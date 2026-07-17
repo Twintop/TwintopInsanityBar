@@ -109,6 +109,21 @@ function TRB.Functions.BarText:GetAnchorFrame(relativeToFrame, classId, specId)
 		return UIParent, true, true
 	end
 
+	-- Castbar is an all-spec bar not handled by any class's per-spec GetBarTextFrame; resolve it here
+	-- centrally so bar text can anchor to it regardless of class/spec.
+	if relativeToFrame == "CastBar" then
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+		local barGroup = barGroups and barGroups.castbar
+		if barGroup ~= nil then
+			local node = barGroup:GetNode(1)
+			if node ~= nil then
+				local isVisible = barGroup.isVisible and node.isVisible
+				return node:GetFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	end
+
 	local barGroupKey = GetContainerAnchorBarGroupKey(relativeToFrame)
 	if barGroupKey ~= nil then
 		local definition = GetContainerAnchorDefinition(classId, specId, barGroupKey)
@@ -489,6 +504,20 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
+
+		{ variable = "$castTime", description = L["BarTextVariableCastTime"], printInSettings = true, color = false },
+		{ variable = "$castTimeRemaining", description = L["BarTextVariableCastTimeRemaining"], printInSettings = true, color = false },
+		{ variable = "$castLatency", description = L["BarTextVariableCastLatency"], printInSettings = true, color = false },
+		{ variable = "$castLatencyMs", description = L["BarTextVariableCastLatencyMs"], printInSettings = true, color = false },
+		{ variable = "$castPushback", description = L["BarTextVariableCastPushback"], printInSettings = true, color = false },
+		{ variable = "$castSpellName", description = L["BarTextVariableCastSpellName"], printInSettings = true, color = false },
+		{ variable = "$castSpellId", description = L["BarTextVariableCastSpellId"], printInSettings = true, color = false },
+		-- Booleans default to logic-only (they'd render nothing); these read out as "true"/"false" text like
+		-- $inCombat does, so both types are stated rather than inferred.
+		{ variable = "$castInterruptible", description = L["BarTextVariableCastInterruptible"], printInSettings = true, color = false,
+			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
+		{ variable = "$castUninterruptible", description = L["BarTextVariableCastUninterruptible"], printInSettings = true, color = false,
+			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
 	}
 	if additionalValues then
 		for _, v in ipairs(additionalValues) do
@@ -504,6 +533,37 @@ end
 local function TryUpdateText(frame, text)
 ---@diagnostic disable-next-line: undefined-field
 	frame.font:SetText(text)
+end
+
+---Applies (or clears) the per-entry text width constraint on a bar text font string.
+---When the entry opts in and isn't bound to Screen, the font is clamped to a percentage
+---of the bound frame's width and truncated with an ellipsis; otherwise it auto-sizes.
+---Memoized on the font so it can be called every refresh (to track live bound-bar resizes)
+---without redundant SetWidth calls, which would force text relayout each tick.
+---@param font FontString The bar text font string
+---@param entry table The bar text entry (DisplayTextEntry)
+---@param relativeToFrame Frame? The frame the entry is bound to
+local function ApplyBarTextWidthConstraint(font, entry, relativeToFrame)
+	local targetWidth = 0
+	local wrap = true
+	if entry.constrainToParent and relativeToFrame ~= nil and relativeToFrame ~= UIParent then
+		local frameWidth = relativeToFrame:GetWidth() or 0
+		local maxWidth = frameWidth * ((entry.maxWidthPercent or 100) / 100)
+		if maxWidth > 0 then
+			targetWidth = maxWidth
+			wrap = false
+		end
+	end
+
+---@diagnostic disable-next-line: inject-field
+	if font.trbConstrainWidth ~= targetWidth or font.trbConstrainWrap ~= wrap then
+---@diagnostic disable-next-line: inject-field
+		font.trbConstrainWidth = targetWidth
+---@diagnostic disable-next-line: inject-field
+		font.trbConstrainWrap = wrap
+		font:SetWordWrap(wrap)
+		font:SetWidth(targetWidth)
+	end
 end
 
 ---Scans the input string for logic symbols and returns their positions and levels
@@ -1372,6 +1432,77 @@ local function AreSecondaryRatingsNil()
 	return false
 end
 
+---Refreshes ONLY the castbar bar text lookup variables (cast/channel/empower) from the dedicated
+---castbar model (TRB.Data.castbar) — deliberately independent of snapshotData.casting, which is the
+---resource-prediction path. Values default to empty/zero when nothing is casting. Called from
+---RefreshLookupDataBase so castbar variables flow through the single, shared bar text render pipeline.
+---Timers format with the castbar's own precision settings (independent of the shared timer precision):
+---$castTimeRemaining uses castTimePrecision, $castTime uses durationPrecision, and $castLatency/$castPushback
+---use latencyPrecision. All values are seconds ($castLatencyMs is always whole milliseconds).
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase? # Active spec settings (for bars.castbar precision fields)
+function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
+	local lookup = TRB.Data.lookup
+	local lookupLogic = TRB.Data.lookupLogic
+	---@diagnostic disable-next-line: undefined-field
+	local castbarSettings = settings and settings.bars and settings.bars.castbar
+	local castTimeFormat = "%." .. ((castbarSettings and castbarSettings.castTimePrecision) or 1) .. "f"
+	local durationFormat = "%." .. ((castbarSettings and castbarSettings.durationPrecision) or 1) .. "f"
+	local latencyFormat = "%." .. ((castbarSettings and castbarSettings.latencyPrecision) or 1) .. "f"
+
+	local castbar = TRB.Data.castbar
+	local castTime, castRemaining, castLatency, castPushback = 0, 0, 0, 0
+	local castSpellName, castSpellId = "", 0
+	local isCasting, notInterruptible = false, false
+	if castbar and castbar:IsActive() then
+		local _, remaining, duration = castbar:GetProgress()
+		isCasting = true
+		notInterruptible = castbar.notInterruptible == true
+		castTime = duration or 0
+		castRemaining = remaining or 0
+		castLatency = castbar.latency or 0
+		castPushback = castbar.pushback or 0
+		if castbar.spell then
+			castSpellName = castbar.spell.name or ""
+			castSpellId = castbar.spell.id or 0
+			-- Source of truth for #casting: the castbar caches spell data for EVERY cast/channel/empower,
+			-- so while a cast is active it drives #casting. The resource-prediction snapshot only fills its
+			-- icon for resource-relevant spells, which is why #casting was blank for most abilities. When the
+			-- castbar is idle/disabled, #casting keeps the snapshot fallback set in RefreshLookupDataBase.
+			if castbar.spell.icon and castbar.spell.icon ~= "" then
+				lookup["#casting"] = castbar.spell.icon
+			end
+		end
+		-- Bulk crafting merge: append the craft progress so $castSpellName reads "Recipe Name 3 / 10".
+		if castbar.tradeskill and castbar.tradeskillTotal > 1 then
+			local progress = string.format("%d / %d", castbar:GetTradeskillIndex(), castbar.tradeskillTotal)
+			castSpellName = castSpellName ~= "" and (castSpellName .. " " .. progress) or progress
+		end
+	end
+	lookup["$castTime"] = castTime > 0 and string.format(durationFormat, castTime) or ""
+	lookup["$castTimeRemaining"] = castTime > 0 and string.format(castTimeFormat, castRemaining) or ""
+	lookup["$castLatency"] = castTime > 0 and string.format(latencyFormat, castLatency) or ""
+	lookup["$castLatencyMs"] = castTime > 0 and string.format("%d", math.floor(castLatency * 1000 + 0.5)) or ""
+	lookup["$castPushback"] = castTime > 0 and string.format(latencyFormat, castPushback) or ""
+	lookup["$castSpellName"] = castSpellName
+	lookup["$castSpellId"] = castTime > 0 and tostring(castSpellId) or ""
+	-- With nothing casting BOTH read false, rather than $castInterruptible being vacuously true.
+	local interruptible = isCasting and not notInterruptible
+	local uninterruptible = isCasting and notInterruptible
+	lookup["$castInterruptible"] = tostring(interruptible)
+	lookup["$castUninterruptible"] = tostring(uninterruptible)
+	lookupLogic["$castTime"] = castTime
+	lookupLogic["$castTimeRemaining"] = castRemaining
+	lookupLogic["$castLatency"] = castLatency
+	lookupLogic["$castLatencyMs"] = castLatency * 1000
+	lookupLogic["$castPushback"] = castPushback
+	lookupLogic["$castSpellId"] = castSpellId
+	-- Stored as strings, matching how $inCombat feeds the conditional engine.
+	lookupLogic["$castInterruptible"] = tostring(interruptible)
+	lookupLogic["$castUninterruptible"] = tostring(uninterruptible)
+end
+
 ---Refreshes the baseline lookup data with the current values.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:RefreshLookupDataBase(settings)
@@ -1535,6 +1666,10 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 
 	lookupLogic["$inCombat"] = tostring(TRB.Data.character.inCombat)
 
+	-- Castbar variables live in their own function so the isolated castbar bar text path can refresh
+	-- them independently of this class-driven (combat/isTracking-gated) refresh.
+	TRB.Functions.BarText:RefreshCastbarLookupData(settings)
+
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
 
 	Global_TwintopResourceBar.resource = Global_TwintopResourceBar.resource or {}
@@ -1610,7 +1745,10 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	-- ticking down, all lookup values are identical to last tick — skip the refresh and
 	-- bar text rendering entirely. During combat $inCombatTime keeps changing, so we
 	-- always refresh when in combat. A pending visibility refresh also bypasses this.
-	if not visibilityRefresh and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not TRB.Functions.Class:HasActiveTimers() then
+	-- An active castbar also bypasses it: its $castTimeRemaining etc. change every frame and must keep
+	-- updating even out of combat / when every other bar is hidden.
+	local castbarActive = TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive()
+	if not visibilityRefresh and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not castbarActive and not TRB.Functions.Class:HasActiveTimers() then
 		return
 	end
 	TRB.Data.lookupDirty = false
@@ -1623,7 +1761,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
 	TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	TRB.Functions.RefreshLookupData()
-	
+
 	--Only parse bar text if we need to refresh the text (or if there are Screen-bound entries)
 	if settings ~= nil and settings.displayText ~= nil then
 		-- Clear the per-call frame cache so entries get fresh visibility data
@@ -1643,7 +1781,19 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 			if displayText.barText[i].enabled then
 				local e = displayText.barText[i]
 				local isScreenText = e.position.relativeToFrame == "UIParent"
-				
+
+				-- Re-apply the width constraint against the bound bar's live width so the clamp
+				-- tracks bar resizes (the font's parent is the bound bar). Runs independent of the
+				-- refreshText gate below so it still updates when only the bar width changed; memoized,
+				-- so it's a no-op unless the width actually changed.
+				if e.constrainToParent and textFrames[i] ~= nil then
+---@diagnostic disable-next-line: undefined-field
+					local entryFont = textFrames[i].font
+					if entryFont ~= nil then
+						ApplyBarTextWidthConstraint(entryFont, e, textFrames[i]:GetParent())
+					end
+				end
+
 				-- Screen-bound text is always processed; other text only when refreshText is true.
 				-- visibilityRefresh forces processing for all entries after a hidden→visible transition.
 				if refreshText or isScreenText or visibilityRefresh then
@@ -1662,14 +1812,14 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 						end
 						showFrameCache[frameKey] = { isEnabled, isVisible }
 					end
-					
+
 					local tfKey = GetTextFrameKey(i)
 					local frameCache = TRB.Data.cache.values.frame[tfKey]
 					if frameCache == nil then
 						frameCache = {}
 						TRB.Data.cache.values.frame[tfKey] = frameCache
 					end
-					
+
 					-- Skip expensive text processing if the target bar is not visible
 					if not isEnabled or not isVisible then
 						frameCache.text = ""
@@ -1770,6 +1920,7 @@ function TRB.Functions.BarText:RepositionBarTextEntry(entryIndex, classId, specI
 	if relativeToFrame ~= nil and entry.enabled and isEnabled then
 		font:ClearAllPoints()
 		font:SetPoint(entry.position.relativeTo, relativeToFrame, entry.position.relativeTo, entry.position.xPos, entry.position.yPos)
+		ApplyBarTextWidthConstraint(font, entry, relativeToFrame)
 		textFrames[entryIndex]:SetParent(relativeToFrame)
 		textFrames[entryIndex]:ClearAllPoints()
 		textFrames[entryIndex]:SetAllPoints(font)
@@ -1906,6 +2057,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 				font:SetText("")
 				font:ClearAllPoints()
 				font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)
+				ApplyBarTextWidthConstraint(font, e, relativeToFrame)
 				textFrames[frameCount]:SetParent(relativeToFrame)
 				textFrames[frameCount]:ClearAllPoints()
 				textFrames[frameCount]:SetAllPoints(font)

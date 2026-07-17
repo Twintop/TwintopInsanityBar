@@ -32,6 +32,20 @@ local globalSettingDefinitions = {
 	textColors      = { checkboxSuffix = "textColors",      tabKey = "fontText",        sectionLabel = L["CopyMenuSection_textColors"],      paths = { {"colors", "text"} } },
 	precision       = { checkboxSuffix = "precision",       tabKey = "fontText",        sectionLabel = L["CopyMenuSection_precision"],       paths = { {"precision"} } },
 	globalBarText   = { checkboxSuffix = "globalBarText",   tabKey = "barText",         sectionLabel = L["CopyMenuSection_globalBarText"],   paths = { {"displayText", "barText"} }, shapeSensitive = true },
+	-- Castbar sections live on the top-level "Castbar" nav category, not the Global Options panel;
+	-- useGlobalLabel gives their checkboxes distinct wording so users aren't sent looking in the
+	-- normal Global Options frame. Field-level paths so copies never clobber spec-only data
+	-- (enabled, tickProfiles).
+	castbarDimensions = { checkboxSuffix = "castbarDimensions", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalCastbar"], sectionLabel = L["CopyMenuSection_castbarDimensions"],
+		paths = { {"bars", "castbar", "width"}, {"bars", "castbar", "height"}, {"bars", "castbar", "border"}, {"bars", "castbar", "xPos"}, {"bars", "castbar", "yPos"}, {"bars", "castbar", "anchor"}, {"bars", "castbar", "fillDirection"} } },
+	castbarColors   = { checkboxSuffix = "castbarColors",   tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalCastbar"], sectionLabel = L["CopyMenuSection_castbarColors"],
+		paths = { {"colors", "bars", "castbar", "bar"}, {"colors", "bars", "castbar", "channel"}, {"colors", "bars", "castbar", "uninterruptible"}, {"colors", "bars", "castbar", "uninterruptibleBorder"}, {"colors", "bars", "castbar", "border"}, {"colors", "bars", "castbar", "background"}, {"colors", "bars", "castbar", "endCap"} } },
+	castbarOverlays = { checkboxSuffix = "castbarOverlays", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalCastbar"], sectionLabel = L["CopyMenuSection_castbarOverlays"],
+		paths = { {"colors", "bars", "castbar", "latency"}, {"colors", "bars", "castbar", "pushback"}, {"colors", "bars", "castbar", "tick"} } },
+	castbarEmpower  = { checkboxSuffix = "castbarEmpower",  tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalCastbar"], sectionLabel = L["CopyMenuSection_castbarEmpower"],
+		paths = { {"colors", "bars", "castbar", "empowerStages"}, {"bars", "castbar", "empowerSegmentedFill"} } },
+	castbarText     = { checkboxSuffix = "castbarText",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalCastbar"], sectionLabel = L["CopyMenuSection_castbarText"],
+		paths = { {"bars", "castbar", "castTimePrecision"}, {"bars", "castbar", "durationPrecision"}, {"bars", "castbar", "latencyPrecision"} } },
 }
 
 ---Sets a checkbox to tristate visual mode
@@ -252,24 +266,32 @@ function TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(
 end
 
 ---Creates a teal hyperlink-style text button anchored to the right of a "Use global settings" checkbox.
----Clicking the link navigates to the Global Options panel and selects the corresponding tab.
+---Clicking the link navigates to the Global Options panel (or another top-level category, e.g. the
+---Castbar screen) and selects the corresponding tab.
 ---@param checkbox CheckButton The "Use global settings" checkbox to attach the link to
----@param globalTabKey string The Global Options tab key to navigate to (e.g., "resourceBar", "barTextures")
-function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, globalTabKey)
+---@param globalTabKey string The tab key to navigate to (e.g., "resourceBar", "barTextures", "castbar")
+---@param categoryKey string? The top-level nav category holding the tab (defaults to "global")
+function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, globalTabKey, categoryKey)
 	local textRegion = _G[checkbox:GetName() .. "Text"]
 	if not textRegion then
 		return
 	end
 
+	-- The Castbar category has its own wording so it's clear the link opens the Cast Bar
+	-- screen, not the normal Global Options frame.
+	local navKey = categoryKey or "global"
+	local linkText = navKey == "castbar" and L["OpenGlobalCastbarSettings"] or L["OpenGlobalSettings"]
+	local linkTooltip = navKey == "castbar" and L["OpenGlobalCastbarSettingsTooltip"] or L["OpenGlobalSettingsTooltip"]
+
 	local link = CreateFrame("Button", nil, checkbox)
 	link:SetNormalFontObject("GameFontNormalSmall")
 	link:SetHighlightFontObject("GameFontHighlightSmall")
-	link:SetText(L["OpenGlobalSettings"])
+	link:SetText(linkText)
 	link:GetFontString():SetTextColor(GetUseGlobalSettingsColor())
 	link:SetWidth(link:GetFontString():GetStringWidth() + 4)
 	link:SetHeight(16)
 	link:SetPoint("LEFT", textRegion, "RIGHT", 8, 0)
-	link.tooltip = L["OpenGlobalSettingsTooltip"]
+	link.tooltip = linkTooltip
 
 	link:SetScript("OnEnter", function(self)
 		self:GetFontString():SetTextColor(1, 1, 1)
@@ -288,12 +310,12 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		GameTooltip:Hide()
 	end)
 
+	local tabNamePrefix = navKey:gsub("^%l", string.upper)
 	link:SetScript("OnClick", function()
 		if TRB.Options.OptionsFrame then
-			TRB.Options.OptionsFrame:SelectCategory("global")
+			TRB.Options.OptionsFrame:SelectCategory(navKey)
 			C_Timer.After(0, function()
----@diagnostic disable-next-line: param-type-mismatch
-				TRB.Functions.OptionsUi.Tabs:SwitchToTabByClassSpec(nil, nil, globalTabKey)
+				TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(tabNamePrefix, globalTabKey)
 			end)
 		end
 	end)

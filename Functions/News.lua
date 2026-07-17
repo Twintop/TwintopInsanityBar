@@ -34,6 +34,92 @@ local content = [====[
 ### Elemental
 
 - Power of the Maelstrom no longer grants bonus Maelstrom from Lightning Bolt and Chain Lightning.
+# 12.0.7.7-release (2026-07-17)
+## General
+### Cast Bar
+
+- [#791](#791) Fix stale bar text, channel tick markers, and latency/pushback overlays from the last shown cast appearing during that flash until a `/reload`.
+- Fix the Cast Bar briefly showing and fading out after every finished cast when it was configured not to show (e.g. all Show Bar When conditions unchecked).
+- When no Show Bar When options are checked, the Cast Bar is now fully disabled as if Never Show were checked: no cast tracking, no idle/inactive alpha display, and Disable Blizzard Cast Bar is ignored.
+
+### Localization
+
+- [#792 - @MOSS099](#792) Updated translations for Simplified Chinese (zhCN).
+
+---
+
+# 12.0.7.6-release (2026-07-16)
+## General
+
+- [#443](#443) Restore Bar End Caps: a configurable width and color overlay at the leading edge of a bar's fill, on every bar except secret cast-count bars.
+- Add Bar End Cap as a Color Indicator target on every bar that has one. This takes priority over the cap's "Use Current Border Color" option, if enabled.
+
+### Cast Bar
+
+- Fix an issue with Warlock's channel tick markers logic being applied to all channeled ticks.
+
+### Localization
+
+- [#790 - @MOSS099](#790) Updated translations for Simplified Chinese (zhCN).
+
+---
+
+# 12.0.7.5-release (2026-07-15)
+## General
+### Cast Bar
+
+- Adjust default Cast Bar fade delay and duration to be a bit smoother.
+
+---
+
+# 12.0.7.4-release (2026-07-15)
+## General
+### Bar Text
+
+- Add a Prevent Text Overflow toggle: clamp bar text to its bound bar's width, truncating with an ellipsis instead of overflowing. No effect when bound to Screen.
+- Add a Maximum Text Width slider (percentage of the bound bar's width, default 100%), shown when the toggle is on.
+
+### Cast Bar
+
+- Add a new Cast Bar for every specialization, covering standard, channeled, and empowered casts, with the same size, anchor, texture, color, and bar text options as every other bar.
+- Visibility conditions (Casting, Channeling, Empowered, Always, Never), In Vehicle hide, active/inactive alpha, and fade.
+- Latency and pushback overlays, with a Channel Tick Width control and optional Size Channel Ticks to Latency.
+- Channel tick markers from a user-editable per-spell tick rate list, handling fixed-count, fixed-duration, and chained channels.
+- Empower stage lines and per-level fill colors, with optional Fill Each Empower Level Separately (Windwalker Monk, Evoker, Blood Death Knight).
+- Uninterruptible Border Color while a cast can't be interrupted.
+- Bulk profession crafting (e.g. Create All) merged into one channel-style bar, with per-craft ticks and `$castSpellName` progress; toggle Merge Bulk Crafting.
+- Bar text variables `$castTime`, `$castTimeRemaining`, `$castLatency`, `$castLatencyMs`, `$castPushback`, `$castSpellName`, `$castSpellId`, `$castInterruptible`, `$castUninterruptible`, and the `#casting` icon.
+- Top-level Cast Bar options with global versions of every section, a Global Profile selector, per-spec follow-global, and Copy... between scopes.
+
+### Color Indicators
+
+- Add the Health Bar and Cast Bar as Color Indicator targets for every specialization.
+- Health Bar: Border and Background.
+- Cast Bar: Bar (Hardcast), Bar (Channeled), Border, Background, and Channeled Tick Color; an indicator on the fill or border outranks the uninterruptible colors.
+- Gradient Colors (Secrets) can target either bar's Border and Background.
+
+### Localization
+
+- [#788 - @MOSS099](#788) Updated translations for Simplified Chinese (zhCN).
+
+## Hunter
+### Marksmanship
+
+- Add new bar text variables for Double Tap tracking: `$doubleTapTime`, and icon `#doubleTap`.
+
+### Survival
+
+- Add support for Raptor Swipe as its own threshold line.
+
+## Mage
+### Fire
+
+- Fix an issue where switching to Fire from Arcane or Frost would cause the Fire Blast bar to not show all of the charges.
+
+## Priest
+### Discipline
+
+- Add new bar text variables for Harsh Discipline tracking: `$harshDisciplineTime`, `$harshDisciplineStacks`, and `$harshDisciplineMaxStacks`, and icon `#harshDiscipline`.
 
 ---
 

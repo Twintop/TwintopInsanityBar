@@ -40,6 +40,8 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$energy",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -68,6 +70,8 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$rage",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -98,6 +102,8 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$energy",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -127,6 +133,8 @@ local function SharedLoadDefaultBarTextSettings(baseSpecId, classic)
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$rage",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -176,6 +184,8 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="{$casting}[#casting$casting+]$astralPower",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -204,6 +214,8 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="{$eclipseTime}[#eclipse $eclipseTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -234,6 +246,8 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$astralPower",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -262,6 +276,8 @@ local function BalanceLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="{$eclipseTime}[#eclipse $eclipseTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -557,6 +573,8 @@ local function FeralLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionCenter"],
 			text = "{$predatorRevealedNextCp=($comboPoints+1)&$comboPoints=0}[$predatorRevealedTickTime]{$incarnationNextCp=($comboPoints+1)&$comboPoints=0}[$incarnationTickTime]",
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -585,6 +603,8 @@ local function FeralLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionCenter"],
 			text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=1)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=0)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=1)||($incarnationNextCp=($comboPoints+2)&$comboPoints=0)}[$incarnationTickTime]",
 			color = { color = "ffffffff" },
@@ -613,6 +633,8 @@ local function FeralLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionCenter"],
 			text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=2)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=1)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=2)||($incarnationNextCp=($comboPoints+2)&$comboPoints=1)}[$incarnationTickTime]",
 			color = { color = "ffffffff" },
@@ -641,6 +663,8 @@ local function FeralLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionCenter"],
 			text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=3)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=2)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=3)||($incarnationNextCp=($comboPoints+2)&$comboPoints=2)}[$incarnationTickTime]",
 			color = { color = "ffffffff" },
@@ -669,6 +693,8 @@ local function FeralLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionCenter"],
 			text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=4)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=3)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=4)||($incarnationNextCp=($comboPoints+2)&$comboPoints=3)}[$incarnationTickTime]",
 			color = { color = "ffffffff" },
@@ -2190,7 +2216,6 @@ local function FeralConstructComboPointsBarPanel(parent)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceComboPoints"])
 
-	yCoord = yCoord - 30
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ComboPointColorPickerBorder"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2203,6 +2228,8 @@ local function FeralConstructComboPointsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Druid_Feral_ComboPoints", "endCapComboPoints", L["EndCap"], 11, 2)
 end
 
 local function FeralConstructHealthBarPanel(parent)

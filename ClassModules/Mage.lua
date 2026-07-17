@@ -399,7 +399,9 @@ local function ConstructResourceBar(settings)
 				barGroups.secondary:ShowNodes(fireBlastNodeCount)
 
 				local fireBlastColors = settings.colors.bars and settings.colors.bars.fireBlastCharges
-				for i = 1, fireBlastNodeCount do
+				-- Style every slot, not just the visible count: charge count lags on spec switch, so higher nodes would render texture-less when shown later.
+				local fireBlastMaxNodes = barGroups.secondary.maxNodes or fireBlastNodeCount
+				for i = 1, fireBlastMaxNodes do
 					local node = barGroups.secondary:GetNode(i)
 					if node then
 						node:SetTextures(
@@ -823,15 +825,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 
@@ -894,15 +888,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 
 			-- Fire Blast Charges secondary bar
@@ -1011,15 +997,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 

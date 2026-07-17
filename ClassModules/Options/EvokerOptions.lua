@@ -23,6 +23,8 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=0}[$essenceRegenTime]",
 			fontSize = 14,
@@ -51,6 +53,8 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=1}[$essenceRegenTime]",
 			fontSize = 14,
@@ -79,6 +83,8 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=2}[$essenceRegenTime]",
 			fontSize = 14,
@@ -107,6 +113,8 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=3}[$essenceRegenTime]",
 			fontSize = 14,
@@ -135,6 +143,8 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=4}[$essenceRegenTime]",
 			fontSize = 14,
@@ -163,6 +173,8 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = L["PositionLeft"],
 			text = "{$essence=5}[$essenceRegenTime]",
 			fontSize = 14,
@@ -651,6 +663,8 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="{$ebonMightTime}[$ebonMightTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -680,6 +694,8 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="{$ebonMightTime}[$ebonMightTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -1152,6 +1168,8 @@ local function DevastationConstructEssenceBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Evoker_Devastation_ComboPoints", "endCapComboPoints", L["EndCap"], 13, 1)
 end
 
 local function DevastationConstructHealthBarPanel(parent)
@@ -1571,6 +1589,8 @@ local function PreservationConstructEssenceBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Evoker_Preservation_ComboPoints", "endCapComboPoints", L["EndCap"], 13, 2)
 end
 
 local function PreservationConstructHealthBarPanel(parent)
@@ -2003,6 +2023,8 @@ local function AugmentationConstructEssenceBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Evoker_Augmentation_ComboPoints", "endCapComboPoints", L["EndCap"], 13, 3)
 end
 
 local function AugmentationConstructHealthBarPanel(parent)

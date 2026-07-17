@@ -240,6 +240,8 @@ local function FillSpecializationCache()
 	specCache.priest_discipline.snapshotData.snapshots[spells.voidbinding.id] = TRB.Classes.Snapshot:New(spells.voidbinding)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_discipline.snapshotData.snapshots[spells.harshDiscipline.id] = TRB.Classes.Snapshot:New(spells.harshDiscipline)
 	--[[---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
@@ -859,6 +861,28 @@ local function RefreshLookupData_Discipline()
 		end
 	end
 
+	-- Block F: Harsh Discipline ($harshDisciplineTime, $harshDisciplineStacks, $harshDisciplineMaxStacks)
+	if not activeVars or activeVars["$harshDisciplineTime"] or activeVars["$harshDisciplineStacks"] or activeVars["$harshDisciplineMaxStacks"] then
+		local currentTime = GetTime()
+		local harshDisciplineBuff = snapshots[spells.harshDiscipline.id]
+		local _harshDisciplineActive = (harshDisciplineBuff ~= nil and harshDisciplineBuff.buff.isActive) or false
+		local _harshDisciplineStacks = (_harshDisciplineActive and (harshDisciplineBuff.buff.applications or 0)) or 0
+		local _harshDisciplineTime = (harshDisciplineBuff ~= nil and harshDisciplineBuff.buff:GetRemainingTime(currentTime)) or 0
+		local _harshDisciplineMaxStacks = spells.harshDiscipline.maxStacks or 0
+		lookupLogic["$harshDisciplineTime"] = _harshDisciplineTime
+		lookupLogic["$harshDisciplineStacks"] = _harshDisciplineStacks
+		lookupLogic["$harshDisciplineMaxStacks"] = _harshDisciplineMaxStacks
+		if lookupChanged(prevState, "$harshDisciplineTime", _harshDisciplineTime) then
+			lookup["$harshDisciplineTime"] = TRB.Functions.BarText:TimerPrecision(_harshDisciplineTime)
+		end
+		if lookupChanged(prevState, "$harshDisciplineStacks", _harshDisciplineStacks) then
+			lookup["$harshDisciplineStacks"] = string.format("%.0f", _harshDisciplineStacks)
+		end
+		if lookupChanged(prevState, "$harshDisciplineMaxStacks", _harshDisciplineMaxStacks) then
+			lookup["$harshDisciplineMaxStacks"] = string.format("%.0f", _harshDisciplineMaxStacks)
+		end
+	end
+
 	--[[lookup["$scTime"] = scTime
 	lookup["$shadowCovenantTime"] = scTime
 	lookup["$entropicRiftTime"] = entropicRiftTime]]
@@ -1308,6 +1332,21 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				-- approach to avoid C_Timer.After(0) callback ordering issues.
 				snapshotData.attributes.evangelismCastTime = GetTime()
 			elseif spellId == spells.powerWordRadiance.id then
+				-- Harsh Discipline: each Radiance grants a stack (timer refreshed on gain) empowering the next Penance.
+				if talents:IsTalentActive(spells.harshDiscipline) then
+					local hdBuff = snapshots[spells.harshDiscipline.id].buff
+					hdBuff:AddStackOrInitializeCustom(spells.harshDiscipline.duration, currentTime, true)
+					hdBuff.updateFromSecret = true
+					if hdBuff.auraInstanceId == nil then
+						local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime)
+						if bufferEntry ~= nil then
+							hdBuff:SetAuraInstanceId(bufferEntry.auraInstanceID)
+							hdBuff:RefreshWithSecretAuraData(bufferEntry)
+						else
+							TRB.Functions.Aura:InsertAuraRequest(currentTime, hdBuff)
+						end
+					end
+				end
 				-- Defer by one frame so the Evangelism timestamp is recorded regardless
 				-- of which SUCCEEDED event fires first within the same frame.
 				local castTime = currentTime
@@ -1382,15 +1421,26 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 						SustainedPotencyStack()
 
+						-- Death wipes the tracked buffs; pending pulses must not re-arm them.
+						local deathCountAtCast = Character:GetDeathCount()
 						C_Timer.After(0, function()
 							C_Timer.After(spells.powerSurge.tickRate, function()
+								if Character:GetDeathCount() ~= deathCountAtCast then
+									return
+								end
 								SustainedPotencyStack()
 							end)
 							C_Timer.After((spells.powerSurge.tickRate * 2), function()
+								if Character:GetDeathCount() ~= deathCountAtCast then
+									return
+								end
 								SustainedPotencyStack()
 							end)
 							if talents:IsTalentActive(spells.energyConservation) then
 								C_Timer.After((spells.powerSurge.tickRate * 3), function()
+									if Character:GetDeathCount() ~= deathCountAtCast then
+										return
+									end
 									SustainedPotencyStack()
 								end)
 							end
@@ -1613,15 +1663,22 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 					--TODO: Clean this up into something more automated
 					if talents:IsTalentActive(spells.powerSurge) then
-
+						-- Death wipes the tracked buffs; pending pulses must not re-arm them.
+						local deathCountAtCast = Character:GetDeathCount()
 						C_Timer.After(0, function()
 							C_Timer.After(spells.powerSurge.tickRate, function()
+								if Character:GetDeathCount() ~= deathCountAtCast then
+									return
+								end
 								if talents:IsTalentActive(spells.manifestedPower) then
 									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + spells.powerSurge.tickRate, true)
 								end
 								SustainedPotencyStack()
 							end)
 							C_Timer.After((spells.powerSurge.tickRate * 2), function()
+								if Character:GetDeathCount() ~= deathCountAtCast then
+									return
+								end
 								if talents:IsTalentActive(spells.manifestedPower) then
 									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 2), true)
 								end
@@ -1629,6 +1686,9 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 							end)
 							if talents:IsTalentActive(spells.energyConservation) then
 								C_Timer.After((spells.powerSurge.tickRate * 3), function()
+								if Character:GetDeathCount() ~= deathCountAtCast then
+									return
+								end
 								if talents:IsTalentActive(spells.manifestedPower) then
 									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 3), true)
 								end
@@ -1656,7 +1716,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				end
 			elseif spellId == spells.tentacleSlam.castId then
 				if talents:IsTalentActive(spells.screamsOfTheVoid) and talents:IsTalentActive(spells.maddeningTentacles) then
+					local deathCountAtCast = Character:GetDeathCount()
 					C_Timer.After((spells.tentacleSlam.attributes.delay), function()
+						if Character:GetDeathCount() ~= deathCountAtCast then
+							return
+						end
 						snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime+spells.tentacleSlam.attributes.delay)
 					end)
 				end
@@ -2008,7 +2072,6 @@ local function UpdateResourceBar()
 			-- Build indicator condition map (shared across primary and secondary bar blocks)
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 			local conditionMap = {
 				surgeOfLight = snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive,
@@ -2021,32 +2084,14 @@ local function UpdateResourceBar()
 			local barColorMap = { manaBar = manaBarColors, powerWordsBar = powerWordsBarColors }
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			if nodeOrder and indicatorColors then
-				for i = #nodeOrder, 1, -1 do
-					local key = nodeOrder[i]
-					local indicator = indicatorColors[key]
-					if indicator and indicator.enabled and conditionMap[key] then
-						if indicator.targets then
-							for barKey, elements in pairs(indicator.targets) do
-								local targetColors = barColorMap[barKey]
-								if targetColors and elements then
-									for elemKey, isTargeted in pairs(elements) do
-										if isTargeted then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-			end
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				primaryNode:SetBorderColor(manaBarColors.border)
@@ -2090,6 +2135,7 @@ local function UpdateResourceBar()
 								TRB.Functions.Color:ApplyFillColor(cpNode, powerWordsBarColors.bar)
 								cpNode:SetBorderColor(powerWordsBarColors.border)
 								cpNode:SetBackgroundColorFromString(powerWordsBarColors.background)
+								Bar:ApplyEndCapIndicator(cpNode, "powerWordsBar")
 								currentCp = currentCp + 1
 							end
 						end
@@ -2100,15 +2146,7 @@ local function UpdateResourceBar()
 			-- Update health bar
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 
 			-- Update utility bar (Angelic Feather charges)
@@ -2231,6 +2269,11 @@ local function UpdateResourceBar()
 			local lightweaverBarColors = { bar = nil, border = nil, background = nil }
 			local barColorMap = { manaBar = manaBarColors, holyWordsBar = holyWordsBarColors, lightweaverBar = lightweaverBarColors }
 
+			-- Holy's own bars are resolved by the node-aware walk below, not the shared resolver: several of
+			-- its indicators apply to one node of a bar rather than the whole bar. The shared health/cast bar
+			-- have no such nuance, so they still resolve the standard way.
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
+
 			-- Apply flat indicator colors (priority order, last writer wins)
 			if nodeOrder and indicatorColors then
 				for i = #nodeOrder, 1, -1 do
@@ -2267,6 +2310,7 @@ local function UpdateResourceBar()
 				local barBackgroundColor = manaBarColors.background
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				primaryNode:SetBorderColor(barBorderColor)
@@ -2341,6 +2385,7 @@ local function UpdateResourceBar()
 										TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 										cpNode:SetBorderColor(nodeBorderColor)
 										cpNode:SetBackgroundColor(nodeBgR, nodeBgG, nodeBgB, nodeBgA)
+										Bar:ApplyEndCapIndicator(cpNode, "holyWordsBar")
 									end
 								end
 								currentCp = currentCp + 1
@@ -2353,15 +2398,7 @@ local function UpdateResourceBar()
 			-- Update health bar
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 
 			-- Update utility bar (Angelic Feather charges)
@@ -2444,6 +2481,7 @@ local function UpdateResourceBar()
 								lwBgColor = benIndicator.color
 							end
 							lwNode:SetBackgroundColorFromString(lwBgColor)
+							Bar:ApplyEndCapIndicator(lwNode, "lightweaverBar")
 						end
 					end
 				end
@@ -2551,8 +2589,55 @@ local function UpdateResourceBar()
 		local overcapCurvesMana = {}
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barColor = specSettings.colors.bar.base
+			local barBackgroundColor = specSettings.colors.bar.background.color
+
+			-- Build indicator condition map
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+
+			-- Precompute voidformEnd timing threshold
+			local voidformActive = snapshots[spells.voidform.id].buff.isActive
+			local voidformEndMet = false
+			if voidformActive then
+				local timeLeft = snapshots[spells.voidform.id].buff.remaining
+				local timeThreshold = 0
+				if specSettings.endOf.voidform.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.voidform.gcdsMax
+				elseif specSettings.endOf.voidform.mode == "time" then
+					timeThreshold = specSettings.endOf.voidform.timeMax
+				end
+				voidformEndMet = timeLeft <= timeThreshold
+			end
+
+			local swmUsable = spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()
+
+			local conditionMap = {
+				instantMindBlast = snapshotData.attributes.shadowyInsightActive,
+				voidformEnd = voidformActive and voidformEndMet,
+				mindDevourer = spells.shadowWordMadness:IsFree(),
+				entropicRift = snapshots[spells.entropicRift.id].buff.isActive,
+				borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive,
+				shadowWordMadnessUsable = swmUsable,
+				voidform = voidformActive,
+				borderOvercap = affectingCombat,
+			}
+
+			-- Color targets: barKey -> elementKey -> current color
+			local insanityBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local manaBarColors = { bar = manaBarColor, border = manaBorderColor, background = manaBackgroundColor }
+			local barColorMap = { insanityBar = insanityBarColors, manaBar = manaBarColors }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
 
@@ -2561,72 +2646,7 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barColor = specSettings.colors.bar.base
-				local barBackgroundColor = specSettings.colors.bar.background.color
-
-				-- Build indicator condition map
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
-
-				-- Precompute voidformEnd timing threshold
-				local voidformActive = snapshots[spells.voidform.id].buff.isActive
-				local voidformEndMet = false
-				if voidformActive then
-					local timeLeft = snapshots[spells.voidform.id].buff.remaining
-					local timeThreshold = 0
-					if specSettings.endOf.voidform.mode == "gcd" then
-						local gcd = Character:GetCurrentGCDTime()
-						timeThreshold = gcd * specSettings.endOf.voidform.gcdsMax
-					elseif specSettings.endOf.voidform.mode == "time" then
-						timeThreshold = specSettings.endOf.voidform.timeMax
-					end
-					voidformEndMet = timeLeft <= timeThreshold
-				end
-
-				local swmUsable = spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()
 				local isCasting = snapshotData.casting.resourceFinal ~= 0
-
-				local conditionMap = {
-					instantMindBlast = snapshotData.attributes.shadowyInsightActive,
-					voidformEnd = voidformActive and voidformEndMet,
-					mindDevourer = spells.shadowWordMadness:IsFree(),
-					entropicRift = snapshots[spells.entropicRift.id].buff.isActive,
-					borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive,
-					shadowWordMadnessUsable = swmUsable,
-					voidform = voidformActive,
-					borderOvercap = affectingCombat,
-				}
-
-				-- Color targets: barKey -> elementKey -> current color
-				-- insanityBar targets
-				local insanityBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				-- manaBar targets
-				local manaBarColors = { bar = manaBarColor, border = manaBorderColor, background = manaBackgroundColor }
-				local barColorMap = { insanityBar = insanityBarColors, manaBar = manaBarColors }
-
-				-- Apply flat indicator colors (priority order, last writer wins)
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] then
-							if indicator.targets then
-								for barKey, elements in pairs(indicator.targets) do
-									local targetColors = barColorMap[barKey]
-									if targetColors and elements then
-										for elemKey, isTargeted in pairs(elements) do
-											if isTargeted then
-												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
 
 				-- Find active gradient indicators (separate priority group, always override flat colors when active)
 				local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -2839,10 +2859,11 @@ local function UpdateResourceBar()
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "insanityBar")
 
 				if overcapCurvesInsanity.border then
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesInsanity.border)
-					primaryNode:SetBorderColorCurve(borderColorResult)
+					primaryNode:SetBorderColorCurve(borderColorResult, TRB.Functions.Color:EvaluateEndCapCurve(primaryNode, overcapCurvesInsanity.border))
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
@@ -2865,15 +2886,7 @@ local function UpdateResourceBar()
 		-- Update health bar
 		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
-			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-			if healthNode then
-				healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-				healthNode:SetValue(snapshotData.attributes.health or 0)
-				healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-				healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-				healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-			end
-			Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 		end
 
 		-- Update mana bar (Shadow only)
@@ -2885,6 +2898,7 @@ local function UpdateResourceBar()
 				local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 				manaNode:SetMinMax(0, maxMana)
 				manaNode:SetValue(currentMana)
+				Bar:ApplyEndCapIndicator(manaNode, "manaBar")
 				if overcapCurvesMana.bar then
 					local manaBarResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesMana.bar)
 					manaNode:SetColorCurve(manaBarResult)
@@ -2893,7 +2907,7 @@ local function UpdateResourceBar()
 				end
 				if overcapCurvesMana.border then
 					local manaBorderResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesMana.border)
-					manaNode:SetBorderColorCurve(manaBorderResult)
+					manaNode:SetBorderColorCurve(manaBorderResult, TRB.Functions.Color:EvaluateEndCapCurve(manaNode, overcapCurvesMana.border))
 				else
 					manaNode:SetBorderColor(manaBorderColor)
 				end
@@ -3650,6 +3664,10 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.powerWordRadiance.id].cooldown.charges > 0
 	end
+	local harshDisciplineFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.harshDiscipline.id].buff.isActive
+	end
 	local discipline = {
 		["$resource"] = false, ["$mana"] = false,
 		["$resourcePercent"] = false, ["$manaPercent"] = false,
@@ -3696,6 +3714,9 @@ do
 			local spells = TRB.Data.spellsData.spells
 			return TRB.Data.snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive
 		end,
+		["$harshDisciplineTime"] = harshDisciplineFn,
+		["$harshDisciplineStacks"] = harshDisciplineFn,
+		["$harshDisciplineMaxStacks"] = true,
 	}
 	for k, v in pairs(healthVars) do discipline[k] = v end
 	-- Holy

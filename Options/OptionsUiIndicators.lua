@@ -17,6 +17,72 @@ local gradientDirectionAbbrevLabels = {
 	vertical = L["GradientDirectionVerticalAbbrev"],
 }
 
+-- The elements a bar target offers when it doesn't name its own set: every spec-owned resource bar.
+local defaultElementDefs = {
+	{ key = "bar", label = L["BarElementBar"] },
+	{ key = "border", label = L["BarElementBorder"] },
+	{ key = "background", label = L["BarElementBackground"] },
+	{ key = "endCap", label = L["EndCap"] },
+}
+
+---Whether this spec registers channel tick profiles of its own, which is what makes the cast bar draw
+---channel tick lines -- and so what makes a color for them worth offering. Read from the code registry, for
+---the spec whose panel is being built (not the one being played, which is usually a different spec).
+---@param classId integer
+---@param specId integer
+---@return boolean
+local function SpecHasCastbarTickProfiles(classId, specId)
+	local compositeKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+	local getter = compositeKey and TRB.Data.castbarTickProfilesRegistry[compositeKey]
+	if type(getter) ~= "function" then
+		return false
+	end
+	return next(getter()) ~= nil
+end
+
+---The bar targets every spec gets for free: the health bar and the cast bar. Appended to whatever bars the
+---spec itself declares, so these don't have to be hand-wired into all 40 spec option panels.
+---Neither offers a plain "Bar" element: the health bar's fill is a health-threshold curve, and the cast
+---bar's is driven per cast state, so it splits into its two states instead.
+---@param classId integer
+---@param specId integer
+---@return TRB.Classes.OptionsUi.BarTargetDef[]
+local function BuildSharedBarTargetDefs(classId, specId)
+	local castbarElements = {
+		{ key = "bar", label = L["BarElementBarHardcast"] },
+		{ key = "channel", label = L["BarElementBarChanneled"] },
+		{ key = "border", label = L["BarElementBorder"] },
+		{ key = "background", label = L["BarElementBackground"] },
+		{ key = "endCap", label = L["EndCap"] },
+	}
+	if SpecHasCastbarTickProfiles(classId, specId) then
+		castbarElements[#castbarElements + 1] = { key = "tick", label = L["BarElementChanneledTick"] }
+	end
+
+	-- Gradient indicators are a step curve over the spec's own resource, painted onto whichever bar is
+	-- targeted -- the same way the overcap gradient already colors, say, the Stagger bar's border from
+	-- Energy. Borders and backgrounds are plain node colors and can take that curve. The rest can't: the
+	-- health bar's fill is already a health curve, the cast bar's fill is driven per cast state, and the
+	-- channel ticks are drawn textures rather than a node color.
+	return {
+		{
+			key = "healthBar",
+			label = L["BarVisibilityBarNameHealth"],
+			elements = {
+				{ key = "border", label = L["BarElementBorder"] },
+				{ key = "background", label = L["BarElementBackground"] },
+				{ key = "endCap", label = L["EndCap"] },
+			}
+		},
+		{
+			key = "castbar",
+			label = L["BarVisibilityBarNameCastbar"],
+			elements = castbarElements,
+			gradientExcluded = { bar = true, channel = true, tick = true }
+		},
+	}
+end
+
 ---Generates the complete Indicator Colors panel for a specialization.
 ---This centralizes the boilerplate UI for flat indicator rows, gradient indicator rows,
 ---optional EndOf configuration sections, and optional overcap configuration.
@@ -31,16 +97,19 @@ local gradientDirectionAbbrevLabels = {
 function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, config)
 	local indicatorDefs = config.indicatorDefs
 	local gradientDefs = config.gradientDefs or {}
-	local barTargetDefs = config.barTargetDefs
 	local excludedElements = config.excludedElements or {}
 	local gradientExcludedElements = config.gradientExcludedElements or {}
 	local ddNamePrefix = config.ddNamePrefix
 
-	local elementDefs = {
-		{ key = "bar", label = L["BarElementBar"] },
-		{ key = "border", label = L["BarElementBorder"] },
-		{ key = "background", label = L["BarElementBackground"] },
-	}
+	-- The spec's own bars, then the health bar and cast bar every spec shares. Built into a new list so the
+	-- caller's config table isn't mutated -- the panel is regenerated each time it's opened.
+	local barTargetDefs = {}
+	for _, barDef in ipairs(config.barTargetDefs) do
+		barTargetDefs[#barTargetDefs + 1] = barDef
+	end
+	for _, barDef in ipairs(BuildSharedBarTargetDefs(classId, specId)) do
+		barTargetDefs[#barTargetDefs + 1] = barDef
+	end
 
 	-- Build a quick lookup from key -> indicatorDef
 	local indicatorDefByKey = {}
@@ -88,7 +157,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			local barTargets = indicator.targets[barDef.key]
 			if barTargets then
 				local elements = {}
-				for _, elemDef in ipairs(elementDefs) do
+				for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
 					if barTargets[elemDef.key] then
 						table.insert(elements, elemDef.label)
 					end
@@ -104,33 +173,35 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return table.concat(parts, "; ")
 	end
 
-	---Syncs the enabled state for an indicator based on whether any targets are selected
-	---@param indicatorKey string
-	---@param rowIndex number
-	local function SyncEnabled(indicatorKey, rowIndex)
-		local indicator = indicatorColors[indicatorKey]
-		if not indicator then return end
-		local anyEnabled = false
-		if indicator.targets then
-			for _, barDef in ipairs(barTargetDefs) do
-				local barTargets = indicator.targets[barDef.key]
-				if barTargets then
-					for _, elemDef in ipairs(elementDefs) do
-						if barTargets[elemDef.key] then
-							anyEnabled = true
-							break
-						end
+	---Whether any bar element is currently targeted by this indicator.
+	---@param indicator table?
+	---@return boolean
+	local function HasAnyTarget(indicator)
+		if not indicator or not indicator.targets then
+			return false
+		end
+		for _, barDef in ipairs(barTargetDefs) do
+			local barTargets = indicator.targets[barDef.key]
+			if barTargets then
+				for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
+					if barTargets[elemDef.key] then
+						return true
 					end
 				end
-				if anyEnabled then break end
 			end
 		end
+		return false
+	end
+
+	---Syncs the enabled state for an indicator based on whether any targets are selected
+	---@param indicator table?
+	---@param colorPicker Button? # The row's color picker, greyed out while nothing is targeted
+	local function SyncEnabled(indicator, colorPicker)
+		if not indicator then return end
+		local anyEnabled = HasAnyTarget(indicator)
 		indicator.enabled = anyEnabled
-		local row = rows[rowIndex]
-		if row then
-			if row.colorPicker then
-				TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(row.colorPicker, anyEnabled)
-			end
+		if colorPicker then
+			TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(colorPicker, anyEnabled)
 		end
 	end
 
@@ -275,11 +346,12 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				currentIndicator.targets = currentIndicator.targets or {}
 
 				local firstBar = true
-				for barIdx, barDef in ipairs(barTargetDefs) do
+				for _, barDef in ipairs(barTargetDefs) do
+					local barElementDefs = barDef.elements or defaultElementDefs
 					local excluded = excludedElements[barDef.key]
 					local allExcluded = true
 					if excluded then
-						for _, elemDef in ipairs(elementDefs) do
+						for _, elemDef in ipairs(barElementDefs) do
 							if not excluded[elemDef.key] then
 								allExcluded = false
 								break
@@ -296,7 +368,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 						rootDescription:CreateTitle(barDef.label)
 						currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
 
-						for _, elemDef in ipairs(elementDefs) do
+						for _, elemDef in ipairs(barElementDefs) do
 							if not (excluded and excluded[elemDef.key]) then
 								rootDescription:CreateCheckbox(
 									elemDef.label,
@@ -312,7 +384,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 										ci.targets = ci.targets or {}
 										ci.targets[barDef.key] = ci.targets[barDef.key] or {}
 										ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
-										SyncEnabled(ck, capturedRowIdx)
+										local targetRow = rows[capturedRowIdx]
+										SyncEnabled(ci, targetRow and targetRow.colorPicker)
 									end
 								)
 							end
@@ -521,12 +594,22 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 					ci.targets = ci.targets or {}
 
 					local firstBar = true
-					for barIdx, barDef in ipairs(barTargetDefs) do
-						local globalExcluded = excludedElements[barDef.key]
-						local gradExcluded = gradientExcludedElements[barDef.key]
+					for _, barDef in ipairs(barTargetDefs) do
+						local barElementDefs = barDef.elements or defaultElementDefs
+						-- An element is off-limits to a gradient row if the panel excludes it outright, the caller
+						-- excludes it from gradients, or the bar itself declares it can't take a color curve.
+						local function IsGradientExcluded(elemKey)
+							local globalExcluded = excludedElements[barDef.key]
+							local gradExcluded = gradientExcludedElements[barDef.key]
+							local barExcluded = barDef.gradientExcluded
+							return (globalExcluded and globalExcluded[elemKey])
+								or (gradExcluded and gradExcluded[elemKey])
+								or (barExcluded and barExcluded[elemKey]) or false
+						end
+
 						local allExcluded = true
-						for _, elemDef in ipairs(elementDefs) do
-							if not ((globalExcluded and globalExcluded[elemDef.key]) or (gradExcluded and gradExcluded[elemDef.key])) then
+						for _, elemDef in ipairs(barElementDefs) do
+							if not IsGradientExcluded(elemDef.key) then
 								allExcluded = false
 								break
 							end
@@ -539,8 +622,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 							rootDescription:CreateTitle(barDef.label)
 							ci.targets[barDef.key] = ci.targets[barDef.key] or {}
 
-							for _, elemDef in ipairs(elementDefs) do
-								if not ((globalExcluded and globalExcluded[elemDef.key]) or (gradExcluded and gradExcluded[elemDef.key])) then
+							for _, elemDef in ipairs(barElementDefs) do
+								if not IsGradientExcluded(elemDef.key) then
 									rootDescription:CreateCheckbox(
 										elemDef.label,
 										function()
@@ -555,23 +638,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 											indicator.targets = indicator.targets or {}
 											indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
 											indicator.targets[barDef.key][elemDef.key] = not indicator.targets[barDef.key][elemDef.key]
-											-- Sync enabled state
-											local anyEnabled = false
-											if indicator.targets then
-												for _, bd in ipairs(barTargetDefs) do
-													local bt = indicator.targets[bd.key]
-													if bt then
-														for _, ed in ipairs(elementDefs) do
-															if bt[ed.key] then anyEnabled = true; break end
-														end
-													end
-													if anyEnabled then break end
-												end
-											end
-											indicator.enabled = anyEnabled
-											if gradRow.colorPicker then
-												TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(gradRow.colorPicker, anyEnabled)
-											end
+											SyncEnabled(indicator, gradRow.colorPicker)
 										end
 									)
 								end

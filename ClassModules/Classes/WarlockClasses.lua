@@ -86,6 +86,21 @@ function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntr
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Affliction, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles()
+	return {
+		-- Drain Life
+		[234153] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
+        -- Dark Harvest
+		[1257052] = { mode = "fixedCount", baseDuration = 3, tickCount = 4, firstTickAtStart = true },
+        -- Drain Soul
+        [198590] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
+        -- Malefic Grasp
+        [1261153] = { mode = "pandemic", baseDuration = 4, tickCount = 4, chains = true },
+    }
+end
+
 ---@class TRB.Classes.Warlock.DemonologySpells : TRB.Classes.SpecializationSpellsBase
 ---@field public shadowBolt TRB.Classes.SpellBase
 ---@field public demonbolt TRB.Classes.SpellBase
@@ -246,6 +261,15 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Demonology, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles()
+	return {
+		-- Drain Life
+		[234153] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
+    }
+end
+
 
 ---@class TRB.Classes.Warlock.DestructionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public incinerate TRB.Classes.SpellBase
@@ -339,6 +363,30 @@ function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEnt
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Destruction, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles()
+	return {
+		-- Drain Life
+		[234153] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
+        -- Channel Demonfire
+		[196447] = { mode = "fixedCount", baseDuration = 3, tickCount = 15 },
+    }
+end
+
+---Gets built-in castbar tick modifiers for Discipline (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickModifiers()
+	return {
+		-- Channel Demonfire
+		[196447] = {
+			-- Raging Demonfirre: +2 bolt while talented
+			{ talentId = 387166, bonusTicks = 2 },
+		},
+	}
+end
+
 
 --[[
     BarGroups Factory for Warlock
@@ -417,3 +465,13 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["warlock_affliction"] = TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["warlock_demonology"] = TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["warlock_affliction"] = TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warlock_demonology"] = TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles
+
+-- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
+TRB.Data.castbarTickModifiersRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickModifiers

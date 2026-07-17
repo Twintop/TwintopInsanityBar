@@ -105,6 +105,8 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.hunter_marksmanship.snapshotData.snapshots[spells.trueshot.id] = TRB.Classes.Snapshot:New(spells.trueshot)
 	---@type TRB.Classes.Snapshot
+	specCache.hunter_marksmanship.snapshotData.snapshots[spells.doubleTap.id] = TRB.Classes.Snapshot:New(spells.doubleTap)
+	---@type TRB.Classes.Snapshot
 	specCache.hunter_marksmanship.snapshotData.snapshots[spells.aimedShot.id] = TRB.Classes.Snapshot:New(spells.aimedShot)
 	---@type TRB.Classes.Snapshot
 	specCache.hunter_marksmanship.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
@@ -494,6 +496,18 @@ local function RefreshLookupData_Marksmanship()
 		end
 	end
 
+	-- Block C: Double Tap ($doubleTapTime)
+	if not activeVars or activeVars["$doubleTapTime"] then
+		local currentTime = GetTime()
+		local _doubleTapTime = snapshots[spells.doubleTap.id].buff:GetRemainingTime(currentTime)
+
+		lookupLogic["$doubleTapTime"] = _doubleTapTime
+
+		if lookupChanged(prevState, "$doubleTapTime", _doubleTapTime) then
+			lookup["$doubleTapTime"] = TRB.Functions.BarText:TimerPrecision(_doubleTapTime)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -689,6 +703,18 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					duration = duration + spells.cantMissWontMiss.duration
 				end
 				snapshotData.snapshots[spells.trueshot.id].buff:InitializeCustom(duration, currentTime)
+
+				if talents:IsTalentActive(spells.doubleTap) then
+					snapshotData.snapshots[spells.doubleTap.id].buff:InitializeCustom(spells.doubleTap.duration, currentTime)
+				end
+			elseif spellId == spells.volley.id then
+				if talents:IsTalentActive(spells.doubleTap) then
+					snapshotData.snapshots[spells.doubleTap.id].buff:InitializeCustom(spells.doubleTap.duration, currentTime)
+				end
+			elseif spellId == spells.rapidFire.id or spellId == spells.aimedShot.id then
+				-- Both spend Double Tap. The castbar has already read the buff by now: its channel-start
+				-- bridge runs ahead of this handler (see Functions/SpellCast.lua).
+				snapshotData.snapshots[spells.doubleTap.id].buff:Reset()
 			elseif spellId == spells.explosiveShot.id then
 				snapshotData.snapshots[spells.explosiveShot.id].cooldown:InitializeCustom(spells.explosiveShot.cooldown, currentTime)
 			end
@@ -713,6 +739,26 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		end
 	end
 end
+
+
+local function HunterEvent(self, event, ...)
+	if event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
+		local spellId, rSpellId = ...
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		if TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			if spellId == spells.raptorStrike.id then
+				if rSpellId == nil or rSpellId ~= spells.raptorSwipe.id then
+					snapshotData.attributes.raptorStrikeOverride = false
+				else
+					snapshotData.attributes.raptorStrikeOverride = true
+				end
+			end
+		end
+	end
+end
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HunterEvent)
 
 local function UpdateSnapshot()
 	Character:UpdateSnapshot()
@@ -752,6 +798,7 @@ local function UpdateSnapshot_Marksmanship()
 	local snapshots = snapshotData.snapshots
 
 	snapshots[spells.explosiveShot.id].cooldown:GetRemainingTime(currentTime)
+	snapshots[spells.doubleTap.id].buff:GetRemainingTime(currentTime)
 
 	if snapshotData.casting.spellId == spells.rapidFire.id then
 		local casting = snapshotData.casting
@@ -811,10 +858,36 @@ local function UpdateResourceBar()
 		UpdateSnapshot_BeastMastery()
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local gradientOrder = sharedColors and sharedColors.gradientOrder
+			local conditionMap = {
+				bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat,
+				bestialWrathEnd = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
+					and specSettings.endOf.bestialWrath.enabled
+					and (snapshots[spells.bestialWrath.id].buff:GetRemainingTime(currentTime) <=
+						(specSettings.endOf.bestialWrath.mode == "gcd"
+							and Character:GetCurrentGCDTime() * specSettings.endOf.bestialWrath.gcdsMax
+							or specSettings.endOf.bestialWrath.timeMax)),
+				beastCleave = snapshots[spells.beastCleave.id].buff.isActive,
+				borderOvercap = affectingCombat,
+			}
+			local focusBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local barColorMap = { focusBar = focusBarColors }
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]				
 				local gcd = Character:GetCurrentGCDTime(true)
 				local currentResource = snapshotData.attributes.resource
 
@@ -824,6 +897,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "focusBar")
 
 				-- Get resourceFrame and thresholds from the BarNode
 				local resourceFrame = primaryNode:GetFrame()
@@ -926,47 +1000,6 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barBackgroundColor = specSettings.colors.bar.background.color
-
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				local conditionMap = {
-					bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat,
-					bestialWrathEnd = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
-						and specSettings.endOf.bestialWrath.enabled
-						and (snapshots[spells.bestialWrath.id].buff:GetRemainingTime(currentTime) <=
-							(specSettings.endOf.bestialWrath.mode == "gcd"
-								and Character:GetCurrentGCDTime() * specSettings.endOf.bestialWrath.gcdsMax
-								or specSettings.endOf.bestialWrath.timeMax)),
-					beastCleave = snapshots[spells.beastCleave.id].buff.isActive,
-					borderOvercap = affectingCombat,
-				}
-				local focusBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local barColorMap = { focusBar = focusBarColors }
-
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-							for barKey, elements in pairs(indicator.targets) do
-								local targetColors = barColorMap[barKey]
-								if targetColors and elements then
-									for elemKey, isTargeted in pairs(elements) do
-										if isTargeted then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-
 				local overcapCurves = {}
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1002,7 +1035,7 @@ local function UpdateResourceBar()
 
 				if overcapCurves.border then
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-					primaryNode:SetBorderColorCurve(borderColorResult)
+					primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 				else
 					primaryNode:SetBorderColor(focusBarColors.border)
 				end
@@ -1025,15 +1058,7 @@ local function UpdateResourceBar()
 		-- Update health bar
 		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
-			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-			if healthNode then
-				healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-				healthNode:SetValue(snapshotData.attributes.health or 0)
-				healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-				healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-				healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-			end
-			Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
@@ -1042,10 +1067,35 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Marksmanship()
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local gradientOrder = sharedColors and sharedColors.gradientOrder
+			local conditionMap = {
+				trueshot = snapshots[spells.trueshot.id].buff.isActive,
+				trueshotEnd = snapshots[spells.trueshot.id].buff.isActive
+					and specSettings.endOf.trueshot.enabled
+					and (snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime) <=
+						(specSettings.endOf.trueshot.mode == "gcd"
+							and Character:GetCurrentGCDTime() * specSettings.endOf.trueshot.gcdsMax
+							or specSettings.endOf.trueshot.timeMax)),
+				borderOvercap = affectingCombat,
+			}
+			local focusBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local barColorMap = { focusBar = focusBarColors }
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 				local gcd = Character:GetCurrentGCDTime(true)
 				local currentResource = snapshotData.attributes.resource
 
@@ -1054,9 +1104,9 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barBorderColor = specSettings.colors.bar.border.color
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "focusBar")
 
 				-- Get resourceFrame and thresholds from the BarNode
 				local resourceFrame = primaryNode:GetFrame()
@@ -1174,45 +1224,6 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local barColor = specSettings.colors.bar.base
-				local barBackgroundColor = specSettings.colors.bar.background.color
-
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				local conditionMap = {
-					trueshot = snapshots[spells.trueshot.id].buff.isActive,
-					trueshotEnd = snapshots[spells.trueshot.id].buff.isActive
-						and specSettings.endOf.trueshot.enabled
-						and (snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime) <=
-							(specSettings.endOf.trueshot.mode == "gcd"
-								and Character:GetCurrentGCDTime() * specSettings.endOf.trueshot.gcdsMax
-								or specSettings.endOf.trueshot.timeMax)),
-					borderOvercap = affectingCombat,
-				}
-				local focusBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local barColorMap = { focusBar = focusBarColors }
-
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-							for barKey, elements in pairs(indicator.targets) do
-								local targetColors = barColorMap[barKey]
-								if targetColors and elements then
-									for elemKey, isTargeted in pairs(elements) do
-										if isTargeted then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-
 				local overcapCurves = {}
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1239,7 +1250,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				if overcapCurves.border then
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-					primaryNode:SetBorderColorCurve(borderColorResult)
+					primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 				else
 					primaryNode:SetBorderColor(focusBarColors.border)
 				end
@@ -1262,15 +1273,7 @@ local function UpdateResourceBar()
 		-- Update health bar
 		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
-			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-			if healthNode then
-				healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-				healthNode:SetValue(snapshotData.attributes.health or 0)
-				healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-				healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-				healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-			end
-			Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
@@ -1283,7 +1286,6 @@ local function UpdateResourceBar()
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local nodeOrder = sharedColors and sharedColors.nodeOrder
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
 			local conditionMap = {
 				takedown = snapshots[spells.takedown.id].buff.isActive,
@@ -1311,27 +1313,8 @@ local function UpdateResourceBar()
 				tipOfTheSpearBar = tipOfTheSpearBarColors,
 			}
 
-			if nodeOrder and indicatorColors then
-				for i = #nodeOrder, 1, -1 do
-					local key = nodeOrder[i]
-					local indicator = indicatorColors[key]
-					if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-						for barKey, elements in pairs(indicator.targets) do
-							local targetColors = barColorMap[barKey]
-							if targetColors and elements then
-								for elemKey, isTargeted in pairs(elements) do
-									if isTargeted then
-										targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										if barKey == "tipOfTheSpearBar" then
-											tipOfTheSpearOverrides[elemKey] = true
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-			end
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap,
+				{ tipOfTheSpearBar = tipOfTheSpearOverrides })
 
 			local overcapIndicator = nil
 			if gradientOrder and indicatorColors then
@@ -1388,6 +1371,7 @@ local function UpdateResourceBar()
 				local barBorderColor = focusBarColors.border
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "focusBar")
 
 				-- Get resourceFrame and thresholds from the BarNode
 				local resourceFrame = primaryNode:GetFrame()
@@ -1411,6 +1395,27 @@ local function UpdateResourceBar()
 					local snapshot = snapshots[spell.id]
 
 					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+						if spell.id == spells.raptorStrike.id then
+							if snapshotData.attributes.raptorStrikeOverride then
+								showThreshold = false
+							elseif isUsable then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = frameLevels.thresholdUnder
+							end
+						elseif spell.id == spells.raptorSwipe.id and (talents:IsTalentActive(spells.raptorSwipeTalent1) or talents:IsTalentActive(spells.raptorSwipeTalent2) or talents:IsTalentActive(spells.raptorSwipeTalent3)) then
+							if not snapshotData.attributes.raptorStrikeOverride then
+								showThreshold = false
+							elseif isUsable then
+								thresholdColor = specCacheSettings.colors.threshold.over.color
+							else
+								thresholdColor = specCacheSettings.colors.threshold.under.color
+								frameLevel = frameLevels.thresholdUnder
+							end
+						else
+							showThreshold = false
+						end
 					elseif resourceAmount == 0 then
 						showThreshold = false
 					elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
@@ -1462,7 +1467,7 @@ local function UpdateResourceBar()
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				if focusOvercapCurves.border then
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, focusOvercapCurves.border)
-					primaryNode:SetBorderColorCurve(borderColorResult)
+					primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, focusOvercapCurves.border))
 				else
 					primaryNode:SetBorderColor(focusBarColors.border)
 				end
@@ -1527,7 +1532,7 @@ local function UpdateResourceBar()
 
 							if tipOfTheSpearOvercapCurves.border then
 								local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, tipOfTheSpearOvercapCurves.border)
-								stackNode:SetBorderColorCurve(borderColorResult)
+								stackNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(stackNode, tipOfTheSpearOvercapCurves.border))
 							else
 								stackNode:SetBorderColor(cpBorderColor)
 							end
@@ -1545,6 +1550,7 @@ local function UpdateResourceBar()
 							else
 								stackNode:SetBackgroundColorFromString(cpBackgroundColor)
 							end
+							Bar:ApplyEndCapIndicator(stackNode, "tipOfTheSpearBar")
 						end
 					end
 				end
@@ -1578,15 +1584,7 @@ local function UpdateResourceBar()
 		-- Update health bar
 		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
-			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-			if healthNode then
-				healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-				healthNode:SetValue(snapshotData.attributes.health or 0)
-				healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-				healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-				healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-			end
-			Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
@@ -1611,6 +1609,7 @@ local function SwitchSpec()
 	end
 	Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = GetSpecialization()
+	spellEventFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 
 	if TRB.Data.character.specId == 1 then
 		specCache.hunter_beastMastery.talents:GetTalents()
@@ -1708,6 +1707,7 @@ local function SwitchSpec()
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
+		spellEventFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 
 		if TRB.Data.barConstructedForSpec ~= "hunter_survival" then
 			talents = specCache.hunter_survival.talents
@@ -1978,6 +1978,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 	else
 		TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
+	end
+end
+
+function TRB.Functions.Class:ResetProcsOnDeath()
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData and snapshotData.attributes then
+		snapshotData.attributes.raptorStrikeOverride = false
 	end
 end
 

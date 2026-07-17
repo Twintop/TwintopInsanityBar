@@ -1698,19 +1698,22 @@ local function UpdateResourceBar()
 		end
 	end
 
+	-- Keep the primary bar's end cap config in sync with the current form: shapeshifting changes which
+	-- form's spec settings drive the bar, so re-apply the form's end cap each frame. ApplyEndCap self-
+	-- guards on field values, so this is a no-op when the form (and thus the config) has not changed.
+	if barGroups and barGroups.primary then
+		local formPrimaryNode = barGroups.primary:GetNode(1)
+		local formBarColors = formSpecCacheSettings.colors and formSpecCacheSettings.colors.bar
+		if formPrimaryNode and formBarColors then
+			formPrimaryNode:ApplyEndCap(formBarColors.endCap, formBarColors.border.color)
+		end
+	end
+
 	local function UpdateHealthBarGeneric()
 		local healthVisSettings = formSpecCacheSettings.displayBar and formSpecCacheSettings.displayBar.health
 		if healthVisSettings ~= nil and not healthVisSettings.neverShow then
 			refreshText = true
-			local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-			if healthNode then
-				healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-				healthNode:SetValue(snapshotData.attributes.health or 0)
-				healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-				healthNode:SetBorderColor(formSpecCacheSettings.colors.healthBar.border.color)
-				healthNode:SetBackgroundColorFromString(formSpecCacheSettings.colors.healthBar.background.color)
-			end
-			Bar:UpdateHealthBarOverlays(healthNode, snapshotData, formSpecCacheSettings)
+			Bar:UpdateHealthBar(barGroups, snapshotData, formSpecCacheSettings)
 		elseif barGroups and barGroups.health and not isInEditMode then
 			barGroups.health:Hide()
 		end
@@ -1893,8 +1896,9 @@ local function UpdateResourceBar()
 							cpNode:SetBackgroundColorCurve(cpOverrides.backgroundCurve)
 						end
 						if cpOverrides and cpOverrides.borderCurve then
-							cpNode:SetBorderColorCurve(cpOverrides.borderCurve)
+							cpNode:SetBorderColorCurve(cpOverrides.borderCurve, Color:EvaluateEndCapCurve(cpNode, cpOverrides.borderCurveSource, cpOverrides.borderCurvePowerType))
 						end
+						Bar:ApplyEndCapIndicator(cpNode, "comboPoints")
 					end
 				end
 			end
@@ -1940,6 +1944,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
+				Bar:ApplyEndCapIndicator(primaryNode, "astralPowerBar")
 
 				local barColor = specSettings.colors.bar.base
 				-- Use simple colors when in non-native form
@@ -2133,7 +2138,6 @@ local function UpdateResourceBar()
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local sharedColors = specSettings.colors.shared
 				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 				-- Precompute eclipse end timing threshold
 				local eclipseActive = snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive
@@ -2166,26 +2170,7 @@ local function UpdateResourceBar()
 				local barColorMap = { astralPowerBar = astralPowerBarColors, comboPoints = comboPointColors }
 
 				-- Apply flat indicator colors (priority order, last writer wins)
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] then
-							if indicator.targets then
-								for barKey, elements in pairs(indicator.targets) do
-									local targetColors = barColorMap[barKey]
-									if targetColors and elements then
-										for elemKey, isTargeted in pairs(elements) do
-											if isTargeted then
-												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
+				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 				-- Find active gradient indicators
 				local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -2198,7 +2183,7 @@ local function UpdateResourceBar()
 								if astralTargets.border then
 									local curve = Color:BuildResourceThresholdCurve(specSettings, astralPowerBarColors.border, indicator.color)
 									local result = UnitPowerPercent("player", displayResourceType, true, curve)
-									primaryNode:SetBorderColorCurve(result)
+									primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
 									astralPowerBarColors.border = nil -- mark as applied
 								end
 								if astralTargets.bar then
@@ -2257,6 +2242,7 @@ local function UpdateResourceBar()
 					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 					manaNode:SetMinMax(0, maxMana)
 					manaNode:SetValue(currentMana)
+					Bar:ApplyEndCapIndicator(manaNode, "manaBar")
 					TRB.Functions.Color:ApplyFillColor(manaNode, specSettings.colors.bars.mana.bar)
 					manaNode:SetBorderColor(specSettings.colors.bars.mana.border.color)
 					manaNode:SetBackgroundColorFromString(specSettings.colors.bars.mana.background.color)
@@ -2282,6 +2268,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
+				Bar:ApplyEndCapIndicator(primaryNode, "energyBar")
 
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
@@ -2517,7 +2504,6 @@ local function UpdateResourceBar()
 					barBackgroundColor = specSettings.colors.bar.background.color
 					local sharedColors = specSettings.colors.shared
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 					local isStealthed = IsStealthed()
 
@@ -2536,26 +2522,7 @@ local function UpdateResourceBar()
 					local barColorMap = { energyBar = energyBarColors, comboPoints = comboPointColors }
 
 					-- Apply flat indicator colors (priority order, last writer wins)
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] then
-								if indicator.targets then
-									for barKey, elements in pairs(indicator.targets) do
-										local targetColors = barColorMap[barKey]
-										if targetColors and elements then
-											for elemKey, isTargeted in pairs(elements) do
-												if isTargeted then
-													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-												end
-											end
-										end
-									end
-								end
-							end
-						end
-					end
+					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 					-- Apply gradient indicators
 					local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -2602,6 +2569,7 @@ local function UpdateResourceBar()
 							curve:AddPoint(maxBitePercent, CreateColor(mR, mG, mB, mA))
 							curve:AddPoint(overcapPercent, CreateColor(oR, oG, oB, oA))
 							curve:AddPoint(2.0, CreateColor(oR, oG, oB, oA))
+							Color:SetCurveThresholdMeta(curve, baseColor, { { x = maxBitePercent, color = maxBiteColor }, { x = overcapPercent, color = overcapColor }, { x = 2.0, color = overcapColor } })
 							cache[fullKey] = curve
 							return curve
 						end
@@ -2624,7 +2592,7 @@ local function UpdateResourceBar()
 									if elem == "bar" then
 										barColorCurveResult = result
 									elseif elem == "border" then
-										primaryNode:SetBorderColorCurve(result)
+										primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
 									else
 										primaryNode:SetBackgroundColorCurve(result)
 									end
@@ -2635,7 +2603,7 @@ local function UpdateResourceBar()
 									if elem == "bar" then
 										barColorCurveResult = result
 									elseif elem == "border" then
-										primaryNode:SetBorderColorCurve(result)
+										primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
 									else
 										primaryNode:SetBackgroundColorCurve(result)
 									end
@@ -2646,7 +2614,7 @@ local function UpdateResourceBar()
 									if elem == "bar" then
 										primaryNode:SetColorCurve(result)
 									elseif elem == "border" then
-										primaryNode:SetBorderColorCurve(result)
+										primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
 									else
 										primaryNode:SetBackgroundColorCurve(result)
 									end
@@ -2666,15 +2634,21 @@ local function UpdateResourceBar()
 							if type(cpBase) == "table" then
 								cpBase = cpBase.color
 							end
+							local curve = nil
 							if mbTargets and ocTargets then
-								local curve = BuildCombinedCurve("feralCombinedCp_" .. elem, cpBase, maxBiteInd.color, overcapInd.color)
-								comboPointColors[elem .. "Curve"] = UnitPowerPercent("player", displayResourceType, true, curve)
+								curve = BuildCombinedCurve("feralCombinedCp_" .. elem, cpBase, maxBiteInd.color, overcapInd.color)
 							elseif mbTargets then
-								local curve = Color:GetStepColorCurve("feralMaxBiteCp_" .. elem, cpBase, maxBiteInd.color, maxBitePercent)
-								comboPointColors[elem .. "Curve"] = UnitPowerPercent("player", displayResourceType, true, curve)
+								curve = Color:GetStepColorCurve("feralMaxBiteCp_" .. elem, cpBase, maxBiteInd.color, maxBitePercent)
 							elseif ocTargets then
-								local curve = Color:BuildResourceThresholdCurve(specSettings, cpBase, overcapInd.color)
+								curve = Color:BuildResourceThresholdCurve(specSettings, cpBase, overcapInd.color)
+							end
+							if curve then
 								comboPointColors[elem .. "Curve"] = UnitPowerPercent("player", displayResourceType, true, curve)
+								-- Keep the border's source curve so end caps can derive their companion curve at apply time
+								if elem == "border" then
+									comboPointColors.borderCurveSource = curve
+									comboPointColors.borderCurvePowerType = displayResourceType
+								end
 							end
 						end
 					end
@@ -2788,10 +2762,11 @@ local function UpdateResourceBar()
 
 							-- Apply border: use curve override if available, otherwise flat color
 							if comboPointOverrides and comboPointOverrides.borderCurve then
-								cpNode:SetBorderColorCurve(comboPointOverrides.borderCurve)
+								cpNode:SetBorderColorCurve(comboPointOverrides.borderCurve, Color:EvaluateEndCapCurve(cpNode, comboPointOverrides.borderCurveSource, comboPointOverrides.borderCurvePowerType))
 							else
 								cpNode:SetBorderColor(cpBorderColor)
 							end
+							Bar:ApplyEndCapIndicator(cpNode, "comboPoints")
 						end
 					end
 				end
@@ -2858,6 +2833,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
+				Bar:ApplyEndCapIndicator(primaryNode, "rageBar")
 
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
@@ -3096,7 +3072,6 @@ local function UpdateResourceBar()
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local sharedColors = specSettings.colors.shared
 				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 				local berserkActive = snapshots[spells.berserk.id].buff.isActive or snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive
 
@@ -3111,26 +3086,7 @@ local function UpdateResourceBar()
 				local barColorMap = { rageBar = rageBarColors, comboPoints = comboPointColors }
 
 				-- Apply flat indicator colors (priority order, last writer wins)
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] then
-							if indicator.targets then
-								for barKey, elements in pairs(indicator.targets) do
-									local targetColors = barColorMap[barKey]
-									if targetColors and elements then
-										for elemKey, isTargeted in pairs(elements) do
-											if isTargeted then
-												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
+				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 				-- Apply gradient indicators
 				local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -3143,7 +3099,7 @@ local function UpdateResourceBar()
 								if rageTargets.border then
 									local curve = Color:BuildResourceThresholdCurve(specSettings, rageBarColors.border, indicator.color)
 									local result = UnitPowerPercent("player", displayResourceType, true, curve)
-									primaryNode:SetBorderColorCurve(result)
+									primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
 									rageBarColors.border = nil
 								end
 								if rageTargets.bar then
@@ -3206,6 +3162,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 
 				local barBorderColor = formSpecSettings.colors.bar.border.color
 				local barColor = specSettings.colors.bar.base
@@ -3235,7 +3192,6 @@ local function UpdateResourceBar()
 					local barBackgroundColor = specSettings.colors.bar.background.color
 					local sharedColors = specSettings.colors.shared
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 					local clearcastingActive = snapshotData.attributes.clearcastingActive
 
@@ -3251,26 +3207,7 @@ local function UpdateResourceBar()
 					local barColorMap = { manaBar = manaBarColors, comboPoints = comboPointColors }
 
 					-- Apply flat indicator colors (priority order, last writer wins)
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] then
-								if indicator.targets then
-									for barKey, elements in pairs(indicator.targets) do
-										local targetColors = barColorMap[barKey]
-										if targetColors and elements then
-											for elemKey, isTargeted in pairs(elements) do
-												if isTargeted then
-													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-												end
-											end
-										end
-									end
-								end
-							end
-						end
-					end
+					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 					-- Read final colors
 					barColor = manaBarColors.bar

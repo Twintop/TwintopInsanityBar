@@ -315,6 +315,76 @@ end
 TRB.Data.cache = TRB.Data.cache or {}
 TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
 
+-- Threshold metadata for built ColorCurves, keyed weakly by the curve object. Lets an end cap
+-- following "only non-default border colors" rebuild the same step curve based at its own color
+-- (the curve's base IS the default border color, and evaluated results are secret).
+local curveThresholdMeta = setmetatable({}, { __mode = "k" })
+
+---Records the base color and above-zero step points of a built ColorCurve so a companion curve can be derived.
+---@param curve any # The ColorCurve object
+---@param baseColor string # The color the curve uses at/below 0 (the live border color it was built from)
+---@param points { x: number, color: string }[] # Step points above 0, in ascending x order
+function TRB.Functions.Color:SetCurveThresholdMeta(curve, baseColor, points)
+	if curve == nil or points == nil then
+		return
+	end
+	local key = ""
+	for _, point in ipairs(points) do
+		key = key .. "_" .. tostring(point.x) .. ":" .. tostring(point.color)
+	end
+	curveThresholdMeta[curve] = { baseColor = baseColor, key = key, points = points }
+end
+
+---Evaluates the end cap companion for a curve-driven border, preserving the pre-Midnight
+---"only non-default border colors" semantics against a secret resource: below the threshold the
+---border shows the curve's base color, so the cap shows its own color when that base IS the bar's
+---configured (default) border color, and follows the base when an indicator overrode it; at/above
+---the threshold the cap follows the indicator color. Returns nil when the node's cap doesn't follow
+---non-default border colors, or the border curve carries no threshold metadata.
+---@param node TRB.Classes.BarNode?
+---@param borderCurve any # The ColorCurve the border result was evaluated from
+---@param powerType Enum.PowerType? # Power type to evaluate against (default: TRB.Data.resource)
+---@return any? # Evaluated secret color result for the end cap, or nil
+function TRB.Functions.Color:EvaluateEndCapCurve(node, borderCurve, powerType)
+	local config = node ~= nil and node.endCapConfig or nil
+	if config == nil or config.useBorderColor ~= true or config.useBorderColorExceptDefault ~= true then
+		return nil
+	end
+	local meta = borderCurve ~= nil and curveThresholdMeta[borderCurve] or nil
+	if meta == nil then
+		return nil
+	end
+	local resource = powerType or TRB.Data.resource
+	if resource == nil then
+		return nil
+	end
+
+	-- The curve base only counts as "default" when it matches the bar's configured border color;
+	-- anything else is an indicator override the cap must follow (same comparison the static
+	-- SetBorderColor path makes).
+	local capBaseColor = config.color
+	if meta.baseColor ~= nil and meta.baseColor ~= config.defaultBorderColor then
+		capBaseColor = meta.baseColor
+	end
+
+	local cache = TRB.Data.cache.stepColorCurves
+	local fullKey = "endCap_" .. tostring(capBaseColor) .. meta.key
+	local curve = cache[fullKey]
+	if curve == nil then
+		curve = C_CurveUtil.CreateColorCurve()
+		curve:SetType(Enum.LuaCurveType.Step)
+		local baseR, baseG, baseB, baseA = self:GetRGBAFromString(capBaseColor, true)
+		curve:AddPoint(0, CreateColor(baseR, baseG, baseB, baseA))
+		for _, point in ipairs(meta.points) do
+			local r, g, b, a = self:GetRGBAFromString(point.color, true)
+			curve:AddPoint(point.x, CreateColor(r, g, b, a))
+		end
+		cache[fullKey] = curve
+	end
+
+	return UnitPowerPercent("player", resource, true, curve)
+end
+
 ---Creates and caches a Step ColorCurve that transitions from belowColor to aboveColor at the given threshold
 ---@param cacheKey string # Unique key for caching (e.g., specName + color combination)
 ---@param belowColor string # ARGB hex color string for below threshold
@@ -346,7 +416,8 @@ function TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor,
 		curve:AddPoint(0, belowColorObj)
 		curve:AddPoint(thresholdPercent, aboveColorObj)
 		curve:AddPoint(2.0, aboveColorObj) -- Extend beyond 100% to handle overflow
-		
+
+		self:SetCurveThresholdMeta(curve, belowColor, { { x = thresholdPercent, color = aboveColor }, { x = 2.0, color = aboveColor } })
 		cache[fullKey] = curve
 	end
 	
@@ -455,6 +526,7 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 	colorCurve:AddPoint(0, belowColorObj)
 	colorCurve:AddPoint(thresholdPercent, aboveColorObj)
 
+	self:SetCurveThresholdMeta(colorCurve, belowColor, { { x = thresholdPercent, color = aboveColor } })
 	cache[cacheKey] = colorCurve
 	return colorCurve
 end
@@ -718,4 +790,251 @@ function TRB.Functions.Color:ApplyOverlayFillColor(slot, colorEntry, overlayType
 			slot:SetOverlayColor(colorString)
 		end
 	end
+end
+
+-- ============================================================================
+-- Indicator color resolution
+-- ============================================================================
+
+--[[
+	Indicators recolor bar elements while a condition holds (a buff is up, a proc is available, ...).
+	Each spec evaluates its own conditions and owns its own bars, but the health bar and cast bar are
+	shared by every spec and are rendered outside the spec update -- the cast bar runs its own OnUpdate
+	loop and never sees the spec's conditionMap at all. So this resolves the shared bars alongside the
+	spec's and parks the result in TRB.Data.resolvedIndicators for those render paths to read.
+]]
+
+-- Resolved colors for the two shared bars. Stamped with the composite key so a spec that never resolves
+-- (Mage has no indicators; Warrior only gradient ones) can't read a previous spec's colors, and versioned
+-- so the cast bar can tell when an indicator flipped mid-cast and its once-per-cast color/overlay setup
+-- needs re-running.
+TRB.Data.resolvedIndicators = {
+	---@type string?
+	compositeKey = nil,
+	version = 0,
+	---@type table<string, string>
+	healthBar = {},
+	---@type table<string, string|table>
+	castbar = {},
+	-- The active gradient (secret-value) indicator, or nil. Its color isn't resolved here like the flat ones:
+	-- a gradient is a curve from whatever color the element would otherwise use up to the indicator's color,
+	-- and only the render path knows that base color. So the indicator itself is parked and the consumer
+	-- builds the curve. See ApplyResolvedBorderOrBackground.
+	---@type table?
+	gradient = nil,
+	-- The active spec's RAW settings. A gradient curve steps at the resource's overcap threshold, which lives
+	-- on the settings root -- and the composed spec-cache settings the render paths carry don't include it.
+	-- Parking it here is what lets the shared bars step at the same threshold the spec's own bars do.
+	---@type table?
+	specSettings = nil
+}
+
+-- Fill elements take the whole indicator entry (so ApplyFillColor can honor color2/gradientDirection);
+-- every other element only needs the flat color string.
+local fillElements = {
+	bar = true,
+	channel = true
+}
+
+-- Cast bar elements, in a fixed order so the change check below can compare without allocating.
+local castbarElements = { "bar", "channel", "border", "background", "tick", "endCap" }
+local previousCastbar = {}
+
+---Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
+---nodeOrder back to front so earlier (higher-priority) entries overwrite later ones. The spec's bars are
+---written back into barColorMap in place; the shared bars are parked in TRB.Data.resolvedIndicators.
+---Pass a nil barColorMap when the spec colors its own bars itself and only needs the shared ones.
+---
+---The shared bars are recomputed from scratch on every call, so a spec that calls this more than once in a
+---frame (Death Knight and Elemental Shaman do, once per bar they own) MUST pass an equivalent conditionMap
+---each time -- the last call decides what the health bar and cast bar see. Deriving conditionMap from live
+---state, as every spec does, satisfies that on its own.
+---@param sharedColors table? # spec.colors.shared -- indicatorColors + nodeOrder
+---@param conditionMap table<string, boolean> # Indicator key -> whether its condition is met right now
+---@param barColorMap table<string, table>? # barKey -> { bar =, border =, background = }, seeded with the spec's unindicated colors
+---@param overrides table<string, table<string, boolean>>? # Optional: for each barKey the caller seeds here, records which elements an indicator claimed (specs that render an element differently once an indicator owns it)
+function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
+	local resolved = TRB.Data.resolvedIndicators
+	local healthBar = resolved.healthBar
+	local castbar = resolved.castbar
+	wipe(healthBar)
+	wipe(castbar)
+
+	local character = TRB.Data.character
+	resolved.compositeKey = character.compositeKey
+	local classSettings = TRB.Data.settings[character.className]
+	resolved.specSettings = classSettings and classSettings[character.specName] or nil
+
+	local indicatorColors = sharedColors and sharedColors.indicatorColors
+	local nodeOrder = sharedColors and sharedColors.nodeOrder
+	local gradientOrder = sharedColors and sharedColors.gradientOrder
+
+	-- Same selection every spec makes for its own bars (walk back, first match wins), so the shared bars can
+	-- never end up showing a different gradient indicator than the resource bar beside them.
+	resolved.gradient = nil
+	if indicatorColors and gradientOrder then
+		for i = #gradientOrder, 1, -1 do
+			local key = gradientOrder[i]
+			local indicator = indicatorColors[key]
+			if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
+				resolved.gradient = indicator
+				break
+			end
+		end
+	end
+
+	if indicatorColors and nodeOrder then
+		for i = #nodeOrder, 1, -1 do
+			local key = nodeOrder[i]
+			local indicator = indicatorColors[key]
+			if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+				for barKey, elements in pairs(indicator.targets) do
+					local targetColors
+					if barKey == "healthBar" then
+						targetColors = healthBar
+					elseif barKey == "castbar" then
+						targetColors = castbar
+					else
+						targetColors = barColorMap and barColorMap[barKey]
+					end
+					if targetColors then
+						local targetFlags = overrides and overrides[barKey]
+						for elemKey, isTargeted in pairs(elements) do
+							if isTargeted then
+								targetColors[elemKey] = fillElements[elemKey] and indicator or indicator.color
+								if targetFlags then
+									targetFlags[elemKey] = true
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	-- Stash each spec bar's resolved flat end cap color globally, keyed by barKey, so a node can resolve
+	-- its own end cap indicator from (node, barKey) alone without the spec threading its color map through.
+	-- Only the active spec's bars are keyed here, and its barKeys are unique, so there's no cross-spec
+	-- collision. Set per key each call (nil when no flat indicator targets the cap) so stale colors clear.
+	if barColorMap ~= nil then
+		local barEndCaps = resolved.barEndCaps
+		if barEndCaps == nil then
+			barEndCaps = {}
+			resolved.barEndCaps = barEndCaps
+		end
+		for barKey, colors in pairs(barColorMap) do
+			barEndCaps[barKey] = colors.endCap
+		end
+	end
+
+	-- The version only moves when the cast bar's resolved colors actually change. Comparing by identity is
+	-- enough: a flat element resolves to a color string, a fill element to the indicator's own settings
+	-- table, and both are stable while the same indicator stays active.
+	local changed = false
+	for i = 1, #castbarElements do
+		local elemKey = castbarElements[i]
+		if previousCastbar[elemKey] ~= castbar[elemKey] then
+			previousCastbar[elemKey] = castbar[elemKey]
+			changed = true
+		end
+	end
+	if changed then
+		resolved.version = resolved.version + 1
+	end
+end
+
+---Returns the resolved indicator colors for a shared bar ("healthBar" or "castbar"), or nil when the
+---active spec hasn't resolved any (it has no indicators, or hasn't run its update yet this spec).
+---@param barKey string
+---@return table<string, string|table>?
+function TRB.Functions.Color:GetResolvedIndicators(barKey)
+	local resolved = TRB.Data.resolvedIndicators
+	if resolved.compositeKey ~= TRB.Data.character.compositeKey then
+		return nil
+	end
+	return resolved[barKey]
+end
+
+---Version stamp of the resolved cast bar colors; changes only when those colors do. The cast bar's render
+---path applies its fill and overlays once per cast, and re-applies when this moves.
+---@return integer
+function TRB.Functions.Color:GetResolvedIndicatorVersion()
+	return TRB.Data.resolvedIndicators.version
+end
+
+---The active gradient (secret-value) indicator for the current spec, or nil when none is met.
+---@return table?
+function TRB.Functions.Color:GetResolvedGradient()
+	local resolved = TRB.Data.resolvedIndicators
+	if resolved.compositeKey ~= TRB.Data.character.compositeKey then
+		return nil
+	end
+	return resolved.gradient
+end
+
+---Applies a shared bar's border or background color, letting the active gradient indicator take it over.
+---A gradient can't be resolved to a color up front the way a flat indicator can: it is a step curve from the
+---color the element would otherwise use up to the indicator's color at the resource's overcap threshold,
+---evaluated against a secret resource value. So the base color is settled first (configured color, possibly
+---overridden by a flat indicator) and the curve is built from it here -- the same thing every spec already
+---does for its own bars.
+---Falls back to the flat base color whenever no gradient targets this element, or the curve can't be built.
+---@param node TRB.Classes.BarNode
+---@param barKey string # "healthBar" or "castbar"
+---@param element string # "border" or "background"
+---@param baseColor string? # The color the element uses absent any gradient
+function TRB.Functions.Color:ApplyResolvedBorderOrBackground(node, barKey, element, baseColor)
+	local curve
+	local gradient = self:GetResolvedGradient()
+	if gradient ~= nil and baseColor ~= nil and TRB.Data.resource ~= nil then
+		local targets = gradient.targets and gradient.targets[barKey]
+		if targets and targets[element] then
+			-- The raw spec settings, not the composed ones the caller carries: only they hold the overcap threshold.
+			curve = self:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, baseColor, gradient.color)
+		end
+	end
+
+	if curve ~= nil then
+		local colorResult = UnitPowerPercent("player", TRB.Data.resource, true, curve)
+		if element == "border" then
+			node:SetBorderColorCurve(colorResult, self:EvaluateEndCapCurve(node, curve))
+		else
+			node:SetBackgroundColorCurve(colorResult)
+		end
+	elseif baseColor ~= nil then
+		if element == "border" then
+			node:SetBorderColor(baseColor)
+		else
+			node:SetBackgroundColorFromString(baseColor)
+		end
+	end
+end
+
+---Applies a shared bar's end cap indicator color (flat or gradient), taking priority over the cap's
+---useBorderColor follow. Mirrors ApplyResolvedBorderOrBackground: a flat indicator resolves to a color
+---string up front (in resolvedIndicators[barKey].endCap), while a gradient builds a step curve from the
+---cap's own color up to the indicator color here. Reverts to the cap's own color when nothing targets it.
+---@param node TRB.Classes.BarNode
+---@param barKey string # "healthBar" or "castbar"
+function TRB.Functions.Color:ApplyResolvedEndCap(node, barKey)
+	local config = node ~= nil and node.endCapConfig or nil
+	if config == nil then
+		return
+	end
+
+	local gradient = self:GetResolvedGradient()
+	if gradient ~= nil and TRB.Data.resource ~= nil then
+		local targets = gradient.targets and gradient.targets[barKey]
+		if targets and targets.endCap then
+			local curve = self:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, config.color, gradient.color)
+			if curve ~= nil then
+				node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", TRB.Data.resource, true, curve))
+				return
+			end
+		end
+	end
+
+	local indicators = self:GetResolvedIndicators(barKey)
+	node:ApplyEndCapIndicator(indicators and indicators.endCap or nil, nil)
 end

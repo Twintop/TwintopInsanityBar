@@ -18,10 +18,17 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public tooltip string Localized tooltip text (bar-agnostic)
 ---@field public colorLabel string Localized color picker label (bar-agnostic)
 
+---An element of a bar that an indicator can recolor.
+---@class TRB.Classes.OptionsUi.BarElementDef
+---@field public key string Element key, matching the key in that bar's color settings (e.g. "bar", "border", "channel", "tick")
+---@field public label string Localized element display name
+
 ---A bar target that indicators can be assigned to.
 ---@class TRB.Classes.OptionsUi.BarTargetDef
 ---@field public key string Bar key (e.g., "furyBar", "insanityBar", "manaBar")
 ---@field public label string Localized bar display name
+---@field public elements TRB.Classes.OptionsUi.BarElementDef[]? Elements this bar offers; defaults to bar/border/background
+---@field public gradientExcluded table<string, boolean>? Elements of this bar that cannot take a gradient indicator's color curve (e.g. a fill already driven by another curve, or a drawn texture rather than a node color)
 
 ---End-of-buff configuration for a single buff tracked by the Indicator Colors panel.
 ---@class TRB.Classes.OptionsUi.EndOfConfig

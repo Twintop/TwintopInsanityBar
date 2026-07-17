@@ -36,6 +36,8 @@ local function BrewmasterLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$staggerPercent%",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -64,6 +66,8 @@ local function BrewmasterLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$stagger",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -1959,6 +1963,8 @@ local function WindwalkerConstructChiPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Monk_Windwalker_ComboPoints", "endCapComboPoints", L["EndCap"], 10, 3)
 end
 
 local function WindwalkerConstructHealthBarPanel(parent)

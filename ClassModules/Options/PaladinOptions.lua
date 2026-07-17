@@ -904,6 +904,8 @@ local function HolyConstructHolyPowerBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Paladin_Holy_ComboPoints", "endCapComboPoints", L["EndCap"], 2, 1)
 end
 
 local function HolyConstructHealthBarPanel(parent)
@@ -1380,6 +1382,8 @@ local function ProtectionConstructHolyPowerBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Paladin_Protection_ComboPoints", "endCapComboPoints", L["EndCap"], 2, 2)
 end
 
 local function ProtectionConstructHealthBarPanel(parent)
@@ -1851,6 +1855,8 @@ local function RetributionConstructHolyPowerBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Paladin_Retribution_ComboPoints", "endCapComboPoints", L["EndCap"], 2, 3)
 end
 
 local function RetributionConstructHealthBarPanel(parent)

@@ -931,6 +931,7 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 				essenceNode:SetBorderColor(cpBorderColor)
 				TRB.Functions.Color:ApplyFillColor(essenceNode, cpColor)
 				essenceNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+				Bar:ApplyEndCapIndicator(essenceNode, "essences")
 			end
 		end
 	end
@@ -990,7 +991,6 @@ local function UpdateResourceBar()
 			-- Indicator color system
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 			-- Precompute dragonrage end timing threshold
 			local dragonrageActive = snapshots[spells.dragonrage.id].buff.isActive
@@ -1019,26 +1019,7 @@ local function UpdateResourceBar()
 			local barColorMap = { manaBar = manaBarColors, essences = essenceColors }
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			if nodeOrder and indicatorColors then
-				for i = #nodeOrder, 1, -1 do
-					local key = nodeOrder[i]
-					local indicator = indicatorColors[key]
-					if indicator and indicator.enabled and conditionMap[key] then
-						if indicator.targets then
-							for barKey, elements in pairs(indicator.targets) do
-								local targetColors = barColorMap[barKey]
-								if targetColors and elements then
-									for elemKey, isTargeted in pairs(elements) do
-										if isTargeted then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-			end
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 			-- Read final mana bar colors from the color map
 			barColor = manaBarColors.bar
@@ -1052,6 +1033,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				primaryNode:SetBorderColor(barBorderColor)
@@ -1064,15 +1046,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1090,7 +1064,6 @@ local function UpdateResourceBar()
 			-- Indicator color system
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 			local conditionMap = {
 				innervate = false,
@@ -1103,26 +1076,7 @@ local function UpdateResourceBar()
 			local barColorMap = { manaBar = manaBarColors, essences = essenceColors }
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			if nodeOrder and indicatorColors then
-				for i = #nodeOrder, 1, -1 do
-					local key = nodeOrder[i]
-					local indicator = indicatorColors[key]
-					if indicator and indicator.enabled and conditionMap[key] then
-						if indicator.targets then
-							for barKey, elements in pairs(indicator.targets) do
-								local targetColors = barColorMap[barKey]
-								if targetColors and elements then
-									for elemKey, isTargeted in pairs(elements) do
-										if isTargeted then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-			end
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 			-- Read final mana bar colors from the color map
 			barColor = manaBarColors.bar
@@ -1134,6 +1088,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(barBorderColor)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
@@ -1144,15 +1099,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1175,7 +1122,6 @@ local function UpdateResourceBar()
 			-- Indicator color system
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 			-- Precompute Ebon Might conditions
 			local ebonMightActive = snapshots[spells.ebonMight.id].buff.isActive
@@ -1227,26 +1173,7 @@ local function UpdateResourceBar()
 			local barColorMap = { manaBar = manaBarColors, essences = essenceColors, ebonMight = ebonMightColors }
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			if nodeOrder and indicatorColors then
-				for i = #nodeOrder, 1, -1 do
-					local key = nodeOrder[i]
-					local indicator = indicatorColors[key]
-					if indicator and indicator.enabled and conditionMap[key] then
-						if indicator.targets then
-							for barKey, elements in pairs(indicator.targets) do
-								local targetColors = barColorMap[barKey]
-								if targetColors and elements then
-									for elemKey, isTargeted in pairs(elements) do
-										if isTargeted then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-			end
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 			-- Read final mana bar colors from the color map
 			barColor = manaBarColors.bar
@@ -1260,6 +1187,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				primaryNode:SetBorderColor(barBorderColor)
@@ -1288,6 +1216,7 @@ local function UpdateResourceBar()
 						TRB.Functions.Color:ApplyFillColor(ebonMightNode, ebonMightColors.bar)
 						ebonMightNode:SetBorderColor(ebonMightColors.border)
 						ebonMightNode:SetBackgroundColorFromString(ebonMightColors.background)
+						Bar:ApplyEndCapIndicator(ebonMightNode, "ebonMight")
 					end
 				end
 			end
@@ -1296,15 +1225,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)

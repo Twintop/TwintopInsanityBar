@@ -62,7 +62,12 @@ local function NewSpecGlobalDefaults()
 		thresholdColors = false,
 		healthBarColors = false,
 		precision = false,
-		textures = false
+		textures = false,
+		castbarDimensions = true,
+		castbarColors = true,
+		castbarOverlays = true,
+		castbarEmpower = true,
+		castbarText = true
 	}
 end
 
@@ -178,6 +183,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					resourceConditionOperator = ">=",
 					resourceConditionValue = 0
 				},
+				castbar = TRB.Functions.Settings:DefaultCastbarVisibility(),
 			},
 			overcap = {
 				mode = "relative",
@@ -187,6 +193,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 			comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 			healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+			bars = {
+				castbar = TRB.Functions.Settings:DefaultCastbarBarSettings(classic),
+			},
 			precision = {
 				health = 1,
 				secondary = 2,
@@ -221,6 +230,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					},
 				},
 				healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+				bars = {
+					castbar = TRB.Functions.Settings:DefaultCastbarBarColors(),
+				},
 				threshold = {
 					under = {
 						color = "FFFFFFFF"
@@ -264,7 +276,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				},
 				barText = TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic),
 				migrations = {
-					healthBarText = true
+					healthBarText = true,
+					castBarText = true
 				}
 			},
 			global = {
@@ -886,6 +899,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 										useDefaultFontSize = specValue.displayText.fontSizeLock,
 										name = L["PositionLeft"],
 										guid = TRB.Functions.String:Guid(),
+										constrainToParent = false,
+										maxWidthPercent = 100,
 										text=specValue.displayText.left.text,
 										fontFace=specValue.displayText.left.fontFace,
 										fontFaceName=specValue.displayText.left.fontFaceName,
@@ -909,6 +924,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 										useDefaultFontSize = specValue.displayText.fontSizeLock,
 										name = L["PositionMiddle"],
 										guid = TRB.Functions.String:Guid(),
+										constrainToParent = false,
+										maxWidthPercent = 100,
 										text=specValue.displayText.middle.text,
 										fontFace=specValue.displayText.middle.fontFace,
 										fontFaceName=specValue.displayText.middle.fontFaceName,
@@ -932,6 +949,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 										useDefaultFontSize = specValue.displayText.fontSizeLock,
 										name = L["PositionRight"],
 										guid = TRB.Functions.String:Guid(),
+										constrainToParent = false,
+										maxWidthPercent = 100,
 										text=specValue.displayText.right.text,
 										fontFace=specValue.displayText.right.fontFace,
 										fontFaceName=specValue.displayText.right.fontFaceName,
@@ -975,6 +994,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{$predatorRevealedNextCp=($comboPoints+1)&$comboPoints=0}[$predatorRevealedTickTime]{$incarnationNextCp=($comboPoints+1)&$comboPoints=0}[$incarnationTickTime]",
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -999,6 +1020,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=1)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=0)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=1)||($incarnationNextCp=($comboPoints+2)&$comboPoints=0)}[$incarnationTickTime]",
 											color = { color = "FFFFFFFF" },
@@ -1023,6 +1046,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=2)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=1)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=2)||($incarnationNextCp=($comboPoints+2)&$comboPoints=1)}[$incarnationTickTime]",
 											color = { color = "FFFFFFFF" },
@@ -1047,6 +1072,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=3)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=2)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=3)||($incarnationNextCp=($comboPoints+2)&$comboPoints=2)}[$incarnationTickTime]",
 											color = { color = "FFFFFFFF" },
@@ -1071,6 +1098,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionCenter"],
 											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=4)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=3)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=4)||($incarnationNextCp=($comboPoints+2)&$comboPoints=3)}[$incarnationTickTime]",
 											color = { color = "FFFFFFFF" },
@@ -1104,6 +1133,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwSerenityTime&$hwSerenityCharges=0}[$hwSerenityTime]",
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -1128,6 +1159,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwSerenityTime&$hwSerenityCharges=1}[$hwSerenityTime]",
 											fontSize = 14,
@@ -1152,6 +1185,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwSanctifyTime&$hwSanctifyCharges=0}[$hwSanctifyTime]",
 											fontSize = 14,
@@ -1176,6 +1211,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwSanctifyTime&$hwSanctifyCharges=1}[$hwSanctifyTime]",
 											fontSize = 14,
@@ -1200,6 +1237,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$hwChastiseTime}[$hwChastiseTime]",
 											fontSize = 14,
@@ -1234,6 +1273,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=0}[$essenceRegenTime]",
 											fontSize = 14,
@@ -1258,6 +1299,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=1}[$essenceRegenTime]",
 											fontSize = 14,
@@ -1282,6 +1325,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=2}[$essenceRegenTime]",
 											fontSize = 14,
@@ -1306,6 +1351,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=3}[$essenceRegenTime]",
 											fontSize = 14,
@@ -1330,6 +1377,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=4}[$essenceRegenTime]",
 											fontSize = 14,
@@ -1354,6 +1403,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 											useDefaultFontFace = false,
 											guid = TRB.Functions.String:Guid(),
+											constrainToParent = false,
+											maxWidthPercent = 100,
 											fontJustifyHorizontalName = L["PositionLeft"],
 											text = "{$essence=5}[$essenceRegenTime]",
 											fontSize = 14,
@@ -2099,6 +2150,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 										fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 										useDefaultFontFace = true,
 										guid = TRB.Functions.String:Guid(),
+										constrainToParent = false,
+										maxWidthPercent = 100,
 										fontJustifyHorizontalName = L["PositionCenter"],
 										text = "$ignorePainAbsorb%",
 										fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -2381,6 +2434,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 									fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 									useDefaultFontFace = true,
 									guid = TRB.Functions.String:Guid(),
+									constrainToParent = false,
+									maxWidthPercent = 100,
 									fontJustifyHorizontalName = L["PositionCenter"],
 									text = "$boneShieldStacks",
 									fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -2528,6 +2583,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 									enabled = true,
 									name = L["PositionMiddle"],
 									guid = TRB.Functions.String:Guid(),
+									constrainToParent = false,
+									maxWidthPercent = 100,
 									text = "{$ebonMightTime}[$ebonMightTime]",
 									fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 									fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -5666,6 +5723,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 					enabled = entry.enabled,
 					name = entry.name,
 					guid = TRB.Functions.String:Guid(),
+					constrainToParent = entry.constrainToParent or false,
+					maxWidthPercent = entry.maxWidthPercent or 100,
 					text = entry.text,
 					fontFace = entry.fontFace,
 					fontFaceName = entry.fontFaceName,
@@ -8228,6 +8287,50 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
+	-- Insert default Cast Bar entries into the global bar text list. Existing users never get new
+	-- default barText entries via merge (saved lists win), so insert them here once, gated by flag.
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.core ~= nil and
+		TwintopInsanityBarSettings.core.displayText ~= nil and
+		TwintopInsanityBarSettings.core.displayText.barText ~= nil and
+		TwintopInsanityBarSettings.core.displayText.migrations ~= nil and
+		not TwintopInsanityBarSettings.core.displayText.migrations.castBarText then
+
+		local castBarTextSettings = TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
+		for x = 1, #castBarTextSettings do
+			table.insert(TwintopInsanityBarSettings.core.displayText.barText, castBarTextSettings[x])
+		end
+
+		TwintopInsanityBarSettings.core.displayText.migrations.castBarText = true
+	end
+
+	-- Pre-Midnight end caps (colors.endCap.base) were orphaned when the feature was purged in 12.0.0.
+	-- Resurrect those prefs into the new per-bar location (colors.bar.endCap), then drop the orphan;
+	-- the orphan's removal makes this naturally idempotent.
+	if TwintopInsanityBarSettings ~= nil then
+		local endCapClassNames = { "deathknight", "demonhunter", "druid", "evoker", "hunter", "mage", "monk", "paladin", "priest", "rogue", "shaman", "warlock", "warrior" }
+		for _, className in ipairs(endCapClassNames) do
+			local classTable = TwintopInsanityBarSettings[className]
+			if type(classTable) == "table" then
+				for _, spec in pairs(classTable) do
+					if type(spec) == "table" and type(spec.colors) == "table" and type(spec.colors.endCap) == "table" then
+						local legacy = spec.colors.endCap.base
+						if type(legacy) == "table" and type(spec.colors.bar) == "table" and spec.colors.bar.endCap == nil then
+							spec.colors.bar.endCap = {
+								color = legacy.color,
+								enabled = legacy.enabled,
+								width = legacy.width,
+								useBorderColor = legacy.useBorderColor,
+								useBorderColorExceptDefault = legacy.useBorderColorExceptDefault
+							}
+						end
+						spec.colors.endCap = nil
+					end
+				end
+			end
+		end
+	end
+
 	-- Add halazzisFury (Midnight S2 2pc) indicator at the bottom of the Feral priority list for existing users
 	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.druid and TwintopInsanityBarSettings.druid.feral then
 		local spec = TwintopInsanityBarSettings.druid.feral
@@ -8504,6 +8607,18 @@ function TRB.Functions.Settings:DefaultSecondarySpendingOverlayColor(enabled)
 	}
 end
 
+---Gets the default end cap settings entry for a bar
+---@return TRB.Classes.Settings.EndCapColorEntry
+function TRB.Functions.Settings:DefaultEndCapColorEntry()
+	return {
+		color = "FFFFFFFF",
+		enabled = false,
+		width = 2,
+		useBorderColor = false,
+		useBorderColorExceptDefault = false
+	}
+end
+
 --- Gets the default health bar color configuration including border, background, absorb, incoming heal, and step-based thresholds.
 ---@return table # Health bar color settings with low/medium/high color steps and overlay defaults
 function TRB.Functions.Settings:DefaultHealthBarColors()
@@ -8513,6 +8628,7 @@ function TRB.Functions.Settings:DefaultHealthBarColors()
 		absorb = { color = "CCFFFFB9", enabled = true, mode = "appended", fullHeight = false },
 		incomingHeal = { color = "CC80b980", enabled = true, mode = "appended", fullHeight = false },
 		healAbsorb = { color = "CCCC4444", enabled = true, mode = "inset", fullHeight = false },
+		endCap = self:DefaultEndCapColorEntry(),
 		type = "step",
 		low = { color = "FFFF0000", threshold = 0.0 },
 		medium = { color = "FFFFFF00", threshold = 0.30 },
@@ -8581,7 +8697,8 @@ function TRB.Functions.Settings:DefaultManaBarColors()
 	return {
 		bar = { color = "FF0000FF", color2 = "FF0000FF", gradientDirection = "disabled" },
 		border = { color = "FF0000AA" },
-		background = { color = "66000000" }
+		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
 	}
 end
 
@@ -8619,7 +8736,7 @@ end
 function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 	if classic then
 		return {
-			width = 25,
+			width = 555,
 			height = 13,
 			xPos = 0,
 			yPos = 4,
@@ -8644,7 +8761,7 @@ function TRB.Functions.Settings:DefaultCustomBarDimensions(classic)
 	end
 
 	return {
-		width = 30,
+		width = 300,
 		height = 20,
 		xPos = 0,
 		yPos = 0,
@@ -8677,7 +8794,8 @@ function TRB.Functions.Settings:DefaultCustomBarColors(barColor, borderColor, ba
 	return {
 		bar = { color = barColor or "FF0000FF", color2 = barColor or "FF0000FF", gradientDirection = "disabled" },
 		border = { color = borderColor or "FF0000AA" },
-		background = { color = backgroundColor or "66000000" }
+		background = { color = backgroundColor or "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
 	}
 end
 
@@ -8726,11 +8844,185 @@ function TRB.Functions.Settings:DefaultStaggerBarColors()
 	return {
 		border = { color = "FF000066" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		type = "step",
 		low = { color = "FF00FF00", threshold = 0.0 },
 		medium = { color = "FFFFFF00", threshold = 0.30 },
 		heavy = { color = "FFFF0000", threshold = 0.60 }
 	}
+end
+
+---Gets default Castbar bar dimensions (single node, full width; wider/taller default than a generic bar)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultCastbarBarDimensions(classic)
+	local dims = self:DefaultCustomBarDimensions(classic)
+	-- Castbars sit below the health bar by default so they never overlap the primary resource bar.
+	dims.relativeTo = "BOTTOM"
+	dims.relativeToName = L["PositionBelowMiddle"]
+	dims.anchor.barKey = "health"
+	dims.anchor.anchorPoint = "BOTTOM"
+	dims.anchor.attachPoint = "TOP"
+	return dims
+end
+
+---Gets built-in channel tick profiles that apply to every spec/class (abilities castable regardless of
+---spec, e.g. Recuperate). Returns a fresh table each call. This is static CODE data, not persisted into
+---settings -- TRB.Functions.Castbar:GetTickProfile resolves it (overlaid with the active spec's registered
+---set from TRB.Data.castbarTickProfilesRegistry) at render time, so edits here take effect on reload.
+---Each profile drives tick placement:
+---  mode "fixedCount": tick count stays constant, channel duration scales with haste (e.g. Mind Flay).
+---  mode "fixedRate": channel duration is fixed, tick rate scales with haste, final partial tick (e.g. Void Torrent).
+---baseDuration and baseTickRate are UNHASTED seconds; the render scales them by GCD-inferred haste.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Functions.Settings:DefaultGlobalCastbarTickProfiles()
+	return {
+		-- Cannibalize
+		[20578] = { mode = "fixedCount", baseDuration = 10, tickCount = 5, firstTickAtStart = false },
+		-- Recuperate: one tick per second for 10 seconds
+		[1231418] = { mode = "fixedCount", baseDuration = 10, tickCount = 10, firstTickAtStart = false },
+	}
+end
+
+---Gets the default Castbar visibility entry (displayBar.castbar). Uses castbar-specific show conditions
+---(casting/channeling/empowered) instead of the standard environment conditions; alwaysShow keeps the
+---empty bar frame on screen while idle, neverShow fully disables castbar processing.
+---@return trbBarVisibilitySetting
+function TRB.Functions.Settings:DefaultCastbarVisibility()
+	return {
+		neverShow = false,
+		alwaysShow = false,
+		conditions = {
+			casting = true,
+			channeling = true,
+			empowered = true
+		},
+		hideConditions = {
+			inVehicle = false
+		},
+		activeAlpha = 100,
+		inactiveAlpha = 0,
+		fadeDuration = 0.5,
+		fadeDelay = 0,
+		resourceConditionType = "none",
+		resourceConditionOperator = ">=",
+		resourceConditionValue = 0
+	}
+end
+
+---Gets the default Castbar bar settings (dimensions + behavior flags). Built-in tick profiles are NOT
+---stored here -- they are static code data resolved at render time by TRB.Functions.Castbar:GetTickProfile.
+---tickProfiles stays an empty table, reserved for future user-authored per-spell overrides.
+---@param classic boolean?
+---@param className string? # Accepted for signature compatibility; no longer used (tick profiles are code data)
+---@param specName string? # Accepted for signature compatibility; no longer used (tick profiles are code data)
+---@return TRB.Classes.Settings.CastbarBar
+function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, specName)
+	local settings = self:DefaultCastbarBarDimensions(classic) --[[@as TRB.Classes.Settings.CastbarBar]]
+	settings.showTicks = true
+	settings.tickWidth = 1
+	settings.tickLatencyWidth = true
+	settings.showLatency = true
+	settings.showPushback = true
+	settings.showEmpowerStages = true
+	settings.empowerSegmentedFill = false
+	settings.castTimePrecision = 1
+	settings.durationPrecision = 1
+	settings.latencyPrecision = 1
+	settings.disableBlizzardCastbar = true
+	settings.mergeTradeskill = true
+	settings.tickProfiles = {}
+	settings.height = 30
+	return settings
+end
+
+---Gets the default Castbar colors. `bar` is the standard-cast fill; `channel` and `uninterruptible`
+---recolor the fill per state, and `uninterruptibleBorder` recolors the border for that same state, so an
+---uninterruptible cast still reads as one when an indicator has claimed the fill (and vice versa).
+---Overlay colors (latency/pushback) and tick lines are separate. Empower fill uses absolute per-level
+---colors: `base` while charging toward Level I, then `level1`..`level4` as each empower level is reached
+---(mapped from GetCurrentEmpowerStage at render time; game max is 4).
+---@return table
+function TRB.Functions.Settings:DefaultCastbarBarColors()
+	return {
+		bar = { color = "FFFFCC00", color2 = "FFFFCC00", gradientDirection = "disabled" },
+		channel = { color = "FF00CCFF", color2 = "FF00CCFF", gradientDirection = "disabled" },
+		uninterruptible = { color = "FF888888", color2 = "FF888888", gradientDirection = "disabled" },
+		uninterruptibleBorder = { color = "FF666666" },
+		border = { color = "FF000000" },
+		background = { color = "66000000" },
+		latency = { color = "80FF0000", enabled = true },
+		pushback = { color = "80FF00FF", enabled = true },
+		tick = { color = "FFFFFFFF", enabled = true },
+		endCap = self:DefaultEndCapColorEntry(),
+		empowerStages = {
+			base = { color = "FFC8B0FF" },
+			level1 = { color = "FFFFCC00" },
+			level2 = { color = "FFFFAA00" },
+			level3 = { color = "FFFF6600" },
+			level4 = { color = "FFFF3000" }
+		}
+	}
+end
+
+---Central injector: adds castbar defaults (bars/colors/textures/displayBar) to a spec's default settings
+---table so the standard defaults->saved Table:Merge carries them into every spec of every class. Idempotent.
+---@param specDefaults table # A single spec's default settings table (from a class's LoadDefaultSettings)
+---@param className string? # Lowercase class name, for the per-spec tick profile lookup
+---@param specName string? # Lowercase spec name, for the per-spec tick profile lookup
+---@param classic boolean?
+function TRB.Functions.Settings:InjectCastbarDefaults(specDefaults, className, specName, classic)
+	if type(specDefaults) ~= "table" then
+		return
+	end
+
+	-- Dimensions + behavior under bars.castbar
+	specDefaults.bars = specDefaults.bars or {}
+	if specDefaults.bars.castbar == nil then
+		specDefaults.bars.castbar = self:DefaultCastbarBarSettings(classic, className, specName)
+	end
+
+	-- Colors under colors.bars.castbar
+	specDefaults.colors = specDefaults.colors or {}
+	specDefaults.colors.bars = specDefaults.colors.bars or {}
+	if specDefaults.colors.bars.castbar == nil then
+		specDefaults.colors.bars.castbar = self:DefaultCastbarBarColors()
+	end
+
+	-- Visibility under displayBar.castbar (BarVisibility-style entry with castbar-specific conditions)
+	specDefaults.displayBar = specDefaults.displayBar or {}
+	if specDefaults.displayBar.castbar == nil then
+		specDefaults.displayBar.castbar = self:DefaultCastbarVisibility()
+	end
+
+	-- Flat texture keys castbarBar / castbarBorder / castbarBackground
+	specDefaults.textures = specDefaults.textures or {}
+	if specDefaults.textures.castbarBar == nil then
+		local tex = self:DefaultCustomBarTextures()
+		specDefaults.textures.castbarBar = tex.bar
+		specDefaults.textures.castbarBarName = tex.barName
+		specDefaults.textures.castbarBorder = tex.border
+		specDefaults.textures.castbarBorderName = tex.borderName
+		specDefaults.textures.castbarBackground = tex.background
+		specDefaults.textures.castbarBackgroundName = tex.backgroundName
+	end
+end
+
+---Central injector: adds end cap defaults to a spec's primary bar and combo point color tables so the
+---standard defaults->saved Table:Merge carries them into every spec of every class. Idempotent.
+---Custom bars get theirs from their Default*BarColors functions instead.
+---@param specDefaults table # A single spec's default settings table (from a class's LoadDefaultSettings)
+function TRB.Functions.Settings:InjectEndCapDefaults(specDefaults)
+	if type(specDefaults) ~= "table" or type(specDefaults.colors) ~= "table" then
+		return
+	end
+
+	if type(specDefaults.colors.bar) == "table" and specDefaults.colors.bar.endCap == nil then
+		specDefaults.colors.bar.endCap = self:DefaultEndCapColorEntry()
+	end
+	if type(specDefaults.colors.comboPoints) == "table" and specDefaults.colors.comboPoints.endCap == nil then
+		specDefaults.colors.comboPoints.endCap = self:DefaultEndCapColorEntry()
+	end
 end
 
 ---Gets default Warrior Defensives bar dimensions
@@ -8795,6 +9087,7 @@ function TRB.Functions.Settings:DefaultDefensivesBarColors()
 	return {
 		border = { color = "FFC21807" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		nodeOrder = { "ignorePain", "ignorePainAbsorb", "shieldBlock" },
 		nodeColors = {
 			ignorePain = { color = "FFFFD000", color2 = "FFFFD000", gradientDirection = "disabled", enabled = true },
@@ -8865,6 +9158,7 @@ function TRB.Functions.Settings:DefaultHolyWordsBarColors()
 	return {
 		border = { color = "FF000099" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		nodeOrder = { "holyWordSerenity", "holyWordSanctify", "holyWordChastise" },
 		nodeColors = {
 			holyWordSerenity = { color = "FF00DDDD", color2 = "FF00DDDD", gradientDirection = "disabled", enabled = true },
@@ -8951,6 +9245,7 @@ function TRB.Functions.Settings:DefaultWhirlwindBarColors()
 	return {
 		border = { color = "FFFFD300" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		sameColor = false,
 		nodeColors = {
 			charge1 = { color = "FFFFFFAA", color2 = "FFFFFFAA", gradientDirection = "disabled" },
@@ -8971,6 +9266,7 @@ function TRB.Functions.Settings:DefaultUtilityBarColors()
 	return {
 		border = { color = "FF888888" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		nodeColors = {
 			charge1 = { color = "FFAAAAAA", color2 = "FFAAAAAA", gradientDirection = "disabled", enabled = true },
 			charge2 = { color = "FFAAAAAA", color2 = "FFAAAAAA", gradientDirection = "disabled", enabled = true },
@@ -9040,6 +9336,7 @@ function TRB.Functions.Settings:DefaultLightweaverBarColors()
 	return {
 		border = { color = "FF4466CC" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
 		sameColor = false,
 		nodeColors = {
 			charge1 = { color = "FF88CCFF", color2 = "FF88CCFF", gradientDirection = "disabled" },
@@ -9334,6 +9631,8 @@ function TRB.Functions.Settings:DefaultBuffTimeBarTextEntry(variable, icon, clas
 			enabled = true,
 			name = name,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text = "{$" .. variable .. "}[#" .. icon .. "$" .. variable .. "]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9584,6 +9883,8 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$health/$healthMax $healthPercent%",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9613,6 +9914,8 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$healthPercent%",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9641,6 +9944,8 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$health",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9676,6 +9981,8 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 			fontFace = "Fonts\\FRIZQT__.TTF",
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontJustifyHorizontalName = "Center",
 			text = "{$inCombatTime}[$inCombatTime]",
 			useDefaultFontColor = false,
@@ -9708,7 +10015,116 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
-	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+
+	textSettings = TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+
+	-- We don't want to apply shared font defaults to cast bar text settings because they have their own defaults that are different from the global defaults
+	local castBarTextSettings = TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
+
+	for x = 1, #castBarTextSettings do
+		table.insert(textSettings, castBarTextSettings[x])
+	end
+	return textSettings
+end
+
+---Returns default bar text for the Cast Bar
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = true,
+			useDefaultFontFace = true,
+			useDefaultFontSize = false,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = true,
+			maxWidthPercent = 75,
+			text = "#casting $castSpellName",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 18,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 6,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "CastBar",
+				relativeToFrameName = L["CastBar"]
+			}
+		},
+		{
+			useDefaultFontColor = true,
+			useDefaultFontFace = true,
+			useDefaultFontSize = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			text = "{$castTime>0}[{$castPushback>0}[||cFFFF00FF$castPushback||r + ] $castTimeRemaining / $castTime]",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize = 14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "CastBar",
+				relativeToFrameName = L["CastBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = true,
+			useDefaultFontSize = false,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			enabled = true,
+			name = L["PositionBottomRight"],
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			text = "$castLatencyMs",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize = 10,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			color = { color = "FFFF0000" },
+			position = {
+				xPos = -2,
+				yPos = 2,
+				relativeTo = "BOTTOMRIGHT",
+				relativeToName = L["PositionBottomRight"],
+				relativeToFrame = "CastBar",
+				relativeToFrameName = L["CastBar"]
+			}
+		}
+	}
+
+	return textSettings
 end
 
 ---Returns default bar text for a secondary mana bar (used by DPS casters like Shadow Priest, Balance Druid, Elemental Shaman)
@@ -9728,6 +10144,8 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$mana/$manaMax $manaPercent%",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9757,6 +10175,8 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionLeft"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$manaPercent%",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9785,6 +10205,8 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$mana",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9829,6 +10251,8 @@ function TRB.Functions.Settings:LoadDefaultFireBlastChargeBarTextSettings()
 			enabled = true,
 			name = "FB" .. chargeIndex,
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text = "{$fireBlastChargesMax=" .. chargeIndex .. "&$fireBlastTime}[$fireBlastTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9885,6 +10309,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				enabled = true,
 				name = L["PositionRight"],
 				guid = TRB.Functions.String:Guid(),
+				constrainToParent = false,
+				maxWidthPercent = 100,
 				text="{$casting}[#casting$casting+]$resource",
 				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9915,6 +10341,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				enabled = true,
 				name = L["PositionMiddle"],
 				guid = TRB.Functions.String:Guid(),
+				constrainToParent = false,
+				maxWidthPercent = 100,
 				text="$resource",
 				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9946,6 +10374,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				enabled = true,
 				name = L["PositionRight"],
 				guid = TRB.Functions.String:Guid(),
+				constrainToParent = false,
+				maxWidthPercent = 100,
 				text="{$casting}[#casting$casting+]$mana/$manaMax $manaPercent%",
 				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -9976,6 +10406,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				enabled = true,
 				name = L["PositionLeft"],
 				guid = TRB.Functions.String:Guid(),
+				constrainToParent = false,
+				maxWidthPercent = 100,
 				text="$manaPercent%",
 				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -10004,6 +10436,8 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				enabled = true,
 				name = L["PositionRight"],
 				guid = TRB.Functions.String:Guid(),
+				constrainToParent = false,
+				maxWidthPercent = 100,
 				text="$mana",
 				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,

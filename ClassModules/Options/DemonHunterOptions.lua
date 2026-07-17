@@ -31,6 +31,8 @@ local function SharedLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionRight"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="{$metamorphosisTime>0}[#meta$metamorphosisTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -498,6 +500,8 @@ local function DevourerLoadDefaultBarTextSettings(classic)
 			enabled = true,
 			name = L["PositionMiddle"],
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			text="$soulFragments",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -1413,6 +1417,9 @@ local function VengeanceConstructIndicatorColorsPanel(parent)
 			{ key = "furyBar", label = L["BarNameFuryBar"] },
 			{ key = "soulFragmentsBar", label = L["BarNameSoulFragmentsBar"] },
 		},
+		excludedElements = {
+			soulFragmentsBar = { endCap = true },
+		},
 		gradientExcludedElements = {
 			soulFragmentsBar = { bar = true },
 		},
@@ -1812,6 +1819,8 @@ local function DevourerConstructSoulFragmentsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "DemonHunter_Devourer_ComboPoints", "endCapComboPoints", L["EndCap"], 12, 3)
 end
 
 local function DevourerConstructHealthBarPanel(parent)

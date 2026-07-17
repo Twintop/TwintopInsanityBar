@@ -46,7 +46,7 @@ TRB is built with customization at its core. Nearly every aspect of the addon ca
 Every bar can be shown or hidden independently with granular, mix-and-match visibility conditions:
 
 - Combat state: In Combat, In Vehicle
-- Mount state: Is Mounted (Any), Ground Mount, Skyriding, Steady Flight
+- Mount state: Is Mounted (Any), Ground Mount, Skyriding, Steady Flight, and Actively In Flight (Skyriding or Steady Flight)
 - Target state: Friendly Target, Hostile Target
 - Group state: In Group, In Raid Group
 - Instance state: In Instance, In Dungeon, In Raid Instance, In Delve, In Battleground, In Arena
@@ -69,11 +69,11 @@ Every bar can be shown or hidden independently with granular, mix-and-match visi
 ### Colors
 
 - Separate color settings for bar fill, border, and background
-- Indicator Color System: state-based color changes that can target any combination of bars and elements (fill, border, background) with configurable priority ordering
+- Indicator Color System: state-based color changes that can target any combination of bars and elements (fill, border, background) -- including the Health Bar and Cast Bar -- with configurable priority ordering
 - Optional gradient color transitions for bar fills and casting overlays
 - Per-threshold colors: under resource threshold, over resource threshold, unusable, out of range -- each overridable per-threshold with static or per-state colors
 - Per-threshold visibility overrides (e.g., hide when unusable)
-- Individual node coloring for secondary resources, with per-stack distinct color options for bars like Holy Power (1-5), Soul Shards (1-5), Whirlwind Charges (1 vs. 2 charges, plus an optional 0-charge background), and the 5th Maelstrom Weapon stack
+- Individual node coloring for secondary resources, with per-stack distinct color options for bars like Holy Power (1-5), Soul Shards (1-5), Whirlwind Charges (1 vs. 2 charges, plus an optional 0-charge background), the 5th Maelstrom Weapon stack, and the 5th Combo Point (Rogue), which can optionally override the penultimate/final color
 - Dedicated color option for the partial-fill portion of bars with time-based or fragment-based generation (Evoker Essence, Feral Druid Combo Points, Destruction Warlock Soul Shards)
 - Node border overlap option for multi-node bars (Combo Points, Runes, etc.)
 - Optional full-bar-height overlays (casting, spending, absorb, incoming heal) that extend across the border for a flush appearance
@@ -105,6 +105,8 @@ Use variables like `$resource`, `$comboPoints`, `$haste`, `$gcd`, and `$inCombat
 For multi-node bars (Combo Points, Runes, Soul Shards, etc.), bar text can be anchored to the bar group as a whole or to individual nodes.
 
 The bar text editor includes a searchable variable browser with descriptions and icons, allowing you to find and insert variables directly at the cursor position. Full undo/redo support is available via standard Ctrl+Z and Ctrl+Shift+Z (or Ctrl+Y) keyboard shortcuts.
+
+Bar text can optionally be clamped to its bound bar's width with a Prevent Text Overflow toggle, truncating with an ellipsis and a configurable Maximum Text Width (a percentage of the bound bar's width) instead of spilling over. This has no effect when bound to the Screen.
 
 For complete documentation on available variables and advanced formatting, check out the [Bar Text Customization Wiki](https://github.com/Twintop/TwintopInsanityBar/wiki/Bar-Text-Customization).
 
@@ -138,7 +140,7 @@ Share your configuration with others or back up your settings:
 - Changes are immediately reflected across all specializations
 - Includes Health Bar colors, and more
 - Per-bar smooth animation settings instead of a single global toggle
-- Optional abbreviated number formatting (e.g., 10.0K, 1.5M) for large numbers across all bars
+- Optional abbreviated number formatting (e.g., 10.0K, 1.5M) for large numbers across all bars, with an alternate myriad-based grouping (10,000-step scale) for CJK locales (zhCN/zhTW/koKR)
 
 ---
 
@@ -180,6 +182,8 @@ Per-threshold options include:
 - **Enable/disable** -- turn individual thresholds on or off without removing them
 
 A dedicated **Threshold Shared Settings** tab sets the default threshold colors, line dimensions, and icon defaults that apply to every threshold for the specialization, giving you a single place to restyle them all at once while still allowing per-threshold overrides.
+
+Beyond the built-in ability-cost thresholds, you can add your own **custom threshold lines** on any bar -- including multi-node bars like Combo Points, Maelstrom Weapon, and Angelic Feather. Custom thresholds can be set to a fixed absolute value or as an offset from the bar's maximum (like the overcapping alert), so a line can automatically track "X below max" as your maximum resource changes.
 
 ### Secondary Resource Nodes
 
@@ -224,6 +228,21 @@ A dedicated health bar is available for all specs, providing an at-a-glance view
 The absorb overlay has its own configurable texture and color, and the current absorb amount is available as a bar text variable (`$absorb`).
 
 An optional incoming heals overlay displays predicted incoming healing on the health bar, with the value available as a bar text variable (`$incomingHeal`).
+
+An optional healing absorb overlay displays debuffs that consume incoming healing (such as Necrotic Wounds) as a separate overlay, distinct from the damage-absorbing shield overlay above. Its value is available as the bar text variable `$healAbsorb`.
+
+### Cast Bar
+
+Every specialization gets a dedicated Cast Bar that tracks standard, channeled, and empowered casts, with the same size, anchor, texture, color, and bar text options as every other bar.
+
+- **Visibility conditions** - show while Casting, Channeling, or Empowering, or set to Always/Never, with an In Vehicle hide, independent active/inactive alpha, and fade-out
+- **Latency and pushback overlays** - visualize spell-queue latency and pushback, with a configurable Channel Tick Width and an optional Size Channel Ticks to Latency
+- **Channel tick markers** - drawn from a user-editable per-spell tick rate list, handling fixed-count, fixed-duration, and chained channels
+- **Empower stages** - stage lines and per-level fill colors, with an optional Fill Each Empower Level Separately mode (Windwalker Monk, Evoker, Blood Death Knight)
+- **Uninterruptible border** - a distinct border color while a cast can't be interrupted
+- **Bulk crafting** - profession crafts like Create All are merged into a single channel-style bar with per-craft ticks and `$castSpellName` progress; toggle with Merge Bulk Crafting
+- **Bar text** - `$castTime`, `$castTimeRemaining`, `$castLatency`, `$castLatencyMs`, `$castPushback`, `$castSpellName`, `$castSpellId`, `$castInterruptible`, `$castUninterruptible`, and the `#casting` spell icon
+- **Global options** - top-level Cast Bar options with global versions of every section, a Global Profile selector, per-spec follow-global, and Copy... between scopes
 
 ### Druid Shapeshifting
 
@@ -275,12 +294,16 @@ Many specs can track important buff status and timers via color changes and dire
 | Mistweaver Monk | Instant Vivify (Sheilun's Gift, Serene Surge) |
 | Windwalker Monk | Heart of the Jade Serpent, Dance of Chi-Ji |
 | Holy/Protection/Retribution Paladin | Divine Purpose |
-| Discipline Priest | Power Word: Radiance, Void Shield, Surge of Light |
+| Discipline Priest | Power Word: Radiance, Void Shield, Surge of Light, Harsh Discipline |
 | Holy Priest | Apotheosis, Benediction, Lightweaver, Surge of Light, Holy Word cooldown reduction tracking |
 | Shadow Priest | Voidform, Entropic Rift (including extensions remaining), Shadowy Insight (Instant Mind Blast) |
 | Elemental Shaman | Ascendance, Earthquake/Elemental Blast usability |
 | Enhancement Shaman | Ascendance |
 | Restoration Shaman | Ascendance |
+| Affliction Warlock | Shard Instability |
+| Demonology Warlock | Demonic Core, Dominion of Argus, Infernal Bolt, Ruination |
+| Destruction Warlock | Infernal Bolt, Ruination |
+| Protection Warrior | Violent Outburst |
 
 ---
 

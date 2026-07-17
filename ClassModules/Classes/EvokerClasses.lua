@@ -85,6 +85,15 @@ function TRB.Classes.Evoker.DevastationSpells.FillBarTextVariables(specCacheEntr
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Devastation, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Evoker.DevastationSpells.GetCastbarTickProfiles()
+	return {
+		-- Disintegrate
+		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 5, firstTickAtStart = false, chains = true },
+	}
+end
+
 
 ---@class TRB.Classes.Evoker.PreservationSpells : TRB.Classes.Healer.HealerSpells
 TRB.Classes.Evoker.PreservationSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
@@ -145,6 +154,17 @@ function TRB.Classes.Evoker.PreservationSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$essenceBurstTime", description = L["EvokerPreservationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
 		{ variable = "$essenceBurstStacks", description = L["EvokerPreservationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Preservation, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Evoker.PreservationSpells.GetCastbarTickProfiles()
+	return {
+		-- Disintegrate
+		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, chains = true },
+		-- Emerald Communion
+		[370960] = { mode = "fixedCount", baseDuration = 5, tickCount = 6, firstTickAtStart = true },
+	}
 end
 
 
@@ -221,6 +241,15 @@ function TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$essenceBurstTime", description = L["EvokerAugmentationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
 		{ variable = "$essenceBurstStacks", description = L["EvokerAugmentationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Augmentation, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Evoker.AugmentationSpells.GetCastbarTickProfiles()
+	return {
+		-- Disintegrate
+		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = false, chains = true },
+	}
 end
 
 
@@ -315,3 +344,9 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["evoker_devastation"] = TRB.Classes.Evoker.DevastationSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["evoker_preservation"] = TRB.Classes.Evoker.PreservationSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["evoker_augmentation"] = TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["evoker_devastation"] = TRB.Classes.Evoker.DevastationSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["evoker_preservation"] = TRB.Classes.Evoker.PreservationSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["evoker_augmentation"] = TRB.Classes.Evoker.AugmentationSpells.GetCastbarTickProfiles

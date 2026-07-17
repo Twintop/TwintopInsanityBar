@@ -999,11 +999,49 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Havoc()
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+			local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+
+			-- Indicator color system
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+
+			-- Precompute metamorphosis end timing threshold
+			local metamorphosisActive = snapshots[spells.metamorphosis.id].buff.isActive
+			local metamorphosisEndMet = false
+			if metamorphosisActive then
+				local timeThreshold = 0
+				if specSettings.endOf.metamorphosis.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.metamorphosis.gcdsMax
+				elseif specSettings.endOf.metamorphosis.mode == "time" then
+					timeThreshold = specSettings.endOf.metamorphosis.timeMax
+				end
+				metamorphosisEndMet = metaTime <= timeThreshold
+			end
+
+			local conditionMap = {
+				metamorphosisEnd = metamorphosisActive and metamorphosisEndMet,
+				metamorphosis = metamorphosisActive,
+				borderOvercap = affectingCombat,
+			}
+
+			-- Color targets: barKey -> elementKey -> current color
+			local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local barColorMap = { furyBar = furyBarColors }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
-				local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 				local currentResource = snapshotData.attributes.resource
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -1012,6 +1050,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					Bar:ApplyEndCapIndicator(primaryNode, "furyBar")
 					local resourceFrame = primaryNode:GetFrame()
 					local thresholds = primaryNode:GetThresholds()
 
@@ -1113,61 +1152,6 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base
-					local barBorderColor = specSettings.colors.bar.border.color
-					local barBackgroundColor = specSettings.colors.bar.background.color
-
-					-- Indicator color system
-					local sharedColors = specSettings.colors.shared
-					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
-
-					-- Precompute metamorphosis end timing threshold
-					local metamorphosisActive = snapshots[spells.metamorphosis.id].buff.isActive
-					local metamorphosisEndMet = false
-					if metamorphosisActive then
-						local timeThreshold = 0
-						if specSettings.endOf.metamorphosis.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.metamorphosis.gcdsMax
-						elseif specSettings.endOf.metamorphosis.mode == "time" then
-							timeThreshold = specSettings.endOf.metamorphosis.timeMax
-						end
-						metamorphosisEndMet = metaTime <= timeThreshold
-					end
-
-					local conditionMap = {
-						metamorphosisEnd = metamorphosisActive and metamorphosisEndMet,
-						metamorphosis = metamorphosisActive,
-						borderOvercap = affectingCombat,
-					}
-
-					-- Color targets: barKey -> elementKey -> current color
-					local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-					local barColorMap = { furyBar = furyBarColors }
-
-					-- Apply flat indicator colors (priority order, last writer wins)
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] then
-								if indicator.targets then
-									for barKey, elements in pairs(indicator.targets) do
-										local targetColors = barColorMap[barKey]
-										if targetColors and elements then
-											for elemKey, isTargeted in pairs(elements) do
-												if isTargeted then
-													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-												end
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-
 					-- Find active gradient indicators (separate priority group, always override flat colors when active)
 					local gradientOrder = sharedColors and sharedColors.gradientOrder
 					local overcapIndicator = nil
@@ -1209,7 +1193,7 @@ local function UpdateResourceBar()
 					-- Apply border
 					if overcapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+						primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
@@ -1236,15 +1220,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1254,12 +1230,49 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Vengeance()
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+			local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+
+			-- Indicator color system
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+
+			-- Precompute metamorphosis end timing threshold
+			local metamorphosisActive = snapshots[spells.metamorphosis.id].buff.isActive
+			local metamorphosisEndMet = false
+			if metamorphosisActive then
+				local timeThreshold = 0
+				if specSettings.endOf.metamorphosis.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.metamorphosis.gcdsMax
+				elseif specSettings.endOf.metamorphosis.mode == "time" then
+					timeThreshold = specSettings.endOf.metamorphosis.timeMax
+				end
+				metamorphosisEndMet = metaTime <= timeThreshold
+			end
+
+			local conditionMap = {
+				metamorphosisEnd = metamorphosisActive and metamorphosisEndMet,
+				metamorphosis = metamorphosisActive,
+				borderOvercap = affectingCombat,
+			}
+
+			-- Color targets: barKey -> elementKey -> current color
+			local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local barColorMap = { furyBar = furyBarColors }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
-				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
-				local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1269,6 +1282,7 @@ local function UpdateResourceBar()
 				
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					Bar:ApplyEndCapIndicator(primaryNode, "furyBar")
 					local resourceFrame = primaryNode:GetFrame()
 					local thresholds = primaryNode:GetThresholds()
 
@@ -1338,61 +1352,6 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base
-					local barBorderColor = specSettings.colors.bar.border.color
-					local barBackgroundColor = specSettings.colors.bar.background.color
-
-					-- Indicator color system
-					local sharedColors = specSettings.colors.shared
-					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
-
-					-- Precompute metamorphosis end timing threshold
-					local metamorphosisActive = snapshots[spells.metamorphosis.id].buff.isActive
-					local metamorphosisEndMet = false
-					if metamorphosisActive then
-						local timeThreshold = 0
-						if specSettings.endOf.metamorphosis.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.metamorphosis.gcdsMax
-						elseif specSettings.endOf.metamorphosis.mode == "time" then
-							timeThreshold = specSettings.endOf.metamorphosis.timeMax
-						end
-						metamorphosisEndMet = metaTime <= timeThreshold
-					end
-
-					local conditionMap = {
-						metamorphosisEnd = metamorphosisActive and metamorphosisEndMet,
-						metamorphosis = metamorphosisActive,
-						borderOvercap = affectingCombat,
-					}
-
-					-- Color targets: barKey -> elementKey -> current color
-					local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-					local barColorMap = { furyBar = furyBarColors }
-
-					-- Apply flat indicator colors (priority order, last writer wins)
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] then
-								if indicator.targets then
-									for barKey, elements in pairs(indicator.targets) do
-										local targetColors = barColorMap[barKey]
-										if targetColors and elements then
-											for elemKey, isTargeted in pairs(elements) do
-												if isTargeted then
-													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-												end
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-
 					-- Find active gradient indicators (separate priority group, always override flat colors when active)
 					local gradientOrder = sharedColors and sharedColors.gradientOrder
 					local overcapIndicator = nil
@@ -1434,7 +1393,7 @@ local function UpdateResourceBar()
 					-- Apply border
 					if overcapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+						primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
@@ -1566,7 +1525,7 @@ local function UpdateResourceBar()
 							-- Border: gradient > flat indicator > default
 							if sfOvercapCurves.border then
 								local borderResult = UnitPowerPercent("player", TRB.Data.resource, true, sfOvercapCurves.border)
-								cpNode:SetBorderColorCurve(borderResult)
+								cpNode:SetBorderColorCurve(borderResult, Color:EvaluateEndCapCurve(cpNode, sfOvercapCurves.border))
 							else
 								cpNode:SetBorderColor(sfBorderOverride or cpBorderColor)
 							end
@@ -1589,15 +1548,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1611,8 +1562,36 @@ local function UpdateResourceBar()
 		local collapsingStarUsable = snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+
+			-- Indicator color system
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+
+			local voidRayUsable = (not metaActive) and spells.voidRay:IsUsable()
+
+			local conditionMap = {
+				voidMetamorphosisReady = metaUsable,
+				collapsingStarReady = collapsingStarUsable,
+				voidMetamorphosis = metaActive,
+				voidRayReady = voidRayUsable,
+				borderOvercap = affectingCombat,
+			}
+
+			-- Color targets: barKey -> elementKey -> current color
+			local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local barColorMap = { furyBar = furyBarColors }
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 
 				local currentResource = snapshotData.attributes.resource
@@ -1624,6 +1603,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+					Bar:ApplyEndCapIndicator(primaryNode, "furyBar")
 					local resourceFrame = primaryNode:GetFrame()
 					local thresholds = primaryNode:GetThresholds()
 
@@ -1705,51 +1685,6 @@ local function UpdateResourceBar()
 						end
 					end
 					
-					local barColor = specSettings.colors.bar.base
-					local barBorderColor = specSettings.colors.bar.border.color
-					local barBackgroundColor = specSettings.colors.bar.background.color
-
-					-- Indicator color system
-					local sharedColors = specSettings.colors.shared
-					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
-
-					local voidRayUsable = (not metaActive) and spells.voidRay:IsUsable()
-
-					local conditionMap = {
-						voidMetamorphosisReady = metaUsable,
-						collapsingStarReady = collapsingStarUsable,
-						voidMetamorphosis = metaActive,
-						voidRayReady = voidRayUsable,
-						borderOvercap = affectingCombat,
-					}
-
-					-- Color targets: barKey -> elementKey -> current color
-					local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-					local barColorMap = { furyBar = furyBarColors }
-
-					-- Apply flat indicator colors (priority order, last writer wins)
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] then
-								if indicator.targets then
-									for barKey, elements in pairs(indicator.targets) do
-										local targetColors = barColorMap[barKey]
-										if targetColors and elements then
-											for elemKey, isTargeted in pairs(elements) do
-												if isTargeted then
-													targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-												end
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-
 					-- Find active gradient indicators (separate priority group, always override flat colors when active)
 					local gradientOrder = sharedColors and sharedColors.gradientOrder
 					local overcapIndicator = nil
@@ -1791,7 +1726,7 @@ local function UpdateResourceBar()
 					-- Apply border
 					if overcapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-						primaryNode:SetBorderColorCurve(borderColorResult)
+						primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 					else
 						primaryNode:SetBorderColor(barBorderColor)
 					end
@@ -1907,7 +1842,7 @@ local function UpdateResourceBar()
 						-- Border: gradient > flat indicator > default
 						if sfOvercapCurves.border then
 							local borderResult = UnitPowerPercent("player", TRB.Data.resource, true, sfOvercapCurves.border)
-							sfNode:SetBorderColorCurve(borderResult)
+							sfNode:SetBorderColorCurve(borderResult, Color:EvaluateEndCapCurve(sfNode, sfOvercapCurves.border))
 						else
 							sfNode:SetBorderColor(sfBorderOverride or cpBorderColor)
 						end
@@ -1925,6 +1860,7 @@ local function UpdateResourceBar()
 								sfNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 							end
 						end
+						Bar:ApplyEndCapIndicator(sfNode, "soulFragmentsBar")
 						
 						-- Collapsing Star threshold (only visible when buff is active)
 						local thresholds = sfNode:GetThresholds()
@@ -2018,15 +1954,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -2057,6 +1985,7 @@ local function SwitchSpec()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 	spellEventFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
+	
 	if TRB.Data.character.specId == 1 then
 		specCache.demonhunter_havoc.talents:GetTalents()
 		FillSpellData_Havoc()

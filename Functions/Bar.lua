@@ -691,6 +691,13 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 		return
 	end
 
+	-- Castbar is an all-spec bar not created by any class's CreateForSpec, so lazily create its BarGroup
+	-- here (the universal post-CreateForSpec choke point). ApplyCustomBarGroups* then handle it
+	-- generically like any other registered custom bar.
+	if barGroups.castbar == nil then
+		barGroups.castbar = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Castbar", 1, false)
+	end
+
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
 	wipe(TRB.Data.cache.colors.backdrop)
@@ -1424,6 +1431,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				settings.textures.border,
 				settings.textures.background
 			)
+			primaryNode:ApplyEndCap(settings.colors.bar.endCap, settings.colors.bar.border.color)
 			TRB.Functions.Color:ApplyFillColor(primaryNode, settings.colors.bar.base)
 			primaryNode:SetBorderColor(settings.colors.bar.border.color)
 			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background.color)
@@ -1578,6 +1586,12 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				else
 					node:SetMinMax(0, 1)
 				end
+				if isVengeance or isFireMage then
+					-- Stepped secret counts: the highest progressed node is unknowable, so no end cap
+					node:ApplyEndCap(nil)
+				else
+					node:ApplyEndCap(effectiveSettings.colors.comboPoints.endCap, effectiveSettings.colors.comboPoints.border.color)
+				end
 				node:SetBorderColor(effectiveSettings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(effectiveSettings.colors.comboPoints.background.color)
 				TRB.Functions.Color:ApplyFillColor(node, effectiveSettings.colors.comboPoints.base)
@@ -1600,6 +1614,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 					settings.textures.comboPointsBackground
 				)
 				node:SetMinMax(0, 1)
+				node:ApplyEndCap(whirlwindColors.endCap, whirlwindColors.border.color)
 				node:SetBorderColor(whirlwindColors.border.color)
 				node:SetBackgroundColorFromString(whirlwindColors.background.color)
 				TRB.Functions.Color:ApplyFillColor(node, whirlwindColors.nodeColors.charge1)
@@ -1617,6 +1632,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				settings.textures.healthBorder,
 				settings.textures.healthBackground
 			)
+			healthNode:ApplyEndCap(settings.colors.healthBar.endCap, settings.colors.healthBar.border.color)
 			healthNode:SetBorderColor(settings.colors.healthBar.border.color)
 			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background.color)
 			healthNode:SetColor(settings.colors.healthBar.bar)
@@ -2031,6 +2047,62 @@ function TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, set
 	self:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData, settings)
 	self:UpdateHealthBarIncomingHealOverlay(healthNode, snapshotData, settings)
 	self:UpdateHealthBarHealAbsorbOverlay(healthNode, snapshotData, settings)
+end
+
+---Renders the health bar for this frame: value, fill curve, border/background, and the overlays. The
+---border and background honor any indicator targeting them (resolved by Color:ApplyIndicatorColors earlier
+---in the same spec update): a flat indicator settles the color, and a gradient indicator can then turn it
+---into a resource-threshold curve. The fill is already a health-threshold curve, so it isn't a target.
+---Called by every spec's update in place of the health block each one used to carry.
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+---@param snapshotData TRB.Classes.SnapshotData
+---@param settings table # The spec cache settings (specCacheSettings)
+function TRB.Functions.Bar:UpdateHealthBar(barGroups, snapshotData, settings)
+	local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
+
+	if healthNode then
+		local Color = TRB.Functions.Color
+		local healthColors = settings.colors.healthBar
+		local indicators = Color:GetResolvedIndicators("healthBar")
+		healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+		healthNode:SetValue(snapshotData.attributes.health or 0)
+		healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "border",
+			(indicators and indicators.border) or healthColors.border.color)
+		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "background",
+			(indicators and indicators.background) or healthColors.background.color)
+		Color:ApplyResolvedEndCap(healthNode, "healthBar")
+	end
+
+	self:UpdateHealthBarOverlays(healthNode, snapshotData, settings)
+end
+
+---Applies a spec-owned bar's end cap indicator color (flat or gradient) for the current frame, taking
+---priority over the cap's useBorderColor follow. Call once per end-cap-bearing node each frame, after
+---ApplyIndicatorColors has run for that bar. Everything is resolved from global indicator state, so the
+---caller only needs the node and its indicator target key -- no color map or gradient threading.
+---@param node TRB.Classes.BarNode
+---@param barKey string # The indicator target key for this bar (e.g. "insanityBar", "runesBar")
+function TRB.Functions.Bar:ApplyEndCapIndicator(node, barKey)
+	if node == nil or node.endCapConfig == nil then
+		return
+	end
+	local Color = TRB.Functions.Color
+
+	local gradient = Color:GetResolvedGradient()
+	if gradient ~= nil and TRB.Data.resource ~= nil then
+		local targets = gradient.targets and gradient.targets[barKey]
+		if targets and targets.endCap then
+			local curve = Color:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, node.endCapConfig.color, gradient.color)
+			if curve ~= nil then
+				node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", TRB.Data.resource, true, curve))
+				return
+			end
+		end
+	end
+
+	local barEndCaps = TRB.Data.resolvedIndicators.barEndCaps
+	node:ApplyEndCapIndicator(barEndCaps and barEndCaps[barKey] or nil, nil)
 end
 
 ---Updates the casting resource overlay on the primary resource bar node.
@@ -3726,7 +3798,15 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 
 	local inEditMode = TRB.Functions.EditMode:IsInEditMode()
 	local barIsVisible = self:IsBarVisible(settings, barKey, inEditMode) and not self:IsBarTalentGatedHidden(barKey)
-	config.shouldInitiallyShow = barIsVisible
+	local shouldInitiallyShow = barIsVisible
+	-- Castbar's on-screen visibility is driven entirely by active cast state (Functions/Castbar.lua),
+	-- not the displayBar system it has no entry in, so always construct it hidden. barIsVisible stays
+	-- true (IsBarVisible defaults true with no displayBar entry) so its layout space is still reserved
+	-- normally below, keeping anchored bars stable whether or not a cast is currently in progress.
+	if barKey == "castbar" and not inEditMode then
+		shouldInitiallyShow = false
+	end
+	config.shouldInitiallyShow = shouldInitiallyShow
 
 	self:ConstructAnchoredBarGroup(settings, anchorGroup, barGroup, config, applyAppearance)
 
@@ -3827,7 +3907,12 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 			-- newly-added or partially-migrated custom bars.
 			local defaultBarColors = barTypeDef:GetDefaultColors() or {}
 			local barColors = settings.colors and settings.colors.bars and settings.colors.bars[key] or {}
-			
+
+			-- Propagate the definition's end cap policy to the group for the visibility sweep
+			if barTypeDef.endCapMode then
+				barGroup.endCapMode = barTypeDef.endCapMode
+			end
+
 			-- Apply to all nodes (use enabled count for multi-node bars with per-node enable)
 			local nodeCount = barTypeDef.maxNodes or 1
 			if barTypeDef.nodeColors and barColors then
@@ -3860,16 +3945,62 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 						barColorEntry = barColors.bar or defaultBarColors.bar
 					end
 				
+					-- End caps are meaningless on secret cast-count bars (the highest node is unknowable)
+					if barTypeDef.usesSecretValue then
+						node:ApplyEndCap(nil)
+					else
+						node:ApplyEndCap(barColors.endCap or defaultBarColors.endCap, borderColor)
+					end
+
 					-- Apply colors with fallbacks
 					node:SetBorderColor(borderColor)
 					node:SetBackgroundColorFromString(backgroundColor)
 					if barColorEntry then
 						TRB.Functions.Color:ApplyFillColor(node, barColorEntry)
 					end
-					
+
 					node:SetFrameLevel(frameLevels.comboPoint)
 				end
 			end
+		end
+	end
+end
+
+---Updates end cap visibility across a multi-node group after a node value change.
+---"highest" mode shows the cap only on the highest node with any fill; "all" leaves every cap shown
+---(empty nodes self-hide via the clip anchor). Single-node groups need no sweep.
+---@param node TRB.Classes.BarNode
+local function UpdateGroupEndCapVisibility(node)
+	local group = node.group
+	if group == nil or group.maxNodes <= 1 or node.endCapConfig == nil then
+		return
+	end
+	if (group.endCapMode or "highest") ~= "highest" then
+		return
+	end
+
+	-- Highest node with any fill; a secret value makes the answer unknowable, so hide every cap
+	local highest = 0
+	for i = group.nodeCount, 1, -1 do
+		local groupNode = group.nodes[i]
+		if groupNode then
+			local value = groupNode.frame:GetValue()
+			if issecretvalue(value) then
+				highest = 0
+				break
+			end
+			if value ~= nil and value > 0 then
+				highest = i
+				break
+			end
+		end
+	end
+
+	for i = 1, group.maxNodes do
+		local groupNode = group.nodes[i]
+		local slot = groupNode and groupNode.overlaySlots and groupNode.overlaySlots.endCap
+		if slot then
+			slot:SetEndCapShown(i == highest)
 		end
 	end
 end
@@ -3937,6 +4068,8 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 
 		TRB.Data.cache.values.bar[key].value = value
 		TRB.Data.cache.values.bar[key].maxResource = maxResource
+
+		UpdateGroupEndCapVisibility(node)
 	end
 end
 

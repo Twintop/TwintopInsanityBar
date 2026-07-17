@@ -892,6 +892,7 @@ local function UpdateResourceBar()
 					holyPowerNode:SetBorderColor(cpBorderColor)
 					TRB.Functions.Color:ApplyFillColor(holyPowerNode, cpColor)
 					holyPowerNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+					Bar:ApplyEndCapIndicator(holyPowerNode, "holyPowerBar")
 
 					if castingSettings ~= nil and (overlayAmount ~= 0 or holyPowerNode:GetOverlaySlot("casting") ~= nil) then
 						Bar:UpdateCastingResourceOverlay(holyPowerNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nil, castingTexture)
@@ -902,27 +903,18 @@ local function UpdateResourceBar()
 	end
 
 	local function ApplyFlatIndicatorColors(sharedColors, conditionMap, barColorMap)
-		if sharedColors == nil then
-			return
+		-- barOverridden tells the render below to skip the resource-threshold fill curve: once an indicator
+		-- owns the fill, its flat color has to survive rather than being recomputed from the resource.
+		local overrides = {}
+		for barKey in pairs(barColorMap) do
+			overrides[barKey] = {}
 		end
 
-		local indicatorColors = sharedColors.indicatorColors
-		local nodeOrder = sharedColors.nodeOrder
-		if indicatorColors and nodeOrder then
-			for i = #nodeOrder, 1, -1 do
-				local key = nodeOrder[i]
-				local indicator = indicatorColors[key]
-				if indicator and indicator.enabled and conditionMap[key] then
-					local targets = indicator.targets
-					for barKey, colorEntry in pairs(barColorMap) do
-						local barTargets = targets and targets[barKey]
-						if barTargets then
-							if barTargets.bar then colorEntry.bar = indicator; colorEntry.barOverridden = true end
-							if barTargets.border then colorEntry.border = indicator.color end
-							if barTargets.background then colorEntry.background = indicator.color end
-						end
-					end
-				end
+		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
+
+		for barKey, colorEntry in pairs(barColorMap) do
+			if overrides[barKey].bar then
+				colorEntry.barOverridden = true
 			end
 		end
 	end
@@ -965,6 +957,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -979,15 +972,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 
 		end
@@ -1025,6 +1010,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -1039,15 +1025,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 
 		end
@@ -1084,6 +1062,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -1098,15 +1077,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 
 		end

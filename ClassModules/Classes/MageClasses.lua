@@ -50,6 +50,30 @@ function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Arcane, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickProfiles()
+	return {
+		-- Arcane Missiles
+		[5143] = { mode = "fixedCount", baseDuration = 2, tickCount = 5, firstTickAtStart = true, chains = true },
+		-- Kleptomania
+		[198100] = { mode = "fixedCount", baseDuration = 4, tickCount = 8 },
+	}
+end
+
+---Gets built-in castbar tick modifiers for Arcane (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers()
+	return {
+		-- Arcane Missiles
+		[5143] = {
+			-- Amplification: +2 missiles while talented
+			{ talentId = 236628, bonusTicks = 2 },
+		},
+	}
+end
+
 
 ---@class TRB.Classes.Mage.FireSpells : TRB.Classes.SpecializationSpellsBase
 ---@field fireBlast TRB.Classes.SpellBase
@@ -116,6 +140,12 @@ function TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---Gets built-in castbar channel tick profiles for Fire, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Mage.FireSpells.GetCastbarTickProfiles()
+	return {}
+end
+
 
 ---@class TRB.Classes.Mage.FrostSpells : TRB.Classes.SpecializationSpellsBase
 ---@field icicles TRB.Classes.SpellBase
@@ -162,6 +192,15 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$iciclesMax", description = L["MageFrostBarTextVariable_iciclesMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 	})
+end
+
+---Gets built-in castbar channel tick profiles for Frost, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Mage.FrostSpells.GetCastbarTickProfiles()
+	return {
+		-- Ray of Frost
+		[205021] = { mode = "fixedCount", baseDuration = 4, tickCount = 8 },
+    }
 end
 
 
@@ -337,3 +376,13 @@ TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["mage_fire"] = TRB.Classes.Mage.FireSpells.FillBarTextVariables
 TRB.Data.barTextVariablesRegistry["mage_frost"] = TRB.Classes.Mage.FrostSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["mage_fire"] = TRB.Classes.Mage.FireSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["mage_frost"] = TRB.Classes.Mage.FrostSpells.GetCastbarTickProfiles
+
+-- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
+TRB.Data.castbarTickModifiersRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers

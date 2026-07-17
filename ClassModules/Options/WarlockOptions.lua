@@ -930,6 +930,8 @@ local function AfflictionConstructSoulShardsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Warlock_Affliction_ComboPoints", "endCapComboPoints", L["EndCap"], 9, 1)
 end
 
 local function AfflictionConstructHealthBarPanel(parent)
@@ -1303,6 +1305,8 @@ local function DemonologyConstructSoulShardsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Warlock_Demonology_ComboPoints", "endCapComboPoints", L["EndCap"], 9, 2)
 end
 
 local function DemonologyConstructHealthBarPanel(parent)
@@ -1864,6 +1868,8 @@ local function DestructionConstructSoulShardsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Warlock_Destruction_ComboPoints", "endCapComboPoints", L["EndCap"], 9, 3)
 end
 
 local function DestructionConstructHealthBarPanel(parent)

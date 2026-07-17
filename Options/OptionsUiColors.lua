@@ -151,6 +151,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetPrimaryBackdropFrame())
 	end)
 
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.bar, namePrefix .. "_Bar", "endCapBar", L["EndCap"], classId, specId)
+
 	return yCoord
 end
 

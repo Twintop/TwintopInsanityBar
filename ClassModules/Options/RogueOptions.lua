@@ -1204,6 +1204,8 @@ local function AssassinationConstructComboPointsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Rogue_Assassination_ComboPoints", "endCapComboPoints", L["EndCap"], 4, 1)
 end
 
 local function AssassinationConstructHealthBarPanel(parent)
@@ -1816,6 +1818,8 @@ local function OutlawConstructComboPointsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Rogue_Outlaw_ComboPoints", "endCapComboPoints", L["EndCap"], 4, 2)
 end
 
 local function OutlawConstructHealthBarPanel(parent)
@@ -2426,6 +2430,8 @@ local function SubtletyConstructComboPointsBarPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Rogue_Subtlety_ComboPoints", "endCapComboPoints", L["EndCap"], 4, 3)
 end
 
 local function SubtletyConstructHealthBarPanel(parent)

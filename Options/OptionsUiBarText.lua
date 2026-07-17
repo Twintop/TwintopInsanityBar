@@ -287,7 +287,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	btc:SetHeight(120)
 
 	yCoord = yCoord - 105
-	local btoHeight = 550
+	local btoHeight = 620
 	local barTextTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, 5, 15, nil, btc, false, false)
 
 	-- Dynamically resize "Bar Text" column (index 4) to fill available width
@@ -886,6 +886,11 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		}
 	end
 
+	-- Castbar is an all-spec bar not covered by the per-class/spec chain above; add it as a bar text
+	-- anchor target for every spec (and the global bar text panel) here, just before Screen.
+	relativeToFrame[L["CastBar"]] = "CastBar"
+	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["CastBar"])
+
 	local containerAnchorOptions = TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
 	if #containerAnchorOptions > 0 then
 		for _, containerAnchor in ipairs(containerAnchorOptions) do
@@ -1269,6 +1274,27 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		RefreshBarTextEditorPreview(true)
 	end)
 
+	yCoord = yCoord - 75
+	local constrainTextWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_constrainTextWidth", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	constrainTextWidth:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-8)
+	getglobal(constrainTextWidth:GetName() .. 'Text'):SetText(L["ConstrainBarTextWidth"])
+	---@diagnostic disable-next-line: inject-field
+	constrainTextWidth.tooltip = L["ConstrainBarTextWidthTooltip"]
+	constrainTextWidth:SetScript("OnClick", function(self, ...)
+		workingBarText.constrainToParent = self:GetChecked()
+		UpdateBarTextEditorInheritedControlState()
+		RefreshBarTextEditorPreview(true)
+	end)
+
+	title = L["MaxBarTextWidthPercent"]
+	local maxWidthPercent = TRB.Functions.OptionsUi.Primitives:BuildSlider(barTextOptionsFrame, title, 1, 100, 100, 1, 0,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	maxWidthPercent:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		workingBarText.maxWidthPercent = value
+		RefreshBarTextEditorPreview(true)
+	end)
+
 	UpdateBarTextEditorInheritedControlState = function()
 		local hasWorkingBarText = workingBarText ~= nil
 		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(barTextFontFace, hasWorkingBarText and not workingBarText.useDefaultFontFace)
@@ -1281,6 +1307,8 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(barTextShadowColor, shadowControlsEnabled)
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(fontShadowXOffset, shadowControlsEnabled)
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(fontShadowYOffset, shadowControlsEnabled)
+
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(maxWidthPercent, hasWorkingBarText and (workingBarText.constrainToParent or false))
 	end
 
 	---Populates the bar text scrolling table with rows from the displayText.barText entries.
@@ -1356,6 +1384,8 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			name = L["NewBarTextEntry"],
 			text = "",
 			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "LEFT",
@@ -1440,6 +1470,9 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		barTextShadowColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(shadow.color or "FF000000", true))
 		fontShadowXOffset:SetValue(shadow.xOffset or 1)
 		fontShadowYOffset:SetValue(shadow.yOffset or -1)
+
+		constrainTextWidth:SetChecked(workingBarText.constrainToParent or false)
+		maxWidthPercent:SetValue(workingBarText.maxWidthPercent or 100)
 		UpdateBarTextEditorInheritedControlState()
 
 		barTextOptionsFrame:Show()

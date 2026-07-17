@@ -345,6 +345,9 @@ function TRB.Functions.Character:UpdateOvercapColor()
 	snapshotData.attributes.overcapColor = UnitPowerPercent("player", TRB.Data.resource, true, curve)
 end
 
+-- Incremented on PLAYER_DEAD; deferred buff re-arms compare against it to skip firing after a death.
+local deathCount = 0
+
 ---Handles some change with the character's status
 ---@param self any
 ---@param event string
@@ -457,6 +460,7 @@ local function CharacterChange(self, event, ...)
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
 	elseif event == "PLAYER_DEAD" then
+		deathCount = deathCount + 1
 		-- All buffs are lost on death. Reset any manually-tracked (isCustom) buff
 		-- snapshots so they don't show stale timers after the player dies.
 		local snapshotData = TRB.Data.snapshotData
@@ -484,6 +488,12 @@ end
 
 local characterChangeFrame = CreateFrame("Frame")
 characterChangeFrame:SetScript("OnEvent", CharacterChange)
+
+---Returns the session count of player deaths. Deferred buff re-arms capture this at schedule time to detect an intervening death.
+---@return integer
+function TRB.Functions.Character:GetDeathCount()
+	return deathCount
+end
 
 ---Registers all character-change events (power updates, health, stats, mounting, zone changes, etc.) on the characterChangeFrame.
 function TRB.Functions.Character:EnableCharacterChange()
@@ -719,6 +729,7 @@ local resourceTypeNames = {
 	WhirlwindCharges = TRB.Localization["ResourceWarriorWhirlwind"],
 	EbonMight = TRB.Localization["ResourceEvokerEbonMight"],
 	FireBlastCharges = TRB.Localization["MageFireBlastCharges"],
+	Castbar = TRB.Localization["ResourceCastbar"],
 }
 
 ---Reads a spec's bar-group configuration (GetSpecConfiguration) without requiring it to be
@@ -738,7 +749,18 @@ function TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	if classModule == nil or classModule.BarGroupsFactory == nil or classModule.BarGroupsFactory.GetSpecConfiguration == nil then
 		return nil
 	end
-	return classModule.BarGroupsFactory:GetSpecConfiguration(specId)
+	local config = classModule.BarGroupsFactory:GetSpecConfiguration(specId)
+	-- Castbar is an all-spec bar not declared per-spec; expose it so it is a valid anchor target and
+	-- bar-text container for every spec. Copy so we never mutate a class factory's returned table.
+	if type(config) == "table" and config.castbar == nil then
+		local merged = {}
+		for k, v in pairs(config) do
+			merged[k] = v
+		end
+		merged.castbar = { maxNodes = 1, isPrimary = false, resourceType = "Castbar" }
+		return merged
+	end
+	return config
 end
 
 ---Returns the localized display name for a resource-type token (as used in
@@ -961,35 +983,9 @@ function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 
 	snapshotData.attributes.haste = UnitSpellHaste("player")
 
-	-- Try to immediately read the new GCD duration. If we're mid-GCD, GetTotalDuration()
-	-- returns the real value and we can update right away. Otherwise we fall back to the
-	-- deferred path (actioned on next cast in SpellCastEvent).
-	local oldGcd = snapshotData.attributes.gcdDuration or 1.5
-	local immediateGcd
-	local durationObj = C_Spell.GetSpellCooldownDuration(61304)
-	if durationObj then
-		local totalDuration = durationObj:GetTotalDuration()
-		if not issecretvalue(totalDuration) and totalDuration > 0 then
-			immediateGcd = totalDuration
-		end
-	end
-
-	if immediateGcd and immediateGcd ~= oldGcd then
-		snapshotData.attributes.gcdDuration = immediateGcd
-		snapshotData:RecalculateHastedCooldowns(oldGcd, immediateGcd, GetTime())
-		snapshotData.attributes.pendingGcdRecalc = nil
-
-		local displayGcd = immediateGcd
-		if displayGcd > 1.5 then displayGcd = 1.5 elseif displayGcd < 0.75 then displayGcd = 0.75 end
-		snapshotData.formatted.gcd = string.format("%.2f", displayGcd)
-		snapshotData.formatted.gcdRaw = displayGcd
-	else
-		-- Flag deferred haste recalc — actioned on next GCD observation in SpellCastEvent.
-		snapshotData.attributes.pendingGcdRecalc = {
-			time = GetTime(),
-			oldGcd = oldGcd,
-		}
-	end
+	-- Try to immediately read the new GCD; if unreadable or unchanged, UpdateGCD queues a
+	-- deferred recalc actioned on the next cast event.
+	snapshotData:UpdateGCD(GetTime())
 
 	snapshotData.attributes.crit = GetCritChance()
 	snapshotData.attributes.mastery = GetMasteryEffect()
@@ -1025,7 +1021,7 @@ function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	formatted.versDef = roundTo(numLib, snapshotData.attributes.versatilityDefensive, precision)
 
 	-- GCD (always 2 decimal places, clamped 0.75 – 1.5)
-	-- Uses cached GCD duration from SpellCastEvent instead of haste math (haste is secret)
+	-- Uses cached GCD duration from SnapshotData:UpdateGCD instead of haste math (haste is secret)
 	local _gcd = snapshotData.attributes.gcdDuration or 1.5
 	if _gcd > 1.5 then _gcd = 1.5 elseif _gcd < 0.75 then _gcd = 0.75 end
 	formatted.gcd = string.format("%.2f", _gcd)
@@ -1091,6 +1087,9 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.snapshotData.attributes.isTracking = false
 	TRB.Functions.Character:ResetCaches()
 	TRB.Functions.BarVisibility:MarkDirty()
+	-- The single point where a spec's composed settings become active (login, spec switch, talent
+	-- change). Pass them directly: compositeKey isn't stamped yet on first login.
+	TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(cache.settings)
 end
 
 ---Clears all cached color data (border, bar, backdrop, health curve, absorb border curve) and resets the RGBA parse memoization.
@@ -1415,6 +1414,81 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.bars = spec.colors.bars
 	end
 
+	-- Castbar global sections: compose a merged castbar view when any castbar use-global flag is set.
+	-- Sub-tables (anchor, color entries, empowerStages) are shared by reference with their source so
+	-- live edits propagate; primitive fields (width, precisions, etc.) are value-copied, so option
+	-- handlers that edit them core-side re-run this fill for the active spec.
+	local anyCastbarGlobal = s.castbarDimensions or s.castbarColors or s.castbarOverlays or s.castbarEmpower or s.castbarText
+	if anyCastbarGlobal and core.bars and core.bars.castbar and spec.bars and spec.bars.castbar then
+		local coreBar = core.bars.castbar
+		local mergedBar = {}
+		for k, v in pairs(spec.bars.castbar) do
+			mergedBar[k] = v
+		end
+		if s.castbarDimensions then
+			mergedBar.width = coreBar.width
+			mergedBar.height = coreBar.height
+			mergedBar.border = coreBar.border
+			mergedBar.xPos = coreBar.xPos
+			mergedBar.yPos = coreBar.yPos
+			mergedBar.anchor = coreBar.anchor
+			mergedBar.fillDirection = coreBar.fillDirection
+		end
+		if s.castbarOverlays then
+			mergedBar.tickWidth = coreBar.tickWidth
+			mergedBar.tickLatencyWidth = coreBar.tickLatencyWidth
+		end
+		if s.castbarEmpower then
+			mergedBar.empowerSegmentedFill = coreBar.empowerSegmentedFill
+		end
+		if s.castbarText then
+			mergedBar.castTimePrecision = coreBar.castTimePrecision
+			mergedBar.durationPrecision = coreBar.durationPrecision
+			mergedBar.latencyPrecision = coreBar.latencyPrecision
+			mergedBar.disableBlizzardCastbar = coreBar.disableBlizzardCastbar
+			mergedBar.mergeTradeskill = coreBar.mergeTradeskill
+		end
+		-- Wrap bars in a shallow copy so spec.bars itself is never mutated
+		local mergedBars = {}
+		for k, v in pairs(spec.bars) do
+			mergedBars[k] = v
+		end
+		mergedBars.castbar = mergedBar
+		specCache.settings.bars = mergedBars
+
+		local coreColors = core.colors and core.colors.bars and core.colors.bars.castbar
+		local specColors = spec.colors and spec.colors.bars and spec.colors.bars.castbar
+		if coreColors and specColors then
+			local mergedColors = {}
+			for k, v in pairs(specColors) do
+				mergedColors[k] = v
+			end
+			if s.castbarColors then
+				mergedColors.bar = coreColors.bar
+				mergedColors.channel = coreColors.channel
+				mergedColors.uninterruptible = coreColors.uninterruptible
+				mergedColors.uninterruptibleBorder = coreColors.uninterruptibleBorder
+				mergedColors.border = coreColors.border
+				mergedColors.background = coreColors.background
+				mergedColors.endCap = coreColors.endCap
+			end
+			if s.castbarOverlays then
+				mergedColors.latency = coreColors.latency
+				mergedColors.pushback = coreColors.pushback
+				mergedColors.tick = coreColors.tick
+			end
+			if s.castbarEmpower then
+				mergedColors.empowerStages = coreColors.empowerStages
+			end
+			local mergedColorBars = {}
+			for k, v in pairs(spec.colors.bars) do
+				mergedColorBars[k] = v
+			end
+			mergedColorBars.castbar = mergedColors
+			specCache.settings.colors.bars = mergedColorBars
+		end
+	end
+
 	if s.displayBar then
 		-- Create a deep copy to avoid modifying the global displayBar object
 		specCache.settings.displayBar = {}
@@ -1462,6 +1536,11 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	specCache.settings.maxResource = spec.maxResource
 	specCache.settings.barVisibilityThresholds = spec.barVisibilityThresholds
 
+	-- Blizzard cast bar handling depends on the composed active-spec settings, which only become
+	-- valid/refreshed here — the initial login fill lands after PLAYER_ENTERING_WORLD fires.
+	if TRB.Functions.Class:GetActiveDisplayCompositeKey() == compositeKey then
+		TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
+	end
 end
 
 --- Mapping from lowercase className to PascalCase options module key
@@ -1533,6 +1612,15 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 			-- A brand new spec stub is just {} with no displayText at all.
 			local savedSpec = settings[className][specName]
 			local isNewSpec = not savedSpec or type(savedSpec) ~= "table" or savedSpec.displayText == nil
+
+			-- Castbar is an all-spec bar not declared in any class's LoadDefaultSettings; inject its
+			-- defaults into every spec's default table so the merge below carries them into saved vars.
+			-- className/specName are the lowercase settings-tree keys, used to pick that spec's built-in
+			-- channel tick profiles (most specs have none).
+			TRB.Functions.Settings:InjectCastbarDefaults(specDefaults, className, specName)
+
+			-- End caps are a universal per-bar setting; inject their defaults the same way
+			TRB.Functions.Settings:InjectEndCapDefaults(specDefaults)
 
 			settings[className][specName] = TRB.Functions.Table:Merge(specDefaults, savedSpec or {})
 

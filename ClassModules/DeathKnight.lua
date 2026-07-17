@@ -679,30 +679,7 @@ local function GetDeathKnightIndicatorState(specSettings)
 		runeRegenOvercap = TRB.Data.character.inCombat and runesOnCooldown < 3,
 	}
 
-	return indicatorColors, nodeOrder, gradientOrder, conditionMap
-end
-
-local function ApplyFlatIndicatorColors(barColorMap, indicatorColors, nodeOrder, conditionMap)
-	if not (indicatorColors and nodeOrder and conditionMap) then
-		return
-	end
-
-	for i = #nodeOrder, 1, -1 do
-		local key = nodeOrder[i]
-		local indicator = indicatorColors[key]
-		if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-			for barKey, elements in pairs(indicator.targets) do
-				local targetColors = barColorMap[barKey]
-				if targetColors and elements then
-					for elementKey, isTargeted in pairs(elements) do
-						if isTargeted then
-							targetColors[elementKey] = (elementKey == "bar") and indicator or indicator.color
-						end
-					end
-				end
-			end
-		end
-	end
+	return indicatorColors, nodeOrder, gradientOrder, conditionMap, sharedColors
 end
 
 local function GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
@@ -741,21 +718,21 @@ local function BuildGradientCurves(specSettings, barKey, currentColors, gradient
 end
 
 local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
-	local indicatorColors, nodeOrder, gradientOrder, conditionMap = GetDeathKnightIndicatorState(specSettings)
+	local indicatorColors, _, gradientOrder, conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
 	local runicPowerBarColors = {
 		bar = specSettings.colors.bar.base,
 		border = specSettings.colors.bar.border.color,
 		background = specSettings.colors.bar.background.color,
 	}
 
-	ApplyFlatIndicatorColors({ runicPowerBar = runicPowerBarColors }, indicatorColors, nodeOrder, conditionMap)
+	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, { runicPowerBar = runicPowerBarColors })
 
 	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
 	local overcapCurves = BuildGradientCurves(specSettings, "runicPowerBar", runicPowerBarColors, gradientIndicator)
 
 	if overcapCurves.border then
 		local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-		primaryNode:SetBorderColorCurve(borderColorResult)
+		primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 	else
 		primaryNode:SetBorderColor(runicPowerBarColors.border)
 	end
@@ -788,7 +765,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 
 	local runes = TRB.Data.character.runes
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-	local indicatorColors, nodeOrder, gradientOrder, conditionMap = GetDeathKnightIndicatorState(specSettings)
+	local indicatorColors, _, gradientOrder, conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
 	local runeRegenIndicator = indicatorColors and indicatorColors.runeRegenOvercap
 	local runeTargets = runeRegenIndicator and runeRegenIndicator.enabled and conditionMap.runeRegenOvercap
 		and runeRegenIndicator.targets and runeRegenIndicator.targets.runesBar or nil
@@ -798,7 +775,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 		background = cpBackgroundColor,
 	}
 
-	ApplyFlatIndicatorColors({ runesBar = runeBarColors }, indicatorColors, nodeOrder, conditionMap)
+	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, { runesBar = runeBarColors })
 	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
 	local runeGradientCurves = BuildGradientCurves(specSettings, "runesBar", runeBarColors, gradientIndicator)
 	local runeGradientResults = {}
@@ -830,7 +807,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 			if runeNode then
 				Bar:SetBarNodeValue(specCacheSettings, "rune" .. x, runeNode, runeValue, 1)
 				if runeGradientResults.border then
-					runeNode:SetBorderColorCurve(runeGradientResults.border)
+					runeNode:SetBorderColorCurve(runeGradientResults.border, Color:EvaluateEndCapCurve(runeNode, runeGradientCurves.border))
 				else
 					runeNode:SetBorderColor(runeBorderColor)
 				end
@@ -846,6 +823,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 				else
 					runeNode:SetBackgroundColorFromString(runeBackgroundColor)
 				end
+				Bar:ApplyEndCapIndicator(runeNode, "runesBar")
 			end
 		end
 	end
@@ -1040,6 +1018,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "runicPowerBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0
@@ -1117,15 +1096,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 
 			if specSettings.displayBar.boneShield and not specSettings.displayBar.boneShield.neverShow then
@@ -1150,6 +1121,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "runicPowerBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0
@@ -1227,15 +1199,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1255,6 +1219,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "runicPowerBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0
@@ -1332,15 +1297,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)

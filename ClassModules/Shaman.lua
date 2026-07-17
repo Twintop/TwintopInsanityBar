@@ -718,10 +718,52 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Elemental()
 
 		if snapshotData.attributes.isTracking then
+			local affectingCombat = TRB.Data.character.inCombat
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barColor = specSettings.colors.bar.base
+			local barBackgroundColor = specSettings.colors.bar.background.color
+
+			-- Determine usability for Earth Shock/Elemental Blast and Earthquake independently
+			local earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and spells.earthShock:IsUsable())
+				or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
+			local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
+				or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local gradientOrder = sharedColors and sharedColors.gradientOrder
+			local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
+			local ascendanceEndMet = false
+
+			if ascendanceActive then
+				local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
+				local timeThreshold = 0
+				if specSettings.endOf.ascendance.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+				elseif specSettings.endOf.ascendance.mode == "time" then
+					timeThreshold = specSettings.endOf.ascendance.timeMax
+				end
+				ascendanceEndMet = timeLeft <= timeThreshold
+			end
+
+			local conditionMap = {
+				ascendanceEnd = ascendanceActive and ascendanceEndMet,
+				earthShock = earthShockUsable,
+				earthquake = earthquakeUsable,
+				ascendance = ascendanceActive,
+				borderOvercap = affectingCombat,
+			}
+			local maelstromBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local barColorMap = { maelstromBar = maelstromBarColors }
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -729,11 +771,8 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barBorderColor = specSettings.colors.bar.border.color
-				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-
-				local barColor = specSettings.colors.bar.base
+				Bar:ApplyEndCapIndicator(primaryNode, "maelstromBar")
 
 				-- Get resourceFrame and thresholds from the BarNode
 				local resourceFrame = primaryNode:GetFrame()
@@ -818,60 +857,6 @@ local function UpdateResourceBar()
 					end
 				end
 
-				-- Determine usability for Earth Shock/Elemental Blast and Earthquake independently
-				local earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and spells.earthShock:IsUsable())
-					or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
-				local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
-					or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
-				local ascendanceEndMet = false
-
-				if ascendanceActive then
-					local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-					local timeThreshold = 0
-					if specSettings.endOf.ascendance.mode == "gcd" then
-						local gcd = Character:GetCurrentGCDTime()
-						timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
-					elseif specSettings.endOf.ascendance.mode == "time" then
-						timeThreshold = specSettings.endOf.ascendance.timeMax
-					end
-					ascendanceEndMet = timeLeft <= timeThreshold
-				end
-
-				local conditionMap = {
-					ascendanceEnd = ascendanceActive and ascendanceEndMet,
-					earthShock = earthShockUsable,
-					earthquake = earthquakeUsable,
-					ascendance = ascendanceActive,
-					borderOvercap = affectingCombat,
-				}
-				local maelstromBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local barColorMap = { maelstromBar = maelstromBarColors }
-
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-							for barKey, elements in pairs(indicator.targets) do
-								local targetColors = barColorMap[barKey]
-								if targetColors and elements then
-									for elemKey, isTargeted in pairs(elements) do
-										if isTargeted then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -923,7 +908,7 @@ local function UpdateResourceBar()
 
 				if overcapCurves.border then
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
-					primaryNode:SetBorderColorCurve(borderColorResult)
+					primaryNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(primaryNode, overcapCurves.border))
 				else
 					primaryNode:SetBorderColor(barBorderColor)
 				end
@@ -946,15 +931,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 
 			-- Mana bar update (Elemental only)
@@ -972,7 +949,6 @@ local function UpdateResourceBar()
 						or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
 					local sharedColors = specSettings.colors.shared
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
 					local gradientOrder = sharedColors and sharedColors.gradientOrder
 					local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
 					local ascendanceEndMet = false
@@ -1003,24 +979,7 @@ local function UpdateResourceBar()
 					}
 					local barColorMap = { manaBar = manaBarColors }
 
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-								for barKey, elements in pairs(indicator.targets) do
-									local targetColors = barColorMap[barKey]
-									if targetColors and elements then
-										for elemKey, isTargeted in pairs(elements) do
-											if isTargeted then
-												targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-											end
-										end
-									end
-								end
-							end
-						end
-					end
+					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 					local overcapIndicator = nil
 					if gradientOrder and indicatorColors then
@@ -1036,6 +995,7 @@ local function UpdateResourceBar()
 
 					manaNode:SetMinMax(0, maxMana)
 					manaNode:SetValue(currentMana)
+					Bar:ApplyEndCapIndicator(manaNode, "manaBar")
 
 					local manaOvercapCurves = {}
 					if overcapIndicator and overcapIndicator.targets then
@@ -1055,7 +1015,7 @@ local function UpdateResourceBar()
 
 					if manaOvercapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, manaOvercapCurves.border)
-						manaNode:SetBorderColorCurve(borderColorResult)
+						manaNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(manaNode, manaOvercapCurves.border))
 					else
 						manaNode:SetBorderColor(manaBarColors.border)
 					end
@@ -1084,9 +1044,39 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Enhancement()
 
 		if snapshotData.attributes.isTracking then
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
+			local ascendanceEndMet = false
+
+			if ascendanceActive then
+				local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
+				local timeThreshold = 0
+				if specSettings.endOf.ascendance.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+				elseif specSettings.endOf.ascendance.mode == "time" then
+					timeThreshold = specSettings.endOf.ascendance.timeMax
+				end
+				ascendanceEndMet = timeLeft <= timeThreshold
+			end
+
+			local conditionMap = {
+				ascendanceEnd = ascendanceActive and ascendanceEndMet,
+				ascendance = ascendanceActive,
+			}
+			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local barColorMap = { manaBar = manaBarColors }
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1094,58 +1084,12 @@ local function UpdateResourceBar()
 					maxPrimaryBarResourceUnnormalized = math.min(specCacheSettings.maxResource.value, maxPrimaryBarResourceUnnormalized)
 				end
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
-				local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
-				local ascendanceEndMet = false
-
-				if ascendanceActive then
-					local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-					local timeThreshold = 0
-					if specSettings.endOf.ascendance.mode == "gcd" then
-						local gcd = Character:GetCurrentGCDTime()
-						timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
-					elseif specSettings.endOf.ascendance.mode == "time" then
-						timeThreshold = specSettings.endOf.ascendance.timeMax
-					end
-					ascendanceEndMet = timeLeft <= timeThreshold
-				end
-
-				local conditionMap = {
-					ascendanceEnd = ascendanceActive and ascendanceEndMet,
-					ascendance = ascendanceActive,
-				}
-				local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local barColorMap = { manaBar = manaBarColors }
-
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-							for barKey, elements in pairs(indicator.targets) do
-								local targetColors = barColorMap[barKey]
-								if targetColors and elements then
-									for elemKey, isTargeted in pairs(elements) do
-										if isTargeted then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -1269,6 +1213,7 @@ local function UpdateResourceBar()
 								stackNode:SetBorderColor(cpBorderColor)
 								TRB.Functions.Color:ApplyFillColor(stackNode, cpColor)
 								stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+								Bar:ApplyEndCapIndicator(stackNode, "maelstromWeaponBar")
 							end
 						end
 					else
@@ -1320,6 +1265,7 @@ local function UpdateResourceBar()
 								stackNode:SetBorderColor(cpBorderColor)
 								TRB.Functions.Color:ApplyFillColor(stackNode, cpColor)
 								stackNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+								Bar:ApplyEndCapIndicator(stackNode, "maelstromWeaponBar")
 							end
 						end
 					end
@@ -1328,15 +1274,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 
@@ -1385,60 +1323,45 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Restoration()
 
 		if snapshotData.attributes.isTracking then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barColor = specSettings.colors.bar.base
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+			local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
+			local ascendanceEndMet = false
+
+			if ascendanceActive then
+				local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
+				local timeThreshold = 0
+				if specSettings.endOf.ascendance.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
+				elseif specSettings.endOf.ascendance.mode == "time" then
+					timeThreshold = specSettings.endOf.ascendance.timeMax
+				end
+				ascendanceEndMet = timeLeft <= timeThreshold
+			end
+
+			local conditionMap = {
+				ascendanceEnd = ascendanceActive and ascendanceEndMet,
+				ascendance = ascendanceActive,
+			}
+			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local barColorMap = { manaBar = manaBarColors }
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 				local currentResource = snapshotData.attributes.resourceModified
-				local barBorderColor = specSettings.colors.bar.border.color
-				
+
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-
-				local barColor = specSettings.colors.bar.base
-
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
-				local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
-				local ascendanceEndMet = false
-
-				if ascendanceActive then
-					local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-					local timeThreshold = 0
-					if specSettings.endOf.ascendance.mode == "gcd" then
-						local gcd = Character:GetCurrentGCDTime()
-						timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
-					elseif specSettings.endOf.ascendance.mode == "time" then
-						timeThreshold = specSettings.endOf.ascendance.timeMax
-					end
-					ascendanceEndMet = timeLeft <= timeThreshold
-				end
-
-				local conditionMap = {
-					ascendanceEnd = ascendanceActive and ascendanceEndMet,
-					ascendance = ascendanceActive,
-				}
-				local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local barColorMap = { manaBar = manaBarColors }
-
-				if nodeOrder and indicatorColors then
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
-							for barKey, elements in pairs(indicator.targets) do
-								local targetColors = barColorMap[barKey]
-								if targetColors and elements then
-									for elemKey, isTargeted in pairs(elements) do
-										if isTargeted then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
-										end
-									end
-								end
-							end
-						end
-					end
-				end
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
 
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
@@ -1448,15 +1371,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
-				local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
-				if healthNode then
-					healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-					healthNode:SetValue(snapshotData.attributes.health or 0)
-					healthNode:SetColorCurve(snapshotData.attributes.healthColor)
-					healthNode:SetBorderColor(specCacheSettings.colors.healthBar.border.color)
-					healthNode:SetBackgroundColorFromString(specCacheSettings.colors.healthBar.background.color)
-				end
-				Bar:UpdateHealthBarOverlays(healthNode, snapshotData, specCacheSettings)
+				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
