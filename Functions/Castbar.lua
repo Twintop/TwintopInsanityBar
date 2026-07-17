@@ -90,16 +90,27 @@ function TRB.Functions.Castbar:GetVisibilitySettings(settings)
 	return settings and settings.displayBar and settings.displayBar.castbar
 end
 
----Whether the castbar is enabled at all: "Never Show" fully disables castbar processing (the model stays
----idle and no events are tracked), exactly like the old opt-in checkbox being unchecked.
+---Whether the castbar is enabled at all: "Never Show" -- or no show options checked at all (not Always
+---Show, no cast-type conditions) -- fully disables castbar processing: the model stays idle, no events are
+---tracked, and the Blizzard cast bar is not suppressed. Exactly like the old opt-in checkbox being unchecked.
 ---@param visibility table?
 ---@return boolean
 function TRB.Functions.Castbar:IsEnabled(visibility)
-	return visibility ~= nil and visibility.neverShow ~= true
+	if visibility == nil or visibility.neverShow == true then
+		return false
+	end
+	if visibility.alwaysShow == true then
+		return true
+	end
+	local conditions = visibility.conditions
+	if conditions == nil then
+		return true
+	end
+	return conditions.casting == true or conditions.channeling == true or conditions.empowered == true
 end
 
 ---Hides or restores the default Blizzard cast bar per the active spec's settings: hidden while
----`bars.castbar.disableBlizzardCastbar` is set and the addon castbar is enabled (not Never Show).
+---`bars.castbar.disableBlizzardCastbar` is set and the addon castbar is enabled (see IsEnabled).
 ---Checked on load/spec/talent changes, option toggles, and the Blizzard bar's own OnShow.
 ---@param settings table? # Composed spec settings to evaluate; defaults to the active display settings (pass explicitly during spec activation, before the composite key is stamped)
 function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
@@ -170,10 +181,11 @@ function TRB.Functions.Castbar:IsForceHidden(visibility)
 end
 
 ---Container alpha to rest at while no cast is active: activeAlpha when Always Show, else inactiveAlpha.
+---0 whenever the castbar is disabled (Never Show / nothing checked).
 ---@param visibility table?
 ---@return number # 0..1
 function TRB.Functions.Castbar:GetIdleAlpha(visibility)
-	if visibility == nil or visibility.neverShow == true then
+	if visibility == nil or not self:IsEnabled(visibility) then
 		return 0
 	end
 	if visibility.alwaysShow then
@@ -1301,6 +1313,10 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 		end
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP"
 		or event == "UNIT_SPELLCAST_EMPOWER_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+		-- Nothing tracked for this cast (type disallowed at start): there is no render to fade out.
+		if not model:IsActive() then
+			return
+		end
 		-- One craft of a bulk-crafting merge finished with more queued: keep the merged bar running
 		-- through the inter-cast gap (an INTERRUPTED cancels the whole merge like any other cast).
 		if event == "UNIT_SPELLCAST_STOP" and model.tradeskill and model:TradeskillCastStopped() then

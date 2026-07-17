@@ -12,6 +12,20 @@ local content = [====[
 
 ---
 
+# 12.0.7.7-release (2026-07-17)
+## General
+### Cast Bar
+
+- [#791](#791) Fix stale bar text, channel tick markers, and latency/pushback overlays from the last shown cast appearing during that flash until a `/reload`.
+- Fix the Cast Bar briefly showing and fading out after every finished cast when it was configured not to show (e.g. all Show Bar When conditions unchecked).
+- When no Show Bar When options are checked, the Cast Bar is now fully disabled as if Never Show were checked: no cast tracking, no idle/inactive alpha display, and Disable Blizzard Cast Bar is ignored.
+
+### Localization
+
+- [#792 - @MOSS099](#792) Updated translations for Simplified Chinese (zhCN).
+
+---
+
 # 12.0.7.6-release (2026-07-16)
 ## General
 
