@@ -7812,6 +7812,47 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
+	-- Castbar tick profiles are static code data now (see DefaultGlobalCastbarTickProfiles); earlier
+	-- castbar builds seeded per-spec defaults into settings. Nothing reads the persisted copies anymore,
+	-- and their sparse spellId keys break JSON export, so wipe them from live pieces and stored profiles.
+	---------------------------------------------------------------------
+	-- BEGIN: REMOVE THIS CLEANUP BLOCK IF/ONCE WE ADD A REAL TICK EDITOR
+	local function ClearCastbarTickProfiles(piece)
+		if type(piece) == "table" and piece.bars ~= nil and type(piece.bars.castbar) == "table" then
+			piece.bars.castbar.tickProfiles = {}
+		end
+	end
+
+	if TwintopInsanityBarSettings ~= nil then
+		ClearCastbarTickProfiles(TwintopInsanityBarSettings.core)
+		for _, className in ipairs(classes) do
+			local classSettings = TwintopInsanityBarSettings[className]
+			if type(classSettings) == "table" then
+				for _, specSettings in pairs(classSettings) do
+					ClearCastbarTickProfiles(specSettings)
+				end
+			end
+		end
+
+		local profileList = TwintopInsanityBarSettings.profiles and TwintopInsanityBarSettings.profiles.list
+		if type(profileList) == "table" then
+			for _, profileBody in pairs(profileList) do
+				if type(profileBody) == "table" then
+					ClearCastbarTickProfiles(profileBody.core)
+					for pieceName, classPiece in pairs(profileBody) do
+						if pieceName ~= "core" and type(classPiece) == "table" then
+							for _, specPiece in pairs(classPiece) do
+								ClearCastbarTickProfiles(specPiece)
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	-- END:   REMOVE THIS CLEANUP BLOCK IF/ONCE WE ADD A REAL TICK EDITOR
+	---------------------------------------------------------------------
+
 	-- Backfill color2 + gradientDirection on fill color entries for bar gradient support
 	local comboPointNonFillKeys = {
 		border = true, background = true, sameColor = true, sortRunes = true,
