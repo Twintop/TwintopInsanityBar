@@ -34,6 +34,9 @@ local content = [====[
 ### Elemental
 
 - Power of the Maelstrom no longer grants bonus Maelstrom from Lightning Bolt and Chain Lightning.
+
+---
+
 # 12.0.7.7-release (2026-07-17)
 ## General
 ### Cast Bar
