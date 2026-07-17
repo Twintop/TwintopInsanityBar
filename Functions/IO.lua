@@ -345,11 +345,70 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 	return configuration
 end
 
+-- JSON can only represent a table as an array (contiguous 1-based integer keys) or an object (string
+-- keys). Settings tables keyed by spellId (e.g. castbar tickProfiles) are neither, so
+-- C_EncodingUtil.SerializeJSON rejects them. MarshalTableKeys deep-copies a table, rewriting numeric
+-- keys of non-array tables to marker-prefixed strings; UnmarshalTableKeys reverses this after
+-- deserialization. Older export strings never contain the marker, so unmarshalling them is a no-op.
+local NUMERIC_KEY_MARKER = "$TRBnum$"
+
+---@param tbl table
+---@return boolean # True if the table is empty or a contiguous 1-based integer-keyed array
+local function IsContiguousArray(tbl)
+	local count, max = 0, 0
+	for key in pairs(tbl) do
+		if type(key) ~= "number" or key % 1 ~= 0 or key < 1 then
+			return false
+		end
+		count = count + 1
+		if key > max then
+			max = key
+		end
+	end
+	return count == max
+end
+
+---@param value any
+---@return any # A deep copy with numeric keys of non-array tables rewritten to marker-prefixed strings
+local function MarshalTableKeys(value)
+	if type(value) ~= "table" then
+		return value
+	end
+
+	local isArray = IsContiguousArray(value)
+	local result = {}
+	for key, entry in pairs(value) do
+		if not isArray and type(key) == "number" then
+			key = NUMERIC_KEY_MARKER .. tostring(key)
+		end
+		result[key] = MarshalTableKeys(entry)
+	end
+	return result
+end
+
+---@param value any
+---@return any # A deep copy with marker-prefixed string keys restored to numbers
+local function UnmarshalTableKeys(value)
+	if type(value) ~= "table" then
+		return value
+	end
+
+	local markerLength = string.len(NUMERIC_KEY_MARKER)
+	local result = {}
+	for key, entry in pairs(value) do
+		if type(key) == "string" and string.sub(key, 1, markerLength) == NUMERIC_KEY_MARKER then
+			key = tonumber(string.sub(key, markerLength + 1)) or key
+		end
+		result[key] = UnmarshalTableKeys(entry)
+	end
+	return result
+end
+
 ---Serializes a configuration table to JSON, compresses it with Deflate, Base64-encodes it, and prepends the v2 export string prefix.
 ---@param configuration table # The configuration table to serialize and encode for export
 ---@return string # The prefixed Base64-encoded compressed export string
 local function Export(configuration)
-	local encoded = C_EncodingUtil.SerializeJSON(configuration)
+	local encoded = C_EncodingUtil.SerializeJSON(MarshalTableKeys(configuration))
 	local compressed = C_EncodingUtil.CompressString(encoded, Enum.CompressionMethod.Deflate)
 	local base64 = C_EncodingUtil.EncodeBase64(compressed)
 
@@ -394,6 +453,8 @@ local function HandleImport(input)
 	if not result or type(configuration) ~= "table" then
 		return -3
 	end
+
+	configuration = UnmarshalTableKeys(configuration)
 
 	if not (configuration.core ~= nil or
 		(configuration.warrior ~= nil and
@@ -666,7 +727,7 @@ function TRB.Functions.IO:DecodeExportString(input)
 		return false, nil, -3
 	end
 
-	return true, configuration, nil
+	return true, UnmarshalTableKeys(configuration), nil
 end
 
 ---Builds the export configuration table for a single-spec profile export.
