@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.7.8-release (2026-07-18)
+## Monk
+### Brewmaster
+
+- Add Bar End Cap support to the Stagger bar, including as a Color Indicator target.
+
+---
+
 # 12.0.7.7-release (2026-07-17)
 ## General
 ### Cast Bar
