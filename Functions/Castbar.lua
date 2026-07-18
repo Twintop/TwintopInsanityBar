@@ -3,6 +3,12 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Castbar = {}
 
+---Returns the active spec's composed settings (castbar settings never follow Druid form-mapping).
+local function GetActiveSpecSettings()
+	local cache = TRB.Functions.Character:GetActiveSpecCache()
+	return cache and cache.settings or nil
+end
+
 --[[
 	Functions.Castbar: the render + event bridge for the castbar bar type.
 	Drives TRB.Data.castbar (Classes/Castbar.lua) from UNIT_SPELLCAST_* events (fed by
@@ -71,7 +77,7 @@ end
 ---Returns the active spec's settings, castbar bar settings, and castbar colors (or nils).
 ---@return table? settings, table? barSettings, table? colors
 function TRB.Functions.Castbar:GetActiveSettings()
-	local settings = TRB.Functions.Class:GetActiveDisplaySettings()
+	local settings = GetActiveSpecSettings()
 	if settings == nil then
 		return nil, nil, nil
 	end
@@ -85,7 +91,7 @@ end
 ---@return table?
 function TRB.Functions.Castbar:GetVisibilitySettings(settings)
 	if settings == nil then
-		settings = TRB.Functions.Class:GetActiveDisplaySettings()
+		settings = GetActiveSpecSettings()
 	end
 	return settings and settings.displayBar and settings.displayBar.castbar
 end
@@ -112,13 +118,13 @@ end
 ---Hides or restores the default Blizzard cast bar per the active spec's settings: hidden while
 ---`bars.castbar.disableBlizzardCastbar` is set and the addon castbar is enabled (see IsEnabled).
 ---Checked on load/spec/talent changes, option toggles, and the Blizzard bar's own OnShow.
----@param settings table? # Composed spec settings to evaluate; defaults to the active display settings (pass explicitly during spec activation, before the composite key is stamped)
+---@param settings table? # Composed spec settings to evaluate; defaults to the active spec settings (pass explicitly during spec activation, before the composite key is stamped)
 function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
 	if PlayerCastingBarFrame == nil then
 		return
 	end
 	if settings == nil then
-		settings = TRB.Functions.Class:GetActiveDisplaySettings()
+		settings = GetActiveSpecSettings()
 	end
 	local barSettings = settings and settings.bars and settings.bars.castbar
 	local visibility = self:GetVisibilitySettings(settings)
@@ -146,6 +152,23 @@ function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
 	else
 		PlayerCastingBarFrame:SetParent(blizzardCastbarOriginalParent or UIParent)
 	end
+end
+
+---Applies an enabled-state change from recomposed settings: tears down any active render when the
+---castbar is now disabled, then re-evaluates Blizzard cast bar suppression. Idempotent.
+---@param settings table? # Composed spec settings; defaults to the active spec's
+function TRB.Functions.Castbar:SyncEnabledState(settings)
+	if settings == nil then
+		settings = GetActiveSpecSettings()
+	end
+	if not self:IsEnabled(self:GetVisibilitySettings(settings)) then
+		local model = TRB.Data.castbar
+		if model ~= nil and model:IsActive() then
+			model:Stop()
+		end
+		self:EndRender()
+	end
+	self:UpdateBlizzardCastbarVisibility(settings)
 end
 
 ---Whether the given cast state ("cast"/"channel"/"empower") may show per the visibility conditions.
@@ -1051,7 +1074,7 @@ end
 ---inactive alpha) when done. Falls back to an instant EndRender when no fade is configured and nothing
 ---rests visible.
 function TRB.Functions.Castbar:BeginFadeOut()
-	local settings = TRB.Functions.Class:GetActiveDisplaySettings()
+	local settings = GetActiveSpecSettings()
 	local visibility = self:GetVisibilitySettings(settings)
 	local group = self:GetGroup()
 	local delay = (visibility and visibility.fadeDelay) or 0

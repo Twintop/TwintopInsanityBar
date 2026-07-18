@@ -13,6 +13,12 @@ local content = [====[
 ---
 
 # 12.0.7.8-release (2026-07-18)
+## General
+### Cast Bar
+
+- Fix the Cast Bar on Druids resolving settings from the shapeshift form's spec (e.g. Restoration's while in caster form) instead of the active specialization. Visibility, dimensions, colors, and Disable Blizzard Cast Bar now always follow the active spec.
+- Fix the Blizzard cast bar reappearing, both cast bars showing, or no cast bar showing after spec changes or form shifts on Druids when Cast Bar settings differed between specs.
+
 ## Monk
 ### Brewmaster
 

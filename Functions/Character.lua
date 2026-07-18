@@ -1089,7 +1089,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Functions.BarVisibility:MarkDirty()
 	-- The single point where a spec's composed settings become active (login, spec switch, talent
 	-- change). Pass them directly: compositeKey isn't stamped yet on first login.
-	TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(cache.settings)
+	TRB.Functions.Castbar:SyncEnabledState(cache.settings)
 end
 
 ---Clears all cached color data (border, bar, backdrop, health curve, absorb border curve) and resets the RGBA parse memoization.
@@ -1536,10 +1536,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	specCache.settings.maxResource = spec.maxResource
 	specCache.settings.barVisibilityThresholds = spec.barVisibilityThresholds
 
-	-- Blizzard cast bar handling depends on the composed active-spec settings, which only become
-	-- valid/refreshed here — the initial login fill lands after PLAYER_ENTERING_WORLD fires.
-	if TRB.Functions.Class:GetActiveDisplayCompositeKey() == compositeKey then
-		TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
+	-- Castbar enabled-state + Blizzard cast bar suppression follow the active spec's recomposed
+	-- settings, which only become valid/refreshed here (initial login fill lands after PLAYER_ENTERING_WORLD).
+	if TRB.Data.character.compositeKey == compositeKey then
+		TRB.Functions.Castbar:SyncEnabledState()
 	end
 end
 

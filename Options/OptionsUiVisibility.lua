@@ -523,8 +523,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				TRB.Functions.Bar:HideResourceBar()
 			end
 		end
-		-- Never Show toggles change whether the Blizzard cast bar should be detached.
-		TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
+		-- Never Show toggles change castbar enablement + whether the Blizzard cast bar is detached.
+		TRB.Functions.Castbar:SyncEnabledState()
 	end
 
 	---Refreshes the spec/global cache, reapplies bar appearance, and re-evaluates visibility for changes affecting custom bars.
