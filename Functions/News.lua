@@ -16,10 +16,10 @@ local content = [====[
 ## General
 ### Cast Bar
 
-- Fix the Cast Bar on Druids applying settings inconsistently across shapeshift forms and specialization changes. It now always follows the form's spec settings (Cat Form: Feral, Bear Form: Guardian, Moonkin Form: Balance for Balance Druids, everything else: Restoration), re-evaluated on every form or spec change. Disable the Switch bars based on shapeshift form option on a spec to always use that spec's own settings instead.
-- Fix the Cast Bar collapsing to a sliver with its bar text bunched together after setting Shown to Never on one spec while a different spec's settings govern the current form.
-- Fix the Blizzard cast bar sometimes reappearing, both cast bars showing, or no cast bar showing after spec or form changes on Druids when Cast Bar settings differed between specs.
-- Disable Blizzard Cast Bar now leaves the Blizzard cast bar alone when another cast bar addon is already managing it.
+- Fix Cast Bar settings applying inconsistently on Druids across shapeshift forms and spec changes. The Cast Bar now follows the form's spec settings. Disable Switch bars based on shapeshift form on a spec to always use its own settings.
+- Fix the Cast Bar collapsing to a sliver with bunched bar text after setting Shown to Never on a spec other than the form's governing spec.
+- Fix the Blizzard cast bar reappearing, doubling up, or vanishing entirely after spec or form changes when Cast Bar settings differed between specs.
+- Disable Blizzard Cast Bar now leaves the Blizzard cast bar alone when another addon is already managing it.
 
 ## Monk
 ### Brewmaster
