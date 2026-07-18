@@ -652,6 +652,15 @@ end
 -- Initialize parallel storage for new bar system
 TRB.Frames.barGroups = TRB.Frames.barGroups or {}
 
+---Castbar is an all-spec bar not created by any class's CreateForSpec, so it is created lazily at the
+---layout entry points; every path that lays out bars guarantees the group exists first.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsureCastbarBarGroup(barGroups)
+	if barGroups.castbar == nil then
+		barGroups.castbar = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Castbar", 1, false)
+	end
+end
+
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
@@ -691,12 +700,8 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 		return
 	end
 
-	-- Castbar is an all-spec bar not created by any class's CreateForSpec, so lazily create its BarGroup
-	-- here (the universal post-CreateForSpec choke point). ApplyCustomBarGroups* then handle it
-	-- generically like any other registered custom bar.
-	if barGroups.castbar == nil then
-		barGroups.castbar = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Castbar", 1, false)
-	end
+	-- ApplyCustomBarGroups* handle the castbar generically like any other registered custom bar.
+	EnsureCastbarBarGroup(barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
@@ -741,6 +746,10 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	if not TRB.Data.specSupported then
 		return
 	end
+
+	-- Some setup paths (EventRegistration re-enable, load-screen races) lay out without ever passing
+	-- through ConstructBarGroups; guarantee the castbar group exists before the forest is built.
+	EnsureCastbarBarGroup(barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels

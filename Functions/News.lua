@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.7.9-release (2026-07-19)
+## General
+### Cast Bar
+
+- Fix the Cast Bar sometimes not showing after a loading screen.
+
+---
+
 # 12.0.7.8-release (2026-07-18)
 ## General
 ### Cast Bar
