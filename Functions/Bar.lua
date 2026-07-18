@@ -2750,6 +2750,9 @@ end
 ---@return boolean
 function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 	if includeHidden then return true end
+	-- Castbar visibility is runtime-driven (Functions/Castbar.lua); at layout it always counts as
+	-- visible so its container is never collapsed and its layout space stays reserved.
+	if barKey == "castbar" then return true end
 	-- A secondary bar with 0 resource nodes is never visible (e.g., all Holy Word enables unchecked)
 	if barKey == "secondary" and (TRB.Data.character.maxResource2 or 0) == 0 then
 		return false
@@ -3688,12 +3691,6 @@ function TRB.Functions.Bar:ConstructHealthBarGroup(settings, primaryGroup, healt
 	self:ConstructAnchoredBarGroup(settings, primaryGroup, healthGroup, config, applyAppearance)
 end
 
----Castbar settings always come from the active spec, not Druid form-resolved settings.
-local function ResolveCastbarSettingsSource(settings)
-	local cache = TRB.Functions.Character:GetActiveSpecCache()
-	return (cache and cache.settings) or settings
-end
-
 ---Applies layout to one non-primary anchored bar group.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>
@@ -3737,9 +3734,7 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 		return
 	end
 
-	-- Castbar dimensions/anchor/colors never follow Druid form-mapping; source them from the active spec.
-	local barSource = (barKey == "castbar") and ResolveCastbarSettingsSource(settings) or settings
-	local barSettings = barSource.bars and barSource.bars[barKey]
+	local barSettings = settings.bars and settings.bars[barKey]
 	local defaultSettings = nil
 	if not barSettings then
 		defaultSettings = barTypeDef:GetDefaultDimensions()
@@ -3756,7 +3751,7 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 	effectiveSettings.fillDirection = effectiveSettings.fillDirection or (defaultSettings and defaultSettings.fillDirection) or barTypeDef.fillDirection or "leftRight"
 	effectiveSettings.growthDirection = effectiveSettings.growthDirection or (defaultSettings and defaultSettings.growthDirection) or barTypeDef.growthDirection or "leftRight"
 
-	local colorSettings = barSource.colors and barSource.colors.bars and barSource.colors.bars[barKey]
+	local colorSettings = settings.colors and settings.colors.bars and settings.colors.bars[barKey]
 	local widthMatched = TRB.Functions.EditMode:IsWidthMatchingEnabled(nil, barKey)
 	local heightMatched = TRB.Functions.EditMode:IsHeightMatchingEnabled(nil, barKey)
 	local rootEffWidth = barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[barKey]
@@ -3808,8 +3803,8 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 	local barIsVisible = self:IsBarVisible(settings, barKey, inEditMode) and not self:IsBarTalentGatedHidden(barKey)
 	local shouldInitiallyShow = barIsVisible
 	-- Castbar's on-screen visibility is driven entirely by active cast state (Functions/Castbar.lua),
-	-- not the displayBar system it has no entry in, so always construct it hidden. barIsVisible stays
-	-- true (IsBarVisible defaults true with no displayBar entry) so its layout space is still reserved
+	-- so always construct it hidden outside Edit Mode. IsBarVisible special-cases the castbar to true
+	-- (runtime-driven visibility) so barIsVisible stays true and its layout space is still reserved
 	-- normally below, keeping anchored bars stable whether or not a cast is currently in progress.
 	if barKey == "castbar" and not inEditMode then
 		shouldInitiallyShow = false
@@ -3902,21 +3897,19 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 	
 	for key, barTypeDef in pairs(allBarTypes) do
 		local barGroup = barGroups[key]
-		-- Castbar appearance never follows Druid form-mapping; source it from the active spec.
-		local barSource = (key == "castbar") and ResolveCastbarSettingsSource(settings) or settings
-		local barSettings = barSource.bars and barSource.bars[key]
+		local barSettings = settings.bars and settings.bars[key]
 
 		-- Apply appearance if bar group exists, even if barSettings is missing (use fallbacks)
 		if barGroup then
 			-- Get textures from flat keys (same pattern as manaBar: staggerBar, staggerBorder, staggerBackground)
-			local barTexture = barSource.textures and (barSource.textures[key .. "Bar"] or barSource.textures.resourceBar)
-			local borderTexture = barSource.textures and (barSource.textures[key .. "Border"] or barSource.textures.border)
-			local backgroundTexture = barSource.textures and (barSource.textures[key .. "Background"] or barSource.textures.background)
+			local barTexture = settings.textures and (settings.textures[key .. "Bar"] or settings.textures.resourceBar)
+			local borderTexture = settings.textures and (settings.textures[key .. "Border"] or settings.textures.border)
+			local backgroundTexture = settings.textures and (settings.textures[key .. "Background"] or settings.textures.background)
 
 			-- Get colors from nested structure, falling back to registry defaults for
 			-- newly-added or partially-migrated custom bars.
 			local defaultBarColors = barTypeDef:GetDefaultColors() or {}
-			local barColors = barSource.colors and barSource.colors.bars and barSource.colors.bars[key] or {}
+			local barColors = settings.colors and settings.colors.bars and settings.colors.bars[key] or {}
 
 			-- Propagate the definition's end cap policy to the group for the visibility sweep
 			if barTypeDef.endCapMode then

@@ -572,6 +572,9 @@ local function UpdateShapeshiftForm()
 	if TRB.Functions.Bar and TRB.Functions.Bar.RefreshWrapperPositioning then
 		Bar:RefreshWrapperPositioning()
 	end
+
+	-- Form change swaps which spec's settings govern the castbar; re-evaluate enablement + Blizzard suppression.
+	TRB.Functions.Castbar:SyncEnabledState()
 end
 
 local shapeshiftFrame = CreateFrame("Frame")

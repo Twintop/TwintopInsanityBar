@@ -1536,9 +1536,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	specCache.settings.maxResource = spec.maxResource
 	specCache.settings.barVisibilityThresholds = spec.barVisibilityThresholds
 
-	-- Castbar enabled-state + Blizzard cast bar suppression follow the active spec's recomposed
+	-- Castbar enablement + Blizzard cast bar suppression follow the display spec's recomposed
 	-- settings, which only become valid/refreshed here (initial login fill lands after PLAYER_ENTERING_WORLD).
-	if TRB.Data.character.compositeKey == compositeKey then
+	if TRB.Functions.Class:GetActiveDisplayCompositeKey() == compositeKey then
 		TRB.Functions.Castbar:SyncEnabledState()
 	end
 end
