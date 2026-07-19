@@ -12,6 +12,17 @@ local content = [====[
 
 ---
 
+# 12.0.7.10-release (2026-07-19)
+## General
+
+- Fix a Lua error preventing some bars from rendering updates.
+
+### Cast Bar
+
+- Add the option to color the Cast Bar by an enemy player target's class color, across all cast types. Sub-options limit it to while PvP is enabled or extend it to friendly players. Active Color Indicators still priority.
+
+---
+
 # 12.0.7.9-release (2026-07-19)
 ## General
 ### Cast Bar

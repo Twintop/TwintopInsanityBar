@@ -8946,6 +8946,9 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	settings.latencyPrecision = 1
 	settings.disableBlizzardCastbar = true
 	settings.mergeTradeskill = true
+	settings.targetClassColor = false
+	settings.targetClassColorPvpOnly = false
+	settings.targetClassColorFriendly = false
 	settings.tickProfiles = {}
 	settings.height = 30
 	return settings

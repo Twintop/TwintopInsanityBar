@@ -3896,7 +3896,9 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>
 function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
-	if settings == nil or barGroups == nil then
+	-- Mirror ApplyCustomBarGroupsLayout's primary guard: without primary the custom bars are never
+	-- laid out, so texturing an unsized node throws "TexCoord out of range" in Blizzard's ApplyBackdrop.
+	if settings == nil or barGroups == nil or barGroups.primary == nil then
 		return
 	end
 	

@@ -206,11 +206,14 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 		barSettings.tickWidth = value
 		RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
 	end)
-	yCoord = yCoord - 60
+	-- Tick width is driven by latency when tickLatencyWidth is on, so gray out the manual slider then.
+	TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.castbarTickWidth, not barSettings.tickLatencyWidth)
+	yCoord = yCoord - 50
 	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_tickLatencyWidth", L["CastbarTickLatencyWidth"], L["CastbarTickLatencyWidthTooltip"], yCoord,
 		function() return barSettings.tickLatencyWidth end,
 		function(v)
 			barSettings.tickLatencyWidth = v
+			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.castbarTickWidth, not v)
 			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
 		end)
 	yCoord = yCoord - 40
@@ -259,7 +262,46 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 			barSettings.mergeTradeskill = v
 			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
 		end)
+	yCoord = yCoord - 30
+
+	-- Target class color: recolor the whole cast bar (every cast type) by the current target's class color,
+	-- a PvP class-identification aid. Two indented sub-options gate it to PvP-enabled contexts and extend it
+	-- to friendly players; both are grayed out while the master option is off.
+	local targetClassColorSubs = {}
+	local function RefreshTargetClassColorStates()
+		local enabled = barSettings.targetClassColor == true
+		for _, cb in ipairs(targetClassColorSubs) do
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(cb, enabled)
+		end
+	end
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_targetClassColor", L["CastbarTargetClassColor"], L["CastbarTargetClassColorTooltip"], yCoord,
+		function() return barSettings.targetClassColor end,
+		function(v)
+			barSettings.targetClassColor = v
+			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+			RefreshTargetClassColorStates()
+		end)
+	yCoord = yCoord - 20
+	local pvpOnlyCb = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_targetClassColorPvpOnly", L["CastbarTargetClassColorPvpOnly"], L["CastbarTargetClassColorPvpOnlyTooltip"], yCoord,
+		function() return barSettings.targetClassColorPvpOnly end,
+		function(v)
+			barSettings.targetClassColorPvpOnly = v
+			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+		end)
+	pvpOnlyCb:SetPoint("TOPLEFT", oUi.xCoord + 20, yCoord)
+	targetClassColorSubs[#targetClassColorSubs + 1] = pvpOnlyCb
+	yCoord = yCoord - 20
+	local friendlyCb = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_targetClassColorFriendly", L["CastbarTargetClassColorFriendly"], L["CastbarTargetClassColorFriendlyTooltip"], yCoord,
+		function() return barSettings.targetClassColorFriendly end,
+		function(v)
+			barSettings.targetClassColorFriendly = v
+			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+		end)
+	friendlyCb:SetPoint("TOPLEFT", oUi.xCoord + 20, yCoord)
+	targetClassColorSubs[#targetClassColorSubs + 1] = friendlyCb
+	RefreshTargetClassColorStates()
 	yCoord = yCoord - 40
+
 	local function BuildPrecisionSlider(label, settingKey, xCoord, y)
 		local slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, label, 0, 3, barSettings[settingKey], 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, xCoord, y)

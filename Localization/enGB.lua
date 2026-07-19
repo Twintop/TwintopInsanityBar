@@ -364,4 +364,8 @@ if locale == "enGB" then
     L["CheckboxEndCapUseBorderColorTooltip"] = "This will override the end cap's colour with whatever the current bar border colour is."
     L["CheckboxEndCapUseBorderColorExceptDefault"] = "Only non-default border colours"
     L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"] = "This will only override the end cap's colour if the border colour is anything other than the base colour."
+    L["CastbarTargetClassColor"] = "Use target's class colour"
+    L["CastbarTargetClassColorTooltip"] = "When checked, the cast bar fill uses the class colour of your current target for every cast type, including empowered and uninterruptible casts, whenever that target is an enemy player. An active colour indicator still takes priority."
+    L["CastbarTargetClassColorPvpOnlyTooltip"] = "When checked, the target's class colour is only used while PvP is enabled: you are PvP flagged, War Mode is on, or you are in a battleground or arena."
+    L["CastbarTargetClassColorFriendlyTooltip"] = "When checked, friendly player targets also recolour the cast bar with their class colour, not just enemy players."
 end

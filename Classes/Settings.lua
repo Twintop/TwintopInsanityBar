@@ -272,6 +272,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public latencyPrecision integer # Decimal places (0-3) for $castLatency and $castPushback
 ---@field public disableBlizzardCastbar boolean # Detach the default Blizzard cast bar while the addon castbar is enabled
 ---@field public mergeTradeskill boolean # Merge bulk crafting's repeated craft casts into one channel-style bar
+---@field public targetClassColor boolean # Color the fill by the current target's class color when it is an enemy player
+---@field public targetClassColorPvpOnly boolean # Restrict targetClassColor to when PvP is enabled (flagged / War Mode / battleground / arena)
+---@field public targetClassColorFriendly boolean # Extend targetClassColor to friendly player targets as well
 ---@field public tickProfiles table<integer, TRB.Classes.Settings.CastbarTickProfile> # Channel tick profiles keyed by spellId
 
 ---@class TRB.Classes.Settings.DisplayText
