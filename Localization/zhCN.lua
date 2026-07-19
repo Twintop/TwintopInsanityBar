@@ -2905,4 +2905,10 @@ if locale == "zhCN" then
 	L["CheckboxEndCapUseBorderColorTooltip"] = "前端标记颜色将跟随当前进度条边框色。"
 	L["CheckboxEndCapUseBorderColorExceptDefault"] = "仅非默认边框色生效"
 	L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"] = "仅边框颜色不是基础默认色时，才替换前端标记颜色。"
+	L["CastbarTargetClassColor"] = "使用目标职业颜色"
+	L["CastbarTargetClassColorTooltip"] = "勾选后，敌方玩家的各类施法进度条填充色会替换为目标对应职业色，包含强化施法、不可打断施法。若已启用颜色指示器，其优先级更高。"
+	L["CastbarTargetClassColorPvpOnly"] = "仅PvP状态下生效"
+	L["CastbarTargetClassColorPvpOnlyTooltip"] = "勾选后仅在PvP开启时才显示目标职业色：自身开启PVP标记、战争模式激活、身处战场或竞技场。"
+	L["CastbarTargetClassColorFriendly"] = "友方目标也生效"
+	L["CastbarTargetClassColorFriendlyTooltip"] = "勾选后，友方玩家施法条同样会使用其职业颜色，不再仅限敌方玩家。"
 end
