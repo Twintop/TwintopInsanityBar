@@ -15,7 +15,7 @@ local content = [====[
 # 12.0.7.10-release (2026-07-19)
 ## General
 
-- Fix a Lua error preventing some bars from rendering updates.
+- [#794](#794) Fix a Lua error preventing some bars from rendering updates.
 
 ### Cast Bar
 
