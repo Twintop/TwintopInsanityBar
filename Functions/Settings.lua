@@ -8371,6 +8371,25 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			end
 		end
 	end
+
+	-- Cast Bar's default left text dropped the spell icon (#casting) now that the bar renders its own
+	-- ability icon. Rewrite only untouched defaults: any CastBar-bound entry still exactly matching the
+	-- old default becomes the new icon-less default. Gated so a user who re-adds #casting keeps it.
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.core ~= nil and
+		TwintopInsanityBarSettings.core.displayText ~= nil and
+		TwintopInsanityBarSettings.core.displayText.barText ~= nil and
+		TwintopInsanityBarSettings.core.displayText.migrations ~= nil and
+		not TwintopInsanityBarSettings.core.displayText.migrations.castBarIconText then
+
+		for _, entry in ipairs(TwintopInsanityBarSettings.core.displayText.barText) do
+			if entry.position ~= nil and entry.position.relativeToFrame == "CastBar" and entry.text == "#casting $castSpellName" then
+				entry.text = "$castSpellName"
+			end
+		end
+
+		TwintopInsanityBarSettings.core.displayText.migrations.castBarIconText = true
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -8950,8 +8969,23 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	settings.targetClassColorPvpOnly = false
 	settings.targetClassColorFriendly = false
 	settings.tickProfiles = {}
+	settings.icon = self:DefaultBarIconSettings()
 	settings.height = 30
 	return settings
+end
+
+---Gets the default side ability icon settings for a bar. Generic: any bar type that renders a side icon
+---uses this same block, so the layout and options code stays bar-agnostic. The border is not configured
+---here -- it follows the bar's own border thickness and color.
+---@return TRB.Classes.Settings.BarIcon
+function TRB.Functions.Settings:DefaultBarIconSettings()
+	return {
+		enabled = true,
+		side = "left",
+		spacing = 2,
+		collapseBorderWidth = false,
+		zoom = 10
+	}
 end
 
 ---Gets the default Castbar colors. `bar` is the standard-cast fill; `channel` and `uninterruptible`
@@ -10061,7 +10095,7 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 			guid = TRB.Functions.String:Guid(),
 			constrainToParent = true,
 			maxWidthPercent = 75,
-			text = "#casting $castSpellName",
+			text = "$castSpellName",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "LEFT",

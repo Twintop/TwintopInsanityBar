@@ -1433,6 +1433,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			mergedBar.yPos = coreBar.yPos
 			mergedBar.anchor = coreBar.anchor
 			mergedBar.fillDirection = coreBar.fillDirection
+			mergedBar.icon = coreBar.icon
 		end
 		if s.castbarOverlays then
 			mergedBar.tickWidth = coreBar.tickWidth

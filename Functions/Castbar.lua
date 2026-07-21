@@ -1014,6 +1014,12 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 	-- Not version-gated: a gradient indicator is a curve over a secret resource value, so its color moves
 	-- with the resource, not with the indicator flipping on and off.
 	ApplyBorderAndBackgroundColor(node, colors, model)
+	-- Track the casting spell's icon every frame so a chained cast swapping spells mid-render updates it.
+	-- SetIconTexture no-ops when the texture is unchanged, so this stays cheap.
+	if barSettings ~= nil and barSettings.icon ~= nil and barSettings.icon.enabled then
+		node:SetIconTexture(model.spell and model.spell.iconId or nil)
+		node:SetIconVisible(model.spell ~= nil)
+	end
 	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
 	-- Keep the shared fade fields synced so anything that consults them stays consistent, but we
 	-- drive the actual container alpha directly rather than through UpdateFade.
@@ -1059,6 +1065,10 @@ function TRB.Functions.Castbar:ApplyIdleState(group, node, idleAlpha, colors)
 	end
 	node:SetMinMax(0, 1)
 	node:SetValue(0)
+	-- No spell is casting, so the icon has nothing to show. Its reserved strip stays claimed by the
+	-- layout, keeping the bar the same size whether idle or active. Clearing the texture (rather than
+	-- just hiding) stops a layout rebuild from resurrecting the last cast's icon.
+	node:SetIconTexture(nil)
 	-- No model: an idle bar is never uninterruptible, so only the indicator/configured colors apply.
 	ApplyBorderAndBackgroundColor(node, colors, nil)
 	group.targetAlpha = idleAlpha
@@ -1124,6 +1134,7 @@ function TRB.Functions.Castbar:EndRender()
 	if node then
 		---@diagnostic disable-next-line: inject-field
 		HideOverlays(node.frame._trbCastbarOverlays)
+		node:SetIconTexture(nil)
 	end
 	if group then
 		ApplyHiddenState(group)

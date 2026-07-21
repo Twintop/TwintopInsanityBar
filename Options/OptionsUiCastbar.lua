@@ -160,6 +160,10 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, castbarDef, L["ResourceCastbar"], "castbarDimensions")
 	yCoord = yCoord - 60
 
+	-- Side ability icon (generic; copied under the castbarDimensions global-settings section)
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls, spec, classId, specId, yCoord, castbarDef)
+	yCoord = yCoord - 20
+
 	-- Fill colors
 	controls.castbarColorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarColorsHeader"], oUi.xCoord, yCoord)
 	yCoord = BuildCastbarUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, "castbarColors", yCoord)

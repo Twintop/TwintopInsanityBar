@@ -2035,3 +2035,113 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	return yCoord
 end
 
+---Generates the side ability icon options for a bar: enable checkbox, side dropdown, and spacing/border
+---sliders. Bar-agnostic -- any bar type whose settings carry an `icon` block can call this, and the
+---layout code in Functions/Bar.lua reserves the space generically.
+---@param parent Frame # The tab's scroll child
+---@param controls table # The panel's controls table
+---@param spec table # The spec (or core) settings table being edited
+---@param classId integer? # nil on the Global panel
+---@param specId integer?
+---@param yCoord number
+---@param barTypeDef table # The bar's BarTypeRegistry definition
+---@return number yCoord
+function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = "TwintopResourceBar_" .. className .. "_" .. specName .. "_" .. barTypeDef.key .. "_icon"
+
+	local barSettings = barTypeDef:GetSettings(spec)
+	if barSettings == nil then
+		return yCoord
+	end
+	barSettings.icon = barSettings.icon or TRB.Functions.Settings:DefaultBarIconSettings()
+	local iconSettings = barSettings.icon
+
+	-- Global-panel edits land on the core table; the active spec's merged cache only picks them up on a re-fill
+	local function ApplyIconChange()
+		local char = TRB.Data.character
+		if classId == nil and char ~= nil and char.className ~= nil and char.specName ~= nil and TRB.Data.specCache[char.compositeKey] ~= nil then
+			TRB.Functions.Character:FillSpecializationCacheSettings(char.className, char.specName)
+		end
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+		end
+	end
+
+	controls[barTypeDef.key .. "IconSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, string.format(L["BarIconHeader"], barTypeDef.displayName), oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
+	-- Everything below the enable checkbox is meaningless with the icon off, so gray it out together
+	local iconSubControls = {}
+	local function RefreshIconSubControlStates()
+		local enabled = iconSettings.enabled == true
+		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(iconSubControls.side, enabled)
+		-- Collapsing the border overlaps the icon onto the bar, so the spacing slider is meaningless then
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.spacing, enabled and not iconSettings.collapseBorderWidth)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconSubControls.collapse, enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.zoom, enabled)
+	end
+
+	controls[barTypeDef.key .. "IconEnabled"] = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_enabled", L["BarIconEnabled"], L["BarIconEnabledTooltip"], yCoord,
+		function() return iconSettings.enabled end,
+		function(v)
+			iconSettings.enabled = v
+			RefreshIconSubControlStates()
+			ApplyIconChange()
+		end)
+	yCoord = yCoord - 40
+
+	local sideOptions = {
+		{ value = "left", label = L["BarIconSideLeft"] },
+		{ value = "right", label = L["BarIconSideRight"] },
+		{ value = "top", label = L["BarIconSideTop"] },
+		{ value = "bottom", label = L["BarIconSideBottom"] },
+	}
+	-- Row with Side dropdown (left) + Spacing slider (right), and Collapse border width directly under
+	-- Spacing. The dropdown is nudged up 14px so its label lines up with the slider's floating title.
+	iconSubControls.side = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_side", L["BarIconSide"], sideOptions,
+		function() return iconSettings.side or "left" end,
+		function(v)
+			iconSettings.side = v
+			ApplyIconChange()
+		end,
+		oUi.xCoord, yCoord + 14)
+	controls[barTypeDef.key .. "IconSideDropdown"] = iconSubControls.side
+
+	yCoord = yCoord - 20
+	iconSubControls.spacing = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconSpacing"], 0, 20, iconSettings.spacing, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	iconSubControls.spacing:SetScript("OnValueChanged", function(sliderFrame, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
+		iconSettings.spacing = value
+		ApplyIconChange()
+	end)
+	controls[barTypeDef.key .. "IconSpacing"] = iconSubControls.spacing
+
+	-- Collapse checkbox sits 40px under the Spacing slider (same offset the bar-group panel uses)
+	iconSubControls.collapse = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_collapseBorderWidth", L["CollapseBorderWidth"], L["CollapseBorderWidthTooltip"], yCoord,
+		function() return iconSettings.collapseBorderWidth end,
+		function(v)
+			iconSettings.collapseBorderWidth = v
+			RefreshIconSubControlStates()
+			ApplyIconChange()
+		end)
+	iconSubControls.collapse:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 40)
+	controls[barTypeDef.key .. "IconCollapseBorderWidth"] = iconSubControls.collapse
+
+	-- Zoom slider on its own row, clearing the dropdown button and the collapse checkbox above it.
+	yCoord = yCoord - 80
+	iconSubControls.zoom = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconZoom"], 0, 25, iconSettings.zoom, 1, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	iconSubControls.zoom:SetScript("OnValueChanged", function(sliderFrame, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
+		iconSettings.zoom = value
+		ApplyIconChange()
+	end)
+	controls[barTypeDef.key .. "IconZoom"] = iconSubControls.zoom
+	yCoord = yCoord - 40
+
+	RefreshIconSubControlStates()
+	return yCoord
+end
+
