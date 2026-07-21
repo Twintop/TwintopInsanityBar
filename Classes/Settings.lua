@@ -220,7 +220,24 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public fillDirection trbFillDirection # Fill direction for the bar's StatusBar
 ---@field public anchor TRB.Classes.Settings.BarAnchor? # Only used when this bar is NOT the base bar
 
+---Which side of a bar its ability icon is bound to.
+---@alias trbBarIconSide
+---| '"left"'   # Reserved strip on the left; node width shrinks
+---| '"right"'  # Reserved strip on the right; node width shrinks
+---| '"top"'    # Reserved strip above; container grows taller, node keeps its size
+---| '"bottom"' # Reserved strip below; container grows taller, node keeps its size
+
+---An ability icon rendered beside a bar. The icon is always square with its side equal to the bar's
+---configured height, and its border matches the bar's own border in both thickness and live color.
+---@class TRB.Classes.Settings.BarIcon
+---@field public enabled boolean # Whether the icon is drawn and reserves space
+---@field public side trbBarIconSide # Which side of the bar the icon binds to
+---@field public spacing number # Gap in pixels between the icon and the bar
+---@field public collapseBorderWidth boolean # Overlap the icon's border with the bar's (single-width shared border); ignores spacing
+---@field public zoom number # Percent cropped from each edge of the icon art, to cut the stock spell border
+
 ---@class TRB.Classes.Settings.SecondaryBar
+---@field public icon TRB.Classes.Settings.BarIcon? # Side ability icon; nil on bar types that do not support one
 ---@field public width number
 ---@field public height number
 ---@field public border integer

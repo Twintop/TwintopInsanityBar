@@ -2421,6 +2421,39 @@ function TRB.Functions.Bar:GetEffectiveHeightForBarGroup(barGroups, settings, ba
 	return effectiveHeight, cdmForced
 end
 
+---Resolves how much space a bar's side ability icon reserves. The icon is always square with its side
+---equal to the bar's configured height. Left/right reserve along the width (the node shrinks inside a
+---fixed container); top/bottom reserve along the height (the container grows and the node keeps its size).
+---Generic across bar types -- any bar whose settings carry an `icon` block gets the same geometry.
+---@param barSettings table? # A bar's settings table
+---@param barHeight number # The bar's resolved height, which is also the icon's square side
+---@return table? # { side, size, spacing, zoom, widthReserved, heightReserved }, or nil when no icon
+function TRB.Functions.Bar:GetBarIconReservation(barSettings, barHeight)
+	local icon = barSettings and barSettings.icon
+	if icon == nil or not icon.enabled or barHeight == nil or barHeight <= 0 then
+		return nil
+	end
+
+	local side = icon.side or "left"
+	-- collapseBorderWidth overlaps the icon's border with the bar's into a single shared width, exactly
+	-- like adjacent nodes in a bar group: the gap becomes the negative border width, ignoring spacing.
+	local spacing = icon.spacing or 0
+	if icon.collapseBorderWidth then
+		spacing = -((barSettings and barSettings.border) or 0)
+	end
+	local extent = barHeight + spacing
+	local isVertical = side == "top" or side == "bottom"
+
+	return {
+		side = side,
+		size = barHeight,
+		spacing = spacing,
+		zoom = icon.zoom or 0,
+		widthReserved = isVertical and 0 or extent,
+		heightReserved = isVertical and extent or 0
+	}
+end
+
 ---Gets the rendered width of a bar group when available.
 ---@param barGroup TRB.Classes.BarGroup?
 ---@return number?
@@ -3508,15 +3541,28 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			end
 		end
 	else
-		-- Single-node direct sizing (health bar, etc.)
-		targetGroup.containerFrame:SetWidth(groupWidth)
-		targetGroup.containerFrame:SetHeight(groupHeight)
-		targetGroup.layoutHeight = groupHeight -- Store layout height for collapse/expand by ProcessBars
-		targetGroup.layoutWidth = groupWidth -- Store layout width for collapse/expand by ProcessBars
+		-- Single-node direct sizing (health bar, castbar, etc.)
+		-- A side ability icon claims a strip of the footprint: left/right shrink the node inside a
+		-- container that keeps its configured width, top/bottom grow the container and leave the node alone.
+		local iconReservation = self:GetBarIconReservation(groupSettings, groupHeight)
+		local containerWidth = groupWidth
+		local containerHeight = groupHeight
+		local nodeWidth = groupWidth
+		local nodeHeight = groupHeight
+		if iconReservation then
+			containerHeight = groupHeight + iconReservation.heightReserved
+			nodeWidth = math.max(groupWidth - iconReservation.widthReserved, 1)
+		end
+		targetGroup.iconReserved = iconReservation ~= nil
+
+		targetGroup.containerFrame:SetWidth(containerWidth)
+		targetGroup.containerFrame:SetHeight(containerHeight)
+		targetGroup.layoutHeight = containerHeight -- Store layout height for collapse/expand by ProcessBars
+		targetGroup.layoutWidth = containerWidth -- Store layout width for collapse/expand by ProcessBars
 
 		local singleNode = targetGroup:GetNode(1)
 		if singleNode then
-			singleNode:SetDimensions(groupWidth, groupHeight, groupBorder)
+			singleNode:SetDimensions(nodeWidth, nodeHeight, groupBorder)
 			singleNode:SetFillDirection(groupSettings.fillDirection)
 			singleNode:SetFrameLevel(frameLevels.comboPoint)
 
@@ -3524,7 +3570,26 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			local nodeFrame = singleNode:GetFrame()
 			if nodeFrame then
 				nodeFrame:ClearAllPoints()
-				nodeFrame:SetAllPoints(targetGroup.containerFrame)
+				if iconReservation then
+					-- Pin the node to the container corner away from the icon's strip; its explicit
+					-- size from SetDimensions then leaves exactly that strip free.
+					local side = iconReservation.side
+					local nodePoint = "TOPLEFT"
+					if side == "left" then
+						nodePoint = "TOPRIGHT"
+					elseif side == "top" then
+						nodePoint = "BOTTOMLEFT"
+					end
+					nodeFrame:SetPoint(nodePoint, targetGroup.containerFrame, nodePoint, 0, 0)
+					-- groupBorder, not an icon-specific setting: the icon border matches the bar's
+					singleNode:ApplyIconLayout(side, iconReservation.size, iconReservation.spacing, groupBorder, iconReservation.zoom)
+					-- Only reveal it if something has actually assigned a texture; the render path owns
+					-- visibility from there (the castbar shows it only while a spell is casting).
+					singleNode:SetIconVisible(singleNode._iconTexture ~= nil)
+				else
+					nodeFrame:SetAllPoints(targetGroup.containerFrame)
+					singleNode:SetIconVisible(false)
+				end
 			end
 
 			-- Set min/max based on mode

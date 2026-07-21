@@ -12,6 +12,15 @@ local content = [====[
 
 ---
 
+# 12.0.7.11-release (2026-07-21)
+## General
+
+### Cast Bar
+
+- Add an ability icon beside the Cast Bar. Side (left/right/top/bottom), spacing, zoom to crop the stock border, and collapse border width to share a single border with the bar.
+
+---
+
 # 12.0.7.10-release (2026-07-19)
 ## General
 
