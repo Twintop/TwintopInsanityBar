@@ -666,6 +666,12 @@ local function ConstructCastbarOptionsPanel()
 		{ "castbar", L["TabCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, nil, nil, true)
 		end },
+		{ "target", L["ResourceTargetCastbar"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, TRB.Data.character.classId, TRB.Data.character.specId, "targetCastbar")
+		end },
+		{ "focus", L["ResourceFocusCastbar"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, TRB.Data.character.classId, TRB.Data.character.specId, "focusCastbar")
+		end },
 	}
 
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Castbar", tabDefinitions, -37)
@@ -2174,4 +2180,4 @@ function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord)
 			yCoord = yCoord - (height * 3) - 5
 		end
 	end
-end
+end

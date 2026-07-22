@@ -661,6 +661,18 @@ local function EnsureCastbarBarGroup(barGroups)
 	end
 end
 
+---Target/Focus Cast Bars are all-spec, standalone (screen-anchored) bars not created by any class's
+---CreateForSpec; guarantee their groups exist wherever the castbar group is ensured.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsureTargetCastbarBarGroups(barGroups)
+	if barGroups.targetCastbar == nil then
+		barGroups.targetCastbar = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_TargetCastbar", 1, false)
+	end
+	if barGroups.focusCastbar == nil then
+		barGroups.focusCastbar = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_FocusCastbar", 1, false)
+	end
+end
+
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
@@ -702,6 +714,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 
 	-- ApplyCustomBarGroups* handle the castbar generically like any other registered custom bar.
 	EnsureCastbarBarGroup(barGroups)
+	EnsureTargetCastbarBarGroups(barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
@@ -750,6 +763,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- Some setup paths (EventRegistration re-enable, load-screen races) lay out without ever passing
 	-- through ConstructBarGroups; guarantee the castbar group exists before the forest is built.
 	EnsureCastbarBarGroup(barGroups)
+	EnsureTargetCastbarBarGroups(barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels
@@ -2792,9 +2806,10 @@ end
 ---@return boolean
 function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 	if includeHidden then return true end
-	-- Castbar visibility is runtime-driven (Functions/Castbar.lua); at layout it always counts as
-	-- visible so its container is never collapsed and its layout space stays reserved.
-	if barKey == "castbar" then return true end
+	-- Castbar (and the target/focus cast bars) have runtime-driven visibility (Functions/Castbar,
+	-- Functions/TargetCastbar); at layout they always count as visible so the container is never
+	-- collapsed and layout space stays reserved.
+	if barKey == "castbar" or barKey == "targetCastbar" or barKey == "focusCastbar" then return true end
 	-- A secondary bar with 0 resource nodes is never visible (e.g., all Holy Word enables unchecked)
 	if barKey == "secondary" and (TRB.Data.character.maxResource2 or 0) == 0 then
 		return false
@@ -3880,7 +3895,7 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 	-- so always construct it hidden outside Edit Mode. IsBarVisible special-cases the castbar to true
 	-- (runtime-driven visibility) so barIsVisible stays true and its layout space is still reserved
 	-- normally below, keeping anchored bars stable whether or not a cast is currently in progress.
-	if barKey == "castbar" and not inEditMode then
+	if (barKey == "castbar" or barKey == "targetCastbar" or barKey == "focusCastbar") and not inEditMode then
 		shouldInitiallyShow = false
 	end
 	config.shouldInitiallyShow = shouldInitiallyShow

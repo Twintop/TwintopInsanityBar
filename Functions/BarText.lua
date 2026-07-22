@@ -111,9 +111,11 @@ function TRB.Functions.BarText:GetAnchorFrame(relativeToFrame, classId, specId)
 
 	-- Castbar is an all-spec bar not handled by any class's per-spec GetBarTextFrame; resolve it here
 	-- centrally so bar text can anchor to it regardless of class/spec.
-	if relativeToFrame == "CastBar" then
+	if relativeToFrame == "CastBar" or relativeToFrame == "TargetCastBar" or relativeToFrame == "FocusCastBar" then
+		local groupKey = relativeToFrame == "TargetCastBar" and "targetCastbar"
+			or relativeToFrame == "FocusCastBar" and "focusCastbar" or "castbar"
 		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-		local barGroup = barGroups and barGroups.castbar
+		local barGroup = barGroups and barGroups[groupKey]
 		if barGroup ~= nil then
 			local node = barGroup:GetNode(1)
 			if node ~= nil then
@@ -292,6 +294,8 @@ end
 function TRB.Functions.BarText:GetCommonIcons(additionalIcons)
 	local icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+		{ variable = "#targetCasting", icon = "", description = L["BarTextIconTargetCasting"], printInSettings = true },
+		{ variable = "#focusCasting", icon = "", description = L["BarTextIconFocusCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 	}
@@ -518,6 +522,14 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
 		{ variable = "$castUninterruptible", description = L["BarTextVariableCastUninterruptible"], printInSettings = true, color = false,
 			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
+
+		-- Target/Focus cast bars. Values may be secret (enemy casts), so they are display-only.
+		{ variable = "$targetCastingSpellName", description = L["BarTextVariableTargetCastSpellName"], printInSettings = true, color = false, secret = true },
+		{ variable = "$targetCastTime", description = L["BarTextVariableTargetCastTime"], printInSettings = true, color = false, secret = true },
+		{ variable = "$targetCastTimeRemaining", description = L["BarTextVariableTargetCastTimeRemaining"], printInSettings = true, color = false, secret = true },
+		{ variable = "$focusCastingSpellName", description = L["BarTextVariableFocusCastSpellName"], printInSettings = true, color = false, secret = true },
+		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true },
+		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true },
 	}
 	if additionalValues then
 		for _, v in ipairs(additionalValues) do
@@ -1503,6 +1515,53 @@ function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 	lookupLogic["$castUninterruptible"] = tostring(uninterruptible)
 end
 
+---Refreshes the Target/Focus Cast Bar bar text variables from their models. Everything here is
+---secret-safe: name/icon are stored raw (SetText/inline-texture handle secret values), and the
+---remaining/total seconds come from the DurationObject and are formatted with string.format (allowed on
+---secrets). Nothing is written to lookupLogic -- these values may be secret and must not feed the
+---arithmetic/comparison conditional engine.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
+function TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	local lookup = TRB.Data.lookup
+	for _, u in ipairs({ { prefix = "target", modelKey = "targetCastbar" }, { prefix = "focus", modelKey = "focusCastbar" } }) do
+		local model = TRB.Data[u.modelKey]
+		local barSettings = settings and settings.bars and settings.bars[u.modelKey] --[[@as TRB.Classes.Settings.CastbarBar?]]
+		local remFmt = "%." .. ((barSettings and barSettings.castTimePrecision) or 1) .. "f"
+		local durFmt = "%." .. ((barSettings and barSettings.durationPrecision) or 1) .. "f"
+		local nameVar = "$" .. u.prefix .. "CastingSpellName"
+		local timeVar = "$" .. u.prefix .. "CastTime"
+		local remVar = "$" .. u.prefix .. "CastTimeRemaining"
+		local iconVar = "#" .. u.prefix .. "Casting"
+
+		-- Default to empty, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
+		-- which is blocked; only nil-checks (==/~= nil) and string.format are allowed on secrets.
+		lookup[nameVar] = ""
+		lookup[remVar] = ""
+		lookup[timeVar] = ""
+		lookup[iconVar] = ""
+		if model ~= nil and model:IsActive() then
+			local name = model.spellName
+			if name ~= nil then
+				lookup[nameVar] = name
+			end
+			local rem = model:GetRemainingSeconds()
+			if rem ~= nil then
+				lookup[remVar] = string.format(remFmt, rem)
+			end
+			local total = model:GetTotalSeconds()
+			if total ~= nil then
+				lookup[timeVar] = string.format(durFmt, total)
+			end
+			-- Inline icon texture; icon id may be secret (%d works on secret numbers, %s may not).
+			local iconId = model.spellIconId
+			if iconId ~= nil then
+				lookup[iconVar] = string.format("|T%d:0|t", iconId)
+			end
+		end
+	end
+end
+
 ---Refreshes the baseline lookup data with the current values.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:RefreshLookupDataBase(settings)
@@ -1669,6 +1728,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	-- Castbar variables live in their own function so the isolated castbar bar text path can refresh
 	-- them independently of this class-driven (combat/isTracking-gated) refresh.
 	TRB.Functions.BarText:RefreshCastbarLookupData(settings)
+	TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
 
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
 
@@ -1703,6 +1763,19 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	end
 	if var == "$inCombat" or var == "$inCombatTime" then
 		return TRB.Data.character.inCombat == true
+	end
+	-- Target/Focus cast bar variables are secret in display, but in bar text LOGIC they resolve to a
+	-- plain boolean: "is that unit currently casting?" So {$targetCastTimeRemaining}[...] gates on the cast.
+	-- Read via computed key (as elsewhere) so the model field isn't flagged undefined-field.
+	local castbarModelKey
+	if var == "$targetCastingSpellName" or var == "$targetCastTime" or var == "$targetCastTimeRemaining" then
+		castbarModelKey = "targetCastbar"
+	elseif var == "$focusCastingSpellName" or var == "$focusCastTime" or var == "$focusCastTimeRemaining" then
+		castbarModelKey = "focusCastbar"
+	end
+	if castbarModelKey ~= nil then
+		local model = TRB.Data[castbarModelKey]
+		return model ~= nil and model:IsActive()
 	end
 	return false
 end
@@ -2233,4 +2306,4 @@ function TRB.Functions.BarText:Show(settings)
 			TRB.Data.barTextVisibilityRefreshNeeded = true
 		end
 	end
-end
+end

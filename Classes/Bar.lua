@@ -2164,4 +2164,33 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()
 		end
 	}))
+
+	-- Target and Focus Cast Bars (available to all specs, hidden by default, standalone screen-anchored
+	-- roots). Secret-safe timer-driven fill managed by Functions/TargetCastbar; minMaxMode "custom".
+	for _, tc in ipairs({
+		{ key = "targetCastbar", name = L["ResourceTargetCastbar"] },
+		{ key = "focusCastbar", name = L["ResourceFocusCastbar"] },
+	}) do
+		self:Register(TRB.Classes.BarTypeDefinition:New({
+			key = tc.key,
+			displayName = tc.name,
+			isMultiNode = false,
+			maxNodes = 1,
+			hasSameColor = false,
+			minMaxMode = "custom",
+			hasSpacing = false,
+			hasThresholds = false,
+			colorCurveType = nil,
+			visibilityKey = tc.key,
+			defaultDimensionsFunc = function(classic)
+				return TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic)
+			end,
+			defaultColorsFunc = function()
+				return TRB.Functions.Settings:DefaultTargetCastbarBarColors()
+			end,
+			defaultTexturesFunc = function()
+				return TRB.Functions.Settings:DefaultCustomBarTextures()
+			end
+		}))
+	end
 end

@@ -1623,6 +1623,9 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 			-- channel tick profiles (most specs have none).
 			TRB.Functions.Settings:InjectCastbarDefaults(specDefaults, className, specName)
 
+			-- Target/Focus Cast Bars are all-spec standalone bars; inject their defaults the same way.
+			TRB.Functions.Settings:InjectTargetCastbarDefaults(specDefaults)
+
 			-- End caps are a universal per-bar setting; inject their defaults the same way
 			TRB.Functions.Settings:InjectEndCapDefaults(specDefaults)
 
@@ -1827,6 +1830,7 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Details.addonData.registered = true
 		TRB.Functions.Aura:EnableUnitAura()
 		TRB.Functions.SpellCast:EnableSpellCast()
+		TRB.Functions.TargetCastbar:Enable()
 		TRB.Functions.Character:EnableCharacterChange()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)

@@ -790,6 +790,12 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	if not anyShowing and TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive() then
 		anyShowing = true
 	end
+	-- Same for the target/focus cast bars: keep isTracking true while either is active so their
+	-- anchored bar text keeps ticking through the shared render path.
+	if not anyShowing and ((TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
+		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())) then
+		anyShowing = true
+	end
 
 	-- Kick the castbar's idle display (Always Show / non-zero inactive alpha) when no cast is active:
 	-- its self-driven updater stops while idle-hidden, so this is what restarts it after settings

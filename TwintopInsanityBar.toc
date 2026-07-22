@@ -13,9 +13,9 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 12.0.7.10
+## Version: 12.0.7.11
 ## X-ReleaseType: release
-## X-ReleaseDate: 2026-07-19
+## X-ReleaseDate: 2026-07-21
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -74,6 +74,7 @@ Classes\Talent.lua
 Classes\OverlaySlot.lua
 Classes\Bar.lua
 Classes\Castbar.lua
+Classes\TargetCastbar.lua
 Classes\Settings.lua
 Classes\SpecCache.lua
 
@@ -113,6 +114,7 @@ Functions\Settings.lua
 Functions\Profiles.lua
 Functions\SpellCast.lua
 Functions\Castbar.lua
+Functions\TargetCastbar.lua
 Functions\String.lua
 Functions\Talent.lua
 Functions\Threshold.lua
@@ -140,6 +142,7 @@ Options\OptionsUiBarTextVariables.lua
 Options\OptionsUiBarTextInput.lua
 Options\OptionsUiBarText.lua
 Options\OptionsUiCastbar.lua
+Options\OptionsUiTargetCastbar.lua
 Options\OptionsUiTabs.lua
 Options\OptionsFrame.lua
 Options\Options.lua

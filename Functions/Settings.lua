@@ -8390,6 +8390,31 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 
 		TwintopInsanityBarSettings.core.displayText.migrations.castBarIconText = true
 	end
+
+	-- Insert default Target and Focus Cast Bar bar text entries into the global list, once each, gated by
+	-- flags (existing users never get new default barText entries via merge). Mirrors the castBarText block.
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.core ~= nil and
+		TwintopInsanityBarSettings.core.displayText ~= nil and
+		TwintopInsanityBarSettings.core.displayText.barText ~= nil and
+		TwintopInsanityBarSettings.core.displayText.migrations ~= nil then
+
+		if not TwintopInsanityBarSettings.core.displayText.migrations.targetCastBarText then
+			local entries = TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings("TargetCastBar", L["ResourceTargetCastbar"], "$targetCastingSpellName", "$targetCastTimeRemaining", "$targetCastTime")
+			for x = 1, #entries do
+				table.insert(TwintopInsanityBarSettings.core.displayText.barText, entries[x])
+			end
+			TwintopInsanityBarSettings.core.displayText.migrations.targetCastBarText = true
+		end
+
+		if not TwintopInsanityBarSettings.core.displayText.migrations.focusCastBarText then
+			local entries = TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings("FocusCastBar", L["ResourceFocusCastbar"], "$focusCastingSpellName", "$focusCastTimeRemaining", "$focusCastTime")
+			for x = 1, #entries do
+				table.insert(TwintopInsanityBarSettings.core.displayText.barText, entries[x])
+			end
+			TwintopInsanityBarSettings.core.displayText.migrations.focusCastBarText = true
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -9057,6 +9082,190 @@ function TRB.Functions.Settings:InjectCastbarDefaults(specDefaults, className, s
 		specDefaults.textures.castbarBorderName = tex.borderName
 		specDefaults.textures.castbarBackground = tex.background
 		specDefaults.textures.castbarBackgroundName = tex.backgroundName
+	end
+end
+
+---Gets default Target/Focus Cast Bar dimensions: a standalone bar anchored to the SCREEN (its own
+---EditMode root), NOT part of the main anchor stack. Fixed width, center-upper by default.
+---@param classic boolean?
+---@return table
+function TRB.Functions.Settings:DefaultTargetCastbarBarDimensions(classic)
+	local dims = self:DefaultCustomBarDimensions(classic)
+	dims.fullWidth = false
+	dims.width = 300
+	dims.relativeTo = "SCREEN"
+	dims.relativeToName = L["PositionScreen"]
+	dims.anchor.barKey = "screen"
+	dims.anchor.anchorPoint = "CENTER"
+	dims.anchor.attachPoint = "CENTER"
+	dims.anchor.xOffset = 0
+	dims.anchor.yOffset = 0
+	dims.anchor.matchWidth = false
+	dims.anchor.matchHeight = false
+	return dims
+end
+
+---Gets the default Target/Focus Cast Bar behavior settings (dimensions + flags). Secret-safe render, so
+---no tick/latency/pushback/empower overlay flags -- only the elements the secret-safe path supports.
+---@param classic boolean?
+---@return table
+function TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic)
+	local settings = self:DefaultTargetCastbarBarDimensions(classic)
+	settings.height = 24
+	settings.castTimePrecision = 1
+	settings.durationPrecision = 1
+	settings.interruptColor = true
+	settings.interruptHostileOnly = true
+	settings.icon = self:DefaultBarIconSettings()
+	return settings
+end
+
+---Gets the default bar text entries for a Target/Focus Cast Bar: spell name (left) and remaining time
+---(right), anchored to the given bar frame. Mirrors LoadDefaultCastBarTextSettings. Timing is secret, so
+---the display value can't be compared with {$var>0}; instead the variables resolve to a boolean ("is the
+---unit casting?") in logic context (see IsValidVariableBase), so a bare {$var}[...] conditional gates it.
+---@param relativeToFrame string # "TargetCastBar" or "FocusCastBar"
+---@param relativeToFrameName string # Localized display name for the anchor frame
+---@param spellNameVar string # e.g. "$targetCastingSpellName"
+---@param remainingVar string # e.g. "$targetCastTimeRemaining"
+---@param castTimeVar string # e.g. "$targetCastTime"
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relativeToFrame, relativeToFrameName, spellNameVar, remainingVar, castTimeVar)
+	return {
+		{
+			useDefaultFontColor = true,
+			useDefaultFontFace = true,
+			useDefaultFontSize = false,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = true,
+			maxWidthPercent = 75,
+			text = "{" .. spellNameVar .. "}[" .. spellNameVar .. "]",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize = 16,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = 6,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = relativeToFrame,
+				relativeToFrameName = relativeToFrameName
+			}
+		},
+		{
+			useDefaultFontColor = true,
+			useDefaultFontFace = true,
+			useDefaultFontSize = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			enabled = true,
+			name = L["PositionRight"],
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			text = "{" .. remainingVar .. "}[" .. remainingVar .. " / " .. castTimeVar .. "]",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize = 14,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			color = { color = "FFFFFFFF" },
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = relativeToFrame,
+				relativeToFrameName = relativeToFrameName
+			}
+		}
+	}
+end
+
+---Gets the default Target/Focus Cast Bar colors. `bar` is the standard-cast fill, `channel` recolors a
+---channel, `uninterruptible` recolors the fill when a hostile cast can't be interrupted (via the native
+---secret-boolean evaluator).
+---@return table
+function TRB.Functions.Settings:DefaultTargetCastbarBarColors()
+	return {
+		bar = { color = "FFFFCC00", color2 = "FFFFCC00", gradientDirection = "disabled" },
+		channel = { color = "FF00CCFF", color2 = "FF00CCFF", gradientDirection = "disabled" },
+		uninterruptible = { color = "FF888888", color2 = "FF888888", gradientDirection = "disabled" },
+		border = { color = "FF000000" },
+		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
+	}
+end
+
+---Gets the default Target/Focus Cast Bar visibility entry: castbar-style show conditions (casting/
+---channeling/empowered), runtime-driven like the player castbar.
+---@return table
+function TRB.Functions.Settings:DefaultTargetCastbarVisibility()
+	return {
+		neverShow = false,
+		alwaysShow = false,
+		conditions = { casting = true, channeling = true, empowered = true },
+		hideConditions = { inVehicle = false },
+		activeAlpha = 100,
+		inactiveAlpha = 0,
+		fadeDuration = 0.5,
+		fadeDelay = 0,
+		resourceConditionType = "none",
+		resourceConditionOperator = ">=",
+		resourceConditionValue = 0
+	}
+end
+
+---Central injector: adds the Target and Focus Cast Bar defaults (bars/colors/displayBar/textures) to a
+---spec's default settings table for both unit bars, so the standard defaults->saved Table:Merge carries
+---them into every spec of every class. Idempotent. Mirrors InjectCastbarDefaults.
+---@param specDefaults table
+---@param classic boolean?
+function TRB.Functions.Settings:InjectTargetCastbarDefaults(specDefaults, classic)
+	if type(specDefaults) ~= "table" then
+		return
+	end
+	specDefaults.bars = specDefaults.bars or {}
+	specDefaults.colors = specDefaults.colors or {}
+	specDefaults.colors.bars = specDefaults.colors.bars or {}
+	specDefaults.displayBar = specDefaults.displayBar or {}
+	specDefaults.textures = specDefaults.textures or {}
+
+	-- Both bars share the same default shape; Focus starts slightly below Target (positions are then
+	-- independently movable via EditMode).
+	for _, key in ipairs({ "targetCastbar", "focusCastbar" }) do
+		if specDefaults.bars[key] == nil then
+			specDefaults.bars[key] = self:DefaultTargetCastbarBarSettings(classic)
+		end
+		if specDefaults.colors.bars[key] == nil then
+			specDefaults.colors.bars[key] = self:DefaultTargetCastbarBarColors()
+		end
+		if specDefaults.displayBar[key] == nil then
+			specDefaults.displayBar[key] = self:DefaultTargetCastbarVisibility()
+		end
+		local barTex = key .. "Bar"
+		if specDefaults.textures[barTex] == nil then
+			local tex = self:DefaultCustomBarTextures()
+			specDefaults.textures[barTex] = tex.bar
+			specDefaults.textures[key .. "BarName"] = tex.barName
+			specDefaults.textures[key .. "Border"] = tex.border
+			specDefaults.textures[key .. "BorderName"] = tex.borderName
+			specDefaults.textures[key .. "Background"] = tex.background
+			specDefaults.textures[key .. "BackgroundName"] = tex.backgroundName
+		end
 	end
 end
 

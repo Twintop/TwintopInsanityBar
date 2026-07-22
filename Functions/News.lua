@@ -19,6 +19,14 @@ local content = [====[
 
 - Add an ability icon beside the Cast Bar. Side (left/right/top/bottom), spacing, zoom to crop the stock border, and collapse border width to share a single border with the bar.
 
+### Target and Focus Cast Bars
+
+- Add standalone Target and Focus Cast Bars, tracking a unit's casts, channels, and empowers. Secret-safe, so they work on enemy casts where the timing is hidden.
+- Spell name, ability icon, remaining countdown, and total cast time, with fill coloring by interruptibility (hostile targets only).
+- Positioned independently of the main bar stack, center-upper by default and movable in Edit Mode.
+- Own Target/Focus Cast Bars options category, configurable per specialization.
+- New bar text variables including `$targetCastingSpellName`, `$targetCastTimeRemaining`, and the `$focus` equivalents.
+
 ---
 
 # 12.0.7.10-release (2026-07-19)

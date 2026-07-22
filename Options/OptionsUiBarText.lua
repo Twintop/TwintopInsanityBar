@@ -890,6 +890,10 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	-- anchor target for every spec (and the global bar text panel) here, just before Screen.
 	relativeToFrame[L["CastBar"]] = "CastBar"
 	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["CastBar"])
+	relativeToFrame[L["ResourceTargetCastbar"]] = "TargetCastBar"
+	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourceTargetCastbar"])
+	relativeToFrame[L["ResourceFocusCastbar"]] = "FocusCastBar"
+	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourceFocusCastbar"])
 
 	local containerAnchorOptions = TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
 	if #containerAnchorOptions > 0 then
@@ -2023,4 +2027,4 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	---@diagnostic disable-next-line: inject-field
 	parent.barTextVariablesPanel = variablesPanel
 	TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-end
+end

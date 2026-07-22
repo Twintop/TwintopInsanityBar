@@ -368,4 +368,9 @@ if locale == "enGB" then
     L["CastbarTargetClassColorTooltip"] = "When checked, the cast bar fill uses the class colour of your current target for every cast type, including empowered and uninterruptible casts, whenever that target is an enemy player. An active colour indicator still takes priority."
     L["CastbarTargetClassColorPvpOnlyTooltip"] = "When checked, the target's class colour is only used while PvP is enabled: you are PvP flagged, War Mode is on, or you are in a battleground or arena."
     L["CastbarTargetClassColorFriendlyTooltip"] = "When checked, friendly player targets also recolour the cast bar with their class colour, not just enemy players."
+
+    L["TargetCastbarColorsHeader"] = "Colours"
+    L["TargetCastbarInterruptColor"] = "Colour by Interruptibility"
+    L["TargetCastbarInterruptColorTooltip"] = "When checked, the bar fill uses the Uninterruptible colour while the cast cannot be interrupted."
+    L["TargetCastbarInterruptHostileOnlyTooltip"] = "When checked, the interruptible colouring only applies to hostile targets (a friendly cast reads as interruptible but cannot actually be interrupted)."
 end

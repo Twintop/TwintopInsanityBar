@@ -153,7 +153,15 @@ function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
 	wrapperFrame:SetFrameLevel(1)
 	-- Start with a default size - will be updated to encompass all bars in this tree
 	wrapperFrame:SetSize(100, 100)
-	wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
+	-- Standalone target/focus cast bars default to center-upper screen (non-overlapping), not the
+	-- main stack's below-center spot. They are their own screen-anchored roots.
+	if rootBarKey == "targetCastbar" then
+		wrapperFrame:SetPoint("TOP", UIParent, "TOP", 0, -120)
+	elseif rootBarKey == "focusCastbar" then
+		wrapperFrame:SetPoint("TOP", UIParent, "TOP", 0, -175)
+	else
+		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
+	end
 
 	-- Tag the frame with its root bar key so callbacks can identify it
 	wrapperFrame.trbRootBarKey = rootBarKey
