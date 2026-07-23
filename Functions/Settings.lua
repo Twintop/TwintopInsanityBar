@@ -9037,7 +9037,7 @@ function TRB.Functions.Settings:DefaultCastbarBarColors()
 	return {
 		bar = { color = "FFFFCC00", color2 = "FFFFCC00", gradientDirection = "disabled" },
 		channel = { color = "FF00CCFF", color2 = "FF00CCFF", gradientDirection = "disabled" },
-		uninterruptible = { color = "FF444444", color2 = "FF444444", gradientDirection = "disabled" },
+		uninterruptible = { color = "ff555555", color2 = "ff555555", gradientDirection = "disabled" },
 		uninterruptibleBorder = { color = "FF222222" },
 		border = { color = "FF000000" },
 		background = { color = "66000000" },
@@ -9233,7 +9233,7 @@ function TRB.Functions.Settings:DefaultTargetCastbarBarColors()
 		bar = { color = "FFFFCC00", color2 = "FFFFCC00", gradientDirection = "disabled" },
 		channel = { color = "FF00CCFF", color2 = "FF00CCFF", gradientDirection = "disabled" },
 		empower = { color = "FFFF8000", color2 = "FFFF8000", gradientDirection = "disabled" },
-		uninterruptible = { color = "FF444444", color2 = "FF444444", gradientDirection = "disabled" },
+		uninterruptible = { color = "ff555555", color2 = "ff555555", gradientDirection = "disabled" },
 		uninterruptibleBorder = { color = "FF222222" },
 		empowerStageLine = { color = "FFFFFFFF" },
 		border = { color = "FF000000" },
