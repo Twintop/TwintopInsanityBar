@@ -499,11 +499,20 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 		end
 	end
 
+	-- Determines whether a bar collapses to 0 in the bounding box. In Edit Mode (includeHidden),
+	-- only bars set to "Never Show" collapse; everything else previews at full size. Outside Edit
+	-- Mode, fall back to the normal layout visibility test (runtime/Druid-form aware).
+	local function isLayoutCollapsed(barKey)
+		if includeHidden then
+			return TRB.Functions.Bar:IsBarNeverShow(settings, barKey)
+		end
+		return not TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden)
+	end
+
 	-- Hidden bars use 0 height in the bounding-box calculation so the wrapper
 	-- doesn't reserve space for them. The actual container frames are also
 	-- collapsed to 0 height in ApplyBarGroupsLayout, matching this calculation.
-	-- Uses IsBarVisibleForLayout for runtime visibility (e.g., Druid forms).
-	if not TRB.Functions.Bar:IsBarVisibleForLayout(settings, rootBarKey, includeHidden) then
+	if isLayoutCollapsed(rootBarKey) then
 		baseHeight = 0
 	end
 
@@ -643,8 +652,9 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 				if childWidth > 0 or childHeight > 0 then
 					-- Hidden children use 0 height and 0 width so they collapse in the bounding box.
 					-- This matches ApplyBarGroupsLayout which sets their container to 0 for both.
-					-- Uses IsBarVisibleForLayout for runtime visibility (e.g., Druid forms).
-					local childIsHidden = child.barKey and not TRB.Functions.Bar:IsBarVisibleForLayout(settings, child.barKey, includeHidden)
+					-- A Never-Show child still recurses below as an invisible scaffold so its own
+					-- visible descendants stay positioned (gap collapses, child slides up).
+					local childIsHidden = child.barKey and isLayoutCollapsed(child.barKey)
 					local layoutHeight = childIsHidden and 0 or childHeight
 					local layoutWidth = childIsHidden and 0 or childWidth
 
@@ -828,24 +838,48 @@ function TRB.Functions.EditMode:RegisterAllTreeRoots()
 	-- Build the forest to find all tree roots
 	local forest = TRB.Functions.Bar:BuildAnchorForest(layoutSettings, barGroups, false, true)
 
-	-- Register each root
-	for rootBarKey, _ in pairs(forest) do
+	-- A tree is only rendered as a draggable Edit Mode frame if at least one bar in it is not
+	-- set to "Never Show". Trees where every bar is Never Show are collapsed away entirely.
+	local function treeHasVisibleBar(node)
+		if node.barKey and not TRB.Functions.Bar:IsBarNeverShow(layoutSettings, node.barKey) then
+			return true
+		end
+		for _, child in ipairs(node.children) do
+			if treeHasVisibleBar(child) then
+				return true
+			end
+		end
+		return false
+	end
+
+	---Hides a wrapper frame and its LibEditMode selection frame (if any).
+	local function hideWrapper(wrapperFrame)
+		wrapperFrame:Hide()
+		if LibEditMode.frameSelections and LibEditMode.frameSelections[wrapperFrame] then
+			local selection = LibEditMode.frameSelections[wrapperFrame]
+			if selection then
+				selection:Hide()
+			end
+		end
+	end
+
+	-- Register each root whose tree has a visible bar; collapse away all-Never-Show trees.
+	for rootBarKey, rootNode in pairs(forest) do
 		local rootGroup = barGroups[rootBarKey]
-		if rootGroup then
+		if rootGroup and treeHasVisibleBar(rootNode) then
 			self:RegisterTreeRoot(rootBarKey, rootGroup:GetContainerFrame())
+		else
+			local wrapperFrame = editModeWrapperFrames[rootBarKey]
+			if wrapperFrame then
+				hideWrapper(wrapperFrame)
+			end
 		end
 	end
 
 	-- Hide wrappers for roots that no longer exist in the forest
 	for existingRootKey, wrapperFrame in pairs(editModeWrapperFrames) do
 		if not forest[existingRootKey] then
-			wrapperFrame:Hide()
-			if LibEditMode.frameSelections and LibEditMode.frameSelections[wrapperFrame] then
-				local selection = LibEditMode.frameSelections[wrapperFrame]
-				if selection then
-					selection:Hide()
-				end
-			end
+			hideWrapper(wrapperFrame)
 		end
 	end
 end

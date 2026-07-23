@@ -695,6 +695,18 @@ function TRB.Classes.BarNode:ApplyIconBorderColor()
 	end
 end
 
+---Sets the side ability icon's border color directly from an ARGB string, independent of the node's
+---border cache. Used at construction to seed the icon with the bar's base border color so it doesn't
+---show the BackdropTemplate default (white) before any render/appearance pass populates the cache.
+---@param colorString string # ARGB hex color string
+function TRB.Classes.BarNode:SetIconBorderColorString(colorString)
+	if self.icon == nil or colorString == nil then
+		return
+	end
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
+	self.icon:SetBackdropBorderColor(r, g, b, a)
+end
+
 ---Sets the side ability icon's texture. Passing nil hides the icon.
 ---@param texture string|integer? # Texture path or fileID
 function TRB.Classes.BarNode:SetIconTexture(texture)

@@ -477,6 +477,7 @@ function TRB.Functions.Bar:HideResourceBar(force)
 				editContext, entries, snapshotData,
 				(specSettings and specSettings.settings) or nil
 			)
+			self:ApplyEditModeIconPreviews((specSettings and specSettings.settings) or nil, barGroups)
 			if TRB.Functions.Bar.RefreshWrapperPositioning then
 				TRB.Functions.Bar:RefreshWrapperPositioning()
 			end
@@ -2468,6 +2469,28 @@ function TRB.Functions.Bar:GetBarIconReservation(barSettings, barHeight)
 	}
 end
 
+---In Edit Mode, a visible bar that reserves a side icon strip has no live spell to show (cast bars,
+---in practice), so its icon box would render blank. Fill it with the default "?" placeholder so the
+---reserved strip is obviously an icon. Purely a preview aid: the live render path (Functions/Castbar,
+---Functions/TargetCastbar) reasserts the real icon -- or clears it -- outside Edit Mode.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+function TRB.Functions.Bar:ApplyEditModeIconPreviews(settings, barGroups)
+	if not settings or not barGroups then
+		return
+	end
+	for _, barKey in ipairs(self:GetAllBarKeys(barGroups)) do
+		local group = barGroups[barKey]
+		local node = group and group.GetNode and group:GetNode(1)
+		local barSettings = self:GetBarSettings(settings, barKey)
+		if node and barSettings and barSettings.icon and barSettings.icon.enabled
+			and group.currentAlpha and group.currentAlpha > 0 then
+			node:SetIconTexture(134400) -- inv-misc-questionmark placeholder
+			node:SetIconVisible(true)
+		end
+	end
+end
+
 ---Gets the rendered width of a bar group when available.
 ---@param barGroup TRB.Classes.BarGroup?
 ---@return number?
@@ -2822,6 +2845,23 @@ function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 		return not visibilitySetting.neverShow
 	end
 	return visibilitySetting.visibility ~= "never"
+end
+
+---Returns true when a bar's visibility is set to "Never Show". Unlike IsBarVisible, this
+---honors neverShow even for the runtime-driven cast bars and ignores includeHidden, so it
+---is the criterion Edit Mode uses to decide whether a bar (or a whole tree) is previewed.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string
+---@return boolean
+function TRB.Functions.Bar:IsBarNeverShow(settings, barKey)
+	local visKey = self:GetVisibilityKey(barKey)
+	local visibilitySetting = settings and settings.displayBar and settings.displayBar[visKey]
+	if not visibilitySetting then return false end
+	-- Support both new (neverShow) and legacy (visibility) formats
+	if visibilitySetting.neverShow ~= nil then
+		return visibilitySetting.neverShow == true
+	end
+	return visibilitySetting.visibility == "never"
 end
 
 ---Returns true when a bar is permanently hidden at layout time because a class/spec-specific
@@ -3598,6 +3638,17 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					nodeFrame:SetPoint(nodePoint, targetGroup.containerFrame, nodePoint, 0, 0)
 					-- groupBorder, not an icon-specific setting: the icon border matches the bar's
 					singleNode:ApplyIconLayout(side, iconReservation.size, iconReservation.spacing, groupBorder, iconReservation.zoom)
+					-- Seed the icon border with the bar's base color so it starts matching the bar instead of
+					-- the BackdropTemplate default (white). The cache the icon normally follows isn't populated
+					-- until the first appearance/render pass, which for cast bars only happens on an actual cast.
+					local iconColorSettings = config.colorsTable or (config.colorsKey and settings.colors[config.colorsKey])
+					local iconBorderColor = config.colors and config.colors.border and iconColorSettings and iconColorSettings[config.colors.border]
+					if type(iconBorderColor) == "table" then
+						iconBorderColor = iconBorderColor.color
+					end
+					if iconBorderColor then
+						singleNode:SetIconBorderColorString(iconBorderColor)
+					end
 					-- Only reveal it if something has actually assigned a texture; the render path owns
 					-- visibility from there (the castbar shows it only while a spell is casting).
 					singleNode:SetIconVisible(singleNode._iconTexture ~= nil)
@@ -3890,6 +3941,10 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 
 	local inEditMode = TRB.Functions.EditMode:IsInEditMode()
 	local barIsVisible = self:IsBarVisible(settings, barKey, inEditMode) and not self:IsBarTalentGatedHidden(barKey)
+	-- Edit Mode previews everything except bars set to "Never Show", which stay collapsed.
+	if inEditMode and self:IsBarNeverShow(settings, barKey) then
+		barIsVisible = false
+	end
 	local shouldInitiallyShow = barIsVisible
 	-- Castbar's on-screen visibility is driven entirely by active cast state (Functions/Castbar.lua),
 	-- so always construct it hidden outside Edit Mode. IsBarVisible special-cases the castbar to true
