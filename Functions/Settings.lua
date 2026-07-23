@@ -8413,7 +8413,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		TwintopInsanityBarSettings.core.displayText.migrations ~= nil then
 
 		if not TwintopInsanityBarSettings.core.displayText.migrations.targetCastBarText then
-			local entries = TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings("TargetCastBar", L["ResourceTargetCastbar"], "$targetCastingSpellName", "$targetCastTimeRemaining", "$targetCastTime")
+			local entries = TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings("TargetCastBar", L["ResourceTargetCastbar"], "$targetCastingSpellName", "$targetCastTimeRemaining", "$targetCastTime", 20, 20)
 			for x = 1, #entries do
 				table.insert(TwintopInsanityBarSettings.core.displayText.barText, entries[x])
 			end
@@ -8421,7 +8421,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 
 		if not TwintopInsanityBarSettings.core.displayText.migrations.focusCastBarText then
-			local entries = TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings("FocusCastBar", L["ResourceFocusCastbar"], "$focusCastingSpellName", "$focusCastTimeRemaining", "$focusCastTime")
+			local entries = TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings("FocusCastBar", L["ResourceFocusCastbar"], "$focusCastingSpellName", "$focusCastTimeRemaining", "$focusCastTime", 14, 12)
 			for x = 1, #entries do
 				table.insert(TwintopInsanityBarSettings.core.displayText.barText, entries[x])
 			end
@@ -9121,8 +9121,9 @@ end
 ---Gets the default Target/Focus Cast Bar behavior settings (dimensions + flags). Secret-safe render, so
 ---no tick/latency/pushback/empower overlay flags -- only the elements the secret-safe path supports.
 ---@param classic boolean?
+---@param unitKey string? # "targetCastbar" or "focusCastbar"; Target ships larger and above center
 ---@return table
-function TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic)
+function TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic, unitKey)
 	local settings = self:DefaultTargetCastbarBarDimensions(classic)
 	settings.height = 24
 	settings.castTimePrecision = 1
@@ -9135,6 +9136,13 @@ function TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic)
 	settings.classColorPvpOnly = false
 	settings.classColorFriendly = false
 	settings.icon = self:DefaultBarIconSettings()
+
+	if unitKey == "targetCastbar" then
+		settings.width = 500
+		settings.height = 40
+		settings.anchor.yOffset = 300
+	end
+
 	return settings
 end
 
@@ -9147,8 +9155,10 @@ end
 ---@param spellNameVar string # e.g. "$targetCastingSpellName"
 ---@param remainingVar string # e.g. "$targetCastTimeRemaining"
 ---@param castTimeVar string # e.g. "$targetCastTime"
+---@param leftFontSize number # Font size for the left (spell name) entry
+---@param rightFontSize number # Font size for the right (remaining / cast time) entry
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
-function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relativeToFrame, relativeToFrameName, spellNameVar, remainingVar, castTimeVar)
+function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relativeToFrame, relativeToFrameName, spellNameVar, remainingVar, castTimeVar, leftFontSize, rightFontSize)
 	return {
 		{
 			useDefaultFontColor = true,
@@ -9166,7 +9176,7 @@ function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relati
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = L["PositionLeft"],
-			fontSize = 16,
+			fontSize = leftFontSize,
 			fontOutline = "OUTLINE",
 			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
@@ -9183,7 +9193,7 @@ function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relati
 		{
 			useDefaultFontColor = true,
 			useDefaultFontFace = true,
-			useDefaultFontSize = true,
+			useDefaultFontSize = false,
 			useDefaultFontOutline = true,
 			useDefaultFontShadow = true,
 			enabled = true,
@@ -9196,7 +9206,7 @@ function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relati
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "RIGHT",
 			fontJustifyHorizontalName = L["PositionRight"],
-			fontSize = 14,
+			fontSize = rightFontSize,
 			fontOutline = "OUTLINE",
 			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
@@ -9270,7 +9280,7 @@ function TRB.Functions.Settings:InjectTargetCastbarDefaults(specDefaults, classi
 	-- independently movable via EditMode).
 	for _, key in ipairs({ "targetCastbar", "focusCastbar" }) do
 		if specDefaults.bars[key] == nil then
-			specDefaults.bars[key] = self:DefaultTargetCastbarBarSettings(classic)
+			specDefaults.bars[key] = self:DefaultTargetCastbarBarSettings(classic, key)
 		end
 		if specDefaults.colors.bars[key] == nil then
 			specDefaults.colors.bars[key] = self:DefaultTargetCastbarBarColors()

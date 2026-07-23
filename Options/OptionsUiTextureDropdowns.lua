@@ -213,6 +213,8 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(contr
 	end
 	-- Castbar is an all-spec bar; include it in every texture dropdown set without per-class wiring.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendCastbar(customBars)
+	-- Target and Focus Cast Bars are likewise all-spec; include them in every texture dropdown set.
+	TRB.Classes.BarTypeRegistry:GetInstance():AppendTargetFocusCastbars(customBars)
 
 	textures[variable.."Bar"] = newValue
 	textures[variable.."BarName"] = newName

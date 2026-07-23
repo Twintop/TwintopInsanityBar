@@ -1803,6 +1803,27 @@ function TRB.Classes.BarTypeRegistry:AppendCastbar(list)
 	list[#list + 1] = def
 end
 
+---Appends the Target and Focus Cast Bar definitions to a customBars list if registered and not already
+---present. Mirrors AppendCastbar so the all-spec target/focus bars appear everywhere without per-class wiring.
+---@param list TRB.Classes.BarTypeDefinition[]
+function TRB.Classes.BarTypeRegistry:AppendTargetFocusCastbars(list)
+	for _, key in ipairs({ "targetCastbar", "focusCastbar" }) do
+		local def = self.definitions[key]
+		if def ~= nil then
+			local exists = false
+			for _, d in ipairs(list) do
+				if d.key == key then
+					exists = true
+					break
+				end
+			end
+			if not exists then
+				list[#list + 1] = def
+			end
+		end
+	end
+end
+
 ---Gets the bar types that a spec uses based on its GetSpecConfiguration
 ---@param classId integer
 ---@param specId integer
@@ -2183,7 +2204,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			colorCurveType = nil,
 			visibilityKey = tc.key,
 			defaultDimensionsFunc = function(classic)
-				return TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic)
+				return TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic, tc.key)
 			end,
 			defaultColorsFunc = function()
 				return TRB.Functions.Settings:DefaultTargetCastbarBarColors()

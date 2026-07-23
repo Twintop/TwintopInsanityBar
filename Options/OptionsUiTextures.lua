@@ -45,6 +45,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	end
 	-- Castbar is an all-spec bar; include it in every textures panel without per-class wiring.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendCastbar(customBars)
+	-- Target and Focus Cast Bars are likewise all-spec; include them in every textures panel.
+	TRB.Classes.BarTypeRegistry:GetInstance():AppendTargetFocusCastbars(customBars)
 
 	if secondaryResourceString == nil then
 		secondaryResourceString = L["ResourceComboPoints"]
