@@ -427,6 +427,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public inVehicle boolean? # Hide when the player is in a vehicle
 ---@field public inPetBattle boolean? # Hide when the player is in a pet battle
 ---@field public onTaxi boolean? # Hide when the player is on a flight path
+---@field public isDead boolean? # Hide when the player is dead or a ghost
 
 ---@class trbBarVisibilitySetting
 ---@field public neverShow boolean # When true, the bar is unconditionally hidden regardless of conditions

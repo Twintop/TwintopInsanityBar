@@ -16,6 +16,7 @@ local content = [====[
 ## General
 
 - [#793](#793) Restict what bars are shown in Edit Mode to just those that are enabled.
+- Add a Dead option to Always Hide Bar When, hiding a bar while you are dead or a ghost. Available on all bars, including Cast Bars, and disabled by default.
 
 ### Cast Bars
 

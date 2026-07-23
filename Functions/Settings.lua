@@ -43,6 +43,7 @@ function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
 		inVehicle = false,
 		inPetBattle = true,
 		onTaxi = true,
+		isDead = false,
 	}
 end
 

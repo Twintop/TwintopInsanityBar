@@ -9,6 +9,7 @@ TRB.Functions = TRB.Functions or {}
 ---@field inVehicle boolean # Whether the player is currently in a vehicle
 ---@field inPetBattle boolean # Whether the player is currently in a pet battle
 ---@field onTaxi boolean # Whether the player is currently on a flight path
+---@field isDead boolean # Whether the player is currently dead or a ghost
 ---@field hasTarget boolean # Whether the player has a target selected
 ---@field targetIsFriendly boolean # Whether the current target is friendly
 ---@field targetIsEnemy boolean # Whether the current target is unfriendly
@@ -53,6 +54,7 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.inVehicle = params.inVehicle or false
 	self.inPetBattle = params.inPetBattle or false
 	self.onTaxi = params.onTaxi or false
+	self.isDead = params.isDead or false
 	self.hasTarget = params.hasTarget or false
 	self.targetIsFriendly = params.targetIsFriendly or false
 	self.targetIsEnemy = params.targetIsEnemy or false
@@ -113,6 +115,8 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		onTaxi = UnitOnTaxi("player") or false
 	end
 
+	local isDead = UnitIsDeadOrGhost("player") or false
+
 	local isDruid = TRB.Data.character.classId == 11
 	local druidForm = nil
 	if isDruid then
@@ -144,6 +148,7 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		inVehicle = TRB.Data.character.inVehicle or false,
 		inPetBattle = TRB.Data.character.inPetBattle or false,
 		onTaxi = onTaxi or false,
+		isDead = isDead or false,
 		hasTarget = hasTarget,
 		targetIsFriendly = targetIsFriendly,
 		targetIsEnemy = targetIsEnemy,
@@ -307,6 +312,9 @@ function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
 		return true
 	end
 	if conditions.onTaxi == true and context.onTaxi then
+		return true
+	end
+	if conditions.isDead == true and context.isDead then
 		return true
 	end
 	if HasMatchingDruidFormCondition(conditions, context) then

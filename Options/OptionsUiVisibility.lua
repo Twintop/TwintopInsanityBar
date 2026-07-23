@@ -195,7 +195,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		})
 	end
 
-	local hideConditionKeys = { "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi" }
+	local hideConditionKeys = { "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
 	local hideConditionLabels = {
 		isMountedAny = L["ShowBarVisibilityConditionIsMountedAny"],
 		isMountedGround = L["ShowBarVisibilityConditionIsMountedGround"],
@@ -206,11 +206,12 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
 		inPetBattle = L["ShowBarVisibilityConditionInPetBattle"],
 		onTaxi = L["ShowBarVisibilityConditionOnTaxi"],
+		isDead = L["ShowBarVisibilityConditionIsDead"],
 	}
 	local hideConditionGroups = {
 		{
 			title = L["ShowBarVisibilityGroupGeneral"],
-			keys = { "inVehicle", "inPetBattle", "onTaxi" },
+			keys = { "inVehicle", "inPetBattle", "onTaxi", "isDead" },
 		},
 		{
 			title = L["ShowBarVisibilityGroupMounting"],
@@ -244,9 +245,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		showKeys = castbarConditionKeys,
 		showLabels = castbarConditionLabels,
 		showGroups = { { title = L["ShowBarVisibilityGroupCasting"], keys = castbarConditionKeys } },
-		hideKeys = { "inVehicle" },
-		hideLabels = { inVehicle = L["ShowBarVisibilityConditionInVehicle"] },
-		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = { "inVehicle" } } },
+		hideKeys = { "inVehicle", "isDead" },
+		hideLabels = { inVehicle = L["ShowBarVisibilityConditionInVehicle"], isDead = L["ShowBarVisibilityConditionIsDead"] },
+		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = { "inVehicle", "isDead" } } },
 		supportsThresholds = false,
 	}
 	-- Target/Focus cast bars: a target can be any class, so Empowered is always offered (unlike the player
@@ -256,9 +257,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		showKeys = targetCastbarConditionKeys,
 		showLabels = castbarConditionLabels,
 		showGroups = { { title = L["ShowBarVisibilityGroupCasting"], keys = targetCastbarConditionKeys } },
-		hideKeys = { "inVehicle" },
-		hideLabels = { inVehicle = L["ShowBarVisibilityConditionInVehicle"] },
-		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = { "inVehicle" } } },
+		hideKeys = { "inVehicle", "isDead" },
+		hideLabels = { inVehicle = L["ShowBarVisibilityConditionInVehicle"], isDead = L["ShowBarVisibilityConditionIsDead"] },
+		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = { "inVehicle", "isDead" } } },
 		supportsThresholds = false,
 	}
 	local standardProfile = {

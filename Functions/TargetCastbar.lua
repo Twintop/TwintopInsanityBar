@@ -125,13 +125,22 @@ local function IsStateAllowed(visibility, state)
 	return conditions.casting == true
 end
 
----Whether a hard-hide condition (In Vehicle) currently suppresses the bar. The model keeps tracking while
+---Whether a hard-hide condition (In Vehicle, Dead) currently suppresses the bar. The model keeps tracking while
 ---force-hidden so the bar reappears mid-cast when the condition clears (mirrors the player castbar).
 ---@param visibility table?
 ---@return boolean
 local function IsForceHidden(visibility)
 	local hideConditions = visibility and visibility.hideConditions
-	return hideConditions ~= nil and hideConditions.inVehicle == true and UnitInVehicle("player") == true
+	if hideConditions == nil then
+		return false
+	end
+	if hideConditions.inVehicle == true and UnitInVehicle("player") == true then
+		return true
+	end
+	if hideConditions.isDead == true and UnitIsDeadOrGhost("player") == true then
+		return true
+	end
+	return false
 end
 
 ---Container alpha to rest at while no cast is active: activeAlpha when Always Show, else inactiveAlpha.
