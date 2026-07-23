@@ -1529,6 +1529,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
 	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield, Fire Blast charges); forces custom thresholds to static color mode
+	self.isCastbar = config.isCastbar or false -- Player/Target/Focus cast bar; display name already ends in "Cast Bar" so labels drop the redundant trailing "Bar"
 	self.endCapMode = config.endCapMode -- "all" for independent-node bars; nil/"highest" shows the cap only on the highest progressed node
 
 	return self
@@ -2175,6 +2176,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		colorCurveType = nil,
 		visibilityKey = "castbar",
+		isCastbar = true,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultCastbarBarDimensions(classic)
 		end,
@@ -2203,6 +2205,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			hasThresholds = false,
 			colorCurveType = nil,
 			visibilityKey = tc.key,
+			isCastbar = true,
 			defaultDimensionsFunc = function(classic)
 				return TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic, tc.key)
 			end,

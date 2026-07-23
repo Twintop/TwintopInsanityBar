@@ -3211,3 +3211,4 @@ L["CheckboxUseGlobalTooltip_FocusCastbarText"] = "When checked, the global Focus
 L["TabCastbars"] = "Cast Bars"
 L["ResourcePlayerCastbar"] = "Player Cast Bar"
 L["CheckboxUseGlobalPlayerCastbar"] = "Use global Player Cast Bar settings"
+L["CustomBarTextureCastbarBar"] = "%s Texture"

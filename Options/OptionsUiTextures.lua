@@ -166,7 +166,9 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	end
 	for _, barTypeDef in ipairs(customBars) do
 		local barKey = barTypeDef.key .. "Bar"
-		table.insert(barTextureItems, { key = barKey, label = string.format(L["CustomBarTextureBar"], barTypeDef.displayName), callback = function(newValue) StatusbarSetValue(barTypeDef.key, newValue) end })
+		-- Cast bar display names already end in "Bar", so use a label that omits the redundant trailing "Bar".
+		local barLabel = barTypeDef.isCastbar and L["CustomBarTextureCastbarBar"] or L["CustomBarTextureBar"]
+		table.insert(barTextureItems, { key = barKey, label = string.format(barLabel, barTypeDef.displayName), callback = function(newValue) StatusbarSetValue(barTypeDef.key, newValue) end })
 	end
 
 	for i, item in ipairs(barTextureItems) do
