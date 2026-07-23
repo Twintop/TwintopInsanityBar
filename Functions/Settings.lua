@@ -8351,9 +8351,21 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		TwintopInsanityBarSettings.core.displayText.migrations ~= nil and
 		not TwintopInsanityBarSettings.core.displayText.migrations.castBarText then
 
-		local castBarTextSettings = TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
-		for x = 1, #castBarTextSettings do
-			table.insert(TwintopInsanityBarSettings.core.displayText.barText, castBarTextSettings[x])
+		-- Skip the insert if CastBar entries already exist (flag-missing imported/cross-build saves),
+		-- otherwise the defaults get duplicated on top of the user's existing cast bar text.
+		local hasCastBarEntry = false
+		for _, entry in ipairs(TwintopInsanityBarSettings.core.displayText.barText) do
+			if entry.position ~= nil and entry.position.relativeToFrame == "CastBar" then
+				hasCastBarEntry = true
+				break
+			end
+		end
+
+		if not hasCastBarEntry then
+			local castBarTextSettings = TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
+			for x = 1, #castBarTextSettings do
+				table.insert(TwintopInsanityBarSettings.core.displayText.barText, castBarTextSettings[x])
+			end
 		end
 
 		TwintopInsanityBarSettings.core.displayText.migrations.castBarText = true

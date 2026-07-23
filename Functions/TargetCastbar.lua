@@ -652,7 +652,7 @@ local function BeginFadeOut(groupKey)
 	local _, _, _, visibility = GetBarConfig(groupKey)
 	local delay = (visibility and visibility.fadeDelay) or 0
 	local duration = (visibility and visibility.fadeDuration) or 0
-	if IsForceHidden(visibility) or (delay <= 0 and duration <= 0 and GetIdleAlpha(visibility) <= 0) then
+	if not IsEnabled(visibility) or IsForceHidden(visibility) or (delay <= 0 and duration <= 0 and GetIdleAlpha(visibility) <= 0) then
 		fadeStart[groupKey] = nil
 		ApplyInactiveState(groupKey)
 	else
@@ -698,19 +698,28 @@ updaterFrame:SetScript("OnUpdate", function()
 		local model = TRB.Data[u.modelKey]
 		local _, _, _, visibility = GetBarConfig(u.groupKey)
 		if model ~= nil and model:IsActive() then
-			needsUpdater = true
-			if IsForceHidden(visibility) then
-				-- Hard-hide (In Vehicle) mid-cast: hide but keep tracking so it reappears when it clears.
-				forceHidden[u.groupKey] = true
-				ApplyHiddenState(u.groupKey)
-			elseif forceHidden[u.groupKey] then
-				-- Just cleared the hard-hide: rebind the native fill timer (ApplyHiddenState cleared it).
+			if not IsStateAllowed(visibility, model.state) then
+				-- Bar disabled (Never Show / nothing checked) or this cast type isn't an enabled condition:
+				-- render nothing even though the model keeps tracking, so a disabled bar never flashes an
+				-- empty frame while the unit casts. Mirrors BeginRender's inactive path; the updater then
+				-- self-hides once no bar needs it.
 				forceHidden[u.groupKey] = nil
-				anyActive = true
-				ApplyVisibleState(u.groupKey, model)
+				ApplyInactiveState(u.groupKey)
 			else
-				anyActive = true
-				ReassertVisibility(u.groupKey, model)
+				needsUpdater = true
+				if IsForceHidden(visibility) then
+					-- Hard-hide (In Vehicle) mid-cast: hide but keep tracking so it reappears when it clears.
+					forceHidden[u.groupKey] = true
+					ApplyHiddenState(u.groupKey)
+				elseif forceHidden[u.groupKey] then
+					-- Just cleared the hard-hide: rebind the native fill timer (ApplyHiddenState cleared it).
+					forceHidden[u.groupKey] = nil
+					anyActive = true
+					ApplyVisibleState(u.groupKey, model)
+				else
+					anyActive = true
+					ReassertVisibility(u.groupKey, model)
+				end
 			end
 		elseif fadeStart[u.groupKey] ~= nil then
 			-- Fading out after a cast: hold for fadeDelay, then interpolate activeAlpha -> idleAlpha.
@@ -790,8 +799,10 @@ local function OnUnitEvent(unit, event, spellId)
 		model:Stop()
 		BeginFadeOut(entry.groupKey)
 	elseif event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
-		-- The DurationObject reflects the new timing automatically; just re-assert the render.
-		if model:IsActive() then
+		-- The DurationObject reflects the new timing automatically; just re-assert the render -- but only
+		-- when this bar + cast type is actually allowed to show, so a disabled bar stays hidden.
+		local _, _, _, visibility = GetBarConfig(entry.groupKey)
+		if model:IsActive() and IsStateAllowed(visibility, model.state) then
 			ApplyVisibleState(entry.groupKey, model)
 		end
 	end
