@@ -605,6 +605,12 @@ function TRB.Classes.BarNode:GetFrame()
 	return self.frame
 end
 
+---Returns the side ability icon frame, or nil if this node has no icon (icon feature disabled).
+---@return TRB.Classes.BarNode.Icon?
+function TRB.Classes.BarNode:GetIconFrame()
+	return self.icon
+end
+
 ---Creates the side ability icon frame on first use. Parented to the node's parent (the group container)
 ---rather than the node, since the icon sits in the strip the node was inset out of.
 ---@return TRB.Classes.BarNode.Icon

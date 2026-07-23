@@ -4,6 +4,23 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
 local containerAnchorPrefix = "Container::"
+
+-- Cast bar anchor keys → their bar group key. Both the bar and its side icon resolve through the same node.
+local castbarAnchorGroupKeys = {
+	CastBar = "castbar",
+	TargetCastBar = "targetCastbar",
+	FocusCastBar = "focusCastbar",
+	CastBarIcon = "castbar",
+	TargetCastBarIcon = "targetCastbar",
+	FocusCastBarIcon = "focusCastbar",
+}
+
+-- Which of the above keys target the side icon frame rather than the bar itself.
+local castbarIconAnchors = {
+	CastBarIcon = true,
+	TargetCastBarIcon = true,
+	FocusCastBarIcon = true,
+}
 local containerAnchorLabelByResourceType = {
 	AngelicFeather = L["AngelicFeatherContainer"],
 	ArcaneCharges = L["ArcaneChargesContainer"],
@@ -110,15 +127,21 @@ function TRB.Functions.BarText:GetAnchorFrame(relativeToFrame, classId, specId)
 	end
 
 	-- Castbar is an all-spec bar not handled by any class's per-spec GetBarTextFrame; resolve it here
-	-- centrally so bar text can anchor to it regardless of class/spec.
-	if relativeToFrame == "CastBar" or relativeToFrame == "TargetCastBar" or relativeToFrame == "FocusCastBar" then
-		local groupKey = relativeToFrame == "TargetCastBar" and "targetCastbar"
-			or relativeToFrame == "FocusCastBar" and "focusCastbar" or "castbar"
+	-- centrally so bar text can anchor to it (or its side icon) regardless of class/spec.
+	local castbarGroupKey = castbarAnchorGroupKeys[relativeToFrame]
+	if castbarGroupKey ~= nil then
+		local wantsIcon = castbarIconAnchors[relativeToFrame]
 		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-		local barGroup = barGroups and barGroups[groupKey]
+		local barGroup = barGroups and barGroups[castbarGroupKey]
 		if barGroup ~= nil then
 			local node = barGroup:GetNode(1)
 			if node ~= nil then
+				if wantsIcon then
+					local iconFrame = node:GetIconFrame()
+					-- The icon only shows while a spell is casting; track its live shown state, not just the group's.
+					local isVisible = barGroup.isVisible and node.isVisible and iconFrame ~= nil and iconFrame:IsShown()
+					return iconFrame, true, isVisible == true
+				end
 				local isVisible = barGroup.isVisible and node.isVisible
 				return node:GetFrame(), true, isVisible
 			end
@@ -164,6 +187,10 @@ local function BarGroupContainsFrame(frame, barGroup)
 	if barGroup.GetNodes then
 		for _, node in ipairs(barGroup:GetNodes()) do
 			if node and node.GetFrame and frame == node:GetFrame() then
+				return true
+			end
+			-- Bar text can anchor to a node's side icon frame too, so treat that as belonging to the group.
+			if node and node.GetIconFrame and frame == node:GetIconFrame() then
 				return true
 			end
 		end

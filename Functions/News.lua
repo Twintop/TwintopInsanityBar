@@ -23,6 +23,7 @@ local content = [====[
 - Add an ability icon beside the Cast Bar. Side (left/right/top/bottom), spacing, zoom to crop the stock border, and collapse border width to share a single border with the bar.
 - Add standalone Target and Focus Cast Bars, tracking a unit's casts, channels, and empowers. Secret-safe, so they work on enemy casts where the timing is hidden.
 - New bar text variables including `$targetCastingSpellName`, `$targetCastTimeRemaining`, and the `$focus` equivalents.
+- Cast Bar, Target Cast Bar, and Focus Cast Bar ability icons are bar text anchor targets -- text can be positioned relative to the icon frame like any other bar.
 
 ---
 
