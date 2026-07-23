@@ -28,7 +28,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public isSecret boolean # Whether this unit's cast queries produce secret values (branchable)
 ---@field public spellId any # Spell id from the event (may be a secret number; nil when unavailable)
 ---@field public spellName any # Spell name for bar text (string or secret string)
----@field public spellIconId any # Icon file id for the side icon (number or secret number)
+---@field public spellIconId any # Icon for the side icon: cast texture (arg 3) preferred, GetSpellInfo iconID fallback (may be secret)
 ---@field public castTimeMs any # Base cast time in ms from GetSpellInfo (may be secret); nil if unknown
 ---@field public notInterruptible any # Interruptible flag (secret boolean) for EvaluateColorFromBoolean
 ---@field public durationObject any # DurationObject driving the fill + remaining countdown
@@ -63,11 +63,15 @@ end
 
 ---Captures the spell display data (name/icon/base cast time) for a spellId. The id and results may be
 ---secret; they are stored raw for display sinks and never compared. Populates spellName/spellIconId/castTimeMs.
+---The cast texture (UnitCastingInfo/UnitChannelInfo arg 3) is the icon Blizzard's own cast bar draws and is
+---always present for the actual cast, so it wins over GetSpellInfo's iconID, which is nil for many NPC/mob
+---spells the client spell database can't resolve by id.
 ---@param spellId any
-local function CaptureSpellData(self, spellId)
+---@param castTexture any # Cast texture from the query API (may be secret); nil to fall back to iconID
+local function CaptureSpellData(self, spellId, castTexture)
 	self.spellId = spellId
 	self.spellName = nil
-	self.spellIconId = nil
+	self.spellIconId = castTexture
 	self.castTimeMs = nil
 	if spellId == nil then
 		return
@@ -77,7 +81,9 @@ local function CaptureSpellData(self, spellId)
 		return
 	end
 	self.spellName = info.name
-	self.spellIconId = info.iconID
+	if self.spellIconId == nil then
+		self.spellIconId = info.iconID
+	end
 	self.castTimeMs = info.castTime
 end
 
@@ -97,8 +103,8 @@ function TRB.Classes.TargetCastbar:StartCast(spellId)
 	self:Reset()
 	self.state = "cast"
 	CaptureSecrecy(self)
-	local _, _, _, _, _, _, _, notInterruptible, infoSpellId = UnitCastingInfo(self.unit)
-	CaptureSpellData(self, spellId ~= nil and spellId or infoSpellId)
+	local _, _, texture, _, _, _, _, notInterruptible, infoSpellId = UnitCastingInfo(self.unit)
+	CaptureSpellData(self, spellId ~= nil and spellId or infoSpellId, texture)
 	self.notInterruptible = notInterruptible
 	self.durationObject = UnitCastingDuration and UnitCastingDuration(self.unit) or nil
 end
@@ -109,8 +115,8 @@ function TRB.Classes.TargetCastbar:StartChannel(spellId)
 	self:Reset()
 	self.state = "channel"
 	CaptureSecrecy(self)
-	local _, _, _, _, _, _, notInterruptible, infoSpellId = UnitChannelInfo(self.unit)
-	CaptureSpellData(self, spellId ~= nil and spellId or infoSpellId)
+	local _, _, texture, _, _, _, notInterruptible, infoSpellId = UnitChannelInfo(self.unit)
+	CaptureSpellData(self, spellId ~= nil and spellId or infoSpellId, texture)
 	self.notInterruptible = notInterruptible
 	self.durationObject = (UnitChannelDuration and UnitChannelDuration(self.unit)) or nil
 end
@@ -123,8 +129,8 @@ function TRB.Classes.TargetCastbar:StartEmpower(spellId)
 	self:Reset()
 	self.state = "empower"
 	CaptureSecrecy(self)
-	local _, _, _, _, _, _, notInterruptible, infoSpellId, _, numStages = UnitChannelInfo(self.unit)
-	CaptureSpellData(self, spellId ~= nil and spellId or infoSpellId)
+	local _, _, texture, _, _, _, notInterruptible, infoSpellId, _, numStages = UnitChannelInfo(self.unit)
+	CaptureSpellData(self, spellId ~= nil and spellId or infoSpellId, texture)
 	self.notInterruptible = notInterruptible
 	self.numEmpowerStages = (type(numStages) == "number" and numStages) or 0
 	self.durationObject = (UnitEmpoweredChannelDuration and UnitEmpoweredChannelDuration(self.unit))
