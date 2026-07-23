@@ -1493,6 +1493,86 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
+	-- Target/Focus cast bars mirror the player cast bar's per-section "Use Global" flags: Dimensions
+	-- (position/size/icon), Colors (fill/interrupt/border/background), and Empower (empower fill color +
+	-- stage lines). Operates on the current cache tables so it composes with the castbar merge above, and
+	-- always shallow-copies before mutating so spec.bars / spec.colors.bars are never touched.
+	for _, unitKey in ipairs({ "targetCastbar", "focusCastbar" }) do
+		local coreBar = core.bars and core.bars[unitKey]
+		local currentBars = specCache.settings.bars
+		local specBar = currentBars and currentBars[unitKey]
+		local useDims = s[unitKey .. "Dimensions"]
+		local useColors = s[unitKey .. "Colors"]
+		local useEmpower = s[unitKey .. "Empower"]
+		local useText = s[unitKey .. "Text"]
+		if coreBar and specBar and (useDims or useColors or useEmpower or useText) then
+			local mergedBar = {}
+			for k, v in pairs(specBar) do
+				mergedBar[k] = v
+			end
+			if useDims then
+				mergedBar.width = coreBar.width
+				mergedBar.height = coreBar.height
+				mergedBar.border = coreBar.border
+				mergedBar.xPos = coreBar.xPos
+				mergedBar.yPos = coreBar.yPos
+				mergedBar.anchor = coreBar.anchor
+				mergedBar.fillDirection = coreBar.fillDirection
+				mergedBar.icon = coreBar.icon
+			end
+			if useColors then
+				mergedBar.interruptColor = coreBar.interruptColor
+				mergedBar.interruptHostileOnly = coreBar.interruptHostileOnly
+			end
+			if useEmpower then
+				mergedBar.showEmpowerStages = coreBar.showEmpowerStages
+				mergedBar.empowerStageLineWidth = coreBar.empowerStageLineWidth
+			end
+			if useText then
+				mergedBar.classColor = coreBar.classColor
+				mergedBar.classColorPvpOnly = coreBar.classColorPvpOnly
+				mergedBar.classColorFriendly = coreBar.classColorFriendly
+				mergedBar.castTimePrecision = coreBar.castTimePrecision
+				mergedBar.durationPrecision = coreBar.durationPrecision
+			end
+			local mergedBars = {}
+			for k, v in pairs(currentBars) do
+				mergedBars[k] = v
+			end
+			mergedBars[unitKey] = mergedBar
+			specCache.settings.bars = mergedBars
+		end
+
+		local coreColors = core.colors and core.colors.bars and core.colors.bars[unitKey]
+		local currentColorBars = specCache.settings.colors.bars
+		local specColors = currentColorBars and currentColorBars[unitKey]
+		if coreColors and specColors and (useColors or useEmpower) then
+			local mergedColors = {}
+			for k, v in pairs(specColors) do
+				mergedColors[k] = v
+			end
+			if useColors then
+				mergedColors.bar = coreColors.bar
+				mergedColors.channel = coreColors.channel
+				mergedColors.uninterruptible = coreColors.uninterruptible
+				mergedColors.uninterruptibleBorder = coreColors.uninterruptibleBorder
+				mergedColors.border = coreColors.border
+				mergedColors.background = coreColors.background
+				mergedColors.endCap = coreColors.endCap
+			end
+			if useEmpower then
+				mergedColors.empower = coreColors.empower
+				mergedColors.empowerStageLine = coreColors.empowerStageLine
+			end
+			local mergedColorBars = {}
+			for k, v in pairs(currentColorBars) do
+				mergedColorBars[k] = v
+			end
+			mergedColorBars[unitKey] = mergedColors
+			specCache.settings.colors.bars = mergedColorBars
+		end
+	end
+
 	if s.displayBar then
 		-- Create a deep copy to avoid modifying the global displayBar object
 		specCache.settings.displayBar = {}

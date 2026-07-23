@@ -292,6 +292,33 @@ TRB.Functions.OptionsUi.Tabs.TabKeys = {
 	BarVisibility = "barVisibility",
 }
 
+---Builds the nested Cast Bar sub-tab group (player / target / focus) inside a spec's Cast Bar tab.
+---Each sub-tab is scoped to the given spec so its settings can be overridden per-spec. The namePrefix
+---never matches the castbar spec map, so BuildTabGroup's auto-injection is skipped here. Hosted in a
+---manual (non-scroll) container so each sub-tab supplies its own scroll frame.
+---@param parent Frame # The Cast Bar tab's manual container frame
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(parent, classId, specId)
+	if parent == nil then
+		return
+	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = "CastbarInner_" .. tostring(className) .. "_" .. tostring(specName)
+	local innerTabs = {
+		{ "castbar", TRB.Localization["ResourcePlayerCastbar"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, classId, specId, TRB.Functions.OptionsUi.Castbar:SpecUsesEmpower(classId, specId))
+		end },
+		{ "target", TRB.Localization["ResourceTargetCastbar"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, classId, specId, "targetCastbar")
+		end },
+		{ "focus", TRB.Localization["ResourceFocusCastbar"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, classId, specId, "focusCastbar")
+		end },
+	}
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10)
+end
+
 ---Builds a dynamic set of tabs and tabsheets for an options panel.
 ---Tabs automatically wrap to multiple rows when they would exceed the parent frame's width.
 ---@param parent Frame The parent frame to attach tabs to (e.g., the spec display panel)
@@ -335,11 +362,13 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 			end
 			table.insert(tabDefinitions, insertIndex, {
 				"castbar",
-				TRB.Localization["TabCastbar"],
+				TRB.Localization["TabCastbars"],
 				oUi.tabWidth.small,
 				function(scrollChild)
-					TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, cId, sId, TRB.Functions.OptionsUi.Castbar:SpecUsesEmpower(cId, sId))
-				end
+					-- Nested sub-tabs (player / target / focus), each scoped to this spec.
+					TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(scrollChild, cId, sId)
+				end,
+				true -- manual container: the inner sub-tabs provide their own scroll frames
 			})
 		end
 	end
@@ -476,4 +505,4 @@ function TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(displayPanel, tabId)
 end
 
 
-TRB.Functions.OptionsUi.TabKeys = TRB.Functions.OptionsUi.Tabs.TabKeys
+TRB.Functions.OptionsUi.TabKeys = TRB.Functions.OptionsUi.Tabs.TabKeys

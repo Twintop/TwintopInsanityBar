@@ -22,9 +22,13 @@ local content = [====[
 ### Target and Focus Cast Bars
 
 - Add standalone Target and Focus Cast Bars, tracking a unit's casts, channels, and empowers. Secret-safe, so they work on enemy casts where the timing is hidden.
-- Spell name, ability icon, remaining countdown, and total cast time, with fill coloring by interruptibility (hostile targets only).
+- Spell name, ability icon, remaining countdown, and total cast time, with fill and border coloring by interruptibility (hostile targets only).
+- Distinct fill color for empowered casts (differentiated from cast and channel), plus empower stage boundary lines with a show toggle, line color, and line width.
+- Bar cap (end cap) support, and the border, background, and bar cap are available as Color Indicator targets, matching the player Cast Bar.
+- Additional Settings section: color the fill by the monitored unit's class (Target by target, Focus by focus; PvP-only and friendly sub-options), plus cast time and duration decimal precision.
 - Positioned independently of the main bar stack, center-upper by default and movable in Edit Mode.
-- Own Target/Focus Cast Bars options category, configurable per specialization.
+- Configured under the Cast Bar tab, which now nests Cast Bar, Target Cast Bar, and Focus Cast Bar sub-tabs; per-section Use Global toggles (dimensions, colors, empower) override the global defaults per specialization.
+- Controlled through the Visibility / Bar Display system like the player Cast Bar: show conditions per cast state (casting, channeling, empowered), an In Vehicle hide condition, Never/Always Show, and active/inactive alpha with fade.
 - New bar text variables including `$targetCastingSpellName`, `$targetCastTimeRemaining`, and the `$focus` equivalents.
 
 ---

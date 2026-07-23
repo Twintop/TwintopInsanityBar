@@ -157,7 +157,7 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 
 	-- Dimensions / anchoring (reuses the shared custom-bar dimensions generator, which also builds
 	-- the castbarDimensions use-global / bulk-toggle row)
-	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, castbarDef, L["ResourceCastbar"], "castbarDimensions")
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, castbarDef, L["ResourcePlayerCastbar"], "castbarDimensions")
 	yCoord = yCoord - 60
 
 	-- Side ability icon (generic; copied under the castbarDimensions global-settings section)

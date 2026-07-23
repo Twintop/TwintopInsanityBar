@@ -76,9 +76,29 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		},
 		{
 			key = "castbar",
-			label = L["BarVisibilityBarNameCastbar"],
+			label = L["ResourcePlayerCastbar"],
 			elements = castbarElements,
 			gradientExcluded = { bar = true, channel = true, tick = true }
+		},
+		-- Target/Focus cast bars: only border/background/endCap are targetable (the fill is secret-driven
+		-- per cast state), and all three take a gradient curve, same as the health bar's elements.
+		{
+			key = "targetCastbar",
+			label = L["BarVisibilityBarNameTargetCastbar"],
+			elements = {
+				{ key = "border", label = L["BarElementBorder"] },
+				{ key = "background", label = L["BarElementBackground"] },
+				{ key = "endCap", label = L["EndCap"] },
+			}
+		},
+		{
+			key = "focusCastbar",
+			label = L["BarVisibilityBarNameFocusCastbar"],
+			elements = {
+				{ key = "border", label = L["BarElementBorder"] },
+				{ key = "background", label = L["BarElementBackground"] },
+				{ key = "endCap", label = L["EndCap"] },
+			}
 		},
 	}
 end

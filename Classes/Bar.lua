@@ -2145,7 +2145,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 	-- generic snapshot-value path, so minMaxMode is "custom" and colorCurveType is nil.
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "castbar",
-		displayName = L["ResourceCastbar"],
+		displayName = L["ResourcePlayerCastbar"],
 		isMultiNode = false,
 		maxNodes = 1,
 		hasSameColor = false,

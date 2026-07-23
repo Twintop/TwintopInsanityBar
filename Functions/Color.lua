@@ -816,6 +816,12 @@ TRB.Data.resolvedIndicators = {
 	healthBar = {},
 	---@type table<string, string|table>
 	castbar = {},
+	-- Target/Focus cast bars: shared bars like the player castbar, resolved the same way. Only border,
+	-- background, and endCap are targetable (the fill is secret-driven per cast state), so no fill entries.
+	---@type table<string, string>
+	targetCastbar = {},
+	---@type table<string, string>
+	focusCastbar = {},
 	-- The active gradient (secret-value) indicator, or nil. Its color isn't resolved here like the flat ones:
 	-- a gradient is a curve from whatever color the element would otherwise use up to the indicator's color,
 	-- and only the render path knows that base color. So the indicator itself is parked and the consumer
@@ -857,8 +863,12 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 	local resolved = TRB.Data.resolvedIndicators
 	local healthBar = resolved.healthBar
 	local castbar = resolved.castbar
+	local targetCastbar = resolved.targetCastbar
+	local focusCastbar = resolved.focusCastbar
 	wipe(healthBar)
 	wipe(castbar)
+	wipe(targetCastbar)
+	wipe(focusCastbar)
 
 	local character = TRB.Data.character
 	resolved.compositeKey = character.compositeKey
@@ -894,6 +904,10 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 						targetColors = healthBar
 					elseif barKey == "castbar" then
 						targetColors = castbar
+					elseif barKey == "targetCastbar" then
+						targetColors = targetCastbar
+					elseif barKey == "focusCastbar" then
+						targetColors = focusCastbar
 					else
 						targetColors = barColorMap and barColorMap[barKey]
 					end

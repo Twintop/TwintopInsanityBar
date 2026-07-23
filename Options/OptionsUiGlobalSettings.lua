@@ -36,16 +36,35 @@ local globalSettingDefinitions = {
 	-- useGlobalLabel gives their checkboxes distinct wording so users aren't sent looking in the
 	-- normal Global Options frame. Field-level paths so copies never clobber spec-only data
 	-- (enabled, tickProfiles).
-	castbarDimensions = { checkboxSuffix = "castbarDimensions", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalCastbar"], sectionLabel = L["CopyMenuSection_castbarDimensions"],
+	castbarDimensions = { checkboxSuffix = "castbarDimensions", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarDimensions"],
 		paths = { {"bars", "castbar", "width"}, {"bars", "castbar", "height"}, {"bars", "castbar", "border"}, {"bars", "castbar", "xPos"}, {"bars", "castbar", "yPos"}, {"bars", "castbar", "anchor"}, {"bars", "castbar", "fillDirection"}, {"bars", "castbar", "icon"} } },
-	castbarColors   = { checkboxSuffix = "castbarColors",   tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalCastbar"], sectionLabel = L["CopyMenuSection_castbarColors"],
+	castbarColors   = { checkboxSuffix = "castbarColors",   tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarColors"],
 		paths = { {"colors", "bars", "castbar", "bar"}, {"colors", "bars", "castbar", "channel"}, {"colors", "bars", "castbar", "uninterruptible"}, {"colors", "bars", "castbar", "uninterruptibleBorder"}, {"colors", "bars", "castbar", "border"}, {"colors", "bars", "castbar", "background"}, {"colors", "bars", "castbar", "endCap"} } },
-	castbarOverlays = { checkboxSuffix = "castbarOverlays", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalCastbar"], sectionLabel = L["CopyMenuSection_castbarOverlays"],
+	castbarOverlays = { checkboxSuffix = "castbarOverlays", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarOverlays"],
 		paths = { {"colors", "bars", "castbar", "latency"}, {"colors", "bars", "castbar", "pushback"}, {"colors", "bars", "castbar", "tick"} } },
-	castbarEmpower  = { checkboxSuffix = "castbarEmpower",  tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalCastbar"], sectionLabel = L["CopyMenuSection_castbarEmpower"],
+	castbarEmpower  = { checkboxSuffix = "castbarEmpower",  tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarEmpower"],
 		paths = { {"colors", "bars", "castbar", "empowerStages"}, {"bars", "castbar", "empowerSegmentedFill"} } },
-	castbarText     = { checkboxSuffix = "castbarText",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalCastbar"], sectionLabel = L["CopyMenuSection_castbarText"],
+	castbarText     = { checkboxSuffix = "castbarText",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarText"],
 		paths = { {"bars", "castbar", "castTimePrecision"}, {"bars", "castbar", "durationPrecision"}, {"bars", "castbar", "latencyPrecision"}, {"bars", "castbar", "targetClassColor"}, {"bars", "castbar", "targetClassColorPvpOnly"}, {"bars", "castbar", "targetClassColorFriendly"} } },
+	-- Target/Focus cast bars mirror the player cast bar's per-section "Use Global" toggles: Dimensions
+	-- (position/size/icon), Colors (fill/interrupt/border/background), and Empower (empower fill color +
+	-- stage lines). Secret-safe render, so no latency/pushback/tick overlays section.
+	targetCastbarDimensions = { checkboxSuffix = "targetCastbarDimensions", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarDimensions"],
+		paths = { {"bars", "targetCastbar", "width"}, {"bars", "targetCastbar", "height"}, {"bars", "targetCastbar", "border"}, {"bars", "targetCastbar", "xPos"}, {"bars", "targetCastbar", "yPos"}, {"bars", "targetCastbar", "anchor"}, {"bars", "targetCastbar", "fillDirection"}, {"bars", "targetCastbar", "icon"} } },
+	targetCastbarColors     = { checkboxSuffix = "targetCastbarColors",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarColors"],
+		paths = { {"bars", "targetCastbar", "interruptColor"}, {"bars", "targetCastbar", "interruptHostileOnly"}, {"colors", "bars", "targetCastbar", "bar"}, {"colors", "bars", "targetCastbar", "channel"}, {"colors", "bars", "targetCastbar", "uninterruptible"}, {"colors", "bars", "targetCastbar", "uninterruptibleBorder"}, {"colors", "bars", "targetCastbar", "border"}, {"colors", "bars", "targetCastbar", "background"}, {"colors", "bars", "targetCastbar", "endCap"} } },
+	targetCastbarEmpower    = { checkboxSuffix = "targetCastbarEmpower",    tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarEmpower"],
+		paths = { {"bars", "targetCastbar", "showEmpowerStages"}, {"bars", "targetCastbar", "empowerStageLineWidth"}, {"colors", "bars", "targetCastbar", "empower"}, {"colors", "bars", "targetCastbar", "empowerStageLine"} } },
+	targetCastbarText       = { checkboxSuffix = "targetCastbarText",       tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarText"],
+		paths = { {"bars", "targetCastbar", "classColor"}, {"bars", "targetCastbar", "classColorPvpOnly"}, {"bars", "targetCastbar", "classColorFriendly"}, {"bars", "targetCastbar", "castTimePrecision"}, {"bars", "targetCastbar", "durationPrecision"} } },
+	focusCastbarDimensions  = { checkboxSuffix = "focusCastbarDimensions",  tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarDimensions"],
+		paths = { {"bars", "focusCastbar", "width"}, {"bars", "focusCastbar", "height"}, {"bars", "focusCastbar", "border"}, {"bars", "focusCastbar", "xPos"}, {"bars", "focusCastbar", "yPos"}, {"bars", "focusCastbar", "anchor"}, {"bars", "focusCastbar", "fillDirection"}, {"bars", "focusCastbar", "icon"} } },
+	focusCastbarColors      = { checkboxSuffix = "focusCastbarColors",      tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarColors"],
+		paths = { {"bars", "focusCastbar", "interruptColor"}, {"bars", "focusCastbar", "interruptHostileOnly"}, {"colors", "bars", "focusCastbar", "bar"}, {"colors", "bars", "focusCastbar", "channel"}, {"colors", "bars", "focusCastbar", "uninterruptible"}, {"colors", "bars", "focusCastbar", "uninterruptibleBorder"}, {"colors", "bars", "focusCastbar", "border"}, {"colors", "bars", "focusCastbar", "background"}, {"colors", "bars", "focusCastbar", "endCap"} } },
+	focusCastbarEmpower     = { checkboxSuffix = "focusCastbarEmpower",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarEmpower"],
+		paths = { {"bars", "focusCastbar", "showEmpowerStages"}, {"bars", "focusCastbar", "empowerStageLineWidth"}, {"colors", "bars", "focusCastbar", "empower"}, {"colors", "bars", "focusCastbar", "empowerStageLine"} } },
+	focusCastbarText        = { checkboxSuffix = "focusCastbarText",        tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarText"],
+		paths = { {"bars", "focusCastbar", "classColor"}, {"bars", "focusCastbar", "classColorPvpOnly"}, {"bars", "focusCastbar", "classColorFriendly"}, {"bars", "focusCastbar", "castTimePrecision"}, {"bars", "focusCastbar", "durationPrecision"} } },
 }
 
 ---Sets a checkbox to tristate visual mode

@@ -249,6 +249,18 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = { "inVehicle" } } },
 		supportsThresholds = false,
 	}
+	-- Target/Focus cast bars: a target can be any class, so Empowered is always offered (unlike the player
+	-- castbar, which gates it on the player's own spec). Otherwise identical to the player castbar profile.
+	local targetCastbarConditionKeys = { "casting", "channeling", "empowered" }
+	local targetCastbarProfile = {
+		showKeys = targetCastbarConditionKeys,
+		showLabels = castbarConditionLabels,
+		showGroups = { { title = L["ShowBarVisibilityGroupCasting"], keys = targetCastbarConditionKeys } },
+		hideKeys = { "inVehicle" },
+		hideLabels = { inVehicle = L["ShowBarVisibilityConditionInVehicle"] },
+		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = { "inVehicle" } } },
+		supportsThresholds = false,
+	}
 	local standardProfile = {
 		showKeys = conditionKeys,
 		showLabels = conditionLabels,
@@ -264,6 +276,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---@return table profile
 	local function GetProfileForEntry(barEntry)
 		if barEntry ~= nil and barEntry.isCastbar then
+			if barEntry.displayBarKey == "targetCastbar" or barEntry.displayBarKey == "focusCastbar" then
+				return targetCastbarProfile
+			end
 			return castbarProfile
 		end
 		return standardProfile
@@ -525,6 +540,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 		-- Never Show toggles change castbar enablement + whether the Blizzard cast bar is detached.
 		TRB.Functions.Castbar:SyncEnabledState()
+		-- Re-resolve the target/focus idle (Always Show) / hidden display for the new visibility settings.
+		TRB.Functions.TargetCastbar:RefreshVisibility()
 	end
 
 	---Refreshes the spec/global cache, reapplies bar appearance, and re-evaluates visibility for changes affecting custom bars.
@@ -776,11 +793,37 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		table.insert(barEntries, {
 			key = "castbar",
 			displayBarKey = "castbar",
-			label = L["BarVisibilityBarNameCastbar"],
-			globalLabel = L["BarVisibilityBarNameCastbar"],
+			label = L["ResourcePlayerCastbar"],
+			globalLabel = L["ResourcePlayerCastbar"],
 			isCustomBar = false,
 			isCastbar = true,
 			isGlobal = (classId ~= nil and coreDisplayBar["castbar"] ~= nil),
+		})
+	end
+
+	-- Target / Focus cast bars: self-driven render (Functions/TargetCastbar.lua), same castbar visibility
+	-- controls (cast-state show conditions, In Vehicle hide, alpha/fade). isCastbar reuses the entire
+	-- castbar row path (smooth hidden, thresholds excluded).
+	if spec.displayBar and spec.displayBar.targetCastbar ~= nil then
+		table.insert(barEntries, {
+			key = "targetCastbar",
+			displayBarKey = "targetCastbar",
+			label = L["BarVisibilityBarNameTargetCastbar"],
+			globalLabel = L["BarVisibilityBarNameTargetCastbar"],
+			isCustomBar = false,
+			isCastbar = true,
+			isGlobal = (classId ~= nil and coreDisplayBar["targetCastbar"] ~= nil),
+		})
+	end
+	if spec.displayBar and spec.displayBar.focusCastbar ~= nil then
+		table.insert(barEntries, {
+			key = "focusCastbar",
+			displayBarKey = "focusCastbar",
+			label = L["BarVisibilityBarNameFocusCastbar"],
+			globalLabel = L["BarVisibilityBarNameFocusCastbar"],
+			isCustomBar = false,
+			isCastbar = true,
+			isGlobal = (classId ~= nil and coreDisplayBar["focusCastbar"] ~= nil),
 		})
 	end
 
@@ -817,7 +860,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local bvc = controls.barVisibilityContainer
 	bvc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
 	bvc:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
-	local tableRowCount = math.max(#barEntries, 2)
+	-- Show at most 5 rows; LibScrollingTable adds a scrollbar when there are more bars than that.
+	local tableRowCount = math.min(math.max(#barEntries, 2), 5)
 	bvc:SetHeight(35 + (tableRowCount * 15))
 
 	local barVisibilityTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, bvc, false, false)

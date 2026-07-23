@@ -67,7 +67,15 @@ local function NewSpecGlobalDefaults()
 		castbarColors = true,
 		castbarOverlays = true,
 		castbarEmpower = true,
-		castbarText = true
+		castbarText = true,
+		targetCastbarDimensions = true,
+		targetCastbarColors = true,
+		targetCastbarEmpower = true,
+		targetCastbarText = true,
+		focusCastbarDimensions = true,
+		focusCastbarColors = true,
+		focusCastbarEmpower = true,
+		focusCastbarText = true
 	}
 end
 
@@ -490,6 +498,11 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			protection = {}
 		}
 	}
+
+	-- Target/Focus cast bars are all-spec standalone bars; core is the global-defaults source for the
+	-- per-spec "Use Global" toggle, so seed its bars/colors/displayBar/textures the same way specs do.
+	-- Table:Merge(defaults, saved) then backfills these into existing saved core settings.
+	self:InjectTargetCastbarDefaults(settings.core, classic)
 
 	return settings
 end
@@ -9116,6 +9129,11 @@ function TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic)
 	settings.durationPrecision = 1
 	settings.interruptColor = true
 	settings.interruptHostileOnly = true
+	settings.showEmpowerStages = true
+	settings.empowerStageLineWidth = 1
+	settings.classColor = false
+	settings.classColorPvpOnly = false
+	settings.classColorFriendly = false
 	settings.icon = self:DefaultBarIconSettings()
 	return settings
 end
@@ -9196,14 +9214,18 @@ function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relati
 end
 
 ---Gets the default Target/Focus Cast Bar colors. `bar` is the standard-cast fill, `channel` recolors a
----channel, `uninterruptible` recolors the fill when a hostile cast can't be interrupted (via the native
----secret-boolean evaluator).
+---channel, `empower` recolors an empowered cast (differentiated by event), `uninterruptible` /
+---`uninterruptibleBorder` recolor the fill / border when a hostile cast can't be interrupted (via the
+---native secret-boolean evaluator), and `empowerStageLine` colors the empower stage boundary lines.
 ---@return table
 function TRB.Functions.Settings:DefaultTargetCastbarBarColors()
 	return {
 		bar = { color = "FFFFCC00", color2 = "FFFFCC00", gradientDirection = "disabled" },
 		channel = { color = "FF00CCFF", color2 = "FF00CCFF", gradientDirection = "disabled" },
+		empower = { color = "FFFF8000", color2 = "FFFF8000", gradientDirection = "disabled" },
 		uninterruptible = { color = "FF888888", color2 = "FF888888", gradientDirection = "disabled" },
+		uninterruptibleBorder = { color = "FF666666" },
+		empowerStageLine = { color = "FFFFFFFF" },
 		border = { color = "FF000000" },
 		background = { color = "66000000" },
 		endCap = self:DefaultEndCapColorEntry()
@@ -9215,7 +9237,7 @@ end
 ---@return table
 function TRB.Functions.Settings:DefaultTargetCastbarVisibility()
 	return {
-		neverShow = false,
+		neverShow = true,
 		alwaysShow = false,
 		conditions = { casting = true, channeling = true, empowered = true },
 		hideConditions = { inVehicle = false },

@@ -33,7 +33,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public notInterruptible any # Interruptible flag (secret boolean) for EvaluateColorFromBoolean
 ---@field public durationObject any # DurationObject driving the fill + remaining countdown
 ---@field public numEmpowerStages integer # Empower stage count (NeverSecret); 0 when not an empower
----@field public stagePercentages number[]? # Empower stage boundary fractions (captured for a later phase)
+---@field public stagePercentages number[]? # Empower per-stage segment widths (charge+hold frame, sum 1.0; last is the hold-at-max segment). Accumulate for boundary positions.
 TRB.Classes.TargetCastbar = {}
 TRB.Classes.TargetCastbar.__index = TRB.Classes.TargetCastbar
 
@@ -116,7 +116,8 @@ function TRB.Classes.TargetCastbar:StartChannel(spellId)
 end
 
 ---Begins tracking an empowered cast on the unit. numEmpowerStages / isEmpowered are NeverSecret; the
----stage boundary percentages are captured for a later stage-line rendering phase.
+---per-stage segment widths (default includeHoldAtMax frame, matching the fill) are captured for the
+---stage-line render, which accumulates them into boundary positions.
 ---@param spellId any
 function TRB.Classes.TargetCastbar:StartEmpower(spellId)
 	self:Reset()
