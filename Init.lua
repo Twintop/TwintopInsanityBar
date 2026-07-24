@@ -458,14 +458,36 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
+-- Tracks an active boss encounter so the combat timer survives a death-and-rez mid-fight.
+local inEncounter = false
+
 TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFrame", UIParent)
 TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_REGEN_DISABLED" then
 		TRB.Data.character.inCombat = true
-		TRB.Data.character.combatStartTime = GetTime()
+		-- Keep an existing start time so a battle rez mid-fight continues the timer rather than restarting.
+		if TRB.Data.character.combatStartTime == nil then
+			TRB.Data.character.combatStartTime = GetTime()
+		end
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		TRB.Data.character.inCombat = false
-		TRB.Data.character.combatStartTime = nil
+		-- Dying drops combat but the fight may continue, so only reset when leaving combat while alive and not in an encounter.
+		if not UnitIsDeadOrGhost("player") and not inEncounter then
+			TRB.Data.character.combatStartTime = nil
+		end
+	elseif event == "ENCOUNTER_START" then
+		inEncounter = true
+	elseif event == "ENCOUNTER_END" then
+		inEncounter = false
+		-- Encounter over (kill or wipe); reset the timer unless combat is somehow still ongoing.
+		if not InCombatLockdown() then
+			TRB.Data.character.combatStartTime = nil
+		end
+	elseif event == "PLAYER_UNGHOST" or event == "PLAYER_ALIVE" then
+		-- Fully resurrected out of combat with no active encounter (e.g. corpse run after a world death): reset before the next pull.
+		if not inEncounter and not InCombatLockdown() and not UnitIsDeadOrGhost("player") then
+			TRB.Data.character.combatStartTime = nil
+		end
 	end
 	-- Fully invalidate memoization so formatting branches that depend on inCombat
 	-- (e.g., overcap text coloring) rewrite all lookup strings on the next refresh.
