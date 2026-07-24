@@ -12,7 +12,7 @@ local content = [====[
 
 ---
 
-# 12.0.7.11-release (2026-07-23)
+# 12.0.7.11-release (2026-07-24)
 ## General
 
 - [#793](#793) Restict what bars are shown in Edit Mode to just those that are enabled.
@@ -24,6 +24,11 @@ local content = [====[
 - Add standalone Target and Focus Cast Bars, tracking a unit's casts, channels, and empowers. Secret-safe, so they work on enemy casts where the timing is hidden.
 - New bar text variables including `$targetCastingSpellName`, `$targetCastTimeRemaining`, and the `$focus` equivalents.
 - Cast Bar, Target Cast Bar, and Focus Cast Bar ability icons are bar text anchor targets -- text can be positioned relative to the icon frame like any other bar.
+
+### Localization
+
+- [#795 - @MOSS099](#795) Updated translations for Simplified Chinese (zhCN).
+- [#798 - @MOSS099](#798) Updated translations for Simplified Chinese (zhCN).
 
 ---
 
