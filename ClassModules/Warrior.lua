@@ -636,13 +636,30 @@ local function RefreshLookupData_Protection()
 		local ipBuff = snapshots[spells.ignorePain.id].buff
 		-- GetRemainingTime updates isActive, so call it first
 		local _ignorePainTime = ipBuff:GetRemainingTime(currentTime)
-		local _ignorePainAbsorb = ipBuff.isActive and (ipBuff.applications or 0) or 0
+		-- Refilled from the Cooldown Manager each tick and usually a secret.
+		local _ignorePainAbsorb = nil
+		if ipBuff.isActive then
+			_ignorePainAbsorb = ipBuff.customProperties.absorb
+		end
 
 		lookupLogic["$ignorePainTime"] = _ignorePainTime
-		lookupLogic["$ignorePainAbsorb"] = true
+		-- A secret cannot be compared, so logic only ever learns whether there is a pool at all.
+		lookupLogic["$ignorePainAbsorb"] = _ignorePainAbsorb ~= nil
 
-		if lookupChanged(prevState, "$ignorePainAbsorb", _ignorePainAbsorb) then
-			lookup["$ignorePainAbsorb"] = TRB.Functions.String:ConvertToAbbreviatedNumber(_ignorePainAbsorb)
+		-- Absent for two different reasons: a buff that is down is a known zero, a buff that is up
+		-- with no Cooldown Manager data is unknown. Memoized on the rendered string rather than the
+		-- value, so those two -- both nil underneath -- still repaint when one becomes the other.
+		local absorbDisplay
+		if _ignorePainAbsorb ~= nil then
+			absorbDisplay = TRB.Functions.String:ConvertToAbbreviatedNumber(_ignorePainAbsorb)
+		elseif ipBuff.isActive then
+			absorbDisplay = "??"
+		else
+			absorbDisplay = "0"
+		end
+
+		if lookupChanged(prevState, "$ignorePainAbsorb", absorbDisplay) then
+			lookup["$ignorePainAbsorb"] = absorbDisplay
 		end
 		if lookupChanged(prevState, "$ignorePainTime", _ignorePainTime) then
 			lookup["$ignorePainTime"] = TRB.Functions.BarText:TimerPrecision(_ignorePainTime)
@@ -688,17 +705,15 @@ local function RefreshLookupData_Protection()
 end
 
 
---- Starts the event-driven Ignore Pain timer and parses the cast-time absorb cap out of
---- the spell description into `applications` for $ignorePainAbsorb (live absorb is secret).
+--- Starts the event-driven Ignore Pain timer. The absorb pool needs nothing from here: it is a
+--- percentage supplied by the Cooldown Manager each tick. An earlier version scraped an absolute
+--- absorb out of the spell description into the same field, which is what made the number useless
+--- -- millions of damage where the consumer wanted 0-100.
 ---@param currentTime number
 local function StartIgnorePainTimer(currentTime)
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 	local ipBuff = TRB.Data.snapshotData.snapshots[spells.ignorePain.id].buff
 	ipBuff:InitializeCustom(spells.ignorePain.duration, currentTime)
-	local absorb = TRB.Functions.String:ParseLastNumber(C_Spell.GetSpellDescription(spells.ignorePain.id))
-	if absorb ~= nil and absorb > 100 then -- values <= 100 are misparses (percent/duration)
-		ipBuff.applications = absorb
-	end
 end
 
 ---Handles UNIT_SPELLCAST_ events for the class
@@ -935,10 +950,24 @@ local function UpdateSnapshot_Protection()
 
 	-- Track active→inactive transitions so bar text gets one final refresh when
 	-- buffs expire out of combat.
-	local wasIgnorePainActive = snapshots[spells.ignorePain.id].buff.isActive
-	snapshots[spells.ignorePain.id].buff:GetRemainingTime(currentTime)
-	if wasIgnorePainActive and not snapshots[spells.ignorePain.id].buff.isActive then
+	local ignorePainBuff = snapshots[spells.ignorePain.id].buff
+	local wasIgnorePainActive = ignorePainBuff.isActive
+	ignorePainBuff:GetRemainingTime(currentTime)
+	if wasIgnorePainActive and not ignorePainBuff.isActive then
 		TRB.Data.lookupDirty = true
+	end
+
+	-- Refill the absorb pool from the Cooldown Manager, and clear it the moment the buff drops -- a
+	-- stale pool reads as protection that is no longer there. The pool arrives as the aura's
+	-- application count rather than an effect value: Ignore Pain does not stack, and the buff
+	-- viewers still print a number on the icon, so that count is the absorb. Pinned to the buff
+	-- viewers because the cooldown viewers hold the same spell but describe the cast instead.
+	local cdm = TRB.Functions.CooldownManager
+	local absorbOk, absorb = cdm:Read(spells.ignorePain.id, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF)
+	if ignorePainBuff.isActive and absorbOk then
+		ignorePainBuff.customProperties.absorb = absorb
+	else
+		ignorePainBuff.customProperties.absorb = nil
 	end
 
 	local wasShieldBlockActive = snapshots[spells.shieldBlock.id].buff.isActive
@@ -1037,10 +1066,12 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 				local cpDuration = 1
 				
 				if colorKey == "ignorePainAbsorb" then
-					-- Live absorb is secret; bar shows full while active
+					-- The pool already arrives as a 0-100 percentage, so it goes straight onto a
+					-- fixed scale. It is a secret, which the status bar accepts but no arithmetic
+					-- here could touch -- there is nothing to normalise either way.
 					cpDuration = 100
-					if buff.isActive then
-						cpTime = 100
+					if buff.isActive and buff.customProperties.absorb ~= nil then
+						cpTime = buff.customProperties.absorb
 					end
 				else
 					if buff.isActive then
@@ -2328,7 +2359,9 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.ignorePain.id].buff.isActive
 	end
-	protection["$ignorePainAbsorb"] = false
+	-- Always renders: a buff that is down shows 0, and one that is up with nothing from the Cooldown
+	-- Manager shows "??" rather than dropping out, so the gap is visible instead of silent.
+	protection["$ignorePainAbsorb"] = true
 	protection["$shieldBlockTime"] = function()
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.shieldBlock.id].buff.isActive

@@ -99,6 +99,7 @@ ClassModules\Classes\WarriorClasses.lua
 
 Functions\Table.lua
 Functions\Aura.lua
+Functions\CooldownManager.lua
 Functions\Bar.lua
 Functions\BarText.lua
 Classes\BarVisibility.lua

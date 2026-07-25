@@ -1122,6 +1122,10 @@ function TRB.Functions.Character:ResetCaches()
 	wipe(TRB.Data.cache.values.bar)
 	wipe(TRB.Data.cache.values.resource)
 	wipe(TRB.Data.cache.values.threshold)
+	-- CDM item frames are pooled and reassigned across spec/talent changes, so its reads and
+	-- quarantine list must be dropped alongside the rest.
+	TRB.Functions.CooldownManager:ResetCaches()
+	TRB.Functions.CooldownManager:MarkIndexDirty()
 	TRB.Functions.Character:ResetColorCaches()
 	-- We don't do range check cache reset here since we need to track what we've enabled and clean it up when we change specs
 	--TRB.Data.cache.values.range = {}
@@ -1920,6 +1924,7 @@ function TRB.Functions.Character:EventRegistration()
 		combatFrame:RegisterEvent("PLAYER_ALIVE")
 		TRB.Details.addonData.registered = true
 		TRB.Functions.Aura:EnableUnitAura()
+		TRB.Functions.CooldownManager:Enable()
 		TRB.Functions.SpellCast:EnableSpellCast()
 		TRB.Functions.TargetCastbar:Enable()
 		TRB.Functions.Character:EnableCharacterChange()

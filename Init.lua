@@ -564,6 +564,8 @@ function SlashCmdList.TWINTOP(msg)
 		TRB.Functions.Bar:SetPositionXY(tonumber(x), tonumber(y))
 	elseif cmd == "news" then
 		TRB.Functions.News:Show()
+	elseif cmd == "cdm" then
+		TRB.Functions.CooldownManager:PrintDiagnostics()
 	elseif cmd == "minimap" then
 		local minimapCmd = ParseCmdString(subcmd)
 		if minimapCmd == "hide" then
