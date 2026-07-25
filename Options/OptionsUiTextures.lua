@@ -45,6 +45,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	end
 	-- Castbar is an all-spec bar; include it in every textures panel without per-class wiring.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendCastbar(customBars)
+	-- Target and Focus Cast Bars are likewise all-spec; include them in every textures panel.
+	TRB.Classes.BarTypeRegistry:GetInstance():AppendTargetFocusCastbars(customBars)
 
 	if secondaryResourceString == nil then
 		secondaryResourceString = L["ResourceComboPoints"]
@@ -164,7 +166,9 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	end
 	for _, barTypeDef in ipairs(customBars) do
 		local barKey = barTypeDef.key .. "Bar"
-		table.insert(barTextureItems, { key = barKey, label = string.format(L["CustomBarTextureBar"], barTypeDef.displayName), callback = function(newValue) StatusbarSetValue(barTypeDef.key, newValue) end })
+		-- Cast bar display names already end in "Bar", so use a label that omits the redundant trailing "Bar".
+		local barLabel = barTypeDef.isCastbar and L["CustomBarTextureCastbarBar"] or L["CustomBarTextureBar"]
+		table.insert(barTextureItems, { key = barKey, label = string.format(barLabel, barTypeDef.displayName), callback = function(newValue) StatusbarSetValue(barTypeDef.key, newValue) end })
 	end
 
 	for i, item in ipairs(barTextureItems) do

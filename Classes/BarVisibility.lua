@@ -9,6 +9,7 @@ TRB.Functions = TRB.Functions or {}
 ---@field inVehicle boolean # Whether the player is currently in a vehicle
 ---@field inPetBattle boolean # Whether the player is currently in a pet battle
 ---@field onTaxi boolean # Whether the player is currently on a flight path
+---@field isDead boolean # Whether the player is currently dead or a ghost
 ---@field hasTarget boolean # Whether the player has a target selected
 ---@field targetIsFriendly boolean # Whether the current target is friendly
 ---@field targetIsEnemy boolean # Whether the current target is unfriendly
@@ -53,6 +54,7 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.inVehicle = params.inVehicle or false
 	self.inPetBattle = params.inPetBattle or false
 	self.onTaxi = params.onTaxi or false
+	self.isDead = params.isDead or false
 	self.hasTarget = params.hasTarget or false
 	self.targetIsFriendly = params.targetIsFriendly or false
 	self.targetIsEnemy = params.targetIsEnemy or false
@@ -113,6 +115,8 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		onTaxi = UnitOnTaxi("player") or false
 	end
 
+	local isDead = UnitIsDeadOrGhost("player") or false
+
 	local isDruid = TRB.Data.character.classId == 11
 	local druidForm = nil
 	if isDruid then
@@ -144,6 +148,7 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		inVehicle = TRB.Data.character.inVehicle or false,
 		inPetBattle = TRB.Data.character.inPetBattle or false,
 		onTaxi = onTaxi or false,
+		isDead = isDead or false,
 		hasTarget = hasTarget,
 		targetIsFriendly = targetIsFriendly,
 		targetIsEnemy = targetIsEnemy,
@@ -307,6 +312,9 @@ function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
 		return true
 	end
 	if conditions.onTaxi == true and context.onTaxi then
+		return true
+	end
+	if conditions.isDead == true and context.isDead then
 		return true
 	end
 	if HasMatchingDruidFormCondition(conditions, context) then
@@ -790,6 +798,12 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	if not anyShowing and TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive() then
 		anyShowing = true
 	end
+	-- Same for the target/focus cast bars: keep isTracking true while either is active so their
+	-- anchored bar text keeps ticking through the shared render path.
+	if not anyShowing and ((TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
+		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())) then
+		anyShowing = true
+	end
 
 	-- Kick the castbar's idle display (Always Show / non-zero inactive alpha) when no cast is active:
 	-- its self-driven updater stops while idle-hidden, so this is what restarts it after settings
@@ -867,67 +881,78 @@ function TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
 end
 
 ---Convenience: Builds entries from barGroups for Edit Mode display.
----Shows ALL bars unconditionally so they can be previewed and repositioned.
+---Every bar previews at full size so it can be repositioned, except bars set to "Never Show",
+---which get a collapsing entry so they don't render in Edit Mode.
 ---@param barGroups table # TRB.Frames.barGroups
----@param displayBar table|nil # The displayBar settings table (unused; kept for API compat)
+---@param displayBar table|nil # The displayBar settings table (used to resolve per-bar Never Show)
 ---@param maxResource2 number|nil # Max secondary resource count (for ShowNodes)
 ---@return TRB.Classes.BarVisibilityEntry[]
 function TRB.Functions.BarVisibility:BuildEditModeEntries(barGroups, displayBar, maxResource2)
 	local entries = {}
 	local alwaysVis = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = {} }
+	local neverVis = { neverShow = true, alwaysShow = false, conditions = {}, hideConditions = {} }
 
-	-- Primary always shows in Edit Mode
+	-- In Edit Mode a bar previews at full size unless it is set to "Never Show", in which case
+	-- it gets a collapsing entry (ProcessBars shrinks its container to 0.001) so it doesn't render.
+	local visSource = displayBar and { displayBar = displayBar } or nil
+	local function visFor(barKey)
+		if TRB.Functions.Bar:IsBarNeverShow(visSource, barKey) then
+			return neverVis
+		end
+		return alwaysVis
+	end
+
+	-- Primary
 	if barGroups.primary then
 		entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
 			barGroups.primary,
-			alwaysVis,
+			visFor("primary"),
 			true,
 			nil,
 			nil
 		)
 	end
 
-	-- Secondary: always show in Edit Mode if nodes exist
+	-- Secondary: only when nodes exist
 	if barGroups.secondary and (maxResource2 or 0) > 0 then
 		entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
 			barGroups.secondary,
-			alwaysVis,
+			visFor("secondary"),
 			true,
 			maxResource2,
 			nil
 		)
 	end
 
-	-- Health: always show in Edit Mode
+	-- Health
 	if barGroups.health then
 		entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
 			barGroups.health,
-			alwaysVis,
+			visFor("health"),
 			true,
 			1,
 			nil
 		)
 	end
 
-	-- Utility: always show in Edit Mode
+	-- Utility
 	if barGroups.utility then
 		entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
 			barGroups.utility,
-			alwaysVis,
+			visFor("utility"),
 			true,
 			1,
 			nil
 		)
 	end
 
-	-- Iterate remaining bar groups (custom bar types: mana, stagger, defensives, utility, etc.)
-	-- All shown unconditionally in Edit Mode
+	-- Iterate remaining bar groups (custom bar types: mana, stagger, defensives, cast bars, etc.)
 	for key, group in pairs(barGroups) do
 		if type(group) == "table" and group.Hide and key ~= "primary" and key ~= "secondary" and key ~= "health" and key ~= "utility" then
 			local nodeCount = group.maxNodes or 1
 			entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(
 				group,
-				alwaysVis,
+				visFor(key),
 				true,
 				nodeCount,
 				nil

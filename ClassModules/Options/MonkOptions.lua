@@ -228,6 +228,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				stagger = {
 					border = { color = "FF00FF98" },
 					background = { color = "66000000" },
+					endCap = TRB.Functions.Settings:DefaultEndCapColorEntry(),
 					type = "step",
 					low = {
 						color = "FF85FF85",
@@ -943,6 +944,7 @@ local function BrewmasterConstructStaggerBarPanel(parent)
 		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 10, 1, yCoord, staggerBarDef)
 	end
 
+	yCoord = yCoord - 10
 	-- Maximum Stagger Scale slider
 	controls.staggerMaxScaleSlider = TRB.Functions.OptionsUi.Primitives:BuildPercentageSlider(parent, L["StaggerBarMaxScaleSlider"], 100, 1000, spec.bars.stagger.maxScale or 1.0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.staggerMaxScaleSlider.tooltip = L["StaggerBarMaxScaleTooltip"]

@@ -37,6 +37,69 @@ local content = [====[
 
 ---
 
+# 12.0.7.12-release (2026-07-25)
+## General
+### Cast Bars
+
+- [#799](#799) Fix an issue where the Cast Bar would still reserve space in the layout even when it was configured to never show.
+
+---
+
+# 12.0.7.11-release (2026-07-24)
+## General
+
+- [#793](#793) Restrict what bars are shown in Edit Mode to just those that are enabled.
+- Add a Dead option to Always Hide Bar When, hiding a bar while you are dead or a ghost. Available on all bars, including Cast Bars, and disabled by default.
+
+### Cast Bars
+
+- Add an ability icon beside the Cast Bar. Side (left/right/top/bottom), spacing, zoom to crop the stock border, and collapse border width to share a single border with the bar.
+- Add standalone Target and Focus Cast Bars, tracking a unit's casts, channels, and empowers. Secret-safe, so they work on enemy casts where the timing is hidden.
+- New bar text variables including `$targetCastingSpellName`, `$targetCastTimeRemaining`, and the `$focus` equivalents.
+- Cast Bar, Target Cast Bar, and Focus Cast Bar ability icons are bar text anchor targets -- text can be positioned relative to the icon frame like any other bar.
+
+### Localization
+
+- [#795 - @MOSS099](#795) Updated translations for Simplified Chinese (zhCN).
+- [#798 - @MOSS099](#798) Updated translations for Simplified Chinese (zhCN).
+
+---
+
+# 12.0.7.10-release (2026-07-19)
+## General
+
+- [#794](#794) Fix a Lua error preventing some bars from rendering updates.
+
+### Cast Bar
+
+- Add the option to color the Cast Bar by an enemy player target's class color, across all cast types. Sub-options limit it to while PvP is enabled or extend it to friendly players. Active Color Indicators still priority.
+
+---
+
+# 12.0.7.9-release (2026-07-19)
+## General
+### Cast Bar
+
+- Fix the Cast Bar sometimes not showing after a loading screen.
+
+---
+
+# 12.0.7.8-release (2026-07-18)
+## General
+### Cast Bar
+
+- Fix Cast Bar settings applying inconsistently on Druids across shapeshift forms and spec changes. The Cast Bar now follows the form's spec settings. Disable Switch bars based on shapeshift form on a spec to always use its own settings.
+- Fix the Cast Bar collapsing to a sliver with bunched bar text after setting Shown to Never on a spec other than the form's governing spec.
+- Fix the Blizzard cast bar reappearing, doubling up, or vanishing entirely after spec or form changes when Cast Bar settings differed between specs.
+- Disable Blizzard Cast Bar now leaves the Blizzard cast bar alone when another addon is already managing it.
+
+## Monk
+### Brewmaster
+
+- Add Bar End Cap support to the Stagger bar, including as a Color Indicator target.
+
+---
+
 # 12.0.7.7-release (2026-07-17)
 ## General
 ### Cast Bar

@@ -13,6 +13,10 @@ local barNodeCounter = 0
 	This is the building block for both primary bars (N=1) and secondary "combo point" bars (N>1).
 ]]
 
+---A bar's side ability icon: a bordered backdrop frame wrapping a single texture.
+---@class TRB.Classes.BarNode.Icon : Frame
+---@field public texture Texture
+
 ---@class TRB.Classes.BarNode
 ---@field public frame StatusBar # The single consolidated StatusBar frame
 ---@field public overlaySlots table<string, TRB.Classes.OverlaySlot> # Named overlay slots keyed by slot name
@@ -30,6 +34,8 @@ local barNodeCounter = 0
 ---@field public group TRB.Classes.BarGroup? # Back-reference to the owning BarGroup
 ---@field public endCapConfig table? # Active end cap config: { color, width, useBorderColor, useBorderColorExceptDefault, defaultBorderColor }; nil when disabled
 ---@field public endCapIndicatorActive boolean? # Whether a Color Indicator owned the end cap color last frame (so it reverts cleanly when the indicator drops)
+---@field public icon TRB.Classes.BarNode.Icon? # Side ability icon frame (lazily created by EnsureIcon); nil when the bar has no icon
+---@field public _iconTexture string|integer? # Last texture applied to the icon, so repeat sets are skipped
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
@@ -230,6 +236,9 @@ end
 function TRB.Classes.BarNode:SetBorderColor(colorString)
 	TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.frame, self.name .. "_border", colorString)
 
+	-- The side ability icon's border is part of the same bar, so it tracks every border recolor
+	self:ApplyIconBorderColor()
+
 	-- End cap border-follow: track the live border color, except when it is at the
 	-- configured default and useBorderColorExceptDefault asks to keep the cap's own color.
 	-- Skipped while a Color Indicator owns the cap this frame (that takes priority).
@@ -256,6 +265,10 @@ function TRB.Classes.BarNode:SetBorderColorCurve(colorResult, endCapColorResult)
 	end
 	TRB.Data.cache.colors.border[self.name .. "_border"] = nil
 	self.frame:SetBackdropBorderColor(colorResult:GetRGBA())
+	-- Curve results are secret-safe to pass straight through; the icon border follows the same curve
+	if self.icon ~= nil then
+		self.icon:SetBackdropBorderColor(colorResult:GetRGBA())
+	end
 
 	-- Curve-driven borders are built with the DEFAULT border color as their base, and the secret
 	-- result can't be compared. useBorderColorExceptDefault therefore needs the companion curve
@@ -570,6 +583,13 @@ end
 function TRB.Classes.BarNode:Destroy()
 	self:Hide()
 	self:ClearThresholds()
+	if self.icon ~= nil then
+		self.icon:Hide()
+		self.icon:SetParent(nil)
+		self.icon:ClearAllPoints()
+		self.icon = nil
+		self._iconTexture = nil
+	end
 	-- Clear the global name reference so CreateFrame won't return this stale frame
 	local frameName = self.frame:GetName()
 	if frameName and _G[frameName] == self.frame then
@@ -583,6 +603,142 @@ end
 ---@return StatusBar
 function TRB.Classes.BarNode:GetFrame()
 	return self.frame
+end
+
+---Returns the side ability icon frame, or nil if this node has no icon (icon feature disabled).
+---@return TRB.Classes.BarNode.Icon?
+function TRB.Classes.BarNode:GetIconFrame()
+	return self.icon
+end
+
+---Creates the side ability icon frame on first use. Parented to the node's parent (the group container)
+---rather than the node, since the icon sits in the strip the node was inset out of.
+---@return TRB.Classes.BarNode.Icon
+function TRB.Classes.BarNode:EnsureIcon()
+	if self.icon == nil then
+		local icon = CreateFrame("Frame", nil, self.frame:GetParent(), "BackdropTemplate") --[[@as TRB.Classes.BarNode.Icon]]
+		icon.texture = icon:CreateTexture(nil, "ARTWORK")
+		icon.texture:SetAllPoints(icon)
+		icon:Hide()
+		self.icon = icon
+	end
+	return self.icon
+end
+
+---Positions, sizes, and borders the side ability icon against this node's edge. The icon is square with
+---side `size` and hangs off the node's opposite edge by `spacing`, so it works identically whether the
+---node was inset (left/right) or the container grew (top/bottom). The border matches the bar's own, and
+---`zoom` crops the art inward to cut the stock spell border baked into the icon texture.
+---@param side trbBarIconSide
+---@param size number # Square side length in pixels
+---@param spacing number # Gap between icon and bar
+---@param border integer # Border thickness in pixels, matching the bar's border (0 = none)
+---@param zoom number? # Percent cropped from each edge of the art (0 = untouched)
+function TRB.Classes.BarNode:ApplyIconLayout(side, size, spacing, border, zoom)
+	local icon = self:EnsureIcon()
+	border = border or 0
+
+	-- Anchor the icon's inner edge to the node's matching outer edge, offset by the gap
+	local point, relativePoint, xOffset, yOffset
+	if side == "right" then
+		point, relativePoint, xOffset, yOffset = "LEFT", "RIGHT", spacing, 0
+	elseif side == "top" then
+		point, relativePoint, xOffset, yOffset = "BOTTOM", "TOP", 0, spacing
+	elseif side == "bottom" then
+		point, relativePoint, xOffset, yOffset = "TOP", "BOTTOM", 0, -spacing
+	else
+		point, relativePoint, xOffset, yOffset = "RIGHT", "LEFT", -spacing, 0
+	end
+
+	icon:ClearAllPoints()
+	icon:SetPoint(point, self.frame, relativePoint, xOffset, yOffset)
+	icon:SetSize(size, size)
+	icon:SetFrameStrata(self.frame:GetFrameStrata())
+	icon:SetFrameLevel(self.frame:GetFrameLevel() + 1)
+
+	-- Backdrop must come after ClearAllPoints/SetSize: those invalidate BackdropTemplate rendering
+	if border < 1 then
+---@diagnostic disable-next-line: missing-fields
+		icon:SetBackdrop({
+---@diagnostic disable-next-line: missing-fields
+			insets = {0, 0, 0, 0}
+		})
+	else
+---@diagnostic disable-next-line: missing-fields
+		icon:SetBackdrop({
+			edgeFile = "Interface\\Buttons\\WHITE8X8",
+			tile = true,
+			tileSize = 4,
+			edgeSize = border,
+---@diagnostic disable-next-line: missing-fields
+			insets = {0, 0, 0, 0}
+		})
+	end
+	icon:SetBackdropColor(0, 0, 0, 0)
+	-- ApplyBackdrop resets the border to white; restore whatever color the bar's border is currently at
+	-- so the icon reads as part of the same bar (including uninterruptible / indicator recolors)
+	self:ApplyIconBorderColor()
+
+	-- Inset the texture so it never draws under the border
+	icon.texture:ClearAllPoints()
+	icon.texture:SetPoint("TOPLEFT", icon, "TOPLEFT", border, -border)
+	icon.texture:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", -border, border)
+
+	-- Crop the art inward so the stock border baked into the spell icon falls outside the visible area
+	local crop = math.min(math.max((zoom or 0) / 100, 0), 0.45)
+	icon.texture:SetTexCoord(crop, 1 - crop, crop, 1 - crop)
+end
+
+---Applies the node's current border color to the side ability icon, so the icon border always tracks the
+---bar's. Falls back to the bar's cached border color; leaves the icon alone when nothing is cached yet.
+function TRB.Classes.BarNode:ApplyIconBorderColor()
+	if self.icon == nil then
+		return
+	end
+	local cached = TRB.Data.cache.colors.border[self.name .. "_border"]
+	if cached then
+		self.icon:SetBackdropBorderColor(cached.r, cached.g, cached.b, cached.a)
+	end
+end
+
+---Sets the side ability icon's border color directly from an ARGB string, independent of the node's
+---border cache. Used at construction to seed the icon with the bar's base border color so it doesn't
+---show the BackdropTemplate default (white) before any render/appearance pass populates the cache.
+---@param colorString string # ARGB hex color string
+function TRB.Classes.BarNode:SetIconBorderColorString(colorString)
+	if self.icon == nil or colorString == nil then
+		return
+	end
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
+	self.icon:SetBackdropBorderColor(r, g, b, a)
+end
+
+---Sets the side ability icon's texture. Passing nil hides the icon.
+---@param texture string|integer? # Texture path or fileID
+function TRB.Classes.BarNode:SetIconTexture(texture)
+	if texture == nil then
+		self._iconTexture = nil
+		self:SetIconVisible(false)
+		return
+	end
+	local icon = self:EnsureIcon()
+	if self._iconTexture ~= texture then
+		icon.texture:SetTexture(texture)
+		self._iconTexture = texture
+	end
+end
+
+---Shows or hides the side ability icon without discarding its layout or texture.
+---@param visible boolean
+function TRB.Classes.BarNode:SetIconVisible(visible)
+	if self.icon == nil then
+		return
+	end
+	if visible then
+		self.icon:Show()
+	else
+		self.icon:Hide()
+	end
 end
 
 ---Registers a threshold frame with this node, or creates one at the specified index
@@ -657,6 +813,7 @@ end
 ---@field public fadeStartAlpha number # Alpha at the moment a fade began (used for normalized progress)
 ---@field public fadeDelayUntil number # GetTime() timestamp when the fade delay expires (0 = no delay active)
 ---@field public endCapMode string? # Multi-node end cap policy: "highest" (default; only the highest progressed node) or "all" (independent nodes, e.g. DK runes)
+---@field public iconReserved boolean? # Whether a side ability icon currently reserves space, so GetAnchorFrame returns the container
 TRB.Classes.BarGroup = {}
 TRB.Classes.BarGroup.__index = TRB.Classes.BarGroup
 
@@ -789,9 +946,11 @@ end
 ---which represents the full visual extent including borders.
 ---For multi-node groups (combo points, defensives, etc.), returns the group container,
 ---which already encompasses all nodes at full visual extent.
+---When a side ability icon reserves space, the node no longer spans the full footprint, so the container
+---is the correct anchor -- otherwise child bars would align to the shrunken node and sit offset.
 ---@return Frame
 function TRB.Classes.BarGroup:GetAnchorFrame()
-	if self.maxNodes == 1 then
+	if self.maxNodes == 1 and not self.iconReserved then
 		local node = self.nodes[1]
 		if node then
 			return node:GetFrame()
@@ -1388,6 +1547,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
 	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield, Fire Blast charges); forces custom thresholds to static color mode
+	self.isCastbar = config.isCastbar or false -- Player/Target/Focus cast bar; display name already ends in "Cast Bar" so labels drop the redundant trailing "Bar"
 	self.endCapMode = config.endCapMode -- "all" for independent-node bars; nil/"highest" shows the cap only on the highest progressed node
 
 	return self
@@ -1660,6 +1820,27 @@ function TRB.Classes.BarTypeRegistry:AppendCastbar(list)
 		end
 	end
 	list[#list + 1] = def
+end
+
+---Appends the Target and Focus Cast Bar definitions to a customBars list if registered and not already
+---present. Mirrors AppendCastbar so the all-spec target/focus bars appear everywhere without per-class wiring.
+---@param list TRB.Classes.BarTypeDefinition[]
+function TRB.Classes.BarTypeRegistry:AppendTargetFocusCastbars(list)
+	for _, key in ipairs({ "targetCastbar", "focusCastbar" }) do
+		local def = self.definitions[key]
+		if def ~= nil then
+			local exists = false
+			for _, d in ipairs(list) do
+				if d.key == key then
+					exists = true
+					break
+				end
+			end
+			if not exists then
+				list[#list + 1] = def
+			end
+		end
+	end
 end
 
 ---Gets the bar types that a spec uses based on its GetSpecConfiguration
@@ -2004,7 +2185,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 	-- generic snapshot-value path, so minMaxMode is "custom" and colorCurveType is nil.
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "castbar",
-		displayName = L["ResourceCastbar"],
+		displayName = L["ResourcePlayerCastbar"],
 		isMultiNode = false,
 		maxNodes = 1,
 		hasSameColor = false,
@@ -2013,6 +2194,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		colorCurveType = nil,
 		visibilityKey = "castbar",
+		isCastbar = true,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultCastbarBarDimensions(classic)
 		end,
@@ -2023,4 +2205,34 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()
 		end
 	}))
+
+	-- Target and Focus Cast Bars (available to all specs, hidden by default, standalone screen-anchored
+	-- roots). Secret-safe timer-driven fill managed by Functions/TargetCastbar; minMaxMode "custom".
+	for _, tc in ipairs({
+		{ key = "targetCastbar", name = L["ResourceTargetCastbar"] },
+		{ key = "focusCastbar", name = L["ResourceFocusCastbar"] },
+	}) do
+		self:Register(TRB.Classes.BarTypeDefinition:New({
+			key = tc.key,
+			displayName = tc.name,
+			isMultiNode = false,
+			maxNodes = 1,
+			hasSameColor = false,
+			minMaxMode = "custom",
+			hasSpacing = false,
+			hasThresholds = false,
+			colorCurveType = nil,
+			visibilityKey = tc.key,
+			isCastbar = true,
+			defaultDimensionsFunc = function(classic)
+				return TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic, tc.key)
+			end,
+			defaultColorsFunc = function()
+				return TRB.Functions.Settings:DefaultTargetCastbarBarColors()
+			end,
+			defaultTexturesFunc = function()
+				return TRB.Functions.Settings:DefaultCustomBarTextures()
+			end
+		}))
+	end
 end

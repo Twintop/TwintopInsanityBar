@@ -610,6 +610,54 @@ function TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, name, label
 	return cb
 end
 
+---Builds a labeled radio dropdown bound to a getter/setter. Keeps the button's display text in sync with
+---the selection, so callers only supply the value list and the two accessors.
+---@param parent Frame
+---@param name string # Unique global frame name
+---@param label string # Header text drawn above the dropdown
+---@param options table[] # Ordered list of { value = any, label = string }
+---@param getFn fun():any # Returns the currently selected value
+---@param setFn fun(value:any) # Applies a newly selected value
+---@param posX number
+---@param posY number
+---@return DropdownButton
+function TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, name, label, options, getFn, setFn, posX, posY)
+	local dropdown = CreateFrame("DropdownButton", name, parent, "WowStyle1DropdownTemplate")
+	dropdown:SetWidth(oUi.sliderWidth)
+	dropdown.label = self:BuildSectionHeader(parent, label, posX, posY)
+	dropdown.label.font:SetFontObject(GameFontNormal)
+	dropdown:SetPoint("TOPLEFT", posX, posY - 30)
+
+	local function LabelFor(value)
+		for _, opt in ipairs(options) do
+			if opt.value == value then
+				return opt.label
+			end
+		end
+		return options[1] and options[1].label or ""
+	end
+
+	local function IsSelected(value)
+		return getFn() == value
+	end
+
+	local function SetSelected(value)
+		setFn(value)
+		-- Deferred: the menu is still closing, and SetDefaultText during teardown does not stick
+		C_Timer.After(0, function()
+			dropdown:SetDefaultText(LabelFor(value))
+		end)
+	end
+
+	dropdown:SetupMenu(function(_, rootDescription)
+		for _, opt in ipairs(options) do
+			rootDescription:CreateRadio(opt.label, IsSelected, SetSelected, opt.value)
+		end
+	end)
+	dropdown:SetDefaultText(LabelFor(getFn()))
+	return dropdown
+end
+
 ---Enables or disables a ChatConfigCheckButton checkbox and grays out its label text when disabled.
 ---@param checkbox CheckButton # The checkbox frame to toggle
 ---@param enable boolean # Whether to enable (true) or disable (false) the checkbox

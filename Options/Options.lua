@@ -653,7 +653,7 @@ local function ConstructCastbarOptionsPanel()
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.castbarPanel = CreateFrame("Frame", "TwintopResourceBar_Options_CastbarPanel")
-	TRB.Options.OptionsFrame:RegisterCategory("castbar", L["ResourceCastbar"], interfaceSettingsFrame.castbarPanel)
+	TRB.Options.OptionsFrame:RegisterCategory("castbar", L["TabCastbars"], interfaceSettingsFrame.castbarPanel)
 
 	local parent = interfaceSettingsFrame.castbarPanel
 
@@ -663,8 +663,14 @@ local function ConstructCastbarOptionsPanel()
 	controls.profileDropdown = TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, -10, "core", nil, nil, L["GlobalOptions"], "_Castbar")
 
 	local tabDefinitions = {
-		{ "castbar", L["TabCastbar"], oUi.tabWidth.small, function(scrollChild)
+		{ "castbar", L["ResourcePlayerCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, nil, nil, true)
+		end },
+		{ "target", L["ResourceTargetCastbar"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, nil, nil, "targetCastbar")
+		end },
+		{ "focus", L["ResourceFocusCastbar"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, nil, nil, "focusCastbar")
 		end },
 	}
 
@@ -2174,4 +2180,4 @@ function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord)
 			yCoord = yCoord - (height * 3) - 5
 		end
 	end
-end
+end

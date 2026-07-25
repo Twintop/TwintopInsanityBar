@@ -68,7 +68,8 @@ local function IsTradeskillCast()
 	return not issecretvalue(isTradeSkill) and isTradeSkill == true
 end
 
----Returns the active spec's settings, castbar bar settings, and castbar colors (or nils).
+---Returns the form-resolved display settings (on Druid the form's spec, per GetActiveDisplayCompositeKey),
+---the castbar bar settings, and castbar colors (or nils).
 ---@return table? settings, table? barSettings, table? colors
 function TRB.Functions.Castbar:GetActiveSettings()
 	local settings = TRB.Functions.Class:GetActiveDisplaySettings()
@@ -109,6 +110,21 @@ function TRB.Functions.Castbar:IsEnabled(visibility)
 	return conditions.casting == true or conditions.channeling == true or conditions.empowered == true
 end
 
+---Whether another addon already manages/hides the Blizzard cast bar: unit cleared (SetUnit(nil)),
+---cast events unregistered (UnregisterAllEvents), or parked under a foreign hidden parent. Leave
+---such a bar alone -- suppressing it would start an ownership fight over the frame.
+---@return boolean
+local function IsBlizzardCastbarExternallyManaged()
+	if PlayerCastingBarFrame.unit == nil then
+		return true
+	end
+	if not PlayerCastingBarFrame:IsEventRegistered("UNIT_SPELLCAST_START") then
+		return true
+	end
+	local parent = PlayerCastingBarFrame:GetParent()
+	return parent ~= nil and parent ~= blizzardCastbarHolder and not parent:IsVisible()
+end
+
 ---Hides or restores the default Blizzard cast bar per the active spec's settings: hidden while
 ---`bars.castbar.disableBlizzardCastbar` is set and the addon castbar is enabled (see IsEnabled).
 ---Checked on load/spec/talent changes, option toggles, and the Blizzard bar's own OnShow.
@@ -130,6 +146,10 @@ function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
 		return
 	end
 	if shouldDisable then
+		-- Another addon already manages the Blizzard bar: don't fight it for the frame.
+		if IsBlizzardCastbarExternallyManaged() then
+			return
+		end
 		if blizzardCastbarHolder == nil then
 			blizzardCastbarHolder = CreateFrame("Frame")
 			blizzardCastbarHolder:Hide()
@@ -146,6 +166,23 @@ function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
 	else
 		PlayerCastingBarFrame:SetParent(blizzardCastbarOriginalParent or UIParent)
 	end
+end
+
+---Applies an enabled-state change from recomposed settings: tears down any active render when the
+---castbar is now disabled, then re-evaluates Blizzard cast bar suppression. Idempotent.
+---@param settings table? # Composed spec settings; defaults to the form-resolved display settings
+function TRB.Functions.Castbar:SyncEnabledState(settings)
+	if settings == nil then
+		settings = TRB.Functions.Class:GetActiveDisplaySettings()
+	end
+	if not self:IsEnabled(self:GetVisibilitySettings(settings)) then
+		local model = TRB.Data.castbar
+		if model ~= nil and model:IsActive() then
+			model:Stop()
+		end
+		self:EndRender()
+	end
+	self:UpdateBlizzardCastbarVisibility(settings)
 end
 
 ---Whether the given cast state ("cast"/"channel"/"empower") may show per the visibility conditions.
@@ -171,13 +208,22 @@ function TRB.Functions.Castbar:IsCastTypeAllowed(visibility, state)
 	return conditions.casting == true
 end
 
----Whether a hard-hide condition (In Vehicle) currently suppresses the castbar display. The model keeps
+---Whether a hard-hide condition (In Vehicle, Dead) currently suppresses the castbar display. The model keeps
 ---tracking while force-hidden so the bar reappears mid-cast when the condition clears.
 ---@param visibility table?
 ---@return boolean
 function TRB.Functions.Castbar:IsForceHidden(visibility)
 	local hideConditions = visibility and visibility.hideConditions
-	return hideConditions ~= nil and hideConditions.inVehicle == true and UnitInVehicle("player") == true
+	if hideConditions == nil then
+		return false
+	end
+	if hideConditions.inVehicle == true and UnitInVehicle("player") == true then
+		return true
+	end
+	if hideConditions.isDead == true and UnitIsDeadOrGhost("player") == true then
+		return true
+	end
+	return false
 end
 
 ---Container alpha to rest at while no cast is active: activeAlpha when Always Show, else inactiveAlpha.
@@ -627,6 +673,56 @@ end
 -- Per-state fill color
 -- ============================================================================
 
+---Whether PvP is currently "enabled" for the target-class-color PvP-only sub-option: player flagged,
+---War Mode desired, or inside a battleground/arena instance. Mirrors the visibility system's PvP rules.
+---@return boolean
+local function IsPvpEnabled()
+	if UnitIsPVP("player") or C_PvP.IsWarModeDesired() then
+		return true
+	end
+	local instanceType = TRB.Data.character.instanceType
+	return instanceType == "pvp" or instanceType == "arena"
+end
+
+---Resolves the current target's class color as an AARRGGBB hex string when the "color cast bar by target
+---class" option applies: the target is a player, hostile (or friendly when the friendly sub-option is set),
+---and PvP is enabled when the PvP-only sub-option is set. Returns nil to fall through to the configured
+---cast colors. Called every frame while a cast is on screen, so the checks are ordered cheapest-first.
+---@param barSettings table?
+---@return string?
+local function GetTargetClassColor(barSettings)
+	if barSettings == nil or barSettings.targetClassColor ~= true then
+		return nil
+	end
+	if not UnitExists("target") or not UnitIsPlayer("target") then
+		return nil
+	end
+	-- Enemy players by default; friendly targets only recolor when the friendly sub-option opts them in.
+	if UnitIsFriend("player", "target") and barSettings.targetClassColorFriendly ~= true then
+		return nil
+	end
+	if barSettings.targetClassColorPvpOnly == true and not IsPvpEnabled() then
+		return nil
+	end
+	local _, classFilename = UnitClass("target")
+	if classFilename == nil or issecretvalue(classFilename) then
+		return nil
+	end
+	local color = C_ClassColor.GetClassColor(classFilename)
+	if color == nil then
+		return nil
+	end
+	return TRB.Functions.Color:ConvertColorDecimalToHex(color.r, color.g, color.b, 1)
+end
+
+---Hides only the pooled empower segment-fill textures, leaving the latency overlay intact. Used when a
+---target-class-color override replaces the segmented empower fill with a single color.
+---@param node TRB.Classes.BarNode
+local function HideEmpowerSegments(node)
+	local pool = GetOverlayPool(node)
+	for _, t in ipairs(pool.segments) do t:Hide() end
+end
+
 ---Applies the fill color for the current cast state (and empower stage), honoring uninterruptible.
 ---An indicator claiming the fill outranks the uninterruptible color: the uninterruptible border still
 ---marks the cast, so nothing is lost by letting the indicator through.
@@ -638,10 +734,21 @@ local function ApplyStateFillColor(node, colors, model, barSettings)
 	local Color = TRB.Functions.Color
 	if colors == nil then return end
 
+	-- Color the fill by the current target's class color (PvP identification aid). It replaces the
+	-- configured per-state colors -- including the empower stage colors and the uninterruptible color --
+	-- but sits just below an active fill indicator, which still wins (resolved in the cast/channel path).
+	local classColor = GetTargetClassColor(barSettings)
+
 	-- Empowered casts always use the empower stage colors, even when uninterruptible: stage progression
 	-- is the point of the bar, so it should never be flattened to a plain "can't interrupt" color. For the
 	-- same reason indicators don't claim the empower fill either.
 	if model.state == "empower" then
+		-- Target class color overrides the stage colors entirely; the caller suppresses (and clears) the
+		-- segmented fill so this single color shows through.
+		if classColor ~= nil then
+			Color:ApplyFillColor(node, classColor)
+			return
+		end
 		-- Segmented-fill mode: blank the main fill so DrawEmpowerSegments can paint each level's segment in
 		-- its own color; there is no single advancing fill color to apply here.
 		if barSettings and barSettings.empowerSegmentedFill then
@@ -668,6 +775,10 @@ local function ApplyStateFillColor(node, colors, model, barSettings)
 	local isChannel = model.state == "channel"
 	local indicators = Color:GetResolvedIndicators("castbar")
 	local entry = indicators and indicators[isChannel and "channel" or "bar"]
+	-- Target class color sits below an active indicator but above the uninterruptible/configured colors.
+	if entry == nil and classColor ~= nil then
+		entry = classColor
+	end
 	if entry == nil and model.notInterruptible then
 		entry = colors.uninterruptible
 	end
@@ -893,16 +1004,31 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 	-- The fill color and the overlay textures are only worth rebuilding when something they depend on moves:
 	-- a new node frame, or an indicator flipping mid-cast (which the version stamp reports).
 	local indicatorVersion = TRB.Functions.Color:GetResolvedIndicatorVersion()
+	local targetColor = GetTargetClassColor(barSettings)
 	if self._renderedFrame ~= node.frame or self._renderedIndicatorVersion ~= indicatorVersion then
 		self._renderedFrame = node.frame
 		self._renderedIndicatorVersion = indicatorVersion
+		self._renderedTargetColor = targetColor
 		node:SetMinMax(0, 1)
 		ApplyStateFillColor(node, colors, model, barSettings)
 		self:SetupOverlays(model)
+	elseif self._renderedTargetColor ~= targetColor then
+		-- Target (and so its class color) changed mid-cast: re-apply just the fill. Empower re-applies
+		-- ApplyStateFillColor every frame from the updater, so it needs no handling here.
+		self._renderedTargetColor = targetColor
+		if model.state ~= "empower" then
+			ApplyStateFillColor(node, colors, model, barSettings)
+		end
 	end
 	-- Not version-gated: a gradient indicator is a curve over a secret resource value, so its color moves
 	-- with the resource, not with the indicator flipping on and off.
 	ApplyBorderAndBackgroundColor(node, colors, model)
+	-- Track the casting spell's icon every frame so a chained cast swapping spells mid-render updates it.
+	-- SetIconTexture no-ops when the texture is unchanged, so this stays cheap.
+	if barSettings ~= nil and barSettings.icon ~= nil and barSettings.icon.enabled then
+		node:SetIconTexture(model.spell and model.spell.iconId or nil)
+		node:SetIconVisible(model.spell ~= nil)
+	end
 	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
 	-- Keep the shared fade fields synced so anything that consults them stays consistent, but we
 	-- drive the actual container alpha directly rather than through UpdateFade.
@@ -942,11 +1068,16 @@ function TRB.Functions.Castbar:ApplyIdleState(group, node, idleAlpha, colors)
 	if self._renderedFrame ~= nil then
 		self._renderedFrame = nil
 		self._renderedIndicatorVersion = nil
+		self._renderedTargetColor = nil
 		---@diagnostic disable-next-line: inject-field
 		HideOverlays(node.frame._trbCastbarOverlays)
 	end
 	node:SetMinMax(0, 1)
 	node:SetValue(0)
+	-- No spell is casting, so the icon has nothing to show. Its reserved strip stays claimed by the
+	-- layout, keeping the bar the same size whether idle or active. Clearing the texture (rather than
+	-- just hiding) stops a layout rebuild from resurrecting the last cast's icon.
+	node:SetIconTexture(nil)
 	-- No model: an idle bar is never uninterruptible, so only the indicator/configured colors apply.
 	ApplyBorderAndBackgroundColor(node, colors, nil)
 	group.targetAlpha = idleAlpha
@@ -980,6 +1111,7 @@ function TRB.Functions.Castbar:BeginRender()
 	-- Force ApplyVisibleState to (re)place the colors and overlays for this fresh cast
 	self._renderedFrame = nil
 	self._renderedIndicatorVersion = nil
+	self._renderedTargetColor = nil
 	if self:IsForceHidden(visibility) then
 		-- Hard-hide condition active (e.g. In Vehicle): keep tracking but stay hidden; the per-frame
 		-- updater reveals the bar mid-cast if the condition clears.
@@ -1005,11 +1137,13 @@ function TRB.Functions.Castbar:EndRender()
 	local node = self:GetNode()
 	self._renderedFrame = nil
 	self._renderedIndicatorVersion = nil
+	self._renderedTargetColor = nil
 	fadeOutStart = nil
 	fillComplete = nil
 	if node then
 		---@diagnostic disable-next-line: inject-field
 		HideOverlays(node.frame._trbCastbarOverlays)
+		node:SetIconTexture(nil)
 	end
 	if group then
 		ApplyHiddenState(group)
@@ -1140,11 +1274,16 @@ castbarFrame:SetScript("OnUpdate", function()
 				node:SetValue(fill)
 
 				-- Empower fill advances with the current stage. In segmented mode the main fill is blanked
-				-- and each level's segment fills to the live progress in its own color instead.
+				-- and each level's segment fills to the live progress in its own color instead -- unless a
+				-- target class color override is active, which paints a single color and clears the segments.
 				if model.state == "empower" then
 					ApplyStateFillColor(node, colors, model, barSettings)
 					if barSettings and barSettings.empowerSegmentedFill then
-						DrawEmpowerSegments(node, colors, model, fill)
+						if GetTargetClassColor(barSettings) ~= nil then
+							HideEmpowerSegments(node)
+						else
+							DrawEmpowerSegments(node, colors, model, fill)
+						end
 					end
 				end
 			end

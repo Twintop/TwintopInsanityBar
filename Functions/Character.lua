@@ -478,6 +478,9 @@ local function CharacterChange(self, event, ...)
 		-- Let class modules clear their spec-specific proc attributes.
 		TRB.Functions.Class:ResetProcsOnDeath()
 		TRB.Data.lookupDirty = true
+		TRB.Functions.BarVisibility:MarkDirty()
+	elseif event == "PLAYER_ALIVE" or event == "PLAYER_UNGHOST" then
+		TRB.Functions.BarVisibility:MarkDirty()
 	else
 		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
@@ -520,6 +523,8 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
 	characterChangeFrame:RegisterEvent("UNIT_FLAGS")
 	characterChangeFrame:RegisterEvent("PLAYER_DEAD")
+	characterChangeFrame:RegisterEvent("PLAYER_ALIVE")
+	characterChangeFrame:RegisterEvent("PLAYER_UNGHOST")
 	characterChangeFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
@@ -550,6 +555,8 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_FLAGS")
 	characterChangeFrame:UnregisterEvent("PLAYER_DEAD")
+	characterChangeFrame:UnregisterEvent("PLAYER_ALIVE")
+	characterChangeFrame:UnregisterEvent("PLAYER_UNGHOST")
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
@@ -1089,7 +1096,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Functions.BarVisibility:MarkDirty()
 	-- The single point where a spec's composed settings become active (login, spec switch, talent
 	-- change). Pass them directly: compositeKey isn't stamped yet on first login.
-	TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(cache.settings)
+	TRB.Functions.Castbar:SyncEnabledState(cache.settings)
 end
 
 ---Clears all cached color data (border, bar, backdrop, health curve, absorb border curve) and resets the RGBA parse memoization.
@@ -1433,6 +1440,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			mergedBar.yPos = coreBar.yPos
 			mergedBar.anchor = coreBar.anchor
 			mergedBar.fillDirection = coreBar.fillDirection
+			mergedBar.icon = coreBar.icon
 		end
 		if s.castbarOverlays then
 			mergedBar.tickWidth = coreBar.tickWidth
@@ -1447,6 +1455,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			mergedBar.latencyPrecision = coreBar.latencyPrecision
 			mergedBar.disableBlizzardCastbar = coreBar.disableBlizzardCastbar
 			mergedBar.mergeTradeskill = coreBar.mergeTradeskill
+			mergedBar.targetClassColor = coreBar.targetClassColor
+			mergedBar.targetClassColorPvpOnly = coreBar.targetClassColorPvpOnly
+			mergedBar.targetClassColorFriendly = coreBar.targetClassColorFriendly
 		end
 		-- Wrap bars in a shallow copy so spec.bars itself is never mutated
 		local mergedBars = {}
@@ -1485,6 +1496,86 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				mergedColorBars[k] = v
 			end
 			mergedColorBars.castbar = mergedColors
+			specCache.settings.colors.bars = mergedColorBars
+		end
+	end
+
+	-- Target/Focus cast bars mirror the player cast bar's per-section "Use Global" flags: Dimensions
+	-- (position/size/icon), Colors (fill/interrupt/border/background), and Empower (empower fill color +
+	-- stage lines). Operates on the current cache tables so it composes with the castbar merge above, and
+	-- always shallow-copies before mutating so spec.bars / spec.colors.bars are never touched.
+	for _, unitKey in ipairs({ "targetCastbar", "focusCastbar" }) do
+		local coreBar = core.bars and core.bars[unitKey]
+		local currentBars = specCache.settings.bars
+		local specBar = currentBars and currentBars[unitKey]
+		local useDims = s[unitKey .. "Dimensions"]
+		local useColors = s[unitKey .. "Colors"]
+		local useEmpower = s[unitKey .. "Empower"]
+		local useText = s[unitKey .. "Text"]
+		if coreBar and specBar and (useDims or useColors or useEmpower or useText) then
+			local mergedBar = {}
+			for k, v in pairs(specBar) do
+				mergedBar[k] = v
+			end
+			if useDims then
+				mergedBar.width = coreBar.width
+				mergedBar.height = coreBar.height
+				mergedBar.border = coreBar.border
+				mergedBar.xPos = coreBar.xPos
+				mergedBar.yPos = coreBar.yPos
+				mergedBar.anchor = coreBar.anchor
+				mergedBar.fillDirection = coreBar.fillDirection
+				mergedBar.icon = coreBar.icon
+			end
+			if useColors then
+				mergedBar.interruptColor = coreBar.interruptColor
+				mergedBar.interruptHostileOnly = coreBar.interruptHostileOnly
+			end
+			if useEmpower then
+				mergedBar.showEmpowerStages = coreBar.showEmpowerStages
+				mergedBar.empowerStageLineWidth = coreBar.empowerStageLineWidth
+			end
+			if useText then
+				mergedBar.classColor = coreBar.classColor
+				mergedBar.classColorPvpOnly = coreBar.classColorPvpOnly
+				mergedBar.classColorFriendly = coreBar.classColorFriendly
+				mergedBar.castTimePrecision = coreBar.castTimePrecision
+				mergedBar.durationPrecision = coreBar.durationPrecision
+			end
+			local mergedBars = {}
+			for k, v in pairs(currentBars) do
+				mergedBars[k] = v
+			end
+			mergedBars[unitKey] = mergedBar
+			specCache.settings.bars = mergedBars
+		end
+
+		local coreColors = core.colors and core.colors.bars and core.colors.bars[unitKey]
+		local currentColorBars = specCache.settings.colors.bars
+		local specColors = currentColorBars and currentColorBars[unitKey]
+		if coreColors and specColors and (useColors or useEmpower) then
+			local mergedColors = {}
+			for k, v in pairs(specColors) do
+				mergedColors[k] = v
+			end
+			if useColors then
+				mergedColors.bar = coreColors.bar
+				mergedColors.channel = coreColors.channel
+				mergedColors.uninterruptible = coreColors.uninterruptible
+				mergedColors.uninterruptibleBorder = coreColors.uninterruptibleBorder
+				mergedColors.border = coreColors.border
+				mergedColors.background = coreColors.background
+				mergedColors.endCap = coreColors.endCap
+			end
+			if useEmpower then
+				mergedColors.empower = coreColors.empower
+				mergedColors.empowerStageLine = coreColors.empowerStageLine
+			end
+			local mergedColorBars = {}
+			for k, v in pairs(currentColorBars) do
+				mergedColorBars[k] = v
+			end
+			mergedColorBars[unitKey] = mergedColors
 			specCache.settings.colors.bars = mergedColorBars
 		end
 	end
@@ -1536,10 +1627,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	specCache.settings.maxResource = spec.maxResource
 	specCache.settings.barVisibilityThresholds = spec.barVisibilityThresholds
 
-	-- Blizzard cast bar handling depends on the composed active-spec settings, which only become
-	-- valid/refreshed here — the initial login fill lands after PLAYER_ENTERING_WORLD fires.
+	-- Castbar enablement + Blizzard cast bar suppression follow the display spec's recomposed
+	-- settings, which only become valid/refreshed here (initial login fill lands after PLAYER_ENTERING_WORLD).
 	if TRB.Functions.Class:GetActiveDisplayCompositeKey() == compositeKey then
-		TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
+		TRB.Functions.Castbar:SyncEnabledState()
 	end
 end
 
@@ -1618,6 +1709,9 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 			-- className/specName are the lowercase settings-tree keys, used to pick that spec's built-in
 			-- channel tick profiles (most specs have none).
 			TRB.Functions.Settings:InjectCastbarDefaults(specDefaults, className, specName)
+
+			-- Target/Focus Cast Bars are all-spec standalone bars; inject their defaults the same way.
+			TRB.Functions.Settings:InjectTargetCastbarDefaults(specDefaults)
 
 			-- End caps are a universal per-bar setting; inject their defaults the same way
 			TRB.Functions.Settings:InjectEndCapDefaults(specDefaults)
@@ -1820,9 +1914,14 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.Class:CheckCharacter()
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		combatFrame:RegisterEvent("ENCOUNTER_START")
+		combatFrame:RegisterEvent("ENCOUNTER_END")
+		combatFrame:RegisterEvent("PLAYER_UNGHOST")
+		combatFrame:RegisterEvent("PLAYER_ALIVE")
 		TRB.Details.addonData.registered = true
 		TRB.Functions.Aura:EnableUnitAura()
 		TRB.Functions.SpellCast:EnableSpellCast()
+		TRB.Functions.TargetCastbar:Enable()
 		TRB.Functions.Character:EnableCharacterChange()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
@@ -1864,6 +1963,10 @@ function TRB.Functions.Character:EventRegistration()
 		timerFrame:SetScript("OnUpdate", nil)
 		combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		combatFrame:UnregisterEvent("ENCOUNTER_START")
+		combatFrame:UnregisterEvent("ENCOUNTER_END")
+		combatFrame:UnregisterEvent("PLAYER_UNGHOST")
+		combatFrame:UnregisterEvent("PLAYER_ALIVE")
 		TRB.Functions.Aura:DisableUnitAura()
 		TRB.Functions.SpellCast:DisableSpellCast()
 		TRB.Functions.Character:DisableCharacterChange()

@@ -477,6 +477,7 @@ function TRB.Functions.Bar:HideResourceBar(force)
 				editContext, entries, snapshotData,
 				(specSettings and specSettings.settings) or nil
 			)
+			self:ApplyEditModeIconPreviews((specSettings and specSettings.settings) or nil, barGroups)
 			if TRB.Functions.Bar.RefreshWrapperPositioning then
 				TRB.Functions.Bar:RefreshWrapperPositioning()
 			end
@@ -652,6 +653,27 @@ end
 -- Initialize parallel storage for new bar system
 TRB.Frames.barGroups = TRB.Frames.barGroups or {}
 
+---Castbar is an all-spec bar not created by any class's CreateForSpec, so it is created lazily at the
+---layout entry points; every path that lays out bars guarantees the group exists first.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsureCastbarBarGroup(barGroups)
+	if barGroups.castbar == nil then
+		barGroups.castbar = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Castbar", 1, false)
+	end
+end
+
+---Target/Focus Cast Bars are all-spec, standalone (screen-anchored) bars not created by any class's
+---CreateForSpec; guarantee their groups exist wherever the castbar group is ensured.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsureTargetCastbarBarGroups(barGroups)
+	if barGroups.targetCastbar == nil then
+		barGroups.targetCastbar = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_TargetCastbar", 1, false)
+	end
+	if barGroups.focusCastbar == nil then
+		barGroups.focusCastbar = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_FocusCastbar", 1, false)
+	end
+end
+
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
@@ -691,12 +713,9 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 		return
 	end
 
-	-- Castbar is an all-spec bar not created by any class's CreateForSpec, so lazily create its BarGroup
-	-- here (the universal post-CreateForSpec choke point). ApplyCustomBarGroups* then handle it
-	-- generically like any other registered custom bar.
-	if barGroups.castbar == nil then
-		barGroups.castbar = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Castbar", 1, false)
-	end
+	-- ApplyCustomBarGroups* handle the castbar generically like any other registered custom bar.
+	EnsureCastbarBarGroup(barGroups)
+	EnsureTargetCastbarBarGroups(barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
@@ -741,6 +760,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	if not TRB.Data.specSupported then
 		return
 	end
+
+	-- Some setup paths (EventRegistration re-enable, load-screen races) lay out without ever passing
+	-- through ConstructBarGroups; guarantee the castbar group exists before the forest is built.
+	EnsureCastbarBarGroup(barGroups)
+	EnsureTargetCastbarBarGroups(barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels
@@ -2412,6 +2436,61 @@ function TRB.Functions.Bar:GetEffectiveHeightForBarGroup(barGroups, settings, ba
 	return effectiveHeight, cdmForced
 end
 
+---Resolves how much space a bar's side ability icon reserves. The icon is always square with its side
+---equal to the bar's configured height. Left/right reserve along the width (the node shrinks inside a
+---fixed container); top/bottom reserve along the height (the container grows and the node keeps its size).
+---Generic across bar types -- any bar whose settings carry an `icon` block gets the same geometry.
+---@param barSettings table? # A bar's settings table
+---@param barHeight number # The bar's resolved height, which is also the icon's square side
+---@return table? # { side, size, spacing, zoom, widthReserved, heightReserved }, or nil when no icon
+function TRB.Functions.Bar:GetBarIconReservation(barSettings, barHeight)
+	local icon = barSettings and barSettings.icon
+	if icon == nil or not icon.enabled or barHeight == nil or barHeight <= 0 then
+		return nil
+	end
+
+	local side = icon.side or "left"
+	-- collapseBorderWidth overlaps the icon's border with the bar's into a single shared width, exactly
+	-- like adjacent nodes in a bar group: the gap becomes the negative border width, ignoring spacing.
+	local spacing = icon.spacing or 0
+	if icon.collapseBorderWidth then
+		spacing = -((barSettings and barSettings.border) or 0)
+	end
+	local extent = barHeight + spacing
+	local isVertical = side == "top" or side == "bottom"
+
+	return {
+		side = side,
+		size = barHeight,
+		spacing = spacing,
+		zoom = icon.zoom or 0,
+		widthReserved = isVertical and 0 or extent,
+		heightReserved = isVertical and extent or 0
+	}
+end
+
+---In Edit Mode, a visible bar that reserves a side icon strip has no live spell to show (cast bars,
+---in practice), so its icon box would render blank. Fill it with the default "?" placeholder so the
+---reserved strip is obviously an icon. Purely a preview aid: the live render path (Functions/Castbar,
+---Functions/TargetCastbar) reasserts the real icon -- or clears it -- outside Edit Mode.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+function TRB.Functions.Bar:ApplyEditModeIconPreviews(settings, barGroups)
+	if not settings or not barGroups then
+		return
+	end
+	for _, barKey in ipairs(self:GetAllBarKeys(barGroups)) do
+		local group = barGroups[barKey]
+		local node = group and group.GetNode and group:GetNode(1)
+		local barSettings = self:GetBarSettings(settings, barKey)
+		if node and barSettings and barSettings.icon and barSettings.icon.enabled
+			and group.currentAlpha and group.currentAlpha > 0 then
+			node:SetIconTexture(134400) -- inv-misc-questionmark placeholder
+			node:SetIconVisible(true)
+		end
+	end
+end
+
 ---Gets the rendered width of a bar group when available.
 ---@param barGroup TRB.Classes.BarGroup?
 ---@return number?
@@ -2694,6 +2773,24 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 		return false
 	end
 
+	-- Cast bars are runtime-driven, so IsBarVisible special-cases them to true to keep them in the anchor
+	-- tree as scaffolds. But one set to "Never Show" (or with no show condition checked) can never appear,
+	-- so -- exactly like the talent-gated bars above -- treat it as hidden for layout. This collapses its
+	-- reserved height in CalculateWrapperLayout's bounding box so the wrapper (and the whole anchored stack)
+	-- doesn't hold a gap for a cast bar that never shows. includeHidden=true (Edit Mode) still previews it.
+	if not includeHidden then
+		local displayBar = settings and settings.displayBar
+		if barKey == "castbar" then
+			if not TRB.Functions.Castbar:IsEnabled(displayBar and displayBar.castbar) then
+				return false
+			end
+		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
+			if not TRB.Functions.TargetCastbar:IsEnabled(displayBar and displayBar[barKey]) then
+				return false
+			end
+		end
+	end
+
 	-- Druid form-based visibility: secondary (combo points) and mana bar
 	-- visibility depends on current shapeshift form and spec options.
 	-- This mirrors the logic in HideResourceBar and CalculateWrapperLayout.
@@ -2750,6 +2847,10 @@ end
 ---@return boolean
 function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 	if includeHidden then return true end
+	-- Castbar (and the target/focus cast bars) have runtime-driven visibility (Functions/Castbar,
+	-- Functions/TargetCastbar); at layout they always count as visible so the container is never
+	-- collapsed and layout space stays reserved.
+	if barKey == "castbar" or barKey == "targetCastbar" or barKey == "focusCastbar" then return true end
 	-- A secondary bar with 0 resource nodes is never visible (e.g., all Holy Word enables unchecked)
 	if barKey == "secondary" and (TRB.Data.character.maxResource2 or 0) == 0 then
 		return false
@@ -2762,6 +2863,23 @@ function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 		return not visibilitySetting.neverShow
 	end
 	return visibilitySetting.visibility ~= "never"
+end
+
+---Returns true when a bar's visibility is set to "Never Show". Unlike IsBarVisible, this
+---honors neverShow even for the runtime-driven cast bars and ignores includeHidden, so it
+---is the criterion Edit Mode uses to decide whether a bar (or a whole tree) is previewed.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barKey string
+---@return boolean
+function TRB.Functions.Bar:IsBarNeverShow(settings, barKey)
+	local visKey = self:GetVisibilityKey(barKey)
+	local visibilitySetting = settings and settings.displayBar and settings.displayBar[visKey]
+	if not visibilitySetting then return false end
+	-- Support both new (neverShow) and legacy (visibility) formats
+	if visibilitySetting.neverShow ~= nil then
+		return visibilitySetting.neverShow == true
+	end
+	return visibilitySetting.visibility == "never"
 end
 
 ---Returns true when a bar is permanently hidden at layout time because a class/spec-specific
@@ -3496,15 +3614,28 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			end
 		end
 	else
-		-- Single-node direct sizing (health bar, etc.)
-		targetGroup.containerFrame:SetWidth(groupWidth)
-		targetGroup.containerFrame:SetHeight(groupHeight)
-		targetGroup.layoutHeight = groupHeight -- Store layout height for collapse/expand by ProcessBars
-		targetGroup.layoutWidth = groupWidth -- Store layout width for collapse/expand by ProcessBars
+		-- Single-node direct sizing (health bar, castbar, etc.)
+		-- A side ability icon claims a strip of the footprint: left/right shrink the node inside a
+		-- container that keeps its configured width, top/bottom grow the container and leave the node alone.
+		local iconReservation = self:GetBarIconReservation(groupSettings, groupHeight)
+		local containerWidth = groupWidth
+		local containerHeight = groupHeight
+		local nodeWidth = groupWidth
+		local nodeHeight = groupHeight
+		if iconReservation then
+			containerHeight = groupHeight + iconReservation.heightReserved
+			nodeWidth = math.max(groupWidth - iconReservation.widthReserved, 1)
+		end
+		targetGroup.iconReserved = iconReservation ~= nil
+
+		targetGroup.containerFrame:SetWidth(containerWidth)
+		targetGroup.containerFrame:SetHeight(containerHeight)
+		targetGroup.layoutHeight = containerHeight -- Store layout height for collapse/expand by ProcessBars
+		targetGroup.layoutWidth = containerWidth -- Store layout width for collapse/expand by ProcessBars
 
 		local singleNode = targetGroup:GetNode(1)
 		if singleNode then
-			singleNode:SetDimensions(groupWidth, groupHeight, groupBorder)
+			singleNode:SetDimensions(nodeWidth, nodeHeight, groupBorder)
 			singleNode:SetFillDirection(groupSettings.fillDirection)
 			singleNode:SetFrameLevel(frameLevels.comboPoint)
 
@@ -3512,7 +3643,37 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			local nodeFrame = singleNode:GetFrame()
 			if nodeFrame then
 				nodeFrame:ClearAllPoints()
-				nodeFrame:SetAllPoints(targetGroup.containerFrame)
+				if iconReservation then
+					-- Pin the node to the container corner away from the icon's strip; its explicit
+					-- size from SetDimensions then leaves exactly that strip free.
+					local side = iconReservation.side
+					local nodePoint = "TOPLEFT"
+					if side == "left" then
+						nodePoint = "TOPRIGHT"
+					elseif side == "top" then
+						nodePoint = "BOTTOMLEFT"
+					end
+					nodeFrame:SetPoint(nodePoint, targetGroup.containerFrame, nodePoint, 0, 0)
+					-- groupBorder, not an icon-specific setting: the icon border matches the bar's
+					singleNode:ApplyIconLayout(side, iconReservation.size, iconReservation.spacing, groupBorder, iconReservation.zoom)
+					-- Seed the icon border with the bar's base color so it starts matching the bar instead of
+					-- the BackdropTemplate default (white). The cache the icon normally follows isn't populated
+					-- until the first appearance/render pass, which for cast bars only happens on an actual cast.
+					local iconColorSettings = config.colorsTable or (config.colorsKey and settings.colors[config.colorsKey])
+					local iconBorderColor = config.colors and config.colors.border and iconColorSettings and iconColorSettings[config.colors.border]
+					if type(iconBorderColor) == "table" then
+						iconBorderColor = iconBorderColor.color
+					end
+					if iconBorderColor then
+						singleNode:SetIconBorderColorString(iconBorderColor)
+					end
+					-- Only reveal it if something has actually assigned a texture; the render path owns
+					-- visibility from there (the castbar shows it only while a spell is casting).
+					singleNode:SetIconVisible(singleNode._iconTexture ~= nil)
+				else
+					nodeFrame:SetAllPoints(targetGroup.containerFrame)
+					singleNode:SetIconVisible(false)
+				end
 			end
 
 			-- Set min/max based on mode
@@ -3798,12 +3959,16 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 
 	local inEditMode = TRB.Functions.EditMode:IsInEditMode()
 	local barIsVisible = self:IsBarVisible(settings, barKey, inEditMode) and not self:IsBarTalentGatedHidden(barKey)
+	-- Edit Mode previews everything except bars set to "Never Show", which stay collapsed.
+	if inEditMode and self:IsBarNeverShow(settings, barKey) then
+		barIsVisible = false
+	end
 	local shouldInitiallyShow = barIsVisible
 	-- Castbar's on-screen visibility is driven entirely by active cast state (Functions/Castbar.lua),
-	-- not the displayBar system it has no entry in, so always construct it hidden. barIsVisible stays
-	-- true (IsBarVisible defaults true with no displayBar entry) so its layout space is still reserved
+	-- so always construct it hidden outside Edit Mode. IsBarVisible special-cases the castbar to true
+	-- (runtime-driven visibility) so barIsVisible stays true and its layout space is still reserved
 	-- normally below, keeping anchored bars stable whether or not a cast is currently in progress.
-	if barKey == "castbar" and not inEditMode then
+	if (barKey == "castbar" or barKey == "targetCastbar" or barKey == "focusCastbar") and not inEditMode then
 		shouldInitiallyShow = false
 	end
 	config.shouldInitiallyShow = shouldInitiallyShow
@@ -3814,6 +3979,26 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 		barGroup:Hide()
 		barGroup:HideAllNodes()
 		if barGroup.containerFrame then
+			barGroup.containerFrame:SetHeight(0.001)
+			barGroup.containerFrame:SetWidth(0.001)
+		end
+	end
+
+	-- Cast bars keep barIsVisible=true (runtime-driven visibility), so the collapse above is skipped and
+	-- their layout space stays reserved -- correct while enabled, since the bar can still appear on a cast.
+	-- But one set to "Never Show" (or with no show condition checked) can never appear, so that reserved
+	-- strip is just a gap that pushes anchored bars around. Collapse it here so anchored bars slide
+	-- together, mirroring how ProcessBars collapses its own permanently-hidden bars. Edit Mode previews
+	-- these normally (they are ProcessBars entries there), so this is live-only.
+	if not inEditMode and barGroup.containerFrame then
+		local visibility = settings.displayBar and settings.displayBar[barKey]
+		local disabled = false
+		if barKey == "castbar" then
+			disabled = not TRB.Functions.Castbar:IsEnabled(visibility)
+		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
+			disabled = not TRB.Functions.TargetCastbar:IsEnabled(visibility)
+		end
+		if disabled then
 			barGroup.containerFrame:SetHeight(0.001)
 			barGroup.containerFrame:SetWidth(0.001)
 		end
@@ -3884,7 +4069,9 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>
 function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
-	if settings == nil or barGroups == nil then
+	-- Mirror ApplyCustomBarGroupsLayout's primary guard: without primary the custom bars are never
+	-- laid out, so texturing an unsized node throws "TexCoord out of range" in Blizzard's ApplyBackdrop.
+	if settings == nil or barGroups == nil or barGroups.primary == nil then
 		return
 	end
 	
@@ -3895,14 +4082,14 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 	for key, barTypeDef in pairs(allBarTypes) do
 		local barGroup = barGroups[key]
 		local barSettings = settings.bars and settings.bars[key]
-		
+
 		-- Apply appearance if bar group exists, even if barSettings is missing (use fallbacks)
 		if barGroup then
 			-- Get textures from flat keys (same pattern as manaBar: staggerBar, staggerBorder, staggerBackground)
 			local barTexture = settings.textures and (settings.textures[key .. "Bar"] or settings.textures.resourceBar)
 			local borderTexture = settings.textures and (settings.textures[key .. "Border"] or settings.textures.border)
 			local backgroundTexture = settings.textures and (settings.textures[key .. "Background"] or settings.textures.background)
-			
+
 			-- Get colors from nested structure, falling back to registry defaults for
 			-- newly-added or partially-migrated custom bars.
 			local defaultBarColors = barTypeDef:GetDefaultColors() or {}

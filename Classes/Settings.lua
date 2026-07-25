@@ -220,7 +220,24 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public fillDirection trbFillDirection # Fill direction for the bar's StatusBar
 ---@field public anchor TRB.Classes.Settings.BarAnchor? # Only used when this bar is NOT the base bar
 
+---Which side of a bar its ability icon is bound to.
+---@alias trbBarIconSide
+---| '"left"'   # Reserved strip on the left; node width shrinks
+---| '"right"'  # Reserved strip on the right; node width shrinks
+---| '"top"'    # Reserved strip above; container grows taller, node keeps its size
+---| '"bottom"' # Reserved strip below; container grows taller, node keeps its size
+
+---An ability icon rendered beside a bar. The icon is always square with its side equal to the bar's
+---configured height, and its border matches the bar's own border in both thickness and live color.
+---@class TRB.Classes.Settings.BarIcon
+---@field public enabled boolean # Whether the icon is drawn and reserves space
+---@field public side trbBarIconSide # Which side of the bar the icon binds to
+---@field public spacing number # Gap in pixels between the icon and the bar
+---@field public collapseBorderWidth boolean # Overlap the icon's border with the bar's (single-width shared border); ignores spacing
+---@field public zoom number # Percent cropped from each edge of the icon art, to cut the stock spell border
+
 ---@class TRB.Classes.Settings.SecondaryBar
+---@field public icon TRB.Classes.Settings.BarIcon? # Side ability icon; nil on bar types that do not support one
 ---@field public width number
 ---@field public height number
 ---@field public border integer
@@ -272,6 +289,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public latencyPrecision integer # Decimal places (0-3) for $castLatency and $castPushback
 ---@field public disableBlizzardCastbar boolean # Detach the default Blizzard cast bar while the addon castbar is enabled
 ---@field public mergeTradeskill boolean # Merge bulk crafting's repeated craft casts into one channel-style bar
+---@field public targetClassColor boolean # Color the fill by the current target's class color when it is an enemy player
+---@field public targetClassColorPvpOnly boolean # Restrict targetClassColor to when PvP is enabled (flagged / War Mode / battleground / arena)
+---@field public targetClassColorFriendly boolean # Extend targetClassColor to friendly player targets as well
 ---@field public tickProfiles table<integer, TRB.Classes.Settings.CastbarTickProfile> # Channel tick profiles keyed by spellId
 
 ---@class TRB.Classes.Settings.DisplayText
@@ -407,6 +427,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public inVehicle boolean? # Hide when the player is in a vehicle
 ---@field public inPetBattle boolean? # Hide when the player is in a pet battle
 ---@field public onTaxi boolean? # Hide when the player is on a flight path
+---@field public isDead boolean? # Hide when the player is dead or a ghost
 
 ---@class trbBarVisibilitySetting
 ---@field public neverShow boolean # When true, the bar is unconditionally hidden regardless of conditions

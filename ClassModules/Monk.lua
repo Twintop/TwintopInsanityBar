@@ -1038,7 +1038,8 @@ local function UpdateResourceBar()
 				borderOvercap = affectingCombat,
 			}
 			local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local barColorMap = { energyBar = energyBarColors }
+			-- Stagger border/background are colored bespoke below; this entry routes flat indicator end cap colors
+			local barColorMap = { energyBar = energyBarColors, staggerBar = {} }
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
