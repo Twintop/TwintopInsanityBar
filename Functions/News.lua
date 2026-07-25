@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.7.12-release (2026-07-25)
+## General
+### Cast Bars
+
+- [#799](#799) Fix an issue where the Cast Bar would still reserve space in the layout even when it was configured to never show.
+
+---
+
 # 12.0.7.11-release (2026-07-24)
 ## General
 

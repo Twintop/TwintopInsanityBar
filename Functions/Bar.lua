@@ -2773,6 +2773,24 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 		return false
 	end
 
+	-- Cast bars are runtime-driven, so IsBarVisible special-cases them to true to keep them in the anchor
+	-- tree as scaffolds. But one set to "Never Show" (or with no show condition checked) can never appear,
+	-- so -- exactly like the talent-gated bars above -- treat it as hidden for layout. This collapses its
+	-- reserved height in CalculateWrapperLayout's bounding box so the wrapper (and the whole anchored stack)
+	-- doesn't hold a gap for a cast bar that never shows. includeHidden=true (Edit Mode) still previews it.
+	if not includeHidden then
+		local displayBar = settings and settings.displayBar
+		if barKey == "castbar" then
+			if not TRB.Functions.Castbar:IsEnabled(displayBar and displayBar.castbar) then
+				return false
+			end
+		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
+			if not TRB.Functions.TargetCastbar:IsEnabled(displayBar and displayBar[barKey]) then
+				return false
+			end
+		end
+	end
+
 	-- Druid form-based visibility: secondary (combo points) and mana bar
 	-- visibility depends on current shapeshift form and spec options.
 	-- This mirrors the logic in HideResourceBar and CalculateWrapperLayout.
@@ -3961,6 +3979,26 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 		barGroup:Hide()
 		barGroup:HideAllNodes()
 		if barGroup.containerFrame then
+			barGroup.containerFrame:SetHeight(0.001)
+			barGroup.containerFrame:SetWidth(0.001)
+		end
+	end
+
+	-- Cast bars keep barIsVisible=true (runtime-driven visibility), so the collapse above is skipped and
+	-- their layout space stays reserved -- correct while enabled, since the bar can still appear on a cast.
+	-- But one set to "Never Show" (or with no show condition checked) can never appear, so that reserved
+	-- strip is just a gap that pushes anchored bars around. Collapse it here so anchored bars slide
+	-- together, mirroring how ProcessBars collapses its own permanently-hidden bars. Edit Mode previews
+	-- these normally (they are ProcessBars entries there), so this is live-only.
+	if not inEditMode and barGroup.containerFrame then
+		local visibility = settings.displayBar and settings.displayBar[barKey]
+		local disabled = false
+		if barKey == "castbar" then
+			disabled = not TRB.Functions.Castbar:IsEnabled(visibility)
+		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
+			disabled = not TRB.Functions.TargetCastbar:IsEnabled(visibility)
+		end
+		if disabled then
 			barGroup.containerFrame:SetHeight(0.001)
 			barGroup.containerFrame:SetWidth(0.001)
 		end

@@ -102,6 +102,14 @@ local function IsEnabled(visibility)
 	return conditions.casting == true or conditions.channeling == true or conditions.empowered == true
 end
 
+---Public wrapper over the local IsEnabled: whether the bar is enabled at all (not Never Show / has a
+---show condition). Layout consults this to collapse a disabled bar's reserved container space.
+---@param visibility table?
+---@return boolean
+function TRB.Functions.TargetCastbar:IsEnabled(visibility)
+	return IsEnabled(visibility)
+end
+
 ---Whether the given cast state may show per the visibility conditions.
 ---@param visibility table?
 ---@param state string
