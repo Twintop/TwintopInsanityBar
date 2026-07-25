@@ -23,12 +23,6 @@ local talents --[[@as TRB.Classes.Talents]]
 ---@type number?
 local protectionShieldSlamBaselineRage = nil
 
---- Aura-adding UNIT_AURA batches to skip before binding the Ignore Pain that Shield Slam grants
---- when it consumes Violent Outburst. The grant lands a couple of batches after the consume (the
---- consume frame's batch only removes Violent Outburst), and the generic delayed-request system
---- already ignores the consume frame, so 0 binds the next aura-adding batch. Bump if needed.
-local IGNORE_PAIN_GRANT_SKIP_BATCHES = 0
-
 --- Spell lookup for defensive node keys → spell objects. Populated in FillSpellData_Protection.
 ---@type table<string, table>
 local defensiveSpellsByKey = {}
@@ -315,7 +309,6 @@ local function ConstructResourceBar(settings)
 		if barGroups and barGroups.defensives then
 			barGroups.defensives:Hide()
 		end
-		TRB.Functions.Aura:DisableUnitAuraCache()
 	elseif TRB.Data.character.specId == 2 then
 		-- Fury: Whirlwind stacks bar (nodes based on talent)
 		if barGroups and barGroups.defensives then
@@ -356,7 +349,6 @@ local function ConstructResourceBar(settings)
 				barGroups.secondary:Show()
 			end
 		end
-		TRB.Functions.Aura:DisableUnitAuraCache()
 	elseif TRB.Data.character.specId == 3 then
 		-- Protection: Show secondary bar for defensive buffs (Shield Block + Ignore Pain)
 		if barGroups and barGroups.defensives then
@@ -374,7 +366,6 @@ local function ConstructResourceBar(settings)
 				barGroups.defensives:Hide()
 			end
 		end
-		TRB.Functions.Aura:EnableUnitAuraCache()
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -697,6 +688,19 @@ local function RefreshLookupData_Protection()
 end
 
 
+--- Starts the event-driven Ignore Pain timer and parses the cast-time absorb cap out of
+--- the spell description into `applications` for $ignorePainAbsorb (live absorb is secret).
+---@param currentTime number
+local function StartIgnorePainTimer(currentTime)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local ipBuff = TRB.Data.snapshotData.snapshots[spells.ignorePain.id].buff
+	ipBuff:InitializeCustom(spells.ignorePain.duration, currentTime)
+	local absorb = TRB.Functions.String:ParseLastNumber(C_Spell.GetSpellDescription(spells.ignorePain.id))
+	if absorb ~= nil and absorb > 100 then -- values <= 100 are misparses (percent/duration)
+		ipBuff.applications = absorb
+	end
+end
+
 ---Handles UNIT_SPELLCAST_ events for the class
 ---@param event trbSpellCastType
 ---@param spellId integer
@@ -751,14 +755,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 				snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
 				snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = false]]
 			elseif spellId == spells.ignorePain.castId then
-				snapshotData.snapshots[spells.ignorePain.id].buff:InitializeCustom(spells.ignorePain.duration, currentTime, nil, nil, true)
-				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
-				if bufferEntry ~= nil then
-					snapshotData.snapshots[spells.ignorePain.id].buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
-					snapshotData.snapshots[spells.ignorePain.id].buff:RefreshWithSecretAuraData(bufferEntry)
-				else
-					TRB.Functions.Aura:InsertAuraRequest(currentTime, snapshotData.snapshots[spells.ignorePain.id].buff, "first")
-				end
+				StartIgnorePainTimer(currentTime)
 			elseif spellId == spells.shieldSlam.id then
 				if talents:IsTalentActive(spells.heavyRepercussions) and snapshotData.snapshots[spells.shieldBlock.id].buff.isActive then
 					local duration = spells.heavyRepercussions.attributes.durationMod
@@ -766,17 +763,13 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 				end
 
 				-- Shield Slam consumes an active Violent Outburst proc, which also grants Ignore
-				-- Pain. The grant does not land in this frame's UNIT_AURA batch (that one removes
-				-- Violent Outburst) but in a later batch ~0.15s afterward, so use a delayed aura
-				-- request that binds to the correct (later) batch.
+				-- Pain. Start the event-driven Ignore Pain timer from the consume.
 				local violentOutburst = snapshotData.snapshots[spells.violentOutburst.id]
 				if violentOutburst ~= nil and violentOutburst.buff.isActive then
 					violentOutburst.buff:Reset()
 					snapshotData.audio.violentOutburstCue = false
 
-					local ipBuff = snapshotData.snapshots[spells.ignorePain.id].buff
-					ipBuff:InitializeCustom(spells.ignorePain.duration, currentTime, nil, nil, true)
-					TRB.Functions.Aura:InsertAuraRequest(currentTime, ipBuff, "first", IGNORE_PAIN_GRANT_SKIP_BATCHES)
+					StartIgnorePainTimer(currentTime)
 				end
 			end
 		end
@@ -1044,10 +1037,10 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 				local cpDuration = 1
 				
 				if colorKey == "ignorePainAbsorb" then
-					-- Absorb bar: buff.applications is a secret value on a 0-100 scale
+					-- Live absorb is secret; bar shows full while active
 					cpDuration = 100
 					if buff.isActive then
-						cpTime = buff.applications or 0
+						cpTime = 100
 					end
 				else
 					if buff.isActive then

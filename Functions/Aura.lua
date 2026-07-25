@@ -3,94 +3,9 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Aura = {}
 
----@type table<number, AuraData[]>
-local auraCacheBuffer = {}
----@type table<number, {buff: TRB.Classes.SnapshotBuff, positionHint: string?}>
-local auraRequests = {}
---- Persistent requests for auras that arrive a few UNIT_AURA batches after they are requested
---- (e.g. a buff granted ~0.15s after the action that triggers it). Unlike auraRequests these
---- survive across frames until matched, skipped out, or aged off.
----@type {buff: TRB.Classes.SnapshotBuff, positionHint: string?, skipRemaining: integer, createdAt: number}[]
-local delayedAuraRequests = {}
-local auraCacheCleanupTime = 0
-local AURA_CACHE_MAX_DURATION = 1 -- seconds
-local auraCacheEnabled = false
-
-local allBuffsCache = nil
-local allBuffsCacheTime = 0
-
----Resolves the correct AuraData from a list of candidates using a position hint.
----@param candidates AuraData[] # Array of AuraData from info.addedAuras or the cache buffer
----@param positionHint string? # Resolution strategy: "first" picks the candidate appearing earliest in the buff list
----@return AuraData?
-local function ResolveAuraFromCandidates(candidates, positionHint)
-	if candidates == nil or #candidates == 0 then
-		return nil
-	end
-
-	if positionHint == "first" then
-		-- Build a set of candidate auraInstanceIDs for fast lookup
-		local candidateIds = {}
-		for _, v in ipairs(candidates) do
-			if v.auraInstanceID ~= nil then
-				candidateIds[v.auraInstanceID] = v
-			end
-		end
-
-		-- Walk the buff list from index 1 upward; the first match is the
-		-- earliest-position candidate (e.g. Ignore Pain before Seeing Red)
-		for i = 1, 1000 do
----@diagnostic disable-next-line: param-type-mismatch
-			local buffData = C_UnitAuras.GetBuffDataByIndex("player", i)
-			if not buffData then
-				break
-			end
-			if candidateIds[buffData.auraInstanceID] then
-				return candidateIds[buffData.auraInstanceID]
-			end
-		end
-
-		-- Buff list walk found nothing; fall through to single-candidate fallback
-	end
-
-	-- No hint (or hint miss) with exactly one candidate: return it directly
-	if #candidates == 1 then
-		return candidates[1]
-	end
-
-	return nil
-end
-
----Processes persistent (delayed) aura requests against a player addedAuras batch. A delayed
----request ignores aura batches in its own creation frame, then skips `skipRemaining` further
----aura-adding batches, then binds to the matching aura. Used for auras that are applied a few
----UNIT_AURA batches after the action that grants them.
----@param candidates AuraData[] # info.addedAuras for this batch
----@param currentTime number # GetTime() of this batch
----@return boolean # true if at least one request resolved against this batch
-local function ProcessDelayedAuraRequests(candidates, currentTime)
-	local consumed = false
-	for i = #delayedAuraRequests, 1, -1 do
-		local req = delayedAuraRequests[i]
-		-- Ignore batches in the creation frame (e.g. the batch that removed the consumed buff).
-		if currentTime > req.createdAt then
-			if req.skipRemaining > 0 then
-				req.skipRemaining = req.skipRemaining - 1
-			else
-				local resolved = ResolveAuraFromCandidates(candidates, req.positionHint)
-				if resolved ~= nil then
-					req.buff:SetAuraInstanceId(resolved.auraInstanceID)
-					req.buff:RefreshWithSecretAuraData(resolved)
-					table.remove(delayedAuraRequests, i)
-					consumed = true
-				end
-			end
-		end
-	end
-	return consumed
-end
-
----Handles UNIT_AURA events
+---Handles UNIT_AURA events. As of 12.1 the UnitAuraUpdateInfo payload is secret for the
+---player, so this mostly serves as a "some aura changed" signal (cache invalidation,
+---lookupDirty, OnPlayerUnitAura hook); payload branches are guarded and run when readable.
 ---@param self any
 ---@param event string
 ---@param unit UnitToken
@@ -98,8 +13,7 @@ end
 local function AuraUpdateEvent(self, event, unit, info)
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData
-	local currentTime = GetTime()
-	
+
 	-- Short circuit this for now
 	if unit == "player" then
 		wipe(TRB.Data.cache.values.resource)
@@ -149,32 +63,9 @@ local function AuraUpdateEvent(self, event, unit, info)
 	local unitGuid = nil
 	local isUnitFriend = nil
 
-	if info.addedAuras then
+---@diagnostic disable-next-line: param-type-mismatch
+	if info.addedAuras and not issecrettable(info.addedAuras) then
 		if unit == "player" then
-			-- Aura cache handling: if enabled and auras were added, try to match to a pending request
-			if auraCacheEnabled and #info.addedAuras > 0 then
-				local consumed = false
-				-- Same-frame requests (match only the batch in the request's own frame).
-				local request = auraRequests[currentTime]
-				if request ~= nil then
-					local resolved = ResolveAuraFromCandidates(info.addedAuras, request.positionHint)
-					if resolved ~= nil then
-						request.buff:SetAuraInstanceId(resolved.auraInstanceID)
-						request.buff:RefreshWithSecretAuraData(resolved)
-						auraRequests[currentTime] = nil
-						consumed = true
-					end
-				end
-				-- Persistent (delayed) requests for auras applied a few batches later.
-				if ProcessDelayedAuraRequests(info.addedAuras, currentTime) then
-					consumed = true
-				end
-				if not consumed then
-					-- Could not resolve; buffer the full array for later pickup
-					auraCacheBuffer[currentTime] = info.addedAuras
-				end
-			end
-
 			for _, v in pairs(info.addedAuras) do
 ---@diagnostic disable-next-line: param-type-mismatch
 				if not issecretvalue(v.spellId) then
@@ -214,41 +105,14 @@ local function AuraUpdateEvent(self, event, unit, info)
 		end
 	end
 
-	if info.updatedAuraInstanceIDs then
+---@diagnostic disable-next-line: param-type-mismatch
+	if info.updatedAuraInstanceIDs and not issecrettable(info.updatedAuraInstanceIDs) then
 		if unit == "player" then
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
 				local snapshot = snapshotData.auraInstanceIds[v]
 
 				if snapshot ~= nil then
-					if snapshot.updateFromSecret then
-						-- Custom buff snapshot: call RefreshWithSecretAuraData() to update with the new AuraData
-						if allBuffsCache == nil or allBuffsCacheTime + 0.5 < currentTime then
-							allBuffsCacheTime = currentTime
----@diagnostic disable-next-line: param-type-mismatch
-							allBuffsCache = C_UnitAuras.GetUnitAuras("player", "HELPFUL")
-						end
-
-						for i = 1, #allBuffsCache do
-							local auraData = allBuffsCache[i]
-							if auraData.auraInstanceID == v then
-								snapshot:RefreshWithSecretAuraData(auraData)
-								break
-							end
-						end
-						--[[
-
-							Try one of these instead once they return non-secret `points` table data.
-
-							]]
-						--local buffData = TRB.Functions.Aura:FindBuffById(snapshot.parent.spell.id)
-						--local buffData = C_UnitAuras.GetAuraDataBySpellName("player", snapshot.parent.spell.name)
-						--local buffData = C_UnitAuras.GetUnitAuraBySpellID("player", snapshot.parent.spell.id)
-						--local buffData = C_UnitAuras..GetAuraDataByAuraInstanceID("player", snapshot.auraInstanceId)
-						--snapshot:RefreshWithSecretAuraData(buffData)
-					else
-						-- Standard buff snapshot: call Refresh() to update from current aura state
-						snapshot:Refresh()
-					end
+					snapshot:Refresh()
 				end
 
 				local target = targetData.auraInstanceIds[v]
@@ -278,18 +142,13 @@ local function AuraUpdateEvent(self, event, unit, info)
 		end
 	end
 
-	if info.removedAuraInstanceIDs then
+---@diagnostic disable-next-line: param-type-mismatch
+	if info.removedAuraInstanceIDs and not issecrettable(info.removedAuraInstanceIDs) then
 		if unit == "player" then
 			for _, v in pairs(info.removedAuraInstanceIDs) do
 				local snapshot = snapshotData.auraInstanceIds[v]
 				if snapshot ~= nil then
-					if auraCacheEnabled then
-						-- Cache-managed snapshot: call Reset() to fully clear it
-						snapshot:Reset()
-					else
-						-- Standard snapshot: call Refresh() to update from current aura state
-						snapshot:Refresh()
-					end
+					snapshot:Refresh()
 				end
 				TRB.Functions.Aura:RemoveBuffAuraInstanceId(v)
 			end
@@ -312,22 +171,6 @@ local function AuraUpdateEvent(self, event, unit, info)
 			end
 		end
 	end
-
-	-- Aura cache buffer cleanup
-	if auraCacheEnabled and currentTime - auraCacheCleanupTime > AURA_CACHE_MAX_DURATION then
-		auraCacheCleanupTime = currentTime
-		for k, v in pairs(auraCacheBuffer) do
-			if currentTime - k > AURA_CACHE_MAX_DURATION then
-				auraCacheBuffer[k] = nil
-			end
-		end
-		-- Age off delayed requests whose aura never arrived.
-		for i = #delayedAuraRequests, 1, -1 do
-			if currentTime - delayedAuraRequests[i].createdAt > AURA_CACHE_MAX_DURATION then
-				table.remove(delayedAuraRequests, i)
-			end
-		end
-	end
 end
 
 local unitAuraFrame = CreateFrame("Frame")
@@ -342,56 +185,6 @@ end
 function TRB.Functions.Aura:DisableUnitAura()
 	unitAuraFrame:UnregisterEvent("UNIT_AURA")
 end
-
----Enables the aura instance ID cache used to match newly applied auras to pending snapshot requests
-function TRB.Functions.Aura:EnableUnitAuraCache()
-	auraCacheEnabled = true
-end
-
----Disables the aura instance ID cache and clears all pending cache buffers and aura requests
-function TRB.Functions.Aura:DisableUnitAuraCache()
-	auraCacheEnabled = false
-	auraCacheBuffer = {}
-	auraRequests = {}
-	delayedAuraRequests = {}
-end
-
----Gets an aura from the cache buffer by its timestamp, resolving the correct entry using the position hint
----@param time number
----@param positionHint string? # Resolution strategy passed to ResolveAuraFromCandidates
----@return AuraData?
-function TRB.Functions.Aura:GetFromAuraCacheBuffer(time, positionHint)
-	local candidates = auraCacheBuffer[time]
-	if candidates == nil then
-		return nil
-	end
-	return ResolveAuraFromCandidates(candidates, positionHint)
-end
-
----Inserts an aura request into the request cache.
----
----By default the request matches only the addedAuras batch in its own frame (the cast frame).
----Pass `skipBatches` to instead match a LATER batch: the request then persists across frames,
----ignores aura batches in its creation frame, skips `skipBatches` further aura-adding batches,
----and binds to the next one. Use this for auras applied a short time after their trigger (e.g.
----a buff granted ~0.15s after the ability that grants it).
----@param time number
----@param buff TRB.Classes.SnapshotBuff
----@param positionHint string? # Resolution strategy: "first" picks the candidate appearing earliest in the buff list
----@param skipBatches integer? # nil = same-frame match (default); a number enables delayed matching, skipping this many later aura-adding batches first
-function TRB.Functions.Aura:InsertAuraRequest(time, buff, positionHint, skipBatches)
-	if skipBatches ~= nil then
-		delayedAuraRequests[#delayedAuraRequests + 1] = {
-			buff = buff,
-			positionHint = positionHint,
-			skipRemaining = skipBatches,
-			createdAt = time,
-		}
-	else
-		auraRequests[time] = { buff = buff, positionHint = positionHint }
-	end
-end
-
 
 ---Stores the AuraInstanceId->SnapshotBuff in a dictionary
 ---@param snapshotBuff TRB.Classes.SnapshotBuff
@@ -483,7 +276,8 @@ function TRB.Functions.Aura:FindDebuffById(spellId, onWhom, byWhom)
 		debuffData = C_UnitAuras.GetDebuffDataByIndex(onWhom, i)
 		if not debuffData then
 			return
-		elseif issecretvalue(buffData.spellId) then
+---@diagnostic disable-next-line: param-type-mismatch
+		elseif issecretvalue(debuffData.spellId) then
 			-- do nothing
 		elseif spellId == debuffData.spellId and (byWhom == nil or byWhom == debuffData.sourceUnit) then
 			return debuffData

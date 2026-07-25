@@ -24,7 +24,8 @@ function TRB.Classes.Paladin.HolySpells:New()
 
     self.divinePurpose = TRB.Classes.SpellBase:New({
         id = 223819,
-        isBuff = true
+        isBuff = true,
+        duration = 12
     })
 
 	self.holyLight = TRB.Classes.SpellBase:New({
@@ -96,7 +97,8 @@ function TRB.Classes.Paladin.ProtectionSpells:New()
 
 	self.divinePurpose = TRB.Classes.SpellBase:New({
 		id = 223819,
-		isBuff = true
+		isBuff = true,
+		duration = 12
 	})
     
     return self
@@ -151,7 +153,8 @@ function TRB.Classes.Paladin.RetributionSpells:New()
 
     self.divinePurpose = TRB.Classes.SpellBase:New({
         id = 223819,
-        isBuff = true
+        isBuff = true,
+        duration = 12
     })
    
     return self

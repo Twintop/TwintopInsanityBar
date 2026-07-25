@@ -454,7 +454,9 @@ local function SetAuraData(self, unitToken, isBuff)
         end
     end
     
-    if aura ~= nil then
+    -- Secret aura payload: leave existing state untouched
+---@diagnostic disable-next-line: param-type-mismatch
+    if aura ~= nil and not issecrettable(aura) and not issecretvalue(aura.expirationTime) and not issecretvalue(aura.applications) and not issecretvalue(aura.auraInstanceID) then
         self.active = true
         self.remainingTime = aura.expirationTime - currentTime
         self.endTime = aura.expirationTime

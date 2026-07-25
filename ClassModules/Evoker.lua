@@ -353,11 +353,6 @@ local function ConstructResourceBar(settings)
 	-- Make sure bar visibility and bar text are updated immediately.
 	-- Bar:HideResourceBar()
 	TRB.Functions.Class:TriggerResourceBarUpdates()
-
-	-- Enable the UNIT_AURA cache buffer so SPELL_ACTIVATION_OVERLAY_SHOW handlers can
-	-- match a freshly-applied (secret) Essence Burst aura back to its auraInstanceID,
-	-- mirroring the Protection Warrior Ignore Pain pattern.
-	TRB.Functions.Aura:EnableUnitAuraCache()
 end
 
 local function RefreshLookupData_Devastation()
@@ -799,26 +794,10 @@ local function HandleSpellEvents(self, event, ...)
 				end
 			end
 
-			-- Set up the buff snapshot to be driven entirely by live aura data via the
-			-- DurationObject API. We do NOT seed a placeholder duration from the spell
-			-- definition -- the live aura is the source of truth and refreshes/extensions
-			-- on stack gain are picked up automatically by RefreshWithSecretAuraData.
+			-- Stacks pinned to 1: redraw re-SHOWs would inflate an AddStack approach.
+			-- Stack counting needs EB's per-stack overlay ids (etrace, like SoL 114255/128654).
 			if essenceBurstSnapshot ~= nil then
-				local buff = essenceBurstSnapshot.buff
-				if not wasActive then
-					buff:InitializeCustomSimple(false)
-					buff.updateFromSecret = true
-				end
-
-				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
-				if bufferEntry ~= nil then
-					if buff.auraInstanceId == nil then
-						buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
-					end
-					buff:RefreshWithSecretAuraData(bufferEntry)
-				elseif not wasActive then
-					TRB.Functions.Aura:InsertAuraRequest(currentTime, buff, "first")
-				end
+				essenceBurstSnapshot.buff:InitializeCustom(essenceBurstSpell.duration, currentTime, true, 1)
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then

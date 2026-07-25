@@ -19,7 +19,9 @@ function TRB.Classes.Evoker.DevastationSpells:New()
     
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 359618,
-		isBuff = true
+		isBuff = true,
+		duration = 15,
+		maxStacks = 2
     })
 	
     -- Devastation Spec Talents
@@ -106,7 +108,9 @@ function TRB.Classes.Evoker.PreservationSpells:New()
     
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 369299,
-		isBuff = true
+		isBuff = true,
+		duration = 15,
+		maxStacks = 2
     })
 	
     --[[self.eruption = TRB.Classes.SpellBase:New({
@@ -183,7 +187,9 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
 
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 392268,
-		isBuff = true
+		isBuff = true,
+		duration = 15,
+		maxStacks = 2
     })
 
     self.ebonMight = TRB.Classes.SpellBase:New({

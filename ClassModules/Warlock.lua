@@ -1008,20 +1008,10 @@ local function HandleSpellEvents(self, event, ...)
 		if TRB.Data.character.specId == 1 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 			if spellId == spells.unstableAffliction.id then -- Shard Instability proc glows the Unstable Affliction button
-				local currentTime = GetTime()
 				local shardInstabilitySnapshot = snapshotData.snapshots[spells.shardInstability.id]
 				if shardInstabilitySnapshot ~= nil then
-					-- Shard Instability has no fixed duration; mark it active (removal handled by
-					-- GLOW_HIDE) and pull stacks/remaining time from the secret aura data.
+					-- No duration or stacks knowable; active until GLOW_HIDE
 					shardInstabilitySnapshot.buff:InitializeCustomSimple(true)
-					shardInstabilitySnapshot.buff.updateFromSecret = true
-					local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
-					if bufferEntry ~= nil then
-						shardInstabilitySnapshot.buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
-						shardInstabilitySnapshot.buff:RefreshWithSecretAuraData(bufferEntry)
-					else
-						TRB.Functions.Aura:InsertAuraRequest(currentTime, shardInstabilitySnapshot.buff, "first")
-					end
 				end
 			end
 		elseif TRB.Data.character.specId == 2 then
@@ -1039,14 +1029,8 @@ local function HandleSpellEvents(self, event, ...)
 					end
 				end
 
-				demonicCoreSnapshot.buff:InitializeCustom(spells.demonicCore.duration, currentTime, true, 1, true)
-				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
-				if bufferEntry ~= nil then
-					snapshotData.snapshots[spells.demonicCore.id].buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
-					snapshotData.snapshots[spells.demonicCore.id].buff:RefreshWithSecretAuraData(bufferEntry)
-				else
-					TRB.Functions.Aura:InsertAuraRequest(currentTime, snapshotData.snapshots[spells.demonicCore.id].buff)
-				end
+				-- Stack count is not knowable; treat as 1 stack until GLOW_HIDE
+				demonicCoreSnapshot.buff:InitializeCustom(spells.demonicCore.duration, currentTime, true, 1)
 			elseif spellId == spells.shadowBolt.id then -- Infernal Bolt proc glows the Shadow Bolt button
 				local infernalBoltSnapshot = snapshotData.snapshots[spells.infernalBolt.id]
 				if infernalBoltSnapshot ~= nil then
@@ -1182,13 +1166,11 @@ spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
 function TRB.Functions.Class:EnableEvents()
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
-	TRB.Functions.Aura:EnableUnitAuraCache()
 end
 
 function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
-	TRB.Functions.Aura:DisableUnitAuraCache()
 end
 
 local function UpdateResourceBar()

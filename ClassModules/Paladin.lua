@@ -300,11 +300,6 @@ local function ConstructResourceBar(settings)
 	-- Make sure bar visibility and bar text are updated immediately.
 	-- Bar:HideResourceBar()
 	TRB.Functions.Class:TriggerResourceBarUpdates()
-
-	-- Enable the UNIT_AURA cache buffer so SPELL_ACTIVATION_OVERLAY_SHOW handlers can
-	-- match a freshly-applied (secret) Divine Purpose aura back to its auraInstanceID,
-	-- mirroring the Evoker Essence Burst / Protection Warrior Ignore Pain pattern.
-	TRB.Functions.Aura:EnableUnitAuraCache()
 end
 
 ---@param spells TRB.Classes.Paladin.HolySpells?
@@ -770,26 +765,11 @@ local function HandleSpellEvents(self, event, ...)
 					end
 				end
 
-				-- Drive the buff snapshot from live aura data via the DurationObject API.
-				-- No `duration` is seeded from the spell definition -- the live aura is
-				-- the source of truth and refreshes are picked up automatically by
-				-- RefreshWithSecretAuraData.
+				-- 12.1: the Divine Purpose aura is fully secret, so run a pure event-driven
+				-- timer from the spell definition. A re-proc refires OVERLAY_SHOW and
+				-- refreshes the timer; early consumption is handled by OVERLAY_HIDE.
 				if divinePurposeSnapshot ~= nil then
-					local buff = divinePurposeSnapshot.buff
-					if not wasActive then
-						buff:InitializeCustomSimple(false)
-						buff.updateFromSecret = true
-					end
-
-					local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
-					if bufferEntry ~= nil then
-						if buff.auraInstanceId == nil then
-							buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
-						end
-						buff:RefreshWithSecretAuraData(bufferEntry)
-					elseif not wasActive then
-						TRB.Functions.Aura:InsertAuraRequest(currentTime, buff, "first")
-					end
+					divinePurposeSnapshot.buff:InitializeCustom(spells.divinePurpose.duration, currentTime)
 				end
 			end
 		end

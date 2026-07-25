@@ -63,7 +63,13 @@ function TRB.Classes.Priest.HealerSpells:New()
 	})
 	self.surgeOfLight = TRB.Classes.SpellBase:New({
 		id = 114255,
-		isBuff = true
+		isBuff = true,
+		maxStacks = 2,
+		-- One screen overlay per stack; visible overlay count = stack count
+		overlayIds = {
+			[114255] = true,
+			[128654] = true
+		}
 	})
 
 	-- Priest Class Talent Abilities
@@ -203,7 +209,6 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 
 		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = false, color = false },
 		{ variable = "$surgeOfLightStacks", description = L["PriestBarTextVariable_surgeOfLightStacks"], printInSettings = true, color = false },
-		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
 
 		{ variable = "$voidShieldTime", description = L["PriestDisciplineBarTextVariable_voidShieldTime"], printInSettings = true, color = false },
 		{ variable = "$masterTheDarknessTime", description = "", printInSettings = false, color = false },
@@ -520,7 +525,6 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 
 		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = false, color = false },
 		{ variable = "$surgeOfLightStacks", description = L["PriestBarTextVariable_surgeOfLightStacks"], printInSettings = true, color = false },
-		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
 		{ variable = "$benediction", description = L["PriestHolyBarTextVariable_benediction"], printInSettings = true, color = false },
 	})
 end
