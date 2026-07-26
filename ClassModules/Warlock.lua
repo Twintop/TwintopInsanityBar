@@ -60,7 +60,10 @@ local function FillSpecializationCache()
 		soulShardThreshold2Played = false,
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.warlock_affliction.snapshotData.snapshots[spells.shardInstability.id] = TRB.Classes.Snapshot:New(spells.shardInstability)
+	-- Always simple: this buff never has a knowable endTime. Its remaining time is a secret we can
+	-- render but not subtract, so normal time tracking would see a nil endTime and clear isActive on
+	-- the very next tick. Simple mode leaves isActive alone for our own signals to drive.
+	specCache.warlock_affliction.snapshotData.snapshots[spells.shardInstability.id] = TRB.Classes.Snapshot:New(spells.shardInstability, nil, "always")
 
 	specCache.warlock_affliction.barTextVariables = {
 		icons = {},
@@ -390,37 +393,51 @@ local function RefreshLookupData_Affliction()
 	-- Block D: Shard Instability ($shardInstabilityTime, $shardInstabilityStacks, $shardInstabilityMaxStacks)
 	if not activeVars or activeVars["$shardInstabilityTime"] or activeVars["$shardInstabilityStacks"] or activeVars["$shardInstabilityMaxStacks"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
-		local currentTime = GetTime()
-		local shardInstabilityBuff = snapshotData.snapshots[spells.shardInstability.id]
-		local _shardInstabilityActive = (shardInstabilityBuff ~= nil and shardInstabilityBuff.buff.isActive) or false
+		local shardInstabilityBuff = snapshotData.snapshots[spells.shardInstability.id].buff
+		local _shardInstabilityActive = shardInstabilityBuff.isActive == true
+		local properties = shardInstabilityBuff.customProperties
+		local _shardInstabilityStacks = properties.stacks
+		local _shardInstabilityTime = properties.remaining
+		local _shardInstabilityTimeText = properties.remainingText
 
-		-- Stacks and remaining time come from secret aura data, so the conditional/boolean check
-		-- is driven by `isActive` (a plain boolean) while the displayed values use secret-safe
-		-- `string.format`/`TimerPrecision`. Max stacks is a plain constant from the spell data.
-		lookupLogic["$shardInstabilityTime"] = _shardInstabilityActive
-		lookupLogic["$shardInstabilityStacks"] = _shardInstabilityActive
+		-- Both values are secret when the Cooldown Manager has them and missing entirely when it does
+		-- not, so logic never learns more than whether there is a value at all. Max stacks is a plain
+		-- constant from the spell data and stays a real number.
+		lookupLogic["$shardInstabilityStacks"] = _shardInstabilityActive and _shardInstabilityStacks ~= nil
+		lookupLogic["$shardInstabilityTime"] = _shardInstabilityActive and (_shardInstabilityTime ~= nil or _shardInstabilityTimeText ~= nil)
 		lookupLogic["$shardInstabilityMaxStacks"] = spells.shardInstability.maxStacks
 
-		if _shardInstabilityActive then
-			local _shardInstabilityStacks = shardInstabilityBuff.buff.applications
-			local _shardInstabilityTime = shardInstabilityBuff.buff:GetRemainingTime(currentTime)
-
-			if lookupChanged(prevState, "$shardInstabilityStacks", _shardInstabilityStacks, nil, true) then
-				lookup["$shardInstabilityStacks"] = string.format("%.0f", _shardInstabilityStacks)
-			end
-			if lookupChanged(prevState, "$shardInstabilityTime", _shardInstabilityTime, nil, true) then
-				lookup["$shardInstabilityTime"] = TRB.Functions.BarText:TimerPrecision(_shardInstabilityTime)
-			end
+		-- Absent for two different reasons: a proc that is down is a known zero, a proc that is up
+		-- with nothing tracking it in the Cooldown Manager is unknown. Memoized on the rendered
+		-- string rather than the value, so those two -- both nil underneath -- still repaint when
+		-- one becomes the other.
+		local stacksDisplay
+		if not _shardInstabilityActive then
+			stacksDisplay = string.format("%.0f", 0)
+		elseif _shardInstabilityStacks ~= nil then
+			stacksDisplay = string.format("%.0f", _shardInstabilityStacks)
 		else
-			-- When Shard Instability is not active, display zeroed defaults rather than blank strings.
-			if lookupChanged(prevState, "$shardInstabilityStacks", 0) then
-				lookup["$shardInstabilityStacks"] = string.format("%.0f", 0)
-			end
-			if lookupChanged(prevState, "$shardInstabilityTime", 0) then
-				lookup["$shardInstabilityTime"] = TRB.Functions.BarText:TimerPrecision(0)
-			end
+			stacksDisplay = "??"
 		end
 
+		local timeDisplay
+		if not _shardInstabilityActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _shardInstabilityTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_shardInstabilityTime)
+		elseif _shardInstabilityTimeText ~= nil then
+			-- Already formatted for us, and to the viewer's precision rather than ours.
+			timeDisplay = _shardInstabilityTimeText
+		else
+			timeDisplay = "??"
+		end
+
+		if lookupChanged(prevState, "$shardInstabilityStacks", stacksDisplay) then
+			lookup["$shardInstabilityStacks"] = stacksDisplay
+		end
+		if lookupChanged(prevState, "$shardInstabilityTime", timeDisplay) then
+			lookup["$shardInstabilityTime"] = timeDisplay
+		end
 		if lookupChanged(prevState, "$shardInstabilityMaxStacks", spells.shardInstability.maxStacks) then
 			lookup["$shardInstabilityMaxStacks"] = string.format("%.0f", spells.shardInstability.maxStacks)
 		end
@@ -938,7 +955,53 @@ local function UpdateSnapshot_Affliction()
 	UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	snapshotData.snapshots[spells.shardInstability.id].buff:GetRemainingTime(GetTime())
+	local shardInstabilityBuff = snapshotData.snapshots[spells.shardInstability.id].buff
+
+	local properties = shardInstabilityBuff.customProperties
+	properties.stacks = nil
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	-- Pinned to the buff viewers, which describe the aura -- a cooldown viewer would describe the
+	-- cast instead. Which ID the entry answers to depends on how it was configured, so offer both.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.shardInstability.buffId, spells.shardInstability.id)
+	if trackedId == nil then
+		-- Nothing tracking it, so the Unstable Affliction button glow is the only signal left. It
+		-- carries no stacks or duration, which is what the bar text renders as "??".
+		return
+	end
+
+	-- Once the Cooldown Manager holds the buff it is authoritative, because its item follows the
+	-- real aura while the glow only reports that a proc appeared. The applications read doubles as
+	-- the up-signal: Blizzard drops the cached aura record the moment the aura ends, so the count
+	-- and the buff's existence always arrive together.
+	local wasActive = shardInstabilityBuff.isActive
+	local stacksOk, stacks = cdm:Read(trackedId, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF)
+	if stacksOk then
+		properties.stacks = stacks
+		shardInstabilityBuff:InitializeCustomSimple(true)
+
+		-- The bar viewer is the only one where Blizzard subtracts expiry from now, leaving a number
+		-- we can render at the user's own precision. Elsewhere the best on offer is the countdown
+		-- Blizzard already formatted, which is empty while that viewer's timers are switched off --
+		-- a settings answer, not a value, so it is discarded when plain-empty.
+		local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+		if remainingOk then
+			properties.remaining = remaining
+		else
+			local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+			if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+				properties.remainingText = remainingText
+			end
+		end
+	elseif wasActive then
+		shardInstabilityBuff:Reset()
+	end
+
+	if wasActive ~= shardInstabilityBuff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 end
 
 local function UpdateSnapshot_Demonology()
@@ -1424,8 +1487,11 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 
+			-- No talent gate: a buff that is up is proof enough the talent is taken, and the talent
+			-- lookup keys off the spell ID, which is not guaranteed to be the tree's node ID.
+			local shardInstabilitySnapshot = snapshots[spells.shardInstability.id]
 			local conditionMap = {
-				shardInstability = talents:IsTalentActive(spells.shardInstability) and snapshots[spells.shardInstability.id] ~= nil and snapshots[spells.shardInstability.id].buff.isActive,
+				shardInstability = shardInstabilitySnapshot ~= nil and shardInstabilitySnapshot.buff.isActive == true,
 			}
 
 			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
@@ -2010,13 +2076,18 @@ do
 	for key, entry in pairs(shared) do
 		affliction[key] = entry
 	end
+	-- Both go false the moment the value is unknown, matching the "??" the text renders: a
+	-- conditional must not read as satisfied on the strength of a number we could not obtain.
 	affliction["$shardInstabilityTime"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if spells == nil or spells.shardInstability == nil then
 			return false
 		end
 		local snap = TRB.Data.snapshotData.snapshots[spells.shardInstability.id]
-		return snap ~= nil and snap.buff.isActive == true
+		if snap == nil or snap.buff.isActive ~= true then
+			return false
+		end
+		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
 	end
 	affliction["$shardInstabilityStacks"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
@@ -2024,7 +2095,7 @@ do
 			return false
 		end
 		local snap = TRB.Data.snapshotData.snapshots[spells.shardInstability.id]
-		return snap ~= nil and snap.buff.isActive == true
+		return snap ~= nil and snap.buff.isActive == true and snap.buff.customProperties.stacks ~= nil
 	end
 	affliction["$shardInstabilityMaxStacks"] = true
 	local demonology = {}

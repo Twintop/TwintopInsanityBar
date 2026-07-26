@@ -319,6 +319,23 @@ function CDM:IsTracked(spellId, source)
 	return GetSource(spellId, source) ~= nil
 end
 
+---Picks the first of several candidate spell IDs the user actually has placed in a viewer. A talent
+---and the buff it applies are separate IDs, and which one an item answers to depends on how that
+---Cooldown Manager entry was configured, so callers offer every ID the spec data knows and take
+---whichever resolves.
+---@param source TRB.CdmSourceGroup|TRB.CdmSourceKind|nil
+---@param ... integer|nil # Candidate spell IDs, in preference order; nils are skipped
+---@return integer? # nil when none of them are tracked
+function CDM:ResolveTrackedSpellId(source, ...)
+	for index = 1, select("#", ...) do
+		local spellId = select(index, ...)
+		if spellId ~= nil and GetSource(spellId, source) ~= nil then
+			return spellId
+		end
+	end
+	return nil
+end
+
 ---True when this spell resolves to a source that can supply a live remaining time. Pinned to the
 ---bar viewer, which is the only one where Blizzard leaves a subtracted remaining value behind.
 ---@param spellId integer
