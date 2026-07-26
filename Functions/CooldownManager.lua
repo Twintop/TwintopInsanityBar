@@ -114,6 +114,31 @@ local sources = {}
 local indexDirty = true
 local indexBuiltAt = nil
 
+-- Shown state per viewerDefinitions index, as of the last rebuild. A hidden viewer is skipped by
+-- RebuildIndex outright, so one appearing or disappearing changes what the index holds without any
+-- event announcing it -- the "only in combat" visibility setting flips it on every pull, and the
+-- master CVar flips all four at once. Polled rather than subscribed, at most once per frame.
+local viewerShown = {}
+local shownCheckedAt = nil
+
+---@return boolean
+local function ShownStateChanged()
+	local now = GetTime()
+	if shownCheckedAt == now then
+		return false
+	end
+	shownCheckedAt = now
+
+	for index, definition in ipairs(viewerDefinitions) do
+		local viewer = _G[definition.globalName]
+		if (viewer ~= nil and viewer:IsShown()) ~= viewerShown[index] then
+			return true
+		end
+	end
+
+	return false
+end
+
 -- Per-frame memo, one record per signal *per selector*, each keyed by spellId. The selector is part
 -- of the key because the same spellId and signal legitimately answer differently depending on which
 -- viewer the read resolved to. Freshness is a GetTime() stamp rather than a wipe, so a hit is a few
@@ -213,21 +238,31 @@ end
 ---setter or a refresh method, which would run Blizzard's code under our taint and error.
 function CDM:RebuildIndex()
 	wipe(sources)
+	wipe(viewerShown)
 	-- A rebuild means frame->spell assignments may have changed, so every memoized read and
 	-- quarantine verdict from the old mapping is void.
 	self:ResetCaches()
 	indexDirty = false
 	indexBuiltAt = GetTime()
+	shownCheckedAt = indexBuiltAt
 
-	if not self:IsAvailable() then
+	-- Recorded ahead of the availability guard so an unavailable Cooldown Manager leaves a settled
+	-- state of "nothing shown" rather than an empty table the poll would read as a change every frame.
+	local available = self:IsAvailable()
+	for index, definition in ipairs(viewerDefinitions) do
+		local viewer = _G[definition.globalName]
+		viewerShown[index] = viewer ~= nil and viewer:IsShown()
+	end
+
+	if not available then
 		return
 	end
 
-	for _, definition in ipairs(viewerDefinitions) do
+	for index, definition in ipairs(viewerDefinitions) do
 		local viewer = _G[definition.globalName]
 		-- A hidden viewer has unregistered its events and is serving stale data, so it is
 		-- excluded outright rather than indexed and silently trusted.
-		if viewer ~= nil and viewer.GetItemFrames ~= nil and viewer:IsShown() then
+		if viewerShown[index] and viewer.GetItemFrames ~= nil then
 			local ok, itemFrames = pcall(viewer.GetItemFrames, viewer)
 			if ok and type(itemFrames) == "table" then
 				for _, frame in ipairs(itemFrames) do
@@ -256,7 +291,7 @@ local function GetSource(spellId, selector)
 	if not TRB.Functions.Number:IsPlainNumber(spellId) then
 		return nil
 	end
-	if indexDirty then
+	if indexDirty or ShownStateChanged() then
 		CDM:RebuildIndex()
 	end
 
@@ -662,10 +697,18 @@ function CDM:ApplyToBarNode(node, spellId)
 end
 
 local cdmFrame = CreateFrame("Frame")
-cdmFrame:SetScript("OnEvent", function()
+local function InvalidateIndex()
 	CDM:MarkIndexDirty()
 	TRB.Data.lookupDirty = true
-end)
+end
+cdmFrame:SetScript("OnEvent", InvalidateIndex)
+
+-- Fires whenever the player edits what the Cooldown Manager tracks: a spell added or removed, a
+-- viewer reconfigured, a saved layout applied. Nothing in the ordinary event stream reports that,
+-- which is why the index used to stay stale until a reload. Blizzard's own viewers rebuild off this
+-- same callback and it dispatches synchronously, so the item frames are settled again well before
+-- our next update tick reads them.
+local dataChangedEvent = "CooldownViewerSettings.OnDataChanged"
 
 ---Starts watching for changes that invalidate the spellId index.
 function CDM:Enable()
@@ -674,13 +717,25 @@ function CDM:Enable()
 	cdmFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 	cdmFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	cdmFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+	-- Registering an event nobody has declared yet is supported, so this does not need to wait on
+	-- the Cooldown Manager loading. Callbacks are dispatched through securecallfunction, so our
+	-- taint cannot follow the return path back into Blizzard's layout code.
+	if EventRegistry ~= nil then
+		EventRegistry:RegisterCallback(dataChangedEvent, InvalidateIndex, cdmFrame)
+	end
+
 	self:MarkIndexDirty()
 end
 
 ---Stops watching and drops the index.
 function CDM:Disable()
 	cdmFrame:UnregisterAllEvents()
+	if EventRegistry ~= nil then
+		EventRegistry:UnregisterCallback(dataChangedEvent, cdmFrame)
+	end
 	wipe(sources)
+	wipe(viewerShown)
 	self:ResetCaches()
 	indexDirty = true
 end
@@ -707,7 +762,7 @@ local probeOrder = {
 ---whether a read succeeded at all.
 ---@return table
 function CDM:GetDiagnostics()
-	if indexDirty then
+	if indexDirty or ShownStateChanged() then
 		self:RebuildIndex()
 	end
 
