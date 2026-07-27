@@ -253,6 +253,7 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 
 		{ variable = "$demonicCoreTime", description = L["WarlockDemonologyBarTextVariable_demonicCoreTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
 		{ variable = "$demonicCoreStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		{ variable = "$demonicCoreMaxStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreMaxStacks"], printInSettings = true, color = false },
 
 		{ variable = "$doaTime", description = L["WarlockDemonologyBarTextVariable_doaTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 

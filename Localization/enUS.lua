@@ -3222,3 +3222,5 @@ L["DruidFeralCheckboxHalazzisFury"] = "Halazzi's Fury (Set 2pc)"
 L["DruidFeralIndicatorHalazzisFuryTooltip"] = "Changes to this color while the Midnight Season 2 (2pc) damage buff (Halazzi's Fury) is active after Berserk / Avatar of Ashamane ends."
 L["DruidFeralIndicatorHalazzisFuryColor"] = "Halazzi's Fury buff is active"
 L["DruidFeralBarTextVariable_halazzisFuryTime"] = "Time remaining on the Halazzi's Fury (Set 2pc) damage buff"
+
+L["WarlockDemonologyBarTextVariable_demonicCoreMaxStacks"] = "Maximum number of Demonic Core stacks"

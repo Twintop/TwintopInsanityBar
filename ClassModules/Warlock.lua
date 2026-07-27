@@ -106,7 +106,10 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_demonology.snapshotData.snapshots[spells.dominionOfArgus.id] = TRB.Classes.Snapshot:New(spells.dominionOfArgus)
 	---@type TRB.Classes.Snapshot
-	specCache.warlock_demonology.snapshotData.snapshots[spells.demonicCore.id] = TRB.Classes.Snapshot:New(spells.demonicCore)
+	-- Always simple: the Demonbolt glow says a proc exists but not when it started, and it does not
+	-- fire again as stacks are added, so there is no application time to count from. Without an
+	-- endTime the normal path reads the buff as expired and clears it a tick later.
+	specCache.warlock_demonology.snapshotData.snapshots[spells.demonicCore.id] = TRB.Classes.Snapshot:New(spells.demonicCore, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_demonology.snapshotData.snapshots[spells.infernalBolt.id] = TRB.Classes.Snapshot:New(spells.infernalBolt)
 	---@type TRB.Classes.Snapshot
@@ -553,40 +556,56 @@ local function RefreshLookupData_Demonology()
 		end
 	end
 
-	-- Block D: Demonic Core ($demonicCoreTime, $demonicCoreStacks)
-	if not activeVars or activeVars["$demonicCoreTime"] or activeVars["$demonicCoreStacks"] then
+	-- Block D: Demonic Core ($demonicCoreTime, $demonicCoreStacks, $demonicCoreMaxStacks)
+	if not activeVars or activeVars["$demonicCoreTime"] or activeVars["$demonicCoreStacks"] or activeVars["$demonicCoreMaxStacks"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
-		local currentTime = GetTime()
-		local demonicCoreBuff = snapshotData.snapshots[spells.demonicCore.id]
-		local _demonicCoreActive = (demonicCoreBuff ~= nil and demonicCoreBuff.buff.isActive) or false
+		local demonicCoreBuff = snapshotData.snapshots[spells.demonicCore.id].buff
+		local _demonicCoreActive = demonicCoreBuff.isActive == true
+		local properties = demonicCoreBuff.customProperties
+		local _demonicCoreStacks = properties.stacks
+		local _demonicCoreTime = properties.remaining
+		local _demonicCoreTimeText = properties.remainingText
 
-		-- Demonic Core is sourced from secret aura data, so `applications` and the
-		-- remaining time are always treated as secret. The conditional/boolean check
-		-- is driven by `isActive` (a plain boolean), while the displayed values use
-		-- secret-safe `string.format`/`TimerPrecision`.
-		lookupLogic["$demonicCoreTime"] = _demonicCoreActive
-		lookupLogic["$demonicCoreStacks"] = _demonicCoreActive
+		-- Both values are secret when the Cooldown Manager has them and missing entirely when it does
+		-- not, so logic never learns more than whether there is a value at all. Max stacks is a plain
+		-- constant from the spell data and stays a real number.
+		lookupLogic["$demonicCoreStacks"] = _demonicCoreActive and _demonicCoreStacks ~= nil
+		lookupLogic["$demonicCoreTime"] = _demonicCoreActive and (_demonicCoreTime ~= nil or _demonicCoreTimeText ~= nil)
+		lookupLogic["$demonicCoreMaxStacks"] = spells.demonicCore.maxStacks
 
-		if _demonicCoreActive then
-			local _demonicCoreStacks = demonicCoreBuff.buff.applications
-			local _demonicCoreTime = demonicCoreBuff.buff:GetRemainingTime(currentTime)
-
-			if lookupChanged(prevState, "$demonicCoreStacks", _demonicCoreStacks, nil, true) then
-				lookup["$demonicCoreStacks"] = string.format("%.0f", _demonicCoreStacks)
-			end
-			if lookupChanged(prevState, "$demonicCoreTime", _demonicCoreTime, nil, true) then
-				lookup["$demonicCoreTime"] = TRB.Functions.BarText:TimerPrecision(_demonicCoreTime)
-			end
+		-- Absent for two different reasons: a proc that is down is a known zero, a proc that is up
+		-- with nothing tracking it in the Cooldown Manager is unknown. Memoized on the rendered
+		-- string rather than the value, so those two -- both nil underneath -- still repaint when
+		-- one becomes the other.
+		local stacksDisplay
+		if not _demonicCoreActive then
+			stacksDisplay = string.format("%.0f", 0)
+		elseif _demonicCoreStacks ~= nil then
+			stacksDisplay = string.format("%.0f", _demonicCoreStacks)
 		else
-			-- When Demonic Core is not active, display zeroed defaults rather than
-			-- blank strings. Stacks render as a whole number ("0") and the timer
-			-- respects the user's timer precision setting ("0.0" by default).
-			if lookupChanged(prevState, "$demonicCoreStacks", 0) then
-				lookup["$demonicCoreStacks"] = string.format("%.0f", 0)
-			end
-			if lookupChanged(prevState, "$demonicCoreTime", 0) then
-				lookup["$demonicCoreTime"] = TRB.Functions.BarText:TimerPrecision(0)
-			end
+			stacksDisplay = "??"
+		end
+
+		local timeDisplay
+		if not _demonicCoreActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _demonicCoreTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_demonicCoreTime)
+		elseif _demonicCoreTimeText ~= nil then
+			-- Already formatted for us, and to the viewer's precision rather than ours.
+			timeDisplay = _demonicCoreTimeText
+		else
+			timeDisplay = "??"
+		end
+
+		if lookupChanged(prevState, "$demonicCoreStacks", stacksDisplay) then
+			lookup["$demonicCoreStacks"] = stacksDisplay
+		end
+		if lookupChanged(prevState, "$demonicCoreTime", timeDisplay) then
+			lookup["$demonicCoreTime"] = timeDisplay
+		end
+		if lookupChanged(prevState, "$demonicCoreMaxStacks", spells.demonicCore.maxStacks) then
+			lookup["$demonicCoreMaxStacks"] = string.format("%.0f", spells.demonicCore.maxStacks)
 		end
 	end
 
@@ -1010,9 +1029,58 @@ local function UpdateSnapshot_Demonology()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.snapshots[spells.dominionOfArgus.id].buff:GetRemainingTime(currentTime)
-	snapshotData.snapshots[spells.demonicCore.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.infernalBolt.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.ruination.id].buff:GetRemainingTime(currentTime)
+
+	local demonicCoreBuff = snapshotData.snapshots[spells.demonicCore.id].buff
+	local properties = demonicCoreBuff.customProperties
+	properties.stacks = nil
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	-- Pinned to the buff viewers, which describe the aura -- a cooldown viewer would describe the
+	-- cast instead. Which ID the entry answers to depends on how it was configured, so offer both.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.demonicCore.buffId, spells.demonicCore.id)
+	if trackedId == nil then
+		-- Nothing tracking it, so the Demonbolt button glow is the only signal left. It carries no
+		-- stacks or duration, which is what the bar text renders as "??".
+		return
+	end
+
+	-- Once the Cooldown Manager holds the buff it is authoritative, because its item follows the
+	-- real aura while the glow only reports that a proc appeared: it stays lit unchanged as stacks
+	-- come and go. The applications read doubles as the up-signal, since Blizzard drops the cached
+	-- aura record the moment the aura ends.
+	local wasActive = demonicCoreBuff.isActive
+	local stacksOk, stacks = cdm:Read(trackedId, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF)
+	if stacksOk then
+		properties.stacks = stacks
+		demonicCoreBuff:InitializeCustomSimple(true)
+
+		-- The bar viewer is the only one where Blizzard subtracts expiry from now, leaving a number
+		-- we can render at the user's own precision. Elsewhere the best on offer is the countdown
+		-- Blizzard already formatted, which is empty while that viewer's timers are switched off --
+		-- a settings answer, not a value, so it is discarded when plain-empty.
+		local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+		if remainingOk then
+			properties.remaining = remaining
+		else
+			local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+			if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+				properties.remainingText = remainingText
+			end
+		end
+	elseif wasActive then
+		demonicCoreBuff:Reset()
+		-- The glow arms the sound and its hide event disarms it. When the Cooldown Manager is the one
+		-- that sees the buff end, rearm here so the next proc is still audible.
+		snapshotData.audio.demonicCorePlayed = false
+	end
+
+	if wasActive ~= demonicCoreBuff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 end
 
 local function UpdateSnapshot_Destruction()
@@ -1080,20 +1148,19 @@ local function HandleSpellEvents(self, event, ...)
 		elseif TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 			if spellId == spells.demonbolt.id then -- Demonic Core
-				local currentTime = GetTime()
 				local demonicCoreSnapshot = snapshotData.snapshots[spells.demonicCore.id]
-				local wasActive = demonicCoreSnapshot ~= nil and demonicCoreSnapshot.buff.isActive
-
-				if not wasActive then
+				if demonicCoreSnapshot ~= nil then
+					-- Gated on the sound flag alone rather than on isActive, which the Cooldown Manager
+					-- may already have set from the same proc a tick earlier.
 					local specSettings = TRB.Data.settings.warlock.demonology
 					if specSettings.audio.demonicCore.enabled and not snapshotData.audio.demonicCorePlayed then
 						PlaySoundFile(specSettings.audio.demonicCore.sound, TRB.Data.settings.core.audio.channel.channel)
 						snapshotData.audio.demonicCorePlayed = true
 					end
-				end
 
-				-- Stack count is not knowable; treat as 1 stack until GLOW_HIDE
-				demonicCoreSnapshot.buff:InitializeCustom(spells.demonicCore.duration, currentTime, true, 1)
+					-- No stacks or duration knowable from a glow; active until GLOW_HIDE
+					demonicCoreSnapshot.buff:InitializeCustomSimple(true)
+				end
 			elseif spellId == spells.shadowBolt.id then -- Infernal Bolt proc glows the Shadow Bolt button
 				local infernalBoltSnapshot = snapshotData.snapshots[spells.infernalBolt.id]
 				if infernalBoltSnapshot ~= nil then
@@ -2102,13 +2169,18 @@ do
 	for key, entry in pairs(shared) do
 		demonology[key] = entry
 	end
+	-- Both go false the moment the value is unknown, matching the "??" the text renders: a
+	-- conditional must not read as satisfied on the strength of a number we could not obtain.
 	demonology["$demonicCoreTime"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if spells == nil or spells.demonicCore == nil then
 			return false
 		end
 		local snap = TRB.Data.snapshotData.snapshots[spells.demonicCore.id]
-		return snap ~= nil and snap.buff.isActive == true
+		if snap == nil or snap.buff.isActive ~= true then
+			return false
+		end
+		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
 	end
 	demonology["$demonicCoreStacks"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
@@ -2116,8 +2188,9 @@ do
 			return false
 		end
 		local snap = TRB.Data.snapshotData.snapshots[spells.demonicCore.id]
-		return snap ~= nil and snap.buff.isActive == true
+		return snap ~= nil and snap.buff.isActive == true and snap.buff.customProperties.stacks ~= nil
 	end
+	demonology["$demonicCoreMaxStacks"] = true
 	demonology["$infernalBoltTime"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if spells == nil or spells.infernalBolt == nil then
