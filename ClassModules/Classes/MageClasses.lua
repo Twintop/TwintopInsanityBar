@@ -61,7 +61,10 @@ function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickProfiles()
 	}
 end
 
----Gets built-in castbar tick modifiers for Arcane (talent/buff-conditional bonus ticks), keyed by
+-- Key the Midnight Season 2 Arcane set is registered under at the bottom of this file.
+local arcaneMidnightSeason2SetKey = "mage_arcane_midnightSeason2"
+
+---Gets built-in castbar tick modifiers for Arcane (talent/set/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
 function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers()
@@ -70,6 +73,8 @@ function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers()
 		[5143] = {
 			-- Amplification: +2 missiles while talented
 			{ talentId = 236628, bonusTicks = 2 },
+			-- Midnight Season 2 (2pc): +1 missile over the same channel duration
+			{ setBonus = arcaneMidnightSeason2SetKey, setBonusPieces = 2, bonusTicks = 1 },
 		},
 	}
 end
@@ -383,6 +388,18 @@ TRB.Data.castbarTickProfilesRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpe
 TRB.Data.castbarTickProfilesRegistry["mage_fire"] = TRB.Classes.Mage.FireSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["mage_frost"] = TRB.Classes.Mage.FrostSpells.GetCastbarTickProfiles
 
--- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+-- Register built-in castbar tick modifiers (talent/set/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
 TRB.Data.castbarTickModifiersRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers
+
+-- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
+-- every registered set once per gear change and caches it.
+TRB.Data.itemSetRegistry = TRB.Data.itemSetRegistry or {}
+---@type TRB.Classes.ItemSetDefinition
+TRB.Data.itemSetRegistry[arcaneMidnightSeason2SetKey] = {
+	headId = 271564,
+	shoulderId = 271562,
+	chestId = 271567,
+	handId = 271565,
+	legId = 271563,
+}

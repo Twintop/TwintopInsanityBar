@@ -414,6 +414,7 @@ end
 ---@field public frenziedRegeneration TRB.Classes.SpellComboPointThreshold
 ---@field public halazzisFury TRB.Classes.SpellBase
 ---@field public midnightSeason2SetBonus TRB.Classes.SpellBase
+---@field public midnightSeason2SetKey string # Key the set's pieces are registered under in TRB.Data.itemSetRegistry
 TRB.Classes.Druid.FeralSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
 TRB.Classes.Druid.FeralSpells.__index = TRB.Classes.Druid.FeralSpells
 
@@ -556,13 +557,9 @@ function TRB.Classes.Druid.FeralSpells:New()
     self.halazzisFury = TRB.Classes.SpellBase:New({
         id = 1301600
     })
-    -- Midnight Season 2 set bonus (4pc extends Berserk/Avatar of Ashamane by fourPieceDuration, 2pc grants halazzisFury)
+    -- Midnight Season 2 set bonus (4pc extends Berserk/Avatar of Ashamane by fourPieceDuration, 2pc grants
+    -- halazzisFury). The set's piece ids live in TRB.Data.itemSetRegistry at the bottom of this file.
     self.midnightSeason2SetBonus = TRB.Classes.SpellBase:New({
-        headId = 271528,
-        shoulderId = 271526,
-        chestId = 271531,
-        handId = 271529,
-        legId = 271527,
         fourPieceDuration = 10
     })
 
@@ -1226,3 +1223,16 @@ TRB.Data.castbarTickModifiersRegistry["druid_balance"] = TRB.Classes.Druid.Balan
 TRB.Data.castbarTickModifiersRegistry["druid_feral"] = TRB.Classes.Druid.FeralSpells.GetCastbarTickModifiers
 TRB.Data.castbarTickModifiersRegistry["druid_guardian"] = TRB.Classes.Druid.GuardianSpells.GetCastbarTickModifiers
 TRB.Data.castbarTickModifiersRegistry["druid_restoration"] = TRB.Classes.Druid.RestorationSpells.GetCastbarTickModifiers
+
+-- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
+-- every registered set once per gear change and caches it.
+TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey = "druid_feral_midnightSeason2"
+TRB.Data.itemSetRegistry = TRB.Data.itemSetRegistry or {}
+---@type TRB.Classes.ItemSetDefinition
+TRB.Data.itemSetRegistry[TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey] = {
+	headId = 271528,
+	shoulderId = 271526,
+	chestId = 271531,
+	handId = 271529,
+	legId = 271527,
+}

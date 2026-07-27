@@ -110,7 +110,6 @@ local function FillSpecializationCache()
 		effects = {
 		},
 		items = {
-			midnightSeason2SetBonusCount = 0
 		}
 	}
 	
@@ -1431,7 +1430,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-			local has4pc = (TRB.Data.character.items and TRB.Data.character.items.midnightSeason2SetBonusCount or 0) >= 4
+			local has4pc = TRB.Functions.Item:HasSetBonus(TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey, 4)
 			local fourPieceBonus = has4pc and spells.midnightSeason2SetBonus.attributes.fourPieceDuration or 0
 			if spellId == spells.berserk.castId then
 				snapshotData.snapshots[spells.berserk.id].buff:InitializeCustom(spells.berserk.duration + fourPieceBonus, currentTime)
@@ -1566,7 +1565,7 @@ local function UpdateSnapshot_Feral()
 
 	-- Midnight S2 2pc: accumulate combo points spent during Berserk/Avatar of Ashamane and, when
 	-- the window ends, spawn halazzisFury for 1s per spent combo point (1301600, manually tracked).
-	if (TRB.Data.character.items and TRB.Data.character.items.midnightSeason2SetBonusCount or 0) >= 2 then
+	if TRB.Functions.Item:HasSetBonus(TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey, 2) then
 		local windowActive = snapshotData.snapshots[spells.berserk.id].buff.isActive or snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive
 		local currentCp = snapshotData.attributes.comboPoints or 0
 		local previousCp = snapshotData.attributes.berserkPreviousComboPoints or currentCp
@@ -3730,18 +3729,6 @@ function TRB.Functions.Class:CheckCharacter()
 		if talents:IsTalentActive(spells.circleOfLifeAndDeath) then
 			TRB.Data.character.pandemicModifier = spells.circleOfLifeAndDeath.attributes.modifier
 		end
-
-		-- Midnight S2 set bonus detection (re-runs on equipment change via PLAYER_EQUIPMENT_CHANGED -> CheckCharacter)
-		local setBonus = spells.midnightSeason2SetBonus
-		local setCount = 0
-		if TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", 1), setBonus.attributes.headId) then setCount = setCount + 1 end
-		if TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", 3), setBonus.attributes.shoulderId) then setCount = setCount + 1 end
-		if TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", 5), setBonus.attributes.chestId) then setCount = setCount + 1 end
-		if TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", 10), setBonus.attributes.handId) then setCount = setCount + 1 end
-		if TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", 7), setBonus.attributes.legId) then setCount = setCount + 1 end
-
-		TRB.Data.character.items = TRB.Data.character.items or {}
-		TRB.Data.character.items.midnightSeason2SetBonusCount = setCount
 	elseif TRB.Data.character.specId == 3 then
 		TRB.Data.character.specName = "guardian"
 		TRB.Data.character.compositeKey = "druid_guardian"

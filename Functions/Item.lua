@@ -58,3 +58,79 @@ function TRB.Functions.Item:GetItemLevelOfItem(itemLink)
 	end
 	return select(1, C_Item.GetDetailedItemLevelInfo(itemLink))
 end
+
+---The five class set (tier) pieces of a season's set, as item ids. Any piece may be omitted.
+---@class TRB.Classes.ItemSetDefinition
+---@field public headId integer?
+---@field public shoulderId integer?
+---@field public chestId integer?
+---@field public handId integer?
+---@field public legId integer?
+
+-- Inventory slot each set definition field is worn in.
+local setPieceSlots = {
+	headId = 1,
+	shoulderId = 3,
+	chestId = 5,
+	legId = 7,
+	handId = 10,
+}
+
+-- Equipment changes anywhere else on the character can't alter a set count, so they're ignored outright.
+local setPieceSlotIds = {
+	[1] = true,
+	[3] = true,
+	[5] = true,
+	[7] = true,
+	[10] = true,
+}
+
+-- Equipped piece count for every set in TRB.Data.itemSetRegistry, keyed by set key. Computed only when gear
+-- changes; reads are a table lookup and never touch the inventory. Module-local rather than on
+-- TRB.Data.character because that table is swapped out wholesale whenever a spec cache is loaded.
+local setPieceCounts = {}
+
+---Recomputes equipped piece counts for every registered class set. Only called on a gear change.
+local function RefreshSetPieceCounts()
+	wipe(setPieceCounts)
+	local registry = TRB.Data.itemSetRegistry
+	if registry == nil then
+		return
+	end
+	for setKey, setDefinition in pairs(registry) do
+		local count = 0
+		for field, slot in pairs(setPieceSlots) do
+			local itemId = setDefinition[field]
+			if itemId ~= nil and TRB.Functions.Item:DoesItemLinkMatchId(GetInventoryItemLink("player", slot), itemId) then
+				count = count + 1
+			end
+		end
+		setPieceCounts[setKey] = count
+	end
+end
+
+local setPieceFrame = CreateFrame("Frame")
+setPieceFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+setPieceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+setPieceFrame:SetScript("OnEvent", function(_, event, slot)
+	if event == "PLAYER_EQUIPMENT_CHANGED" and not setPieceSlotIds[slot] then
+		return
+	end
+	RefreshSetPieceCounts()
+end)
+
+---How many pieces of a registered class set the player has equipped. Read from the cached count maintained
+---by gear-change events -- this never scans the inventory, so it is safe to call from hot paths.
+---@param setKey string? # Key the set is registered under in TRB.Data.itemSetRegistry
+---@return integer # Equipped piece count, 0 for an unknown or unregistered set
+function TRB.Functions.Item:GetEquippedSetPieceCount(setKey)
+	return (setKey ~= nil and setPieceCounts[setKey]) or 0
+end
+
+---Whether the player has enough pieces of a registered class set equipped for one of its set bonuses.
+---@param setKey string? # Key the set is registered under in TRB.Data.itemSetRegistry
+---@param pieces integer? # Pieces the bonus requires, defaults to 2
+---@return boolean
+function TRB.Functions.Item:HasSetBonus(setKey, pieces)
+	return self:GetEquippedSetPieceCount(setKey) >= (pieces or 2)
+end
