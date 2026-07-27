@@ -82,8 +82,8 @@ function TRB.Classes.Evoker.DevastationSpells.FillBarTextVariables(specCacheEntr
 
 		{ variable = "$dragonrageTime", description = L["EvokerDevastationBarTextVariable_dragonrageTime"], printInSettings = true, color = false },
 
-		{ variable = "$essenceBurstTime", description = L["EvokerDevastationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
-		{ variable = "$essenceBurstStacks", description = L["EvokerDevastationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
+		{ variable = "$essenceBurstTime", description = L["EvokerDevastationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		{ variable = "$essenceBurstStacks", description = L["EvokerDevastationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
 	})
 end
 
@@ -155,8 +155,8 @@ function TRB.Classes.Evoker.PreservationSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$essenceMax", description = L["EvokerPreservationBarTextVariable_essenceMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 
-		{ variable = "$essenceBurstTime", description = L["EvokerPreservationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
-		{ variable = "$essenceBurstStacks", description = L["EvokerPreservationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
+		{ variable = "$essenceBurstTime", description = L["EvokerPreservationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		{ variable = "$essenceBurstStacks", description = L["EvokerPreservationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
 	})
 end
 
@@ -244,8 +244,8 @@ function TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables(specCacheEnt
 
 		{ variable = "$ebonMightTime", description = L["EvokerAugmentationBarTextVariable_ebonMightTime"], printInSettings = true, color = false },
 
-		{ variable = "$essenceBurstTime", description = L["EvokerAugmentationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
-		{ variable = "$essenceBurstStacks", description = L["EvokerAugmentationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
+		{ variable = "$essenceBurstTime", description = L["EvokerAugmentationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		{ variable = "$essenceBurstStacks", description = L["EvokerAugmentationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
 	})
 end
 
