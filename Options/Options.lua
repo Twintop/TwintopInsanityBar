@@ -377,6 +377,28 @@ local function ConstructMiscellaneousPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CooldownManagerSettings"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 50
+
+	title = L["CooldownManagerGracePeriod"]
+	controls.cooldownManagerGracePeriod = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 60, TRB.Data.settings.core.cooldownManagerGracePeriod, 0.05, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.cooldownManagerGracePeriod:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		else
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		end
+
+		self.EditBox:SetText(value)
+		TRB.Data.settings.core.cooldownManagerGracePeriod = value
+	end)
+
+	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["FrameStrata"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
@@ -2180,4 +2202,4 @@ function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord)
 			yCoord = yCoord - (height * 3) - 5
 		end
 	end
-end
+end

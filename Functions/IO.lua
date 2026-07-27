@@ -39,6 +39,9 @@ local CUSTOM_BAR_EXPORT_SPECS = {
 	[7] = {
 		[1] = { "mana" },
 	},
+	[8] = {
+		[3] = { "shatter" },
+	},
 	[10] = {
 		[1] = { "stagger" },
 	},

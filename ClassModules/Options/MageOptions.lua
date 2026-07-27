@@ -335,6 +335,36 @@ end
 local function FrostLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
+		{
+			useDefaultFontColor = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = true,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionCenter"],
+			text = "$shatterStacks",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontSize = 14,
+			name = L["ResourceMageShatter"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["ShatterContainer"],
+				yPos = 0,
+				relativeToFrame = "Container::shatter",
+			},
+			fontJustifyHorizontal = "CENTER",
+			useDefaultFontSize = true,
+			color = { color = "FFFFFFFF" },
+			enabled = true,
+		},
 	}
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
@@ -368,10 +398,14 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			shatter = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			shatter = TRB.Functions.Settings:DefaultShatterBarDimensions(classic),
+		},
 		colors={
 			text = {
 				current = {
@@ -428,6 +462,9 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				sameColor = false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			bars = {
+				shatter = TRB.Functions.Settings:DefaultShatterBarColors(),
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -488,6 +525,15 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
+
+	-- Add Shatter bar textures
+	local shatterTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+	settings.textures.shatterBar = shatterTextures.bar
+	settings.textures.shatterBarName = shatterTextures.barName
+	settings.textures.shatterBorder = shatterTextures.border
+	settings.textures.shatterBorderName = shatterTextures.borderName
+	settings.textures.shatterBackground = shatterTextures.background
+	settings.textures.shatterBackgroundName = shatterTextures.backgroundName
 
 	if includeBarText then
 		settings.displayText.barText = FrostLoadDefaultBarTextSettings(classic)
@@ -1413,6 +1459,62 @@ local function FrostConstructIciclesBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Mage_Frost_ComboPoints", "endCapComboPoints", L["EndCap"], 8, 3)
 end
 
+local function FrostConstructShatterBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.mage.frost
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mage_frost
+	local yCoord = 5
+
+	local shatterBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("shatter")
+	local shatterColors = shatterBarDef and shatterBarDef:GetColors(spec)
+	if shatterBarDef and shatterColors then
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 8, 3, yCoord, shatterBarDef, L["ResourceMana"])
+
+		yCoord = yCoord - 90
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 8, 3, yCoord, shatterBarDef,
+			function(callbackParent, callbackYCoord)
+				local f = nil
+
+				if shatterColors.threshold == nil then
+					return callbackYCoord
+				end
+
+				-- Threshold stack, applied to every multiple of it (5, 10, 15, 20)
+				controls.checkBoxes.shatterThreshold = CreateFrame("CheckButton", "TwintopResourceBar_Mage_Frost_shatterThresholdEnabled", callbackParent, "ChatConfigCheckButtonTemplate")
+				f = controls.checkBoxes.shatterThreshold
+				f:SetPoint("TOPLEFT", oUi.xCoord, callbackYCoord)
+				getglobal(f:GetName() .. 'Text'):SetText(L["MageFrostCheckboxShatterThresholdMultiples"])
+				f.tooltip = L["MageFrostCheckboxShatterThresholdMultiplesTooltip"]
+				f:SetChecked(shatterColors.threshold.enabled)
+				f:SetScript("OnClick", function(self, ...)
+					shatterColors.threshold.enabled = self:GetChecked()
+					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(8, 3) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Data.cache.colors.bar = {}
+						TRB.Data.lookupDirty = true
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				end)
+
+				controls.colors.bars = controls.colors.bars or {}
+				controls.colors.bars.shatter = controls.colors.bars.shatter or {}
+				controls.colors.bars.shatter.threshold = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(callbackParent, L["MageFrostColorPickerShatterThreshold"], shatterColors.threshold, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+				f = controls.colors.bars.shatter.threshold
+				f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, shatterColors, controls.colors.bars.shatter, "threshold", nil, nil, 8, 3)
+				end)
+				f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, shatterColors.threshold, self, 8, 3)
+				end)
+
+				return callbackYCoord - 30
+			end)
+	end
+end
+
 local function FrostConstructHealthBarPanel(parent)
 	if parent == nil then
 		return
@@ -1439,7 +1541,12 @@ local function FrostConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 8, 3, yCoord, true, L["ResourceIcicles"])
+	local shatterBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("shatter")
+	local customBars = {}
+	if shatterBarDef then
+		table.insert(customBars, shatterBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 8, 3, yCoord, true, L["ResourceIcicles"], false, customBars)
 end
 
 local function FrostConstructBarVisibilityPanel(parent)
@@ -1452,7 +1559,12 @@ local function FrostConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceIcicles"], true)
+	local shatterBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("shatter")
+	local customBars = {}
+	if shatterBarDef then
+		table.insert(customBars, shatterBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceIcicles"], true, nil, customBars)
 end
 
 local function FrostConstructFontAndTextPanel(parent)
@@ -1596,6 +1708,7 @@ local function FrostConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FrostConstructManaBarPanel },
 		{ key = "iciclesBar", label = L["TabIcicles"], width = oUi.tabWidth.small, constructor = FrostConstructIciclesBarPanel },
+		{ key = "shatterBar", label = L["TabShatter"], width = oUi.tabWidth.small, constructor = FrostConstructShatterBarPanel },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = FrostConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "frost", controls),

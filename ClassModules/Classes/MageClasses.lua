@@ -154,6 +154,7 @@ end
 
 ---@class TRB.Classes.Mage.FrostSpells : TRB.Classes.SpecializationSpellsBase
 ---@field icicles TRB.Classes.SpellBase
+---@field shatter TRB.Classes.SpellBase
 TRB.Classes.Mage.FrostSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.FrostSpells.__index = TRB.Classes.Mage.FrostSpells
 
@@ -167,6 +168,11 @@ function TRB.Classes.Mage.FrostSpells:New()
         talentId = 1246832,
         isTalent = true,
         maxStacks = 5
+    })
+    self.shatter = TRB.Classes.SpellBase:New({
+        id = 1246769,
+        maxStacks = 20,
+        stackThreshold = 5
     })
 
     return self
@@ -182,7 +188,9 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.spellsData:FillSpellData()
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 
-	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#shatter", icon = spells.shatter.icon, description = spells.shatter.name, printInSettings = true },
+	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false, secret = true },
 		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
@@ -196,6 +204,9 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 		{ variable = "$iciclesMax", description = L["MageFrostBarTextVariable_iciclesMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+
+		{ variable = "$shatterStacks", description = L["MageFrostBarTextVariable_shatterStacks"], printInSettings = true, color = false, secret = true },
+		{ variable = "$shatterStacksMax", description = L["MageFrostBarTextVariable_shatterStacksMax"], printInSettings = true, color = false },
 	})
 end
 
@@ -297,6 +308,14 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             false -- not primary
         )
 
+        -- Shatter stacks on the current target
+        barGroups.shatter = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Shatter",
+            20,
+            false -- not primary
+        )
+
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(
             UIParent,
@@ -364,6 +383,12 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 5,
                 isPrimary = false,
                 resourceType = "Icicles"
+            },
+            shatter = {
+                maxNodes = 20,
+                isPrimary = false,
+                resourceType = "Shatter",
+                usesSecretValue = true
             },
             health = {
                 maxNodes = 1,

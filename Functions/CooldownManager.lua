@@ -114,12 +114,34 @@ local sources = {}
 local indexDirty = true
 local indexBuiltAt = nil
 
--- Shown state per viewerDefinitions index, as of the last rebuild. A hidden viewer is skipped by
+-- Usable state per viewerDefinitions index, as of the last rebuild. An unusable viewer is skipped by
 -- RebuildIndex outright, so one appearing or disappearing changes what the index holds without any
 -- event announcing it -- the "only in combat" visibility setting flips it on every pull, and the
 -- master CVar flips all four at once. Polled rather than subscribed, at most once per frame.
 local viewerShown = {}
 local shownCheckedAt = nil
+
+-- Time each viewer was last seen shown, stamped by every usability check. Survives rebuilds, since
+-- it is the only record of when the grace period below started.
+local viewerLastShown = {}
+
+---True while a viewer is worth indexing: shown now, or hidden within the user's grace period. A
+---viewer that hides -- dropping combat with "only in combat" set is the common case -- takes every
+---value it carries with it, so without the grace those flicker to unknown and straight back.
+---@param index integer
+---@param viewer table?
+---@param now number
+---@return boolean
+local function IsViewerUsable(index, viewer, now)
+	if viewer ~= nil and viewer:IsShown() then
+		viewerLastShown[index] = now
+		return true
+	end
+
+	local lastShown = viewerLastShown[index]
+	local grace = TRB.Data.settings.core.cooldownManagerGracePeriod
+	return lastShown ~= nil and grace > 0 and (now - lastShown) < grace
+end
 
 ---@return boolean
 local function ShownStateChanged()
@@ -130,8 +152,7 @@ local function ShownStateChanged()
 	shownCheckedAt = now
 
 	for index, definition in ipairs(viewerDefinitions) do
-		local viewer = _G[definition.globalName]
-		if (viewer ~= nil and viewer:IsShown()) ~= viewerShown[index] then
+		if IsViewerUsable(index, _G[definition.globalName], now) ~= viewerShown[index] then
 			return true
 		end
 	end
@@ -250,8 +271,7 @@ function CDM:RebuildIndex()
 	-- state of "nothing shown" rather than an empty table the poll would read as a change every frame.
 	local available = self:IsAvailable()
 	for index, definition in ipairs(viewerDefinitions) do
-		local viewer = _G[definition.globalName]
-		viewerShown[index] = viewer ~= nil and viewer:IsShown()
+		viewerShown[index] = IsViewerUsable(index, _G[definition.globalName], indexBuiltAt)
 	end
 
 	if not available then
@@ -260,8 +280,8 @@ function CDM:RebuildIndex()
 
 	for index, definition in ipairs(viewerDefinitions) do
 		local viewer = _G[definition.globalName]
-		-- A hidden viewer has unregistered its events and is serving stale data, so it is
-		-- excluded outright rather than indexed and silently trusted.
+		-- A hidden viewer has unregistered its events and is serving stale data, which is exactly
+		-- what the grace period trades for: frozen values beat values that vanish and return.
 		if viewerShown[index] and viewer.GetItemFrames ~= nil then
 			local ok, itemFrames = pcall(viewer.GetItemFrames, viewer)
 			if ok and type(itemFrames) == "table" then
@@ -753,6 +773,7 @@ function CDM:Disable()
 	end
 	wipe(sources)
 	wipe(viewerShown)
+	wipe(viewerLastShown)
 	self:ResetCaches()
 	indexDirty = true
 end
@@ -784,11 +805,14 @@ function CDM:GetDiagnostics()
 	end
 
 	local viewerStates = {}
-	for _, definition in ipairs(viewerDefinitions) do
+	for index, definition in ipairs(viewerDefinitions) do
 		local viewer = _G[definition.globalName]
 		viewerStates[definition.globalName] = {
 			exists = viewer ~= nil,
 			shown = viewer ~= nil and viewer:IsShown() or false,
+			-- Diverges from `shown` only inside the grace period, which is the one state where a
+			-- hidden viewer still supplies data and the probe below would otherwise look impossible.
+			usable = viewerShown[index] == true,
 		}
 	end
 
@@ -849,8 +873,8 @@ function CDM:PrintDiagnostics()
 
 	for _, definition in ipairs(viewerDefinitions) do
 		local state = diagnostics.viewers[definition.globalName]
-		print(prefix .. string.format("  %s exists=%s shown=%s", definition.globalName,
-			tostring(state.exists), tostring(state.shown)))
+		print(prefix .. string.format("  %s exists=%s shown=%s usable=%s", definition.globalName,
+			tostring(state.exists), tostring(state.shown), tostring(state.usable)))
 	end
 
 	if not diagnostics.available then

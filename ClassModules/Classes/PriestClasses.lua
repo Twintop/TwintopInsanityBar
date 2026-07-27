@@ -52,14 +52,12 @@ function TRB.Classes.Priest.HealerSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Priest.HealerSpells) --[[@as TRB.Classes.Priest.HealerSpells]]
 
 	-- Priest Class Baseline Abilities
+	-- attributes.baseManaCost is filled in at runtime; Surge of Light is detected from its cost reduction
 	self.flashHeal = TRB.Classes.SpellBase:New({
 		id = 2061,
 		isTalent = false,
 		baseline = true,
-		primaryResourceType = Enum.PowerType.Mana,
-		attributes = {
-			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
-		}
+		primaryResourceType = Enum.PowerType.Mana
 	})
 	self.surgeOfLight = TRB.Classes.SpellBase:New({
 		id = 114255,
@@ -348,16 +346,14 @@ function TRB.Classes.Priest.HolySpells:New()
 		duration = 60,
 		hasCharges = true
 	})
+	-- attributes.baseManaCost is filled in at runtime; Surge of Light is detected from its cost reduction
 	self.flashHeal = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 2061,
 		holyWordKey = "holyWordSerenity",
 		holyWordReduction = 6,
 		isTalent = false,
 		baseline = true,
-		primaryResourceType = Enum.PowerType.Mana,
-		attributes = {
-			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
-		}
+		primaryResourceType = Enum.PowerType.Mana
 	})
 	self.prayerOfMending = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 33076,

@@ -3223,3 +3223,40 @@ L["DruidFeralIndicatorHalazzisFuryColor"] = "Halazzi's Fury buff is active"
 L["DruidFeralBarTextVariable_halazzisFuryTime"] = "Time remaining on the Halazzi's Fury (Set 2pc) damage buff"
 
 L["WarlockDemonologyBarTextVariable_demonicCoreMaxStacks"] = "Maximum number of Demonic Core stacks"
+
+-- Frost Mage Shatter bar
+L["ResourceMageShatter"] = "Shatter"
+L["TabShatter"] = "Shatter"
+L["ShatterContainer"] = "Shatter Container"
+L["Shatter1"] = "Shatter 1"
+L["Shatter2"] = "Shatter 2"
+L["Shatter3"] = "Shatter 3"
+L["Shatter4"] = "Shatter 4"
+L["Shatter5"] = "Shatter 5"
+L["Shatter6"] = "Shatter 6"
+L["Shatter7"] = "Shatter 7"
+L["Shatter8"] = "Shatter 8"
+L["Shatter9"] = "Shatter 9"
+L["Shatter10"] = "Shatter 10"
+L["Shatter11"] = "Shatter 11"
+L["Shatter12"] = "Shatter 12"
+L["Shatter13"] = "Shatter 13"
+L["Shatter14"] = "Shatter 14"
+L["Shatter15"] = "Shatter 15"
+L["Shatter16"] = "Shatter 16"
+L["Shatter17"] = "Shatter 17"
+L["Shatter18"] = "Shatter 18"
+L["Shatter19"] = "Shatter 19"
+L["Shatter20"] = "Shatter 20"
+L["MageFrostBarTextVariable_shatterStacks"] = "Number of stacks of Shatter on your current target"
+L["MageFrostBarTextVariable_shatterStacksMax"] = "Maximum number of Shatter stacks"
+-- REMOVED: L["MageFrostCheckboxShatterThreshold"] - replaced by MageFrostCheckboxShatterThresholdMultiples
+-- REMOVED: L["MageFrostCheckboxShatterThresholdTooltip"] - replaced by MageFrostCheckboxShatterThresholdMultiplesTooltip
+L["MageFrostColorPickerShatterThreshold"] = "Shatter thresholds"
+-- Cooldown Manager global options
+L["CooldownManagerSettings"] = "Cooldown Manager"
+L["CooldownManagerGracePeriod"] = "Hidden Viewer Grace Period (seconds)"
+
+-- Frost Mage Shatter threshold now recolors every multiple of the threshold stack
+L["MageFrostCheckboxShatterThresholdMultiples"] = "Change Shatter color at Ice Lance stacks"
+L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fill color at every multiple of the maximum consumption of stacks by Ice Lance (5, 10, 15, 20)."

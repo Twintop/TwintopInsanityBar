@@ -105,6 +105,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 		core = {
 			dataRefreshRate = 5.0,
 			reactionTime = 0.1,
+			cooldownManagerGracePeriod = 10.0,
 			news = {
 				enabled = true,
 				lastUpdate = ""
@@ -2462,6 +2463,88 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 										relativeToFrameName = L["BoneShieldContainer"],
 										yPos = 0,
 										relativeToFrame = "Container::boneShield",
+									},
+									fontJustifyHorizontal = "CENTER",
+									useDefaultFontSize = true,
+									color = { color = "FFFFFFFF" },
+									enabled = true,
+								})
+							end
+						end
+					end
+
+					-- Migrate Frost Mage: add Shatter bar settings and default bar text
+					if className == "mage" and specName == "frost" then
+						if not specSettings.bars then
+							specSettings.bars = {}
+						end
+						if not specSettings.bars.shatter then
+							specSettings.bars.shatter = TRB.Functions.Settings:DefaultShatterBarDimensions()
+						end
+
+						if specSettings.colors then
+							specSettings.colors.bars = specSettings.colors.bars or {}
+							if not specSettings.colors.bars.shatter then
+								specSettings.colors.bars.shatter = TRB.Functions.Settings:DefaultShatterBarColors()
+							else
+								local defaultShatterColors = TRB.Functions.Settings:DefaultShatterBarColors()
+								specSettings.colors.bars.shatter.bar = specSettings.colors.bars.shatter.bar or defaultShatterColors.bar
+								specSettings.colors.bars.shatter.border = specSettings.colors.bars.shatter.border or defaultShatterColors.border
+								specSettings.colors.bars.shatter.background = specSettings.colors.bars.shatter.background or defaultShatterColors.background
+								specSettings.colors.bars.shatter.threshold = specSettings.colors.bars.shatter.threshold or defaultShatterColors.threshold
+							end
+						end
+
+						if specSettings.textures and not specSettings.textures.shatterBar then
+							local shatterTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+							specSettings.textures.shatterBar = shatterTextures.bar
+							specSettings.textures.shatterBarName = shatterTextures.barName
+							specSettings.textures.shatterBorder = shatterTextures.border
+							specSettings.textures.shatterBorderName = shatterTextures.borderName
+							specSettings.textures.shatterBackground = shatterTextures.background
+							specSettings.textures.shatterBackgroundName = shatterTextures.backgroundName
+						end
+
+						if not specSettings.displayBar then
+							specSettings.displayBar = {}
+						end
+						if not specSettings.displayBar.shatter then
+							specSettings.displayBar.shatter = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+						end
+
+						if specSettings.displayText and specSettings.displayText.barText then
+							local hasShatterText = false
+							for _, entry in ipairs(specSettings.displayText.barText) do
+								if entry.position and entry.position.relativeToFrame == "Container::shatter" then
+									hasShatterText = true
+									break
+								end
+							end
+							if not hasShatterText then
+								table.insert(specSettings.displayText.barText, {
+									useDefaultFontColor = true,
+									useDefaultFontOutline = true,
+									useDefaultFontShadow = true,
+									fontOutline = "OUTLINE",
+									fontOutlineName = L["FontOutlineOutline"],
+									fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+									fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+									useDefaultFontFace = true,
+									guid = TRB.Functions.String:Guid(),
+									constrainToParent = false,
+									maxWidthPercent = 100,
+									fontJustifyHorizontalName = L["PositionCenter"],
+									text = "$shatterStacks",
+									fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+									fontSize = 14,
+									name = L["ResourceMageShatter"],
+									position = {
+										relativeToName = L["PositionCenter"],
+										relativeTo = "CENTER",
+										xPos = 0,
+										relativeToFrameName = L["ShatterContainer"],
+										yPos = 0,
+										relativeToFrame = "Container::shatter",
 									},
 									fontJustifyHorizontal = "CENTER",
 									useDefaultFontSize = true,
@@ -9742,6 +9825,73 @@ function TRB.Functions.Settings:DefaultBoneShieldBarColors()
 		ossuary = { color = "FFB8FFB8", color2 = "FFB8FFB8", gradientDirection = "disabled", enabled = true },
 		ossuaryThreshold = { color = "FF404040", color2 = "FF404040", gradientDirection = "disabled", enabled = true },
 		border = { color = "FF205E20" },
+		background = { color = "66000000" }
+	}
+end
+
+
+---Gets default Shatter bar dimensions (Frost Mage, anchored above the Icicles bar)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultShatterBarDimensions(classic)
+	if classic then
+		return {
+			width = 25,
+			height = 13,
+			xPos = 0,
+			yPos = 4,
+			border = 1,
+			spacing = 14,
+			collapseBorderWidth = false,
+			fillDirection = "leftRight",
+			growthDirection = "leftRight",
+			relativeTo = "TOP",
+			relativeToName = L["PositionAboveMiddle"],
+			fullWidth = true,
+			anchor = {
+				barKey = "secondary",
+				anchorPoint = "TOP",
+				attachPoint = "BOTTOM",
+				xOffset = 0,
+				yOffset = 4,
+				matchWidth = true,
+				matchHeight = false,
+			},
+		}
+	end
+
+	return {
+		width = 30,
+		height = 20,
+		xPos = 0,
+		yPos = 0,
+		border = 2,
+		spacing = 0,
+		collapseBorderWidth = true,
+		fillDirection = "leftRight",
+		growthDirection = "leftRight",
+		relativeTo = "TOP",
+		relativeToName = L["PositionAboveMiddle"],
+		fullWidth = true,
+		anchor = {
+			barKey = "secondary",
+			anchorPoint = "TOP",
+			attachPoint = "BOTTOM",
+			xOffset = 0,
+			yOffset = 0,
+			matchWidth = true,
+			matchHeight = false,
+		},
+	}
+end
+
+---Gets default Shatter bar colors (Frost Mage)
+---@return table
+function TRB.Functions.Settings:DefaultShatterBarColors()
+	return {
+		bar = { color = "FFBFE3FF", color2 = "FFBFE3FF", gradientDirection = "disabled" },
+		threshold = { color = "FF000080", color2 = "FF000080", gradientDirection = "disabled", enabled = true },
+		border = { color = "FF12336B" },
 		background = { color = "66000000" }
 	}
 end

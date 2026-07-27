@@ -724,6 +724,7 @@ local resourceTypeNames = {
 	TipOfTheSpear = TRB.Localization["ResourceTipOfTheSpear"],
 	MaelstromWeapon = TRB.Localization["ResourceMaelstromWeapon"],
 	Icicles = TRB.Localization["ResourceIcicles"],
+	Shatter = TRB.Localization["ResourceMageShatter"],
 	BoneShield = TRB.Localization["ResourceBoneShield"],
 	Stagger = TRB.Localization["ResourceStagger"],
 	Health = TRB.Localization["ResourceHealth"],

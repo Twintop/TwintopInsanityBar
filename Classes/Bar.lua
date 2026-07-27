@@ -2180,6 +2180,31 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end
 	}))
 
+	-- Shatter bar (Frost Mage)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "shatter",
+		displayName = L["ResourceMageShatter"],
+		isMultiNode = true,
+		maxNodes = 20,
+		hasSameColor = false,
+		minMaxMode = "stepped",
+		hasSpacing = true,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "shatter",
+		-- Stack count is secret, so custom thresholds on it are static-only.
+		usesSecretValue = true,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultShatterBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultShatterBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
 	-- Castbar (available to all specs, hidden by default). Timer-driven (cast/channel/empower);
 	-- its fill value/min/max and per-state color are managed by the castbar render path, not the
 	-- generic snapshot-value path, so minMaxMode is "custom" and colorCurveType is nil.

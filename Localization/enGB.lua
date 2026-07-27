@@ -387,4 +387,8 @@ if locale == "enGB" then
 
     -- Druid Feral Midnight Season 2 set bonus (Halazzi's Fury)
     L["DruidFeralIndicatorHalazzisFuryTooltip"] = "Changes to this colour while the Midnight Season 2 (2pc) damage buff (Halazzi's Fury) is active after Berserk / Avatar of Ashamane ends."
+
+    -- Frost Mage Shatter bar
+    L["MageFrostCheckboxShatterThresholdMultiples"] = "Change Shatter colour at threshold stacks"
+    L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fill colour at every multiple of the threshold stack (5, 10, 15, 20)."
 end

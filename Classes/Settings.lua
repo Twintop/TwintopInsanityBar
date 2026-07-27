@@ -42,6 +42,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public colors TRB.Classes.Settings.ColorsCore
 ---@field public dataRefreshRate number
 ---@field public reactionTime number
+---@field public cooldownManagerGracePeriod number
 ---@field public news table
 ---@field public strata table
 ---@field public timers table

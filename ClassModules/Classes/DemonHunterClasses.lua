@@ -221,7 +221,6 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
 	--Resource
 	self.soulFragments = TRB.Classes.SpellBase:New({
 		id = 203981,
-		attributes = {},
 		maxResource = 6
 	})
 

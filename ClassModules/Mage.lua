@@ -423,6 +423,7 @@ local function ConstructResourceBar(settings)
 				end
 			end
 		elseif TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 			local maxIcicles = TRB.Data.character.maxResource2 or 0
 
 			if maxIcicles == 0 then
@@ -436,6 +437,10 @@ local function ConstructResourceBar(settings)
 					Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxIcicles)
 					barGroups.secondary:Show()
 				end
+			end
+
+			if barGroups.shatter then
+				barGroups.shatter:SetNodeCount(spells.shatter.maxStacks)
 			end
 		end
 	end
@@ -682,6 +687,32 @@ local function RefreshLookupData_Frost()
 		lookup["$comboPointsMax"] = _iciclesMax
 	end
 
+	-- Block C: Shatter ($shatterStacks, $shatterStacksMax)
+	if not activeVars or activeVars["$shatterStacks"] or activeVars["$shatterStacksMax"] then
+		local attributes = snapshotData.attributes
+		local _shatterStacksMax = spells.shatter.maxStacks
+
+		lookupLogic["$shatterStacksMax"] = _shatterStacksMax
+
+		-- A debuff that is down is a known zero; one nothing in the Cooldown Manager holds is unknown.
+		-- Memoized on the rendered string, since both are nil underneath.
+		local stacksDisplay
+		if not attributes.shatterTracked then
+			stacksDisplay = "??"
+		elseif attributes.shatterStacks ~= nil then
+			stacksDisplay = string.format("%s", attributes.shatterStacks)
+		else
+			stacksDisplay = string.format("%.0f", 0)
+		end
+
+		if lookupChanged(prevState, "$shatterStacks", stacksDisplay) then
+			lookup["$shatterStacks"] = stacksDisplay
+		end
+		if lookupChanged(prevState, "$shatterStacksMax", _shatterStacksMax) then
+			lookup["$shatterStacksMax"] = tostring(_shatterStacksMax)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -734,12 +765,91 @@ local function UpdateSnapshot_Fire()
 	end
 end
 
+---Refreshes the Shatter stack count on the current target from the Cooldown Manager.
+---`shatterTracked` separates a down debuff (known zero) from an untracked spell (renders "??").
+local function RefreshShatterStacks()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	local attributes = snapshotData.attributes
+	local wasTracked = attributes.shatterTracked == true
+	local wasActive = attributes.shatterActive == true
+
+	attributes.shatterStacks = nil
+	attributes.shatterTracked = false
+	attributes.shatterActive = false
+
+	if spells ~= nil and spells.shatter ~= nil then
+		-- Unpinned: the debuff is on our target, so a cooldown viewer holds it, not a buff viewer.
+		local cdm = TRB.Functions.CooldownManager
+		local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.ANY, spells.shatter.id)
+		if trackedId ~= nil then
+			attributes.shatterTracked = true
+			local stacksOk, stacks = cdm:Read(trackedId, cdm.Signal.APPLICATIONS, cdm.SourceGroup.ANY)
+			if stacksOk then
+				attributes.shatterStacks = stacks
+				attributes.shatterActive = true
+			end
+		end
+	end
+
+	if wasTracked ~= attributes.shatterTracked or wasActive ~= attributes.shatterActive then
+		TRB.Data.lookupDirty = true
+	end
+end
+
 local function UpdateSnapshot_Frost()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
+
+	RefreshShatterStacks()
+end
+
+---Updates the Shatter bar nodes (Frost only).
+---The count is secret, so every node takes the raw value and stepped min/max does the filling.
+---@param specSettings table
+---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
+local function UpdateShatter(specSettings, specCacheSettings)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+
+	if not (barGroups and barGroups.shatter) then
+		return
+	end
+
+	local shatterStacks = snapshotData.attributes.shatterStacks or 0
+	local maxShatter = spells.shatter.maxStacks
+
+	local shatterColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.shatter
+	if shatterColors == nil then
+		return
+	end
+
+	local backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha = Color:GetRGBAFromString(shatterColors.background.color, true)
+	local borderColor = shatterColors.border.color
+
+	local stackThreshold = spells.shatter.attributes and spells.shatter.attributes.stackThreshold
+	local thresholdEnabled = shatterColors.threshold ~= nil and shatterColors.threshold.enabled == true
+
+	for x = 1, maxShatter do
+		local shatterNode = barGroups.shatter:GetNode(x)
+		if shatterNode then
+			Bar:SetBarNodeValue(specCacheSettings, "shatter" .. x, shatterNode, shatterStacks)
+
+			local fillColor = shatterColors.bar
+			-- Every multiple of the threshold, not just the first: 5, 10, 15, 20.
+			if thresholdEnabled and stackThreshold and stackThreshold > 0 and x % stackThreshold == 0 then
+				fillColor = shatterColors.threshold
+			end
+
+			Color:ApplyFillColor(shatterNode, fillColor)
+			shatterNode:SetBorderColor(borderColor)
+			shatterNode:SetBackgroundColor(backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha)
+		end
+	end
 end
 
 local function UpdateResourceBar()
@@ -995,6 +1105,11 @@ local function UpdateResourceBar()
 				end
 			end
 
+			if specSettings.displayBar.shatter and not specSettings.displayBar.shatter.neverShow then
+				refreshText = true
+				UpdateShatter(specSettings, specCacheSettings)
+			end
+
 			if not specSettings.displayBar.health.neverShow then
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
@@ -1120,6 +1235,7 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.mage_frost.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#shatter"] = spells.shatter.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1427,6 +1543,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, TRB.Data.character.maxResource2, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.shatter, sharedSettings and sharedSettings.displayBar.shatter, TRB.Data.character.specId == 3, barGroups and barGroups.shatter and barGroups.shatter.maxNodes, nil),
 		}
 
 		if sharedSettings ~= nil then
@@ -1468,6 +1585,11 @@ do
 	frost["$icicles"] = true
 	frost["$comboPointsMax"] = true
 	frost["$iciclesMax"] = true
+	-- Goes false when the count is unknown, matching the "??" the text renders.
+	frost["$shatterStacks"] = function()
+		return TRB.Data.snapshotData.attributes.shatterTracked == true
+	end
+	frost["$shatterStacksMax"] = true
 	-- Fire
 	local fireBlastChargesMaxFn = function()
 		local maxCharges = TRB.Data.character.maxResource2 or 0
@@ -1536,6 +1658,19 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	if normalizedRelativeFrame == "FireBlastChargesBar" or normalizedRelativeFrame == "FireBlastCharges" then
 		if barGroups.secondary then
 			return barGroups.secondary:GetContainerFrame(), true, barGroups.secondary.isVisible
+		end
+		return nil, true, false
+	end
+
+	local shatterIndex = string.match(normalizedRelativeFrame, "^Shatter(%d+)$")
+	if shatterIndex ~= nil then
+		local index = tonumber(shatterIndex)
+		if index and barGroups.shatter then
+			local shatterNode = barGroups.shatter:GetNode(index)
+			if shatterNode then
+				local isVisible = barGroups.shatter.isVisible and shatterNode.isVisible
+				return shatterNode:GetFrame(), true, isVisible
+			end
 		end
 		return nil, true, false
 	end
