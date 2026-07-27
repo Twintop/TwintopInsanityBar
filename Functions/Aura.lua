@@ -3,6 +3,31 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Aura = {}
 
+local pendingPlayerBuffRefresh = false
+
+---Queues a re-poll of every tracked player buff through the aura API, coalescing bursts of
+---UNIT_AURA into a single pass. As of 12.1 the UnitAuraUpdateInfo payload is secret, so we can
+---neither tell which auras changed nor whether it was a full update; whitelisted auras
+---(Maelstrom Weapon, etc.) still read back cleanly from C_UnitAuras, and secret ones leave their
+---event-driven state untouched.
+function TRB.Functions.Aura:RequestPlayerBuffRefresh()
+	if pendingPlayerBuffRefresh then
+		return
+	end
+	pendingPlayerBuffRefresh = true
+
+	-- Deferred a frame: when a batch of aura changes lands (combat entry, channel end) the aura
+	-- API can transiently return nil for buffs that are still present, which would flash
+	-- stack-based bars like Maelstrom Weapon or Soul Fragments to zero for a frame.
+	C_Timer.After(0.02, function()
+		pendingPlayerBuffRefresh = false
+		if TRB.Data.snapshotData ~= nil then
+			TRB.Data.snapshotData:RefreshAllBuffs()
+			TRB.Data.lookupDirty = true
+		end
+	end)
+end
+
 ---Handles UNIT_AURA events. As of 12.1 the UnitAuraUpdateInfo payload is secret for the
 ---player, so this mostly serves as a "some aura changed" signal (cache invalidation,
 ---lookupDirty, OnPlayerUnitAura hook); payload branches are guarded and run when readable.
@@ -24,6 +49,9 @@ local function AuraUpdateEvent(self, event, unit, info)
 		if TRB.Functions.Class and TRB.Functions.Class.OnPlayerUnitAura then
 			TRB.Functions.Class:OnPlayerUnitAura(info)
 		end
+		-- The payload below is secret, so treat every player aura change as a full update and
+		-- re-read the tracked buffs directly from the aura API.
+		TRB.Functions.Aura:RequestPlayerBuffRefresh()
 		--return
 	elseif unit ~= "player" then
 		return
@@ -34,24 +62,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 		if TRB.Data.character and TRB.Data.character.classId == 12 and TRB.Data.character.specId == 3 and TRB.Data.snapshotData and TRB.Data.snapshotData.attributes then
 			TRB.Data.snapshotData.attributes.devourerTransitionAt = GetTime()
 		end
-		-- Defer the full buff refresh by one frame so that the aura API has time to
-		-- stabilise.  When isFullUpdate fires (e.g. on combat entry or after a channel
-		-- ends), C_UnitAuras.GetPlayerAuraBySpellID() can transiently return nil for
-		-- buffs that are still present.  RefreshAllBuffs() running in the same frame
-		-- would call ParseBuffData(nil) → buff:Reset() → applications = 0, causing a
-		-- one-frame visual flash on stack-based secondary bars like Soul Fragments.
-		-- Deferring by one frame keeps the current (correct) snapshot values intact for
-		-- the first onUpdate poll and lets RefreshAllBuffs() read clean API data.
-		local function RefreshAndUpdateBars()
-			if TRB.Data.snapshotData ~= nil then
-				TRB.Data.snapshotData:RefreshAllBuffs()
-			end
-			TRB.Data.lookupDirty = true
-		end
-
-		C_Timer.After(0.02, function()
-			RefreshAndUpdateBars()
-		end)
+		TRB.Functions.Aura:RequestPlayerBuffRefresh()
 		wipe(TRB.Data.cache.values.resource)
 		wipe(TRB.Data.cache.values.castTime)
 		return

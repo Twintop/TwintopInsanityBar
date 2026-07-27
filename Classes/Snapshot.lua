@@ -600,12 +600,13 @@ end
 ---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
 ---@param aura AuraData # Data about the buff
 ---@return integer? # The SpellID of the buff, if found
+---@return boolean # True when the payload was secret and no state was written
 local function ParseBuffData(buff, aura)
 	if aura ~= nil then
 		-- Secret aura payload: leave existing event-driven state untouched
 ---@diagnostic disable-next-line: param-type-mismatch
 		if issecrettable(aura) or issecretvalue(aura.expirationTime) or issecretvalue(aura.duration) or issecretvalue(aura.applications) or issecretvalue(aura.auraInstanceID) then
-			return nil
+			return nil, true
 		end
         if (buff.sometimesSimple or buff.alwaysSimple) and (aura.expirationTime <= 0 or aura.duration <= 0) then
             -- Make sure we have the most up-to-date remaining time before we set the buff to simple mode
@@ -624,9 +625,10 @@ local function ParseBuffData(buff, aura)
 		GetCustomProperties(buff, aura)
 
 		TRB.Functions.Aura:StoreBuffAuraInstanceId(buff)
-		return aura.spellId
+		return aura.spellId, false
 	else
 		buff:Reset()
+		return nil, false
 	end
 end
 
@@ -644,7 +646,12 @@ function TRB.Classes.SnapshotBuff:RefreshWithAuraData(auraData)
 		return
 	end
 
-	ParseBuffData(self, auraData)
+	local _, isSecret = ParseBuffData(self, auraData)
+
+	-- Unreadable aura: keep whatever event-driven state we already had
+	if isSecret then
+		return
+	end
 
 	if self.currentlySimple then
 		self.isActive = true
@@ -691,10 +698,16 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 	if id ~= nil then
 		if eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH" or eventType == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
 			self.isActive = true
+			local _, isSecret
 			if unit == "player" then
-				ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
+				_, isSecret = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
 			else
-				ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+				_, isSecret = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+			end
+			-- Unreadable aura: no endTime to work from, so leave it flagged active and let the
+			-- combat log's SPELL_AURA_REMOVED clear it rather than expiring it immediately.
+			if isSecret then
+				return
 			end
 			if not simple and not self.currentlySimple then
 				self:GetRemainingTime()
@@ -718,11 +731,17 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 		elseif eventType == nil or eventType == "" then
 			local currentTime = currentTime or GetTime()
 			local foundId = nil
-			
+			local isSecret = false
+
 			if unit == "player" then
-				foundId = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
+				foundId, isSecret = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
 			else
-				foundId = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+				foundId, isSecret = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+			end
+
+			-- Unreadable aura: keep whatever event-driven state we already had
+			if isSecret then
+				return
 			end
 
 			if self.currentlySimple then
