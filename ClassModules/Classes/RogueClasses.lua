@@ -306,8 +306,8 @@ function TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables(specCacheEnt
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
 
-		{ variable = "$energy", description = L["RogueAssassinationBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$energy", description = L["RogueAssassinationBarTextVariable_energy"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$energyMax", description = L["RogueAssassinationBarTextVariable_energyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
@@ -555,8 +555,8 @@ function TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
 
 
-		{ variable = "$energy", description = L["RogueOutlawBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$energy", description = L["RogueOutlawBarTextVariable_energy"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$energyMax", description = L["RogueOutlawBarTextVariable_energyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },
@@ -770,8 +770,8 @@ function TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
 
 
-		{ variable = "$energy", description = L["RogueSubtletyBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$energy", description = L["RogueSubtletyBarTextVariable_energy"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$energyMax", description = L["RogueSubtletyBarTextVariable_energyMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = "", printInSettings = false, color = false },

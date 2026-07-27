@@ -97,8 +97,8 @@ function TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "#boneShield", icon = spells.boneShield.icon, description = spells.boneShield.name, printInSettings = true },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 
@@ -183,8 +183,8 @@ function TRB.Classes.DeathKnight.FrostSpells.FillBarTextVariables(specCacheEntry
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 
@@ -267,8 +267,8 @@ function TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables(specCacheEntr
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
+		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$runicPowerMax", description = L["DeathKnightBarTextVariable_runicPowerMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 

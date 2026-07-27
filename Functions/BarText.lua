@@ -351,6 +351,9 @@ TRB.Functions.BarText.VariableRenderType = {
 	UNKNOWN = "unknown",
 }
 
+-- Health only. Everything else is decided per spec: the same variable name can be secret in one
+-- spec and plain in another (Vengeance reads Soul Fragments from GetSpellCastCount, Devourer counts
+-- them itself), so resource flags belong in each spec's FillBarTextVariables list, not here.
 local defaultSecretBarTextVariables = {
 	["$health"] = true,
 	["$healthMax"] = true,

@@ -35,10 +35,10 @@ function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
+		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
@@ -123,20 +123,20 @@ function TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
+		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
 
-		{ variable = "$fireBlastCharges", description = L["MageFireBarTextVariable_fireBlastCharges"], printInSettings = true, color = false },
-        { variable = "$fbCharges", description = "", printInSettings = false, color = false },
+		{ variable = "$fireBlastCharges", description = L["MageFireBarTextVariable_fireBlastCharges"], printInSettings = true, color = false, secret = true },
+        { variable = "$fbCharges", description = "", printInSettings = false, color = false, secret = true },
         { variable = "$fireBlastChargesMax", description = L["MageFireBarTextVariable_fireBlastChargesMax"], printInSettings = true, color = false },
         { variable = "$fbChargesMax", description = "", printInSettings = false, color = false },
-		{ variable = "$fireBlastTime", description = L["MageFireBarTextVariable_fireBlastTime"], printInSettings = true, color = false },
-		{ variable = "$fbTime", description = "", printInSettings = false, color = false },
+		{ variable = "$fireBlastTime", description = L["MageFireBarTextVariable_fireBlastTime"], printInSettings = true, color = false, secret = true },
+		{ variable = "$fbTime", description = "", printInSettings = false, color = false, secret = true },
 	})
 end
 
@@ -179,10 +179,10 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
+		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },

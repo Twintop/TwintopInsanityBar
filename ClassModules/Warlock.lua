@@ -454,7 +454,7 @@ local function RefreshLookupData_Affliction()
 		lookupLogic["$soulShardsPlusCasting"] = soulShardsPlusCasting
 		lookupLogic["$comboPointsPlusCasting"] = soulShardsPlusCasting
 
-		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor, true) then
+		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor) then
 			local f = string.format("|c%s%.0f|r", soulShardsPlusCastingColor, soulShardsPlusCasting)
 			lookup["$soulShardsPlusCasting"] = f
 			lookup["$comboPointsPlusCasting"] = f
@@ -528,7 +528,7 @@ local function RefreshLookupData_Demonology()
 		lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 
-		if lookupChanged(prevState, "$soulShards", normalizedSoulShards, nil, true) then
+		if lookupChanged(prevState, "$soulShards", normalizedSoulShards) then
 			local f = string.format("%.0f", normalizedSoulShards)
 			lookup["$soulShards"] = f
 			lookup["$comboPoints"] = f
@@ -682,7 +682,7 @@ local function RefreshLookupData_Demonology()
 		lookupLogic["$soulShardsPlusCasting"] = soulShardsPlusCasting
 		lookupLogic["$comboPointsPlusCasting"] = soulShardsPlusCasting
 
-		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor, true) then
+		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor) then
 			local f = string.format("|c%s%.0f|r", soulShardsPlusCastingColor, soulShardsPlusCasting)
 			lookup["$soulShardsPlusCasting"] = f
 			lookup["$comboPointsPlusCasting"] = f
@@ -757,12 +757,12 @@ local function RefreshLookupData_Destruction()
 		lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 
-		if lookupChanged(prevState, "$soulShards", normalizedSoulShards, nil, true) then
+		if lookupChanged(prevState, "$soulShards", normalizedSoulShards) then
 			local f = string.format("%.1f", normalizedSoulShards)
 			lookup["$soulShards"] = f
 			lookup["$comboPoints"] = f
 		end
-		if lookupChanged(prevState, "$soulShardsMax", TRB.Data.character.maxResource2, nil, true) then
+		if lookupChanged(prevState, "$soulShardsMax", TRB.Data.character.maxResource2) then
 			local f = string.format("%.0f", TRB.Data.character.maxResource2)
 			lookup["$soulShardsMax"] = f
 			lookup["$comboPointsMax"] = f
@@ -836,7 +836,7 @@ local function RefreshLookupData_Destruction()
 		lookupLogic["$soulShardsPlusCasting"] = soulShardsPlusCasting
 		lookupLogic["$comboPointsPlusCasting"] = soulShardsPlusCasting
 
-		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor, true) then
+		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor) then
 			local f = string.format("|c%s%.1f|r", soulShardsPlusCastingColor, soulShardsPlusCasting)
 			lookup["$soulShardsPlusCasting"] = f
 			lookup["$comboPointsPlusCasting"] = f

@@ -67,10 +67,10 @@ function TRB.Classes.Evoker.DevastationSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "#dragonrage", icon = spells.dragonrage.icon, description = spells.dragonrage.name, printInSettings = true },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["EvokerDevastationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["EvokerDevastationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["EvokerDevastationBarTextVariable_mana"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
+		{ variable = "$manaPercent", description = L["EvokerDevastationBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$manaMax", description = L["EvokerDevastationBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		
@@ -141,10 +141,10 @@ function TRB.Classes.Evoker.PreservationSpells.FillBarTextVariables(specCacheEnt
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["EvokerPreservationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["EvokerPreservationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["EvokerPreservationBarTextVariable_mana"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
+		{ variable = "$manaPercent", description = L["EvokerPreservationBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$manaMax", description = L["EvokerPreservationBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		{ variable = "$casting", description = L["EvokerPreservationBarTextVariable_casting"], printInSettings = true, color = false },
@@ -229,10 +229,10 @@ function TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "#ebonMight", icon = spells.ebonMight.icon, description = spells.ebonMight.name, printInSettings = true },
 	})
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["EvokerAugmentationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["EvokerAugmentationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["EvokerAugmentationBarTextVariable_mana"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true },
+		{ variable = "$manaPercent", description = L["EvokerAugmentationBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true },
 		{ variable = "$manaMax", description = L["EvokerAugmentationBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 		
