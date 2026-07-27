@@ -2373,7 +2373,6 @@ if locale == "zhCN" then
     L["GradientDirectionHorizontalAbbrev"] = "水"
     L["GradientDirectionVerticalAbbrev"] = "垂"
 
-    L["PaladinBarTextVariable_divinePurposeActive"] = "神圣意志当前是否激活？仅用于逻辑变量！"
     L["PaladinIndicatorDivinePurpose"] = "神圣意志"
     L["PaladinIndicatorDivinePurposeTooltip"] = "获得神圣意志效果时，指示器将切换为此颜色。"
     L["PaladinIndicatorDivinePurposeColor"] = "神圣意志已激活"

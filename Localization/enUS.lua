@@ -2576,7 +2576,6 @@ L["GradientDirectionHorizontalAbbrev"] = "H"
 L["GradientDirectionVerticalAbbrev"] = "V"
 
 -- Paladin Divine Purpose Indicator Colors
-L["PaladinBarTextVariable_divinePurposeActive"] = "Is Divine Purpose currently active? LOGIC VARIABLE ONLY!"
 L["PaladinIndicatorDivinePurpose"] = "Divine Purpose"
 L["PaladinIndicatorDivinePurposeTooltip"] = "Changes to this color when you have Divine Purpose."
 L["PaladinIndicatorDivinePurposeColor"] = "Divine Purpose is active"
