@@ -33,7 +33,7 @@ local content = [====[
 
 ## Evoker
 
-- Essence Burst tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+- Essence Burst tracking now uses the CDM. Requires CDM to be enabled and Essence Burst to be actively tracked to function.
 
 ## Hunter
 ### Beast Mastery
@@ -44,19 +44,20 @@ local content = [====[
 ### Frost
 
 - [#653](#653) Add a new Shatter Bar that tracks the stacks of the Freeze debuff on the target. Requires CDM to be enabled and Freeze to be actively tracked to function.
+- 2-Piece: Increase the number of ticks when channeling Arcane Missiles by 1.
 
 ## Paladin
 
-- Divine Purpose tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+- Divine Purpose tracking now uses the CDM. Requires CDM to be enabled and Divine Purpose to be actively tracked to function.
 
 ## Priest
 ### Discipline
 
-- Surge of Light tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+- Surge of Light tracking now uses the CDM. Requires CDM to be enabled and Surge of Light to be actively tracked to function.
 
 ### Holy
 
-- Surge of Light tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+- Surge of Light tracking now uses the CDM. Requires CDM to be enabled and Surge of Light to be actively tracked to function.
 
 ### Shadow
 
@@ -71,16 +72,16 @@ local content = [====[
 ## Warlock
 ### Affliction
 
-- Shard Instability tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+- Shard Instability tracking now uses the CDM. Requires CDM to be enabled and Shard Instability to be actively tracked to function.
 
 ### Demonology
 
-- Demonic Core tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+- Demonic Core tracking now uses the CDM. Requires CDM to be enabled and Demonic Core to be actively tracked to function.
 
 ## Warrior
 ### Protection
 
-- Ignore Pain tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+- Ignore Pain tracking now uses the CDM. Requires CDM to be enabled and Ignore Pain to be actively tracked to function.
 
 ---
 
