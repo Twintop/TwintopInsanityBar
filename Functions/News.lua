@@ -12,19 +12,52 @@ local content = [====[
 
 ---
 
-# 12.1.0.0-beta01 (2026-06-26)
+# 12.1.0.0-beta01 (2026-07-28)
+## General
+
+- Add a version check that, when enabled in the TOC, will prevent the addon from loading if the client version does not match one of the versions listed in the TOC. This is to prevent people from accidentally updating to a version of the addon that is not compatible with their client version.
+- Remove the Aura Caching system since, with 12.1 API changes, it never returns usable (non-`secret`) data.
+- Integrate with the Cooldown Manager (CDM) as a supplimental source of data for abilities, buffs, and debuffs. Abilities that used to read Aura data directly now read from the CDM.
+- Fix bar text labeling to correctly denote bar text variables that are `secret` values.
+- Refactor how set bonus detection is handled to be more generic.
+
+### Cast Bar
+
+- Add support for channel ticks to be modified by set bonuses.
+
 ## Druid
 ### Feral
 
 - 2-Piece: Add tracking for the Halazzi's Fury damage buff gained when Berserk / Incarnation: Avatar of Ashamane ends (1 second per Combo Point spent during it), shown as a new Color Indicator. Adds a bar text timer variable `$halazzisFuryTime` and an icon (`#halazzisFury`).
 - 4-Piece: Account for the additional 10 seconds of duration granted to Berserk / Incarnation: Avatar of Ashamane.
 
+## Evoker
+
+- Essence Burst tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+
 ## Hunter
 ### Beast Mastery
 
 - Update Beast Cleave's duration to 10 seconds.
 
+## Mage
+### Frost
+
+- [#653](#653) Add a new Shatter Bar that tracks the stacks of the Freeze debuff on the target. Requires CDM to be enabled and Freeze to be actively tracked to function.
+
+## Paladin
+
+- Divine Purpose tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+
 ## Priest
+### Discipline
+
+- Surge of Light tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+
+### Holy
+
+- Surge of Light tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+
 ### Shadow
 
 - Improved Voidform no longer grants bonus Insanity.
@@ -34,6 +67,20 @@ local content = [====[
 ### Elemental
 
 - Power of the Maelstrom no longer grants bonus Maelstrom from Lightning Bolt and Chain Lightning.
+
+## Warlock
+### Affliction
+
+- Shard Instability tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+
+### Demonology
+
+- Demonic Core tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+
+## Warrior
+### Protection
+
+Ignore Pain tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
 
 ---
 
