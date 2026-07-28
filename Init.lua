@@ -504,6 +504,11 @@ TRB.Frames.renderTransitionFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
 TRB.Frames.renderTransitionFrame:RegisterEvent("TRAIT_CONFIG_LIST_UPDATED")
 TRB.Frames.renderTransitionFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 TRB.Frames.renderTransitionFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	-- Wrong game version for this build: no bar was ever constructed, so there is nothing to transition.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
+
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -532,6 +537,10 @@ local minimapButtonInitFrame = CreateFrame("Frame")
 minimapButtonInitFrame:RegisterEvent("PLAYER_LOGIN")
 minimapButtonInitFrame:SetScript("OnEvent", function(self)
 	self:UnregisterAllEvents()
+	-- Wrong game version for this build: settings were never merged, so there is nothing to drive a button.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
 	-- Delay slightly to ensure saved variables and settings merging is complete
 	C_Timer.After(2, function()
 		TRB.Functions.MinimapButton:Initialize()

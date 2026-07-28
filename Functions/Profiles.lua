@@ -1331,6 +1331,12 @@ local profilesFrame = CreateFrame("Frame")
 profilesFrame:RegisterEvent("PLAYER_LOGIN")
 profilesFrame:RegisterEvent("PLAYER_LOGOUT")
 profilesFrame:SetScript("OnEvent", function(_, event)
+	-- Wrong game version for this build: the settings were never loaded, so seeding or flushing
+	-- profiles here would write this build's structure over the user's saved data.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
+
 	local Profiles = TRB.Functions.Profiles
 	if event == "PLAYER_LOGIN" then
 		if TRB.Data == nil or TRB.Data.settings == nil then

@@ -3260,3 +3260,7 @@ L["CooldownManagerGracePeriod"] = "Hidden Viewer Grace Period (seconds)"
 -- Frost Mage Shatter threshold now recolors every multiple of the threshold stack
 L["MageFrostCheckboxShatterThresholdMultiples"] = "Change Shatter color at Ice Lance stacks"
 L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fill color at every multiple of the maximum consumption of stacks by Ice Lance (5, 10, 15, 20)."
+
+-- Game version gate (addon build does not match the game client it is running on)
+L["VersionGateMismatchPopupText"] = "|cFFFF0000Twintop's Resource Bar did not load.|r\n\nThis is the |cFFFFFFFF%s|r build, which targets World of Warcraft |cFFFFFFFF%s|r, but you are playing on |cFFFFFFFF%s|r.\n\nPlease install the build of Twintop's Resource Bar that matches this game client."
+L["VersionGateMismatchChatMessage"] = "|cFFFF0000Twintop's Resource Bar did not load:|r this is the %s build, which targets World of Warcraft %s, but you are playing on %s. Please install the build that matches this game client."

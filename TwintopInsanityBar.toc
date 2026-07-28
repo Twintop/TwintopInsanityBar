@@ -1,4 +1,6 @@
 ## Interface: 120100
+## X-TargetInterface: 120100
+## X-VersionCheck: enabled
 ## Title: Twintop's Resource Bar
 ## Title-deDE: Twintops Ressourcenleiste
 ## Title-esES: Barra de Recursos de Twintop
@@ -15,7 +17,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 12.1.0.0
 ## X-ReleaseType: beta01
-## X-ReleaseDate: 2026-06-24
+## X-ReleaseDate: 2026-07-28
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -65,6 +67,8 @@ Localization\ruRU.lua
 Localization\zhCN.lua
 Localization\zhTW.lua
 Localization\LocalizationPost.lua
+
+Functions\VersionGate.lua
 
 Classes\CombatLog.lua
 Classes\Snapshot.lua
