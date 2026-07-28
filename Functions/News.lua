@@ -17,7 +17,7 @@ local content = [====[
 
 - Add a version check that, when enabled in the TOC, will prevent the addon from loading if the client version does not match one of the versions listed in the TOC. This is to prevent people from accidentally updating to a version of the addon that is not compatible with their client version.
 - Remove the Aura Caching system since, with 12.1 API changes, it never returns usable (non-`secret`) data.
-- Integrate with the Cooldown Manager (CDM) as a supplimental source of data for abilities, buffs, and debuffs. Abilities that used to read Aura data directly now read from the CDM.
+- Integrate with the Cooldown Manager (CDM) as a supplemental source of data for abilities, buffs, and debuffs. Abilities that used to read Aura data directly now read from the CDM.
 - Fix bar text labeling to correctly denote bar text variables that are `secret` values.
 - Refactor how set bonus detection is handled to be more generic.
 
@@ -80,7 +80,7 @@ local content = [====[
 ## Warrior
 ### Protection
 
-Ignore Pain tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
+- Ignore Pain tracking now uses the CDM. Requires CDM to be enabled and Freeze to be actively tracked to function.
 
 ---
 
