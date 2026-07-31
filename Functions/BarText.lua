@@ -1807,6 +1807,47 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	return false
 end
 
+-- Bar text variables whose values come from an active cast bar (player $cast* / #casting, and the
+-- target/focus $target*|$focus* / #targetCasting|#focusCasting). An active cast bar only needs to force a
+-- per-frame bar text refresh when one of THESE is actually referenced by an enabled entry -- otherwise the
+-- cast changes nothing the bar text shows, and the normal early-out applies. Keyed by variable/icon name.
+local castbarDrivenVariables = {
+	-- Player cast bar (see RefreshCastbarLookupData)
+	["$castTime"] = true, ["$castTimeRemaining"] = true, ["$castLatency"] = true, ["$castLatencyMs"] = true,
+	["$castPushback"] = true, ["$castSpellName"] = true, ["$castSpellId"] = true,
+	["$castInterruptible"] = true, ["$castUninterruptible"] = true, ["#casting"] = true,
+	-- Target / Focus cast bars (see RefreshTargetCastbarLookupData)
+	["$targetCastingSpellName"] = true, ["$targetCastTime"] = true, ["$targetCastTimeRemaining"] = true,
+	["#targetCasting"] = true,
+	["$focusCastingSpellName"] = true, ["$focusCastTime"] = true, ["$focusCastTimeRemaining"] = true,
+	["#focusCasting"] = true,
+}
+
+---Whether any active cast bar (player/target/focus) drives a variable that an enabled bar text entry
+---actually references. This is what justifies bypassing the early-out for a live cast: if nothing on
+---screen shows a $cast*/$target*/$focus* value, the cast is irrelevant to bar text. When the active
+---variable set hasn't been built yet (nil, e.g. just invalidated), returns true so the caller refreshes
+---and rebuilds it rather than skipping a frame's worth of text.
+---@return boolean
+local function HasActiveCastbarVariableInUse()
+	local anyActive = (TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive())
+		or (TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
+		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())
+	if not anyActive then
+		return false
+	end
+	local activeVars = TRB.Data.activeVariables
+	if activeVars == nil then
+		return true
+	end
+	for var in pairs(castbarDrivenVariables) do
+		if activeVars[var] then
+			return true
+		end
+	end
+	return false
+end
+
 -- Reused per-call cache for GetBarTextFrame results (avoids redundant frame lookups)
 local showFrameCache = {}
 
@@ -1845,10 +1886,12 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	-- ticking down, all lookup values are identical to last tick — skip the refresh and
 	-- bar text rendering entirely. During combat $inCombatTime keeps changing, so we
 	-- always refresh when in combat. A pending visibility refresh also bypasses this.
-	-- An active castbar also bypasses it: its $castTimeRemaining etc. change every frame and must keep
-	-- updating even out of combat / when every other bar is hidden.
-	local castbarActive = TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive()
-	if not visibilityRefresh and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not castbarActive and not TRB.Functions.Class:HasActiveTimers() then
+	-- An active cast bar bypasses it too -- its $castTimeRemaining etc. change every frame and must keep
+	-- updating even out of combat / when every other bar is hidden -- BUT only when an enabled bar text
+	-- entry actually references a cast-bar variable. A live cast that no bar text shows is irrelevant here,
+	-- so it no longer forces a full per-frame refresh (the cast bar's own fill/text render independently).
+	local castbarInUse = HasActiveCastbarVariableInUse()
+	if not visibilityRefresh and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not castbarInUse and not TRB.Functions.Class:HasActiveTimers() then
 		return
 	end
 	TRB.Data.lookupDirty = false
