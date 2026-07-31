@@ -39,6 +39,8 @@ TRB.Classes = TRB.Classes or {}
 ---@field public startTime number? # GetTime() seconds when the cast began
 ---@field public endTime number? # GetTime() seconds when the cast completes
 ---@field public duration number # endTime - startTime (seconds)
+---@field public durationObject DurationObject? # DurationObject (C_DurationUtil) driving the native fill; rebuilt from startTime/endTime
+---@field public durationObjectVersion integer # Bumped each time durationObject is rebuilt, so the render binds the native timer only when the span actually moved (not every frame)
 ---@field public latency number # Latency captured at cast start (seconds)
 ---@field public pushback number # Accumulated pushback delay (seconds)
 ---@field public notInterruptible boolean
@@ -132,6 +134,8 @@ function TRB.Classes.Castbar:Reset()
 	self.startTime = nil
 	self.endTime = nil
 	self.duration = 0
+	self.durationObject = nil
+	self.durationObjectVersion = (self.durationObjectVersion or 0) + 1
 	self.latency = 0
 	self.pushback = 0
 	self.notInterruptible = false
@@ -199,6 +203,53 @@ function TRB.Classes.Castbar:GetHasteMultiplier()
 	return mult
 end
 
+---The native fill animation direction for the current state: casts/empowers fill up (ElapsedTime),
+---channels deplete (RemainingTime). Mirrors TargetCastbar:GetTimerDirection.
+---@return any # Enum.StatusBarTimerDirection
+function TRB.Classes.Castbar:GetTimerDirection()
+	if self.state == "channel" then
+		return Enum.StatusBarTimerDirection.RemainingTime
+	end
+	return Enum.StatusBarTimerDirection.ElapsedTime
+end
+
+---(Re)builds the DurationObject that natively drives the bar fill, so the per-frame updater no longer
+---recomputes progress in Lua. A cast/channel/empower with authoritative timing hands the live object
+---straight from the query API (like the target/focus bars); a reconstructed (secret-timing) channel or
+---a bulk-crafting merge -- which have no live object -- gets a synthetic one spanning the model's own
+---startTime/endTime (absolute GetTime() seconds, exactly SetTimeSpan's contract). Rebuilt on every
+---timing change (start, pushback, channel update, tradeskill advance) since the span moves.
+function TRB.Classes.Castbar:RefreshDurationObject()
+	self.durationObject = nil
+	-- New span (or cleared): bump so the render re-binds SetTimerDuration exactly once for this change.
+	self.durationObjectVersion = (self.durationObjectVersion or 0) + 1
+	-- Authoritative timing: use the game's own object so the fill matches Blizzard's bar exactly. A
+	-- reconstructed cast/channel/empower (self.reconstructed) or a tradeskill merge has no live object.
+	if not self.reconstructed and not self.tradeskill then
+		local liveObject
+		if self.state == "cast" then
+			liveObject = UnitCastingDuration and UnitCastingDuration("player") or nil
+		elseif self.state == "channel" then
+			liveObject = UnitChannelDuration and UnitChannelDuration("player") or nil
+		elseif self.state == "empower" then
+			liveObject = (UnitEmpoweredChannelDuration and UnitEmpoweredChannelDuration("player"))
+				or (UnitChannelDuration and UnitChannelDuration("player")) or nil
+		end
+		if liveObject ~= nil then
+			self.durationObject = liveObject
+			return
+		end
+	end
+	-- Synthetic span from our own reconstructed times (seconds, GetTime()-based).
+	if C_DurationUtil ~= nil and self.startTime ~= nil and self.endTime ~= nil and self.endTime > self.startTime then
+		local object = C_DurationUtil.CreateDuration()
+		if object ~= nil then
+			object:SetTimeSpan(self.startTime, self.endTime)
+			self.durationObject = object
+		end
+	end
+end
+
 ---Reads player cast timing from UnitCastingInfo, returning seconds. Values may be secret.
 ---@return integer? spellId, number? startTime, number? endTime, boolean notInterruptible
 local function ReadCastingInfo()
@@ -258,6 +309,7 @@ function TRB.Classes.Castbar:StartCast(spellId)
 		self.reconstructed = true
 	end
 	self.duration = self.endTime - self.startTime
+	self:RefreshDurationObject()
 end
 
 ---Begins tracking a channel. Uses real timing when UnitChannelInfo exposes it, otherwise reconstructs
@@ -334,6 +386,7 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	end
 
 	self:ComputeChannelTicks(profile, haste)
+	self:RefreshDurationObject()
 end
 
 ---Computes channel tick positions (fraction 0..1 along the depleting bar) and stores them on self.ticks.
@@ -529,6 +582,7 @@ function TRB.Classes.Castbar:StartTradeskill(spellId, count)
 	self.duration = castDuration * count
 	self.endTime = self.startTime + self.duration
 	self:ComputeTradeskillTicks()
+	self:RefreshDurationObject()
 end
 
 ---Advances the merged bulk-crafting bar when the next individual craft cast starts: re-extrapolates the
@@ -547,6 +601,7 @@ function TRB.Classes.Castbar:ContinueTradeskill()
 		end
 	end
 	self:ComputeTradeskillTicks()
+	self:RefreshDurationObject()
 end
 
 ---Marks one craft of the merged bulk-crafting bar as completed (its individual UNIT_SPELLCAST_STOP).
@@ -639,6 +694,7 @@ function TRB.Classes.Castbar:StartEmpower(spellId)
 	-- interior (not at the bar's end), so all N lines are visible.
 	self.empowerStages = numStages or 0
 	self:ComputeEmpowerStages()
+	self:RefreshDurationObject()
 end
 
 ---Computes cumulative empower stage-completion fractions along the full (charge + hold-at-max) timeline.
@@ -698,6 +754,7 @@ function TRB.Classes.Castbar:Delayed()
 		self.startTime = startTime
 		self.endTime = endTime
 		self.duration = endTime - startTime
+		self:RefreshDurationObject()
 	end
 end
 
@@ -713,6 +770,7 @@ function TRB.Classes.Castbar:ChannelUpdate()
 		self.startTime = startTime
 		self.endTime = endTime
 		self.duration = endTime - startTime
+		self:RefreshDurationObject()
 	end
 end
 
