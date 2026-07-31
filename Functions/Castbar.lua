@@ -17,6 +17,13 @@ TRB.Functions.Castbar = {}
 local castbarFrame = CreateFrame("Frame")
 castbarFrame:Hide()
 local isRunning = false
+-- Throttle for the expensive visibility work (settings/condition resolution + color re-assert): run it at
+-- the same 20Hz cadence every other bar uses (timerFrame:onUpdate), NOT every frame. The native
+-- SetTimerDuration fill animates on its own between ticks, and the cheap alpha/visibility self-heal still
+-- runs each frame, so nothing visibly lags. Events that change visibility (cast start/stop, spec/settings
+-- change, vehicle enter/exit) re-assert immediately through their own paths regardless of this accumulator.
+local VISIBILITY_THROTTLE = 0.05
+local visibilitySinceLastUpdate = VISIBILITY_THROTTLE -- force a full pass on the very first frame
 -- GetTime() of the most recent cast end while a fade-out (fadeDelay/fadeDuration) is in progress.
 local fadeOutStart = nil
 -- Latency makes the server fire the natural end-of-cast STOP a beat before GetTime() reaches endTime
@@ -181,6 +188,10 @@ function TRB.Functions.Castbar:SyncEnabledState(settings)
 			model:Stop()
 		end
 		self:EndRender()
+	else
+		-- Settings may have changed while a cast is still on screen: force the updater's next frame to be a
+		-- full throttle tick so it re-resolves the new settings/visibility instead of the cached ones.
+		visibilitySinceLastUpdate = VISIBILITY_THROTTLE
 	end
 	self:UpdateBlizzardCastbarVisibility(settings)
 end
@@ -1013,6 +1024,10 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 		node:SetMinMax(0, 1)
 		ApplyStateFillColor(node, colors, model, barSettings)
 		self:SetupOverlays(model)
+		-- SetMinMax/overlay re-setup here disturbs the native SetTimerDuration binding (the fill freezes
+		-- where it was). The old code masked this by re-running SetValue every frame; now that the fill is
+		-- native, force the timer to re-bind below so it resumes animating after an indicator flip.
+		self._renderedDurationVersion = nil
 	elseif self._renderedTargetColor ~= targetColor then
 		-- Target (and so its class color) changed mid-cast: re-apply just the fill. Empower re-applies
 		-- ApplyStateFillColor every frame from the updater, so it needs no handling here.
@@ -1050,6 +1065,27 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 		-- The group just transitioned hidden->visible (fresh cast, or after a render transition /
 		-- reconstruction hid it). Mark visibility dirty so the next ProcessBars re-runs BarText:Show and
 		-- reveals this castbar's anchored text frames (whose isVisible tracks this group's isVisible).
+		TRB.Functions.BarVisibility:MarkDirty()
+	end
+	node:Show()
+	group.containerFrame:SetAlpha(activeAlpha)
+end
+
+---Cheap per-frame self-heal for an active cast: re-asserts only the group's alpha/visibility so the bar
+---survives a render transition (which hides every group and only restores ProcessBars entries -- the cast
+---bar isn't one). Does NO settings resolution, condition checks, or color work -- those run on the 20Hz
+---throttle tick via ApplyVisibleState. The native timer keeps the fill animating on its own between ticks,
+---so this plus the transition gate is all that's needed each frame. Assumes the cast is visible (caller
+---has already gated on not-force-hidden at the last throttle tick).
+---@param group TRB.Classes.BarGroup
+---@param node TRB.Classes.BarNode
+---@param visibility table? # displayBar.castbar entry; supplies activeAlpha
+function TRB.Functions.Castbar:ReassertVisibility(group, node, visibility)
+	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
+	group.targetAlpha = activeAlpha
+	group.currentAlpha = activeAlpha
+	if not group.isVisible then
+		group:Show()
 		TRB.Functions.BarVisibility:MarkDirty()
 	end
 	node:Show()
@@ -1130,11 +1166,19 @@ function TRB.Functions.Castbar:BeginRender()
 	self._renderedIndicatorVersion = nil
 	self._renderedTargetColor = nil
 	self._renderedDurationVersion = nil
+	-- Seed the updater's throttle cache with this cast's freshly-resolved settings, and force its first
+	-- frame to be a full throttle tick so it never runs against a previous cast's stale cache.
+	self._cachedBarSettings = barSettings
+	self._cachedColors = colors
+	self._cachedVisibility = visibility
+	visibilitySinceLastUpdate = VISIBILITY_THROTTLE
 	if self:IsForceHidden(visibility) then
 		-- Hard-hide condition active (e.g. In Vehicle): keep tracking but stay hidden; the per-frame
 		-- updater reveals the bar mid-cast if the condition clears.
+		self._castForceHidden = true
 		ApplyHiddenState(group)
 	else
+		self._castForceHidden = false
 		self:ApplyVisibleState(group, node, colors, model, barSettings, visibility)
 	end
 
@@ -1271,7 +1315,7 @@ end
 -- Per-frame updater
 -- ============================================================================
 
-castbarFrame:SetScript("OnUpdate", function()
+castbarFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 	local self = TRB.Functions.Castbar
 	local model = TRB.Data.castbar
 	local group = self:GetGroup()
@@ -1281,8 +1325,24 @@ castbarFrame:SetScript("OnUpdate", function()
 		return
 	end
 	local node = group:GetNode(1)
-	local settings, barSettings, colors = self:GetActiveSettings()
-	local visibility = self:GetVisibilitySettings(settings)
+
+	-- 20Hz throttle for the expensive visibility work. Resolving settings (GetActiveSettings) and evaluating
+	-- the show/hide conditions (IsEnabled/IsForceHidden, which hit UnitInVehicle/UnitIsDeadOrGhost) every
+	-- frame was the remaining per-frame cost. Do it at the shared 20Hz cadence instead; the native fill
+	-- animates on its own and the cheap self-heal below runs each frame, so the bar never visibly lags. The
+	-- resolved settings/visibility are cached so between-tick frames can still self-heal and redraw empower.
+	visibilitySinceLastUpdate = visibilitySinceLastUpdate + (sinceLastUpdate or 0)
+	local throttleTick = visibilitySinceLastUpdate >= VISIBILITY_THROTTLE
+	if throttleTick then
+		visibilitySinceLastUpdate = 0
+		local settings, barSettings, colors = self:GetActiveSettings()
+		self._cachedBarSettings = barSettings
+		self._cachedColors = colors
+		self._cachedVisibility = self:GetVisibilitySettings(settings)
+	end
+	local barSettings = self._cachedBarSettings
+	local colors = self._cachedColors
+	local visibility = self._cachedVisibility
 
 	if model and model:IsActive() and node then
 		local now = GetTime()
@@ -1313,19 +1373,30 @@ castbarFrame:SetScript("OnUpdate", function()
 		-- left permanently hidden (which is exactly what happened before: the transition hides + zeroes
 		-- the castbar's alpha, ProcessBars restores every OTHER bar afterward, but never the castbar).
 		if not TRB.Functions.Bar:IsRenderTransitionActive() then
-			if not self:IsEnabled(visibility) then
-				-- Never Show flipped mid-cast: stop tracking entirely.
-				model:Stop()
-				self:EndRender()
-				return
+			if throttleTick then
+				-- 20Hz: full visibility re-evaluation (conditions) + color/overlay/icon re-assert.
+				if not self:IsEnabled(visibility) then
+					-- Never Show flipped mid-cast: stop tracking entirely.
+					model:Stop()
+					self:EndRender()
+					return
+				end
+				if self:IsForceHidden(visibility) then
+					self._castForceHidden = true
+					ApplyHiddenState(group)
+				else
+					self._castForceHidden = false
+					-- The bar fill now animates natively via SetTimerDuration (bound once per timing change inside
+					-- ApplyVisibleState), so the per-frame GetProgress + SetValue is gone -- the big CPU win here.
+					self:ApplyVisibleState(group, node, colors, model, barSettings, visibility)
+				end
+			elseif not self._castForceHidden then
+				-- Between throttle ticks: cheap alpha/visibility self-heal only (no settings/condition work).
+				-- The last tick decided this cast is visible; keep it visible against render transitions.
+				self:ReassertVisibility(group, node, visibility)
 			end
-			if self:IsForceHidden(visibility) then
-				ApplyHiddenState(group)
-			else
-				-- The bar fill now animates natively via SetTimerDuration (bound once per timing change inside
-				-- ApplyVisibleState), so the per-frame GetProgress + SetValue is gone -- the big CPU win here.
-				self:ApplyVisibleState(group, node, colors, model, barSettings, visibility)
 
+			if not self._castForceHidden then
 				-- Fallback only: with no DurationObject to bind (C_DurationUtil unavailable), keep the old
 				-- per-frame manual fill so the bar still animates. The native path skips this entirely.
 				if model.durationObject == nil then
@@ -1402,9 +1473,22 @@ castbarFrame:SetScript("OnUpdate", function()
 		end
 
 		if idleAlpha > 0 then
-			-- Keep running: the idle display must self-heal against render transitions.
+			-- Keep running: the idle display must self-heal against render transitions. The full re-assert
+			-- (color/indicator resolution) runs on the 20Hz tick; between ticks a cheap alpha/visibility
+			-- re-show keeps the resting Always-Show bar healed against transitions without the color work.
 			if not TRB.Functions.Bar:IsRenderTransitionActive() then
-				self:ApplyIdleState(group, node, idleAlpha, colors)
+				if throttleTick then
+					self:ApplyIdleState(group, node, idleAlpha, colors)
+				else
+					group.targetAlpha = idleAlpha
+					group.currentAlpha = idleAlpha
+					if not group.isVisible then
+						group:Show()
+						TRB.Functions.BarVisibility:MarkDirty()
+					end
+					node:Show()
+					group.containerFrame:SetAlpha(idleAlpha)
+				end
 			end
 		else
 			self._renderedFrame = nil

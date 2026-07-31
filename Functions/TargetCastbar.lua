@@ -39,6 +39,21 @@ local forceHidden = {}
 local updaterFrame = CreateFrame("Frame")
 updaterFrame:Hide()
 
+-- 20Hz throttle for the expensive per-unit visibility work (GetBarConfig -> GetActiveSettings, plus the
+-- IsForceHidden/IsStateAllowed condition checks and the color re-assert). Matches the shared timerFrame
+-- cadence; the native SetTimerDuration fill animates on its own between ticks and a cheap alpha/visibility
+-- self-heal still runs each frame, so nothing visibly lags. Cast start/stop, unit change, and delayed/
+-- channel-update events re-assert immediately through their own handlers regardless of this accumulator.
+local UPDATER_THROTTLE = 0.05
+local updaterSinceLastUpdate = UPDATER_THROTTLE -- force a full pass on the first frame
+
+-- Forces the updater's next frame to be a full throttle tick. Called from every state-transition entry
+-- point (cast start/stop/fade, unit change, visibility refresh) so the tick re-resolves settings and
+-- conditions immediately rather than acting on a cache left over from the previous state.
+local function ForceThrottleTick()
+	updaterSinceLastUpdate = UPDATER_THROTTLE
+end
+
 -- Interruptible/uninterruptible colors are resolved from settings each render; cached CreateColor objects
 -- are rebuilt only when the hex changes (CreateColor allocates).
 local colorCache = {}
@@ -498,8 +513,19 @@ local function ApplyVisibleState(groupKey, model)
 	group.containerFrame:SetAlpha(activeAlpha)
 end
 
----Per-frame self-heal: re-asserts alpha/visibility (and the static per-cast fill color) WITHOUT
----re-binding the native timer -- re-calling SetTimerDuration every frame would reset the fill animation.
+-- Per-groupKey cache of the last throttle tick's resolved activeAlpha, so between-tick frames can do the
+-- cheap alpha/visibility self-heal without re-resolving settings (GetBarConfig). nil means the bar was not
+-- visible at the last tick (disabled/force-hidden/idle), so the cheap self-heal is skipped.
+local cachedActiveAlpha = {}
+-- Per-groupKey cache of the last throttle tick's resolved visibility table, reused between ticks by the
+-- per-frame fade interpolation so it needn't re-resolve settings every frame.
+local cachedVisibility = {}
+-- Per-groupKey cache of the last throttle tick's resolved idle alpha (Always Show / inactive-alpha resting
+-- bar). nil means no idle bar was resting visible at the last tick, so the cheap self-heal is skipped.
+local cachedIdleAlpha = {}
+
+---Full per-cast visibility re-assert (color + stage lines + alpha) WITHOUT re-binding the native timer
+---(re-calling SetTimerDuration every frame would reset the fill animation). Run on the 20Hz throttle tick.
 ---@param groupKey string
 ---@param model TRB.Classes.TargetCastbar
 local function ReassertVisibility(groupKey, model)
@@ -517,6 +543,27 @@ local function ReassertVisibility(groupKey, model)
 	-- settings changes (positions are static per cast, so this is cheap).
 	DrawEmpowerStageLines(node, model, colors, barSettings)
 	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
+	cachedActiveAlpha[groupKey] = activeAlpha
+	group.targetAlpha = activeAlpha
+	group.currentAlpha = activeAlpha
+	if not group.isVisible then
+		group:Show()
+		TRB.Functions.BarVisibility:MarkDirty()
+	end
+	node:Show()
+	group.containerFrame:SetAlpha(activeAlpha)
+end
+
+---Cheap between-tick self-heal: re-asserts only alpha/visibility from the cached activeAlpha, no settings
+---resolution or color work. Keeps a visible active bar healed against render transitions each frame while
+---the full re-assert waits for the next 20Hz tick.
+---@param groupKey string
+local function ReassertVisibilityCheap(groupKey)
+	local group, node = GetGroupNode(groupKey)
+	if group == nil or node == nil then
+		return
+	end
+	local activeAlpha = cachedActiveAlpha[groupKey] or 1
 	group.targetAlpha = activeAlpha
 	group.currentAlpha = activeAlpha
 	if not group.isVisible then
@@ -616,9 +663,13 @@ local function NeedsUpdater()
 	return false
 end
 
----Starts/stops the per-frame updater based on whether any bar needs rendering.
+---Starts/stops the per-frame updater based on whether any bar needs rendering. Every state-transition
+---entry point (BeginRender/BeginFadeOut/EndRender/RefreshVisibility) ends here, so forcing a throttle tick
+---when the updater runs guarantees the next frame re-resolves settings/conditions from the new state
+---rather than acting on a cache left over from the previous state.
 local function SyncUpdater()
 	if NeedsUpdater() then
+		ForceThrottleTick()
 		updaterFrame:Show()
 	else
 		updaterFrame:Hide()
@@ -698,35 +749,65 @@ end
 -- render transition hides every group; only self-healing restores them). The active fill self-animates
 -- via SetTimerDuration; the countdown text flows through the shared bar-text pipeline.
 -- ============================================================================
-updaterFrame:SetScript("OnUpdate", function()
+updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 	local anyActive = false
 	local needsUpdater = false
 	local now = GetTime()
+
+	-- 20Hz throttle: the expensive per-unit work (GetBarConfig -> GetActiveSettings, the condition checks,
+	-- and the color re-assert) runs on the tick; between ticks a cheap alpha/visibility self-heal keeps the
+	-- native-fill bar healed against render transitions. The fade interpolation stays per-frame for
+	-- smoothness (it uses the cheap cached visibility, not a settings re-resolve).
+	updaterSinceLastUpdate = updaterSinceLastUpdate + (sinceLastUpdate or 0)
+	local throttleTick = updaterSinceLastUpdate >= UPDATER_THROTTLE
+	if throttleTick then
+		updaterSinceLastUpdate = 0
+	end
+
 	for _, u in ipairs(UNITS) do
 		local model = TRB.Data[u.modelKey]
-		local _, _, _, visibility = GetBarConfig(u.groupKey)
+		-- Resolve settings only on the throttle tick; between ticks reuse the cached visibility.
+		local visibility
+		if throttleTick then
+			_, _, _, visibility = GetBarConfig(u.groupKey)
+			cachedVisibility[u.groupKey] = visibility
+		else
+			visibility = cachedVisibility[u.groupKey]
+		end
 		if model ~= nil and model:IsActive() then
-			if not IsStateAllowed(visibility, model.state) then
+			if throttleTick and not IsStateAllowed(visibility, model.state) then
 				-- Bar disabled (Never Show / nothing checked) or this cast type isn't an enabled condition:
 				-- render nothing even though the model keeps tracking, so a disabled bar never flashes an
 				-- empty frame while the unit casts. Mirrors BeginRender's inactive path; the updater then
-				-- self-hides once no bar needs it.
+				-- self-hides once no bar needs it. Evaluated on the tick; the resulting hidden/inactive state
+				-- persists between ticks (cachedActiveAlpha not set, so the cheap path is skipped below).
 				forceHidden[u.groupKey] = nil
+				cachedActiveAlpha[u.groupKey] = nil
 				ApplyInactiveState(u.groupKey)
+			elseif not throttleTick and not IsStateAllowed(visibility, model.state) then
+				-- Between ticks with the last tick having disabled this bar: leave it as the tick left it.
 			else
 				needsUpdater = true
-				if IsForceHidden(visibility) then
+				if throttleTick and IsForceHidden(visibility) then
 					-- Hard-hide (In Vehicle) mid-cast: hide but keep tracking so it reappears when it clears.
 					forceHidden[u.groupKey] = true
+					cachedActiveAlpha[u.groupKey] = nil
 					ApplyHiddenState(u.groupKey)
 				elseif forceHidden[u.groupKey] then
-					-- Just cleared the hard-hide: rebind the native fill timer (ApplyHiddenState cleared it).
-					forceHidden[u.groupKey] = nil
-					anyActive = true
-					ApplyVisibleState(u.groupKey, model)
-				else
+					if throttleTick then
+						-- Just cleared the hard-hide: rebind the native fill timer (ApplyHiddenState cleared it).
+						forceHidden[u.groupKey] = nil
+						anyActive = true
+						ApplyVisibleState(u.groupKey, model)
+					end
+					-- Between ticks while still force-hidden: leave hidden until the next tick re-checks.
+				elseif throttleTick then
 					anyActive = true
 					ReassertVisibility(u.groupKey, model)
+				elseif cachedActiveAlpha[u.groupKey] ~= nil then
+					-- Between ticks, bar was visible at the last tick: cheap alpha/visibility self-heal only.
+					anyActive = true
+					ReassertVisibilityCheap(u.groupKey)
 				end
 			end
 		elseif fadeStart[u.groupKey] ~= nil then
@@ -757,10 +838,37 @@ updaterFrame:SetScript("OnUpdate", function()
 					end
 				end
 			end
-		elseif GetIdleAlpha(visibility) > 0 and UnitExists(u.unit) then
-			-- Idle Always Show / inactive-alpha bar: re-assert so it self-heals against render transitions.
+		elseif throttleTick then
+			-- Idle Always Show / inactive-alpha bar: full re-assert on the tick (resolves idle alpha, which
+			-- hits the Unit condition APIs, plus the color re-assert inside ApplyIdleState). Cache the alpha so
+			-- between-tick frames can cheaply self-heal without re-resolving.
+			local idleAlpha = GetIdleAlpha(visibility)
+			if idleAlpha > 0 and UnitExists(u.unit) then
+				needsUpdater = true
+				cachedIdleAlpha[u.groupKey] = idleAlpha
+				ApplyIdleState(u.groupKey, idleAlpha)
+			else
+				cachedIdleAlpha[u.groupKey] = nil
+			end
+		elseif cachedIdleAlpha[u.groupKey] ~= nil then
+			-- Between ticks, an idle bar was resting visible at the last tick: cheap alpha/visibility self-heal.
 			needsUpdater = true
-			ApplyIdleState(u.groupKey, GetIdleAlpha(visibility))
+			local group, node = GetGroupNode(u.groupKey)
+			local idleAlpha = cachedIdleAlpha[u.groupKey]
+			if group ~= nil then
+				group.targetAlpha = idleAlpha
+				group.currentAlpha = idleAlpha
+				if not group.isVisible then
+					group:Show()
+					TRB.Functions.BarVisibility:MarkDirty()
+				end
+				if node ~= nil then
+					node:Show()
+				end
+				if group.containerFrame then
+					group.containerFrame:SetAlpha(idleAlpha)
+				end
+			end
 		end
 	end
 	if anyActive then
