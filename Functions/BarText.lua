@@ -363,50 +363,10 @@ TRB.Functions.BarText.VariableCategory = {
 	ICONS = "icons",
 }
 
--- Variables that represent a resource the addon tracks on a bar (primary power types, secondary
--- resources such as Soul Fragments or Icicles, and the generic $resource aliases). Any values entry
--- not listed here and not stamped by GetCommonValues falls through to the Abilities subgroup.
-local resourceCategoryBarTextVariables = {
-	["$resource"] = true, ["$resourcemax"] = true, ["$resourcepercent"] = true, ["$resourcetotal"] = true,
-	["$resourcepluscasting"] = true, ["$resourcepluspassive"] = true,
-	["$casting"] = true, ["$castingfragments"] = true, ["$castingholypower"] = true,
-	["$castingshards"] = true, ["$castingsoulshards"] = true, ["$passive"] = true,
-
-	["$mana"] = true, ["$manamax"] = true, ["$manapercent"] = true,
-	["$energy"] = true, ["$energymax"] = true,
-	["$rage"] = true, ["$ragemax"] = true,
-	["$focus"] = true, ["$focusmax"] = true,
-	["$fury"] = true, ["$furymax"] = true,
-	["$pain"] = true, ["$painmax"] = true,
-	["$insanity"] = true, ["$insanitymax"] = true,
-	["$astralpower"] = true, ["$astralpowermax"] = true,
-	["$maelstrom"] = true, ["$maelstrommax"] = true,
-	["$runicpower"] = true, ["$runicpowermax"] = true,
-	["$holypower"] = true, ["$holypowermax"] = true, ["$holypowerpluscasting"] = true,
-	["$chi"] = true, ["$chimax"] = true,
-	["$combopoints"] = true, ["$combopointsmax"] = true, ["$combopointspluscasting"] = true,
-	["$soulshards"] = true, ["$soulshardsmax"] = true, ["$soulshardspluscasting"] = true,
-	["$essence"] = true, ["$essencemax"] = true, ["$essenceregentime"] = true,
-	["$arcanecharges"] = true, ["$arcanechargesmax"] = true,
-
-	["$soulfragments"] = true, ["$soulfragmentsmax"] = true,
-	["$maelstromweapon"] = true, ["$maelstromweaponmax"] = true,
-	["$icicles"] = true, ["$iciclesmax"] = true,
-	["$tipofthespear"] = true, ["$tipofthespearmax"] = true,
-	["$stagger"] = true, ["$staggerpercent"] = true,
-	["$collapsingstar"] = true, ["$collapsingstars"] = true,
-	["$collapsingstarmax"] = true, ["$collapsingstarsmax"] = true,
-	["$collapsingstarusable"] = true, ["$collapsingstarsusable"] = true,
-
-	["$runesreadycount"] = true,
-	["$rune1time"] = true, ["$rune2time"] = true, ["$rune3time"] = true,
-	["$rune4time"] = true, ["$rune5time"] = true, ["$rune6time"] = true,
-	["$rune1ready"] = true, ["$rune2ready"] = true, ["$rune3ready"] = true,
-	["$rune4ready"] = true, ["$rune5ready"] = true, ["$rune6ready"] = true,
-}
-
 ---Determines which display group a bar text variable belongs to.
 ---Icons are their own group; pipe commands fold into Other alongside the miscellaneous values.
+---Every other group comes from the entry's own `category`, declared where the variable is defined:
+---GetCommonValues stamps the shared entries, each spec's FillBarTextVariables tags its own.
 ---@param entry table
 ---@param sectionKey string
 ---@return string
@@ -420,10 +380,6 @@ function TRB.Functions.BarText:GetVariableCategory(entry, sectionKey)
 	entry = entry or {}
 	if type(entry.category) == "string" and entry.category ~= "" then
 		return entry.category
-	end
-
-	if resourceCategoryBarTextVariables[string.lower(entry.variable or "")] then
-		return self.VariableCategory.RESOURCES
 	end
 
 	return self.VariableCategory.ABILITIES
