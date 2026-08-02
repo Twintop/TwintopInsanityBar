@@ -1055,6 +1055,15 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 		node:SetIconTexture(model.spell and model.spell.iconId or nil)
 		node:SetIconVisible(model.spell ~= nil)
 	end
+	-- Uninterruptible shield. Independent of the icon being enabled (a bar-targeted shield shows with the
+	-- icon off). Player notInterruptible is a plain boolean, so branch directly. Not shown for empower
+	-- (always self-interruptible) or when no spell is casting.
+	if barSettings ~= nil and barSettings.icon ~= nil then
+		local shield = barSettings.icon.uninterruptibleShield
+		local showShield = shield ~= nil and shield.mode ~= "hide" and model.spell ~= nil
+			and model.notInterruptible and model.state ~= "empower"
+		node:SetShieldVisible(showShield, shield and shield.opacity)
+	end
 	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
 	-- Keep the shared fade fields synced so anything that consults them stays consistent, but we
 	-- drive the actual container alpha directly rather than through UpdateFade.
@@ -1131,6 +1140,8 @@ function TRB.Functions.Castbar:ApplyIdleState(group, node, idleAlpha, colors)
 	-- layout, keeping the bar the same size whether idle or active. Clearing the texture (rather than
 	-- just hiding) stops a layout rebuild from resurrecting the last cast's icon.
 	node:SetIconTexture(nil)
+	-- An idle bar is never uninterruptible, so the shield never shows.
+	node:SetShieldVisible(false)
 	-- No model: an idle bar is never uninterruptible, so only the indicator/configured colors apply.
 	ApplyBorderAndBackgroundColor(node, colors, nil)
 	group.targetAlpha = idleAlpha

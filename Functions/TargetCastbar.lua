@@ -70,6 +70,21 @@ local function GetColorObject(hex)
 	return cached
 end
 
+-- Uninterruptible shield alpha endpoints (white RGB so the shield art keeps its own gray tint; only the
+-- alpha carries meaning). Cached per opacity% since CreateColor allocates. The transparent endpoint is
+-- shared, so an interruptible cast evaluates to fully-transparent regardless of the configured opacity.
+local shieldTransparent = CreateColor(1, 1, 1, 0)
+local shieldOpaqueCache = {}
+local function GetShieldOpaqueColor(opacity)
+	local a = math.min(math.max((opacity or 100) / 100, 0), 1)
+	local cached = shieldOpaqueCache[a]
+	if cached == nil then
+		cached = CreateColor(1, 1, 1, a)
+		shieldOpaqueCache[a] = cached
+	end
+	return cached
+end
+
 ---Returns the model for a unit key, lazily creating both models on first use.
 ---@param modelKey string
 ---@return TRB.Classes.TargetCastbar
@@ -492,6 +507,22 @@ local function ApplyVisibleState(groupKey, model)
 		node:SetIconVisible(false)
 	end
 
+	-- Uninterruptible shield. Independent of the icon being enabled (a bar-targeted shield shows with the
+	-- icon off). notInterruptible is SECRET here, so we can't branch on it: instead evaluate a curve
+	-- (uninterruptible -> opaque white, interruptible -> transparent) and feed the result's alpha straight to
+	-- the shield, exactly like the border recolor. Same opt-in/hostile guards as the border.
+	local shield = barSettings and barSettings.icon and barSettings.icon.uninterruptibleShield
+	local wantInterrupt = barSettings == nil or barSettings.interruptColor ~= false
+	if shield ~= nil and shield.mode ~= "hide" and model.state ~= "empower" and wantInterrupt
+		and UnitExists(model.unit) and UnitCanAttack("player", model.unit)
+		and model.notInterruptible ~= nil and C_CurveUtil ~= nil and C_CurveUtil.EvaluateColorFromBoolean ~= nil then
+		local colorResult = C_CurveUtil.EvaluateColorFromBoolean(model.notInterruptible,
+			GetShieldOpaqueColor(shield.opacity), shieldTransparent)
+		node:SetShieldCurve(colorResult)
+	else
+		node:SetShieldCurve(nil)
+	end
+
 	-- Border / background / end cap: Color Indicator (border/background/endCap targets) over the secret-safe
 	-- uninterruptible recolor over the configured colors. Border also colors the icon border + end-cap follow.
 	if colors ~= nil then
@@ -613,6 +644,7 @@ local function ApplyIdleState(groupKey, idleAlpha)
 	node:SetValue(0)
 	HideEmpowerStageLines(node)
 	node:SetIconVisible(false)
+	node:SetShieldCurve(nil)
 	-- No cast means no interruptibility, but the empty bar is on screen, so a Color Indicator targeting
 	-- its border/background/end cap should still show (else the configured colors).
 	if colors ~= nil then

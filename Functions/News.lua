@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.7.13-release (2026-07-31)
+## General
+### Cast Bars
+
+- Add a gray uninterruptible shield shown while a cast can't be interrupted, on by default. Place it on the ability icon or the bar itself, drawn behind or over (or hidden), with its own size, opacity, and 9-point anchor. Applies to the Player, Target, and Focus Cast Bars.
+
+---
+
 # 12.0.7.12-release (2026-07-25)
 ## General
 ### Cast Bars

@@ -3674,6 +3674,13 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					nodeFrame:SetAllPoints(targetGroup.containerFrame)
 					singleNode:SetIconVisible(false)
 				end
+				-- Uninterruptible shield: cast-bar-only (only present on cast bar icon settings). Laid out
+				-- regardless of the icon being enabled -- a bar-targeted shield shows with the icon off. Size
+				-- and anchor are geometry (safe here); alpha/visibility is driven per cast by the render path.
+				local shield = groupSettings and groupSettings.icon and groupSettings.icon.uninterruptibleShield
+				if shield then
+					singleNode:ApplyShieldLayout(shield.mode or "behind", shield.target or "icon", shield.sizePercent or 125, shield.anchor or "CENTER")
+				end
 			end
 
 			-- Set min/max based on mode

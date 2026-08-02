@@ -236,6 +236,29 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public collapseBorderWidth boolean # Overlap the icon's border with the bar's (single-width shared border); ignores spacing
 ---@field public zoom number # Percent cropped from each edge of the icon art, to cut the stock spell border
 
+---@alias trbCastBarIconShieldMode
+---| '"behind"' # Shield drawn behind the target (peeks out around it)
+---| '"over"'   # Shield drawn over the target
+---| '"hide"'   # Shield never drawn
+
+---@alias trbCastBarIconShieldTarget
+---| '"icon"' # Shield anchors to and sizes against the ability icon
+---| '"bar"'  # Shield anchors to and sizes against the bar itself (works with the icon disabled)
+
+---The uninterruptible shield shown while a cast can't be interrupted. Square, anchored by a 9-point point
+---to either the ability icon or the bar (`target`), with an independent size (% of the target) and opacity.
+---@class TRB.Classes.Settings.CastBarIconShield
+---@field public mode trbCastBarIconShieldMode # Draw behind/over the target, or hide entirely
+---@field public target trbCastBarIconShieldTarget # Anchor/size against the icon or the bar
+---@field public sizePercent number # Square side length as a percent of the target's reference length (100 = target-sized)
+---@field public opacity number # Shield alpha percent (100 = opaque)
+---@field public anchor string # 9-point anchor: which point of the target the shield centers on
+
+---A cast bar's ability icon: the generic side icon plus the uninterruptible shield overlay, which is
+---specific to cast bars (only casts have an interruptibility state).
+---@class TRB.Classes.Settings.CastBarIcon : TRB.Classes.Settings.BarIcon
+---@field public uninterruptibleShield TRB.Classes.Settings.CastBarIconShield # Uninterruptible shield overlay
+
 ---@class TRB.Classes.Settings.SecondaryBar
 ---@field public icon TRB.Classes.Settings.BarIcon? # Side ability icon; nil on bar types that do not support one
 ---@field public width number

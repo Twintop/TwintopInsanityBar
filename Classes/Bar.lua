@@ -17,6 +17,12 @@ local barNodeCounter = 0
 ---@class TRB.Classes.BarNode.Icon : Frame
 ---@field public texture Texture
 
+---The uninterruptible shield: a dedicated frame wrapping a single texture. It gets its own frame (not just
+---a texture) so its frame level can be set per-mode -- above the icon frame to draw over it, below the bar
+---to peek out behind. Draw layers alone can't order across separate frames.
+---@class TRB.Classes.BarNode.Shield : Frame
+---@field public texture Texture
+
 ---@class TRB.Classes.BarNode
 ---@field public frame StatusBar # The single consolidated StatusBar frame
 ---@field public overlaySlots table<string, TRB.Classes.OverlaySlot> # Named overlay slots keyed by slot name
@@ -36,6 +42,7 @@ local barNodeCounter = 0
 ---@field public endCapIndicatorActive boolean? # Whether a Color Indicator owned the end cap color last frame (so it reverts cleanly when the indicator drops)
 ---@field public icon TRB.Classes.BarNode.Icon? # Side ability icon frame (lazily created by EnsureIcon); nil when the bar has no icon
 ---@field public _iconTexture string|integer? # Last texture applied to the icon, so repeat sets are skipped
+---@field public shield TRB.Classes.BarNode.Shield? # Uninterruptible shield (lazily created by EnsureShield); its own frame so its level can order above the icon or below the bar
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
@@ -625,6 +632,26 @@ function TRB.Classes.BarNode:EnsureIcon()
 	return self.icon
 end
 
+---Creates the uninterruptible shield frame on first use. Its own frame (parented to the group container,
+---like the icon) rather than a texture on the bar, so ApplyShieldLayout can set its frame level per-mode --
+---above the icon to draw over it, below the bar to peek out behind. A bar-frame texture could never order
+---above the icon (which lives on a higher-level frame). Survives with the icon disabled. Starts hidden; the
+---render path drives its alpha per cast (plain bool on the player bar, secret-safe curve on target/focus).
+---@return TRB.Classes.BarNode.Shield
+function TRB.Classes.BarNode:EnsureShield()
+	if self.shield == nil then
+		local shield = CreateFrame("Frame", nil, self.frame:GetParent()) --[[@as TRB.Classes.BarNode.Shield]]
+		shield.texture = shield:CreateTexture(nil, "ARTWORK")
+		shield.texture:SetAllPoints(shield)
+		-- useAtlasSize=false so the shield stretches to the size ApplyShieldLayout sets rather than snapping
+		-- to the atlas's native pixel dimensions.
+		shield.texture:SetAtlas("UI-CastingBar-Shield", false)
+		shield:Hide()
+		self.shield = shield
+	end
+	return self.shield
+end
+
 ---Positions, sizes, and borders the side ability icon against this node's edge. The icon is square with
 ---side `size` and hangs off the node's opposite edge by `spacing`, so it works identically whether the
 ---node was inset (left/right) or the container grew (top/bottom). The border matches the bar's own, and
@@ -687,6 +714,90 @@ function TRB.Classes.BarNode:ApplyIconLayout(side, size, spacing, border, zoom)
 	-- Crop the art inward so the stock border baked into the spell icon falls outside the visible area
 	local crop = math.min(math.max((zoom or 0) / 100, 0), 0.45)
 	icon.texture:SetTexCoord(crop, 1 - crop, crop, 1 - crop)
+end
+
+---Sizes, anchors, and layers the uninterruptible shield against either the ability icon or the bar itself
+---(`target`). The shield is square with a side of `sizePercent`% of the target's reference length -- the
+---icon width when targeting the icon, the bar height when targeting the bar -- so >100% overhangs. Its
+---center sits at `anchor`'s 9-point on the target. `mode` picks the shield frame's level relative to the
+---bar/icon: "over" puts it above (draws on top), "behind" below (peeks out around). Draw layers can't order
+---across separate frames, so the frame level is what actually stacks it. Visibility/alpha is driven
+---separately per cast by the shield setters. Cast-bar only. Hides the shield when the icon target is chosen
+---but no icon frame exists.
+---@param mode trbCastBarIconShieldMode
+---@param target string # "icon" or "bar" -- which frame the shield anchors to and sizes against
+---@param sizePercent number # Square side as a percent of the target's reference length
+---@param anchor string # 9-point anchor constant the shield centers on
+function TRB.Classes.BarNode:ApplyShieldLayout(mode, target, sizePercent, anchor)
+	if mode == "hide" then
+		if self.shield ~= nil then
+			self.shield:Hide()
+		end
+		return
+	end
+	-- Icon target with no icon frame: nothing to anchor to, so keep the shield hidden.
+	local anchorFrame = (target == "bar") and self.frame or self.icon
+	if anchorFrame == nil then
+		if self.shield ~= nil then
+			self.shield:Hide()
+		end
+		return
+	end
+	local shield = self:EnsureShield()
+	-- Reference length: icon is square (width), bar's square shield keys off its height.
+	local reference = (target == "bar") and (self.frame:GetHeight() or 0) or (anchorFrame:GetWidth() or 0)
+	local side = reference * (math.max(sizePercent or 100, 1) / 100)
+	shield:SetSize(side, side)
+	-- Center the shield on the target's `anchor` point: CENTER->CENTER, TOPLEFT->TOPLEFT, etc. The atlas art
+	-- sits slightly high within its own bounds, so nudge it down by a fixed fraction of its height (scales
+	-- with size%) to visually center the target inside the shield.
+	anchor = anchor or "CENTER"
+	local yNudge = -side * 0.09
+	shield:ClearAllPoints()
+	shield:SetPoint("CENTER", anchorFrame, anchor, 0, yNudge)
+	-- Stack the shield frame relative to the bar/icon. The icon frame sits at bar level + 1, so "over" must
+	-- clear that (bar level + 2); "behind" drops below the bar (bar level - 1) to peek out around everything.
+	-- Frame level, not draw layer, is what orders across these separate frames.
+	shield:SetFrameStrata(self.frame:GetFrameStrata())
+	local barLevel = self.frame:GetFrameLevel()
+	shield:SetFrameLevel(mode == "over" and (barLevel + 2) or math.max(barLevel - 1, 0))
+end
+
+---Shows or hides the uninterruptible shield at a plain alpha. Used by the player cast bar, whose
+---notInterruptible is a plain boolean. `opacity` is a percent (100 = opaque).
+---@param visible boolean
+---@param opacity number? # Alpha percent when visible; defaults to 100
+function TRB.Classes.BarNode:SetShieldVisible(visible, opacity)
+	if self.shield == nil then
+		return
+	end
+	if visible then
+		self.shield:SetAlpha(math.min(math.max((opacity or 100) / 100, 0), 1))
+		self.shield:Show()
+	else
+		self.shield:Hide()
+	end
+end
+
+---Drives the uninterruptible shield's alpha from a secret-boolean curve result. Used by the target/focus
+---cast bar, whose notInterruptible is a SECRET value that can't be branched on: the caller evaluates a
+---curve (uninterruptible -> visible color, interruptible -> transparent) and passes the result here, which
+---feeds straight into SetVertexColor so no secret is ever compared. The shield stays Show()n; the curve's
+---alpha alone hides it when interruptible.
+---@diagnostic disable-next-line: undefined-doc-name
+---@param colorResult LuaCurveEvaluatedResult?
+function TRB.Classes.BarNode:SetShieldCurve(colorResult)
+	if self.shield == nil then
+		return
+	end
+	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
+		self.shield:Hide()
+		return
+	end
+	-- SetVertexColor is a texture method (the shield is now a frame wrapping a texture); the curve's alpha
+	-- carries the show/hide, so the frame stays Show()n and the texture's alpha does the work.
+	self.shield.texture:SetVertexColor(colorResult:GetRGBA())
+	self.shield:Show()
 end
 
 ---Applies the node's current border color to the side ability icon, so the icon border always tracks the

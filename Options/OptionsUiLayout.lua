@@ -2073,6 +2073,8 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 
 	-- Everything below the enable checkbox is meaningless with the icon off, so gray it out together
 	local iconSubControls = {}
+	-- The uninterruptible shield is cast-bar-only: its settings block is present only on cast bar icons.
+	local shieldSettings = iconSettings.uninterruptibleShield
 	local function RefreshIconSubControlStates()
 		local enabled = iconSettings.enabled == true
 		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(iconSubControls.side, enabled)
@@ -2080,6 +2082,16 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.spacing, enabled and not iconSettings.collapseBorderWidth)
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconSubControls.collapse, enabled)
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.zoom, enabled)
+		if shieldSettings ~= nil then
+			-- The shield is independent of the icon (a bar-targeted shield shows with the icon off), so its
+			-- controls gate only on its own mode, not the icon's enabled state. Mode is always adjustable;
+			-- target/size/opacity/anchor only matter when not "hide".
+			local shieldShown = shieldSettings.mode ~= "hide"
+			TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(iconSubControls.shieldTarget, shieldShown)
+			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.shieldSize, shieldShown)
+			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.shieldOpacity, shieldShown)
+			TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(iconSubControls.shieldAnchor, shieldShown)
+		end
 	end
 
 	controls[barTypeDef.key .. "IconEnabled"] = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_enabled", L["BarIconEnabled"], L["BarIconEnabledTooltip"], yCoord,
@@ -2140,6 +2152,77 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 	end)
 	controls[barTypeDef.key .. "IconZoom"] = iconSubControls.zoom
 	yCoord = yCoord - 40
+
+	-- Uninterruptible shield options: cast-bar-only, so only drawn when the icon settings carry the block.
+	if shieldSettings ~= nil then
+		controls[barTypeDef.key .. "IconShieldSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarIconShieldHeader"], oUi.xCoord, yCoord)
+		yCoord = yCoord - 30
+
+		-- Row 1: Mode (behind/over/hide) + Target (icon/bar) dropdowns.
+		local modeOptions = {
+			{ value = "behind", label = L["BarIconShieldModeBehind"] },
+			{ value = "over", label = L["BarIconShieldModeOver"] },
+			{ value = "hide", label = L["BarIconShieldModeHide"] },
+		}
+		iconSubControls.shieldMode = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_shieldMode", L["BarIconShieldMode"], modeOptions,
+			function() return shieldSettings.mode or "behind" end,
+			function(v)
+				shieldSettings.mode = v
+				RefreshIconSubControlStates()
+				ApplyIconChange()
+			end,
+			oUi.xCoord, yCoord + 14)
+		controls[barTypeDef.key .. "IconShieldMode"] = iconSubControls.shieldMode
+
+		local targetOptions = {
+			{ value = "icon", label = L["BarIconShieldTargetIcon"] },
+			{ value = "bar", label = L["BarIconShieldTargetBar"] },
+		}
+		iconSubControls.shieldTarget = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_shieldTarget", L["BarIconShieldTarget"], targetOptions,
+			function() return shieldSettings.target or "icon" end,
+			function(v)
+				shieldSettings.target = v
+				ApplyIconChange()
+			end,
+			oUi.xCoord2, yCoord + 14)
+		controls[barTypeDef.key .. "IconShieldTarget"] = iconSubControls.shieldTarget
+
+		-- Row 2: Anchor dropdown (9-point, like bar text positioning) on its own row.
+		yCoord = yCoord - 60
+		local anchorOptions = {}
+		for _, point in ipairs({ "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }) do
+			anchorOptions[#anchorOptions + 1] = { value = point, label = anchorPointDisplayNames[point] }
+		end
+		iconSubControls.shieldAnchor = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_shieldAnchor", L["BarIconShieldAnchor"], anchorOptions,
+			function() return shieldSettings.anchor or "CENTER" end,
+			function(v)
+				shieldSettings.anchor = v
+				ApplyIconChange()
+			end,
+			oUi.xCoord, yCoord + 14)
+		controls[barTypeDef.key .. "IconShieldAnchor"] = iconSubControls.shieldAnchor
+
+		-- Row 3: Size (% of target) and opacity (%) sliders share the row.
+		yCoord = yCoord - 60
+		iconSubControls.shieldSize = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconShieldSize"], 50, 200, shieldSettings.sizePercent, 5, 0,
+			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+		iconSubControls.shieldSize:SetScript("OnValueChanged", function(sliderFrame, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
+			shieldSettings.sizePercent = value
+			ApplyIconChange()
+		end)
+		controls[barTypeDef.key .. "IconShieldSize"] = iconSubControls.shieldSize
+
+		iconSubControls.shieldOpacity = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconShieldOpacity"], 0, 100, shieldSettings.opacity, 5, 0,
+			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		iconSubControls.shieldOpacity:SetScript("OnValueChanged", function(sliderFrame, value)
+			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
+			shieldSettings.opacity = value
+			ApplyIconChange()
+		end)
+		controls[barTypeDef.key .. "IconShieldOpacity"] = iconSubControls.shieldOpacity
+		yCoord = yCoord - 40
+	end
 
 	RefreshIconSubControlStates()
 	return yCoord
