@@ -22,6 +22,8 @@ local barNodeCounter = 0
 ---to peek out behind. Draw layers alone can't order across separate frames.
 ---@class TRB.Classes.BarNode.Shield : Frame
 ---@field public texture Texture
+---@field public _mode trbCastBarIconShieldMode? # Last mode applied by ApplyShieldLayout, so the setters can re-assert the frame level each show
+---@field public _levelAnchor Frame? # Frame the shield's level is derived from ("over" -> the icon), so a re-leveled icon doesn't leave the shield stranded below it
 
 ---@class TRB.Classes.BarNode
 ---@field public frame StatusBar # The single consolidated StatusBar frame
@@ -755,12 +757,28 @@ function TRB.Classes.BarNode:ApplyShieldLayout(mode, target, sizePercent, anchor
 	local yNudge = -side * 0.09
 	shield:ClearAllPoints()
 	shield:SetPoint("CENTER", anchorFrame, anchor, 0, yNudge)
-	-- Stack the shield frame relative to the bar/icon. The icon frame sits at bar level + 1, so "over" must
-	-- clear that (bar level + 2); "behind" drops below the bar (bar level - 1) to peek out around everything.
-	-- Frame level, not draw layer, is what orders across these separate frames.
+	-- Stack the shield frame relative to the bar/icon. Frame level, not draw layer, orders across these
+	-- separate frames. Store the mode and the frame the level derives from so the render-path setters can
+	-- re-assert it every show: the bar/icon can be re-leveled after this one-time layout (group reconstruct,
+	-- show/hide cycle), which would otherwise strand a snapshotted "over" shield below the raised icon.
 	shield:SetFrameStrata(self.frame:GetFrameStrata())
-	local barLevel = self.frame:GetFrameLevel()
-	shield:SetFrameLevel(mode == "over" and (barLevel + 2) or math.max(barLevel - 1, 0))
+	shield._mode = mode
+	-- "over" derives from the icon when present (draw above it); everything else keys off the bar.
+	shield._levelAnchor = (mode == "over" and self.icon ~= nil) and self.icon or self.frame
+	self:_ReassertShieldLevel()
+end
+
+---Recomputes the shield's frame level from its level-anchor's CURRENT level. "over" sits one above its
+---anchor (the icon, else the bar); "behind" drops below the bar so it peeks out around everything. Called
+---at layout and again on every show, so a re-leveled bar/icon never leaves the shield stranded.
+function TRB.Classes.BarNode:_ReassertShieldLevel()
+	local shield = self.shield
+	if shield == nil or shield._levelAnchor == nil then
+		return
+	end
+	shield:SetFrameStrata(self.frame:GetFrameStrata())
+	local anchorLevel = shield._levelAnchor:GetFrameLevel()
+	shield:SetFrameLevel(shield._mode == "over" and (anchorLevel + 1) or math.max(anchorLevel - 1, 0))
 end
 
 ---Shows or hides the uninterruptible shield, tinting it to the given RGB and alpha. Used by the player cast
@@ -778,6 +796,7 @@ function TRB.Classes.BarNode:SetShieldVisible(visible, r, g, b, alpha)
 	if visible then
 		self.shield.texture:SetVertexColor(r or 1, g or 1, b or 1, 1)
 		self.shield:SetAlpha(math.min(math.max(alpha or 1, 0), 1))
+		self:_ReassertShieldLevel()
 		self.shield:Show()
 	else
 		self.shield:Hide()
@@ -802,6 +821,7 @@ function TRB.Classes.BarNode:SetShieldCurve(colorResult)
 	-- SetVertexColor is a texture method (the shield is now a frame wrapping a texture); the curve's alpha
 	-- carries the show/hide, so the frame stays Show()n and the texture's alpha does the work.
 	self.shield.texture:SetVertexColor(colorResult:GetRGBA())
+	self:_ReassertShieldLevel()
 	self.shield:Show()
 end
 

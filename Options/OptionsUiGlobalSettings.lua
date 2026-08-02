@@ -46,6 +46,8 @@ local globalSettingDefinitions = {
 		paths = { {"colors", "bars", "castbar", "empowerStages"}, {"bars", "castbar", "empowerSegmentedFill"} } },
 	castbarText     = { checkboxSuffix = "castbarText",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarText"],
 		paths = { {"bars", "castbar", "castTimePrecision"}, {"bars", "castbar", "durationPrecision"}, {"bars", "castbar", "latencyPrecision"}, {"bars", "castbar", "targetClassColor"}, {"bars", "castbar", "targetClassColorPvpOnly"}, {"bars", "castbar", "targetClassColorFriendly"} } },
+	castbarShield   = { checkboxSuffix = "castbarShield",   tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarShield"],
+		paths = { {"bars", "castbar", "uninterruptibleShield"} } },
 	-- Target/Focus cast bars mirror the player cast bar's per-section "Use Global" toggles: Dimensions
 	-- (position/size/icon), Colors (fill/interrupt/border/background), and Empower (empower fill color +
 	-- stage lines). Secret-safe render, so no latency/pushback/tick overlays section.
@@ -57,6 +59,8 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "targetCastbar", "showEmpowerStages"}, {"bars", "targetCastbar", "empowerStageLineWidth"}, {"colors", "bars", "targetCastbar", "empower"}, {"colors", "bars", "targetCastbar", "empowerStageLine"} } },
 	targetCastbarText       = { checkboxSuffix = "targetCastbarText",       tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarText"],
 		paths = { {"bars", "targetCastbar", "classColor"}, {"bars", "targetCastbar", "classColorPvpOnly"}, {"bars", "targetCastbar", "classColorFriendly"}, {"bars", "targetCastbar", "castTimePrecision"}, {"bars", "targetCastbar", "durationPrecision"} } },
+	targetCastbarShield     = { checkboxSuffix = "targetCastbarShield",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarShield"],
+		paths = { {"bars", "targetCastbar", "uninterruptibleShield"} } },
 	focusCastbarDimensions  = { checkboxSuffix = "focusCastbarDimensions",  tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarDimensions"],
 		paths = { {"bars", "focusCastbar", "width"}, {"bars", "focusCastbar", "height"}, {"bars", "focusCastbar", "border"}, {"bars", "focusCastbar", "xPos"}, {"bars", "focusCastbar", "yPos"}, {"bars", "focusCastbar", "anchor"}, {"bars", "focusCastbar", "fillDirection"}, {"bars", "focusCastbar", "icon"} } },
 	focusCastbarColors      = { checkboxSuffix = "focusCastbarColors",      tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarColors"],
@@ -65,6 +69,8 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "focusCastbar", "showEmpowerStages"}, {"bars", "focusCastbar", "empowerStageLineWidth"}, {"colors", "bars", "focusCastbar", "empower"}, {"colors", "bars", "focusCastbar", "empowerStageLine"} } },
 	focusCastbarText        = { checkboxSuffix = "focusCastbarText",        tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarText"],
 		paths = { {"bars", "focusCastbar", "classColor"}, {"bars", "focusCastbar", "classColorPvpOnly"}, {"bars", "focusCastbar", "classColorFriendly"}, {"bars", "focusCastbar", "castTimePrecision"}, {"bars", "focusCastbar", "durationPrecision"} } },
+	focusCastbarShield      = { checkboxSuffix = "focusCastbarShield",      tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarShield"],
+		paths = { {"bars", "focusCastbar", "uninterruptibleShield"} } },
 }
 
 ---Sets a checkbox to tristate visual mode

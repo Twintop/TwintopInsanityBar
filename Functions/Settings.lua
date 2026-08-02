@@ -69,14 +69,17 @@ local function NewSpecGlobalDefaults()
 		castbarOverlays = true,
 		castbarEmpower = true,
 		castbarText = true,
+		castbarShield = true,
 		targetCastbarDimensions = true,
 		targetCastbarColors = true,
 		targetCastbarEmpower = true,
 		targetCastbarText = true,
+		targetCastbarShield = true,
 		focusCastbarDimensions = true,
 		focusCastbarColors = true,
 		focusCastbarEmpower = true,
-		focusCastbarText = true
+		focusCastbarText = true,
+		focusCastbarShield = true
 	}
 end
 
@@ -9020,7 +9023,8 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	settings.targetClassColorPvpOnly = false
 	settings.targetClassColorFriendly = false
 	settings.tickProfiles = {}
-	settings.icon = self:DefaultCastBarIconSettings()
+	settings.icon = self:DefaultBarIconSettings()
+	settings.uninterruptibleShield = self:DefaultCastbarShieldSettings()
 	settings.height = 30
 	return settings
 end
@@ -9039,13 +9043,12 @@ function TRB.Functions.Settings:DefaultBarIconSettings()
 	}
 end
 
----Gets the default cast bar ability icon settings: the generic icon block plus the uninterruptible shield,
----which is cast-bar-only (only casts have an interruptibility state). Defaults: shield drawn behind the
----art at 125% (peeking out), fully opaque, centered.
----@return TRB.Classes.Settings.CastBarIcon
-function TRB.Functions.Settings:DefaultCastBarIconSettings()
-	local icon = self:DefaultBarIconSettings() --[[@as TRB.Classes.Settings.CastBarIcon]]
-	icon.uninterruptibleShield = {
+---Gets the default uninterruptible shield settings for a cast bar. Its own bar-level block (a sibling of
+---`icon`, not nested inside it) so it is globally toggleable as its own section and shows independent of the
+---icon. Defaults: drawn behind the target at 175% (peeking out), fully opaque, centered, untinted.
+---@return TRB.Classes.Settings.CastBarIconShield
+function TRB.Functions.Settings:DefaultCastbarShieldSettings()
+	return {
 		mode = "behind",
 		target = "icon",
 		sizePercent = 175,
@@ -9054,7 +9057,6 @@ function TRB.Functions.Settings:DefaultCastBarIconSettings()
 		colorSource = "default",
 		customColor = "FFFFFFFF"
 	}
-	return icon
 end
 
 ---Gets the default Castbar colors. `bar` is the standard-cast fill; `channel` and `uninterruptible`
@@ -9166,7 +9168,8 @@ function TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic, unitKey
 	settings.classColor = false
 	settings.classColorPvpOnly = false
 	settings.classColorFriendly = false
-	settings.icon = self:DefaultCastBarIconSettings()
+	settings.icon = self:DefaultBarIconSettings()
+	settings.uninterruptibleShield = self:DefaultCastbarShieldSettings()
 
 	if unitKey == "targetCastbar" then
 		settings.width = 500

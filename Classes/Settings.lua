@@ -21,6 +21,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public castbarOverlays boolean
 ---@field public castbarEmpower boolean
 ---@field public castbarText boolean
+---@field public castbarShield boolean
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public bar TRB.Classes.Settings.PrimaryBar
@@ -251,8 +252,10 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---| '"uninterruptibleBorder"' # Tint to the uninterruptible border color
 ---| '"custom"'                # Tint to customColor (its alpha multiplies the opacity slider)
 
----The uninterruptible shield shown while a cast can't be interrupted. Square, anchored by a 9-point point
----to either the ability icon or the bar (`target`), with an independent size (% of the target) and opacity.
+---The uninterruptible shield shown while a cast can't be interrupted. A bar-level block (sibling of the
+---cast bar's `icon`, not nested in it) so it is globally toggleable as its own section and shows regardless
+---of the icon. Square, anchored by a 9-point point to either the ability icon or the bar (`target`), with an
+---independent size (% of the target) and opacity.
 ---@class TRB.Classes.Settings.CastBarIconShield
 ---@field public mode trbCastBarIconShieldMode # Draw behind/over the target, or hide entirely
 ---@field public target trbCastBarIconShieldTarget # Anchor/size against the icon or the bar
@@ -261,11 +264,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public anchor string # 9-point anchor: which point of the target the shield centers on
 ---@field public colorSource trbCastBarIconShieldColorSource # Where the shield tint comes from
 ---@field public customColor string # ARGB hex tint used when colorSource is "custom"
-
----A cast bar's ability icon: the generic side icon plus the uninterruptible shield overlay, which is
----specific to cast bars (only casts have an interruptibility state).
----@class TRB.Classes.Settings.CastBarIcon : TRB.Classes.Settings.BarIcon
----@field public uninterruptibleShield TRB.Classes.Settings.CastBarIconShield # Uninterruptible shield overlay
 
 ---@class TRB.Classes.Settings.SecondaryBar
 ---@field public icon TRB.Classes.Settings.BarIcon? # Side ability icon; nil on bar types that do not support one

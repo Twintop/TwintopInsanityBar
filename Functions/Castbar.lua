@@ -1055,11 +1055,11 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 		node:SetIconTexture(model.spell and model.spell.iconId or nil)
 		node:SetIconVisible(model.spell ~= nil)
 	end
-	-- Uninterruptible shield. Independent of the icon being enabled (a bar-targeted shield shows with the
-	-- icon off). Player notInterruptible is a plain boolean, so branch directly. Not shown for empower
+	-- Uninterruptible shield. A bar-level setting, independent of the icon (a bar-targeted shield shows with
+	-- the icon off). Player notInterruptible is a plain boolean, so branch directly. Not shown for empower
 	-- (always self-interruptible) or when no spell is casting.
-	if barSettings ~= nil and barSettings.icon ~= nil then
-		local shield = barSettings.icon.uninterruptibleShield
+	if barSettings ~= nil then
+		local shield = barSettings.uninterruptibleShield
 		local showShield = shield ~= nil and shield.mode ~= "hide" and model.spell ~= nil
 			and model.notInterruptible and model.state ~= "empower"
 		if showShield then

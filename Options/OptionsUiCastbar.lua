@@ -164,6 +164,13 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls, spec, classId, specId, yCoord, castbarDef)
 	yCoord = yCoord - 20
 
+	-- Uninterruptible shield (its own global-settings section, decoupled from the icon)
+	controls.castbarShieldSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarIconShieldHeader"], oUi.xCoord, yCoord)
+	yCoord = BuildCastbarUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, "castbarShield", yCoord)
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCastbarShieldOptions(parent, controls, spec, classId, specId, yCoord, castbarDef)
+	yCoord = yCoord - 20
+
 	-- Fill colors
 	controls.castbarColorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarColorsHeader"], oUi.xCoord, yCoord)
 	yCoord = BuildCastbarUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, "castbarColors", yCoord)

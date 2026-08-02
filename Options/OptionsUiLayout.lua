@@ -2073,8 +2073,6 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 
 	-- Everything below the enable checkbox is meaningless with the icon off, so gray it out together
 	local iconSubControls = {}
-	-- The uninterruptible shield is cast-bar-only: its settings block is present only on cast bar icons.
-	local shieldSettings = iconSettings.uninterruptibleShield
 	local function RefreshIconSubControlStates()
 		local enabled = iconSettings.enabled == true
 		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(iconSubControls.side, enabled)
@@ -2082,19 +2080,6 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.spacing, enabled and not iconSettings.collapseBorderWidth)
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconSubControls.collapse, enabled)
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.zoom, enabled)
-		if shieldSettings ~= nil then
-			-- The shield is independent of the icon (a bar-targeted shield shows with the icon off), so its
-			-- controls gate only on its own mode, not the icon's enabled state. Mode is always adjustable;
-			-- target/size/opacity/anchor only matter when not "hide".
-			local shieldShown = shieldSettings.mode ~= "hide"
-			TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(iconSubControls.shieldTarget, shieldShown)
-			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.shieldSize, shieldShown)
-			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.shieldOpacity, shieldShown)
-			TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(iconSubControls.shieldAnchor, shieldShown)
-			TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(iconSubControls.shieldColor, shieldShown)
-			-- The custom color swatch only matters when the source is "custom".
-			TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(iconSubControls.shieldCustomColor, shieldShown and shieldSettings.colorSource == "custom")
-		end
 	end
 
 	controls[barTypeDef.key .. "IconEnabled"] = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_enabled", L["BarIconEnabled"], L["BarIconEnabledTooltip"], yCoord,
@@ -2156,107 +2141,150 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 	controls[barTypeDef.key .. "IconZoom"] = iconSubControls.zoom
 	yCoord = yCoord - 40
 
-	-- Uninterruptible shield options: cast-bar-only, so only drawn when the icon settings carry the block.
-	if shieldSettings ~= nil then
-		controls[barTypeDef.key .. "IconShieldSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarIconShieldHeader"], oUi.xCoord, yCoord)
-		yCoord = yCoord - 30
+	RefreshIconSubControlStates()
+	return yCoord
+end
 
-		-- Row 1: Mode (behind/over/hide) + Target (icon/bar) dropdowns.
-		local modeOptions = {
-			{ value = "behind", label = L["BarIconShieldModeBehind"] },
-			{ value = "over", label = L["BarIconShieldModeOver"] },
-			{ value = "hide", label = L["BarIconShieldModeHide"] },
-		}
-		iconSubControls.shieldMode = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_shieldMode", L["BarIconShieldMode"], modeOptions,
-			function() return shieldSettings.mode or "behind" end,
-			function(v)
-				shieldSettings.mode = v
-				RefreshIconSubControlStates()
-				ApplyIconChange()
-			end,
-			oUi.xCoord, yCoord)
-		controls[barTypeDef.key .. "IconShieldMode"] = iconSubControls.shieldMode
+---Generates the uninterruptible shield options for a cast bar: layer (behind/over/hide), target (icon/bar),
+---anchor, size, opacity, and color source with a custom swatch. A bar-level block (a sibling of `icon`, not
+---nested in it) so it is globally toggleable as its own section and independent of the icon. Cast-bar only.
+---@param parent Frame # The tab's scroll child
+---@param controls table # The panel's controls table
+---@param spec table # The spec (or core) settings table being edited
+---@param classId integer? # nil on the Global panel
+---@param specId integer?
+---@param yCoord number
+---@param barTypeDef table # The bar's BarTypeRegistry definition
+---@return number yCoord
+function TRB.Functions.OptionsUi.Layout:GenerateCastbarShieldOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = "TwintopResourceBar_" .. className .. "_" .. specName .. "_" .. barTypeDef.key .. "_shield"
 
-		local targetOptions = {
-			{ value = "icon", label = L["BarIconShieldTargetIcon"] },
-			{ value = "bar", label = L["BarIconShieldTargetBar"] },
-		}
-		iconSubControls.shieldTarget = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_shieldTarget", L["BarIconShieldTarget"], targetOptions,
-			function() return shieldSettings.target or "icon" end,
-			function(v)
-				shieldSettings.target = v
-				ApplyIconChange()
-			end,
-			oUi.xCoord2, yCoord)
-		controls[barTypeDef.key .. "IconShieldTarget"] = iconSubControls.shieldTarget
+	local barSettings = barTypeDef:GetSettings(spec)
+	if barSettings == nil then
+		return yCoord
+	end
+	barSettings.uninterruptibleShield = barSettings.uninterruptibleShield or TRB.Functions.Settings:DefaultCastbarShieldSettings()
+	local shieldSettings = barSettings.uninterruptibleShield
 
-		-- Row 2: Anchor dropdown (9-point, like bar text positioning) on its own row.
-		yCoord = yCoord - 70
-		local anchorOptions = {}
-		for _, point in ipairs({ "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }) do
-			anchorOptions[#anchorOptions + 1] = { value = point, label = anchorPointDisplayNames[point] }
+	-- Global-panel edits land on the core table; the active spec's merged cache only picks them up on a re-fill
+	local function ApplyShieldChange()
+		local char = TRB.Data.character
+		if classId == nil and char ~= nil and char.className ~= nil and char.specName ~= nil and TRB.Data.specCache[char.compositeKey] ~= nil then
+			TRB.Functions.Character:FillSpecializationCacheSettings(char.className, char.specName)
 		end
-		iconSubControls.shieldAnchor = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_shieldAnchor", L["BarIconShieldAnchor"], anchorOptions,
-			function() return shieldSettings.anchor or "CENTER" end,
-			function(v)
-				shieldSettings.anchor = v
-				ApplyIconChange()
-			end,
-			oUi.xCoord, yCoord)
-		controls[barTypeDef.key .. "IconShieldAnchor"] = iconSubControls.shieldAnchor
-
-		-- Row 3: Size (% of target) and opacity (%) sliders share the row.
-		yCoord = yCoord - 80
-		iconSubControls.shieldSize = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconShieldSize"], 5, 400, shieldSettings.sizePercent, 5, 0,
-			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		iconSubControls.shieldSize:SetScript("OnValueChanged", function(sliderFrame, value)
-			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
-			shieldSettings.sizePercent = value
-			ApplyIconChange()
-		end)
-		controls[barTypeDef.key .. "IconShieldSize"] = iconSubControls.shieldSize
-
-		iconSubControls.shieldOpacity = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconShieldOpacity"], 0, 100, shieldSettings.opacity, 5, 0,
-			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		iconSubControls.shieldOpacity:SetScript("OnValueChanged", function(sliderFrame, value)
-			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
-			shieldSettings.opacity = value
-			ApplyIconChange()
-		end)
-		controls[barTypeDef.key .. "IconShieldOpacity"] = iconSubControls.shieldOpacity
-
-		-- Row 4: Color source dropdown (left) + custom color swatch (right). The swatch only applies when the
-		-- source is "custom" (RefreshIconSubControlStates grays it otherwise).
-		yCoord = yCoord - 40
-		local colorOptions = {
-			{ value = "default", label = L["BarIconShieldColorDefault"] },
-			{ value = "uninterruptibleBar", label = L["BarIconShieldColorUninterruptibleBar"] },
-			{ value = "uninterruptibleBorder", label = L["BarIconShieldColorUninterruptibleBorder"] },
-			{ value = "custom", label = L["BarIconShieldColorCustom"] },
-		}
-		iconSubControls.shieldColor = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_shieldColor", L["BarIconShieldColor"], colorOptions,
-			function() return shieldSettings.colorSource or "default" end,
-			function(v)
-				shieldSettings.colorSource = v
-				RefreshIconSubControlStates()
-				ApplyIconChange()
-			end,
-			oUi.xCoord, yCoord)
-		controls[barTypeDef.key .. "IconShieldColor"] = iconSubControls.shieldColor
-
-		iconSubControls.shieldCustomColor = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["BarIconShieldCustomColor"], shieldSettings.customColor or "FFFFFFFF",
-			oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord-30)
-		iconSubControls.shieldCustomColor:SetScript("OnMouseDown", function(_, button)
-			-- ColorOnMouseDown opens the picker and writes shieldSettings.customColor on confirm; the shield
-			-- picks up the new color on the next cast (color is applied per-cast in the render path).
-			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, shieldSettings, iconSubControls, "customColor")
-		end)
-		controls[barTypeDef.key .. "IconShieldCustomColor"] = iconSubControls.shieldCustomColor
-		iconSubControls.customColor = iconSubControls.shieldCustomColor
-		yCoord = yCoord - 40
+		if TRB.Frames.barGroups ~= nil then
+			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+		end
 	end
 
-	RefreshIconSubControlStates()
+	local shieldControls = {}
+	local function RefreshShieldControlStates()
+		-- Mode is always adjustable; target/size/opacity/anchor/color only matter when not "hide".
+		local shieldShown = shieldSettings.mode ~= "hide"
+		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(shieldControls.target, shieldShown)
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(shieldControls.size, shieldShown)
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(shieldControls.opacity, shieldShown)
+		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(shieldControls.anchor, shieldShown)
+		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(shieldControls.color, shieldShown)
+		-- The custom color swatch only matters when the source is "custom".
+		TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(shieldControls.customColor, shieldShown and shieldSettings.colorSource == "custom")
+	end
+
+	-- Row 1: Layer (behind/over/hide) + Target (icon/bar) dropdowns.
+	local modeOptions = {
+		{ value = "behind", label = L["BarIconShieldModeBehind"] },
+		{ value = "over", label = L["BarIconShieldModeOver"] },
+		{ value = "hide", label = L["BarIconShieldModeHide"] },
+	}
+	shieldControls.mode = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_mode", L["BarIconShieldMode"], modeOptions,
+		function() return shieldSettings.mode or "behind" end,
+		function(v)
+			shieldSettings.mode = v
+			RefreshShieldControlStates()
+			ApplyShieldChange()
+		end,
+		oUi.xCoord, yCoord)
+	controls[barTypeDef.key .. "ShieldMode"] = shieldControls.mode
+
+	local targetOptions = {
+		{ value = "icon", label = L["BarIconShieldTargetIcon"] },
+		{ value = "bar", label = L["BarIconShieldTargetBar"] },
+	}
+	shieldControls.target = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_target", L["BarIconShieldTarget"], targetOptions,
+		function() return shieldSettings.target or "icon" end,
+		function(v)
+			shieldSettings.target = v
+			ApplyShieldChange()
+		end,
+		oUi.xCoord2, yCoord)
+	controls[barTypeDef.key .. "ShieldTarget"] = shieldControls.target
+
+	-- Row 2: Anchor dropdown (9-point, like bar text positioning) on its own row.
+	yCoord = yCoord - 70
+	local anchorOptions = {}
+	for _, point in ipairs({ "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }) do
+		anchorOptions[#anchorOptions + 1] = { value = point, label = anchorPointDisplayNames[point] }
+	end
+	shieldControls.anchor = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_anchor", L["BarIconShieldAnchor"], anchorOptions,
+		function() return shieldSettings.anchor or "CENTER" end,
+		function(v)
+			shieldSettings.anchor = v
+			ApplyShieldChange()
+		end,
+		oUi.xCoord, yCoord)
+	controls[barTypeDef.key .. "ShieldAnchor"] = shieldControls.anchor
+
+	-- Row 3: Size (% of target) and opacity (%) sliders share the row.
+	yCoord = yCoord - 80
+	shieldControls.size = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconShieldSize"], 5, 400, shieldSettings.sizePercent, 5, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	shieldControls.size:SetScript("OnValueChanged", function(sliderFrame, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
+		shieldSettings.sizePercent = value
+		ApplyShieldChange()
+	end)
+	controls[barTypeDef.key .. "ShieldSize"] = shieldControls.size
+
+	shieldControls.opacity = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconShieldOpacity"], 0, 100, shieldSettings.opacity, 5, 0,
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	shieldControls.opacity:SetScript("OnValueChanged", function(sliderFrame, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
+		shieldSettings.opacity = value
+		ApplyShieldChange()
+	end)
+	controls[barTypeDef.key .. "ShieldOpacity"] = shieldControls.opacity
+
+	-- Row 4: Color source dropdown (left) + custom color swatch (right). The swatch only applies when the
+	-- source is "custom" (RefreshShieldControlStates grays it otherwise).
+	yCoord = yCoord - 40
+	local colorOptions = {
+		{ value = "default", label = L["BarIconShieldColorDefault"] },
+		{ value = "uninterruptibleBar", label = L["BarIconShieldColorUninterruptibleBar"] },
+		{ value = "uninterruptibleBorder", label = L["BarIconShieldColorUninterruptibleBorder"] },
+		{ value = "custom", label = L["BarIconShieldColorCustom"] },
+	}
+	shieldControls.color = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_color", L["BarIconShieldColor"], colorOptions,
+		function() return shieldSettings.colorSource or "default" end,
+		function(v)
+			shieldSettings.colorSource = v
+			RefreshShieldControlStates()
+			ApplyShieldChange()
+		end,
+		oUi.xCoord, yCoord)
+	controls[barTypeDef.key .. "ShieldColor"] = shieldControls.color
+
+	shieldControls.customColor = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["BarIconShieldCustomColor"], shieldSettings.customColor or "FFFFFFFF",
+		oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord - 30)
+	shieldControls.customColor:SetScript("OnMouseDown", function(_, button)
+		-- ColorOnMouseDown opens the picker and writes shieldSettings.customColor on confirm; the shield
+		-- picks up the new color on the next cast (color is applied per-cast in the render path).
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, shieldSettings, shieldControls, "customColor")
+	end)
+	controls[barTypeDef.key .. "ShieldCustomColor"] = shieldControls.customColor
+	yCoord = yCoord - 40
+
+	RefreshShieldControlStates()
 	return yCoord
 end
 

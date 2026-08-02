@@ -516,7 +516,7 @@ local function ApplyVisibleState(groupKey, model)
 	-- tint -> transparent) and feed the result's color straight to the shield, exactly like the border
 	-- recolor. The tint (resolved from a plain color source) and alpha ride the visible endpoint. Same
 	-- opt-in/hostile guards as the border.
-	local shield = barSettings and barSettings.icon and barSettings.icon.uninterruptibleShield
+	local shield = barSettings and barSettings.uninterruptibleShield
 	local wantInterrupt = barSettings == nil or barSettings.interruptColor ~= false
 	if shield ~= nil and shield.mode ~= "hide" and model.state ~= "empower" and wantInterrupt
 		and UnitExists(model.unit) and UnitCanAttack("player", model.unit)
@@ -641,6 +641,43 @@ local function ApplyHiddenState(groupKey)
 	if group.containerFrame then
 		group.containerFrame:SetAlpha(0)
 	end
+end
+
+---Freezes the fill where the native timer last animated it, so an abnormal stop (interrupt, cancel, early
+---empower release) holds the bar in place instead of the C-side timer draining it to empty/full through the
+---fade-out. GetValue() stays 0 while the timer animates C-side (no readable animated position), so instead
+---reconstruct the stopped fraction directly from the duration's own seconds: range [0, total], value elapsed.
+---Both are secret, but SetMinMaxValues/SetValue accept secrets and there's no Lua compare or arithmetic, so
+---elapsed/total renders as the exact stopped fraction with NO timer left to advance it. Idempotent: a single
+---cancel fires duplicate STOP/INTERRUPTED events, and model:Stop() has already nil'd the durationObject by the
+---second call -- with no duration to read, leave the already-frozen bar untouched (calling ClearTimerDuration
+---here would hide/reshow the frame and flash it).
+---@param groupKey string
+---@param model TRB.Classes.TargetCastbar
+local function FreezeFill(groupKey, model)
+	local _, node = GetGroupNode(groupKey)
+	if node == nil then
+		return
+	end
+	local dur = model and model.durationObject
+	local total = dur and dur.GetTotalDuration and dur:GetTotalDuration()
+	-- Casts/empowers fill up (freeze at elapsed); channels deplete from full (freeze at remaining). Mirror the
+	-- direction GetTimerDirection drove the live fill with, so the frozen bar sits exactly where it was drawn.
+	local value
+	if model.state == "channel" then
+		value = dur and dur.GetRemainingDuration and dur:GetRemainingDuration()
+	else
+		value = dur and dur.GetElapsedDuration and dur:GetElapsedDuration()
+	end
+	if value == nil or total == nil then
+		return
+	end
+	-- Paint the static frozen fraction directly; a manual SetMinMaxValues + SetValue supersedes the timer
+	-- animation without ClearTimerDuration's hide/reshow flash. Keep hasTimerDuration in sync so a later
+	-- rebind (next cast) still clears cleanly.
+	node.frame:SetMinMaxValues(0, total)
+	node.frame:SetValue(value)
+	node.hasTimerDuration = false
 end
 
 ---Applies the idle (no active cast) empty-bar state at idleAlpha: empty fill, no icon/stage lines, normal
@@ -961,6 +998,9 @@ local function OnUnitEvent(unit, event, spellId)
 		BeginRender(entry.groupKey, model)
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP"
 		or event == "UNIT_SPELLCAST_EMPOWER_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+		-- Freeze the fill where it stopped BEFORE Stop() wipes the model: the native SetTimerDuration
+		-- animation would otherwise keep advancing the fill (and end cap) on its own through the fade-out.
+		FreezeFill(entry.groupKey, model)
 		model:Stop()
 		BeginFadeOut(entry.groupKey)
 	elseif event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
