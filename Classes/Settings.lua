@@ -245,14 +245,22 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---| '"icon"' # Shield anchors to and sizes against the ability icon
 ---| '"bar"'  # Shield anchors to and sizes against the bar itself (works with the icon disabled)
 
+---@alias trbCastBarIconShieldColorSource
+---| '"default"'               # Untinted -- the atlas shows its native gray
+---| '"uninterruptibleBar"'    # Tint to the uninterruptible fill color
+---| '"uninterruptibleBorder"' # Tint to the uninterruptible border color
+---| '"custom"'                # Tint to customColor (its alpha multiplies the opacity slider)
+
 ---The uninterruptible shield shown while a cast can't be interrupted. Square, anchored by a 9-point point
 ---to either the ability icon or the bar (`target`), with an independent size (% of the target) and opacity.
 ---@class TRB.Classes.Settings.CastBarIconShield
 ---@field public mode trbCastBarIconShieldMode # Draw behind/over the target, or hide entirely
 ---@field public target trbCastBarIconShieldTarget # Anchor/size against the icon or the bar
 ---@field public sizePercent number # Square side length as a percent of the target's reference length (100 = target-sized)
----@field public opacity number # Shield alpha percent (100 = opaque)
+---@field public opacity number # Shield alpha percent (100 = opaque); multiplies the custom color's own alpha
 ---@field public anchor string # 9-point anchor: which point of the target the shield centers on
+---@field public colorSource trbCastBarIconShieldColorSource # Where the shield tint comes from
+---@field public customColor string # ARGB hex tint used when colorSource is "custom"
 
 ---A cast bar's ability icon: the generic side icon plus the uninterruptible shield overlay, which is
 ---specific to cast bars (only casts have an interruptibility state).

@@ -2091,6 +2091,9 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.shieldSize, shieldShown)
 			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.shieldOpacity, shieldShown)
 			TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(iconSubControls.shieldAnchor, shieldShown)
+			TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(iconSubControls.shieldColor, shieldShown)
+			-- The custom color swatch only matters when the source is "custom".
+			TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(iconSubControls.shieldCustomColor, shieldShown and shieldSettings.colorSource == "custom")
 		end
 	end
 
@@ -2171,7 +2174,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 				RefreshIconSubControlStates()
 				ApplyIconChange()
 			end,
-			oUi.xCoord, yCoord + 14)
+			oUi.xCoord, yCoord)
 		controls[barTypeDef.key .. "IconShieldMode"] = iconSubControls.shieldMode
 
 		local targetOptions = {
@@ -2184,11 +2187,11 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 				shieldSettings.target = v
 				ApplyIconChange()
 			end,
-			oUi.xCoord2, yCoord + 14)
+			oUi.xCoord2, yCoord)
 		controls[barTypeDef.key .. "IconShieldTarget"] = iconSubControls.shieldTarget
 
 		-- Row 2: Anchor dropdown (9-point, like bar text positioning) on its own row.
-		yCoord = yCoord - 60
+		yCoord = yCoord - 70
 		local anchorOptions = {}
 		for _, point in ipairs({ "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }) do
 			anchorOptions[#anchorOptions + 1] = { value = point, label = anchorPointDisplayNames[point] }
@@ -2199,12 +2202,12 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 				shieldSettings.anchor = v
 				ApplyIconChange()
 			end,
-			oUi.xCoord, yCoord + 14)
+			oUi.xCoord, yCoord)
 		controls[barTypeDef.key .. "IconShieldAnchor"] = iconSubControls.shieldAnchor
 
 		-- Row 3: Size (% of target) and opacity (%) sliders share the row.
-		yCoord = yCoord - 60
-		iconSubControls.shieldSize = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconShieldSize"], 50, 200, shieldSettings.sizePercent, 5, 0,
+		yCoord = yCoord - 80
+		iconSubControls.shieldSize = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconShieldSize"], 5, 400, shieldSettings.sizePercent, 5, 0,
 			oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		iconSubControls.shieldSize:SetScript("OnValueChanged", function(sliderFrame, value)
 			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
@@ -2221,6 +2224,35 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 			ApplyIconChange()
 		end)
 		controls[barTypeDef.key .. "IconShieldOpacity"] = iconSubControls.shieldOpacity
+
+		-- Row 4: Color source dropdown (left) + custom color swatch (right). The swatch only applies when the
+		-- source is "custom" (RefreshIconSubControlStates grays it otherwise).
+		yCoord = yCoord - 40
+		local colorOptions = {
+			{ value = "default", label = L["BarIconShieldColorDefault"] },
+			{ value = "uninterruptibleBar", label = L["BarIconShieldColorUninterruptibleBar"] },
+			{ value = "uninterruptibleBorder", label = L["BarIconShieldColorUninterruptibleBorder"] },
+			{ value = "custom", label = L["BarIconShieldColorCustom"] },
+		}
+		iconSubControls.shieldColor = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_shieldColor", L["BarIconShieldColor"], colorOptions,
+			function() return shieldSettings.colorSource or "default" end,
+			function(v)
+				shieldSettings.colorSource = v
+				RefreshIconSubControlStates()
+				ApplyIconChange()
+			end,
+			oUi.xCoord, yCoord)
+		controls[barTypeDef.key .. "IconShieldColor"] = iconSubControls.shieldColor
+
+		iconSubControls.shieldCustomColor = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["BarIconShieldCustomColor"], shieldSettings.customColor or "FFFFFFFF",
+			oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord-30)
+		iconSubControls.shieldCustomColor:SetScript("OnMouseDown", function(_, button)
+			-- ColorOnMouseDown opens the picker and writes shieldSettings.customColor on confirm; the shield
+			-- picks up the new color on the next cast (color is applied per-cast in the render path).
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, shieldSettings, iconSubControls, "customColor")
+		end)
+		controls[barTypeDef.key .. "IconShieldCustomColor"] = iconSubControls.shieldCustomColor
+		iconSubControls.customColor = iconSubControls.shieldCustomColor
 		yCoord = yCoord - 40
 	end
 

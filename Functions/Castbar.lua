@@ -1062,7 +1062,23 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 		local shield = barSettings.icon.uninterruptibleShield
 		local showShield = shield ~= nil and shield.mode ~= "hide" and model.spell ~= nil
 			and model.notInterruptible and model.state ~= "empower"
-		node:SetShieldVisible(showShield, shield and shield.opacity)
+		if showShield then
+			-- Resolve the tint (nil = untinted). Final alpha = opacity slider, times the custom color's own
+			-- alpha (bar-color sources contribute RGB only, so their alpha is dropped).
+			local tintHex = TRB.Functions.Color:ResolveShieldColor(shield, colors)
+			local alpha = (shield.opacity or 100) / 100
+			local r, g, b
+			if tintHex ~= nil then
+				local ta
+				r, g, b, ta = TRB.Functions.Color:GetRGBAFromString(tintHex, true)
+				if shield.colorSource == "custom" then
+					alpha = alpha * ta
+				end
+			end
+			node:SetShieldVisible(true, r, g, b, alpha)
+		else
+			node:SetShieldVisible(false)
+		end
 	end
 	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
 	-- Keep the shared fade fields synced so anything that consults them stays consistent, but we

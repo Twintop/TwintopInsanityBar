@@ -70,17 +70,21 @@ local function GetColorObject(hex)
 	return cached
 end
 
--- Uninterruptible shield alpha endpoints (white RGB so the shield art keeps its own gray tint; only the
--- alpha carries meaning). Cached per opacity% since CreateColor allocates. The transparent endpoint is
--- shared, so an interruptible cast evaluates to fully-transparent regardless of the configured opacity.
+-- Uninterruptible shield curve endpoints. The visible endpoint carries the resolved tint RGB (white when
+-- untinted, so the atlas keeps its own gray) and the final alpha; the transparent endpoint is shared so an
+-- interruptible cast always evaluates fully-transparent. Cached by rounded r/g/b/a since CreateColor
+-- allocates and this runs every frame.
 local shieldTransparent = CreateColor(1, 1, 1, 0)
 local shieldOpaqueCache = {}
-local function GetShieldOpaqueColor(opacity)
-	local a = math.min(math.max((opacity or 100) / 100, 0), 1)
-	local cached = shieldOpaqueCache[a]
+local function GetShieldVisibleColor(r, g, b, a)
+	r, g, b = r or 1, g or 1, b or 1
+	a = math.min(math.max(a or 1, 0), 1)
+	-- Key on 3-decimal-rounded channels: keeps the cache bounded while distinguishing every practical color.
+	local key = string.format("%.3f:%.3f:%.3f:%.3f", r, g, b, a)
+	local cached = shieldOpaqueCache[key]
 	if cached == nil then
-		cached = CreateColor(1, 1, 1, a)
-		shieldOpaqueCache[a] = cached
+		cached = CreateColor(r, g, b, a)
+		shieldOpaqueCache[key] = cached
 	end
 	return cached
 end
@@ -508,16 +512,29 @@ local function ApplyVisibleState(groupKey, model)
 	end
 
 	-- Uninterruptible shield. Independent of the icon being enabled (a bar-targeted shield shows with the
-	-- icon off). notInterruptible is SECRET here, so we can't branch on it: instead evaluate a curve
-	-- (uninterruptible -> opaque white, interruptible -> transparent) and feed the result's alpha straight to
-	-- the shield, exactly like the border recolor. Same opt-in/hostile guards as the border.
+	-- icon off). notInterruptible is SECRET here, so we can't branch on it: instead evaluate a curve (visible
+	-- tint -> transparent) and feed the result's color straight to the shield, exactly like the border
+	-- recolor. The tint (resolved from a plain color source) and alpha ride the visible endpoint. Same
+	-- opt-in/hostile guards as the border.
 	local shield = barSettings and barSettings.icon and barSettings.icon.uninterruptibleShield
 	local wantInterrupt = barSettings == nil or barSettings.interruptColor ~= false
 	if shield ~= nil and shield.mode ~= "hide" and model.state ~= "empower" and wantInterrupt
 		and UnitExists(model.unit) and UnitCanAttack("player", model.unit)
 		and model.notInterruptible ~= nil and C_CurveUtil ~= nil and C_CurveUtil.EvaluateColorFromBoolean ~= nil then
+		-- Resolve the tint (nil = untinted white). Final alpha = opacity slider, times the custom color's own
+		-- alpha (bar-color sources contribute RGB only).
+		local tintHex = TRB.Functions.Color:ResolveShieldColor(shield, colors)
+		local alpha = (shield.opacity or 100) / 100
+		local r, g, b
+		if tintHex ~= nil then
+			local ta
+			r, g, b, ta = TRB.Functions.Color:GetRGBAFromString(tintHex, true)
+			if shield.colorSource == "custom" then
+				alpha = alpha * ta
+			end
+		end
 		local colorResult = C_CurveUtil.EvaluateColorFromBoolean(model.notInterruptible,
-			GetShieldOpaqueColor(shield.opacity), shieldTransparent)
+			GetShieldVisibleColor(r, g, b, alpha), shieldTransparent)
 		node:SetShieldCurve(colorResult)
 	else
 		node:SetShieldCurve(nil)

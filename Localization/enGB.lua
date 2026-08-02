@@ -384,4 +384,7 @@ if locale == "enGB" then
     L["TargetCastbarClassColor"] = "Use your %s's class colour"
     L["TargetCastbarClassColorTooltip"] = "When checked, the cast bar fill uses the class colour of your current %s for every cast type, including empowered and uninterruptible casts, whenever that %s is an enemy player. An active colour indicator still takes priority."
     L["TargetCastbarClassColorFriendlyTooltip"] = "When checked, a friendly player %s also recolours the cast bar with their class colour, not just enemy players."
+
+    L["BarIconShieldColor"] = "Shield Colour"
+    L["BarIconShieldCustomColor"] = "Custom Shield Colour"
 end

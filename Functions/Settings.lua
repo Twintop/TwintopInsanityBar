@@ -9048,9 +9048,11 @@ function TRB.Functions.Settings:DefaultCastBarIconSettings()
 	icon.uninterruptibleShield = {
 		mode = "behind",
 		target = "icon",
-		sizePercent = 125,
+		sizePercent = 175,
 		opacity = 100,
-		anchor = "CENTER"
+		anchor = "CENTER",
+		colorSource = "default",
+		customColor = "FFFFFFFF"
 	}
 	return icon
 end

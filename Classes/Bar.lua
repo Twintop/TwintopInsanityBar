@@ -763,16 +763,21 @@ function TRB.Classes.BarNode:ApplyShieldLayout(mode, target, sizePercent, anchor
 	shield:SetFrameLevel(mode == "over" and (barLevel + 2) or math.max(barLevel - 1, 0))
 end
 
----Shows or hides the uninterruptible shield at a plain alpha. Used by the player cast bar, whose
----notInterruptible is a plain boolean. `opacity` is a percent (100 = opaque).
+---Shows or hides the uninterruptible shield, tinting it to the given RGB and alpha. Used by the player cast
+---bar, whose notInterruptible is a plain boolean. The caller resolves the color source to r,g,b (nil = the
+---untinted default, i.e. white) and the final alpha (opacity slider, times the custom color's alpha).
 ---@param visible boolean
----@param opacity number? # Alpha percent when visible; defaults to 100
-function TRB.Classes.BarNode:SetShieldVisible(visible, opacity)
+---@param r number? # Tint red 0-1; nil for untinted (white)
+---@param g number? # Tint green 0-1
+---@param b number? # Tint blue 0-1
+---@param alpha number? # Final alpha 0-1; defaults to 1
+function TRB.Classes.BarNode:SetShieldVisible(visible, r, g, b, alpha)
 	if self.shield == nil then
 		return
 	end
 	if visible then
-		self.shield:SetAlpha(math.min(math.max((opacity or 100) / 100, 0), 1))
+		self.shield.texture:SetVertexColor(r or 1, g or 1, b or 1, 1)
+		self.shield:SetAlpha(math.min(math.max(alpha or 1, 0), 1))
 		self.shield:Show()
 	else
 		self.shield:Hide()
