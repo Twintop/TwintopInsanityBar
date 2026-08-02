@@ -2,8 +2,9 @@ local addonName, TRB = ...
 local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 
----@class TRB.Functions.VersionGate
 TRB.Functions.VersionGate = {}
+
+---@class TRB.Functions.VersionGate
 local VersionGate = TRB.Functions.VersionGate
 
 ---@param interfaceVersion string|number|nil

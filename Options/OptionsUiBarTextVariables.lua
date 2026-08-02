@@ -124,17 +124,22 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 	-- Build data table from cache.barTextVariables
 	-- =============================================
 	local allData = {}     -- flat array for LibScrollingTable
-	local sectionOrder = { "values", "pipe", "icons" }
-	local sectionLabels = {
-		values = L["BarTextVariablesSectionValues"],
-		pipe = L["BarTextVariablesSectionPipe"],
+	-- Fixed group order. Sorting reorders a group's contents but never the groups themselves.
+	local groupOrder = { "resources", "abilities", "stats", "castBar", "other", "icons" }
+	local groupLabels = {
+		resources = L["BarTextVariablesSectionResources"],
+		abilities = L["BarTextVariablesSectionAbilities"],
+		stats = L["BarTextVariablesSectionStats"],
+		castBar = L["BarTextVariablesSectionCastBars"],
+		other = L["BarTextVariablesSectionOther"],
 		icons = L["BarTextVariablesSectionIcons"],
 	}
-	local sectionSortOrder = {
-		values = 1,
-		pipe = 2,
-		icons = 3,
-	}
+	-- Recognized group keys. Metadata inference stays section-based, so each entry carries its
+	-- own source section: Other mixes plain values with pipe commands.
+	local validGroupKeys = {}
+	for _, groupKey in ipairs(groupOrder) do
+		validGroupKeys[groupKey] = true
+	end
 	local variableLogicType = TRB.Functions.BarText.VariableLogicType
 	local variableRenderType = TRB.Functions.BarText.VariableRenderType
 	local logicTypeSortOrder = {
@@ -279,10 +284,11 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			return false
 		end
 
-		local sectionA = dataA.sectionIndex or 99
-		local sectionB = dataB.sectionIndex or 99
-		if sectionA ~= sectionB then
-			return sectionA < sectionB
+		-- Groups always keep their position; only their contents re-sort.
+		local groupA = dataA.groupIndex or 99
+		local groupB = dataB.groupIndex or 99
+		if groupA ~= groupB then
+			return groupA < groupB
 		end
 
 		if dataA.isHeader ~= dataB.isHeader then
@@ -323,70 +329,89 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		return sortValueA > sortValueB
 	end
 
-	---Builds a flat data array for LibScrollingTable from the spec's barTextVariables, organized by section.
+	---Buckets the spec's visible barTextVariables entries into their display groups.
+	---Values split across Stats/Resources/Abilities/Cast Bar/Other; icons and pipe commands are
+	---resolved by the categorizer. Each bucket entry keeps its source section for metadata inference.
+	---@param barTextVariables table # The barTextVariables table with values, pipe, and icons sections
+	---@return table<string, table[]> # Map of group key to a list of { entry, sectionKey } records
+	local function GroupVariableEntries(barTextVariables)
+		local grouped = {}
+		for _, sectionKey in ipairs({ "values", "icons", "pipe" }) do
+			local sectionEntries = barTextVariables[sectionKey]
+			if sectionEntries then
+				for _, entry in ipairs(sectionEntries) do
+					if entry.printInSettings then
+						local groupKey = TRB.Functions.BarText:GetVariableCategory(entry, sectionKey)
+						-- An unrecognized category would otherwise drop the entry from the panel entirely.
+						if not validGroupKeys[groupKey] then
+							groupKey = TRB.Functions.BarText.VariableCategory.ABILITIES
+						end
+						grouped[groupKey] = grouped[groupKey] or {}
+						table.insert(grouped[groupKey], { entry = entry, sectionKey = sectionKey })
+					end
+				end
+			end
+		end
+		return grouped
+	end
+
+	---Builds a flat data array for LibScrollingTable from the spec's barTextVariables, organized by group.
 	---@param barTextVariables table # The barTextVariables table with values, pipe, and icons sections
 	---@return table[] # Flat array of row data for LibScrollingTable
 	local function BuildDataTable(barTextVariables)
 		local data = {}
-		for _, sectionKey in ipairs(sectionOrder) do
-			local sectionEntries = barTextVariables[sectionKey]
-			if sectionEntries and #sectionEntries > 0 then
-				local hasVisible = false
-				for _, entry in ipairs(sectionEntries) do
-					if entry.printInSettings then
-						hasVisible = true
-						break
+		local grouped = GroupVariableEntries(barTextVariables)
+
+		for groupIndex, groupKey in ipairs(groupOrder) do
+			local groupEntries = grouped[groupKey]
+			if groupEntries and #groupEntries > 0 then
+				-- Group header row
+				table.insert(data, {
+					cols = {
+						{ value = "" },
+						{ value = groupLabels[groupKey] },
+						{ value = "" },
+						{ value = "" },
+						{ value = "" },
+						{ value = "" },
+					},
+					isHeader = true,
+					groupKey = groupKey,
+					groupIndex = groupIndex,
+					variable = "",
+					description = "",
+				})
+				-- Variable rows
+				for _, record in ipairs(groupEntries) do
+					local entry = record.entry
+					local sectionKey = record.sectionKey
+					local desc = entry.description or ""
+					if sectionKey == "icons" and entry.icon and entry.icon ~= "" then
+						desc = entry.icon .. " " .. desc
 					end
-				end
-				if hasVisible then
-					-- Section header row
+					local metadata = TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
+					local variable = entry.variable or ""
 					table.insert(data, {
 						cols = {
-							{ value = "" },
-							{ value = sectionLabels[sectionKey] },
-							{ value = "" },
-							{ value = "" },
-							{ value = "" },
-							{ value = "" },
+							{ value = L["BarTextVariablesAddButton"] },
+							{ value = variable },
+							{ value = metadata.secret and L["BarTextVariablesBadgeSecret"] or "" },
+							{ value = metadata.booleanCheck and L["BarTextVariablesBadgeBooleanCheck"] or "" },
+							{ value = GetLogicTypeBadge(metadata.logicType) },
+							{ value = GetRenderTypeBadge(metadata.renderType) },
 						},
-						isHeader = true,
-						sectionKey = sectionKey,
-						sectionIndex = sectionSortOrder[sectionKey] or 99,
-						variable = "",
-						description = "",
+						isHeader = false,
+						groupKey = groupKey,
+						groupIndex = groupIndex,
+						variable = variable,
+						description = desc,
+						metadata = metadata,
+						sortVariable = string.lower(variable),
+						sortSecret = metadata.secret and 1 or 0,
+						sortBooleanCheck = metadata.booleanCheck and 1 or 0,
+						sortLogicType = logicTypeSortOrder[metadata.logicType] or logicTypeSortOrder[variableLogicType.UNKNOWN],
+						sortRenderType = renderTypeSortOrder[metadata.renderType] or renderTypeSortOrder[variableRenderType.UNKNOWN],
 					})
-					-- Variable rows
-					for _, entry in ipairs(sectionEntries) do
-						if entry.printInSettings then
-							local desc = entry.description or ""
-							if sectionKey == "icons" and entry.icon and entry.icon ~= "" then
-								desc = entry.icon .. " " .. desc
-							end
-							local metadata = TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
-							local variable = entry.variable or ""
-							table.insert(data, {
-								cols = {
-									{ value = L["BarTextVariablesAddButton"] },
-									{ value = variable },
-									{ value = metadata.secret and L["BarTextVariablesBadgeSecret"] or "" },
-									{ value = metadata.booleanCheck and L["BarTextVariablesBadgeBooleanCheck"] or "" },
-									{ value = GetLogicTypeBadge(metadata.logicType) },
-									{ value = GetRenderTypeBadge(metadata.renderType) },
-								},
-								isHeader = false,
-								sectionKey = sectionKey,
-								sectionIndex = sectionSortOrder[sectionKey] or 99,
-								variable = variable,
-								description = desc,
-								metadata = metadata,
-								sortVariable = string.lower(variable),
-								sortSecret = metadata.secret and 1 or 0,
-								sortBooleanCheck = metadata.booleanCheck and 1 or 0,
-								sortLogicType = logicTypeSortOrder[metadata.logicType] or logicTypeSortOrder[variableLogicType.UNKNOWN],
-								sortRenderType = renderTypeSortOrder[metadata.renderType] or renderTypeSortOrder[variableRenderType.UNKNOWN],
-							})
-						end
-					end
 				end
 			end
 		end

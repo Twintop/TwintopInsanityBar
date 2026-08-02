@@ -353,6 +353,82 @@ TRB.Functions.BarText.VariableRenderType = {
 	UNKNOWN = "unknown",
 }
 
+-- Display groups the bar text variables panel splits its entries into.
+TRB.Functions.BarText.VariableCategory = {
+	STATS = "stats",
+	RESOURCES = "resources",
+	ABILITIES = "abilities",
+	CAST_BAR = "castBar",
+	OTHER = "other",
+	ICONS = "icons",
+}
+
+-- Variables that represent a resource the addon tracks on a bar (primary power types, secondary
+-- resources such as Soul Fragments or Icicles, and the generic $resource aliases). Any values entry
+-- not listed here and not stamped by GetCommonValues falls through to the Abilities subgroup.
+local resourceCategoryBarTextVariables = {
+	["$resource"] = true, ["$resourcemax"] = true, ["$resourcepercent"] = true, ["$resourcetotal"] = true,
+	["$resourcepluscasting"] = true, ["$resourcepluspassive"] = true,
+	["$casting"] = true, ["$castingfragments"] = true, ["$castingholypower"] = true,
+	["$castingshards"] = true, ["$castingsoulshards"] = true, ["$passive"] = true,
+
+	["$mana"] = true, ["$manamax"] = true, ["$manapercent"] = true,
+	["$energy"] = true, ["$energymax"] = true,
+	["$rage"] = true, ["$ragemax"] = true,
+	["$focus"] = true, ["$focusmax"] = true,
+	["$fury"] = true, ["$furymax"] = true,
+	["$pain"] = true, ["$painmax"] = true,
+	["$insanity"] = true, ["$insanitymax"] = true,
+	["$astralpower"] = true, ["$astralpowermax"] = true,
+	["$maelstrom"] = true, ["$maelstrommax"] = true,
+	["$runicpower"] = true, ["$runicpowermax"] = true,
+	["$holypower"] = true, ["$holypowermax"] = true, ["$holypowerpluscasting"] = true,
+	["$chi"] = true, ["$chimax"] = true,
+	["$combopoints"] = true, ["$combopointsmax"] = true, ["$combopointspluscasting"] = true,
+	["$soulshards"] = true, ["$soulshardsmax"] = true, ["$soulshardspluscasting"] = true,
+	["$essence"] = true, ["$essencemax"] = true, ["$essenceregentime"] = true,
+	["$arcanecharges"] = true, ["$arcanechargesmax"] = true,
+
+	["$soulfragments"] = true, ["$soulfragmentsmax"] = true,
+	["$maelstromweapon"] = true, ["$maelstromweaponmax"] = true,
+	["$icicles"] = true, ["$iciclesmax"] = true,
+	["$tipofthespear"] = true, ["$tipofthespearmax"] = true,
+	["$stagger"] = true, ["$staggerpercent"] = true,
+	["$collapsingstar"] = true, ["$collapsingstars"] = true,
+	["$collapsingstarmax"] = true, ["$collapsingstarsmax"] = true,
+	["$collapsingstarusable"] = true, ["$collapsingstarsusable"] = true,
+
+	["$runesreadycount"] = true,
+	["$rune1time"] = true, ["$rune2time"] = true, ["$rune3time"] = true,
+	["$rune4time"] = true, ["$rune5time"] = true, ["$rune6time"] = true,
+	["$rune1ready"] = true, ["$rune2ready"] = true, ["$rune3ready"] = true,
+	["$rune4ready"] = true, ["$rune5ready"] = true, ["$rune6ready"] = true,
+}
+
+---Determines which display group a bar text variable belongs to.
+---Icons are their own group; pipe commands fold into Other alongside the miscellaneous values.
+---@param entry table
+---@param sectionKey string
+---@return string
+function TRB.Functions.BarText:GetVariableCategory(entry, sectionKey)
+	if sectionKey == "icons" then
+		return self.VariableCategory.ICONS
+	elseif sectionKey == "pipe" then
+		return self.VariableCategory.OTHER
+	end
+
+	entry = entry or {}
+	if type(entry.category) == "string" and entry.category ~= "" then
+		return entry.category
+	end
+
+	if resourceCategoryBarTextVariables[string.lower(entry.variable or "")] then
+		return self.VariableCategory.RESOURCES
+	end
+
+	return self.VariableCategory.ABILITIES
+end
+
 -- Health only. Everything else is decided per spec: the same variable name can be secret in one
 -- spec and plain in another (Vengeance reads Soul Fragments from GetSpellCastCount, Devourer counts
 -- them itself), so resource flags belong in each spec's FillBarTextVariables list, not here.
@@ -542,31 +618,37 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$incomingHeal", description = L["BarTextVariable_incomingHeal"], printInSettings = true, color = false, secret = true },
 		{ variable = "$healAbsorb", description = L["BarTextVariable_healAbsorb"], printInSettings = true, color = false, secret = true },
 
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
+		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false, category = self.VariableCategory.OTHER },
+		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false, category = self.VariableCategory.OTHER },
 
-		{ variable = "$castTime", description = L["BarTextVariableCastTime"], printInSettings = true, color = false },
-		{ variable = "$castTimeRemaining", description = L["BarTextVariableCastTimeRemaining"], printInSettings = true, color = false },
-		{ variable = "$castLatency", description = L["BarTextVariableCastLatency"], printInSettings = true, color = false },
-		{ variable = "$castLatencyMs", description = L["BarTextVariableCastLatencyMs"], printInSettings = true, color = false },
-		{ variable = "$castPushback", description = L["BarTextVariableCastPushback"], printInSettings = true, color = false },
-		{ variable = "$castSpellName", description = L["BarTextVariableCastSpellName"], printInSettings = true, color = false },
-		{ variable = "$castSpellId", description = L["BarTextVariableCastSpellId"], printInSettings = true, color = false },
+		{ variable = "$castTime", description = L["BarTextVariableCastTime"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$castTimeRemaining", description = L["BarTextVariableCastTimeRemaining"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$castLatency", description = L["BarTextVariableCastLatency"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$castLatencyMs", description = L["BarTextVariableCastLatencyMs"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$castPushback", description = L["BarTextVariableCastPushback"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$castSpellName", description = L["BarTextVariableCastSpellName"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$castSpellId", description = L["BarTextVariableCastSpellId"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
 		-- Booleans default to logic-only (they'd render nothing); these read out as "true"/"false" text like
 		-- $inCombat does, so both types are stated rather than inferred.
-		{ variable = "$castInterruptible", description = L["BarTextVariableCastInterruptible"], printInSettings = true, color = false,
+		{ variable = "$castInterruptible", description = L["BarTextVariableCastInterruptible"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
 			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
-		{ variable = "$castUninterruptible", description = L["BarTextVariableCastUninterruptible"], printInSettings = true, color = false,
+		{ variable = "$castUninterruptible", description = L["BarTextVariableCastUninterruptible"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
 			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
 
 		-- Target/Focus cast bars. Values may be secret (enemy casts), so they are display-only.
-		{ variable = "$targetCastingSpellName", description = L["BarTextVariableTargetCastSpellName"], printInSettings = true, color = false, secret = true },
-		{ variable = "$targetCastTime", description = L["BarTextVariableTargetCastTime"], printInSettings = true, color = false, secret = true },
-		{ variable = "$targetCastTimeRemaining", description = L["BarTextVariableTargetCastTimeRemaining"], printInSettings = true, color = false, secret = true },
-		{ variable = "$focusCastingSpellName", description = L["BarTextVariableFocusCastSpellName"], printInSettings = true, color = false, secret = true },
-		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true },
-		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true },
+		{ variable = "$targetCastingSpellName", description = L["BarTextVariableTargetCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$targetCastTime", description = L["BarTextVariableTargetCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$targetCastTimeRemaining", description = L["BarTextVariableTargetCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$focusCastingSpellName", description = L["BarTextVariableFocusCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
+		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
 	}
+	-- Any shared value not explicitly categorized above is a stat.
+	for _, v in ipairs(values) do
+		if v.category == nil then
+			v.category = self.VariableCategory.STATS
+		end
+	end
 	if additionalValues then
 		for _, v in ipairs(additionalValues) do
 			table.insert(values, v)

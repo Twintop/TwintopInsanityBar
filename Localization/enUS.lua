@@ -3250,8 +3250,6 @@ L["Shatter19"] = "Shatter 19"
 L["Shatter20"] = "Shatter 20"
 L["MageFrostBarTextVariable_shatterStacks"] = "Number of stacks of Shatter on your current target"
 L["MageFrostBarTextVariable_shatterStacksMax"] = "Maximum number of Shatter stacks"
--- REMOVED: L["MageFrostCheckboxShatterThreshold"] - replaced by MageFrostCheckboxShatterThresholdMultiples
--- REMOVED: L["MageFrostCheckboxShatterThresholdTooltip"] - replaced by MageFrostCheckboxShatterThresholdMultiplesTooltip
 L["MageFrostColorPickerShatterThreshold"] = "Shatter thresholds"
 -- Cooldown Manager global options
 L["CooldownManagerSettings"] = "Cooldown Manager"
@@ -3264,3 +3262,10 @@ L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fi
 -- Game version gate (addon build does not match the game client it is running on)
 L["VersionGateMismatchPopupText"] = "|cFFFF0000Twintop's Resource Bar did not load.|r\n\nThis is the |cFFFFFFFF%s|r build, which targets World of Warcraft |cFFFFFFFF%s|r, but you are playing on |cFFFFFFFF%s|r.\n\nPlease install the build of Twintop's Resource Bar that matches this game client."
 L["VersionGateMismatchChatMessage"] = "|cFFFF0000Twintop's Resource Bar did not load:|r this is the %s build, which targets World of Warcraft %s, but you are playing on %s. Please install the build that matches this game client."
+
+-- Bar text variables panel: value subgroups
+L["BarTextVariablesSectionStats"] = "Stats"
+L["BarTextVariablesSectionResources"] = "Resources"
+L["BarTextVariablesSectionAbilities"] = "Abilities"
+L["BarTextVariablesSectionOther"] = "Other"
+L["BarTextVariablesSectionCastBars"] = "Cast Bars"
