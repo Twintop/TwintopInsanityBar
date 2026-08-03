@@ -12,11 +12,16 @@ local content = [====[
 
 ---
 
-# 12.0.7.13-release (2026-07-31)
+# 12.0.7.13-release (2026-08-03)
 ## General
 ### Cast Bars
 
-- Add a gray uninterruptible shield shown while a cast can't be interrupted, on by default, as its own globally-configurable Cast Bar section. Place it on the ability icon or the bar itself, drawn behind or over (or hidden), with its own size, opacity, 9-point anchor, and color (texture default, the uninterruptible bar or border color, or custom). Applies to the Player, Target, and Focus Cast Bars.
+- Add a shield icon that is shown when a cast can't be interrupted, on by default. This shield is fully customizable in size, position (icon/bar, behind/in front, anchored to 9-point), color, and can be hidden if desired.
+- Improve cast bar performance by reducing the number of redraws required.
+
+### Localization
+
+- [#800 - @MOSS099](#800) Updated translations for Simplified Chinese (zhCN).
 
 ---
 
