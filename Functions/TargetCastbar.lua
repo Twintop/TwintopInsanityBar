@@ -587,6 +587,15 @@ local function ReassertVisibility(groupKey, model)
 		ApplyBorderColor(node, model, colors, barSettings, groupKey)
 		ApplyBackgroundColor(node, colors, groupKey)
 	end
+	-- Re-assert the icon every tick, not just at cast start: a render transition hides all bar groups
+	-- (icon included) and ProcessBars restores only its entries -- not these bars -- so without this the icon
+	-- vanishes mid-cast and never returns (the fill/color self-heal here but the icon didn't). Mirrors the
+	-- player bar's per-tick ApplyVisibleState icon re-assert.
+	if barSettings and barSettings.icon and barSettings.icon.enabled ~= false then
+		SetIconRaw(node, model.spellIconId)
+	else
+		node:SetIconVisible(false)
+	end
 	-- Re-draw the stage lines each frame so they self-heal after render transitions and pick up live
 	-- settings changes (positions are static per cast, so this is cheap).
 	DrawEmpowerStageLines(node, model, colors, barSettings)

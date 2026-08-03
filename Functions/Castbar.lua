@@ -1050,10 +1050,19 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 	-- with the resource, not with the indicator flipping on and off.
 	ApplyBorderAndBackgroundColor(node, colors, model)
 	-- Track the casting spell's icon every frame so a chained cast swapping spells mid-render updates it.
-	-- SetIconTexture no-ops when the texture is unchanged, so this stays cheap.
+	-- Prefer the resolved spell's icon (plain int, memoized cheap). When the spell id was secret so it never
+	-- resolved, fall back to the cast texture from UnitCastingInfo/UnitChannelInfo (present even for secret
+	-- casts) via the raw setter, since a secret texture can't go through SetIconTexture's ~= comparison.
 	if barSettings ~= nil and barSettings.icon ~= nil and barSettings.icon.enabled then
-		node:SetIconTexture(model.spell and model.spell.iconId or nil)
-		node:SetIconVisible(model.spell ~= nil)
+		if model.spell ~= nil then
+			node:SetIconTexture(model.spell.iconId)
+			node:SetIconVisible(true)
+		elseif model.state ~= "none" and model.castTexture ~= nil then
+			node:SetIconTextureRaw(model.castTexture)
+			node:SetIconVisible(true)
+		else
+			node:SetIconVisible(false)
+		end
 	end
 	-- Uninterruptible shield. A bar-level setting, independent of the icon (a bar-targeted shield shows with
 	-- the icon off). Player notInterruptible is a plain boolean, so branch directly. Not shown for empower

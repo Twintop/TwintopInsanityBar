@@ -36,6 +36,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public state trbCastbarState
 ---@field public spellId integer?
 ---@field public spell TRB.Classes.CastbarSpell?
+---@field public castTexture any # Cast icon texture from UnitCastingInfo/UnitChannelInfo arg 3 (may be secret); the icon source that survives a secret spell id, applied raw without comparison
 ---@field public startTime number? # GetTime() seconds when the cast began
 ---@field public endTime number? # GetTime() seconds when the cast completes
 ---@field public duration number # endTime - startTime (seconds)
@@ -131,6 +132,7 @@ function TRB.Classes.Castbar:Reset()
 	self.state = "none"
 	self.spellId = nil
 	self.spell = nil
+	self.castTexture = nil
 	self.startTime = nil
 	self.endTime = nil
 	self.duration = 0
@@ -251,24 +253,24 @@ function TRB.Classes.Castbar:RefreshDurationObject()
 end
 
 ---Reads player cast timing from UnitCastingInfo, returning seconds. Values may be secret.
----@return integer? spellId, number? startTime, number? endTime, boolean notInterruptible
+---@return integer? spellId, number? startTime, number? endTime, boolean notInterruptible, any texture
 local function ReadCastingInfo()
-	local _, _, _, startMS, endMS, _, _, notInterruptible, spellId = UnitCastingInfo("player")
+	local _, _, texture, startMS, endMS, _, _, notInterruptible, spellId = UnitCastingInfo("player")
 	if spellId == nil then
-		return nil, nil, nil, false
+		return nil, nil, nil, false, nil
 	end
 	local startTime, endTime
 	if startMS ~= nil and endMS ~= nil and not issecretvalue(startMS) and not issecretvalue(endMS) then
 		startTime = startMS / 1000
 		endTime = endMS / 1000
 	end
-	return spellId, startTime, endTime, notInterruptible == true
+	return spellId, startTime, endTime, notInterruptible == true, texture
 end
 
 ---Reads player channel/empower timing from UnitChannelInfo, returning seconds. Values may be secret.
----@return integer? spellId, number? startTime, number? endTime, boolean notInterruptible, boolean isEmpowered, integer numStages
+---@return integer? spellId, number? startTime, number? endTime, boolean notInterruptible, boolean isEmpowered, integer numStages, any texture
 local function ReadChannelInfo()
-	local _, _, _, startMS, endMS, _, notInterruptible, spellId, isEmpowered, numStages = UnitChannelInfo("player")
+	local _, _, texture, startMS, endMS, _, notInterruptible, spellId, isEmpowered, numStages = UnitChannelInfo("player")
 	local startTime, endTime
 	if startMS ~= nil and endMS ~= nil and not issecretvalue(startMS) and not issecretvalue(endMS) then
 		startTime = startMS / 1000
@@ -278,13 +280,13 @@ local function ReadChannelInfo()
 	if not issecretvalue(numStages) and type(numStages) == "number" then
 		stages = numStages
 	end
-	return spellId, startTime, endTime, notInterruptible == true, isEmpowered == true, stages
+	return spellId, startTime, endTime, notInterruptible == true, isEmpowered == true, stages, texture
 end
 
 ---Begins tracking a standard cast. Reads real timing from UnitCastingInfo when available.
 ---@param spellId integer? # Spell id from the event (authoritative name/icon source)
 function TRB.Classes.Castbar:StartCast(spellId)
-	local infoSpellId, startTime, endTime, notInterruptible = ReadCastingInfo()
+	local infoSpellId, startTime, endTime, notInterruptible, texture = ReadCastingInfo()
 	local resolvedId = spellId
 	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
 		resolvedId = infoSpellId
@@ -294,6 +296,7 @@ function TRB.Classes.Castbar:StartCast(spellId)
 	self.state = "cast"
 	self.spellId = (not issecretvalue(resolvedId)) and resolvedId or nil
 	self.spell = self:GetSpellData(self.spellId)
+	self.castTexture = texture
 	self.notInterruptible = notInterruptible
 	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
 
@@ -317,7 +320,7 @@ end
 ---@param spellId integer? # Channel spell id resolved by the caller (may be nil if secret)
 ---@param profile table? # Resolved tick profile { mode, baseDuration, tickCount?, baseTickRate?, firstTickAtStart?, chains? }; kept on the model so recomputes don't re-evaluate conditional bonuses
 function TRB.Classes.Castbar:StartChannel(spellId, profile)
-	local infoSpellId, startTime, endTime, notInterruptible = ReadChannelInfo()
+	local infoSpellId, startTime, endTime, notInterruptible, _, _, texture = ReadChannelInfo()
 	local resolvedId = spellId
 	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
 		resolvedId = (not issecretvalue(infoSpellId)) and infoSpellId or nil
@@ -331,6 +334,7 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	self.state = "channel"
 	self.spellId = (resolvedId and not issecretvalue(resolvedId)) and resolvedId or nil
 	self.spell = self:GetSpellData(self.spellId)
+	self.castTexture = texture
 	self.notInterruptible = notInterruptible
 	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
 	self.chains = (profile ~= nil and profile.chains) == true
@@ -552,7 +556,7 @@ end
 ---@param spellId integer? # Recipe cast spell id from the event
 ---@param count integer # Number of crafts queued (> 1)
 function TRB.Classes.Castbar:StartTradeskill(spellId, count)
-	local infoSpellId, startTime, endTime, notInterruptible = ReadCastingInfo()
+	local infoSpellId, startTime, endTime, notInterruptible, texture = ReadCastingInfo()
 	local resolvedId = spellId
 	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
 		resolvedId = infoSpellId
@@ -562,6 +566,7 @@ function TRB.Classes.Castbar:StartTradeskill(spellId, count)
 	self.state = "channel"
 	self.spellId = (resolvedId ~= nil and not issecretvalue(resolvedId)) and resolvedId or nil
 	self.spell = self:GetSpellData(self.spellId)
+	self.castTexture = texture
 	self.notInterruptible = notInterruptible
 	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
 	self.tradeskill = true
@@ -648,7 +653,7 @@ end
 ---secret values), computing cumulative stage boundary fractions for threshold placement.
 ---@param spellId integer?
 function TRB.Classes.Castbar:StartEmpower(spellId)
-	local infoSpellId, startTime, endTime, notInterruptible, _, numStages = ReadChannelInfo()
+	local infoSpellId, startTime, endTime, notInterruptible, _, numStages, texture = ReadChannelInfo()
 	local resolvedId = spellId
 	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
 		resolvedId = (not issecretvalue(infoSpellId)) and infoSpellId or nil
@@ -658,6 +663,7 @@ function TRB.Classes.Castbar:StartEmpower(spellId)
 	self.state = "empower"
 	self.spellId = (resolvedId and not issecretvalue(resolvedId)) and resolvedId or nil
 	self.spell = self:GetSpellData(self.spellId)
+	self.castTexture = texture
 	self.notInterruptible = notInterruptible
 	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
 

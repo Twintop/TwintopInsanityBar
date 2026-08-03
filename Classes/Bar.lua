@@ -864,6 +864,23 @@ function TRB.Classes.BarNode:SetIconTexture(texture)
 	end
 end
 
+---Sets the side ability icon's texture WITHOUT the memoized comparison SetIconTexture does, so a SECRET
+---texture id (which cannot be compared with ~=) still applies. Used for the cast texture that survives a
+---secret spell id. Passing nil hides the icon.
+---@param texture any # Texture path/fileID (may be secret); nil hides the icon
+function TRB.Classes.BarNode:SetIconTextureRaw(texture)
+	if texture == nil then
+		self._iconTexture = nil
+		self:SetIconVisible(false)
+		return
+	end
+	local icon = self:EnsureIcon()
+	icon.texture:SetTexture(texture)
+	-- Leave _iconTexture unset: a secret can't be stored for comparison, and the next plain SetIconTexture
+	-- must not short-circuit against a stale value.
+	self._iconTexture = nil
+end
+
 ---Shows or hides the side ability icon without discarding its layout or texture.
 ---@param visible boolean
 function TRB.Classes.BarNode:SetIconVisible(visible)
