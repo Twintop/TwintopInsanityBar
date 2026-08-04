@@ -1376,9 +1376,9 @@ local function BrewmasterConstructOptionsPanel(cache)
 		"monk", "brewmaster")
 
 	local tabDefinitions = {
-		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, BrewmasterConstructEnergyBarPanel },
-		{ "staggerBar", L["TabStagger"], oUi.tabWidth.small, BrewmasterConstructStaggerBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, BrewmasterConstructHealthBarPanel },
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, BrewmasterConstructEnergyBarPanel, visibilityKey = "primary" },
+		{ "staggerBar", L["TabStagger"], oUi.tabWidth.small, BrewmasterConstructStaggerBarPanel, visibilityKey = "stagger" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, BrewmasterConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, BrewmasterConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, BrewmasterConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, BrewmasterConstructBarVisibilityPanel },
@@ -1754,8 +1754,8 @@ local function MistweaverConstructOptionsPanel(cache)
 		"monk", "mistweaver")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, MistweaverConstructManaBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, MistweaverConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, MistweaverConstructManaBarPanel, visibilityKey = "primary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, MistweaverConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, MistweaverConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("monk", "mistweaver", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, MistweaverConstructIndicatorColorsPanel },
@@ -2273,9 +2273,9 @@ local function WindwalkerConstructOptionsPanel(cache)
 		"monk", "windwalker")
 
 	local tabDefinitions = {
-		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, WindwalkerConstructEnergyBarPanel },
-		{ "chiBar", L["TabChi"], oUi.tabWidth.small, WindwalkerConstructChiPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, WindwalkerConstructHealthBarPanel },
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, WindwalkerConstructEnergyBarPanel, visibilityKey = "primary" },
+		{ "chiBar", L["TabChi"], oUi.tabWidth.small, WindwalkerConstructChiPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, WindwalkerConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, WindwalkerConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, WindwalkerConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, WindwalkerConstructBarVisibilityPanel },

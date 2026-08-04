@@ -391,4 +391,7 @@ if locale == "enGB" then
     -- Frost Mage Shatter bar
     L["MageFrostCheckboxShatterThresholdMultiples"] = "Change Shatter colour at threshold stacks"
     L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fill colour at every multiple of the threshold stack (5, 10, 15, 20)."
+
+    -- Per-bar tab visibility header
+    L["BarTabVisibilityGlobalTooltip"] = "This bar's visibility is being controlled by Global Options, so it cannot be changed here. Open Global Settings to change it, or uncheck Use global settings on the Visibility tab to control it for this specialisation only."
 end

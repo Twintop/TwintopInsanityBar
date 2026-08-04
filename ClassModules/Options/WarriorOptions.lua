@@ -1298,8 +1298,8 @@ local function ArmsConstructOptionsPanel(cache)
 		"warrior", "arms")
 
 	local tabDefinitions = {
-		{ "rageBar", L["TabRage"], oUi.tabWidth.small, ArmsConstructRageBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ArmsConstructHealthBarPanel },
+		{ "rageBar", L["TabRage"], oUi.tabWidth.small, ArmsConstructRageBarPanel, visibilityKey = "primary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ArmsConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ArmsConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ArmsConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ArmsConstructBarVisibilityPanel },
@@ -1739,9 +1739,9 @@ local function FuryConstructOptionsPanel(cache)
 		"warrior", "fury")
 
 	local tabDefinitions = {
-		{ "rageBar", L["TabRage"], oUi.tabWidth.small, FuryConstructRageBarPanel },
-		{ "whirlwindBar", L["TabWhirlwind"], oUi.tabWidth.small, FuryConstructWhirlwindBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, FuryConstructHealthBarPanel },
+		{ "rageBar", L["TabRage"], oUi.tabWidth.small, FuryConstructRageBarPanel, visibilityKey = "primary" },
+		{ "whirlwindBar", L["TabWhirlwind"], oUi.tabWidth.small, FuryConstructWhirlwindBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, FuryConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, FuryConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, FuryConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, FuryConstructBarVisibilityPanel },
@@ -2199,9 +2199,9 @@ local function ProtectionConstructOptionsPanel(cache)
 		"warrior", "protection")
 
 	local tabDefinitions = {
-		{ "rageBar", L["TabRage"], oUi.tabWidth.small, ProtectionConstructRageBarPanel },
-		{ "defensivesBar", L["TabDefensives"], oUi.tabWidth.small, ProtectionConstructDefensivesBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ProtectionConstructHealthBarPanel },
+		{ "rageBar", L["TabRage"], oUi.tabWidth.small, ProtectionConstructRageBarPanel, visibilityKey = "primary" },
+		{ "defensivesBar", L["TabDefensives"], oUi.tabWidth.small, ProtectionConstructDefensivesBarPanel, visibilityKey = "defensives" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ProtectionConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ProtectionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ProtectionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ProtectionConstructBarVisibilityPanel },

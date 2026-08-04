@@ -3269,3 +3269,14 @@ L["BarTextVariablesSectionResources"] = "Resources"
 L["BarTextVariablesSectionAbilities"] = "Abilities"
 L["BarTextVariablesSectionOther"] = "Other"
 L["BarTextVariablesSectionCastBars"] = "Cast Bars"
+
+-- Per-bar tab visibility header (enable/disable shortcut for "Never Show")
+-- The spec-controlled states reuse L["Enabled"] / L["Disabled"]; these are the Global variants.
+L["BarTabEnabledGlobal"] = "Enabled (Global)"
+L["BarTabDisabledGlobal"] = "Disabled (Global)"
+L["BarTabEnabledCheckboxTooltip"] = "Uncheck to disable this bar. This is a shortcut for setting this bar's visibility to Never Show on the Visibility tab, where you can also choose exactly when the bar appears."
+L["BarTabVisibilityGlobalTooltip"] = "This bar's visibility is being controlled by Global Options, so it cannot be changed here. Open Global Settings to change it, or uncheck Use global settings on the Visibility tab to control it for this specialization only."
+L["BarTabVisibilityShowsPrefix"] = "Shows: %s"
+L["BarTabVisibilityNeverWarning"] = "No condition will ever show this bar"
+L["BarTabConfigureVisibility"] = "[Configure Visibility]"
+L["BarTabConfigureVisibilityTooltip"] = "Opens the Visibility tab and selects this bar, where you can choose exactly when it appears and when it is forced to hide."

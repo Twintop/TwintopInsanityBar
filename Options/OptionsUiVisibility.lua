@@ -15,6 +15,524 @@ local function GetUseGlobalSettingsColor()
 end
 
 -- ============================================================================
+-- Shared condition metadata
+--
+-- Ordered key lists and a merged label map, shared by the bar visibility panel
+-- below and by the per-bar tab visibility headers. Order is fixed so summaries
+-- always list their conditions in the same sequence.
+-- ============================================================================
+
+local STANDARD_CONDITION_KEYS = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isSteadyFlight", "isSteadyFlightFlying", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
+local DRUID_FORM_CONDITION_KEYS = { "isDruidHumanoidForm", "isDruidTravelFormAny", "isDruidStagForm", "isDruidFlightForm", "isDruidSwiftFlightForm", "isDruidAquaticForm", "isDruidCatForm", "isDruidBearForm", "isDruidMoonkinForm" }
+local CASTBAR_CONDITION_KEYS = { "casting", "channeling", "empowered" }
+local STANDARD_HIDE_CONDITION_KEYS = { "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
+
+-- Every condition key the addon can store, show-side and hide-side alike.
+local CONDITION_LABELS = {
+	inCombat = L["ShowBarVisibilityConditionInCombat"],
+	inVehicle = L["ShowBarVisibilityConditionInVehicle"],
+	hasFriendlyTarget = L["ShowBarVisibilityConditionFriendlyTarget"],
+	hasUnfriendlyTarget = L["ShowBarVisibilityConditionUnfriendlyTarget"],
+	isMountedAny = L["ShowBarVisibilityConditionIsMountedAny"],
+	isMountedGround = L["ShowBarVisibilityConditionIsMountedGround"],
+	isMountedFlying = L["ShowBarVisibilityConditionIsSteadyFlight"],
+	isSkyriding = L["ShowBarVisibilityConditionIsSkyriding"],
+	isSkyridingFlying = L["ShowBarVisibilityConditionIsSkyridingFlying"],
+	isSteadyFlight = L["ShowBarVisibilityConditionIsSteadyFlight"],
+	isSteadyFlightFlying = L["ShowBarVisibilityConditionIsSteadyFlightFlying"],
+	inGroup = L["ShowBarVisibilityConditionInGroup"],
+	inRaid = L["ShowBarVisibilityConditionInRaidGroup"],
+	inInstance = L["ShowBarVisibilityConditionInInstance"],
+	inDungeon = L["ShowBarVisibilityConditionInDungeon"],
+	inRaidInstance = L["ShowBarVisibilityConditionInRaidInstance"],
+	inBattleground = L["ShowBarVisibilityConditionInBattleground"],
+	inArena = L["ShowBarVisibilityConditionInArena"],
+	inDelve = L["ShowBarVisibilityConditionInDelve"],
+	isPvpFlagged = L["ShowBarVisibilityConditionIsPvpFlagged"],
+	isWarMode = L["ShowBarVisibilityConditionIsWarMode"],
+	inPetBattle = L["ShowBarVisibilityConditionInPetBattle"],
+	onTaxi = L["ShowBarVisibilityConditionOnTaxi"],
+	isDead = L["ShowBarVisibilityConditionIsDead"],
+	isDruidHumanoidForm = L["ShowBarVisibilityConditionDruidHumanoidForm"],
+	isDruidTravelFormAny = L["ShowBarVisibilityConditionDruidTravelFormAny"],
+	isDruidStagForm = L["ShowBarVisibilityConditionDruidStagForm"],
+	isDruidFlightForm = L["ShowBarVisibilityConditionDruidFlightForm"],
+	isDruidSwiftFlightForm = L["ShowBarVisibilityConditionDruidSwiftFlightForm"],
+	isDruidAquaticForm = L["ShowBarVisibilityConditionDruidAquaticForm"],
+	isDruidCatForm = L["ShowBarVisibilityConditionDruidCatForm"],
+	isDruidBearForm = L["ShowBarVisibilityConditionDruidBearForm"],
+	isDruidMoonkinForm = L["ShowBarVisibilityConditionDruidMoonkinForm"],
+	casting = L["ShowBarVisibilityConditionCasting"],
+	channeling = L["ShowBarVisibilityConditionChanneling"],
+	empowered = L["ShowBarVisibilityConditionEmpowered"],
+}
+
+-- Deterministic iteration order for show-side summaries: standard, then Druid forms, then cast states.
+local SHOW_CONDITION_ORDER = {}
+for _, key in ipairs(STANDARD_CONDITION_KEYS) do
+	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
+end
+for _, key in ipairs(DRUID_FORM_CONDITION_KEYS) do
+	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
+end
+for _, key in ipairs(CASTBAR_CONDITION_KEYS) do
+	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
+end
+
+-- Resource/health threshold condition types (used in the show dropdown and in summaries).
+-- Ordered array so dropdown items render in a deterministic, logical order.
+local BASE_THRESHOLD_TYPES = {
+	{ key = "resourcePercent", label = L["BarVisibilityThresholdResourcePercent"], comparisonLabel = L["BarVisibilityThresholdResourcePercentComparison"], valueLabel = L["BarVisibilityThresholdResourcePercentValue"], isPercent = true },
+	{ key = "resourceValue",   label = L["BarVisibilityThresholdResourceValue"],   comparisonLabel = L["BarVisibilityThresholdResourceValueComparison"],   valueLabel = L["BarVisibilityThresholdResourceValueValue"],   isPercent = false },
+	{ key = "healthPercent",   label = L["BarVisibilityThresholdHealthPercent"],   comparisonLabel = L["BarVisibilityThresholdHealthPercentComparison"],   valueLabel = L["BarVisibilityThresholdHealthPercentValue"],   isPercent = true },
+	{ key = "healthValue",     label = L["BarVisibilityThresholdHealthValue"],     comparisonLabel = L["BarVisibilityThresholdHealthValueComparison"],     valueLabel = L["BarVisibilityThresholdHealthValueValue"],     isPercent = false },
+}
+
+local BASE_THRESHOLD_LABELS = {}
+for _, thresholdType in ipairs(BASE_THRESHOLD_TYPES) do
+	BASE_THRESHOLD_LABELS[thresholdType.key] = thresholdType.label
+end
+
+---Copies the given keys into a new array, in order.
+---@param keys string[]
+---@return string[]
+local function CopyKeys(keys)
+	local result = {}
+	for _, key in ipairs(keys) do
+		result[#result + 1] = key
+	end
+	return result
+end
+
+---Builds a label map containing only the requested keys.
+---@param keys string[]
+---@return table<string, string>
+local function LabelsFor(keys)
+	local labels = {}
+	for _, key in ipairs(keys) do
+		labels[key] = CONDITION_LABELS[key]
+	end
+	return labels
+end
+
+---Builds the status summary shown in a per-bar tab visibility header: every selected show
+---condition, comma separated. The header ellipsizes it to fit and keeps the full text in a tooltip,
+---so this never abbreviates to a count the way the Visibility tab's dropdown button does.
+---@param visSettings trbBarVisibilitySetting|nil # The bar's displayBar entry
+---@return string summary # Localized summary text
+function TRB.Functions.OptionsUi.Visibility:GetBarStatusSummary(visSettings)
+	if visSettings == nil or visSettings.neverShow then
+		return L["BarVisibilityTableShowNeverShown"]
+	end
+	if visSettings.alwaysShow then
+		return L["ShowBarVisibilityAlways"]
+	end
+
+	local selectedLabels = {}
+	local conditions = visSettings.conditions
+	if conditions ~= nil then
+		for _, key in ipairs(SHOW_CONDITION_ORDER) do
+			if conditions[key] then
+				selectedLabels[#selectedLabels + 1] = CONDITION_LABELS[key]
+			end
+		end
+	end
+
+	local conditionType = visSettings.resourceConditionType
+	if conditionType ~= nil and conditionType ~= "none" then
+		local thresholdLabel = BASE_THRESHOLD_LABELS[conditionType]
+		if thresholdLabel == nil then
+			-- Spec-defined threshold types aren't in the base set, so name the group instead.
+			thresholdLabel = L["BarVisibilityThresholdHeader"]
+		end
+		selectedLabels[#selectedLabels + 1] = thresholdLabel
+	end
+
+	if #selectedLabels == 0 then
+		return string.format(L["ShowBarVisibilitySelectedCount"], 0)
+	end
+	return table.concat(selectedLabels, ", ")
+end
+
+---Returns true when a bar is enabled but no condition could ever make it appear.
+---@param visSettings trbBarVisibilitySetting|nil # The bar's displayBar entry
+---@return boolean
+function TRB.Functions.OptionsUi.Visibility:IsBarUnreachable(visSettings)
+	if visSettings == nil or visSettings.neverShow or visSettings.alwaysShow then
+		return false
+	end
+
+	local conditionType = visSettings.resourceConditionType
+	if conditionType ~= nil and conditionType ~= "none" then
+		return false
+	end
+
+	local conditions = visSettings.conditions
+	if conditions == nil then
+		-- Legacy entries fall back to the visibility string, which always resolves to something showable.
+		return visSettings.visibility == nil
+	end
+
+	for _, key in ipairs(SHOW_CONDITION_ORDER) do
+		if conditions[key] then
+			return false
+		end
+	end
+	return true
+end
+
+---Reapplies spec/global settings and re-evaluates bar visibility after a visibility setting changes.
+---Shared by the bar visibility panel and the per-bar tab visibility headers.
+---@param classId integer? # Class ID, or nil when editing the global panel
+---@param specId integer? # Spec ID, or nil when editing the global panel
+---@param includeAppearance boolean? # Whether to reapply bar appearance (needed for custom bars)
+---@param forceReshow boolean? # Whether the change alters which bars should render, requiring their applied show/alpha state to be rebuilt rather than reused
+function TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, includeAppearance, forceReshow)
+	-- Ahead of the scope resolution below: bar tab labels turn red when their bar is disabled, and
+	-- a global displayBar edit recolours tabs on spec panels this call never otherwise touches.
+	TRB.Functions.OptionsUi.Tabs:RefreshBarTabStates()
+
+	local className, specName
+	if classId ~= nil and specId ~= nil then
+		className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+		className = string.lower(className)
+	elseif TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
+		className = string.lower(TRB.Data.character.className)
+		specName = TRB.Data.character.specName
+	end
+
+	if className == nil or specName == nil then
+		return
+	end
+
+	TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
+
+	-- Custom bars rebuild colors/textures from the caches, so those are dropped even when editing
+	-- a spec that isn't currently being played (matching the pre-existing custom-bar refresh path).
+	if includeAppearance then
+		TRB.Functions.Character:ResetCaches()
+	end
+
+	-- The global panel always edits the playing character's resolved settings, so it refreshes
+	-- unconditionally; a spec panel only refreshes when it is the spec currently being played.
+	local isActive = (classId == nil or specId == nil) or TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId)
+	if isActive then
+		if not includeAppearance then
+			TRB.Functions.Character:ResetCaches()
+		end
+		if TRB.Frames.barGroups ~= nil then
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+			if includeAppearance then
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+			end
+			TRB.Functions.EditMode:UpdateWrapperSize(settings)
+		end
+		-- Changing which bars should render invalidates the show/alpha state ProcessBars has
+		-- already applied, because the layout pass above independently re-shows bar groups.
+		-- Without this a re-enabled bar reclaims its layout space but never draws.
+		if forceReshow then
+			TRB.Functions.BarVisibility:InvalidateAppliedState()
+		else
+			TRB.Functions.BarVisibility:MarkDirty()
+		end
+		TRB.Functions.Bar:HideResourceBar()
+		if includeAppearance and TRB.Frames.barGroups ~= nil and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end
+
+	-- Never Show toggles change castbar enablement + whether the Blizzard cast bar is detached.
+	TRB.Functions.Castbar:SyncEnabledState()
+	-- Re-resolve the target/focus idle (Always Show) / hidden display for the new visibility settings.
+	TRB.Functions.TargetCastbar:RefreshVisibility()
+end
+
+-- ============================================================================
+-- Per-bar tab visibility header
+--
+-- A compact enable/disable row pinned to the top of each bar's options tab. It is
+-- purely a shortcut for the bar's "Never Show" setting, mirrors whatever the
+-- Visibility tab holds, and goes read-only when Global Options owns the bar.
+-- ============================================================================
+
+local BAR_TAB_HEADER_HEIGHT = 30
+-- Widest the show-condition summary may grow, and the padding it keeps from the band's right edge.
+local BAR_TAB_STATUS_MAX_WIDTH = 400
+local BAR_TAB_STATUS_RIGHT_PADDING = 10
+-- Left edge the summary may never cross: clears the widest checkbox label plus its link.
+local BAR_TAB_STATUS_LEFT_BOUNDARY = 310
+
+-- Vertical space a bar tab's content must leave for the header. The tabsheet already offsets its
+-- scroll frame by a few pixels, and that becomes the gap below the band.
+-- Read by OptionsUiTabs when it offsets a tabsheet's scroll frame.
+TRB.Functions.OptionsUi.Visibility.barTabHeaderReservedHeight = BAR_TAB_HEADER_HEIGHT
+
+---Resolves which displayBar entry drives a bar, and whether Global Options owns it.
+---@param classId integer? # Class ID, or nil for the global panel
+---@param specId integer? # Spec ID, or nil for the global panel
+---@param visibilityKey string # The displayBar key for the bar
+---@return trbBarVisibilitySetting|nil visSettings # The entry currently in effect, nil when the bar has none
+---@return boolean isControlledByGlobal # True when Global Options owns this bar for this spec
+function TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, specId, visibilityKey)
+	local core = TRB.Data.settings.core
+	if core == nil then
+		return nil, false
+	end
+
+	local globalEntry = core.displayBar and core.displayBar[visibilityKey]
+	if classId == nil or specId == nil then
+		return globalEntry, false
+	end
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	local classSettings = TRB.Data.settings[className]
+	local spec = classSettings and classSettings[specName]
+	local specEntry = spec and spec.displayBar and spec.displayBar[visibilityKey]
+
+	-- Only keys present in core.displayBar are shared globally; custom bars stay spec-owned.
+	local globalFlags = core.global and core.global[className] and core.global[className][specName]
+	if globalFlags ~= nil and globalFlags.displayBar == true and globalEntry ~= nil then
+		return globalEntry, true
+	end
+	return specEntry, false
+end
+
+---Returns the options controls table for a scope, used to reach the bar visibility table API.
+---@param classId integer?
+---@param specId integer?
+---@return table|nil
+local function GetControlsForScope(classId, specId)
+	local container = TRB.Frames.interfaceSettingsFrameContainer
+	if container == nil or container.controls == nil then
+		return nil
+	end
+	if classId == nil or specId == nil then
+		return container.controls.global
+	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	return container.controls[className .. "_" .. specName]
+end
+
+---Builds the enable/disable header pinned to the top of a bar's options tab.
+---The returned frame exposes :Refresh() so callers can resync it when the tab is shown.
+---@param container Frame # The tabsheet frame the header is anchored into
+---@param namePrefix string # The tab group's name prefix (e.g. "Monk_brewmaster")
+---@param classId integer? # Class ID, or nil for the global panel
+---@param specId integer? # Spec ID, or nil for the global panel
+---@param visibilityKey string # The displayBar key for this tab's bar
+---@return Frame header # The header frame
+function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(container, namePrefix, classId, specId, visibilityKey)
+	-- Filled band, darker than the tabsheet behind it, so the row reads as a title bar rather than
+	-- as the first row of the tab's own content. Pinned flush to the tabsheet's top/left/right with
+	-- an identical backdrop, so its three outer edges land exactly on the tabsheet's own border art
+	-- and the only new line drawn is the band's bottom edge.
+	local header = CreateFrame("Frame", nil, container, "BackdropTemplate")
+	header:SetBackdrop({
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true,
+		edgeSize = 8,
+		tileSize = 32,
+		insets = { left = 0, right = 0, top = 0, bottom = 0 },
+	})
+	header:SetBackdropColor(0.05, 0.05, 0.05, 0.9)
+	header:SetHeight(BAR_TAB_HEADER_HEIGHT)
+	header:SetPoint("TOPLEFT", container, "TOPLEFT", 0, 0)
+	header:SetPoint("TOPRIGHT", container, "TOPRIGHT", 0, 0)
+
+	local checkbox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_barTabEnabled_" .. visibilityKey, header, "ChatConfigCheckButtonTemplate")
+	checkbox:SetPoint("LEFT", header, "LEFT", 7, 0)
+	local checkboxText = getglobal(checkbox:GetName() .. "Text")
+
+	-- Jumps to this bar's row on the Visibility tab, building that tab first if it is still deferred.
+	local configureLink = CreateFrame("Button", nil, header)
+	configureLink:SetNormalFontObject("GameFontNormalSmall")
+	configureLink:SetHighlightFontObject("GameFontHighlightSmall")
+	configureLink:SetText(L["BarTabConfigureVisibility"])
+	configureLink:SetWidth(configureLink:GetFontString():GetStringWidth() + 4)
+	configureLink:SetHeight(16)
+	configureLink:GetFontString():SetTextColor(GetUseGlobalSettingsColor())
+	-- Above the checkbox so the label can never swallow clicks meant for the link.
+	configureLink:SetFrameLevel(checkbox:GetFrameLevel() + 1)
+	configureLink.tooltip = L["BarTabConfigureVisibilityTooltip"]
+	configureLink:SetScript("OnEnter", function(self)
+		self:GetFontString():SetTextColor(1, 1, 1)
+		SetCursor("Interface\\CURSOR\\vehichleCursor.PNG")
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
+---@diagnostic disable-next-line: param-type-mismatch
+		GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true)
+		GameTooltip:Show()
+	end)
+	configureLink:SetScript("OnLeave", function(self)
+		self:GetFontString():SetTextColor(GetUseGlobalSettingsColor())
+		SetCursor(nil)
+		GameTooltip:Hide()
+	end)
+	---Switches to the Visibility tab that owns this bar and selects its row. SwitchTab builds the
+	---tab if it is still deferred, so barVisibilityApi exists by the time the row is selected.
+	local function OpenVisibilityTab()
+		-- Resolved from the scope, not from namePrefix: the castbar sub-tabs use a synthesized
+		-- prefix, and their Visibility tab lives on the owning spec's panel.
+		TRB.Functions.OptionsUi.Tabs:SwitchToTabByClassSpec(classId, specId, "barVisibility")
+		local controls = GetControlsForScope(classId, specId)
+		local api = controls and controls.barVisibilityApi
+		if api ~= nil and api.SelectByDisplayBarKey ~= nil then
+			api.SelectByDisplayBarKey(visibilityKey)
+		end
+	end
+
+	configureLink:SetScript("OnClick", function()
+		-- Global-scope bars keep their visibility on the Global Options screen, which is a different
+		-- nav category than the Cast Bars screen the global castbar tabs live on. Selecting it is a
+		-- no-op when already there, and the tab switch is deferred so the panel exists first.
+		if classId == nil or specId == nil then
+			if TRB.Options.OptionsFrame then
+				TRB.Options.OptionsFrame:SelectCategory("global")
+				C_Timer.After(0, OpenVisibilityTab)
+				return
+			end
+		end
+		OpenVisibilityTab()
+	end)
+
+	-- Shown instead of the Configure link when Global Options owns this bar.
+	local globalLink = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, "barVisibility")
+
+	-- Right-aligned summary. Word wrap is off, so the FontString ellipsizes anything wider than the
+	-- width applied below; the untruncated text stays reachable through the hitbox tooltip.
+	local status = header:CreateFontString(nil, "OVERLAY")
+	status:SetFontObject(GameFontNormalSmall)
+	status:SetPoint("RIGHT", header, "RIGHT", -BAR_TAB_STATUS_RIGHT_PADDING, 0)
+	status:SetJustifyH("RIGHT")
+	status:SetWordWrap(false)
+
+	-- FontStrings take no scripts, so a frame hugging the rendered text carries the tooltip.
+	local statusHitbox = CreateFrame("Frame", nil, header)
+	statusHitbox:SetPoint("RIGHT", status, "RIGHT", 0, 0)
+	statusHitbox:SetHeight(BAR_TAB_HEADER_HEIGHT)
+	statusHitbox:EnableMouse(true)
+	statusHitbox:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
+---@diagnostic disable-next-line: param-type-mismatch
+		GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true)
+		GameTooltip:Show()
+	end)
+	statusHitbox:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+
+	---Sizes the summary to the smaller of its cap and the space left beside the checkbox and link,
+	---so a long condition list neither stretches across the whole band nor collides with the link,
+	---then pulls the hitbox in to match whatever ends up rendered.
+	local function ApplyStatusWidth()
+		local available = header:GetWidth() - BAR_TAB_STATUS_LEFT_BOUNDARY - BAR_TAB_STATUS_RIGHT_PADDING
+		if available > 0 then
+			status:SetWidth(math.min(BAR_TAB_STATUS_MAX_WIDTH, available))
+		end
+		-- GetStringWidth reports the untruncated text, so clamping to the FontString's own width
+		-- keeps the hitbox on the visible glyphs rather than out over the empty part of the band.
+		statusHitbox:SetWidth(math.max(math.min(status:GetStringWidth(), status:GetWidth()), 1))
+	end
+	-- The header has no resolved width yet during construction, so re-apply once it is laid out.
+	header:HookScript("OnSizeChanged", ApplyStatusWidth)
+	ApplyStatusWidth()
+
+	---Resyncs every part of the header from the settings currently in effect.
+	local function Refresh()
+		local visSettings, isControlledByGlobal = TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, specId, visibilityKey)
+
+		-- A tab whose bar has no visibility entry for this spec simply shows no header.
+		if visSettings == nil then
+			header:Hide()
+			return
+		end
+		header:Show()
+
+		local isEnabled = not visSettings.neverShow
+		checkbox:SetChecked(isEnabled)
+		checkbox:SetEnabled(not isControlledByGlobal)
+
+		-- Green "Enabled" / red "Disabled", matching the spec enable checkbox. The Global variants
+		-- take the same colors but name their source, since the checkbox is read-only in that state.
+		if isControlledByGlobal then
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(checkbox, isEnabled, false)
+			if isEnabled then
+				checkboxText:SetText(L["BarTabEnabledGlobal"])
+			else
+				checkboxText:SetText(L["BarTabDisabledGlobal"])
+			end
+			checkbox.tooltip = L["BarTabVisibilityGlobalTooltip"]
+		else
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(checkbox, isEnabled, true)
+			checkbox.tooltip = L["BarTabEnabledCheckboxTooltip"]
+		end
+
+		configureLink:SetShown(not isControlledByGlobal)
+		if globalLink ~= nil then
+			globalLink:SetShown(isControlledByGlobal)
+		end
+
+		-- Anchor the active link past the label's rendered width. The checkbox's FontString keeps
+		-- the template's own width regardless of its text, so anchoring to its right edge leaves
+		-- the label overlapping the link and eating clicks meant for it.
+		local labelEnd = checkboxText:GetStringWidth() + 14
+		configureLink:ClearAllPoints()
+		configureLink:SetPoint("LEFT", checkbox, "RIGHT", labelEnd, 0)
+		if globalLink ~= nil then
+			globalLink:ClearAllPoints()
+			globalLink:SetPoint("LEFT", checkbox, "RIGHT", labelEnd, 0)
+		end
+
+		local statusText
+		if TRB.Functions.OptionsUi.Visibility:IsBarUnreachable(visSettings) then
+			statusText = L["BarTabVisibilityNeverWarning"]
+			status:SetTextColor(1, 0.82, 0)
+		else
+			statusText = string.format(L["BarTabVisibilityShowsPrefix"], TRB.Functions.OptionsUi.Visibility:GetBarStatusSummary(visSettings))
+			status:SetTextColor(0.75, 0.75, 0.75)
+		end
+		status:SetText(statusText)
+
+		-- Tooltip carries the full list, since a long one is ellipsized on the band.
+		---@diagnostic disable-next-line: inject-field
+		statusHitbox.tooltip = statusText
+		ApplyStatusWidth()
+	end
+
+	checkbox:SetScript("OnClick", function(self)
+		local visSettings, isControlledByGlobal = TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, specId, visibilityKey)
+		if visSettings == nil or isControlledByGlobal then
+			Refresh()
+			return
+		end
+
+		-- Only the Never Show bit is written. ShouldShowBar bails on neverShow before it ever reads
+		-- alwaysShow, so the bar is fully disabled either way, and leaving Always Show intact keeps
+		-- this a lossless round trip instead of quietly discarding the setting on the way out.
+		visSettings.neverShow = not self:GetChecked()
+
+		-- forceReshow: toggling Never Show changes whether this bar renders at all.
+		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true, true)
+		Refresh()
+
+		-- Push straight into the Visibility tab's table when it has already been constructed.
+		local controls = GetControlsForScope(classId, specId)
+		local api = controls and controls.barVisibilityApi
+		if api ~= nil and api.Refresh ~= nil then
+			api.Refresh()
+		end
+	end)
+
+---@diagnostic disable-next-line: inject-field
+	header.Refresh = Refresh
+	Refresh()
+
+	return header
+end
+
+-- ============================================================================
 -- Bar visibility options
 -- ============================================================================
 
@@ -95,21 +613,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayBar)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].displayBar = self:GetChecked()
-			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
-			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-					TRB.Functions.BarVisibility:MarkDirty()
-					TRB.Functions.Bar:HideResourceBar()
-					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-						TRB.Data.lookupDirty = true
-						TRB.Functions.Class:TriggerResourceBarUpdates()
-					end
-				end
-			end
+			-- Swapping the displayBar source can flip Never Show for several bars at once,
+			-- so the applied show/alpha state is rebuilt rather than reused.
+			TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true, true)
 			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("displayBar")
 			if RefreshTableForGlobalToggle then
 				RefreshTableForGlobalToggle()
@@ -123,43 +629,11 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	yCoord = yCoord - 30
 	local isDruidVisibilityPanel = classId == 11 or (classId == nil and TRB.Data.character ~= nil and TRB.Data.character.classId == 11)
-	local druidFormConditionKeys = { "isDruidHumanoidForm", "isDruidTravelFormAny", "isDruidStagForm", "isDruidFlightForm", "isDruidSwiftFlightForm", "isDruidAquaticForm", "isDruidCatForm", "isDruidBearForm", "isDruidMoonkinForm" }
-	local druidFormConditionLabels = {
-		isDruidHumanoidForm = L["ShowBarVisibilityConditionDruidHumanoidForm"],
-		isDruidTravelFormAny = L["ShowBarVisibilityConditionDruidTravelFormAny"],
-		isDruidStagForm = L["ShowBarVisibilityConditionDruidStagForm"],
-		isDruidFlightForm = L["ShowBarVisibilityConditionDruidFlightForm"],
-		isDruidSwiftFlightForm = L["ShowBarVisibilityConditionDruidSwiftFlightForm"],
-		isDruidAquaticForm = L["ShowBarVisibilityConditionDruidAquaticForm"],
-		isDruidCatForm = L["ShowBarVisibilityConditionDruidCatForm"],
-		isDruidBearForm = L["ShowBarVisibilityConditionDruidBearForm"],
-		isDruidMoonkinForm = L["ShowBarVisibilityConditionDruidMoonkinForm"],
-	}
+	local druidFormConditionKeys = CopyKeys(DRUID_FORM_CONDITION_KEYS)
 
 	-- Condition definitions for multi-select bar visibility
-	local conditionKeys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isSteadyFlight", "isSteadyFlightFlying", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
-	local conditionLabels = {
-		inCombat = L["ShowBarVisibilityConditionInCombat"],
-		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
-		hasFriendlyTarget = L["ShowBarVisibilityConditionFriendlyTarget"],
-		hasUnfriendlyTarget = L["ShowBarVisibilityConditionUnfriendlyTarget"],
-		isMountedAny = L["ShowBarVisibilityConditionIsMountedAny"],
-		isMountedGround = L["ShowBarVisibilityConditionIsMountedGround"],
-		isSkyriding = L["ShowBarVisibilityConditionIsSkyriding"],
-		isSkyridingFlying = L["ShowBarVisibilityConditionIsSkyridingFlying"],
-		isSteadyFlight = L["ShowBarVisibilityConditionIsSteadyFlight"],
-		isSteadyFlightFlying = L["ShowBarVisibilityConditionIsSteadyFlightFlying"],
-		inGroup = L["ShowBarVisibilityConditionInGroup"],
-		inRaid = L["ShowBarVisibilityConditionInRaidGroup"],
-		inInstance = L["ShowBarVisibilityConditionInInstance"],
-		inDungeon = L["ShowBarVisibilityConditionInDungeon"],
-		inRaidInstance = L["ShowBarVisibilityConditionInRaidInstance"],
-		inBattleground = L["ShowBarVisibilityConditionInBattleground"],
-		inArena = L["ShowBarVisibilityConditionInArena"],
-		inDelve = L["ShowBarVisibilityConditionInDelve"],
-		isPvpFlagged = L["ShowBarVisibilityConditionIsPvpFlagged"],
-		isWarMode = L["ShowBarVisibilityConditionIsWarMode"],
-	}
+	local conditionKeys = CopyKeys(STANDARD_CONDITION_KEYS)
+	local conditionLabels = LabelsFor(STANDARD_CONDITION_KEYS)
 
 	-- Grouped condition sections for the dropdown
 	local conditionGroups = {
@@ -187,7 +661,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	if isDruidVisibilityPanel then
 		for _, key in ipairs(druidFormConditionKeys) do
 			table.insert(conditionKeys, key)
-			conditionLabels[key] = druidFormConditionLabels[key]
+			conditionLabels[key] = CONDITION_LABELS[key]
 		end
 		table.insert(conditionGroups, {
 			title = L["ShowBarVisibilityGroupDruidForms"],
@@ -195,19 +669,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		})
 	end
 
-	local hideConditionKeys = { "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
-	local hideConditionLabels = {
-		isMountedAny = L["ShowBarVisibilityConditionIsMountedAny"],
-		isMountedGround = L["ShowBarVisibilityConditionIsMountedGround"],
-		isMountedFlying = L["ShowBarVisibilityConditionIsSteadyFlight"],
-		isSteadyFlightFlying = L["ShowBarVisibilityConditionIsSteadyFlightFlying"],
-		isSkyriding = L["ShowBarVisibilityConditionIsSkyriding"],
-		isSkyridingFlying = L["ShowBarVisibilityConditionIsSkyridingFlying"],
-		inVehicle = L["ShowBarVisibilityConditionInVehicle"],
-		inPetBattle = L["ShowBarVisibilityConditionInPetBattle"],
-		onTaxi = L["ShowBarVisibilityConditionOnTaxi"],
-		isDead = L["ShowBarVisibilityConditionIsDead"],
-	}
+	local hideConditionKeys = CopyKeys(STANDARD_HIDE_CONDITION_KEYS)
+	local hideConditionLabels = LabelsFor(STANDARD_HIDE_CONDITION_KEYS)
 	local hideConditionGroups = {
 		{
 			title = L["ShowBarVisibilityGroupGeneral"],
@@ -221,7 +684,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	if isDruidVisibilityPanel then
 		for _, key in ipairs(druidFormConditionKeys) do
 			table.insert(hideConditionKeys, key)
-			hideConditionLabels[key] = druidFormConditionLabels[key]
+			hideConditionLabels[key] = CONDITION_LABELS[key]
 		end
 		table.insert(hideConditionGroups, {
 			title = L["ShowBarVisibilityGroupDruidForms"],
@@ -236,30 +699,28 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	if classId == nil or TRB.Functions.OptionsUi.Castbar:SpecUsesEmpower(classId, specId) then
 		table.insert(castbarConditionKeys, "empowered")
 	end
-	local castbarConditionLabels = {
-		casting = L["ShowBarVisibilityConditionCasting"],
-		channeling = L["ShowBarVisibilityConditionChanneling"],
-		empowered = L["ShowBarVisibilityConditionEmpowered"],
-	}
+	local castbarConditionLabels = LabelsFor(CASTBAR_CONDITION_KEYS)
+	local castbarHideKeys = { "inVehicle", "isDead" }
+	local castbarHideLabels = LabelsFor(castbarHideKeys)
 	local castbarProfile = {
 		showKeys = castbarConditionKeys,
 		showLabels = castbarConditionLabels,
 		showGroups = { { title = L["ShowBarVisibilityGroupCasting"], keys = castbarConditionKeys } },
-		hideKeys = { "inVehicle", "isDead" },
-		hideLabels = { inVehicle = L["ShowBarVisibilityConditionInVehicle"], isDead = L["ShowBarVisibilityConditionIsDead"] },
-		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = { "inVehicle", "isDead" } } },
+		hideKeys = castbarHideKeys,
+		hideLabels = castbarHideLabels,
+		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = castbarHideKeys } },
 		supportsThresholds = false,
 	}
 	-- Target/Focus cast bars: a target can be any class, so Empowered is always offered (unlike the player
 	-- castbar, which gates it on the player's own spec). Otherwise identical to the player castbar profile.
-	local targetCastbarConditionKeys = { "casting", "channeling", "empowered" }
+	local targetCastbarConditionKeys = CopyKeys(CASTBAR_CONDITION_KEYS)
 	local targetCastbarProfile = {
 		showKeys = targetCastbarConditionKeys,
 		showLabels = castbarConditionLabels,
 		showGroups = { { title = L["ShowBarVisibilityGroupCasting"], keys = targetCastbarConditionKeys } },
-		hideKeys = { "inVehicle", "isDead" },
-		hideLabels = { inVehicle = L["ShowBarVisibilityConditionInVehicle"], isDead = L["ShowBarVisibilityConditionIsDead"] },
-		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = { "inVehicle", "isDead" } } },
+		hideKeys = castbarHideKeys,
+		hideLabels = castbarHideLabels,
+		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = castbarHideKeys } },
 		supportsThresholds = false,
 	}
 	local standardProfile = {
@@ -285,16 +746,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		return standardProfile
 	end
 
-	-- Labels for resource/health threshold condition types (used in dropdown and summary)
-	-- Ordered array so dropdown items render in a deterministic, logical order.
-	local baseThresholdTypes = {
-		{ key = "resourcePercent", label = L["BarVisibilityThresholdResourcePercent"], comparisonLabel = L["BarVisibilityThresholdResourcePercentComparison"], valueLabel = L["BarVisibilityThresholdResourcePercentValue"], isPercent = true },
-		{ key = "resourceValue",   label = L["BarVisibilityThresholdResourceValue"],   comparisonLabel = L["BarVisibilityThresholdResourceValueComparison"],   valueLabel = L["BarVisibilityThresholdResourceValueValue"],   isPercent = false },
-		{ key = "healthPercent",   label = L["BarVisibilityThresholdHealthPercent"],   comparisonLabel = L["BarVisibilityThresholdHealthPercentComparison"],   valueLabel = L["BarVisibilityThresholdHealthPercentValue"],   isPercent = true },
-		{ key = "healthValue",     label = L["BarVisibilityThresholdHealthValue"],     comparisonLabel = L["BarVisibilityThresholdHealthValueComparison"],     valueLabel = L["BarVisibilityThresholdHealthValueValue"],     isPercent = false },
-	}
 	local thresholdTypeDefinitions = {}
-	for _, tt in ipairs(baseThresholdTypes) do
+	for _, tt in ipairs(BASE_THRESHOLD_TYPES) do
 		thresholdTypeDefinitions[tt.key] = tt
 	end
 	for _, tt in ipairs(extraThresholdTypes) do
@@ -306,7 +759,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			return {}
 		end
 		local types = {}
-		for _, tt in ipairs(baseThresholdTypes) do
+		for _, tt in ipairs(BASE_THRESHOLD_TYPES) do
 			table.insert(types, tt)
 		end
 
@@ -512,77 +965,19 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	---Refreshes the spec/global cache and re-evaluates bar visibility after visibility settings change.
 	local function RefreshVisibilitySettings()
-		if classId ~= nil and specId ~= nil then
-			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					TRB.Functions.EditMode:UpdateWrapperSize(settings)
-				end
-				TRB.Functions.BarVisibility:MarkDirty()
-				TRB.Functions.Bar:HideResourceBar()
-			end
-		else
-			if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-				local lowerClassName = string.lower(TRB.Data.character.className)
-				local currentSpecName = TRB.Data.character.specName
-				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					TRB.Functions.EditMode:UpdateWrapperSize(settings)
-				end
-				TRB.Functions.BarVisibility:MarkDirty()
-				TRB.Functions.Bar:HideResourceBar()
-			end
-		end
-		-- Never Show toggles change castbar enablement + whether the Blizzard cast bar is detached.
-		TRB.Functions.Castbar:SyncEnabledState()
-		-- Re-resolve the target/focus idle (Always Show) / hidden display for the new visibility settings.
-		TRB.Functions.TargetCastbar:RefreshVisibility()
+		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, false)
 	end
 
 	---Refreshes the spec/global cache, reapplies bar appearance, and re-evaluates visibility for changes affecting custom bars.
 	local function RefreshVisibilityAndAppearance()
-		if classId ~= nil and specId ~= nil then
-			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
-			TRB.Functions.Character:ResetCaches()
-			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-					TRB.Functions.EditMode:UpdateWrapperSize(settings)
-					TRB.Functions.BarVisibility:MarkDirty()
-					TRB.Functions.Bar:HideResourceBar()
-					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-						TRB.Data.lookupDirty = true
-						TRB.Functions.Class:TriggerResourceBarUpdates()
-					end
-				else
-					TRB.Functions.BarVisibility:MarkDirty()
-					TRB.Functions.Bar:HideResourceBar()
-				end
-			end
-		else
-			if TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-				local lowerClassName = string.lower(TRB.Data.character.className)
-				local currentSpecName = TRB.Data.character.specName
-				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, currentSpecName)
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-					TRB.Functions.EditMode:UpdateWrapperSize(settings)
-				end
-				TRB.Functions.BarVisibility:MarkDirty()
-				TRB.Functions.Bar:HideResourceBar()
-			end
-		end
+		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true)
+	end
+
+	---Refresh for changes that alter which bars should render (Never Show / Always Show, show and
+	---hard-hide conditions). These need the applied show/alpha state rebuilt rather than reused,
+	---so a bar switched back on draws immediately instead of waiting for the next visibility event.
+	local function RefreshVisibilityConditions()
+		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true, true)
 	end
 
 	---Populates the show-condition dropdown menu.
@@ -1122,7 +1517,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			controls.dropDown.selectedBarVisibility:SetDefaultText(displayText)
 			controls.dropDown.selectedBarVisibility:SetText(displayText)
 			ShowThresholdControls(visSettings.resourceConditionType or "none", visSettings)
-			refreshFunc()
+			RefreshVisibilityConditions()
 			SetTableValues()
 			-- Re-select the current row
 			for i, e in ipairs(barEntries) do
@@ -1137,7 +1532,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			local displayText = GetHideVisibilityDisplayName(visSettings, profile)
 			controls.dropDown.selectedHideVisibility:SetDefaultText(displayText)
 			controls.dropDown.selectedHideVisibility:SetText(displayText)
-			refreshFunc()
+			RefreshVisibilityConditions()
 			SetTableValues()
 			-- Re-select the current row
 			for i, e in ipairs(barEntries) do
@@ -1307,6 +1702,30 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			end
 		end
 	end
+
+	-- Handle used by the per-bar tab visibility headers: refreshes the table after a header
+	-- toggle, and jumps to a bar's row when the header's "Configure Visibility" link is used.
+	-- Selection matches on displayBarKey because it diverges from key for custom bars.
+	controls.barVisibilityApi = {
+		Refresh = RefreshTableForGlobalToggle,
+		SelectByDisplayBarKey = function(displayBarKey)
+			for i, e in ipairs(barEntries) do
+				if e.displayBarKey == displayBarKey then
+					if IsUsingGlobalDisplayBar() and e.isGlobal then
+						return
+					end
+					barVisibilityTable:SetSelection(i)
+					FillDetailPanel(e.key)
+					return
+				end
+			end
+		end,
+	}
+
+	-- Keep the table in sync with visibility changes made from the per-bar tab headers.
+	parent:HookScript("OnShow", function()
+		RefreshTableForGlobalToggle()
+	end)
 
 	yCoord = yCoord - (35 + (tableRowCount * 15)) - 10 - detailHeight
 

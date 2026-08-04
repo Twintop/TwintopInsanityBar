@@ -1155,9 +1155,9 @@ local function HolyConstructOptionsPanel(cache)
 		"paladin", "holy")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, HolyConstructManaBarPanel },
-		{ "holyPowerBar", L["TabHolyPower"], oUi.tabWidth.small, HolyConstructHolyPowerBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, HolyConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, HolyConstructManaBarPanel, visibilityKey = "primary" },
+		{ "holyPowerBar", L["TabHolyPower"], oUi.tabWidth.small, HolyConstructHolyPowerBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, HolyConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, HolyConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("paladin", "holy", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, HolyConstructIndicatorColorsPanel },
@@ -1629,9 +1629,9 @@ local function ProtectionConstructOptionsPanel(cache)
 		"paladin", "protection")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, ProtectionConstructManaBarPanel },
-		{ "holyPowerBar", L["TabHolyPower"], oUi.tabWidth.small, ProtectionConstructHolyPowerBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ProtectionConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, ProtectionConstructManaBarPanel, visibilityKey = "primary" },
+		{ "holyPowerBar", L["TabHolyPower"], oUi.tabWidth.small, ProtectionConstructHolyPowerBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ProtectionConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, ProtectionConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("paladin", "protection", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ProtectionConstructIndicatorColorsPanel },
@@ -2101,9 +2101,9 @@ local function RetributionConstructOptionsPanel(cache)
 		"paladin", "retribution")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, RetributionConstructManaBarPanel },
-		{ "holyPowerBar", L["TabHolyPower"], oUi.tabWidth.small, RetributionConstructHolyPowerBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, RetributionConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, RetributionConstructManaBarPanel, visibilityKey = "primary" },
+		{ "holyPowerBar", L["TabHolyPower"], oUi.tabWidth.small, RetributionConstructHolyPowerBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, RetributionConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, RetributionConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("paladin", "retribution", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, RetributionConstructIndicatorColorsPanel },

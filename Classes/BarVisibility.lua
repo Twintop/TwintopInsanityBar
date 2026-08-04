@@ -273,6 +273,38 @@ function TRB.Functions.BarVisibility:MarkClean()
 	self.lastAppliedToken = self.dirtyToken
 end
 
+---Discards the applied show/alpha state of every bar group so the next ProcessBars pass
+---rebuilds it from scratch, then marks visibility dirty.
+---
+---ProcessBars memoizes what it has already applied: it only calls Show()/ShowNodes() on a
+---hidden→visible transition, SetTargetAlpha() no-ops when the target is unchanged, and frame
+---alpha is only written while a bar is showing. Layout passes mutate that same state
+---independently (ApplyBarGroupsLayout shows the primary group and its node directly, and
+---ConstructAnchoredBarGroup shows or hides anchored/custom groups plus their nodes). After a
+---bar flips off and back on, those two views disagree: the group reads as already visible, so
+---Phase 3 skips ShowNodes() even though the hide pass called HideAllNodes(), leaving a bar that
+---occupies its layout space but draws nothing until an unrelated event marks visibility dirty.
+---
+---Hide() is used rather than clearing isVisible directly so the flag and the frame stay in
+---agreement -- if ProcessBars then resolves the bar as hidden, it simply stays hidden.
+function TRB.Functions.BarVisibility:InvalidateAppliedState()
+	local barGroups = TRB.Frames.barGroups
+	if barGroups ~= nil then
+		for key, group in pairs(barGroups) do
+			-- The cast bars render themselves from live cast state and are not ProcessBars
+			-- entries, so nothing would ever show them again if they were torn down here.
+			local isSelfDriven = key == "castbar" or key == "targetCastbar" or key == "focusCastbar"
+			if not isSelfDriven and type(group) == "table" and group.Hide ~= nil and group.containerFrame ~= nil then
+				group:Hide()
+				-- Defeats SetTargetAlpha's no-op guard so Phase 3 re-applies frame alpha.
+				group.targetAlpha = -1
+			end
+		end
+	end
+
+	self:MarkDirty()
+end
+
 ---Evaluates whether a bar has any configured hard-hide condition active.
 ---@param context TRB.Classes.BarVisibilityContext # The shared environment snapshot
 ---@param entry TRB.Classes.BarVisibilityEntry # The bar entry to evaluate

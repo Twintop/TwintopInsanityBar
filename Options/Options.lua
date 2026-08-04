@@ -18,6 +18,17 @@ f3:SetFontObject(GameFontNormalSmall)
 local f4 = CreateFont("TwintopResourceBar_OptionsMenu_Export_Spec_Color")
 ---@diagnostic disable-next-line: need-check-nil
 f4:SetFontObject(GameFontWhite)
+-- Red variants of the tab label fonts, used when a bar tab's bar is disabled (Visibility = Never).
+local f5 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Red_Small_Color")
+---@diagnostic disable-next-line: need-check-nil
+f5:SetFontObject(GameFontNormalSmall)
+---@diagnostic disable-next-line: need-check-nil
+f5:SetTextColor(1, 0, 0)
+local f6 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Red_Highlight_Small_Color")
+---@diagnostic disable-next-line: need-check-nil
+f6:SetFontObject(GameFontHighlightSmall)
+---@diagnostic disable-next-line: need-check-nil
+f6:SetTextColor(1, 0.35, 0.35)
 
 TRB.Options.fonts = {}
 TRB.Options.fonts.options = {}
@@ -25,6 +36,8 @@ TRB.Options.fonts.options.tabHighlightSmall = f1
 TRB.Options.fonts.options.tabGreenSmall = f2
 TRB.Options.fonts.options.tabNormalSmall = f3
 TRB.Options.fonts.options.exportSpec = f4
+TRB.Options.fonts.options.tabRedSmall = f5
+TRB.Options.fonts.options.tabRedHighlightSmall = f6
 
 TRB.Options.variables = {}
 TRB.Options.variables.barTextInstructions = L["BarTextInstructions"]
@@ -648,9 +661,9 @@ local function ConstructGlobalOptionsPanel()
 	TRB.Frames.interfaceSettingsFrameContainer.controls.global = controls
 
 	local tabDefinitions = {
-		{ "resourceBar", L["TabResource"], oUi.tabWidth.small, ConstructResourceBarPanel },
-		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, ConstructComboPointsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ConstructHealthBarPanel },
+		{ "resourceBar", L["TabResource"], oUi.tabWidth.small, ConstructResourceBarPanel, visibilityKey = "primary" },
+		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, ConstructComboPointsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ConstructHealthBarPanel, visibilityKey = "health" },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ConstructThresholdPanel },
@@ -688,13 +701,13 @@ local function ConstructCastbarOptionsPanel()
 	local tabDefinitions = {
 		{ "castbar", L["ResourcePlayerCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, nil, nil, true)
-		end },
+		end, visibilityKey = "castbar" },
 		{ "target", L["ResourceTargetCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, nil, nil, "targetCastbar")
-		end },
+		end, visibilityKey = "targetCastbar" },
 		{ "focus", L["ResourceFocusCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, nil, nil, "focusCastbar")
-		end },
+		end, visibilityKey = "focusCastbar" },
 	}
 
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Castbar", tabDefinitions, -37)

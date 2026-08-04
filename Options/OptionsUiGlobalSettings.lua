@@ -290,10 +290,11 @@ end
 ---@param checkbox CheckButton The "Use global settings" checkbox to attach the link to
 ---@param globalTabKey string The tab key to navigate to (e.g., "resourceBar", "barTextures", "castbar")
 ---@param categoryKey string? The top-level nav category holding the tab (defaults to "global")
+---@return Button|nil link The created link button, or nil when the checkbox has no text region
 function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, globalTabKey, categoryKey)
 	local textRegion = _G[checkbox:GetName() .. "Text"]
 	if not textRegion then
-		return
+		return nil
 	end
 
 	-- The Castbar category has its own wording so it's clear the link opens the Cast Bar
@@ -338,5 +339,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 			end)
 		end
 	end)
+
+	return link
 end
 

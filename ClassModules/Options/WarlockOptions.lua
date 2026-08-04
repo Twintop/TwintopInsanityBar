@@ -1148,9 +1148,9 @@ local function AfflictionConstructOptionsPanel(cache)
 		"warlock", "affliction")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, AfflictionConstructManaBarPanel },
-		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, AfflictionConstructSoulShardsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AfflictionConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, AfflictionConstructManaBarPanel, visibilityKey = "primary" },
+		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, AfflictionConstructSoulShardsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AfflictionConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, AfflictionConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "affliction", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, AfflictionConstructIndicatorColorsPanel },
@@ -1640,9 +1640,9 @@ local function DemonologyConstructOptionsPanel(cache)
 		"warlock", "demonology")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DemonologyConstructManaBarPanel },
-		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DemonologyConstructSoulShardsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DemonologyConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DemonologyConstructManaBarPanel, visibilityKey = "primary" },
+		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DemonologyConstructSoulShardsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DemonologyConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, DemonologyConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "demonology", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DemonologyConstructIndicatorColorsPanel },
@@ -2092,9 +2092,9 @@ local function DestructionConstructOptionsPanel(cache)
 		"warlock", "destruction")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DestructionConstructManaBarPanel },
-		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DestructionConstructSoulShardsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DestructionConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DestructionConstructManaBarPanel, visibilityKey = "primary" },
+		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DestructionConstructSoulShardsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DestructionConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, DestructionConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "destruction", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DestructionConstructIndicatorColorsPanel },

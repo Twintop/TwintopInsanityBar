@@ -1088,9 +1088,9 @@ local function ElementalConstructOptionsPanel(cache)
 		"shaman", "elemental")
 
 	local tabDefinitions = {
-		{ "maelstromBar", L["TabMaelstrom"], oUi.tabWidth.small, ElementalConstructMaelstromBarPanel },
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, ElementalConstructManaBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ElementalConstructHealthBarPanel },
+		{ "maelstromBar", L["TabMaelstrom"], oUi.tabWidth.small, ElementalConstructMaelstromBarPanel, visibilityKey = "primary" },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, ElementalConstructManaBarPanel, visibilityKey = "mana" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ElementalConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ElementalConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ElementalConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ElementalConstructBarVisibilityPanel },
@@ -1573,9 +1573,9 @@ local function EnhancementConstructOptionsPanel(cache)
 		"shaman", "enhancement")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, EnhancementConstructManaBarPanel },
-		{ "maelstromWeaponBar", L["TabMaelstromWeapon"], oUi.tabWidth.small, EnhancementConstructMaelstromWeaponBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, EnhancementConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, EnhancementConstructManaBarPanel, visibilityKey = "primary" },
+		{ "maelstromWeaponBar", L["TabMaelstromWeapon"], oUi.tabWidth.small, EnhancementConstructMaelstromWeaponBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, EnhancementConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, EnhancementConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("shaman", "enhancement", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, EnhancementConstructIndicatorColorsPanel },
@@ -1932,8 +1932,8 @@ local function RestorationConstructOptionsPanel(cache)
 		"shaman", "restoration")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, RestorationConstructManaBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, RestorationConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, RestorationConstructManaBarPanel, visibilityKey = "primary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, RestorationConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, RestorationConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("shaman", "restoration", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, RestorationConstructIndicatorColorsPanel },
