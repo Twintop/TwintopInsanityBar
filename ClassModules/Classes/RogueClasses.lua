@@ -338,7 +338,6 @@ end
 ---@field public ruthlessPrecision TRB.Classes.SpellBase
 ---@field public skullAndCrossbones TRB.Classes.SpellBase
 ---@field public trueBearing TRB.Classes.SpellBase
----@field public countTheOdds TRB.Classes.SpellBase
 ---@field public bladeRush TRB.Classes.SpellBase
 ---@field public keepItRolling TRB.Classes.SpellBase
 ---@field public floatLikeAButterfly TRB.Classes.SpellBase
@@ -467,10 +466,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     })
     self.trueBearing = TRB.Classes.SpellBase:New({
         id = 193359,
-    })
-    self.countTheOdds = TRB.Classes.SpellBase:New({
-        id = 381982,
-        duration = 5
     })
     self.bladeRush = TRB.Classes.SpellBase:New({
         id = 271877,

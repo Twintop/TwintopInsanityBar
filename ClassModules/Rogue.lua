@@ -182,27 +182,14 @@ local function FillSpecializationCache()
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id] = TRB.Classes.Snapshot:New(spells.rollTheBones, {
 		---@type table<integer, TRB.Classes.Snapshot>
 		buffs = {
-			[spells.broadside.id] = TRB.Classes.Snapshot:New(spells.broadside, {
-				fromCountTheOdds = false
-			}),
-			[spells.buriedTreasure.id] = TRB.Classes.Snapshot:New(spells.buriedTreasure, {
-				fromCountTheOdds = false
-			}),
-			[spells.grandMelee.id] = TRB.Classes.Snapshot:New(spells.grandMelee, {
-				fromCountTheOdds = false
-			}),
-			[spells.ruthlessPrecision.id] = TRB.Classes.Snapshot:New(spells.ruthlessPrecision, {
-				fromCountTheOdds = false
-			}),
-			[spells.skullAndCrossbones.id] = TRB.Classes.Snapshot:New(spells.skullAndCrossbones, {
-				fromCountTheOdds = false
-			}),
-			[spells.trueBearing.id] =TRB.Classes.Snapshot:New(spells.trueBearing, {
-				fromCountTheOdds = false
-			})
+			[spells.broadside.id] = TRB.Classes.Snapshot:New(spells.broadside),
+			[spells.buriedTreasure.id] = TRB.Classes.Snapshot:New(spells.buriedTreasure),
+			[spells.grandMelee.id] = TRB.Classes.Snapshot:New(spells.grandMelee),
+			[spells.ruthlessPrecision.id] = TRB.Classes.Snapshot:New(spells.ruthlessPrecision),
+			[spells.skullAndCrossbones.id] = TRB.Classes.Snapshot:New(spells.skullAndCrossbones),
+			[spells.trueBearing.id] =TRB.Classes.Snapshot:New(spells.trueBearing)
 		},
 		count = 0,
-		temporaryCount = 0,
 		goodBuffs = false
 	})
 	---@type TRB.Classes.Snapshot
@@ -734,23 +721,17 @@ local function UpdateRollTheBones()
 	local currentTime = GetTime()
 			
 	local rollTheBonesCount = 0
-	local rollTheBonesTemporaryCount = 0
 	local highestRemaining = 0
 	for _, v in pairs(buffs) do
 		local remaining = v.buff:GetRemainingTime(currentTime)
 		if v.buff.isActive then
-			if v.attributes.fromCountTheOdds then
-				rollTheBonesTemporaryCount = rollTheBonesTemporaryCount + 1
-			else
-				rollTheBonesCount = rollTheBonesCount + 1
-				if remaining > highestRemaining then
-					highestRemaining = remaining
-				end
+			rollTheBonesCount = rollTheBonesCount + 1
+			if remaining > highestRemaining then
+				highestRemaining = remaining
 			end
 		end
 	end
 	rollTheBones.attributes.count = rollTheBonesCount
-	rollTheBones.attributes.temporaryCount = rollTheBonesTemporaryCount
 	rollTheBones.attributes.remaining = highestRemaining
 
 	if rollTheBones.attributes.count >= 2 or buffs[spells.broadside.id].buff.isActive or buffs[spells.trueBearing.id].buff.isActive then

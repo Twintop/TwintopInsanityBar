@@ -808,7 +808,6 @@ if locale == "zhCN" then
     L["RogueOutlawBarTextVariable_comboPoints"] = "当前连击点"
     L["RogueOutlawBarTextVariable_comboPointsMax"] = "连击点上限"
     L["RogueOutlawBarTextVariable_rtbCount"] = "当前激活的命运之骰buff数量"
-    L["RogueOutlawBarTextVariable_rtbTemporaryCount"] = "当前激活的完整命运之骰buff数量"
     L["RogueOutlawBarTextVariable_rtbAllCount"] = "所有来源的命运之骰buff总数量"
     L["RogueOutlawBarTextVariable_rtbBuffTime"] = "命运之骰buff剩余时间(非奇计迭出来源)"
     L["RogueOutlawBarTextVariable_rtbGoodBuff"] = "当前命运之骰buff是否为优质组合(优质定义：双buff、侧舷齐射或真北方向，仅逻辑变量)"
