@@ -7223,6 +7223,32 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 				indicator.enabled = true
 			end
 		end
+
+		-- Migrate Warrior Fury enrage from the bar colors to indicator colors
+		if spec.colors and spec.colors.bar and spec.colors.bar.enrage
+		and (spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil or spec.colors.shared.indicatorColors.enrage == nil) then
+			spec.colors.shared = spec.colors.shared or {}
+			spec.colors.shared.nodeOrder = spec.colors.shared.nodeOrder or {}
+			spec.colors.shared.gradientOrder = spec.colors.shared.gradientOrder or {}
+			spec.colors.shared.indicatorColors = spec.colors.shared.indicatorColors or {}
+
+			local old = spec.colors.bar.enrage
+			spec.colors.shared.indicatorColors.enrage = {
+				color = old.color or "FFFFCC55",
+				enabled = old.enabled ~= false,
+				targets = { rageBar = { bar = true, border = false, background = false } },
+			}
+
+			local found = false
+			for _, v in ipairs(spec.colors.shared.nodeOrder) do
+				if v == "enrage" then found = true break end
+			end
+			if not found then
+				table.insert(spec.colors.shared.nodeOrder, 1, "enrage")
+			end
+
+			spec.colors.bar.enrage = nil
+		end
 	end
 
 	-- Migrate Warrior Protection to indicator colors

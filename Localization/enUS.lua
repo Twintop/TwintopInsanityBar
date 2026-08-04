@@ -3290,3 +3290,9 @@ L["BarTextVariablesBadgeCdm"] = "C"
 L["BarTextVariablesDescriptionCdm"] = "Needs the Cooldown Manager"
 L["BarTextVariablesCdmRequired"] = "Yes"
 L["BarTextVariablesCdmNone"] = "No"
+
+-- Warrior Fury Enrage (restored, now fed by the Cooldown Manager)
+L["WarriorFuryBarTextVariable_enrageTime"] = "Time remaining on Enrage"
+L["WarriorFuryCheckboxEnrage"] = "Enrage"
+L["WarriorFuryIndicatorEnrageTooltip"] = "Changes to this color when Enrage is active."
+L["WarriorFuryIndicatorEnrageColor"] = "Enrage is active"

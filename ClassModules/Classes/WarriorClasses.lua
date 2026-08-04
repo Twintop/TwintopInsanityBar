@@ -392,6 +392,7 @@ function TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#bladestorm", icon = spells.bladestorm.icon, description = spells.bladestorm.name, printInSettings = true },
+		{ variable = "#enrage", icon = spells.enrage.icon, description = spells.enrage.name, printInSettings = true },
 		{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },
 		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
@@ -412,6 +413,8 @@ function TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
 
 		{ variable = "$wwTime", description = L["WarriorFuryBarTextVariable_wwTime"], printInSettings = true, color = false },
 		{ variable = "$whirlwindTime", description = "", printInSettings = false, color = false },
+
+		{ variable = "$enrageTime", description = L["WarriorFuryBarTextVariable_enrageTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 	})
 end
 

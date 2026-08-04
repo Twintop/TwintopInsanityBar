@@ -140,6 +140,9 @@ local function FillSpecializationCache()
 	specCache.warrior_fury.snapshotData.snapshots[spells.execute.id] = TRB.Classes.Snapshot:New(spells.execute)
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_fury.snapshotData.snapshots[spells.suddenDeath.id] = TRB.Classes.Snapshot:New(spells.suddenDeath)
+	-- Always-simple: the Cooldown Manager never hands back an endTime, and a nil one reads as expired.
+	---@type TRB.Classes.Snapshot
+	specCache.warrior_fury.snapshotData.snapshots[spells.enrage.id] = TRB.Classes.Snapshot:New(spells.enrage, nil, "always")
 
 	-- Protection
 	specCache.warrior_protection.Global_TwintopResourceBar = {
@@ -556,6 +559,37 @@ local function RefreshLookupData_Fury()
 		end
 	end
 
+	-- Block C: Enrage ($enrageTime)
+	if not activeVars or activeVars["$enrageTime"] then
+		local enrageBuff = snapshots[spells.enrage.id].buff
+		local _enrageActive = enrageBuff.isActive == true
+		local properties = enrageBuff.customProperties
+		local _enrageTime = properties.remaining
+		local _enrageTimeText = properties.remainingText
+
+		-- Secret when the Cooldown Manager has it, missing when it does not, so logic only learns whether
+		-- there is a value at all.
+		lookupLogic["$enrageTime"] = _enrageActive and (_enrageTime ~= nil or _enrageTimeText ~= nil)
+
+		-- Buff down is a known zero; buff up with nothing tracking it is unknown. Memoized on the rendered
+		-- string, since both are nil underneath.
+		local timeDisplay
+		if not _enrageActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _enrageTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_enrageTime)
+		elseif _enrageTimeText ~= nil then
+			-- Already formatted, to the viewer's precision rather than ours.
+			timeDisplay = _enrageTimeText
+		else
+			timeDisplay = "??"
+		end
+
+		if lookupChanged(prevState, "$enrageTime", timeDisplay) then
+			lookup["$enrageTime"] = timeDisplay
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -934,6 +968,38 @@ local function UpdateSnapshot_Fury()
 	local wasWhirlwindActive = snapshots[spells.improvedWhirlwind.id].buff.isActive
 	snapshots[spells.improvedWhirlwind.id].buff:GetRemainingTime(currentTime)
 	if wasWhirlwindActive and not snapshots[spells.improvedWhirlwind.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
+
+	local enrageBuff = snapshots[spells.enrage.id].buff
+	local properties = enrageBuff.customProperties
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	-- Pinned to the buff viewers: a cooldown viewer reports every spell it holds as active.
+	local cdm = TRB.Functions.CooldownManager
+	local wasEnrageActive = enrageBuff.isActive
+	local activeOk = cdm:Read(spells.enrage.id, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF)
+	if activeOk then
+		-- The cached aura record is dropped the moment the aura ends, so a successful read is the up-signal.
+		enrageBuff:InitializeCustomSimple()
+
+		-- Only the bar viewer leaves a subtracted remaining value; elsewhere take Blizzard's own countdown
+		-- text, which is empty when that viewer's timers are off -- a settings answer, not a value.
+		local remainingOk, remaining = cdm:Read(spells.enrage.id, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+		if remainingOk then
+			properties.remaining = remaining
+		else
+			local textOk, remainingText = cdm:Read(spells.enrage.id, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+			if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+				properties.remainingText = remainingText
+			end
+		end
+	elseif wasEnrageActive then
+		enrageBuff:Reset()
+	end
+
+	if wasEnrageActive ~= enrageBuff.isActive then
 		TRB.Data.lookupDirty = true
 	end
 	--[[snapshots[spells.bladestorm.id].buff:UpdateTicks(currentTime)
@@ -1441,7 +1507,6 @@ local function UpdateResourceBar()
 						end
 					end
 				end
-
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1453,6 +1518,7 @@ local function UpdateResourceBar()
 						end
 					end
 				end
+
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
@@ -1531,9 +1597,28 @@ local function UpdateResourceBar()
 					end
 				end
 			end
+			-- Enrage is fed from the Cooldown Manager, so it is false whenever nothing tracks the buff.
+			local enrageActive = snapshots[spells.enrage.id].buff.isActive == true
+			do
+				local enrageInd = indicatorColors and indicatorColors.enrage
+				local enrageTargets = enrageInd and enrageInd.enabled and enrageActive
+					and enrageInd.targets and enrageInd.targets.rageBar or nil
+				if enrageTargets then
+					if enrageTargets.bar then
+						barColor = enrageInd.color
+					end
+					if enrageTargets.border then
+						barBorderColor = enrageInd.color
+					end
+					if enrageTargets.background then
+						barBackgroundColor = enrageInd.color
+					end
+				end
+			end
 			local conditionMap = {
 				borderOvercap = affectingCombat,
 				zeroStackBackground = zeroStackActive,
+				enrage = enrageActive,
 			}
 			-- The rage bar is colored bespoke above; the resolver is here for the shared health/cast bar.
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
@@ -1658,6 +1743,7 @@ local function UpdateResourceBar()
 						end
 					end
 				end
+
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1669,7 +1755,6 @@ local function UpdateResourceBar()
 						end
 					end
 				end
-
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
 					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
@@ -1984,6 +2069,7 @@ local function SwitchSpec()
 		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 		local lookup = TRB.Data.lookup or {}
 		lookup["#bladestorm"] = spells.bladestorm.icon
+		lookup["#enrage"] = spells.enrage.icon
 		lookup["#execute"] = spells.execute.icon
 		lookup["#impendingVictory"] = spells.impendingVictory.icon
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
@@ -2357,6 +2443,21 @@ do
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
+	-- Fury
+	local fury = {}
+	for k, v in pairs(common) do fury[k] = v end
+	-- False the moment the value is unknown, matching the "??" the text renders.
+	fury["$enrageTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.enrage == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.enrage.id]
+		if snap == nil or snap.buff.isActive ~= true then
+			return false
+		end
+		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
+	end
 	-- Protection
 	local protection = {}
 	for k, v in pairs(common) do protection[k] = v end
@@ -2382,7 +2483,7 @@ do
 		return issecretvalue(charges) or charges > 0
 	end
 
-	specValidVars = { [1] = common, [2] = common, [3] = protection }
+	specValidVars = { [1] = common, [2] = fury, [3] = protection }
 end
 
 function TRB.Functions.Class:IsValidVariableForSpec(var)

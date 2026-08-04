@@ -394,4 +394,7 @@ if locale == "enGB" then
 
     -- Per-bar tab visibility header
     L["BarTabVisibilityGlobalTooltip"] = "This bar's visibility is being controlled by Global Options, so it cannot be changed here. Open Global Settings to change it, or uncheck Use global settings on the Visibility tab to control it for this specialisation only."
+
+    -- Warrior Fury Enrage
+    L["WarriorFuryIndicatorEnrageTooltip"] = "Changes to this colour when Enrage is active."
 end

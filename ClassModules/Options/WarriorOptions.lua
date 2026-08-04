@@ -459,12 +459,6 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 					color2 = "FFFF0000",
 					gradientDirection = "disabled"
 				},
-				enrage = {
-					color = "FFFFCC55",
-					color2 = "FFFFCC55",
-					gradientDirection = "disabled",
-					enabled = true
-				},
 				casting = {
 					color = "FFFFFFFF",
 					color2 = "FFFFFFFF",
@@ -494,9 +488,14 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 			}
 			,
 			shared = {
-				nodeOrder = { "zeroStackBackground" },
+				nodeOrder = { "enrage", "zeroStackBackground" },
 				gradientOrder = { "borderOvercap" },
 				indicatorColors = {
+					enrage = {
+						color = "FFFFCC55",
+						enabled = true,
+						targets = { rageBar = { bar = true, border = false, background = false } },
+					},
 					zeroStackBackground = {
 						color = "FF333333",
 						enabled = true,
@@ -1470,6 +1469,7 @@ local function FuryConstructIndicatorColorsPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, classId, specId, yCoord, {
 		indicatorDefs = {
+			{ key = "enrage", label = L["WarriorFuryCheckboxEnrage"], tooltip = L["WarriorFuryIndicatorEnrageTooltip"], colorLabel = L["WarriorFuryIndicatorEnrageColor"], cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 			{ key = "zeroStackBackground", label = L["WarriorFuryCheckboxZeroStackBackground"], tooltip = L["WarriorFuryIndicatorZeroStackBackgroundTooltip"], colorLabel = L["WarriorFuryIndicatorZeroStackBackgroundColor"] },
 		},
 		gradientDefs = {
