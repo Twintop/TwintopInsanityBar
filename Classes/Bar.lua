@@ -1448,6 +1448,7 @@ end
 ---@field public thresholdMax number? # Optional custom-threshold slider max for this sub-target (and runtime value scale, e.g. Shield Block 8.0s). Defaults to the node-run count.
 ---@field public thresholdMin number? # Optional custom-threshold slider min for this sub-target. Defaults to 0.
 ---@field public thresholdDecimals integer? # Optional decimal precision for this sub-target's value slider. Defaults to 0.
+---@field public cdm TRB.CdmDependency? # Declared Cooldown Manager reliance for this node alone (e.g. Ignore Pain's absorb pool but not its timer). Options-panel badge only.
 
 ---@class TRB.Classes.BarTypeDefinition
 ---@field public key string # Unique key for this bar type (e.g., "stagger", "mana", "defensives")
@@ -1486,6 +1487,7 @@ end
 ---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
 ---@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color). Secret-count bars also get no end cap (the highest progressed node is unknowable).
 ---@field public endCapMode string? # Multi-node end cap policy: "highest" (default) or "all" (independent nodes, e.g. Warrior defensives)
+---@field public cdm TRB.CdmDependency? # Declared Cooldown Manager reliance for the whole bar. Options-panel badge only; nothing branches on it at runtime.
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -1547,6 +1549,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
 	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield, Fire Blast charges); forces custom thresholds to static color mode
+	self.cdm = config.cdm -- Declared Cooldown Manager reliance for the whole bar; options-panel badge only, nothing branches on it
 	self.isCastbar = config.isCastbar or false -- Player/Target/Focus cast bar; display name already ends in "Cast Bar" so labels drop the redundant trailing "Bar"
 	self.endCapMode = config.endCapMode -- "all" for independent-node bars; nil/"highest" shows the cap only on the highest progressed node
 
@@ -1953,7 +1956,8 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		orderDownTooltip = L["NodeOrderMoveDownTooltip"],
 		nodeColors = {
 			{ key = "ignorePain", displayName = L["IgnorePainTimeBarEnable"], colorLabel = L["IgnorePainTime"], tooltip = L["IgnorePainTimeBarEnableTooltip"], hasEnabled = true, thresholdMax = 12, thresholdDecimals = 1 },
-			{ key = "ignorePainAbsorb", displayName = L["IgnorePainAbsorbBarEnable"], colorLabel = L["IgnorePainAbsorb"], tooltip = L["IgnorePainAbsorbBarEnableTooltip"], hasEnabled = true, thresholdMax = 100, thresholdDecimals = 1 },
+			-- Absorb alone: the timer node beside it is snapshot-driven.
+			{ key = "ignorePainAbsorb", displayName = L["IgnorePainAbsorbBarEnable"], colorLabel = L["IgnorePainAbsorb"], tooltip = L["IgnorePainAbsorbBarEnableTooltip"], hasEnabled = true, thresholdMax = 100, thresholdDecimals = 1, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 			{ key = "shieldBlock", displayName = L["ShieldBlockBarEnable"], colorLabel = L["ShieldBlock"], tooltip = L["ShieldBlockBarEnableTooltip"], hasEnabled = true, thresholdMax = 8, thresholdDecimals = 1 }
 		},
 		defaultDimensionsFunc = function(classic)
@@ -2194,6 +2198,8 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		visibilityKey = "shatter",
 		-- Stack count is secret, so custom thresholds on it are static-only.
 		usesSecretValue = true,
+		-- Fed entirely by the Cooldown Manager's item for Shatter.
+		cdm = TRB.Data.constants.cdmDependency.REQUIRED,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultShatterBarDimensions(classic)
 		end,

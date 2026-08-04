@@ -496,6 +496,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 					getglobal(fCheckbox:GetName() .. 'Text'):SetText(nodeDisplayName)
 					fCheckbox.tooltip = nodeConfig.tooltip or nodeDisplayName
 					fCheckbox:SetChecked(nodeColorSettings.enabled)
+					-- On an amalgamation bar only some nodes are CDM-fed, so the badge is per-node.
+					TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(getglobal(fCheckbox:GetName() .. 'Text'), nodeConfig.cdm)
 					-- Dereference via orderedKeys at click-time to survive arrow reordering
 					fCheckbox:SetScript("OnClick", function(self, ...)
 						local currentKey = orderedKeys[capturedRowIdx]
@@ -627,6 +629,10 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 						end)
 					end
 					row.colorPicker = nodeControls.color
+					-- No enable checkbox here, so the swatch label carries the badge.
+					if nodeControls.color ~= nil then
+						TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(nodeControls.color.Font, nodeConfig.cdm)
+					end
 				end
 				rowFrames[rowIndex] = row
 				yCoord = yCoord - 30

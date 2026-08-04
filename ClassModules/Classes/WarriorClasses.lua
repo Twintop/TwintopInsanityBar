@@ -586,7 +586,8 @@ function TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$casting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		
 		{ variable = "$ignorePainTime", description = L["WarriorProtectionBarTextVariable_ignorePainTime"], printInSettings = true, color = false },
-		{ variable = "$ignorePainAbsorb", description = L["WarriorProtectionBarTextVariable_ignorePainAbsorb"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		-- Absorb pool has no source but the Cooldown Manager; the time above is snapshot-driven.
+		{ variable = "$ignorePainAbsorb", description = L["WarriorProtectionBarTextVariable_ignorePainAbsorb"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 
 		{ variable = "$shieldBlockTime", description = L["WarriorProtectionBarTextVariable_shieldBlockTime"], printInSettings = true, color = false },
 		{ variable = "$shieldBlockCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockCharges"], printInSettings = true, color = false, secret = true },

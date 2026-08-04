@@ -19,7 +19,8 @@ local L = TRB.Localization
 ---@return Frame # The outer container frame for the side panel
 function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(parent, name, cache, classId, specId)
 	local mainFrame = TRB.Frames.optionsFrame
-	local panelWidth = 375
+	-- Widened alongside the CDM column so the name column keeps its old width.
+	local panelWidth = 400
 
 	-- Outer container frame anchored to the right of the main options frame
 	local cf = CreateFrame("Frame", "TRB_" .. name .. "_BarTextVariables_Frame", mainFrame, "BackdropTemplate")
@@ -157,6 +158,9 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		[variableRenderType.COMMAND] = 4,
 		[variableRenderType.UNKNOWN] = 5,
 	}
+	local cdmDependency = TRB.Data.constants.cdmDependency
+	-- Matches the inline badge tint in OptionsUiPrimitives.
+	local cdmBadgeColor = { 1.0, 0.24, 0.24 }
 
 	local function GetBooleanStatusLabel(value)
 		if value == true then
@@ -219,6 +223,20 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		return ""
 	end
 
+	local function GetCdmLabel(cdm)
+		if cdm == cdmDependency.REQUIRED then
+			return L["BarTextVariablesCdmRequired"]
+		end
+		return L["BarTextVariablesCdmNone"]
+	end
+
+	local function GetCdmBadge(cdm)
+		if cdm == cdmDependency.REQUIRED then
+			return L["BarTextVariablesBadgeCdm"]
+		end
+		return ""
+	end
+
 	local function BuildDescriptionText(rowData)
 		if rowData == nil or rowData.isHeader then
 			return L["BarTextVariablesPanelDescriptionDefault"]
@@ -227,6 +245,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		local metadata = rowData.metadata or {}
 		local summary = {
 			L["BarTextVariablesDescriptionSecret"] .. ": " .. GetBooleanStatusLabel(metadata.secret),
+			L["BarTextVariablesDescriptionCdm"] .. ": " .. GetCdmLabel(metadata.cdm),
 			L["BarTextVariablesDescriptionBooleanCheck"] .. ": " .. GetBooleanStatusLabel(metadata.booleanCheck),
 			L["BarTextVariablesDescriptionLogicComparisons"] .. ": " .. GetBooleanStatusLabel(metadata.comparisonUsable),
 			L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType),
@@ -246,10 +265,12 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			if column == 3 then
 				return L["BarTextVariablesDescriptionSecret"] .. ": " .. GetBooleanStatusLabel(metadata.secret)
 			elseif column == 4 then
-				return L["BarTextVariablesDescriptionBooleanCheck"] .. ": " .. GetBooleanStatusLabel(metadata.booleanCheck)
+				return L["BarTextVariablesDescriptionCdm"] .. ": " .. GetCdmLabel(metadata.cdm)
 			elseif column == 5 then
-				return L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType) .. "\n" .. L["BarTextVariablesDescriptionLogicComparisons"] .. ": " .. GetBooleanStatusLabel(metadata.comparisonUsable)
+				return L["BarTextVariablesDescriptionBooleanCheck"] .. ": " .. GetBooleanStatusLabel(metadata.booleanCheck)
 			elseif column == 6 then
+				return L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType) .. "\n" .. L["BarTextVariablesDescriptionLogicComparisons"] .. ": " .. GetBooleanStatusLabel(metadata.comparisonUsable)
+			elseif column == 7 then
 				return L["BarTextVariablesDescriptionOutput"] .. ": " .. GetRenderTypeLabel(metadata.renderType)
 			end
 		end
@@ -259,10 +280,12 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		elseif column == 3 then
 			return L["BarTextVariablesColumnSecretTooltip"]
 		elseif column == 4 then
-			return L["BarTextVariablesColumnBooleanTooltip"]
+			return L["BarTextVariablesColumnCdmTooltip"]
 		elseif column == 5 then
-			return L["BarTextVariablesColumnTypeTooltip"]
+			return L["BarTextVariablesColumnBooleanTooltip"]
 		elseif column == 6 then
+			return L["BarTextVariablesColumnTypeTooltip"]
+		elseif column == 7 then
 			return L["BarTextVariablesColumnOutputTooltip"]
 		end
 		return nil
@@ -274,6 +297,28 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		end
 		GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
 		GameTooltip:SetText(text, 1, 1, 1)
+		GameTooltip:Show()
+	end
+
+	---Variable name plus its description, so the description is readable without selecting the row.
+	---Anchored to the cell's TOPLEFT rather than the preset ANCHOR_RIGHT, which uses TOPRIGHT and
+	---puts the tooltip over the badge columns on a cell this wide.
+	local function ShowVariableTooltip(owner, rowData)
+		if owner == nil or rowData == nil then
+			return
+		end
+		local variable = rowData.variable or ""
+		if variable == "" then
+			return
+		end
+		GameTooltip:SetOwner(owner, "ANCHOR_NONE")
+		GameTooltip:ClearAllPoints()
+		GameTooltip:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", 0, 0)
+		GameTooltip:SetText(variable, 1, 1, 1)
+		local description = rowData.description or ""
+		if description ~= "" then
+			GameTooltip:AddLine(description, nil, nil, nil, true)
+		end
 		GameTooltip:Show()
 	end
 
@@ -304,12 +349,15 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			sortValueA = dataA.sortSecret
 			sortValueB = dataB.sortSecret
 		elseif sortByColumn == 4 then
+			sortValueA = dataA.sortCdm
+			sortValueB = dataB.sortCdm
+		elseif sortByColumn == 5 then
 			sortValueA = dataA.sortBooleanCheck
 			sortValueB = dataB.sortBooleanCheck
-		elseif sortByColumn == 5 then
+		elseif sortByColumn == 6 then
 			sortValueA = dataA.sortLogicType
 			sortValueB = dataB.sortLogicType
-		elseif sortByColumn == 6 then
+		elseif sortByColumn == 7 then
 			sortValueA = dataA.sortRenderType
 			sortValueB = dataB.sortRenderType
 		end
@@ -374,6 +422,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 						{ value = "" },
 						{ value = "" },
 						{ value = "" },
+						{ value = "" },
 					},
 					isHeader = true,
 					groupKey = groupKey,
@@ -396,6 +445,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 							{ value = L["BarTextVariablesAddButton"] },
 							{ value = variable },
 							{ value = metadata.secret and L["BarTextVariablesBadgeSecret"] or "" },
+							{ value = GetCdmBadge(metadata.cdm) },
 							{ value = metadata.booleanCheck and L["BarTextVariablesBadgeBooleanCheck"] or "" },
 							{ value = GetLogicTypeBadge(metadata.logicType) },
 							{ value = GetRenderTypeBadge(metadata.renderType) },
@@ -411,6 +461,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 						sortBooleanCheck = metadata.booleanCheck and 1 or 0,
 						sortLogicType = logicTypeSortOrder[metadata.logicType] or logicTypeSortOrder[variableLogicType.UNKNOWN],
 						sortRenderType = renderTypeSortOrder[metadata.renderType] or renderTypeSortOrder[variableRenderType.UNKNOWN],
+						sortCdm = metadata.cdm == cdmDependency.REQUIRED and 1 or 0,
 					})
 				end
 			end
@@ -448,7 +499,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 
 	-- =============================================
 	-- LibScrollingTable columns
-	-- Column 1 = Add button (+), Column 2 = Variable name, Columns 3-6 = metadata badges
+	-- Column 1 = Add button (+), Column 2 = Variable name, Columns 3-7 = metadata badges
 	-- =============================================
 	local function UpdateMetadataCell(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, st)
 		if not fShow then return end
@@ -460,6 +511,19 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			cellFrame.text:SetTextColor(1, 1, 1, 1)
 			cellFrame.text:SetText(rowData and rowData.cols[column].value or "")
 		end
+	end
+
+	-- Tinted rather than white, matching the inline badge.
+	local function UpdateCdmCell(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, st)
+		if not fShow then return end
+		local rowData = data[realrow]
+		if rowData and rowData.isHeader then
+			cellFrame.text:SetText("")
+			return
+		end
+		cellFrame.text:SetFontObject(GameFontHighlightSmall)
+		cellFrame.text:SetTextColor(cdmBadgeColor[1], cdmBadgeColor[2], cdmBadgeColor[3], 1)
+		cellFrame.text:SetText(rowData and rowData.cols[column].value or "")
 	end
 
 	local columns = {
@@ -526,6 +590,14 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			["DoCellUpdate"] = UpdateMetadataCell,
 		},
 		{
+			["name"] = L["BarTextVariablesColumnCdm"],
+			["width"] = 22,
+			["align"] = "CENTER",
+			["defaultsort"] = 2,
+			["comparesort"] = CompareVariableRows,
+			["DoCellUpdate"] = UpdateCdmCell,
+		},
+		{
 			["name"] = L["BarTextVariablesColumnBoolean"],
 			["width"] = 22,
 			["align"] = "CENTER",
@@ -567,7 +639,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			variablesTable:SetDisplayRows(newRows, rowHeight)
 		end
 		-- Resize variable column (col 2) to fill remaining width after fixed metadata columns.
-		local fixedWidth = columns[1].width + columns[3].width + columns[4].width + columns[5].width + columns[6].width
+		local fixedWidth = columns[1].width + columns[3].width + columns[4].width + columns[5].width + columns[6].width + columns[7].width
 		columns[2].width = math.max(110, w - fixedWidth - 45)
 		variablesTable:SetDisplayCols(columns)
 	end)
@@ -673,6 +745,8 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 					-- Tooltip for add button
 					if column == 1 then
 						ShowTooltip(cellFrame, L["BarTextVariablesAddTooltip"])
+					elseif column == 2 then
+						ShowVariableTooltip(cellFrame, rowData)
 					elseif column >= 3 then
 						ShowTooltip(cellFrame, GetColumnTooltipText(column, rowData))
 					end

@@ -81,8 +81,9 @@ function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$soulShardsPlusCasting", description = L["WarlockAfflictionBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$shardInstabilityTime", description = L["WarlockAfflictionBarTextVariable_shardInstabilityTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
-		{ variable = "$shardInstabilityStacks", description = L["WarlockAfflictionBarTextVariable_shardInstabilityStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		-- The Unstable Affliction glow says the proc is up but carries no numbers; these render "??".
+		{ variable = "$shardInstabilityTime", description = L["WarlockAfflictionBarTextVariable_shardInstabilityTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$shardInstabilityStacks", description = L["WarlockAfflictionBarTextVariable_shardInstabilityStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 		{ variable = "$shardInstabilityMaxStacks", description = L["WarlockAfflictionBarTextVariable_shardInstabilityMaxStacks"], printInSettings = true, color = false },
 	})
 end
@@ -253,8 +254,9 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$soulShardsPlusCasting", description = L["WarlockDemonologyBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$demonicCoreTime", description = L["WarlockDemonologyBarTextVariable_demonicCoreTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
-		{ variable = "$demonicCoreStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		-- The Demonbolt glow stays lit unchanged as stacks come and go; these render "??" without it.
+		{ variable = "$demonicCoreTime", description = L["WarlockDemonologyBarTextVariable_demonicCoreTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$demonicCoreStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 		{ variable = "$demonicCoreMaxStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreMaxStacks"], printInSettings = true, color = false },
 
 		{ variable = "$doaTime", description = L["WarlockDemonologyBarTextVariable_doaTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },

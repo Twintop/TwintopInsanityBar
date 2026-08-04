@@ -489,6 +489,16 @@ local function InferBarTextVariableBooleanCheck(variable, sectionKey, entry, log
 		string.match(variableName, "remainingstacks$") ~= nil or string.match(variableName, "extensionsremaining$") ~= nil
 end
 
+---Normalizes an entry's declared Cooldown Manager reliance, dropping unrecognized values.
+---@param entry table
+---@return string? # nil when the variable declares no reliance
+local function GetBarTextVariableCdmDependency(entry)
+	if entry.cdm == TRB.Data.constants.cdmDependency.REQUIRED then
+		return entry.cdm
+	end
+	return nil
+end
+
 ---@param entry table
 ---@param sectionKey string
 ---@return table
@@ -526,6 +536,7 @@ function TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
 		booleanCheck = booleanCheck == true,
 		logicOnly = renderType == self.VariableRenderType.LOGIC_ONLY,
 		renderType = renderType,
+		cdm = GetBarTextVariableCdmDependency(entry),
 	}
 end
 

@@ -134,6 +134,13 @@ TRB.Data.constants = {
 			soundName = L["LSMSoundAirHorn"]
 		}
 	},
+	---Declared Cooldown Manager reliance, read only by the options panel. Lives here rather than on
+	---the CDM module because bar types register before that module loads.
+	---@enum TRB.CdmDependency
+	cdmDependency = {
+		-- Value is unobtainable without the tracked spell: bar text renders "??", nodes stay empty.
+		REQUIRED = "required",
+	},
 	frameCategories = {
 		container = "Container",
 		resource = "Resource"

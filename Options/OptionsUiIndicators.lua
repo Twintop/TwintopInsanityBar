@@ -420,6 +420,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			-- Color picker
 			local cp = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, def.colorLabel, indicator, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord, L["GradientBarFillOnlyTooltip"])
 			---@cast cp Button
+			-- Past the swatch label; the gap after the targets dropdown is only a few pixels wide.
+			TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(cp.Font, def.cdm)
 			cp.Swatch1:SetScript("OnMouseDown", function(self, button)
 				local currentKey = orderedKeys[capturedRowIdx]
 				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicatorColors, { [currentKey] = rows[capturedRowIdx].colorPicker }, currentKey, "indicatorColor_" .. currentKey)

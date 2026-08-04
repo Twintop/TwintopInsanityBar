@@ -1494,9 +1494,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 
 	local displayName = barTypeDef.displayName
 
-	-- Section header
+	-- Section header. Every custom bar panel opens with this one, so a whole-bar CDM badge lands here.
 	local headerText = string.format(L["SecondaryPositionAndSize"], displayName)
 	controls[barTypeDef.key .. "DimensionsSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
+	TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(controls[barTypeDef.key .. "DimensionsSection"].font, barTypeDef.cdm)
 
 	-- Optional "Use global settings" row (spec panels) / bulk all-specs toggle (Global panel)
 	if useGlobalSettingKey ~= nil then
