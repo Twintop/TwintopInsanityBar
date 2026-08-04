@@ -19,8 +19,8 @@ local L = TRB.Localization
 ---@return Frame # The outer container frame for the side panel
 function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(parent, name, cache, classId, specId)
 	local mainFrame = TRB.Frames.optionsFrame
-	-- Widened alongside the CDM column so the name column keeps its old width.
-	local panelWidth = 400
+	-- Kept as narrow as the columns allow; the options frame plus this flyout has to fit on screen.
+	local panelWidth = 365
 
 	-- Outer container frame anchored to the right of the main options frame
 	local cf = CreateFrame("Frame", "TRB_" .. name .. "_BarTextVariables_Frame", mainFrame, "BackdropTemplate")
@@ -159,8 +159,6 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		[variableRenderType.UNKNOWN] = 5,
 	}
 	local cdmDependency = TRB.Data.constants.cdmDependency
-	-- Matches the inline badge tint in OptionsUiPrimitives.
-	local cdmBadgeColor = { 1.0, 0.24, 0.24 }
 
 	local function GetBooleanStatusLabel(value)
 		if value == true then
@@ -246,9 +244,9 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		local summary = {
 			L["BarTextVariablesDescriptionSecret"] .. ": " .. GetBooleanStatusLabel(metadata.secret),
 			L["BarTextVariablesDescriptionCdm"] .. ": " .. GetCdmLabel(metadata.cdm),
+			L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType),
 			L["BarTextVariablesDescriptionBooleanCheck"] .. ": " .. GetBooleanStatusLabel(metadata.booleanCheck),
 			L["BarTextVariablesDescriptionLogicComparisons"] .. ": " .. GetBooleanStatusLabel(metadata.comparisonUsable),
-			L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType),
 			L["BarTextVariablesDescriptionOutput"] .. ": " .. GetRenderTypeLabel(metadata.renderType),
 		}
 
@@ -263,7 +261,11 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		if rowData ~= nil and not rowData.isHeader then
 			local metadata = rowData.metadata or {}
 			if column == 3 then
-				return L["BarTextVariablesDescriptionSecret"] .. ": " .. GetBooleanStatusLabel(metadata.secret)
+				local secretText = L["BarTextVariablesDescriptionSecret"] .. ": " .. GetBooleanStatusLabel(metadata.secret)
+				if metadata.secret then
+					secretText = secretText .. "\n" .. L["BarTextVariablesDescriptionSecretNoComparisons"]
+				end
+				return secretText
 			elseif column == 4 then
 				return L["BarTextVariablesDescriptionCdm"] .. ": " .. GetCdmLabel(metadata.cdm)
 			elseif column == 5 then
@@ -278,7 +280,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		if column == 2 then
 			return L["BarTextVariablesColumnNameTooltip"]
 		elseif column == 3 then
-			return L["BarTextVariablesColumnSecretTooltip"]
+			return L["BarTextVariablesColumnSecretComparisonsTooltip"]
 		elseif column == 4 then
 			return L["BarTextVariablesColumnCdmTooltip"]
 		elseif column == 5 then
@@ -513,23 +515,13 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		end
 	end
 
-	-- Tinted rather than white, matching the inline badge.
-	local function UpdateCdmCell(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, st)
-		if not fShow then return end
-		local rowData = data[realrow]
-		if rowData and rowData.isHeader then
-			cellFrame.text:SetText("")
-			return
-		end
-		cellFrame.text:SetFontObject(GameFontHighlightSmall)
-		cellFrame.text:SetTextColor(cdmBadgeColor[1], cdmBadgeColor[2], cdmBadgeColor[3], 1)
-		cellFrame.text:SetText(rowData and rowData.cols[column].value or "")
-	end
+	-- LibScrollingTable indents its rows 6px and reserves 22px on the right for the scroll trough.
+	local tableChrome = 32
 
 	local columns = {
 		{
 			["name"] = "",
-			["width"] = 18,
+			["width"] = 16,
 			["align"] = "CENTER",
 			["DoCellUpdate"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, st)
 				if not fShow then return end
@@ -562,7 +554,8 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		},
 		{
 			["name"] = L["BarTextVariablesColumnName"],
-			["width"] = panelWidth - 65,
+			-- Placeholder; tableContainer's OnSizeChanged recomputes this from the real container width.
+			["width"] = panelWidth - 203,
 			["align"] = "LEFT",
 			["sort"] = 1,
 			["defaultsort"] = 1,
@@ -583,7 +576,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		},
 		{
 			["name"] = L["BarTextVariablesColumnSecret"],
-			["width"] = 22,
+			["width"] = 20,
 			["align"] = "CENTER",
 			["defaultsort"] = 2,
 			["comparesort"] = CompareVariableRows,
@@ -591,15 +584,15 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		},
 		{
 			["name"] = L["BarTextVariablesColumnCdm"],
-			["width"] = 22,
+			["width"] = 20,
 			["align"] = "CENTER",
 			["defaultsort"] = 2,
 			["comparesort"] = CompareVariableRows,
-			["DoCellUpdate"] = UpdateCdmCell,
+			["DoCellUpdate"] = UpdateMetadataCell,
 		},
 		{
 			["name"] = L["BarTextVariablesColumnBoolean"],
-			["width"] = 22,
+			["width"] = 20,
 			["align"] = "CENTER",
 			["defaultsort"] = 2,
 			["comparesort"] = CompareVariableRows,
@@ -607,7 +600,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		},
 		{
 			["name"] = L["BarTextVariablesColumnType"],
-			["width"] = 42,
+			["width"] = 38,
 			["align"] = "CENTER",
 			["defaultsort"] = 1,
 			["comparesort"] = CompareVariableRows,
@@ -615,7 +608,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		},
 		{
 			["name"] = L["BarTextVariablesColumnOutput"],
-			["width"] = 46,
+			["width"] = 42,
 			["align"] = "CENTER",
 			["defaultsort"] = 1,
 			["comparesort"] = CompareVariableRows,
@@ -640,7 +633,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		end
 		-- Resize variable column (col 2) to fill remaining width after fixed metadata columns.
 		local fixedWidth = columns[1].width + columns[3].width + columns[4].width + columns[5].width + columns[6].width + columns[7].width
-		columns[2].width = math.max(110, w - fixedWidth - 45)
+		columns[2].width = math.max(110, w - fixedWidth - tableChrome)
 		variablesTable:SetDisplayCols(columns)
 	end)
 

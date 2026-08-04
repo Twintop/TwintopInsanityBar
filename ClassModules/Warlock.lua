@@ -2212,6 +2212,14 @@ do
 		local snap = TRB.Data.snapshotData.snapshots[spells.ruination.id]
 		return snap ~= nil and snap.buff.isActive == true
 	end
+	demonology["$doaTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.dominionOfArgus == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.dominionOfArgus.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
 	local destruction = {}
 	for key, entry in pairs(shared) do
 		destruction[key] = entry

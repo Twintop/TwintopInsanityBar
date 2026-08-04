@@ -3930,6 +3930,10 @@ do
 		local c = TRB.Data.snapshotData.casting
 		return c.resourceRaw ~= nil and c.resourceRaw ~= 0
 	end
+	-- Shared by Feral and Restoration
+	local clearcastingFn = function()
+		return TRB.Data.snapshotData.attributes.clearcastingActive == true
+	end
 	-- Balance
 	local eclipseFn = function()
 		local spells = TRB.Data.spellsData.spells
@@ -3987,6 +3991,7 @@ do
 		["$incarnationTickTime"] = incarnFeralBuffFn,
 		["$incarnationNextCp"] = incarnFeralBuffFn,
 		["$halazzisFuryTime"] = halazzisFuryFeralFn,
+		["$clearcastingActive"] = clearcastingFn,
 		["$inStealth"] = function() return IsStealthed() end,
 		["$ravageActive"] = function()
 			local spells = TRB.Data.spellsData.spells
@@ -4019,6 +4024,7 @@ do
 			local spells = TRB.Data.spellsData.spells
 			return TRB.Data.snapshotData.snapshots[spells.incarnationTreeOfLife.id].buff.isActive
 		end,
+		["$clearcastingActive"] = clearcastingFn,
 		["$casting"] = castingFn,
 	}
 	for k, v in pairs(healthVars) do restoration[k] = v end

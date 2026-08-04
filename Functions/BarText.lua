@@ -506,10 +506,17 @@ function TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
 	entry = entry or {}
 	sectionKey = sectionKey or "values"
 
+	local secret = entry.secret == true or defaultSecretBarTextVariables[entry.variable] == true
 	local logicType = InferBarTextVariableLogicType(entry.variable, sectionKey, entry)
+
+	-- Comparison operators need a real value in lookupLogic. Icons and pipe commands never write one,
+	-- and secret variables write either nothing or a presence boolean -- ResolveConditionalValues also
+	-- scrubs any secret that does land there to false, so comparing against one can never succeed.
+	-- Booleans compare fine against their "true"/"false" literal, which is why they are not excluded.
 	local comparisonUsable = entry.comparisonUsable
 	if comparisonUsable == nil then
-		comparisonUsable = logicType == self.VariableLogicType.NUMBER or logicType == self.VariableLogicType.INTEGER
+		comparisonUsable = (not secret) and logicType ~= self.VariableLogicType.NONE and
+			logicType ~= self.VariableLogicType.UNKNOWN
 	end
 
 	local booleanCheck = InferBarTextVariableBooleanCheck(entry.variable, sectionKey, entry, logicType)
@@ -520,9 +527,8 @@ function TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
 			renderType = self.VariableRenderType.ICON
 		elseif sectionKey == "pipe" then
 			renderType = self.VariableRenderType.COMMAND
-		elseif entry.logicOnly == true or entry.renderText == false then
-			renderType = self.VariableRenderType.LOGIC_ONLY
-		elseif logicType == self.VariableLogicType.BOOLEAN and entry.variable ~= "$inCombat" then
+		-- Booleans render nothing unless the entry declares otherwise, so they default to logic-only.
+		elseif entry.logicOnly == true or entry.renderText == false or logicType == self.VariableLogicType.BOOLEAN then
 			renderType = self.VariableRenderType.LOGIC_ONLY
 		else
 			renderType = self.VariableRenderType.TEXT
@@ -530,7 +536,7 @@ function TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
 	end
 
 	return {
-		secret = entry.secret == true or defaultSecretBarTextVariables[entry.variable] == true,
+		secret = secret,
 		logicType = logicType,
 		comparisonUsable = comparisonUsable == true,
 		booleanCheck = booleanCheck == true,
@@ -544,6 +550,8 @@ end
 ---@param additionalValues table|nil Optional array of spec-specific value entries to append
 ---@return table # Combined values table
 function TRB.Functions.BarText:GetCommonValues(additionalValues)
+	local logicTypes = self.VariableLogicType
+	local renderTypes = self.VariableRenderType
 	local values = {
 		-- $gcd is the one stat here that is not secret: it comes from the cached GCD duration rather
 		-- than haste math, precisely so it stays usable in comparisons (see UpdateSecondaryStatsSnapshot).
@@ -568,47 +576,55 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false, secret = true },
 		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false, secret = true },
 
-		-- Primary stats: UnitStat is secret.
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false, secret = true },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false, secret = true },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false, secret = true },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false, secret = true },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false, secret = true },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false, secret = true },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false, secret = true },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false, secret = true },
+		-- Primary stats: UnitStat is secret. Whole numbers, so integer rather than the inferred number.
+		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
 
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false, secret = true },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false, secret = true },
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
 		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false, secret = true },
-		{ variable = "$absorb", description = L["BarTextVariable_absorb"], printInSettings = true, color = false, secret = true },
-		{ variable = "$incomingHeal", description = L["BarTextVariable_incomingHeal"], printInSettings = true, color = false, secret = true },
-		{ variable = "$healAbsorb", description = L["BarTextVariable_healAbsorb"], printInSettings = true, color = false, secret = true },
+		{ variable = "$absorb", description = L["BarTextVariable_absorb"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$incomingHeal", description = L["BarTextVariable_incomingHeal"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$healAbsorb", description = L["BarTextVariable_healAbsorb"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
 
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false, category = self.VariableCategory.OTHER },
+		-- Booleans default to logic-only (they'd render nothing); this one reads out as "true"/"false"
+		-- text, so both types are stated rather than inferred.
+		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT },
 		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false, category = self.VariableCategory.OTHER },
 
-		{ variable = "$castTime", description = L["BarTextVariableCastTime"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$castTimeRemaining", description = L["BarTextVariableCastTimeRemaining"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$castLatency", description = L["BarTextVariableCastLatency"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$castLatencyMs", description = L["BarTextVariableCastLatencyMs"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$castPushback", description = L["BarTextVariableCastPushback"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$castSpellName", description = L["BarTextVariableCastSpellName"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$castSpellId", description = L["BarTextVariableCastSpellId"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR },
-		-- Booleans default to logic-only (they'd render nothing); these read out as "true"/"false" text like
-		-- $inCombat does, so both types are stated rather than inferred.
+		-- Player cast bar. A bare check gates on the cast being in progress (see playerCastbarVars).
+		-- $castSpellName is the one entry here with no lookupLogic value, so it cannot be compared.
+		{ variable = "$castTime", description = L["BarTextVariableCastTime"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castTimeRemaining", description = L["BarTextVariableCastTimeRemaining"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castLatency", description = L["BarTextVariableCastLatency"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castLatencyMs", description = L["BarTextVariableCastLatencyMs"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castPushback", description = L["BarTextVariableCastPushback"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castSpellName", description = L["BarTextVariableCastSpellName"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true, comparisonUsable = false },
+		{ variable = "$castSpellId", description = L["BarTextVariableCastSpellId"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.INTEGER, booleanCheck = true },
 		{ variable = "$castInterruptible", description = L["BarTextVariableCastInterruptible"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
-			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT, booleanCheck = true },
 		{ variable = "$castUninterruptible", description = L["BarTextVariableCastUninterruptible"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
-			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT, booleanCheck = true },
 
-		-- Target/Focus cast bars. Values may be secret (enemy casts), so they are display-only.
-		{ variable = "$targetCastingSpellName", description = L["BarTextVariableTargetCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$targetCastTime", description = L["BarTextVariableTargetCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$targetCastTimeRemaining", description = L["BarTextVariableTargetCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$focusCastingSpellName", description = L["BarTextVariableFocusCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
-		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR },
+		-- Target/Focus cast bars. Values may be secret (enemy casts), so they are display-only: nothing
+		-- reaches lookupLogic. A bare check on any of them resolves to "is that unit casting?" instead.
+		{ variable = "$targetCastingSpellName", description = L["BarTextVariableTargetCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+		{ variable = "$targetCastTime", description = L["BarTextVariableTargetCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$targetCastTimeRemaining", description = L["BarTextVariableTargetCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$focusCastingSpellName", description = L["BarTextVariableFocusCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
 	}
 	-- Any shared value not explicitly categorized above is a stat.
 	for _, v in ipairs(values) do
@@ -1839,6 +1855,14 @@ local validBaseVars = {
 	["$stam"] = true, ["$stamina"] = true,
 }
 
+-- Player cast bar variables, which no spec wires up itself. A bare {$castTime}[...] shortcircuits to
+-- "$castTime ~= nil" -- is a cast in progress at all -- matching how the Target/Focus ones below behave.
+local playerCastbarVars = {
+	["$castTime"] = true, ["$castTimeRemaining"] = true,
+	["$castLatency"] = true, ["$castLatencyMs"] = true, ["$castPushback"] = true,
+	["$castSpellName"] = true, ["$castSpellId"] = true,
+}
+
 ---Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
 ---@param var string
 ---@return boolean
@@ -1848,6 +1872,22 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	end
 	if var == "$inCombat" or var == "$inCombatTime" then
 		return TRB.Data.character.inCombat == true
+	end
+	if playerCastbarVars[var] then
+		local castbar = TRB.Data.castbar
+		return castbar ~= nil and castbar:IsActive()
+	end
+	-- These two are already booleans that read false when nothing is casting, so they answer for
+	-- themselves rather than gating on the cast the way the timers above do.
+	if var == "$castInterruptible" or var == "$castUninterruptible" then
+		local castbar = TRB.Data.castbar
+		if castbar == nil or not castbar:IsActive() then
+			return false
+		end
+		if var == "$castInterruptible" then
+			return castbar.notInterruptible ~= true
+		end
+		return castbar.notInterruptible == true
 	end
 	-- Target/Focus cast bar variables are secret in display, but in bar text LOGIC they resolve to a
 	-- plain boolean: "is that unit currently casting?" So {$targetCastTimeRemaining}[...] gates on the cast.

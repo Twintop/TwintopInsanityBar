@@ -976,12 +976,11 @@ local function UpdateSnapshot_Fury()
 	properties.remaining = nil
 	properties.remainingText = nil
 
-	-- Pinned to the buff viewers: a cooldown viewer reports every spell it holds as active.
+	-- Pinned to the buff viewers: a cooldown viewer reports every spell it holds as active. applications
+	-- is nil while the buff is down and secret while it is up, and `~= nil` is legal on a secret.
 	local cdm = TRB.Functions.CooldownManager
 	local wasEnrageActive = enrageBuff.isActive
-	local activeOk = cdm:Read(spells.enrage.id, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF)
-	if activeOk then
-		-- The cached aura record is dropped the moment the aura ends, so a successful read is the up-signal.
+	if cdm:HasSignal(spells.enrage.id, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF) then
 		enrageBuff:InitializeCustomSimple()
 
 		-- Only the bar viewer leaves a subtracted remaining value; elsewhere take Blizzard's own countdown
@@ -2458,6 +2457,18 @@ do
 		end
 		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
 	end
+	local whirlwindFn = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.improvedWhirlwind == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.improvedWhirlwind.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
+	fury["$wwCharges"] = whirlwindFn
+	fury["$whirlwindCharges"] = whirlwindFn
+	fury["$wwTime"] = whirlwindFn
+	fury["$whirlwindTime"] = whirlwindFn
 	-- Protection
 	local protection = {}
 	for k, v in pairs(common) do protection[k] = v end
@@ -2482,6 +2493,16 @@ do
 		local charges = TRB.Data.snapshotData.snapshots[spells.shieldBlock.id].cooldown.charges
 		return issecretvalue(charges) or charges > 0
 	end
+	local violentOutburstFn = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.violentOutburst == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.violentOutburst.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
+	protection["$voTime"] = violentOutburstFn
+	protection["$violentOutburstTime"] = violentOutburstFn
 
 	specValidVars = { [1] = common, [2] = fury, [3] = protection }
 end

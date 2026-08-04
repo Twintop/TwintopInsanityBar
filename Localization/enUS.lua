@@ -2835,7 +2835,7 @@ L["BarTextDeleteActionTooltip"] = "Delete this bar text entry"
 L["BarTextVariablesColumnName"] = "Name"
 L["BarTextVariablesColumnNameTooltip"] = "Sort by variable name."
 L["BarTextVariablesColumnSecret"] = "S"
-L["BarTextVariablesColumnSecretTooltip"] = "Secret value: the rendered value comes from a protected WoW API value."
+-- REMOVED: L["BarTextVariablesColumnSecretTooltip"] - replaced by BarTextVariablesColumnSecretComparisonsTooltip
 L["BarTextVariablesColumnBoolean"] = "B"
 L["BarTextVariablesColumnBooleanTooltip"] = "Bare Boolean check: the variable can be used directly as a true/false condition."
 L["BarTextVariablesColumnType"] = "Type"
@@ -3296,3 +3296,7 @@ L["WarriorFuryBarTextVariable_enrageTime"] = "Time remaining on Enrage"
 L["WarriorFuryCheckboxEnrage"] = "Enrage"
 L["WarriorFuryIndicatorEnrageTooltip"] = "Changes to this color when Enrage is active."
 L["WarriorFuryIndicatorEnrageColor"] = "Enrage is active"
+
+-- Bar text variables panel: secret values and comparison operators
+L["BarTextVariablesColumnSecretComparisonsTooltip"] = "Secret value: the rendered value comes from a protected WoW API value, so it cannot be used with comparison operators in bar text logic."
+L["BarTextVariablesDescriptionSecretNoComparisons"] = "Secret values cannot be used with comparison operators in bar text logic."

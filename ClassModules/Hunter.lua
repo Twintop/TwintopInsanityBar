@@ -2024,6 +2024,10 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.trueshot.id].buff.isActive
 	end
+	mm["$doubleTapTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.doubleTap.id].buff.isActive
+	end
 	-- Survival
 	local sv = {}
 	for k, v in pairs(common) do sv[k] = v end

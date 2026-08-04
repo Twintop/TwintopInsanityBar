@@ -308,7 +308,7 @@ function TRB.Classes.Warrior.FurySpells:New()
 	
 	--Fury base abilities
 	self.enrage = TRB.Classes.SpellBase:New({
-		id = 184362,
+		id = 184361,
 		isTalent = false,
 		baseline = true,
 	})

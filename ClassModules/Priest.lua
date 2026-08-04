@@ -3755,6 +3755,10 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.holyWordSerenity.id].cooldown.charges > 0
 	end
+	local hwSanctifyChargesFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.holyWordSanctify.id].cooldown.charges > 0
+	end
 	local holy = {
 		["$resource"] = false, ["$mana"] = false,
 		["$resourcePercent"] = false, ["$manaPercent"] = false,
@@ -3781,6 +3785,9 @@ do
 		["$hwSerenityCharges"] = hwSerenityChargesFn,
 		["$serenityCharges"] = hwSerenityChargesFn,
 		["$holyWordSerenityCharges"] = hwSerenityChargesFn,
+		["$hwSanctifyCharges"] = hwSanctifyChargesFn,
+		["$sanctifyCharges"] = hwSanctifyChargesFn,
+		["$holyWordSanctifyCharges"] = hwSanctifyChargesFn,
 		["$afTime"] = afTimeFn, ["$angelicFeatherTime"] = afTimeFn,
 		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
 		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
