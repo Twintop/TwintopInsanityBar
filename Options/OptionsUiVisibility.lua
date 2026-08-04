@@ -508,10 +508,17 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 			return
 		end
 
-		-- Only the Never Show bit is written. ShouldShowBar bails on neverShow before it ever reads
-		-- alwaysShow, so the bar is fully disabled either way, and leaving Always Show intact keeps
-		-- this a lossless round trip instead of quietly discarding the setting on the way out.
+		-- Disabling only writes the Never Show bit. ShouldShowBar bails on neverShow before it ever
+		-- reads alwaysShow, so the bar is fully disabled either way, and leaving Always Show intact
+		-- keeps this a lossless round trip instead of quietly discarding the setting on the way out.
 		visSettings.neverShow = not self:GetChecked()
+
+		-- Enabling a bar has to leave it able to actually appear. If nothing else would ever show
+		-- it, fall back to Always Show, otherwise the checkbox would report the bar as enabled while
+		-- it stayed invisible. A bar that already has a condition or threshold keeps it untouched.
+		if not visSettings.neverShow and TRB.Functions.OptionsUi.Visibility:IsBarUnreachable(visSettings) then
+			visSettings.alwaysShow = true
+		end
 
 		-- forceReshow: toggling Never Show changes whether this bar renders at all.
 		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true, true)
