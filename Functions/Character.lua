@@ -1430,7 +1430,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	-- Sub-tables (anchor, color entries, empowerStages) are shared by reference with their source so
 	-- live edits propagate; primitive fields (width, precisions, etc.) are value-copied, so option
 	-- handlers that edit them core-side re-run this fill for the active spec.
-	local anyCastbarGlobal = s.castbarDimensions or s.castbarColors or s.castbarOverlays or s.castbarEmpower or s.castbarText
+	local anyCastbarGlobal = s.castbarDimensions or s.castbarColors or s.castbarOverlays or s.castbarEmpower or s.castbarText or s.castbarShield
 	if anyCastbarGlobal and core.bars and core.bars.castbar and spec.bars and spec.bars.castbar then
 		local coreBar = core.bars.castbar
 		local mergedBar = {}
@@ -1446,6 +1446,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			mergedBar.anchor = coreBar.anchor
 			mergedBar.fillDirection = coreBar.fillDirection
 			mergedBar.icon = coreBar.icon
+		end
+		if s.castbarShield then
+			mergedBar.uninterruptibleShield = coreBar.uninterruptibleShield
 		end
 		if s.castbarOverlays then
 			mergedBar.tickWidth = coreBar.tickWidth
@@ -1517,7 +1520,8 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		local useColors = s[unitKey .. "Colors"]
 		local useEmpower = s[unitKey .. "Empower"]
 		local useText = s[unitKey .. "Text"]
-		if coreBar and specBar and (useDims or useColors or useEmpower or useText) then
+		local useShield = s[unitKey .. "Shield"]
+		if coreBar and specBar and (useDims or useColors or useEmpower or useText or useShield) then
 			local mergedBar = {}
 			for k, v in pairs(specBar) do
 				mergedBar[k] = v
@@ -1531,6 +1535,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				mergedBar.anchor = coreBar.anchor
 				mergedBar.fillDirection = coreBar.fillDirection
 				mergedBar.icon = coreBar.icon
+			end
+			if useShield then
+				mergedBar.uninterruptibleShield = coreBar.uninterruptibleShield
 			end
 			if useColors then
 				mergedBar.interruptColor = coreBar.interruptColor

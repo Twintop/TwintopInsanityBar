@@ -202,6 +202,34 @@ function TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, key, rg
 	TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
 end
 
+-- Shield color sources -> the castbar colors-table key they pull from. Only the uninterruptible colors are
+-- offered, since the shield only shows on uninterruptible casts and should read as part of that state.
+local shieldColorSourceKeys = {
+	uninterruptibleBar = "uninterruptible",
+	uninterruptibleBorder = "uninterruptibleBorder",
+}
+
+---Resolves the uninterruptible shield's tint to an ARGB hex string from its color source, or nil when the
+---source is "default" (leave the atlas untinted/gray). Every source is a plain hex string in the castbar
+---colors table (or the shield's own customColor), so this is secret-safe on the target/focus bars too. The
+---custom source keeps its own alpha; the uninterruptible-color sources return RGB only (their alpha is
+---meaningless to the shield -- the opacity slider is the alpha). Shared by the player and target/focus paths.
+---@param shield table # The uninterruptibleShield settings block
+---@param colors table? # The castbar colors table (uninterruptible / uninterruptibleBorder)
+---@return string? # ARGB hex tint, or nil for the untinted default
+function TRB.Functions.Color:ResolveShieldColor(shield, colors)
+	local source = shield and shield.colorSource or "default"
+	if source == "custom" then
+		return shield.customColor or "FFFFFFFF"
+	end
+	if source == "default" or colors == nil then
+		return nil
+	end
+	local key = shieldColorSourceKeys[source]
+	local entry = key and colors[key]
+	return entry and entry.color or nil
+end
+
 ---Sets a status bar frame's color, using a cache to skip redundant SetStatusBarColor calls when the color hasn't changed
 ---@param frame table # The status bar frame whose color to set
 ---@param key string? # Cache key for deduplication; if nil, always applies the color

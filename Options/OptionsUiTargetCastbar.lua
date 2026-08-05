@@ -119,6 +119,13 @@ function TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(parent, classId, s
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls, spec, classId, specId, yCoord, barDef)
 	yCoord = yCoord - 20
 
+	-- Uninterruptible shield (its own global-settings section, decoupled from the icon)
+	controls[unitKey .. "ShieldSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarIconShieldHeader"], oUi.xCoord, yCoord)
+	yCoord = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, unitKey .. "Shield", yCoord)
+	yCoord = yCoord - 30
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCastbarShieldOptions(parent, controls, spec, classId, specId, yCoord, barDef)
+	yCoord = yCoord - 20
+
 	-- Colors: fill/interrupt/border/background, under the "Colors" per-section global toggle. Optional
 	-- colors follow the standard row layout -- enable checkbox in the left column, color swatch in the
 	-- right -- like the player cast bar's overlay colors; always-applied colors are plain swatch rows.

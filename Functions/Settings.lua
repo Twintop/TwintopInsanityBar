@@ -69,14 +69,17 @@ local function NewSpecGlobalDefaults()
 		castbarOverlays = true,
 		castbarEmpower = true,
 		castbarText = true,
+		castbarShield = true,
 		targetCastbarDimensions = true,
 		targetCastbarColors = true,
 		targetCastbarEmpower = true,
 		targetCastbarText = true,
+		targetCastbarShield = true,
 		focusCastbarDimensions = true,
 		focusCastbarColors = true,
 		focusCastbarEmpower = true,
-		focusCastbarText = true
+		focusCastbarText = true,
+		focusCastbarShield = true
 	}
 end
 
@@ -9156,6 +9159,7 @@ function TRB.Functions.Settings:DefaultCastbarBarSettings(classic, className, sp
 	settings.targetClassColorFriendly = false
 	settings.tickProfiles = {}
 	settings.icon = self:DefaultBarIconSettings()
+	settings.uninterruptibleShield = self:DefaultCastbarShieldSettings()
 	settings.height = 30
 	return settings
 end
@@ -9171,6 +9175,22 @@ function TRB.Functions.Settings:DefaultBarIconSettings()
 		spacing = 2,
 		collapseBorderWidth = false,
 		zoom = 10
+	}
+end
+
+---Gets the default uninterruptible shield settings for a cast bar. Its own bar-level block (a sibling of
+---`icon`, not nested inside it) so it is globally toggleable as its own section and shows independent of the
+---icon. Defaults: drawn behind the target at 175% (peeking out), fully opaque, centered, untinted.
+---@return TRB.Classes.Settings.CastBarIconShield
+function TRB.Functions.Settings:DefaultCastbarShieldSettings()
+	return {
+		mode = "behind",
+		target = "icon",
+		sizePercent = 175,
+		opacity = 100,
+		anchor = "CENTER",
+		colorSource = "default",
+		customColor = "FFFFFFFF"
 	}
 end
 
@@ -9284,6 +9304,7 @@ function TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic, unitKey
 	settings.classColorPvpOnly = false
 	settings.classColorFriendly = false
 	settings.icon = self:DefaultBarIconSettings()
+	settings.uninterruptibleShield = self:DefaultCastbarShieldSettings()
 
 	if unitKey == "targetCastbar" then
 		settings.width = 500

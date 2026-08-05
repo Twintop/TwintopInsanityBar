@@ -385,6 +385,10 @@ if locale == "enGB" then
     L["TargetCastbarClassColorTooltip"] = "When checked, the cast bar fill uses the class colour of your current %s for every cast type, including empowered and uninterruptible casts, whenever that %s is an enemy player. An active colour indicator still takes priority."
     L["TargetCastbarClassColorFriendlyTooltip"] = "When checked, a friendly player %s also recolours the cast bar with their class colour, not just enemy players."
 
+    -- Cast bar uninterruptible shield
+    L["BarIconShieldColor"] = "Shield Colour"
+    L["BarIconShieldCustomColor"] = "Custom Shield Colour"
+    
     -- Druid Feral Midnight Season 2 set bonus (Halazzi's Fury)
     L["DruidFeralIndicatorHalazzisFuryTooltip"] = "Changes to this colour while the Midnight Season 2 (2pc) damage buff (Halazzi's Fury) is active after Berserk / Avatar of Ashamane ends."
 

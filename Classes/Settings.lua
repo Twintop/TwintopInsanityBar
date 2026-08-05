@@ -21,6 +21,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public castbarOverlays boolean
 ---@field public castbarEmpower boolean
 ---@field public castbarText boolean
+---@field public castbarShield boolean
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public bar TRB.Classes.Settings.PrimaryBar
@@ -237,6 +238,34 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public collapseBorderWidth boolean # Overlap the icon's border with the bar's (single-width shared border); ignores spacing
 ---@field public zoom number # Percent cropped from each edge of the icon art, to cut the stock spell border
 
+---@alias trbCastBarIconShieldMode
+---| '"behind"' # Shield drawn behind the target (peeks out around it)
+---| '"over"'   # Shield drawn over the target
+---| '"hide"'   # Shield never drawn
+
+---@alias trbCastBarIconShieldTarget
+---| '"icon"' # Shield anchors to and sizes against the ability icon
+---| '"bar"'  # Shield anchors to and sizes against the bar itself (works with the icon disabled)
+
+---@alias trbCastBarIconShieldColorSource
+---| '"default"'               # Untinted -- the atlas shows its native gray
+---| '"uninterruptibleBar"'    # Tint to the uninterruptible fill color
+---| '"uninterruptibleBorder"' # Tint to the uninterruptible border color
+---| '"custom"'                # Tint to customColor (its alpha multiplies the opacity slider)
+
+---The uninterruptible shield shown while a cast can't be interrupted. A bar-level block (sibling of the
+---cast bar's `icon`, not nested in it) so it is globally toggleable as its own section and shows regardless
+---of the icon. Square, anchored by a 9-point point to either the ability icon or the bar (`target`), with an
+---independent size (% of the target) and opacity.
+---@class TRB.Classes.Settings.CastBarIconShield
+---@field public mode trbCastBarIconShieldMode # Draw behind/over the target, or hide entirely
+---@field public target trbCastBarIconShieldTarget # Anchor/size against the icon or the bar
+---@field public sizePercent number # Square side length as a percent of the target's reference length (100 = target-sized)
+---@field public opacity number # Shield alpha percent (100 = opaque); multiplies the custom color's own alpha
+---@field public anchor string # 9-point anchor: which point of the target the shield centers on
+---@field public colorSource trbCastBarIconShieldColorSource # Where the shield tint comes from
+---@field public customColor string # ARGB hex tint used when colorSource is "custom"
+
 ---@class TRB.Classes.Settings.SecondaryBar
 ---@field public icon TRB.Classes.Settings.BarIcon? # Side ability icon; nil on bar types that do not support one
 ---@field public width number
@@ -294,6 +323,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public targetClassColorPvpOnly boolean # Restrict targetClassColor to when PvP is enabled (flagged / War Mode / battleground / arena)
 ---@field public targetClassColorFriendly boolean # Extend targetClassColor to friendly player targets as well
 ---@field public tickProfiles table<integer, TRB.Classes.Settings.CastbarTickProfile> # Channel tick profiles keyed by spellId
+---@field public uninterruptibleShield TRB.Classes.Settings.CastBarIconShield # Uninteruptible Shield settings
 
 ---@class TRB.Classes.Settings.DisplayText
 ---@field public default TRB.Classes.Settings.DisplayTextDefault

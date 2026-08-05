@@ -85,6 +85,19 @@ local content = [====[
 
 ---
 
+# 12.0.7.13-release (2026-08-03)
+## General
+### Cast Bars
+
+- Add a shield icon that is shown when a cast can't be interrupted, on by default. This shield is fully customizable in size, position (icon/bar, behind/in front, anchored to 9-point), color, and can be hidden if desired.
+- Improve cast bar performance by reducing the number of redraws required.
+
+### Localization
+
+- [#800 - @MOSS099](#800) Updated translations for Simplified Chinese (zhCN).
+
+---
+
 # 12.0.7.12-release (2026-07-25)
 ## General
 ### Cast Bars
