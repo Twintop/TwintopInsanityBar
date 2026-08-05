@@ -1919,6 +1919,7 @@ L["FontOutlineThickOutline"] = "Thick Outline"
 L["FontOutlineMonochrome"] = "Monochrome"
 L["FontOutlineOutlineMonochrome"] = "Outline + Monochrome"
 L["FontOutlineThickOutlineMonochrome"] = "Thick Outline + Monochrome"
+L["FontOutlineSlug"] = "Outline + Slug"
 L["UseDefaultFontOutline"] = "Use shared Font Outline"
 L["UseDefaultFontOutlineTooltip"] = "This will make this bar text area use the shared font outline setting instead of the font outline chosen above."
 

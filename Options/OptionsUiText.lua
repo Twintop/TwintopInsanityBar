@@ -153,6 +153,7 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 		{ label = L["FontOutlineMonochrome"], value = "MONOCHROME" },
 		{ label = L["FontOutlineOutlineMonochrome"], value = "OUTLINE, MONOCHROME" },
 		{ label = L["FontOutlineThickOutlineMonochrome"], value = "THICKOUTLINE, MONOCHROME" },
+		{ label = L["FontOutlineSlug"], value = "OUTLINE, SLUG" },
 	}
 	local fontOutlineLookup = {}
 	for _, opt in ipairs(fontOutlineOptions) do

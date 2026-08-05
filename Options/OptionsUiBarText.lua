@@ -1170,6 +1170,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		{ label = L["FontOutlineMonochrome"], value = "MONOCHROME" },
 		{ label = L["FontOutlineOutlineMonochrome"], value = "OUTLINE, MONOCHROME" },
 		{ label = L["FontOutlineThickOutlineMonochrome"], value = "THICKOUTLINE, MONOCHROME" },
+		{ label = L["FontOutlineSlug"], value = "OUTLINE, SLUG" },
 	}
 	local perEntryFontOutlineLookup = {}
 	for _, opt in ipairs(perEntryFontOutlineOptions) do
@@ -2033,4 +2034,4 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	---@diagnostic disable-next-line: inject-field
 	parent.barTextVariablesPanel = variablesPanel
 	TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-end
+end
