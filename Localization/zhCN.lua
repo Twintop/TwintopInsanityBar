@@ -1778,8 +1778,6 @@ if locale == "zhCN" then
     L["FontOutlineOutline"] = "描边"
     L["FontOutlineThickOutline"] = "粗描边"
     L["FontOutlineMonochrome"] = "单色"
-    L["FontOutlineOutlineMonochrome"] = "描边 + 单色"
-    L["FontOutlineThickOutlineMonochrome"] = "粗描边 + 单色"
     L["UseDefaultFontOutline"] = "使用共享字体描边"
     L["UseDefaultFontOutlineTooltip"] = "使此资源条文字区域使用共享字体描边设置，而非上方选择的描边样式。"
 

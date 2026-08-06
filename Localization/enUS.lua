@@ -1917,9 +1917,6 @@ L["FontOutlineNone"] = "None"
 L["FontOutlineOutline"] = "Outline"
 L["FontOutlineThickOutline"] = "Thick Outline"
 L["FontOutlineMonochrome"] = "Monochrome"
-L["FontOutlineOutlineMonochrome"] = "Outline + Monochrome"
-L["FontOutlineThickOutlineMonochrome"] = "Thick Outline + Monochrome"
-L["FontOutlineSlug"] = "Outline + Slug"
 L["UseDefaultFontOutline"] = "Use shared Font Outline"
 L["UseDefaultFontOutlineTooltip"] = "This will make this bar text area use the shared font outline setting instead of the font outline chosen above."
 
@@ -3240,3 +3237,6 @@ L["CopyMenuSection_focusCastbarShield"] = "Focus Cast Bar Uninterruptible Shield
 L["CheckboxUseGlobalTooltip_CastbarShield"] = "When checked, the global Cast Bar uninterruptible shield settings will be used."
 L["CheckboxUseGlobalTooltip_TargetCastbarShield"] = "When checked, the global Target Cast Bar uninterruptible shield settings will be used."
 L["CheckboxUseGlobalTooltip_FocusCastbarShield"] = "When checked, the global Focus Cast Bar uninterruptible shield settings will be used."
+
+L["FontOutlineSlug"] = "Use Slug Rendering"
+L["FontOutlineTooltip"] = "Pick any combination of styles. None clears everything else, and Outline and Thick Outline replace one another."

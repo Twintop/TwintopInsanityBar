@@ -180,7 +180,6 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -410,7 +409,6 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -621,7 +619,6 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",

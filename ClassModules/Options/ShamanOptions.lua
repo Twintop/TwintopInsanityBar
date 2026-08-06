@@ -226,7 +226,6 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -426,7 +425,6 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -603,7 +601,6 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",

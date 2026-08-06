@@ -45,7 +45,6 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
@@ -75,7 +74,6 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
@@ -105,7 +103,6 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
@@ -135,7 +132,6 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
@@ -165,7 +161,6 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
@@ -195,7 +190,6 @@ local function EvokerLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		}
 	}
@@ -393,7 +387,6 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -598,7 +591,6 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -656,7 +648,6 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
@@ -687,7 +678,6 @@ local function AugmentationLoadDefaultBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
@@ -920,7 +910,6 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
