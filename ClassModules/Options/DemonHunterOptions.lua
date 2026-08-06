@@ -24,7 +24,6 @@ local function SharedLoadDefaultBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
@@ -242,7 +241,6 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFFFF"
 				},
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -460,7 +458,6 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFFFF"
 				},
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -493,7 +490,6 @@ local function DevourerLoadDefaultBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
@@ -754,7 +750,6 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFFFF"
 				},
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",

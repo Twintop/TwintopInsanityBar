@@ -336,8 +336,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public fontJustifyHorizontalName string
 ---@field public fontSize integer
 ---@field public color TRB.Classes.Settings.ColorEntry
----@field public fontOutline string # SetFont flags: "", "OUTLINE", "THICKOUTLINE", "MONOCHROME", "OUTLINE, MONOCHROME", "THICKOUTLINE, MONOCHROME"
----@field public fontOutlineName string # Localized display name for the outline option
+---@field public fontOutline string # SetFont flags joined with ", ": any of "OUTLINE"/"THICKOUTLINE" (mutually exclusive), "MONOCHROME", "SLUG". Empty string means no flags
 ---@field public fontShadow TRB.Classes.Settings.FontShadow
 
 ---@class TRB.Classes.Settings.FontShadow

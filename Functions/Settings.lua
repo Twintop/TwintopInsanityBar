@@ -278,7 +278,6 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 						color = "FFFFFFFF"
 					},
 					fontOutline = "OUTLINE",
-					fontOutlineName = L["FontOutlineOutline"],
 					fontShadow = {
 						enabled = false,
 						color = "FF000000",
@@ -2162,7 +2161,6 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 										useDefaultFontOutline = true,
 										useDefaultFontShadow = true,
 										fontOutline = "OUTLINE",
-										fontOutlineName = L["FontOutlineOutline"],
 										fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 										fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 										useDefaultFontFace = true,
@@ -2446,7 +2444,6 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 									useDefaultFontOutline = true,
 									useDefaultFontShadow = true,
 									fontOutline = "OUTLINE",
-									fontOutlineName = L["FontOutlineOutline"],
 									fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 									fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 									useDefaultFontFace = true,
@@ -2593,7 +2590,6 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 									useDefaultFontOutline = false,
 									useDefaultFontShadow = false,
 									fontOutline = "OUTLINE",
-									fontOutlineName = L["FontOutlineOutline"],
 									fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 									useDefaultFontFace = false,
 									useDefaultFontSize = false,
@@ -5829,14 +5825,12 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		local dt = TwintopInsanityBarSettings.core.displayText
 		if dt.default and dt.default.fontOutline == nil then
 			dt.default.fontOutline = "OUTLINE"
-			dt.default.fontOutlineName = L["FontOutlineOutline"]
 			dt.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
 		end
 		if dt.barText then
 			for _, entry in ipairs(dt.barText) do
 				if entry.fontOutline == nil then
 					entry.fontOutline = "OUTLINE"
-					entry.fontOutlineName = L["FontOutlineOutline"]
 				end
 				if entry.fontShadow == nil then
 					entry.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
@@ -5858,14 +5852,12 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 					local dt = specSettings.displayText
 					if dt.default and dt.default.fontOutline == nil then
 						dt.default.fontOutline = "OUTLINE"
-						dt.default.fontOutlineName = L["FontOutlineOutline"]
 						dt.default.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
 					end
 					if dt.barText then
 						for _, entry in ipairs(dt.barText) do
 							if entry.fontOutline == nil then
 								entry.fontOutline = "OUTLINE"
-								entry.fontOutlineName = L["FontOutlineOutline"]
 							end
 							if entry.fontShadow == nil then
 								entry.fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
@@ -9212,7 +9204,6 @@ function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relati
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize = leftFontSize,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -9242,7 +9233,6 @@ function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relati
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize = rightFontSize,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -9967,7 +9957,6 @@ function TRB.Functions.Settings:DefaultBuffTimeBarTextEntry(variable, icon, clas
 			fontJustifyHorizontalName = fontJustifyHorizontalName,
 			fontSize = 14,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -10219,7 +10208,6 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=13,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -10250,7 +10238,6 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -10280,7 +10267,6 @@ function TRB.Functions.Settings:LoadDefaultHealthBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -10332,7 +10318,6 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 			},
 			fontSize = 48,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 	}
@@ -10377,7 +10362,6 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize = 18,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -10407,7 +10391,6 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize = 14,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -10437,7 +10420,6 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize = 10,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFF0000" },
 			position = {
@@ -10480,7 +10462,6 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=13,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -10511,7 +10492,6 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=14,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -10541,7 +10521,6 @@ function TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 			fontJustifyHorizontalName = L["PositionRight"],
 			fontSize=14,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -10587,7 +10566,6 @@ function TRB.Functions.Settings:LoadDefaultFireBlastChargeBarTextSettings()
 			fontJustifyHorizontalName = L["PositionCenter"],
 			fontSize = 14,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			color = { color = "FFFFFFFF" },
 			position = {
@@ -10645,7 +10623,6 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=20,
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 				color = { color = "FFFFFFFF" },
 				position = {
@@ -10677,7 +10654,6 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=16,
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 				color = { color = "FFFFFFFF" },
 				position = {
@@ -10710,7 +10686,6 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 				color = { color = "FFFFFFFF" },
 				position = {
@@ -10742,7 +10717,6 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=16,
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 				color = { color = "FFFFFFFF" },
 				position = {
@@ -10772,7 +10746,6 @@ function TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings(includeResource
 				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 				color = { color = "FFFFFFFF" },
 				position = {

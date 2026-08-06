@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.0.7.14-release (2026-08-06)
+## General
+### Bar Text
+
+- [#802 - @Ignitetheskywow](#802) Font Outline is now a multiselect dropdown. Outline and Thick Outline still replace each other, but either can be combined with Monochrome and the new Slug style, and None clears the rest.
+
+---
+
 # 12.0.7.13-release (2026-08-03)
 ## General
 ### Cast Bars
