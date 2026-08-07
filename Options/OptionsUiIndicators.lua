@@ -25,6 +25,40 @@ local defaultElementDefs = {
 	{ key = "endCap", label = L["EndCap"] },
 }
 
+-- A target menu draws a title and a divider per bar plus a checkbox per element, so specs with several
+-- extra bars (Blood DK, Holy Priest) run well past a screen's worth now that the cast bars are
+-- targetable. Past this many rows the menu scrolls instead of growing.
+local maxMenuRowsBeforeScroll = 15
+local menuRowHeight = 20
+
+---Turns a target menu scrollable when the rows it is about to draw would overflow the screen.
+---@param rootDescription table The root menu description being populated
+---@param barTargetDefs TRB.Classes.OptionsUi.BarTargetDef[] The bars the menu offers
+---@param isExcluded fun(barDef: table, elemKey: string): boolean Whether an element is omitted from the menu
+local function ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, isExcluded)
+	if not rootDescription.SetScrollMode then
+		return
+	end
+
+	local rows = 0
+	for _, barDef in ipairs(barTargetDefs) do
+		local sectionRows = 0
+		for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
+			if not isExcluded(barDef, elemDef.key) then
+				sectionRows = sectionRows + 1
+			end
+		end
+		if sectionRows > 0 then
+			-- The section's title row, and the divider drawn ahead of every section but the first.
+			rows = rows + sectionRows + (rows > 0 and 2 or 1)
+		end
+	end
+
+	if rows > maxMenuRowsBeforeScroll then
+		rootDescription:SetScrollMode(maxMenuRowsBeforeScroll * menuRowHeight)
+	end
+end
+
 ---Whether this spec registers channel tick profiles of its own, which is what makes the cast bar draw
 ---channel tick lines -- and so what makes a color for them worth offering. Read from the code registry, for
 ---the spec whose panel is being built (not the one being played, which is usually a different spec).
@@ -142,6 +176,28 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 	local sharedSettings = spec.colors.shared
 	local indicatorColors = sharedSettings.indicatorColors
+
+	---Whether an element is off-limits to a flat indicator row, because the panel excludes it outright.
+	---@param barDef table
+	---@param elemKey string
+	---@return boolean
+	local function IsExcluded(barDef, elemKey)
+		local excluded = excludedElements[barDef.key]
+		return (excluded and excluded[elemKey]) or false
+	end
+
+	---An element is off-limits to a gradient row if the panel excludes it outright, the caller excludes it
+	---from gradients, or the bar itself declares it can't take a color curve.
+	---@param barDef table
+	---@param elemKey string
+	---@return boolean
+	local function IsGradientExcluded(barDef, elemKey)
+		local gradExcluded = gradientExcludedElements[barDef.key]
+		local barExcluded = barDef.gradientExcluded
+		return IsExcluded(barDef, elemKey)
+			or (gradExcluded and gradExcluded[elemKey])
+			or (barExcluded and barExcluded[elemKey]) or false
+	end
 
 	-- Working copy of the ordered keys (survives reordering within this panel's lifetime)
 	-- Filter out any keys that have no matching indicatorDef or no indicatorColors entry
@@ -365,20 +421,17 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				if not currentIndicator then return end
 				currentIndicator.targets = currentIndicator.targets or {}
 
+				ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, IsExcluded)
+
 				local firstBar = true
 				for _, barDef in ipairs(barTargetDefs) do
 					local barElementDefs = barDef.elements or defaultElementDefs
-					local excluded = excludedElements[barDef.key]
 					local allExcluded = true
-					if excluded then
-						for _, elemDef in ipairs(barElementDefs) do
-							if not excluded[elemDef.key] then
-								allExcluded = false
-								break
-							end
+					for _, elemDef in ipairs(barElementDefs) do
+						if not IsExcluded(barDef, elemDef.key) then
+							allExcluded = false
+							break
 						end
-					else
-						allExcluded = false
 					end
 					if not allExcluded then
 						if not firstBar then
@@ -389,7 +442,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 						currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
 
 						for _, elemDef in ipairs(barElementDefs) do
-							if not (excluded and excluded[elemDef.key]) then
+							if not IsExcluded(barDef, elemDef.key) then
 								rootDescription:CreateCheckbox(
 									elemDef.label,
 									function()
@@ -615,23 +668,14 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 					if not ci then return end
 					ci.targets = ci.targets or {}
 
+					ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, IsGradientExcluded)
+
 					local firstBar = true
 					for _, barDef in ipairs(barTargetDefs) do
 						local barElementDefs = barDef.elements or defaultElementDefs
-						-- An element is off-limits to a gradient row if the panel excludes it outright, the caller
-						-- excludes it from gradients, or the bar itself declares it can't take a color curve.
-						local function IsGradientExcluded(elemKey)
-							local globalExcluded = excludedElements[barDef.key]
-							local gradExcluded = gradientExcludedElements[barDef.key]
-							local barExcluded = barDef.gradientExcluded
-							return (globalExcluded and globalExcluded[elemKey])
-								or (gradExcluded and gradExcluded[elemKey])
-								or (barExcluded and barExcluded[elemKey]) or false
-						end
-
 						local allExcluded = true
 						for _, elemDef in ipairs(barElementDefs) do
-							if not IsGradientExcluded(elemDef.key) then
+							if not IsGradientExcluded(barDef, elemDef.key) then
 								allExcluded = false
 								break
 							end
@@ -645,7 +689,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 							ci.targets[barDef.key] = ci.targets[barDef.key] or {}
 
 							for _, elemDef in ipairs(barElementDefs) do
-								if not IsGradientExcluded(elemDef.key) then
+								if not IsGradientExcluded(barDef, elemDef.key) then
 									rootDescription:CreateCheckbox(
 										elemDef.label,
 										function()
