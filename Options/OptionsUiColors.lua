@@ -955,6 +955,70 @@ function TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, contr
 	return yCoord
 end
 
+---Generates the maximum value override panel for a custom bar, mirroring GenerateMaxResourceOptions
+---but scoped to the bar's own settings (`spec.bars[barKey].maxResource`) instead of the primary resource.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param spec table The spec settings table containing the bars table
+---@param classId integer? The class ID, or nil for global settings
+---@param specId integer? The spec ID, or nil for global settings
+---@param yCoord number The current Y coordinate for layout positioning
+---@param barKey string The custom bar's registry key (e.g. "coagulatingBlood")
+---@param resourceString string The localized name of the bar's resource
+---@param minValue number The minimum allowed value for the slider
+---@param maxValue number The maximum allowed value for the slider
+---@return number yCoord The updated Y coordinate after placing all controls
+function TRB.Functions.OptionsUi.Colors:GenerateCustomBarMaxValueOptions(parent, controls, spec, classId, specId, yCoord, barKey, resourceString, minValue, maxValue)
+	local barSettings = spec.bars and spec.bars[barKey]
+	if barSettings == nil or barSettings.maxResource == nil then
+		return yCoord
+	end
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName .. "_" .. barKey
+	local f = nil
+
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls[barKey .. "MaxResourceConfiguration"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MaxResourceHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 40
+	controls.checkBoxes[barKey .. "MaxResourceEnabled"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_maxResourceEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes[barKey .. "MaxResourceEnabled"]
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["MaxResourceEnabled"])
+	f.tooltip = L["MaxResourceEnabledTooltip"]
+	f:SetChecked(barSettings.maxResource.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		barSettings.maxResource.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi.Colors:RefreshCustomBarMaxValue(classId, specId)
+	end)
+
+	controls[barKey .. "MaxResourceValue"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, string.format(L["MaxResourceValue"], resourceString), minValue, maxValue, barSettings.maxResource.value, 1, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls[barKey .. "MaxResourceValue"]:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		barSettings.maxResource.value = value
+		TRB.Functions.OptionsUi.Colors:RefreshCustomBarMaxValue(classId, specId)
+	end)
+
+	return yCoord
+end
+
+---Pushes a custom bar max value change to the live bar, when the edited spec is the active one.
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.OptionsUi.Colors:RefreshCustomBarMaxValue(classId, specId)
+	if classId ~= nil and specId ~= nil and (classId ~= TRB.Data.character.classId or specId ~= TRB.Data.character.specId) then
+		return
+	end
+
+	if TRB.Frames.barGroups ~= nil and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
+end
+
 ---Generates the "End Of" buff color options UI (active buff color checkbox + color picker, ending color checkbox + color picker)
 ---@param parent Frame # The parent frame
 ---@param controls table # The controls table

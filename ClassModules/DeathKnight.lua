@@ -19,6 +19,10 @@ local spellEventFrame = CreateFrame("Frame")
 
 local talents --[[@as TRB.Classes.Talents]]
 
+-- Max currently applied to the Coagulating Blood node. Its min/max can be tainted by the secret stack
+-- count, so the applied scale is tracked here instead of read back off the frame.
+local coagulatingBloodAppliedMax = nil
+
 Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
@@ -337,14 +341,10 @@ local function ConstructResourceBar(settings)
 		barGroups.boneShield:SetNodeCount(maxBoneShield)
 	end
 
-	-- Coagulating Blood bar (Blood only). Fixed stack scale, so set once here rather than per frame;
-	-- the "percentage" min/max mode leaves it to us and never overwrites it.
+	-- Coagulating Blood bar (Blood only). The node is freshly built, so drop the applied scale and
+	-- let the next update reapply it.
 	if barGroups and barGroups.coagulatingBlood and TRB.Data.character.specId == 1 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
-		local coagulatingBloodNode = barGroups.coagulatingBlood:GetNode(1)
-		if coagulatingBloodNode then
-			coagulatingBloodNode:SetMinMax(0, spells.coagulatingBlood.maxStacks)
-		end
+		coagulatingBloodAppliedMax = nil
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -436,7 +436,7 @@ local function RefreshLookupData_Blood()
 	if not activeVars or activeVars["$coagulatingBloodStacks"] or activeVars["$coagulatingBloodStacksMax"] then
 		local attributes = snapshotData.attributes
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
-		local _coagulatingBloodStacksMax = spells.coagulatingBlood.maxStacks
+		local _coagulatingBloodStacksMax = Bar:GetCustomBarMaxValue(specSettings.bars and specSettings.bars.coagulatingBlood, spells.coagulatingBlood.maxStacks)
 
 		lookupLogic["$coagulatingBloodStacksMax"] = _coagulatingBloodStacksMax
 
@@ -1066,8 +1066,16 @@ local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
 		return
 	end
 
+	-- The stack count is secret, so SetBarNodeValue passes it through unscaled and the node's own
+	-- range does the filling. That makes SetMinMax the only place the max override can take effect.
+	local maxStacks = Bar:GetCustomBarMaxValue(specSettings.bars and specSettings.bars.coagulatingBlood, spells.coagulatingBlood.maxStacks)
+	if coagulatingBloodAppliedMax ~= maxStacks then
+		node:SetMinMax(0, maxStacks)
+		coagulatingBloodAppliedMax = maxStacks
+	end
+
 	local stacks = snapshotData.attributes.coagulatingBloodStacks or 0
-	Bar:SetBarNodeValue(specCacheSettings, "coagulatingBlood", node, stacks, spells.coagulatingBlood.maxStacks)
+	Bar:SetBarNodeValue(specCacheSettings, "coagulatingBlood", node, stacks, maxStacks)
 
 	-- Same color resolution as the primary bar. Unlike Bone Shield the fill has no positional scheme
 	-- of its own, so the gradient can target it too.

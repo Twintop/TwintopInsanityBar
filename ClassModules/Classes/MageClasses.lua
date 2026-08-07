@@ -138,10 +138,10 @@ function TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$fireBlastCharges", description = L["MageFireBarTextVariable_fireBlastCharges"], printInSettings = true, color = false, secret = true },
-        { variable = "$fbCharges", description = "", printInSettings = false, color = false, secret = true },
-        { variable = "$fireBlastChargesMax", description = L["MageFireBarTextVariable_fireBlastChargesMax"], printInSettings = true, color = false },
-        { variable = "$fbChargesMax", description = "", printInSettings = false, color = false },
+		{ variable = "$fireBlastCharges", description = L["MageFireBarTextVariable_fireBlastCharges"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCE },
+        { variable = "$fbCharges", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCE },
+        { variable = "$fireBlastChargesMax", description = L["MageFireBarTextVariable_fireBlastChargesMax"], printInSettings = true, color = false, category = varCategory.RESOURCE },
+        { variable = "$fbChargesMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
 		{ variable = "$fireBlastTime", description = L["MageFireBarTextVariable_fireBlastTime"], printInSettings = true, color = false, secret = true },
 		{ variable = "$fbTime", description = "", printInSettings = false, color = false, secret = true },
 	})

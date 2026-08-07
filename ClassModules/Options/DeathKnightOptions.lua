@@ -13,6 +13,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy = {}
 
 local BLOOD_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.blood.runicPower
+local BLOOD_MAX_COAGULATING_BLOOD = TRB.Data.maxResource.deathknight.blood.coagulatingBlood
 local FROST_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.frost.runicPower
 local UNHOLY_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.unholy.runicPower
 
@@ -1237,6 +1238,9 @@ local function BloodConstructCoagulatingBloodBarPanel(parent)
 
 		yCoord = yCoord - 90
 		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 6, 1, yCoord, coagulatingBloodBarDef)
+
+		yCoord = yCoord - 60
+		yCoord = TRB.Functions.OptionsUi.Colors:GenerateCustomBarMaxValueOptions(parent, controls, spec, 6, 1, yCoord, "coagulatingBlood", L["ResourceCoagulatingBlood"], 1, BLOOD_MAX_COAGULATING_BLOOD)
 	end
 end
 

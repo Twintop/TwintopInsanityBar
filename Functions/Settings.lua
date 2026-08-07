@@ -9926,6 +9926,10 @@ function TRB.Functions.Settings:DefaultCoagulatingBloodBarDimensions(classic)
 	dims.anchor.barKey = "boneShield"
 	dims.anchor.anchorPoint = "TOP"
 	dims.anchor.attachPoint = "BOTTOM"
+	dims.maxResource = {
+		enabled = false,
+		value = TRB.Data.maxResource.deathknight.blood.coagulatingBlood
+	}
 	return dims
 end
 

@@ -247,7 +247,7 @@ function TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$essenceMax", description = L["EvokerAugmentationBarTextVariable_essenceMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$ebonMightTime", description = L["EvokerAugmentationBarTextVariable_ebonMightTime"], printInSettings = true, color = false },
+		{ variable = "$ebonMightTime", description = L["EvokerAugmentationBarTextVariable_ebonMightTime"], printInSettings = true, color = false, category = varCategory.RESOURCE },
 
 		-- The activation overlay says the proc is up but carries no numbers; these render "??".
 		{ variable = "$essenceBurstTime", description = L["EvokerAugmentationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },

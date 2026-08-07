@@ -4286,6 +4286,20 @@ function TRB.Functions.Bar:SetBarNodeTimerDuration(settings, key, node, duration
 	node:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
 end
 
+---Applies a custom bar's opt-in maximum value override, clamped to the bar's true maximum.
+---Mirrors the primary bar's `settings.maxResource` behaviour, scoped to `settings.bars[barKey]`.
+---@param barSettings TRB.Classes.Settings.SecondaryBar? # The bar's entry in `settings.bars`
+---@param defaultMax number # The bar's true maximum when no override is enabled
+---@return number
+function TRB.Functions.Bar:GetCustomBarMaxValue(barSettings, defaultMax)
+	local override = barSettings ~= nil and barSettings.maxResource or nil
+	if override ~= nil and override.enabled == true and type(override.value) == "number" and override.value > 0 then
+		return math.min(override.value, defaultMax)
+	end
+
+	return defaultMax
+end
+
 ---Sets the primary value on a BarNode
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param key string

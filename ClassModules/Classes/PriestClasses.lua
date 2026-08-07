@@ -195,9 +195,9 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "$radianceTime", description = "", printInSettings = false, color = false },
 		{ variable = "$powerWordRadianceTime", description = "", printInSettings = false, color = false },
 
-		{ variable = "$pwRadianceCharges", description = L["PriestDisciplineBarTextVariable_pwRadianceCharges"], printInSettings = true, color = false },
-		{ variable = "$radianceCharges", description = "", printInSettings = false, color = false },
-		{ variable = "$powerWordRadianceCharges", description = "", printInSettings = false, color = false },
+		{ variable = "$pwRadianceCharges", description = L["PriestDisciplineBarTextVariable_pwRadianceCharges"], printInSettings = true, color = false, category = varCategory.RESOURCE },
+		{ variable = "$radianceCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
+		{ variable = "$powerWordRadianceCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
 
 		--[[{ variable = "$scTime", description = L["PriestDisciplineBarTextVariable_scTime"], printInSettings = true, color = false },
 		{ variable = "$shadowCovenantTime", description = "", printInSettings = false, color = false },]]
@@ -500,21 +500,21 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$sanctifyTime", description = "", printInSettings = false, color = false },
 		{ variable = "$holyWordSanctifyTime", description = "", printInSettings = false, color = false },
 		
-		{ variable = "$hwSanctifyCharges", description = L["PriestHolyBarTextVariable_hwSanctifyCharges"], printInSettings = true, color = false },
-		{ variable = "$sanctifyCharges", description = "", printInSettings = false, color = false },
-		{ variable = "$holyWordSanctifyCharges", description = "", printInSettings = false, color = false },
+		{ variable = "$hwSanctifyCharges", description = L["PriestHolyBarTextVariable_hwSanctifyCharges"], printInSettings = true, color = false, category = varCategory.RESOURCE },
+		{ variable = "$sanctifyCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
+		{ variable = "$holyWordSanctifyCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
 		
 		{ variable = "$hwSerenityTime", description = L["PriestHolyBarTextVariable_hwSerenityTime"], printInSettings = true, color = false },
 		{ variable = "$serenityTime", description = "", printInSettings = false, color = false },
 		{ variable = "$holyWordSerenityTime", description = "", printInSettings = false, color = false },
 		
-		{ variable = "$hwSerenityCharges", description = L["PriestHolyBarTextVariable_hwSerenityCharges"], printInSettings = true, color = false },
-		{ variable = "$serenityCharges", description = "", printInSettings = false, color = false },
-		{ variable = "$holyWordSerenityCharges", description = "", printInSettings = false, color = false },
+		{ variable = "$hwSerenityCharges", description = L["PriestHolyBarTextVariable_hwSerenityCharges"], printInSettings = true, color = false, category = varCategory.RESOURCE },
+		{ variable = "$serenityCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
+		{ variable = "$holyWordSerenityCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
 
 		{ variable = "$apotheosisTime", description = L["PriestHolyBarTextVariable_apotheosisTime"], printInSettings = true, color = false },
 		
-		{ variable = "$lightweaverStacks", description = L["PriestHolyBarTextVariable_lightweaverStacks"], printInSettings = true, color = false },
+		{ variable = "$lightweaverStacks", description = L["PriestHolyBarTextVariable_lightweaverStacks"], printInSettings = true, color = false, category = varCategory.RESOURCE },
 		{ variable = "$lightweaverTime", description = L["PriestHolyBarTextVariable_lightweaverTime"], printInSettings = true, color = false },
 
 		{ variable = "$afTime", description = L["PriestBarTextVariable_afTime"], printInSettings = true, color = false },

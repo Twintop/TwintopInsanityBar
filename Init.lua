@@ -73,7 +73,7 @@ TRB.Data = {}
 -- Keyed by class token -> spec token -> resource token -> max value.
 TRB.Data.maxResource = {
 	deathknight = {
-		blood = { runicPower = 125 },
+		blood = { runicPower = 125, coagulatingBlood = 100 },
 		frost = { runicPower = 110 },
 		unholy = { runicPower = 100 },
 	},

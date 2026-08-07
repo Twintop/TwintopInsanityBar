@@ -72,7 +72,7 @@ function TRB.Classes.DeathKnight.BloodSpells:New()
     -- One application is one percent, so the bar fills against a flat 100.
     self.coagulatingBlood = TRB.Classes.SpellBase:New({
         id = 463730,
-        maxStacks = 100
+        maxStacks = TRB.Data.maxResource.deathknight.blood.coagulatingBlood
     })
 
     self.marrowrend = TRB.Classes.SpellBase:New({
@@ -127,11 +127,11 @@ function TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$boneShieldStacks", description = L["DeathKnightBarTextVariable_boneShieldStacks"], printInSettings = true, color = false, secret = true },
-		{ variable = "$boneShieldStacksMax", description = L["DeathKnightBarTextVariable_boneShieldStacksMax"], printInSettings = true, color = false },
+		{ variable = "$boneShieldStacks", description = L["DeathKnightBarTextVariable_boneShieldStacks"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCE },
+		{ variable = "$boneShieldStacksMax", description = L["DeathKnightBarTextVariable_boneShieldStacksMax"], printInSettings = true, color = false, category = varCategory.RESOURCE },
 
-		{ variable = "$coagulatingBloodStacks", description = L["DeathKnightBarTextVariable_coagulatingBloodStacks"], printInSettings = true, color = false, secret = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
-		{ variable = "$coagulatingBloodStacksMax", description = L["DeathKnightBarTextVariable_coagulatingBloodStacksMax"], printInSettings = true, color = false },
+		{ variable = "$coagulatingBloodStacks", description = L["DeathKnightBarTextVariable_coagulatingBloodStacks"], printInSettings = true, color = false, secret = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED, category = varCategory.RESOURCE },
+		{ variable = "$coagulatingBloodStacksMax", description = L["DeathKnightBarTextVariable_coagulatingBloodStacksMax"], printInSettings = true, color = false, category = varCategory.RESOURCE },
 	})
 end
 

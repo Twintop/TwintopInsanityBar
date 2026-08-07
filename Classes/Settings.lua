@@ -275,6 +275,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public fillDirection trbFillDirection # Fill direction for the bar's StatusBar
 ---@field public growthDirection trbFillDirection? # Growth direction for multi-node bars (independent from fill)
 ---@field public anchor TRB.Classes.Settings.BarAnchor? # New anchor system
+---@field public maxResource table? # Opt-in maximum value override `{ enabled, value }`; only on bars that support one (e.g. Coagulating Blood)
 ---@field public xPos number # @deprecated Use anchor.xOffset instead
 ---@field public yPos number # @deprecated Use anchor.yOffset instead
 ---@field public relativeTo string # @deprecated Use anchor.anchorPoint/attachPoint instead
