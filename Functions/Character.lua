@@ -726,6 +726,7 @@ local resourceTypeNames = {
 	Icicles = TRB.Localization["ResourceIcicles"],
 	Shatter = TRB.Localization["ResourceMageShatter"],
 	BoneShield = TRB.Localization["ResourceBoneShield"],
+	CoagulatingBlood = TRB.Localization["ResourceCoagulatingBlood"],
 	Stagger = TRB.Localization["ResourceStagger"],
 	Health = TRB.Localization["ResourceHealth"],
 	Utility = TRB.Localization["ResourceUtility"],

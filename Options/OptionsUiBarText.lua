@@ -611,6 +611,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		relativeToFrame[L["BoneShield10"]] = "BoneShield_10"
 		relativeToFrame[L["BoneShield11"]] = "BoneShield_11"
 		relativeToFrame[L["BoneShield12"]] = "BoneShield_12"
+		relativeToFrame[L["CoagulatingBloodBar"]] = "CoagulatingBloodBar"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["Rune1"],
@@ -631,6 +632,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			L["BoneShield10"],
 			L["BoneShield11"],
 			L["BoneShield12"],
+			L["CoagulatingBloodBar"],
 			L["HealthBar"],
 			L["Screen"],
 		}

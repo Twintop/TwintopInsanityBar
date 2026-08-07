@@ -2473,6 +2473,47 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 									enabled = true,
 								})
 							end
+
+							-- barText is an array, so the defaults merge cannot backfill it
+							local hasCoagulatingBloodText = false
+							for _, entry in ipairs(specSettings.displayText.barText) do
+								if entry.position and entry.position.relativeToFrame == "CoagulatingBloodBar" then
+									hasCoagulatingBloodText = true
+									break
+								end
+							end
+							if not hasCoagulatingBloodText then
+								table.insert(specSettings.displayText.barText, {
+									useDefaultFontColor = true,
+									useDefaultFontOutline = true,
+									useDefaultFontShadow = true,
+									fontOutline = "OUTLINE",
+									fontOutlineName = L["FontOutlineOutline"],
+									fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+									fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+									useDefaultFontFace = true,
+									guid = TRB.Functions.String:Guid(),
+									constrainToParent = false,
+									maxWidthPercent = 100,
+									fontJustifyHorizontalName = L["PositionCenter"],
+									text = "$coagulatingBloodStacks",
+									fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+									fontSize = 14,
+									name = L["ResourceCoagulatingBlood"],
+									position = {
+										relativeToName = L["PositionCenter"],
+										relativeTo = "CENTER",
+										xPos = 0,
+										relativeToFrameName = L["CoagulatingBloodBar"],
+										yPos = 0,
+										relativeToFrame = "CoagulatingBloodBar",
+									},
+									fontJustifyHorizontal = "CENTER",
+									useDefaultFontSize = true,
+									color = { color = "FFFFFFFF" },
+									enabled = true,
+								})
+							end
 						end
 					end
 
@@ -9874,6 +9915,24 @@ function TRB.Functions.Settings:DefaultBoneShieldBarColors()
 		border = { color = "FF205E20" },
 		background = { color = "66000000" }
 	}
+end
+
+
+---Gets default Coagulating Blood bar dimensions (Blood Death Knight, anchored above the Bone Shield bar)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultCoagulatingBloodBarDimensions(classic)
+	local dims = self:DefaultCustomBarDimensions(classic)
+	dims.anchor.barKey = "boneShield"
+	dims.anchor.anchorPoint = "TOP"
+	dims.anchor.attachPoint = "BOTTOM"
+	return dims
+end
+
+---Gets default Coagulating Blood bar colors (Blood Death Knight)
+---@return table
+function TRB.Functions.Settings:DefaultCoagulatingBloodBarColors()
+	return self:DefaultCustomBarColors("FFAA0000", "FF550000", "66000000")
 end
 
 

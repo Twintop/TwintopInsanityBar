@@ -337,6 +337,16 @@ local function ConstructResourceBar(settings)
 		barGroups.boneShield:SetNodeCount(maxBoneShield)
 	end
 
+	-- Coagulating Blood bar (Blood only). Fixed stack scale, so set once here rather than per frame;
+	-- the "percentage" min/max mode leaves it to us and never overwrites it.
+	if barGroups and barGroups.coagulatingBlood and TRB.Data.character.specId == 1 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+		local coagulatingBloodNode = barGroups.coagulatingBlood:GetNode(1)
+		if coagulatingBloodNode then
+			coagulatingBloodNode:SetMinMax(0, spells.coagulatingBlood.maxStacks)
+		end
+	end
+
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
 	TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -419,6 +429,33 @@ local function RefreshLookupData_Blood()
 		end
 		if lookupChanged(prevState, "$boneShieldStacksMax", maxBoneShield) then
 			lookup["$boneShieldStacksMax"] = tostring(maxBoneShield)
+		end
+	end
+
+	-- Block D: Coagulating Blood ($coagulatingBloodStacks, $coagulatingBloodStacksMax)
+	if not activeVars or activeVars["$coagulatingBloodStacks"] or activeVars["$coagulatingBloodStacksMax"] then
+		local attributes = snapshotData.attributes
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+		local _coagulatingBloodStacksMax = spells.coagulatingBlood.maxStacks
+
+		lookupLogic["$coagulatingBloodStacksMax"] = _coagulatingBloodStacksMax
+
+		-- A buff that is down is a known zero; one nothing in the Cooldown Manager holds is unknown.
+		-- Memoized on the rendered string, since both are nil underneath.
+		local stacksDisplay
+		if not attributes.coagulatingBloodTracked then
+			stacksDisplay = "??"
+		elseif attributes.coagulatingBloodStacks ~= nil then
+			stacksDisplay = string.format("%s", attributes.coagulatingBloodStacks)
+		else
+			stacksDisplay = string.format("%.0f", 0)
+		end
+
+		if lookupChanged(prevState, "$coagulatingBloodStacks", stacksDisplay) then
+			lookup["$coagulatingBloodStacks"] = stacksDisplay
+		end
+		if lookupChanged(prevState, "$coagulatingBloodStacksMax", _coagulatingBloodStacksMax) then
+			lookup["$coagulatingBloodStacksMax"] = tostring(_coagulatingBloodStacksMax)
 		end
 	end
 
@@ -640,8 +677,42 @@ local function UpdateSnapshot()
 	TRB.Data.snapshotData.attributes.runesReadyCount = readyCount
 end
 
+---Refreshes the Coagulating Blood stack count from the Cooldown Manager. `coagulatingBloodTracked`
+---separates a buff that is down (known zero) from one the Cooldown Manager lacks (renders "??").
+local function RefreshCoagulatingBlood()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	local attributes = snapshotData.attributes
+	local wasTracked = attributes.coagulatingBloodTracked == true
+	local wasActive = attributes.coagulatingBloodActive == true
+
+	attributes.coagulatingBloodStacks = nil
+	attributes.coagulatingBloodTracked = false
+	attributes.coagulatingBloodActive = false
+
+	if spells ~= nil and spells.coagulatingBlood ~= nil then
+		-- Pinned to the buff viewers: it is a self-buff, and a cooldown viewer would describe the
+		-- cast instead. applications is nil while the buff is down and secret while it is up.
+		local cdm = TRB.Functions.CooldownManager
+		local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.coagulatingBlood.id)
+		if trackedId ~= nil then
+			attributes.coagulatingBloodTracked = true
+			local stacksOk, stacks = cdm:Read(trackedId, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF)
+			if stacksOk then
+				attributes.coagulatingBloodStacks = stacks
+				attributes.coagulatingBloodActive = true
+			end
+		end
+	end
+
+	if wasTracked ~= attributes.coagulatingBloodTracked or wasActive ~= attributes.coagulatingBloodActive then
+		TRB.Data.lookupDirty = true
+	end
+end
+
 local function UpdateSnapshot_Blood()
 	UpdateSnapshot()
+	RefreshCoagulatingBlood()
 end
 
 local function UpdateSnapshot_Frost()
@@ -972,6 +1043,70 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 	end
 end
 
+---Updates the Coagulating Blood bar (Blood only). One application is one percent, so the node runs
+---0-100 and takes the raw secret count straight from the Cooldown Manager; the StatusBar scales it.
+---@param specSettings table
+---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
+local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+
+	if not (barGroups and barGroups.coagulatingBlood) then
+		return
+	end
+
+	local node = barGroups.coagulatingBlood:GetNode(1)
+	if node == nil then
+		return
+	end
+
+	local colors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.coagulatingBlood
+	if colors == nil then
+		return
+	end
+
+	local stacks = snapshotData.attributes.coagulatingBloodStacks or 0
+	Bar:SetBarNodeValue(specCacheSettings, "coagulatingBlood", node, stacks, spells.coagulatingBlood.maxStacks)
+
+	-- Same color resolution as the primary bar. Unlike Bone Shield the fill has no positional scheme
+	-- of its own, so the gradient can target it too.
+	local indicatorColors, _, gradientOrder, conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
+	local coagulatingBloodColors = {
+		bar = colors.bar,
+		border = colors.border.color,
+		background = colors.background.color,
+	}
+
+	Color:ApplyIndicatorColors(sharedColors, conditionMap, { coagulatingBlood = coagulatingBloodColors })
+
+	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
+	local overcapCurves = BuildGradientCurves(specSettings, "coagulatingBlood", coagulatingBloodColors, gradientIndicator)
+
+	if overcapCurves.border then
+		local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
+		node:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(node, overcapCurves.border))
+	else
+		node:SetBorderColor(coagulatingBloodColors.border)
+	end
+
+	if overcapCurves.bar then
+		local barColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.bar)
+		node:SetColorCurve(barColorResult)
+	else
+		Color:ApplyFillColor(node, coagulatingBloodColors.bar)
+	end
+
+	if overcapCurves.background then
+		local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.background)
+		node:SetBackgroundColorCurve(backgroundColorResult)
+	else
+		node:SetBackgroundColorFromString(coagulatingBloodColors.background)
+	end
+
+	Bar:ApplyEndCapIndicator(node, "coagulatingBlood")
+end
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local classSettings = TRB.Data.settings.deathknight
@@ -1102,6 +1237,11 @@ local function UpdateResourceBar()
 			if specSettings.displayBar.boneShield and not specSettings.displayBar.boneShield.neverShow then
 				refreshText = true
 				UpdateBoneShield(specSettings, specCacheSettings)
+			end
+
+			if specSettings.displayBar.coagulatingBlood and not specSettings.displayBar.coagulatingBlood.neverShow then
+				refreshText = true
+				UpdateCoagulatingBlood(specSettings, specCacheSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1342,6 +1482,7 @@ local function SwitchSpec()
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#boneShield"] = spells.boneShield.icon
+		lookup["#coagulatingBlood"] = spells.coagulatingBlood.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1653,6 +1794,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, true, TRB.Data.character.maxResource2, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.boneShield, sharedSettings and sharedSettings.displayBar.boneShield, TRB.Data.character.specId == 1, TRB.Data.character.maxBoneShield, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.coagulatingBlood, sharedSettings and sharedSettings.displayBar.coagulatingBlood, TRB.Data.character.specId == 1, 1, nil),
 		}
 
 		if sharedSettings ~= nil then
@@ -1696,6 +1838,11 @@ do
 	for k, v in pairs(shared) do blood[k] = v end
 	blood["$boneShieldStacks"] = false
 	blood["$boneShieldStacksMax"] = true
+	-- Goes false when the count is unknown, matching the "??" the text renders.
+	blood["$coagulatingBloodStacks"] = function()
+		return TRB.Data.snapshotData.attributes.coagulatingBloodTracked == true
+	end
+	blood["$coagulatingBloodStacksMax"] = true
 	specValidVars = { [1] = blood, [2] = shared, [3] = shared }
 end
 
@@ -1737,6 +1884,15 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
 				return healthNode:GetFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	elseif relativeToFrame == "CoagulatingBloodBar" then
+		if barGroups and barGroups.coagulatingBlood then
+			local coagulatingBloodNode = barGroups.coagulatingBlood:GetNode(1)
+			if coagulatingBloodNode then
+				local isVisible = barGroups.coagulatingBlood.isVisible and coagulatingBloodNode.isVisible
+				return coagulatingBloodNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

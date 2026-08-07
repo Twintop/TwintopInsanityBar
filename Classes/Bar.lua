@@ -2337,6 +2337,34 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end
 	}))
 
+	-- Coagulating Blood bar (Blood Death Knight)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "coagulatingBlood",
+		displayName = L["ResourceCoagulatingBlood"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		-- One application is one percent, so the single node fills against a flat 0-100 scale.
+		minMaxMode = "percentage",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "coagulatingBlood",
+		-- Stack count is secret, so custom thresholds on it are static-only.
+		usesSecretValue = true,
+		-- Fed entirely by the Cooldown Manager's item for Coagulating Blood.
+		cdm = TRB.Data.constants.cdmDependency.REQUIRED,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultCoagulatingBloodBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultCoagulatingBloodBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
 	-- Shatter bar (Frost Mage)
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "shatter",

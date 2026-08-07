@@ -581,7 +581,13 @@ function SlashCmdList.TWINTOP(msg)
 	elseif cmd == "news" then
 		TRB.Functions.News:Show()
 	elseif cmd == "cdm" then
-		TRB.Functions.CooldownManager:PrintDiagnostics()
+		local spellArg = ParseCmdString(subcmd)
+		local spellId = spellArg and tonumber(spellArg) or nil
+		if spellId ~= nil then
+			TRB.Functions.CooldownManager:PrintSpellReport(spellId)
+		else
+			TRB.Functions.CooldownManager:PrintDiagnostics()
+		end
 	elseif cmd == "minimap" then
 		local minimapCmd = ParseCmdString(subcmd)
 		if minimapCmd == "hide" then

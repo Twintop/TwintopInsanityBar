@@ -3325,3 +3325,10 @@ L["WarriorFuryIndicatorEnrageColor"] = "Enrage is active"
 -- Bar text variables panel: secret values and comparison operators
 L["BarTextVariablesColumnSecretComparisonsTooltip"] = "Secret value: the rendered value comes from a protected WoW API value, so it cannot be used with comparison operators in bar text logic."
 L["BarTextVariablesDescriptionSecretNoComparisons"] = "Secret values cannot be used with comparison operators in bar text logic."
+
+-- Blood Death Knight Coagulating Blood bar
+L["ResourceCoagulatingBlood"] = "Coagulating Blood"
+L["TabCoagulatingBlood"] = "Coagulating Blood"
+L["CoagulatingBloodBar"] = "Coagulating Blood Bar"
+L["DeathKnightBarTextVariable_coagulatingBloodStacks"] = "Current number of Coagulating Blood stacks, where each stack is 1%. Read from Blizzard's Cooldown Manager; renders as ?? when Coagulating Blood is not added to one of its viewers."
+L["DeathKnightBarTextVariable_coagulatingBloodStacksMax"] = "Maximum number of Coagulating Blood stacks."

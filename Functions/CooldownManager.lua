@@ -114,6 +114,10 @@ local sources = {}
 local indexDirty = true
 local indexBuiltAt = nil
 
+-- frame -> plain spell IDs it last indexed under. Spell IDs go secret in combat and AddSource drops
+-- those, so without this a rebuild landing mid-combat loses the frame until the next one.
+local frameSpellIds = {}
+
 -- Usable state per viewerDefinitions index, as of the last rebuild. An unusable viewer is skipped by
 -- RebuildIndex outright, so one appearing or disappearing changes what the index holds without any
 -- event announcing it -- the "only in combat" visibility setting flips it on every pull, and the
@@ -216,7 +220,8 @@ end
 ---spell whose live and base IDs are the same must not be indexed against itself twice.
 ---@param spellId any # Rejected unless plain; secret and nil IDs cannot key the index
 ---@param entry table
-local function AddSource(spellId, entry)
+---@param recorded table? # Collects the plain IDs accepted for this frame during this rebuild
+local function AddSource(spellId, entry, recorded)
 	if not TRB.Functions.Number:IsPlainNumber(spellId) then
 		return
 	end
@@ -234,24 +239,83 @@ local function AddSource(spellId, entry)
 	end
 
 	entries[#entries + 1] = entry
+	if recorded ~= nil then
+		recorded[#recorded + 1] = spellId
+	end
+end
+
+---Indexes the extra spell IDs an entry declares. An aura is often a different spell from the ability
+---applying it (Coagulating Blood rides on Death Strike), reachable only through linkedSpellIDs.
+---@param frame table
+---@param entry table
+---@param recorded table? # Collects the plain IDs accepted for this frame during this rebuild
+---@return boolean # True when the entry's metadata was reachable, so the linked IDs are complete
+local function IndexLinkedSpellIds(frame, entry, recorded)
+	if C_CooldownViewer == nil or C_CooldownViewer.GetCooldownViewerCooldownInfo == nil
+		or frame.GetCooldownID == nil then
+		return false
+	end
+
+	local okId, cooldownID = pcall(frame.GetCooldownID, frame)
+	if not okId or not TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		return false
+	end
+
+	local okInfo, info = pcall(C_CooldownViewer.GetCooldownViewerCooldownInfo, cooldownID)
+	if not okInfo or type(info) ~= "table" then
+		return false
+	end
+
+	AddSource(info.overrideSpellID, entry, recorded)
+
+	if type(info.linkedSpellIDs) == "table" then
+		for _, linkedSpellId in ipairs(info.linkedSpellIDs) do
+			AddSource(linkedSpellId, entry, recorded)
+		end
+	end
+
+	return true
 end
 
 ---Indexes a spell against an item frame. Both the live and base spell IDs are recorded so a
----talent-overridden spell still resolves from whichever ID the spec data uses.
+---talent-overridden spell still resolves from whichever ID the spec data uses, plus every ID the
+---entry's metadata links to it.
 ---@param frame table
 ---@param kind TRB.CdmSourceKind
 ---@param viewer table
 local function IndexItemFrame(frame, kind, viewer)
 	local entry = { frame = frame, kind = kind, viewer = viewer }
+	local recorded = {}
 
 	local okLive, liveSpellId = pcall(frame.GetSpellID, frame)
 	if okLive then
-		AddSource(liveSpellId, entry)
+		AddSource(liveSpellId, entry, recorded)
 	end
 
 	local okBase, baseSpellId = pcall(frame.GetBaseSpellID, frame)
 	if okBase then
-		AddSource(baseSpellId, entry)
+		AddSource(baseSpellId, entry, recorded)
+	end
+
+	local metadataResolved = IndexLinkedSpellIds(frame, entry, recorded)
+
+	-- A complete read is authoritative, and replacing is how a recycled frame corrects itself.
+	if metadataResolved and #recorded > 0 then
+		frameSpellIds[frame] = recorded
+		return
+	end
+
+	-- Partial read: what's missing is the linked aura IDs, so union with the remembered set instead
+	-- of replacing. AddSource dedupes by frame, so `recorded` ends up holding the union.
+	local known = frameSpellIds[frame]
+	if known ~= nil then
+		for _, spellId in ipairs(known) do
+			AddSource(spellId, entry, recorded)
+		end
+	end
+
+	if #recorded > 0 then
+		frameSpellIds[frame] = recorded
 	end
 end
 
@@ -774,6 +838,7 @@ function CDM:Disable()
 	wipe(sources)
 	wipe(viewerShown)
 	wipe(viewerLastShown)
+	wipe(frameSpellIds)
 	self:ResetCaches()
 	indexDirty = true
 end
@@ -792,6 +857,104 @@ local probeOrder = {
 	CDM.Signal.POINT_2,
 	CDM.Signal.POINT_3,
 }
+
+---Describes one spell ID read off an item frame, without ever observing a secret.
+---@param ok boolean
+---@param spellId any
+---@return string
+local function DescribeFrameSpellId(ok, spellId)
+	if not ok then
+		return "error"
+	end
+	if spellId == nil then
+		return "nil"
+	end
+	if issecretvalue(spellId) then
+		return "SECRET"
+	end
+	if not TRB.Functions.Number:IsPlainNumber(spellId) then
+		return "nonPlain"
+	end
+	return tostring(spellId)
+end
+
+---Reports the item frames the index would NOT record. Such a frame is absent from `sources`, so the
+---probe list below cannot show it -- which is what makes "it's in my layout but nothing reads it"
+---unanswerable from the probes alone.
+---@return table[] skipped
+---@return table<string, table> counts # Per viewer: frames walked vs frames recorded
+local function CollectSkippedFrames()
+	local skipped = {}
+	local counts = {}
+
+	for index, definition in ipairs(viewerDefinitions) do
+		local viewer = _G[definition.globalName]
+		-- Unusable viewers are walked too, unlike in RebuildIndex: "0 frames" would read as empty
+		-- when it means "never looked", and what a hidden viewer holds is the whole question.
+		local usable = viewerShown[index] == true
+		local walked, recorded = 0, 0
+
+		if viewer ~= nil and viewer.GetItemFrames ~= nil then
+			local ok, itemFrames = pcall(viewer.GetItemFrames, viewer)
+			if ok and type(itemFrames) == "table" then
+				for _, frame in ipairs(itemFrames) do
+					if frame ~= nil and frame.GetSpellID ~= nil then
+						walked = walked + 1
+
+						local okLive, liveSpellId = pcall(frame.GetSpellID, frame)
+						local okBase, baseSpellId = pcall(frame.GetBaseSpellID, frame)
+						-- A secret read is no longer a skip; having no remembered identity at all is.
+						local hasIdentity = frameSpellIds[frame] ~= nil
+
+						local reason
+						if not usable then
+							reason = "viewerNotUsable"
+						elseif quarantined[frame] == true then
+							reason = "quarantined"
+						elseif not hasIdentity then
+							reason = "noPlainSpellId"
+						end
+
+						if reason ~= nil then
+							-- Named off whichever ID is plain, falling back to the remembered identity
+							-- since both reads are secret in combat.
+							local nameId
+							if okLive and TRB.Functions.Number:IsPlainNumber(liveSpellId) then
+								nameId = liveSpellId
+							elseif okBase and TRB.Functions.Number:IsPlainNumber(baseSpellId) then
+								nameId = baseSpellId
+							else
+								local known = frameSpellIds[frame]
+								nameId = known and known[1] or nil
+							end
+							local name = "?"
+							if nameId ~= nil then
+								local okName, spellName = pcall(C_Spell.GetSpellName, nameId)
+								if okName and spellName ~= nil then
+									name = spellName
+								end
+							end
+
+							skipped[#skipped + 1] = {
+								kind = definition.kind,
+								reason = reason,
+								name = name,
+								liveSpellId = DescribeFrameSpellId(okLive, liveSpellId),
+								baseSpellId = DescribeFrameSpellId(okBase, baseSpellId),
+							}
+						else
+							recorded = recorded + 1
+						end
+					end
+				end
+			end
+		end
+
+		counts[definition.globalName] = { walked = walked, recorded = recorded }
+	end
+
+	return skipped, counts
+end
 
 ---Diagnostic snapshot, for troubleshooting and for the options panel to explain why a spell has
 ---no CDM data. One probe **per source**, not per spell: a spell sitting in both halves of the
@@ -815,6 +978,9 @@ function CDM:GetDiagnostics()
 			usable = viewerShown[index] == true,
 		}
 	end
+
+	-- Before the probes, which can quarantine a frame themselves and would show up as our own damage.
+	local skipped, frameCounts = CollectSkippedFrames()
 
 	local probes = {}
 	local trackedCount = 0
@@ -860,7 +1026,132 @@ function CDM:GetDiagnostics()
 		indexBuiltAt = indexBuiltAt,
 		viewers = viewerStates,
 		probes = probes,
+		skipped = skipped,
+		frameCounts = frameCounts,
 	}
+end
+
+---Cooldown Manager category enum per viewer kind, for reading the *configured* layout rather than
+---the frames built from it.
+local categoryByKind = {
+	[CDM.SourceKind.ESSENTIAL] = Enum.CooldownViewerCategory and Enum.CooldownViewerCategory.Essential,
+	[CDM.SourceKind.UTILITY] = Enum.CooldownViewerCategory and Enum.CooldownViewerCategory.Utility,
+	[CDM.SourceKind.BUFF_ICON] = Enum.CooldownViewerCategory and Enum.CooldownViewerCategory.TrackedBuff,
+	[CDM.SourceKind.BUFF_BAR] = Enum.CooldownViewerCategory and Enum.CooldownViewerCategory.TrackedBar,
+}
+
+---Equality against a plain spell ID, safe on a value that may be secret -- comparing a secret raises
+---rather than returning false, so the plainness check has to come first.
+---@param candidate any
+---@param spellId integer
+---@return boolean
+local function SpellIdMatches(candidate, spellId)
+	return TRB.Functions.Number:IsPlainNumber(candidate) and candidate == spellId
+end
+
+---True when a cooldown entry names this spell by any of the IDs it can answer to.
+---@param info table
+---@param spellId integer
+---@return boolean
+local function CooldownInfoNamesSpell(info, spellId)
+	if SpellIdMatches(info.spellID, spellId) or SpellIdMatches(info.overrideSpellID, spellId) then
+		return true
+	end
+	if type(info.linkedSpellIDs) == "table" then
+		for _, linked in ipairs(info.linkedSpellIDs) do
+			if SpellIdMatches(linked, spellId) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+---Everything the Cooldown Manager knows about one spell across all three layers: configured entry,
+---item frame, and our index. Reached from `/trb cdm <spellId>`.
+---@param spellId integer
+function CDM:PrintSpellReport(spellId)
+	local prefix = "|cFFFF8800TRB CDM:|r "
+
+	if not TRB.Functions.Number:IsPlainNumber(spellId) then
+		print(prefix .. "Usage: /trb cdm <spellId>")
+		return
+	end
+
+	if indexDirty or ShownStateChanged() then
+		self:RebuildIndex()
+	end
+
+	local okName, spellName = pcall(C_Spell.GetSpellName, spellId)
+	print(prefix .. string.format("Report for %d %s", spellId, (okName and spellName) or "?"))
+
+	-- Layer 1: our index.
+	local entries = sources[spellId]
+	if entries == nil then
+		print(prefix .. "  index: NOT INDEXED")
+	else
+		for _, entry in ipairs(entries) do
+			print(prefix .. string.format("  index: indexed from [%s]%s", entry.kind,
+				quarantined[entry.frame] and " (QUARANTINED)" or ""))
+		end
+	end
+
+	-- Layer 2: item frames that exist right now, including in viewers we are not indexing.
+	local foundFrame = false
+	for index, definition in ipairs(viewerDefinitions) do
+		local viewer = _G[definition.globalName]
+		if viewer ~= nil and viewer.GetItemFrames ~= nil then
+			local ok, itemFrames = pcall(viewer.GetItemFrames, viewer)
+			if ok and type(itemFrames) == "table" then
+				for _, frame in ipairs(itemFrames) do
+					if frame ~= nil and frame.GetSpellID ~= nil then
+						local okLive, liveSpellId = pcall(frame.GetSpellID, frame)
+						local okBase, baseSpellId = pcall(frame.GetBaseSpellID, frame)
+						-- SpellIdMatches screens for plainness; both go secret in combat.
+						if (okLive and SpellIdMatches(liveSpellId, spellId))
+							or (okBase and SpellIdMatches(baseSpellId, spellId)) then
+							foundFrame = true
+							print(prefix .. string.format("  frame: exists in %s (viewerUsable=%s)",
+								definition.globalName, tostring(viewerShown[index] == true)))
+						end
+					end
+				end
+			end
+		end
+	end
+	if not foundFrame then
+		print(prefix .. "  frame: NO ITEM FRAME in any viewer")
+	end
+
+	-- Layer 3: the configured layout. A spell present here but absent above is one Blizzard declined
+	-- to build a frame for, and these fields are the reasons it would.
+	if C_CooldownViewer == nil or C_CooldownViewer.GetCooldownViewerCategorySet == nil then
+		print(prefix .. "  config: C_CooldownViewer unavailable")
+		return
+	end
+
+	local foundConfig = false
+	for _, definition in ipairs(viewerDefinitions) do
+		local category = categoryByKind[definition.kind]
+		if category ~= nil then
+			local okSet, cooldownIDs = pcall(C_CooldownViewer.GetCooldownViewerCategorySet, category)
+			if okSet and type(cooldownIDs) == "table" then
+				for _, cooldownID in ipairs(cooldownIDs) do
+					local okInfo, info = pcall(C_CooldownViewer.GetCooldownViewerCooldownInfo, cooldownID)
+					if okInfo and type(info) == "table" and CooldownInfoNamesSpell(info, spellId) then
+						foundConfig = true
+						print(prefix .. string.format("  config: %s cooldownID=%s spellID=%s overrideSpellID=%s isKnown=%s isInvisible=%s flags=%s hasAura=%s",
+							definition.kind, tostring(cooldownID), tostring(info.spellID),
+							tostring(info.overrideSpellID), tostring(info.isKnown),
+							tostring(info.isInvisible), tostring(info.flags), tostring(info.hasAura)))
+					end
+				end
+			end
+		end
+	end
+	if not foundConfig then
+		print(prefix .. "  config: not present in any category set")
+	end
 end
 
 ---Prints GetDiagnostics to chat. Reached from `/trb cdm`.
@@ -873,8 +1164,19 @@ function CDM:PrintDiagnostics()
 
 	for _, definition in ipairs(viewerDefinitions) do
 		local state = diagnostics.viewers[definition.globalName]
-		print(prefix .. string.format("  %s exists=%s shown=%s usable=%s", definition.globalName,
-			tostring(state.exists), tostring(state.shown), tostring(state.usable)))
+		local counts = diagnostics.frameCounts and diagnostics.frameCounts[definition.globalName]
+		print(prefix .. string.format("  %s exists=%s shown=%s usable=%s frames=%d indexed=%d", definition.globalName,
+			tostring(state.exists), tostring(state.shown), tostring(state.usable),
+			counts and counts.walked or 0, counts and counts.recorded or 0))
+	end
+
+	-- Ahead of the probes: a frame listed here is missing from every line below.
+	if diagnostics.skipped ~= nil and #diagnostics.skipped > 0 then
+		print(prefix .. string.format("%d frame(s) skipped during indexing:", #diagnostics.skipped))
+		for _, entry in ipairs(diagnostics.skipped) do
+			print(prefix .. string.format("  [%s] SKIPPED %s %s reason=%s baseSpellId=%s",
+				entry.kind, entry.liveSpellId, entry.name, entry.reason, entry.baseSpellId))
+		end
 	end
 
 	if not diagnostics.available then

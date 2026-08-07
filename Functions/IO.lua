@@ -34,7 +34,7 @@ local CUSTOM_BAR_EXPORT_SPECS = {
 		[3] = { "mana", "utility" },
 	},
 	[6] = {
-		[1] = { "boneShield" },
+		[1] = { "boneShield", "coagulatingBlood" },
 	},
 	[7] = {
 		[1] = { "mana" },

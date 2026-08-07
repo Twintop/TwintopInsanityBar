@@ -37,6 +37,7 @@ end
 
 ---@class TRB.Classes.DeathKnight.BloodSpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
 ---@field boneShield TRB.Classes.SpellBase
+---@field coagulatingBlood TRB.Classes.SpellBase
 ---@field improvedBoneShield TRB.Classes.SpellBase
 ---@field marrowrend TRB.Classes.SpellBase
 ---@field ossuary TRB.Classes.SpellBase
@@ -68,6 +69,12 @@ function TRB.Classes.DeathKnight.BloodSpells:New()
         maxStacksMod = 2
     })
 
+    -- One application is one percent, so the bar fills against a flat 100.
+    self.coagulatingBlood = TRB.Classes.SpellBase:New({
+        id = 463730,
+        maxStacks = 100
+    })
+
     self.marrowrend = TRB.Classes.SpellBase:New({
         id = 195182,
         isTalent = true
@@ -95,6 +102,7 @@ function TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCacheEntry
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#boneShield", icon = spells.boneShield.icon, description = spells.boneShield.name, printInSettings = true },
+		{ variable = "#coagulatingBlood", icon = spells.coagulatingBlood.icon, description = spells.coagulatingBlood.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -121,6 +129,9 @@ function TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCacheEntry
 
 		{ variable = "$boneShieldStacks", description = L["DeathKnightBarTextVariable_boneShieldStacks"], printInSettings = true, color = false, secret = true },
 		{ variable = "$boneShieldStacksMax", description = L["DeathKnightBarTextVariable_boneShieldStacksMax"], printInSettings = true, color = false },
+
+		{ variable = "$coagulatingBloodStacks", description = L["DeathKnightBarTextVariable_coagulatingBloodStacks"], printInSettings = true, color = false, secret = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$coagulatingBloodStacksMax", description = L["DeathKnightBarTextVariable_coagulatingBloodStacksMax"], printInSettings = true, color = false },
 	})
 end
 
@@ -357,6 +368,14 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(specId, parentFr
             12,
             false -- not primary
         )
+
+        -- Coagulating Blood bar (Blood only, single node filled by stack percentage)
+        barGroups.coagulatingBlood = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_CoagulatingBlood",
+            1,
+            false -- not primary
+        )
     end
 
     return barGroups
@@ -384,12 +403,18 @@ function TRB.Classes.DeathKnight.BarGroupsFactory:GetSpecConfiguration(specId)
         }
     }
 
-    -- Blood gets a Bone Shield bar
+    -- Blood gets a Bone Shield bar and a Coagulating Blood bar
     if specId == 1 then
         config.boneShield = {
             maxNodes = 12,
             isPrimary = false,
             resourceType = "BoneShield"
+        }
+        config.coagulatingBlood = {
+            maxNodes = 1,
+            isPrimary = false,
+            resourceType = "CoagulatingBlood",
+            usesSecretValue = true
         }
     end
 
