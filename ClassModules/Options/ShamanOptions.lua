@@ -437,24 +437,6 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			maelstromWeaponThreshold1={
-				name = L["ShamanAudioMaelstromWeaponThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 5
-				}
-			},
-			maelstromWeaponThreshold2={
-				name = L["ShamanAudioMaelstromWeaponThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 10
-				}
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -614,12 +596,6 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			innervate={
-				name = L["Innervate"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(),
 	}
@@ -1031,26 +1007,6 @@ local function ElementalConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 7, 1, yCoord)
 end
 
-local function ElementalConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 7
-	local specId = 1
-	local spec = TRB.Data.settings.shaman.elemental
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shaman_elemental
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "esReady", spec, classId, specId, yCoord, L["ShamanElementalAudioCheckboxEarthShock"], L["ShamanElementalAudioCheckboxEarthShockTooltip"])
-end
-
 local function ElementalConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1097,8 +1053,8 @@ local function ElementalConstructOptionsPanel(cache)
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, ElementalConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ElementalConstructThresholdListPanel, true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("shaman", "elemental", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("shaman", "elemental", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ElementalConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, ElementalConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) ElementalConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ElementalConstructResetDefaultsPanel },
 	}
@@ -1468,48 +1424,6 @@ local function EnhancementConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 7, 2, yCoord)
 end
 
-local function EnhancementConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 7
-	local specId = 2
-	local spec = TRB.Data.settings.shaman.enhancement
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shaman_enhancement
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "maelstromWeaponThreshold1", spec, classId, specId, yCoord, L["ShamanAudioCheckboxMaelstromWeaponThreshold1"], L["ShamanAudioCheckboxMaelstromWeaponThreshold1Tooltip"])
-
-	controls.maelstromWeaponThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["ShamanMaelstromWeaponThresholdSliderTitle"], 0, 10, spec.audio["maelstromWeaponThreshold1"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.maelstromWeaponThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["maelstromWeaponThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "maelstromWeaponThreshold2", spec, classId, specId, yCoord, L["ShamanAudioCheckboxMaelstromWeaponThreshold2"], L["ShamanAudioCheckboxMaelstromWeaponThreshold2Tooltip"])
-
-	controls.maelstromWeaponThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["ShamanMaelstromWeaponThresholdSliderTitle"], 0, 10, spec.audio["maelstromWeaponThreshold2"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.maelstromWeaponThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["maelstromWeaponThreshold2"].configuration.thresholdValue = value
-	end)
-end
-
 local function EnhancementConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1581,8 +1495,8 @@ local function EnhancementConstructOptionsPanel(cache)
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, EnhancementConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, EnhancementConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, EnhancementConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("shaman", "enhancement", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, EnhancementConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, EnhancementConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) EnhancementConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, EnhancementConstructResetDefaultsPanel },
 	}
@@ -1849,25 +1763,6 @@ local function RestorationConstructFontAndTextPanel(parent)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 7, 3, yCoord)
-end
-
-local function RestorationConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 7
-	local specId = 3
-	local spec = TRB.Data.settings.shaman.restoration
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.shaman_restoration
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
 end
 
 local function RestorationConstructBarTextDisplayPanel(parent, cache)

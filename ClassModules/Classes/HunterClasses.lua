@@ -658,3 +658,37 @@ TRB.Data.castbarTickProfilesRegistry["hunter_marksmanship"] = TRB.Classes.Hunter
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
 TRB.Data.castbarTickModifiersRegistry["hunter_marksmanship"] = TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickModifiers
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("hunter_survival", {
+		counters = {
+			{
+				id = "tipOfTheSpear",
+				label = L["HunterSurvivalAudioCueSourceTots"],
+				description = L["HunterSurvivalAudioCueSourceTotsDescription"],
+				sliderLabel = L["HunterSurvivalTotsThresholdSliderTitle"],
+				defaultName = L["HunterSurvivalAudioCueTotsDefaultName"],
+				min = 0,
+				max = 3,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "totsThreshold1" },
+				defaultCues = {
+					{
+						id = "totsThreshold1",
+						name = L["HunterSurvivalAudioTotsThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 3,
+					},
+				},
+			},
+		},
+	})
+end

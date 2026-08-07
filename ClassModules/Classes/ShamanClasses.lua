@@ -509,3 +509,56 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["shaman_elemental"] = TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["shaman_enhancement"] = TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["shaman_restoration"] = TRB.Classes.Shaman.RestorationSpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("shaman_elemental", {
+		builtIns = {
+			{
+				id = "esReady",
+				label = L["ShamanElementalAudioEarthShockReady"],
+				trigger = L["ShamanElementalAudioTriggerEarthShockReady"],
+				tooltip = L["ShamanElementalAudioCheckboxEarthShockTooltip"],
+			},
+		},
+	})
+
+	TRB.Functions.AudioCues:Register("shaman_enhancement", {
+		counters = {
+			{
+				id = "maelstromWeapon",
+				label = L["ShamanAudioCueSourceMaelstromWeapon"],
+				description = L["ShamanAudioCueSourceMaelstromWeaponDescription"],
+				sliderLabel = L["ShamanMaelstromWeaponThresholdSliderTitle"],
+				defaultName = L["ShamanAudioCueMaelstromWeaponDefaultName"],
+				min = 0,
+				max = 10,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "maelstromWeaponThreshold1", "maelstromWeaponThreshold2" },
+				defaultCues = {
+					{
+						id = "maelstromWeaponThreshold1",
+						name = L["ShamanAudioMaelstromWeaponThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 5,
+					},
+					{
+						id = "maelstromWeaponThreshold2",
+						name = L["ShamanAudioMaelstromWeaponThreshold2"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 10,
+					},
+				},
+			},
+		},
+	})
+end

@@ -432,3 +432,74 @@ TRB.Data.itemSetRegistry[arcaneMidnightSeason2SetKey] = {
 	handId = 271565,
 	legId = 271563,
 }
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("mage_arcane", {
+		counters = {
+			{
+				id = "arcaneCharges",
+				label = L["MageAudioCueSourceArcaneCharges"],
+				description = L["MageAudioCueSourceArcaneChargesDescription"],
+				sliderLabel = L["MageArcaneChargeThresholdSliderTitle"],
+				defaultName = L["MageAudioCueArcaneChargeDefaultName"],
+				min = 0,
+				max = 4,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "arcaneChargeThreshold1", "arcaneChargeThreshold2" },
+				defaultCues = {
+					{
+						id = "arcaneChargeThreshold1",
+						name = L["MageAudioArcaneChargeThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 2,
+					},
+					{
+						id = "arcaneChargeThreshold2",
+						name = L["MageAudioArcaneChargeThreshold2"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 4,
+					},
+				},
+			},
+		},
+	})
+
+	TRB.Functions.AudioCues:Register("mage_frost", {
+		counters = {
+			{
+				id = "icicles",
+				label = L["MageAudioCueSourceIcicles"],
+				description = L["MageAudioCueSourceIciclesDescription"],
+				sliderLabel = L["MageIciclesThresholdSliderTitle"],
+				defaultName = L["MageAudioCueIciclesDefaultName"],
+				min = 0,
+				max = 5,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "iciclesThreshold1" },
+				defaultCues = {
+					{
+						id = "iciclesThreshold1",
+						name = L["MageAudioIciclesThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 3,
+					},
+				},
+			},
+		},
+	})
+end

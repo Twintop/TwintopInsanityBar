@@ -584,6 +584,10 @@ local function HandleImport(input)
 	-- without updating the corresponding anchor blocks.
 	TRB.Functions.Settings:MigrateBarAnchors(TRB.Data.settings, true)
 
+	-- An export string produced before the audio cue refactor carries flat, unstamped cue entries.
+	-- Merging them in leaves them without kind/source, so re-normalize the merged result.
+	TRB.Functions.Settings:NormalizeAllAudioCues(TRB.Data.settings)
+
 	return 1
 end
 

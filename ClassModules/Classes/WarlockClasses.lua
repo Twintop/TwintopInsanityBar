@@ -481,3 +481,81 @@ TRB.Data.castbarTickProfilesRegistry["warlock_destruction"] = TRB.Classes.Warloc
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
 TRB.Data.castbarTickModifiersRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickModifiers
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	---Destruction tracks Soul Shard fragments, so its threshold runs to one decimal place.
+	---@param decimals number
+	local function SoulShardSource(decimals)
+		return {
+			id = "soulShards",
+			label = L["WarlockAudioCueSourceSoulShards"],
+			description = L["WarlockAudioCueSourceSoulShardsDescription"],
+			sliderLabel = L["WarlockSoulShardThresholdSliderTitle"],
+			defaultName = L["WarlockAudioCueSoulShardDefaultName"],
+			min = 0,
+			max = 5,
+			step = decimals > 0 and 0.1 or 1,
+			decimals = decimals,
+			compare = "atLeast",
+			requiresCombat = true,
+			legacyIds = { "soulShardThreshold1", "soulShardThreshold2" },
+			defaultCues = {
+				{
+					id = "soulShardThreshold1",
+					name = L["WarlockAudioSoulShardThreshold1"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 3,
+				},
+				{
+					id = "soulShardThreshold2",
+					name = L["WarlockAudioSoulShardThreshold2"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 5,
+				},
+			},
+		}
+	end
+
+	local infernalBolt = {
+		id = "infernalBolt",
+		label = L["WarlockAudioInfernalBolt"],
+		trigger = L["WarlockAudioTriggerInfernalBolt"],
+		tooltip = L["WarlockAudioCheckboxInfernalBoltTooltip"],
+	}
+	local ruination = {
+		id = "ruination",
+		label = L["WarlockAudioRuination"],
+		trigger = L["WarlockAudioTriggerRuination"],
+		tooltip = L["WarlockAudioCheckboxRuinationTooltip"],
+	}
+
+	TRB.Functions.AudioCues:Register("warlock_affliction", {
+		counters = { SoulShardSource(0) },
+	})
+
+	TRB.Functions.AudioCues:Register("warlock_demonology", {
+		builtIns = {
+			{
+				id = "demonicCore",
+				label = L["WarlockAudioDemonicCore"],
+				trigger = L["WarlockAudioTriggerDemonicCore"],
+				tooltip = L["WarlockAudioCheckboxDemonicCoreTooltip"],
+			},
+			infernalBolt,
+			ruination,
+		},
+		counters = { SoulShardSource(0) },
+	})
+
+	TRB.Functions.AudioCues:Register("warlock_destruction", {
+		builtIns = { infernalBolt, ruination },
+		counters = { SoulShardSource(1) },
+	})
+end

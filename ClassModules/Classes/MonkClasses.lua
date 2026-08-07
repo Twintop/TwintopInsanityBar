@@ -699,3 +699,61 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["monk_brewmaster"] = TRB.Classes.Monk.BrewmasterSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["monk_mistweaver"] = TRB.Classes.Monk.MistweaverSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["monk_windwalker"] = TRB.Classes.Monk.WindwalkerSpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("monk_windwalker", {
+		builtIns = {
+			{
+				id = "danceOfChiJi",
+				label = L["MonkWindwalkerAudioDanceOfChiJi"],
+				trigger = L["MonkWindwalkerAudioTriggerDanceOfChiJi"],
+				tooltip = L["MonkWindwalkerAudioDanceOfChiJiTooltip"],
+			},
+		},
+		counters = {
+			{
+				id = "chi",
+				label = L["MonkAudioCueSourceChi"],
+				description = L["MonkAudioCueSourceChiDescription"],
+				sliderLabel = L["MonkChiThresholdSliderTitle"],
+				defaultName = L["MonkAudioCueChiDefaultName"],
+				min = 0,
+				max = 6,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "chiThreshold1", "chiThreshold2", "chiThreshold3" },
+				defaultCues = {
+					{
+						id = "chiThreshold1",
+						name = L["MonkAudioChiThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 3,
+					},
+					{
+						id = "chiThreshold2",
+						name = L["MonkAudioChiThreshold2"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 5,
+					},
+					{
+						id = "chiThreshold3",
+						name = L["MonkAudioChiThreshold3"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 6,
+					},
+				},
+			},
+		},
+	})
+end

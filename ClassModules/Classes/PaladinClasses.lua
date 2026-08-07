@@ -279,3 +279,81 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["paladin_holy"] = TRB.Classes.Paladin.HolySpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["paladin_protection"] = TRB.Classes.Paladin.ProtectionSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["paladin_retribution"] = TRB.Classes.Paladin.RetributionSpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	local function HolyPowerSource()
+		return {
+			id = "holyPower",
+			label = L["PaladinAudioCueSourceHolyPower"],
+			description = L["PaladinAudioCueSourceHolyPowerDescription"],
+			sliderLabel = L["PaladinHolyPowerThresholdSliderTitle"],
+			defaultName = L["PaladinAudioCueHolyPowerDefaultName"],
+			min = 0,
+			max = 5,
+			step = 1,
+			decimals = 0,
+			compare = "atLeast",
+			requiresCombat = true,
+			legacyIds = { "holyPowerThreshold1", "holyPowerThreshold2", "holyPowerThreshold3" },
+			defaultCues = {
+				{
+					id = "holyPowerThreshold1",
+					name = L["PaladinAudioHolyPowerThreshold1"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 3,
+				},
+				{
+					id = "holyPowerThreshold2",
+					name = L["PaladinAudioHolyPowerThreshold2"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 4,
+				},
+				{
+					id = "holyPowerThreshold3",
+					name = L["PaladinAudioHolyPowerThreshold3"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 5,
+				},
+			},
+		}
+	end
+
+	local divinePurpose = {
+		id = "divinePurpose",
+		label = L["PaladinAudioDivinePurpose"],
+		trigger = L["PaladinAudioTriggerDivinePurpose"],
+		tooltip = L["PaladinAudioCheckboxDivinePurposeTooltip"],
+	}
+
+	TRB.Functions.AudioCues:Register("paladin_holy", {
+		builtIns = {
+			{
+				id = "infusionOfLight",
+				label = L["PaladinHolyInfusionOfLight"],
+				trigger = L["PaladinHolyAudioTriggerInfusionOfLight"],
+				tooltip = L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"],
+			},
+			divinePurpose,
+		},
+		counters = { HolyPowerSource() },
+	})
+
+	TRB.Functions.AudioCues:Register("paladin_protection", {
+		builtIns = { divinePurpose },
+		counters = { HolyPowerSource() },
+	})
+
+	TRB.Functions.AudioCues:Register("paladin_retribution", {
+		builtIns = { divinePurpose },
+		counters = { HolyPowerSource() },
+	})
+end

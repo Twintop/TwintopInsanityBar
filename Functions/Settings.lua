@@ -513,16 +513,21 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 end
 
 ---Per-profile port-forward hook. Calls PortForwardSettings against the given
----profile subtable. Use for migrating individual profiles in the profiles.list
----structure. The `profile` parameter should be shaped like a top-level settings
----table (i.e. has optional `core` and class/spec keys), which is exactly how
----profiles are stored.
+---profile subtable, then brings its audio cues up to the current shape. Use for
+---migrating individual profiles in the profiles.list structure, including ones
+---that just arrived from an import. The `profile` parameter should be shaped
+---like a top-level settings table (i.e. has optional `core` and class/spec
+---keys), which is exactly how profiles are stored.
 ---@param profile table?
 function TRB.Functions.Settings:PortForwardProfile(profile)
 	if profile == nil then
 		return
 	end
 	self:PortForwardSettings(profile)
+	-- CleanupSettings only ever sees the live settings table, so a profile that is not seeded and
+	-- normalized here keeps whatever cue shape it was saved or exported with.
+	self:SeedAllAudioCues(profile)
+	self:NormalizeAllAudioCues(profile)
 end
 
 ---Migrates legacy and outdated TwintopInsanityBar saved-variable structures to the current settings format, handling renames, restructures, threshold refactors, bar text format changes, color standardizations, and displayBar enum conversions across all classes and specs.
@@ -8693,6 +8698,12 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 		end
 	end
 
+	-- Runs last, on the fully merged table, so saved cues, defaults, and any user-added guid cues
+	-- are all present and get stamped together. Seeding goes first: it can add cues that then need
+	-- the same normalization pass as everything else.
+	TRB.Functions.Settings:SeedAllAudioCues(newSettings)
+	TRB.Functions.Settings:NormalizeAllAudioCues(newSettings)
+
 	return newSettings
 end
 
@@ -10455,6 +10466,175 @@ function TRB.Functions.Settings:NormalizeCustomThresholdLine(customThreshold, gu
 	line.iconSourceId = tonumber(line.iconSourceId) or 0
 
 	return line --[[@as TRB.Classes.Settings.CustomThresholdLine]]
+end
+
+---Seeds the counter cues the addon ships for a spec, once per counter source, then never again.
+---
+---Shipped cues cannot live in the defaults factories. `Table:Merge(defaults, saved)` only iterates
+---`saved`, so a key present in `defaults` and absent from `saved` is never visited and simply
+---survives -- meaning a cue the user deleted would come back on the next load. Seeding instead
+---makes the cues user-owned from the moment they first appear, so deletion is permanent.
+---
+---The marker lives on the spec settings table. That is deliberate: it rides through the merge
+---(saved wins), but Reset Defaults replaces the whole spec table with a fresh one that has no
+---marker, so resetting restores the shipped set.
+---@param spec table? # A single spec's settings table
+---@param compositeKey string? # "className_specName"
+function TRB.Functions.Settings:SeedAudioCues(spec, compositeKey)
+	if spec == nil then
+		return
+	end
+
+	local definition = TRB.Functions.AudioCues:GetDefinition(compositeKey)
+	if definition == nil then
+		return
+	end
+
+	spec.audio = spec.audio or {}
+	spec.audioSeeded = spec.audioSeeded or {}
+
+	for _, source in ipairs(definition.counters) do
+		if not spec.audioSeeded[source.id] then
+			spec.audioSeeded[source.id] = true
+			for _, seed in ipairs(source.defaultCues or {}) do
+				-- Existing users already hold these under the same ids, so this adds nothing for
+				-- them; it only populates a spec seeing the source for the first time.
+				if spec.audio[seed.id] == nil then
+					spec.audio[seed.id] = {
+						id = seed.id,
+						kind = "counter",
+						source = source.id,
+						name = seed.name,
+						enabled = seed.enabled,
+						sound = seed.sound,
+						soundName = seed.soundName,
+						configuration = {
+							thresholdValue = seed.thresholdValue,
+						},
+					}
+				end
+			end
+		end
+	end
+end
+
+---Runs SeedAudioCues across every spec in a settings table.
+---@param settings table? # The full addon settings table
+function TRB.Functions.Settings:SeedAllAudioCues(settings)
+	if settings == nil then
+		return
+	end
+
+	for compositeKey, entry in pairs(TRB.Data.specRegistry) do
+		local class = settings[entry.className]
+		if class ~= nil then
+			TRB.Functions.Settings:SeedAudioCues(class[entry.specName], compositeKey)
+		end
+	end
+end
+
+---Brings a spec's `audio` table up to the current cue shape: stamps `id`/`kind`/`source` on every
+---entry, maps pre-refactor counter keys onto their registered source, and drops entries the spec's
+---cue registry no longer recognizes.
+---
+---Runs both on load (for saved settings) and after an import merge, so an export string produced
+---before the refactor self-heals into the current shape.
+---@param spec table? # A single spec's settings table
+---@param compositeKey string? # "className_specName"
+function TRB.Functions.Settings:NormalizeAudioCues(spec, compositeKey)
+	if spec == nil or type(spec.audio) ~= "table" then
+		return
+	end
+
+	local definition = TRB.Functions.AudioCues:GetDefinition(compositeKey)
+	if definition == nil then
+		return
+	end
+
+	local builtInIds = {}
+	for _, builtIn in ipairs(definition.builtIns) do
+		builtInIds[builtIn.id] = true
+	end
+
+	-- Pre-refactor counter keys (chiThreshold1, holyPowerThreshold2, ...) declared by each source.
+	local legacyCounterSources = {}
+	for _, source in ipairs(definition.counters) do
+		for _, legacyId in ipairs(source.legacyIds or {}) do
+			legacyCounterSources[legacyId] = source
+		end
+	end
+
+	local knownSources = {}
+	for _, source in ipairs(definition.counters) do
+		knownSources[source.id] = true
+	end
+
+	for id, cue in pairs(spec.audio) do
+		if type(cue) ~= "table" then
+			spec.audio[id] = nil
+		elseif builtInIds[id] then
+			cue.id = id
+			cue.kind = "builtin"
+			cue.source = nil
+		elseif legacyCounterSources[id] ~= nil then
+			cue.id = id
+			cue.kind = "counter"
+			cue.source = legacyCounterSources[id].id
+		elseif cue.kind == "counter" and knownSources[cue.source] then
+			-- User-added cue from a current-shape save or import.
+			cue.id = cue.id or id
+		else
+			-- Belongs to a spec that no longer declares it, or was never a real cue.
+			spec.audio[id] = nil
+		end
+	end
+
+	-- Counter cues need a threshold to compare against; built-ins get whatever config their registry
+	-- entry declares, so consuming code can read cue.configuration.<key> without nil guards.
+	for _, cue in pairs(spec.audio) do
+		if cue.kind == "counter" then
+			cue.configuration = cue.configuration or {}
+			local source = TRB.Functions.AudioCues:GetCounterSource(compositeKey, cue.source)
+			if cue.configuration.thresholdValue == nil and source ~= nil then
+				cue.configuration.thresholdValue = source.min
+			end
+			if TRB.Functions.AudioCues:SourceSupportsPlayOnDrop(source) then
+				if cue.configuration.playOnDrop == nil then
+					cue.configuration.playOnDrop = false
+				end
+			else
+				cue.configuration.playOnDrop = nil
+			end
+			cue.name = cue.name or (source and source.defaultName)
+		else
+			local builtIn = TRB.Functions.AudioCues:GetBuiltIn(compositeKey, cue.id)
+			if builtIn ~= nil and builtIn.config ~= nil then
+				cue.configuration = cue.configuration or {}
+				for _, descriptor in ipairs(builtIn.config) do
+					if cue.configuration[descriptor.key] == nil then
+						cue.configuration[descriptor.key] = descriptor.default
+					end
+				end
+			end
+		end
+	end
+
+	TRB.Functions.AudioCues:InvalidateCache(spec)
+end
+
+---Runs NormalizeAudioCues across every spec in a settings table.
+---@param settings table? # The full addon settings table
+function TRB.Functions.Settings:NormalizeAllAudioCues(settings)
+	if settings == nil then
+		return
+	end
+
+	for compositeKey, entry in pairs(TRB.Data.specRegistry) do
+		local class = settings[entry.className]
+		if class ~= nil then
+			TRB.Functions.Settings:NormalizeAudioCues(class[entry.specName], compositeKey)
+		end
+	end
 end
 
 ---Returns default bar text for the health bar

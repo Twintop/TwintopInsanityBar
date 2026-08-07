@@ -1240,3 +1240,70 @@ TRB.Data.itemSetRegistry[TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey] = 
 	handId = 271529,
 	legId = 271527,
 }
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("druid_balance", {
+		builtIns = {
+			{
+				id = "ssReady",
+				label = L["DruidBalanceAudioStarsurgeReady"],
+				trigger = L["DruidBalanceAudioTriggerStarsurgeReady"],
+				tooltip = L["DruidBalanceAudioStarsurgeCheckboxTooltip"],
+			},
+			{
+				id = "sfReady",
+				label = L["DruidBalanceAudioStarfallReady"],
+				trigger = L["DruidBalanceAudioTriggerStarfallReady"],
+				tooltip = L["DruidBalanceAudioStarfallCheckboxTooltip"],
+			},
+		},
+	})
+
+	TRB.Functions.AudioCues:Register("druid_feral", {
+		builtIns = {
+			{
+				id = "apexPredatorsCraving",
+				label = L["DruidFeralAudioApexPredatorsCravingProc"],
+				trigger = L["DruidFeralAudioTriggerApexPredatorsCraving"],
+				tooltip = L["DruidFeralCheckboxApexPredatorsCravingProcTooltip"],
+			},
+		},
+		counters = {
+			{
+				id = "comboPoints",
+				label = L["DruidFeralAudioCueSourceComboPoints"],
+				description = L["DruidFeralAudioCueSourceComboPointsDescription"],
+				sliderLabel = L["DruidFeralComboPointThresholdSliderTitle"],
+				defaultName = L["DruidFeralAudioCueComboPointDefaultName"],
+				min = 0,
+				max = 5,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "comboPointThreshold1", "comboPointThreshold2" },
+				defaultCues = {
+					{
+						id = "comboPointThreshold1",
+						name = L["DruidFeralAudioComboPointThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 3,
+					},
+					{
+						id = "comboPointThreshold2",
+						name = L["DruidFeralAudioComboPointThreshold2"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 5,
+					},
+				},
+			},
+		},
+	})
+end

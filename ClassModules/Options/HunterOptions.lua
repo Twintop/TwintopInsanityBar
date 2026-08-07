@@ -220,12 +220,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			beastCleaveDown={
-				name = L["HunterBeastMasteryAudioBeastCleaveDown"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(),
 	}
@@ -680,15 +674,6 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			totsThreshold1 = {
-				name = L["HunterSurvivalAudioTotsThreshold1"],
-				enabled = false,
-				sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 3,
-				},
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -1058,29 +1043,6 @@ local function BeastMasteryConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 1, yCoord)
 end
 
-local function BeastMasteryConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 3
-	local specId = 1
-	local spec = TRB.Data.settings.hunter.beastMastery
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.hunter_beastMastery
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "beastCleaveDown", spec, classId, specId, yCoord, L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"], L["HunterBeastMasteryAudioCheckboxBeastCleaveDownTooltip"])
-end
-
 local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1132,8 +1094,8 @@ local function BeastMasteryConstructOptionsPanel(cache)
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, BeastMasteryConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, BeastMasteryConstructThresholdListPanel, true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("hunter", "beastMastery", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("hunter", "beastMastery", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, BeastMasteryConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, BeastMasteryConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) BeastMasteryConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, BeastMasteryConstructResetDefaultsPanel },
 	}
@@ -1494,78 +1456,6 @@ local function MarksmanshipConstructFontAndTextPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 2, yCoord)
-end
-
-local function MarksmanshipConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 3
-	local specId = 2
-	local spec = TRB.Data.settings.hunter.marksmanship
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.hunter_marksmanship
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	--[[yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "aimedShot", spec, classId, specId, yCoord, L["HunterMarksmanshipCheckboxAimedShot"], L["HunterMarksmanshipCheckboxAimedShotTooltip"])
-	
-	controls.checkBoxes.aimedShotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_AS_GCD", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.aimedShotModeGCDs
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxAimedShotGcds"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.audio.aimedShot.mode == "gcd" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.aimedShotModeGCDs:SetChecked(true)
-		controls.checkBoxes.aimedShotModeTime:SetChecked(false)
-		spec.audio.aimedShot.mode = "gcd"
-	end)
-
-	title = L["HunterMarksmanshipAimedShotGcds"]
-	controls.aimedShotGCDs = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 6, spec.audio.aimedShot.gcds, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.aimedShotGCDs:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		spec.audio.aimedShot.gcds = value
-	end)
-
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.aimedShotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_AS_TIME", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.aimedShotModeTime
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxAimedShotTime"])
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.audio.aimedShot.mode == "time" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.aimedShotModeGCDs:SetChecked(false)
-		controls.checkBoxes.aimedShotModeTime:SetChecked(true)
-		spec.audio.aimedShot.mode = "time"
-	end)
-
-	title = L["HunterMarksmanshipAimedShotTime"]
-	controls.aimedShotTime = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 12, spec.audio.aimedShot.time, 0.25, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.aimedShotTime:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio.aimedShot.time = value
-	end)
-	yCoord = yCoord - 60]]
 end
 
 local function MarksmanshipConstructBarTextDisplayPanel(parent, cache)
@@ -2047,37 +1937,6 @@ local function SurvivalConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 3, 3, yCoord)
 end
 
-local function SurvivalConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 3
-	local specId = 3
-	local spec = TRB.Data.settings.hunter.survival
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.hunter_survival
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "totsThreshold1", spec, classId, specId, yCoord, L["HunterSurvivalAudioCheckboxTotsThreshold1"], L["HunterSurvivalAudioCheckboxTotsThreshold1Tooltip"])
-
-	controls.totsThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["HunterSurvivalTotsThresholdSliderTitle"], 0, 3, spec.audio["totsThreshold1"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.totsThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["totsThreshold1"].configuration.thresholdValue = value
-	end)
-end
-
 local function SurvivalConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2130,8 +1989,8 @@ local function SurvivalConstructOptionsPanel(cache)
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, SurvivalConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, SurvivalConstructThresholdListPanel, true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("hunter", "survival", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("hunter", "survival", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, SurvivalConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, SurvivalConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) SurvivalConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, SurvivalConstructResetDefaultsPanel },
 	}

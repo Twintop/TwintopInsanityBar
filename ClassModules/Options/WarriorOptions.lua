@@ -199,12 +199,6 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			suddenDeath={
-				name = L["WarriorAudioSuddenDeathProc"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(),
 	}
@@ -532,12 +526,6 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			suddenDeath={
-				name = L["WarriorAudioSuddenDeathProc"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -850,12 +838,6 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			suddenDeath={
-				name = L["WarriorAudioSuddenDeathProc"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
 			violentOutburst={
 				name = L["WarriorAudioViolentOutburstProc"],
 				enabled=false,
@@ -1231,26 +1213,6 @@ local function ArmsConstructFontAndTextPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 1, 1, yCoord)
-end
-
-local function ArmsConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 1
-	local specId = 1
-	local spec = TRB.Data.settings.warrior.arms
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.warrior_arms
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "suddenDeath", spec, classId, specId, yCoord, L["WarriorAudioCheckboxSuddenDeath"], L["WarriorAudioCheckboxSuddenDeathTooltip"])
 end
 
 local function ArmsConstructBarTextDisplayPanel(parent, cache)
@@ -1675,24 +1637,6 @@ local function FuryConstructFontAndTextPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 1, 2, yCoord)
-end
-
-local function FuryConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 1
-	local specId = 2
-	local spec = TRB.Data.settings.warrior.fury
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.warrior_fury
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
 end
 
 local function FuryConstructBarTextDisplayPanel(parent, cache)
@@ -2135,26 +2079,6 @@ local function ProtectionConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 1, 3, yCoord)
 end
 
-local function ProtectionConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 1
-	local specId = 3
-	local spec = TRB.Data.settings.warrior.protection
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.warrior_protection
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "violentOutburst", spec, classId, specId, yCoord, L["WarriorAudioCheckboxViolentOutburst"], L["WarriorAudioCheckboxViolentOutburstTooltip"])
-end
-
 local function ProtectionConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2208,7 +2132,7 @@ local function ProtectionConstructOptionsPanel(cache)
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, ProtectionConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ProtectionConstructThresholdListPanel, true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warrior", "protection", controls),
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, ProtectionConstructAudioAndTrackingPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("warrior", "protection", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ProtectionConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) ProtectionConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ProtectionConstructResetDefaultsPanel },

@@ -362,3 +362,66 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["evoker_devastation"] = TRB.Classes.Evoker.DevastationSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["evoker_preservation"] = TRB.Classes.Evoker.PreservationSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["evoker_augmentation"] = TRB.Classes.Evoker.AugmentationSpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	local function EssenceSource()
+		return {
+			-- Essence cues fire as Essence runs low, so the lowest threshold is the urgent one.
+			id = "essence",
+			label = L["EvokerAudioCueSourceEssence"],
+			description = L["EvokerAudioCueSourceEssenceDescription"],
+			sliderLabel = string.format(L["SecondaryThresholdValueTitle"], L["ResourceEssence"]),
+			defaultName = L["EvokerAudioCueEssenceDefaultName"],
+			min = 0,
+			max = 6,
+			step = 1,
+			decimals = 0,
+			compare = "atMost",
+			requiresCombat = false,
+			legacyIds = { "secondaryThreshold" },
+			defaultCues = {
+				{
+					id = "secondaryThreshold",
+					name = L["EssenceThresholdAudio"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 2,
+				},
+			},
+		}
+	end
+
+	local essenceBurst = {
+		id = "essenceBurst",
+		label = L["EvokerEssenceBurst"],
+		trigger = L["EvokerAudioTriggerEssenceBurst"],
+		tooltip = L["EvokerAudioCheckboxEssenceBurstTooltip"],
+	}
+
+	TRB.Functions.AudioCues:Register("evoker_devastation", {
+		builtIns = { essenceBurst },
+		counters = { EssenceSource() },
+	})
+
+	TRB.Functions.AudioCues:Register("evoker_preservation", {
+		builtIns = { essenceBurst },
+		counters = { EssenceSource() },
+	})
+
+	TRB.Functions.AudioCues:Register("evoker_augmentation", {
+		builtIns = {
+			essenceBurst,
+			{
+				id = "ebonMightEnding",
+				label = L["EvokerAugmentationAudioEbonMightEnding"],
+				trigger = L["EvokerAugmentationAudioTriggerEbonMightEnding"],
+				tooltip = L["EvokerAugmentationAudioCheckboxEbonMightEndingTooltip"],
+			},
+		},
+		counters = { EssenceSource() },
+	})
+end

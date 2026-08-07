@@ -115,8 +115,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.DeathKnight.BloodSpells
 	specCache.deathknight_blood.spellsData.spells = TRB.Classes.DeathKnight.BloodSpells:New()
 	
-	specCache.deathknight_blood.snapshotData.audio = {
-	}
 
 	specCache.deathknight_blood.barTextVariables = {
 		icons = {},
@@ -153,8 +151,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.deathknight_frost.snapshotData.snapshots[spells.breathOfSindragosa.id] = TRB.Classes.Snapshot:New(spells.breathOfSindragosa)
 
-	specCache.deathknight_frost.snapshotData.audio = {
-	}
 
 	specCache.deathknight_frost.barTextVariables = {
 		icons = {},
@@ -188,8 +184,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.DeathKnight.UnholySpells
 	specCache.deathknight_unholy.spellsData.spells = TRB.Classes.DeathKnight.UnholySpells:New()
 
-	specCache.deathknight_unholy.snapshotData.audio = {
-	}
 
 	specCache.deathknight_unholy.barTextVariables = {
 		icons = {},

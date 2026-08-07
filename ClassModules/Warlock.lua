@@ -55,10 +55,6 @@ local function FillSpecializationCache()
 	specCache.warlock_affliction.spellsData.spells = TRB.Classes.Warlock.AfflictionSpells:New()
 	local spells = specCache.warlock_affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
-	specCache.warlock_affliction.snapshotData.audio = {
-		soulShardThreshold1Played = false,
-		soulShardThreshold2Played = false,
-	}
 	---@type TRB.Classes.Snapshot
 	-- Always simple: this buff never has a knowable endTime. Its remaining time is a secret we can
 	-- render but not subtract, so normal time tracking would see a nil endTime and clear isActive on
@@ -96,13 +92,6 @@ local function FillSpecializationCache()
 	specCache.warlock_demonology.spellsData.spells = TRB.Classes.Warlock.DemonologySpells:New()
 	local spells = specCache.warlock_demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 
-	specCache.warlock_demonology.snapshotData.audio = {
-		soulShardThreshold1Played = false,
-		soulShardThreshold2Played = false,
-		demonicCorePlayed = false,
-		infernalBoltPlayed = false,
-		ruinationPlayed = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_demonology.snapshotData.snapshots[spells.dominionOfArgus.id] = TRB.Classes.Snapshot:New(spells.dominionOfArgus)
 	---@type TRB.Classes.Snapshot
@@ -146,12 +135,6 @@ local function FillSpecializationCache()
 	specCache.warlock_destruction.spellsData.spells = TRB.Classes.Warlock.DestructionSpells:New()
 	local spells = specCache.warlock_destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
 
-	specCache.warlock_destruction.snapshotData.audio = {
-		soulShardThreshold1Played = false,
-		soulShardThreshold2Played = false,
-		infernalBoltPlayed = false,
-		ruinationPlayed = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_destruction.snapshotData.snapshots[spells.infernalBolt.id] = TRB.Classes.Snapshot:New(spells.infernalBolt)
 	---@type TRB.Classes.Snapshot
@@ -1075,7 +1058,7 @@ local function UpdateSnapshot_Demonology()
 		demonicCoreBuff:Reset()
 		-- The glow arms the sound and its hide event disarms it. When the Cooldown Manager is the one
 		-- that sees the buff end, rearm here so the next proc is still audible.
-		snapshotData.audio.demonicCorePlayed = false
+		TRB.Functions.AudioCues:ResetLatch(snapshotData, "demonicCore")
 	end
 
 	if wasActive ~= demonicCoreBuff.isActive then
@@ -1092,42 +1075,11 @@ local function UpdateSnapshot_Destruction()
 	snapshotData.snapshots[spells.ruination.id].buff:GetRemainingTime(currentTime)
 end
 
----Processes soul shard threshold audio cues for any Warlock spec
----@param specSettings table The spec-specific settings table containing audio thresholds
+---Processes Soul Shard threshold audio cues for any Warlock spec
+---@param specSettings table The spec-specific settings table containing audio cues
 local function ProcessSoulShardAudioCues(specSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local coreSettings = TRB.Data.settings.core
-	local currentResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-	local threshold1 = specSettings.audio.soulShardThreshold1
-	local threshold2 = specSettings.audio.soulShardThreshold2
-	local threshold1Value = threshold1.configuration.thresholdValue
-	local threshold2Value = threshold2.configuration.thresholdValue
-
-	local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.soulShardThreshold1Played and currentResource2 >= threshold1Value
-	local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.soulShardThreshold2Played and currentResource2 >= threshold2Value
-
-	if threshold1ShouldFire and threshold2ShouldFire then
-		snapshotData.audio.soulShardThreshold1Played = true
-		snapshotData.audio.soulShardThreshold2Played = true
-		if threshold2Value > threshold1Value then
-			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-		else
-			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-		end
-	elseif threshold2ShouldFire then
-		snapshotData.audio.soulShardThreshold2Played = true
-		PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-	elseif threshold1ShouldFire then
-		snapshotData.audio.soulShardThreshold1Played = true
-		PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-	end
-
-	if currentResource2 < threshold1Value then
-		snapshotData.audio.soulShardThreshold1Played = false
-	end
-	if currentResource2 < threshold2Value then
-		snapshotData.audio.soulShardThreshold2Played = false
-	end
+	TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "soulShards", snapshotData.attributes.resource2)
 end
 
 
@@ -1152,11 +1104,7 @@ local function HandleSpellEvents(self, event, ...)
 				if demonicCoreSnapshot ~= nil then
 					-- Gated on the sound flag alone rather than on isActive, which the Cooldown Manager
 					-- may already have set from the same proc a tick earlier.
-					local specSettings = TRB.Data.settings.warlock.demonology
-					if specSettings.audio.demonicCore.enabled and not snapshotData.audio.demonicCorePlayed then
-						PlaySoundFile(specSettings.audio.demonicCore.sound, TRB.Data.settings.core.audio.channel.channel)
-						snapshotData.audio.demonicCorePlayed = true
-					end
+					TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "demonicCore", true)
 
 					-- No stacks or duration knowable from a glow; active until GLOW_HIDE
 					demonicCoreSnapshot.buff:InitializeCustomSimple(true)
@@ -1167,11 +1115,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = infernalBoltSnapshot.buff.isActive
 
 					if not wasActive then
-						local specSettings = TRB.Data.settings.warlock.demonology
-						if specSettings.audio.infernalBolt.enabled and not snapshotData.audio.infernalBoltPlayed then
-							PlaySoundFile(specSettings.audio.infernalBolt.sound, TRB.Data.settings.core.audio.channel.channel)
-							snapshotData.audio.infernalBoltPlayed = true
-						end
+						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "infernalBolt", true)
 					end
 
 					-- Infernal Bolt proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1183,11 +1127,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = ruinationSnapshot.buff.isActive
 
 					if not wasActive then
-						local specSettings = TRB.Data.settings.warlock.demonology
-						if specSettings.audio.ruination.enabled and not snapshotData.audio.ruinationPlayed then
-							PlaySoundFile(specSettings.audio.ruination.sound, TRB.Data.settings.core.audio.channel.channel)
-							snapshotData.audio.ruinationPlayed = true
-						end
+						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "ruination", true)
 					end
 
 					-- Ruination proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1202,11 +1142,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = infernalBoltSnapshot.buff.isActive
 
 					if not wasActive then
-						local specSettings = TRB.Data.settings.warlock.destruction
-						if specSettings.audio.infernalBolt.enabled and not snapshotData.audio.infernalBoltPlayed then
-							PlaySoundFile(specSettings.audio.infernalBolt.sound, TRB.Data.settings.core.audio.channel.channel)
-							snapshotData.audio.infernalBoltPlayed = true
-						end
+						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.destruction, snapshotData, "infernalBolt", true)
 					end
 
 					-- Infernal Bolt proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1218,11 +1154,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = ruinationSnapshot.buff.isActive
 
 					if not wasActive then
-						local specSettings = TRB.Data.settings.warlock.destruction
-						if specSettings.audio.ruination.enabled and not snapshotData.audio.ruinationPlayed then
-							PlaySoundFile(specSettings.audio.ruination.sound, TRB.Data.settings.core.audio.channel.channel)
-							snapshotData.audio.ruinationPlayed = true
-						end
+						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.destruction, snapshotData, "ruination", true)
 					end
 
 					-- Ruination proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1248,7 +1180,7 @@ local function HandleSpellEvents(self, event, ...)
 				if demonicCoreSnapshot ~= nil then
 					demonicCoreSnapshot.buff:Reset()
 				end
-				snapshotData.audio.demonicCorePlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "demonicCore")
 
 				snapshotData.attributes.demonicCoreActiveGrace = true
 
@@ -1262,13 +1194,13 @@ local function HandleSpellEvents(self, event, ...)
 				if infernalBoltSnapshot ~= nil then
 					infernalBoltSnapshot.buff:Reset()
 				end
-				snapshotData.audio.infernalBoltPlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "infernalBolt")
 			elseif spellId == spells.ruination.id then -- Ruination proc ended
 				local ruinationSnapshot = snapshotData.snapshots[spells.ruination.id]
 				if ruinationSnapshot ~= nil then
 					ruinationSnapshot.buff:Reset()
 				end
-				snapshotData.audio.ruinationPlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "ruination")
 			end
 		elseif TRB.Data.character.specId == 3 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
@@ -1277,13 +1209,13 @@ local function HandleSpellEvents(self, event, ...)
 				if infernalBoltSnapshot ~= nil then
 					infernalBoltSnapshot.buff:Reset()
 				end
-				snapshotData.audio.infernalBoltPlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "infernalBolt")
 			elseif spellId == spells.ruination.id then -- Ruination proc ended
 				local ruinationSnapshot = snapshotData.snapshots[spells.ruination.id]
 				if ruinationSnapshot ~= nil then
 					ruinationSnapshot.buff:Reset()
 				end
-				snapshotData.audio.ruinationPlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "ruination")
 			end
 		end
 	end

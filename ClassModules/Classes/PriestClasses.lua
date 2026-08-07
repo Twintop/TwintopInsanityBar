@@ -1141,3 +1141,146 @@ TRB.Data.castbarTickProfilesRegistry["priest_holy"] = TRB.Classes.Priest.HolySpe
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
 TRB.Data.castbarTickModifiersRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.GetCastbarTickModifiers
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("priest_discipline", {
+		builtIns = {
+			{
+				id = "surgeOfLight",
+				label = L["PriestAudioSurgeOfLight"],
+				trigger = L["PriestAudioTriggerSurgeOfLight"],
+				tooltip = L["PriestAudioCheckboxSurgeOfLightTooltip"],
+			},
+		},
+	})
+
+	TRB.Functions.AudioCues:Register("priest_holy", {
+		builtIns = {
+			{
+				id = "surgeOfLight",
+				label = L["PriestAudioSurgeOfLight"],
+				trigger = L["PriestAudioTriggerSurgeOfLight"],
+				tooltip = L["PriestAudioCheckboxSurgeOfLightTooltip"],
+				config = {
+					{
+						key = "requireSpiritwellTalent",
+						control = "checkbox",
+						label = L["PriestAudioCheckboxSurgeOfLightSpiritwellOnly"],
+						tooltip = L["PriestAudioCheckboxSurgeOfLightSpiritwellOnlyTooltip"],
+						default = false,
+					},
+				},
+			},
+			{
+				id = "benediction",
+				label = L["PriestHolyAudioBenediction"],
+				trigger = L["PriestHolyAudioTriggerBenediction"],
+				tooltip = L["PriestHolyAudioCheckboxBenedictionTooltip"],
+			},
+			{
+				id = "lightweaverExpiring",
+				label = L["PriestHolyAudioLightweaverExpiring"],
+				trigger = L["PriestHolyAudioTriggerLightweaverExpiring"],
+				tooltip = L["PriestHolyAudioCheckboxLightweaverExpiringTooltip"],
+				config = {
+					{
+						key = "thresholdValue",
+						control = "slider",
+						label = L["PriestHolyAudioLightweaverExpiringSliderTitle"],
+						min = 0,
+						max = 20,
+						step = 0.5,
+						decimals = 1,
+						default = 5,
+					},
+				},
+			},
+			{
+				id = "holyWordChastiseReady",
+				label = L["PriestHolyAudioHolyWordChastiseReady"],
+				trigger = L["PriestHolyAudioTriggerHolyWordChastiseReady"],
+				tooltip = L["PriestHolyAudioCheckboxHolyWordChastiseReadyTooltip"],
+			},
+			{
+				id = "holyWordSerenityCharge1",
+				label = L["PriestHolyAudioHolyWordSerenityCharge1"],
+				trigger = L["PriestHolyAudioTriggerHolyWordSerenityCharge1"],
+				tooltip = L["PriestHolyAudioCheckboxHolyWordSerenityCharge1Tooltip"],
+			},
+			{
+				id = "holyWordSerenityCharge2",
+				label = L["PriestHolyAudioHolyWordSerenityCharge2"],
+				trigger = L["PriestHolyAudioTriggerHolyWordSerenityCharge2"],
+				tooltip = L["PriestHolyAudioCheckboxHolyWordSerenityCharge2Tooltip"],
+			},
+			{
+				id = "holyWordSanctifyCharge1",
+				label = L["PriestHolyAudioHolyWordSanctifyCharge1"],
+				trigger = L["PriestHolyAudioTriggerHolyWordSanctifyCharge1"],
+				tooltip = L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1Tooltip"],
+			},
+			{
+				id = "holyWordSanctifyCharge2",
+				label = L["PriestHolyAudioHolyWordSanctifyCharge2"],
+				trigger = L["PriestHolyAudioTriggerHolyWordSanctifyCharge2"],
+				tooltip = L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2Tooltip"],
+			},
+		},
+		counters = {
+			{
+				-- Lightweaver is the one source that matches on an exact stack count rather than a
+				-- floor, and its cues are not gated on being in combat.
+				id = "lightweaverStacks",
+				label = L["PriestHolyAudioCueSourceLightweaver"],
+				description = L["PriestHolyAudioCueSourceLightweaverDescription"],
+				sliderLabel = L["PriestHolyAudioLightweaverThresholdSliderTitle"],
+				defaultName = L["PriestHolyAudioCueLightweaverDefaultName"],
+				min = 1,
+				max = 4,
+				step = 1,
+				decimals = 0,
+				compare = "exact",
+				requiresCombat = false,
+				legacyIds = { "lightweaver", "lightweaverMaxStacks" },
+				defaultCues = {
+					{
+						id = "lightweaver",
+						name = L["PriestHolyAudioLightweaverThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+						soundName = L["LSMSoundAirHorn"],
+						thresholdValue = 1,
+					},
+					{
+						id = "lightweaverMaxStacks",
+						name = L["PriestHolyAudioLightweaverThreshold2"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+						soundName = L["LSMSoundAirHorn"],
+						thresholdValue = 4,
+					},
+				},
+			},
+		},
+	})
+
+	TRB.Functions.AudioCues:Register("priest_shadow", {
+		builtIns = {
+			{
+				id = "mdProc",
+				label = L["PriestShadowAudioMindDevourer"],
+				trigger = L["PriestShadowAudioTriggerMindDevourer"],
+				tooltip = L["PriestShadowAudioCheckboxMindDevourerTooltip"],
+			},
+			{
+				id = "dpReady",
+				label = L["PriestShadowAudioShadowWordMadness"],
+				trigger = L["PriestShadowAudioTriggerShadowWordMadness"],
+				tooltip = L["PriestShadowAudioCheckboxShadowWordMadnessTooltip"],
+			},
+		},
+	})
+end

@@ -86,6 +86,8 @@ Classes\OptionsUi.lua
 
 Init.lua
 
+Functions\AudioCues.lua
+
 ClassModules\Classes\HealerClasses.lua
 ClassModules\Classes\DeathKnightClasses.lua
 ClassModules\Classes\DemonHunterClasses.lua
@@ -138,6 +140,7 @@ Options\OptionsUiVisibility.lua
 Options\OptionsUiThresholdList.lua
 Options\OptionsUiThresholds.lua
 Options\OptionsUiCustomThresholds.lua
+Options\OptionsUiAudioCues.lua
 Options\OptionsUiText.lua
 Options\OptionsUiIndicators.lua
 Options\OptionsUiColors.lua

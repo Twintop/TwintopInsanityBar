@@ -54,14 +54,6 @@ local function FillSpecializationCache()
 	local spells = specCache.paladin_holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 
 	specCache.paladin_holy.snapshotData.attributes.manaRegen = 0
-	specCache.paladin_holy.snapshotData.audio = {
-		innervateCue = false,
-		holyPowerThreshold1Played = false,
-		holyPowerThreshold2Played = false,
-		holyPowerThreshold3Played = false,
-		infusionOfLightPlayed = false,
-		divinePurposePlayed = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.paladin_holy.snapshotData.snapshots[spells.divinePurpose.id] = TRB.Classes.Snapshot:New(spells.divinePurpose)
 
@@ -94,12 +86,6 @@ local function FillSpecializationCache()
 	spells = specCache.paladin_protection.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
 
 	specCache.paladin_protection.snapshotData.attributes.manaRegen = 0
-	specCache.paladin_protection.snapshotData.audio = {
-		holyPowerThreshold1Played = false,
-		holyPowerThreshold2Played = false,
-		holyPowerThreshold3Played = false,
-		divinePurposePlayed = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.paladin_protection.snapshotData.snapshots[spells.divinePurpose.id] = TRB.Classes.Snapshot:New(spells.divinePurpose)
 
@@ -132,12 +118,6 @@ local function FillSpecializationCache()
 	spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 
 	specCache.paladin_retribution.snapshotData.attributes.manaRegen = 0
-	specCache.paladin_retribution.snapshotData.audio = {
-		holyPowerThreshold1Played = false,
-		holyPowerThreshold2Played = false,
-		holyPowerThreshold3Played = false,
-		divinePurposePlayed = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.paladin_retribution.snapshotData.snapshots[spells.divinePurpose.id] = TRB.Classes.Snapshot:New(spells.divinePurpose)
 
@@ -657,7 +637,7 @@ local function UpdateDivinePurpose(spells, currentTime)
 	divinePurposeSnapshot.buff:GetRemainingTime(currentTime)
 	if wasActive and not divinePurposeSnapshot.buff.isActive then
 		-- Expiry can beat the overlay's hide, so rearm the cue here to keep the next proc audible.
-		snapshotData.audio.divinePurposePlayed = false
+		TRB.Functions.AudioCues:ResetLatch(snapshotData, "divinePurpose")
 		TRB.Functions.BarText:MarkLookupDirty()
 	end
 end
@@ -692,59 +672,7 @@ end
 ---@param specSettings table The spec-specific settings table containing audio thresholds
 local function ProcessHolyPowerAudioCues(specSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local coreSettings = TRB.Data.settings.core
-	local currentResource2 = snapshotData.attributes.resource2 or 0
-	local threshold1 = specSettings.audio.holyPowerThreshold1
-	local threshold2 = specSettings.audio.holyPowerThreshold2
-	local threshold3 = specSettings.audio.holyPowerThreshold3
-	local threshold1Value = threshold1.configuration.thresholdValue
-	local threshold2Value = threshold2.configuration.thresholdValue
-	local threshold3Value = threshold3.configuration.thresholdValue
-
-	local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.holyPowerThreshold1Played and currentResource2 >= threshold1Value
-	local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.holyPowerThreshold2Played and currentResource2 >= threshold2Value
-	local threshold3ShouldFire = threshold3.enabled and not snapshotData.audio.holyPowerThreshold3Played and currentResource2 >= threshold3Value
-
-	if threshold1ShouldFire or threshold2ShouldFire or threshold3ShouldFire then
-		local highestValue = 0
-		local highestSound = nil
-
-		if threshold1ShouldFire then
-			snapshotData.audio.holyPowerThreshold1Played = true
-			if threshold1Value > highestValue then
-				highestValue = threshold1Value
-				highestSound = threshold1.sound
-			end
-		end
-		if threshold2ShouldFire then
-			snapshotData.audio.holyPowerThreshold2Played = true
-			if threshold2Value > highestValue then
-				highestValue = threshold2Value
-				highestSound = threshold2.sound
-			end
-		end
-		if threshold3ShouldFire then
-			snapshotData.audio.holyPowerThreshold3Played = true
-			if threshold3Value > highestValue then
-				highestValue = threshold3Value
-				highestSound = threshold3.sound
-			end
-		end
-
-		if highestSound then
-			PlaySoundFile(highestSound, coreSettings.audio.channel.channel)
-		end
-	end
-
-	if currentResource2 < threshold1Value then
-		snapshotData.audio.holyPowerThreshold1Played = false
-	end
-	if currentResource2 < threshold2Value then
-		snapshotData.audio.holyPowerThreshold2Played = false
-	end
-	if currentResource2 < threshold3Value then
-		snapshotData.audio.holyPowerThreshold3Played = false
-	end
+	TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "holyPower", snapshotData.attributes.resource2 or 0)
 end
 
 local function HandleSpellEvents(self, event, ...)
@@ -760,10 +688,7 @@ local function HandleSpellEvents(self, event, ...)
 
 				if not wasActive then
 					local specSettings = TRB.Data.settings.paladin[TRB.Data.character.specName]
-					if specSettings.audio.divinePurpose.enabled and not snapshotData.audio.divinePurposePlayed then
-						PlaySoundFile(specSettings.audio.divinePurpose.sound, TRB.Data.settings.core.audio.channel.channel)
-						snapshotData.audio.divinePurposePlayed = true
-					end
+					TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "divinePurpose", true)
 				end
 
 				-- Timed from the spell definition: the aura is secret, and a proc is always a full
@@ -784,7 +709,7 @@ local function HandleSpellEvents(self, event, ...)
 				if divinePurposeSnapshot ~= nil then
 					divinePurposeSnapshot.buff:Reset()
 				end
-				snapshotData.audio.divinePurposePlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "divinePurpose")
 				TRB.Functions.BarText:MarkLookupDirty()
 			end
 		end
@@ -925,14 +850,7 @@ local function UpdateResourceBar()
 			holyPowerBar = holyPowerColors,
 		})
 		if snapshotData.attributes.isTracking then
-			if infusionOfLightActive then
-				if specSettings.audio.infusionOfLight.enabled and not snapshotData.audio.infusionOfLightPlayed then
-					PlaySoundFile(specSettings.audio.infusionOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
-					snapshotData.audio.infusionOfLightPlayed = true
-				end
-			else
-				snapshotData.audio.infusionOfLightPlayed = false
-			end
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "infusionOfLight", infusionOfLightActive)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true

@@ -72,10 +72,6 @@ local function FillSpecializationCache()
 
 	specCache.rogue_assassination.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_assassination.snapshotData.attributes.comboPoints = 0
-	specCache.rogue_assassination.snapshotData.audio = {
-		comboPointThreshold1Played = false,
-		comboPointThreshold2Played = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_assassination.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
@@ -144,10 +140,6 @@ local function FillSpecializationCache()
 	specCache.rogue_outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_outlaw.snapshotData.attributes.comboPoints = 0
 	specCache.rogue_outlaw.snapshotData.attributes.coupDeGraceActive = false
-	specCache.rogue_outlaw.snapshotData.audio = {
-		comboPointThreshold1Played = false,
-		comboPointThreshold2Played = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
@@ -241,10 +233,6 @@ local function FillSpecializationCache()
 	specCache.rogue_subtlety.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_subtlety.snapshotData.attributes.comboPoints = 0
 	specCache.rogue_subtlety.snapshotData.attributes.coupDeGraceActive = false
-	specCache.rogue_subtlety.snapshotData.audio = {
-		comboPointThreshold1Played = false,
-		comboPointThreshold2Played = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_subtlety.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
@@ -773,42 +761,11 @@ local function UpdateSnapshot_Subtlety()
 	local currentTime = GetTime()]]
 end
 
----Processes combo point threshold audio cues for any Rogue spec
----@param specSettings table The spec-specific settings table containing audio thresholds
+---Processes Combo Point threshold audio cues for any Rogue spec
+---@param specSettings table The spec-specific settings table containing audio cues
 local function ProcessComboPointAudioCues(specSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local coreSettings = TRB.Data.settings.core
-	local currentResource2 = snapshotData.attributes.resource2
-	local threshold1 = specSettings.audio.comboPointThreshold1
-	local threshold2 = specSettings.audio.comboPointThreshold2
-	local threshold1Value = threshold1.configuration.thresholdValue
-	local threshold2Value = threshold2.configuration.thresholdValue
-
-	local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.comboPointThreshold1Played and currentResource2 >= threshold1Value
-	local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.comboPointThreshold2Played and currentResource2 >= threshold2Value
-
-	if threshold1ShouldFire and threshold2ShouldFire then
-		snapshotData.audio.comboPointThreshold1Played = true
-		snapshotData.audio.comboPointThreshold2Played = true
-		if threshold2Value > threshold1Value then
-			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-		else
-			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-		end
-	elseif threshold2ShouldFire then
-		snapshotData.audio.comboPointThreshold2Played = true
-		PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-	elseif threshold1ShouldFire then
-		snapshotData.audio.comboPointThreshold1Played = true
-		PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-	end
-
-	if currentResource2 < threshold1Value then
-		snapshotData.audio.comboPointThreshold1Played = false
-	end
-	if currentResource2 < threshold2Value then
-		snapshotData.audio.comboPointThreshold2Played = false
-	end
+	TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
 end
 
 local function ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap)

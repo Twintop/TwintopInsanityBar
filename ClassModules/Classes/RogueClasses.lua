@@ -868,3 +868,49 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["rogue_assassination"] = TRB.Classes.Rogue.AssassinationSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["rogue_outlaw"] = TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["rogue_subtlety"] = TRB.Classes.Rogue.SubtletySpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	local function ComboPointSource()
+		return {
+			id = "comboPoints",
+			label = L["RogueAudioCueSourceComboPoints"],
+			description = L["RogueAudioCueSourceComboPointsDescription"],
+			sliderLabel = L["RogueComboPointThresholdSliderTitle"],
+			defaultName = L["RogueAudioCueComboPointDefaultName"],
+			min = 0,
+			max = 7,
+			step = 1,
+			decimals = 0,
+			compare = "atLeast",
+			requiresCombat = true,
+			legacyIds = { "comboPointThreshold1", "comboPointThreshold2" },
+			defaultCues = {
+				{
+					id = "comboPointThreshold1",
+					name = L["RogueAudioComboPointThreshold1"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 3,
+				},
+				{
+					id = "comboPointThreshold2",
+					name = L["RogueAudioComboPointThreshold2"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 5,
+				},
+			},
+		}
+	end
+
+	for _, specName in ipairs({ "assassination", "outlaw", "subtlety" }) do
+		TRB.Functions.AudioCues:Register("rogue_" .. specName, {
+			counters = { ComboPointSource() },
+		})
+	end
+end

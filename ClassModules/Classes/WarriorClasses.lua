@@ -740,3 +740,19 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["warrior_arms"] = TRB.Classes.Warrior.ArmsSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["warrior_fury"] = TRB.Classes.Warrior.FurySpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["warrior_protection"] = TRB.Classes.Warrior.ProtectionSpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("warrior_protection", {
+		builtIns = {
+			{
+				id = "violentOutburst",
+				label = L["WarriorAudioViolentOutburstProc"],
+				trigger = L["WarriorAudioTriggerViolentOutburst"],
+				tooltip = L["WarriorAudioCheckboxViolentOutburstTooltip"],
+			},
+		},
+	})
+end

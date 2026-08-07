@@ -56,10 +56,6 @@ local function FillSpecializationCache()
 	local spells = specCache.evoker_devastation.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 
 	specCache.evoker_devastation.snapshotData.attributes.manaRegen = 0
-	specCache.evoker_devastation.snapshotData.audio = {
-		essenceBurstPlayed = false,
-		secondaryThresholdPlayed = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.evoker_devastation.snapshotData.snapshots[spells.dragonrage.id] = TRB.Classes.Snapshot:New(spells.dragonrage)
 	---@type TRB.Classes.Snapshot
@@ -99,10 +95,6 @@ local function FillSpecializationCache()
 	spells = specCache.evoker_preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 
 	specCache.evoker_preservation.snapshotData.attributes.manaRegen = 0
-	specCache.evoker_preservation.snapshotData.audio = {
-		essenceBurstPlayed = false,
-		secondaryThresholdPlayed = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.evoker_preservation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst, nil, "always")
 
@@ -140,11 +132,6 @@ local function FillSpecializationCache()
 
 	specCache.evoker_augmentation.snapshotData.attributes.manaRegen = 0
 	specCache.evoker_augmentation.snapshotData.attributes.extendsEbonMight = false
-	specCache.evoker_augmentation.snapshotData.audio = {
-		essenceBurstPlayed = false,
-		playedEbonMightCue = false,
-		secondaryThresholdPlayed = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.evoker_augmentation.snapshotData.snapshots[spells.ebonMight.id] = TRB.Classes.Snapshot:New(spells.ebonMight)
 	---@type TRB.Classes.Snapshot
@@ -870,10 +857,7 @@ local function HandleSpellEvents(self, event, ...)
 				-- Gated on the sound flag alone rather than on isActive, which the Cooldown Manager
 				-- may already have set from the same proc a tick earlier.
 				local specSettings = TRB.Data.settings.evoker[TRB.Data.character.specName]
-				if specSettings.audio.essenceBurst.enabled and not snapshotData.audio.essenceBurstPlayed then
-					PlaySoundFile(specSettings.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
-					snapshotData.audio.essenceBurstPlayed = true
-				end
+				TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "essenceBurst", true)
 
 				-- No stacks or duration knowable from an overlay; active until HIDE.
 				essenceBurstSnapshot.buff:InitializeCustomSimple(true)
@@ -885,7 +869,7 @@ local function HandleSpellEvents(self, event, ...)
 			if essenceBurstSnapshot ~= nil then
 				essenceBurstSnapshot.buff:Reset()
 			end
-			snapshotData.audio.essenceBurstPlayed = false
+			TRB.Functions.AudioCues:ResetLatch(snapshotData, "essenceBurst")
 		end
 	end
 end
@@ -953,7 +937,7 @@ local function UpdateEssenceBurst(spells)
 		essenceBurstBuff:Reset()
 		-- The overlay arms the sound and its hide event disarms it; rearm here when the Cooldown
 		-- Manager is the one that sees the buff end.
-		snapshotData.audio.essenceBurstPlayed = false
+		TRB.Functions.AudioCues:ResetLatch(snapshotData, "essenceBurst")
 	end
 
 	if wasActive ~= essenceBurstBuff.isActive then
@@ -1084,12 +1068,7 @@ local function UpdateResourceBar()
 			UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 		end
 
-		if specSettings.audio.secondaryThreshold.enabled and not snapshotData.audio.secondaryThresholdPlayed and snapshotData.attributes.resource2 <= specSettings.audio.secondaryThreshold.configuration.thresholdValue then
-			snapshotData.audio.secondaryThresholdPlayed = true
-			PlaySoundFile(specSettings.audio.secondaryThreshold.sound, coreSettings.audio.channel.channel)
-		elseif snapshotData.attributes.resource2 > specSettings.audio.secondaryThreshold.configuration.thresholdValue then
-			snapshotData.audio.secondaryThresholdPlayed = false
-		end
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "essence", snapshotData.attributes.resource2)
 
 		return refreshTextEssence
 	end
@@ -1267,14 +1246,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Audio cue for Ebon Might dropping during cast
-			if ebonMightActive and ebonMightDropDuringCastMet then
-				if specSettings.audio.ebonMightEnding.enabled and not snapshotData.audio.playedEbonMightCue then
-					snapshotData.audio.playedEbonMightCue = true
-					PlaySoundFile(specSettings.audio.ebonMightEnding.sound, coreSettings.audio.channel.channel)
-				end
-			else
-				snapshotData.audio.playedEbonMightCue = false
-			end
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "ebonMightEnding", ebonMightActive and ebonMightDropDuringCastMet)
 
 			local conditionMap = {
 				ebonMightDropDuringCast = ebonMightActive and ebonMightDropDuringCastMet,

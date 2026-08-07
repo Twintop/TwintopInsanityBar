@@ -64,8 +64,6 @@ local function FillSpecializationCache()
 	specCache.demonhunter_havoc.spellsData.spells = TRB.Classes.DemonHunter.HavocSpells:New()
 	local spells = specCache.demonhunter_havoc.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 
-	specCache.demonhunter_havoc.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_havoc.snapshotData.snapshots[spells.bladeDance.id] = TRB.Classes.Snapshot:New(spells.bladeDance)
 	---@type TRB.Classes.Snapshot
@@ -115,8 +113,6 @@ local function FillSpecializationCache()
 	---@diagnostic disable-next-line: cast-local-type
 	spells = specCache.demonhunter_vengeance.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 
-	specCache.demonhunter_vengeance.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.chaosNova.id] = TRB.Classes.Snapshot:New(spells.chaosNova)
 	---@type TRB.Classes.Snapshot
@@ -151,8 +147,6 @@ local function FillSpecializationCache()
 	specCache.demonhunter_devourer.spellsData.spells = TRB.Classes.DemonHunter.DevourerSpells:New()
 	local spells = specCache.demonhunter_devourer.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 
-	specCache.demonhunter_devourer.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_devourer.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis, nil, "always")
 	-----@type TRB.Classes.Snapshot

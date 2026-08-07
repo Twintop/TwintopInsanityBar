@@ -55,10 +55,6 @@ local function FillSpecializationCache()
 	local spells = specCache.mage_arcane.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 
 	specCache.mage_arcane.snapshotData.attributes.manaRegen = 0
-	specCache.mage_arcane.snapshotData.audio = {
-		arcaneChargeThreshold1Played = false,
-		arcaneChargeThreshold2Played = false,
-	}
 
 	specCache.mage_arcane.barTextVariables = {
 		icons = {},
@@ -87,8 +83,6 @@ local function FillSpecializationCache()
 	specCache.mage_fire.spellsData.spells = TRB.Classes.Mage.FireSpells:New()
 
 	specCache.mage_fire.snapshotData.attributes.manaRegen = 0
-	specCache.mage_fire.snapshotData.audio = {
-	}
 
 	specCache.mage_fire.barTextVariables = {
 		icons = {},
@@ -119,9 +113,6 @@ local function FillSpecializationCache()
 	local frostSpells = specCache.mage_frost.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 
 	specCache.mage_frost.snapshotData.attributes.manaRegen = 0
-	specCache.mage_frost.snapshotData.audio = {
-		iciclesThreshold1Played = false,
-	}
 
 	specCache.mage_frost.snapshotData.snapshots[frostSpells.icicles.id] = TRB.Classes.Snapshot:New(frostSpells.icicles, nil, "always")
 
@@ -939,43 +930,7 @@ local function UpdateResourceBar()
 			end
 		end
 
-		-- Arcane Charge threshold audio cues (independent of bar visibility)
-		if TRB.Data.character.inCombat then
-			do
-				local coreSettings = TRB.Data.settings.core
-				local currentResource2 = snapshotData.attributes.resource2
-				local threshold1 = specSettings.audio.arcaneChargeThreshold1
-				local threshold2 = specSettings.audio.arcaneChargeThreshold2
-				local threshold1Value = threshold1.configuration.thresholdValue
-				local threshold2Value = threshold2.configuration.thresholdValue
-
-				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.arcaneChargeThreshold1Played and currentResource2 >= threshold1Value
-				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.arcaneChargeThreshold2Played and currentResource2 >= threshold2Value
-
-				if threshold1ShouldFire and threshold2ShouldFire then
-					snapshotData.audio.arcaneChargeThreshold1Played = true
-					snapshotData.audio.arcaneChargeThreshold2Played = true
-					if threshold2Value > threshold1Value then
-						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-					else
-						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-					end
-				elseif threshold2ShouldFire then
-					snapshotData.audio.arcaneChargeThreshold2Played = true
-					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-				elseif threshold1ShouldFire then
-					snapshotData.audio.arcaneChargeThreshold1Played = true
-					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-				end
-
-				if currentResource2 < threshold1Value then
-					snapshotData.audio.arcaneChargeThreshold1Played = false
-				end
-				if currentResource2 < threshold2Value then
-					snapshotData.audio.arcaneChargeThreshold2Played = false
-				end
-			end
-		end
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "arcaneCharges", snapshotData.attributes.resource2)
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.fire
@@ -1117,26 +1072,10 @@ local function UpdateResourceBar()
 		end
 
 		-- Icicles threshold audio cues (independent of bar visibility)
-		if TRB.Data.character.inCombat then
-			do
-				local coreSettings = TRB.Data.settings.core
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
-				local snapshots = snapshotData.snapshots
-				local currentIcicles = snapshots[spells.icicles.id].buff.applications or 0
-				local threshold1 = specSettings.audio.iciclesThreshold1
-				local threshold1Value = threshold1.configuration.thresholdValue
-
-				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.iciclesThreshold1Played and currentIcicles >= threshold1Value
-
-				if threshold1ShouldFire then
-					snapshotData.audio.iciclesThreshold1Played = true
-					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-				end
-
-				if currentIcicles < threshold1Value then
-					snapshotData.audio.iciclesThreshold1Played = false
-				end
-			end
+		do
+			local frostSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "icicles",
+				snapshotData.snapshots[frostSpells.icicles.id].buff.applications or 0)
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end

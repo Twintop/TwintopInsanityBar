@@ -73,8 +73,6 @@ local function FillSpecializationCache()
 	specCache.warrior_arms.spellsData.spells = TRB.Classes.Warrior.ArmsSpells:New()
 	local spells = specCache.warrior_arms.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 
-	specCache.warrior_arms.snapshotData.audio = {
-	}
 	--[[---@type TRB.Classes.Snapshot
 	specCache.warrior_arms.snapshotData.snapshots[spells.execute.id] = TRB.Classes.Snapshot:New(spells.execute)]]
 	---@type TRB.Classes.Snapshot
@@ -124,8 +122,6 @@ local function FillSpecializationCache()
 	---@diagnostic disable-next-line: cast-local-type
 	spells = specCache.warrior_fury.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 
-	specCache.warrior_fury.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_fury.snapshotData.snapshots[spells.shieldBlock.id] = TRB.Classes.Snapshot:New(spells.shieldBlock)
 	---@type TRB.Classes.Snapshot
@@ -167,8 +163,6 @@ local function FillSpecializationCache()
 	---@diagnostic disable-next-line: cast-local-type
 	spells = specCache.warrior_protection.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 
-	specCache.warrior_protection.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_protection.snapshotData.snapshots[spells.impendingVictory.id] = TRB.Classes.Snapshot:New(spells.impendingVictory)
 	---@type TRB.Classes.Snapshot
@@ -816,7 +810,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 				local violentOutburst = snapshotData.snapshots[spells.violentOutburst.id]
 				if violentOutburst ~= nil and violentOutburst.buff.isActive then
 					violentOutburst.buff:Reset()
-					snapshotData.audio.violentOutburstCue = false
+					TRB.Functions.AudioCues:ResetLatch(snapshotData, "violentOutburst")
 
 					StartIgnorePainTimer(currentTime)
 				end
@@ -884,11 +878,7 @@ local function DetectViolentOutburst()
 			snap.buff:InitializeCustom(spells.violentOutburst.duration, GetTime())
 			TRB.Data.lookupDirty = true
 
-			local specSettings = TRB.Data.settings.warrior.protection
-			if specSettings.audio.violentOutburst ~= nil and specSettings.audio.violentOutburst.enabled and not snapshotData.audio.violentOutburstCue then
-				PlaySoundFile(specSettings.audio.violentOutburst.sound, TRB.Data.settings.core.audio.channel.channel)
-				snapshotData.audio.violentOutburstCue = true
-			end
+			TRB.Functions.AudioCues:Fire(TRB.Data.settings.warrior.protection, snapshotData, "violentOutburst", true)
 		end
 	end
 end
@@ -1045,7 +1035,7 @@ local function UpdateSnapshot_Protection()
 	snapshots[spells.violentOutburst.id].buff:GetRemainingTime(currentTime)
 	if wasViolentOutburstActive and not snapshots[spells.violentOutburst.id].buff.isActive then
 		-- Proc expired (or was consumed); allow the audio cue to fire on the next proc.
-		TRB.Data.snapshotData.audio.violentOutburstCue = false
+		TRB.Functions.AudioCues:ResetLatch(TRB.Data.snapshotData, "violentOutburst")
 		TRB.Data.lookupDirty = true
 	end
 	--[[

@@ -71,8 +71,6 @@ local function FillSpecializationCache()
 	specCache.monk_brewmaster.snapshotData.snapshots[spells.invokeNiuzao.id] = TRB.Classes.Snapshot:New(spells.invokeNiuzao)
 
 	specCache.monk_brewmaster.snapshotData.attributes.resourceRegen = 0
-	specCache.monk_brewmaster.snapshotData.audio = {
-	}
 
 	specCache.monk_brewmaster.barTextVariables = {
 		icons = {},
@@ -105,9 +103,6 @@ local function FillSpecializationCache()
 	local spells = specCache.monk_mistweaver.spellsData.spells
 
 	specCache.monk_mistweaver.snapshotData.attributes.manaRegen = 0
-	specCache.monk_mistweaver.snapshotData.audio = {
-		innervateCue = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.monk_mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification)
 	---@type TRB.Classes.Snapshot
@@ -147,12 +142,6 @@ local function FillSpecializationCache()
 	spells = specCache.monk_windwalker.spellsData.spells
 
 	specCache.monk_windwalker.snapshotData.attributes.resourceRegen = 0
-	specCache.monk_windwalker.snapshotData.audio = {
-		danceOfChiJiPlayed = false,
-		chiThreshold1Played = false,
-		chiThreshold2Played = false,
-		chiThreshold3Played = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.monk_windwalker.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
 	---@type TRB.Classes.Snapshot
@@ -772,10 +761,7 @@ local function HandleSpellEvents(self, event, ...)
 			if spellId == spells.danceOfChiJi.id then
 				if snapshotData.attributes.danceOfChiJiActive ~= true then
 					local specSettings = TRB.Data.settings.monk[TRB.Data.character.specName]
-					if specSettings.audio.danceOfChiJi.enabled and not snapshotData.audio.danceOfChiJiPlayed then
-						PlaySoundFile(specSettings.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
-						snapshotData.audio.danceOfChiJiPlayed = true
-					end
+					TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "danceOfChiJi", true)
 				end
 				snapshotData.attributes.danceOfChiJiActive = true
 			end
@@ -787,7 +773,7 @@ local function HandleSpellEvents(self, event, ...)
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 			if spellId == spells.danceOfChiJi.id then
 				snapshotData.attributes.danceOfChiJiActive = false
-				snapshotData.audio.danceOfChiJiPlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "danceOfChiJi")
 			end
 		end
 	end
@@ -1667,63 +1653,8 @@ local function UpdateResourceBar()
 		end
 
 		-- Chi threshold audio cues (independent of bar visibility)
-		if TRB.Data.character.inCombat then
-			do
-				local coreSettings = TRB.Data.settings.core
-				local currentResource2 = snapshotData.attributes.resource2
-				local threshold1 = specSettings.audio.chiThreshold1
-				local threshold2 = specSettings.audio.chiThreshold2
-				local threshold3 = specSettings.audio.chiThreshold3
-				local threshold1Value = threshold1.configuration.thresholdValue
-				local threshold2Value = threshold2.configuration.thresholdValue
-				local threshold3Value = threshold3.configuration.thresholdValue
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "chi", snapshotData.attributes.resource2)
 
-				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.chiThreshold1Played and currentResource2 >= threshold1Value
-				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.chiThreshold2Played and currentResource2 >= threshold2Value
-				local threshold3ShouldFire = threshold3.enabled and not snapshotData.audio.chiThreshold3Played and currentResource2 >= threshold3Value
-
-				if threshold1ShouldFire or threshold2ShouldFire or threshold3ShouldFire then
-					local highestValue = 0
-					local highestSound = nil
-
-					if threshold1ShouldFire then
-						snapshotData.audio.chiThreshold1Played = true
-						if threshold1Value > highestValue then
-							highestValue = threshold1Value
-							highestSound = threshold1.sound
-						end
-					end
-					if threshold2ShouldFire then
-						snapshotData.audio.chiThreshold2Played = true
-						if threshold2Value > highestValue then
-							highestValue = threshold2Value
-							highestSound = threshold2.sound
-						end
-					end
-					if threshold3ShouldFire then
-						snapshotData.audio.chiThreshold3Played = true
-						if threshold3Value > highestValue then
-							highestValue = threshold3Value
-							highestSound = threshold3.sound
-						end
-					end
-
-					if highestSound then
-						PlaySoundFile(highestSound, coreSettings.audio.channel.channel)
-					end
-				end
-
-				if currentResource2 < threshold1Value then
-					snapshotData.audio.chiThreshold1Played = false
-				end
-				if currentResource2 < threshold2Value then
-					snapshotData.audio.chiThreshold2Played = false
-				end
-				if currentResource2 < threshold3Value then
-					snapshotData.audio.chiThreshold3Played = false
-				end
-			end
-		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end

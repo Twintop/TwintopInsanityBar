@@ -65,10 +65,6 @@ local function FillSpecializationCache()
 	specCache.druid_balance.spellsData.spells = TRB.Classes.Druid.BalanceSpells:New()
 	local spells = specCache.druid_balance.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 	
-	specCache.druid_balance.snapshotData.audio = {
-		playedSsCue = false,
-		playedSfCue = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.druid_balance.snapshotData.snapshots[spells.eclipseSolar.id] = TRB.Classes.Snapshot:New(spells.eclipseSolar)
 	---@type TRB.Classes.Snapshot
@@ -123,11 +119,6 @@ local function FillSpecializationCache()
 	specCache.druid_feral.snapshotData.attributes.berserkComboPointsSpent = 0
 	specCache.druid_feral.snapshotData.attributes.berserkWindowActive = false
 	specCache.druid_feral.snapshotData.attributes.berserkPreviousComboPoints = 0
-	specCache.druid_feral.snapshotData.audio = {
-		apexPredatorsCravingCue = false,
-		comboPointThreshold1Played = false,
-		comboPointThreshold2Played = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 	---@type TRB.Classes.Snapshot
@@ -189,8 +180,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.druid_guardian.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 
-	specCache.druid_guardian.snapshotData.audio = {
-	}
 
 	-- Restoration
 	specCache.druid_restoration.Global_TwintopResourceBar = {
@@ -218,9 +207,6 @@ local function FillSpecializationCache()
 
 	specCache.druid_restoration.snapshotData.attributes.manaRegen = 0
 	specCache.druid_restoration.snapshotData.attributes.clearcastingActive = false
-	specCache.druid_restoration.snapshotData.audio = {
-		innervateCue = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.druid_restoration.snapshotData.snapshots[spells.efflorescence.id] = TRB.Classes.Snapshot:New(spells.efflorescence)
 	---@type TRB.Classes.Snapshot
@@ -1998,14 +1984,7 @@ local function UpdateResourceBar()
 									end
 									
 									if showThreshold then
-										if isUsable then
-											if specSettings.audio.ssReady.enabled and snapshotData.audio.playedSsCue == false then
-												snapshotData.audio.playedSsCue = true
-												PlaySoundFile(specSettings.audio.ssReady.sound, coreSettings.audio.channel.channel)
-											end
-										else
-											snapshotData.audio.playedSsCue = false
-										end
+										TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "ssReady", isUsable)
 									end
 								elseif spell.settingKey == spells.starsurge2.settingKey then
 									if specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow then
@@ -2066,14 +2045,7 @@ local function UpdateResourceBar()
 									end
 									
 									if showThreshold then
-										if isUsable then
-											if specSettings.audio.sfReady.enabled and snapshotData.audio.playedSfCue == false then
-												snapshotData.audio.playedSfCue = true
-												PlaySoundFile(specSettings.audio.sfReady.sound, coreSettings.audio.channel.channel)
-											end
-										else
-											snapshotData.audio.playedSfCue = false
-										end
+										TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "sfReady", isUsable)
 									end
 								end
 							--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
@@ -2656,14 +2628,7 @@ local function UpdateResourceBar()
 					end
 
 					-- APC audio cues (independent of indicator system)
-					if apcActive then
-						if specSettings.audio.apexPredatorsCraving.enabled and not snapshotData.audio.apexPredatorsCravingCue then
-							snapshotData.audio.apexPredatorsCravingCue = true
-							PlaySoundFile(specSettings.audio.apexPredatorsCraving.sound, coreSettings.audio.channel.channel)
-						end
-					else
-						snapshotData.audio.apexPredatorsCravingCue = false
-					end
+					TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "apexPredatorsCraving", apcActive)
 
 					-- Read final colors from the color map
 					barColor = energyBarColors.bar
@@ -2781,43 +2746,7 @@ local function UpdateResourceBar()
 			UpdateHealthBarGeneric()
 		end
 
-		-- Combo Point threshold audio cues (independent of bar visibility)
-		if TRB.Data.character.inCombat then
-			do
-				local coreSettings = TRB.Data.settings.core
-				local currentResource2 = snapshotData.attributes.resource2
-				local threshold1 = specSettings.audio.comboPointThreshold1
-				local threshold2 = specSettings.audio.comboPointThreshold2
-				local threshold1Value = threshold1.configuration.thresholdValue
-				local threshold2Value = threshold2.configuration.thresholdValue
-
-				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.comboPointThreshold1Played and currentResource2 >= threshold1Value
-				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.comboPointThreshold2Played and currentResource2 >= threshold2Value
-
-				if threshold1ShouldFire and threshold2ShouldFire then
-					snapshotData.audio.comboPointThreshold1Played = true
-					snapshotData.audio.comboPointThreshold2Played = true
-					if threshold2Value > threshold1Value then
-						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-					else
-						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-					end
-				elseif threshold2ShouldFire then
-					snapshotData.audio.comboPointThreshold2Played = true
-					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-				elseif threshold1ShouldFire then
-					snapshotData.audio.comboPointThreshold1Played = true
-					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-				end
-
-				if currentResource2 < threshold1Value then
-					snapshotData.audio.comboPointThreshold1Played = false
-				end
-				if currentResource2 < threshold2Value then
-					snapshotData.audio.comboPointThreshold2Played = false
-				end
-			end
-		end
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		-- Override with form-appropriate spec settings for colors and bar configuration

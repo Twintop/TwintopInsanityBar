@@ -35,7 +35,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public textures table?
 ---@field public thresholds TRB.Classes.Settings.Thresholds?
 ---@field public precision TRB.Classes.Settings.Precision
----@field public audio { string: TRB.Classes.Settings.Audio }
+---@field public audio { string: TRB.Classes.Settings.AudioCue }
+---@field public audioSeeded table<string, boolean>? # Counter sources whose shipped cues have been seeded once
 ---@field public maxResource table?
 
 
@@ -371,12 +372,15 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public relativeToFrame string
 ---@field public relativeToFrameName string
 
----@class TRB.Classes.Settings.Audio
----@field public name string
+---@class TRB.Classes.Settings.AudioCue
+---@field public id string # Stable identifier: a built-in key ("surgeOfLight") or a generated guid
+---@field public kind string # "builtin" (spec-specific firing logic) or "counter" (generic threshold engine)
+---@field public source string? # Counter cues only: which counter source feeds it, e.g. "chi"
+---@field public name string? # User-editable display name. nil on built-ins, which resolve from the registry
 ---@field public enabled boolean
 ---@field public sound string
 ---@field public soundName string
----@field public configuration table?
+---@field public configuration table? # thresholdValue for counters; arbitrary declared fields for built-ins
 
 ---Defines how a bar is anchored to another bar in the anchor tree.
 ---@class TRB.Classes.Settings.BarAnchor

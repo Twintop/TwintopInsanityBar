@@ -247,7 +247,6 @@ if locale == "deDE" then
     L["BarDisplayTextCustomizationHeader"] = "Anpassung der Leistentext-Anzeige"
     L["IsBarEnabledForSpecTooltip"] = "Ist Twintop's Resource Bar für %s aktiviert"
     L["TabFontText"] = "Schrift & Text"
-    L["TabAudioTracking"] = "Audio & Verfolgung"
     L["TabBarText"] = "Leistentext"
     L["TabResetDefaults"] = "Standards zurücksetzen"
 

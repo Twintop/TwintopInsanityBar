@@ -226,10 +226,6 @@ local function FillSpecializationCache()
 	local spells = specCache.priest_discipline.spellsData.spells
 
 	specCache.priest_discipline.snapshotData.attributes.manaRegen = 0
-	specCache.priest_discipline.snapshotData.audio = {
-		innervateCue = false,
-		surgeOfLightPlayed = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
 	---@type TRB.Classes.Snapshot
@@ -282,17 +278,6 @@ local function FillSpecializationCache()
 	spells = specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 
 	specCache.priest_holy.snapshotData.attributes.manaRegen = 0
-	specCache.priest_holy.snapshotData.audio = {
-		innervateCue = false,
-		lightweaverCue = false,
-		lightweaverMaxStacksCue = false,
-		lightweaverExpiringCue = false,
-		surgeOfLightPlayed = false,
-		benedictionCue = false,
-		holyWordChastisePrevCharges = nil,
-		holyWordSerenityPrevCharges = nil,
-		holyWordSanctifyPrevCharges = nil,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.apotheosis.id] = TRB.Classes.Snapshot:New(spells.apotheosis, nil, "sometimes")
 	---@type TRB.Classes.Snapshot
@@ -342,10 +327,6 @@ local function FillSpecializationCache()
 	---@diagnostic disable-next-line: cast-local-type
 	spells = specCache.priest_shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 
-	specCache.priest_shadow.snapshotData.audio = {
-		playedDpCue = false,
-		playedMdCue = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.voidform.id] = TRB.Classes.Snapshot:New(spells.voidform, nil, "sometimes")
 	---@type TRB.Classes.Snapshot
@@ -1739,18 +1720,12 @@ local function HandleSpellEvents(self, event, ...)
 
 				if not wasActive then
 					local specSettings = TRB.Data.settings.priest[TRB.Data.character.specName]
-					if specSettings.audio.surgeOfLight.enabled and not snapshotData.audio.surgeOfLightPlayed then
-						local shouldPlay = true
-						if specSettings.audio.surgeOfLight.configuration and specSettings.audio.surgeOfLight.configuration.requireSpiritwellTalent then
-							if not talents or not talents:IsTalentActive(spells.spiritwell) then
-								shouldPlay = false
-							end
-						end
-						if shouldPlay then
-							PlaySoundFile(specSettings.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
-							snapshotData.audio.surgeOfLightPlayed = true
-						end
+					local configuration = specSettings.audio.surgeOfLight.configuration
+					local spiritwellSatisfied = true
+					if configuration ~= nil and configuration.requireSpiritwellTalent then
+						spiritwellSatisfied = (talents ~= nil and talents:IsTalentActive(spells.spiritwell)) or false
 					end
+					TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "surgeOfLight", spiritwellSatisfied)
 				end
 
 				-- No duration tracked: redraw re-SHOWs are indistinguishable from refreshes.
@@ -1783,7 +1758,7 @@ local function HandleSpellEvents(self, event, ...)
 					if surgeOfLightSnapshot ~= nil then
 						surgeOfLightSnapshot.buff:Reset()
 					end
-					snapshotData.audio.surgeOfLightPlayed = false
+					TRB.Functions.AudioCues:ResetLatch(snapshotData, "surgeOfLight")
 
 					snapshotData.attributes.surgeOfLightActiveGrace = true
 
@@ -1811,7 +1786,7 @@ local function HandleSpellEvents(self, event, ...)
 					if surgeOfLightSnapshot ~= nil then
 						surgeOfLightSnapshot.buff:Reset()
 					end
-					innerSnapshotData.audio.surgeOfLightPlayed = false
+					TRB.Functions.AudioCues:ResetLatch(innerSnapshotData, "surgeOfLight")
 
 					innerSnapshotData.attributes.surgeOfLightActiveGrace = true
 					C_Timer.After(0.05, function()
@@ -1847,14 +1822,10 @@ local function HandleSpellEvents(self, event, ...)
 				if rSpellId == nil or rSpellId ~= spells.benediction.id then
 					benedictionBuff:Reset()
 					benedictionBuff.isCustom = true
-					snapshotData.audio.benedictionCue = false
+					TRB.Functions.AudioCues:ResetLatch(snapshotData, "benediction")
 				else
 					benedictionBuff:AddTimeOrInitializeCustom(spells.benediction.duration, GetTime())
-					local specSettings = TRB.Data.settings.priest.holy
-					if specSettings.audio.benediction ~= nil and specSettings.audio.benediction.enabled and not snapshotData.audio.benedictionCue then
-						PlaySoundFile(specSettings.audio.benediction.sound, TRB.Data.settings.core.audio.channel.channel)
-						snapshotData.audio.benedictionCue = true
-					end
+					TRB.Functions.AudioCues:Fire(TRB.Data.settings.priest.holy, snapshotData, "benediction", true)
 				end
 			end
 		end
@@ -2022,7 +1993,7 @@ local function UpdateSnapshot_Holy()
 	local wasBenedictionActive = snapshots[spells.benediction.id].buff.isActive
 	snapshots[spells.benediction.id].buff:GetRemainingTime(currentTime)
 	if wasBenedictionActive and not snapshots[spells.benediction.id].buff.isActive then
-		TRB.Data.snapshotData.audio.benedictionCue = false
+		TRB.Functions.AudioCues:ResetLatch(TRB.Data.snapshotData, "benediction")
 		TRB.Data.lookupDirty = true
 	end
 end
@@ -2503,87 +2474,37 @@ local function UpdateResourceBar()
 		-- Lightweaver audio cues (independent of bar visibility)
 		do
 			local lightweaverStacks = snapshots[spells.lightweaver.id].buff.applications or 0
-			local audioChannel = TRB.Data.settings.core.audio.channel.channel
-
-			-- Threshold 1 cue: fires when stacks == configured value
-			local threshold1Value = specSettings.audio.lightweaver.configuration.thresholdValue
-			if lightweaverStacks == threshold1Value then
-				if specSettings.audio.lightweaver ~= nil and specSettings.audio.lightweaver.enabled and not snapshotData.audio.lightweaverCue then
-					PlaySoundFile(specSettings.audio.lightweaver.sound, audioChannel)
-					snapshotData.audio.lightweaverCue = true
-				end
-			else
-				snapshotData.audio.lightweaverCue = false
-			end
-
-			-- Threshold 2 cue: fires when stacks == configured value
-			local threshold2Value = specSettings.audio.lightweaverMaxStacks.configuration.thresholdValue
-			if lightweaverStacks == threshold2Value then
-				if specSettings.audio.lightweaverMaxStacks ~= nil and specSettings.audio.lightweaverMaxStacks.enabled and not snapshotData.audio.lightweaverMaxStacksCue then
-					PlaySoundFile(specSettings.audio.lightweaverMaxStacks.sound, audioChannel)
-					snapshotData.audio.lightweaverMaxStacksCue = true
-				end
-			else
-				snapshotData.audio.lightweaverMaxStacksCue = false
-			end
+			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "lightweaverStacks", lightweaverStacks)
 
 			-- Expiring cue: fires when buff is active and remaining time drops below configured threshold
 			local lightweaverTime = snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime) or 0
 			local expiringThreshold = specSettings.audio.lightweaverExpiring.configuration.thresholdValue
-			if lightweaverStacks > 0 and lightweaverTime > 0 and lightweaverTime < expiringThreshold then
-				if specSettings.audio.lightweaverExpiring ~= nil and specSettings.audio.lightweaverExpiring.enabled and not snapshotData.audio.lightweaverExpiringCue then
-					PlaySoundFile(specSettings.audio.lightweaverExpiring.sound, audioChannel)
-					snapshotData.audio.lightweaverExpiringCue = true
-				end
-			else
-				snapshotData.audio.lightweaverExpiringCue = false
-			end
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "lightweaverExpiring",
+				lightweaverStacks > 0 and lightweaverTime > 0 and lightweaverTime < expiringThreshold)
 		end
 
-		-- Holy Word charge-ready audio cues (independent of bar visibility, combat-only)
+		-- Holy Word charge-ready audio cues (independent of bar visibility, combat-only). Latches
+		-- track charge state out of combat too, so re-entering combat with a Holy Word already up
+		-- does not replay its cue.
 		do
+			local inCombat = TRB.Data.character.inCombat
 			local chastiseCharges = snapshots[spells.holyWordChastise.id].cooldown.charges or 0
 			local serenityCharges = snapshots[spells.holyWordSerenity.id].cooldown.charges or 0
 			local sanctifyCharges = snapshots[spells.holyWordSanctify.id].cooldown.charges or 0
-			local audioChannel = TRB.Data.settings.core.audio.channel.channel
 
-			-- Chastise: single charge, fire on 0->1 transition
-			if snapshotData.audio.holyWordChastisePrevCharges ~= nil then
-				if TRB.Data.character.inCombat and chastiseCharges > snapshotData.audio.holyWordChastisePrevCharges then
-					if specSettings.audio.holyWordChastiseReady ~= nil and specSettings.audio.holyWordChastiseReady.enabled then
-						PlaySoundFile(specSettings.audio.holyWordChastiseReady.sound, audioChannel)
-					end
-				end
-			end
-			snapshotData.audio.holyWordChastisePrevCharges = chastiseCharges
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "holyWordChastiseReady", chastiseCharges >= 1, inCombat)
 
-			-- Serenity: up to 2 charges with Miracle Worker
-			if snapshotData.audio.holyWordSerenityPrevCharges ~= nil then
-				if TRB.Data.character.inCombat and serenityCharges > snapshotData.audio.holyWordSerenityPrevCharges then
-					local prevCharges = snapshotData.audio.holyWordSerenityPrevCharges
-					-- Fire highest applicable cue (charge 2 takes priority if both thresholds crossed)
-					if serenityCharges >= 2 and prevCharges < 2 and specSettings.audio.holyWordSerenityCharge2 ~= nil and specSettings.audio.holyWordSerenityCharge2.enabled then
-						PlaySoundFile(specSettings.audio.holyWordSerenityCharge2.sound, audioChannel)
-					elseif serenityCharges >= 1 and prevCharges < 1 and specSettings.audio.holyWordSerenityCharge1 ~= nil and specSettings.audio.holyWordSerenityCharge1.enabled then
-						PlaySoundFile(specSettings.audio.holyWordSerenityCharge1.sound, audioChannel)
-					end
-				end
-			end
-			snapshotData.audio.holyWordSerenityPrevCharges = serenityCharges
+			-- Serenity and Sanctify go up to 2 charges with Miracle Worker; the second-charge cue
+			-- wins when both thresholds are crossed on the same update.
+			TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, {
+				{ id = "holyWordSerenityCharge1", condition = serenityCharges >= 1 },
+				{ id = "holyWordSerenityCharge2", condition = serenityCharges >= 2 },
+			}, inCombat)
 
-			-- Sanctify: up to 2 charges with Miracle Worker
-			if snapshotData.audio.holyWordSanctifyPrevCharges ~= nil then
-				if TRB.Data.character.inCombat and sanctifyCharges > snapshotData.audio.holyWordSanctifyPrevCharges then
-					local prevCharges = snapshotData.audio.holyWordSanctifyPrevCharges
-					-- Fire highest applicable cue (charge 2 takes priority if both thresholds crossed)
-					if sanctifyCharges >= 2 and prevCharges < 2 and specSettings.audio.holyWordSanctifyCharge2 ~= nil and specSettings.audio.holyWordSanctifyCharge2.enabled then
-						PlaySoundFile(specSettings.audio.holyWordSanctifyCharge2.sound, audioChannel)
-					elseif sanctifyCharges >= 1 and prevCharges < 1 and specSettings.audio.holyWordSanctifyCharge1 ~= nil and specSettings.audio.holyWordSanctifyCharge1.enabled then
-						PlaySoundFile(specSettings.audio.holyWordSanctifyCharge1.sound, audioChannel)
-					end
-				end
-			end
-			snapshotData.audio.holyWordSanctifyPrevCharges = sanctifyCharges
+			TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, {
+				{ id = "holyWordSanctifyCharge1", condition = sanctifyCharges >= 1 },
+				{ id = "holyWordSanctifyCharge2", condition = sanctifyCharges >= 2 },
+			}, inCombat)
 		end
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -2856,18 +2777,16 @@ local function UpdateResourceBar()
 						barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					end
 
-					if spells.shadowWordMadness:IsFree() and specSettings.audio.mdProc.enabled and snapshotData.audio.playedMdCue == false then
-						snapshotData.audio.playedDpCue = true
-						snapshotData.audio.playedMdCue = true
-						PlaySoundFile(specSettings.audio.mdProc.sound, coreSettings.audio.channel.channel)
-					elseif specSettings.audio.dpReady.enabled and snapshotData.audio.playedDpCue == false then
-						snapshotData.audio.playedDpCue = true
-						PlaySoundFile(specSettings.audio.dpReady.sound, coreSettings.audio.channel.channel)
-					end
+					-- A free cast outranks a merely usable one, so the Mind Devourer cue wins when both
+					-- become true together.
+					TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, {
+						{ id = "dpReady", condition = true },
+						{ id = "mdProc", condition = spells.shadowWordMadness:IsFree() },
+					})
 				else
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-					snapshotData.audio.playedDpCue = false
-					snapshotData.audio.playedMdCue = false
+					TRB.Functions.AudioCues:ResetLatch(snapshotData, "dpReady")
+					TRB.Functions.AudioCues:ResetLatch(snapshotData, "mdProc")
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
@@ -3645,9 +3564,7 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 			if benedictionSnapshot then
 				benedictionSnapshot.buff:Reset()
 			end
-			if snapshotData.audio then
-				snapshotData.audio.benedictionCue = false
-			end
+			TRB.Functions.AudioCues:ResetLatch(snapshotData, "benediction")
 		end
 	end
 end

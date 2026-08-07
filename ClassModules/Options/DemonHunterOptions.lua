@@ -1126,24 +1126,6 @@ local function HavocConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 12, 1, yCoord)
 end
 
-local function HavocConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 12
-	local specId = 1
-	local spec = TRB.Data.settings.demonhunter.havoc
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonhunter_havoc
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-end
-
 local function HavocConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1605,24 +1587,6 @@ local function VengeanceConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 12, 2, yCoord)
 end
 
-local function VengeanceConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 12
-	local specId = 2
-	local spec = TRB.Data.settings.demonhunter.vengeance
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonhunter_vengeance
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-end
-
 local function VengeanceConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2014,24 +1978,6 @@ local function DevourerConstructFontAndTextPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 12, 3, yCoord)
-end
-
-local function DevourerConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 12
-	local specId = 1
-	local spec = TRB.Data.settings.demonhunter.devourer
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.demonhunter_devourer
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
 end
 
 local function DevourerConstructBarTextDisplayPanel(parent, cache)

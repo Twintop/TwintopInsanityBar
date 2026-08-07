@@ -486,14 +486,19 @@ end
 ---shaped like a top-level settings table (optional `core` + class/spec keys),
 ---so we call PortForwardSettings against the profile table directly and let
 ---the full migration pipeline run against it.
+---
+---PortForwardProfile also normalizes audio cues, which matters here: `CleanupSettings`
+---only reaches the live settings table, so a profile left un-normalized would keep
+---whatever cue shape it was saved with -- and `ApplyToRuntime` would then merge that
+---stale shape back over the live settings.
 function TRB.Functions.Profiles:PortForwardAll()
 	self:EnsureStructure()
 	local Settings = TRB.Functions.Settings
-	if Settings == nil or Settings.PortForwardSettings == nil then
+	if Settings == nil or Settings.PortForwardProfile == nil then
 		return
 	end
 	self:IterateAll(function(_, profile)
-		Settings:PortForwardSettings(profile)
+		Settings:PortForwardProfile(profile)
 	end)
 end
 
@@ -1346,6 +1351,20 @@ profilesFrame:SetScript("OnEvent", function(_, event)
 		Profiles:SeedFromLegacy()
 		Profiles:PortForwardAll()
 		Profiles:ApplyToRuntime()
+
+		-- ApplyToRuntime deep-merges profile pieces over the live tables, and a merge can only add
+		-- or overwrite keys, never remove them. A cue that CleanupSettings dropped at ADDON_LOADED
+		-- would reappear here from any profile still holding it, so normalize once more on the way out.
+		--
+		-- Seeding repeats here as well because a first-ever launch never reaches CleanupSettings:
+		-- with no saved variables the class modules assign the defaults table straight across.
+		local Settings = TRB.Functions.Settings
+		if Settings ~= nil and Settings.SeedAllAudioCues ~= nil then
+			Settings:SeedAllAudioCues(TRB.Data.settings)
+		end
+		if Settings ~= nil and Settings.NormalizeAllAudioCues ~= nil then
+			Settings:NormalizeAllAudioCues(TRB.Data.settings)
+		end
 	elseif event == "PLAYER_LOGOUT" then
 		if TRB.Data == nil or TRB.Data.settings == nil then
 			return
