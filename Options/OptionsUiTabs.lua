@@ -358,6 +358,41 @@ function TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(parent, classId,
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
 end
 
+---Builds the nested Other Bars sub-tab group (GCD / Fatigue / Breath / Death / Feign Death) inside a
+---spec's Other Bars tab. Feign Death is only offered to Hunters. Structured exactly like the Cast Bar
+---inner group: a manual (non-scroll) container whose sub-tabs each supply their own scroll frame.
+---@param parent Frame # The Other Bars tab's manual container frame
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(parent, classId, specId)
+	if parent == nil then
+		return
+	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = "OtherBarsInner_" .. tostring(className) .. "_" .. tostring(specName)
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local innerTabs = {}
+	for _, barKey in ipairs(registry:GetOtherBarKeys(classId)) do
+		local barDef = registry:Get(barKey)
+		if barDef ~= nil then
+			local capturedKey = barKey
+			innerTabs[#innerTabs + 1] = {
+				capturedKey,
+				barDef.displayName,
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.OtherBars:ConstructPanel(scrollChild, classId, specId, capturedKey)
+				end,
+				visibilityKey = capturedKey,
+			}
+		end
+	end
+	if #innerTabs == 0 then
+		return
+	end
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
+end
+
 ---Builds a dynamic set of tabs and tabsheets for an options panel.
 ---Tabs automatically wrap to multiple rows when they would exceed the parent frame's width.
 ---@param parent Frame The parent frame to attach tabs to (e.g., the spec display panel)
@@ -407,6 +442,34 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 				function(scrollChild)
 					-- Nested sub-tabs (player / target / focus), each scoped to this spec.
 					TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(scrollChild, cId, sId)
+				end,
+				true -- manual container: the inner sub-tabs provide their own scroll frames
+			})
+		end
+
+		-- Other Bars sits immediately after Cast Bars, structured the same way.
+		local hasOtherBars = false
+		for _, def in ipairs(tabDefinitions) do
+			if def[1] == "otherBars" then
+				hasOtherBars = true
+				break
+			end
+		end
+		if not hasOtherBars then
+			local cId, sId = castbarSpec.classId, castbarSpec.specId
+			local insertIndex = #tabDefinitions + 1
+			for i, def in ipairs(tabDefinitions) do
+				if def[1] == "castbar" then
+					insertIndex = i + 1
+					break
+				end
+			end
+			table.insert(tabDefinitions, insertIndex, {
+				"otherBars",
+				TRB.Localization["TabOtherBars"],
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(scrollChild, cId, sId)
 				end,
 				true -- manual container: the inner sub-tabs provide their own scroll frames
 			})

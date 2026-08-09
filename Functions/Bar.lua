@@ -674,6 +674,21 @@ local function EnsureTargetCastbarBarGroups(barGroups)
 	end
 end
 
+---Other Bars (the GCD bar and the Fatigue/Breath/Feign Death mirror timers) are all-spec bars not
+---created by any class's CreateForSpec; guarantee their groups exist wherever the castbar group is
+---ensured. Only bars the spec actually has settings for get a group -- Feign Death exists on Hunter
+---specs only, and a group with no settings would join the anchor forest as a zero-size node.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsureOtherBarGroups(settings, barGroups)
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.otherBarKeys) do
+		if barGroups[key] == nil and settings.bars ~= nil and settings.bars[key] ~= nil then
+			local frameName = "TwintopResourceBarFrame_" .. key:gsub("^%l", string.upper)
+			barGroups[key] = TRB.Classes.BarGroup:New(UIParent, frameName, 1, false)
+		end
+	end
+end
+
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
@@ -716,6 +731,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	-- ApplyCustomBarGroups* handle the castbar generically like any other registered custom bar.
 	EnsureCastbarBarGroup(barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
+	EnsureOtherBarGroups(settings, barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
@@ -765,6 +781,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- through ConstructBarGroups; guarantee the castbar group exists before the forest is built.
 	EnsureCastbarBarGroup(barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
+	EnsureOtherBarGroups(settings, barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
 	local frameLevels = TRB.Data.constants.frameLevels
@@ -2788,6 +2805,11 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 			if not TRB.Functions.TargetCastbar:IsEnabled(displayBar and displayBar[barKey]) then
 				return false
 			end
+		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
+			-- Other Bars (GCD + mirror timers) follow the same rule as the cast bars above.
+			if not TRB.Functions.OtherBars:IsEnabled(displayBar and displayBar[barKey]) then
+				return false
+			end
 		end
 	end
 
@@ -2847,10 +2869,10 @@ end
 ---@return boolean
 function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 	if includeHidden then return true end
-	-- Castbar (and the target/focus cast bars) have runtime-driven visibility (Functions/Castbar,
-	-- Functions/TargetCastbar); at layout they always count as visible so the container is never
-	-- collapsed and layout space stays reserved.
-	if barKey == "castbar" or barKey == "targetCastbar" or barKey == "focusCastbar" then return true end
+	-- Self-driven bars (the cast bars, the GCD bar and the mirror timers) have runtime-driven visibility;
+	-- at layout they always count as visible so the container is never collapsed and layout space stays
+	-- reserved.
+	if TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then return true end
 	-- A secondary bar with 0 resource nodes is never visible (e.g., all Holy Word enables unchecked)
 	if barKey == "secondary" and (TRB.Data.character.maxResource2 or 0) == 0 then
 		return false
@@ -3975,7 +3997,7 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 	-- so always construct it hidden outside Edit Mode. IsBarVisible special-cases the castbar to true
 	-- (runtime-driven visibility) so barIsVisible stays true and its layout space is still reserved
 	-- normally below, keeping anchored bars stable whether or not a cast is currently in progress.
-	if (barKey == "castbar" or barKey == "targetCastbar" or barKey == "focusCastbar") and not inEditMode then
+	if TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) and not inEditMode then
 		shouldInitiallyShow = false
 	end
 	config.shouldInitiallyShow = shouldInitiallyShow
@@ -4004,6 +4026,8 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 			disabled = not TRB.Functions.Castbar:IsEnabled(visibility)
 		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
 			disabled = not TRB.Functions.TargetCastbar:IsEnabled(visibility)
+		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
+			disabled = not TRB.Functions.OtherBars:IsEnabled(visibility)
 		end
 		if disabled then
 			barGroup.containerFrame:SetHeight(0.001)

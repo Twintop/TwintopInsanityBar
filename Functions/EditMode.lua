@@ -159,6 +159,14 @@ function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
 		wrapperFrame:SetPoint("TOP", UIParent, "TOP", 0, -120)
 	elseif rootBarKey == "focusCastbar" then
 		wrapperFrame:SetPoint("TOP", UIParent, "TOP", 0, -175)
+	elseif rootBarKey == "fatigue" then
+		-- Root of the mirror timer stack (Fatigue -> Breath -> Feign Death); the rest anchor
+		-- below it, so this one position moves the whole group. Sits where Blizzard's Duration Bars do.
+		wrapperFrame:SetPoint("TOP", UIParent, "TOP", 0, -230)
+	elseif rootBarKey == "gcd" then
+		-- The GCD bar hangs off the Cast Bar by default, so it is only a root once the user re-anchors it
+		-- to the screen. Park it just under the main stack's default spot when that happens.
+		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -260)
 	else
 		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
 	end

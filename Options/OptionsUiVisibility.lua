@@ -25,7 +25,9 @@ end
 local STANDARD_CONDITION_KEYS = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isSteadyFlight", "isSteadyFlightFlying", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
 local DRUID_FORM_CONDITION_KEYS = { "isDruidHumanoidForm", "isDruidTravelFormAny", "isDruidStagForm", "isDruidFlightForm", "isDruidSwiftFlightForm", "isDruidAquaticForm", "isDruidCatForm", "isDruidBearForm", "isDruidMoonkinForm" }
 local CASTBAR_CONDITION_KEYS = { "casting", "channeling", "empowered" }
-local STANDARD_HIDE_CONDITION_KEYS = { "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
+-- Other Bars (GCD + the mirror timers) have exactly one show state: their timer is running.
+local TIMER_CONDITION_KEYS = { "whenActive" }
+local STANDARD_HIDE_CONDITION_KEYS ={ "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
 
 -- Every condition key the addon can store, show-side and hide-side alike.
 local CONDITION_LABELS = {
@@ -65,9 +67,11 @@ local CONDITION_LABELS = {
 	casting = L["ShowBarVisibilityConditionCasting"],
 	channeling = L["ShowBarVisibilityConditionChanneling"],
 	empowered = L["ShowBarVisibilityConditionEmpowered"],
+	whenActive = L["ShowBarVisibilityWhenActive"],
 }
 
--- Deterministic iteration order for show-side summaries: standard, then Druid forms, then cast states.
+-- Deterministic iteration order for show-side summaries: standard, then Druid forms, then cast states,
+-- then the timer-bar state.
 local SHOW_CONDITION_ORDER = {}
 for _, key in ipairs(STANDARD_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
@@ -76,6 +80,9 @@ for _, key in ipairs(DRUID_FORM_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
 for _, key in ipairs(CASTBAR_CONDITION_KEYS) do
+	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
+end
+for _, key in ipairs(TIMER_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
 
@@ -247,6 +254,9 @@ function TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specI
 	TRB.Functions.Castbar:SyncEnabledState()
 	-- Re-resolve the target/focus idle (Always Show) / hidden display for the new visibility settings.
 	TRB.Functions.TargetCastbar:RefreshVisibility()
+	-- Same for the Other Bars, which also re-arms the GCD events and Blizzard Duration Bar suppression.
+	TRB.Functions.OtherBars:SyncGcdEvents()
+	TRB.Functions.OtherBars:RefreshVisibility()
 end
 
 -- ============================================================================
@@ -291,9 +301,12 @@ function TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, s
 	local spec = classSettings and classSettings[specName]
 	local specEntry = spec and spec.displayBar and spec.displayBar[visibilityKey]
 
-	-- Only keys present in core.displayBar are shared globally; custom bars stay spec-owned.
+	-- Only keys present in core.displayBar are shared globally; custom bars stay spec-owned. IsGlobalScopeBar
+	-- is the authority on which those are, so a stale core entry for a class-scoped bar can't take its
+	-- spec row hostage (it would go read-only against a global entry with no UI behind it).
 	local globalFlags = core.global and core.global[className] and core.global[className][specName]
-	if globalFlags ~= nil and globalFlags.displayBar == true and globalEntry ~= nil then
+	if globalFlags ~= nil and globalFlags.displayBar == true and globalEntry ~= nil
+		and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(visibilityKey) then
 		return globalEntry, true
 	end
 	return specEntry, false
@@ -730,6 +743,22 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = castbarHideKeys } },
 		supportsThresholds = false,
 	}
+	-- Other Bars (GCD + the mirror timers): one show state, "When Active", meaning the bar's timer is
+	-- running. It sits alongside Always Show / Never Show exactly like the cast bars' cast states do, so
+	-- a bar can be enabled without being pinned on screen. Resource/health thresholds don't apply, but
+	-- the hard-hide list is the full standard one (Druid forms included) rather than the cast bars'
+	-- pared-back pair: these run in exactly the situations people want to suppress -- mounted, flying,
+	-- on a taxi -- so the whole set has to be reachable.
+	local timerBarConditionKeys = CopyKeys(TIMER_CONDITION_KEYS)
+	local timerBarProfile = {
+		showKeys = timerBarConditionKeys,
+		showLabels = LabelsFor(timerBarConditionKeys),
+		showGroups = { { title = L["ShowBarVisibilityGroupTimer"], keys = timerBarConditionKeys } },
+		hideKeys = hideConditionKeys,
+		hideLabels = hideConditionLabels,
+		hideGroups = hideConditionGroups,
+		supportsThresholds = false,
+	}
 	local standardProfile = {
 		showKeys = conditionKeys,
 		showLabels = conditionLabels,
@@ -744,6 +773,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---@param barEntry table?
 	---@return table profile
 	local function GetProfileForEntry(barEntry)
+		if barEntry ~= nil and barEntry.isTimerBar then
+			return timerBarProfile
+		end
 		if barEntry ~= nil and barEntry.isCastbar then
 			if barEntry.displayBarKey == "targetCastbar" or barEntry.displayBarKey == "focusCastbar" then
 				return targetCastbarProfile
@@ -762,7 +794,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	local function GetThresholdTypesForBarEntry(barEntry)
-		if barEntry ~= nil and barEntry.isCastbar then
+		-- Self-driven bars (cast bars, GCD, mirror timers) fill from a timeline, not a resource, so a
+		-- resource/health threshold condition has nothing to compare against.
+		if barEntry ~= nil and (barEntry.isCastbar or barEntry.isTimerBar) then
 			return {}
 		end
 		local types = {}
@@ -1230,6 +1264,27 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		})
 	end
 
+	-- Other Bars: self-driven render (Functions/OtherBars.lua). isTimerBar drops the show-condition list
+	-- entirely (their timer either runs or it doesn't) while keeping the castbar row behaviour otherwise.
+	for _, otherBarKey in ipairs(TRB.Classes.BarTypeRegistry:GetOtherBarKeys(classId)) do
+		if spec.displayBar and spec.displayBar[otherBarKey] ~= nil then
+			local otherBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(otherBarKey)
+			local otherBarLabel = otherBarDef and otherBarDef.displayName or otherBarKey
+			table.insert(barEntries, {
+				key = otherBarKey,
+				displayBarKey = otherBarKey,
+				label = otherBarLabel,
+				globalLabel = otherBarLabel,
+				isCustomBar = false,
+				isTimerBar = true,
+				-- Scope decides this, not whether core happens to hold the key: a class-scoped bar such as
+				-- Feign Death has no global screen to configure, so its row must stay spec-editable.
+				isGlobal = (classId ~= nil and coreDisplayBar[otherBarKey] ~= nil
+					and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(otherBarKey)),
+			})
+		end
+	end
+
 	-- Create the LibScrollingTable for bar selection
 	local columns = {
 		{
@@ -1566,8 +1621,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			return displayText
 		end)
 
-		-- Smooth checkbox (hidden for the castbar: its fill is timeline-driven, not resource-driven)
-		if barEntry.isCastbar then
+		-- Smooth checkbox (hidden for the self-driven bars: their fill is timeline-driven, not resource-driven)
+		if barEntry.isCastbar or barEntry.isTimerBar then
 			controls.checkBoxes.selectedSmooth:Hide()
 		else
 			controls.checkBoxes.selectedSmooth:Show()

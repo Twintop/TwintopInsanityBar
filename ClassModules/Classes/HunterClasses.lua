@@ -175,7 +175,11 @@ function TRB.Classes.Hunter.BeastMasterySpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$casting", description = L["HunterBeastMasteryBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$beastCleaveTime", description = L["HunterBeastMasteryBarTextVariable_beastCleaveTime"], printInSettings = true, color = false },
-		{ variable = "$bestialWrathTime", description = L["HunterBeastMasteryBarTextVariable_bestialWrathTime"], printInSettings = true, color = false }
+		{ variable = "$bestialWrathTime", description = L["HunterBeastMasteryBarTextVariable_bestialWrathTime"], printInSettings = true, color = false },
+
+		-- Feign Death bar timer. Hunter-only, so it is declared here rather than in the shared pool.
+		{ variable = "$feignDeathDuration", description = L["BarTextVariableFeignDeathDuration"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true },
+		{ variable = "$feignDeathDurationRemaining", description = L["BarTextVariableFeignDeathDurationRemaining"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true }
 	})
 end
 
@@ -373,6 +377,10 @@ function TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables(specCacheEnt
 
 		{ variable = "$trueshotTime", description = L["HunterMarksmanshipBarTextVariable_trueshotTime"], printInSettings = true, color = false },
 		{ variable = "$doubleTapTime", description = L["HunterMarksmanshipBarTextVariable_doubleTapTime"], printInSettings = true, color = false },
+
+		-- Feign Death bar timer. Hunter-only, so it is declared here rather than in the shared pool.
+		{ variable = "$feignDeathDuration", description = L["BarTextVariableFeignDeathDuration"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true },
+		{ variable = "$feignDeathDurationRemaining", description = L["BarTextVariableFeignDeathDurationRemaining"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true }
 	})
 end
 
@@ -551,6 +559,10 @@ function TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		{ variable = "$totsTime", description = L["HunterSurvivalBarTextVariable_totsTime"], printInSettings = true, color = false },
 		{ variable = "$takedownTime", description = L["HunterSurvivalBarTextVariable_takedownTime"], printInSettings = true, color = false },
+
+		-- Feign Death bar timer. Hunter-only, so it is declared here rather than in the shared pool.
+		{ variable = "$feignDeathDuration", description = L["BarTextVariableFeignDeathDuration"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true },
+		{ variable = "$feignDeathDurationRemaining", description = L["BarTextVariableFeignDeathDurationRemaining"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true }
 	})
 end
 

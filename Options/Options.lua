@@ -713,6 +713,48 @@ local function ConstructCastbarOptionsPanel()
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Castbar", tabDefinitions, -37)
 end
 
+---Constructs the top-level Other Bars options panel: global (core-scope) settings for the GCD bar and
+---the Fatigue/Breath/Death/Feign Death mirror timers, in a tabbed screen like the Castbar one.
+local function ConstructOtherBarsOptionsPanel()
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.core or {}
+	interfaceSettingsFrame.controls.core = controls
+	controls.colors = controls.colors or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.otherBarsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_OtherBarsPanel")
+	TRB.Options.OptionsFrame:RegisterCategory("otherBars", L["TabOtherBars"], interfaceSettingsFrame.otherBarsPanel)
+
+	local parent = interfaceSettingsFrame.otherBarsPanel
+
+	controls.otherBarsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["OtherBarsGlobalOptionsHeader"], oUi.xCoord, -5)
+
+	-- Core-scope profile dropdown, same position as on Global Options.
+	controls.otherBarsProfileDropdown = TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, -10, "core", nil, nil, L["GlobalOptions"], "_OtherBars")
+
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local tabDefinitions = {}
+	-- nil classId is the global scope, which excludes the Hunter-only Feign Death bar.
+	for _, barKey in ipairs(registry:GetOtherBarKeys(nil)) do
+		local barDef = registry:Get(barKey)
+		if barDef ~= nil then
+			local capturedKey = barKey
+			tabDefinitions[#tabDefinitions + 1] = {
+				capturedKey,
+				barDef.displayName,
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.OtherBars:ConstructPanel(scrollChild, nil, nil, capturedKey)
+				end,
+				visibilityKey = capturedKey,
+			}
+		end
+	end
+
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "OtherBars", tabDefinitions, -37)
+end
+
 -- Localized labels for the profile/nav catalogs. Identity comes from
 -- TRB.Data.specRegistry; this table only keeps literal localization lookups.
 local PROFILE_LABELS_BY_CLASS = {
@@ -2080,6 +2122,7 @@ function TRB.Options:ConstructOptionsPanel()
 
 	ConstructGlobalOptionsPanel()
 	ConstructCastbarOptionsPanel()
+	ConstructOtherBarsOptionsPanel()
 	ConstructImportExportPanel()
 	ConstructProfileDefaultsPanel()
 

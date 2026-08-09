@@ -79,7 +79,15 @@ local function NewSpecGlobalDefaults()
 		focusCastbarColors = true,
 		focusCastbarEmpower = true,
 		focusCastbarText = true,
-		focusCastbarShield = true
+		focusCastbarShield = true,
+		-- Other Bars default to the global scope, like the cast bars: a GCD or Fatigue bar is the same
+		-- thing on every spec, so nobody should have to configure it forty times.
+		gcdDimensions = true,
+		gcdColors = true,
+		fatigueDimensions = true,
+		fatigueColors = true,
+		breathDimensions = true,
+		breathColors = true
 	}
 end
 
@@ -290,7 +298,12 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				barText = TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic),
 				migrations = {
 					healthBarText = true,
-					castBarText = true
+					castBarText = true,
+					-- Both sets are already in the defaults above (Other Bars) and in the Hunter specs'
+					-- own bar text (Feign Death), so a fresh install must start with these marked done or
+					-- PortForwardSettings would add a second copy on the next login.
+					otherBarsText = true,
+					hunterFeignDeathBarText = true
 				}
 			},
 			global = {
@@ -508,6 +521,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	-- per-spec "Use Global" toggle, so seed its bars/colors/displayBar/textures the same way specs do.
 	-- Table:Merge(defaults, saved) then backfills these into existing saved core settings.
 	self:InjectTargetCastbarDefaults(settings.core, classic)
+
+	-- Other Bars follow the same rule. Core is the global scope, which excludes the Hunter-only Feign
+	-- Death bar -- Hunter specs own that one outright.
+	self:InjectOtherBarsDefaults(settings.core, nil, classic)
 
 	return settings
 end
@@ -8598,6 +8615,42 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			end
 			TwintopInsanityBarSettings.core.displayText.migrations.focusCastBarText = true
 		end
+
+		-- Other Bars timers: one entry each showing the time left. The GCD reads on the right of its bar,
+		-- which is thin and sits under the Cast Bar; the mirror timers get a centred readout. Feign Death
+		-- is absent here on purpose -- it is Hunter-only, and a global entry would put a dead row in all
+		-- forty specs' bar text lists. It is seeded per Hunter spec below.
+		if not TwintopInsanityBarSettings.core.displayText.migrations.otherBarsText then
+			local entries = {
+				TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("GcdBar", L["ResourceGcd"], "$gcdDurationRemaining", "RIGHT", 10, false),
+				TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("FatigueBar", L["ResourceFatigue"], "$fatigueDurationRemaining", "CENTER", 12),
+				TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("BreathBar", L["ResourceBreath"], "$breathDurationRemaining", "CENTER", 12),
+			}
+			for x = 1, #entries do
+				table.insert(TwintopInsanityBarSettings.core.displayText.barText, entries[x])
+			end
+			TwintopInsanityBarSettings.core.displayText.migrations.otherBarsText = true
+		end
+	end
+
+	-- Feign Death text for Hunter specs that already exist. Specs initialized from here on get it from
+	-- their LoadDefaultBarTextSettings instead, so the shared flag gates only this backfill.
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.core ~= nil and
+		TwintopInsanityBarSettings.core.displayText ~= nil and
+		TwintopInsanityBarSettings.core.displayText.migrations ~= nil and
+		not TwintopInsanityBarSettings.core.displayText.migrations.hunterFeignDeathBarText then
+
+		local hunterSettings = TwintopInsanityBarSettings.hunter
+		if type(hunterSettings) == "table" then
+			for _, specSettings in pairs(hunterSettings) do
+				if type(specSettings) == "table" and specSettings.displayText ~= nil
+					and specSettings.displayText.barText ~= nil then
+					table.insert(specSettings.displayText.barText, TRB.Functions.Settings:LoadDefaultFeignDeathBarTextSettings())
+				end
+			end
+		end
+		TwintopInsanityBarSettings.core.displayText.migrations.hunterFeignDeathBarText = true
 	end
 
 	-- Add halazzisFury (Midnight S2 2pc) indicator at the bottom of the Feral priority list for existing users
@@ -8622,6 +8675,48 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			end
 			if not found then
 				table.insert(nodeOrder, "halazzisFury")
+			end
+		end
+	end
+
+	-- Feign Death briefly shipped in the global (core) scope before it became Hunter-owned. A leftover
+	-- core entry is worse than dead config: `isGlobal` is decided by whether core has the key, so with
+	-- "Use global settings" on, Hunter's row goes read-only and defers to a global entry that no longer
+	-- has any UI behind it -- the bar becomes uncontrollable from either screen. Strip core's copy and
+	-- the two Use Global flags that pointed at it, so the spec owns it outright again.
+	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.core ~= nil then
+		local core = TwintopInsanityBarSettings.core
+		for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.otherBarKeys) do
+			if not TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(barKey) then
+				if core.bars ~= nil then
+					core.bars[barKey] = nil
+				end
+				if core.colors ~= nil and core.colors.bars ~= nil then
+					core.colors.bars[barKey] = nil
+				end
+				if core.displayBar ~= nil then
+					core.displayBar[barKey] = nil
+				end
+				if core.textures ~= nil then
+					core.textures[barKey .. "Bar"] = nil
+					core.textures[barKey .. "BarName"] = nil
+					core.textures[barKey .. "Border"] = nil
+					core.textures[barKey .. "BorderName"] = nil
+					core.textures[barKey .. "Background"] = nil
+					core.textures[barKey .. "BackgroundName"] = nil
+				end
+				if core.global ~= nil then
+					for _, specs in pairs(core.global) do
+						if type(specs) == "table" then
+							for _, flags in pairs(specs) do
+								if type(flags) == "table" then
+									flags[barKey .. "Dimensions"] = nil
+									flags[barKey .. "Colors"] = nil
+								end
+							end
+						end
+					end
+				end
 			end
 		end
 	end
@@ -9444,6 +9539,64 @@ function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relati
 	}
 end
 
+---Gets the default bar text entry for one of the Other Bars: its remaining time, sitting on the bar
+---itself. One entry per bar -- these show a single number, unlike the cast bars' name/timing pair. The
+---remaining value is display-only (the GCD's is secret), so the text is gated by a bare {$var} check,
+---which resolves to "is this timer running?" in logic context, rather than by a comparison.
+---@param relativeToFrame string # "GcdBar", "FatigueBar", "BreathBar" or "FeignDeathBar"
+---@param relativeToFrameName string # Localized display name for the anchor frame, also the entry's name
+---@param remainingVar string # e.g. "$fatigueDurationRemaining"
+---@param anchorPoint string # "CENTER" or "RIGHT"
+---@param fontSize number
+---@param enabled boolean? # Whether the entry is enabled by default (default: true)
+---@return TRB.Classes.Settings.DisplayTextEntry
+function TRB.Functions.Settings:LoadDefaultOtherBarTextSettings(relativeToFrame, relativeToFrameName, remainingVar, anchorPoint, fontSize, enabled)
+	local anchorName = L["PositionCenter"]
+	local xPos = 0
+	if anchorPoint == "RIGHT" then
+		anchorName = L["PositionRight"]
+		xPos = -2
+	end
+
+	return {
+		useDefaultFontColor = true,
+		useDefaultFontFace = true,
+		useDefaultFontSize = false,
+		useDefaultFontOutline = true,
+		useDefaultFontShadow = true,
+		enabled = enabled or true,
+		name = relativeToFrameName,
+		guid = TRB.Functions.String:Guid(),
+		constrainToParent = false,
+		maxWidthPercent = 100,
+		text = "{" .. remainingVar .. "}[" .. remainingVar .. "]",
+		fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+		fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+		fontJustifyHorizontal = anchorPoint,
+		fontJustifyHorizontalName = anchorName,
+		fontSize = fontSize,
+		fontOutline = "OUTLINE",
+		fontOutlineName = L["FontOutlineOutline"],
+		fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		color = { color = "FFFFFFFF" },
+		position = {
+			xPos = xPos,
+			yPos = 0,
+			relativeTo = anchorPoint,
+			relativeToName = anchorName,
+			relativeToFrame = relativeToFrame,
+			relativeToFrameName = relativeToFrameName
+		}
+	}
+end
+
+---Gets the default Feign Death bar text entry. Hunter-only, so it is seeded into the Hunter specs' own
+---bar text rather than the global list every spec shares.
+---@return TRB.Classes.Settings.DisplayTextEntry
+function TRB.Functions.Settings:LoadDefaultFeignDeathBarTextSettings()
+	return self:LoadDefaultOtherBarTextSettings("FeignDeathBar", L["ResourceFeignDeath"], "$feignDeathDurationRemaining", "CENTER", 12)
+end
+
 ---Gets the default Target/Focus Cast Bar colors. `bar` is the standard-cast fill, `channel` recolors a
 ---channel, `empower` recolors an empowered cast (differentiated by event), `uninterruptible` /
 ---`uninterruptibleBorder` recolor the fill / border when a hostile cast can't be interrupted (via the
@@ -9508,6 +9661,199 @@ function TRB.Functions.Settings:InjectTargetCastbarDefaults(specDefaults, classi
 		end
 		if specDefaults.displayBar[key] == nil then
 			specDefaults.displayBar[key] = self:DefaultTargetCastbarVisibility()
+		end
+		local barTex = key .. "Bar"
+		if specDefaults.textures[barTex] == nil then
+			local tex = self:DefaultCustomBarTextures()
+			specDefaults.textures[barTex] = tex.bar
+			specDefaults.textures[key .. "BarName"] = tex.barName
+			specDefaults.textures[key .. "Border"] = tex.border
+			specDefaults.textures[key .. "BorderName"] = tex.borderName
+			specDefaults.textures[key .. "Background"] = tex.background
+			specDefaults.textures[key .. "BackgroundName"] = tex.backgroundName
+		end
+	end
+end
+
+---Gets default Other Bars dimensions: a standalone bar anchored to the SCREEN (its own EditMode root),
+---NOT part of the main anchor stack. Mirrors DefaultTargetCastbarBarDimensions.
+---@param classic boolean?
+---@return table
+function TRB.Functions.Settings:DefaultOtherBarDimensions(classic)
+	local dims = self:DefaultCustomBarDimensions(classic)
+	dims.fullWidth = false
+	dims.width = 300
+	dims.relativeTo = "SCREEN"
+	dims.relativeToName = L["PositionScreen"]
+	dims.anchor.barKey = "screen"
+	dims.anchor.anchorPoint = "CENTER"
+	dims.anchor.attachPoint = "CENTER"
+	dims.anchor.xOffset = 0
+	dims.anchor.yOffset = 0
+	dims.anchor.matchWidth = false
+	dims.anchor.matchHeight = false
+	return dims
+end
+
+---Gets the default visibility entry for an Other Bar. These bars have one show state, `whenActive`,
+---meaning their timer is running; Always Show additionally keeps the empty frame on screen while idle.
+---Ships disabled: an all-spec bar nobody asked for should not appear (nor displace Blizzard's) until it
+---is turned on, but it ships with whenActive already ticked so enabling it does something immediately.
+---@param barKey string? # The bar this entry is for; the GCD takes a shorter tail than the mirror timers
+---@return trbBarVisibilitySetting
+function TRB.Functions.Settings:DefaultOtherBarVisibility(barKey)
+	-- The GCD recycles every ~1.5s, so any fade tail leaves it on screen most of the time and reads as a
+	-- bar that never goes away. The mirror timers fire once in a while and fade out normally.
+	local fadeDuration = 0.5
+	if barKey == "gcd" then
+		fadeDuration = 0
+	end
+
+	return {
+		neverShow = true,
+		alwaysShow = false,
+		conditions = { whenActive = true },
+		-- Full standard hide-condition set, not the cast bars' pared-back pair: these timers run in
+		-- exactly the situations people suppress bars for (mounted, flying, on a taxi), so all of them
+		-- need to be reachable. Existing saved entries get the new keys through the defaults merge.
+		hideConditions = self:LoadDefaultBarVisibilityHideConditions(),
+		activeAlpha = 100,
+		inactiveAlpha = 0,
+		fadeDuration = fadeDuration,
+		fadeDelay = 0,
+		resourceConditionType = "none",
+		resourceConditionOperator = ">=",
+		resourceConditionValue = 0
+	}
+end
+
+---Gets the default Global Cooldown bar settings. `timerDirection` picks how the fill runs: "deplete"
+---(default) drains a full bar as the GCD runs down, "fill" grows an empty one. It maps straight onto
+---Enum.StatusBarTimerDirection at render time.
+---@param classic boolean?
+---@return TRB.Classes.Settings.OtherBar
+function TRB.Functions.Settings:DefaultGcdBarSettings(classic)
+	local settings = self:DefaultOtherBarDimensions(classic) --[[@as TRB.Classes.Settings.OtherBar]]
+	settings.height = 10
+	settings.timerDirection = "deplete"
+	settings.durationPrecision = 1
+
+	-- Sits flush under the Cast Bar, its natural companion: both count the same cast down. Specs whose
+	-- cast bar group is absent fall back automatically -- BuildAnchorForest walks up to the nearest
+	-- existing ancestor rather than orphaning the bar.
+	settings.relativeTo = "BOTTOM"
+	settings.relativeToName = L["PositionBelowMiddle"]
+	settings.anchor.barKey = "castbar"
+	settings.anchor.anchorPoint = "BOTTOM"
+	settings.anchor.attachPoint = "TOP"
+	settings.anchor.xOffset = 0
+	settings.anchor.yOffset = -2
+	settings.anchor.matchWidth = true
+	return settings
+end
+
+---Gets the default Global Cooldown bar colors.
+---@return table
+function TRB.Functions.Settings:DefaultGcdBarColors()
+	return {
+		bar = { color = "FFFFFFFF", color2 = "FFFFFFFF", gradientDirection = "disabled" },
+		border = { color = "FF000000" },
+		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
+	}
+end
+
+---The mirror timer bars form a single anchored stack: Fatigue is the tree root (screen-anchored, its own
+---EditMode wrapper) and each of the others hangs off the one before it, so moving Fatigue moves the whole
+---group. Maps bar key -> the key it anchors to; absent means "root".
+local mirrorTimerAnchorParent = {
+	breath = "fatigue",
+	feignDeath = "breath",
+}
+
+---Gets the default settings for one of the mirror timer bars (Fatigue / Breath / Feign Death).
+---`disableBlizzardBar` suppresses only this timer's frame inside Blizzard's "Duration Bars" Edit Mode
+---system, mirroring the cast bar's disableBlizzardCastbar.
+---@param classic boolean?
+---@param barKey string # "fatigue", "breath" or "feignDeath"
+---@return TRB.Classes.Settings.OtherBar
+function TRB.Functions.Settings:DefaultMirrorTimerBarSettings(classic, barKey)
+	local settings = self:DefaultOtherBarDimensions(classic) --[[@as TRB.Classes.Settings.OtherBar]]
+	settings.height = 18
+	settings.disableBlizzardBar = true
+	-- No durationPrecision: these read as mm:ss, so there are no decimals to configure. Only the GCD,
+	-- which runs under two seconds, has one.
+
+	local parentKey = mirrorTimerAnchorParent[barKey]
+	if parentKey ~= nil then
+		-- Sits below its parent: this bar's TOP against the parent's BOTTOM, matching its width so the
+		-- stack reads as one block.
+		settings.relativeTo = "BOTTOM"
+		settings.relativeToName = L["PositionBelowMiddle"]
+		settings.anchor.barKey = parentKey
+		settings.anchor.anchorPoint = "BOTTOM"
+		settings.anchor.attachPoint = "TOP"
+		settings.anchor.yOffset = -4
+		settings.anchor.matchWidth = true
+	end
+
+	return settings
+end
+
+---Gets the default colors for one of the mirror timer bars. Each takes a fill that reads as its hazard:
+---Fatigue amber, Breath blue, Feign Death grey-violet.
+---@param barKey string # "fatigue", "breath" or "feignDeath"
+---@return table
+function TRB.Functions.Settings:DefaultMirrorTimerBarColors(barKey)
+	local fill = "FFB0A0D0"
+	if barKey == "fatigue" then
+		fill = "FFFFAA00"
+	elseif barKey == "breath" then
+		fill = "FF00AAFF"
+	end
+
+	return {
+		bar = { color = fill, color2 = fill, gradientDirection = "disabled" },
+		border = { color = "FF000000" },
+		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
+	}
+end
+
+---Central injector: adds the Other Bars defaults (bars/colors/displayBar/textures) to a spec's default
+---settings table, so the standard defaults->saved Table:Merge carries them into every spec of every
+---class. Idempotent. Mirrors InjectTargetCastbarDefaults. Feign Death only ever fires for Hunters, so
+---only Hunter specs get it -- not even the global scope.
+---@param specDefaults table
+---@param classId integer? # nil for the global (core) scope, which gets every bar
+---@param classic boolean?
+function TRB.Functions.Settings:InjectOtherBarsDefaults(specDefaults, classId, classic)
+	if type(specDefaults) ~= "table" then
+		return
+	end
+	specDefaults.bars = specDefaults.bars or {}
+	specDefaults.colors = specDefaults.colors or {}
+	specDefaults.colors.bars = specDefaults.colors.bars or {}
+	specDefaults.displayBar = specDefaults.displayBar or {}
+	specDefaults.textures = specDefaults.textures or {}
+
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry:GetOtherBarKeys(classId)) do
+		if specDefaults.bars[key] == nil then
+			if key == "gcd" then
+				specDefaults.bars[key] = self:DefaultGcdBarSettings(classic)
+			else
+				specDefaults.bars[key] = self:DefaultMirrorTimerBarSettings(classic, key)
+			end
+		end
+		if specDefaults.colors.bars[key] == nil then
+			if key == "gcd" then
+				specDefaults.colors.bars[key] = self:DefaultGcdBarColors()
+			else
+				specDefaults.colors.bars[key] = self:DefaultMirrorTimerBarColors(key)
+			end
+		end
+		if specDefaults.displayBar[key] == nil then
+			specDefaults.displayBar[key] = self:DefaultOtherBarVisibility(key)
 		end
 		local barTex = key .. "Bar"
 		if specDefaults.textures[barTex] == nil then
@@ -10787,6 +11133,13 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 	for x = 1, #extraTextSettings do
 		table.insert(textSettings, extraTextSettings[x])
 	end
+
+	-- Other Bars timers, one readout each. Feign Death is Hunter-only and lives in those specs' own bar
+	-- text instead, so it is absent here. Existing users get these through the otherBarsText migration --
+	-- keep the two lists in step, or they will be seeded twice.
+	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("GcdBar", L["ResourceGcd"], "$gcdDurationRemaining", "RIGHT", 10))
+	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("FatigueBar", L["ResourceFatigue"], "$fatigueDurationRemaining", "CENTER", 12))
+	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("BreathBar", L["ResourceBreath"], "$breathDurationRemaining", "CENTER", 12))
 
 	textSettings = TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 

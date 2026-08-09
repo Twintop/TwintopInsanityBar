@@ -401,4 +401,21 @@ if locale == "enGB" then
 
     -- Warrior Fury Enrage
     L["WarriorFuryIndicatorEnrageTooltip"] = "Changes to this colour when Enrage is active."
+
+    -- Other Bars
+    L["OtherBarsColorsHeader"] = "Colours"
+    L["OtherBarsBehaviorHeader"] = "Behaviour"
+    L["CheckboxUseGlobalTooltipOtherBars"] = "When checked, this section uses the settings from the global Other Bars screen instead of this specialisation's own."
+    L["OpenGlobalOtherBarsSettingsTooltip"] = "Opens the global Other Bars options screen, where these settings are configured for every specialisation at once."
+    L["CopyMenuSection_gcdColors"] = "Global Cooldown Bar - Colours"
+    L["CopyMenuSection_fatigueColors"] = "Fatigue Bar - Colours"
+    L["CopyMenuSection_breathColors"] = "Breath Bar - Colours"
+    -- REMOVED: L["CopyMenuSection_deathColors"] - the Death mirror timer bar was retired
+    L["CopyMenuSection_feignDeathColors"] = "Feign Death Bar - Colours"
+
+    -- Other Bars: Use Global tooltips for the shared dimensions rows
+    L["CheckboxUseGlobalTooltip_GcdDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
+    L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
+    L["CheckboxUseGlobalTooltip_BreathDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
+    -- REMOVED: L["CheckboxUseGlobalTooltip_DeathDimensions"] - the Death mirror timer bar was retired
 end

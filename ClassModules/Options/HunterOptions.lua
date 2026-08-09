@@ -24,6 +24,8 @@ local function BeastMasteryLoadDefaultBarTextSettings(classic)
 	}
 
 	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("bestialWrathTime", "bestialWrath", classic, "CENTER", "RIGHT"))
+	-- Feign Death is Hunter-only, so its bar text lives here rather than in the global list every spec shares
+	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultFeignDeathBarTextSettings())
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
@@ -240,6 +242,8 @@ local function MarksmanshipLoadDefaultBarTextSettings(classic)
 	}
 
 	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("trueshotTime", "trueshot", classic, "CENTER", "RIGHT"))
+	-- Feign Death is Hunter-only, so its bar text lives here rather than in the global list every spec shares
+	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultFeignDeathBarTextSettings())
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
@@ -458,6 +462,8 @@ local function SurvivalLoadDefaultBarTextSettings(classic)
 	}
 
 	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("takedownTime", "takedown", classic, "CENTER", "RIGHT"))
+	-- Feign Death is Hunter-only, so its bar text lives here rather than in the global list every spec shares
+	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultFeignDeathBarTextSettings())
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end

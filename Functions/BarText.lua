@@ -5,7 +5,8 @@ TRB.Functions.BarText = {}
 
 local containerAnchorPrefix = "Container::"
 
--- Cast bar anchor keys → their bar group key. Both the bar and its side icon resolve through the same node.
+-- Self-driven bar anchor keys → their bar group key. For the cast bars both the bar and its side icon
+-- resolve through the same node; the Other Bars have no icon, so they map bar-only.
 local castbarAnchorGroupKeys = {
 	CastBar = "castbar",
 	TargetCastBar = "targetCastbar",
@@ -13,6 +14,10 @@ local castbarAnchorGroupKeys = {
 	CastBarIcon = "castbar",
 	TargetCastBarIcon = "targetCastbar",
 	FocusCastBarIcon = "focusCastbar",
+	GcdBar = "gcd",
+	FatigueBar = "fatigue",
+	BreathBar = "breath",
+	FeignDeathBar = "feignDeath",
 }
 
 -- Which of the above keys target the side icon frame rather than the bar itself.
@@ -625,6 +630,16 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 			logicType = logicTypes.TEXT, booleanCheck = true },
 		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
 		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+
+		-- Other Bars timers. A bare check gates on that bar's timer running (see otherBarsVars).
+		-- The GCD's seconds come from a DurationObject whose values are secret in restricted content, so
+		-- those two are display-only. The mirror timers report plain numbers and can be compared.
+		{ variable = "$gcdDuration", description = L["BarTextVariableGcdDuration"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$gcdDurationRemaining", description = L["BarTextVariableGcdDurationRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$fatigueDuration", description = L["BarTextVariableFatigueDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$fatigueDurationRemaining", description = L["BarTextVariableFatigueDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$breathDuration", description = L["BarTextVariableBreathDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$breathDurationRemaining", description = L["BarTextVariableBreathDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
 	}
 	-- Any shared value not explicitly categorized above is a stat.
 	for _, v in ipairs(values) do
@@ -1830,12 +1845,99 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	-- them independently of this class-driven (combat/isTracking-gated) refresh.
 	TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 	TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
+	TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
 
 	Global_TwintopResourceBar.resource = Global_TwintopResourceBar.resource or {}
 	Global_TwintopResourceBar.resource.resource = snapshotData.attributes.resource-- or 0
 	Global_TwintopResourceBar.resource.casting = castingAmount
+end
+
+-- Other Bars variable -> bar key. Each bar contributes $<key>Duration and $<key>DurationRemaining.
+local otherBarsVars = {
+	["$gcdDuration"] = "gcd", ["$gcdDurationRemaining"] = "gcd",
+	["$fatigueDuration"] = "fatigue", ["$fatigueDurationRemaining"] = "fatigue",
+	["$breathDuration"] = "breath", ["$breathDurationRemaining"] = "breath",
+	["$feignDeathDuration"] = "feignDeath", ["$feignDeathDurationRemaining"] = "feignDeath",
+}
+
+-- The GCD's seconds ride on a DurationObject and are secret in restricted content, so they are
+-- display-only. The mirror timers come back as plain numbers from GetMirrorTimerProgress, so those
+-- also reach lookupLogic and can be compared in bar text conditionals.
+local otherBarsSecretVars = {
+	["$gcdDuration"] = true, ["$gcdDurationRemaining"] = true,
+}
+
+---Refreshes the Other Bars timer variables ($gcdDuration, $fatigueDurationRemaining, ...). An idle bar
+---renders as an empty string, so a bare {$fatigueDurationRemaining}[...] gate shows nothing while the
+---timer is down. Values are formatted with string.format, which is safe on a secret.
+---
+---The two kinds format differently. The GCD is under two seconds, so it reads as seconds to the
+---configured decimal precision -- and it has no choice: its value is a secret, and mm:ss needs division
+---and subtraction, which a secret does not permit. The mirror timers run for minutes and come back as
+---plain numbers, so they read as mm:ss. `lookupLogic` always carries the raw seconds either way, so
+---conditionals still compare against a number rather than the display string.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
+function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
+	local lookup = TRB.Data.lookup
+	local lookupLogic = TRB.Data.lookupLogic
+
+	---Renders a mirror timer's seconds as mm:ss. Minutes are not capped -- no mirror timer runs an hour,
+	---but a longer one would read 61:xx rather than wrap silently.
+	---@param seconds number
+	---@return string
+	local function FormatMinutesSeconds(seconds)
+		if seconds < 0 then
+			seconds = 0
+		end
+		local wholeSeconds = math.floor(seconds)
+		local minutes = math.floor(wholeSeconds / 60)
+		return string.format("%02d:%02d", minutes, wholeSeconds - (minutes * 60))
+	end
+
+	for _, entry in ipairs(TRB.Functions.OtherBars:GetBars()) do
+		local barKey = entry.key
+		local barSettings = settings and settings.bars and settings.bars[barKey]
+		-- A spec without this bar's settings doesn't have the bar at all (Feign Death outside Hunter),
+		-- so it gets no lookup entries either.
+		if barSettings ~= nil then
+			local isMirror = entry.kind == "mirror"
+			-- Only the GCD carries durationPrecision; the mirror timers have no decimals to configure.
+			local fmt
+			if not isMirror then
+				fmt = "%." .. barSettings.durationPrecision .. "f"
+			end
+			local totalVar = "$" .. barKey .. "Duration"
+			local remVar = totalVar .. "Remaining"
+			local isSecret = otherBarsSecretVars[totalVar] == true
+
+			-- Default to empty, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
+			-- which is blocked; only nil-checks and string.format are allowed on secrets.
+			lookup[totalVar] = ""
+			lookup[remVar] = ""
+			if not isSecret then
+				lookupLogic[totalVar] = nil
+				lookupLogic[remVar] = nil
+			end
+
+			local remaining, total = TRB.Functions.OtherBars:GetTimerValues(barKey)
+			if remaining ~= nil then
+				lookup[remVar] = isMirror and FormatMinutesSeconds(remaining) or string.format(fmt, remaining)
+				if not isSecret then
+					lookupLogic[remVar] = remaining
+				end
+			end
+			if total ~= nil then
+				lookup[totalVar] = isMirror and FormatMinutesSeconds(total) or string.format(fmt, total)
+				if not isSecret then
+					lookupLogic[totalVar] = total
+				end
+			end
+		end
+	end
 end
 
 -- Static set of always-valid base variables (O(1) lookup instead of if/elseif chain)
@@ -1902,14 +2004,22 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		local model = TRB.Data[castbarModelKey]
 		return model ~= nil and model:IsActive()
 	end
+	-- Other Bars timers resolve, in bar text LOGIC, to "is that bar's timer running", so a bare
+	-- {$breathDurationRemaining}[...] gates on the timer the same way a cast variable gates on a cast.
+	-- The mirror timers additionally reach lookupLogic, so they can be compared as well.
+	local otherBarKey = otherBarsVars[var]
+	if otherBarKey ~= nil then
+		return TRB.Functions.OtherBars:IsBarActive(otherBarKey)
+	end
 	return false
 end
 
--- Bar text variables whose values come from an active cast bar (player $cast* / #casting, and the
--- target/focus $target*|$focus* / #targetCasting|#focusCasting). An active cast bar only needs to force a
--- per-frame bar text refresh when one of THESE is actually referenced by an enabled entry -- otherwise the
--- cast changes nothing the bar text shows, and the normal early-out applies. Keyed by variable/icon name.
-local castbarDrivenVariables = {
+-- Bar text variables whose values come from a self-driven bar: the cast bars (player $cast* / #casting
+-- and the target/focus $target*|$focus* / #targetCasting|#focusCasting) and the Other Bars timers. Those
+-- bars only need to force a per-frame bar text refresh when one of THESE is actually referenced by an
+-- enabled entry -- otherwise a running timer changes nothing the bar text shows and the normal early-out
+-- applies. Keyed by variable/icon name.
+local selfDrivenBarVariables = {
 	-- Player cast bar (see RefreshCastbarLookupData)
 	["$castTime"] = true, ["$castTimeRemaining"] = true, ["$castLatency"] = true, ["$castLatencyMs"] = true,
 	["$castPushback"] = true, ["$castSpellName"] = true, ["$castSpellId"] = true,
@@ -1919,18 +2029,24 @@ local castbarDrivenVariables = {
 	["#targetCasting"] = true,
 	["$focusCastingSpellName"] = true, ["$focusCastTime"] = true, ["$focusCastTimeRemaining"] = true,
 	["#focusCasting"] = true,
+	-- Other Bars timers (see RefreshOtherBarsLookupData)
+	["$gcdDuration"] = true, ["$gcdDurationRemaining"] = true,
+	["$fatigueDuration"] = true, ["$fatigueDurationRemaining"] = true,
+	["$breathDuration"] = true, ["$breathDurationRemaining"] = true,
+	["$feignDeathDuration"] = true, ["$feignDeathDurationRemaining"] = true,
 }
 
----Whether any active cast bar (player/target/focus) drives a variable that an enabled bar text entry
----actually references. This is what justifies bypassing the early-out for a live cast: if nothing on
----screen shows a $cast*/$target*/$focus* value, the cast is irrelevant to bar text. When the active
----variable set hasn't been built yet (nil, e.g. just invalidated), returns true so the caller refreshes
----and rebuilds it rather than skipping a frame's worth of text.
+---Whether any running self-driven bar (the player/target/focus cast bars, or an Other Bars timer)
+---drives a variable that an enabled bar text entry actually references. This is what justifies
+---bypassing the early-out for a live cast or timer: if nothing on screen shows one of those values, it
+---is irrelevant to bar text. When the active variable set hasn't been built yet (nil, e.g. just
+---invalidated), returns true so the caller refreshes and rebuilds it rather than skipping a frame.
 ---@return boolean
-local function HasActiveCastbarVariableInUse()
+local function HasActiveSelfDrivenBarVariableInUse()
 	local anyActive = (TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive())
 		or (TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
 		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())
+		or TRB.Functions.OtherBars:HasActiveTimer()
 	if not anyActive then
 		return false
 	end
@@ -1938,7 +2054,7 @@ local function HasActiveCastbarVariableInUse()
 	if activeVars == nil then
 		return true
 	end
-	for var in pairs(castbarDrivenVariables) do
+	for var in pairs(selfDrivenBarVariables) do
 		if activeVars[var] then
 			return true
 		end
@@ -1988,8 +2104,8 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	-- updating even out of combat / when every other bar is hidden -- BUT only when an enabled bar text
 	-- entry actually references a cast-bar variable. A live cast that no bar text shows is irrelevant here,
 	-- so it no longer forces a full per-frame refresh (the cast bar's own fill/text render independently).
-	local castbarInUse = HasActiveCastbarVariableInUse()
-	if not visibilityRefresh and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not castbarInUse and not TRB.Functions.Class:HasActiveTimers() then
+	local selfDrivenBarInUse = HasActiveSelfDrivenBarVariableInUse()
+	if not visibilityRefresh and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not selfDrivenBarInUse and not TRB.Functions.Class:HasActiveTimers() then
 		return
 	end
 	TRB.Data.lookupDirty = false

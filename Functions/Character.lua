@@ -1593,6 +1593,68 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
+	-- Other Bars (GCD + the mirror timers) get the same treatment with two sections each: Dimensions
+	-- (position/size) and Colors (fill/border/background/end cap plus the one behaviour flag each kind
+	-- carries). Same shallow-copy-before-mutate rule so the raw settings are never touched.
+	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.otherBarKeys) do
+		-- Class-scoped bars (Feign Death) have no global counterpart, so they never pull from core even if
+		-- an older build left an entry and its Use Global flags behind in saved variables.
+		local isGlobalScope = TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(barKey)
+		local coreBar = isGlobalScope and core.bars and core.bars[barKey] or nil
+		local currentBars = specCache.settings.bars
+		local specBar = currentBars and currentBars[barKey]
+		local useDims = isGlobalScope and s[barKey .. "Dimensions"]
+		local useColors = isGlobalScope and s[barKey .. "Colors"]
+		if coreBar and specBar and (useDims or useColors) then
+			local mergedBar = {}
+			for k, v in pairs(specBar) do
+				mergedBar[k] = v
+			end
+			if useDims then
+				mergedBar.width = coreBar.width
+				mergedBar.height = coreBar.height
+				mergedBar.border = coreBar.border
+				mergedBar.xPos = coreBar.xPos
+				mergedBar.yPos = coreBar.yPos
+				mergedBar.anchor = coreBar.anchor
+				mergedBar.fillDirection = coreBar.fillDirection
+			end
+			if useColors then
+				-- The behaviour flags and text precision ride with Colors, matching their placement in the
+				-- options panel.
+				mergedBar.timerDirection = coreBar.timerDirection
+				mergedBar.disableBlizzardBar = coreBar.disableBlizzardBar
+				mergedBar.durationPrecision = coreBar.durationPrecision
+			end
+			local mergedBars = {}
+			for k, v in pairs(currentBars) do
+				mergedBars[k] = v
+			end
+			mergedBars[barKey] = mergedBar
+			specCache.settings.bars = mergedBars
+		end
+
+		local coreColors = core.colors and core.colors.bars and core.colors.bars[barKey]
+		local currentColorBars = specCache.settings.colors.bars
+		local specColors = currentColorBars and currentColorBars[barKey]
+		if coreColors and specColors and useColors then
+			local mergedColors = {}
+			for k, v in pairs(specColors) do
+				mergedColors[k] = v
+			end
+			mergedColors.bar = coreColors.bar
+			mergedColors.border = coreColors.border
+			mergedColors.background = coreColors.background
+			mergedColors.endCap = coreColors.endCap
+			local mergedColorBars = {}
+			for k, v in pairs(currentColorBars) do
+				mergedColorBars[k] = v
+			end
+			mergedColorBars[barKey] = mergedColors
+			specCache.settings.colors.bars = mergedColorBars
+		end
+	end
+
 	if s.displayBar then
 		-- Create a deep copy to avoid modifying the global displayBar object
 		specCache.settings.displayBar = {}
@@ -1725,6 +1787,10 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 
 			-- Target/Focus Cast Bars are all-spec standalone bars; inject their defaults the same way.
 			TRB.Functions.Settings:InjectTargetCastbarDefaults(specDefaults)
+
+			-- Other Bars (GCD + the mirror timers) are all-spec standalone bars too. classId scopes out
+			-- Feign Death, which only ever fires for Hunters.
+			TRB.Functions.Settings:InjectOtherBarsDefaults(specDefaults, TRB.Functions.Character:GetClassIdFromName(className))
 
 			-- End caps are a universal per-bar setting; inject their defaults the same way
 			TRB.Functions.Settings:InjectEndCapDefaults(specDefaults)
@@ -1936,6 +2002,7 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.CooldownManager:Enable()
 		TRB.Functions.SpellCast:EnableSpellCast()
 		TRB.Functions.TargetCastbar:Enable()
+		TRB.Functions.OtherBars:Enable()
 		TRB.Functions.Character:EnableCharacterChange()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)

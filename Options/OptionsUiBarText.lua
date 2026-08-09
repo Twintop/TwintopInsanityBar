@@ -943,6 +943,19 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	relativeToFrame[L["ResourceFocusCastbarIcon"]] = "FocusCastBarIcon"
 	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourceFocusCastbarIcon"])
 
+	-- Other Bars are all-spec too, so their frames are bar text anchor targets everywhere. GetOtherBarKeys
+	-- scopes the list, so the Hunter-only Feign Death bar is only offered to Hunter specs. The label is
+	-- the definition's already-localized displayName, never a key looked up from a variable.
+	local otherBarsRegistry = TRB.Classes.BarTypeRegistry:GetInstance()
+	for _, otherBarKey in ipairs(otherBarsRegistry:GetOtherBarKeys(classId)) do
+		local otherBarDef = otherBarsRegistry:Get(otherBarKey)
+		if otherBarDef ~= nil then
+			local anchorKey = otherBarKey:gsub("^%l", string.upper) .. "Bar"
+			relativeToFrame[otherBarDef.displayName] = anchorKey
+			table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), otherBarDef.displayName)
+		end
+	end
+
 	local containerAnchorOptions = TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
 	if #containerAnchorOptions > 0 then
 		for _, containerAnchor in ipairs(containerAnchorOptions) do

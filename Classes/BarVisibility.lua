@@ -291,9 +291,9 @@ function TRB.Functions.BarVisibility:InvalidateAppliedState()
 	local barGroups = TRB.Frames.barGroups
 	if barGroups ~= nil then
 		for key, group in pairs(barGroups) do
-			-- The cast bars render themselves from live cast state and are not ProcessBars
-			-- entries, so nothing would ever show them again if they were torn down here.
-			local isSelfDriven = key == "castbar" or key == "targetCastbar" or key == "focusCastbar"
+			-- The cast bars, the GCD bar and the mirror timers render themselves from live state and are
+			-- not ProcessBars entries, so nothing would ever show them again if they were torn down here.
+			local isSelfDriven = TRB.Classes.BarTypeRegistry:IsSelfDriven(key)
 			if not isSelfDriven and type(group) == "table" and group.Hide ~= nil and group.containerFrame ~= nil then
 				group:Hide()
 				-- Defeats SetTargetAlpha's no-op guard so Phase 3 re-applies frame alpha.
@@ -834,6 +834,12 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	-- anchored bar text keeps ticking through the shared render path.
 	if not anyShowing and ((TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
 		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())) then
+		anyShowing = true
+	end
+	-- And for the Other Bars timers. This one matters most: Fatigue and Breath run out of combat, which
+	-- is exactly when every other bar is hidden and isTracking would otherwise be false -- taking their
+	-- anchored bar text down with it.
+	if not anyShowing and TRB.Functions.OtherBars:HasActiveTimer() then
 		anyShowing = true
 	end
 

@@ -1,4 +1,4 @@
-## Interface: 120100
+﻿## Interface: 120100
 ## X-TargetInterface: 120100
 ## X-VersionCheck: enabled
 ## Title: Twintop's Resource Bar
@@ -122,6 +122,7 @@ Functions\Profiles.lua
 Functions\SpellCast.lua
 Functions\Castbar.lua
 Functions\TargetCastbar.lua
+Functions\OtherBars.lua
 Functions\String.lua
 Functions\Talent.lua
 Functions\Threshold.lua
@@ -151,6 +152,7 @@ Options\OptionsUiBarTextInput.lua
 Options\OptionsUiBarText.lua
 Options\OptionsUiCastbar.lua
 Options\OptionsUiTargetCastbar.lua
+Options\OptionsUiOtherBars.lua
 Options\OptionsUiTabs.lua
 Options\OptionsFrame.lua
 Options\Options.lua

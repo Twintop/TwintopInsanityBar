@@ -3425,3 +3425,66 @@ L["ShamanAudioCueSourceMaelstromWeaponDescription"] = "Plays once when your Mael
 L["HunterSurvivalAudioCueSourceTotsDescription"] = "Plays once when your Tip of the Spear stacks reach the value below while you are in combat, then stays silent until they fall back under it. Add as many of these as you like, each with its own sound."
 L["EvokerAudioCueSourceEssenceDescription"] = "Plays once when your available Essence drops to the value below or lower, then stays silent until it climbs back above it. Add as many of these as you like, each with its own sound."
 L["PriestHolyAudioCueSourceLightweaverDescription"] = "Plays whenever your Lightweaver stacks land on exactly the value below, from either direction. Add as many of these as you like, each with its own sound."
+
+-- Other Bars: bar display names
+L["ResourceGcd"] = "Global Cooldown"
+L["ResourceFatigue"] = "Fatigue"
+L["ResourceBreath"] = "Breath"
+-- REMOVED: L["ResourceDeathTimer"] - the Death mirror timer bar was retired
+L["ResourceFeignDeath"] = "Feign Death"
+
+-- Other Bars: tab + screen labels
+L["TabOtherBars"] = "Other Bars"
+L["OtherBarsGlobalOptionsHeader"] = "Global Other Bars Options"
+
+-- Other Bars: panel sections and options
+L["OtherBarsColorsHeader"] = "Colors"
+L["OtherBarsColorFill"] = "Bar"
+L["OtherBarsBehaviorHeader"] = "Behavior"
+L["GcdBarGrowInstead"] = "Grow instead of drain"
+L["GcdBarGrowInsteadTooltip"] = "Fills the bar up from empty as the global cooldown elapses, instead of draining a full bar down as it runs out."
+L["MirrorTimerDisableBlizzard"] = "Hide Blizzard's bar"
+L["MirrorTimerDisableBlizzardTooltip"] = "Hides the default Blizzard timer for this one while it is being shown here. Blizzard groups these under 'Duration Bars' in Edit Mode and offers no per-timer toggle, so only the timer this tab replaces is hidden -- the others are left alone."
+
+-- Other Bars: global settings
+L["CheckboxUseGlobalOtherBars"] = "Use global Other Bars settings"
+L["CheckboxUseGlobalTooltipOtherBars"] = "When checked, this section uses the settings from the global Other Bars screen instead of this specialization's own."
+L["OpenGlobalOtherBarsSettings"] = "Open Global Other Bars Settings"
+L["OpenGlobalOtherBarsSettingsTooltip"] = "Opens the global Other Bars options screen, where these settings are configured for every specialization at once."
+
+-- Other Bars: copy menu section labels
+L["CopyMenuSection_gcdDimensions"] = "Global Cooldown Bar - Dimensions"
+L["CopyMenuSection_gcdColors"] = "Global Cooldown Bar - Colors"
+L["CopyMenuSection_fatigueDimensions"] = "Fatigue Bar - Dimensions"
+L["CopyMenuSection_fatigueColors"] = "Fatigue Bar - Colors"
+L["CopyMenuSection_breathDimensions"] = "Breath Bar - Dimensions"
+L["CopyMenuSection_breathColors"] = "Breath Bar - Colors"
+-- REMOVED: L["CopyMenuSection_deathDimensions"] - the Death mirror timer bar was retired
+-- REMOVED: L["CopyMenuSection_deathColors"] - the Death mirror timer bar was retired
+L["CopyMenuSection_feignDeathDimensions"] = "Feign Death Bar - Dimensions"
+L["CopyMenuSection_feignDeathColors"] = "Feign Death Bar - Colors"
+
+-- Other Bars: visibility summary for bars whose only show condition is "the timer is running"
+L["ShowBarVisibilityWhenActive"] = "When active"
+
+-- Other Bars: show-condition group title for the "When Active" timer state
+L["ShowBarVisibilityGroupTimer"] = "Timer"
+
+-- Other Bars: Use Global tooltips for the shared dimensions rows (looked up by section key)
+L["CheckboxUseGlobalTooltip_GcdDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialization's own settings."
+L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialization's own settings."
+L["CheckboxUseGlobalTooltip_BreathDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialization's own settings."
+-- REMOVED: L["CheckboxUseGlobalTooltip_DeathDimensions"] - the Death mirror timer bar was retired
+
+-- Other Bars: bar text variables and the shared precision slider
+L["OtherBarsDurationPrecision"] = "Duration Decimal Precision"
+L["BarTextVariableGcdDuration"] = "Total length of the global cooldown currently running. Blank when no global cooldown is active."
+L["BarTextVariableGcdDurationRemaining"] = "Time left on the global cooldown currently running. Blank when no global cooldown is active."
+L["BarTextVariableFatigueDuration"] = "Total length of the Fatigue timer. Blank when you are not fatigued."
+L["BarTextVariableFatigueDurationRemaining"] = "Time left on the Fatigue timer. Blank when you are not fatigued."
+L["BarTextVariableBreathDuration"] = "Total length of the Breath timer. Blank when you are not underwater."
+L["BarTextVariableBreathDurationRemaining"] = "Time left on the Breath timer. Blank when you are not underwater."
+-- REMOVED: L["BarTextVariableDeathDuration"] - the Death mirror timer bar was retired
+-- REMOVED: L["BarTextVariableDeathDurationRemaining"] - the Death mirror timer bar was retired
+L["BarTextVariableFeignDeathDuration"] = "Total length of the Feign Death timer. Blank when you are not feigning death."
+L["BarTextVariableFeignDeathDurationRemaining"] = "Time left on the Feign Death timer. Blank when you are not feigning death."
