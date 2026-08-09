@@ -49,6 +49,7 @@ local content = [====[
 
 ### Bar Text
 
+- [#802 - @Ignitetheskywow](#802) Font Outline is now a multiselect dropdown. Outline and Thick Outline still replace each other, but either can be combined with Monochrome and the new Slug style, and None clears the rest.
 - The bar text variable list is now grouped into **Stats**, **Resources**, **Abilities**, **Other**, and **Cast Bars** sections.
 - Add a **CDM** column to the variable list, marking variables whose value comes from Blizzard's Cooldown Manager and which render as `??` until the ability they track is added to one of its viewers.
 - Hovering a variable in the list now shows its name and full description, instead of having to select the row.
@@ -133,14 +134,6 @@ local content = [====[
 ### Protection
 
 - Ignore Pain tracking now uses the CDM. Requires CDM to be enabled and Ignore Pain to be actively tracked to function.
-
----
-
-# 12.0.7.14-release (2026-08-06)
-## General
-### Bar Text
-
-- [#802 - @Ignitetheskywow](#802) Font Outline is now a multiselect dropdown. Outline and Thick Outline still replace each other, but either can be combined with Monochrome and the new Slug style, and None clears the rest.
 
 ---
 
