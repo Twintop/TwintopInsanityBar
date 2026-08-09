@@ -830,10 +830,9 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	if not anyShowing and TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive() then
 		anyShowing = true
 	end
-	-- Same for the target/focus cast bars: keep isTracking true while either is active so their
-	-- anchored bar text keeps ticking through the shared render path.
-	if not anyShowing and ((TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
-		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())) then
+	-- Same for the target/focus cast bars, but for as long as either is on screen (cast, fade-out, or idle
+	-- Always Show) -- gating on IsActive() blanked their anchored bar text for every fade-out.
+	if not anyShowing and TRB.Functions.TargetCastbar:IsRendering() then
 		anyShowing = true
 	end
 	-- And for the Other Bars timers. This one matters most: Fatigue and Breath run out of combat, which
