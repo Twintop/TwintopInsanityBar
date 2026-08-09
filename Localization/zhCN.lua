@@ -3008,4 +3008,7 @@ if locale == "zhCN" then
 	L["CheckboxUseGlobalTooltip_CastbarShield"] = "勾选后，将使用全局施法条不可打断护盾配置。"
 	L["CheckboxUseGlobalTooltip_TargetCastbarShield"] = "勾选后，将使用全局目标施法条不可打断护盾配置。"
 	L["CheckboxUseGlobalTooltip_FocusCastbarShield"] = "勾选后，将使用全局焦点施法条不可打断护盾配置。"
+
+	L["FontOutlineSlug"] = "使用描边渲染"
+	L["FontOutlineTooltip"] = "可任意组合多种样式。选择无会清除其余全部效果；描边与粗描边二者互斥。"
 end
