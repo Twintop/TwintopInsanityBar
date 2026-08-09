@@ -315,7 +315,6 @@ local function ConstructResourceBar(settings)
 			-- Always apply textures and colors to ALL secondary nodes so they are
 			-- renderable even when maxResource2 is not yet known (it is set in
 			-- CheckCharacter which may run after ConstructResourceBar).
-			local frameLevels = TRB.Data.constants.frameLevels
 			local whirlwindColors = settings.colors.bars and settings.colors.bars.whirlwind
 			for x = 1, barGroups.secondary.maxNodes do
 				local wwNode = barGroups.secondary:GetNode(x)
@@ -331,7 +330,7 @@ local function ConstructResourceBar(settings)
 						wwNode:SetBackgroundColorFromString(whirlwindColors.background.color)
 						TRB.Functions.Color:ApplyFillColor(wwNode, whirlwindColors.nodeColors.charge1)
 					end
-					wwNode:SetFrameLevel(frameLevels.comboPoint)
+					wwNode:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 				end
 			end
 

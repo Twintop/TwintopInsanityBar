@@ -267,7 +267,6 @@ local function ConstructResourceBar(settings)
 		barGroups.secondary:Show()
 		
 		-- Set textures and colors for each Soul Shard node
-		local frameLevels = TRB.Data.constants.frameLevels
 		for i = 1, maxShards do
 			local node = barGroups.secondary:GetNode(i)
 			if node then
@@ -280,7 +279,7 @@ local function ConstructResourceBar(settings)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 				TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
-				node:SetFrameLevel(frameLevels.comboPoint)
+				node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 			end
 		end
 	end

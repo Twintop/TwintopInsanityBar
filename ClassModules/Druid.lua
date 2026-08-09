@@ -3620,7 +3620,6 @@ function TRB.Functions.Class:CheckCharacter()
 					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
 					Bar:ApplySecondaryBarGroupLayout(feralSettings, barGroups, TRB.Data.character.maxComboPoints)
 					-- Apply textures and colors to all nodes
-					local frameLevels = TRB.Data.constants.frameLevels
 					for i = 1, TRB.Data.character.maxComboPoints do
 						local node = barGroups.secondary:GetNode(i)
 						if node then
@@ -3633,7 +3632,7 @@ function TRB.Functions.Class:CheckCharacter()
 							node:SetBorderColor(feralSettings.colors.comboPoints.border.color)
 							node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background.color)
 							TRB.Functions.Color:ApplyFillColor(node, feralSettings.colors.comboPoints.base)
-							node:SetFrameLevel(frameLevels.comboPoint)
+							node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 						end
 					end
 				end

@@ -306,7 +306,6 @@ local function ConstructResourceBar(settings)
 			barGroups.secondary:Show()
 			
 			-- Set up Chi nodes with textures and colors
-			local frameLevels = TRB.Data.constants.frameLevels
 			for i = 1, maxChi do
 				local node = barGroups.secondary:GetNode(i)
 				if node then
@@ -319,7 +318,7 @@ local function ConstructResourceBar(settings)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
-					node:SetFrameLevel(frameLevels.comboPoint)
+					node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 				end
 			end
 		end
@@ -2002,7 +2001,6 @@ function TRB.Functions.Class:CheckCharacter()
 					barGroups.secondary:SetMaxNodes(maxComboPoints)
 					Bar:ApplySecondaryBarGroupLayout(sharedSettings, barGroups, maxComboPoints)
 					-- Apply textures and colors to any newly created nodes
-					local frameLevels = TRB.Data.constants.frameLevels
 					for i = 1, maxComboPoints do
 						local node = barGroups.secondary:GetNode(i)
 						if node then
@@ -2015,7 +2013,7 @@ function TRB.Functions.Class:CheckCharacter()
 							node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 							node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
 							TRB.Functions.Color:ApplyFillColor(node, sharedSettings.colors.comboPoints.base)
-							node:SetFrameLevel(frameLevels.comboPoint)
+							node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 						end
 					end
 				end

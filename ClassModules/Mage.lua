@@ -348,7 +348,6 @@ local function ConstructResourceBar(settings)
 			barGroups.secondary:Show()
 			
 			-- Explicitly set textures and colors for each Arcane Charge node
-			local frameLevels = TRB.Data.constants.frameLevels
 			for i = 1, maxCharges do
 				local node = barGroups.secondary:GetNode(i)
 				if node then
@@ -361,12 +360,11 @@ local function ConstructResourceBar(settings)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
-					node:SetFrameLevel(frameLevels.comboPoint)
+					node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 				end
 			end
 		elseif TRB.Data.character.specId == 2 then
 			local maxFBCharges = TRB.Data.character.maxResource2 or 2
-			local frameLevels = TRB.Data.constants.frameLevels
 
 			if maxFBCharges == 0 then
 				barGroups.secondary:Hide()
@@ -409,7 +407,7 @@ local function ConstructResourceBar(settings)
 								TRB.Functions.Color:ApplyFillColor(node, fireBlastColors.nodeColors[chargeKey])
 							end
 						end
-						node:SetFrameLevel(frameLevels.comboPoint)
+						node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 					end
 				end
 			end

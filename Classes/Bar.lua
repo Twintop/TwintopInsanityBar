@@ -1252,7 +1252,7 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 	self:Show()
 
 	-- Show/hide nodes and set up textures
-	local frameLevels = TRB.Data.constants.frameLevels
+	local frameLevel = TRB.Functions.Bar:GetBarFrameLevel("secondary")
 	for i = 1, displayNodes do
 		local node = self:GetNode(i)
 		if node then
@@ -1275,7 +1275,7 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 			node:SetBorderColor(settings.colors.comboPoints.border.color)
 			node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 			node:SetColor(settings.colors.comboPoints.base.color)
-			node:SetFrameLevel(frameLevels.comboPoint)
+			node:SetFrameLevel(frameLevel)
 			node:Show()
 		end
 	end

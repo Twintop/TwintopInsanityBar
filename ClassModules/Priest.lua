@@ -463,7 +463,6 @@ local function ConstructResourceBar(settings)
 			Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxPowerWordNodes)
 			barGroups.secondary:Show()
 
-			local frameLevels = TRB.Data.constants.frameLevels
 			for i = 1, maxPowerWordNodes do
 				local node = barGroups.secondary:GetNode(i)
 				if node then
@@ -476,7 +475,7 @@ local function ConstructResourceBar(settings)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.powerWordRadiance)
-					node:SetFrameLevel(frameLevels.comboPoint)
+					node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 				end
 			end
 		end
@@ -519,7 +518,6 @@ local function ConstructResourceBar(settings)
 				end
 			end
 
-			local frameLevels = TRB.Data.constants.frameLevels
 			for i = 1, maxHolyWordNodes do
 				local node = barGroups.holyWords:GetNode(i)
 				if node then
@@ -532,7 +530,7 @@ local function ConstructResourceBar(settings)
 					node:SetBorderColor(hwColors.border.color)
 					node:SetBackgroundColorFromString(hwColors.background.color)
 					node:SetColor(orderedNodeColors[i] or hwColors.border.color)
-					node:SetFrameLevel(frameLevels.comboPoint)
+					node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("holyWords"))
 				end
 			end
 
@@ -544,7 +542,6 @@ local function ConstructResourceBar(settings)
 	-- Lightweaver bar (Holy only)
 	if TRB.Data.character.specId == 2 and barGroups and barGroups.lightweaver then
 		local lightweaverColors = settings.colors and settings.colors.bars and settings.colors.bars.lightweaver
-		local frameLevels = TRB.Data.constants.frameLevels
 		local maxLightweaverNodes = 4
 
 		for i = 1, maxLightweaverNodes do
@@ -555,7 +552,7 @@ local function ConstructResourceBar(settings)
 				local chargeKey = "charge" .. i
 				local nodeColor = lightweaverColors and lightweaverColors.nodeColors and lightweaverColors.nodeColors[chargeKey]
 				TRB.Functions.Color:ApplyFillColor(node, nodeColor)
-				node:SetFrameLevel(frameLevels.comboPoint)
+				node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("lightweaver"))
 			end
 		end
 	end

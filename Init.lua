@@ -151,8 +151,11 @@ TRB.Data.constants = {
 		border = "Border",
 	},
 	frameLevels = {
+		-- Every bar is levelled as bar + (anchor depth * barDepthStride), so a bar always draws
+		-- above the bar it is anchored to. The stride leaves room for a bar's own overlays,
+		-- which sit between node level +1 and +3.
 		bar = 100,
-		comboPoint = 300,
+		barDepthStride = 10,
 		thresholdBase = 1000,
 		thresholdOutOfRange = 1200,
 		thresholdUnusable = 1800,
