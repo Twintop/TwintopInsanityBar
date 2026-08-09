@@ -5,7 +5,8 @@ TRB.Functions.BarText = {}
 
 local containerAnchorPrefix = "Container::"
 
--- Cast bar anchor keys → their bar group key. Both the bar and its side icon resolve through the same node.
+-- Self-driven bar anchor keys → their bar group key. For the cast bars both the bar and its side icon
+-- resolve through the same node; the Other Bars have no icon, so they map bar-only.
 local castbarAnchorGroupKeys = {
 	CastBar = "castbar",
 	TargetCastBar = "targetCastbar",
@@ -13,6 +14,10 @@ local castbarAnchorGroupKeys = {
 	CastBarIcon = "castbar",
 	TargetCastBarIcon = "targetCastbar",
 	FocusCastBarIcon = "focusCastbar",
+	GcdBar = "gcd",
+	FatigueBar = "fatigue",
+	BreathBar = "breath",
+	FeignDeathBar = "feignDeath",
 }
 
 -- Which of the above keys target the side icon frame rather than the bar itself.
@@ -33,6 +38,7 @@ local containerAnchorLabelByResourceType = {
 	HolyPower = L["HolyPowerContainer"],
 	MaelstromWeapon = L["MaelstromWeaponContainer"],
 	Runes = L["RunesContainer"],
+	Shatter = L["ShatterContainer"],
 	SoulFragments = L["SoulFragmentsContainer"],
 	SoulShards = L["SoulShardsContainer"],
 	TipOfTheSpear = L["TipOfTheSpearContainer"],
@@ -51,6 +57,7 @@ local containerAnchorFirstNodeLabelByResourceType = {
 	Lightweaver = L["LightweaverCharge1"],
 	MaelstromWeapon = L["Maelstrom1"],
 	Runes = L["Rune1"],
+	Shatter = L["Shatter1"],
 	SoulFragments = L["SoulFragment1"],
 	SoulShards = L["SoulShard1"],
 	TipOfTheSpear = L["TipOfTheSpear1"],
@@ -351,6 +358,41 @@ TRB.Functions.BarText.VariableRenderType = {
 	UNKNOWN = "unknown",
 }
 
+-- Display groups the bar text variables panel splits its entries into.
+TRB.Functions.BarText.VariableCategory = {
+	STATS = "stats",
+	RESOURCES = "resources",
+	ABILITIES = "abilities",
+	CAST_BAR = "castBar",
+	OTHER = "other",
+	ICONS = "icons",
+}
+
+---Determines which display group a bar text variable belongs to.
+---Icons are their own group; pipe commands fold into Other alongside the miscellaneous values.
+---Every other group comes from the entry's own `category`, declared where the variable is defined:
+---GetCommonValues stamps the shared entries, each spec's FillBarTextVariables tags its own.
+---@param entry table
+---@param sectionKey string
+---@return string
+function TRB.Functions.BarText:GetVariableCategory(entry, sectionKey)
+	if sectionKey == "icons" then
+		return self.VariableCategory.ICONS
+	elseif sectionKey == "pipe" then
+		return self.VariableCategory.OTHER
+	end
+
+	entry = entry or {}
+	if type(entry.category) == "string" and entry.category ~= "" then
+		return entry.category
+	end
+
+	return self.VariableCategory.ABILITIES
+end
+
+-- Health only. Everything else is decided per spec: the same variable name can be secret in one
+-- spec and plain in another (Vengeance reads Soul Fragments from GetSpellCastCount, Devourer counts
+-- them itself), so resource flags belong in each spec's FillBarTextVariables list, not here.
 local defaultSecretBarTextVariables = {
 	["$health"] = true,
 	["$healthMax"] = true,
@@ -452,6 +494,16 @@ local function InferBarTextVariableBooleanCheck(variable, sectionKey, entry, log
 		string.match(variableName, "remainingstacks$") ~= nil or string.match(variableName, "extensionsremaining$") ~= nil
 end
 
+---Normalizes an entry's declared Cooldown Manager reliance, dropping unrecognized values.
+---@param entry table
+---@return string? # nil when the variable declares no reliance
+local function GetBarTextVariableCdmDependency(entry)
+	if entry.cdm == TRB.Data.constants.cdmDependency.REQUIRED then
+		return entry.cdm
+	end
+	return nil
+end
+
 ---@param entry table
 ---@param sectionKey string
 ---@return table
@@ -459,10 +511,17 @@ function TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
 	entry = entry or {}
 	sectionKey = sectionKey or "values"
 
+	local secret = entry.secret == true or defaultSecretBarTextVariables[entry.variable] == true
 	local logicType = InferBarTextVariableLogicType(entry.variable, sectionKey, entry)
+
+	-- Comparison operators need a real value in lookupLogic. Icons and pipe commands never write one,
+	-- and secret variables write either nothing or a presence boolean -- ResolveConditionalValues also
+	-- scrubs any secret that does land there to false, so comparing against one can never succeed.
+	-- Booleans compare fine against their "true"/"false" literal, which is why they are not excluded.
 	local comparisonUsable = entry.comparisonUsable
 	if comparisonUsable == nil then
-		comparisonUsable = logicType == self.VariableLogicType.NUMBER or logicType == self.VariableLogicType.INTEGER
+		comparisonUsable = (not secret) and logicType ~= self.VariableLogicType.NONE and
+			logicType ~= self.VariableLogicType.UNKNOWN
 	end
 
 	local booleanCheck = InferBarTextVariableBooleanCheck(entry.variable, sectionKey, entry, logicType)
@@ -473,9 +532,8 @@ function TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
 			renderType = self.VariableRenderType.ICON
 		elseif sectionKey == "pipe" then
 			renderType = self.VariableRenderType.COMMAND
-		elseif entry.logicOnly == true or entry.renderText == false then
-			renderType = self.VariableRenderType.LOGIC_ONLY
-		elseif logicType == self.VariableLogicType.BOOLEAN and entry.variable ~= "$inCombat" then
+		-- Booleans render nothing unless the entry declares otherwise, so they default to logic-only.
+		elseif entry.logicOnly == true or entry.renderText == false or logicType == self.VariableLogicType.BOOLEAN then
 			renderType = self.VariableRenderType.LOGIC_ONLY
 		else
 			renderType = self.VariableRenderType.TEXT
@@ -483,12 +541,13 @@ function TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
 	end
 
 	return {
-		secret = entry.secret == true or defaultSecretBarTextVariables[entry.variable] == true,
+		secret = secret,
 		logicType = logicType,
 		comparisonUsable = comparisonUsable == true,
 		booleanCheck = booleanCheck == true,
 		logicOnly = renderType == self.VariableRenderType.LOGIC_ONLY,
 		renderType = renderType,
+		cdm = GetBarTextVariableCdmDependency(entry),
 	}
 end
 
@@ -496,68 +555,98 @@ end
 ---@param additionalValues table|nil Optional array of spec-specific value entries to append
 ---@return table # Combined values table
 function TRB.Functions.BarText:GetCommonValues(additionalValues)
+	local logicTypes = self.VariableLogicType
+	local renderTypes = self.VariableRenderType
 	local values = {
+		-- $gcd is the one stat here that is not secret: it comes from the cached GCD duration rather
+		-- than haste math, precisely so it stays usable in comparisons (see UpdateSecondaryStatsSnapshot).
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
+		-- Secondary stats: UnitSpellHaste/GetCritChance/GetMasteryEffect/GetCombatRating(Bonus) are secret.
+		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false, secret = true },
+		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false, secret = true },
+		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false, secret = true },
+		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false, secret = true },
+		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false, secret = true },
+		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false, secret = true },
+		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false, secret = true },
+		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false, secret = true },
+		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false, secret = true },
+		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false, secret = true },
+		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false, secret = true },
+		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false, secret = true },
+		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false, secret = true },
+		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false, secret = true },
+		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false, secret = true },
+		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false, secret = true },
+		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false, secret = true },
+		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false, secret = true },
 
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
+		-- Primary stats: UnitStat is secret. Whole numbers, so integer rather than the inferred number.
+		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
 
-		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false, secret = true },
-		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false, secret = true },
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
 		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false, secret = true },
-		{ variable = "$absorb", description = L["BarTextVariable_absorb"], printInSettings = true, color = false, secret = true },
-		{ variable = "$incomingHeal", description = L["BarTextVariable_incomingHeal"], printInSettings = true, color = false, secret = true },
-		{ variable = "$healAbsorb", description = L["BarTextVariable_healAbsorb"], printInSettings = true, color = false, secret = true },
+		{ variable = "$absorb", description = L["BarTextVariable_absorb"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$incomingHeal", description = L["BarTextVariable_incomingHeal"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$healAbsorb", description = L["BarTextVariable_healAbsorb"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
 
-		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
-		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false },
+		-- Booleans default to logic-only (they'd render nothing); this one reads out as "true"/"false"
+		-- text, so both types are stated rather than inferred.
+		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT },
+		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false, category = self.VariableCategory.OTHER },
 
-		{ variable = "$castTime", description = L["BarTextVariableCastTime"], printInSettings = true, color = false },
-		{ variable = "$castTimeRemaining", description = L["BarTextVariableCastTimeRemaining"], printInSettings = true, color = false },
-		{ variable = "$castLatency", description = L["BarTextVariableCastLatency"], printInSettings = true, color = false },
-		{ variable = "$castLatencyMs", description = L["BarTextVariableCastLatencyMs"], printInSettings = true, color = false },
-		{ variable = "$castPushback", description = L["BarTextVariableCastPushback"], printInSettings = true, color = false },
-		{ variable = "$castSpellName", description = L["BarTextVariableCastSpellName"], printInSettings = true, color = false },
-		{ variable = "$castSpellId", description = L["BarTextVariableCastSpellId"], printInSettings = true, color = false },
-		-- Booleans default to logic-only (they'd render nothing); these read out as "true"/"false" text like
-		-- $inCombat does, so both types are stated rather than inferred.
-		{ variable = "$castInterruptible", description = L["BarTextVariableCastInterruptible"], printInSettings = true, color = false,
-			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
-		{ variable = "$castUninterruptible", description = L["BarTextVariableCastUninterruptible"], printInSettings = true, color = false,
-			logicType = TRB.Functions.BarText.VariableLogicType.BOOLEAN, renderType = TRB.Functions.BarText.VariableRenderType.TEXT },
+		-- Player cast bar. A bare check gates on the cast being in progress (see playerCastbarVars).
+		-- $castSpellName is the one entry here with no lookupLogic value, so it cannot be compared.
+		{ variable = "$castTime", description = L["BarTextVariableCastTime"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castTimeRemaining", description = L["BarTextVariableCastTimeRemaining"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castLatency", description = L["BarTextVariableCastLatency"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castLatencyMs", description = L["BarTextVariableCastLatencyMs"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castPushback", description = L["BarTextVariableCastPushback"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castSpellName", description = L["BarTextVariableCastSpellName"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true, comparisonUsable = false },
+		{ variable = "$castSpellId", description = L["BarTextVariableCastSpellId"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.INTEGER, booleanCheck = true },
+		{ variable = "$castInterruptible", description = L["BarTextVariableCastInterruptible"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT, booleanCheck = true },
+		{ variable = "$castUninterruptible", description = L["BarTextVariableCastUninterruptible"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT, booleanCheck = true },
 
-		-- Target/Focus cast bars. Values may be secret (enemy casts), so they are display-only.
-		{ variable = "$targetCastingSpellName", description = L["BarTextVariableTargetCastSpellName"], printInSettings = true, color = false, secret = true },
-		{ variable = "$targetCastTime", description = L["BarTextVariableTargetCastTime"], printInSettings = true, color = false, secret = true },
-		{ variable = "$targetCastTimeRemaining", description = L["BarTextVariableTargetCastTimeRemaining"], printInSettings = true, color = false, secret = true },
-		{ variable = "$focusCastingSpellName", description = L["BarTextVariableFocusCastSpellName"], printInSettings = true, color = false, secret = true },
-		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true },
-		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true },
+		-- Target/Focus cast bars. Values may be secret (enemy casts), so they are display-only: nothing
+		-- reaches lookupLogic. A bare check on any of them resolves to "is that unit casting?" instead.
+		{ variable = "$targetCastingSpellName", description = L["BarTextVariableTargetCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+		{ variable = "$targetCastTime", description = L["BarTextVariableTargetCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$targetCastTimeRemaining", description = L["BarTextVariableTargetCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$focusCastingSpellName", description = L["BarTextVariableFocusCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+
+		-- Other Bars timers. A bare check gates on that bar's timer running (see otherBarsVars).
+		-- The GCD's seconds come from a DurationObject whose values are secret in restricted content, so
+		-- those two are display-only. The mirror timers report plain numbers and can be compared.
+		{ variable = "$gcdDuration", description = L["BarTextVariableGcdDuration"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$gcdDurationRemaining", description = L["BarTextVariableGcdDurationRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$fatigueDuration", description = L["BarTextVariableFatigueDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$fatigueDurationRemaining", description = L["BarTextVariableFatigueDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$breathDuration", description = L["BarTextVariableBreathDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$breathDurationRemaining", description = L["BarTextVariableBreathDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
 	}
+	-- Any shared value not explicitly categorized above is a stat.
+	for _, v in ipairs(values) do
+		if v.category == nil then
+			v.category = self.VariableCategory.STATS
+		end
+	end
 	if additionalValues then
 		for _, v in ipairs(additionalValues) do
 			table.insert(values, v)
@@ -1756,12 +1845,99 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	-- them independently of this class-driven (combat/isTracking-gated) refresh.
 	TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 	TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
+	TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
 
 	Global_TwintopResourceBar.resource = Global_TwintopResourceBar.resource or {}
 	Global_TwintopResourceBar.resource.resource = snapshotData.attributes.resource-- or 0
 	Global_TwintopResourceBar.resource.casting = castingAmount
+end
+
+-- Other Bars variable -> bar key. Each bar contributes $<key>Duration and $<key>DurationRemaining.
+local otherBarsVars = {
+	["$gcdDuration"] = "gcd", ["$gcdDurationRemaining"] = "gcd",
+	["$fatigueDuration"] = "fatigue", ["$fatigueDurationRemaining"] = "fatigue",
+	["$breathDuration"] = "breath", ["$breathDurationRemaining"] = "breath",
+	["$feignDeathDuration"] = "feignDeath", ["$feignDeathDurationRemaining"] = "feignDeath",
+}
+
+-- The GCD's seconds ride on a DurationObject and are secret in restricted content, so they are
+-- display-only. The mirror timers come back as plain numbers from GetMirrorTimerProgress, so those
+-- also reach lookupLogic and can be compared in bar text conditionals.
+local otherBarsSecretVars = {
+	["$gcdDuration"] = true, ["$gcdDurationRemaining"] = true,
+}
+
+---Refreshes the Other Bars timer variables ($gcdDuration, $fatigueDurationRemaining, ...). An idle bar
+---renders as an empty string, so a bare {$fatigueDurationRemaining}[...] gate shows nothing while the
+---timer is down. Values are formatted with string.format, which is safe on a secret.
+---
+---The two kinds format differently. The GCD is under two seconds, so it reads as seconds to the
+---configured decimal precision -- and it has no choice: its value is a secret, and mm:ss needs division
+---and subtraction, which a secret does not permit. The mirror timers run for minutes and come back as
+---plain numbers, so they read as mm:ss. `lookupLogic` always carries the raw seconds either way, so
+---conditionals still compare against a number rather than the display string.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
+function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
+	local lookup = TRB.Data.lookup
+	local lookupLogic = TRB.Data.lookupLogic
+
+	---Renders a mirror timer's seconds as mm:ss. Minutes are not capped -- no mirror timer runs an hour,
+	---but a longer one would read 61:xx rather than wrap silently.
+	---@param seconds number
+	---@return string
+	local function FormatMinutesSeconds(seconds)
+		if seconds < 0 then
+			seconds = 0
+		end
+		local wholeSeconds = math.floor(seconds)
+		local minutes = math.floor(wholeSeconds / 60)
+		return string.format("%02d:%02d", minutes, wholeSeconds - (minutes * 60))
+	end
+
+	for _, entry in ipairs(TRB.Functions.OtherBars:GetBars()) do
+		local barKey = entry.key
+		local barSettings = settings and settings.bars and settings.bars[barKey] --[[@as TRB.Classes.Settings.OtherBar?]]
+		-- A spec without this bar's settings doesn't have the bar at all (Feign Death outside Hunter),
+		-- so it gets no lookup entries either.
+		if barSettings ~= nil then
+			local isMirror = entry.kind == "mirror"
+			-- Only the GCD carries durationPrecision; the mirror timers have no decimals to configure.
+			local fmt
+			if not isMirror then
+				fmt = "%." .. barSettings.durationPrecision .. "f"
+			end
+			local totalVar = "$" .. barKey .. "Duration"
+			local remVar = totalVar .. "Remaining"
+			local isSecret = otherBarsSecretVars[totalVar] == true
+
+			-- Default to empty, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
+			-- which is blocked; only nil-checks and string.format are allowed on secrets.
+			lookup[totalVar] = ""
+			lookup[remVar] = ""
+			if not isSecret then
+				lookupLogic[totalVar] = nil
+				lookupLogic[remVar] = nil
+			end
+
+			local remaining, total = TRB.Functions.OtherBars:GetTimerValues(barKey)
+			if remaining ~= nil then
+				lookup[remVar] = isMirror and FormatMinutesSeconds(remaining) or string.format(fmt, remaining)
+				if not isSecret then
+					lookupLogic[remVar] = remaining
+				end
+			end
+			if total ~= nil then
+				lookup[totalVar] = isMirror and FormatMinutesSeconds(total) or string.format(fmt, total)
+				if not isSecret then
+					lookupLogic[totalVar] = total
+				end
+			end
+		end
+	end
 end
 
 -- Static set of always-valid base variables (O(1) lookup instead of if/elseif chain)
@@ -1781,6 +1957,14 @@ local validBaseVars = {
 	["$stam"] = true, ["$stamina"] = true,
 }
 
+-- Player cast bar variables, which no spec wires up itself. A bare {$castTime}[...] shortcircuits to
+-- "$castTime ~= nil" -- is a cast in progress at all -- matching how the Target/Focus ones below behave.
+local playerCastbarVars = {
+	["$castTime"] = true, ["$castTimeRemaining"] = true,
+	["$castLatency"] = true, ["$castLatencyMs"] = true, ["$castPushback"] = true,
+	["$castSpellName"] = true, ["$castSpellId"] = true,
+}
+
 ---Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
 ---@param var string
 ---@return boolean
@@ -1790,6 +1974,22 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	end
 	if var == "$inCombat" or var == "$inCombatTime" then
 		return TRB.Data.character.inCombat == true
+	end
+	if playerCastbarVars[var] then
+		local castbar = TRB.Data.castbar
+		return castbar ~= nil and castbar:IsActive()
+	end
+	-- These two are already booleans that read false when nothing is casting, so they answer for
+	-- themselves rather than gating on the cast the way the timers above do.
+	if var == "$castInterruptible" or var == "$castUninterruptible" then
+		local castbar = TRB.Data.castbar
+		if castbar == nil or not castbar:IsActive() then
+			return false
+		end
+		if var == "$castInterruptible" then
+			return castbar.notInterruptible ~= true
+		end
+		return castbar.notInterruptible == true
 	end
 	-- Target/Focus cast bar variables are secret in display, but in bar text LOGIC they resolve to a
 	-- plain boolean: "is that unit currently casting?" So {$targetCastTimeRemaining}[...] gates on the cast.
@@ -1804,14 +2004,22 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		local model = TRB.Data[castbarModelKey]
 		return model ~= nil and model:IsActive()
 	end
+	-- Other Bars timers resolve, in bar text LOGIC, to "is that bar's timer running", so a bare
+	-- {$breathDurationRemaining}[...] gates on the timer the same way a cast variable gates on a cast.
+	-- The mirror timers additionally reach lookupLogic, so they can be compared as well.
+	local otherBarKey = otherBarsVars[var]
+	if otherBarKey ~= nil then
+		return TRB.Functions.OtherBars:IsBarActive(otherBarKey)
+	end
 	return false
 end
 
--- Bar text variables whose values come from an active cast bar (player $cast* / #casting, and the
--- target/focus $target*|$focus* / #targetCasting|#focusCasting). An active cast bar only needs to force a
--- per-frame bar text refresh when one of THESE is actually referenced by an enabled entry -- otherwise the
--- cast changes nothing the bar text shows, and the normal early-out applies. Keyed by variable/icon name.
-local castbarDrivenVariables = {
+-- Bar text variables whose values come from a self-driven bar: the cast bars (player $cast* / #casting
+-- and the target/focus $target*|$focus* / #targetCasting|#focusCasting) and the Other Bars timers. Those
+-- bars only need to force a per-frame bar text refresh when one of THESE is actually referenced by an
+-- enabled entry -- otherwise a running timer changes nothing the bar text shows and the normal early-out
+-- applies. Keyed by variable/icon name.
+local selfDrivenBarVariables = {
 	-- Player cast bar (see RefreshCastbarLookupData)
 	["$castTime"] = true, ["$castTimeRemaining"] = true, ["$castLatency"] = true, ["$castLatencyMs"] = true,
 	["$castPushback"] = true, ["$castSpellName"] = true, ["$castSpellId"] = true,
@@ -1821,18 +2029,24 @@ local castbarDrivenVariables = {
 	["#targetCasting"] = true,
 	["$focusCastingSpellName"] = true, ["$focusCastTime"] = true, ["$focusCastTimeRemaining"] = true,
 	["#focusCasting"] = true,
+	-- Other Bars timers (see RefreshOtherBarsLookupData)
+	["$gcdDuration"] = true, ["$gcdDurationRemaining"] = true,
+	["$fatigueDuration"] = true, ["$fatigueDurationRemaining"] = true,
+	["$breathDuration"] = true, ["$breathDurationRemaining"] = true,
+	["$feignDeathDuration"] = true, ["$feignDeathDurationRemaining"] = true,
 }
 
----Whether any active cast bar (player/target/focus) drives a variable that an enabled bar text entry
----actually references. This is what justifies bypassing the early-out for a live cast: if nothing on
----screen shows a $cast*/$target*/$focus* value, the cast is irrelevant to bar text. When the active
----variable set hasn't been built yet (nil, e.g. just invalidated), returns true so the caller refreshes
----and rebuilds it rather than skipping a frame's worth of text.
+---Whether any running self-driven bar (the player/target/focus cast bars, or an Other Bars timer)
+---drives a variable that an enabled bar text entry actually references. This is what justifies
+---bypassing the early-out for a live cast or timer: if nothing on screen shows one of those values, it
+---is irrelevant to bar text. When the active variable set hasn't been built yet (nil, e.g. just
+---invalidated), returns true so the caller refreshes and rebuilds it rather than skipping a frame.
 ---@return boolean
-local function HasActiveCastbarVariableInUse()
+local function HasActiveSelfDrivenBarVariableInUse()
 	local anyActive = (TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive())
 		or (TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
 		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())
+		or TRB.Functions.OtherBars:HasActiveTimer()
 	if not anyActive then
 		return false
 	end
@@ -1840,7 +2054,7 @@ local function HasActiveCastbarVariableInUse()
 	if activeVars == nil then
 		return true
 	end
-	for var in pairs(castbarDrivenVariables) do
+	for var in pairs(selfDrivenBarVariables) do
 		if activeVars[var] then
 			return true
 		end
@@ -1890,8 +2104,8 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	-- updating even out of combat / when every other bar is hidden -- BUT only when an enabled bar text
 	-- entry actually references a cast-bar variable. A live cast that no bar text shows is irrelevant here,
 	-- so it no longer forces a full per-frame refresh (the cast bar's own fill/text render independently).
-	local castbarInUse = HasActiveCastbarVariableInUse()
-	if not visibilityRefresh and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not castbarInUse and not TRB.Functions.Class:HasActiveTimers() then
+	local selfDrivenBarInUse = HasActiveSelfDrivenBarVariableInUse()
+	if not visibilityRefresh and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not selfDrivenBarInUse and not TRB.Functions.Class:HasActiveTimers() then
 		return
 	end
 	TRB.Data.lookupDirty = false
@@ -2241,6 +2455,23 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	-- All font strings were just cleared to ""; mark lookup dirty so the next tick
 	-- repaints instead of early-outing (otherwise text stays blank out of combat).
 	TRB.Data.lookupDirty = true
+end
+
+---Returns what a Cooldown Manager fed bar text variable renders when the CDM holds no value for it --
+---the ability was never added to a viewer, or its group is hidden. Distinct from a known zero: the value
+---is unavailable, not absent. The viewer picks the treatment in Global Options; the default is to render
+---nothing, so an untracked ability leaves no debris on the bar.
+---@param zeroText string? # How this variable renders a zero, used by the "zero" treatment. Callers pass
+---                          their own zero rendering so a timer reads "0.0" where a stack count reads "0".
+---@return string
+function TRB.Functions.BarText:UnknownValue(zeroText)
+	local display = TRB.Data.settings.core.cdmUnknownDisplay
+	if display == "questionMarks" then
+		return "??"
+	elseif display == "zero" then
+		return zeroText or "0"
+	end
+	return ""
 end
 
 ---Returns a string formatted time value based on settings for precision

@@ -187,16 +187,17 @@ function TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#lightningBolt", icon = spells.lightningBolt.icon, description = spells.lightningBolt.name, printInSettings = true },
 		{ variable = "#stormkeeper", icon = spells.stormkeeper.icon, description = spells.stormkeeper.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$maelstrom", description = L["ShamanElementalBarTextVariable_maelstrom"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$maelstromMax", description = L["ShamanElementalBarTextVariable_maelstromMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["ShamanElementalBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$maelstrom", description = L["ShamanElementalBarTextVariable_maelstrom"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$maelstromMax", description = L["ShamanElementalBarTextVariable_maelstromMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["ShamanElementalBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$mana", description = L["ShamanElementalBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$manaPercent", description = L["ShamanElementalBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$manaMax", description = L["ShamanElementalBarTextVariable_manaMax"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["ShamanElementalBarTextVariable_mana"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["ShamanElementalBarTextVariable_manaPercent"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["ShamanElementalBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$ascendanceTime", description = L["ShamanElementalBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
 
@@ -262,18 +263,19 @@ function TRB.Classes.Shaman.EnhancementSpells.FillBarTextVariables(specCacheEntr
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["ShamanEnhancementBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["ShamanEnhancementBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["ShamanEnhancementBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["ShamanEnhancementBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["ShamanEnhancementBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["ShamanEnhancementBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		
-		{ variable = "$maelstromWeapon", description = L["ShamanEnhancementBarTextVariable_maelstromWeapon"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$maelstromWeaponMax", description = L["ShamanEnhancementBarTextVariable_maelstromWeaponMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$maelstromWeapon", description = L["ShamanEnhancementBarTextVariable_maelstromWeapon"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$maelstromWeaponMax", description = L["ShamanEnhancementBarTextVariable_maelstromWeaponMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$ascendanceTime", description = L["ShamanEnhancementBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
 	})
@@ -328,14 +330,15 @@ function TRB.Classes.Shaman.RestorationSpells.FillBarTextVariables(specCacheEntr
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["ShamanRestorationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["ShamanRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["ShamanRestorationBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["ShamanRestorationBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["ShamanRestorationBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["ShamanRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["ShamanRestorationBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["ShamanRestorationBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		
 		{ variable = "$ascendanceTime", description = L["ShamanRestorationBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
 	})
@@ -506,3 +509,56 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["shaman_elemental"] = TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["shaman_enhancement"] = TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["shaman_restoration"] = TRB.Classes.Shaman.RestorationSpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("shaman_elemental", {
+		builtIns = {
+			{
+				id = "esReady",
+				label = L["ShamanElementalAudioEarthShockReady"],
+				trigger = L["ShamanElementalAudioTriggerEarthShockReady"],
+				tooltip = L["ShamanElementalAudioCheckboxEarthShockTooltip"],
+			},
+		},
+	})
+
+	TRB.Functions.AudioCues:Register("shaman_enhancement", {
+		counters = {
+			{
+				id = "maelstromWeapon",
+				label = L["ShamanAudioCueSourceMaelstromWeapon"],
+				description = L["ShamanAudioCueSourceMaelstromWeaponDescription"],
+				sliderLabel = L["ShamanMaelstromWeaponThresholdSliderTitle"],
+				defaultName = L["ShamanAudioCueMaelstromWeaponDefaultName"],
+				min = 0,
+				max = 10,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "maelstromWeaponThreshold1", "maelstromWeaponThreshold2" },
+				defaultCues = {
+					{
+						id = "maelstromWeaponThreshold1",
+						name = L["ShamanAudioMaelstromWeaponThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 5,
+					},
+					{
+						id = "maelstromWeaponThreshold2",
+						name = L["ShamanAudioMaelstromWeaponThreshold2"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 10,
+					},
+				},
+			},
+		},
+	})
+end

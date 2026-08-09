@@ -72,10 +72,6 @@ local function FillSpecializationCache()
 
 	specCache.rogue_assassination.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_assassination.snapshotData.attributes.comboPoints = 0
-	specCache.rogue_assassination.snapshotData.audio = {
-		comboPointThreshold1Played = false,
-		comboPointThreshold2Played = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_assassination.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
@@ -144,10 +140,6 @@ local function FillSpecializationCache()
 	specCache.rogue_outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_outlaw.snapshotData.attributes.comboPoints = 0
 	specCache.rogue_outlaw.snapshotData.attributes.coupDeGraceActive = false
-	specCache.rogue_outlaw.snapshotData.audio = {
-		comboPointThreshold1Played = false,
-		comboPointThreshold2Played = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
@@ -182,27 +174,14 @@ local function FillSpecializationCache()
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id] = TRB.Classes.Snapshot:New(spells.rollTheBones, {
 		---@type table<integer, TRB.Classes.Snapshot>
 		buffs = {
-			[spells.broadside.id] = TRB.Classes.Snapshot:New(spells.broadside, {
-				fromCountTheOdds = false
-			}),
-			[spells.buriedTreasure.id] = TRB.Classes.Snapshot:New(spells.buriedTreasure, {
-				fromCountTheOdds = false
-			}),
-			[spells.grandMelee.id] = TRB.Classes.Snapshot:New(spells.grandMelee, {
-				fromCountTheOdds = false
-			}),
-			[spells.ruthlessPrecision.id] = TRB.Classes.Snapshot:New(spells.ruthlessPrecision, {
-				fromCountTheOdds = false
-			}),
-			[spells.skullAndCrossbones.id] = TRB.Classes.Snapshot:New(spells.skullAndCrossbones, {
-				fromCountTheOdds = false
-			}),
-			[spells.trueBearing.id] =TRB.Classes.Snapshot:New(spells.trueBearing, {
-				fromCountTheOdds = false
-			})
+			[spells.broadside.id] = TRB.Classes.Snapshot:New(spells.broadside),
+			[spells.buriedTreasure.id] = TRB.Classes.Snapshot:New(spells.buriedTreasure),
+			[spells.grandMelee.id] = TRB.Classes.Snapshot:New(spells.grandMelee),
+			[spells.ruthlessPrecision.id] = TRB.Classes.Snapshot:New(spells.ruthlessPrecision),
+			[spells.skullAndCrossbones.id] = TRB.Classes.Snapshot:New(spells.skullAndCrossbones),
+			[spells.trueBearing.id] =TRB.Classes.Snapshot:New(spells.trueBearing)
 		},
 		count = 0,
-		temporaryCount = 0,
 		goodBuffs = false
 	})
 	---@type TRB.Classes.Snapshot
@@ -254,10 +233,6 @@ local function FillSpecializationCache()
 	specCache.rogue_subtlety.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_subtlety.snapshotData.attributes.comboPoints = 0
 	specCache.rogue_subtlety.snapshotData.attributes.coupDeGraceActive = false
-	specCache.rogue_subtlety.snapshotData.audio = {
-		comboPointThreshold1Played = false,
-		comboPointThreshold2Played = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_subtlety.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
@@ -434,7 +409,6 @@ local function ConstructResourceBar(settings)
 		barGroups.secondary:Show()
 		
 		-- Explicitly set textures and colors for each Combo Point node
-		local frameLevels = TRB.Data.constants.frameLevels
 		for i = 1, maxComboPoints do
 			local node = barGroups.secondary:GetNode(i)
 			if node then
@@ -447,7 +421,7 @@ local function ConstructResourceBar(settings)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 				TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
-				node:SetFrameLevel(frameLevels.comboPoint)
+				node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 			end
 		end
 	end
@@ -734,23 +708,17 @@ local function UpdateRollTheBones()
 	local currentTime = GetTime()
 			
 	local rollTheBonesCount = 0
-	local rollTheBonesTemporaryCount = 0
 	local highestRemaining = 0
 	for _, v in pairs(buffs) do
 		local remaining = v.buff:GetRemainingTime(currentTime)
 		if v.buff.isActive then
-			if v.attributes.fromCountTheOdds then
-				rollTheBonesTemporaryCount = rollTheBonesTemporaryCount + 1
-			else
-				rollTheBonesCount = rollTheBonesCount + 1
-				if remaining > highestRemaining then
-					highestRemaining = remaining
-				end
+			rollTheBonesCount = rollTheBonesCount + 1
+			if remaining > highestRemaining then
+				highestRemaining = remaining
 			end
 		end
 	end
 	rollTheBones.attributes.count = rollTheBonesCount
-	rollTheBones.attributes.temporaryCount = rollTheBonesTemporaryCount
 	rollTheBones.attributes.remaining = highestRemaining
 
 	if rollTheBones.attributes.count >= 2 or buffs[spells.broadside.id].buff.isActive or buffs[spells.trueBearing.id].buff.isActive then
@@ -792,42 +760,11 @@ local function UpdateSnapshot_Subtlety()
 	local currentTime = GetTime()]]
 end
 
----Processes combo point threshold audio cues for any Rogue spec
----@param specSettings table The spec-specific settings table containing audio thresholds
+---Processes Combo Point threshold audio cues for any Rogue spec
+---@param specSettings table The spec-specific settings table containing audio cues
 local function ProcessComboPointAudioCues(specSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local coreSettings = TRB.Data.settings.core
-	local currentResource2 = snapshotData.attributes.resource2
-	local threshold1 = specSettings.audio.comboPointThreshold1
-	local threshold2 = specSettings.audio.comboPointThreshold2
-	local threshold1Value = threshold1.configuration.thresholdValue
-	local threshold2Value = threshold2.configuration.thresholdValue
-
-	local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.comboPointThreshold1Played and currentResource2 >= threshold1Value
-	local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.comboPointThreshold2Played and currentResource2 >= threshold2Value
-
-	if threshold1ShouldFire and threshold2ShouldFire then
-		snapshotData.audio.comboPointThreshold1Played = true
-		snapshotData.audio.comboPointThreshold2Played = true
-		if threshold2Value > threshold1Value then
-			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-		else
-			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-		end
-	elseif threshold2ShouldFire then
-		snapshotData.audio.comboPointThreshold2Played = true
-		PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-	elseif threshold1ShouldFire then
-		snapshotData.audio.comboPointThreshold1Played = true
-		PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-	end
-
-	if currentResource2 < threshold1Value then
-		snapshotData.audio.comboPointThreshold1Played = false
-	end
-	if currentResource2 < threshold2Value then
-		snapshotData.audio.comboPointThreshold2Played = false
-	end
+	TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
 end
 
 local function ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap)
@@ -2132,6 +2069,11 @@ eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	-- Wrong game version for this build: halt before anything reads or writes settings.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
+
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -2297,7 +2239,6 @@ function TRB.Functions.Class:CheckCharacter()
 				barGroups.secondary:SetMaxNodes(maxComboPoints)
 				Bar:ApplySecondaryBarGroupLayout(sharedSettings, barGroups, maxComboPoints)
 				-- Apply textures and colors to any newly created nodes
-				local frameLevels = TRB.Data.constants.frameLevels
 				for i = 1, maxComboPoints do
 					local node = barGroups.secondary:GetNode(i)
 					if node then
@@ -2310,7 +2251,7 @@ function TRB.Functions.Class:CheckCharacter()
 						node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 						node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
 						TRB.Functions.Color:ApplyFillColor(node, sharedSettings.colors.comboPoints.base)
-						node:SetFrameLevel(frameLevels.comboPoint)
+						node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 					end
 				end
 			end

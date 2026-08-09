@@ -285,30 +285,6 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			blindside={
-				name = L["RogueAssassinationAudioBlindsideProc"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
-			comboPointThreshold1={
-				name = L["RogueAudioComboPointThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 3
-				}
-			},
-			comboPointThreshold2={
-				name = L["RogueAudioComboPointThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 5
-				}
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -602,30 +578,6 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			opportunity={
-				name = L["RogueOutlawAudioOpportunityProc"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"]
-			},
-			comboPointThreshold1={
-				name = L["RogueAudioComboPointThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 3
-				}
-			},
-			comboPointThreshold2={
-				name = L["RogueAudioComboPointThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 5
-				}
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -917,24 +869,6 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			comboPointThreshold1={
-				name = L["RogueAudioComboPointThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 3
-				}
-			},
-			comboPointThreshold2={
-				name = L["RogueAudioComboPointThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 5
-				}
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -1415,51 +1349,6 @@ local function AssassinationConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 1, yCoord)
 end
 
-local function AssassinationConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 4
-	local specId = 1
-	local spec = TRB.Data.settings.rogue.assassination
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.rogue_assassination
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "comboPointThreshold1", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold1"], L["RogueAudioCheckboxComboPointThreshold1Tooltip"])
-
-	controls.comboPointThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold1"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.comboPointThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["comboPointThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "comboPointThreshold2", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold2"], L["RogueAudioCheckboxComboPointThreshold2Tooltip"])
-
-	controls.comboPointThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold2"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.comboPointThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["comboPointThreshold2"].configuration.thresholdValue = value
-	end)
-end
-
 local function AssassinationConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1537,17 +1426,17 @@ local function AssassinationConstructOptionsPanel(cache)
 		"rogue", "assassination")
 
 	local tabDefinitions = {
-		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, AssassinationConstructEnergyBarPanel },
-		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, AssassinationConstructComboPointsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AssassinationConstructHealthBarPanel },
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, AssassinationConstructEnergyBarPanel, visibilityKey = "primary" },
+		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, AssassinationConstructComboPointsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AssassinationConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, AssassinationConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, AssassinationConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, AssassinationConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, AssassinationConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, AssassinationConstructThresholdListPanel, true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("rogue", "assassination", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("rogue", "assassination", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, AssassinationConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, AssassinationConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) AssassinationConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, AssassinationConstructResetDefaultsPanel },
 	}
@@ -2037,51 +1926,6 @@ local function OutlawConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 2, yCoord)
 end
 
-local function OutlawConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 4
-	local specId = 2
-	local spec = TRB.Data.settings.rogue.outlaw
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.rogue_outlaw
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "comboPointThreshold1", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold1"], L["RogueAudioCheckboxComboPointThreshold1Tooltip"])
-
-	controls.comboPointThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold1"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.comboPointThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["comboPointThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "comboPointThreshold2", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold2"], L["RogueAudioCheckboxComboPointThreshold2Tooltip"])
-
-	controls.comboPointThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold2"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.comboPointThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["comboPointThreshold2"].configuration.thresholdValue = value
-	end)
-end
-
 local function OutlawConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2159,17 +2003,17 @@ local function OutlawConstructOptionsPanel(cache)
 		"rogue", "outlaw")
 
 	local tabDefinitions = {
-		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, OutlawConstructEnergyBarPanel },
-		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, OutlawConstructComboPointsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, OutlawConstructHealthBarPanel },
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, OutlawConstructEnergyBarPanel, visibilityKey = "primary" },
+		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, OutlawConstructComboPointsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, OutlawConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, OutlawConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, OutlawConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, OutlawConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, OutlawConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, OutlawConstructThresholdListPanel, true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("rogue", "outlaw", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("rogue", "outlaw", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, OutlawConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, OutlawConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) OutlawConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, OutlawConstructResetDefaultsPanel },
 	}
@@ -2644,51 +2488,6 @@ local function SubtletyConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 4, 3, yCoord)
 end
 
-local function SubtletyConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 4
-	local specId = 3
-	local spec = TRB.Data.settings.rogue.subtlety
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.rogue_subtlety
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "comboPointThreshold1", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold1"], L["RogueAudioCheckboxComboPointThreshold1Tooltip"])
-
-	controls.comboPointThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold1"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.comboPointThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["comboPointThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "comboPointThreshold2", spec, classId, specId, yCoord, L["RogueAudioCheckboxComboPointThreshold2"], L["RogueAudioCheckboxComboPointThreshold2Tooltip"])
-
-	controls.comboPointThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["RogueComboPointThresholdSliderTitle"], 0, 7, spec.audio["comboPointThreshold2"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.comboPointThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["comboPointThreshold2"].configuration.thresholdValue = value
-	end)
-end
-
 local function SubtletyConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2766,17 +2565,17 @@ local function SubtletyConstructOptionsPanel(cache)
 		"rogue", "subtlety")
 
 	local tabDefinitions = {
-		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, SubtletyConstructEnergyBarPanel },
-		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, SubtletyConstructComboPointsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, SubtletyConstructHealthBarPanel },
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, SubtletyConstructEnergyBarPanel, visibilityKey = "primary" },
+		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, SubtletyConstructComboPointsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, SubtletyConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, SubtletyConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, SubtletyConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, SubtletyConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.xlarge, SubtletyConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, SubtletyConstructThresholdListPanel, true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("rogue", "subtlety", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("rogue", "subtlety", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, SubtletyConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, SubtletyConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) SubtletyConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, SubtletyConstructResetDefaultsPanel },
 	}

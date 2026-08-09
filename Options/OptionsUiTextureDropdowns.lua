@@ -215,6 +215,10 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(contr
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendCastbar(customBars)
 	-- Target and Focus Cast Bars are likewise all-spec; include them in every texture dropdown set.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendTargetFocusCastbars(customBars)
+	-- Other Bars (GCD + mirror timers) too. This callback doesn't know which class's panel it is serving,
+	-- so it takes every key regardless of scope and the sync loop below skips the ones this panel has no
+	-- dropdown for -- otherwise texture lock would quietly pass over the Hunter-only Feign Death bar.
+	TRB.Classes.BarTypeRegistry:GetInstance():AppendOtherBars(customBars, nil, true)
 
 	textures[variable.."Bar"] = newValue
 	textures[variable.."BarName"] = newName
@@ -245,9 +249,13 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(contr
 		-- Sync custom bar textures
 		for _, barTypeDef in ipairs(customBars) do
 			local barKey = barTypeDef.key .. "Bar"
-			textures[barKey] = newValue
-			textures[barKey .. "Name"] = newName
-			RefreshLsmDropdown(controls[barKey], newName)
+			-- Some all-spec bars are scoped out of a given panel (Feign Death is Hunter-only), so only
+			-- sync the ones this panel actually built a dropdown for.
+			if controls[barKey] ~= nil then
+				textures[barKey] = newValue
+				textures[barKey .. "Name"] = newName
+				RefreshLsmDropdown(controls[barKey], newName)
+			end
 		end
 
 		textures.healthBar = newValue

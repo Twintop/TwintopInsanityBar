@@ -273,6 +273,38 @@ function TRB.Functions.BarVisibility:MarkClean()
 	self.lastAppliedToken = self.dirtyToken
 end
 
+---Discards the applied show/alpha state of every bar group so the next ProcessBars pass
+---rebuilds it from scratch, then marks visibility dirty.
+---
+---ProcessBars memoizes what it has already applied: it only calls Show()/ShowNodes() on a
+---hidden→visible transition, SetTargetAlpha() no-ops when the target is unchanged, and frame
+---alpha is only written while a bar is showing. Layout passes mutate that same state
+---independently (ApplyBarGroupsLayout shows the primary group and its node directly, and
+---ConstructAnchoredBarGroup shows or hides anchored/custom groups plus their nodes). After a
+---bar flips off and back on, those two views disagree: the group reads as already visible, so
+---Phase 3 skips ShowNodes() even though the hide pass called HideAllNodes(), leaving a bar that
+---occupies its layout space but draws nothing until an unrelated event marks visibility dirty.
+---
+---Hide() is used rather than clearing isVisible directly so the flag and the frame stay in
+---agreement -- if ProcessBars then resolves the bar as hidden, it simply stays hidden.
+function TRB.Functions.BarVisibility:InvalidateAppliedState()
+	local barGroups = TRB.Frames.barGroups
+	if barGroups ~= nil then
+		for key, group in pairs(barGroups) do
+			-- The cast bars, the GCD bar and the mirror timers render themselves from live state and are
+			-- not ProcessBars entries, so nothing would ever show them again if they were torn down here.
+			local isSelfDriven = TRB.Classes.BarTypeRegistry:IsSelfDriven(key)
+			if not isSelfDriven and type(group) == "table" and group.Hide ~= nil and group.containerFrame ~= nil then
+				group:Hide()
+				-- Defeats SetTargetAlpha's no-op guard so Phase 3 re-applies frame alpha.
+				group.targetAlpha = -1
+			end
+		end
+	end
+
+	self:MarkDirty()
+end
+
 ---Evaluates whether a bar has any configured hard-hide condition active.
 ---@param context TRB.Classes.BarVisibilityContext # The shared environment snapshot
 ---@param entry TRB.Classes.BarVisibilityEntry # The bar entry to evaluate
@@ -801,6 +833,12 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	-- Same for the target/focus cast bars, but for as long as either is on screen (cast, fade-out, or idle
 	-- Always Show) -- gating on IsActive() blanked their anchored bar text for every fade-out.
 	if not anyShowing and TRB.Functions.TargetCastbar:IsRendering() then
+		anyShowing = true
+	end
+	-- And for the Other Bars timers. This one matters most: Fatigue and Breath run out of combat, which
+	-- is exactly when every other bar is hidden and isTracking would otherwise be false -- taking their
+	-- anchored bar text down with it.
+	if not anyShowing and TRB.Functions.OtherBars:HasActiveTimer() then
 		anyShowing = true
 	end
 

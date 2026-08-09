@@ -25,6 +25,35 @@ local function GetCastbarSpecMap()
 	return castbarSpecByNamePrefix
 end
 
+-- Every bar tab built so far, so one visibility change can recolour labels across every panel at
+-- once. Panels are built lazily and never torn down, so this only ever grows to the tabs in use.
+local barTabs = {}
+
+---Applies a tab's label font, swapping in the red variant when the tab's bar is disabled.
+---The font object is what carries the label colour, so this must run after every font swap.
+---@param tab Button # The tab button
+---@param isActive boolean # True when this is the tab group's currently selected tab
+function TRB.Functions.OptionsUi.Tabs:ApplyTabLabelFont(tab, isActive)
+	local fonts = TRB.Options.fonts.options
+	if tab.isBarDisabled then
+		tab.Text:SetFontObject(isActive and fonts.tabRedHighlightSmall or fonts.tabRedSmall)
+	else
+		tab.Text:SetFontObject(isActive and fonts.tabHighlightSmall or fonts.tabNormalSmall)
+	end
+end
+
+---Recolours every bar tab label built so far from the visibility settings currently in effect,
+---so a disabled bar is obvious from the tab strip without opening the tab.
+function TRB.Functions.OptionsUi.Tabs:RefreshBarTabStates()
+	for _, entry in ipairs(barTabs) do
+		local visSettings = TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(entry.classId, entry.specId, entry.visibilityKey)
+		---@diagnostic disable-next-line: inject-field
+		entry.tab.isBarDisabled = visSettings ~= nil and visSettings.neverShow == true
+		local parent = entry.tab:GetParent()
+		self:ApplyTabLabelFont(entry.tab, parent ~= nil and parent.lastTabId == entry.tab.id)
+	end
+end
+
 ---Creates a scroll frame container with a child frame for scrollable options content.
 ---@param name string # Global frame name for the scroll frame
 ---@param parent Frame # The parent frame
@@ -58,8 +87,9 @@ end
 ---@param width number? # Width of the container (nil to fill parent width)
 ---@param height number? # Height of the container (nil to fill parent height)
 ---@param isManualScrollFrame boolean? # If true, skips creating the embedded scroll frame
+---@param headerBuilder fun(container: Frame): Frame|nil # Optional builder for a pinned header above the scroll frame
 ---@return Frame|BackdropTemplate
-function TRB.Functions.OptionsUi.Tabs:CreateTabFrameContainer(name, parent, width, height, isManualScrollFrame)
+function TRB.Functions.OptionsUi.Tabs:CreateTabFrameContainer(name, parent, width, height, isManualScrollFrame, headerBuilder)
 	local fillParent = (width == nil and height == nil)
 	width = width or 652
 	height = height or 523
@@ -88,10 +118,18 @@ function TRB.Functions.OptionsUi.Tabs:CreateTabFrameContainer(name, parent, widt
 		cf:SetPoint("TOPLEFT", 0, 0)
 	end
 
+	-- A pinned header sits above the scroll frame so it stays put while the tab's content scrolls.
+	local headerReservedHeight = 0
+	if headerBuilder then
+		---@diagnostic disable-next-line: inject-field
+		cf.visibilityHeader = headerBuilder(cf)
+		headerReservedHeight = TRB.Functions.OptionsUi.Visibility.barTabHeaderReservedHeight
+	end
+
 	if not isManualScrollFrame then
 		---@diagnostic disable-next-line: inject-field
-		cf.scrollFrame = TRB.Functions.OptionsUi.Tabs:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
-		cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
+		cf.scrollFrame = TRB.Functions.OptionsUi.Tabs:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8 - headerReservedHeight)
+		cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5 - headerReservedHeight)
 		if fillParent then
 			cf.scrollFrame:SetPoint("BOTTOMRIGHT", cf, "BOTTOMRIGHT", -25, 5)
 			-- Keep scrollChild width in sync with the resolved scrollFrame width
@@ -146,7 +184,7 @@ function TRB.Functions.OptionsUi.Tabs.SwitchTab(self, tabId)
 	if parent.lastTab then
 		parent.lastTab:Hide()
 		local lastTab = parent.tabs[parent.lastTabId]
-		lastTab.Text:SetFontObject(TRB.Options.fonts.options.tabNormalSmall)
+		TRB.Functions.OptionsUi.Tabs:ApplyTabLabelFont(lastTab, false)
 		lastTab:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
 		lastTab.bottomCover:SetColorTexture(0.1, 0.1, 0.1, 0.8)
 	end
@@ -159,7 +197,7 @@ function TRB.Functions.OptionsUi.Tabs.SwitchTab(self, tabId)
 
 	parent.tabsheets[tabId]:Show()
 	local activeTab = parent.tabs[tabId]
-	activeTab.Text:SetFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+	TRB.Functions.OptionsUi.Tabs:ApplyTabLabelFont(activeTab, true)
 	activeTab:SetBackdropColor(0.3, 0.3, 0.3, 0.9)
 	activeTab.bottomCover:SetColorTexture(0.5, 0.5, 0.5, 1.0)
 	parent.lastTab = parent.tabsheets[tabId]
@@ -308,25 +346,62 @@ function TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(parent, classId,
 	local innerTabs = {
 		{ "castbar", TRB.Localization["ResourcePlayerCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, classId, specId, TRB.Functions.OptionsUi.Castbar:SpecUsesEmpower(classId, specId))
-		end },
+		end, visibilityKey = "castbar" },
 		{ "target", TRB.Localization["ResourceTargetCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, classId, specId, "targetCastbar")
-		end },
+		end, visibilityKey = "targetCastbar" },
 		{ "focus", TRB.Localization["ResourceFocusCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, classId, specId, "focusCastbar")
-		end },
+		end, visibilityKey = "focusCastbar" },
 	}
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10)
+	-- The synthesized namePrefix never matches the castbar spec map, so the scope is passed explicitly.
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
+end
+
+---Builds the nested Other Bars sub-tab group (GCD / Fatigue / Breath / Death / Feign Death) inside a
+---spec's Other Bars tab. Feign Death is only offered to Hunters. Structured exactly like the Cast Bar
+---inner group: a manual (non-scroll) container whose sub-tabs each supply their own scroll frame.
+---@param parent Frame # The Other Bars tab's manual container frame
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(parent, classId, specId)
+	if parent == nil then
+		return
+	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = "OtherBarsInner_" .. tostring(className) .. "_" .. tostring(specName)
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local innerTabs = {}
+	for _, barKey in ipairs(registry:GetOtherBarKeys(classId)) do
+		local barDef = registry:Get(barKey)
+		if barDef ~= nil then
+			local capturedKey = barKey
+			innerTabs[#innerTabs + 1] = {
+				capturedKey,
+				barDef.displayName,
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.OtherBars:ConstructPanel(scrollChild, classId, specId, capturedKey)
+				end,
+				visibilityKey = capturedKey,
+			}
+		end
+	end
+	if #innerTabs == 0 then
+		return
+	end
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
 end
 
 ---Builds a dynamic set of tabs and tabsheets for an options panel.
 ---Tabs automatically wrap to multiple rows when they would exceed the parent frame's width.
 ---@param parent Frame The parent frame to attach tabs to (e.g., the spec display panel)
 ---@param namePrefix string The naming prefix (e.g., "Priest_Shadow")
----@param tabDefinitions table[] Ordered list of tab definitions: { [1]=key:string, [2]=label:string, [3]=width:number, [4]=constructor:function(scrollChild) }
+---@param tabDefinitions table[] Ordered list of tab definitions: { [1]=key:string, [2]=label:string, [3]=width:number, [4]=constructor:function(scrollChild) }. A named `visibilityKey` field marks a bar tab and gives it a pinned enable/disable header.
 ---@param yCoord number The starting y coordinate for the tabs row. Will be adjusted internally.
+---@param specContext table? Explicit { classId, specId } scope; only needed when namePrefix is synthesized (e.g. the castbar sub-tab group)
 ---@return number yCoord The adjusted yCoord after tabs are placed (for further content below if needed)
-function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord)
+function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord, specContext)
 	local optionsUiFuncs = TRB.Functions.OptionsUi.Tabs
 
 	-- Normalize: support both positional { key, label, width, constructor, isManualScrollFrame } and named
@@ -367,6 +442,34 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 				function(scrollChild)
 					-- Nested sub-tabs (player / target / focus), each scoped to this spec.
 					TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(scrollChild, cId, sId)
+				end,
+				true -- manual container: the inner sub-tabs provide their own scroll frames
+			})
+		end
+
+		-- Other Bars sits immediately after Cast Bars, structured the same way.
+		local hasOtherBars = false
+		for _, def in ipairs(tabDefinitions) do
+			if def[1] == "otherBars" then
+				hasOtherBars = true
+				break
+			end
+		end
+		if not hasOtherBars then
+			local cId, sId = castbarSpec.classId, castbarSpec.specId
+			local insertIndex = #tabDefinitions + 1
+			for i, def in ipairs(tabDefinitions) do
+				if def[1] == "castbar" then
+					insertIndex = i + 1
+					break
+				end
+			end
+			table.insert(tabDefinitions, insertIndex, {
+				"otherBars",
+				TRB.Localization["TabOtherBars"],
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(scrollChild, cId, sId)
 				end,
 				true -- manual container: the inner sub-tabs provide their own scroll frames
 			})
@@ -440,14 +543,40 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 	-- Offset yCoord past all tab rows
 	yCoord = yCoord - (numRows * tabRowHeight) + ((numRows) * borderOverlap)
 
+	-- Resolve which class/spec owns this tab group so bar tabs can render their visibility header.
+	-- Spec panels resolve from namePrefix; callers with a synthesized prefix pass their scope
+	-- explicitly. No match means global scope (the Global Options and Castbar panels).
+	local scope = specContext or GetCastbarSpecMap()[namePrefix]
+	local scopeClassId = scope and scope.classId or nil
+	local scopeSpecId = scope and scope.specId or nil
+
 	for _, def in ipairs(tabDefinitions) do
 		local key = def[1]
 		local isManual = def[5] or def.isManualScrollFrame
-		tabsheets[key] = optionsUiFuncs:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel_" .. key, parent, nil, nil, isManual)
+		-- A visibilityKey marks this tab as a bar tab, which pins an enable/disable header on top.
+		local visibilityKey = def.visibilityKey
+		local headerBuilder = nil
+		if visibilityKey ~= nil then
+			headerBuilder = function(containerFrame)
+				return TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containerFrame, namePrefix, scopeClassId, scopeSpecId, visibilityKey)
+			end
+			barTabs[#barTabs + 1] = { tab = tabs[key], classId = scopeClassId, specId = scopeSpecId, visibilityKey = visibilityKey }
+		end
+		tabsheets[key] = optionsUiFuncs:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel_" .. key, parent, nil, nil, isManual, headerBuilder)
 		tabsheets[key]:Hide()
 		tabsheets[key]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		---@diagnostic disable-next-line: inject-field
 		tabsheets[key].constructorFrame = (not isManual and tabsheets[key].scrollFrame) and tabsheets[key].scrollFrame.scrollChild or tabsheets[key]
+
+		-- Resync the header whenever the tab becomes visible, so visibility changes made on the
+		-- Visibility tab (or on the Global panel) are reflected without any cross-tab broadcast.
+		if headerBuilder ~= nil then
+			tabsheets[key]:HookScript("OnShow", function(self)
+				if self.visibilityHeader ~= nil and self.visibilityHeader.Refresh ~= nil then
+					self.visibilityHeader:Refresh()
+				end
+			end)
+		end
 	end
 
 	-- Show the first tab by default
@@ -455,7 +584,6 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 	tabsheets[firstKey]:Show()
 	---@diagnostic disable-next-line: inject-field
 	tabsheets[firstKey].selected = true
-	tabs[firstKey].Text:SetFontObject(TRB.Options.fonts.options.tabHighlightSmall)
 	tabs[firstKey]:SetBackdropColor(0.3, 0.3, 0.3, 0.9)
 	tabs[firstKey].bottomCover:SetColorTexture(0.5, 0.5, 0.5, 1.0)
 ---@diagnostic disable-next-line: inject-field
@@ -468,6 +596,16 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 	parent.lastTabId = firstKey
 ---@diagnostic disable-next-line: inject-field
 	parent.tabOrder = tabOrder
+
+	-- Deferred until lastTabId exists, since both calls resolve the active tab from it.
+	TRB.Functions.OptionsUi.Tabs:ApplyTabLabelFont(tabs[firstKey], true)
+	TRB.Functions.OptionsUi.Tabs:RefreshBarTabStates()
+
+	-- Panels are built once and kept, so a profile import or a change made on another panel can
+	-- leave these labels stale. Resync them whenever the panel comes back into view.
+	parent:HookScript("OnShow", function()
+		TRB.Functions.OptionsUi.Tabs:RefreshBarTabStates()
+	end)
 
 	-- Store constructors for lazy tab construction.
 	-- Only the first (visible) tab is built eagerly; the rest are deferred until first shown.

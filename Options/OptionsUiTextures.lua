@@ -47,6 +47,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendCastbar(customBars)
 	-- Target and Focus Cast Bars are likewise all-spec; include them in every textures panel.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendTargetFocusCastbars(customBars)
+	-- Other Bars (GCD + mirror timers) too, scoped so Feign Death only appears for Hunters.
+	TRB.Classes.BarTypeRegistry:GetInstance():AppendOtherBars(customBars, classId)
 
 	if secondaryResourceString == nil then
 		secondaryResourceString = L["ResourceComboPoints"]

@@ -385,6 +385,40 @@ if locale == "enGB" then
     L["TargetCastbarClassColorTooltip"] = "When checked, the cast bar fill uses the class colour of your current %s for every cast type, including empowered and uninterruptible casts, whenever that %s is an enemy player. An active colour indicator still takes priority."
     L["TargetCastbarClassColorFriendlyTooltip"] = "When checked, a friendly player %s also recolours the cast bar with their class colour, not just enemy players."
 
+    -- Cast bar uninterruptible shield
     L["BarIconShieldColor"] = "Shield Colour"
     L["BarIconShieldCustomColor"] = "Custom Shield Colour"
+    
+    -- Druid Feral Midnight Season 2 set bonus (Halazzi's Fury)
+    L["DruidFeralIndicatorHalazzisFuryTooltip"] = "Changes to this colour while the Midnight Season 2 (2pc) damage buff (Halazzi's Fury) is active after Berserk / Avatar of Ashamane ends."
+
+    -- Frost Mage Shatter bar
+    L["MageFrostCheckboxShatterThresholdMultiples"] = "Change Shatter colour at threshold stacks"
+    L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fill colour at every multiple of the threshold stack (5, 10, 15, 20)."
+
+    -- Per-bar tab visibility header
+    L["BarTabVisibilityGlobalTooltip"] = "This bar's visibility is being controlled by Global Options, so it cannot be changed here. Open Global Settings to change it, or uncheck Use global settings on the Visibility tab to control it for this specialisation only."
+
+    -- Warrior Fury Enrage
+    L["WarriorFuryIndicatorEnrageTooltip"] = "Changes to this colour when Enrage is active."
+
+    -- Other Bars
+    L["OtherBarsColorsHeader"] = "Colours"
+    L["OtherBarsBehaviorHeader"] = "Behaviour"
+    L["CheckboxUseGlobalTooltipOtherBars"] = "When checked, this section uses the settings from the global Other Bars screen instead of this specialisation's own."
+    L["OpenGlobalOtherBarsSettingsTooltip"] = "Opens the global Other Bars options screen, where these settings are configured for every specialisation at once."
+    L["CopyMenuSection_gcdColors"] = "Global Cooldown Bar - Colours"
+    L["CopyMenuSection_fatigueColors"] = "Fatigue Bar - Colours"
+    L["CopyMenuSection_breathColors"] = "Breath Bar - Colours"
+    -- REMOVED: L["CopyMenuSection_deathColors"] - the Death mirror timer bar was retired
+    L["CopyMenuSection_feignDeathColors"] = "Feign Death Bar - Colours"
+
+    -- Other Bars: Use Global tooltips for the shared dimensions rows
+    L["CheckboxUseGlobalTooltip_GcdDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
+    L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
+    L["CheckboxUseGlobalTooltip_BreathDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
+    -- REMOVED: L["CheckboxUseGlobalTooltip_DeathDimensions"] - the Death mirror timer bar was retired
+
+    -- Health Bar: flat class colour transition type
+    L["HealthBarColorTypeClassColor"] = "Single (Class Colour)"
 end

@@ -23,12 +23,6 @@ local talents --[[@as TRB.Classes.Talents]]
 ---@type number?
 local protectionShieldSlamBaselineRage = nil
 
---- Aura-adding UNIT_AURA batches to skip before binding the Ignore Pain that Shield Slam grants
---- when it consumes Violent Outburst. The grant lands a couple of batches after the consume (the
---- consume frame's batch only removes Violent Outburst), and the generic delayed-request system
---- already ignores the consume frame, so 0 binds the next aura-adding batch. Bump if needed.
-local IGNORE_PAIN_GRANT_SKIP_BATCHES = 0
-
 --- Spell lookup for defensive node keys → spell objects. Populated in FillSpellData_Protection.
 ---@type table<string, table>
 local defensiveSpellsByKey = {}
@@ -79,8 +73,6 @@ local function FillSpecializationCache()
 	specCache.warrior_arms.spellsData.spells = TRB.Classes.Warrior.ArmsSpells:New()
 	local spells = specCache.warrior_arms.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 
-	specCache.warrior_arms.snapshotData.audio = {
-	}
 	--[[---@type TRB.Classes.Snapshot
 	specCache.warrior_arms.snapshotData.snapshots[spells.execute.id] = TRB.Classes.Snapshot:New(spells.execute)]]
 	---@type TRB.Classes.Snapshot
@@ -130,8 +122,6 @@ local function FillSpecializationCache()
 	---@diagnostic disable-next-line: cast-local-type
 	spells = specCache.warrior_fury.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 
-	specCache.warrior_fury.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_fury.snapshotData.snapshots[spells.shieldBlock.id] = TRB.Classes.Snapshot:New(spells.shieldBlock)
 	---@type TRB.Classes.Snapshot
@@ -146,6 +136,9 @@ local function FillSpecializationCache()
 	specCache.warrior_fury.snapshotData.snapshots[spells.execute.id] = TRB.Classes.Snapshot:New(spells.execute)
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_fury.snapshotData.snapshots[spells.suddenDeath.id] = TRB.Classes.Snapshot:New(spells.suddenDeath)
+	-- Always-simple: the Cooldown Manager never hands back an endTime, and a nil one reads as expired.
+	---@type TRB.Classes.Snapshot
+	specCache.warrior_fury.snapshotData.snapshots[spells.enrage.id] = TRB.Classes.Snapshot:New(spells.enrage, nil, "always")
 
 	-- Protection
 	specCache.warrior_protection.Global_TwintopResourceBar = {
@@ -170,8 +163,6 @@ local function FillSpecializationCache()
 	---@diagnostic disable-next-line: cast-local-type
 	spells = specCache.warrior_protection.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 
-	specCache.warrior_protection.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_protection.snapshotData.snapshots[spells.impendingVictory.id] = TRB.Classes.Snapshot:New(spells.impendingVictory)
 	---@type TRB.Classes.Snapshot
@@ -315,7 +306,6 @@ local function ConstructResourceBar(settings)
 		if barGroups and barGroups.defensives then
 			barGroups.defensives:Hide()
 		end
-		TRB.Functions.Aura:DisableUnitAuraCache()
 	elseif TRB.Data.character.specId == 2 then
 		-- Fury: Whirlwind stacks bar (nodes based on talent)
 		if barGroups and barGroups.defensives then
@@ -325,7 +315,6 @@ local function ConstructResourceBar(settings)
 			-- Always apply textures and colors to ALL secondary nodes so they are
 			-- renderable even when maxResource2 is not yet known (it is set in
 			-- CheckCharacter which may run after ConstructResourceBar).
-			local frameLevels = TRB.Data.constants.frameLevels
 			local whirlwindColors = settings.colors.bars and settings.colors.bars.whirlwind
 			for x = 1, barGroups.secondary.maxNodes do
 				local wwNode = barGroups.secondary:GetNode(x)
@@ -341,7 +330,7 @@ local function ConstructResourceBar(settings)
 						wwNode:SetBackgroundColorFromString(whirlwindColors.background.color)
 						TRB.Functions.Color:ApplyFillColor(wwNode, whirlwindColors.nodeColors.charge1)
 					end
-					wwNode:SetFrameLevel(frameLevels.comboPoint)
+					wwNode:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 				end
 			end
 
@@ -356,7 +345,6 @@ local function ConstructResourceBar(settings)
 				barGroups.secondary:Show()
 			end
 		end
-		TRB.Functions.Aura:DisableUnitAuraCache()
 	elseif TRB.Data.character.specId == 3 then
 		-- Protection: Show secondary bar for defensive buffs (Shield Block + Ignore Pain)
 		if barGroups and barGroups.defensives then
@@ -374,7 +362,6 @@ local function ConstructResourceBar(settings)
 				barGroups.defensives:Hide()
 			end
 		end
-		TRB.Functions.Aura:EnableUnitAuraCache()
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -565,6 +552,37 @@ local function RefreshLookupData_Fury()
 		end
 	end
 
+	-- Block C: Enrage ($enrageTime)
+	if not activeVars or activeVars["$enrageTime"] then
+		local enrageBuff = snapshots[spells.enrage.id].buff
+		local _enrageActive = enrageBuff.isActive == true
+		local properties = enrageBuff.customProperties
+		local _enrageTime = properties.remaining
+		local _enrageTimeText = properties.remainingText
+
+		-- Secret when the Cooldown Manager has it, missing when it does not, so logic only learns whether
+		-- there is a value at all.
+		lookupLogic["$enrageTime"] = _enrageActive and (_enrageTime ~= nil or _enrageTimeText ~= nil)
+
+		-- Buff down is a known zero; buff up with nothing tracking it is unknown. Memoized on the rendered
+		-- string, since both are nil underneath.
+		local timeDisplay
+		if not _enrageActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _enrageTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_enrageTime)
+		elseif _enrageTimeText ~= nil then
+			-- Already formatted, to the viewer's precision rather than ours.
+			timeDisplay = _enrageTimeText
+		else
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		end
+
+		if lookupChanged(prevState, "$enrageTime", timeDisplay) then
+			lookup["$enrageTime"] = timeDisplay
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -645,13 +663,30 @@ local function RefreshLookupData_Protection()
 		local ipBuff = snapshots[spells.ignorePain.id].buff
 		-- GetRemainingTime updates isActive, so call it first
 		local _ignorePainTime = ipBuff:GetRemainingTime(currentTime)
-		local _ignorePainAbsorb = ipBuff.isActive and (ipBuff.applications or 0) or 0
+		-- Refilled from the Cooldown Manager each tick and usually a secret.
+		local _ignorePainAbsorb = nil
+		if ipBuff.isActive then
+			_ignorePainAbsorb = ipBuff.customProperties.absorb
+		end
 
 		lookupLogic["$ignorePainTime"] = _ignorePainTime
-		lookupLogic["$ignorePainAbsorb"] = true
+		-- A secret cannot be compared, so logic only ever learns whether there is a pool at all.
+		lookupLogic["$ignorePainAbsorb"] = _ignorePainAbsorb ~= nil
 
-		if lookupChanged(prevState, "$ignorePainAbsorb", _ignorePainAbsorb) then
-			lookup["$ignorePainAbsorb"] = TRB.Functions.String:ConvertToAbbreviatedNumber(_ignorePainAbsorb)
+		-- Absent for two different reasons: a buff that is down is a known zero, a buff that is up
+		-- with no Cooldown Manager data is unknown. Memoized on the rendered string rather than the
+		-- value, so those two -- both nil underneath -- still repaint when one becomes the other.
+		local absorbDisplay
+		if _ignorePainAbsorb ~= nil then
+			absorbDisplay = TRB.Functions.String:ConvertToAbbreviatedNumber(_ignorePainAbsorb)
+		elseif ipBuff.isActive then
+			absorbDisplay = TRB.Functions.BarText:UnknownValue("0")
+		else
+			absorbDisplay = "0"
+		end
+
+		if lookupChanged(prevState, "$ignorePainAbsorb", absorbDisplay) then
+			lookup["$ignorePainAbsorb"] = absorbDisplay
 		end
 		if lookupChanged(prevState, "$ignorePainTime", _ignorePainTime) then
 			lookup["$ignorePainTime"] = TRB.Functions.BarText:TimerPrecision(_ignorePainTime)
@@ -696,6 +731,17 @@ local function RefreshLookupData_Protection()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
+
+--- Starts the event-driven Ignore Pain timer. The absorb pool needs nothing from here: it is a
+--- percentage supplied by the Cooldown Manager each tick. An earlier version scraped an absolute
+--- absorb out of the spell description into the same field, which is what made the number useless
+--- -- millions of damage where the consumer wanted 0-100.
+---@param currentTime number
+local function StartIgnorePainTimer(currentTime)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local ipBuff = TRB.Data.snapshotData.snapshots[spells.ignorePain.id].buff
+	ipBuff:InitializeCustom(spells.ignorePain.duration, currentTime)
+end
 
 ---Handles UNIT_SPELLCAST_ events for the class
 ---@param event trbSpellCastType
@@ -751,14 +797,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 				snapshotData.snapshots[spells.shieldBlock.id].buff:AddTimeOrInitializeCustom(duration, currentTime)
 				snapshotData.snapshots[spells.shieldBlock.id].buff.attributes.shieldChargeUsed = false]]
 			elseif spellId == spells.ignorePain.castId then
-				snapshotData.snapshots[spells.ignorePain.id].buff:InitializeCustom(spells.ignorePain.duration, currentTime, nil, nil, true)
-				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
-				if bufferEntry ~= nil then
-					snapshotData.snapshots[spells.ignorePain.id].buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
-					snapshotData.snapshots[spells.ignorePain.id].buff:RefreshWithSecretAuraData(bufferEntry)
-				else
-					TRB.Functions.Aura:InsertAuraRequest(currentTime, snapshotData.snapshots[spells.ignorePain.id].buff, "first")
-				end
+				StartIgnorePainTimer(currentTime)
 			elseif spellId == spells.shieldSlam.id then
 				if talents:IsTalentActive(spells.heavyRepercussions) and snapshotData.snapshots[spells.shieldBlock.id].buff.isActive then
 					local duration = spells.heavyRepercussions.attributes.durationMod
@@ -766,17 +805,13 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 				end
 
 				-- Shield Slam consumes an active Violent Outburst proc, which also grants Ignore
-				-- Pain. The grant does not land in this frame's UNIT_AURA batch (that one removes
-				-- Violent Outburst) but in a later batch ~0.15s afterward, so use a delayed aura
-				-- request that binds to the correct (later) batch.
+				-- Pain. Start the event-driven Ignore Pain timer from the consume.
 				local violentOutburst = snapshotData.snapshots[spells.violentOutburst.id]
 				if violentOutburst ~= nil and violentOutburst.buff.isActive then
 					violentOutburst.buff:Reset()
-					snapshotData.audio.violentOutburstCue = false
+					TRB.Functions.AudioCues:ResetLatch(snapshotData, "violentOutburst")
 
-					local ipBuff = snapshotData.snapshots[spells.ignorePain.id].buff
-					ipBuff:InitializeCustom(spells.ignorePain.duration, currentTime, nil, nil, true)
-					TRB.Functions.Aura:InsertAuraRequest(currentTime, ipBuff, "first", IGNORE_PAIN_GRANT_SKIP_BATCHES)
+					StartIgnorePainTimer(currentTime)
 				end
 			end
 		end
@@ -842,11 +877,7 @@ local function DetectViolentOutburst()
 			snap.buff:InitializeCustom(spells.violentOutburst.duration, GetTime())
 			TRB.Data.lookupDirty = true
 
-			local specSettings = TRB.Data.settings.warrior.protection
-			if specSettings.audio.violentOutburst ~= nil and specSettings.audio.violentOutburst.enabled and not snapshotData.audio.violentOutburstCue then
-				PlaySoundFile(specSettings.audio.violentOutburst.sound, TRB.Data.settings.core.audio.channel.channel)
-				snapshotData.audio.violentOutburstCue = true
-			end
+			TRB.Functions.AudioCues:Fire(TRB.Data.settings.warrior.protection, snapshotData, "violentOutburst", true)
 		end
 	end
 end
@@ -928,6 +959,37 @@ local function UpdateSnapshot_Fury()
 	if wasWhirlwindActive and not snapshots[spells.improvedWhirlwind.id].buff.isActive then
 		TRB.Data.lookupDirty = true
 	end
+
+	local enrageBuff = snapshots[spells.enrage.id].buff
+	local properties = enrageBuff.customProperties
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	-- Pinned to the buff viewers: a cooldown viewer reports every spell it holds as active. applications
+	-- is nil while the buff is down and secret while it is up, and `~= nil` is legal on a secret.
+	local cdm = TRB.Functions.CooldownManager
+	local wasEnrageActive = enrageBuff.isActive
+	if cdm:HasSignal(spells.enrage.id, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF) then
+		enrageBuff:InitializeCustomSimple()
+
+		-- Only the bar viewer leaves a subtracted remaining value; elsewhere take Blizzard's own countdown
+		-- text, which is empty when that viewer's timers are off -- a settings answer, not a value.
+		local remainingOk, remaining = cdm:Read(spells.enrage.id, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+		if remainingOk then
+			properties.remaining = remaining
+		else
+			local textOk, remainingText = cdm:Read(spells.enrage.id, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+			if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+				properties.remainingText = remainingText
+			end
+		end
+	elseif wasEnrageActive then
+		enrageBuff:Reset()
+	end
+
+	if wasEnrageActive ~= enrageBuff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 	--[[snapshots[spells.bladestorm.id].buff:UpdateTicks(currentTime)
 	snapshots[spells.execute.id].cooldown:Refresh()]]
 end
@@ -942,10 +1004,24 @@ local function UpdateSnapshot_Protection()
 
 	-- Track active→inactive transitions so bar text gets one final refresh when
 	-- buffs expire out of combat.
-	local wasIgnorePainActive = snapshots[spells.ignorePain.id].buff.isActive
-	snapshots[spells.ignorePain.id].buff:GetRemainingTime(currentTime)
-	if wasIgnorePainActive and not snapshots[spells.ignorePain.id].buff.isActive then
+	local ignorePainBuff = snapshots[spells.ignorePain.id].buff
+	local wasIgnorePainActive = ignorePainBuff.isActive
+	ignorePainBuff:GetRemainingTime(currentTime)
+	if wasIgnorePainActive and not ignorePainBuff.isActive then
 		TRB.Data.lookupDirty = true
+	end
+
+	-- Refill the absorb pool from the Cooldown Manager, and clear it the moment the buff drops -- a
+	-- stale pool reads as protection that is no longer there. The pool arrives as the aura's
+	-- application count rather than an effect value: Ignore Pain does not stack, and the buff
+	-- viewers still print a number on the icon, so that count is the absorb. Pinned to the buff
+	-- viewers because the cooldown viewers hold the same spell but describe the cast instead.
+	local cdm = TRB.Functions.CooldownManager
+	local absorbOk, absorb = cdm:Read(spells.ignorePain.id, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF)
+	if ignorePainBuff.isActive and absorbOk then
+		ignorePainBuff.customProperties.absorb = absorb
+	else
+		ignorePainBuff.customProperties.absorb = nil
 	end
 
 	local wasShieldBlockActive = snapshots[spells.shieldBlock.id].buff.isActive
@@ -958,7 +1034,7 @@ local function UpdateSnapshot_Protection()
 	snapshots[spells.violentOutburst.id].buff:GetRemainingTime(currentTime)
 	if wasViolentOutburstActive and not snapshots[spells.violentOutburst.id].buff.isActive then
 		-- Proc expired (or was consumed); allow the audio cue to fire on the next proc.
-		TRB.Data.snapshotData.audio.violentOutburstCue = false
+		TRB.Functions.AudioCues:ResetLatch(TRB.Data.snapshotData, "violentOutburst")
 		TRB.Data.lookupDirty = true
 	end
 	--[[
@@ -1044,10 +1120,12 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 				local cpDuration = 1
 				
 				if colorKey == "ignorePainAbsorb" then
-					-- Absorb bar: buff.applications is a secret value on a 0-100 scale
+					-- The pool already arrives as a 0-100 percentage, so it goes straight onto a
+					-- fixed scale. It is a secret, which the status bar accepts but no arithmetic
+					-- here could touch -- there is nothing to normalise either way.
 					cpDuration = 100
-					if buff.isActive then
-						cpTime = buff.applications or 0
+					if buff.isActive and buff.customProperties.absorb ~= nil then
+						cpTime = buff.customProperties.absorb
 					end
 				else
 					if buff.isActive then
@@ -1417,7 +1495,6 @@ local function UpdateResourceBar()
 						end
 					end
 				end
-
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1429,6 +1506,7 @@ local function UpdateResourceBar()
 						end
 					end
 				end
+
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
@@ -1507,9 +1585,28 @@ local function UpdateResourceBar()
 					end
 				end
 			end
+			-- Enrage is fed from the Cooldown Manager, so it is false whenever nothing tracks the buff.
+			local enrageActive = snapshots[spells.enrage.id].buff.isActive == true
+			do
+				local enrageInd = indicatorColors and indicatorColors.enrage
+				local enrageTargets = enrageInd and enrageInd.enabled and enrageActive
+					and enrageInd.targets and enrageInd.targets.rageBar or nil
+				if enrageTargets then
+					if enrageTargets.bar then
+						barColor = enrageInd.color
+					end
+					if enrageTargets.border then
+						barBorderColor = enrageInd.color
+					end
+					if enrageTargets.background then
+						barBackgroundColor = enrageInd.color
+					end
+				end
+			end
 			local conditionMap = {
 				borderOvercap = affectingCombat,
 				zeroStackBackground = zeroStackActive,
+				enrage = enrageActive,
 			}
 			-- The rage bar is colored bespoke above; the resolver is here for the shared health/cast bar.
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
@@ -1634,6 +1731,7 @@ local function UpdateResourceBar()
 						end
 					end
 				end
+
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1645,7 +1743,6 @@ local function UpdateResourceBar()
 						end
 					end
 				end
-
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
 					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
@@ -1960,6 +2057,7 @@ local function SwitchSpec()
 		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 		local lookup = TRB.Data.lookup or {}
 		lookup["#bladestorm"] = spells.bladestorm.icon
+		lookup["#enrage"] = spells.enrage.icon
 		lookup["#execute"] = spells.execute.icon
 		lookup["#impendingVictory"] = spells.impendingVictory.icon
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
@@ -2039,6 +2137,11 @@ eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	-- Wrong game version for this build: halt before anything reads or writes settings.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
+
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -2328,6 +2431,33 @@ do
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
+	-- Fury
+	local fury = {}
+	for k, v in pairs(common) do fury[k] = v end
+	-- False the moment the value is unknown, matching the "??" the text renders.
+	fury["$enrageTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.enrage == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.enrage.id]
+		if snap == nil or snap.buff.isActive ~= true then
+			return false
+		end
+		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
+	end
+	local whirlwindFn = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.improvedWhirlwind == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.improvedWhirlwind.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
+	fury["$wwCharges"] = whirlwindFn
+	fury["$whirlwindCharges"] = whirlwindFn
+	fury["$wwTime"] = whirlwindFn
+	fury["$whirlwindTime"] = whirlwindFn
 	-- Protection
 	local protection = {}
 	for k, v in pairs(common) do protection[k] = v end
@@ -2335,7 +2465,9 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.ignorePain.id].buff.isActive
 	end
-	protection["$ignorePainAbsorb"] = false
+	-- Always renders: a buff that is down shows 0, and one that is up with nothing from the Cooldown
+	-- Manager shows "??" rather than dropping out, so the gap is visible instead of silent.
+	protection["$ignorePainAbsorb"] = true
 	protection["$shieldBlockTime"] = function()
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.shieldBlock.id].buff.isActive
@@ -2350,8 +2482,18 @@ do
 		local charges = TRB.Data.snapshotData.snapshots[spells.shieldBlock.id].cooldown.charges
 		return issecretvalue(charges) or charges > 0
 	end
+	local violentOutburstFn = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.violentOutburst == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.violentOutburst.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
+	protection["$voTime"] = violentOutburstFn
+	protection["$violentOutburstTime"] = violentOutburstFn
 
-	specValidVars = { [1] = common, [2] = common, [3] = protection }
+	specValidVars = { [1] = common, [2] = fury, [3] = protection }
 end
 
 function TRB.Functions.Class:IsValidVariableForSpec(var)

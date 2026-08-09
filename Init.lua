@@ -73,7 +73,7 @@ TRB.Data = {}
 -- Keyed by class token -> spec token -> resource token -> max value.
 TRB.Data.maxResource = {
 	deathknight = {
-		blood = { runicPower = 125 },
+		blood = { runicPower = 125, coagulatingBlood = 100 },
 		frost = { runicPower = 110 },
 		unholy = { runicPower = 100 },
 	},
@@ -134,6 +134,13 @@ TRB.Data.constants = {
 			soundName = L["LSMSoundAirHorn"]
 		}
 	},
+	---Declared Cooldown Manager reliance, read only by the options panel. Lives here rather than on
+	---the CDM module because bar types register before that module loads.
+	---@enum TRB.CdmDependency
+	cdmDependency = {
+		-- Value is unobtainable without the tracked spell: bar text renders "??", nodes stay empty.
+		REQUIRED = "required",
+	},
 	frameCategories = {
 		container = "Container",
 		resource = "Resource"
@@ -144,8 +151,11 @@ TRB.Data.constants = {
 		border = "Border",
 	},
 	frameLevels = {
+		-- Every bar is levelled as bar + (anchor depth * barDepthStride), so a bar always draws
+		-- above the bar it is anchored to. The stride leaves room for a bar's own overlays,
+		-- which sit between node level +1 and +3.
 		bar = 100,
-		comboPoint = 300,
+		barDepthStride = 10,
 		thresholdBase = 1000,
 		thresholdOutOfRange = 1200,
 		thresholdUnusable = 1800,
@@ -504,6 +514,11 @@ TRB.Frames.renderTransitionFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
 TRB.Frames.renderTransitionFrame:RegisterEvent("TRAIT_CONFIG_LIST_UPDATED")
 TRB.Frames.renderTransitionFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 TRB.Frames.renderTransitionFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	-- Wrong game version for this build: no bar was ever constructed, so there is nothing to transition.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
+
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -532,6 +547,10 @@ local minimapButtonInitFrame = CreateFrame("Frame")
 minimapButtonInitFrame:RegisterEvent("PLAYER_LOGIN")
 minimapButtonInitFrame:SetScript("OnEvent", function(self)
 	self:UnregisterAllEvents()
+	-- Wrong game version for this build: settings were never merged, so there is nothing to drive a button.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
 	-- Delay slightly to ensure saved variables and settings merging is complete
 	C_Timer.After(2, function()
 		TRB.Functions.MinimapButton:Initialize()
@@ -564,6 +583,14 @@ function SlashCmdList.TWINTOP(msg)
 		TRB.Functions.Bar:SetPositionXY(tonumber(x), tonumber(y))
 	elseif cmd == "news" then
 		TRB.Functions.News:Show()
+	elseif cmd == "cdm" then
+		local spellArg = ParseCmdString(subcmd)
+		local spellId = spellArg and tonumber(spellArg) or nil
+		if spellId ~= nil then
+			TRB.Functions.CooldownManager:PrintSpellReport(spellId)
+		else
+			TRB.Functions.CooldownManager:PrintDiagnostics()
+		end
 	elseif cmd == "minimap" then
 		local minimapCmd = ParseCmdString(subcmd)
 		if minimapCmd == "hide" then

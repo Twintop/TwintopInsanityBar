@@ -1562,6 +1562,9 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				if scale ~= nil and scale > 0 then
 					maxValue = scale * 100
 				end
+				-- Opt-in per-bar maximum override (e.g. Coagulating Blood): the bar fills at the
+				-- configured max, so thresholds position against it, not the absolute max.
+				maxValue = TRB.Functions.Bar:GetCustomBarMaxValue(barSettings, maxValue)
 			elseif barTypeDef.minMaxMode == "mana" then
 				-- Dedicated mana bar (Shadow/Balance/Elemental): percent-based, 0-100. The bar fills
 				-- 0-manaMax, so a percent threshold lines up with the matching fill fraction.
@@ -1724,7 +1727,8 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetRange(settings, barTarg
 			elseif barTypeDef.isMultiNode then
 				return 0, GetPositivePlainNumber(barTypeDef.maxNodes, 1)
 			elseif barTypeDef.minMaxMode == "percentage" then
-				return 0, GetPositivePlainNumber(barTypeDef.maxThresholdPercent, 100)
+				local percentMax = GetPositivePlainNumber(barTypeDef.maxThresholdPercent, 100)
+				return 0, TRB.Functions.Bar:GetCustomBarMaxValue(settings.bars[baseKey], percentMax)
 			end
 		end
 	end

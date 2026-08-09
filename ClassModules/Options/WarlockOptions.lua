@@ -177,24 +177,6 @@ local function AfflictionLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			soulShardThreshold1={
-				name = L["WarlockAudioSoulShardThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 3
-				}
-			},
-			soulShardThreshold2={
-				name = L["WarlockAudioSoulShardThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 5
-				}
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -427,24 +409,6 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			soulShardThreshold1={
-				name = L["WarlockAudioSoulShardThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 3
-				}
-			},
-			soulShardThreshold2={
-				name = L["WarlockAudioSoulShardThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 5
-				}
-			},
 			demonicCore={
 				name = L["WarlockAudioDemonicCore"],
 				enabled=false,
@@ -656,24 +620,6 @@ local function DestructionLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			soulShardThreshold1={
-				name = L["WarlockAudioSoulShardThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 3
-				}
-			},
-			soulShardThreshold2={
-				name = L["WarlockAudioSoulShardThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 5
-				}
-			},
 			infernalBolt={
 				name = L["WarlockAudioInfernalBolt"],
 				enabled=false,
@@ -1014,48 +960,6 @@ local function AfflictionConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 9, 1, yCoord)
 end
 
-local function AfflictionConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 9
-	local specId = 1
-	local spec = TRB.Data.settings.warlock.affliction
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.warlock_affliction
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "soulShardThreshold1", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold1"], L["WarlockAudioCheckboxSoulShardThreshold1Tooltip"])
-
-	controls.soulShardThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold1"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.soulShardThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["soulShardThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "soulShardThreshold2", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold2"], L["WarlockAudioCheckboxSoulShardThreshold2Tooltip"])
-
-	controls.soulShardThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold2"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.soulShardThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["soulShardThreshold2"].configuration.thresholdValue = value
-	end)
-end
-
 
 local function AfflictionConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
@@ -1145,16 +1049,16 @@ local function AfflictionConstructOptionsPanel(cache)
 		"warlock", "affliction")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, AfflictionConstructManaBarPanel },
-		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, AfflictionConstructSoulShardsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AfflictionConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, AfflictionConstructManaBarPanel, visibilityKey = "primary" },
+		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, AfflictionConstructSoulShardsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, AfflictionConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, AfflictionConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "affliction", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, AfflictionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, AfflictionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, AfflictionConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("warlock", "affliction", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, AfflictionConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, AfflictionConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) AfflictionConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, AfflictionConstructResetDefaultsPanel },
 	}
@@ -1389,54 +1293,6 @@ local function DemonologyConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 9, 2, yCoord)
 end
 
-local function DemonologyConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 9
-	local specId = 2
-	local spec = TRB.Data.settings.warlock.demonology
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.warlock_demonology
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "soulShardThreshold1", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold1"], L["WarlockAudioCheckboxSoulShardThreshold1Tooltip"])
-
-	controls.soulShardThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold1"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.soulShardThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["soulShardThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "soulShardThreshold2", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold2"], L["WarlockAudioCheckboxSoulShardThreshold2Tooltip"])
-
-	controls.soulShardThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold2"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.soulShardThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["soulShardThreshold2"].configuration.thresholdValue = value
-	end)
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "demonicCore", spec, classId, specId, yCoord, L["WarlockAudioCheckboxDemonicCore"], L["WarlockAudioCheckboxDemonicCoreTooltip"])
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "infernalBolt", spec, classId, specId, yCoord, L["WarlockAudioCheckboxInfernalBolt"], L["WarlockAudioCheckboxInfernalBoltTooltip"])
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "ruination", spec, classId, specId, yCoord, L["WarlockAudioCheckboxRuination"], L["WarlockAudioCheckboxRuinationTooltip"])
-end
-
 local function DemonologyConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1637,16 +1493,16 @@ local function DemonologyConstructOptionsPanel(cache)
 		"warlock", "demonology")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DemonologyConstructManaBarPanel },
-		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DemonologyConstructSoulShardsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DemonologyConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DemonologyConstructManaBarPanel, visibilityKey = "primary" },
+		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DemonologyConstructSoulShardsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DemonologyConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, DemonologyConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "demonology", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DemonologyConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, DemonologyConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, DemonologyConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("warlock", "demonology", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, DemonologyConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, DemonologyConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) DemonologyConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, DemonologyConstructResetDefaultsPanel },
 	}
@@ -1952,54 +1808,6 @@ local function DestructionConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 9, 3, yCoord)
 end
 
-local function DestructionConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local spec = TRB.Data.settings.warlock.destruction
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.warlock_destruction
-	local yCoord = 5
-	local f = nil
-
-	local classId = 9
-	local specId = 3
-
-
-	controls.textAudioSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "soulShardThreshold1", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold1"], L["WarlockAudioCheckboxSoulShardThreshold1Tooltip"])
-
-	controls.soulShardThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold1"].configuration.thresholdValue, 0.1, 1,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.soulShardThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["soulShardThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "soulShardThreshold2", spec, classId, specId, yCoord, L["WarlockAudioCheckboxSoulShardThreshold2"], L["WarlockAudioCheckboxSoulShardThreshold2Tooltip"])
-
-	controls.soulShardThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["WarlockSoulShardThresholdSliderTitle"], 0, 5, spec.audio["soulShardThreshold2"].configuration.thresholdValue, 0.1, 1,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.soulShardThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["soulShardThreshold2"].configuration.thresholdValue = value
-	end)
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "infernalBolt", spec, classId, specId, yCoord, L["WarlockAudioCheckboxInfernalBolt"], L["WarlockAudioCheckboxInfernalBoltTooltip"])
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "ruination", spec, classId, specId, yCoord, L["WarlockAudioCheckboxRuination"], L["WarlockAudioCheckboxRuinationTooltip"])
-end
-
 local function DestructionConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2089,16 +1897,16 @@ local function DestructionConstructOptionsPanel(cache)
 		"warlock", "destruction")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DestructionConstructManaBarPanel },
-		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DestructionConstructSoulShardsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DestructionConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, DestructionConstructManaBarPanel, visibilityKey = "primary" },
+		{ "soulShardsBar", L["TabSoulShards"], oUi.tabWidth.small, DestructionConstructSoulShardsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, DestructionConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, DestructionConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("warlock", "destruction", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, DestructionConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, DestructionConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, DestructionConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("warlock", "destruction", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, DestructionConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, DestructionConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) DestructionConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, DestructionConstructResetDefaultsPanel },
 	}

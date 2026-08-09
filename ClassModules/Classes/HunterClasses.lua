@@ -83,7 +83,7 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         id = 268877,
         talentId = 115939,
         isTalent = true,
-        duration = 8
+        duration = 10
     })
     self.killCommand = TRB.Classes.SpellThreshold:New({
         id = 34026,
@@ -166,15 +166,20 @@ function TRB.Classes.Hunter.BeastMasterySpells.FillBarTextVariables(specCacheEnt
 		{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
 		{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$focus", description = L["HunterBeastMasteryBarTextVariable_focus"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$focusMax", description = L["HunterBeastMasteryBarTextVariable_focusMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["HunterBeastMasteryBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$focus", description = L["HunterBeastMasteryBarTextVariable_focus"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$focusMax", description = L["HunterBeastMasteryBarTextVariable_focusMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["HunterBeastMasteryBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$beastCleaveTime", description = L["HunterBeastMasteryBarTextVariable_beastCleaveTime"], printInSettings = true, color = false },
-		{ variable = "$bestialWrathTime", description = L["HunterBeastMasteryBarTextVariable_bestialWrathTime"], printInSettings = true, color = false }
+		{ variable = "$bestialWrathTime", description = L["HunterBeastMasteryBarTextVariable_bestialWrathTime"], printInSettings = true, color = false },
+
+		-- Feign Death bar timer. Hunter-only, so it is declared here rather than in the shared pool.
+		{ variable = "$feignDeathDuration", description = L["BarTextVariableFeignDeathDuration"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true },
+		{ variable = "$feignDeathDurationRemaining", description = L["BarTextVariableFeignDeathDurationRemaining"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true }
 	})
 end
 
@@ -362,15 +367,20 @@ function TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = spells.steadyShot.name, printInSettings = true },
 		{ variable = "#trueshot", icon = spells.trueshot.icon, description = spells.trueshot.name, printInSettings = true }
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$focus", description = L["HunterMarksmanshipBarTextVariable_focus"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$focusMax", description = L["HunterMarksmanshipBarTextVariable_focusMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["HunterMarksmanshipBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$focus", description = L["HunterMarksmanshipBarTextVariable_focus"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$focusMax", description = L["HunterMarksmanshipBarTextVariable_focusMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["HunterMarksmanshipBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$trueshotTime", description = L["HunterMarksmanshipBarTextVariable_trueshotTime"], printInSettings = true, color = false },
 		{ variable = "$doubleTapTime", description = L["HunterMarksmanshipBarTextVariable_doubleTapTime"], printInSettings = true, color = false },
+
+		-- Feign Death bar timer. Hunter-only, so it is declared here rather than in the shared pool.
+		{ variable = "$feignDeathDuration", description = L["BarTextVariableFeignDeathDuration"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true },
+		{ variable = "$feignDeathDurationRemaining", description = L["BarTextVariableFeignDeathDurationRemaining"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true }
 	})
 end
 
@@ -535,19 +545,24 @@ function TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = spells.wildfireBomb.name, printInSettings = true },
 		{ variable = "#wingClip", icon = spells.wingClip.icon, description = spells.wingClip.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$focus", description = L["HunterSurvivalBarTextVariable_focus"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$focusMax", description = L["HunterSurvivalBarTextVariable_focusMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["HunterSurvivalBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$focus", description = L["HunterSurvivalBarTextVariable_focus"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$focusMax", description = L["HunterSurvivalBarTextVariable_focusMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["HunterSurvivalBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$tipOfTheSpear", description = L["HunterSurvivalBarTextVariable_tipOfTheSpear"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$tipOfTheSpearMax", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$tipOfTheSpear", description = L["HunterSurvivalBarTextVariable_tipOfTheSpear"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$tipOfTheSpearMax", description = L["HunterSurvivalBarTextVariable_tipOfTheSpearMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		{ variable = "$totsTime", description = L["HunterSurvivalBarTextVariable_totsTime"], printInSettings = true, color = false },
 		{ variable = "$takedownTime", description = L["HunterSurvivalBarTextVariable_takedownTime"], printInSettings = true, color = false },
+
+		-- Feign Death bar timer. Hunter-only, so it is declared here rather than in the shared pool.
+		{ variable = "$feignDeathDuration", description = L["BarTextVariableFeignDeathDuration"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true },
+		{ variable = "$feignDeathDurationRemaining", description = L["BarTextVariableFeignDeathDurationRemaining"], printInSettings = true, color = false, category = varCategory.OTHER, booleanCheck = true }
 	})
 end
 
@@ -655,3 +670,37 @@ TRB.Data.castbarTickProfilesRegistry["hunter_marksmanship"] = TRB.Classes.Hunter
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
 TRB.Data.castbarTickModifiersRegistry["hunter_marksmanship"] = TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickModifiers
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("hunter_survival", {
+		counters = {
+			{
+				id = "tipOfTheSpear",
+				label = L["HunterSurvivalAudioCueSourceTots"],
+				description = L["HunterSurvivalAudioCueSourceTotsDescription"],
+				sliderLabel = L["HunterSurvivalTotsThresholdSliderTitle"],
+				defaultName = L["HunterSurvivalAudioCueTotsDefaultName"],
+				min = 0,
+				max = 3,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "totsThreshold1" },
+				defaultCues = {
+					{
+						id = "totsThreshold1",
+						name = L["HunterSurvivalAudioTotsThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 3,
+					},
+				},
+			},
+		},
+	})
+end

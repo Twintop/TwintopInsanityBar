@@ -55,12 +55,11 @@ local function FillSpecializationCache()
 	specCache.warlock_affliction.spellsData.spells = TRB.Classes.Warlock.AfflictionSpells:New()
 	local spells = specCache.warlock_affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
-	specCache.warlock_affliction.snapshotData.audio = {
-		soulShardThreshold1Played = false,
-		soulShardThreshold2Played = false,
-	}
 	---@type TRB.Classes.Snapshot
-	specCache.warlock_affliction.snapshotData.snapshots[spells.shardInstability.id] = TRB.Classes.Snapshot:New(spells.shardInstability)
+	-- Always simple: this buff never has a knowable endTime. Its remaining time is a secret we can
+	-- render but not subtract, so normal time tracking would see a nil endTime and clear isActive on
+	-- the very next tick. Simple mode leaves isActive alone for our own signals to drive.
+	specCache.warlock_affliction.snapshotData.snapshots[spells.shardInstability.id] = TRB.Classes.Snapshot:New(spells.shardInstability, nil, "always")
 
 	specCache.warlock_affliction.barTextVariables = {
 		icons = {},
@@ -93,17 +92,13 @@ local function FillSpecializationCache()
 	specCache.warlock_demonology.spellsData.spells = TRB.Classes.Warlock.DemonologySpells:New()
 	local spells = specCache.warlock_demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 
-	specCache.warlock_demonology.snapshotData.audio = {
-		soulShardThreshold1Played = false,
-		soulShardThreshold2Played = false,
-		demonicCorePlayed = false,
-		infernalBoltPlayed = false,
-		ruinationPlayed = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_demonology.snapshotData.snapshots[spells.dominionOfArgus.id] = TRB.Classes.Snapshot:New(spells.dominionOfArgus)
 	---@type TRB.Classes.Snapshot
-	specCache.warlock_demonology.snapshotData.snapshots[spells.demonicCore.id] = TRB.Classes.Snapshot:New(spells.demonicCore)
+	-- Always simple: the Demonbolt glow says a proc exists but not when it started, and it does not
+	-- fire again as stacks are added, so there is no application time to count from. Without an
+	-- endTime the normal path reads the buff as expired and clears it a tick later.
+	specCache.warlock_demonology.snapshotData.snapshots[spells.demonicCore.id] = TRB.Classes.Snapshot:New(spells.demonicCore, nil, "always")
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_demonology.snapshotData.snapshots[spells.infernalBolt.id] = TRB.Classes.Snapshot:New(spells.infernalBolt)
 	---@type TRB.Classes.Snapshot
@@ -140,12 +135,6 @@ local function FillSpecializationCache()
 	specCache.warlock_destruction.spellsData.spells = TRB.Classes.Warlock.DestructionSpells:New()
 	local spells = specCache.warlock_destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
 
-	specCache.warlock_destruction.snapshotData.audio = {
-		soulShardThreshold1Played = false,
-		soulShardThreshold2Played = false,
-		infernalBoltPlayed = false,
-		ruinationPlayed = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_destruction.snapshotData.snapshots[spells.infernalBolt.id] = TRB.Classes.Snapshot:New(spells.infernalBolt)
 	---@type TRB.Classes.Snapshot
@@ -278,7 +267,6 @@ local function ConstructResourceBar(settings)
 		barGroups.secondary:Show()
 		
 		-- Set textures and colors for each Soul Shard node
-		local frameLevels = TRB.Data.constants.frameLevels
 		for i = 1, maxShards do
 			local node = barGroups.secondary:GetNode(i)
 			if node then
@@ -291,7 +279,7 @@ local function ConstructResourceBar(settings)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 				TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
-				node:SetFrameLevel(frameLevels.comboPoint)
+				node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 			end
 		end
 	end
@@ -390,37 +378,51 @@ local function RefreshLookupData_Affliction()
 	-- Block D: Shard Instability ($shardInstabilityTime, $shardInstabilityStacks, $shardInstabilityMaxStacks)
 	if not activeVars or activeVars["$shardInstabilityTime"] or activeVars["$shardInstabilityStacks"] or activeVars["$shardInstabilityMaxStacks"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
-		local currentTime = GetTime()
-		local shardInstabilityBuff = snapshotData.snapshots[spells.shardInstability.id]
-		local _shardInstabilityActive = (shardInstabilityBuff ~= nil and shardInstabilityBuff.buff.isActive) or false
+		local shardInstabilityBuff = snapshotData.snapshots[spells.shardInstability.id].buff
+		local _shardInstabilityActive = shardInstabilityBuff.isActive == true
+		local properties = shardInstabilityBuff.customProperties
+		local _shardInstabilityStacks = properties.stacks
+		local _shardInstabilityTime = properties.remaining
+		local _shardInstabilityTimeText = properties.remainingText
 
-		-- Stacks and remaining time come from secret aura data, so the conditional/boolean check
-		-- is driven by `isActive` (a plain boolean) while the displayed values use secret-safe
-		-- `string.format`/`TimerPrecision`. Max stacks is a plain constant from the spell data.
-		lookupLogic["$shardInstabilityTime"] = _shardInstabilityActive
-		lookupLogic["$shardInstabilityStacks"] = _shardInstabilityActive
+		-- Both values are secret when the Cooldown Manager has them and missing entirely when it does
+		-- not, so logic never learns more than whether there is a value at all. Max stacks is a plain
+		-- constant from the spell data and stays a real number.
+		lookupLogic["$shardInstabilityStacks"] = _shardInstabilityActive and _shardInstabilityStacks ~= nil
+		lookupLogic["$shardInstabilityTime"] = _shardInstabilityActive and (_shardInstabilityTime ~= nil or _shardInstabilityTimeText ~= nil)
 		lookupLogic["$shardInstabilityMaxStacks"] = spells.shardInstability.maxStacks
 
-		if _shardInstabilityActive then
-			local _shardInstabilityStacks = shardInstabilityBuff.buff.applications
-			local _shardInstabilityTime = shardInstabilityBuff.buff:GetRemainingTime(currentTime)
-
-			if lookupChanged(prevState, "$shardInstabilityStacks", _shardInstabilityStacks, nil, true) then
-				lookup["$shardInstabilityStacks"] = string.format("%.0f", _shardInstabilityStacks)
-			end
-			if lookupChanged(prevState, "$shardInstabilityTime", _shardInstabilityTime, nil, true) then
-				lookup["$shardInstabilityTime"] = TRB.Functions.BarText:TimerPrecision(_shardInstabilityTime)
-			end
+		-- Absent for two different reasons: a proc that is down is a known zero, a proc that is up
+		-- with nothing tracking it in the Cooldown Manager is unknown. Memoized on the rendered
+		-- string rather than the value, so those two -- both nil underneath -- still repaint when
+		-- one becomes the other.
+		local stacksDisplay
+		if not _shardInstabilityActive then
+			stacksDisplay = string.format("%.0f", 0)
+		elseif _shardInstabilityStacks ~= nil then
+			stacksDisplay = string.format("%.0f", _shardInstabilityStacks)
 		else
-			-- When Shard Instability is not active, display zeroed defaults rather than blank strings.
-			if lookupChanged(prevState, "$shardInstabilityStacks", 0) then
-				lookup["$shardInstabilityStacks"] = string.format("%.0f", 0)
-			end
-			if lookupChanged(prevState, "$shardInstabilityTime", 0) then
-				lookup["$shardInstabilityTime"] = TRB.Functions.BarText:TimerPrecision(0)
-			end
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		end
 
+		local timeDisplay
+		if not _shardInstabilityActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _shardInstabilityTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_shardInstabilityTime)
+		elseif _shardInstabilityTimeText ~= nil then
+			-- Already formatted for us, and to the viewer's precision rather than ours.
+			timeDisplay = _shardInstabilityTimeText
+		else
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		end
+
+		if lookupChanged(prevState, "$shardInstabilityStacks", stacksDisplay) then
+			lookup["$shardInstabilityStacks"] = stacksDisplay
+		end
+		if lookupChanged(prevState, "$shardInstabilityTime", timeDisplay) then
+			lookup["$shardInstabilityTime"] = timeDisplay
+		end
 		if lookupChanged(prevState, "$shardInstabilityMaxStacks", spells.shardInstability.maxStacks) then
 			lookup["$shardInstabilityMaxStacks"] = string.format("%.0f", spells.shardInstability.maxStacks)
 		end
@@ -434,7 +436,7 @@ local function RefreshLookupData_Affliction()
 		lookupLogic["$soulShardsPlusCasting"] = soulShardsPlusCasting
 		lookupLogic["$comboPointsPlusCasting"] = soulShardsPlusCasting
 
-		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor, true) then
+		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor) then
 			local f = string.format("|c%s%.0f|r", soulShardsPlusCastingColor, soulShardsPlusCasting)
 			lookup["$soulShardsPlusCasting"] = f
 			lookup["$comboPointsPlusCasting"] = f
@@ -508,7 +510,7 @@ local function RefreshLookupData_Demonology()
 		lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 
-		if lookupChanged(prevState, "$soulShards", normalizedSoulShards, nil, true) then
+		if lookupChanged(prevState, "$soulShards", normalizedSoulShards) then
 			local f = string.format("%.0f", normalizedSoulShards)
 			lookup["$soulShards"] = f
 			lookup["$comboPoints"] = f
@@ -536,40 +538,56 @@ local function RefreshLookupData_Demonology()
 		end
 	end
 
-	-- Block D: Demonic Core ($demonicCoreTime, $demonicCoreStacks)
-	if not activeVars or activeVars["$demonicCoreTime"] or activeVars["$demonicCoreStacks"] then
+	-- Block D: Demonic Core ($demonicCoreTime, $demonicCoreStacks, $demonicCoreMaxStacks)
+	if not activeVars or activeVars["$demonicCoreTime"] or activeVars["$demonicCoreStacks"] or activeVars["$demonicCoreMaxStacks"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
-		local currentTime = GetTime()
-		local demonicCoreBuff = snapshotData.snapshots[spells.demonicCore.id]
-		local _demonicCoreActive = (demonicCoreBuff ~= nil and demonicCoreBuff.buff.isActive) or false
+		local demonicCoreBuff = snapshotData.snapshots[spells.demonicCore.id].buff
+		local _demonicCoreActive = demonicCoreBuff.isActive == true
+		local properties = demonicCoreBuff.customProperties
+		local _demonicCoreStacks = properties.stacks
+		local _demonicCoreTime = properties.remaining
+		local _demonicCoreTimeText = properties.remainingText
 
-		-- Demonic Core is sourced from secret aura data, so `applications` and the
-		-- remaining time are always treated as secret. The conditional/boolean check
-		-- is driven by `isActive` (a plain boolean), while the displayed values use
-		-- secret-safe `string.format`/`TimerPrecision`.
-		lookupLogic["$demonicCoreTime"] = _demonicCoreActive
-		lookupLogic["$demonicCoreStacks"] = _demonicCoreActive
+		-- Both values are secret when the Cooldown Manager has them and missing entirely when it does
+		-- not, so logic never learns more than whether there is a value at all. Max stacks is a plain
+		-- constant from the spell data and stays a real number.
+		lookupLogic["$demonicCoreStacks"] = _demonicCoreActive and _demonicCoreStacks ~= nil
+		lookupLogic["$demonicCoreTime"] = _demonicCoreActive and (_demonicCoreTime ~= nil or _demonicCoreTimeText ~= nil)
+		lookupLogic["$demonicCoreMaxStacks"] = spells.demonicCore.maxStacks
 
-		if _demonicCoreActive then
-			local _demonicCoreStacks = demonicCoreBuff.buff.applications
-			local _demonicCoreTime = demonicCoreBuff.buff:GetRemainingTime(currentTime)
-
-			if lookupChanged(prevState, "$demonicCoreStacks", _demonicCoreStacks, nil, true) then
-				lookup["$demonicCoreStacks"] = string.format("%.0f", _demonicCoreStacks)
-			end
-			if lookupChanged(prevState, "$demonicCoreTime", _demonicCoreTime, nil, true) then
-				lookup["$demonicCoreTime"] = TRB.Functions.BarText:TimerPrecision(_demonicCoreTime)
-			end
+		-- Absent for two different reasons: a proc that is down is a known zero, a proc that is up
+		-- with nothing tracking it in the Cooldown Manager is unknown. Memoized on the rendered
+		-- string rather than the value, so those two -- both nil underneath -- still repaint when
+		-- one becomes the other.
+		local stacksDisplay
+		if not _demonicCoreActive then
+			stacksDisplay = string.format("%.0f", 0)
+		elseif _demonicCoreStacks ~= nil then
+			stacksDisplay = string.format("%.0f", _demonicCoreStacks)
 		else
-			-- When Demonic Core is not active, display zeroed defaults rather than
-			-- blank strings. Stacks render as a whole number ("0") and the timer
-			-- respects the user's timer precision setting ("0.0" by default).
-			if lookupChanged(prevState, "$demonicCoreStacks", 0) then
-				lookup["$demonicCoreStacks"] = string.format("%.0f", 0)
-			end
-			if lookupChanged(prevState, "$demonicCoreTime", 0) then
-				lookup["$demonicCoreTime"] = TRB.Functions.BarText:TimerPrecision(0)
-			end
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
+		end
+
+		local timeDisplay
+		if not _demonicCoreActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _demonicCoreTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_demonicCoreTime)
+		elseif _demonicCoreTimeText ~= nil then
+			-- Already formatted for us, and to the viewer's precision rather than ours.
+			timeDisplay = _demonicCoreTimeText
+		else
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		end
+
+		if lookupChanged(prevState, "$demonicCoreStacks", stacksDisplay) then
+			lookup["$demonicCoreStacks"] = stacksDisplay
+		end
+		if lookupChanged(prevState, "$demonicCoreTime", timeDisplay) then
+			lookup["$demonicCoreTime"] = timeDisplay
+		end
+		if lookupChanged(prevState, "$demonicCoreMaxStacks", spells.demonicCore.maxStacks) then
+			lookup["$demonicCoreMaxStacks"] = string.format("%.0f", spells.demonicCore.maxStacks)
 		end
 	end
 
@@ -646,7 +664,7 @@ local function RefreshLookupData_Demonology()
 		lookupLogic["$soulShardsPlusCasting"] = soulShardsPlusCasting
 		lookupLogic["$comboPointsPlusCasting"] = soulShardsPlusCasting
 
-		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor, true) then
+		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor) then
 			local f = string.format("|c%s%.0f|r", soulShardsPlusCastingColor, soulShardsPlusCasting)
 			lookup["$soulShardsPlusCasting"] = f
 			lookup["$comboPointsPlusCasting"] = f
@@ -721,12 +739,12 @@ local function RefreshLookupData_Destruction()
 		lookupLogic["$soulShardsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 
-		if lookupChanged(prevState, "$soulShards", normalizedSoulShards, nil, true) then
+		if lookupChanged(prevState, "$soulShards", normalizedSoulShards) then
 			local f = string.format("%.1f", normalizedSoulShards)
 			lookup["$soulShards"] = f
 			lookup["$comboPoints"] = f
 		end
-		if lookupChanged(prevState, "$soulShardsMax", TRB.Data.character.maxResource2, nil, true) then
+		if lookupChanged(prevState, "$soulShardsMax", TRB.Data.character.maxResource2) then
 			local f = string.format("%.0f", TRB.Data.character.maxResource2)
 			lookup["$soulShardsMax"] = f
 			lookup["$comboPointsMax"] = f
@@ -800,7 +818,7 @@ local function RefreshLookupData_Destruction()
 		lookupLogic["$soulShardsPlusCasting"] = soulShardsPlusCasting
 		lookupLogic["$comboPointsPlusCasting"] = soulShardsPlusCasting
 
-		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor, true) then
+		if lookupChanged(prevState, "$soulShardsPlusCasting", soulShardsPlusCasting, soulShardsPlusCastingColor) then
 			local f = string.format("|c%s%.1f|r", soulShardsPlusCastingColor, soulShardsPlusCasting)
 			lookup["$soulShardsPlusCasting"] = f
 			lookup["$comboPointsPlusCasting"] = f
@@ -938,7 +956,53 @@ local function UpdateSnapshot_Affliction()
 	UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	snapshotData.snapshots[spells.shardInstability.id].buff:GetRemainingTime(GetTime())
+	local shardInstabilityBuff = snapshotData.snapshots[spells.shardInstability.id].buff
+
+	local properties = shardInstabilityBuff.customProperties
+	properties.stacks = nil
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	-- Pinned to the buff viewers, which describe the aura -- a cooldown viewer would describe the
+	-- cast instead. Which ID the entry answers to depends on how it was configured, so offer both.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.shardInstability.buffId, spells.shardInstability.id)
+	if trackedId == nil then
+		-- Nothing tracking it, so the Unstable Affliction button glow is the only signal left. It
+		-- carries no stacks or duration, which is what the bar text renders as "??".
+		return
+	end
+
+	-- Once the Cooldown Manager holds the buff it is authoritative, because its item follows the
+	-- real aura while the glow only reports that a proc appeared. The applications read doubles as
+	-- the up-signal: Blizzard drops the cached aura record the moment the aura ends, so the count
+	-- and the buff's existence always arrive together.
+	local wasActive = shardInstabilityBuff.isActive
+	local stacksOk, stacks = cdm:Read(trackedId, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF)
+	if stacksOk then
+		properties.stacks = stacks
+		shardInstabilityBuff:InitializeCustomSimple(true)
+
+		-- The bar viewer is the only one where Blizzard subtracts expiry from now, leaving a number
+		-- we can render at the user's own precision. Elsewhere the best on offer is the countdown
+		-- Blizzard already formatted, which is empty while that viewer's timers are switched off --
+		-- a settings answer, not a value, so it is discarded when plain-empty.
+		local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+		if remainingOk then
+			properties.remaining = remaining
+		else
+			local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+			if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+				properties.remainingText = remainingText
+			end
+		end
+	elseif wasActive then
+		shardInstabilityBuff:Reset()
+	end
+
+	if wasActive ~= shardInstabilityBuff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 end
 
 local function UpdateSnapshot_Demonology()
@@ -947,9 +1011,58 @@ local function UpdateSnapshot_Demonology()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.snapshots[spells.dominionOfArgus.id].buff:GetRemainingTime(currentTime)
-	snapshotData.snapshots[spells.demonicCore.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.infernalBolt.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.ruination.id].buff:GetRemainingTime(currentTime)
+
+	local demonicCoreBuff = snapshotData.snapshots[spells.demonicCore.id].buff
+	local properties = demonicCoreBuff.customProperties
+	properties.stacks = nil
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	-- Pinned to the buff viewers, which describe the aura -- a cooldown viewer would describe the
+	-- cast instead. Which ID the entry answers to depends on how it was configured, so offer both.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.demonicCore.buffId, spells.demonicCore.id)
+	if trackedId == nil then
+		-- Nothing tracking it, so the Demonbolt button glow is the only signal left. It carries no
+		-- stacks or duration, which is what the bar text renders as "??".
+		return
+	end
+
+	-- Once the Cooldown Manager holds the buff it is authoritative, because its item follows the
+	-- real aura while the glow only reports that a proc appeared: it stays lit unchanged as stacks
+	-- come and go. The applications read doubles as the up-signal, since Blizzard drops the cached
+	-- aura record the moment the aura ends.
+	local wasActive = demonicCoreBuff.isActive
+	local stacksOk, stacks = cdm:Read(trackedId, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF)
+	if stacksOk then
+		properties.stacks = stacks
+		demonicCoreBuff:InitializeCustomSimple(true)
+
+		-- The bar viewer is the only one where Blizzard subtracts expiry from now, leaving a number
+		-- we can render at the user's own precision. Elsewhere the best on offer is the countdown
+		-- Blizzard already formatted, which is empty while that viewer's timers are switched off --
+		-- a settings answer, not a value, so it is discarded when plain-empty.
+		local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+		if remainingOk then
+			properties.remaining = remaining
+		else
+			local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+			if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+				properties.remainingText = remainingText
+			end
+		end
+	elseif wasActive then
+		demonicCoreBuff:Reset()
+		-- The glow arms the sound and its hide event disarms it. When the Cooldown Manager is the one
+		-- that sees the buff end, rearm here so the next proc is still audible.
+		TRB.Functions.AudioCues:ResetLatch(snapshotData, "demonicCore")
+	end
+
+	if wasActive ~= demonicCoreBuff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 end
 
 local function UpdateSnapshot_Destruction()
@@ -961,42 +1074,11 @@ local function UpdateSnapshot_Destruction()
 	snapshotData.snapshots[spells.ruination.id].buff:GetRemainingTime(currentTime)
 end
 
----Processes soul shard threshold audio cues for any Warlock spec
----@param specSettings table The spec-specific settings table containing audio thresholds
+---Processes Soul Shard threshold audio cues for any Warlock spec
+---@param specSettings table The spec-specific settings table containing audio cues
 local function ProcessSoulShardAudioCues(specSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local coreSettings = TRB.Data.settings.core
-	local currentResource2 = snapshotData.attributes.resource2Modified / TRB.Data.resource2Factor
-	local threshold1 = specSettings.audio.soulShardThreshold1
-	local threshold2 = specSettings.audio.soulShardThreshold2
-	local threshold1Value = threshold1.configuration.thresholdValue
-	local threshold2Value = threshold2.configuration.thresholdValue
-
-	local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.soulShardThreshold1Played and currentResource2 >= threshold1Value
-	local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.soulShardThreshold2Played and currentResource2 >= threshold2Value
-
-	if threshold1ShouldFire and threshold2ShouldFire then
-		snapshotData.audio.soulShardThreshold1Played = true
-		snapshotData.audio.soulShardThreshold2Played = true
-		if threshold2Value > threshold1Value then
-			PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-		else
-			PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-		end
-	elseif threshold2ShouldFire then
-		snapshotData.audio.soulShardThreshold2Played = true
-		PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-	elseif threshold1ShouldFire then
-		snapshotData.audio.soulShardThreshold1Played = true
-		PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-	end
-
-	if currentResource2 < threshold1Value then
-		snapshotData.audio.soulShardThreshold1Played = false
-	end
-	if currentResource2 < threshold2Value then
-		snapshotData.audio.soulShardThreshold2Played = false
-	end
+	TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "soulShards", snapshotData.attributes.resource2)
 end
 
 
@@ -1008,44 +1090,23 @@ local function HandleSpellEvents(self, event, ...)
 		if TRB.Data.character.specId == 1 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 			if spellId == spells.unstableAffliction.id then -- Shard Instability proc glows the Unstable Affliction button
-				local currentTime = GetTime()
 				local shardInstabilitySnapshot = snapshotData.snapshots[spells.shardInstability.id]
 				if shardInstabilitySnapshot ~= nil then
-					-- Shard Instability has no fixed duration; mark it active (removal handled by
-					-- GLOW_HIDE) and pull stacks/remaining time from the secret aura data.
+					-- No duration or stacks knowable; active until GLOW_HIDE
 					shardInstabilitySnapshot.buff:InitializeCustomSimple(true)
-					shardInstabilitySnapshot.buff.updateFromSecret = true
-					local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
-					if bufferEntry ~= nil then
-						shardInstabilitySnapshot.buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
-						shardInstabilitySnapshot.buff:RefreshWithSecretAuraData(bufferEntry)
-					else
-						TRB.Functions.Aura:InsertAuraRequest(currentTime, shardInstabilitySnapshot.buff, "first")
-					end
 				end
 			end
 		elseif TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
 			if spellId == spells.demonbolt.id then -- Demonic Core
-				local currentTime = GetTime()
 				local demonicCoreSnapshot = snapshotData.snapshots[spells.demonicCore.id]
-				local wasActive = demonicCoreSnapshot ~= nil and demonicCoreSnapshot.buff.isActive
+				if demonicCoreSnapshot ~= nil then
+					-- Gated on the sound flag alone rather than on isActive, which the Cooldown Manager
+					-- may already have set from the same proc a tick earlier.
+					TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "demonicCore", true)
 
-				if not wasActive then
-					local specSettings = TRB.Data.settings.warlock.demonology
-					if specSettings.audio.demonicCore.enabled and not snapshotData.audio.demonicCorePlayed then
-						PlaySoundFile(specSettings.audio.demonicCore.sound, TRB.Data.settings.core.audio.channel.channel)
-						snapshotData.audio.demonicCorePlayed = true
-					end
-				end
-
-				demonicCoreSnapshot.buff:InitializeCustom(spells.demonicCore.duration, currentTime, true, 1, true)
-				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
-				if bufferEntry ~= nil then
-					snapshotData.snapshots[spells.demonicCore.id].buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
-					snapshotData.snapshots[spells.demonicCore.id].buff:RefreshWithSecretAuraData(bufferEntry)
-				else
-					TRB.Functions.Aura:InsertAuraRequest(currentTime, snapshotData.snapshots[spells.demonicCore.id].buff)
+					-- No stacks or duration knowable from a glow; active until GLOW_HIDE
+					demonicCoreSnapshot.buff:InitializeCustomSimple(true)
 				end
 			elseif spellId == spells.shadowBolt.id then -- Infernal Bolt proc glows the Shadow Bolt button
 				local infernalBoltSnapshot = snapshotData.snapshots[spells.infernalBolt.id]
@@ -1053,11 +1114,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = infernalBoltSnapshot.buff.isActive
 
 					if not wasActive then
-						local specSettings = TRB.Data.settings.warlock.demonology
-						if specSettings.audio.infernalBolt.enabled and not snapshotData.audio.infernalBoltPlayed then
-							PlaySoundFile(specSettings.audio.infernalBolt.sound, TRB.Data.settings.core.audio.channel.channel)
-							snapshotData.audio.infernalBoltPlayed = true
-						end
+						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "infernalBolt", true)
 					end
 
 					-- Infernal Bolt proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1069,11 +1126,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = ruinationSnapshot.buff.isActive
 
 					if not wasActive then
-						local specSettings = TRB.Data.settings.warlock.demonology
-						if specSettings.audio.ruination.enabled and not snapshotData.audio.ruinationPlayed then
-							PlaySoundFile(specSettings.audio.ruination.sound, TRB.Data.settings.core.audio.channel.channel)
-							snapshotData.audio.ruinationPlayed = true
-						end
+						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "ruination", true)
 					end
 
 					-- Ruination proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1088,11 +1141,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = infernalBoltSnapshot.buff.isActive
 
 					if not wasActive then
-						local specSettings = TRB.Data.settings.warlock.destruction
-						if specSettings.audio.infernalBolt.enabled and not snapshotData.audio.infernalBoltPlayed then
-							PlaySoundFile(specSettings.audio.infernalBolt.sound, TRB.Data.settings.core.audio.channel.channel)
-							snapshotData.audio.infernalBoltPlayed = true
-						end
+						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.destruction, snapshotData, "infernalBolt", true)
 					end
 
 					-- Infernal Bolt proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1104,11 +1153,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = ruinationSnapshot.buff.isActive
 
 					if not wasActive then
-						local specSettings = TRB.Data.settings.warlock.destruction
-						if specSettings.audio.ruination.enabled and not snapshotData.audio.ruinationPlayed then
-							PlaySoundFile(specSettings.audio.ruination.sound, TRB.Data.settings.core.audio.channel.channel)
-							snapshotData.audio.ruinationPlayed = true
-						end
+						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.destruction, snapshotData, "ruination", true)
 					end
 
 					-- Ruination proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1134,7 +1179,7 @@ local function HandleSpellEvents(self, event, ...)
 				if demonicCoreSnapshot ~= nil then
 					demonicCoreSnapshot.buff:Reset()
 				end
-				snapshotData.audio.demonicCorePlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "demonicCore")
 
 				snapshotData.attributes.demonicCoreActiveGrace = true
 
@@ -1148,13 +1193,13 @@ local function HandleSpellEvents(self, event, ...)
 				if infernalBoltSnapshot ~= nil then
 					infernalBoltSnapshot.buff:Reset()
 				end
-				snapshotData.audio.infernalBoltPlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "infernalBolt")
 			elseif spellId == spells.ruination.id then -- Ruination proc ended
 				local ruinationSnapshot = snapshotData.snapshots[spells.ruination.id]
 				if ruinationSnapshot ~= nil then
 					ruinationSnapshot.buff:Reset()
 				end
-				snapshotData.audio.ruinationPlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "ruination")
 			end
 		elseif TRB.Data.character.specId == 3 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
@@ -1163,13 +1208,13 @@ local function HandleSpellEvents(self, event, ...)
 				if infernalBoltSnapshot ~= nil then
 					infernalBoltSnapshot.buff:Reset()
 				end
-				snapshotData.audio.infernalBoltPlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "infernalBolt")
 			elseif spellId == spells.ruination.id then -- Ruination proc ended
 				local ruinationSnapshot = snapshotData.snapshots[spells.ruination.id]
 				if ruinationSnapshot ~= nil then
 					ruinationSnapshot.buff:Reset()
 				end
-				snapshotData.audio.ruinationPlayed = false
+				TRB.Functions.AudioCues:ResetLatch(snapshotData, "ruination")
 			end
 		end
 	end
@@ -1182,13 +1227,11 @@ spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
 function TRB.Functions.Class:EnableEvents()
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
-	TRB.Functions.Aura:EnableUnitAuraCache()
 end
 
 function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
-	TRB.Functions.Aura:DisableUnitAuraCache()
 end
 
 local function UpdateResourceBar()
@@ -1442,8 +1485,11 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 
+			-- No talent gate: a buff that is up is proof enough the talent is taken, and the talent
+			-- lookup keys off the spell ID, which is not guaranteed to be the tree's node ID.
+			local shardInstabilitySnapshot = snapshots[spells.shardInstability.id]
 			local conditionMap = {
-				shardInstability = talents:IsTalentActive(spells.shardInstability) and snapshots[spells.shardInstability.id] ~= nil and snapshots[spells.shardInstability.id].buff.isActive,
+				shardInstability = shardInstabilitySnapshot ~= nil and shardInstabilitySnapshot.buff.isActive == true,
 			}
 
 			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
@@ -1763,6 +1809,11 @@ eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	-- Wrong game version for this build: halt before anything reads or writes settings.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
+
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -2028,13 +2079,18 @@ do
 	for key, entry in pairs(shared) do
 		affliction[key] = entry
 	end
+	-- Both go false the moment the value is unknown, matching the "??" the text renders: a
+	-- conditional must not read as satisfied on the strength of a number we could not obtain.
 	affliction["$shardInstabilityTime"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if spells == nil or spells.shardInstability == nil then
 			return false
 		end
 		local snap = TRB.Data.snapshotData.snapshots[spells.shardInstability.id]
-		return snap ~= nil and snap.buff.isActive == true
+		if snap == nil or snap.buff.isActive ~= true then
+			return false
+		end
+		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
 	end
 	affliction["$shardInstabilityStacks"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
@@ -2042,20 +2098,25 @@ do
 			return false
 		end
 		local snap = TRB.Data.snapshotData.snapshots[spells.shardInstability.id]
-		return snap ~= nil and snap.buff.isActive == true
+		return snap ~= nil and snap.buff.isActive == true and snap.buff.customProperties.stacks ~= nil
 	end
 	affliction["$shardInstabilityMaxStacks"] = true
 	local demonology = {}
 	for key, entry in pairs(shared) do
 		demonology[key] = entry
 	end
+	-- Both go false the moment the value is unknown, matching the "??" the text renders: a
+	-- conditional must not read as satisfied on the strength of a number we could not obtain.
 	demonology["$demonicCoreTime"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if spells == nil or spells.demonicCore == nil then
 			return false
 		end
 		local snap = TRB.Data.snapshotData.snapshots[spells.demonicCore.id]
-		return snap ~= nil and snap.buff.isActive == true
+		if snap == nil or snap.buff.isActive ~= true then
+			return false
+		end
+		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
 	end
 	demonology["$demonicCoreStacks"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
@@ -2063,8 +2124,9 @@ do
 			return false
 		end
 		local snap = TRB.Data.snapshotData.snapshots[spells.demonicCore.id]
-		return snap ~= nil and snap.buff.isActive == true
+		return snap ~= nil and snap.buff.isActive == true and snap.buff.customProperties.stacks ~= nil
 	end
+	demonology["$demonicCoreMaxStacks"] = true
 	demonology["$infernalBoltTime"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if spells == nil or spells.infernalBolt == nil then
@@ -2079,6 +2141,14 @@ do
 			return false
 		end
 		local snap = TRB.Data.snapshotData.snapshots[spells.ruination.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
+	demonology["$doaTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.dominionOfArgus == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.dominionOfArgus.id]
 		return snap ~= nil and snap.buff.isActive == true
 	end
 	local destruction = {}

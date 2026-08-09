@@ -56,14 +56,12 @@ local function FillSpecializationCache()
 	local spells = specCache.evoker_devastation.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 
 	specCache.evoker_devastation.snapshotData.attributes.manaRegen = 0
-	specCache.evoker_devastation.snapshotData.audio = {
-		essenceBurstPlayed = false,
-		secondaryThresholdPlayed = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.evoker_devastation.snapshotData.snapshots[spells.dragonrage.id] = TRB.Classes.Snapshot:New(spells.dragonrage)
 	---@type TRB.Classes.Snapshot
-	specCache.evoker_devastation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
+	-- Always-simple: the aura is secret, so there is no endTime of our own to age. Without this
+	-- GetRemainingTime would read the missing endTime as expired and clear the buff a tick later.
+	specCache.evoker_devastation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst, nil, "always")
 
 	specCache.evoker_devastation.barTextVariables = {
 		icons = {},
@@ -97,12 +95,8 @@ local function FillSpecializationCache()
 	spells = specCache.evoker_preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 
 	specCache.evoker_preservation.snapshotData.attributes.manaRegen = 0
-	specCache.evoker_preservation.snapshotData.audio = {
-		essenceBurstPlayed = false,
-		secondaryThresholdPlayed = false
-	}
 	---@type TRB.Classes.Snapshot
-	specCache.evoker_preservation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
+	specCache.evoker_preservation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst, nil, "always")
 
 	specCache.evoker_preservation.barTextVariables = {
 		icons = {},
@@ -138,15 +132,10 @@ local function FillSpecializationCache()
 
 	specCache.evoker_augmentation.snapshotData.attributes.manaRegen = 0
 	specCache.evoker_augmentation.snapshotData.attributes.extendsEbonMight = false
-	specCache.evoker_augmentation.snapshotData.audio = {
-		essenceBurstPlayed = false,
-		playedEbonMightCue = false,
-		secondaryThresholdPlayed = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.evoker_augmentation.snapshotData.snapshots[spells.ebonMight.id] = TRB.Classes.Snapshot:New(spells.ebonMight)
 	---@type TRB.Classes.Snapshot
-	specCache.evoker_augmentation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
+	specCache.evoker_augmentation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst, nil, "always")
 
 	specCache.evoker_augmentation.barTextVariables = {
 		icons = {},
@@ -353,11 +342,6 @@ local function ConstructResourceBar(settings)
 	-- Make sure bar visibility and bar text are updated immediately.
 	-- Bar:HideResourceBar()
 	TRB.Functions.Class:TriggerResourceBarUpdates()
-
-	-- Enable the UNIT_AURA cache buffer so SPELL_ACTIVATION_OVERLAY_SHOW handlers can
-	-- match a freshly-applied (secret) Essence Burst aura back to its auraInstanceID,
-	-- mirroring the Protection Warrior Ignore Pain pattern.
-	TRB.Functions.Aura:EnableUnitAuraCache()
 end
 
 local function RefreshLookupData_Devastation()
@@ -455,19 +439,46 @@ local function RefreshLookupData_Devastation()
 
 	-- Block D: Essence Burst ($essenceBurstTime, $essenceBurstStacks)
 	if not activeVars or activeVars["$essenceBurstTime"] or activeVars["$essenceBurstStacks"] then
-		local currentTime = GetTime()
 		local essenceBurstBuff = snapshotData.snapshots[spells.essenceBurst.id].buff
-		local _essenceBurstTime = essenceBurstBuff:GetRemainingTime(currentTime)
-		local _essenceBurstStacks = (essenceBurstBuff.isActive and (essenceBurstBuff.applications or 0)) or 0
+		local _essenceBurstActive = essenceBurstBuff.isActive == true
+		local properties = essenceBurstBuff.customProperties
+		local _essenceBurstStacks = properties.stacks
+		local _essenceBurstTime = properties.remaining
+		local _essenceBurstTimeText = properties.remainingText
 
-		lookupLogic["$essenceBurstTime"] = _essenceBurstTime
-		lookupLogic["$essenceBurstStacks"] = _essenceBurstStacks
+		-- Both values are secret when the Cooldown Manager has them and missing entirely when it does
+		-- not, so logic never learns more than whether there is a value at all.
+		lookupLogic["$essenceBurstStacks"] = _essenceBurstActive and _essenceBurstStacks ~= nil
+		lookupLogic["$essenceBurstTime"] = _essenceBurstActive and (_essenceBurstTime ~= nil or _essenceBurstTimeText ~= nil)
 
-		if lookupChanged(prevState, "$essenceBurstTime", _essenceBurstTime) then
-			lookup["$essenceBurstTime"] = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
+		-- A proc that is down is a known zero; one that is up with nothing tracking it is unknown.
+		-- Memoized on the rendered string, so those two -- both nil underneath -- still repaint.
+		local stacksDisplay
+		if not _essenceBurstActive then
+			stacksDisplay = string.format("%.0f", 0)
+		elseif _essenceBurstStacks ~= nil then
+			stacksDisplay = string.format("%.0f", _essenceBurstStacks)
+		else
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		end
-		if lookupChanged(prevState, "$essenceBurstStacks", _essenceBurstStacks) then
-			lookup["$essenceBurstStacks"] = string.format("%.0f", _essenceBurstStacks)
+
+		local timeDisplay
+		if not _essenceBurstActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _essenceBurstTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
+		elseif _essenceBurstTimeText ~= nil then
+			-- Already formatted for us, and to the viewer's precision rather than ours.
+			timeDisplay = _essenceBurstTimeText
+		else
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		end
+
+		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then
+			lookup["$essenceBurstStacks"] = stacksDisplay
+		end
+		if lookupChanged(prevState, "$essenceBurstTime", timeDisplay) then
+			lookup["$essenceBurstTime"] = timeDisplay
 		end
 	end
 
@@ -559,19 +570,46 @@ local function RefreshLookupData_Preservation()
 
 	-- Block C: Essence Burst ($essenceBurstTime, $essenceBurstStacks)
 	if not activeVars or activeVars["$essenceBurstTime"] or activeVars["$essenceBurstStacks"] then
-		local currentTime = GetTime()
 		local essenceBurstBuff = snapshotData.snapshots[spells.essenceBurst.id].buff
-		local _essenceBurstTime = essenceBurstBuff:GetRemainingTime(currentTime)
-		local _essenceBurstStacks = (essenceBurstBuff.isActive and (essenceBurstBuff.applications or 0)) or 0
+		local _essenceBurstActive = essenceBurstBuff.isActive == true
+		local properties = essenceBurstBuff.customProperties
+		local _essenceBurstStacks = properties.stacks
+		local _essenceBurstTime = properties.remaining
+		local _essenceBurstTimeText = properties.remainingText
 
-		lookupLogic["$essenceBurstTime"] = _essenceBurstTime
-		lookupLogic["$essenceBurstStacks"] = _essenceBurstStacks
+		-- Both values are secret when the Cooldown Manager has them and missing entirely when it does
+		-- not, so logic never learns more than whether there is a value at all.
+		lookupLogic["$essenceBurstStacks"] = _essenceBurstActive and _essenceBurstStacks ~= nil
+		lookupLogic["$essenceBurstTime"] = _essenceBurstActive and (_essenceBurstTime ~= nil or _essenceBurstTimeText ~= nil)
 
-		if lookupChanged(prevState, "$essenceBurstTime", _essenceBurstTime) then
-			lookup["$essenceBurstTime"] = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
+		-- A proc that is down is a known zero; one that is up with nothing tracking it is unknown.
+		-- Memoized on the rendered string, so those two -- both nil underneath -- still repaint.
+		local stacksDisplay
+		if not _essenceBurstActive then
+			stacksDisplay = string.format("%.0f", 0)
+		elseif _essenceBurstStacks ~= nil then
+			stacksDisplay = string.format("%.0f", _essenceBurstStacks)
+		else
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		end
-		if lookupChanged(prevState, "$essenceBurstStacks", _essenceBurstStacks) then
-			lookup["$essenceBurstStacks"] = string.format("%.0f", _essenceBurstStacks)
+
+		local timeDisplay
+		if not _essenceBurstActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _essenceBurstTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
+		elseif _essenceBurstTimeText ~= nil then
+			-- Already formatted for us, and to the viewer's precision rather than ours.
+			timeDisplay = _essenceBurstTimeText
+		else
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		end
+
+		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then
+			lookup["$essenceBurstStacks"] = stacksDisplay
+		end
+		if lookupChanged(prevState, "$essenceBurstTime", timeDisplay) then
+			lookup["$essenceBurstTime"] = timeDisplay
 		end
 	end
 
@@ -674,19 +712,46 @@ local function RefreshLookupData_Augmentation()
 
 	-- Block D: Essence Burst ($essenceBurstTime, $essenceBurstStacks)
 	if not activeVars or activeVars["$essenceBurstTime"] or activeVars["$essenceBurstStacks"] then
-		local currentTime = GetTime()
 		local essenceBurstBuff = snapshotData.snapshots[spells.essenceBurst.id].buff
-		local _essenceBurstTime = essenceBurstBuff:GetRemainingTime(currentTime)
-		local _essenceBurstStacks = (essenceBurstBuff.isActive and (essenceBurstBuff.applications or 0)) or 0
+		local _essenceBurstActive = essenceBurstBuff.isActive == true
+		local properties = essenceBurstBuff.customProperties
+		local _essenceBurstStacks = properties.stacks
+		local _essenceBurstTime = properties.remaining
+		local _essenceBurstTimeText = properties.remainingText
 
-		lookupLogic["$essenceBurstTime"] = _essenceBurstTime
-		lookupLogic["$essenceBurstStacks"] = _essenceBurstStacks
+		-- Both values are secret when the Cooldown Manager has them and missing entirely when it does
+		-- not, so logic never learns more than whether there is a value at all.
+		lookupLogic["$essenceBurstStacks"] = _essenceBurstActive and _essenceBurstStacks ~= nil
+		lookupLogic["$essenceBurstTime"] = _essenceBurstActive and (_essenceBurstTime ~= nil or _essenceBurstTimeText ~= nil)
 
-		if lookupChanged(prevState, "$essenceBurstTime", _essenceBurstTime) then
-			lookup["$essenceBurstTime"] = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
+		-- A proc that is down is a known zero; one that is up with nothing tracking it is unknown.
+		-- Memoized on the rendered string, so those two -- both nil underneath -- still repaint.
+		local stacksDisplay
+		if not _essenceBurstActive then
+			stacksDisplay = string.format("%.0f", 0)
+		elseif _essenceBurstStacks ~= nil then
+			stacksDisplay = string.format("%.0f", _essenceBurstStacks)
+		else
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		end
-		if lookupChanged(prevState, "$essenceBurstStacks", _essenceBurstStacks) then
-			lookup["$essenceBurstStacks"] = string.format("%.0f", _essenceBurstStacks)
+
+		local timeDisplay
+		if not _essenceBurstActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _essenceBurstTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
+		elseif _essenceBurstTimeText ~= nil then
+			-- Already formatted for us, and to the viewer's precision rather than ours.
+			timeDisplay = _essenceBurstTimeText
+		else
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		end
+
+		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then
+			lookup["$essenceBurstStacks"] = stacksDisplay
+		end
+		if lookupChanged(prevState, "$essenceBurstTime", timeDisplay) then
+			lookup["$essenceBurstTime"] = timeDisplay
 		end
 	end
 
@@ -788,37 +853,14 @@ local function HandleSpellEvents(self, event, ...)
 	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
 		local spellId = ...
 		if spellId == essenceBurstDetectionId then -- Essence Burst
-			local currentTime = GetTime()
-			local wasActive = essenceBurstSnapshot ~= nil and essenceBurstSnapshot.buff.isActive
-
-			if not wasActive then
-				local specSettings = TRB.Data.settings.evoker[TRB.Data.character.specName]
-				if specSettings.audio.essenceBurst.enabled and not snapshotData.audio.essenceBurstPlayed then
-					PlaySoundFile(specSettings.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
-					snapshotData.audio.essenceBurstPlayed = true
-				end
-			end
-
-			-- Set up the buff snapshot to be driven entirely by live aura data via the
-			-- DurationObject API. We do NOT seed a placeholder duration from the spell
-			-- definition -- the live aura is the source of truth and refreshes/extensions
-			-- on stack gain are picked up automatically by RefreshWithSecretAuraData.
 			if essenceBurstSnapshot ~= nil then
-				local buff = essenceBurstSnapshot.buff
-				if not wasActive then
-					buff:InitializeCustomSimple(false)
-					buff.updateFromSecret = true
-				end
+				-- Gated on the sound flag alone rather than on isActive, which the Cooldown Manager
+				-- may already have set from the same proc a tick earlier.
+				local specSettings = TRB.Data.settings.evoker[TRB.Data.character.specName]
+				TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "essenceBurst", true)
 
-				local bufferEntry = TRB.Functions.Aura:GetFromAuraCacheBuffer(currentTime, "first")
-				if bufferEntry ~= nil then
-					if buff.auraInstanceId == nil then
-						buff:SetAuraInstanceId(bufferEntry.auraInstanceID)
-					end
-					buff:RefreshWithSecretAuraData(bufferEntry)
-				elseif not wasActive then
-					TRB.Functions.Aura:InsertAuraRequest(currentTime, buff, "first")
-				end
+				-- No stacks or duration knowable from an overlay; active until HIDE.
+				essenceBurstSnapshot.buff:InitializeCustomSimple(true)
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
@@ -827,7 +869,7 @@ local function HandleSpellEvents(self, event, ...)
 			if essenceBurstSnapshot ~= nil then
 				essenceBurstSnapshot.buff:Reset()
 			end
-			snapshotData.audio.essenceBurstPlayed = false
+			TRB.Functions.AudioCues:ResetLatch(snapshotData, "essenceBurst")
 		end
 	end
 end
@@ -851,10 +893,65 @@ local function UpdateSnapshot()
 	local currentTime = GetTime()
 end
 
+---Refreshes Essence Burst from the Cooldown Manager. All 3 specs share the proc under their own
+---buff id, so the caller supplies its spell data.
+---@param spells TRB.Classes.Evoker.DevastationSpells|TRB.Classes.Evoker.PreservationSpells|TRB.Classes.Evoker.AugmentationSpells
+local function UpdateEssenceBurst(spells)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local essenceBurstBuff = snapshotData.snapshots[spells.essenceBurst.id].buff
+	local properties = essenceBurstBuff.customProperties
+	properties.stacks = nil
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	-- Pinned to the buff viewers, which describe the aura -- a cooldown viewer would describe the cast.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.essenceBurst.id)
+	if trackedId == nil then
+		-- Nothing tracking it, so the activation overlay is the only signal left. It carries no
+		-- stacks or duration, which is what the bar text renders as "??".
+		return
+	end
+
+	-- Once the Cooldown Manager holds the buff it is authoritative: its item follows the real aura,
+	-- while the overlay stays lit unchanged across refreshes and stack changes. The applications
+	-- read doubles as the up-signal, since Blizzard drops the cached record the moment the aura ends.
+	local wasActive = essenceBurstBuff.isActive
+	local stacksOk, stacks = cdm:Read(trackedId, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF)
+	if stacksOk then
+		properties.stacks = stacks
+		essenceBurstBuff:InitializeCustomSimple(true)
+
+		-- The bar viewer is the only one where Blizzard subtracts expiry from now. Elsewhere the best
+		-- on offer is the countdown it already formatted, empty while that viewer's timers are off.
+		local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+		if remainingOk then
+			properties.remaining = remaining
+		else
+			local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+			if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+				properties.remainingText = remainingText
+			end
+		end
+	elseif wasActive then
+		essenceBurstBuff:Reset()
+		-- The overlay arms the sound and its hide event disarms it; rearm here when the Cooldown
+		-- Manager is the one that sees the buff end.
+		TRB.Functions.AudioCues:ResetLatch(snapshotData, "essenceBurst")
+	end
+
+	if wasActive ~= essenceBurstBuff.isActive then
+		TRB.Data.lookupDirty = true
+	end
+end
+
 local function UpdateSnapshot_Devastation()
 	UpdateSnapshot()
-	
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+
 	local currentTime = GetTime()
+
+	UpdateEssenceBurst(spells)
 end
 
 local function UpdateSnapshot_Preservation()
@@ -863,6 +960,8 @@ local function UpdateSnapshot_Preservation()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
+
+	UpdateEssenceBurst(spells)
 end
 
 local function UpdateSnapshot_Augmentation()
@@ -872,6 +971,8 @@ local function UpdateSnapshot_Augmentation()
 	local snapshots = TRB.Data.snapshotData.snapshots
 
 	local currentTime = GetTime()
+
+	UpdateEssenceBurst(spells)
 
 	-- Plain (non-secret) active flag for the Ebon Might bar's custom thresholds: the lines hide
 	-- while the buff is down (see ebonMight thresholdActiveAttribute).
@@ -967,12 +1068,7 @@ local function UpdateResourceBar()
 			UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 		end
 
-		if specSettings.audio.secondaryThreshold.enabled and not snapshotData.audio.secondaryThresholdPlayed and snapshotData.attributes.resource2 <= specSettings.audio.secondaryThreshold.configuration.thresholdValue then
-			snapshotData.audio.secondaryThresholdPlayed = true
-			PlaySoundFile(specSettings.audio.secondaryThreshold.sound, coreSettings.audio.channel.channel)
-		elseif snapshotData.attributes.resource2 > specSettings.audio.secondaryThreshold.configuration.thresholdValue then
-			snapshotData.audio.secondaryThresholdPlayed = false
-		end
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "essence", snapshotData.attributes.resource2)
 
 		return refreshTextEssence
 	end
@@ -1150,14 +1246,7 @@ local function UpdateResourceBar()
 			end
 
 			-- Audio cue for Ebon Might dropping during cast
-			if ebonMightActive and ebonMightDropDuringCastMet then
-				if specSettings.audio.ebonMightEnding.enabled and not snapshotData.audio.playedEbonMightCue then
-					snapshotData.audio.playedEbonMightCue = true
-					PlaySoundFile(specSettings.audio.ebonMightEnding.sound, coreSettings.audio.channel.channel)
-				end
-			else
-				snapshotData.audio.playedEbonMightCue = false
-			end
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "ebonMightEnding", ebonMightActive and ebonMightDropDuringCastMet)
 
 			local conditionMap = {
 				ebonMightDropDuringCast = ebonMightActive and ebonMightDropDuringCastMet,
@@ -1354,6 +1443,11 @@ eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	-- Wrong game version for this build: halt before anything reads or writes settings.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
+
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -1606,9 +1700,26 @@ do
 	local essenceRegenFn = function()
 		return TRB.Data.snapshotData.attributes.resource2 < TRB.Data.character.maxResource2
 	end
-	local essenceBurstFn = function()
-		local spells = TRB.Data.spellsData.spells
-		return spells and spells.essenceBurst and TRB.Data.snapshotData.snapshots[spells.essenceBurst.id].buff.isActive
+	-- Both go false the moment the value is unknown, matching the "??" the text renders: a conditional
+	-- must not read as satisfied on the strength of a number we could not obtain.
+	local essenceBurstTimeFn = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.essenceBurst == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.essenceBurst.id]
+		if snap == nil or snap.buff.isActive ~= true then
+			return false
+		end
+		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
+	end
+	local essenceBurstStacksFn = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.essenceBurst == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.essenceBurst.id]
+		return snap ~= nil and snap.buff.isActive == true and snap.buff.customProperties.stacks ~= nil
 	end
 	local common = {
 		["$casting"] = castingFn,
@@ -1620,8 +1731,8 @@ do
 		["$comboPointsMax"] = true, ["$essenceMax"] = true,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
-		["$essenceBurstTime"] = essenceBurstFn,
-		["$essenceBurstStacks"] = essenceBurstFn,
+		["$essenceBurstTime"] = essenceBurstTimeFn,
+		["$essenceBurstStacks"] = essenceBurstStacksFn,
 	}
 	-- Devastation
 	local devastation = {}

@@ -13,6 +13,7 @@ TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy = {}
 
 local BLOOD_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.blood.runicPower
+local BLOOD_MAX_COAGULATING_BLOOD = TRB.Data.maxResource.deathknight.blood.coagulatingBlood
 local FROST_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.frost.runicPower
 local UNHOLY_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.unholy.runicPower
 
@@ -239,6 +240,36 @@ local function BloodLoadDefaultBarTextSettings(classic)
 			color = { color = "FFFFFFFF" },
 			enabled = true,
 		},
+		{
+			useDefaultFontColor = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = true,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionCenter"],
+			text = "$coagulatingBloodStacks",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontSize = 14,
+			name = L["ResourceCoagulatingBlood"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["CoagulatingBloodBar"],
+				yPos = 0,
+				relativeToFrame = "CoagulatingBloodBar",
+			},
+			fontJustifyHorizontal = "CENTER",
+			useDefaultFontSize = true,
+			color = { color = "FFFFFFFF" },
+			enabled = true,
+		},
 	}
 
 	local extraTextSettings = DeathKnightLoadExtraBarTextSettings(classic)
@@ -289,6 +320,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			boneShield = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			coagulatingBlood = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -300,6 +332,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		bars = {
 			boneShield = TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic),
+			coagulatingBlood = TRB.Functions.Settings:DefaultCoagulatingBloodBarDimensions(classic),
 		},
 		colors={
 			text = {
@@ -359,6 +392,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			bars = {
 				boneShield = TRB.Functions.Settings:DefaultBoneShieldBarColors(),
+				coagulatingBlood = TRB.Functions.Settings:DefaultCoagulatingBloodBarColors(),
 			},
 			shared = {
 				nodeOrder = { "runeRegenOvercap" },
@@ -373,6 +407,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 							runicPowerBar = { bar = false, border = false, background = false },
 							runesBar = { bar = true, border = false, background = false },
 							boneShield = { bar = false, border = false, background = false },
+							coagulatingBlood = { bar = false, border = false, background = false },
 						},
 					},
 					borderOvercap = {
@@ -383,6 +418,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 							runicPowerBar = { bar = false, border = true, background = false },
 							runesBar = { bar = false, border = false, background = false },
 							boneShield = { bar = false, border = false, background = false },
+							coagulatingBlood = { bar = false, border = false, background = false },
 						},
 					},
 				},
@@ -441,6 +477,15 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 	settings.textures.boneShieldBorderName = boneShieldTextures.borderName
 	settings.textures.boneShieldBackground = boneShieldTextures.background
 	settings.textures.boneShieldBackgroundName = boneShieldTextures.backgroundName
+
+	-- Add Coagulating Blood bar textures
+	local coagulatingBloodTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+	settings.textures.coagulatingBloodBar = coagulatingBloodTextures.bar
+	settings.textures.coagulatingBloodBarName = coagulatingBloodTextures.barName
+	settings.textures.coagulatingBloodBorder = coagulatingBloodTextures.border
+	settings.textures.coagulatingBloodBorderName = coagulatingBloodTextures.borderName
+	settings.textures.coagulatingBloodBackground = coagulatingBloodTextures.background
+	settings.textures.coagulatingBloodBackgroundName = coagulatingBloodTextures.backgroundName
 
 	if includeBarText then
 		settings.displayText.barText = BloodLoadDefaultBarTextSettings(classic)
@@ -1167,6 +1212,28 @@ local function BloodConstructBoneShieldBarPanel(parent)
 	end
 end
 
+local function BloodConstructCoagulatingBloodBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+
+	local coagulatingBloodBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("coagulatingBlood")
+	if coagulatingBloodBarDef then
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, coagulatingBloodBarDef, L["ResourceRunicPower"])
+
+		yCoord = yCoord - 90
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 6, 1, yCoord, coagulatingBloodBarDef)
+
+		yCoord = yCoord - 60
+		yCoord = TRB.Functions.OptionsUi.Colors:GenerateCustomBarMaxValueOptions(parent, controls, spec, 6, 1, yCoord, "coagulatingBlood", L["ResourceCoagulatingBlood"], 1, BLOOD_MAX_COAGULATING_BLOOD)
+	end
+end
+
 local function BloodConstructBarTexturesPanel(parent)
 	if parent == nil then
 		return
@@ -1178,10 +1245,15 @@ local function BloodConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
-	local boneShieldBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("boneShield")
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local customBars = {}
+	local boneShieldBarDef = registry:Get("boneShield")
 	if boneShieldBarDef then
 		table.insert(customBars, boneShieldBarDef)
+	end
+	local coagulatingBloodBarDef = registry:Get("coagulatingBlood")
+	if coagulatingBloodBarDef then
+		table.insert(customBars, coagulatingBloodBarDef)
 	end
 	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"], false, customBars)
 end
@@ -1197,10 +1269,15 @@ local function BloodConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.deathknight_blood
 	local yCoord = 5
 
-	local boneShieldBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("boneShield")
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local customBars = {}
+	local boneShieldBarDef = registry:Get("boneShield")
 	if boneShieldBarDef then
 		table.insert(customBars, boneShieldBarDef)
+	end
+	local coagulatingBloodBarDef = registry:Get("coagulatingBlood")
+	if coagulatingBloodBarDef then
+		table.insert(customBars, coagulatingBloodBarDef)
 	end
 	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true, nil, customBars)
 end
@@ -1297,25 +1374,6 @@ local function BloodConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 1, yCoord)
 end
 
-local function BloodConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 6
-	local specId = 1
-	local spec = TRB.Data.settings.deathknight.blood
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.deathknight_blood
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-end
-
 local function BloodConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1354,6 +1412,7 @@ local function BloodConstructIndicatorColorsPanel(parent)
 			{ key = "runicPowerBar", label = L["BarNameRunicPowerBar"] },
 			{ key = "runesBar", label = L["BarNameRunesBar"] },
 			{ key = "boneShield", label = L["ResourceBoneShield"] },
+			{ key = "coagulatingBlood", label = L["ResourceCoagulatingBlood"] },
 		},
 		excludedElements = {
 			["boneShield"] = { endCap = true },
@@ -1398,10 +1457,11 @@ local function BloodConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_blood = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = BloodConstructRunicPowerBarPanel },
-		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = BloodConstructRunesBarPanel },
-		{ key = "boneShieldBar", label = L["TabBoneShield"], width = oUi.tabWidth.medium, constructor = BloodConstructBoneShieldBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = BloodConstructHealthBarPanel },
+		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = BloodConstructRunicPowerBarPanel, visibilityKey = "primary" },
+		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = BloodConstructRunesBarPanel, visibilityKey = "secondary" },
+		{ key = "boneShieldBar", label = L["TabBoneShield"], width = oUi.tabWidth.medium, constructor = BloodConstructBoneShieldBarPanel, visibilityKey = "boneShield" },
+		{ key = "coagulatingBloodBar", label = L["TabCoagulatingBlood"], width = oUi.tabWidth.large, constructor = BloodConstructCoagulatingBloodBarPanel, visibilityKey = "coagulatingBlood" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = BloodConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = BloodConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = BloodConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = BloodConstructBarVisibilityPanel },
@@ -1749,25 +1809,6 @@ local function FrostConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 2, yCoord)
 end
 
-local function FrostConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 6
-	local specId = 2
-	local spec = TRB.Data.settings.deathknight.frost
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.deathknight_frost
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-end
-
 local function FrostConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1843,9 +1884,9 @@ local function FrostConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = FrostConstructRunicPowerBarPanel },
-		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = FrostConstructRunesBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel },
+		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = FrostConstructRunicPowerBarPanel, visibilityKey = "primary" },
+		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = FrostConstructRunesBarPanel, visibilityKey = "secondary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FrostConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FrostConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FrostConstructBarVisibilityPanel },
@@ -2192,25 +2233,6 @@ local function UnholyConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 3, yCoord)
 end
 
-local function UnholyConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 6
-	local specId = 3
-	local spec = TRB.Data.settings.deathknight.unholy
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.deathknight_unholy
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-end
-
 local function UnholyConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2286,9 +2308,9 @@ local function UnholyConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = UnholyConstructRunicPowerBarPanel },
-		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = UnholyConstructRunesBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = UnholyConstructHealthBarPanel },
+		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = UnholyConstructRunicPowerBarPanel, visibilityKey = "primary" },
+		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = UnholyConstructRunesBarPanel, visibilityKey = "secondary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = UnholyConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = UnholyConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = UnholyConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = UnholyConstructBarVisibilityPanel },

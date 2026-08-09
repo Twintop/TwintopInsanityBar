@@ -35,7 +35,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public textures table?
 ---@field public thresholds TRB.Classes.Settings.Thresholds?
 ---@field public precision TRB.Classes.Settings.Precision
----@field public audio { string: TRB.Classes.Settings.Audio }
+---@field public audio { string: TRB.Classes.Settings.AudioCue }
+---@field public audioSeeded table<string, boolean>? # Counter sources whose shipped cues have been seeded once
 ---@field public maxResource table?
 
 
@@ -43,6 +44,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public colors TRB.Classes.Settings.ColorsCore
 ---@field public dataRefreshRate number
 ---@field public reactionTime number
+---@field public cooldownManagerGracePeriod number
+---@field public cdmUnknownDisplay string # "questionMarks" | "zero" | "nothing"
 ---@field public news table
 ---@field public strata table
 ---@field public timers table
@@ -274,6 +277,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public fillDirection trbFillDirection # Fill direction for the bar's StatusBar
 ---@field public growthDirection trbFillDirection? # Growth direction for multi-node bars (independent from fill)
 ---@field public anchor TRB.Classes.Settings.BarAnchor? # New anchor system
+---@field public maxResource table? # Opt-in maximum value override `{ enabled, value }`; only on bars that support one (e.g. Coagulating Blood)
 ---@field public xPos number # @deprecated Use anchor.xOffset instead
 ---@field public yPos number # @deprecated Use anchor.yOffset instead
 ---@field public relativeTo string # @deprecated Use anchor.anchorPoint/attachPoint instead
@@ -322,6 +326,12 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public targetClassColorPvpOnly boolean # Restrict targetClassColor to when PvP is enabled (flagged / War Mode / battleground / arena)
 ---@field public targetClassColorFriendly boolean # Extend targetClassColor to friendly player targets as well
 ---@field public tickProfiles table<integer, TRB.Classes.Settings.CastbarTickProfile> # Channel tick profiles keyed by spellId
+---@field public uninterruptibleShield TRB.Classes.Settings.CastBarIconShield # Uninteruptible Shield settings
+
+---@class TRB.Classes.Settings.OtherBar : TRB.Classes.Settings.SecondaryBar
+---@field public durationPrecision integer? # GCD bar only: decimal places (0-3) for its duration text. The mirror timers render mm:ss instead
+---@field public timerDirection string? # GCD bar only: "deplete" (drain a full bar) or "fill" (grow an empty one)
+---@field public disableBlizzardBar boolean? # Mirror timers only: hide Blizzard's own frame for this timer type
 
 ---@class TRB.Classes.Settings.DisplayText
 ---@field public default TRB.Classes.Settings.DisplayTextDefault
@@ -367,12 +377,15 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public relativeToFrame string
 ---@field public relativeToFrameName string
 
----@class TRB.Classes.Settings.Audio
----@field public name string
+---@class TRB.Classes.Settings.AudioCue
+---@field public id string # Stable identifier: a built-in key ("surgeOfLight") or a generated guid
+---@field public kind string # "builtin" (spec-specific firing logic) or "counter" (generic threshold engine)
+---@field public source string? # Counter cues only: which counter source feeds it, e.g. "chi"
+---@field public name string? # User-editable display name. nil on built-ins, which resolve from the registry
 ---@field public enabled boolean
 ---@field public sound string
 ---@field public soundName string
----@field public configuration table?
+---@field public configuration table? # thresholdValue for counters; arbitrary declared fields for built-ins
 
 ---Defines how a bar is anchored to another bar in the anchor tree.
 ---@class TRB.Classes.Settings.BarAnchor

@@ -34,19 +34,20 @@ function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 					
-		{ variable = "$arcaneCharges", description = L["MageArcaneBarTextVariable_arcaneCharges"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$arcaneChargesMax", description = L["MageArcaneBarTextVariable_arcaneChargesMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$arcaneCharges", description = L["MageArcaneBarTextVariable_arcaneCharges"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$arcaneChargesMax", description = L["MageArcaneBarTextVariable_arcaneChargesMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 	})
 end
 
@@ -61,7 +62,10 @@ function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickProfiles()
 	}
 end
 
----Gets built-in castbar tick modifiers for Arcane (talent/buff-conditional bonus ticks), keyed by
+-- Key the Midnight Season 2 Arcane set is registered under at the bottom of this file.
+local arcaneMidnightSeason2SetKey = "mage_arcane_midnightSeason2"
+
+---Gets built-in castbar tick modifiers for Arcane (talent/set/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
 function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers()
@@ -70,6 +74,8 @@ function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers()
 		[5143] = {
 			-- Amplification: +2 missiles while talented
 			{ talentId = 236628, bonusTicks = 2 },
+			-- Midnight Season 2 (2pc): +1 missile over the same channel duration
+			{ setBonus = arcaneMidnightSeason2SetKey, setBonusPieces = 2, bonusTicks = 1 },
 		},
 	}
 end
@@ -122,21 +128,22 @@ function TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$fireBlastCharges", description = L["MageFireBarTextVariable_fireBlastCharges"], printInSettings = true, color = false },
-        { variable = "$fbCharges", description = "", printInSettings = false, color = false },
-        { variable = "$fireBlastChargesMax", description = L["MageFireBarTextVariable_fireBlastChargesMax"], printInSettings = true, color = false },
-        { variable = "$fbChargesMax", description = "", printInSettings = false, color = false },
-		{ variable = "$fireBlastTime", description = L["MageFireBarTextVariable_fireBlastTime"], printInSettings = true, color = false },
-		{ variable = "$fbTime", description = "", printInSettings = false, color = false },
+		{ variable = "$fireBlastCharges", description = L["MageFireBarTextVariable_fireBlastCharges"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCE },
+        { variable = "$fbCharges", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCE },
+        { variable = "$fireBlastChargesMax", description = L["MageFireBarTextVariable_fireBlastChargesMax"], printInSettings = true, color = false, category = varCategory.RESOURCE },
+        { variable = "$fbChargesMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
+		{ variable = "$fireBlastTime", description = L["MageFireBarTextVariable_fireBlastTime"], printInSettings = true, color = false, secret = true },
+		{ variable = "$fbTime", description = "", printInSettings = false, color = false, secret = true },
 	})
 end
 
@@ -149,6 +156,7 @@ end
 
 ---@class TRB.Classes.Mage.FrostSpells : TRB.Classes.SpecializationSpellsBase
 ---@field icicles TRB.Classes.SpellBase
+---@field shatter TRB.Classes.SpellBase
 TRB.Classes.Mage.FrostSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.FrostSpells.__index = TRB.Classes.Mage.FrostSpells
 
@@ -162,6 +170,11 @@ function TRB.Classes.Mage.FrostSpells:New()
         talentId = 1246832,
         isTalent = true,
         maxStacks = 5
+    })
+    self.shatter = TRB.Classes.SpellBase:New({
+        id = 1246769,
+        maxStacks = 20,
+        stackThreshold = 5
     })
 
     return self
@@ -177,20 +190,27 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.spellsData:FillSpellData()
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 
-	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#shatter", icon = spells.shatter.icon, description = spells.shatter.name, printInSettings = true },
+	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["MageBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["MageBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["MageBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$icicles", description = L["MageFrostBarTextVariable_icicles"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$iciclesMax", description = L["MageFrostBarTextVariable_iciclesMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$icicles", description = L["MageFrostBarTextVariable_icicles"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$iciclesMax", description = L["MageFrostBarTextVariable_iciclesMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+
+		-- Stack count exists only on the Cooldown Manager's item for Shatter; the max is spell data.
+		{ variable = "$shatterStacks", description = L["MageFrostBarTextVariable_shatterStacks"], printInSettings = true, color = false, secret = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$shatterStacksMax", description = L["MageFrostBarTextVariable_shatterStacksMax"], printInSettings = true, color = false },
 	})
 end
 
@@ -292,6 +312,14 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             false -- not primary
         )
 
+        -- Shatter stacks on the current target
+        barGroups.shatter = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Shatter",
+            20,
+            false -- not primary
+        )
+
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(
             UIParent,
@@ -360,6 +388,12 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
                 isPrimary = false,
                 resourceType = "Icicles"
             },
+            shatter = {
+                maxNodes = 20,
+                isPrimary = false,
+                resourceType = "Shatter",
+                usesSecretValue = true
+            },
             health = {
                 maxNodes = 1,
                 isPrimary = false,
@@ -383,6 +417,89 @@ TRB.Data.castbarTickProfilesRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpe
 TRB.Data.castbarTickProfilesRegistry["mage_fire"] = TRB.Classes.Mage.FireSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["mage_frost"] = TRB.Classes.Mage.FrostSpells.GetCastbarTickProfiles
 
--- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+-- Register built-in castbar tick modifiers (talent/set/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
 TRB.Data.castbarTickModifiersRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers
+
+-- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
+-- every registered set once per gear change and caches it.
+TRB.Data.itemSetRegistry = TRB.Data.itemSetRegistry or {}
+---@type TRB.Classes.ItemSetDefinition
+TRB.Data.itemSetRegistry[arcaneMidnightSeason2SetKey] = {
+	headId = 271564,
+	shoulderId = 271562,
+	chestId = 271567,
+	handId = 271565,
+	legId = 271563,
+}
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("mage_arcane", {
+		counters = {
+			{
+				id = "arcaneCharges",
+				label = L["MageAudioCueSourceArcaneCharges"],
+				description = L["MageAudioCueSourceArcaneChargesDescription"],
+				sliderLabel = L["MageArcaneChargeThresholdSliderTitle"],
+				defaultName = L["MageAudioCueArcaneChargeDefaultName"],
+				min = 0,
+				max = 4,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "arcaneChargeThreshold1", "arcaneChargeThreshold2" },
+				defaultCues = {
+					{
+						id = "arcaneChargeThreshold1",
+						name = L["MageAudioArcaneChargeThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 2,
+					},
+					{
+						id = "arcaneChargeThreshold2",
+						name = L["MageAudioArcaneChargeThreshold2"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 4,
+					},
+				},
+			},
+		},
+	})
+
+	TRB.Functions.AudioCues:Register("mage_frost", {
+		counters = {
+			{
+				id = "icicles",
+				label = L["MageAudioCueSourceIcicles"],
+				description = L["MageAudioCueSourceIciclesDescription"],
+				sliderLabel = L["MageIciclesThresholdSliderTitle"],
+				defaultName = L["MageAudioCueIciclesDefaultName"],
+				min = 0,
+				max = 5,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "iciclesThreshold1" },
+				defaultCues = {
+					{
+						id = "iciclesThreshold1",
+						name = L["MageAudioIciclesThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 3,
+					},
+				},
+			},
+		},
+	})
+end

@@ -161,15 +161,16 @@ function TRB.Classes.Monk.BrewmasterSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#niuzao", icon = spells.invokeNiuzao.icon, description = L["MonkBrewmasterBarTextIcon_niuzao"], printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$energy", description = L["MonkBrewmasterBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyMax", description = L["MonkBrewmasterBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MonkBrewmasterBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$energy", description = L["MonkBrewmasterBarTextVariable_energy"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$energyMax", description = L["MonkBrewmasterBarTextVariable_energyMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["MonkBrewmasterBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$stagger", description = L["MonkBrewmasterBarTextVariable_stagger"], printInSettings = true, color = false, secret = true },
-		{ variable = "$staggerPercent", description = L["MonkBrewmasterBarTextVariable_staggerPercent"], printInSettings = true, color = false, secret = true },
+		{ variable = "$stagger", description = L["MonkBrewmasterBarTextVariable_stagger"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$staggerPercent", description = L["MonkBrewmasterBarTextVariable_staggerPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
 
 		{ variable = "$niuzaoTime", description = L["MonkBrewmasterBarTextVariable_niuzaoTime"], printInSettings = true, color = false },
 	})
@@ -274,14 +275,15 @@ function TRB.Classes.Monk.MistweaverSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["MonkMistweaverBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["MonkMistweaverBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["MonkMistweaverBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MonkMistweaverBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["MonkMistweaverBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["MonkMistweaverBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["MonkMistweaverBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["MonkMistweaverBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 	})
 end
 
@@ -507,17 +509,18 @@ function TRB.Classes.Monk.WindwalkerSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
 		{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$energy", description = L["MonkWindwalkerBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyMax", description = L["MonkWindwalkerBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["MonkWindwalkerBarTextVariable_casting"], printInSettings = false, color = false },
+		{ variable = "$energy", description = L["MonkWindwalkerBarTextVariable_energy"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$energyMax", description = L["MonkWindwalkerBarTextVariable_energyMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["MonkWindwalkerBarTextVariable_casting"], printInSettings = false, color = false, category = varCategory.RESOURCES },
 		
-		{ variable = "$chi", description = L["MonkWindwalkerBarTextVariable_chi"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$chiMax", description = L["MonkWindwalkerBarTextVariable_chiMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$chi", description = L["MonkWindwalkerBarTextVariable_chi"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$chiMax", description = L["MonkWindwalkerBarTextVariable_chiMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 	})
 end
 
@@ -696,3 +699,61 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["monk_brewmaster"] = TRB.Classes.Monk.BrewmasterSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["monk_mistweaver"] = TRB.Classes.Monk.MistweaverSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["monk_windwalker"] = TRB.Classes.Monk.WindwalkerSpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("monk_windwalker", {
+		builtIns = {
+			{
+				id = "danceOfChiJi",
+				label = L["MonkWindwalkerAudioDanceOfChiJi"],
+				trigger = L["MonkWindwalkerAudioTriggerDanceOfChiJi"],
+				tooltip = L["MonkWindwalkerAudioDanceOfChiJiTooltip"],
+			},
+		},
+		counters = {
+			{
+				id = "chi",
+				label = L["MonkAudioCueSourceChi"],
+				description = L["MonkAudioCueSourceChiDescription"],
+				sliderLabel = L["MonkChiThresholdSliderTitle"],
+				defaultName = L["MonkAudioCueChiDefaultName"],
+				min = 0,
+				max = 6,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "chiThreshold1", "chiThreshold2", "chiThreshold3" },
+				defaultCues = {
+					{
+						id = "chiThreshold1",
+						name = L["MonkAudioChiThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 3,
+					},
+					{
+						id = "chiThreshold2",
+						name = L["MonkAudioChiThreshold2"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 5,
+					},
+					{
+						id = "chiThreshold3",
+						name = L["MonkAudioChiThreshold3"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 6,
+					},
+				},
+			},
+		},
+	})
+end

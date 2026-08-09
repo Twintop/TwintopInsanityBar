@@ -53,8 +53,6 @@ local function FillSpecializationCache()
 	local spells = specCache.hunter_beastMastery.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 
 	specCache.hunter_beastMastery.snapshotData.attributes.resourceRegen = 0
-	specCache.hunter_beastMastery.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.hunter_beastMastery.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
 	---@type TRB.Classes.Snapshot
@@ -100,8 +98,6 @@ local function FillSpecializationCache()
 	spells = specCache.hunter_marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 
 	specCache.hunter_marksmanship.snapshotData.attributes.resourceRegen = 0
-	specCache.hunter_marksmanship.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.hunter_marksmanship.snapshotData.snapshots[spells.trueshot.id] = TRB.Classes.Snapshot:New(spells.trueshot)
 	---@type TRB.Classes.Snapshot
@@ -145,9 +141,6 @@ local function FillSpecializationCache()
 	spells = specCache.hunter_survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 
 	specCache.hunter_survival.snapshotData.attributes.resourceRegen = 0
-	specCache.hunter_survival.snapshotData.audio = {
-		totsThreshold1Played = false,
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.hunter_survival.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
 	---@type TRB.Classes.Snapshot
@@ -1558,27 +1551,10 @@ local function UpdateResourceBar()
 		end
 
 		-- Tip of the Spear threshold audio cues (independent of bar visibility)
-		if TRB.Data.character.inCombat then
-			do
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
-				local coreSettings = TRB.Data.settings.core
-				local currentResource2 = snapshots[spells.tipOfTheSpear.id].buff.applications or 0
-				local threshold1 = specSettings.audio.totsThreshold1
-				if threshold1 ~= nil then
-					local threshold1Value = threshold1.configuration.thresholdValue
-
-					local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.totsThreshold1Played and currentResource2 >= threshold1Value
-
-					if threshold1ShouldFire then
-						snapshotData.audio.totsThreshold1Played = true
-						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-					end
-
-					if currentResource2 < threshold1Value then
-						snapshotData.audio.totsThreshold1Played = false
-					end
-				end
-			end
+		do
+			local survivalSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "tipOfTheSpear",
+				snapshots[survivalSpells.tipOfTheSpear.id].buff.applications or 0)
 		end
 
 		-- Update health bar
@@ -1743,6 +1719,11 @@ eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	-- Wrong game version for this build: halt before anything reads or writes settings.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
+
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -2018,6 +1999,10 @@ do
 	mm["$trueshotTime"] = function()
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.trueshot.id].buff.isActive
+	end
+	mm["$doubleTapTime"] = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.doubleTap.id].buff.isActive
 	end
 	-- Survival
 	local sv = {}

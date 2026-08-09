@@ -247,7 +247,6 @@ if locale == "deDE" then
     L["BarDisplayTextCustomizationHeader"] = "Anpassung der Leistentext-Anzeige"
     L["IsBarEnabledForSpecTooltip"] = "Ist Twintop's Resource Bar für %s aktiviert"
     L["TabFontText"] = "Schrift & Text"
-    L["TabAudioTracking"] = "Audio & Verfolgung"
     L["TabBarText"] = "Leistentext"
     L["TabResetDefaults"] = "Standards zurücksetzen"
 
@@ -813,7 +812,6 @@ if locale == "deDE" then
     L["RogueOutlawBarTextVariable_comboPoints"] = "Aktuelle Combopunkte"
     L["RogueOutlawBarTextVariable_comboPointsMax"] = "Maximale Combopunkte"
     L["RogueOutlawBarTextVariable_rtbCount"] = "Aktuelle Anzahl aktiver Schicksalswürfel Buffs"
-    L["RogueOutlawBarTextVariable_rtbTemporaryCount"] = "Aktuelle Anzahl aktiver voller Schicksalswürfel Buffs"
     L["RogueOutlawBarTextVariable_rtbAllCount"] = "Aktuelle Anzahl aktiver Schicksalswürfel Buffs aus allen Quellen"
     L["RogueOutlawBarTextVariable_rtbBuffTime"] = "Verbleibende Zeit deiner Schicksalswürfel Buffs (nicht von Die Chancen nutzen)"
     L["RogueOutlawBarTextVariable_rtbGoodBuff"] = "Sind die aktuellen Schicksalswürfel Buffs gut oder nicht? Gut ist definiert als zwei beliebige Buffs, Breitseite oder Kurs halten. Nur Logik-Variable!"
