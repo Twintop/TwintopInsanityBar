@@ -392,6 +392,7 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		colorTypeStepLabel = L["HealthBarColorTypeStep"],
 		colorTypeLinearLabel = L["HealthBarColorTypeLinear"],
 		colorTypeNoneLabel = L["HealthBarColorTypeNone"],
+		colorTypeClassColorLabel = L["HealthBarColorTypeClassColor"],
 		-- Custom GetColors to retrieve from spec.colors.healthBar instead of spec.colors.bars.health
 		GetColors = function(self, specSettings)
 			if specSettings and specSettings.colors then

@@ -1622,6 +1622,7 @@ end
 ---@field public colorTypeStepLabel string? # Localized string for "step" option
 ---@field public colorTypeLinearLabel string? # Localized string for "linear" option
 ---@field public colorTypeNoneLabel string? # Localized string for "none" option
+---@field public colorTypeClassColorLabel string? # Localized string for the "classColor" option. When nil, the option isn't offered for this bar type.
 ---@field public defaultDimensionsFunc function? # Function returning default dimensions (SecondaryBar structure)
 ---@field public defaultColorsFunc function? # Function returning default colors
 ---@field public defaultTexturesFunc function? # Function returning default textures
@@ -1679,6 +1680,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.colorTypeStepLabel = config.colorTypeStepLabel
 	self.colorTypeLinearLabel = config.colorTypeLinearLabel
 	self.colorTypeNoneLabel = config.colorTypeNoneLabel
+	self.colorTypeClassColorLabel = config.colorTypeClassColorLabel
 	self.onChangeCallback = config.onChangeCallback
 
 	-- Validate: thresholdLevels is required when colorCurveType is "step" or "linear"

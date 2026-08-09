@@ -214,7 +214,12 @@ function TRB.Functions.Character:UpdateHealthValues()
 	local medColor = (healthBarSettings.medium and healthBarSettings.medium.color) or ""
 	local medThreshold = (healthBarSettings.medium and healthBarSettings.medium.threshold) or 0.3
 	local curveTypeStr = healthBarSettings.type or ""
-	local cacheKey = highColor .. highThreshold .. lowColor .. lowThreshold .. medColor .. medThreshold .. curveTypeStr
+	-- "classColor" paints a single flat color pulled from the player's class rather than the threshold colors
+	local classColor = ""
+	if curveTypeStr == "classColor" then
+		classColor = TRB.Functions.Color:GetPlayerClassColor() or ""
+	end
+	local cacheKey = highColor .. highThreshold .. lowColor .. lowThreshold .. medColor .. medThreshold .. curveTypeStr .. classColor
 
 	local cache = TRB.Data.cache
 	if cache.healthCurve == nil or cache.healthCurveKey ~= cacheKey then
@@ -223,7 +228,10 @@ function TRB.Functions.Character:UpdateHealthValues()
 		local curveType = Enum.LuaCurveType.Step
 
 		local highR, highG, highB, highA = 0, 1, 0, 1
-		if healthBarSettings.high and healthBarSettings.high.color then
+		if classColor ~= "" then
+			-- Class color stands in for the high health color and takes the flat single-point path below
+			highR, highG, highB, highA = TRB.Functions.Color:GetRGBAFromString(classColor, true)
+		elseif healthBarSettings.high and healthBarSettings.high.color then
 			highR, highG, highB, highA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.high.color, true)
 		end
 

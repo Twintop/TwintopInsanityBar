@@ -742,6 +742,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColor
 	local colorTypeStepLabel = barTypeDef.colorTypeStepLabel or L["ColorTypeStep"]
 	local colorTypeLinearLabel = barTypeDef.colorTypeLinearLabel or L["ColorTypeLinear"]
 	local colorTypeNoneLabel = barTypeDef.colorTypeNoneLabel or L["ColorTypeNone"]
+	-- Only bar types that supply this label offer the flat class color option
+	local colorTypeClassColorLabel = barTypeDef.colorTypeClassColorLabel
 
 	-- Color Transition Type dropdown
 	-- Note: yCoord already positioned at header row, so dropdown label goes here
@@ -753,40 +755,45 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColor
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"].label.font:SetFontObject(GameFontNormal)
 
 	---Returns whether the given value matches the current color curve type.
-	---@param value string The color curve type to check ("step", "linear", or "none")
+	---@param value string The color curve type to check ("step", "linear", "none", or "classColor")
 	---@return boolean
 	local function ColorCurveTypeIsSelected(value)
 		return value == colorSettings.type
 	end
 
 	---Returns the localized display name for a color curve type value.
-	---@param value string The color curve type ("step", "linear", or "none")
+	---@param value string The color curve type ("step", "linear", "none", or "classColor")
 	---@return string
 	local function ColorCurveTypeGetDisplayName(value)
 		if value == "step" then
 			return colorTypeStepLabel
 		elseif value == "linear" then
 			return colorTypeLinearLabel
+		elseif value == "classColor" and colorTypeClassColorLabel ~= nil then
+			return colorTypeClassColorLabel
 		else
 			return colorTypeNoneLabel
 		end
 	end
 
 	---Sets the color curve type to a new value, updates the dropdown text, and triggers a change callback.
-	---@param newValue string The new color curve type ("step", "linear", or "none")
+	---@param newValue string The new color curve type ("step", "linear", "none", or "classColor")
 	local function ColorCurveTypeSetSelected(newValue)
 		colorSettings.type = newValue
 		controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetDefaultText(ColorCurveTypeGetDisplayName(newValue))
 		triggerChange()
 	end
 
-	---Populates the dropdown menu with color curve type options (step, linear, none).
+	---Populates the dropdown menu with color curve type options (step, linear, none, and optionally classColor).
 	---@param dropdown DropdownButton The dropdown button being initialized
 	---@param rootDescription table The root menu description to add radio items to
 	local function ColorCurveTypeGenerator(dropdown, rootDescription)
 		rootDescription:CreateRadio(colorTypeStepLabel, ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "step")
 		rootDescription:CreateRadio(colorTypeLinearLabel, ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "linear")
 		rootDescription:CreateRadio(colorTypeNoneLabel, ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "none")
+		if colorTypeClassColorLabel ~= nil then
+			rootDescription:CreateRadio(colorTypeClassColorLabel, ColorCurveTypeIsSelected, ColorCurveTypeSetSelected, "classColor")
+		end
 	end
 
 	controls.dropDown[barTypeDef.key .. "ColorCurveType"]:SetupMenu(ColorCurveTypeGenerator)

@@ -3488,3 +3488,6 @@ L["BarTextVariableBreathDurationRemaining"] = "Time left on the Breath timer. Bl
 -- REMOVED: L["BarTextVariableDeathDurationRemaining"] - the Death mirror timer bar was retired
 L["BarTextVariableFeignDeathDuration"] = "Total length of the Feign Death timer. Blank when you are not feigning death."
 L["BarTextVariableFeignDeathDurationRemaining"] = "Time left on the Feign Death timer. Blank when you are not feigning death."
+
+-- Health Bar: flat class color transition type
+L["HealthBarColorTypeClassColor"] = "Single (Class Color)"

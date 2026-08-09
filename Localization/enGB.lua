@@ -418,4 +418,7 @@ if locale == "enGB" then
     L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
     L["CheckboxUseGlobalTooltip_BreathDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
     -- REMOVED: L["CheckboxUseGlobalTooltip_DeathDimensions"] - the Death mirror timer bar was retired
+
+    -- Health Bar: flat class colour transition type
+    L["HealthBarColorTypeClassColor"] = "Single (Class Colour)"
 end
