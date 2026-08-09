@@ -58,6 +58,10 @@ local content = [====[
 
 ### Cast Bar
 
+- Fix an empty Target or Focus Cast Bar flashing on screen after an interrupt.
+- Fix the Target and Focus Cast Bar lingering after a hardcast finished, until the unit's next spell replaced it.
+- Fix bar text anchored to the Target or Focus Cast Bar disappearing during the fade out, and on an idle Always Show bar.
+- Fix the Target and Focus Cast Bars flickering during spec switches, bar reconstruction, and login.
 - Add support for channel ticks to be modified by set bonuses.
 
 ## Death Knight
@@ -134,13 +138,6 @@ local content = [====[
 ### Protection
 
 - Ignore Pain tracking now uses the CDM. Requires CDM to be enabled and Ignore Pain to be actively tracked to function.
-
-### Cast Bars
-
-- Fix an empty Target or Focus Cast Bar flashing on screen after an interrupt.
-- Fix the Target and Focus Cast Bar lingering after a hardcast finished, until the unit's next spell replaced it.
-- Fix bar text anchored to the Target or Focus Cast Bar disappearing during the fade out, and on an idle Always Show bar.
-- Fix the Target and Focus Cast Bars flickering during spec switches, bar reconstruction, and login.
 
 ---
 
