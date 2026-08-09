@@ -9,10 +9,8 @@ TRB.Functions.OtherBars = {}
 	Two kinds live here, sharing one updater and one visibility model:
 
 	  * Global Cooldown -- the fill is bound to the DurationObject for Blizzard's dummy GCD spell (61304)
-	    via StatusBar:SetTimerDuration, so it animates natively and stays correct even when the underlying
-	    cooldown values are secret. The handle itself proves nothing (GetSpellCooldownDuration always hands
-	    one back, finished or not), so "is a GCD running" comes from C_Spell.GetSpellCooldown while its
-	    numbers are readable, and from the length we recorded at the start when they are not.
+	    via StatusBar:SetTimerDuration, so it animates natively even when the cooldown values are secret.
+	    The cooldown API is read only on events that start a GCD or end one early; never polled.
 
 	  * Fatigue / Breath / Feign Death -- the three mirror timers Blizzard groups under Edit Mode's
 	    "Duration Bars". GetMirrorTimerInfo / GetMirrorTimerProgress are not secret, so these fill from
@@ -49,8 +47,8 @@ local active = {}
 local mirrorMax = {}
 -- The DurationObject currently bound to the GCD node, or nil.
 local gcdDuration = nil
--- GetTime() the running GCD is expected to end. The stop signal of last resort: in restricted content
--- the cooldown's own numbers are secret, so this is the only readable answer to "is it over yet".
+-- GetTime() the running GCD is expected to end. Its length is known at the start, so this is the stop
+-- signal -- no per-frame read of the cooldown API.
 local gcdExpiry = nil
 -- Post-timer fade timers keyed by bar key: GetTime() when the fade began, or nil when not fading.
 local fadeStart = {}
@@ -483,16 +481,11 @@ local function ReadGcdLength(durationObject)
 	return TRB.Functions.Character:GetCurrentGCDTime()
 end
 
----Whether the GCD the bar is currently showing is still running. The expiry recorded at the start is the
----hard bound and is checked first: a GCD cannot outlive its own length, so the bar always comes down even
----if the cooldown API goes secret mid-GCD or reports something stale. Within that window the readable
----API can still end it early.
+---Whether the GCD the bar is showing is still running, from the expiry recorded at its start. Runs on the
+---updater tick, so it must stay API-free.
 ---@return boolean
 local function IsGcdStillRunning()
-	if gcdExpiry == nil or GetTime() >= gcdExpiry then
-		return false
-	end
-	return IsGcdRunningReadable() ~= false
+	return gcdExpiry ~= nil and GetTime() < gcdExpiry
 end
 
 ---Picks up a global cooldown that just started. Cheap enough to run on every cast: one API read plus a
@@ -500,6 +493,10 @@ end
 ---on screen rather than letting the old animation run out.
 ---@param fromCast boolean? # True when a cast event triggered this, which is itself proof a GCD started
 local function CheckGcdStart(fromCast)
+	-- SPELL_UPDATE_COOLDOWN fires constantly during a GCD, and nothing can start one while another runs.
+	if not fromCast and IsGcdStillRunning() then
+		return
+	end
 	local entry = BARS[1]
 	local _, _, visibility = GetBarConfig(entry.key)
 	if not IsEnabled(visibility) then
@@ -522,6 +519,18 @@ local function CheckGcdStart(fromCast)
 	gcdExpiry = GetTime() + ReadGcdLength(duration)
 	active[entry.key] = true
 	BeginRender(entry)
+end
+
+---Ends the bar early when a failed cast turns out not to have started a GCD. One API read per failure; a
+---failure during a real GCD, or a secret cooldown, leaves the expiry to stand.
+local function CheckGcdStop()
+	local entry = BARS[1]
+	if not active[entry.key] then
+		return
+	end
+	if IsGcdRunningReadable() == false then
+		StopTimer(entry)
+	end
 end
 
 -- ============================================================================
@@ -650,8 +659,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 		end
 
 		if active[barKey] then
-			-- Nothing announces the end of a GCD; mirror timers end on their STOP event, so only the GCD
-			-- needs an expiry poll, and only on the tick.
+			-- Nothing announces the end of a GCD, so only it needs an expiry check -- a timestamp compare.
 			if throttleTick and entry.kind == "gcd" and not IsGcdStillRunning() then
 				StopTimer(entry)
 			else
@@ -754,6 +762,8 @@ eventFrame:SetScript("OnEvent", function(_, event, timerName, _, maxValue)
 		TRB.Functions.OtherBars:RefreshVisibility()
 	elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" then
 		TRB.Functions.OtherBars:RefreshVisibility()
+	elseif event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_FAILED_QUIET" then
+		CheckGcdStop()
 	else
 		-- SPELL_UPDATE_COOLDOWN / UNIT_SPELLCAST_SUCCEEDED: a global cooldown may have just started.
 		CheckGcdStart(event == "UNIT_SPELLCAST_SUCCEEDED")
@@ -796,9 +806,13 @@ function TRB.Functions.OtherBars:SyncGcdEvents()
 	if IsEnabled(visibility) then
 		eventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 		eventFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+		eventFrame:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player")
+		eventFrame:RegisterUnitEvent("UNIT_SPELLCAST_FAILED_QUIET", "player")
 	else
 		eventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 		eventFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+		eventFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
+		eventFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED_QUIET")
 	end
 end
 

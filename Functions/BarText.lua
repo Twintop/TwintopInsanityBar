@@ -1900,7 +1900,7 @@ function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 
 	for _, entry in ipairs(TRB.Functions.OtherBars:GetBars()) do
 		local barKey = entry.key
-		local barSettings = settings and settings.bars and settings.bars[barKey]
+		local barSettings = settings and settings.bars and settings.bars[barKey] --[[@as TRB.Classes.Settings.OtherBar?]]
 		-- A spec without this bar's settings doesn't have the bar at all (Feign Death outside Hunter),
 		-- so it gets no lookup entries either.
 		if barSettings ~= nil then
