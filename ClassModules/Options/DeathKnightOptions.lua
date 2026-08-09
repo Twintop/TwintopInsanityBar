@@ -50,7 +50,6 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
@@ -80,7 +79,6 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
@@ -110,7 +108,6 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
@@ -140,7 +137,6 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
@@ -170,7 +166,6 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		},
 		{
@@ -200,7 +195,6 @@ local function DeathKnightLoadExtraBarTextSettings(classic)
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 		}
 	}
@@ -222,7 +216,6 @@ local function BloodLoadDefaultBarTextSettings(classic)
 			useDefaultFontOutline = true,
 			useDefaultFontShadow = true,
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = true,
@@ -462,7 +455,6 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFFFF"
 				},
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -686,7 +678,6 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFFFF"
 				},
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -891,7 +882,6 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFFFF"
 				},
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",

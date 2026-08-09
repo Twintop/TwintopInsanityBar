@@ -721,6 +721,129 @@ function TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, name, label, o
 	return dropdown
 end
 
+-- SetFont outline flags in canonical order; the stored setting is these joined with ", "
+local fontOutlineFlags = {
+	{ flag = "OUTLINE", labelKey = "FontOutlineOutline", excludes = "THICKOUTLINE" },
+	{ flag = "THICKOUTLINE", labelKey = "FontOutlineThickOutline", excludes = "OUTLINE" },
+	{ flag = "MONOCHROME", labelKey = "FontOutlineMonochrome" },
+	{ flag = "SLUG", labelKey = "FontOutlineSlug" },
+}
+
+---Splits a SetFont flag string into a set of active flags.
+---@param value string?
+---@return table<string, boolean>
+local function ParseFontOutline(value)
+	local flags = {}
+	for flag in string.gmatch(value or "", "[^,%s]+") do
+		flags[string.upper(flag)] = true
+	end
+	return flags
+end
+
+---Joins a set of active flags back into a SetFont flag string in canonical order.
+---@param flags table<string, boolean>
+---@return string
+local function JoinFontOutline(flags)
+	local parts = {}
+	for _, entry in ipairs(fontOutlineFlags) do
+		if flags[entry.flag] then
+			table.insert(parts, entry.flag)
+		end
+	end
+	return table.concat(parts, ", ")
+end
+
+---Builds the localized display name for a SetFont outline flag string.
+---@param value string? # e.g. "OUTLINE, SLUG"
+---@return string
+local function GetFontOutlineDisplayName(value)
+	local flags = ParseFontOutline(value)
+	local labels = {}
+	for _, entry in ipairs(fontOutlineFlags) do
+		if flags[entry.flag] then
+			table.insert(labels, L[entry.labelKey])
+		end
+	end
+
+	if #labels == 0 then
+		return L["FontOutlineNone"]
+	end
+
+	return table.concat(labels, ", ")
+end
+
+---Builds a labeled multiselect font outline dropdown bound to a getter/setter. Flags stack, except None,
+---which clears everything, and Outline/Thick Outline, which replace each other.
+---@param parent Frame
+---@param name string # Unique global frame name
+---@param label string # Header text drawn above the dropdown
+---@param getFn fun():string # Returns the current SetFont flag string
+---@param setFn fun(value:string) # Applies a newly built SetFont flag string
+---@param posX number
+---@param posY number
+---@return DropdownButton dropdown
+---@return fun() refresh # Resyncs the button text after the bound value changes outside the menu
+function TRB.Functions.OptionsUi.Primitives:BuildFontOutlineDropdown(parent, name, label, getFn, setFn, posX, posY)
+	local dropdown = CreateFrame("DropdownButton", name, parent, "WowStyle1DropdownTemplate")
+	dropdown:SetWidth(oUi.sliderWidth)
+	dropdown.label = self:BuildSectionHeader(parent, label, posX, posY)
+	dropdown.label.font:SetFontObject(GameFontNormal)
+	dropdown:SetPoint("TOPLEFT", posX, posY - 30)
+
+	dropdown:SetScript("OnEnter", function(frame)
+		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
+		GameTooltip:SetText(L["FontOutlineTooltip"], 1, 1, 1, 1, true)
+		GameTooltip:Show()
+	end)
+	dropdown:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+
+	local function RefreshText()
+		local displayName = GetFontOutlineDisplayName(getFn())
+		dropdown:SetDefaultText(displayName)
+		dropdown:SetText(displayName)
+	end
+
+	local function Apply(flags)
+		setFn(JoinFontOutline(flags))
+		RefreshText()
+	end
+
+	dropdown:SetupMenu(function(_, rootDescription)
+		rootDescription:CreateCheckbox(L["FontOutlineNone"],
+			function()
+				return next(ParseFontOutline(getFn())) == nil
+			end,
+			function()
+				Apply({})
+			end)
+
+		for _, entry in ipairs(fontOutlineFlags) do
+			local capturedEntry = entry
+			rootDescription:CreateCheckbox(L[capturedEntry.labelKey],
+				function()
+					return ParseFontOutline(getFn())[capturedEntry.flag] == true
+				end,
+				function()
+					local flags = ParseFontOutline(getFn())
+					if flags[capturedEntry.flag] then
+						flags[capturedEntry.flag] = nil
+					else
+						flags[capturedEntry.flag] = true
+						if capturedEntry.excludes ~= nil then
+							flags[capturedEntry.excludes] = nil
+						end
+					end
+					Apply(flags)
+				end)
+		end
+	end)
+
+	RefreshText()
+	return dropdown, RefreshText
+end
+
 ---Enables or disables a ChatConfigCheckButton checkbox and grays out its label text when disabled.
 ---@param checkbox CheckButton # The checkbox frame to toggle
 ---@param enable boolean # Whether to enable (true) or disable (false) the checkbox

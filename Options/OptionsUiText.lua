@@ -146,41 +146,16 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 	end)
 
 	-- Font Outline dropdown
-	local fontOutlineOptions = {
-		{ label = L["FontOutlineNone"], value = "" },
-		{ label = L["FontOutlineOutline"], value = "OUTLINE" },
-		{ label = L["FontOutlineThickOutline"], value = "THICKOUTLINE" },
-		{ label = L["FontOutlineMonochrome"], value = "MONOCHROME" },
-		{ label = L["FontOutlineOutlineMonochrome"], value = "OUTLINE, MONOCHROME" },
-		{ label = L["FontOutlineThickOutlineMonochrome"], value = "THICKOUTLINE, MONOCHROME" },
-	}
-	local fontOutlineLookup = {}
-	for _, opt in ipairs(fontOutlineOptions) do
-		fontOutlineLookup[opt.value] = opt.label
-	end
-
-	local barTextFontOutline = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontOutlineDefault", parent, "WowStyle1DropdownTemplate")
-	barTextFontOutline:SetWidth(oUi.sliderWidth)
-	barTextFontOutline.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DefaultFontOutline"], oUi.xCoord2, yCoord+25)
-	barTextFontOutline.label.font:SetFontObject(GameFontNormal)
-
-	local function FontOutlineIsSelected(value)
-		return value == (spec.displayText.default.fontOutline or "OUTLINE")
-	end
-
-	local function FontOutlineSetSelected(newValue)
-		spec.displayText.default.fontOutline = newValue
-		spec.displayText.default.fontOutlineName = fontOutlineLookup[newValue] or L["FontOutlineOutline"]
-		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
-	end
-
-	local function FontOutlineGenerator(dropdown, rootDescription)
-		for _, opt in ipairs(fontOutlineOptions) do
-			rootDescription:CreateRadio(opt.label, FontOutlineIsSelected, FontOutlineSetSelected, opt.value)
-		end
-	end
-	barTextFontOutline:SetupMenu(FontOutlineGenerator)
-	barTextFontOutline:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-5)
+	TRB.Functions.OptionsUi.Primitives:BuildFontOutlineDropdown(parent, "TwintopResourceBar_" .. namePrefix .. "_fontOutlineDefault",
+		L["DefaultFontOutline"],
+		function()
+			return spec.displayText.default.fontOutline
+		end,
+		function(newValue)
+			spec.displayText.default.fontOutline = newValue
+			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+		end,
+		oUi.xCoord2, yCoord+25)
 
 	yCoord = yCoord - 50
 	title = L["FontShadowXOffset"]

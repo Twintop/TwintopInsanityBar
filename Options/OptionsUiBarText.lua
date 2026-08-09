@@ -1218,47 +1218,18 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 
 	-- Font Outline dropdown
 	yCoord = yCoord - 60
-	local perEntryFontOutlineOptions = {
-		{ label = L["FontOutlineNone"], value = "" },
-		{ label = L["FontOutlineOutline"], value = "OUTLINE" },
-		{ label = L["FontOutlineThickOutline"], value = "THICKOUTLINE" },
-		{ label = L["FontOutlineMonochrome"], value = "MONOCHROME" },
-		{ label = L["FontOutlineOutlineMonochrome"], value = "OUTLINE, MONOCHROME" },
-		{ label = L["FontOutlineThickOutlineMonochrome"], value = "THICKOUTLINE, MONOCHROME" },
-	}
-	local perEntryFontOutlineLookup = {}
-	for _, opt in ipairs(perEntryFontOutlineOptions) do
-		perEntryFontOutlineLookup[opt.value] = opt.label
-	end
-
-	local barTextFontOutline = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontOutline", barTextOptionsFrame, "WowStyle1DropdownTemplate")
-	barTextFontOutline:SetWidth(oUi.sliderWidth)
-	barTextFontOutline.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(barTextOptionsFrame, L["FontOutlineHeader"], oUi.xCoord, yCoord)
-	barTextFontOutline.label.font:SetFontObject(GameFontNormal)
-
-	local function PerEntryFontOutlineIsSelected(value)
-		if workingBarText ~= nil then
-			return value == (workingBarText.fontOutline or "OUTLINE")
-		else
-			return false
-		end
-	end
-
-	local function PerEntryFontOutlineSetSelected(newValue)
-		if workingBarText ~= nil then
-			workingBarText.fontOutline = newValue
-			workingBarText.fontOutlineName = perEntryFontOutlineLookup[newValue] or L["FontOutlineOutline"]
-			RefreshBarTextEditorPreview(true)
-		end
-	end
-
-	local function PerEntryFontOutlineGenerator(dropdown, rootDescription)
-		for _, opt in ipairs(perEntryFontOutlineOptions) do
-			rootDescription:CreateRadio(opt.label, PerEntryFontOutlineIsSelected, PerEntryFontOutlineSetSelected, opt.value)
-		end
-	end
-	barTextFontOutline:SetupMenu(PerEntryFontOutlineGenerator)
-	barTextFontOutline:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+	local barTextFontOutline, RefreshFontOutlineDisplayText = TRB.Functions.OptionsUi.Primitives:BuildFontOutlineDropdown(barTextOptionsFrame,
+		"TwintopResourceBar_" .. namePrefix .. "_fontOutline", L["FontOutlineHeader"],
+		function()
+			return workingBarText ~= nil and workingBarText.fontOutline or ""
+		end,
+		function(newValue)
+			if workingBarText ~= nil then
+				workingBarText.fontOutline = newValue
+				RefreshBarTextEditorPreview(true)
+			end
+		end,
+		oUi.xCoord, yCoord)
 
 	local useDefaultFontOutline = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontOutline", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontOutline:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
@@ -1458,7 +1429,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			fontSize=14,
 			color = { color = "FFFFFFFF" },
 			fontOutline = "OUTLINE",
-			fontOutlineName = L["FontOutlineOutline"],
 			fontShadow = {
 				enabled = false,
 				color = "FF000000",
@@ -1526,8 +1496,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		useDefaultFontSize:SetChecked(workingBarText.useDefaultFontSize)
 		useDefaultFontOutline:SetChecked(workingBarText.useDefaultFontOutline or false)
 		useDefaultFontShadow:SetChecked(workingBarText.useDefaultFontShadow or false)
-		barTextFontOutline:SetupMenu(PerEntryFontOutlineGenerator)
-		barTextFontOutline:SetDefaultText(workingBarText.fontOutlineName or L["FontOutlineOutline"])
+		RefreshFontOutlineDisplayText()
 
 		-- Restore font shadow controls
 		local shadow = workingBarText.fontShadow or { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 }
@@ -2088,4 +2057,4 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	---@diagnostic disable-next-line: inject-field
 	parent.barTextVariablesPanel = variablesPanel
 	TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-end
+end

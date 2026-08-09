@@ -211,7 +211,6 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFFFF"
 				},
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -431,7 +430,6 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFFFF"
 				},
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -669,7 +667,6 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 					color = "FFFFFFFF"
 				},
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",

@@ -1776,8 +1776,6 @@ if locale == "zhCN" then
     L["FontOutlineOutline"] = "描边"
     L["FontOutlineThickOutline"] = "粗描边"
     L["FontOutlineMonochrome"] = "单色"
-    L["FontOutlineOutlineMonochrome"] = "描边 + 单色"
-    L["FontOutlineThickOutlineMonochrome"] = "粗描边 + 单色"
     L["UseDefaultFontOutline"] = "使用共享字体描边"
     L["UseDefaultFontOutlineTooltip"] = "使此资源条文字区域使用共享字体描边设置，而非上方选择的描边样式。"
 
@@ -3007,4 +3005,7 @@ if locale == "zhCN" then
 	L["CheckboxUseGlobalTooltip_CastbarShield"] = "勾选后，将使用全局施法条不可打断护盾配置。"
 	L["CheckboxUseGlobalTooltip_TargetCastbarShield"] = "勾选后，将使用全局目标施法条不可打断护盾配置。"
 	L["CheckboxUseGlobalTooltip_FocusCastbarShield"] = "勾选后，将使用全局焦点施法条不可打断护盾配置。"
+
+	L["FontOutlineSlug"] = "使用描边渲染"
+	L["FontOutlineTooltip"] = "可任意组合多种样式。选择无会清除其余全部效果；描边与粗描边二者互斥。"
 end

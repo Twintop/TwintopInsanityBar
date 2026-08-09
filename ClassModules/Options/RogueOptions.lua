@@ -275,7 +275,6 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -569,7 +568,6 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
@@ -861,7 +859,6 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 				fontSize=14,
 				color = { color = "FFFFFFFF" },
 				fontOutline = "OUTLINE",
-				fontOutlineName = L["FontOutlineOutline"],
 				fontShadow = {
 					enabled = false,
 					color = "FF000000",
