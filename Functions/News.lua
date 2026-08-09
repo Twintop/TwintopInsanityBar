@@ -78,8 +78,8 @@ local content = [====[
 ## Druid
 ### Feral
 
-- 2-Piece: Add tracking for the Halazzi's Fury damage buff gained when Berserk / Incarnation: Avatar of Ashamane ends (1 second per Combo Point spent during it), shown as a new Color Indicator. Adds a bar text timer variable `$halazzisFuryTime` and an icon (`#halazzisFury`).
-- 4-Piece: Account for the additional 10 seconds of duration granted to Berserk / Incarnation: Avatar of Ashamane.
+- Midnight Season Two 2-Piece: Add tracking for the Halazzi's Fury damage buff gained when Berserk / Incarnation: Avatar of Ashamane ends (1 second per Combo Point spent during it), shown as a new Color Indicator. Adds a bar text timer variable `$halazzisFuryTime` and an icon (`#halazzisFury`).
+- Midnight Season Two 4-Piece: Account for the additional 10 seconds of duration granted to Berserk / Incarnation: Avatar of Ashamane.
 
 ## Evoker
 
@@ -93,7 +93,7 @@ local content = [====[
 ## Mage
 ### Arcane
 
-- 2-Piece: Increase the number of ticks when channeling Arcane Missiles by 1.
+- Midnight Season Two 2-Piece: Increase the number of ticks when channeling Arcane Missiles by 1.
 
 ### Frost
 
