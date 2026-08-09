@@ -18,6 +18,13 @@ local content = [====[
 
 - [#802 - @Ignitetheskywow](#802) Font Outline is now a multiselect dropdown. Outline and Thick Outline still replace each other, but either can be combined with Monochrome and the new Slug style, and None clears the rest.
 
+### Cast Bars
+
+- Fix an empty Target or Focus Cast Bar flashing on screen after an interrupt.
+- Fix the Target and Focus Cast Bar lingering after a hardcast finished, until the unit's next spell replaced it.
+- Fix bar text anchored to the Target or Focus Cast Bar disappearing during the fade out, and on an idle Always Show bar.
+- Fix the Target and Focus Cast Bars flickering during spec switches, bar reconstruction, and login.
+
 ---
 
 # 12.0.7.13-release (2026-08-03)

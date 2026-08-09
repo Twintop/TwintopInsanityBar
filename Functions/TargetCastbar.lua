@@ -731,7 +731,8 @@ local function ApplyInactiveState(groupKey)
 	local entry = ENTRY_BY_GROUP[groupKey]
 	local _, _, _, visibility = GetBarConfig(groupKey)
 	local idleAlpha = GetIdleAlpha(visibility)
-	if idleAlpha > 0 and entry ~= nil and UnitExists(entry.unit) then
+	if idleAlpha > 0 and entry ~= nil and UnitExists(entry.unit)
+		and not TRB.Functions.Bar:IsRenderTransitionActive() then
 		ApplyIdleState(groupKey, idleAlpha)
 	else
 		ApplyHiddenState(groupKey)
@@ -756,6 +757,13 @@ local function NeedsUpdater()
 		end
 	end
 	return false
+end
+
+---Whether either bar has anything on screen: active cast, fade-out, or idle at a visible alpha. Broader
+---than IsActive(), which drops the instant a cast stops; ProcessBars gates the bar text pipeline on this.
+---@return boolean
+function TRB.Functions.TargetCastbar:IsRendering()
+	return NeedsUpdater()
 end
 
 ---Starts/stops the per-frame updater based on whether any bar needs rendering. Every state-transition
@@ -785,7 +793,7 @@ local function BeginRender(groupKey, model)
 		SyncUpdater()
 		return
 	end
-	if IsForceHidden(visibility) then
+	if IsForceHidden(visibility) or TRB.Functions.Bar:IsRenderTransitionActive() then
 		-- Hidden now, but the model keeps tracking; flag so the updater rebinds the fill when it clears.
 		forceHidden[groupKey] = true
 		ApplyHiddenState(groupKey)
@@ -859,6 +867,9 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 		updaterSinceLastUpdate = 0
 	end
 
+	-- Yield to a render transition (it hides every group); keep tracking and re-assert once it ends.
+	local inTransition = TRB.Functions.Bar:IsRenderTransitionActive()
+
 	for _, u in ipairs(UNITS) do
 		local model = TRB.Data[u.modelKey]
 		-- Resolve settings only on the throttle tick; between ticks reuse the cached visibility.
@@ -883,14 +894,14 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 				-- Between ticks with the last tick having disabled this bar: leave it as the tick left it.
 			else
 				needsUpdater = true
-				if throttleTick and IsForceHidden(visibility) then
-					-- Hard-hide (In Vehicle) mid-cast: hide but keep tracking so it reappears when it clears.
+				if throttleTick and (inTransition or IsForceHidden(visibility)) then
+					-- Hard-hide (In Vehicle) or transition mid-cast: hide but keep tracking.
 					forceHidden[u.groupKey] = true
 					cachedActiveAlpha[u.groupKey] = nil
 					ApplyHiddenState(u.groupKey)
 				elseif forceHidden[u.groupKey] then
 					if throttleTick then
-						-- Just cleared the hard-hide: rebind the native fill timer (ApplyHiddenState cleared it).
+						-- Just cleared: rebind the native fill timer (ApplyHiddenState cleared it).
 						forceHidden[u.groupKey] = nil
 						anyActive = true
 						ApplyVisibleState(u.groupKey, model)
@@ -899,7 +910,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 				elseif throttleTick then
 					anyActive = true
 					ReassertVisibility(u.groupKey, model)
-				elseif cachedActiveAlpha[u.groupKey] ~= nil then
+				elseif not inTransition and cachedActiveAlpha[u.groupKey] ~= nil then
 					-- Between ticks, bar was visible at the last tick: cheap alpha/visibility self-heal only.
 					anyActive = true
 					ReassertVisibilityCheap(u.groupKey)
@@ -916,7 +927,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			if elapsed >= delay + duration then
 				fadeStart[u.groupKey] = nil
 				ApplyInactiveState(u.groupKey)
-			else
+			elseif not inTransition then
 				local alpha = activeAlpha
 				if elapsed > delay and duration > 0 then
 					alpha = activeAlpha + (idleAlpha - activeAlpha) * ((elapsed - delay) / duration)
@@ -941,7 +952,9 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			if idleAlpha > 0 and UnitExists(u.unit) then
 				needsUpdater = true
 				cachedIdleAlpha[u.groupKey] = idleAlpha
-				ApplyIdleState(u.groupKey, idleAlpha)
+				if not inTransition then
+					ApplyIdleState(u.groupKey, idleAlpha)
+				end
 			else
 				cachedIdleAlpha[u.groupKey] = nil
 			end
@@ -950,7 +963,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			needsUpdater = true
 			local group, node = GetGroupNode(u.groupKey)
 			local idleAlpha = cachedIdleAlpha[u.groupKey]
-			if group ~= nil then
+			if group ~= nil and not inTransition then
 				group.targetAlpha = idleAlpha
 				group.currentAlpha = idleAlpha
 				if not group.isVisible then
@@ -996,6 +1009,19 @@ local function OnUnitEvent(unit, event, spellId)
 	end
 	local model = GetModel(entry.modelKey)
 
+	if event == "UNIT_SPELLCAST_SUCCEEDED" then
+		-- Secret enemy hardcasts often never fire STOP, so completion comes from here. Cast state only: a
+		-- unit can't instant-cast while hardcasting, but can mid-channel (and channels do get their STOP).
+		if model.state ~= "cast" then
+			return
+		end
+		FreezeFill(entry.groupKey, model)
+		model:Stop()
+		BeginFadeOut(entry.groupKey)
+		TRB.Functions.BarText:MarkLookupDirty()
+		return
+	end
+
 	if event == "UNIT_SPELLCAST_START" then
 		model:StartCast(spellId)
 		BeginRender(entry.groupKey, model)
@@ -1007,6 +1033,11 @@ local function OnUnitEvent(unit, event, spellId)
 		BeginRender(entry.groupKey, model)
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP"
 		or event == "UNIT_SPELLCAST_EMPOWER_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+		-- Untracked stop (spurious, or the duplicate after INTERRUPTED): BeginFadeOut isn't idempotent and
+		-- restarting it flashes an empty bar.
+		if not model:IsActive() then
+			return
+		end
 		-- Freeze the fill where it stopped BEFORE Stop() wipes the model: the native SetTimerDuration
 		-- animation would otherwise keep advancing the fill (and end cap) on its own through the fade-out.
 		FreezeFill(entry.groupKey, model)
@@ -1060,7 +1091,8 @@ end)
 function TRB.Functions.TargetCastbar:Enable()
 	for _, e in ipairs({ "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_DELAYED",
 		"UNIT_SPELLCAST_CHANNEL_START", "UNIT_SPELLCAST_CHANNEL_UPDATE", "UNIT_SPELLCAST_CHANNEL_STOP",
-		"UNIT_SPELLCAST_EMPOWER_START", "UNIT_SPELLCAST_EMPOWER_STOP", "UNIT_SPELLCAST_INTERRUPTED" }) do
+		"UNIT_SPELLCAST_EMPOWER_START", "UNIT_SPELLCAST_EMPOWER_STOP", "UNIT_SPELLCAST_INTERRUPTED",
+		"UNIT_SPELLCAST_SUCCEEDED" }) do
 		eventFrame:RegisterUnitEvent(e, "target", "focus")
 	end
 	eventFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
