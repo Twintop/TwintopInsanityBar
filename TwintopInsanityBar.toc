@@ -1,4 +1,4 @@
-﻿## Interface: 120100
+﻿## Interface: 120100, 120007
 ## X-TargetInterface: 120100
 ## X-VersionCheck: disabled
 ## Title: Twintop's Resource Bar
@@ -17,7 +17,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 12.1.0.0
 ## X-ReleaseType: release
-## X-ReleaseDate: 2026-08-11
+## X-ReleaseDate: 2026-08-10
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled

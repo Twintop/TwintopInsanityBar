@@ -575,7 +575,7 @@ local function RefreshLookupData_Fury()
 			-- Already formatted, to the viewer's precision rather than ours.
 			timeDisplay = _enrageTimeText
 		else
-			timeDisplay = "??"
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if lookupChanged(prevState, "$enrageTime", timeDisplay) then
@@ -680,7 +680,7 @@ local function RefreshLookupData_Protection()
 		if _ignorePainAbsorb ~= nil then
 			absorbDisplay = TRB.Functions.String:ConvertToAbbreviatedNumber(_ignorePainAbsorb)
 		elseif ipBuff.isActive then
-			absorbDisplay = "??"
+			absorbDisplay = TRB.Functions.BarText:UnknownValue("0")
 		else
 			absorbDisplay = "0"
 		end

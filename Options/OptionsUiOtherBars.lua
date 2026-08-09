@@ -123,7 +123,8 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 		yCoord = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, barKey .. "Colors", yCoord)
 	end
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "bar", L["OtherBarsColorFill"], yCoord, classId, specId)
+	-- The fill takes a gradient; border and background are single-color, as everywhere else.
+	TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorRow(parent, cc.fill, colors, "bar", L["OtherBarsColorFill"], yCoord, classId, specId, ReapplyBars)
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "border", L["ColorPickerBorder"], yCoord, classId, specId)
 	yCoord = yCoord - 30

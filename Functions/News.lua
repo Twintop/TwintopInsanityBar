@@ -12,26 +12,18 @@ local content = [====[
 
 ---
 
-# 12.1.0.0-release (2026-08-11)
+# 12.1.0.0-release (2026-08-10)
 ## General
 
 - Add a version check that, when enabled in the TOC, will prevent the addon from loading if the client version does not match one of the versions listed in the TOC. This is to prevent people from accidentally updating to a version of the addon that is not compatible with their client version.
 - Remove the Aura Caching system since, with 12.1 API changes, it never returns usable (non-`secret`) data.
 - Integrate with the Cooldown Manager (CDM) as a supplemental source of data for abilities, buffs, and debuffs. Abilities that used to read Aura data directly now read from the CDM.
 - Settings and bar text variables that are fed by the Cooldown Manager now carry a **CDM** badge, with a tooltip explaining that the ability it tracks has to be added to one of the Cooldown Manager's viewers before a value can be shown.
+- Add a Cooldown Manager value when unavailable option under Global Options -> Miscellaneous -> Bar Settings, choosing what a CDM fed bar text variable shows while the Cooldown Manager has no value for it -- because the ability was never added to a viewer, or its group is hidden. Choose Nothing (the default), `??`, or zero.
 - Refactor how set bonus detection is handled to be more generic.
 - Bars that are anchored to another bar now always draw on top of the bar they are attached to, so a bar can no longer be hidden behind its parent.
 - Colors: the Health Bar gains a **Single (Class Color)** color option, painting the bar in your current class's color.
 - Color Indicators: the bar/element target dropdowns are now a fixed height with a scrollbar, instead of running off the bottom of the screen when a spec has many bars.
-
-### Other Bars
-
-- [#79](#79) Add a new **Other Bars** screen with three optional timer bars available to every specialization -- **Global Cooldown**, **Fatigue**, and **Breath** -- plus a **Feign Death** bar for Hunters. Each has its own dimensions, anchoring, colors, textures, visibility rules, and bar text.
-- The Global Cooldown, Fatigue, and Breath bars can be configured globally for every specialization at once, or on a per specialization basis. Feign Death is configured per Hunter specialization, as no other class can use it.
-- The Global Cooldown bar can either drain a full bar down or grow an empty one up as the global cooldown elapses.
-- The Fatigue, Breath, and Feign Death bars can each hide Blizzard's own version of that timer while they are shown.
-- Add a Duration Decimal Precision option for the Global Cooldown bar's timer text. The mirror timers read as mm:ss and have no decimals to configure.
-- New bar text variables: `$gcdDuration`, `$gcdDurationRemaining`, `$fatigueDuration`, `$fatigueDurationRemaining`, `$breathDuration`, and `$breathDurationRemaining`, plus `$feignDeathDuration` and `$feignDeathDurationRemaining` for Hunters.
 
 ### Audio Cues
 
@@ -64,10 +56,24 @@ local content = [====[
 - Fix the Target and Focus Cast Bars flickering during spec switches, bar reconstruction, and login.
 - Add support for channel ticks to be modified by set bonuses.
 
+### Localization
+
+- [#803 - @MOSS099](#803) Updated translations for Simplified Chinese (zhCN).
+
+### Other Bars
+
+- [#79](#79) Add a new **Other Bars** screen with three optional timer bars available to every specialization -- **Global Cooldown**, **Fatigue**, and **Breath** -- plus a **Feign Death** bar for Hunters. Each has its own dimensions, anchoring, colors, textures, visibility rules, and bar text.
+- The Global Cooldown, Fatigue, and Breath bars can be configured globally for every specialization at once, or on a per specialization basis. Feign Death is configured per Hunter specialization, as no other class can use it.
+- The Global Cooldown bar can either drain a full bar down or grow an empty one up as the global cooldown elapses.
+- The Fatigue, Breath, and Feign Death bars can each hide Blizzard's own version of that timer while they are shown.
+- Add a Duration Decimal Precision option for the Global Cooldown bar's timer text. The mirror timers read as mm:ss and have no decimals to configure.
+- New bar text variables: `$gcdDuration`, `$gcdDurationRemaining`, `$fatigueDuration`, `$fatigueDurationRemaining`, `$breathDuration`, and `$breathDurationRemaining`, plus `$feignDeathDuration` and `$feignDeathDurationRemaining` for Hunters.
+- Each bar comes with a bar text entry for its remaining time already set up. The Global Cooldown's starts disabled, since its bar is thin and recycles constantly; enable it on the Bar Text screen if you want it.
+
 ## Death Knight
 ### Blood
 
-- [#801](#801) Add a new Coagulating Blood bar, tracking your current stacks where each stack is 1% damage reduction, with an optional maximum value override so the bar and its threshold lines scale to the cap you actually reach. Adds the `$coagulatingBloodStacks` and `$coagulatingBloodStacksMax` bar text variables. Requires CDM to be enabled and Coagulating Blood to be actively tracked to function.
+- [#801](#801) Add a new Coagulating Blood bar, tracking your current stacks where each stack is 1% damage reduction, with an optional maximum value override so the bar and its threshold lines scale to the cap you actually reach. Adds the `$coagulatingBloodStacks` and `$coagulatingBloodStacksMax` bar text variables. Requires CDM to be enabled and Coagulating Blood to be actively tracked to function. On upgrade it starts with your Bone Shield bar's visibility settings, rather than appearing unannounced.
 
 ## Druid
 ### Feral
@@ -91,7 +97,7 @@ local content = [====[
 
 ### Frost
 
-- [#653](#653) Add a new Shatter bar, tracking the stacks of Shatter on your current target, up to 20. Adds the `$shatterStacks` and `$shatterStacksMax` bar text variables and an icon (`#shatter`). Requires CDM to be enabled and Shatter to be actively tracked to function.
+- [#653](#653) Add a new Shatter bar, tracking the stacks of Shatter on your current target, up to 20. Adds the `$shatterStacks` and `$shatterStacksMax` bar text variables and an icon (`#shatter`). Requires CDM to be enabled and Shatter to be actively tracked to function. On upgrade it starts with your Icicles bar's visibility settings, rather than appearing unannounced.
 
 ## Paladin
 

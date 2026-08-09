@@ -438,7 +438,7 @@ local function RefreshLookupData_Blood()
 		-- Memoized on the rendered string, since both are nil underneath.
 		local stacksDisplay
 		if not attributes.coagulatingBloodTracked then
-			stacksDisplay = "??"
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		elseif attributes.coagulatingBloodStacks ~= nil then
 			stacksDisplay = string.format("%s", attributes.coagulatingBloodStacks)
 		else

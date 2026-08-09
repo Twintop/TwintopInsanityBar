@@ -687,7 +687,7 @@ local function RefreshLookupData_Frost()
 		-- Memoized on the rendered string, since both are nil underneath.
 		local stacksDisplay
 		if not attributes.shatterTracked then
-			stacksDisplay = "??"
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		elseif attributes.shatterStacks ~= nil then
 			stacksDisplay = string.format("%s", attributes.shatterStacks)
 		else

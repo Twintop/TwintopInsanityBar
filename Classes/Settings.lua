@@ -45,6 +45,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public dataRefreshRate number
 ---@field public reactionTime number
 ---@field public cooldownManagerGracePeriod number
+---@field public cdmUnknownDisplay string # "questionMarks" | "zero" | "nothing"
 ---@field public news table
 ---@field public strata table
 ---@field public timers table

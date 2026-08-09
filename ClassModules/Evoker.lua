@@ -459,7 +459,7 @@ local function RefreshLookupData_Devastation()
 		elseif _essenceBurstStacks ~= nil then
 			stacksDisplay = string.format("%.0f", _essenceBurstStacks)
 		else
-			stacksDisplay = "??"
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		end
 
 		local timeDisplay
@@ -471,7 +471,7 @@ local function RefreshLookupData_Devastation()
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _essenceBurstTimeText
 		else
-			timeDisplay = "??"
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then
@@ -590,7 +590,7 @@ local function RefreshLookupData_Preservation()
 		elseif _essenceBurstStacks ~= nil then
 			stacksDisplay = string.format("%.0f", _essenceBurstStacks)
 		else
-			stacksDisplay = "??"
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		end
 
 		local timeDisplay
@@ -602,7 +602,7 @@ local function RefreshLookupData_Preservation()
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _essenceBurstTimeText
 		else
-			timeDisplay = "??"
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then
@@ -732,7 +732,7 @@ local function RefreshLookupData_Augmentation()
 		elseif _essenceBurstStacks ~= nil then
 			stacksDisplay = string.format("%.0f", _essenceBurstStacks)
 		else
-			stacksDisplay = "??"
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		end
 
 		local timeDisplay
@@ -744,7 +744,7 @@ local function RefreshLookupData_Augmentation()
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _essenceBurstTimeText
 		else
-			timeDisplay = "??"
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then

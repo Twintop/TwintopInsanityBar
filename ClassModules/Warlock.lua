@@ -402,7 +402,7 @@ local function RefreshLookupData_Affliction()
 		elseif _shardInstabilityStacks ~= nil then
 			stacksDisplay = string.format("%.0f", _shardInstabilityStacks)
 		else
-			stacksDisplay = "??"
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		end
 
 		local timeDisplay
@@ -414,7 +414,7 @@ local function RefreshLookupData_Affliction()
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _shardInstabilityTimeText
 		else
-			timeDisplay = "??"
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if lookupChanged(prevState, "$shardInstabilityStacks", stacksDisplay) then
@@ -565,7 +565,7 @@ local function RefreshLookupData_Demonology()
 		elseif _demonicCoreStacks ~= nil then
 			stacksDisplay = string.format("%.0f", _demonicCoreStacks)
 		else
-			stacksDisplay = "??"
+			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
 		end
 
 		local timeDisplay
@@ -577,7 +577,7 @@ local function RefreshLookupData_Demonology()
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _demonicCoreTimeText
 		else
-			timeDisplay = "??"
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		if lookupChanged(prevState, "$demonicCoreStacks", stacksDisplay) then

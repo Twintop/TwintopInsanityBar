@@ -122,6 +122,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				lastUpdate = ""
 			},
 			numberAbbreviation = true,
+			-- What a Cooldown Manager fed bar text variable renders when the CDM has no value for it (the
+			-- ability is not in a viewer, or its group is hidden): "questionMarks", "zero" or "nothing".
+			cdmUnknownDisplay = "nothing",
 			minimap = {
 				hide = false,
 			},
@@ -2568,12 +2571,8 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 							specSettings.textures.shatterBackgroundName = shatterTextures.backgroundName
 						end
 
-						if not specSettings.displayBar then
-							specSettings.displayBar = {}
-						end
-						if not specSettings.displayBar.shatter then
-							specSettings.displayBar.shatter = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
-						end
+						-- displayBar.shatter is seeded at the end of this function instead, where it can inherit
+						-- the Icicles bar's visibility rather than landing on a bare default.
 
 						if specSettings.displayText and specSettings.displayText.barText then
 							local hasShatterText = false
@@ -8712,6 +8711,60 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			end
 		end
 	end
+
+	-- Coagulating Blood and Shatter arrived long after the bars they sit alongside were configured. Left to
+	-- the defaults merge they would land on "always show" and start rendering for people who had
+	-- deliberately hidden the bar they belong with, so each inherits that bar's visibility instead:
+	-- Coagulating Blood from Bone Shield, Shatter from Icicles. This runs before the defaults merge, so an
+	-- absent entry here means the user has never had the bar at all.
+	if TwintopInsanityBarSettings ~= nil then
+		local core = TwintopInsanityBarSettings.core
+
+		---Resolves the visibility entry a spec actually renders a bar with. Keys the global visibility panel
+		---exposes (secondary) come from core when that spec has Use Global settings on for displayBar; keys
+		---it does not expose (boneShield, like every custom bar) are always the spec's own -- FillSpecialization-
+		---CacheSettings overlays those back over the global copy.
+		---@return table?
+		local function ResolveVisibility(className, specName, specSettings, sourceKey)
+			local flags = core and core.global and core.global[className] and core.global[className][specName]
+			if flags ~= nil and flags.displayBar == true and core.displayBar ~= nil and core.displayBar[sourceKey] ~= nil then
+				return core.displayBar[sourceKey]
+			end
+			return specSettings.displayBar ~= nil and specSettings.displayBar[sourceKey] or nil
+		end
+
+		---Seeds a bar's visibility from the bar it ships alongside, leaving an existing entry untouched.
+		---@param smooth boolean # The new bar's own fill smoothing: how it fills is not part of when it shows
+		local function InheritBarVisibility(className, specName, sourceKey, targetKey, smooth)
+			local classSettings = TwintopInsanityBarSettings[className]
+			local specSettings = type(classSettings) == "table" and classSettings[specName] or nil
+			if type(specSettings) ~= "table" then
+				return
+			end
+
+			specSettings.displayBar = specSettings.displayBar or {}
+			if specSettings.displayBar[targetKey] ~= nil then
+				return
+			end
+
+			local source = ResolveVisibility(className, specName, specSettings, sourceKey)
+			local entry
+			if source ~= nil then
+				-- Deep copy: Table:Merge into an empty base aliases nested tables, which would leave the two
+				-- bars sharing one conditions/hideConditions table.
+				entry = TRB.Functions.Table:DeepCopy(source)
+				entry.conditions = entry.conditions or {}
+				entry.hideConditions = entry.hideConditions or TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
+			else
+				entry = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 }
+			end
+			entry.smooth = smooth
+			specSettings.displayBar[targetKey] = entry
+		end
+
+		InheritBarVisibility("deathknight", "blood", "boneShield", "coagulatingBlood", true)
+		InheritBarVisibility("mage", "frost", "secondary", "shatter", false)
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -9554,7 +9607,7 @@ function TRB.Functions.Settings:LoadDefaultOtherBarTextSettings(relativeToFrame,
 		useDefaultFontSize = false,
 		useDefaultFontOutline = true,
 		useDefaultFontShadow = true,
-		enabled = enabled or true,
+		enabled = enabled ~= false,
 		name = relativeToFrameName,
 		guid = TRB.Functions.String:Guid(),
 		constrainToParent = false,
@@ -9775,7 +9828,11 @@ function TRB.Functions.Settings:DefaultMirrorTimerBarSettings(classic, barKey)
 	-- which runs under two seconds, has one.
 
 	local parentKey = mirrorTimerAnchorParent[barKey]
-	if parentKey ~= nil then
+	if parentKey == nil then
+		-- Root of the stack: sits well above screen center, clear of the action bars and the middle of
+		-- the screen. Moving it moves the whole group.
+		settings.anchor.yOffset = 300
+	else
 		-- Sits below its parent: this bar's TOP against the parent's BOTTOM, matching its width so the
 		-- stack reads as one block.
 		settings.relativeTo = "BOTTOM"
@@ -11121,8 +11178,9 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 
 	-- Other Bars timers, one readout each. Feign Death is Hunter-only and lives in those specs' own bar
 	-- text instead, so it is absent here. Existing users get these through the otherBarsText migration --
-	-- keep the two lists in step, or they will be seeded twice.
-	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("GcdBar", L["ResourceGcd"], "$gcdDurationRemaining", "RIGHT", 10))
+	-- keep the two lists in step, or they will be seeded twice. The GCD's ships disabled: its bar is thin
+	-- and recycles every ~1.5s, so the readout is seeded ready to turn on rather than on by default.
+	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("GcdBar", L["ResourceGcd"], "$gcdDurationRemaining", "RIGHT", 10, false))
 	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("FatigueBar", L["ResourceFatigue"], "$fatigueDurationRemaining", "CENTER", 12))
 	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("BreathBar", L["ResourceBreath"], "$breathDurationRemaining", "CENTER", 12))
 

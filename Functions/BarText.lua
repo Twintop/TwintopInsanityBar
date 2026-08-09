@@ -2457,6 +2457,23 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	TRB.Data.lookupDirty = true
 end
 
+---Returns what a Cooldown Manager fed bar text variable renders when the CDM holds no value for it --
+---the ability was never added to a viewer, or its group is hidden. Distinct from a known zero: the value
+---is unavailable, not absent. The viewer picks the treatment in Global Options; the default is to render
+---nothing, so an untracked ability leaves no debris on the bar.
+---@param zeroText string? # How this variable renders a zero, used by the "zero" treatment. Callers pass
+---                          their own zero rendering so a timer reads "0.0" where a stack count reads "0".
+---@return string
+function TRB.Functions.BarText:UnknownValue(zeroText)
+	local display = TRB.Data.settings.core.cdmUnknownDisplay
+	if display == "questionMarks" then
+		return "??"
+	elseif display == "zero" then
+		return zeroText or "0"
+	end
+	return ""
+end
+
 ---Returns a string formatted time value based on settings for precision
 ---@param value number # Timer value to format
 ---@param positiveOnly boolean? # Should the timer only ever show a positive number?

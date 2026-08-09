@@ -385,8 +385,10 @@ end
 ---@param posX number # X offset from parent's TOPLEFT
 ---@param posY number # Y offset from parent's TOPLEFT
 ---@param tooltipNote string? # Optional tooltip text shown on the direction button
+---@param onChanged function? # Optional callback run after the direction is cycled, for bars whose repaint
+---                             is not driven by TriggerResourceBarUpdates
 ---@return Frame # Container frame with .Swatch1, .Swatch2, .DirectionButton, .Font children
-function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, description, colorEntry, sizeTotal, sizeFrame, posX, posY, tooltipNote)
+function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, description, colorEntry, sizeTotal, sizeFrame, posX, posY, tooltipNote, onChanged)
 	NormalizeGradientColorEntry(colorEntry)
 
 	local swatchSize = sizeFrame - 8
@@ -512,6 +514,9 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 			local nextIdx = (currentIdx % #gradientDirectionCycle) + 1
 			colorEntry.gradientDirection = gradientDirectionCycle[nextIdx]
 			UpdateSwatch2State()
+			if onChanged then
+				onChanged()
+			end
 			TRB.Data.cache.colors.gradient = {}
 			TRB.Data.cache.colors.bar = {}
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -554,6 +559,32 @@ function TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, 
 			end
 		end)
 	end
+end
+
+---Builds one gradient-capable color row: the two-swatch picker plus its direction cycle button, with both
+---swatches wired to the color picker. The gradient twin of BuildColorRow -- same argument shape, same
+---controls-table bookkeeping -- for panels whose fill color offers a gradient.
+---@param parent Frame
+---@param controlsTbl table # Controls table the built frame is stored in under `key`
+---@param colorTable table # The settings table holding the color entry
+---@param key string # Key into colorTable/controlsTbl
+---@param label string # Label text beside the swatches
+---@param yCoord number
+---@param classId integer?
+---@param specId integer?
+---@param onChanged function? # Optional callback run after any of the three controls changes a value
+---@return Frame # The gradient picker container
+function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorRow(parent, controlsTbl, colorTable, key, label, yCoord, classId, specId, onChanged)
+	local colorEntry = colorTable[key]
+	local f = self:BuildGradientColorPicker(parent, label, colorEntry, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord, L["GradientBarFillOnlyTooltip"], onChanged)
+	controlsTbl[key] = f
+	f.Swatch1:SetScript("OnMouseDown", function(_, button)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTable, controlsTbl, key, nil, nil, classId, specId, onChanged)
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(swatch, button)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, colorEntry, swatch, classId, specId, onChanged)
+	end)
+	return f
 end
 
 ---Builds standard TRB color picker with an optional enable/disable checkbox

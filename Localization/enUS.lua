@@ -3492,3 +3492,9 @@ L["BarTextVariableFeignDeathDurationRemaining"] = "Time left on the Feign Death 
 
 -- Health Bar: flat class color transition type
 L["HealthBarColorTypeClassColor"] = "Single (Class Color)"
+
+-- Global Options: what a Cooldown Manager fed bar text variable shows when the CDM has no value for it
+L["GlobalOptionsCdmUnknownDisplay"] = "Cooldown Manager value when unavailable"
+L["GlobalOptionsCdmUnknownDisplayNothing"] = "Nothing"
+L["GlobalOptionsCdmUnknownDisplayQuestionMarks"] = "??"
+L["GlobalOptionsCdmUnknownDisplayZero"] = "Zero (0, 0.0, 00:00, etc.)"

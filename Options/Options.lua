@@ -294,7 +294,26 @@ local function ConstructMiscellaneousPanel(parent)
 		end
 	end)
 
-	yCoord = yCoord - 30
+	-- What a Cooldown Manager fed variable renders when the CDM holds no value for it: the ability was
+	-- never added to a viewer, or the viewer's group is hidden.
+	yCoord = yCoord - 40
+	controls.cdmUnknownDisplay = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, "TwintopResourceBar_DD_CdmUnknownDisplay", L["GlobalOptionsCdmUnknownDisplay"], {
+			{ value = "nothing", label = L["GlobalOptionsCdmUnknownDisplayNothing"] },
+			{ value = "questionMarks", label = L["GlobalOptionsCdmUnknownDisplayQuestionMarks"] },
+			{ value = "zero", label = L["GlobalOptionsCdmUnknownDisplayZero"] },
+		},
+		function() return TRB.Data.settings.core.cdmUnknownDisplay end,
+		function(value)
+			TRB.Data.settings.core.cdmUnknownDisplay = value
+			-- The lookup memoizes on the rendered string, so the new treatment only reaches the bar once
+			-- the cache is invalidated.
+			TRB.Data.lookupDirty = true
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end, oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 70
 	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["TimerPrecision"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
