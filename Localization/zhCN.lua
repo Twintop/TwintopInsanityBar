@@ -359,9 +359,9 @@ if locale == "zhCN" then
     L["DruidFeralThresholdCheckboxPrimalWrathTooltip"] = "资源条显示施放原始狂怒所需能量阈值线，无连击点时标记为不可用。"
     L["DruidFeralThresholdCheckboxRip"] = "割裂"
     L["DruidFeralThresholdCheckboxRipTooltip"] = "资源条显示施放割裂所需能量阈值线，无连击点时标记为不可用。"
-    L["DruidFeralAudioApexPredatorsCravingProc"] = "顶尖掠食者渴求触发"
-    L["DruidFeralCheckboxApexPredatorsCravingProc"] = "顶尖掠食者渴求触发时播放音效"
-    L["DruidFeralCheckboxApexPredatorsCravingProcTooltip"] = "触发顶尖掠食者渴求时播放提示音，可无消耗、无连击点施放满伤凶猛撕咬。"
+    L["DruidFeralAudioApexPredatorsCravingProc"] = "顶级捕食者的渴望触发"
+    L["DruidFeralCheckboxApexPredatorsCravingProc"] = "顶级捕食者的渴望触发时播放音效"
+    L["DruidFeralCheckboxApexPredatorsCravingProcTooltip"] = "触发顶级捕食者的渴望时播放提示音，可无消耗、无连击点施放满伤凶猛撕咬。"
     L["DruidRestorationEndOfIncarnationConfigurationHeader"] = "化身末期设置"
     L["DruidRestorationCheckboxIncarnationGcds"] = "按剩余GCD数判定化身末期"
     L["DruidRestorationIncarnationGcds"] = "化身剩余GCD数（向下取整0.75秒）"
@@ -3008,4 +3008,267 @@ if locale == "zhCN" then
 
 	L["FontOutlineSlug"] = "使用描边渲染"
 	L["FontOutlineTooltip"] = "可任意组合多种样式。选择无会清除其余全部效果；描边与粗描边二者互斥。"
+
+	-- Druid Feral Midnight Season 2 set bonus (Halazzi's Fury)
+	L["DruidFeralCheckboxHalazzisFury"] = "哈拉齐之怒（2件套装）"
+	L["DruidFeralIndicatorHalazzisFuryTooltip"] = "当至暗之夜第二赛季2件套装伤害增益【哈拉齐之怒】在狂暴/阿莎曼化身结束后生效时，指示器将变为该颜色。"
+	L["DruidFeralIndicatorHalazzisFuryColor"] = "哈拉齐之怒增益已激活"
+	L["DruidFeralBarTextVariable_halazzisFuryTime"] = "哈拉齐之怒（2件套装）伤害增益剩余时间"
+	
+	L["WarlockDemonologyBarTextVariable_demonicCoreMaxStacks"] = "恶魔之核最大层数"
+	
+	-- Frost Mage Shatter bar
+	L["ResourceMageShatter"] = "碎冰"
+	L["TabShatter"] = "碎冰"
+	L["ShatterContainer"] = "碎冰容器"
+	L["Shatter1"] = "碎冰 1"
+	L["Shatter2"] = "碎冰 2"
+	L["Shatter3"] = "碎冰 3"
+	L["Shatter4"] = "碎冰 4"
+	L["Shatter5"] = "碎冰 5"
+	L["Shatter6"] = "碎冰 6"
+	L["Shatter7"] = "碎冰 7"
+	L["Shatter8"] = "碎冰 8"
+	L["Shatter9"] = "碎冰 9"
+	L["Shatter10"] = "碎冰 10"
+	L["Shatter11"] = "碎冰 11"
+	L["Shatter12"] = "碎冰 12"
+	L["Shatter13"] = "碎冰 13"
+	L["Shatter14"] = "碎冰 14"
+	L["Shatter15"] = "碎冰 15"
+	L["Shatter16"] = "碎冰 16"
+	L["Shatter17"] = "碎冰 17"
+	L["Shatter18"] = "碎冰 18"
+	L["Shatter19"] = "碎冰 19"
+	L["Shatter20"] = "碎冰 20"
+	L["MageFrostBarTextVariable_shatterStacks"] = "当前目标身上的碎冰层数"
+	L["MageFrostBarTextVariable_shatterStacksMax"] = "碎冰最大层数"
+	L["MageFrostColorPickerShatterThreshold"] = "碎冰阈值"
+	-- Cooldown Manager global options
+	L["CooldownManagerSettings"] = "冷却管理器"
+	L["CooldownManagerGracePeriod"] = "显示缓冲时间（秒）"
+	
+	-- Frost Mage Shatter threshold now recolors every multiple of the threshold stack
+	L["MageFrostCheckboxShatterThresholdMultiples"] = "冰枪术层数达到阈值时切换碎冰颜色"
+	L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "每当达到冰枪术消耗层数的倍数时（5、10、15、20），碎冰填充条就会切换颜色。"
+	
+	-- Game version gate (addon build does not match the game client it is running on)
+	L["VersionGateMismatchPopupText"] = "|cFFFF0000Twintop资源条未能加载。|r\n\n当前为 |cFFFFFFFF%s|r 版本，适配魔兽世界 |cFFFFFFFF%s|r，但你正在游玩 |cFFFFFFFF%s|r。\n\n请安装与当前游戏客户端匹配的Twintop资源条版本。"
+	L["VersionGateMismatchChatMessage"] = "|cFFFF0000Twintop资源条加载失败：|r当前为%s版本，适配魔兽世界%s，而你正在游玩%s。请安装与当前游戏客户端匹配的版本。"
+	
+	-- Bar text variables panel: value subgroups
+	L["BarTextVariablesSectionStats"] = "属性"
+	L["BarTextVariablesSectionResources"] = "资源"
+	L["BarTextVariablesSectionAbilities"] = "技能"
+	L["BarTextVariablesSectionOther"] = "其他"
+	L["BarTextVariablesSectionCastBars"] = "施法条"
+	
+	-- Per‑bar tab visibility header (enable/disable shortcut for "Never Show")
+	-- The spec‑controlled states reuse L["Enabled"] / L["Disabled"]; these are the Global variants.
+	L["BarTabEnabledGlobal"] = "已启用（全局）"
+	L["BarTabDisabledGlobal"] = "已禁用（全局）"
+	L["BarTabEnabledCheckboxTooltip"] = "取消勾选将禁用此资源条。该选项等同于在可见性标签页中将显示条件设置为永不显示，你也可以在那里自定义该资源条何时显示。"
+	L["BarTabVisibilityGlobalTooltip"] = "此资源条的可见性受全局选项控制，此处无法修改。前往全局设置进行更改，或在可见性标签页取消勾选使用全局设置，即可为本专精单独配置。"
+	L["BarTabVisibilityShowsPrefix"] = "显示条件：%s"
+	L["BarTabVisibilityNeverWarning"] = "没有任何条件会显示此资源条"
+	L["BarTabConfigureVisibility"] = "[配置可见性]"
+	L["BarTabConfigureVisibilityTooltip"] = "跳转至可见性标签页并选中此资源条，可设置它何时显示、何时强制隐藏。"
+	
+	-- Cooldown Manager reliance badge (options panel) and its bar text variables column
+	L["CdmBadgeLabel"] = "CDM"
+	L["CdmBadgeHeader"] = "依赖冷却管理器"
+	L["CdmBadgeRequiredTooltip"] = "该选项读取自暴雪冷却管理器。请将所追踪的技能添加至冷却管理器的监控列表，否则将无法读取数值，内容会保持空白。"
+	L["BarTextVariablesColumnCdm"] = "C"
+	L["BarTextVariablesColumnCdmTooltip"] = "依赖冷却管理器：数值取自暴雪冷却管理器，若对应技能未加入监控列表，会显示为??。"
+	L["BarTextVariablesBadgeCdm"] = "C"
+	L["BarTextVariablesDescriptionCdm"] = "依赖冷却管理器"
+	L["BarTextVariablesCdmRequired"] = "是"
+	L["BarTextVariablesCdmNone"] = "否"
+	
+	-- Warrior Fury Enrage (restored, now fed by the Cooldown Manager)
+	L["WarriorFuryBarTextVariable_enrageTime"] = "激怒剩余时间"
+	L["WarriorFuryCheckboxEnrage"] = "激怒"
+	L["WarriorFuryIndicatorEnrageTooltip"] = "激怒激活时指示器变为该颜色。"
+	L["WarriorFuryIndicatorEnrageColor"] = "激怒已激活"
+	
+	-- Bar text variables panel: secret values and comparison operators
+	L["BarTextVariablesColumnSecretComparisonsTooltip"] = "受保护数值：该数值来自魔兽世界受保护接口，无法在条文本逻辑中使用比较运算符。"
+	L["BarTextVariablesDescriptionSecretNoComparisons"] = "受保护数值不能在条文本逻辑中使用比较运算符。"
+	
+	-- Blood Death Knight Coagulating Blood bar
+	L["ResourceCoagulatingBlood"] = "凝血"
+	L["TabCoagulatingBlood"] = "凝血"
+	L["CoagulatingBloodBar"] = "凝血条"
+	L["DeathKnightBarTextVariable_coagulatingBloodStacks"] = "凝血当前层数，每层等效1%。读取自暴雪冷却管理器；未将凝血加入监控列表时显示为??。"
+	L["DeathKnightBarTextVariable_coagulatingBloodStacksMax"] = "凝血最大层数。"
+	
+	-- Audio Cues tab (generic cue table, detail editor, and add/delete flow)
+	L["TabAudioCues"] = "音频提示"
+	L["AudioCuesHeader"] = "音频提示"
+	L["AudioCueAdd"] = "新增音频提示"
+	L["AudioCueDelete"] = "删除"
+	L["AudioCueDeleteConfirmation"] = "确定删除音频提示「%s」吗？"
+	L["AudioCueDeleteActionTooltip"] = "删除该音频提示"
+	L["AudioCueTableHeaderType"] = "类型"
+	L["AudioCueTableHeaderTrigger"] = "触发条件"
+	L["AudioCueTableHeaderSound"] = "音效"
+	L["AudioCueTypeBuiltIn"] = "内置"
+	L["AudioCueTypeCustom"] = "自定义"
+	L["AudioCueNameLabel"] = "名称"
+	L["AudioCueSoundLabel"] = "音效"
+	L["AudioCueSoundNone"] = "无"
+	L["AudioCueEnabledCheckbox"] = "启用该音频提示"
+	L["AudioCueEnabledCheckboxTooltip"] = "启用后，每当触发条件满足就播放选定音效。"
+	L["AudioCueAddSourceTitle"] = "触发依据"
+	L["AudioCueTriggerAtLeast"] = "%s大于等于%s"
+	L["AudioCueTriggerExact"] = "%s恰好等于%s"
+	
+	-- Windwalker Monk audio cues
+	L["MonkWindwalkerAudioDanceOfChiJiTooltip"] = "触发赤精之舞时播放音频提示，此时旋火冲无需消耗真气。"
+	L["MonkAudioCueSourceChi"] = "真气"
+	L["MonkAudioCueChiDefaultName"] = "真气阈值"
+	
+	-- Holy Priest Lightweaver audio cues
+	L["PriestHolyAudioCueSourceLightweaver"] = "织光者层数"
+	L["PriestHolyAudioCueLightweaverDefaultName"] = "织光者阈值"
+	
+	-- Audio cue counter source labels and seed names for newly added cues
+	L["AudioCueTriggerAtMost"] = "%s小于等于%s"
+	L["RogueAudioCueSourceComboPoints"] = "连击点"
+	L["RogueAudioCueComboPointDefaultName"] = "连击点阈值"
+	L["DruidFeralAudioCueSourceComboPoints"] = "连击点"
+	L["DruidFeralAudioCueComboPointDefaultName"] = "连击点阈值"
+	L["PaladinAudioCueSourceHolyPower"] = "神圣能量"
+	L["PaladinAudioCueHolyPowerDefaultName"] = "神圣能量阈值"
+	L["WarlockAudioCueSourceSoulShards"] = "灵魂碎片"
+	L["WarlockAudioCueSoulShardDefaultName"] = "灵魂碎片阈值"
+	L["MageAudioCueSourceArcaneCharges"] = "奥术充能"
+	L["MageAudioCueArcaneChargeDefaultName"] = "奥术充能阈值"
+	L["MageAudioCueSourceIcicles"] = "冰锥术"
+	L["MageAudioCueIciclesDefaultName"] = "冰锥术阈值"
+	L["EvokerAudioCueSourceEssence"] = "精华"
+	L["EvokerAudioCueEssenceDefaultName"] = "精华阈值"
+	L["ShamanAudioCueSourceMaelstromWeapon"] = "漩涡武器层数"
+	L["ShamanAudioCueMaelstromWeaponDefaultName"] = "漩涡武器阈值"
+	L["HunterSurvivalAudioCueSourceTots"] = "利刃之矛层数"
+	L["HunterSurvivalAudioCueTotsDefaultName"] = "利刃之矛阈值"
+	
+	-- Audio cue "also play on dropping to this value" toggle
+	L["AudioCuePlayOnDropCheckbox"] = "数值回落至该值时同样播放"
+	L["AudioCuePlayOnDropCheckboxTooltip"] = "默认仅在数值上升达到阈值时播放，回落之后才会再次触发。开启后，消耗导致数值回落至该阈值时也会播放提示。"
+	L["AudioCueTriggerAtLeastWithDrop"] = "%s大于等于%s，或回落至该值"
+	-- Audio cue detail pane: read‑only trigger and description fields
+	L["AudioCueTriggerLabel"] = "触发条件"
+	L["AudioCueDescriptionLabel"] = "描述"
+	
+	-- Built‑in audio cue triggers (one‑line firing conditions shown in the cue table and detail pane)
+	L["DruidBalanceAudioTriggerStarsurgeReady"] = "星涌术可用"
+	L["DruidBalanceAudioTriggerStarfallReady"] = "星辰坠落可用"
+	L["DruidFeralAudioTriggerApexPredatorsCraving"] = "顶级捕食者的渴望触发"
+	L["EvokerAudioTriggerEssenceBurst"] = "精华迸发触发"
+	L["EvokerAugmentationAudioTriggerEbonMightEnding"] = "延长施放会让黑檀之力提前结束"
+	L["MonkWindwalkerAudioTriggerDanceOfChiJi"] = "赤精之舞触发"
+	L["PaladinAudioTriggerDivinePurpose"] = "神圣意志触发"
+	L["PaladinHolyAudioTriggerInfusionOfLight"] = "圣光灌注触发"
+	L["PriestAudioTriggerSurgeOfLight"] = "圣光涌动触发"
+	L["PriestHolyAudioTriggerBenediction"] = "祈福触发"
+	L["PriestHolyAudioTriggerLightweaverExpiring"] = "织光者即将结束"
+	L["PriestHolyAudioTriggerHolyWordChastiseReady"] = "圣言术：罚冷却完成"
+	L["PriestHolyAudioTriggerHolyWordSerenityCharge1"] = "圣言术：静获得1层充能"
+	L["PriestHolyAudioTriggerHolyWordSerenityCharge2"] = "圣言术：静获得2层充能"
+	L["PriestHolyAudioTriggerHolyWordSanctifyCharge1"] = "圣言术：佑获得1层充能"
+	L["PriestHolyAudioTriggerHolyWordSanctifyCharge2"] = "圣言术：佑获得2层充能"
+	L["PriestShadowAudioTriggerMindDevourer"] = "心灵吞噬者触发"
+	L["PriestShadowAudioTriggerShadowWordMadness"] = "暗言术：癫可用"
+	L["ShamanElementalAudioTriggerEarthShockReady"] = "地震术可用"
+	L["WarlockAudioTriggerInfernalBolt"] = "狱火箭触发"
+	L["WarlockAudioTriggerRuination"] = "陨灭触发"
+	L["WarlockAudioTriggerDemonicCore"] = "获得恶魔之核"
+	L["WarriorAudioTriggerViolentOutburst"] = "怒意迸发触发"
+	
+	-- Audio cue counter source descriptions (shown on row hover and in the detail pane)
+	L["DruidFeralAudioCueSourceComboPointsDescription"] = "战斗中连击点达到设定数值播放一次，需要回落至阈值以下才会再次触发。可新建多条提示，各自设置不同音效。"
+	L["RogueAudioCueSourceComboPointsDescription"] = "战斗中连击点达到设定数值播放一次，需要回落至阈值以下才会再次触发。可新建多条提示，各自设置不同音效。"
+	L["MonkAudioCueSourceChiDescription"] = "战斗中真气达到设定数值播放一次，需要回落至阈值以下才会再次触发。可新建多条提示，各自设置不同音效。"
+	L["PaladinAudioCueSourceHolyPowerDescription"] = "战斗中神圣能量达到设定数值播放一次，需要回落至阈值以下才会再次触发。可新建多条提示，各自设置不同音效。"
+	L["WarlockAudioCueSourceSoulShardsDescription"] = "战斗中灵魂碎片达到设定数值播放一次，需要回落至阈值以下才会再次触发。可新建多条提示，各自设置不同音效。"
+	L["MageAudioCueSourceArcaneChargesDescription"] = "战斗中奥术充能达到设定数值播放一次，需要回落至阈值以下才会再次触发。可新建多条提示，各自设置不同音效。"
+	L["MageAudioCueSourceIciclesDescription"] = "战斗中冰锥术达到设定数值播放一次，需要回落至阈值以下才会再次触发。可新建多条提示，各自设置不同音效。"
+	L["ShamanAudioCueSourceMaelstromWeaponDescription"] = "战斗中漩涡武器层数达到设定数值播放一次，需要回落至阈值以下才会再次触发。可新建多条提示，各自设置不同音效。"
+	L["HunterSurvivalAudioCueSourceTotsDescription"] = "战斗中利刃之矛层数达到设定数值播放一次，需要回落至阈值以下才会再次触发。可新建多条提示，各自设置不同音效。"
+	L["EvokerAudioCueSourceEssenceDescription"] = "可用精华下降至该数值或更低时播放一次，需要回升超过阈值才会再次触发。可新建多条提示，各自设置不同音效。"
+	L["PriestHolyAudioCueSourceLightweaverDescription"] = "织光者层数无论上升或回落，只要恰好等于该数值就播放。可新建多条提示，各自设置不同音效。"
+	
+	-- Other Bars: bar display names
+	L["ResourceGcd"] = "公共冷却"
+	L["ResourceFatigue"] = "疲劳值"
+	L["ResourceBreath"] = "呼吸值"
+	-- REMOVED: L["ResourceDeathTimer"] - the Death mirror timer bar was retired
+	L["ResourceFeignDeath"] = "假死"
+	
+	-- Other Bars: tab + screen labels
+	L["TabOtherBars"] = "其他资源条"
+	L["OtherBarsGlobalOptionsHeader"] = "全局其他资源条设置"
+	
+	-- Other Bars: panel sections and options
+	L["OtherBarsColorsHeader"] = "颜色"
+	L["OtherBarsColorFill"] = "资源条本体"
+	L["OtherBarsBehaviorHeader"] = "行为"
+	L["GcdBarGrowInstead"] = "正向填充而非倒计时"
+	L["GcdBarGrowInsteadTooltip"] = "公共冷却运行时从空到满填充资源条，而非从满向空倒计时。"
+	L["MirrorTimerDisableBlizzard"] = "隐藏原生计时条"
+	L["MirrorTimerDisableBlizzardTooltip"] = "本插件显示该计时时，隐藏游戏原生对应计时条。原生设置在编辑模式的「持续时间条」，无法单独关闭某一个计时，只会隐藏本插件接管的这一项，其余不受影响。"
+	
+	-- Other Bars: global settings
+	L["CheckboxUseGlobalOtherBars"] = "使用全局其他资源条设置"
+	L["CheckboxUseGlobalTooltipOtherBars"] = "勾选后，该模块将读取全局其他资源条配置，而非本专精独立设置。"
+	L["OpenGlobalOtherBarsSettings"] = "打开全局其他资源条设置"
+	L["OpenGlobalOtherBarsSettingsTooltip"] = "跳转至全局其他资源条配置界面，在这里的修改会作用于全部专精。"
+	
+	-- Other Bars: copy menu section labels
+	L["CopyMenuSection_gcdDimensions"] = "公共冷却条 - 尺寸位置"
+	L["CopyMenuSection_gcdColors"] = "公共冷却条 - 颜色"
+	L["CopyMenuSection_fatigueDimensions"] = "疲劳值条 - 尺寸位置"
+	L["CopyMenuSection_fatigueColors"] = "疲劳值条 - 颜色"
+	L["CopyMenuSection_breathDimensions"] = "呼吸值条 - 尺寸位置"
+	L["CopyMenuSection_breathColors"] = "呼吸值条 - 颜色"
+	-- REMOVED: L["CopyMenuSection_deathDimensions"] - the Death mirror timer bar was retired
+	-- REMOVED: L["CopyMenuSection_deathColors"] - the Death mirror timer bar was retired
+	L["CopyMenuSection_feignDeathDimensions"] = "假死条 - 尺寸位置"
+	L["CopyMenuSection_feignDeathColors"] = "假死条 - 颜色"
+	
+	-- Other Bars: visibility summary for bars whose only show condition is "the timer is running"
+	L["ShowBarVisibilityWhenActive"] = "计时激活时"
+	
+	-- Other Bars: show‑condition group title for the "When Active" timer state
+	L["ShowBarVisibilityGroupTimer"] = "计时"
+	
+	-- Other Bars: Use Global tooltips for the shared dimensions rows (looked up by section key)
+	L["CheckboxUseGlobalTooltip_GcdDimensions"] = "勾选后，该资源条的位置大小取自全局其他资源条配置，而非本专精独立设置。"
+	L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "勾选后，该资源条的位置大小取自全局其他资源条配置，而非本专精独立设置。"
+	L["CheckboxUseGlobalTooltip_BreathDimensions"] = "勾选后，该资源条的位置大小取自全局其他资源条配置，而非本专精独立设置。"
+	-- REMOVED: L["CheckboxUseGlobalTooltip_DeathDimensions"] - the Death mirror timer bar was retired
+	
+	-- Other Bars: bar text variables and the shared precision slider
+	L["OtherBarsDurationPrecision"] = "时间小数精度"
+	L["BarTextVariableGcdDuration"] = "当前公共冷却总时长。无公共冷却时为空。"
+	L["BarTextVariableGcdDurationRemaining"] = "当前公共冷却剩余时间。无公共冷却时为空。"
+	L["BarTextVariableFatigueDuration"] = "疲劳总时长。未疲劳时为空。"
+	L["BarTextVariableFatigueDurationRemaining"] = "疲劳剩余时间。未疲劳时为空。"
+	L["BarTextVariableBreathDuration"] = "水下呼吸总时长。不在水下时为空。"
+	L["BarTextVariableBreathDurationRemaining"] = "水下呼吸剩余时间。不在水下时为空。"
+	-- REMOVED: L["BarTextVariableDeathDuration"] - the Death mirror timer bar was retired
+	-- REMOVED: L["BarTextVariableDeathDurationRemaining"] - the Death mirror timer bar was retired
+	L["BarTextVariableFeignDeathDuration"] = "假死总时长。未假死时为空。"
+	L["BarTextVariableFeignDeathDurationRemaining"] = "假死剩余时间。未假死时为空。"
+	
+	-- Health Bar: flat class color transition type
+	L["HealthBarColorTypeClassColor"] = "单色（职业颜色）"
+	
+	-- Global Options: what a Cooldown Manager fed bar text variable shows when the CDM has no value for it
+	L["GlobalOptionsCdmUnknownDisplay"] = "冷却管理器无数据时的显示"
+	L["GlobalOptionsCdmUnknownDisplayNothing"] = "空白"
+	L["GlobalOptionsCdmUnknownDisplayQuestionMarks"] = "??"
+	L["GlobalOptionsCdmUnknownDisplayZero"] = "显示零（0、0.0、00:00等）"
+
 end
