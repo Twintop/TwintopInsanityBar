@@ -77,6 +77,7 @@ Every bar can be shown or hidden independently with granular, mix-and-match visi
 - Dedicated color option for the partial-fill portion of bars with time-based or fragment-based generation (Evoker Essence, Feral Druid Combo Points, Destruction Warlock Soul Shards)
 - Node border overlap option for multi-node bars (Combo Points, Runes, etc.)
 - Optional full-bar-height overlays (casting, spending, absorb, incoming heal) that extend across the border for a flush appearance
+- Bar End Caps: a configurable width and color overlay at the leading edge of a bar's fill, available on nearly every bar and selectable as a Color Indicator target
 - Global color settings that apply across all specializations (e.g., Health Bar colors)
 
 ### Textures and Fonts
@@ -84,12 +85,16 @@ Every bar can be shown or hidden independently with granular, mix-and-match visi
 - Full LibSharedMedia integration for custom textures and fonts
 - Independent texture settings for primary bar, secondary nodes, and custom bars (Stagger, Mana, Defensives)
 - Configurable font face, size, color, outline, and shadow for all text elements
+- Combinable font outline styles: pick Outline or Thick Outline, either of which can be paired with Monochrome and Slug
 
 ### Audio Notifications
 
-- Customizable sound cues triggered by resource thresholds or proc events
-- Per-threshold audio cues that play when a threshold becomes usable
-- Secondary resource audio cues (Combo Points, Holy Power, Soul Shards, Chi, Arcane Charges, Maelstrom Weapon) that fire independently of bar visibility, triggering only during combat
+The **Audio Cues** tab lists every cue for the specialization in a single sortable table showing its type, what triggers it, and the sound it plays, with a detail editor below for the selected row. Each cue describes exactly what triggers it, both in the table and in its detail pane.
+
+- Specializations with a countable resource support as many threshold cues as you want, each with its own value and sound -- available for Combo Points (Feral, all Rogue specs), Chi, Holy Power, Soul Shards, Arcane Charges, Icicles, Essence, Maelstrom Weapon stacks, Tip of the Spear stacks, and Lightweaver stacks
+- Threshold cues have an "Also play when dropping to this value" option, so a cue can fire on the way back down as well as on the way up
+- Secondary resource cues fire independently of bar visibility, triggering only during combat
+- Per-threshold audio cues on the primary bar that play when a threshold line becomes usable
 - Proc and cooldown audio cues for key abilities and buffs, including Benediction procs (Holy Priest), Lightweaver stacks (configurable trigger threshold plus an optional drop-off warning), Holy Word: Chastise/Serenity/Sanctify coming off cooldown per charge, Surge of Light (with optional Spiritwell-only restriction), Dance of Chi-Ji, Earthquake/Elemental Blast usability, Divine Purpose, and more
 - LibSharedMedia support for custom sounds
 - Configurable audio output channel
@@ -104,7 +109,7 @@ Use variables like `$resource`, `$comboPoints`, `$haste`, `$gcd`, and `$inCombat
 
 For multi-node bars (Combo Points, Runes, Soul Shards, etc.), bar text can be anchored to the bar group as a whole or to individual nodes.
 
-The bar text editor includes a searchable variable browser with descriptions and icons, allowing you to find and insert variables directly at the cursor position. Full undo/redo support is available via standard Ctrl+Z and Ctrl+Shift+Z (or Ctrl+Y) keyboard shortcuts.
+The bar text editor includes a searchable variable browser with descriptions and icons, allowing you to find and insert variables directly at the cursor position. Variables are grouped into Stats, Resources, Abilities, Other, and Cast Bars sections, hovering a row shows its name and full description, and a CDM column marks variables whose value comes from Blizzard's Cooldown Manager. Variables that hold `secret` values are labeled as such, since a secret value can't be used with comparison operators in bar text logic. Full undo/redo support is available via standard Ctrl+Z and Ctrl+Shift+Z (or Ctrl+Y) keyboard shortcuts.
 
 Bar text can optionally be clamped to its bound bar's width with a Prevent Text Overflow toggle, truncating with an ellipsis and a configurable Maximum Text Width (a percentage of the bound bar's width) instead of spilling over. This has no effect when bound to the Screen.
 
@@ -116,7 +121,7 @@ Share your configuration with others or back up your settings:
 
 - Export individual sections (colors, thresholds, fonts, audio) or entire spec configurations
 - Import configurations from other players
-- Compressed export strings using Blizzard's `C_EncodingUtil` with Deflate compression for smaller sizes (legacy import strings remain compatible)
+- Compressed export strings using Blizzard's `C_EncodingUtil` with Deflate compression for smaller sizes, with older import strings still accepted
 - "Copy..." buttons on supported settings sections let you copy shared settings between profiles, specializations, and Global Options without exporting and re-importing
 - Native Wago Profile Import/Export API support for one-click sharing through the Wago Companion app
 
@@ -133,18 +138,30 @@ Share your configuration with others or back up your settings:
 - Access and modify any class specialization's settings regardless of your current class
 - Lazy-loaded settings panels to reduce memory usage
 - Options organized across multiple focused tabs for easier navigation
+- Every bar's settings tab has a pinned header with an **Enabled** checkbox as a shortcut for setting that bar's visibility to Never Show, a summary of when the bar currently shows, and a link straight to the Visibility tab
+- Disabled bars show their tab label in red, so it's obvious from the tab strip without opening the tab; bars whose visibility is driven by Global Options say so in the header
 
 ### Global Settings
 
 - Apply common settings across all classes and specializations from the "Global Options" screen
 - Changes are immediately reflected across all specializations
 - Includes Health Bar colors, and more
-- Per-bar smooth animation settings instead of a single global toggle
+- Per-bar smooth animation settings
 - Optional abbreviated number formatting (e.g., 10.0K, 1.5M) for large numbers across all bars, with an alternate myriad-based grouping (10,000-step scale) for CJK locales (zhCN/zhTW/koKR)
+- A "Cooldown Manager value when unavailable" option controlling what a CDM-fed bar text variable shows when the Cooldown Manager has no value for it: Nothing (the default), `??`, or zero
+- Global configuration for the Global Cooldown, Fatigue, and Breath bars, applied to every specialization at once
 
 ---
 
 ## Features
+
+### Cooldown Manager Integration
+
+TRB reads from Blizzard's Cooldown Manager (CDM) as a supplemental source of data for abilities, buffs, and debuffs. Anything fed this way needs the ability it tracks to be added to one of the Cooldown Manager's viewers before it can show a value.
+
+- Settings and bar text variables fed by the Cooldown Manager carry a **CDM** badge, with a tooltip explaining the requirement
+- Choose what a CDM-fed bar text variable displays while no value is available under Global Options -> Miscellaneous -> Bar Settings
+- Tracking that uses the CDM includes Ignore Pain (Protection Warrior), Enrage (Fury Warrior), Demonic Core (Demonology Warlock), Shard Instability (Affliction Warlock), Essence Burst (Evoker), Divine Purpose (Paladin), Surge of Light (Discipline and Holy Priest), Shatter (Frost Mage), and Coagulating Blood (Blood Death Knight)
 
 ### Edit Mode Integration
 
@@ -203,6 +220,7 @@ Many specs have a secondary resource displayed as individual nodes above or belo
 - **Maelstrom Weapon** (Enhancement Shaman) - 5 or 10 stacks with a dedicated color for the 5th stack
 - **Power Words** (Discipline Priest) - cooldown nodes for Power Word: Radiance with real-time cooldown progress
 - **Runes** (Blood/Frost/Unholy Death Knight) - 6 individual runes with cooldown timers
+- **Shatter** (Frost Mage) - up to 20 stacks of Shatter on your current target. Requires the Cooldown Manager to be enabled and Shatter to be actively tracked.
 - **Soul Fragments** (Vengeance/Devourer Demon Hunter)
 - **Soul Shards** (Affliction/Demonology/Destruction Warlock) - Destruction displays partial fragments
 - **Tip of the Spear** (Survival Hunter) - up to 3 stacks with duration timer
@@ -236,13 +254,33 @@ An optional healing absorb overlay displays debuffs that consume incoming healin
 Every specialization gets a dedicated Cast Bar that tracks standard, channeled, and empowered casts, with the same size, anchor, texture, color, and bar text options as every other bar.
 
 - **Visibility conditions** - show while Casting, Channeling, or Empowering, or set to Always/Never, with an In Vehicle hide, independent active/inactive alpha, and fade-out
+- **Ability icon** - an icon beside the bar with configurable side (left/right/top/bottom), spacing, zoom to crop the stock border, and a collapse border width option to share a single border with the bar
 - **Latency and pushback overlays** - visualize spell-queue latency and pushback, with a configurable Channel Tick Width and an optional Size Channel Ticks to Latency
-- **Channel tick markers** - drawn from a user-editable per-spell tick rate list, handling fixed-count, fixed-duration, and chained channels
+- **Channel tick markers** - drawn from a user-editable per-spell tick rate list, handling fixed-count, fixed-duration, and chained channels, and accounting for set bonuses that modify tick counts
 - **Empower stages** - stage lines and per-level fill colors, with an optional Fill Each Empower Level Separately mode (Windwalker Monk, Evoker, Blood Death Knight)
-- **Uninterruptible border** - a distinct border color while a cast can't be interrupted
+- **Uninterruptible border and shield** - a distinct border color while a cast can't be interrupted, plus a shield icon (on by default) that is fully customizable in size, position (icon/bar, behind/in front, anchored to a 9-point grid), and color, or hidden entirely
+- **Class coloring** - color the bar by an enemy player target's class color across all cast types, with sub-options to limit it to while PvP is enabled or extend it to friendly players; active Color Indicators still take priority
 - **Bulk crafting** - profession crafts like Create All are merged into a single channel-style bar with per-craft ticks and `$castSpellName` progress; toggle with Merge Bulk Crafting
 - **Bar text** - `$castTime`, `$castTimeRemaining`, `$castLatency`, `$castLatencyMs`, `$castPushback`, `$castSpellName`, `$castSpellId`, `$castInterruptible`, `$castUninterruptible`, and the `#casting` spell icon
 - **Global options** - top-level Cast Bar options with global versions of every section, a Global Profile selector, per-spec follow-global, and Copy... between scopes
+
+#### Target and Focus Cast Bars
+
+Standalone Target and Focus Cast Bars track a unit's casts, channels, and empowers. They are secret-safe, so they work on enemy casts where the timing is hidden, and they carry the same size, anchor, texture, color, icon, uninterruptible shield, and bar text options as the player Cast Bar.
+
+- Bar text variables including `$targetCastingSpellName`, `$targetCastTimeRemaining`, and the `$focus` equivalents
+- The Cast Bar, Target Cast Bar, and Focus Cast Bar ability icons are bar text anchor targets, so text can be positioned relative to the icon frame like any other bar
+
+### Other Bars
+
+An **Other Bars** screen provides optional timer bars available to every specialization -- **Global Cooldown**, **Fatigue**, and **Breath** -- plus a **Feign Death** bar for Hunters. Each has its own dimensions, anchoring, colors, textures, visibility rules, and bar text.
+
+- The Global Cooldown, Fatigue, and Breath bars can be configured globally for every specialization at once, or per specialization. Feign Death is configured per Hunter specialization, as no other class can use it.
+- The Global Cooldown bar can either drain a full bar down or grow an empty one up as the global cooldown elapses
+- The Fatigue, Breath, and Feign Death bars can each hide Blizzard's own version of that timer while they are shown
+- A Duration Decimal Precision option for the Global Cooldown bar's timer text (the mirror timers read as mm:ss and have no decimals to configure)
+- Bar text variables: `$gcdDuration`, `$gcdDurationRemaining`, `$fatigueDuration`, `$fatigueDurationRemaining`, `$breathDuration`, and `$breathDurationRemaining`, plus `$feignDeathDuration` and `$feignDeathDurationRemaining` for Hunters
+- Each bar ships with a bar text entry for its remaining time already set up. The Global Cooldown's starts disabled, since its bar is thin and recycles constantly.
 
 ### Druid Shapeshifting
 
@@ -264,6 +302,10 @@ Some DPS specs that may need to off-heal in a pinch have a secondary mana bar av
 
 Brewmaster Monks get a dedicated Stagger bar that displays current stagger damage as a percentage of maximum health. The bar includes configurable thresholds for Medium, Heavy, and Extremely Heavy stagger levels, with color transitions as stagger severity increases. The maximum stagger percentage displayed by the bar can be set above 100% of maximum health. Stagger levels and colors are set to Blizzard's defaults but can be freely customized to suit your preferences and needs.
 
+### Coagulating Blood Bar (Blood Death Knight)
+
+Blood Death Knights get a dedicated Coagulating Blood bar tracking current stacks, where each stack is 1% damage reduction. An optional maximum value override lets the bar and its threshold lines scale to the cap you actually reach rather than the theoretical maximum. The `$coagulatingBloodStacks` and `$coagulatingBloodStacksMax` bar text variables expose the value. Requires the Cooldown Manager to be enabled and Coagulating Blood to be actively tracked.
+
 ### Defensives Bar (Protection Warrior)
 
 Protection Warriors have a specialized Defensives bar that tracks the remaining duration of key defensive abilities. Each Defensive bar can be enabled or disabled independently and reordered.
@@ -282,7 +324,7 @@ Many specs can track important buff status and timers via color changes and dire
 | Vengeance Demon Hunter | Metamorphosis |
 | Devourer Demon Hunter | Void Metamorphosis, Rolling Torment Fury prediction |
 | Balance Druid | Eclipse/Incarnation |
-| Feral Druid | Berserk/Incarnation (including incoming combo point generation timing), Clearcasting, Ravage |
+| Feral Druid | Berserk/Incarnation (including incoming combo point generation timing), Clearcasting, Ravage, Halazzi's Fury |
 | Guardian Druid | Berserk/Incarnation |
 | Restoration Druid | Efflorescence, Incarnation, Clearcasting |
 | Augmentation Evoker | Ebon Might |
@@ -303,7 +345,8 @@ Many specs can track important buff status and timers via color changes and dire
 | Affliction Warlock | Shard Instability |
 | Demonology Warlock | Demonic Core, Dominion of Argus, Infernal Bolt, Ruination |
 | Destruction Warlock | Infernal Bolt, Ruination |
-| Protection Warrior | Violent Outburst |
+| Fury Warrior | Enrage |
+| Protection Warrior | Violent Outburst, Ignore Pain |
 
 ---
 
@@ -311,9 +354,9 @@ Many specs can track important buff status and timers via color changes and dire
 
 TRB is being actively translated into multiple languages. Current progress:
 
-- **Simplified Chinese (zhCN)** - 100%
-- **German (deDE)** - 57%
-- **French (frFR)** - 8%
+- **Simplified Chinese (zhCN)** - 93%
+- **German (deDE)** - 46%
+- **French (frFR)** - 6%
 
 If you're interested in helping translate TRB into other languages, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know!
 
