@@ -340,23 +340,24 @@ function TRB.Classes.Druid.BalanceSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#fullMoon", icon = spells.fullMoon.icon, description = spells.fullMoon.name, printInSettings = true },
 		{ variable = "#moon", icon = string.format(L["DruidBalanceIcon_moon"], spells.newMoon.icon, spells.halfMoon.icon, spells.fullMoon.icon), description = L["DruidBalanceIconDescription_moon"], printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$astralPower", description = L["DruidBalanceBarTextVariable_astralPower"], printInSettings = true, color = false },
-		{ variable = "$astralPowerMax", description = L["DruidBalanceBarTextVariable_astralPowerMax"], printInSettings = true, color = false },
+		{ variable = "$astralPower", description = L["DruidBalanceBarTextVariable_astralPower"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$astralPowerMax", description = L["DruidBalanceBarTextVariable_astralPowerMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$mana", description = L["DruidRestorationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["DruidRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$manaMax", description = L["DruidRestorationBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DruidRestorationBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["DruidRestorationBarTextVariable_mana"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["DruidRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["DruidRestorationBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["DruidRestorationBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$energy", description = L["DruidFeralBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-		{ variable = "$rage", description = L["DruidGuardianBarTextVariable_rage"], printInSettings = true, color = false },
-		{ variable = "$rageMax", description = L["DruidGuardianBarTextVariable_rageMax"], printInSettings = true, color = false },
+		{ variable = "$energy", description = L["DruidFeralBarTextVariable_energy"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$rage", description = L["DruidGuardianBarTextVariable_rage"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$rageMax", description = L["DruidGuardianBarTextVariable_rageMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$eclipse", description = L["DruidBalanceBarTextVariable_eclipse"], printInSettings = true, color = false },
 		{ variable = "$eclipseTime", description = L["DruidBalanceBarTextVariable_eclipseTime"], printInSettings = true, color = false },
@@ -412,6 +413,9 @@ end
 ---@field public ravageMinimum TRB.Classes.SpellComboPointThreshold
 ---@field public ravageMaximum TRB.Classes.SpellComboPointThreshold
 ---@field public frenziedRegeneration TRB.Classes.SpellComboPointThreshold
+---@field public halazzisFury TRB.Classes.SpellBase
+---@field public midnightSeason2SetBonus TRB.Classes.SpellBase
+---@field public midnightSeason2SetKey string # Key the set's pieces are registered under in TRB.Data.itemSetRegistry
 TRB.Classes.Druid.FeralSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
 TRB.Classes.Druid.FeralSpells.__index = TRB.Classes.Druid.FeralSpells
 
@@ -550,6 +554,15 @@ function TRB.Classes.Druid.FeralSpells:New()
 		rangeCheck = false,
         category = "defensive"
     })
+    -- Midnight Season 2 2pc damage buff (Halazzi's Fury), manually tracked (1s per combo point spent during Berserk/Avatar of Ashamane)
+    self.halazzisFury = TRB.Classes.SpellBase:New({
+        id = 1301600
+    })
+    -- Midnight Season 2 set bonus (4pc extends Berserk/Avatar of Ashamane by fourPieceDuration, 2pc grants
+    -- halazzisFury). The set's piece ids live in TRB.Data.itemSetRegistry at the bottom of this file.
+    self.midnightSeason2SetBonus = TRB.Classes.SpellBase:New({
+        fourPieceDuration = 10
+    })
 
     return self
 end
@@ -567,6 +580,7 @@ function TRB.Classes.Druid.FeralSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#apexPredatorsCraving", icon = spells.apexPredatorsCraving.icon, description = spells.apexPredatorsCraving.name, printInSettings = true },
 		{ variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
+		{ variable = "#halazzisFury", icon = spells.halazzisFury.icon, description = spells.halazzisFury.name, printInSettings = true },
 		{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
 		{ variable = "#feralFrenzy", icon = spells.feralFrenzy.icon, description = spells.feralFrenzy.name, printInSettings = true },
 		{ variable = "#ferociousBite", icon = spells.ferociousBiteMinimum.icon, description = spells.ferociousBiteMinimum.name, printInSettings = true },
@@ -582,29 +596,32 @@ function TRB.Classes.Druid.FeralSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#shred", icon = spells.shred.icon, description = spells.shred.name, printInSettings = true },
 		{ variable = "#swipe", icon = spells.swipe.icon, description = spells.swipe.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
         { variable = "$ravageActive", description = "", printInSettings = false, color = false },
 
-		{ variable = "$mana", description = L["DruidRestorationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["DruidRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$manaMax", description = L["DruidRestorationBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DruidRestorationBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["DruidRestorationBarTextVariable_mana"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["DruidRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["DruidRestorationBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["DruidRestorationBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$energy", description = L["DruidFeralBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-		{ variable = "$rage", description = L["DruidGuardianBarTextVariable_rage"], printInSettings = true, color = false },
-		{ variable = "$rageMax", description = L["DruidGuardianBarTextVariable_rageMax"], printInSettings = true, color = false },
+		{ variable = "$energy", description = L["DruidFeralBarTextVariable_energy"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$rage", description = L["DruidGuardianBarTextVariable_rage"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$rageMax", description = L["DruidGuardianBarTextVariable_rageMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		
 		{ variable = "$berserkTime", description = L["DruidFeralBarTextVariable_berserkTime"], printInSettings = true, color = false },
 		{ variable = "$incarnationTime", description = "", printInSettings = false, color = false },
 		{ variable = "$incarnationTicks", description = L["DruidFeralBarTextVariable_incarnationTicks"], printInSettings = true, color = false },
 		{ variable = "$incarnationTickTime", description = L["DruidFeralBarTextVariable_incarnationTickTime"], printInSettings = true, color = false },
 		{ variable = "$incarnationNextCp", description = L["DruidFeralBarTextVariable_incarnationNextCp"], printInSettings = true, color = false },
+
+		{ variable = "$halazzisFuryTime", description = L["DruidFeralBarTextVariable_halazzisFuryTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 
 		{ variable = "$clearcastingActive", description = L["DruidFeralBarTextVariable_clearcastingActive"], printInSettings = true, color = false },
 	})
@@ -751,19 +768,20 @@ function TRB.Classes.Druid.GuardianSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
 	})
 
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["DruidRestorationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["DruidRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$manaMax", description = L["DruidRestorationBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["DruidRestorationBarTextVariable_mana"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["DruidRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["DruidRestorationBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$energy", description = L["DruidFeralBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-		{ variable = "$rage", description = L["DruidGuardianBarTextVariable_rage"], printInSettings = true, color = false },
-		{ variable = "$rageMax", description = L["DruidGuardianBarTextVariable_rageMax"], printInSettings = true, color = false },
+		{ variable = "$energy", description = L["DruidFeralBarTextVariable_energy"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$rage", description = L["DruidGuardianBarTextVariable_rage"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$rageMax", description = L["DruidGuardianBarTextVariable_rageMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		
 		{ variable = "$berserkTime", description = L["DruidGuardianBarTextVariable_berserkTime"], printInSettings = true, color = false },
 		{ variable = "$incarnationTime", description = "", printInSettings = false, color = false },
@@ -864,21 +882,22 @@ function TRB.Classes.Druid.RestorationSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
 		{ variable = "#incarnation", icon = spells.incarnationTreeOfLife.icon, description = spells.incarnationTreeOfLife.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["DruidRestorationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["DruidRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["DruidRestorationBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["DruidRestorationBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["DruidRestorationBarTextVariable_mana"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["DruidRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["DruidRestorationBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["DruidRestorationBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$energy", description = L["DruidFeralBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
-		{ variable = "$rage", description = L["DruidGuardianBarTextVariable_rage"], printInSettings = true, color = false },
-		{ variable = "$rageMax", description = L["DruidGuardianBarTextVariable_rageMax"], printInSettings = true, color = false },
+		{ variable = "$energy", description = L["DruidFeralBarTextVariable_energy"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$rage", description = L["DruidGuardianBarTextVariable_rage"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$rageMax", description = L["DruidGuardianBarTextVariable_rageMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$incarnationTime", description = L["DruidRestorationBarTextVariable_incarnationTime"], printInSettings = true, color = false },
 
@@ -1208,3 +1227,83 @@ TRB.Data.castbarTickModifiersRegistry["druid_balance"] = TRB.Classes.Druid.Balan
 TRB.Data.castbarTickModifiersRegistry["druid_feral"] = TRB.Classes.Druid.FeralSpells.GetCastbarTickModifiers
 TRB.Data.castbarTickModifiersRegistry["druid_guardian"] = TRB.Classes.Druid.GuardianSpells.GetCastbarTickModifiers
 TRB.Data.castbarTickModifiersRegistry["druid_restoration"] = TRB.Classes.Druid.RestorationSpells.GetCastbarTickModifiers
+
+-- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
+-- every registered set once per gear change and caches it.
+TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey = "druid_feral_midnightSeason2"
+TRB.Data.itemSetRegistry = TRB.Data.itemSetRegistry or {}
+---@type TRB.Classes.ItemSetDefinition
+TRB.Data.itemSetRegistry[TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey] = {
+	headId = 271528,
+	shoulderId = 271526,
+	chestId = 271531,
+	handId = 271529,
+	legId = 271527,
+}
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("druid_balance", {
+		builtIns = {
+			{
+				id = "ssReady",
+				label = L["DruidBalanceAudioStarsurgeReady"],
+				trigger = L["DruidBalanceAudioTriggerStarsurgeReady"],
+				tooltip = L["DruidBalanceAudioStarsurgeCheckboxTooltip"],
+			},
+			{
+				id = "sfReady",
+				label = L["DruidBalanceAudioStarfallReady"],
+				trigger = L["DruidBalanceAudioTriggerStarfallReady"],
+				tooltip = L["DruidBalanceAudioStarfallCheckboxTooltip"],
+			},
+		},
+	})
+
+	TRB.Functions.AudioCues:Register("druid_feral", {
+		builtIns = {
+			{
+				id = "apexPredatorsCraving",
+				label = L["DruidFeralAudioApexPredatorsCravingProc"],
+				trigger = L["DruidFeralAudioTriggerApexPredatorsCraving"],
+				tooltip = L["DruidFeralCheckboxApexPredatorsCravingProcTooltip"],
+			},
+		},
+		counters = {
+			{
+				id = "comboPoints",
+				label = L["DruidFeralAudioCueSourceComboPoints"],
+				description = L["DruidFeralAudioCueSourceComboPointsDescription"],
+				sliderLabel = L["DruidFeralComboPointThresholdSliderTitle"],
+				defaultName = L["DruidFeralAudioCueComboPointDefaultName"],
+				min = 0,
+				max = 5,
+				step = 1,
+				decimals = 0,
+				compare = "atLeast",
+				requiresCombat = true,
+				legacyIds = { "comboPointThreshold1", "comboPointThreshold2" },
+				defaultCues = {
+					{
+						id = "comboPointThreshold1",
+						name = L["DruidFeralAudioComboPointThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 3,
+					},
+					{
+						id = "comboPointThreshold2",
+						name = L["DruidFeralAudioComboPointThreshold2"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+						soundName = L["LSMSoundBoxingArenaGong"],
+						thresholdValue = 5,
+					},
+				},
+			},
+		},
+	})
+end

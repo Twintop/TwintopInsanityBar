@@ -18,6 +18,17 @@ f3:SetFontObject(GameFontNormalSmall)
 local f4 = CreateFont("TwintopResourceBar_OptionsMenu_Export_Spec_Color")
 ---@diagnostic disable-next-line: need-check-nil
 f4:SetFontObject(GameFontWhite)
+-- Red variants of the tab label fonts, used when a bar tab's bar is disabled (Visibility = Never).
+local f5 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Red_Small_Color")
+---@diagnostic disable-next-line: need-check-nil
+f5:SetFontObject(GameFontNormalSmall)
+---@diagnostic disable-next-line: need-check-nil
+f5:SetTextColor(1, 0, 0)
+local f6 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Red_Highlight_Small_Color")
+---@diagnostic disable-next-line: need-check-nil
+f6:SetFontObject(GameFontHighlightSmall)
+---@diagnostic disable-next-line: need-check-nil
+f6:SetTextColor(1, 0.35, 0.35)
 
 TRB.Options.fonts = {}
 TRB.Options.fonts.options = {}
@@ -25,6 +36,8 @@ TRB.Options.fonts.options.tabHighlightSmall = f1
 TRB.Options.fonts.options.tabGreenSmall = f2
 TRB.Options.fonts.options.tabNormalSmall = f3
 TRB.Options.fonts.options.exportSpec = f4
+TRB.Options.fonts.options.tabRedSmall = f5
+TRB.Options.fonts.options.tabRedHighlightSmall = f6
 
 TRB.Options.variables = {}
 TRB.Options.variables.barTextInstructions = L["BarTextInstructions"]
@@ -281,7 +294,26 @@ local function ConstructMiscellaneousPanel(parent)
 		end
 	end)
 
-	yCoord = yCoord - 30
+	-- What a Cooldown Manager fed variable renders when the CDM holds no value for it: the ability was
+	-- never added to a viewer, or the viewer's group is hidden.
+	yCoord = yCoord - 40
+	controls.cdmUnknownDisplay = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, "TwintopResourceBar_DD_CdmUnknownDisplay", L["GlobalOptionsCdmUnknownDisplay"], {
+			{ value = "nothing", label = L["GlobalOptionsCdmUnknownDisplayNothing"] },
+			{ value = "questionMarks", label = L["GlobalOptionsCdmUnknownDisplayQuestionMarks"] },
+			{ value = "zero", label = L["GlobalOptionsCdmUnknownDisplayZero"] },
+		},
+		function() return TRB.Data.settings.core.cdmUnknownDisplay end,
+		function(value)
+			TRB.Data.settings.core.cdmUnknownDisplay = value
+			-- The lookup memoizes on the rendered string, so the new treatment only reaches the bar once
+			-- the cache is invalidated.
+			TRB.Data.lookupDirty = true
+			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end
+		end, oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 70
 	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["TimerPrecision"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
@@ -374,6 +406,28 @@ local function ConstructMiscellaneousPanel(parent)
 
 		self.EditBox:SetText(value)
 		TRB.Data.settings.core.reactionTime = value
+	end)
+
+	yCoord = yCoord - 40
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CooldownManagerSettings"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 50
+
+	title = L["CooldownManagerGracePeriod"]
+	controls.cooldownManagerGracePeriod = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 60, TRB.Data.settings.core.cooldownManagerGracePeriod, 0.05, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.cooldownManagerGracePeriod:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		else
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		end
+
+		self.EditBox:SetText(value)
+		TRB.Data.settings.core.cooldownManagerGracePeriod = value
 	end)
 
 	yCoord = yCoord - 40
@@ -578,15 +632,16 @@ local function ConstructGlobalBarTextPanel(parent)
 	yCoord = yCoord - 10
 
 	-- Build a lightweight cache object with global-applicable barTextVariables
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	local globalCache = {
 		barTextVariables = {
 			icons = TRB.Functions.BarText:GetCommonIcons(),
 			values = TRB.Functions.BarText:GetCommonValues({
-				{ variable = "$resource", description = L["GlobalBarTextVariable_resource"], printInSettings = true, color = false },
-				{ variable = "$resourceMax", description = L["GlobalBarTextVariable_resourceMax"], printInSettings = true, color = false },
-				{ variable = "$casting", description = L["GlobalBarTextVariable_casting"], printInSettings = true, color = false },
-				{ variable = "$comboPoints", description = L["GlobalBarTextVariable_comboPoints"] .. " " .. L["GlobalBarTextWarningComboPoints"], printInSettings = true, color = false },
-				{ variable = "$comboPointsMax", description = L["GlobalBarTextVariable_comboPointsMax"] .. " " .. L["GlobalBarTextWarningComboPoints"], printInSettings = true, color = false },
+				{ variable = "$resource", description = L["GlobalBarTextVariable_resource"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+				{ variable = "$resourceMax", description = L["GlobalBarTextVariable_resourceMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+				{ variable = "$casting", description = L["GlobalBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+				{ variable = "$comboPoints", description = L["GlobalBarTextVariable_comboPoints"] .. " " .. L["GlobalBarTextWarningComboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+				{ variable = "$comboPointsMax", description = L["GlobalBarTextVariable_comboPointsMax"] .. " " .. L["GlobalBarTextWarningComboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 			}),
 		}
 	}
@@ -625,9 +680,9 @@ local function ConstructGlobalOptionsPanel()
 	TRB.Frames.interfaceSettingsFrameContainer.controls.global = controls
 
 	local tabDefinitions = {
-		{ "resourceBar", L["TabResource"], oUi.tabWidth.small, ConstructResourceBarPanel },
-		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, ConstructComboPointsBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ConstructHealthBarPanel },
+		{ "resourceBar", L["TabResource"], oUi.tabWidth.small, ConstructResourceBarPanel, visibilityKey = "primary" },
+		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, ConstructComboPointsBarPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ConstructHealthBarPanel, visibilityKey = "health" },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ConstructThresholdPanel },
@@ -665,16 +720,58 @@ local function ConstructCastbarOptionsPanel()
 	local tabDefinitions = {
 		{ "castbar", L["ResourcePlayerCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, nil, nil, true)
-		end },
+		end, visibilityKey = "castbar" },
 		{ "target", L["ResourceTargetCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, nil, nil, "targetCastbar")
-		end },
+		end, visibilityKey = "targetCastbar" },
 		{ "focus", L["ResourceFocusCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, nil, nil, "focusCastbar")
-		end },
+		end, visibilityKey = "focusCastbar" },
 	}
 
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Castbar", tabDefinitions, -37)
+end
+
+---Constructs the top-level Other Bars options panel: global (core-scope) settings for the GCD bar and
+---the Fatigue/Breath/Death/Feign Death mirror timers, in a tabbed screen like the Castbar one.
+local function ConstructOtherBarsOptionsPanel()
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.core or {}
+	interfaceSettingsFrame.controls.core = controls
+	controls.colors = controls.colors or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.otherBarsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_OtherBarsPanel")
+	TRB.Options.OptionsFrame:RegisterCategory("otherBars", L["TabOtherBars"], interfaceSettingsFrame.otherBarsPanel)
+
+	local parent = interfaceSettingsFrame.otherBarsPanel
+
+	controls.otherBarsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["OtherBarsGlobalOptionsHeader"], oUi.xCoord, -5)
+
+	-- Core-scope profile dropdown, same position as on Global Options.
+	controls.otherBarsProfileDropdown = TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, -10, "core", nil, nil, L["GlobalOptions"], "_OtherBars")
+
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local tabDefinitions = {}
+	-- nil classId is the global scope, which excludes the Hunter-only Feign Death bar.
+	for _, barKey in ipairs(registry:GetOtherBarKeys(nil)) do
+		local barDef = registry:Get(barKey)
+		if barDef ~= nil then
+			local capturedKey = barKey
+			tabDefinitions[#tabDefinitions + 1] = {
+				capturedKey,
+				barDef.displayName,
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.OtherBars:ConstructPanel(scrollChild, nil, nil, capturedKey)
+				end,
+				visibilityKey = capturedKey,
+			}
+		end
+	end
+
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "OtherBars", tabDefinitions, -37)
 end
 
 -- Localized labels for the profile/nav catalogs. Identity comes from
@@ -2044,6 +2141,7 @@ function TRB.Options:ConstructOptionsPanel()
 
 	ConstructGlobalOptionsPanel()
 	ConstructCastbarOptionsPanel()
+	ConstructOtherBarsOptionsPanel()
 	ConstructImportExportPanel()
 	ConstructProfileDefaultsPanel()
 
@@ -2180,4 +2278,4 @@ function TRB.Options:CreateBarTextVariables(cache, parent, xCoord, yCoord)
 			yCoord = yCoord - (height * 3) - 5
 		end
 	end
-end
+end

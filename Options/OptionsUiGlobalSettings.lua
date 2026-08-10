@@ -71,6 +71,21 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "focusCastbar", "classColor"}, {"bars", "focusCastbar", "classColorPvpOnly"}, {"bars", "focusCastbar", "classColorFriendly"}, {"bars", "focusCastbar", "castTimePrecision"}, {"bars", "focusCastbar", "durationPrecision"} } },
 	focusCastbarShield      = { checkboxSuffix = "focusCastbarShield",      tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarShield"],
 		paths = { {"bars", "focusCastbar", "uninterruptibleShield"} } },
+	-- Other Bars sections live on the top-level "Other Bars" nav category. Two per bar: Dimensions
+	-- (position/size) and Colors (fill/border/background/end cap + the one behaviour flag each kind
+	-- has). Field-level paths so copies never clobber spec-only data.
+	gcdDimensions        = { checkboxSuffix = "gcdDimensions",        tabKey = "gcd",        categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_gcdDimensions"],
+		paths = { {"bars", "gcd", "width"}, {"bars", "gcd", "height"}, {"bars", "gcd", "border"}, {"bars", "gcd", "xPos"}, {"bars", "gcd", "yPos"}, {"bars", "gcd", "anchor"}, {"bars", "gcd", "fillDirection"} } },
+	gcdColors            = { checkboxSuffix = "gcdColors",            tabKey = "gcd",        categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_gcdColors"],
+		paths = { {"colors", "bars", "gcd", "bar"}, {"colors", "bars", "gcd", "border"}, {"colors", "bars", "gcd", "background"}, {"colors", "bars", "gcd", "endCap"}, {"bars", "gcd", "durationPrecision"}, {"bars", "gcd", "timerDirection"} } },
+	fatigueDimensions    = { checkboxSuffix = "fatigueDimensions",    tabKey = "fatigue",    categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_fatigueDimensions"],
+		paths = { {"bars", "fatigue", "width"}, {"bars", "fatigue", "height"}, {"bars", "fatigue", "border"}, {"bars", "fatigue", "xPos"}, {"bars", "fatigue", "yPos"}, {"bars", "fatigue", "anchor"}, {"bars", "fatigue", "fillDirection"} } },
+	fatigueColors        = { checkboxSuffix = "fatigueColors",        tabKey = "fatigue",    categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_fatigueColors"],
+		paths = { {"colors", "bars", "fatigue", "bar"}, {"colors", "bars", "fatigue", "border"}, {"colors", "bars", "fatigue", "background"}, {"colors", "bars", "fatigue", "endCap"}, {"bars", "fatigue", "disableBlizzardBar"} } },
+	breathDimensions     = { checkboxSuffix = "breathDimensions",     tabKey = "breath",     categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_breathDimensions"],
+		paths = { {"bars", "breath", "width"}, {"bars", "breath", "height"}, {"bars", "breath", "border"}, {"bars", "breath", "xPos"}, {"bars", "breath", "yPos"}, {"bars", "breath", "anchor"}, {"bars", "breath", "fillDirection"} } },
+	breathColors         = { checkboxSuffix = "breathColors",         tabKey = "breath",     categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_breathColors"],
+		paths = { {"colors", "bars", "breath", "bar"}, {"colors", "bars", "breath", "border"}, {"colors", "bars", "breath", "background"}, {"colors", "bars", "breath", "endCap"}, {"bars", "breath", "disableBlizzardBar"} } },
 }
 
 ---Sets a checkbox to tristate visual mode
@@ -296,17 +311,25 @@ end
 ---@param checkbox CheckButton The "Use global settings" checkbox to attach the link to
 ---@param globalTabKey string The tab key to navigate to (e.g., "resourceBar", "barTextures", "castbar")
 ---@param categoryKey string? The top-level nav category holding the tab (defaults to "global")
+---@return Button|nil link The created link button, or nil when the checkbox has no text region
 function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, globalTabKey, categoryKey)
 	local textRegion = _G[checkbox:GetName() .. "Text"]
 	if not textRegion then
-		return
+		return nil
 	end
 
-	-- The Castbar category has its own wording so it's clear the link opens the Cast Bar
+	-- The Castbar and Other Bars categories have their own wording so it's clear the link opens that
 	-- screen, not the normal Global Options frame.
 	local navKey = categoryKey or "global"
-	local linkText = navKey == "castbar" and L["OpenGlobalCastbarSettings"] or L["OpenGlobalSettings"]
-	local linkTooltip = navKey == "castbar" and L["OpenGlobalCastbarSettingsTooltip"] or L["OpenGlobalSettingsTooltip"]
+	local linkText = L["OpenGlobalSettings"]
+	local linkTooltip = L["OpenGlobalSettingsTooltip"]
+	if navKey == "castbar" then
+		linkText = L["OpenGlobalCastbarSettings"]
+		linkTooltip = L["OpenGlobalCastbarSettingsTooltip"]
+	elseif navKey == "otherBars" then
+		linkText = L["OpenGlobalOtherBarsSettings"]
+		linkTooltip = L["OpenGlobalOtherBarsSettingsTooltip"]
+	end
 
 	local link = CreateFrame("Button", nil, checkbox)
 	link:SetNormalFontObject("GameFontNormalSmall")
@@ -344,5 +367,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 			end)
 		end
 	end)
+
+	return link
 end
 

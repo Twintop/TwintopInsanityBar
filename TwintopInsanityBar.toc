@@ -1,4 +1,6 @@
-## Interface: 120007
+﻿## Interface: 120100, 120007
+## X-TargetInterface: 120100
+## X-VersionCheck: disabled
 ## Title: Twintop's Resource Bar
 ## Title-deDE: Twintops Ressourcenleiste
 ## Title-esES: Barra de Recursos de Twintop
@@ -13,9 +15,9 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 12.0.7.14
+## Version: 12.1.0.0
 ## X-ReleaseType: release
-## X-ReleaseDate: 2026-08-06
+## X-ReleaseDate: 2026-08-10
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -66,6 +68,8 @@ Localization\zhCN.lua
 Localization\zhTW.lua
 Localization\LocalizationPost.lua
 
+Functions\VersionGate.lua
+
 Classes\CombatLog.lua
 Classes\Snapshot.lua
 Classes\Target.lua
@@ -81,6 +85,8 @@ Classes\SpecCache.lua
 Classes\OptionsUi.lua
 
 Init.lua
+
+Functions\AudioCues.lua
 
 ClassModules\Classes\HealerClasses.lua
 ClassModules\Classes\DeathKnightClasses.lua
@@ -99,6 +105,7 @@ ClassModules\Classes\WarriorClasses.lua
 
 Functions\Table.lua
 Functions\Aura.lua
+Functions\CooldownManager.lua
 Functions\Bar.lua
 Functions\BarText.lua
 Classes\BarVisibility.lua
@@ -115,6 +122,7 @@ Functions\Profiles.lua
 Functions\SpellCast.lua
 Functions\Castbar.lua
 Functions\TargetCastbar.lua
+Functions\OtherBars.lua
 Functions\String.lua
 Functions\Talent.lua
 Functions\Threshold.lua
@@ -133,6 +141,7 @@ Options\OptionsUiVisibility.lua
 Options\OptionsUiThresholdList.lua
 Options\OptionsUiThresholds.lua
 Options\OptionsUiCustomThresholds.lua
+Options\OptionsUiAudioCues.lua
 Options\OptionsUiText.lua
 Options\OptionsUiIndicators.lua
 Options\OptionsUiColors.lua
@@ -143,6 +152,7 @@ Options\OptionsUiBarTextInput.lua
 Options\OptionsUiBarText.lua
 Options\OptionsUiCastbar.lua
 Options\OptionsUiTargetCastbar.lua
+Options\OptionsUiOtherBars.lua
 Options\OptionsUiTabs.lua
 Options\OptionsFrame.lua
 Options\Options.lua

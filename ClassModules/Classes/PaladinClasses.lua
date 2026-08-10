@@ -24,7 +24,9 @@ function TRB.Classes.Paladin.HolySpells:New()
 
     self.divinePurpose = TRB.Classes.SpellBase:New({
         id = 223819,
-        isBuff = true
+        spellId = 223819, -- Id the proc's activation overlay is announced under
+        isBuff = true,
+        duration = 12
     })
 
 	self.holyLight = TRB.Classes.SpellBase:New({
@@ -49,24 +51,23 @@ function TRB.Classes.Paladin.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#flashOfLight", icon = spells.flashOfLight.icon, description = spells.flashOfLight.name, printInSettings = true },
 		{ variable = "#holyLight", icon = spells.holyLight.icon, description = spells.holyLight.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$castingHolyPower", description = L["PaladinHolyBarTextVariable_castingHolyPower"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingHolyPower", description = L["PaladinHolyBarTextVariable_castingHolyPower"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 					
-		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		{ variable = "$holyPowerPlusCasting", description = L["PaladinHolyBarTextVariable_holyPowerPlusCasting"], printInSettings = true, color = false },
-		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false },
-		{ variable = "$divinePurposeActive", description = L["PaladinBarTextVariable_divinePurposeActive"], printInSettings = false, color = false },
-		{ variable = "$divinePurposeStacks", description = L["PaladinBarTextVariable_divinePurposeStacks"], printInSettings = false, color = false },
+		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$holyPowerPlusCasting", description = L["PaladinHolyBarTextVariable_holyPowerPlusCasting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		{ variable = "$divinePurposeTime", description = L["PaladinBarTextVariable_divinePurposeTime"], printInSettings = true, color = false },
 	})
 end
@@ -96,9 +97,11 @@ function TRB.Classes.Paladin.ProtectionSpells:New()
 
 	self.divinePurpose = TRB.Classes.SpellBase:New({
 		id = 223819,
-		isBuff = true
+		spellId = 223819, -- Id the proc's activation overlay is announced under
+		isBuff = true,
+		duration = 12
 	})
-    
+
     return self
 end
 
@@ -113,21 +116,20 @@ function TRB.Classes.Paladin.ProtectionSpells.FillBarTextVariables(specCacheEntr
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 					
-		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		{ variable = "$divinePurposeActive", description = L["PaladinBarTextVariable_divinePurposeActive"], printInSettings = false, color = false },
-		{ variable = "$divinePurposeStacks", description = L["PaladinBarTextVariable_divinePurposeStacks"], printInSettings = false, color = false },
+		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		{ variable = "$divinePurposeTime", description = L["PaladinBarTextVariable_divinePurposeTime"], printInSettings = true, color = false },
 	})
 end
@@ -151,9 +153,11 @@ function TRB.Classes.Paladin.RetributionSpells:New()
 
     self.divinePurpose = TRB.Classes.SpellBase:New({
         id = 223819,
-        isBuff = true
+        spellId = 408458, -- Id the proc's activation overlay is announced under
+        isBuff = true,
+        duration = 12
     })
-   
+
     return self
 end
 
@@ -168,21 +172,20 @@ function TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCacheEnt
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 					
-		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		{ variable = "$divinePurposeActive", description = L["PaladinBarTextVariable_divinePurposeActive"], printInSettings = false, color = false },
-		{ variable = "$divinePurposeStacks", description = L["PaladinBarTextVariable_divinePurposeStacks"], printInSettings = false, color = false },
+		{ variable = "$holyPower", description = L["PaladinHolyBarTextVariable_holyPower"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		{ variable = "$divinePurposeTime", description = L["PaladinBarTextVariable_divinePurposeTime"], printInSettings = true, color = false },
 	})
 end
@@ -276,3 +279,81 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["paladin_holy"] = TRB.Classes.Paladin.HolySpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["paladin_protection"] = TRB.Classes.Paladin.ProtectionSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["paladin_retribution"] = TRB.Classes.Paladin.RetributionSpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	local function HolyPowerSource()
+		return {
+			id = "holyPower",
+			label = L["PaladinAudioCueSourceHolyPower"],
+			description = L["PaladinAudioCueSourceHolyPowerDescription"],
+			sliderLabel = L["PaladinHolyPowerThresholdSliderTitle"],
+			defaultName = L["PaladinAudioCueHolyPowerDefaultName"],
+			min = 0,
+			max = 5,
+			step = 1,
+			decimals = 0,
+			compare = "atLeast",
+			requiresCombat = true,
+			legacyIds = { "holyPowerThreshold1", "holyPowerThreshold2", "holyPowerThreshold3" },
+			defaultCues = {
+				{
+					id = "holyPowerThreshold1",
+					name = L["PaladinAudioHolyPowerThreshold1"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 3,
+				},
+				{
+					id = "holyPowerThreshold2",
+					name = L["PaladinAudioHolyPowerThreshold2"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 4,
+				},
+				{
+					id = "holyPowerThreshold3",
+					name = L["PaladinAudioHolyPowerThreshold3"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 5,
+				},
+			},
+		}
+	end
+
+	local divinePurpose = {
+		id = "divinePurpose",
+		label = L["PaladinAudioDivinePurpose"],
+		trigger = L["PaladinAudioTriggerDivinePurpose"],
+		tooltip = L["PaladinAudioCheckboxDivinePurposeTooltip"],
+	}
+
+	TRB.Functions.AudioCues:Register("paladin_holy", {
+		builtIns = {
+			{
+				id = "infusionOfLight",
+				label = L["PaladinHolyInfusionOfLight"],
+				trigger = L["PaladinHolyAudioTriggerInfusionOfLight"],
+				tooltip = L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"],
+			},
+			divinePurpose,
+		},
+		counters = { HolyPowerSource() },
+	})
+
+	TRB.Functions.AudioCues:Register("paladin_protection", {
+		builtIns = { divinePurpose },
+		counters = { HolyPowerSource() },
+	})
+
+	TRB.Functions.AudioCues:Register("paladin_retribution", {
+		builtIns = { divinePurpose },
+		counters = { HolyPowerSource() },
+	})
+end

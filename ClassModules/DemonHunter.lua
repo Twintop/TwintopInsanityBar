@@ -64,8 +64,6 @@ local function FillSpecializationCache()
 	specCache.demonhunter_havoc.spellsData.spells = TRB.Classes.DemonHunter.HavocSpells:New()
 	local spells = specCache.demonhunter_havoc.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
 
-	specCache.demonhunter_havoc.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_havoc.snapshotData.snapshots[spells.bladeDance.id] = TRB.Classes.Snapshot:New(spells.bladeDance)
 	---@type TRB.Classes.Snapshot
@@ -115,8 +113,6 @@ local function FillSpecializationCache()
 	---@diagnostic disable-next-line: cast-local-type
 	spells = specCache.demonhunter_vengeance.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 
-	specCache.demonhunter_vengeance.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.chaosNova.id] = TRB.Classes.Snapshot:New(spells.chaosNova)
 	---@type TRB.Classes.Snapshot
@@ -151,8 +147,6 @@ local function FillSpecializationCache()
 	specCache.demonhunter_devourer.spellsData.spells = TRB.Classes.DemonHunter.DevourerSpells:New()
 	local spells = specCache.demonhunter_devourer.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
 
-	specCache.demonhunter_devourer.snapshotData.audio = {
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_devourer.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis, nil, "always")
 	-----@type TRB.Classes.Snapshot
@@ -270,7 +264,6 @@ local function ConstructResourceBar(settings)
 			Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxSoulFragments)
 			barGroups.secondary:Show()
 
-			local frameLevels = TRB.Data.constants.frameLevels
 			for i = 1, maxSoulFragments do
 				local node = barGroups.secondary:GetNode(i)
 				if node then
@@ -282,7 +275,7 @@ local function ConstructResourceBar(settings)
 					node:SetBorderColor(settings.colors.comboPoints.border.color)
 					node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
-					node:SetFrameLevel(frameLevels.comboPoint)
+					node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 				end
 			end
 		end
@@ -2123,6 +2116,11 @@ eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	-- Wrong game version for this build: halt before anything reads or writes settings.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
+
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -2289,7 +2287,6 @@ function TRB.Functions.Class:CheckCharacter()
 					if barGroups.secondary then
 						barGroups.secondary:SetMaxNodes(maxComboPoints)
 						barGroups.secondary:SetNodeCount(maxComboPoints)
-						local frameLevels = TRB.Data.constants.frameLevels
 						for i = 1, maxComboPoints do
 							local node = barGroups.secondary:GetNode(i)
 							if node then
@@ -2302,7 +2299,7 @@ function TRB.Functions.Class:CheckCharacter()
 								node:SetBorderColor(sharedSettings.colors.comboPoints.border.color)
 								node:SetBackgroundColorFromString(sharedSettings.colors.comboPoints.background.color)
 								TRB.Functions.Color:ApplyFillColor(node, sharedSettings.colors.comboPoints.base)
-								node:SetFrameLevel(frameLevels.comboPoint)
+								node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 							end
 						end
 					end
@@ -2563,7 +2560,6 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 		local maxSoulFragments = 6
 		barGroups.secondary:SetMaxNodes(maxSoulFragments)
 		barGroups.secondary:SetNodeCount(maxSoulFragments)
-		local frameLevels = TRB.Data.constants.frameLevels
 		for i = 1, maxSoulFragments do
 			local node = barGroups.secondary:GetNode(i)
 			if node then
@@ -2575,7 +2571,7 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 				node:SetBorderColor(settings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 					TRB.Functions.Color:ApplyFillColor(node, settings.colors.comboPoints.base)
-				node:SetFrameLevel(frameLevels.comboPoint)
+				node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 			end
 		end
 	end

@@ -308,17 +308,22 @@ function TRB.Functions.Castbar:GetTickProfile(barSettings, spellId)
 	return profiles[spellId]
 end
 
----A talent/buff-conditional tick rule for a channeled spell, registered per spec in
+---A talent/set/buff-conditional tick rule for a channeled spell, registered per spec in
 ---TRB.Data.castbarTickModifiersRegistry (code data, not settings; keyed "class_spec" like the profiles
----registry). bonusTicks: a number is a flat bonus whenever the talent is active; a table is the TOTAL
+---registry). bonusTicks: a number is a flat bonus whenever the rule's conditions hold; a table is the TOTAL
 ---bonus keyed by talent rank (unmapped ranks resolve to 0). tickMultiplier scales the count instead of
 ---adding to it (e.g. Double Tap's 80% more shots). Every rule's flat bonus lands before any multiplier, so
 ---a multiplier scales the count the other talents already built. Rules only apply to fixedCount profiles.
 ---bonusDuration shortens/lengthens the channel alongside its tick change (e.g. Cenarius' Guidance takes
 ---Convoke to 3s/12 ticks); it only feeds the reconstructed duration, since authoritative channel timing
 ---already reflects the talent.
+---A rule may be gated by any combination of talent, set bonus and buff; all of the conditions it sets must
+---hold. Rank-keyed bonus tables only make sense on a talent-gated rule -- without a talentId every rule
+---evaluates at rank 1.
 ---@class TRB.Classes.CastbarTickModifier
----@field public talentId integer # Talent (definition spellId) gating this rule, checked via the TRB.Data.talents cache
+---@field public talentId integer? # Talent (definition spellId) gating this rule, checked via the TRB.Data.talents cache
+---@field public setBonus string? # When set, the player must have setBonusPieces of this class set (a TRB.Data.itemSetRegistry key) equipped
+---@field public setBonusPieces integer? # Pieces the setBonus rule requires, defaults to 2
 ---@field public buffId integer? # When set, the player must also have this buff when the channel starts (checked against the spec's tracked snapshot when one exists, else a live aura scan)
 ---@field public bonusTicks (number|table<integer, number>)? # Flat bonus ticks (may be negative); omit on a multiplier-only rule
 ---@field public bonusDuration (number|table<integer, number>)? # Flat unhasted seconds added to baseDuration (may be negative); a table is the TOTAL bonus keyed by talent rank
@@ -348,15 +353,22 @@ local function GetTickModifiers(spellId)
 	return rules and rules[spellId] or nil
 end
 
----Evaluates one modifier rule against live talent/buff state.
+---Evaluates one modifier rule against live talent/gear/buff state.
 ---@param rule TRB.Classes.CastbarTickModifier
 ---@return number # Flat bonus ticks this rule contributes (0 when its conditions aren't met)
 ---@return number # Tick count multiplier this rule contributes (1 when its conditions aren't met)
 ---@return number # Flat bonus duration in seconds this rule contributes (0 when its conditions aren't met)
 local function EvaluateTickModifier(rule)
-	local talents = TRB.Data.talents
-	local talent = talents and talents.talents and talents.talents[rule.talentId] or nil
-	if talent == nil or not talent:IsActive() then
+	local rank = 1
+	if rule.talentId ~= nil then
+		local talents = TRB.Data.talents
+		local talent = talents and talents.talents and talents.talents[rule.talentId] or nil
+		if talent == nil or not talent:IsActive() then
+			return 0, 1, 0
+		end
+		rank = talent.currentRank
+	end
+	if rule.setBonus ~= nil and not TRB.Functions.Item:HasSetBonus(rule.setBonus, rule.setBonusPieces) then
 		return 0, 1, 0
 	end
 	if rule.buffId ~= nil then
@@ -374,11 +386,11 @@ local function EvaluateTickModifier(rule)
 	end
 	local bonus = rule.bonusTicks
 	if type(bonus) == "table" then
-		bonus = bonus[talent.currentRank] or 0
+		bonus = bonus[rank] or 0
 	end
 	local bonusDuration = rule.bonusDuration
 	if type(bonusDuration) == "table" then
-		bonusDuration = bonusDuration[talent.currentRank] or 0
+		bonusDuration = bonusDuration[rank] or 0
 	end
 	return bonus or 0, rule.tickMultiplier or 1, bonusDuration or 0
 end
@@ -481,7 +493,7 @@ local function ResolveDynamicTickCount(profile)
 end
 
 ---Resolves the effective tick profile for a channel start: the baseline profile with its per-cast tick
----count resolved (when it has one) and any registered talent/buff-conditional bonus ticks applied.
+---count resolved (when it has one) and any registered talent/set/buff-conditional bonus ticks applied.
 ---Returns a copy when either applies -- the built-in profile is never mutated. Call once per channel start
 ---and reuse via model.profile: the combo points a dynamic count reads, and buff-gated bonuses (e.g. a buff
 ---consumed by this very cast), are both gone by the time the channel is underway.

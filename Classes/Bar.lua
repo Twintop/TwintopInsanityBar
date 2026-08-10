@@ -1252,7 +1252,7 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 	self:Show()
 
 	-- Show/hide nodes and set up textures
-	local frameLevels = TRB.Data.constants.frameLevels
+	local frameLevel = TRB.Functions.Bar:GetBarFrameLevel("secondary")
 	for i = 1, displayNodes do
 		local node = self:GetNode(i)
 		if node then
@@ -1275,7 +1275,7 @@ function TRB.Classes.BarGroup:RebuildNodes(displayNodes, settings)
 			node:SetBorderColor(settings.colors.comboPoints.border.color)
 			node:SetBackgroundColorFromString(settings.colors.comboPoints.background.color)
 			node:SetColor(settings.colors.comboPoints.base.color)
-			node:SetFrameLevel(frameLevels.comboPoint)
+			node:SetFrameLevel(frameLevel)
 			node:Show()
 		end
 	end
@@ -1601,6 +1601,7 @@ end
 ---@field public thresholdMax number? # Optional custom-threshold slider max for this sub-target (and runtime value scale, e.g. Shield Block 8.0s). Defaults to the node-run count.
 ---@field public thresholdMin number? # Optional custom-threshold slider min for this sub-target. Defaults to 0.
 ---@field public thresholdDecimals integer? # Optional decimal precision for this sub-target's value slider. Defaults to 0.
+---@field public cdm TRB.CdmDependency? # Declared Cooldown Manager reliance for this node alone (e.g. Ignore Pain's absorb pool but not its timer). Options-panel badge only.
 
 ---@class TRB.Classes.BarTypeDefinition
 ---@field public key string # Unique key for this bar type (e.g., "stagger", "mana", "defensives")
@@ -1621,6 +1622,7 @@ end
 ---@field public colorTypeStepLabel string? # Localized string for "step" option
 ---@field public colorTypeLinearLabel string? # Localized string for "linear" option
 ---@field public colorTypeNoneLabel string? # Localized string for "none" option
+---@field public colorTypeClassColorLabel string? # Localized string for the "classColor" option. When nil, the option isn't offered for this bar type.
 ---@field public defaultDimensionsFunc function? # Function returning default dimensions (SecondaryBar structure)
 ---@field public defaultColorsFunc function? # Function returning default colors
 ---@field public defaultTexturesFunc function? # Function returning default textures
@@ -1639,6 +1641,8 @@ end
 ---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
 ---@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color). Secret-count bars also get no end cap (the highest progressed node is unknowable).
 ---@field public endCapMode string? # Multi-node end cap policy: "highest" (default) or "all" (independent nodes, e.g. Warrior defensives)
+---@field public cdm TRB.CdmDependency? # Declared Cooldown Manager reliance for the whole bar. Options-panel badge only; nothing branches on it at runtime.
+---@field public isSelfDriven boolean? # True when the bar shows/hides itself from live state (cast bars, GCD, mirror timers) rather than through ProcessBars. Such bars stay in the anchor tree as scaffolds and are never torn down by InvalidateAppliedState.
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -1676,6 +1680,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.colorTypeStepLabel = config.colorTypeStepLabel
 	self.colorTypeLinearLabel = config.colorTypeLinearLabel
 	self.colorTypeNoneLabel = config.colorTypeNoneLabel
+	self.colorTypeClassColorLabel = config.colorTypeClassColorLabel
 	self.onChangeCallback = config.onChangeCallback
 
 	-- Validate: thresholdLevels is required when colorCurveType is "step" or "linear"
@@ -1700,7 +1705,9 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
 	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield, Fire Blast charges); forces custom thresholds to static color mode
+	self.cdm = config.cdm -- Declared Cooldown Manager reliance for the whole bar; options-panel badge only, nothing branches on it
 	self.isCastbar = config.isCastbar or false -- Player/Target/Focus cast bar; display name already ends in "Cast Bar" so labels drop the redundant trailing "Bar"
+	self.isSelfDriven = config.isSelfDriven or false -- Renders itself from live state instead of via ProcessBars
 	self.endCapMode = config.endCapMode -- "all" for independent-node bars; nil/"highest" shows the cap only on the highest progressed node
 
 	return self
@@ -1996,6 +2003,95 @@ function TRB.Classes.BarTypeRegistry:AppendTargetFocusCastbars(list)
 	end
 end
 
+---The all-spec "Other Bars" keys, in tab order. The mirror timers follow Blizzard's own MirrorTimerAtlas
+---order (EXHAUSTION, BREATH, FEIGNDEATH), which is also the order they stack in by default. Feign Death
+---only ever fires for Hunters, so GetOtherBarKeys filters it out for every other class. Blizzard's fourth
+---timer type, DEATH, is deliberately absent: it never fires in retail content.
+TRB.Classes.BarTypeRegistry.otherBarKeys = { "gcd", "fatigue", "breath", "feignDeath" }
+
+---Hunter class id; the only class that can feign death.
+local HUNTER_CLASS_ID = 3
+
+---Returns the Other Bars keys that apply to a scope, in tab order. Feign Death is Hunter-only and is
+---deliberately absent from the global (nil classId) scope too: with one class able to use it, a global
+---copy would just be a setting nobody could reach, so Hunter specs own it outright.
+---@param classId integer? # nil is the global (core) scope
+---@return string[]
+function TRB.Classes.BarTypeRegistry:GetOtherBarKeys(classId)
+	local keys = {}
+	for _, key in ipairs(self.otherBarKeys) do
+		if key ~= "feignDeath" or classId == HUNTER_CLASS_ID then
+			keys[#keys + 1] = key
+		end
+	end
+	return keys
+end
+
+---Whether a bar key takes part in the global (core) scope at all. Only the class-scoped Other Bars are
+---excluded; everything else is globally shared. Callers use this so a stale core entry left behind by an
+---older build can never mark a spec-owned bar as globally controlled.
+---@param key string?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(key)
+	if key == nil then
+		return true
+	end
+	local isOtherBar = false
+	for _, otherKey in ipairs(self.otherBarKeys) do
+		if otherKey == key then
+			isOtherBar = true
+			break
+		end
+	end
+	if not isOtherBar then
+		return true
+	end
+	for _, globalKey in ipairs(self:GetOtherBarKeys(nil)) do
+		if globalKey == key then
+			return true
+		end
+	end
+	return false
+end
+
+---Appends the Other Bars definitions to a customBars list if registered and not already present.
+---Mirrors AppendTargetFocusCastbars so the all-spec timer bars appear everywhere without per-class wiring.
+---@param list TRB.Classes.BarTypeDefinition[]
+---@param classId integer? # The scope: a classId includes that class's own bars, nil is the global scope
+---@param includeAllScopes boolean? # Ignore the scope and append every Other Bar, for callers that don't
+---know which class they are serving and skip anything they have no control for
+function TRB.Classes.BarTypeRegistry:AppendOtherBars(list, classId, includeAllScopes)
+	local keys = includeAllScopes and self.otherBarKeys or self:GetOtherBarKeys(classId)
+	for _, key in ipairs(keys) do
+		local def = self.definitions[key]
+		if def ~= nil then
+			local exists = false
+			for _, d in ipairs(list) do
+				if d.key == key then
+					exists = true
+					break
+				end
+			end
+			if not exists then
+				list[#list + 1] = def
+			end
+		end
+	end
+end
+
+---Whether a bar key renders itself from live state (cast bars, GCD, mirror timers) rather than
+---through ProcessBars. Such bars stay in the anchor tree as scaffolds even while hidden.
+---Resolves the singleton itself, so callers can reach it straight off the class table.
+---@param key string?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsSelfDriven(key)
+	if key == nil then
+		return false
+	end
+	local def = TRB.Classes.BarTypeRegistry:GetInstance():Get(key)
+	return def ~= nil and def.isSelfDriven == true
+end
+
 ---Gets the bar types that a spec uses based on its GetSpecConfiguration
 ---@param classId integer
 ---@param specId integer
@@ -2106,7 +2202,8 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		orderDownTooltip = L["NodeOrderMoveDownTooltip"],
 		nodeColors = {
 			{ key = "ignorePain", displayName = L["IgnorePainTimeBarEnable"], colorLabel = L["IgnorePainTime"], tooltip = L["IgnorePainTimeBarEnableTooltip"], hasEnabled = true, thresholdMax = 12, thresholdDecimals = 1 },
-			{ key = "ignorePainAbsorb", displayName = L["IgnorePainAbsorbBarEnable"], colorLabel = L["IgnorePainAbsorb"], tooltip = L["IgnorePainAbsorbBarEnableTooltip"], hasEnabled = true, thresholdMax = 100, thresholdDecimals = 1 },
+			-- Absorb alone: the timer node beside it is snapshot-driven.
+			{ key = "ignorePainAbsorb", displayName = L["IgnorePainAbsorbBarEnable"], colorLabel = L["IgnorePainAbsorb"], tooltip = L["IgnorePainAbsorbBarEnableTooltip"], hasEnabled = true, thresholdMax = 100, thresholdDecimals = 1, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 			{ key = "shieldBlock", displayName = L["ShieldBlockBarEnable"], colorLabel = L["ShieldBlock"], tooltip = L["ShieldBlockBarEnableTooltip"], hasEnabled = true, thresholdMax = 8, thresholdDecimals = 1 }
 		},
 		defaultDimensionsFunc = function(classic)
@@ -2333,6 +2430,61 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end
 	}))
 
+	-- Coagulating Blood bar (Blood Death Knight)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "coagulatingBlood",
+		displayName = L["ResourceCoagulatingBlood"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		-- One application is one percent, so the single node fills against a flat 0-100 scale.
+		minMaxMode = "percentage",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "coagulatingBlood",
+		-- Stack count is secret, so custom thresholds on it are static-only.
+		usesSecretValue = true,
+		-- Fed entirely by the Cooldown Manager's item for Coagulating Blood.
+		cdm = TRB.Data.constants.cdmDependency.REQUIRED,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultCoagulatingBloodBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultCoagulatingBloodBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Shatter bar (Frost Mage)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "shatter",
+		displayName = L["ResourceMageShatter"],
+		isMultiNode = true,
+		maxNodes = 20,
+		hasSameColor = false,
+		minMaxMode = "stepped",
+		hasSpacing = true,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "shatter",
+		-- Stack count is secret, so custom thresholds on it are static-only.
+		usesSecretValue = true,
+		-- Fed entirely by the Cooldown Manager's item for Shatter.
+		cdm = TRB.Data.constants.cdmDependency.REQUIRED,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultShatterBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultShatterBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
 	-- Castbar (available to all specs, hidden by default). Timer-driven (cast/channel/empower);
 	-- its fill value/min/max and per-state color are managed by the castbar render path, not the
 	-- generic snapshot-value path, so minMaxMode is "custom" and colorCurveType is nil.
@@ -2348,6 +2500,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		colorCurveType = nil,
 		visibilityKey = "castbar",
 		isCastbar = true,
+		isSelfDriven = true,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultCastbarBarDimensions(classic)
 		end,
@@ -2377,11 +2530,72 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			colorCurveType = nil,
 			visibilityKey = tc.key,
 			isCastbar = true,
+			isSelfDriven = true,
 			defaultDimensionsFunc = function(classic)
 				return TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic, tc.key)
 			end,
 			defaultColorsFunc = function()
 				return TRB.Functions.Settings:DefaultTargetCastbarBarColors()
+			end,
+			defaultTexturesFunc = function()
+				return TRB.Functions.Settings:DefaultCustomBarTextures()
+			end
+		}))
+	end
+
+	-- Global Cooldown bar (all specs, hidden by default). Timer-driven: the fill is bound to the
+	-- DurationObject for the dummy GCD spell (61304), so it animates correctly even when the
+	-- underlying cooldown values are secret. minMaxMode "custom" -- the generic snapshot-value path
+	-- never touches it.
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "gcd",
+		displayName = L["ResourceGcd"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		minMaxMode = "custom",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "gcd",
+		isSelfDriven = true,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultGcdBarSettings(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultGcdBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Mirror timer bars (all specs, hidden by default): the timers Blizzard groups under Edit Mode's
+	-- "Duration Bars". Values come from GetMirrorTimerInfo / GetMirrorTimerProgress, which are NOT secret,
+	-- so these fill from plain numbers. Fatigue is the tree root and the rest stack below it by default.
+	-- Feign Death is Hunter-only and its options tab is only built for Hunter specs.
+	for _, mt in ipairs({
+		{ key = "fatigue", name = L["ResourceFatigue"] },
+		{ key = "breath", name = L["ResourceBreath"] },
+		{ key = "feignDeath", name = L["ResourceFeignDeath"] },
+	}) do
+		self:Register(TRB.Classes.BarTypeDefinition:New({
+			key = mt.key,
+			displayName = mt.name,
+			isMultiNode = false,
+			maxNodes = 1,
+			hasSameColor = false,
+			minMaxMode = "custom",
+			hasSpacing = false,
+			hasThresholds = false,
+			colorCurveType = nil,
+			visibilityKey = mt.key,
+			isSelfDriven = true,
+			defaultDimensionsFunc = function(classic)
+				return TRB.Functions.Settings:DefaultMirrorTimerBarSettings(classic, mt.key)
+			end,
+			defaultColorsFunc = function()
+				return TRB.Functions.Settings:DefaultMirrorTimerBarColors(mt.key)
 			end,
 			defaultTexturesFunc = function()
 				return TRB.Functions.Settings:DefaultCustomBarTextures()

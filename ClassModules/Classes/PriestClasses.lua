@@ -52,18 +52,22 @@ function TRB.Classes.Priest.HealerSpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Priest.HealerSpells) --[[@as TRB.Classes.Priest.HealerSpells]]
 
 	-- Priest Class Baseline Abilities
+	-- attributes.baseManaCost is filled in at runtime; Surge of Light is detected from its cost reduction
 	self.flashHeal = TRB.Classes.SpellBase:New({
 		id = 2061,
 		isTalent = false,
 		baseline = true,
-		primaryResourceType = Enum.PowerType.Mana,
-		attributes = {
-			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
-		}
+		primaryResourceType = Enum.PowerType.Mana
 	})
 	self.surgeOfLight = TRB.Classes.SpellBase:New({
 		id = 114255,
-		isBuff = true
+		isBuff = true,
+		maxStacks = 2,
+		-- One screen overlay per stack; visible overlay count = stack count
+		overlayIds = {
+			[114255] = true,
+			[128654] = true
+		}
 	})
 
 	-- Priest Class Talent Abilities
@@ -177,22 +181,23 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "#masterTheDarkness", icon = spells.masterTheDarkness.icon, description = spells.masterTheDarkness.name, printInSettings = false },
 		{ variable = "#harshDiscipline", icon = spells.harshDiscipline.icon, description = spells.harshDiscipline.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["PriestDisciplineBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PriestDisciplineBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PriestDisciplineBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PriestDisciplineBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["PriestDisciplineBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["PriestDisciplineBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["PriestDisciplineBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["PriestDisciplineBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$pwRadianceTime", description = L["PriestDisciplineBarTextVariable_pwRadianceTime"], printInSettings = true, color = false },
 		{ variable = "$radianceTime", description = "", printInSettings = false, color = false },
 		{ variable = "$powerWordRadianceTime", description = "", printInSettings = false, color = false },
 
-		{ variable = "$pwRadianceCharges", description = L["PriestDisciplineBarTextVariable_pwRadianceCharges"], printInSettings = true, color = false },
-		{ variable = "$radianceCharges", description = "", printInSettings = false, color = false },
-		{ variable = "$powerWordRadianceCharges", description = "", printInSettings = false, color = false },
+		{ variable = "$pwRadianceCharges", description = L["PriestDisciplineBarTextVariable_pwRadianceCharges"], printInSettings = true, color = false, category = varCategory.RESOURCE },
+		{ variable = "$radianceCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
+		{ variable = "$powerWordRadianceCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
 
 		--[[{ variable = "$scTime", description = L["PriestDisciplineBarTextVariable_scTime"], printInSettings = true, color = false },
 		{ variable = "$shadowCovenantTime", description = "", printInSettings = false, color = false },]]
@@ -203,7 +208,6 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 
 		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = false, color = false },
 		{ variable = "$surgeOfLightStacks", description = L["PriestBarTextVariable_surgeOfLightStacks"], printInSettings = true, color = false },
-		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
 
 		{ variable = "$voidShieldTime", description = L["PriestDisciplineBarTextVariable_voidShieldTime"], printInSettings = true, color = false },
 		{ variable = "$masterTheDarknessTime", description = "", printInSettings = false, color = false },
@@ -343,16 +347,14 @@ function TRB.Classes.Priest.HolySpells:New()
 		duration = 60,
 		hasCharges = true
 	})
+	-- attributes.baseManaCost is filled in at runtime; Surge of Light is detected from its cost reduction
 	self.flashHeal = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 2061,
 		holyWordKey = "holyWordSerenity",
 		holyWordReduction = 6,
 		isTalent = false,
 		baseline = true,
-		primaryResourceType = Enum.PowerType.Mana,
-		attributes = {
-			baseManaCost = nil -- Populated at runtime, used to detect Surge of Light via cost reduction
-		}
+		primaryResourceType = Enum.PowerType.Mana
 	})
 	self.prayerOfMending = TRB.Classes.Priest.HolyWordSpell:New({
 		id = 33076,
@@ -481,14 +483,15 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#af", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = true },
 		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["PriestHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PriestHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PriestHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PriestHolyBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["PriestHolyBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["PriestHolyBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["PriestHolyBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["PriestHolyBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$hwChastiseTime", description = L["PriestHolyBarTextVariable_hwChastiseTime"], printInSettings = true, color = false },
 		{ variable = "$chastiseTime", description = "", printInSettings = false, color = false },
 		{ variable = "$holyWordChastiseTime", description = "", printInSettings = false, color = false },
@@ -497,21 +500,21 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$sanctifyTime", description = "", printInSettings = false, color = false },
 		{ variable = "$holyWordSanctifyTime", description = "", printInSettings = false, color = false },
 		
-		{ variable = "$hwSanctifyCharges", description = L["PriestHolyBarTextVariable_hwSanctifyCharges"], printInSettings = true, color = false },
-		{ variable = "$sanctifyCharges", description = "", printInSettings = false, color = false },
-		{ variable = "$holyWordSanctifyCharges", description = "", printInSettings = false, color = false },
+		{ variable = "$hwSanctifyCharges", description = L["PriestHolyBarTextVariable_hwSanctifyCharges"], printInSettings = true, color = false, category = varCategory.RESOURCE },
+		{ variable = "$sanctifyCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
+		{ variable = "$holyWordSanctifyCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
 		
 		{ variable = "$hwSerenityTime", description = L["PriestHolyBarTextVariable_hwSerenityTime"], printInSettings = true, color = false },
 		{ variable = "$serenityTime", description = "", printInSettings = false, color = false },
 		{ variable = "$holyWordSerenityTime", description = "", printInSettings = false, color = false },
 		
-		{ variable = "$hwSerenityCharges", description = L["PriestHolyBarTextVariable_hwSerenityCharges"], printInSettings = true, color = false },
-		{ variable = "$serenityCharges", description = "", printInSettings = false, color = false },
-		{ variable = "$holyWordSerenityCharges", description = "", printInSettings = false, color = false },
+		{ variable = "$hwSerenityCharges", description = L["PriestHolyBarTextVariable_hwSerenityCharges"], printInSettings = true, color = false, category = varCategory.RESOURCE },
+		{ variable = "$serenityCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
+		{ variable = "$holyWordSerenityCharges", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
 
 		{ variable = "$apotheosisTime", description = L["PriestHolyBarTextVariable_apotheosisTime"], printInSettings = true, color = false },
 		
-		{ variable = "$lightweaverStacks", description = L["PriestHolyBarTextVariable_lightweaverStacks"], printInSettings = true, color = false },
+		{ variable = "$lightweaverStacks", description = L["PriestHolyBarTextVariable_lightweaverStacks"], printInSettings = true, color = false, category = varCategory.RESOURCE },
 		{ variable = "$lightweaverTime", description = L["PriestHolyBarTextVariable_lightweaverTime"], printInSettings = true, color = false },
 
 		{ variable = "$afTime", description = L["PriestBarTextVariable_afTime"], printInSettings = true, color = false },
@@ -520,7 +523,6 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 
 		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = false, color = false },
 		{ variable = "$surgeOfLightStacks", description = L["PriestBarTextVariable_surgeOfLightStacks"], printInSettings = true, color = false },
-		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
 		{ variable = "$benediction", description = L["PriestHolyBarTextVariable_benediction"], printInSettings = true, color = false },
 	})
 end
@@ -669,14 +671,13 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	})
 	self.improvedVoidform = TRB.Classes.SpellBase:New({
 		id = 341240,
-		isTalent = true,
-		resource = 60
+		isTalent = true
 	})
 	self.ancientMadness = TRB.Classes.SpellBase:New({
 		id = 1231346,
 		isTalent = true,
-		durationMod = 3,
-		durationPerCastMod = 0.75
+		durationMod = 1.5,
+		maxCasts = 5
 	})
 	self.voidVolley = TRB.Classes.SpellBase:New({
 		id = 1242173,
@@ -839,16 +840,17 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#af", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = true },
 		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$insanity", description = L["PriestShadowBarTextVariable_insanity"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$insanityMax", description = L["PriestShadowBarTextVariable_insanityMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PriestShadowBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$insanity", description = L["PriestShadowBarTextVariable_insanity"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$insanityMax", description = L["PriestShadowBarTextVariable_insanityMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["PriestShadowBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$mana", description = L["PriestHolyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$manaPercent", description = L["PriestHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$manaMax", description = L["PriestHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["PriestHolyBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["PriestHolyBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["PriestHolyBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$mfiTime", description = L["PriestShadowBarTextVariable_mfiTime"], printInSettings = true, color = false },
 		{ variable = "$mfiStacks", description = L["PriestShadowBarTextVariable_mfiStacks"], printInSettings = true, color = false },
@@ -1139,3 +1141,146 @@ TRB.Data.castbarTickProfilesRegistry["priest_holy"] = TRB.Classes.Priest.HolySpe
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
 TRB.Data.castbarTickModifiersRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.GetCastbarTickModifiers
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("priest_discipline", {
+		builtIns = {
+			{
+				id = "surgeOfLight",
+				label = L["PriestAudioSurgeOfLight"],
+				trigger = L["PriestAudioTriggerSurgeOfLight"],
+				tooltip = L["PriestAudioCheckboxSurgeOfLightTooltip"],
+			},
+		},
+	})
+
+	TRB.Functions.AudioCues:Register("priest_holy", {
+		builtIns = {
+			{
+				id = "surgeOfLight",
+				label = L["PriestAudioSurgeOfLight"],
+				trigger = L["PriestAudioTriggerSurgeOfLight"],
+				tooltip = L["PriestAudioCheckboxSurgeOfLightTooltip"],
+				config = {
+					{
+						key = "requireSpiritwellTalent",
+						control = "checkbox",
+						label = L["PriestAudioCheckboxSurgeOfLightSpiritwellOnly"],
+						tooltip = L["PriestAudioCheckboxSurgeOfLightSpiritwellOnlyTooltip"],
+						default = false,
+					},
+				},
+			},
+			{
+				id = "benediction",
+				label = L["PriestHolyAudioBenediction"],
+				trigger = L["PriestHolyAudioTriggerBenediction"],
+				tooltip = L["PriestHolyAudioCheckboxBenedictionTooltip"],
+			},
+			{
+				id = "lightweaverExpiring",
+				label = L["PriestHolyAudioLightweaverExpiring"],
+				trigger = L["PriestHolyAudioTriggerLightweaverExpiring"],
+				tooltip = L["PriestHolyAudioCheckboxLightweaverExpiringTooltip"],
+				config = {
+					{
+						key = "thresholdValue",
+						control = "slider",
+						label = L["PriestHolyAudioLightweaverExpiringSliderTitle"],
+						min = 0,
+						max = 20,
+						step = 0.5,
+						decimals = 1,
+						default = 5,
+					},
+				},
+			},
+			{
+				id = "holyWordChastiseReady",
+				label = L["PriestHolyAudioHolyWordChastiseReady"],
+				trigger = L["PriestHolyAudioTriggerHolyWordChastiseReady"],
+				tooltip = L["PriestHolyAudioCheckboxHolyWordChastiseReadyTooltip"],
+			},
+			{
+				id = "holyWordSerenityCharge1",
+				label = L["PriestHolyAudioHolyWordSerenityCharge1"],
+				trigger = L["PriestHolyAudioTriggerHolyWordSerenityCharge1"],
+				tooltip = L["PriestHolyAudioCheckboxHolyWordSerenityCharge1Tooltip"],
+			},
+			{
+				id = "holyWordSerenityCharge2",
+				label = L["PriestHolyAudioHolyWordSerenityCharge2"],
+				trigger = L["PriestHolyAudioTriggerHolyWordSerenityCharge2"],
+				tooltip = L["PriestHolyAudioCheckboxHolyWordSerenityCharge2Tooltip"],
+			},
+			{
+				id = "holyWordSanctifyCharge1",
+				label = L["PriestHolyAudioHolyWordSanctifyCharge1"],
+				trigger = L["PriestHolyAudioTriggerHolyWordSanctifyCharge1"],
+				tooltip = L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1Tooltip"],
+			},
+			{
+				id = "holyWordSanctifyCharge2",
+				label = L["PriestHolyAudioHolyWordSanctifyCharge2"],
+				trigger = L["PriestHolyAudioTriggerHolyWordSanctifyCharge2"],
+				tooltip = L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2Tooltip"],
+			},
+		},
+		counters = {
+			{
+				-- Lightweaver is the one source that matches on an exact stack count rather than a
+				-- floor, and its cues are not gated on being in combat.
+				id = "lightweaverStacks",
+				label = L["PriestHolyAudioCueSourceLightweaver"],
+				description = L["PriestHolyAudioCueSourceLightweaverDescription"],
+				sliderLabel = L["PriestHolyAudioLightweaverThresholdSliderTitle"],
+				defaultName = L["PriestHolyAudioCueLightweaverDefaultName"],
+				min = 1,
+				max = 4,
+				step = 1,
+				decimals = 0,
+				compare = "exact",
+				requiresCombat = false,
+				legacyIds = { "lightweaver", "lightweaverMaxStacks" },
+				defaultCues = {
+					{
+						id = "lightweaver",
+						name = L["PriestHolyAudioLightweaverThreshold1"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+						soundName = L["LSMSoundAirHorn"],
+						thresholdValue = 1,
+					},
+					{
+						id = "lightweaverMaxStacks",
+						name = L["PriestHolyAudioLightweaverThreshold2"],
+						enabled = false,
+						sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+						soundName = L["LSMSoundAirHorn"],
+						thresholdValue = 4,
+					},
+				},
+			},
+		},
+	})
+
+	TRB.Functions.AudioCues:Register("priest_shadow", {
+		builtIns = {
+			{
+				id = "mdProc",
+				label = L["PriestShadowAudioMindDevourer"],
+				trigger = L["PriestShadowAudioTriggerMindDevourer"],
+				tooltip = L["PriestShadowAudioCheckboxMindDevourerTooltip"],
+			},
+			{
+				id = "dpReady",
+				label = L["PriestShadowAudioShadowWordMadness"],
+				trigger = L["PriestShadowAudioTriggerShadowWordMadness"],
+				tooltip = L["PriestShadowAudioCheckboxShadowWordMadnessTooltip"],
+			},
+		},
+	})
+end

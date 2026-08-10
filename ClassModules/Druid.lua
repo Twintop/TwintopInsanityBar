@@ -58,7 +58,6 @@ local function FillSpecializationCache()
 		effects = {
 		},
 		items = {
-			twwSeason1SetBonusCount = 0
 		}
 	}
 	
@@ -66,10 +65,6 @@ local function FillSpecializationCache()
 	specCache.druid_balance.spellsData.spells = TRB.Classes.Druid.BalanceSpells:New()
 	local spells = specCache.druid_balance.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 	
-	specCache.druid_balance.snapshotData.audio = {
-		playedSsCue = false,
-		playedSfCue = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.druid_balance.snapshotData.snapshots[spells.eclipseSolar.id] = TRB.Classes.Snapshot:New(spells.eclipseSolar)
 	---@type TRB.Classes.Snapshot
@@ -109,6 +104,8 @@ local function FillSpecializationCache()
 		maxResource2 = 5,
 		pandemicModifier = 1.0,
 		effects = {
+		},
+		items = {
 		}
 	}
 	
@@ -119,11 +116,9 @@ local function FillSpecializationCache()
 	specCache.druid_feral.snapshotData.attributes.resourceRegen = 0
 	specCache.druid_feral.snapshotData.attributes.comboPoints = 0
 	specCache.druid_feral.snapshotData.attributes.clearcastingActive = false
-	specCache.druid_feral.snapshotData.audio = {
-		apexPredatorsCravingCue = false,
-		comboPointThreshold1Played = false,
-		comboPointThreshold2Played = false,
-	}
+	specCache.druid_feral.snapshotData.attributes.berserkComboPointsSpent = 0
+	specCache.druid_feral.snapshotData.attributes.berserkWindowActive = false
+	specCache.druid_feral.snapshotData.attributes.berserkPreviousComboPoints = 0
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 	---@type TRB.Classes.Snapshot
@@ -143,6 +138,8 @@ local function FillSpecializationCache()
 	specCache.druid_feral.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id] = TRB.Classes.Snapshot:New(spells.incarnationAvatarOfAshamane)
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.apexPredatorsCraving.id] = TRB.Classes.Snapshot:New(spells.apexPredatorsCraving)
+	---@type TRB.Classes.Snapshot
+	specCache.druid_feral.snapshotData.snapshots[spells.halazzisFury.id] = TRB.Classes.Snapshot:New(spells.halazzisFury)
 	-- Druid of the Claw
 	---@type TRB.Classes.Snapshot
 	specCache.druid_feral.snapshotData.snapshots[spells.ravageMinimum.id] = TRB.Classes.Snapshot:New(spells.ravageMinimum)
@@ -183,8 +180,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.druid_guardian.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
 
-	specCache.druid_guardian.snapshotData.audio = {
-	}
 
 	-- Restoration
 	specCache.druid_restoration.Global_TwintopResourceBar = {
@@ -212,9 +207,6 @@ local function FillSpecializationCache()
 
 	specCache.druid_restoration.snapshotData.attributes.manaRegen = 0
 	specCache.druid_restoration.snapshotData.attributes.clearcastingActive = false
-	specCache.druid_restoration.snapshotData.audio = {
-		innervateCue = false
-	}
 	---@type TRB.Classes.Snapshot
 	specCache.druid_restoration.snapshotData.snapshots[spells.efflorescence.id] = TRB.Classes.Snapshot:New(spells.efflorescence)
 	---@type TRB.Classes.Snapshot
@@ -992,6 +984,18 @@ local function RefreshLookupData_Feral()
 		lookup["$clearcastingActive"] = ""
 	end
 
+	-- Block E: Halazzi's Fury / Midnight S2 2pc ($halazzisFuryTime)
+	if not activeVars or activeVars["$halazzisFuryTime"] then
+		local halazzisFuryBuff = snapshotData.snapshots[spells.halazzisFury.id].buff
+		local _halazzisFuryTime = halazzisFuryBuff:GetRemainingTime()
+
+		lookupLogic["$halazzisFuryTime"] = _halazzisFuryTime
+
+		if lookupChanged(prevState, "$halazzisFuryTime", _halazzisFuryTime) then
+			lookup["$halazzisFuryTime"] = TRB.Functions.BarText:TimerPrecision(_halazzisFuryTime)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -1412,10 +1416,14 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			local has4pc = TRB.Functions.Item:HasSetBonus(TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey, 4)
+			local fourPieceBonus = has4pc and spells.midnightSeason2SetBonus.attributes.fourPieceDuration or 0
 			if spellId == spells.berserk.castId then
-				snapshotData.snapshots[spells.berserk.id].buff:InitializeCustom(spells.berserk.duration, currentTime)
+				snapshotData.snapshots[spells.berserk.id].buff:InitializeCustom(spells.berserk.duration + fourPieceBonus, currentTime)
+				snapshotData.attributes.berserkComboPointsSpent = 0
 			elseif spellId == spells.incarnationAvatarOfAshamane.castId or spellId == spells.incarnationAvatarOfAshamane.attributes.castId2 then
-				snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff:InitializeCustom(spells.incarnationAvatarOfAshamane.duration, currentTime)
+				snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff:InitializeCustom(spells.incarnationAvatarOfAshamane.duration + fourPieceBonus, currentTime)
+				snapshotData.attributes.berserkComboPointsSpent = 0
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -1536,10 +1544,34 @@ end
 local function UpdateSnapshot_Feral()
 	UpdateSnapshot()
 	UpdateBerserkIncomingComboPoints()
-	
-	local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Druid.FeralSpells]
-	--[[local snapshotData = TRB.Data.snapshotData --[@as TRB.Classes.SnapshotData]
-	local currentTime = GetTime()]]
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local currentTime = GetTime()
+
+	-- Midnight S2 2pc: accumulate combo points spent during Berserk/Avatar of Ashamane and, when
+	-- the window ends, spawn halazzisFury for 1s per spent combo point (1301600, manually tracked).
+	if TRB.Functions.Item:HasSetBonus(TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey, 2) then
+		local windowActive = snapshotData.snapshots[spells.berserk.id].buff.isActive or snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive
+		local currentCp = snapshotData.attributes.comboPoints or 0
+		local previousCp = snapshotData.attributes.berserkPreviousComboPoints or currentCp
+
+		if windowActive then
+			if currentCp < previousCp then
+				snapshotData.attributes.berserkComboPointsSpent = (snapshotData.attributes.berserkComboPointsSpent or 0) + (previousCp - currentCp)
+			end
+		elseif snapshotData.attributes.berserkWindowActive then
+			local spent = snapshotData.attributes.berserkComboPointsSpent or 0
+			if spent > 0 then
+				snapshotData.snapshots[spells.halazzisFury.id].buff:InitializeCustom(spent, currentTime)
+			end
+			snapshotData.attributes.berserkComboPointsSpent = 0
+		end
+
+		snapshotData.attributes.berserkWindowActive = windowActive
+		snapshotData.attributes.berserkPreviousComboPoints = currentCp
+	end
+	snapshotData.snapshots[spells.halazzisFury.id].buff:GetRemainingTime(currentTime)
 
 	local currentApcCost = spells.ferociousBiteMinimum:GetPrimaryResourceCost(true) or 0
 	if currentApcCost > 0 then
@@ -1952,14 +1984,7 @@ local function UpdateResourceBar()
 									end
 									
 									if showThreshold then
-										if isUsable then
-											if specSettings.audio.ssReady.enabled and snapshotData.audio.playedSsCue == false then
-												snapshotData.audio.playedSsCue = true
-												PlaySoundFile(specSettings.audio.ssReady.sound, coreSettings.audio.channel.channel)
-											end
-										else
-											snapshotData.audio.playedSsCue = false
-										end
+										TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "ssReady", isUsable)
 									end
 								elseif spell.settingKey == spells.starsurge2.settingKey then
 									if specCacheSettings.thresholds.specProperties.starsurgeThresholdOnlyOverShow then
@@ -2020,14 +2045,7 @@ local function UpdateResourceBar()
 									end
 									
 									if showThreshold then
-										if isUsable then
-											if specSettings.audio.sfReady.enabled and snapshotData.audio.playedSfCue == false then
-												snapshotData.audio.playedSfCue = true
-												PlaySoundFile(specSettings.audio.sfReady.sound, coreSettings.audio.channel.channel)
-											end
-										else
-											snapshotData.audio.playedSfCue = false
-										end
+										TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "sfReady", isUsable)
 									end
 								end
 							--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
@@ -2468,6 +2486,7 @@ local function UpdateResourceBar()
 						ravage = snapshots[spells.ravageMinimum.id].buff.isActive,
 						clearcasting = snapshotData.attributes.clearcastingActive,
 						borderStealth = isStealthed,
+						halazzisFury = snapshots[spells.halazzisFury.id].buff.isActive,
 						maxBite = snapshotData.attributes.resource2 == 5 and not apcActive,
 						borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId,
 					}
@@ -2609,14 +2628,7 @@ local function UpdateResourceBar()
 					end
 
 					-- APC audio cues (independent of indicator system)
-					if apcActive then
-						if specSettings.audio.apexPredatorsCraving.enabled and not snapshotData.audio.apexPredatorsCravingCue then
-							snapshotData.audio.apexPredatorsCravingCue = true
-							PlaySoundFile(specSettings.audio.apexPredatorsCraving.sound, coreSettings.audio.channel.channel)
-						end
-					else
-						snapshotData.audio.apexPredatorsCravingCue = false
-					end
+					TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "apexPredatorsCraving", apcActive)
 
 					-- Read final colors from the color map
 					barColor = energyBarColors.bar
@@ -2734,43 +2746,7 @@ local function UpdateResourceBar()
 			UpdateHealthBarGeneric()
 		end
 
-		-- Combo Point threshold audio cues (independent of bar visibility)
-		if TRB.Data.character.inCombat then
-			do
-				local coreSettings = TRB.Data.settings.core
-				local currentResource2 = snapshotData.attributes.resource2
-				local threshold1 = specSettings.audio.comboPointThreshold1
-				local threshold2 = specSettings.audio.comboPointThreshold2
-				local threshold1Value = threshold1.configuration.thresholdValue
-				local threshold2Value = threshold2.configuration.thresholdValue
-
-				local threshold1ShouldFire = threshold1.enabled and not snapshotData.audio.comboPointThreshold1Played and currentResource2 >= threshold1Value
-				local threshold2ShouldFire = threshold2.enabled and not snapshotData.audio.comboPointThreshold2Played and currentResource2 >= threshold2Value
-
-				if threshold1ShouldFire and threshold2ShouldFire then
-					snapshotData.audio.comboPointThreshold1Played = true
-					snapshotData.audio.comboPointThreshold2Played = true
-					if threshold2Value > threshold1Value then
-						PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-					else
-						PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-					end
-				elseif threshold2ShouldFire then
-					snapshotData.audio.comboPointThreshold2Played = true
-					PlaySoundFile(threshold2.sound, coreSettings.audio.channel.channel)
-				elseif threshold1ShouldFire then
-					snapshotData.audio.comboPointThreshold1Played = true
-					PlaySoundFile(threshold1.sound, coreSettings.audio.channel.channel)
-				end
-
-				if currentResource2 < threshold1Value then
-					snapshotData.audio.comboPointThreshold1Played = false
-				end
-				if currentResource2 < threshold2Value then
-					snapshotData.audio.comboPointThreshold2Played = false
-				end
-			end
-		end
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
@@ -3279,6 +3255,7 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
 		lookup["#berserk"] = spells.berserk.icon
+		lookup["#halazzisFury"] = spells.halazzisFury.icon
 		lookup["#clearcasting"] = spells.clearcasting.icon
 		lookup["#feralFrenzy"] = spells.feralFrenzy.icon
 		lookup["#ferociousBite"] = spells.ferociousBiteMinimum.icon
@@ -3416,6 +3393,11 @@ eventFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
 eventFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 eventFrame:SetScript("OnEvent", function(self, event, arg1, ...)
+	-- Wrong game version for this build: halt before anything reads or writes settings.
+	if TRB.Functions.VersionGate:IsBlocked() then
+		return
+	end
+
 	if event == "PLAYER_SPECIALIZATION_CHANGED" and arg1 ~= "player" then
 		return
 	end
@@ -3638,7 +3620,6 @@ function TRB.Functions.Class:CheckCharacter()
 					barGroups.secondary:SetMaxNodes(TRB.Data.character.maxComboPoints)
 					Bar:ApplySecondaryBarGroupLayout(feralSettings, barGroups, TRB.Data.character.maxComboPoints)
 					-- Apply textures and colors to all nodes
-					local frameLevels = TRB.Data.constants.frameLevels
 					for i = 1, TRB.Data.character.maxComboPoints do
 						local node = barGroups.secondary:GetNode(i)
 						if node then
@@ -3651,7 +3632,7 @@ function TRB.Functions.Class:CheckCharacter()
 							node:SetBorderColor(feralSettings.colors.comboPoints.border.color)
 							node:SetBackgroundColorFromString(feralSettings.colors.comboPoints.background.color)
 							TRB.Functions.Color:ApplyFillColor(node, feralSettings.colors.comboPoints.base)
-							node:SetFrameLevel(frameLevels.comboPoint)
+							node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 						end
 					end
 				end
@@ -3677,7 +3658,7 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
 		
 		SetupSharedSettingsForSpec()
-		
+
 		if talents:IsTalentActive(spells.circleOfLifeAndDeath) then
 			TRB.Data.character.pandemicModifier = spells.circleOfLifeAndDeath.attributes.modifier
 		end
@@ -3854,6 +3835,8 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData and snapshotData.attributes then
 		snapshotData.attributes.clearcastingActive = false
+		snapshotData.attributes.berserkComboPointsSpent = 0
+		snapshotData.attributes.berserkWindowActive = false
 	end
 end
 
@@ -3874,6 +3857,10 @@ do
 	local castingFn = function()
 		local c = TRB.Data.snapshotData.casting
 		return c.resourceRaw ~= nil and c.resourceRaw ~= 0
+	end
+	-- Shared by Feral and Restoration
+	local clearcastingFn = function()
+		return TRB.Data.snapshotData.attributes.clearcastingActive == true
 	end
 	-- Balance
 	local eclipseFn = function()
@@ -3919,12 +3906,20 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive
 	end
+	local halazzisFuryFeralFn = function()
+		local spells = TRB.Data.spellsData.spells
+		if spells == nil or spells.halazzisFury == nil then return false end
+		local snap = TRB.Data.snapshotData.snapshots[spells.halazzisFury.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
 	---@type table<string, boolean|function>
 	local feral = {
 		["$berserkTime"] = berserkFeralFn, ["$incarnationTime"] = berserkFeralFn,
 		["$incarnationTicks"] = incarnFeralBuffFn,
 		["$incarnationTickTime"] = incarnFeralBuffFn,
 		["$incarnationNextCp"] = incarnFeralBuffFn,
+		["$halazzisFuryTime"] = halazzisFuryFeralFn,
+		["$clearcastingActive"] = clearcastingFn,
 		["$inStealth"] = function() return IsStealthed() end,
 		["$ravageActive"] = function()
 			local spells = TRB.Data.spellsData.spells
@@ -3957,6 +3952,7 @@ do
 			local spells = TRB.Data.spellsData.spells
 			return TRB.Data.snapshotData.snapshots[spells.incarnationTreeOfLife.id].buff.isActive
 		end,
+		["$clearcastingActive"] = clearcastingFn,
 		["$casting"] = castingFn,
 	}
 	for k, v in pairs(healthVars) do restoration[k] = v end

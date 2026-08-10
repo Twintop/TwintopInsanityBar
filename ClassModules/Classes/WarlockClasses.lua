@@ -61,27 +61,29 @@ function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "#shadowOfDeath", icon = spells.shadowOfDeath.icon, description = spells.shadowOfDeath.name, printInSettings = true },
 		{ variable = "#shardInstability", icon = spells.shardInstability.icon, description = spells.shardInstability.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["WarlockAfflictionBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["WarlockAfflictionBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["WarlockAfflictionBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-        { variable = "$casting", description = L["WarlockAfflictionBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$castingShards", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false },
-		{ variable = "$castingFragments", description = "", printInSettings = false, color = false },
-		{ variable = "$castingSoulShards", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["WarlockAfflictionBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["WarlockAfflictionBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["WarlockAfflictionBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+        { variable = "$casting", description = L["WarlockAfflictionBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingShards", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingFragments", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingSoulShards", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 					
-		{ variable = "$soulShards", description = L["WarlockAfflictionBarTextVariable_soulShards"], printInSettings = true, color = false, secret = true },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false, secret = true },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsPlusCasting", description = L["WarlockAfflictionBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, secret = true },
-		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false },
+		{ variable = "$soulShards", description = L["WarlockAfflictionBarTextVariable_soulShards"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsPlusCasting", description = L["WarlockAfflictionBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$shardInstabilityTime", description = L["WarlockAfflictionBarTextVariable_shardInstabilityTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
-		{ variable = "$shardInstabilityStacks", description = L["WarlockAfflictionBarTextVariable_shardInstabilityStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		-- The Unstable Affliction glow says the proc is up but carries no numbers; these render "??".
+		{ variable = "$shardInstabilityTime", description = L["WarlockAfflictionBarTextVariable_shardInstabilityTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$shardInstabilityStacks", description = L["WarlockAfflictionBarTextVariable_shardInstabilityStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 		{ variable = "$shardInstabilityMaxStacks", description = L["WarlockAfflictionBarTextVariable_shardInstabilityMaxStacks"], printInSettings = true, color = false },
 	})
 end
@@ -232,27 +234,30 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 		{ variable = "#demonicCore", icon = spells.demonicCore.icon, description = spells.demonicCore.name, printInSettings = true },
 		{ variable = "#doa", icon = spells.dominionOfArgus.icon, description = spells.dominionOfArgus.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["WarlockDemonologyBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["WarlockDemonologyBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["WarlockDemonologyBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["WarlockDemonologyBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$castingShards", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false },
-		{ variable = "$castingFragments", description = "", printInSettings = false, color = false },
-		{ variable = "$castingSoulShards", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["WarlockDemonologyBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["WarlockDemonologyBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["WarlockDemonologyBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["WarlockDemonologyBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingShards", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingFragments", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingSoulShards", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 					
-		{ variable = "$soulShards", description = L["WarlockDemonologyBarTextVariable_soulShards"], printInSettings = true, color = false, secret = true },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsMax", description = L["WarlockDemonologyBarTextVariable_soulShardsMax"], printInSettings = true, color = false, secret = true },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsPlusCasting", description = L["WarlockDemonologyBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, secret = true },
-		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false },
+		{ variable = "$soulShards", description = L["WarlockDemonologyBarTextVariable_soulShards"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsMax", description = L["WarlockDemonologyBarTextVariable_soulShardsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsPlusCasting", description = L["WarlockDemonologyBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$demonicCoreTime", description = L["WarlockDemonologyBarTextVariable_demonicCoreTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
-		{ variable = "$demonicCoreStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true },
+		-- The Demonbolt glow stays lit unchanged as stacks come and go; these render "??" without it.
+		{ variable = "$demonicCoreTime", description = L["WarlockDemonologyBarTextVariable_demonicCoreTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$demonicCoreStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$demonicCoreMaxStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreMaxStacks"], printInSettings = true, color = false },
 
 		{ variable = "$doaTime", description = L["WarlockDemonologyBarTextVariable_doaTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 
@@ -338,25 +343,26 @@ function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "#chaosBolt", icon = spells.chaosBolt.icon, description = spells.chaosBolt.name, printInSettings = true },
 		{ variable = "#ruination", icon = spells.ruination.icon, description = spells.ruination.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["WarlockDestructionBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$manaPercent", description = L["WarlockDestructionBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$manaMax", description = L["WarlockDestructionBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$casting", description = L["WarlockDestructionBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$castingFragments", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false },
-		{ variable = "$castingShards", description = "", printInSettings = false, color = false },
-		{ variable = "$castingSoulShards", description = "", printInSettings = false, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["WarlockDestructionBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["WarlockDestructionBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["WarlockDestructionBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["WarlockDestructionBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingFragments", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingShards", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingSoulShards", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
         
-		{ variable = "$soulShards", description = L["WarlockDestructionBarTextVariable_soulShards"], printInSettings = true, color = false, secret = true },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsMax", description = L["WarlockDestructionBarTextVariable_soulShardsMax"], printInSettings = true, color = false, secret = true },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsPlusCasting", description = L["WarlockDestructionBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, secret = true },
-		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false },
+		{ variable = "$soulShards", description = L["WarlockDestructionBarTextVariable_soulShards"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsMax", description = L["WarlockDestructionBarTextVariable_soulShardsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsPlusCasting", description = L["WarlockDestructionBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$infernalBoltTime", description = L["WarlockDestructionBarTextVariable_infernalBoltTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 		{ variable = "$ruinationTime", description = L["WarlockDestructionBarTextVariable_ruinationTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
@@ -475,3 +481,81 @@ TRB.Data.castbarTickProfilesRegistry["warlock_destruction"] = TRB.Classes.Warloc
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
 TRB.Data.castbarTickModifiersRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickModifiers
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	---Destruction tracks Soul Shard fragments, so its threshold runs to one decimal place.
+	---@param decimals number
+	local function SoulShardSource(decimals)
+		return {
+			id = "soulShards",
+			label = L["WarlockAudioCueSourceSoulShards"],
+			description = L["WarlockAudioCueSourceSoulShardsDescription"],
+			sliderLabel = L["WarlockSoulShardThresholdSliderTitle"],
+			defaultName = L["WarlockAudioCueSoulShardDefaultName"],
+			min = 0,
+			max = 5,
+			step = decimals > 0 and 0.1 or 1,
+			decimals = decimals,
+			compare = "atLeast",
+			requiresCombat = true,
+			legacyIds = { "soulShardThreshold1", "soulShardThreshold2" },
+			defaultCues = {
+				{
+					id = "soulShardThreshold1",
+					name = L["WarlockAudioSoulShardThreshold1"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 3,
+				},
+				{
+					id = "soulShardThreshold2",
+					name = L["WarlockAudioSoulShardThreshold2"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 5,
+				},
+			},
+		}
+	end
+
+	local infernalBolt = {
+		id = "infernalBolt",
+		label = L["WarlockAudioInfernalBolt"],
+		trigger = L["WarlockAudioTriggerInfernalBolt"],
+		tooltip = L["WarlockAudioCheckboxInfernalBoltTooltip"],
+	}
+	local ruination = {
+		id = "ruination",
+		label = L["WarlockAudioRuination"],
+		trigger = L["WarlockAudioTriggerRuination"],
+		tooltip = L["WarlockAudioCheckboxRuinationTooltip"],
+	}
+
+	TRB.Functions.AudioCues:Register("warlock_affliction", {
+		counters = { SoulShardSource(0) },
+	})
+
+	TRB.Functions.AudioCues:Register("warlock_demonology", {
+		builtIns = {
+			{
+				id = "demonicCore",
+				label = L["WarlockAudioDemonicCore"],
+				trigger = L["WarlockAudioTriggerDemonicCore"],
+				tooltip = L["WarlockAudioCheckboxDemonicCoreTooltip"],
+			},
+			infernalBolt,
+			ruination,
+		},
+		counters = { SoulShardSource(0) },
+	})
+
+	TRB.Functions.AudioCues:Register("warlock_destruction", {
+		builtIns = { infernalBolt, ruination },
+		counters = { SoulShardSource(1) },
+	})
+end

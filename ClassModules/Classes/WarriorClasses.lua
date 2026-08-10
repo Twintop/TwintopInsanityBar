@@ -177,9 +177,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
 		isTalent = true,
 		hasCooldown = true,
 		duration = 11,
-		rangeCheck = false,
-		-- Preserve non-secret bar text timing so user expressions like `{$ignorePainTime>0}[...]` keep working.
-		disallowSecretTiming = true
+		rangeCheck = false
 	})
 
 	return self
@@ -204,11 +202,12 @@ function TRB.Classes.Warrior.ArmsSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
 		{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$rage", description = L["WarriorArmsBarTextVariable_rage"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$rageMax", description = L["WarriorArmsBarTextVariable_rageMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$rage", description = L["WarriorArmsBarTextVariable_rage"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$rageMax", description = L["WarriorArmsBarTextVariable_rageMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 	})
 end
 
@@ -309,7 +308,7 @@ function TRB.Classes.Warrior.FurySpells:New()
 	
 	--Fury base abilities
 	self.enrage = TRB.Classes.SpellBase:New({
-		id = 184362,
+		id = 184361,
 		isTalent = false,
 		baseline = true,
 	})
@@ -393,6 +392,7 @@ function TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#bladestorm", icon = spells.bladestorm.icon, description = spells.bladestorm.name, printInSettings = true },
+		{ variable = "#enrage", icon = spells.enrage.icon, description = spells.enrage.name, printInSettings = true },
 		{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },
 		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
@@ -400,18 +400,21 @@ function TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#whirlwind", icon = spells.improvedWhirlwind.icon, description = spells.improvedWhirlwind.name, printInSettings = true }
 	})
 
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$rage", description = L["WarriorFuryBarTextVariable_rage"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$rageMax", description = L["WarriorFuryBarTextVariable_rageMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
+		{ variable = "$rage", description = L["WarriorFuryBarTextVariable_rage"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$rageMax", description = L["WarriorFuryBarTextVariable_rageMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$wwCharges", description = L["WarriorFuryBarTextVariable_wwCharges"], printInSettings = true, color = false },
 		{ variable = "$whirlwindCharges", description = "", printInSettings = false, color = false },
 
 		{ variable = "$wwTime", description = L["WarriorFuryBarTextVariable_wwTime"], printInSettings = true, color = false },
 		{ variable = "$whirlwindTime", description = "", printInSettings = false, color = false },
+
+		{ variable = "$enrageTime", description = L["WarriorFuryBarTextVariable_enrageTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 	})
 end
 
@@ -522,8 +525,6 @@ function TRB.Classes.Warrior.ProtectionSpells:New()
 		hasCooldown = true,
 		duration = 12,
 		rangeCheck = false,
-		-- Preserve non-secret bar text timing so user expressions like `{$ignorePainTime>0}[...]` keep working.
-		disallowSecretTiming = true,
 		---@type TRB.Classes.BuffCustomProperty[]
 		customPropertyDefinitions = {
 			TRB.Classes.BuffCustomProperty:New(1, "number", "absorb", 1)
@@ -579,19 +580,21 @@ function TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "#suddenDeath", icon = spells.suddenDeath.icon, description = spells.suddenDeath.name, printInSettings = true },
 		{ variable = "#violentOutburst", icon = spells.violentOutburst.icon, description = spells.violentOutburst.name, printInSettings = true }
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$rage", description = L["WarriorProtectionBarTextVariable_rage"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$rageMax", description = L["WarriorProtectionBarTextVariable_rageMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
+		{ variable = "$rage", description = L["WarriorProtectionBarTextVariable_rage"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$rageMax", description = L["WarriorProtectionBarTextVariable_rageMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		
 		{ variable = "$ignorePainTime", description = L["WarriorProtectionBarTextVariable_ignorePainTime"], printInSettings = true, color = false },
-		{ variable = "$ignorePainAbsorb", description = L["WarriorProtectionBarTextVariable_ignorePainAbsorb"], printInSettings = true, color = false },
+		-- Absorb pool has no source but the Cooldown Manager; the time above is snapshot-driven.
+		{ variable = "$ignorePainAbsorb", description = L["WarriorProtectionBarTextVariable_ignorePainAbsorb"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 
 		{ variable = "$shieldBlockTime", description = L["WarriorProtectionBarTextVariable_shieldBlockTime"], printInSettings = true, color = false },
-		{ variable = "$shieldBlockCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockCharges"], printInSettings = true, color = false },
-		{ variable = "$shieldBlockMaxCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockMaxCharges"], printInSettings = true, color = false },
+		{ variable = "$shieldBlockCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockCharges"], printInSettings = true, color = false, secret = true },
+		{ variable = "$shieldBlockMaxCharges", description = L["WarriorProtectionBarTextVariable_shieldBlockMaxCharges"], printInSettings = true, color = false, secret = true },
 
 		{ variable = "$voTime", description = L["WarriorProtectionBarTextVariable_voTime"], printInSettings = true, color = false },
 		{ variable = "$violentOutburstTime", description = "", printInSettings = false, color = false },
@@ -737,3 +740,19 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["warrior_arms"] = TRB.Classes.Warrior.ArmsSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["warrior_fury"] = TRB.Classes.Warrior.FurySpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["warrior_protection"] = TRB.Classes.Warrior.ProtectionSpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	TRB.Functions.AudioCues:Register("warrior_protection", {
+		builtIns = {
+			{
+				id = "violentOutburst",
+				label = L["WarriorAudioViolentOutburstProc"],
+				trigger = L["WarriorAudioTriggerViolentOutburst"],
+				tooltip = L["WarriorAudioCheckboxViolentOutburstTooltip"],
+			},
+		},
+	})
+end

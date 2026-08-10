@@ -435,6 +435,69 @@ function TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, title, po
 	return f
 end
 
+local CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B = 1.0, 0.24, 0.24
+
+---Creates a Cooldown Manager reliance badge. Declared state only: it never checks whether the spell
+---is tracked right now, since the viewers are hidden while the options panel is open out of combat.
+---@param parent Frame # The frame the badge is parented to
+---@param dependency TRB.CdmDependency? # Absent or unrecognized produces no badge
+---@param posX number # X offset from parent's TOPLEFT
+---@param posY number # Y offset from parent's TOPLEFT
+---@return Frame? # nil when the feature declares no reliance
+function TRB.Functions.OptionsUi.Primitives:BuildCdmBadge(parent, dependency, posX, posY)
+	if parent == nil or dependency ~= TRB.Data.constants.cdmDependency.REQUIRED then
+		return nil
+	end
+
+	local f = CreateFrame("Frame", nil, parent)
+	f:SetPoint("TOPLEFT", parent, "TOPLEFT", posX, posY)
+	f:EnableMouse(true)
+	-- Above the parent so the control it annotates cannot swallow the hover.
+	f:SetFrameLevel(parent:GetFrameLevel() + 1)
+---@diagnostic disable-next-line: inject-field
+	f.font = f:CreateFontString(nil, "OVERLAY")
+	f.font:SetFontObject(GameFontNormalSmall)
+	f.font:SetPoint("LEFT", f, "LEFT")
+	f.font:SetJustifyH("LEFT")
+	f.font:SetText(L["CdmBadgeLabel"])
+	f.font:SetTextColor(CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B, 1)
+	-- Sized to the glyph so the hitbox cannot reach over a neighbouring control.
+	f:SetSize(math.max(f.font:GetStringWidth(), 1), 16)
+
+	f:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText(L["CdmBadgeHeader"], 1, 1, 1)
+		GameTooltip:AddLine(L["CdmBadgeRequiredTooltip"], CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B, true)
+		GameTooltip:Show()
+	end)
+	f:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+
+	return f
+end
+
+---Attaches a Cooldown Manager reliance badge just past the rendered end of a font string. Uses the
+---measured string width, since these labels size their font string wider than the text they hold.
+---@param fontString FontString # The label to sit beside
+---@param dependency TRB.CdmDependency? # Absent or unrecognized produces no badge
+---@param padding number? # Gap between the text and the badge (default 6)
+---@return Frame? # nil when the feature declares no reliance
+function TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(fontString, dependency, padding)
+	if fontString == nil then
+		return nil
+	end
+
+	local badge = self:BuildCdmBadge(fontString:GetParent(), dependency, 0, 0)
+	if badge == nil then
+		return nil
+	end
+
+	badge:ClearAllPoints()
+	badge:SetPoint("LEFT", fontString, "LEFT", fontString:GetStringWidth() + (padding or 6), 0)
+	return badge
+end
+
 ---Creates a two-part help entry: a right-aligned variable name and a left-aligned description below it.
 ---@param parent Frame # The parent frame
 ---@param var string # The variable name or label (displayed right-aligned)

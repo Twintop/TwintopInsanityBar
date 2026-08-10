@@ -901,6 +901,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					"ravage",
 					"clearcasting",
 					"borderStealth",
+					"halazzisFury",
 				},
 				gradientOrder = {
 					"maxBite",
@@ -936,6 +937,15 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					},
 					borderStealth = {
 						color = "FF000000",
+						enabled = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+						},
+					},
+					halazzisFury = {
+						color = "FF00FFFF",
+						color2 = "FF00FFFF",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							energyBar = { bar = false, border = true, background = false },
@@ -984,24 +994,6 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
-			},
-			comboPointThreshold1={
-				name = L["DruidFeralAudioComboPointThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 3
-				}
-			},
-			comboPointThreshold2={
-				name = L["DruidFeralAudioComboPointThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 5
-				}
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -1413,12 +1405,6 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			innervate={
-				name = L["Innervate"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(),
 	}
@@ -1905,30 +1891,6 @@ local function BalanceConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 11, 1, yCoord)
 end
 
-local function BalanceConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 11
-	local specId = 1
-	local spec = TRB.Data.settings.druid.balance
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.druid_balance
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "ssReady", spec, classId, specId, yCoord, L["DruidBalanceAudioStarsurgeCheckbox"], L["DruidBalanceAudioStarsurgeCheckboxTooltip"])
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "sfReady", spec, classId, specId, yCoord, L["DruidBalanceAudioStarfallCheckbox"], L["DruidBalanceAudioStarfallCheckboxTooltip"])
-
-	--yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "starweaversReady", spec, classId, specId, yCoord, L["DruidBalanceAudioStarweaverCheckbox"], L["DruidBalanceAudioStarweaverCheckboxTooltip"])
-end
-
 local function BalanceConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1975,17 +1937,17 @@ local function BalanceConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_balance = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "astralPowerBar", label = L["TabAstralPower"], width = oUi.tabWidth.small, constructor = BalanceConstructAstralPowerBarPanel },
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = BalanceConstructManaBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = BalanceConstructHealthBarPanel },
+		{ key = "astralPowerBar", label = L["TabAstralPower"], width = oUi.tabWidth.small, constructor = BalanceConstructAstralPowerBarPanel, visibilityKey = "primary" },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = BalanceConstructManaBarPanel, visibilityKey = "mana" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = BalanceConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = BalanceConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = BalanceConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = BalanceConstructBarVisibilityPanel },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = BalanceConstructThresholdSettingsPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = BalanceConstructThresholdListPanel, isManualScrollFrame = true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("druid", "balance", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("druid", "balance", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = BalanceConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = BalanceConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) BalanceConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = BalanceConstructResetDefaultsPanel },
 	}, yCoord)
@@ -2239,6 +2201,7 @@ local function FeralConstructIndicatorColorsPanel(parent)
 			{ key = "ravage",        label = L["DruidFeralCheckboxRavage"],        tooltip = L["DruidFeralIndicatorRavageTooltip"],          colorLabel = L["DruidFeralIndicatorRavageColor"] },
 			{ key = "clearcasting",  label = L["DruidFeralCheckboxClearcasting"],  tooltip = L["DruidFeralIndicatorClearcastingTooltip"],    colorLabel = L["DruidFeralIndicatorClearcastingColor"] },
 			{ key = "borderStealth",  label = L["CheckboxBorderStealth"],           tooltip = L["DruidFeralIndicatorBorderStealthTooltip"],   colorLabel = L["DruidFeralIndicatorBorderStealthColor"] },
+			{ key = "halazzisFury", label = L["DruidFeralCheckboxHalazzisFury"], tooltip = L["DruidFeralIndicatorHalazzisFuryTooltip"], colorLabel = L["DruidFeralIndicatorHalazzisFuryColor"] },
 		},
 		gradientDefs = {
 			{ key = "maxBite",       label = L["DruidFeralCheckboxMaxBite"],        tooltip = L["DruidFeralIndicatorMaxBiteTooltip"],         colorLabel = L["DruidFeralIndicatorMaxBiteColor"] },
@@ -2486,54 +2449,6 @@ local function FeralConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 11, 2, yCoord)
 end
 
-local function FeralConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 11
-	local specId = 2
-	local spec = TRB.Data.settings.druid.feral
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.druid_feral
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "apexPredatorsCraving", spec, classId, specId, yCoord, L["DruidFeralCheckboxApexPredatorsCravingProc"], L["DruidFeralCheckboxApexPredatorsCravingProcTooltip"])
-
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "comboPointThreshold1", spec, classId, specId, yCoord, L["DruidFeralAudioCheckboxComboPointThreshold1"], L["DruidFeralAudioCheckboxComboPointThreshold1Tooltip"])
-
-	controls.comboPointThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["DruidFeralComboPointThresholdSliderTitle"], 0, 5, spec.audio["comboPointThreshold1"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.comboPointThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["comboPointThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "comboPointThreshold2", spec, classId, specId, yCoord, L["DruidFeralAudioCheckboxComboPointThreshold2"], L["DruidFeralAudioCheckboxComboPointThreshold2Tooltip"])
-
-	controls.comboPointThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["DruidFeralComboPointThresholdSliderTitle"], 0, 5, spec.audio["comboPointThreshold2"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.comboPointThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["comboPointThreshold2"].configuration.thresholdValue = value
-	end)
-end
-
 local function FeralConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2580,17 +2495,17 @@ local function FeralConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_feral = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "energyBar", label = L["TabEnergy"], width = oUi.tabWidth.small, constructor = FeralConstructEnergyBarPanel },
-		{ key = "comboPointsBar", label = L["TabComboPoints"], width = oUi.tabWidth.small, constructor = FeralConstructComboPointsBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FeralConstructHealthBarPanel },
+		{ key = "energyBar", label = L["TabEnergy"], width = oUi.tabWidth.small, constructor = FeralConstructEnergyBarPanel, visibilityKey = "primary" },
+		{ key = "comboPointsBar", label = L["TabComboPoints"], width = oUi.tabWidth.small, constructor = FeralConstructComboPointsBarPanel, visibilityKey = "secondary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FeralConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FeralConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FeralConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FeralConstructBarVisibilityPanel },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = FeralConstructThresholdSettingsPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = FeralConstructThresholdListPanel, isManualScrollFrame = true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("druid", "feral", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("druid", "feral", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = FeralConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = FeralConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) FeralConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = FeralConstructResetDefaultsPanel },
 	}, yCoord)
@@ -2996,24 +2911,6 @@ local function GuardianConstructFontAndTextPanel(parent)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = controls
 end
 
-local function GuardianConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local spec = TRB.Data.settings.druid.guardian
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.druid_guardian
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-end
-
 local function GuardianConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -3060,8 +2957,8 @@ local function GuardianConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "rageBar", label = L["TabRage"], width = oUi.tabWidth.small, constructor = GuardianConstructRageBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = GuardianConstructHealthBarPanel },
+		{ key = "rageBar", label = L["TabRage"], width = oUi.tabWidth.small, constructor = GuardianConstructRageBarPanel, visibilityKey = "primary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = GuardianConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = GuardianConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = GuardianConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = GuardianConstructBarVisibilityPanel },
@@ -3394,25 +3291,6 @@ local function RestorationConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 11, 4, yCoord)
 end
 
-local function RestorationConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 11
-	local specId = 4
-	local spec = TRB.Data.settings.druid.restoration
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.druid_restoration
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-end
-
 local function RestorationConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -3479,8 +3357,8 @@ local function RestorationConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_restoration = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = RestorationConstructManaBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = RestorationConstructHealthBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = RestorationConstructManaBarPanel, visibilityKey = "primary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = RestorationConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = RestorationConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("druid", "restoration", controls),
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = RestorationConstructIndicatorColorsPanel },

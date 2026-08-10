@@ -19,7 +19,8 @@ local L = TRB.Localization
 ---@return Frame # The outer container frame for the side panel
 function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(parent, name, cache, classId, specId)
 	local mainFrame = TRB.Frames.optionsFrame
-	local panelWidth = 375
+	-- Kept as narrow as the columns allow; the options frame plus this flyout has to fit on screen.
+	local panelWidth = 365
 
 	-- Outer container frame anchored to the right of the main options frame
 	local cf = CreateFrame("Frame", "TRB_" .. name .. "_BarTextVariables_Frame", mainFrame, "BackdropTemplate")
@@ -124,17 +125,22 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 	-- Build data table from cache.barTextVariables
 	-- =============================================
 	local allData = {}     -- flat array for LibScrollingTable
-	local sectionOrder = { "values", "pipe", "icons" }
-	local sectionLabels = {
-		values = L["BarTextVariablesSectionValues"],
-		pipe = L["BarTextVariablesSectionPipe"],
+	-- Fixed group order. Sorting reorders a group's contents but never the groups themselves.
+	local groupOrder = { "resources", "abilities", "stats", "castBar", "other", "icons" }
+	local groupLabels = {
+		resources = L["BarTextVariablesSectionResources"],
+		abilities = L["BarTextVariablesSectionAbilities"],
+		stats = L["BarTextVariablesSectionStats"],
+		castBar = L["BarTextVariablesSectionCastBars"],
+		other = L["BarTextVariablesSectionOther"],
 		icons = L["BarTextVariablesSectionIcons"],
 	}
-	local sectionSortOrder = {
-		values = 1,
-		pipe = 2,
-		icons = 3,
-	}
+	-- Recognized group keys. Metadata inference stays section-based, so each entry carries its
+	-- own source section: Other mixes plain values with pipe commands.
+	local validGroupKeys = {}
+	for _, groupKey in ipairs(groupOrder) do
+		validGroupKeys[groupKey] = true
+	end
 	local variableLogicType = TRB.Functions.BarText.VariableLogicType
 	local variableRenderType = TRB.Functions.BarText.VariableRenderType
 	local logicTypeSortOrder = {
@@ -152,6 +158,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		[variableRenderType.COMMAND] = 4,
 		[variableRenderType.UNKNOWN] = 5,
 	}
+	local cdmDependency = TRB.Data.constants.cdmDependency
 
 	local function GetBooleanStatusLabel(value)
 		if value == true then
@@ -214,6 +221,20 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		return ""
 	end
 
+	local function GetCdmLabel(cdm)
+		if cdm == cdmDependency.REQUIRED then
+			return L["BarTextVariablesCdmRequired"]
+		end
+		return L["BarTextVariablesCdmNone"]
+	end
+
+	local function GetCdmBadge(cdm)
+		if cdm == cdmDependency.REQUIRED then
+			return L["BarTextVariablesBadgeCdm"]
+		end
+		return ""
+	end
+
 	local function BuildDescriptionText(rowData)
 		if rowData == nil or rowData.isHeader then
 			return L["BarTextVariablesPanelDescriptionDefault"]
@@ -222,9 +243,10 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		local metadata = rowData.metadata or {}
 		local summary = {
 			L["BarTextVariablesDescriptionSecret"] .. ": " .. GetBooleanStatusLabel(metadata.secret),
+			L["BarTextVariablesDescriptionCdm"] .. ": " .. GetCdmLabel(metadata.cdm),
+			L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType),
 			L["BarTextVariablesDescriptionBooleanCheck"] .. ": " .. GetBooleanStatusLabel(metadata.booleanCheck),
 			L["BarTextVariablesDescriptionLogicComparisons"] .. ": " .. GetBooleanStatusLabel(metadata.comparisonUsable),
-			L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType),
 			L["BarTextVariablesDescriptionOutput"] .. ": " .. GetRenderTypeLabel(metadata.renderType),
 		}
 
@@ -239,12 +261,18 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		if rowData ~= nil and not rowData.isHeader then
 			local metadata = rowData.metadata or {}
 			if column == 3 then
-				return L["BarTextVariablesDescriptionSecret"] .. ": " .. GetBooleanStatusLabel(metadata.secret)
+				local secretText = L["BarTextVariablesDescriptionSecret"] .. ": " .. GetBooleanStatusLabel(metadata.secret)
+				if metadata.secret then
+					secretText = secretText .. "\n" .. L["BarTextVariablesDescriptionSecretNoComparisons"]
+				end
+				return secretText
 			elseif column == 4 then
-				return L["BarTextVariablesDescriptionBooleanCheck"] .. ": " .. GetBooleanStatusLabel(metadata.booleanCheck)
+				return L["BarTextVariablesDescriptionCdm"] .. ": " .. GetCdmLabel(metadata.cdm)
 			elseif column == 5 then
-				return L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType) .. "\n" .. L["BarTextVariablesDescriptionLogicComparisons"] .. ": " .. GetBooleanStatusLabel(metadata.comparisonUsable)
+				return L["BarTextVariablesDescriptionBooleanCheck"] .. ": " .. GetBooleanStatusLabel(metadata.booleanCheck)
 			elseif column == 6 then
+				return L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType) .. "\n" .. L["BarTextVariablesDescriptionLogicComparisons"] .. ": " .. GetBooleanStatusLabel(metadata.comparisonUsable)
+			elseif column == 7 then
 				return L["BarTextVariablesDescriptionOutput"] .. ": " .. GetRenderTypeLabel(metadata.renderType)
 			end
 		end
@@ -252,12 +280,14 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		if column == 2 then
 			return L["BarTextVariablesColumnNameTooltip"]
 		elseif column == 3 then
-			return L["BarTextVariablesColumnSecretTooltip"]
+			return L["BarTextVariablesColumnSecretComparisonsTooltip"]
 		elseif column == 4 then
-			return L["BarTextVariablesColumnBooleanTooltip"]
+			return L["BarTextVariablesColumnCdmTooltip"]
 		elseif column == 5 then
-			return L["BarTextVariablesColumnTypeTooltip"]
+			return L["BarTextVariablesColumnBooleanTooltip"]
 		elseif column == 6 then
+			return L["BarTextVariablesColumnTypeTooltip"]
+		elseif column == 7 then
 			return L["BarTextVariablesColumnOutputTooltip"]
 		end
 		return nil
@@ -272,6 +302,28 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		GameTooltip:Show()
 	end
 
+	---Variable name plus its description, so the description is readable without selecting the row.
+	---Anchored to the cell's TOPLEFT rather than the preset ANCHOR_RIGHT, which uses TOPRIGHT and
+	---puts the tooltip over the badge columns on a cell this wide.
+	local function ShowVariableTooltip(owner, rowData)
+		if owner == nil or rowData == nil then
+			return
+		end
+		local variable = rowData.variable or ""
+		if variable == "" then
+			return
+		end
+		GameTooltip:SetOwner(owner, "ANCHOR_NONE")
+		GameTooltip:ClearAllPoints()
+		GameTooltip:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", 0, 0)
+		GameTooltip:SetText(variable, 1, 1, 1)
+		local description = rowData.description or ""
+		if description ~= "" then
+			GameTooltip:AddLine(description, nil, nil, nil, true)
+		end
+		GameTooltip:Show()
+	end
+
 	local function CompareVariableRows(scrollingTable, rowA, rowB, sortByColumn)
 		local dataA = scrollingTable.data[rowA]
 		local dataB = scrollingTable.data[rowB]
@@ -279,10 +331,11 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			return false
 		end
 
-		local sectionA = dataA.sectionIndex or 99
-		local sectionB = dataB.sectionIndex or 99
-		if sectionA ~= sectionB then
-			return sectionA < sectionB
+		-- Groups always keep their position; only their contents re-sort.
+		local groupA = dataA.groupIndex or 99
+		local groupB = dataB.groupIndex or 99
+		if groupA ~= groupB then
+			return groupA < groupB
 		end
 
 		if dataA.isHeader ~= dataB.isHeader then
@@ -298,12 +351,15 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			sortValueA = dataA.sortSecret
 			sortValueB = dataB.sortSecret
 		elseif sortByColumn == 4 then
+			sortValueA = dataA.sortCdm
+			sortValueB = dataB.sortCdm
+		elseif sortByColumn == 5 then
 			sortValueA = dataA.sortBooleanCheck
 			sortValueB = dataB.sortBooleanCheck
-		elseif sortByColumn == 5 then
+		elseif sortByColumn == 6 then
 			sortValueA = dataA.sortLogicType
 			sortValueB = dataB.sortLogicType
-		elseif sortByColumn == 6 then
+		elseif sortByColumn == 7 then
 			sortValueA = dataA.sortRenderType
 			sortValueB = dataB.sortRenderType
 		end
@@ -323,70 +379,92 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		return sortValueA > sortValueB
 	end
 
-	---Builds a flat data array for LibScrollingTable from the spec's barTextVariables, organized by section.
+	---Buckets the spec's visible barTextVariables entries into their display groups.
+	---Values split across Stats/Resources/Abilities/Cast Bar/Other; icons and pipe commands are
+	---resolved by the categorizer. Each bucket entry keeps its source section for metadata inference.
+	---@param barTextVariables table # The barTextVariables table with values, pipe, and icons sections
+	---@return table<string, table[]> # Map of group key to a list of { entry, sectionKey } records
+	local function GroupVariableEntries(barTextVariables)
+		local grouped = {}
+		for _, sectionKey in ipairs({ "values", "icons", "pipe" }) do
+			local sectionEntries = barTextVariables[sectionKey]
+			if sectionEntries then
+				for _, entry in ipairs(sectionEntries) do
+					if entry.printInSettings then
+						local groupKey = TRB.Functions.BarText:GetVariableCategory(entry, sectionKey)
+						-- An unrecognized category would otherwise drop the entry from the panel entirely.
+						if not validGroupKeys[groupKey] then
+							groupKey = TRB.Functions.BarText.VariableCategory.ABILITIES
+						end
+						grouped[groupKey] = grouped[groupKey] or {}
+						table.insert(grouped[groupKey], { entry = entry, sectionKey = sectionKey })
+					end
+				end
+			end
+		end
+		return grouped
+	end
+
+	---Builds a flat data array for LibScrollingTable from the spec's barTextVariables, organized by group.
 	---@param barTextVariables table # The barTextVariables table with values, pipe, and icons sections
 	---@return table[] # Flat array of row data for LibScrollingTable
 	local function BuildDataTable(barTextVariables)
 		local data = {}
-		for _, sectionKey in ipairs(sectionOrder) do
-			local sectionEntries = barTextVariables[sectionKey]
-			if sectionEntries and #sectionEntries > 0 then
-				local hasVisible = false
-				for _, entry in ipairs(sectionEntries) do
-					if entry.printInSettings then
-						hasVisible = true
-						break
+		local grouped = GroupVariableEntries(barTextVariables)
+
+		for groupIndex, groupKey in ipairs(groupOrder) do
+			local groupEntries = grouped[groupKey]
+			if groupEntries and #groupEntries > 0 then
+				-- Group header row
+				table.insert(data, {
+					cols = {
+						{ value = "" },
+						{ value = groupLabels[groupKey] },
+						{ value = "" },
+						{ value = "" },
+						{ value = "" },
+						{ value = "" },
+						{ value = "" },
+					},
+					isHeader = true,
+					groupKey = groupKey,
+					groupIndex = groupIndex,
+					variable = "",
+					description = "",
+				})
+				-- Variable rows
+				for _, record in ipairs(groupEntries) do
+					local entry = record.entry
+					local sectionKey = record.sectionKey
+					local desc = entry.description or ""
+					if sectionKey == "icons" and entry.icon and entry.icon ~= "" then
+						desc = entry.icon .. " " .. desc
 					end
-				end
-				if hasVisible then
-					-- Section header row
+					local metadata = TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
+					local variable = entry.variable or ""
 					table.insert(data, {
 						cols = {
-							{ value = "" },
-							{ value = sectionLabels[sectionKey] },
-							{ value = "" },
-							{ value = "" },
-							{ value = "" },
-							{ value = "" },
+							{ value = L["BarTextVariablesAddButton"] },
+							{ value = variable },
+							{ value = metadata.secret and L["BarTextVariablesBadgeSecret"] or "" },
+							{ value = GetCdmBadge(metadata.cdm) },
+							{ value = metadata.booleanCheck and L["BarTextVariablesBadgeBooleanCheck"] or "" },
+							{ value = GetLogicTypeBadge(metadata.logicType) },
+							{ value = GetRenderTypeBadge(metadata.renderType) },
 						},
-						isHeader = true,
-						sectionKey = sectionKey,
-						sectionIndex = sectionSortOrder[sectionKey] or 99,
-						variable = "",
-						description = "",
+						isHeader = false,
+						groupKey = groupKey,
+						groupIndex = groupIndex,
+						variable = variable,
+						description = desc,
+						metadata = metadata,
+						sortVariable = string.lower(variable),
+						sortSecret = metadata.secret and 1 or 0,
+						sortBooleanCheck = metadata.booleanCheck and 1 or 0,
+						sortLogicType = logicTypeSortOrder[metadata.logicType] or logicTypeSortOrder[variableLogicType.UNKNOWN],
+						sortRenderType = renderTypeSortOrder[metadata.renderType] or renderTypeSortOrder[variableRenderType.UNKNOWN],
+						sortCdm = metadata.cdm == cdmDependency.REQUIRED and 1 or 0,
 					})
-					-- Variable rows
-					for _, entry in ipairs(sectionEntries) do
-						if entry.printInSettings then
-							local desc = entry.description or ""
-							if sectionKey == "icons" and entry.icon and entry.icon ~= "" then
-								desc = entry.icon .. " " .. desc
-							end
-							local metadata = TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
-							local variable = entry.variable or ""
-							table.insert(data, {
-								cols = {
-									{ value = L["BarTextVariablesAddButton"] },
-									{ value = variable },
-									{ value = metadata.secret and L["BarTextVariablesBadgeSecret"] or "" },
-									{ value = metadata.booleanCheck and L["BarTextVariablesBadgeBooleanCheck"] or "" },
-									{ value = GetLogicTypeBadge(metadata.logicType) },
-									{ value = GetRenderTypeBadge(metadata.renderType) },
-								},
-								isHeader = false,
-								sectionKey = sectionKey,
-								sectionIndex = sectionSortOrder[sectionKey] or 99,
-								variable = variable,
-								description = desc,
-								metadata = metadata,
-								sortVariable = string.lower(variable),
-								sortSecret = metadata.secret and 1 or 0,
-								sortBooleanCheck = metadata.booleanCheck and 1 or 0,
-								sortLogicType = logicTypeSortOrder[metadata.logicType] or logicTypeSortOrder[variableLogicType.UNKNOWN],
-								sortRenderType = renderTypeSortOrder[metadata.renderType] or renderTypeSortOrder[variableRenderType.UNKNOWN],
-							})
-						end
-					end
 				end
 			end
 		end
@@ -423,7 +501,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 
 	-- =============================================
 	-- LibScrollingTable columns
-	-- Column 1 = Add button (+), Column 2 = Variable name, Columns 3-6 = metadata badges
+	-- Column 1 = Add button (+), Column 2 = Variable name, Columns 3-7 = metadata badges
 	-- =============================================
 	local function UpdateMetadataCell(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, st)
 		if not fShow then return end
@@ -437,10 +515,13 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		end
 	end
 
+	-- LibScrollingTable indents its rows 6px and reserves 22px on the right for the scroll trough.
+	local tableChrome = 32
+
 	local columns = {
 		{
 			["name"] = "",
-			["width"] = 18,
+			["width"] = 16,
 			["align"] = "CENTER",
 			["DoCellUpdate"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, st)
 				if not fShow then return end
@@ -473,7 +554,8 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		},
 		{
 			["name"] = L["BarTextVariablesColumnName"],
-			["width"] = panelWidth - 65,
+			-- Placeholder; tableContainer's OnSizeChanged recomputes this from the real container width.
+			["width"] = panelWidth - 203,
 			["align"] = "LEFT",
 			["sort"] = 1,
 			["defaultsort"] = 1,
@@ -494,7 +576,15 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		},
 		{
 			["name"] = L["BarTextVariablesColumnSecret"],
-			["width"] = 22,
+			["width"] = 20,
+			["align"] = "CENTER",
+			["defaultsort"] = 2,
+			["comparesort"] = CompareVariableRows,
+			["DoCellUpdate"] = UpdateMetadataCell,
+		},
+		{
+			["name"] = L["BarTextVariablesColumnCdm"],
+			["width"] = 20,
 			["align"] = "CENTER",
 			["defaultsort"] = 2,
 			["comparesort"] = CompareVariableRows,
@@ -502,7 +592,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		},
 		{
 			["name"] = L["BarTextVariablesColumnBoolean"],
-			["width"] = 22,
+			["width"] = 20,
 			["align"] = "CENTER",
 			["defaultsort"] = 2,
 			["comparesort"] = CompareVariableRows,
@@ -510,7 +600,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		},
 		{
 			["name"] = L["BarTextVariablesColumnType"],
-			["width"] = 42,
+			["width"] = 38,
 			["align"] = "CENTER",
 			["defaultsort"] = 1,
 			["comparesort"] = CompareVariableRows,
@@ -518,7 +608,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		},
 		{
 			["name"] = L["BarTextVariablesColumnOutput"],
-			["width"] = 46,
+			["width"] = 42,
 			["align"] = "CENTER",
 			["defaultsort"] = 1,
 			["comparesort"] = CompareVariableRows,
@@ -542,8 +632,8 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			variablesTable:SetDisplayRows(newRows, rowHeight)
 		end
 		-- Resize variable column (col 2) to fill remaining width after fixed metadata columns.
-		local fixedWidth = columns[1].width + columns[3].width + columns[4].width + columns[5].width + columns[6].width
-		columns[2].width = math.max(110, w - fixedWidth - 45)
+		local fixedWidth = columns[1].width + columns[3].width + columns[4].width + columns[5].width + columns[6].width + columns[7].width
+		columns[2].width = math.max(110, w - fixedWidth - tableChrome)
 		variablesTable:SetDisplayCols(columns)
 	end)
 
@@ -648,6 +738,8 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 					-- Tooltip for add button
 					if column == 1 then
 						ShowTooltip(cellFrame, L["BarTextVariablesAddTooltip"])
+					elseif column == 2 then
+						ShowVariableTooltip(cellFrame, rowData)
 					elseif column >= 3 then
 						ShowTooltip(cellFrame, GetColumnTooltipText(column, rowData))
 					end

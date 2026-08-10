@@ -489,12 +489,6 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			innervate={
-				name = L["Innervate"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(),
 	}
@@ -740,33 +734,6 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 				soundName = L["LSMSoundAirHorn"]
-			},
-			chiThreshold1={
-				name = L["MonkAudioChiThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 3
-				}
-			},
-			chiThreshold2={
-				name = L["MonkAudioChiThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 5
-				}
-			},
-			chiThreshold3={
-				name = L["MonkAudioChiThreshold3"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 6
-				}
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
@@ -1312,22 +1279,6 @@ local function BrewmasterConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 1, yCoord)
 end
 
-local function BrewmasterConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local spec = TRB.Data.settings.monk.brewmaster
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.monk_brewmaster
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-end
-
 local function BrewmasterConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1371,9 +1322,9 @@ local function BrewmasterConstructOptionsPanel(cache)
 		"monk", "brewmaster")
 
 	local tabDefinitions = {
-		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, BrewmasterConstructEnergyBarPanel },
-		{ "staggerBar", L["TabStagger"], oUi.tabWidth.small, BrewmasterConstructStaggerBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, BrewmasterConstructHealthBarPanel },
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, BrewmasterConstructEnergyBarPanel, visibilityKey = "primary" },
+		{ "staggerBar", L["TabStagger"], oUi.tabWidth.small, BrewmasterConstructStaggerBarPanel, visibilityKey = "stagger" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, BrewmasterConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, BrewmasterConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, BrewmasterConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, BrewmasterConstructBarVisibilityPanel },
@@ -1667,25 +1618,6 @@ local function MistweaverConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 2, yCoord)
 end
 
-local function MistweaverConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 10
-	local specId = 2
-	local spec = TRB.Data.settings.monk.mistweaver
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.monk_mistweaver
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-end
-
 local function MistweaverConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1749,8 +1681,8 @@ local function MistweaverConstructOptionsPanel(cache)
 		"monk", "mistweaver")
 
 	local tabDefinitions = {
-		{ "manaBar", L["TabMana"], oUi.tabWidth.small, MistweaverConstructManaBarPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, MistweaverConstructHealthBarPanel },
+		{ "manaBar", L["TabMana"], oUi.tabWidth.small, MistweaverConstructManaBarPanel, visibilityKey = "primary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, MistweaverConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, MistweaverConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("monk", "mistweaver", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, MistweaverConstructIndicatorColorsPanel },
@@ -2166,65 +2098,6 @@ local function WindwalkerConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 10, 3, yCoord)
 end
 
-local function WindwalkerConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 10
-	local specId = 3
-	local spec = TRB.Data.settings.monk.windwalker
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.monk_windwalker
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "danceOfChiJi", spec, classId, specId, yCoord, L["MonkWindwalkerCheckboxDanceOfChiJi"], L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"])
-
-	local yCoord2 = yCoord - 20
-	
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "chiThreshold1", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold1"], L["MonkAudioCheckboxChiThreshold1Tooltip"])
-
-	controls.chiThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold1"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.chiThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["chiThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "chiThreshold2", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold2"], L["MonkAudioCheckboxChiThreshold2Tooltip"])
-
-	controls.chiThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold2"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.chiThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["chiThreshold2"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "chiThreshold3", spec, classId, specId, yCoord, L["MonkAudioCheckboxChiThreshold3"], L["MonkAudioCheckboxChiThreshold3Tooltip"])
-
-	controls.chiThreshold3Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MonkChiThresholdSliderTitle"], 0, 6, spec.audio["chiThreshold3"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.chiThreshold3Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["chiThreshold3"].configuration.thresholdValue = value
-	end)
-end
-
 local function WindwalkerConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2268,17 +2141,17 @@ local function WindwalkerConstructOptionsPanel(cache)
 		"monk", "windwalker")
 
 	local tabDefinitions = {
-		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, WindwalkerConstructEnergyBarPanel },
-		{ "chiBar", L["TabChi"], oUi.tabWidth.small, WindwalkerConstructChiPanel },
-		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, WindwalkerConstructHealthBarPanel },
+		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, WindwalkerConstructEnergyBarPanel, visibilityKey = "primary" },
+		{ "chiBar", L["TabChi"], oUi.tabWidth.small, WindwalkerConstructChiPanel, visibilityKey = "secondary" },
+		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, WindwalkerConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, WindwalkerConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, WindwalkerConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, WindwalkerConstructBarVisibilityPanel },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, WindwalkerConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, WindwalkerConstructThresholdListPanel, true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("monk", "windwalker", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("monk", "windwalker", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, WindwalkerConstructFontAndTextPanel },
-		{ "audioTracking", L["TabAudioTracking"], oUi.tabWidth.large, WindwalkerConstructAudioAndTrackingPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) WindwalkerConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, WindwalkerConstructResetDefaultsPanel },
 	}

@@ -391,12 +391,6 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			innervate={
-				name = L["Innervate"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			},
 			surgeOfLight={
 				name = L["PriestAudioSurgeOfLight"],
 				enabled=false,
@@ -909,12 +903,6 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			innervate={
-				name = L["Innervate"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			},
 			surgeOfLight={
 				name = L["PriestAudioSurgeOfLight"],
 				enabled=false,
@@ -929,24 +917,6 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
-			},
-			lightweaver={
-				name = L["PriestHolyAudioLightweaverThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"],
-				configuration = {
-					thresholdValue = 1
-				}
-			},
-			lightweaverMaxStacks={
-				name = L["PriestHolyAudioLightweaverThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-				soundName = L["LSMSoundAirHorn"],
-				configuration = {
-					thresholdValue = 4
-				}
 			},
 			lightweaverExpiring={
 				name = L["PriestHolyAudioLightweaverExpiring"],
@@ -1285,12 +1255,6 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
-			powerInfusion={
-				name = L["GlobalAudioPowerInfusion"],
-				enabled = false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(false, true, {
 			GetPriestUtilityBarTypeDefinition(),
@@ -1676,31 +1640,6 @@ local function DisciplineConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 5, 1, yCoord)
 end
 
-local function DisciplineConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 5
-	local specId = 1
-	local spec = TRB.Data.settings.priest.discipline
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.priest_discipline
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "surgeOfLight", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight"], L["PriestAudioCheckboxSurgeOfLightTooltip"])
-end
-
 local function DisciplineConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1786,17 +1725,17 @@ local function DisciplineConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.priest_discipline = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DisciplineConstructManaBarPanel },
-		{ key = "powerWordsBar", label = L["TabPowerWords"], width = oUi.tabWidth.medium, constructor = DisciplineConstructPowerWordsPanel },
-		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.discipline, controls, 5, 1) },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DisciplineConstructHealthBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DisciplineConstructManaBarPanel, visibilityKey = "primary" },
+		{ key = "powerWordsBar", label = L["TabPowerWords"], width = oUi.tabWidth.medium, constructor = DisciplineConstructPowerWordsPanel, visibilityKey = "secondary" },
+		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.discipline, controls, 5, 1), visibilityKey = "utility" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DisciplineConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = DisciplineConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("priest", "discipline", controls),
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = DisciplineConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DisciplineConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DisciplineConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("priest", "discipline", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = DisciplineConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = DisciplineConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) DisciplineConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = DisciplineConstructResetDefaultsPanel },
 	}, yCoord)
@@ -2105,97 +2044,6 @@ local function HolyConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 5, 2, yCoord)
 end
 
-local function HolyConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 5
-	local specId = 2
-	local spec = TRB.Data.settings.priest.holy
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.priest_holy
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	--yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "innervate", spec, classId, specId, yCoord, L["HealerAudioCheckboxInnervate"], L["HealerAudioCheckboxInnervateTooltip"])
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "surgeOfLight", spec, classId, specId, yCoord, L["PriestAudioCheckboxSurgeOfLight"], L["PriestAudioCheckboxSurgeOfLightTooltip"])
-
-	-- Spiritwell-only restriction checkbox for Surge of Light
-	spec.audio.surgeOfLight.configuration = spec.audio.surgeOfLight.configuration or {}
-	controls.checkBoxes.surgeOfLightSpiritwellOnly = CreateFrame("CheckButton", nil, parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.surgeOfLightSpiritwellOnly
-	f:SetPoint("TOPLEFT", oUi.xCoord + 20, yCoord+15)
-	f:SetChecked(spec.audio.surgeOfLight.configuration.requireSpiritwellTalent)
-	f.Text:SetText(L["PriestAudioCheckboxSurgeOfLightSpiritwellOnly"])
-	f.tooltip = L["PriestAudioCheckboxSurgeOfLightSpiritwellOnlyTooltip"]
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.surgeOfLight.configuration.requireSpiritwellTalent = self:GetChecked()
-	end)
-	yCoord = yCoord - 10
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "benediction", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxBenediction"], L["PriestHolyAudioCheckboxBenedictionTooltip"])
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["PriestHolyAudioHolyWordsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "holyWordSerenityCharge1", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSerenityCharge1"], L["PriestHolyAudioCheckboxHolyWordSerenityCharge1Tooltip"])
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "holyWordSerenityCharge2", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSerenityCharge2"], L["PriestHolyAudioCheckboxHolyWordSerenityCharge2Tooltip"])
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "holyWordSanctifyCharge1", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1"], L["PriestHolyAudioCheckboxHolyWordSanctifyCharge1Tooltip"])
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "holyWordSanctifyCharge2", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2"], L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2Tooltip"])
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "holyWordChastiseReady", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxHolyWordChastiseReady"], L["PriestHolyAudioCheckboxHolyWordChastiseReadyTooltip"])
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["PriestHolyAudioLightweaverHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	local yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "lightweaver", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxLightweaverThreshold1"], L["PriestHolyAudioCheckboxLightweaverThreshold1Tooltip"])
-
-	spec.audio.lightweaver.configuration = spec.audio.lightweaver.configuration or {}
-	controls.priest_lightweaverSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["PriestHolyAudioLightweaverThresholdSliderTitle"], 1, 4, spec.audio["lightweaver"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.priest_lightweaverSlider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["lightweaver"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "lightweaverMaxStacks", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxLightweaverThreshold2"], L["PriestHolyAudioCheckboxLightweaverThreshold2Tooltip"])
-
-	spec.audio.lightweaverMaxStacks.configuration = spec.audio.lightweaverMaxStacks.configuration or {}
-	controls.priest_lightweaverMaxStacksSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["PriestHolyAudioLightweaverThresholdSliderTitle"], 1, 4, spec.audio["lightweaverMaxStacks"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.priest_lightweaverMaxStacksSlider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["lightweaverMaxStacks"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "lightweaverExpiring", spec, classId, specId, yCoord, L["PriestHolyAudioCheckboxLightweaverExpiring"], L["PriestHolyAudioCheckboxLightweaverExpiringTooltip"])
-
-	spec.audio.lightweaverExpiring.configuration = spec.audio.lightweaverExpiring.configuration or {}
-	controls.priest_lightweaverExpiringSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["PriestHolyAudioLightweaverExpiringSliderTitle"], 0, 20, spec.audio["lightweaverExpiring"].configuration.thresholdValue, 0.5, 1,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.priest_lightweaverExpiringSlider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["lightweaverExpiring"].configuration.thresholdValue = value
-	end)
-end
-
 local function HolyConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2305,18 +2153,18 @@ local function HolyConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.priest_holy = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = HolyConstructManaBarPanel },
-		{ key = "holyWordsBar", label = L["TabHolyWords"], width = oUi.tabWidth.medium, constructor = HolyConstructHolyWordsPanel },
-		{ key = "lightweaverBar", label = L["TabLightweaver"], width = oUi.tabWidth.medium, constructor = HolyConstructLightweaverBarPanel },
-		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.holy, controls, 5, 2) },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HolyConstructHealthBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = HolyConstructManaBarPanel, visibilityKey = "primary" },
+		{ key = "holyWordsBar", label = L["TabHolyWords"], width = oUi.tabWidth.medium, constructor = HolyConstructHolyWordsPanel, visibilityKey = "holyWords" },
+		{ key = "lightweaverBar", label = L["TabLightweaver"], width = oUi.tabWidth.medium, constructor = HolyConstructLightweaverBarPanel, visibilityKey = "lightweaver" },
+		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.holy, controls, 5, 2), visibilityKey = "utility" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = HolyConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = HolyConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("priest", "holy", controls),
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = HolyConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = HolyConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = HolyConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("priest", "holy", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = HolyConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = HolyConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) HolyConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = HolyConstructResetDefaultsPanel },
 	}, yCoord)
@@ -2729,31 +2577,6 @@ local function ShadowConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 5, 3, yCoord)
 end
 
-local function ShadowConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 5
-	local specId = 3
-	local spec = TRB.Data.settings.priest.shadow
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.priest_shadow
-	local yCoord = 5
-	local f = nil
-
-	local title = ""
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "dpReady", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxShadowWordMadness"], L["PriestShadowAudioCheckboxShadowWordMadnessTooltip"])
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "mdProc", spec, classId, specId, yCoord, L["PriestShadowAudioCheckboxMindDevourer"], L["PriestShadowAudioCheckboxMindDevourerTooltip"])
-end
-
 local function ShadowConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2800,18 +2623,18 @@ local function ShadowConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.priest_shadow = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "insanityBar", label = L["TabInsanity"], width = oUi.tabWidth.small, constructor = ShadowConstructInsanityBarPanel },
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ShadowConstructManaBarPanel },
-		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.shadow, controls, 5, 3) },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ShadowConstructHealthBarPanel },
+		{ key = "insanityBar", label = L["TabInsanity"], width = oUi.tabWidth.small, constructor = ShadowConstructInsanityBarPanel, visibilityKey = "primary" },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ShadowConstructManaBarPanel, visibilityKey = "mana" },
+		{ key = "angelicFeatherBar", label = L["TabAngelicFeather"], width = oUi.tabWidth.small, constructor = PriestConstructAngelicFeatherBarPanel(TRB.Data.settings.priest.shadow, controls, 5, 3), visibilityKey = "utility" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ShadowConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = ShadowConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = ShadowConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = ShadowConstructBarVisibilityPanel },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = ShadowConstructThresholdSettingsPanel },
 		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = ShadowConstructThresholdListPanel, isManualScrollFrame = true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("priest", "shadow", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("priest", "shadow", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = ShadowConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = ShadowConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) ShadowConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = ShadowConstructResetDefaultsPanel },
 	}, yCoord)

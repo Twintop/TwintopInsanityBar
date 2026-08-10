@@ -159,24 +159,6 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			arcaneChargeThreshold1={
-				name = L["MageAudioArcaneChargeThreshold1"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 2
-				}
-			},
-			arcaneChargeThreshold2={
-				name = L["MageAudioArcaneChargeThreshold2"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 4
-				}
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -333,6 +315,36 @@ end
 local function FrostLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = {
+		{
+			useDefaultFontColor = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = true,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionCenter"],
+			text = "$shatterStacks",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontSize = 14,
+			name = L["ResourceMageShatter"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["ShatterContainer"],
+				yPos = 0,
+				relativeToFrame = "Container::shatter",
+			},
+			fontJustifyHorizontal = "CENTER",
+			useDefaultFontSize = true,
+			color = { color = "FFFFFFFF" },
+			enabled = true,
+		},
 	}
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
@@ -366,10 +378,14 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			shatter = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			shatter = TRB.Functions.Settings:DefaultShatterBarDimensions(classic),
+		},
 		colors={
 			text = {
 				current = {
@@ -426,6 +442,9 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				sameColor = false
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			bars = {
+				shatter = TRB.Functions.Settings:DefaultShatterBarColors(),
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -473,18 +492,18 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			iciclesThreshold1 = {
-				name = L["MageAudioIciclesThreshold1"],
-				enabled = false,
-				sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 5
-				}
-			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
+
+	-- Add Shatter bar textures
+	local shatterTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+	settings.textures.shatterBar = shatterTextures.bar
+	settings.textures.shatterBarName = shatterTextures.barName
+	settings.textures.shatterBorder = shatterTextures.border
+	settings.textures.shatterBorderName = shatterTextures.borderName
+	settings.textures.shatterBackground = shatterTextures.background
+	settings.textures.shatterBackgroundName = shatterTextures.backgroundName
 
 	if includeBarText then
 		settings.displayText.barText = FrostLoadDefaultBarTextSettings(classic)
@@ -779,49 +798,6 @@ local function ArcaneConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 8, 1, yCoord)
 end
 
-local function ArcaneConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 2
-	local specId = 1
-	local spec = TRB.Data.settings.mage.arcane
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mage_arcane
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "arcaneChargeThreshold1", spec, classId, specId, yCoord, L["MageAudioCheckboxArcaneChargeThreshold1"], L["MageAudioCheckboxArcaneChargeThreshold1Tooltip"])
-
-	controls.mage_arcaneChargeThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MageArcaneChargeThresholdSliderTitle"], 0, 4, spec.audio["arcaneChargeThreshold1"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.mage_arcaneChargeThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["arcaneChargeThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "arcaneChargeThreshold2", spec, classId, specId, yCoord, L["MageAudioCheckboxArcaneChargeThreshold2"], L["MageAudioCheckboxArcaneChargeThreshold2Tooltip"])
-
-	controls.mage_arcaneChargeThreshold2Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MageArcaneChargeThresholdSliderTitle"], 0, 4, spec.audio["arcaneChargeThreshold2"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.mage_arcaneChargeThreshold2Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["arcaneChargeThreshold2"].configuration.thresholdValue = value
-	end)
-end
-
 local function ArcaneConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -891,16 +867,16 @@ local function ArcaneConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_arcane = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ArcaneConstructManaBarPanel },
-		{ key = "arcaneChargesBar", label = L["TabArcaneCharges"], width = oUi.tabWidth.small, constructor = ArcaneConstructArcaneChargesPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ArcaneConstructHealthBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ArcaneConstructManaBarPanel, visibilityKey = "primary" },
+		{ key = "arcaneChargesBar", label = L["TabArcaneCharges"], width = oUi.tabWidth.small, constructor = ArcaneConstructArcaneChargesPanel, visibilityKey = "secondary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ArcaneConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = ArcaneConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "arcane", controls),
 		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = ArcaneConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = ArcaneConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = ArcaneConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("mage", "arcane", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = ArcaneConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = ArcaneConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) ArcaneConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = ArcaneConstructResetDefaultsPanel },
 	}, yCoord)
@@ -1121,25 +1097,6 @@ local function FireConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 8, 2, yCoord)
 end
 
-local function FireConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 2
-	local specId = 2
-	local spec = TRB.Data.settings.mage.fire
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mage_fire
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-end
-
 local function FireConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1209,9 +1166,9 @@ local function FireConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_fire = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FireConstructManaBarPanel },
-		{ key = "fireBlastCharges", label = L["TabFireBlastCharges"], width = oUi.tabWidth.medium, constructor = FireConstructFireBlastChargesBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FireConstructHealthBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FireConstructManaBarPanel, visibilityKey = "primary" },
+		{ key = "fireBlastCharges", label = L["TabFireBlastCharges"], width = oUi.tabWidth.medium, constructor = FireConstructFireBlastChargesBarPanel, visibilityKey = "secondary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FireConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = FireConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "fire", controls),
 		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FireConstructIndicatorColorsPanel },
@@ -1410,6 +1367,62 @@ local function FrostConstructIciclesBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Mage_Frost_ComboPoints", "endCapComboPoints", L["EndCap"], 8, 3)
 end
 
+local function FrostConstructShatterBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.mage.frost
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mage_frost
+	local yCoord = 5
+
+	local shatterBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("shatter")
+	local shatterColors = shatterBarDef and shatterBarDef:GetColors(spec)
+	if shatterBarDef and shatterColors then
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 8, 3, yCoord, shatterBarDef, L["ResourceMana"])
+
+		yCoord = yCoord - 90
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 8, 3, yCoord, shatterBarDef,
+			function(callbackParent, callbackYCoord)
+				local f = nil
+
+				if shatterColors.threshold == nil then
+					return callbackYCoord
+				end
+
+				-- Threshold stack, applied to every multiple of it (5, 10, 15, 20)
+				controls.checkBoxes.shatterThreshold = CreateFrame("CheckButton", "TwintopResourceBar_Mage_Frost_shatterThresholdEnabled", callbackParent, "ChatConfigCheckButtonTemplate")
+				f = controls.checkBoxes.shatterThreshold
+				f:SetPoint("TOPLEFT", oUi.xCoord, callbackYCoord)
+				getglobal(f:GetName() .. 'Text'):SetText(L["MageFrostCheckboxShatterThresholdMultiples"])
+				f.tooltip = L["MageFrostCheckboxShatterThresholdMultiplesTooltip"]
+				f:SetChecked(shatterColors.threshold.enabled)
+				f:SetScript("OnClick", function(self, ...)
+					shatterColors.threshold.enabled = self:GetChecked()
+					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(8, 3) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Data.cache.colors.bar = {}
+						TRB.Data.lookupDirty = true
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				end)
+
+				controls.colors.bars = controls.colors.bars or {}
+				controls.colors.bars.shatter = controls.colors.bars.shatter or {}
+				controls.colors.bars.shatter.threshold = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(callbackParent, L["MageFrostColorPickerShatterThreshold"], shatterColors.threshold, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+				f = controls.colors.bars.shatter.threshold
+				f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, shatterColors, controls.colors.bars.shatter, "threshold", nil, nil, 8, 3)
+				end)
+				f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, shatterColors.threshold, self, 8, 3)
+				end)
+
+				return callbackYCoord - 30
+			end)
+	end
+end
+
 local function FrostConstructHealthBarPanel(parent)
 	if parent == nil then
 		return
@@ -1436,7 +1449,12 @@ local function FrostConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 8, 3, yCoord, true, L["ResourceIcicles"])
+	local shatterBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("shatter")
+	local customBars = {}
+	if shatterBarDef then
+		table.insert(customBars, shatterBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 8, 3, yCoord, true, L["ResourceIcicles"], false, customBars)
 end
 
 local function FrostConstructBarVisibilityPanel(parent)
@@ -1449,7 +1467,12 @@ local function FrostConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_frost
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceIcicles"], true)
+	local shatterBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("shatter")
+	local customBars = {}
+	if shatterBarDef then
+		table.insert(customBars, shatterBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 8, 3, yCoord, L["ResourceMana"], "notFull", true, L["ResourceIcicles"], true, nil, customBars)
 end
 
 local function FrostConstructFontAndTextPanel(parent)
@@ -1488,38 +1511,6 @@ local function FrostConstructFontAndTextPanel(parent)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 8, 3, yCoord)
-end
-
-local function FrostConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 8
-	local specId = 3
-	local spec = TRB.Data.settings.mage.frost
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.mage_frost
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	local yCoord2 = yCoord - 20
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "iciclesThreshold1", spec, classId, specId, yCoord, L["MageAudioCheckboxIciclesThreshold1"], L["MageAudioCheckboxIciclesThreshold1Tooltip"])
-	controls.mage_iciclesThreshold1Slider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["MageIciclesThresholdSliderTitle"], 0, 5, spec.audio["iciclesThreshold1"].configuration.thresholdValue, 1, 0,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.mage_iciclesThreshold1Slider:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["iciclesThreshold1"].configuration.thresholdValue = value
-	end)
-
-	yCoord = yCoord - 60
 end
 
 local function FrostConstructBarTextDisplayPanel(parent, cache)
@@ -1591,16 +1582,17 @@ local function FrostConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_frost = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FrostConstructManaBarPanel },
-		{ key = "iciclesBar", label = L["TabIcicles"], width = oUi.tabWidth.small, constructor = FrostConstructIciclesBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = FrostConstructManaBarPanel, visibilityKey = "primary" },
+		{ key = "iciclesBar", label = L["TabIcicles"], width = oUi.tabWidth.small, constructor = FrostConstructIciclesBarPanel, visibilityKey = "secondary" },
+		{ key = "shatterBar", label = L["TabShatter"], width = oUi.tabWidth.small, constructor = FrostConstructShatterBarPanel, visibilityKey = "shatter" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = FrostConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "frost", controls),
 		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FrostConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FrostConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FrostConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("mage", "frost", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = FrostConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = FrostConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) FrostConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = FrostConstructResetDefaultsPanel },
 	}, yCoord)

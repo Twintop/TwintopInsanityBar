@@ -248,7 +248,6 @@ if locale == "zhCN" then
     L["BarDisplayTextCustomizationHeader"] = "资源条显示与文字自定义"
     L["IsBarEnabledForSpecTooltip"] = "%s专精下启用Twintop资源条"
     L["TabFontText"] = "字体与文字"
-    L["TabAudioTracking"] = "音效与追踪"
     L["TabBarText"] = "资源条文字"
     L["TabResetDefaults"] = "重置默认设置"
 
@@ -808,7 +807,6 @@ if locale == "zhCN" then
     L["RogueOutlawBarTextVariable_comboPoints"] = "当前连击点"
     L["RogueOutlawBarTextVariable_comboPointsMax"] = "连击点上限"
     L["RogueOutlawBarTextVariable_rtbCount"] = "当前激活的命运之骰buff数量"
-    L["RogueOutlawBarTextVariable_rtbTemporaryCount"] = "当前激活的完整命运之骰buff数量"
     L["RogueOutlawBarTextVariable_rtbAllCount"] = "所有来源的命运之骰buff总数量"
     L["RogueOutlawBarTextVariable_rtbBuffTime"] = "命运之骰buff剩余时间(非奇计迭出来源)"
     L["RogueOutlawBarTextVariable_rtbGoodBuff"] = "当前命运之骰buff是否为优质组合(优质定义：双buff、侧舷齐射或真北方向，仅逻辑变量)"
@@ -2371,7 +2369,6 @@ if locale == "zhCN" then
     L["GradientDirectionHorizontalAbbrev"] = "水"
     L["GradientDirectionVerticalAbbrev"] = "垂"
 
-    L["PaladinBarTextVariable_divinePurposeActive"] = "神圣意志当前是否激活？仅用于逻辑变量！"
     L["PaladinIndicatorDivinePurpose"] = "神圣意志"
     L["PaladinIndicatorDivinePurposeTooltip"] = "获得神圣意志效果时，指示器将切换为此颜色。"
     L["PaladinIndicatorDivinePurposeColor"] = "神圣意志已激活"

@@ -291,7 +291,8 @@ end
 ---@param wantLast boolean? # true returns the LAST number in the string, false/nil the FIRST
 ---@return number?
 local function ParseNumberFromString(str, wantLast)
-	if not str then return nil end
+	-- A secret string exposes no characters to match against, so there is nothing to parse.
+	if not str or issecretvalue(str) then return nil end
 	-- Drop color codes so their hex digits aren't mistaken for numbers.
 	str = str:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
 	-- Match: a digit, then any mix of digits and thousands separators, ending with a digit.

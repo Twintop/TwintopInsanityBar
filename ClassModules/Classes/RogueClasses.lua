@@ -303,17 +303,18 @@ function TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
 
-		{ variable = "$energy", description = L["RogueAssassinationBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyMax", description = L["RogueAssassinationBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
+		{ variable = "$energy", description = L["RogueAssassinationBarTextVariable_energy"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$energyMax", description = L["RogueAssassinationBarTextVariable_energyMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		
-		{ variable = "$comboPoints", description = L["RogueAssassinationBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["RogueAssassinationBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
+		{ variable = "$comboPoints", description = L["RogueAssassinationBarTextVariable_comboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = L["RogueAssassinationBarTextVariable_comboPointsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		--[[
 		-- Proc
@@ -337,7 +338,6 @@ end
 ---@field public ruthlessPrecision TRB.Classes.SpellBase
 ---@field public skullAndCrossbones TRB.Classes.SpellBase
 ---@field public trueBearing TRB.Classes.SpellBase
----@field public countTheOdds TRB.Classes.SpellBase
 ---@field public bladeRush TRB.Classes.SpellBase
 ---@field public keepItRolling TRB.Classes.SpellBase
 ---@field public floatLikeAButterfly TRB.Classes.SpellBase
@@ -467,10 +467,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     self.trueBearing = TRB.Classes.SpellBase:New({
         id = 193359,
     })
-    self.countTheOdds = TRB.Classes.SpellBase:New({
-        id = 381982,
-        duration = 5
-    })
     self.bladeRush = TRB.Classes.SpellBase:New({
         id = 271877,
         isTalent = true,
@@ -551,18 +547,19 @@ function TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#skullAndCrossbones", icon = spells.skullAndCrossbones.icon, description = spells.skullAndCrossbones.name, printInSettings = true },
 		{ variable = "#trueBearing", icon = spells.trueBearing.icon, description = spells.trueBearing.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
 
 
-		{ variable = "$energy", description = L["RogueOutlawBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyMax", description = L["RogueOutlawBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
+		{ variable = "$energy", description = L["RogueOutlawBarTextVariable_energy"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$energyMax", description = L["RogueOutlawBarTextVariable_energyMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		
-		{ variable = "$comboPoints", description = L["RogueOutlawBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["RogueOutlawBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
+		{ variable = "$comboPoints", description = L["RogueOutlawBarTextVariable_comboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = L["RogueOutlawBarTextVariable_comboPointsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 	})
 end
 
@@ -766,18 +763,19 @@ function TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#sod", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = true },
 		{ variable = "#symbolsOfDeath", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = false },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
 
 
-		{ variable = "$energy", description = L["RogueSubtletyBarTextVariable_energy"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$energyMax", description = L["RogueSubtletyBarTextVariable_energyMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = "", printInSettings = false, color = false },
+		{ variable = "$energy", description = L["RogueSubtletyBarTextVariable_energy"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$energyMax", description = L["RogueSubtletyBarTextVariable_energyMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		
-		{ variable = "$comboPoints", description = L["RogueSubtletyBarTextVariable_comboPoints"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = L["RogueSubtletyBarTextVariable_comboPointsMax"], printInSettings = true, color = false },
+		{ variable = "$comboPoints", description = L["RogueSubtletyBarTextVariable_comboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = L["RogueSubtletyBarTextVariable_comboPointsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 	})
 end
 
@@ -870,3 +868,49 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["rogue_assassination"] = TRB.Classes.Rogue.AssassinationSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["rogue_outlaw"] = TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["rogue_subtlety"] = TRB.Classes.Rogue.SubtletySpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	local function ComboPointSource()
+		return {
+			id = "comboPoints",
+			label = L["RogueAudioCueSourceComboPoints"],
+			description = L["RogueAudioCueSourceComboPointsDescription"],
+			sliderLabel = L["RogueComboPointThresholdSliderTitle"],
+			defaultName = L["RogueAudioCueComboPointDefaultName"],
+			min = 0,
+			max = 7,
+			step = 1,
+			decimals = 0,
+			compare = "atLeast",
+			requiresCombat = true,
+			legacyIds = { "comboPointThreshold1", "comboPointThreshold2" },
+			defaultCues = {
+				{
+					id = "comboPointThreshold1",
+					name = L["RogueAudioComboPointThreshold1"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 3,
+				},
+				{
+					id = "comboPointThreshold2",
+					name = L["RogueAudioComboPointThreshold2"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 5,
+				},
+			},
+		}
+	end
+
+	for _, specName in ipairs({ "assassination", "outlaw", "subtlety" }) do
+		TRB.Functions.AudioCues:Register("rogue_" .. specName, {
+			counters = { ComboPointSource() },
+		})
+	end
+end

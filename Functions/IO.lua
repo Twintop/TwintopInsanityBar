@@ -34,10 +34,13 @@ local CUSTOM_BAR_EXPORT_SPECS = {
 		[3] = { "mana", "utility" },
 	},
 	[6] = {
-		[1] = { "boneShield" },
+		[1] = { "boneShield", "coagulatingBlood" },
 	},
 	[7] = {
 		[1] = { "mana" },
+	},
+	[8] = {
+		[3] = { "shatter" },
 	},
 	[10] = {
 		[1] = { "stagger" },
@@ -580,6 +583,10 @@ local function HandleImport(input)
 	-- forceResync=true because the import may have changed relativeTo/xPos/yPos/fullWidth
 	-- without updating the corresponding anchor blocks.
 	TRB.Functions.Settings:MigrateBarAnchors(TRB.Data.settings, true)
+
+	-- An export string produced before the audio cue refactor carries flat, unstamped cue entries.
+	-- Merging them in leaves them without kind/source, so re-normalize the merged result.
+	TRB.Functions.Settings:NormalizeAllAudioCues(TRB.Data.settings)
 
 	return 1
 end

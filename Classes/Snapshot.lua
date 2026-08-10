@@ -148,7 +148,6 @@ end
 ---@field public remaining number
 ---@field public endTimeLeeway number
 ---@field public applications integer
----@field public secretRemaining number? # When the live aura's remaining duration is a secret value, the latest secret remaining number captured at the most recent UNIT_AURA refresh. Used by `GetRemainingTime` (when `endTime` is nil) so display formatters such as `TimerPrecision` (which routes through `string.format`) can still render it. Callers MUST treat this value as opaque -- no arithmetic or comparisons.
 ---@field public customPropertyDefinitions TRB.Classes.BuffCustomProperty[]
 ---@field public customProperties table
 ---@field public alwaysSimple boolean?
@@ -160,7 +159,6 @@ end
 ---@field public ticks number
 ---@field public resource number
 ---@field public isCustom boolean
----@field public updateFromSecret boolean
 ---@field public parent TRB.Classes.Snapshot
 ---@field private refreshRequested boolean
 ---@field private refreshEmbargo number?
@@ -262,11 +260,9 @@ function TRB.Classes.SnapshotBuff:Reset(includeAttributes, force)
 	self.ticks = 0
 	self.resource = 0
 	self.isCustom = false
-	self.updateFromSecret = false
 	self.refreshRequested = false
 	self.lastRefreshGetTime = 0
 	self.previousRemaining = 0
-	self.secretRemaining = nil
 	-- pauseMaxDuration is intentionally NOT cleared here; it's a talent-level configuration
 	-- set/cleared exclusively by SetPauseMaxDuration(). Reset() only clears per-instance state.
 	self.pauseElapsedTime = 0
@@ -415,32 +411,6 @@ function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway, force
         return self.remaining
 	end
 
-	-- Secret-mode timer: when the live DurationObject reports secret values,
-	-- `RefreshWithSecretAuraData` clears `endTime` and flags secret-mode by setting
-	-- `secretRemaining`. Each call must re-fetch a fresh `GetRemainingDuration()`
-	-- from the live DurationObject -- the cached value would be stale (the secret
-	-- remaining captured at SHOW time, equal to the initial total). We cannot do
-	-- arithmetic / comparisons on the secret, but `string.format` (used by
-	-- `TimerPrecision`) is allowed on secrets and the resulting secret string
-	-- still flows through `FontString:SetText` for display.
-	-- `isActive` is driven by the event-driven path (e.g. SHOW/HIDE handlers).
-	if self.endTime == nil and self.secretRemaining ~= nil and self.auraInstanceId ~= nil then
-		local liveDurationObject = C_UnitAuras.GetAuraDuration("player", self.auraInstanceId)
-		if liveDurationObject ~= nil then
-			local liveRemaining = liveDurationObject:GetRemainingDuration()
-			if liveRemaining ~= nil then
-				self.secretRemaining = liveRemaining
-				self.remaining = liveRemaining
-				self.lastRefreshGetTime = currentTime
-				return liveRemaining
-			end
-		end
-		-- Fallback: stale cached secret remaining (better than nothing)
-		self.remaining = self.secretRemaining
-		self.lastRefreshGetTime = currentTime
-		return self.secretRemaining
-	end
-
 	if useLeeway == nil then
 		useLeeway = false
 	end
@@ -503,13 +473,11 @@ end
 ---@param startTime number? # When did this buff begin. Defaults to GetTime()
 ---@param hasStacks boolean? # Should the buff be marked as having stacks
 ---@param stacks integer? # Number of stacks to set when initializing
----@param updateFromSecret boolean? # Should the buff be flagged to update from secret AuraData on refresh
-function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStacks, stacks, updateFromSecret)
+function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStacks, stacks)
 	local startTime = startTime or GetTime()
 	self.duration = duration
 	self.endTime = startTime + duration
 	self.isCustom = true
-	self.updateFromSecret = updateFromSecret or false
 	if hasStacks then
 		self.applications = stacks or 1
 	else
@@ -632,8 +600,14 @@ end
 ---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
 ---@param aura AuraData # Data about the buff
 ---@return integer? # The SpellID of the buff, if found
+---@return boolean # True when the payload was secret and no state was written
 local function ParseBuffData(buff, aura)
 	if aura ~= nil then
+		-- Secret aura payload: leave existing event-driven state untouched
+---@diagnostic disable-next-line: param-type-mismatch
+		if issecrettable(aura) or issecretvalue(aura.expirationTime) or issecretvalue(aura.duration) or issecretvalue(aura.applications) or issecretvalue(aura.auraInstanceID) then
+			return nil, true
+		end
         if (buff.sometimesSimple or buff.alwaysSimple) and (aura.expirationTime <= 0 or aura.duration <= 0) then
             -- Make sure we have the most up-to-date remaining time before we set the buff to simple mode
             buff:GetRemainingTime()
@@ -651,17 +625,11 @@ local function ParseBuffData(buff, aura)
 		GetCustomProperties(buff, aura)
 
 		TRB.Functions.Aura:StoreBuffAuraInstanceId(buff)
-		return aura.spellId
+		return aura.spellId, false
 	else
 		buff:Reset()
+		return nil, false
 	end
-end
-
----Sets the auraInstanceId value for this buff.
----@param auraInstanceId integer
-function TRB.Classes.SnapshotBuff:SetAuraInstanceId(auraInstanceId)
-	self.auraInstanceId = auraInstanceId
-	TRB.Functions.Aura:StoreBuffAuraInstanceId(self)
 end
 
 ---Requests a refresh of the buff after the embargo has passed, if specified
@@ -678,7 +646,12 @@ function TRB.Classes.SnapshotBuff:RefreshWithAuraData(auraData)
 		return
 	end
 
-	ParseBuffData(self, auraData)
+	local _, isSecret = ParseBuffData(self, auraData)
+
+	-- Unreadable aura: keep whatever event-driven state we already had
+	if isSecret then
+		return
+	end
 
 	if self.currentlySimple then
 		self.isActive = true
@@ -689,61 +662,6 @@ function TRB.Classes.SnapshotBuff:RefreshWithAuraData(auraData)
 			self:GetRemainingTime()
 		else
 			self:Reset()
-		end
-	end
-end
-
----Refreshes the buff snapshot with already captured *secret* AuraData
----@param auraData AuraData
-function TRB.Classes.SnapshotBuff:RefreshWithSecretAuraData(auraData)
-	GetCustomProperties(self, auraData)
-	self.applications = auraData.applications
-
-	-- Pull live timing via the DurationObject API. `HasSecretValues()` is itself
-	-- non-secret, so it is safe to branch on; only when it returns false are the
-	-- numeric getters guaranteed to return regular (untainted) numbers we can do
-	-- Lua arithmetic / string formatting against. When the duration is secret, we
-	-- leave the existing InitializeCustom-based timer in place.
-	--
-	-- Opt-out: spells whose attributes set `disallowSecretTiming = true` (e.g.
-	-- Ignore Pain, where users have long-standing bar text expressions like
-	-- `{$ignorePainTime>0}[...]`) skip this entirely and keep their event-driven
-	-- timer, regardless of whether the live aura duration is secret.
-	local spell = self.parent and self.parent.spell
-	local disallowSecretTiming = spell and spell.attributes and spell.attributes.disallowSecretTiming == true
-	if disallowSecretTiming or self.auraInstanceId == nil then
-		return
-	end
-
-	local durationObject = C_UnitAuras.GetAuraDuration("player", self.auraInstanceId)
-	if durationObject == nil then
-		return
-	end
-
-	local remaining = durationObject:GetRemainingDuration()
-	if remaining == nil then
-		return
-	end
-
-	if durationObject:HasSecretValues() then
-		-- Secret mode: stash the secret remaining for display via string.format.
-		-- Clear endTime so GetRemainingTime takes the secret-mode branch and never
-		-- attempts arithmetic against this value. `duration` may also be secret;
-		-- it is allowed to assign as a value but should not be compared against.
-		self.endTime = nil
-		self.secretRemaining = remaining
-		local total = durationObject:GetTotalDuration()
-		if total ~= nil then
-			self.duration = total
-		end
-	else
-		-- Non-secret mode: standard timer. The DurationObject's GetRemainingDuration()
-		-- gives a live, decreasing value, so writing endTime each refresh is stable.
-		self.secretRemaining = nil
-		self.endTime = GetTime() + remaining
-		local total = durationObject:GetTotalDuration()
-		if total ~= nil then
-			self.duration = total
 		end
 	end
 end
@@ -780,10 +698,16 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 	if id ~= nil then
 		if eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH" or eventType == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
 			self.isActive = true
+			local _, isSecret
 			if unit == "player" then
-				ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
+				_, isSecret = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
 			else
-				ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+				_, isSecret = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+			end
+			-- Unreadable aura: no endTime to work from, so leave it flagged active and let the
+			-- combat log's SPELL_AURA_REMOVED clear it rather than expiring it immediately.
+			if isSecret then
+				return
 			end
 			if not simple and not self.currentlySimple then
 				self:GetRemainingTime()
@@ -807,11 +731,17 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 		elseif eventType == nil or eventType == "" then
 			local currentTime = currentTime or GetTime()
 			local foundId = nil
-			
+			local isSecret = false
+
 			if unit == "player" then
-				foundId = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
+				foundId, isSecret = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
 			else
-				foundId = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+				foundId, isSecret = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+			end
+
+			-- Unreadable aura: keep whatever event-driven state we already had
+			if isSecret then
+				return
 			end
 
 			if self.currentlySimple then

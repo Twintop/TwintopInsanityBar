@@ -611,6 +611,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		relativeToFrame[L["BoneShield10"]] = "BoneShield_10"
 		relativeToFrame[L["BoneShield11"]] = "BoneShield_11"
 		relativeToFrame[L["BoneShield12"]] = "BoneShield_12"
+		relativeToFrame[L["CoagulatingBloodBar"]] = "CoagulatingBloodBar"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["Rune1"],
@@ -631,6 +632,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			L["BoneShield10"],
 			L["BoneShield11"],
 			L["BoneShield12"],
+			L["CoagulatingBloodBar"],
 			L["HealthBar"],
 			L["Screen"],
 		}
@@ -720,6 +722,26 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		relativeToFrame[L["Icicle3"]] = "ComboPoint_3"
 		relativeToFrame[L["Icicle4"]] = "ComboPoint_4"
 		relativeToFrame[L["Icicle5"]] = "ComboPoint_5"
+		relativeToFrame[L["Shatter1"]] = "Shatter_1"
+		relativeToFrame[L["Shatter2"]] = "Shatter_2"
+		relativeToFrame[L["Shatter3"]] = "Shatter_3"
+		relativeToFrame[L["Shatter4"]] = "Shatter_4"
+		relativeToFrame[L["Shatter5"]] = "Shatter_5"
+		relativeToFrame[L["Shatter6"]] = "Shatter_6"
+		relativeToFrame[L["Shatter7"]] = "Shatter_7"
+		relativeToFrame[L["Shatter8"]] = "Shatter_8"
+		relativeToFrame[L["Shatter9"]] = "Shatter_9"
+		relativeToFrame[L["Shatter10"]] = "Shatter_10"
+		relativeToFrame[L["Shatter11"]] = "Shatter_11"
+		relativeToFrame[L["Shatter12"]] = "Shatter_12"
+		relativeToFrame[L["Shatter13"]] = "Shatter_13"
+		relativeToFrame[L["Shatter14"]] = "Shatter_14"
+		relativeToFrame[L["Shatter15"]] = "Shatter_15"
+		relativeToFrame[L["Shatter16"]] = "Shatter_16"
+		relativeToFrame[L["Shatter17"]] = "Shatter_17"
+		relativeToFrame[L["Shatter18"]] = "Shatter_18"
+		relativeToFrame[L["Shatter19"]] = "Shatter_19"
+		relativeToFrame[L["Shatter20"]] = "Shatter_20"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["Icicle1"],
@@ -727,6 +749,26 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			L["Icicle3"],
 			L["Icicle4"],
 			L["Icicle5"],
+			L["Shatter1"],
+			L["Shatter2"],
+			L["Shatter3"],
+			L["Shatter4"],
+			L["Shatter5"],
+			L["Shatter6"],
+			L["Shatter7"],
+			L["Shatter8"],
+			L["Shatter9"],
+			L["Shatter10"],
+			L["Shatter11"],
+			L["Shatter12"],
+			L["Shatter13"],
+			L["Shatter14"],
+			L["Shatter15"],
+			L["Shatter16"],
+			L["Shatter17"],
+			L["Shatter18"],
+			L["Shatter19"],
+			L["Shatter20"],
 			L["HealthBar"],
 			L["Screen"],
 		}
@@ -900,6 +942,19 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourceFocusCastbar"])
 	relativeToFrame[L["ResourceFocusCastbarIcon"]] = "FocusCastBarIcon"
 	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourceFocusCastbarIcon"])
+
+	-- Other Bars are all-spec too, so their frames are bar text anchor targets everywhere. GetOtherBarKeys
+	-- scopes the list, so the Hunter-only Feign Death bar is only offered to Hunter specs. The label is
+	-- the definition's already-localized displayName, never a key looked up from a variable.
+	local otherBarsRegistry = TRB.Classes.BarTypeRegistry:GetInstance()
+	for _, otherBarKey in ipairs(otherBarsRegistry:GetOtherBarKeys(classId)) do
+		local otherBarDef = otherBarsRegistry:Get(otherBarKey)
+		if otherBarDef ~= nil then
+			local anchorKey = otherBarKey:gsub("^%l", string.upper) .. "Bar"
+			relativeToFrame[otherBarDef.displayName] = anchorKey
+			table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), otherBarDef.displayName)
+		end
+	end
 
 	local containerAnchorOptions = TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
 	if #containerAnchorOptions > 0 then

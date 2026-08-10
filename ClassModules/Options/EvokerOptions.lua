@@ -397,15 +397,6 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			secondaryThreshold={
-				name = L["EssenceThresholdAudio"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 2
-				}
-			},
 			essenceBurst={
 				name = L["EvokerEssenceBurst"],
 				enabled=false,
@@ -601,21 +592,6 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			innervate={
-				name = L["Innervate"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			},
-			secondaryThreshold={
-				name = L["EssenceThresholdAudio"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 2
-				}
-			},
 			essenceBurst={
 				name = L["EvokerEssenceBurst"],
 				enabled=false,
@@ -925,15 +901,6 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
-			},
-			secondaryThreshold={
-				name = L["EssenceThresholdAudio"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"],
-				configuration = {
-					thresholdValue = 2
-				}
 			},
 			essenceBurst={
 				name = L["EvokerEssenceBurst"],
@@ -1272,40 +1239,6 @@ local function DevastationConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 13, 1, yCoord)
 end
 
-local function DevastationConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 13
-	local specId = 1
-	local spec = TRB.Data.settings.evoker.devastation
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.evoker_devastation
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-	
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "essenceBurst", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurst"], L["EvokerAudioCheckboxEssenceBurstTooltip"])
-	
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "secondaryThreshold", spec, classId, specId, yCoord, L["EvokerAudioCheckboxSecondaryThreshold"], L["EvokerAudioCheckboxSecondaryThresholdTooltip"])
-	
-	local title = string.format(L["SecondaryThresholdValueTitle"], L["ResourceEssence"])
-	controls.precisionSecondary = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 6, spec.audio["secondaryThreshold"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.precisionSecondary:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["secondaryThreshold"].configuration.thresholdValue = value
-	end)
-end
-
 local function DevastationConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1372,16 +1305,16 @@ local function DevastationConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_devastation = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DevastationConstructManaBarPanel },
-		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = DevastationConstructEssenceBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DevastationConstructHealthBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DevastationConstructManaBarPanel, visibilityKey = "primary" },
+		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = DevastationConstructEssenceBarPanel, visibilityKey = "secondary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DevastationConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = DevastationConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("evoker", "devastation", controls),
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = DevastationConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = DevastationConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = DevastationConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("evoker", "devastation", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = DevastationConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = DevastationConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) DevastationConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = DevastationConstructResetDefaultsPanel },
 	}, yCoord)
@@ -1702,41 +1635,6 @@ local function PreservationConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 13, 2, yCoord)
 end
 
-local function PreservationConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 13
-	local specId = 2
-	local spec = TRB.Data.settings.evoker.preservation
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.evoker_preservation
-	local yCoord = 5
-	local f = nil
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "essenceBurst", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurst"], L["EvokerAudioCheckboxEssenceBurstTooltip"])
-
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "secondaryThreshold", spec, classId, specId, yCoord, L["EvokerAudioCheckboxSecondaryThreshold"], L["EvokerAudioCheckboxSecondaryThresholdTooltip"])
-	
-	local title = string.format(L["SecondaryThresholdValueTitle"], L["ResourceEssence"])
-	controls.precisionSecondary = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 6, spec.audio["secondaryThreshold"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.precisionSecondary:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["secondaryThreshold"].configuration.thresholdValue = value
-	end)
-end
-
 local function PreservationConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -1803,16 +1701,16 @@ local function PreservationConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_preservation = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = PreservationConstructManaBarPanel },
-		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = PreservationConstructEssenceBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = PreservationConstructHealthBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = PreservationConstructManaBarPanel, visibilityKey = "primary" },
+		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = PreservationConstructEssenceBarPanel, visibilityKey = "secondary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = PreservationConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = PreservationConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("evoker", "preservation", controls),
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = PreservationConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = PreservationConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = PreservationConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("evoker", "preservation", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = PreservationConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = PreservationConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) PreservationConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = PreservationConstructResetDefaultsPanel },
 	}, yCoord)
@@ -2161,42 +2059,6 @@ local function AugmentationConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 13, 3, yCoord)
 end
 
-local function AugmentationConstructAudioAndTrackingPanel(parent)
-	if parent == nil then
-		return
-	end
-
-	local classId = 13
-	local specId = 3
-	local spec = TRB.Data.settings.evoker.augmentation
-
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	local controls = interfaceSettingsFrame.controls.evoker_augmentation
-	local yCoord = 5
-
-
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "essenceBurst", spec, classId, specId, yCoord, L["EvokerAudioCheckboxEssenceBurst"], L["EvokerAudioCheckboxEssenceBurstTooltip"])
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "ebonMightEnding", spec, classId, specId, yCoord, L["EvokerAugmentationAudioCheckboxEbonMightEnding"], L["EvokerAugmentationAudioCheckboxEbonMightEndingTooltip"])
-
-	local yCoord2 = yCoord - 20
-
-	yCoord = TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, "secondaryThreshold", spec, classId, specId, yCoord, L["EvokerAudioCheckboxSecondaryThreshold"], L["EvokerAudioCheckboxSecondaryThresholdTooltip"])
-	
-	local title = string.format(L["SecondaryThresholdValueTitle"], L["ResourceEssence"])
-	controls.precisionSecondary = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 6, spec.audio["secondaryThreshold"].configuration.thresholdValue, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord2)
-	controls.precisionSecondary:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.audio["secondaryThreshold"].configuration.thresholdValue = value
-	end)
-end
-
 local function AugmentationConstructBarTextDisplayPanel(parent, cache)
 	if parent == nil then
 		return
@@ -2263,17 +2125,17 @@ local function AugmentationConstructOptionsPanel(cache)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.evoker_augmentation = controls
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
-		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = AugmentationConstructManaBarPanel },
-		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = AugmentationConstructEssenceBarPanel },
-		{ key = "ebonMightBar", label = L["TabEbonMight"], width = oUi.tabWidth.medium, constructor = AugmentationConstructEbonMightBarPanel },
-		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = AugmentationConstructHealthBarPanel },
+		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = AugmentationConstructManaBarPanel, visibilityKey = "primary" },
+		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = AugmentationConstructEssenceBarPanel, visibilityKey = "secondary" },
+		{ key = "ebonMightBar", label = L["TabEbonMight"], width = oUi.tabWidth.medium, constructor = AugmentationConstructEbonMightBarPanel, visibilityKey = "ebonMight" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = AugmentationConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = AugmentationConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("evoker", "augmentation", controls),
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = AugmentationConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = AugmentationConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = AugmentationConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("evoker", "augmentation", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = AugmentationConstructFontAndTextPanel },
-		{ key = "audioTracking", label = L["TabAudioTracking"], width = oUi.tabWidth.large, constructor = AugmentationConstructAudioAndTrackingPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) AugmentationConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = AugmentationConstructResetDefaultsPanel },
 	}, yCoord)

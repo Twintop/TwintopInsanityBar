@@ -8,6 +8,9 @@ TRB.Functions.Color = {}
 -- Optionally cleared in ResetColorCaches() to bound memory.
 local rgbaCache = {}
 
+-- The player's class never changes, so its color is resolved once and reused.
+local playerClassColorHex = nil
+
 ---Converts a hexdecimal AARRGGBB string to separate numerical RGBA values, either out of 0-255 or 0.0 - 1.0
 ---@param s string # Hexdecimal string
 ---@param normalize boolean? # Should this be normalized to 0.0 - 1.0?
@@ -120,6 +123,27 @@ function TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
 	end
 
 	return _a .. _r .. _g .. _b
+end
+
+---Returns the player's class color as an AARRGGBB hexadecimal string, or nil when the class token is unavailable.
+---@return string? # AARRGGBB hexadecimal color string, or nil if the class color can't be resolved
+function TRB.Functions.Color:GetPlayerClassColor()
+	if playerClassColorHex ~= nil then
+		return playerClassColorHex
+	end
+
+	local _, classFilename = UnitClass("player")
+	if classFilename == nil then
+		return nil
+	end
+
+	local color = C_ClassColor.GetClassColor(classFilename)
+	if color == nil then
+		return nil
+	end
+
+	playerClassColorHex = self:ConvertColorDecimalToHex(color.r, color.g, color.b, 1)
+	return playerClassColorHex
 end
 
 ---Sets a frame's backdrop color, using a cache to skip redundant SetBackdropColor calls when the color hasn't changed

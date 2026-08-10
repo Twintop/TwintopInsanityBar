@@ -19,7 +19,9 @@ function TRB.Classes.Evoker.DevastationSpells:New()
     
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 359618,
-		isBuff = true
+		isBuff = true,
+		duration = 15,
+		maxStacks = 2
     })
 	
     -- Devastation Spec Talents
@@ -64,24 +66,26 @@ function TRB.Classes.Evoker.DevastationSpells.FillBarTextVariables(specCacheEntr
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#dragonrage", icon = spells.dragonrage.icon, description = spells.dragonrage.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["EvokerDevastationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["EvokerDevastationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["EvokerDevastationBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["EvokerDevastationBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["EvokerDevastationBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["EvokerDevastationBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		
-		{ variable = "$essence", description = L["EvokerDevastationBarTextVariable_essence"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$essenceRegenTime", description = L["EvokerDevastationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
-		{ variable = "$essenceMax", description = L["EvokerDevastationBarTextVariable_essenceMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$essence", description = L["EvokerDevastationBarTextVariable_essence"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$essenceRegenTime", description = L["EvokerDevastationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$essenceMax", description = L["EvokerDevastationBarTextVariable_essenceMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$dragonrageTime", description = L["EvokerDevastationBarTextVariable_dragonrageTime"], printInSettings = true, color = false },
 
-		{ variable = "$essenceBurstTime", description = L["EvokerDevastationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
-		{ variable = "$essenceBurstStacks", description = L["EvokerDevastationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
+		-- The activation overlay says the proc is up but carries no numbers; these render "??".
+		{ variable = "$essenceBurstTime", description = L["EvokerDevastationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$essenceBurstStacks", description = L["EvokerDevastationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 	})
 end
 
@@ -106,7 +110,9 @@ function TRB.Classes.Evoker.PreservationSpells:New()
     
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 369299,
-		isBuff = true
+		isBuff = true,
+		duration = 15,
+		maxStacks = 2
     })
 	
     --[[self.eruption = TRB.Classes.SpellBase:New({
@@ -136,23 +142,25 @@ function TRB.Classes.Evoker.PreservationSpells.FillBarTextVariables(specCacheEnt
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["EvokerPreservationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["EvokerPreservationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["EvokerPreservationBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["EvokerPreservationBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["EvokerPreservationBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["EvokerPreservationBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["EvokerPreservationBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["EvokerPreservationBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 					
-		{ variable = "$essence", description = L["EvokerPreservationBarTextVariable_essence"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$essenceRegenTime", description = L["EvokerPreservationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
-		{ variable = "$essenceMax", description = L["EvokerPreservationBarTextVariable_essenceMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$essence", description = L["EvokerPreservationBarTextVariable_essence"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$essenceRegenTime", description = L["EvokerPreservationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$essenceMax", description = L["EvokerPreservationBarTextVariable_essenceMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$essenceBurstTime", description = L["EvokerPreservationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
-		{ variable = "$essenceBurstStacks", description = L["EvokerPreservationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
+		-- The activation overlay says the proc is up but carries no numbers; these render "??".
+		{ variable = "$essenceBurstTime", description = L["EvokerPreservationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$essenceBurstStacks", description = L["EvokerPreservationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 	})
 end
 
@@ -183,7 +191,9 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
 
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 392268,
-		isBuff = true
+		isBuff = true,
+		duration = 15,
+		maxStacks = 2
     })
 
     self.ebonMight = TRB.Classes.SpellBase:New({
@@ -222,24 +232,26 @@ function TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables(specCacheEnt
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#ebonMight", icon = spells.ebonMight.icon, description = spells.ebonMight.name, printInSettings = true },
 	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
-		{ variable = "$mana", description = L["EvokerAugmentationBarTextVariable_mana"], printInSettings = true, color = false },
-		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["EvokerAugmentationBarTextVariable_manaPercent"], printInSettings = true, color = false },
-		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["EvokerAugmentationBarTextVariable_manaMax"], printInSettings = true, color = false },
-		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+		{ variable = "$mana", description = L["EvokerAugmentationBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["EvokerAugmentationBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["EvokerAugmentationBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		
-		{ variable = "$essence", description = L["EvokerAugmentationBarTextVariable_essence"], printInSettings = true, color = false },
-		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$essenceRegenTime", description = L["EvokerAugmentationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
-		{ variable = "$essenceMax", description = L["EvokerAugmentationBarTextVariable_essenceMax"], printInSettings = true, color = false },
-		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+		{ variable = "$essence", description = L["EvokerAugmentationBarTextVariable_essence"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$essenceRegenTime", description = L["EvokerAugmentationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$essenceMax", description = L["EvokerAugmentationBarTextVariable_essenceMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$ebonMightTime", description = L["EvokerAugmentationBarTextVariable_ebonMightTime"], printInSettings = true, color = false },
+		{ variable = "$ebonMightTime", description = L["EvokerAugmentationBarTextVariable_ebonMightTime"], printInSettings = true, color = false, category = varCategory.RESOURCE },
 
-		{ variable = "$essenceBurstTime", description = L["EvokerAugmentationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false },
-		{ variable = "$essenceBurstStacks", description = L["EvokerAugmentationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false },
+		-- The activation overlay says the proc is up but carries no numbers; these render "??".
+		{ variable = "$essenceBurstTime", description = L["EvokerAugmentationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$essenceBurstStacks", description = L["EvokerAugmentationBarTextVariable_essenceBurstStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 	})
 end
 
@@ -350,3 +362,66 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["evoker_devastation"] = TRB.Classes.Evoker.DevastationSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["evoker_preservation"] = TRB.Classes.Evoker.PreservationSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["evoker_augmentation"] = TRB.Classes.Evoker.AugmentationSpells.GetCastbarTickProfiles
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	local function EssenceSource()
+		return {
+			-- Essence cues fire as Essence runs low, so the lowest threshold is the urgent one.
+			id = "essence",
+			label = L["EvokerAudioCueSourceEssence"],
+			description = L["EvokerAudioCueSourceEssenceDescription"],
+			sliderLabel = string.format(L["SecondaryThresholdValueTitle"], L["ResourceEssence"]),
+			defaultName = L["EvokerAudioCueEssenceDefaultName"],
+			min = 0,
+			max = 6,
+			step = 1,
+			decimals = 0,
+			compare = "atMost",
+			requiresCombat = false,
+			legacyIds = { "secondaryThreshold" },
+			defaultCues = {
+				{
+					id = "secondaryThreshold",
+					name = L["EssenceThresholdAudio"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 2,
+				},
+			},
+		}
+	end
+
+	local essenceBurst = {
+		id = "essenceBurst",
+		label = L["EvokerEssenceBurst"],
+		trigger = L["EvokerAudioTriggerEssenceBurst"],
+		tooltip = L["EvokerAudioCheckboxEssenceBurstTooltip"],
+	}
+
+	TRB.Functions.AudioCues:Register("evoker_devastation", {
+		builtIns = { essenceBurst },
+		counters = { EssenceSource() },
+	})
+
+	TRB.Functions.AudioCues:Register("evoker_preservation", {
+		builtIns = { essenceBurst },
+		counters = { EssenceSource() },
+	})
+
+	TRB.Functions.AudioCues:Register("evoker_augmentation", {
+		builtIns = {
+			essenceBurst,
+			{
+				id = "ebonMightEnding",
+				label = L["EvokerAugmentationAudioEbonMightEnding"],
+				trigger = L["EvokerAugmentationAudioTriggerEbonMightEnding"],
+				tooltip = L["EvokerAugmentationAudioCheckboxEbonMightEndingTooltip"],
+			},
+		},
+		counters = { EssenceSource() },
+	})
+end

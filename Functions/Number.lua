@@ -26,6 +26,14 @@ function TRB.Functions.Number:IsInteger(number)
 	return not (number == "" or number:find("%D"))  -- str:match("%D") also works
 end
 
+---Determines if the parameter is a number that is safe to compare or use as a table key.
+---Secret numbers are neither, so they are rejected before `type()` is consulted.
+---@param value any
+---@return boolean
+function TRB.Functions.Number:IsPlainNumber(value)
+	return not issecretvalue(value) and type(value) == "number"
+end
+
 local math_floor = math.floor
 
 ---Rounds the supplied number to a number of decimal places.

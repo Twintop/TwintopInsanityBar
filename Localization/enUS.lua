@@ -269,7 +269,6 @@ L["AudioOptionsHeader"] = "Audio Options"
 L["BarDisplayTextCustomizationHeader"] = "Bar Display Text Customization"
 L["IsBarEnabledForSpecTooltip"] = "Is Twintop's Resource Bar enabled for %s"
 L["TabFontText"] = "Font & Text"
-L["TabAudioTracking"] = "Audio & Tracking"
 L["TabBarText"] = "Bar Text"
 L["TabResetDefaults"] = "Reset Defaults"
 
@@ -843,7 +842,6 @@ L["RogueOutlawBarTextVariable_energyMax"] = "Maximum Energy"
 L["RogueOutlawBarTextVariable_comboPoints"] = "Current Combo Points"
 L["RogueOutlawBarTextVariable_comboPointsMax"] = "Maximum Combo Points"
 L["RogueOutlawBarTextVariable_rtbCount"] = "Current number of Roll the Bones buffs active"
-L["RogueOutlawBarTextVariable_rtbTemporaryCount"] = "Current number of full Roll the Bones buffs active"
 L["RogueOutlawBarTextVariable_rtbAllCount"] = "Current number of Roll the Bones buffs active from all sources"
 L["RogueOutlawBarTextVariable_rtbBuffTime"] = "Time remaining on your Roll the Bones buffs (not from Count the Odds)"
 L["RogueOutlawBarTextVariable_rtbGoodBuff"] = "Are the current Roll the Bones buffs good or not? Good is defined as any two buffs, Broadside, or True Bearing. Logic variable only!"
@@ -1973,9 +1971,6 @@ L["BarVisibilityThresholdHealthValueValue"] = "Health Value"
 L["ShamanEnhancementMaelstromWeaponColorPickerFiveStack"] = "5 Stack Maelstrom Weapon"
 
 -- Holy Priest: Audio cues for Lightweaver max stacks, Holy Word charge-ready, Surge of Light Spiritwell restriction
--- REMOVED: L["PriestHolyAudioLightweaverMaxStacks"] - replaced by PriestHolyAudioLightweaverThreshold2
--- REMOVED: L["PriestHolyAudioCheckboxLightweaverMaxStacks"] - replaced by PriestHolyAudioCheckboxLightweaverThreshold2
--- REMOVED: L["PriestHolyAudioCheckboxLightweaverMaxStacksTooltip"] - replaced by PriestHolyAudioCheckboxLightweaverThreshold2Tooltip
 L["PriestHolyAudioHolyWordChastiseReady"] = "Holy Word: Chastise Ready"
 L["PriestHolyAudioCheckboxHolyWordChastiseReady"] = "Play audio cue when Holy Word: Chastise comes off cooldown"
 L["PriestHolyAudioCheckboxHolyWordChastiseReadyTooltip"] = "Play audio cue when Holy Word: Chastise comes off cooldown. Only plays during combat."
@@ -2574,7 +2569,6 @@ L["GradientDirectionHorizontalAbbrev"] = "H"
 L["GradientDirectionVerticalAbbrev"] = "V"
 
 -- Paladin Divine Purpose Indicator Colors
-L["PaladinBarTextVariable_divinePurposeActive"] = "Is Divine Purpose currently active? LOGIC VARIABLE ONLY!"
 L["PaladinIndicatorDivinePurpose"] = "Divine Purpose"
 L["PaladinIndicatorDivinePurposeTooltip"] = "Changes to this color when you have Divine Purpose."
 L["PaladinIndicatorDivinePurposeColor"] = "Divine Purpose is active"
@@ -2835,7 +2829,7 @@ L["BarTextDeleteActionTooltip"] = "Delete this bar text entry"
 L["BarTextVariablesColumnName"] = "Name"
 L["BarTextVariablesColumnNameTooltip"] = "Sort by variable name."
 L["BarTextVariablesColumnSecret"] = "S"
-L["BarTextVariablesColumnSecretTooltip"] = "Secret value: the rendered value comes from a protected WoW API value."
+-- REMOVED: L["BarTextVariablesColumnSecretTooltip"] - replaced by BarTextVariablesColumnSecretComparisonsTooltip
 L["BarTextVariablesColumnBoolean"] = "B"
 L["BarTextVariablesColumnBooleanTooltip"] = "Bare Boolean check: the variable can be used directly as a true/false condition."
 L["BarTextVariablesColumnType"] = "Type"
@@ -3214,6 +3208,8 @@ L["ShowBarVisibilityConditionIsDead"] = "Dead"
 L["CastBarIcon"] = "Cast Bar Icon"
 L["ResourceTargetCastbarIcon"] = "Target Cast Bar Icon"
 L["ResourceFocusCastbarIcon"] = "Focus Cast Bar Icon"
+
+-- Cast bar uninterruptible shield
 L["BarIconShieldHeader"] = "Uninterruptible Shield"
 L["BarIconShieldMode"] = "Shield Layer"
 L["BarIconShieldModeBehind"] = "Behind"
@@ -3240,3 +3236,265 @@ L["CheckboxUseGlobalTooltip_FocusCastbarShield"] = "When checked, the global Foc
 
 L["FontOutlineSlug"] = "Use Slug Rendering"
 L["FontOutlineTooltip"] = "Pick any combination of styles. None clears everything else, and Outline and Thick Outline replace one another."
+
+-- Druid Feral Midnight Season 2 set bonus (Halazzi's Fury)
+L["DruidFeralCheckboxHalazzisFury"] = "Halazzi's Fury (Set 2pc)"
+L["DruidFeralIndicatorHalazzisFuryTooltip"] = "Changes to this color while the Midnight Season 2 (2pc) damage buff (Halazzi's Fury) is active after Berserk / Avatar of Ashamane ends."
+L["DruidFeralIndicatorHalazzisFuryColor"] = "Halazzi's Fury buff is active"
+L["DruidFeralBarTextVariable_halazzisFuryTime"] = "Time remaining on the Halazzi's Fury (Set 2pc) damage buff"
+
+L["WarlockDemonologyBarTextVariable_demonicCoreMaxStacks"] = "Maximum number of Demonic Core stacks"
+
+-- Frost Mage Shatter bar
+L["ResourceMageShatter"] = "Shatter"
+L["TabShatter"] = "Shatter"
+L["ShatterContainer"] = "Shatter Container"
+L["Shatter1"] = "Shatter 1"
+L["Shatter2"] = "Shatter 2"
+L["Shatter3"] = "Shatter 3"
+L["Shatter4"] = "Shatter 4"
+L["Shatter5"] = "Shatter 5"
+L["Shatter6"] = "Shatter 6"
+L["Shatter7"] = "Shatter 7"
+L["Shatter8"] = "Shatter 8"
+L["Shatter9"] = "Shatter 9"
+L["Shatter10"] = "Shatter 10"
+L["Shatter11"] = "Shatter 11"
+L["Shatter12"] = "Shatter 12"
+L["Shatter13"] = "Shatter 13"
+L["Shatter14"] = "Shatter 14"
+L["Shatter15"] = "Shatter 15"
+L["Shatter16"] = "Shatter 16"
+L["Shatter17"] = "Shatter 17"
+L["Shatter18"] = "Shatter 18"
+L["Shatter19"] = "Shatter 19"
+L["Shatter20"] = "Shatter 20"
+L["MageFrostBarTextVariable_shatterStacks"] = "Number of stacks of Shatter on your current target"
+L["MageFrostBarTextVariable_shatterStacksMax"] = "Maximum number of Shatter stacks"
+L["MageFrostColorPickerShatterThreshold"] = "Shatter thresholds"
+-- Cooldown Manager global options
+L["CooldownManagerSettings"] = "Cooldown Manager"
+L["CooldownManagerGracePeriod"] = "Hidden Viewer Grace Period (seconds)"
+
+-- Frost Mage Shatter threshold now recolors every multiple of the threshold stack
+L["MageFrostCheckboxShatterThresholdMultiples"] = "Change Shatter color at Ice Lance stacks"
+L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fill color at every multiple of the maximum consumption of stacks by Ice Lance (5, 10, 15, 20)."
+
+-- Game version gate (addon build does not match the game client it is running on)
+L["VersionGateMismatchPopupText"] = "|cFFFF0000Twintop's Resource Bar did not load.|r\n\nThis is the |cFFFFFFFF%s|r build, which targets World of Warcraft |cFFFFFFFF%s|r, but you are playing on |cFFFFFFFF%s|r.\n\nPlease install the build of Twintop's Resource Bar that matches this game client."
+L["VersionGateMismatchChatMessage"] = "|cFFFF0000Twintop's Resource Bar did not load:|r this is the %s build, which targets World of Warcraft %s, but you are playing on %s. Please install the build that matches this game client."
+
+-- Bar text variables panel: value subgroups
+L["BarTextVariablesSectionStats"] = "Stats"
+L["BarTextVariablesSectionResources"] = "Resources"
+L["BarTextVariablesSectionAbilities"] = "Abilities"
+L["BarTextVariablesSectionOther"] = "Other"
+L["BarTextVariablesSectionCastBars"] = "Cast Bars"
+
+-- Per-bar tab visibility header (enable/disable shortcut for "Never Show")
+-- The spec-controlled states reuse L["Enabled"] / L["Disabled"]; these are the Global variants.
+L["BarTabEnabledGlobal"] = "Enabled (Global)"
+L["BarTabDisabledGlobal"] = "Disabled (Global)"
+L["BarTabEnabledCheckboxTooltip"] = "Uncheck to disable this bar. This is a shortcut for setting this bar's visibility to Never Show on the Visibility tab, where you can also choose exactly when the bar appears."
+L["BarTabVisibilityGlobalTooltip"] = "This bar's visibility is being controlled by Global Options, so it cannot be changed here. Open Global Settings to change it, or uncheck Use global settings on the Visibility tab to control it for this specialization only."
+L["BarTabVisibilityShowsPrefix"] = "Shows: %s"
+L["BarTabVisibilityNeverWarning"] = "No condition will ever show this bar"
+L["BarTabConfigureVisibility"] = "[Configure Visibility]"
+L["BarTabConfigureVisibilityTooltip"] = "Opens the Visibility tab and selects this bar, where you can choose exactly when it appears and when it is forced to hide."
+
+-- Cooldown Manager reliance badge (options panel) and its bar text variables column
+L["CdmBadgeLabel"] = "CDM"
+L["CdmBadgeHeader"] = "Needs the Cooldown Manager"
+L["CdmBadgeRequiredTooltip"] = "This setting is fed by Blizzard's Cooldown Manager. Add the ability it tracks to one of the Cooldown Manager's viewers, or there is no value to show and this will stay empty."
+L["BarTextVariablesColumnCdm"] = "C"
+L["BarTextVariablesColumnCdmTooltip"] = "Needs the Cooldown Manager: the value is read from Blizzard's Cooldown Manager and renders as ?? unless the ability it tracks is added to one of its viewers."
+L["BarTextVariablesBadgeCdm"] = "C"
+L["BarTextVariablesDescriptionCdm"] = "Needs the Cooldown Manager"
+L["BarTextVariablesCdmRequired"] = "Yes"
+L["BarTextVariablesCdmNone"] = "No"
+
+-- Warrior Fury Enrage (restored, now fed by the Cooldown Manager)
+L["WarriorFuryBarTextVariable_enrageTime"] = "Time remaining on Enrage"
+L["WarriorFuryCheckboxEnrage"] = "Enrage"
+L["WarriorFuryIndicatorEnrageTooltip"] = "Changes to this color when Enrage is active."
+L["WarriorFuryIndicatorEnrageColor"] = "Enrage is active"
+
+-- Bar text variables panel: secret values and comparison operators
+L["BarTextVariablesColumnSecretComparisonsTooltip"] = "Secret value: the rendered value comes from a protected WoW API value, so it cannot be used with comparison operators in bar text logic."
+L["BarTextVariablesDescriptionSecretNoComparisons"] = "Secret values cannot be used with comparison operators in bar text logic."
+
+-- Blood Death Knight Coagulating Blood bar
+L["ResourceCoagulatingBlood"] = "Coagulating Blood"
+L["TabCoagulatingBlood"] = "Coagulating Blood"
+L["CoagulatingBloodBar"] = "Coagulating Blood Bar"
+L["DeathKnightBarTextVariable_coagulatingBloodStacks"] = "Current number of Coagulating Blood stacks, where each stack is 1%. Read from Blizzard's Cooldown Manager; renders as ?? when Coagulating Blood is not added to one of its viewers."
+L["DeathKnightBarTextVariable_coagulatingBloodStacksMax"] = "Maximum number of Coagulating Blood stacks."
+
+-- Audio Cues tab (generic cue table, detail editor, and add/delete flow)
+L["TabAudioCues"] = "Audio Cues"
+L["AudioCuesHeader"] = "Audio Cues"
+L["AudioCueAdd"] = "Add New Audio Cue"
+L["AudioCueDelete"] = "Delete"
+L["AudioCueDeleteConfirmation"] = "Delete the audio cue \"%s\"?"
+L["AudioCueDeleteActionTooltip"] = "Delete this audio cue"
+L["AudioCueTableHeaderType"] = "Type"
+L["AudioCueTableHeaderTrigger"] = "Trigger"
+L["AudioCueTableHeaderSound"] = "Sound"
+L["AudioCueTypeBuiltIn"] = "Built-in"
+L["AudioCueTypeCustom"] = "Custom"
+L["AudioCueNameLabel"] = "Name"
+L["AudioCueSoundLabel"] = "Sound"
+L["AudioCueSoundNone"] = "None"
+L["AudioCueEnabledCheckbox"] = "Play this audio cue"
+L["AudioCueEnabledCheckboxTooltip"] = "When enabled, this cue plays its selected sound each time its trigger condition is met."
+L["AudioCueAddSourceTitle"] = "Trigger On"
+L["AudioCueTriggerAtLeast"] = "%s at or above %s"
+L["AudioCueTriggerExact"] = "%s exactly %s"
+
+-- Windwalker Monk audio cues
+L["MonkWindwalkerAudioDanceOfChiJiTooltip"] = "Play an audio cue when you gain a Dance of Chi-Ji proc, letting you use Spinning Crane Kick without spending Chi."
+L["MonkAudioCueSourceChi"] = "Chi"
+L["MonkAudioCueChiDefaultName"] = "Chi Threshold"
+
+-- Holy Priest Lightweaver audio cues
+L["PriestHolyAudioCueSourceLightweaver"] = "Lightweaver Stacks"
+L["PriestHolyAudioCueLightweaverDefaultName"] = "Lightweaver Threshold"
+
+-- Audio cue counter source labels and seed names for newly added cues
+L["AudioCueTriggerAtMost"] = "%s at or below %s"
+L["RogueAudioCueSourceComboPoints"] = "Combo Points"
+L["RogueAudioCueComboPointDefaultName"] = "Combo Point Threshold"
+L["DruidFeralAudioCueSourceComboPoints"] = "Combo Points"
+L["DruidFeralAudioCueComboPointDefaultName"] = "Combo Point Threshold"
+L["PaladinAudioCueSourceHolyPower"] = "Holy Power"
+L["PaladinAudioCueHolyPowerDefaultName"] = "Holy Power Threshold"
+L["WarlockAudioCueSourceSoulShards"] = "Soul Shards"
+L["WarlockAudioCueSoulShardDefaultName"] = "Soul Shard Threshold"
+L["MageAudioCueSourceArcaneCharges"] = "Arcane Charges"
+L["MageAudioCueArcaneChargeDefaultName"] = "Arcane Charge Threshold"
+L["MageAudioCueSourceIcicles"] = "Icicles"
+L["MageAudioCueIciclesDefaultName"] = "Icicles Threshold"
+L["EvokerAudioCueSourceEssence"] = "Essence"
+L["EvokerAudioCueEssenceDefaultName"] = "Essence Threshold"
+L["ShamanAudioCueSourceMaelstromWeapon"] = "Maelstrom Weapon Stacks"
+L["ShamanAudioCueMaelstromWeaponDefaultName"] = "Maelstrom Weapon Threshold"
+L["HunterSurvivalAudioCueSourceTots"] = "Tip of the Spear Stacks"
+L["HunterSurvivalAudioCueTotsDefaultName"] = "Tip of the Spear Threshold"
+
+-- Audio cue "also play on dropping to this value" toggle
+L["AudioCuePlayOnDropCheckbox"] = "Also play when dropping to this value"
+L["AudioCuePlayOnDropCheckboxTooltip"] = "By default this cue only plays as the value climbs to the threshold, then stays silent until the value falls back below it. With this enabled it also plays when spending brings the value back down to exactly the threshold."
+L["AudioCueTriggerAtLeastWithDrop"] = "%s at or above %s, or dropping to it"
+-- Audio cue detail pane: read-only trigger and description fields
+L["AudioCueTriggerLabel"] = "Trigger"
+L["AudioCueDescriptionLabel"] = "Description"
+
+-- Built-in audio cue triggers (one-line firing conditions shown in the cue table and detail pane)
+L["DruidBalanceAudioTriggerStarsurgeReady"] = "Starsurge becomes castable"
+L["DruidBalanceAudioTriggerStarfallReady"] = "Starfall becomes castable"
+L["DruidFeralAudioTriggerApexPredatorsCraving"] = "Apex Predator's Craving procs"
+L["EvokerAudioTriggerEssenceBurst"] = "Essence Burst procs"
+L["EvokerAugmentationAudioTriggerEbonMightEnding"] = "An extension cast will outlast Ebon Might"
+L["MonkWindwalkerAudioTriggerDanceOfChiJi"] = "Dance of Chi-Ji procs"
+L["PaladinAudioTriggerDivinePurpose"] = "Divine Purpose procs"
+L["PaladinHolyAudioTriggerInfusionOfLight"] = "Infusion of Light procs"
+L["PriestAudioTriggerSurgeOfLight"] = "Surge of Light procs"
+L["PriestHolyAudioTriggerBenediction"] = "Benediction procs"
+L["PriestHolyAudioTriggerLightweaverExpiring"] = "Lightweaver is about to expire"
+L["PriestHolyAudioTriggerHolyWordChastiseReady"] = "Holy Word: Chastise comes off cooldown"
+L["PriestHolyAudioTriggerHolyWordSerenityCharge1"] = "Holy Word: Serenity reaches 1 charge"
+L["PriestHolyAudioTriggerHolyWordSerenityCharge2"] = "Holy Word: Serenity reaches 2 charges"
+L["PriestHolyAudioTriggerHolyWordSanctifyCharge1"] = "Holy Word: Sanctify reaches 1 charge"
+L["PriestHolyAudioTriggerHolyWordSanctifyCharge2"] = "Holy Word: Sanctify reaches 2 charges"
+L["PriestShadowAudioTriggerMindDevourer"] = "Mind Devourer procs"
+L["PriestShadowAudioTriggerShadowWordMadness"] = "Shadow Word: Madness becomes castable"
+L["ShamanElementalAudioTriggerEarthShockReady"] = "Earth Shock becomes castable"
+L["WarlockAudioTriggerInfernalBolt"] = "Infernal Bolt procs"
+L["WarlockAudioTriggerRuination"] = "Ruination procs"
+L["WarlockAudioTriggerDemonicCore"] = "Demonic Core is gained"
+L["WarriorAudioTriggerViolentOutburst"] = "Violent Outburst procs"
+
+-- Audio cue counter source descriptions (shown on row hover and in the detail pane)
+L["DruidFeralAudioCueSourceComboPointsDescription"] = "Plays once when your Combo Points reach the value below while you are in combat, then stays silent until they fall back under it. Add as many of these as you like, each with its own sound."
+L["RogueAudioCueSourceComboPointsDescription"] = "Plays once when your Combo Points reach the value below while you are in combat, then stays silent until they fall back under it. Add as many of these as you like, each with its own sound."
+L["MonkAudioCueSourceChiDescription"] = "Plays once when your Chi reaches the value below while you are in combat, then stays silent until it falls back under it. Add as many of these as you like, each with its own sound."
+L["PaladinAudioCueSourceHolyPowerDescription"] = "Plays once when your Holy Power reaches the value below while you are in combat, then stays silent until it falls back under it. Add as many of these as you like, each with its own sound."
+L["WarlockAudioCueSourceSoulShardsDescription"] = "Plays once when your Soul Shards reach the value below while you are in combat, then stays silent until they fall back under it. Add as many of these as you like, each with its own sound."
+L["MageAudioCueSourceArcaneChargesDescription"] = "Plays once when your Arcane Charges reach the value below while you are in combat, then stays silent until they fall back under it. Add as many of these as you like, each with its own sound."
+L["MageAudioCueSourceIciclesDescription"] = "Plays once when your Icicles reach the value below while you are in combat, then stays silent until they fall back under it. Add as many of these as you like, each with its own sound."
+L["ShamanAudioCueSourceMaelstromWeaponDescription"] = "Plays once when your Maelstrom Weapon stacks reach the value below while you are in combat, then stays silent until they fall back under it. Add as many of these as you like, each with its own sound."
+L["HunterSurvivalAudioCueSourceTotsDescription"] = "Plays once when your Tip of the Spear stacks reach the value below while you are in combat, then stays silent until they fall back under it. Add as many of these as you like, each with its own sound."
+L["EvokerAudioCueSourceEssenceDescription"] = "Plays once when your available Essence drops to the value below or lower, then stays silent until it climbs back above it. Add as many of these as you like, each with its own sound."
+L["PriestHolyAudioCueSourceLightweaverDescription"] = "Plays whenever your Lightweaver stacks land on exactly the value below, from either direction. Add as many of these as you like, each with its own sound."
+
+-- Other Bars: bar display names
+L["ResourceGcd"] = "Global Cooldown"
+L["ResourceFatigue"] = "Fatigue"
+L["ResourceBreath"] = "Breath"
+-- REMOVED: L["ResourceDeathTimer"] - the Death mirror timer bar was retired
+L["ResourceFeignDeath"] = "Feign Death"
+
+-- Other Bars: tab + screen labels
+L["TabOtherBars"] = "Other Bars"
+L["OtherBarsGlobalOptionsHeader"] = "Global Other Bars Options"
+
+-- Other Bars: panel sections and options
+L["OtherBarsColorsHeader"] = "Colors"
+L["OtherBarsColorFill"] = "Bar"
+L["OtherBarsBehaviorHeader"] = "Behavior"
+L["GcdBarGrowInstead"] = "Grow instead of drain"
+L["GcdBarGrowInsteadTooltip"] = "Fills the bar up from empty as the global cooldown elapses, instead of draining a full bar down as it runs out."
+L["MirrorTimerDisableBlizzard"] = "Hide Blizzard's bar"
+L["MirrorTimerDisableBlizzardTooltip"] = "Hides the default Blizzard timer for this one while it is being shown here. Blizzard groups these under 'Duration Bars' in Edit Mode and offers no per-timer toggle, so only the timer this tab replaces is hidden -- the others are left alone."
+
+-- Other Bars: global settings
+L["CheckboxUseGlobalOtherBars"] = "Use global Other Bars settings"
+L["CheckboxUseGlobalTooltipOtherBars"] = "When checked, this section uses the settings from the global Other Bars screen instead of this specialization's own."
+L["OpenGlobalOtherBarsSettings"] = "Open Global Other Bars Settings"
+L["OpenGlobalOtherBarsSettingsTooltip"] = "Opens the global Other Bars options screen, where these settings are configured for every specialization at once."
+
+-- Other Bars: copy menu section labels
+L["CopyMenuSection_gcdDimensions"] = "Global Cooldown Bar - Dimensions"
+L["CopyMenuSection_gcdColors"] = "Global Cooldown Bar - Colors"
+L["CopyMenuSection_fatigueDimensions"] = "Fatigue Bar - Dimensions"
+L["CopyMenuSection_fatigueColors"] = "Fatigue Bar - Colors"
+L["CopyMenuSection_breathDimensions"] = "Breath Bar - Dimensions"
+L["CopyMenuSection_breathColors"] = "Breath Bar - Colors"
+-- REMOVED: L["CopyMenuSection_deathDimensions"] - the Death mirror timer bar was retired
+-- REMOVED: L["CopyMenuSection_deathColors"] - the Death mirror timer bar was retired
+L["CopyMenuSection_feignDeathDimensions"] = "Feign Death Bar - Dimensions"
+L["CopyMenuSection_feignDeathColors"] = "Feign Death Bar - Colors"
+
+-- Other Bars: visibility summary for bars whose only show condition is "the timer is running"
+L["ShowBarVisibilityWhenActive"] = "When active"
+
+-- Other Bars: show-condition group title for the "When Active" timer state
+L["ShowBarVisibilityGroupTimer"] = "Timer"
+
+-- Other Bars: Use Global tooltips for the shared dimensions rows (looked up by section key)
+L["CheckboxUseGlobalTooltip_GcdDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialization's own settings."
+L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialization's own settings."
+L["CheckboxUseGlobalTooltip_BreathDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialization's own settings."
+-- REMOVED: L["CheckboxUseGlobalTooltip_DeathDimensions"] - the Death mirror timer bar was retired
+
+-- Other Bars: bar text variables and the shared precision slider
+L["OtherBarsDurationPrecision"] = "Duration Decimal Precision"
+L["BarTextVariableGcdDuration"] = "Total length of the global cooldown currently running. Blank when no global cooldown is active."
+L["BarTextVariableGcdDurationRemaining"] = "Time left on the global cooldown currently running. Blank when no global cooldown is active."
+L["BarTextVariableFatigueDuration"] = "Total length of the Fatigue timer. Blank when you are not fatigued."
+L["BarTextVariableFatigueDurationRemaining"] = "Time left on the Fatigue timer. Blank when you are not fatigued."
+L["BarTextVariableBreathDuration"] = "Total length of the Breath timer. Blank when you are not underwater."
+L["BarTextVariableBreathDurationRemaining"] = "Time left on the Breath timer. Blank when you are not underwater."
+-- REMOVED: L["BarTextVariableDeathDuration"] - the Death mirror timer bar was retired
+-- REMOVED: L["BarTextVariableDeathDurationRemaining"] - the Death mirror timer bar was retired
+L["BarTextVariableFeignDeathDuration"] = "Total length of the Feign Death timer. Blank when you are not feigning death."
+L["BarTextVariableFeignDeathDurationRemaining"] = "Time left on the Feign Death timer. Blank when you are not feigning death."
+
+-- Health Bar: flat class color transition type
+L["HealthBarColorTypeClassColor"] = "Single (Class Color)"
+
+-- Global Options: what a Cooldown Manager fed bar text variable shows when the CDM has no value for it
+L["GlobalOptionsCdmUnknownDisplay"] = "Cooldown Manager value when unavailable"
+L["GlobalOptionsCdmUnknownDisplayNothing"] = "Nothing"
+L["GlobalOptionsCdmUnknownDisplayQuestionMarks"] = "??"
+L["GlobalOptionsCdmUnknownDisplayZero"] = "Zero (0, 0.0, 00:00, etc.)"

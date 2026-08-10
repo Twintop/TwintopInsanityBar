@@ -124,6 +124,42 @@ local function BuildEffectiveParentMap(forest)
 	return parentMap
 end
 
+---Builds a map from barKey to its depth in the current anchor forest.
+---Tree roots are depth 0; every step down an anchor chain adds 1.
+---@param forest table<string, table>
+---@return table<string, integer>
+local function BuildBarDepthMap(forest)
+	local depthMap = {}
+	local function traverse(node, depth)
+		depthMap[node.barKey] = depth
+		if node.children then
+			for _, child in ipairs(node.children) do
+				traverse(child, depth + 1)
+			end
+		end
+	end
+	for _, rootNode in pairs(forest) do
+		traverse(rootNode, 0)
+	end
+	return depthMap
+end
+
+---Resolves the frame level for a bar from its depth in the anchor forest, so that a bar always
+---layers above the bar it is anchored to. Depths are cached on barGroups by ApplyBarGroupsLayout.
+---@param barKey string # "primary", "secondary", "health", or a BarTypeRegistry key
+---@return integer
+function TRB.Functions.Bar:GetBarFrameLevel(barKey)
+	local frameLevels = TRB.Data.constants.frameLevels
+	local barGroups = TRB.Frames.barGroups
+	local depth = barGroups and barGroups.barDepths and barGroups.barDepths[barKey]
+	if depth == nil then
+		-- Appearance passes can run before the first layout pass has built the forest. Fall back to
+		-- the default anchor topology every bar ships with: anchored to primary, which is the root.
+		depth = (barKey == "primary") and 0 or 1
+	end
+	return frameLevels.bar + (depth * frameLevels.barDepthStride)
+end
+
 ---Computes the width of each Combo Point node
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@return number
@@ -674,6 +710,21 @@ local function EnsureTargetCastbarBarGroups(barGroups)
 	end
 end
 
+---Other Bars (the GCD bar and the Fatigue/Breath/Feign Death mirror timers) are all-spec bars not
+---created by any class's CreateForSpec; guarantee their groups exist wherever the castbar group is
+---ensured. Only bars the spec actually has settings for get a group -- Feign Death exists on Hunter
+---specs only, and a group with no settings would join the anchor forest as a zero-size node.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsureOtherBarGroups(settings, barGroups)
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.otherBarKeys) do
+		if barGroups[key] == nil and settings.bars ~= nil and settings.bars[key] ~= nil then
+			local frameName = "TwintopResourceBarFrame_" .. key:gsub("^%l", string.upper)
+			barGroups[key] = TRB.Classes.BarGroup:New(UIParent, frameName, 1, false)
+		end
+	end
+end
+
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
@@ -716,6 +767,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	-- ApplyCustomBarGroups* handle the castbar generically like any other registered custom bar.
 	EnsureCastbarBarGroup(barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
+	EnsureOtherBarGroups(settings, barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
@@ -765,9 +817,9 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- through ConstructBarGroups; guarantee the castbar group exists before the forest is built.
 	EnsureCastbarBarGroup(barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
+	EnsureOtherBarGroups(settings, barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
-	local frameLevels = TRB.Data.constants.frameLevels
 
 	-- ========================
 	-- DRUID SPECIAL CASE: Non-Feral Druids use Feral's combo point settings
@@ -836,6 +888,10 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, true)
 	local barKeyToRoot = BuildBarKeyToRootMap(forest)
 	local effectiveParentOf = BuildEffectiveParentMap(forest)
+	-- Anchor depth drives frame level, so recompute it here: this is the one place the anchor
+	-- topology changes. GetBarFrameLevel reads the cached map for every bar's level.
+---@diagnostic disable-next-line: inject-field, assign-type-mismatch
+	barGroups.barDepths = BuildBarDepthMap(forest)
 
 	-- Per-root data: wrappers, anchor settings, effectiveWidth/effectiveHeight
 	local rootMetadata = {}
@@ -1010,8 +1066,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			-- Set dimensions (outer dimensions including border)
 			primaryNode:SetDimensions(primaryWidth, primaryHeight, settings.bar.border)
 
-			-- Set frame level
-			primaryNode:SetFrameLevel(frameLevels.bar)
+			-- Set frame level. Container first: SetFrameLevel on a parent shifts its children by
+			-- the same delta, so levelling the node first would have it dragged off that level.
+			local primaryLevel = self:GetBarFrameLevel("primary")
+			primary.containerFrame:SetFrameLevel(primaryLevel)
+			primaryNode:SetFrameLevel(primaryLevel)
 
 			-- Apply fill direction from settings
 			primaryNode:SetFillDirection(settings.bar.fillDirection)
@@ -1433,7 +1492,6 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	wipe(TRB.Data.cache.colors.border)
 	wipe(TRB.Data.cache.colors.backdrop)
 
-	local frameLevels = TRB.Data.constants.frameLevels
 	local secondaryCastingSettings
 	local secondarySpendingSettings
 	local secondaryCastingTexture
@@ -1459,7 +1517,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			TRB.Functions.Color:ApplyFillColor(primaryNode, settings.colors.bar.base)
 			primaryNode:SetBorderColor(settings.colors.bar.border.color)
 			primaryNode:SetBackgroundColorFromString(settings.colors.bar.background.color)
-			primaryNode:SetFrameLevel(frameLevels.bar)
+			primaryNode:SetFrameLevel(self:GetBarFrameLevel("primary"))
 
 			-- Apply casting overlay appearance via named slot (if it exists)
 			local castingSlot = primaryNode:GetOverlaySlot("casting")
@@ -1619,7 +1677,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				node:SetBorderColor(effectiveSettings.colors.comboPoints.border.color)
 				node:SetBackgroundColorFromString(effectiveSettings.colors.comboPoints.background.color)
 				TRB.Functions.Color:ApplyFillColor(node, effectiveSettings.colors.comboPoints.base)
-				node:SetFrameLevel(frameLevels.comboPoint)
+				node:SetFrameLevel(self:GetBarFrameLevel("secondary"))
 			end
 		end
 	elseif barGroups.secondary and not hasComboPointSettings
@@ -1642,7 +1700,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				node:SetBorderColor(whirlwindColors.border.color)
 				node:SetBackgroundColorFromString(whirlwindColors.background.color)
 				TRB.Functions.Color:ApplyFillColor(node, whirlwindColors.nodeColors.charge1)
-				node:SetFrameLevel(frameLevels.comboPoint)
+				node:SetFrameLevel(self:GetBarFrameLevel("secondary"))
 			end
 		end
 	end
@@ -1660,7 +1718,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			healthNode:SetBorderColor(settings.colors.healthBar.border.color)
 			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background.color)
 			healthNode:SetColor(settings.colors.healthBar.bar)
-			healthNode:SetFrameLevel(frameLevels.comboPoint)
+			healthNode:SetFrameLevel(self:GetBarFrameLevel("health"))
 
 			-- Apply absorb overlay appearance via named slot (if it exists)
 			local absorbSlot = healthNode:GetOverlaySlot("absorb")
@@ -2788,6 +2846,11 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 			if not TRB.Functions.TargetCastbar:IsEnabled(displayBar and displayBar[barKey]) then
 				return false
 			end
+		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
+			-- Other Bars (GCD + mirror timers) follow the same rule as the cast bars above.
+			if not TRB.Functions.OtherBars:IsEnabled(displayBar and displayBar[barKey]) then
+				return false
+			end
 		end
 	end
 
@@ -2847,10 +2910,10 @@ end
 ---@return boolean
 function TRB.Functions.Bar:IsBarVisible(settings, barKey, includeHidden)
 	if includeHidden then return true end
-	-- Castbar (and the target/focus cast bars) have runtime-driven visibility (Functions/Castbar,
-	-- Functions/TargetCastbar); at layout they always count as visible so the container is never
-	-- collapsed and layout space stays reserved.
-	if barKey == "castbar" or barKey == "targetCastbar" or barKey == "focusCastbar" then return true end
+	-- Self-driven bars (the cast bars, the GCD bar and the mirror timers) have runtime-driven visibility;
+	-- at layout they always count as visible so the container is never collapsed and layout space stays
+	-- reserved.
+	if TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then return true end
 	-- A secondary bar with 0 resource nodes is never visible (e.g., all Holy Word enables unchecked)
 	if barKey == "secondary" and (TRB.Data.character.maxResource2 or 0) == 0 then
 		return false
@@ -3358,6 +3421,7 @@ end
 
 ---Configuration for constructing an anchored bar group
 ---@class TRB.Classes.AnchoredBarGroupConfig
+---@field public barKey string # The bar's key in barGroups ("secondary", "health", or a BarTypeRegistry key). Used to resolve the bar's frame level from its anchor depth.
 ---@field public settingsKey string? # Key to read from settings (e.g., "comboPoints", "healthBar"). Ignored if settingsTable is provided.
 ---@field public settingsTable table? # Direct settings table to use instead of looking up via settingsKey
 ---@field public colorsKey string? # Key to read from settings.colors (e.g., "comboPoints", "healthBar"). Ignored if colorsTable is provided.
@@ -3399,7 +3463,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	local effectiveWidth = (barGroups and barGroups.effectiveWidth) or settings.bar.width
 
 	local strata = TRB.Data.settings.core.strata.level
-	local frameLevels = TRB.Data.constants.frameLevels
+	local frameLevel = self:GetBarFrameLevel(config.barKey)
 
 	-- Determine node count
 	-- Priority: 1) config.nodeCount (explicit), 2) lastRebuildNodeCount (from RebuildNodes, respects compressed view), 3) maxResource2
@@ -3560,7 +3624,9 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 	else
 		targetGroup.containerFrame:SetPoint(attachPoint, anchorContainer, anchorPoint, xPos, yPos)
 	end
-	targetGroup.containerFrame:SetFrameLevel(frameLevels.comboPoint)
+	-- Container first: SetFrameLevel on a parent shifts its children by the same delta, so the
+	-- nodes below have to be levelled after their container, not before.
+	targetGroup.containerFrame:SetFrameLevel(frameLevel)
 
 	-- Apply layout or size directly based on config
 	if config.useApplyLayout then
@@ -3637,7 +3703,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		if singleNode then
 			singleNode:SetDimensions(nodeWidth, nodeHeight, groupBorder)
 			singleNode:SetFillDirection(groupSettings.fillDirection)
-			singleNode:SetFrameLevel(frameLevels.comboPoint)
+			singleNode:SetFrameLevel(frameLevel)
 
 			-- Position node within container
 			local nodeFrame = singleNode:GetFrame()
@@ -3731,7 +3797,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 						end
 					end
 
-					node:SetFrameLevel(frameLevels.comboPoint)
+					node:SetFrameLevel(frameLevel)
 
 					-- Handle color values that may be strings or tables with .color property
 					local borderColor = colorSettings[config.colors.border]
@@ -3802,6 +3868,7 @@ function TRB.Functions.Bar:ConstructSecondaryBarGroup(settings, primaryGroup, se
 
 	---@type TRB.Classes.AnchoredBarGroupConfig
 	local config = {
+		barKey = "secondary",
 		settingsKey = "comboPoints",
 		colorsKey = "comboPoints",
 		nodeCount = nil, -- Dynamic based on maxResource2
@@ -3835,6 +3902,7 @@ end
 function TRB.Functions.Bar:ConstructHealthBarGroup(settings, primaryGroup, healthGroup, applyAppearance)
 	---@type TRB.Classes.AnchoredBarGroupConfig
 	local config = {
+		barKey = "health",
 		settingsKey = "healthBar",
 		colorsKey = "healthBar",
 		nodeCount = 1, -- Health bar always has 1 node
@@ -3942,6 +4010,7 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 
 	---@type TRB.Classes.AnchoredBarGroupConfig
 	local config = {
+		barKey = barKey,
 		settingsTable = effectiveSettings,
 		colorsTable = colorSettings,
 		nodeCount = effectiveNodeCount,
@@ -3975,7 +4044,7 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 	-- so always construct it hidden outside Edit Mode. IsBarVisible special-cases the castbar to true
 	-- (runtime-driven visibility) so barIsVisible stays true and its layout space is still reserved
 	-- normally below, keeping anchored bars stable whether or not a cast is currently in progress.
-	if (barKey == "castbar" or barKey == "targetCastbar" or barKey == "focusCastbar") and not inEditMode then
+	if TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) and not inEditMode then
 		shouldInitiallyShow = false
 	end
 	config.shouldInitiallyShow = shouldInitiallyShow
@@ -4004,6 +4073,8 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 			disabled = not TRB.Functions.Castbar:IsEnabled(visibility)
 		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
 			disabled = not TRB.Functions.TargetCastbar:IsEnabled(visibility)
+		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
+			disabled = not TRB.Functions.OtherBars:IsEnabled(visibility)
 		end
 		if disabled then
 			barGroup.containerFrame:SetHeight(0.001)
@@ -4084,8 +4155,7 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 	
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local allBarTypes = registry:GetAll()
-	local frameLevels = TRB.Data.constants.frameLevels
-	
+
 	for key, barTypeDef in pairs(allBarTypes) do
 		local barGroup = barGroups[key]
 		local barSettings = settings.bars and settings.bars[key]
@@ -4153,7 +4223,7 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 						TRB.Functions.Color:ApplyFillColor(node, barColorEntry)
 					end
 
-					node:SetFrameLevel(frameLevels.comboPoint)
+					node:SetFrameLevel(self:GetBarFrameLevel(key))
 				end
 			end
 		end
@@ -4284,6 +4354,20 @@ function TRB.Functions.Bar:SetBarNodeTimerDuration(settings, key, node, duration
 	TRB.Data.cache.values.bar[key].maxResource = nil
 
 	node:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
+end
+
+---Applies a custom bar's opt-in maximum value override, clamped to the bar's true maximum.
+---Mirrors the primary bar's `settings.maxResource` behaviour, scoped to `settings.bars[barKey]`.
+---@param barSettings TRB.Classes.Settings.SecondaryBar? # The bar's entry in `settings.bars`
+---@param defaultMax number # The bar's true maximum when no override is enabled
+---@return number
+function TRB.Functions.Bar:GetCustomBarMaxValue(barSettings, defaultMax)
+	local override = barSettings ~= nil and barSettings.maxResource or nil
+	if override ~= nil and override.enabled == true and type(override.value) == "number" and override.value > 0 then
+		return math.min(override.value, defaultMax)
+	end
+
+	return defaultMax
 end
 
 ---Sets the primary value on a BarNode
