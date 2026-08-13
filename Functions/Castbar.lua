@@ -31,12 +31,14 @@ local fadeOutStart = nil
 -- percent short and fade from there. On a natural finish we keep advancing the fill to done across the
 -- fade instead. { from, to, remaining }; nil when no completion is animating. See CaptureCompletion.
 local fillComplete = nil
--- Whether the OnShow re-assert hook has been installed on PlayerCastingBarFrame.
+-- Whether the re-assert hooks (OnShow, SetParent) have been installed on PlayerCastingBarFrame.
 local blizzardCastbarHookInstalled = false
 -- Permanently-hidden holder frame the Blizzard cast bar gets reparented under, and its original
 -- parent for restoring. Reparenting is taint-safe (C-side only, no Blizzard Lua runs), unlike SetUnit.
 local blizzardCastbarHolder = nil
 local blizzardCastbarOriginalParent = nil
+-- Set while we drive SetParent ourselves, so the SetParent hook ignores our own calls.
+local blizzardCastbarReparenting = false
 
 -- Bulk crafting: the queued craft count (numCasts, argument 2 of every C_TradeSkillUI craft call) is
 -- captured here and consumed by the next tradeskill UNIT_SPELLCAST_START. Timestamped so a queue whose
@@ -129,12 +131,17 @@ local function IsBlizzardCastbarExternallyManaged()
 		return true
 	end
 	local parent = PlayerCastingBarFrame:GetParent()
-	return parent ~= nil and parent ~= blizzardCastbarHolder and not parent:IsVisible()
+	if parent == nil or parent == blizzardCastbarHolder then
+		return false
+	end
+	-- A Blizzard parent is legitimately hidden at times (vehicle, Edit Mode relayout, early login), so only an
+	-- anonymous hidden parent -- what another addon's holder frame looks like -- counts as foreign ownership.
+	return parent:GetName() == nil and not parent:IsVisible()
 end
 
 ---Hides or restores the default Blizzard cast bar per the active spec's settings: hidden while
 ---`bars.castbar.disableBlizzardCastbar` is set and the addon castbar is enabled (see IsEnabled).
----Checked on load/spec/talent changes, option toggles, and the Blizzard bar's own OnShow.
+---Checked on load/spec/talent changes, option toggles, and the Blizzard bar's own OnShow/SetParent.
 ---@param settings table? # Composed spec settings to evaluate; defaults to the active display settings (pass explicitly during spec activation, before the composite key is stamped)
 function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
 	if PlayerCastingBarFrame == nil then
@@ -162,16 +169,29 @@ function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
 			blizzardCastbarHolder:Hide()
 		end
 		blizzardCastbarOriginalParent = PlayerCastingBarFrame:GetParent()
+		blizzardCastbarReparenting = true
 		PlayerCastingBarFrame:SetParent(blizzardCastbarHolder)
-		-- Catch future re-parents: re-evaluate whenever the Blizzard bar becomes visible again.
+		blizzardCastbarReparenting = false
 		if not blizzardCastbarHookInstalled then
 			blizzardCastbarHookInstalled = true
+			-- Backstop for a bar that becomes visible without a re-parent.
 			PlayerCastingBarFrame:HookScript("OnShow", function()
+				TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
+			end)
+			-- Blizzard re-parents the bar back on its own (Edit Mode relayout, player-frame re-attach), which
+			-- reveals it until something re-hides it. Re-park in the same call, before it can render a frame.
+			hooksecurefunc(PlayerCastingBarFrame, "SetParent", function()
+				if blizzardCastbarReparenting or blizzardCastbarHolder == nil
+					or PlayerCastingBarFrame:GetParent() == blizzardCastbarHolder then
+					return
+				end
 				TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility()
 			end)
 		end
 	else
+		blizzardCastbarReparenting = true
 		PlayerCastingBarFrame:SetParent(blizzardCastbarOriginalParent or UIParent)
+		blizzardCastbarReparenting = false
 	end
 end
 
