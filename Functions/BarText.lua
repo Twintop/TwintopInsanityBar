@@ -2230,6 +2230,22 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	end
 end
 
+---Runs the shared visibility + bar text pipeline now instead of on the next 20Hz tick, for self-driven
+---bars that go on screen mid-tick. Marking lookup dirty forces the render past the early-out.
+function TRB.Functions.BarText:RenderNow()
+	if not TRB.Data.specSupported or TRB.Functions.Bar:IsRenderTransitionActive() then
+		return
+	end
+	local specCache = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
+	local settings = specCache and specCache.settings
+	if settings == nil then
+		return
+	end
+	TRB.Functions.Bar:HideResourceBar()
+	self:MarkLookupDirty()
+	self:UpdateResourceBarText(settings, true)
+end
+
 ---Repositions an existing bar text frame without rebuilding all bar text frames.
 ---@param entryIndex integer
 ---@param classId integer?

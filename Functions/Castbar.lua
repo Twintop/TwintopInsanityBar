@@ -1233,11 +1233,14 @@ function TRB.Functions.Castbar:BeginRender()
 	-- Mark visibility dirty so the next ProcessBars pass re-evaluates and (via its castbar-active check)
 	-- keeps isTracking true — that's what makes the shared, class-driven UpdateResourceBarText keep
 	-- rendering this castbar's anchored bar text for the duration of the cast. Bar text is NOT rendered
-	-- here or from the per-frame updater; it flows through the single existing path (no double updates).
+	-- from the per-frame updater; it flows through that single existing path (no double updates).
 	TRB.Functions.BarVisibility:MarkDirty()
 
 	isRunning = true
 	castbarFrame:Show()
+
+	-- Casts start mid-tick; render that path now so the text lands with the bar, not a tick later.
+	TRB.Functions.BarText:RenderNow()
 end
 
 ---Ends the castbar render, hiding instantly and clearing overlays. Used for disable (Never Show) and

@@ -803,6 +803,8 @@ local function BeginRender(groupKey, model)
 	end
 	TRB.Functions.BarVisibility:MarkDirty()
 	SyncUpdater()
+	-- Casts start mid-tick; render that path now so the text lands with the bar, not a tick later.
+	TRB.Functions.BarText:RenderNow()
 end
 
 ---Begins the post-cast fade-out honoring fadeDelay/fadeDuration, resting at the idle alpha when done.
