@@ -1450,6 +1450,11 @@ function TRB.Functions.EditMode:OnEditModeEnter()
 	-- CreateBarTextFrames clears all font text to ""; mark lookup dirty so
 	-- UpdateResourceBarText re-renders on the next tick instead of early-outing.
 	TRB.Functions.BarText:MarkLookupDirty()
+
+	-- ProcessBars' dirty check would otherwise skip the entry pass, leaving every bar at the alpha
+	-- whoever rendered it last left behind.
+	TRB.Functions.BarVisibility:InvalidateAppliedState()
+	TRB.Functions.Bar:HideResourceBar()
 end
 
 ---Called when Edit Mode is exited
@@ -1479,8 +1484,14 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		TRB.Functions.BarText:MarkLookupDirty()
 
 		-- Let HideResourceBar determine if the bar should be visible now
-		TRB.Functions.BarVisibility:MarkDirty()
+		TRB.Functions.BarVisibility:InvalidateAppliedState()
 		TRB.Functions.Class:HideResourceBar()
+
+		-- ProcessBars drops the self-driven bars again here, so whatever Edit Mode left on them would
+		-- stand: hand each back to the renderer that owns it live.
+		TRB.Functions.Castbar:EnsureIdleState()
+		TRB.Functions.TargetCastbar:RefreshVisibility()
+		TRB.Functions.OtherBars:RefreshVisibility()
 	end
 end
 

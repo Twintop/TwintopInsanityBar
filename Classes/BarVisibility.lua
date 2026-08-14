@@ -289,11 +289,12 @@ end
 ---agreement -- if ProcessBars then resolves the bar as hidden, it simply stays hidden.
 function TRB.Functions.BarVisibility:InvalidateAppliedState()
 	local barGroups = TRB.Frames.barGroups
+	-- In Edit Mode the self-driven bars ARE ProcessBars entries, so they must be reset like every other
+	-- bar; outside it they render themselves from live state and nothing would show them again.
+	local skipSelfDriven = not TRB.Functions.EditMode:IsInEditMode()
 	if barGroups ~= nil then
 		for key, group in pairs(barGroups) do
-			-- The cast bars, the GCD bar and the mirror timers render themselves from live state and are
-			-- not ProcessBars entries, so nothing would ever show them again if they were torn down here.
-			local isSelfDriven = TRB.Classes.BarTypeRegistry:IsSelfDriven(key)
+			local isSelfDriven = skipSelfDriven and TRB.Classes.BarTypeRegistry:IsSelfDriven(key)
 			if not isSelfDriven and type(group) == "table" and group.Hide ~= nil and group.containerFrame ~= nil then
 				group:Hide()
 				-- Defeats SetTargetAlpha's no-op guard so Phase 3 re-applies frame alpha.

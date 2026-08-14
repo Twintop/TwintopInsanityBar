@@ -19,6 +19,12 @@ local content = [====[
 - [#806](#806) Ensure that player cast bar Bar Text appears immediately when a cast starts instead of lagging several frames behind.
 - [#806](#806) Fix an issue where the Blizzard player cast bar would flicker back into visibility briefly when beginning a cast.
 
+### Edit Mode
+
+- Fix bars not previewing in Edit Mode even though the Edit Mode container was sized to include them. Every bar now re-resolves its visibility as Edit Mode opens instead of keeping whatever it was rendering beforehand.
+- Fix the Global Cooldown, Fatigue, Breath, Feign Death and cast bars previewing in Edit Mode while disabled, drawing outside the Edit Mode container.
+- Hand those same bars back to their own rendering as Edit Mode closes, so an Edit Mode preview can no longer be left behind on screen.
+
 ### Localization
 
 - [#805 - @MOSS099](#805) Updated translations for Simplified Chinese (zhCN).
