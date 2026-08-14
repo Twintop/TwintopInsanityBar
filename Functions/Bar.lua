@@ -4209,8 +4209,9 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 						barColorEntry = barColors.bar or defaultBarColors.bar
 					end
 				
-					-- End caps are meaningless on secret cast-count bars (the highest node is unknowable)
-					if barTypeDef.usesSecretValue then
+					-- Only multi-node secret bars lose the end cap, where which node is highest is
+					-- unknowable. A single node caps its own fill edge regardless of secrecy.
+					if barTypeDef.usesSecretValue and barTypeDef.isMultiNode then
 						node:ApplyEndCap(nil)
 					else
 						node:ApplyEndCap(barColors.endCap or defaultBarColors.endCap, borderColor)

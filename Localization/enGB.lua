@@ -233,8 +233,6 @@ if locale == "enGB" then
     L["EvokerPreservationIndicatorInnervateTooltip"] = "Changes to this colour when you have Innervate."
     L["EvokerPreservationIndicatorEssenceBurstTooltip"] = "Changes to this colour when you have Essence Burst."
     L["EvokerAugmentationIndicatorEbonMightTooltip"] = "Changes to this colour when Ebon Might is active."
-    L["EvokerAugmentationIndicatorEbonMightEndTooltip"] = "Changes to this colour when Ebon Might is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-    L["EvokerAugmentationIndicatorEbonMightDropDuringCastTooltip"] = "Changes to this colour when you are casting an ability that extends Ebon Might but the cast will not complete before the buff expires."
     L["EvokerAugmentationIndicatorEssenceBurstTooltip"] = "Changes to this colour when you have Essence Burst."
     L["DruidBalanceIndicatorSolarTooltip"] = "Changes to this colour when you are in Solar Eclipse."
     L["DruidBalanceIndicatorLunarTooltip"] = "Changes to this colour when you are in Lunar Eclipse."

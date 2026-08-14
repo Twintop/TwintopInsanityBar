@@ -722,9 +722,6 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 		bars = {
 			ebonMight = TRB.Functions.Settings:DefaultEbonMightBarDimensions(classic),
 		},
-		endOf = {
-			ebonMight = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
-		},
 		colors = {
 			text = {
 				current = {
@@ -748,18 +745,6 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				ebonMight = {
 					color = "FFFF9900",
 					color2 = "FFFF9900",
-					gradientDirection = "disabled",
-					enabled = false
-				},
-				ebonMightEnd = {
-					color = "FFFF0000",
-					color2 = "FFFF0000",
-					gradientDirection = "disabled",
-					enabled = false
-				},
-				ebonMightDropDuringCast = {
-					color = "FF550000",
-					color2 = "FF550000",
 					gradientDirection = "disabled",
 					enabled = false
 				},
@@ -827,31 +812,9 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			shared = {
-				nodeOrder = { "ebonMightDropDuringCast", "ebonMightEnd", "ebonMight", "essenceBurst" },
+				nodeOrder = { "ebonMight", "essenceBurst" },
 				gradientOrder = {},
 				indicatorColors = {
-					ebonMightDropDuringCast = {
-						color = "FF550000",
-						color2 = "FF550000",
-						gradientDirection = "disabled",
-						enabled = true,
-						targets = {
-							manaBar = { bar = false, border = false, background = false },
-							essences = { bar = false, border = false, background = false },
-							ebonMight = { bar = true, border = false, background = false },
-						},
-					},
-					ebonMightEnd = {
-						color = "FFFF0000",
-						color2 = "FFFF0000",
-						gradientDirection = "disabled",
-						enabled = true,
-						targets = {
-							manaBar = { bar = false, border = false, background = false },
-							essences = { bar = false, border = false, background = false },
-							ebonMight = { bar = true, border = false, background = false },
-						},
-					},
 					ebonMight = {
 						color = "FFFF9900",
 						color2 = "FFFF9900",
@@ -896,12 +859,6 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
-			ebonMightEnding={
-				name = L["EvokerAugmentationAudioEbonMightEnding"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			},
 			essenceBurst={
 				name = L["EvokerEssenceBurst"],
 				enabled=false,
@@ -1964,9 +1921,7 @@ local function AugmentationConstructIndicatorColorsPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 13, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
-			{ key = "ebonMightDropDuringCast", label = L["EvokerAugmentationCheckboxEbonMightDropDuringCast"], tooltip = L["EvokerAugmentationIndicatorEbonMightDropDuringCastTooltip"], colorLabel = L["EvokerAugmentationIndicatorEbonMightDropDuringCastColor"] },
-			{ key = "ebonMightEnd",            label = L["EvokerAugmentationCheckboxEndOfEbonMight"],          tooltip = L["EvokerAugmentationIndicatorEbonMightEndTooltip"],            colorLabel = L["EvokerAugmentationIndicatorEbonMightEndColor"] },
-			{ key = "ebonMight",               label = L["EvokerAugmentationCheckboxEbonMight"],               tooltip = L["EvokerAugmentationIndicatorEbonMightTooltip"],               colorLabel = L["EvokerAugmentationIndicatorEbonMightColor"] },
+			{ key = "ebonMight",               label = L["EvokerAugmentationCheckboxEbonMight"],               tooltip = L["EvokerAugmentationIndicatorEbonMightTooltip"],               colorLabel = L["EvokerAugmentationIndicatorEbonMightColor"], cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 			{ key = "essenceBurst",            label = L["EvokerEssenceBurst"],                                tooltip = L["EvokerAugmentationIndicatorEssenceBurstTooltip"],            colorLabel = L["EvokerAugmentationIndicatorEssenceBurstColor"] },
 		},
 		barTargetDefs = {
@@ -1975,16 +1930,6 @@ local function AugmentationConstructIndicatorColorsPanel(parent)
 			{ key = "ebonMight", label = L["BarNameEbonMight"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Evoker_Augmentation",
-		endOfConfigs = {
-			{
-				endOfKey = "ebonMight",
-				sectionHeader = L["EvokerAugmentationHeaderEndOfEbonMightConfiguration"],
-				gcdRadioLabel = L["EvokerAugmentationEndOfEbonMightGcdMode"],
-				gcdSliderLabel = L["EvokerAugmentationEndOfEbonMightGcdSlider"],
-				timeRadioLabel = L["EvokerAugmentationEndOfEbonMightTimeMode"],
-				timeSliderLabel = L["EvokerAugmentationEndOfEbonMightTimeSlider"],
-			},
-		},
 	}))
 
 	yCoord = yCoord - 40

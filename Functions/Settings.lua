@@ -8765,6 +8765,35 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		InheritBarVisibility("deathknight", "blood", "boneShield", "coagulatingBlood", true)
 		InheritBarVisibility("mage", "frost", "secondary", "shatter", false)
 	end
+
+	-- Evoker Augmentation: the Ebon Might bar dropped custom threshold support, so lines already saved
+	-- against it are unreachable and can never be positioned against its now-secret max.
+---@diagnostic disable-next-line: need-check-nil
+	local augmentationThresholds = TwintopInsanityBarSettings.evoker and TwintopInsanityBarSettings.evoker.augmentation	and TwintopInsanityBarSettings.evoker.augmentation.thresholds
+	if augmentationThresholds ~= nil and augmentationThresholds.customThresholds ~= nil then
+		local orphanedGuids = {}
+		for guid, customThreshold in pairs(augmentationThresholds.customThresholds) do
+			if type(customThreshold) == "table" then
+				local barTarget = customThreshold.barTarget or "primary"
+				-- Matches the bare key and any sub-target form ("ebonMight:something").
+				if barTarget == "ebonMight" or string.match(barTarget, "^ebonMight:") ~= nil then
+					orphanedGuids[#orphanedGuids + 1] = customThreshold.guid or guid
+					augmentationThresholds.customThresholds[guid] = nil
+				end
+			end
+		end
+
+		if augmentationThresholds.thresholdDictionary ~= nil then
+			for _, guid in ipairs(orphanedGuids) do
+				local dictionaryKey = TRB.Functions.Settings:GetCustomThresholdDictionaryKey(guid)
+				if dictionaryKey ~= nil then
+					augmentationThresholds.thresholdDictionary[dictionaryKey] = nil
+				end
+				-- Saves that predate the "custom:" prefix keyed the entry on the raw guid.
+				augmentationThresholds.thresholdDictionary[guid] = nil
+			end
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean

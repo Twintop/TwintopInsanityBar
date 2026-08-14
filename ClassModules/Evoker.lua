@@ -131,7 +131,6 @@ local function FillSpecializationCache()
 	spells = specCache.evoker_augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
 	specCache.evoker_augmentation.snapshotData.attributes.manaRegen = 0
-	specCache.evoker_augmentation.snapshotData.attributes.extendsEbonMight = false
 	---@type TRB.Classes.Snapshot
 	specCache.evoker_augmentation.snapshotData.snapshots[spells.ebonMight.id] = TRB.Classes.Snapshot:New(spells.ebonMight)
 	---@type TRB.Classes.Snapshot
@@ -700,13 +699,30 @@ local function RefreshLookupData_Augmentation()
 
 	-- Block C: Ebon Might ($ebonMightTime)
 	if not activeVars or activeVars["$ebonMightTime"] then
-		local currentTime = GetTime()
-		local _ebonMightTime = snapshotData.snapshots[spells.ebonMight.id].buff:GetRemainingTime(currentTime)
+		local ebonMightBuff = snapshotData.snapshots[spells.ebonMight.id].buff
+		local _ebonMightActive = ebonMightBuff.isActive == true
+		local properties = ebonMightBuff.customProperties
+		local _ebonMightTime = properties.remaining
+		local _ebonMightTimeText = properties.remainingText
 
-		lookupLogic["$ebonMightTime"] = _ebonMightTime
+		-- Secret when the Cooldown Manager has it and missing entirely when it does not, so logic
+		-- never learns more than whether there is a value at all.
+		lookupLogic["$ebonMightTime"] = _ebonMightActive and (_ebonMightTime ~= nil or _ebonMightTimeText ~= nil)
 
-		if lookupChanged(prevState, "$ebonMightTime", _ebonMightTime) then
-			lookup["$ebonMightTime"] = TRB.Functions.BarText:TimerPrecision(_ebonMightTime)
+		local timeDisplay
+		if not _ebonMightActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _ebonMightTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_ebonMightTime)
+		elseif _ebonMightTimeText ~= nil then
+			-- Already formatted for us, and to the viewer's precision rather than ours.
+			timeDisplay = _ebonMightTimeText
+		else
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		end
+
+		if lookupChanged(prevState, "$ebonMightTime", timeDisplay) then
+			lookup["$ebonMightTime"] = timeDisplay
 		end
 	end
 
@@ -817,25 +833,9 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		end
 	elseif TRB.Data.character.specId == 3 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
-		if event == "UNIT_SPELLCAST_EMPOWER_START" then
-			snapshotData.attributes.extendsEbonMight = true
+		if event == "UNIT_SPELLCAST_EMPOWER_START" or event == "UNIT_SPELLCAST_START" then
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Augmentation()
-		elseif event == "UNIT_SPELLCAST_START" then
-			casting:SnapshotManaSpell()
-			UpdateCastingResourceFinal_Augmentation()
-			-- Track if we're casting an ability that extends Ebon Might
-			if spellId == spells.eruption.id then
-				snapshotData.attributes.extendsEbonMight = true
-			elseif spellId == spells.emeraldBlossom.id and talents:IsTalentActive(spells.dreamOfSpring.talentId) then
-				snapshotData.attributes.extendsEbonMight = true
-			else
-				snapshotData.attributes.extendsEbonMight = false
-			end
-		elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_SUCCEEDED" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
-			snapshotData.attributes.extendsEbonMight = false
-			casting:Reset()
 		else
 			casting:Reset()
 		end
@@ -945,6 +945,51 @@ local function UpdateEssenceBurst(spells)
 	end
 end
 
+---Refreshes Ebon Might from the Cooldown Manager. Its duration scales with Mastery and Sands of Time
+---extends it per cast, so the live aura is the only place the real timing exists.
+---@param spells TRB.Classes.Evoker.AugmentationSpells
+local function UpdateEbonMight(spells)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local ebonMightBuff = snapshotData.snapshots[spells.ebonMight.id].buff
+	local properties = ebonMightBuff.customProperties
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	local wasActive = ebonMightBuff.isActive
+
+	-- Pinned to the buff viewers, which describe the aura -- a cooldown viewer would describe the
+	-- cast. The talent and the buff it applies are separate ids, so offer both.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.ebonMight.id, spells.ebonMight.talentId)
+	snapshotData.attributes.ebonMightTrackedId = trackedId
+
+	if trackedId ~= nil and cdm:IsLive(trackedId, cdm.SourceGroup.BUFF) then
+		ebonMightBuff:InitializeCustomSimple(false)
+
+		-- The bar viewer is the only one where Blizzard subtracts expiry from now. Elsewhere the best
+		-- on offer is the countdown it already formatted.
+		local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+		if remainingOk then
+			properties.remaining = remaining
+		else
+			local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+			if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+				properties.remainingText = remainingText
+			end
+		end
+	else
+		ebonMightBuff:Reset()
+	end
+
+	-- Plain (non-secret) up/down flag: everything downstream that has to branch on Ebon Might reads
+	-- this rather than the secret remaining.
+	snapshotData.attributes.ebonMightActive = ebonMightBuff.isActive == true
+
+	if wasActive ~= ebonMightBuff.isActive then
+		TRB.Data.lookupDirty = true
+	end
+end
+
 local function UpdateSnapshot_Devastation()
 	UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
@@ -974,10 +1019,8 @@ local function UpdateSnapshot_Augmentation()
 
 	UpdateEssenceBurst(spells)
 
-	-- Plain (non-secret) active flag for the Ebon Might bar's custom thresholds: the lines hide
-	-- while the buff is down (see ebonMight thresholdActiveAttribute).
 	if spells.ebonMight ~= nil and snapshots[spells.ebonMight.id] ~= nil then
-		TRB.Data.snapshotData.attributes.ebonMightActive = snapshots[spells.ebonMight.id].buff.isActive == true
+		UpdateEbonMight(spells)
 	end
 end
 
@@ -1217,40 +1260,12 @@ local function UpdateResourceBar()
 
 			-- Indicator color system
 			local sharedColors = specSettings.colors.shared
-			local indicatorColors = sharedColors and sharedColors.indicatorColors
 
-			-- Precompute Ebon Might conditions
-			local ebonMightActive = snapshots[spells.ebonMight.id].buff.isActive
-			local ebonMightDropDuringCastMet = false
-			local ebonMightEndMet = false
-			if ebonMightActive then
-				local ebonMightTimeLeft = snapshots[spells.ebonMight.id].buff:GetRemainingTime(currentTime)
-				local timeThreshold = 0
-				if specSettings.endOf.ebonMight.mode == "gcd" then
-					local gcd = Character:GetCurrentGCDTime()
-					timeThreshold = gcd * specSettings.endOf.ebonMight.gcdsMax
-				elseif specSettings.endOf.ebonMight.mode == "time" then
-					timeThreshold = specSettings.endOf.ebonMight.timeMax
-				end
-				ebonMightEndMet = ebonMightTimeLeft <= timeThreshold
-
-				-- Check if casting an ability that extends Ebon Might but won't finish before it expires
-				local castTimeRemaining = 0
-				if snapshotData.attributes.extendsEbonMight and snapshotData.casting.endTime ~= nil then
-					castTimeRemaining = snapshotData.casting.endTime - currentTime
-					if castTimeRemaining < 0 then
-						castTimeRemaining = 0
-					end
-				end
-				ebonMightDropDuringCastMet = snapshotData.attributes.extendsEbonMight and castTimeRemaining > ebonMightTimeLeft
-			end
-
-			-- Audio cue for Ebon Might dropping during cast
-			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "ebonMightEnding", ebonMightActive and ebonMightDropDuringCastMet)
+			local cdm = TRB.Functions.CooldownManager
+			local ebonMightTrackedId = snapshotData.attributes.ebonMightTrackedId
+			local ebonMightActive = snapshotData.attributes.ebonMightActive == true
 
 			local conditionMap = {
-				ebonMightDropDuringCast = ebonMightActive and ebonMightDropDuringCastMet,
-				ebonMightEnd = ebonMightActive and ebonMightEndMet,
 				ebonMight = ebonMightActive,
 				essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive,
 			}
@@ -1290,16 +1305,13 @@ local function UpdateResourceBar()
 				refreshText = true
 				local ebonMightNode = barGroups and barGroups.ebonMight and barGroups.ebonMight:GetNode(1)
 				if ebonMightNode then
-					local ebonMightSnapshot = snapshots[spells.ebonMight.id]
-					local ebonMightDuration = ebonMightSnapshot.buff.duration or 1
-					local ebonMightRemaining = 0
-
-					if ebonMightSnapshot.buff.isActive then
-						ebonMightRemaining = ebonMightSnapshot.buff:GetRemainingTime(currentTime)
+					-- Driven straight off the Cooldown Manager: SetMinMaxValues/SetValue normalise
+					-- inside the widget, so the Mastery-scaled duration never has to be read.
+					if ebonMightTrackedId == nil or not ebonMightActive
+						or not cdm:ApplyToBarNode(ebonMightNode, ebonMightTrackedId) then
+						ebonMightNode:SetMinMax(0, 1)
+						ebonMightNode:SetValue(0)
 					end
-
-					ebonMightNode:SetMinMax(0, ebonMightDuration)
-					ebonMightNode:SetValue(ebonMightRemaining)
 
 					if ebonMightBarColors then
 						TRB.Functions.Color:ApplyFillColor(ebonMightNode, ebonMightColors.bar)
@@ -1687,7 +1699,6 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 				essenceBurstSnapshot.buff:Reset()
 			end
 		end
-		snapshotData.attributes.extendsEbonMight = false
 	end
 end
 
@@ -1745,8 +1756,15 @@ do
 	local augmentation = {}
 	for k, v in pairs(common) do augmentation[k] = v end
 	augmentation["$ebonMightTime"] = function()
-		local spells = TRB.Data.spellsData.spells
-		return TRB.Data.snapshotData.snapshots[spells.ebonMight.id].buff.isActive
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if spells == nil or spells.ebonMight == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.ebonMight.id]
+		if snap == nil or snap.buff.isActive ~= true then
+			return false
+		end
+		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
 	end
 
 	specValidVars = { [1] = devastation, [2] = common, [3] = augmentation }

@@ -1612,8 +1612,8 @@ end
 ---@field public isMultiNode boolean # True if bar has multiple nodes (like combo points), false for single node
 ---@field public maxNodes integer # Maximum number of nodes (1 for single-node bars)
 ---@field public minMaxMode string # "discrete" (0-1), "stepped" (i-1,i per node), "health", "mana", "percentage", or "custom"
----@field public thresholdScaleFromLiveMax boolean? # When true, the custom-threshold value SLIDER uses thresholdMin/Max, but runtime positioning AND over/under compare against the bar's LIVE max (e.g. Ebon Might, whose bar max is the last-known buff duration), not thresholdMax.
----@field public thresholdActiveAttribute string? # Optional snapshot attribute name that must be truthy for this bar's custom threshold lines to render (e.g. Ebon Might hides its lines when "ebonMightActive" is false). nil = always render.
+---@field public thresholdScaleFromLiveMax boolean? # When true, the custom-threshold value SLIDER uses thresholdMin/Max, but runtime positioning AND over/under compare against the bar's LIVE max, not thresholdMax. Unset by every bar today: it needs a plain live max, which a CDM-fed timer bar does not have.
+---@field public thresholdActiveAttribute string? # Optional snapshot attribute name that must be truthy for this bar's custom threshold lines to render. nil = always render. Unset by every bar today.
 ---@field public hasSpacing boolean # True if bar supports spacing option (multi-node only)
 ---@field public hasThresholds boolean # True if bar supports threshold lines
 ---@field public colorCurveType string? # nil for simple colors, "step" or "linear" for gradient/threshold colors
@@ -1639,7 +1639,8 @@ end
 ---@field public gradientTooltipNote string? # Localized tooltip shown on gradient direction buttons for threshold fill pickers (e.g., stagger bar).
 ---@field public fillDirection trbFillDirection? # Default fill direction for this bar type
 ---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
----@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color). Secret-count bars also get no end cap (the highest progressed node is unknowable).
+---@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color). Multi-node secret bars also get no end cap (which node is highest is unknowable); single-node ones keep it.
+---@field public hasCustomThresholds boolean? # False to drop this bar from the custom threshold system entirely. For bars whose max is secret (e.g. Ebon Might), a line cannot be positioned at all. Defaults to true.
 ---@field public endCapMode string? # Multi-node end cap policy: "highest" (default) or "all" (independent nodes, e.g. Warrior defensives)
 ---@field public cdm TRB.CdmDependency? # Declared Cooldown Manager reliance for the whole bar. Options-panel badge only; nothing branches on it at runtime.
 ---@field public isSelfDriven boolean? # True when the bar shows/hides itself from live state (cast bars, GCD, mirror timers) rather than through ProcessBars. Such bars stay in the anchor tree as scaffolds and are never torn down by InvalidateAppliedState.
@@ -1705,6 +1706,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
 	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield, Fire Blast charges); forces custom thresholds to static color mode
+	self.hasCustomThresholds = config.hasCustomThresholds ~= false -- Opt out only; a secret max makes a line unpositionable
 	self.cdm = config.cdm -- Declared Cooldown Manager reliance for the whole bar; options-panel badge only, nothing branches on it
 	self.isCastbar = config.isCastbar or false -- Player/Target/Focus cast bar; display name already ends in "Cast Bar" so labels drop the redundant trailing "Bar"
 	self.isSelfDriven = config.isSelfDriven or false -- Renders itself from live state instead of via ProcessBars
@@ -2284,18 +2286,15 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		maxNodes = 1,
 		hasSameColor = false,
 		minMaxMode = "custom",
-		-- Custom-threshold value slider is a 0-20s timer (Ebon Might base 10s, extendable to 20s).
-		-- The bar's live max is the last-known buff duration, so position/compare against that live
-		-- scale rather than the fixed 20s slider max.
-		thresholdMin = 0,
-		thresholdMax = 20,
-		thresholdScaleFromLiveMax = true,
-		-- Hide the custom threshold lines while Ebon Might is down (no active timer to mark).
-		thresholdActiveAttribute = "ebonMightActive",
 		hasSpacing = false,
 		hasThresholds = false,
+		-- Duration and remaining both come from the Cooldown Manager as secrets, so there is no
+		-- plain max to scale a threshold line against.
+		hasCustomThresholds = false,
 		colorCurveType = nil, -- Simple bar color
 		visibilityKey = "ebonMight",
+		-- Fed entirely by the Cooldown Manager's item for Ebon Might.
+		cdm = TRB.Data.constants.cdmDependency.REQUIRED,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultEbonMightBarDimensions(classic)
 		end,

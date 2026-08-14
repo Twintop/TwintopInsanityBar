@@ -178,9 +178,6 @@ end
 
 ---@class TRB.Classes.Evoker.AugmentationSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public ebonMight TRB.Classes.SpellBase
----@field public eruption TRB.Classes.SpellBase
----@field public emeraldBlossom TRB.Classes.SpellBase
----@field public dreamOfSpring TRB.Classes.SpellBase
 TRB.Classes.Evoker.AugmentationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Evoker.AugmentationSpells.__index = TRB.Classes.Evoker.AugmentationSpells
 
@@ -200,19 +197,6 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
         id = 395296,
         talentId = 395152,
         isBuff = true,
-        isTalent = true
-    })
-	self.eruption = TRB.Classes.SpellBase:New({
-        id = 395160,
-        isTalent = true
-    })
-
-    self.emeraldBlossom = TRB.Classes.SpellBase:New({
-        id = 355913,
-        baseline = true,
-    })
-    self.dreamOfSpring = TRB.Classes.SpellBase:New({
-        id = 414969,
         isTalent = true
     })
 	-- Chronowarden
@@ -247,7 +231,7 @@ function TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$essenceMax", description = L["EvokerAugmentationBarTextVariable_essenceMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
-		{ variable = "$ebonMightTime", description = L["EvokerAugmentationBarTextVariable_ebonMightTime"], printInSettings = true, color = false, category = varCategory.RESOURCE },
+		{ variable = "$ebonMightTime", description = L["EvokerAugmentationBarTextVariable_ebonMightTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED, category = varCategory.RESOURCE },
 
 		-- The activation overlay says the proc is up but carries no numbers; these render "??".
 		{ variable = "$essenceBurstTime", description = L["EvokerAugmentationBarTextVariable_essenceBurstTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
@@ -415,12 +399,6 @@ do
 	TRB.Functions.AudioCues:Register("evoker_augmentation", {
 		builtIns = {
 			essenceBurst,
-			{
-				id = "ebonMightEnding",
-				label = L["EvokerAugmentationAudioEbonMightEnding"],
-				trigger = L["EvokerAugmentationAudioTriggerEbonMightEnding"],
-				tooltip = L["EvokerAugmentationAudioCheckboxEbonMightEndingTooltip"],
-			},
 		},
 		counters = { EssenceSource() },
 	})

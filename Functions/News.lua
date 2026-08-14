@@ -12,6 +12,27 @@ local content = [====[
 
 ---
 
+# 12.1.0.1-release (2026-08-14)
+## General
+### Cast Bars
+
+- [#806](#806) Ensure that player cast bar Bar Text appears immediately when a cast starts instead of lagging several frames behind.
+- [#806](#806) Fix an issue where the Blizzard player cast bar would flicker back into visibility briefly when beginning a cast.
+
+### Localization
+
+- [#805 - @MOSS099](#805) Updated translations for Simplified Chinese (zhCN).
+
+## Evoker
+### Augmentation
+
+- [#807](#807) Fix Ebon Might tracking, which read its duration from the aura and went dead when aura data became secret. It now reads from the CDM and requires Ebon Might to be tracked there. The bar, its Color Indicator entry, and `$ebonMightTime` carry the CDM badge.
+- [#807](#807) Remove the End of Ebon Might Configuration section, the "Ebon Might is Ending" and "Cast Won't Extend" Ebon Might Color Indicators, the Ebon Might ending audio cue, and custom threshold support for the Ebon Might bar. Each compared the remaining duration against a threshold, which a `secret` value cannot do. Replacements are being considered but no ETA on a replacement.
+- [#807](#807) Custom threshold line support has been removed from the Ebon Might bar as it is no longer possible to reliably place them.
+- [#807](#807) Fixed an error where casting Emerald Blossom could throw a Lua error.
+
+---
+
 # 12.1.0.0-release (2026-08-10)
 ## General
 
@@ -72,6 +93,8 @@ local content = [====[
 
 ## Death Knight
 ### Blood
+
+- The Coagulating Blood bar can use an End Cap again. End caps were being suppressed on every bar fed by a secret value, but only multi-segment bars need that -- on a single bar the cap marks its own fill edge and is knowable.
 
 - [#801](#801) Add a new Coagulating Blood bar, tracking your current stacks where each stack is 1% damage reduction, with an optional maximum value override so the bar and its threshold lines scale to the cap you actually reach. Adds the `$coagulatingBloodStacks` and `$coagulatingBloodStacksMax` bar text variables. Requires CDM to be enabled and Coagulating Blood to be actively tracked to function. On upgrade it starts with your Bone Shield bar's visibility settings, rather than appearing unannounced.
 

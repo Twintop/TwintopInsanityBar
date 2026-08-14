@@ -39,6 +39,10 @@ local function SpellCastEvent(self, event, unit, castGuid, spellId, ...)
 			TRB.Functions.Class:SpellCast(event)
 		elseif event == "UNIT_SPELLCAST_EMPOWER_STOP" then
 			TRB.Functions.Class:SpellCast(event, spellId, ...)
+		elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_STOP" then
+			-- Without these the end of a cast is only ever announced when it succeeds, so per-cast
+			-- state a class module set at START stays set until the next successful cast.
+			TRB.Functions.Class:SpellCast(event, spellId)
 		end
 		TRB.Functions.Character:ResetCastingSnapshotData()
 		return

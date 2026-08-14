@@ -1094,8 +1094,10 @@ function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId,
 	end
 
 	for _, barKey in ipairs(keys) do
-		if barKey ~= "screen" and not suppressed[barKey] then
-			local barTypeDef = GetBarTypeDefinition(barKey)
+		local barTypeDef = GetBarTypeDefinition(barKey)
+		-- Bars that opted out entirely (secret max, so a line cannot be positioned) are never offered.
+		local supportsCustom = barTypeDef == nil or barTypeDef.hasCustomThresholds ~= false
+		if barKey ~= "screen" and not suppressed[barKey] and supportsCustom then
 			if barTypeDef ~= nil and barTypeDef.isAmalgamation and barTypeDef.nodeColors ~= nil then
 				-- Amalgamation bars (Holy Words, Defensives) expose one sub-target per node
 				-- type (e.g. "Holy Word: Serenity") instead of a single bar-wide target.
@@ -1274,6 +1276,13 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	end
 
 	local baseKey, nodeKey = ParseBarTarget(barTarget)
+	-- Opted-out bars can still have lines saved from before they opted out; drop them here rather
+	-- than positioning against a max that isn't knowable.
+	local targetBarTypeDef = GetBarTypeDefinition(baseKey)
+	if targetBarTypeDef ~= nil and targetBarTypeDef.hasCustomThresholds == false then
+		return nil
+	end
+
 	local snapshotData = TRB.Data.snapshotData or {}
 	local attributes = snapshotData.attributes or {}
 	local group = GetBarGroup(barGroups, baseKey)
@@ -1313,12 +1322,11 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		-- resource per shapeshift form. Each form's resource is a real power type, so coloring
 		-- uses the secret-safe ColorCurve path (no comparison needed). The unified Mana target
 		-- renders on the dedicated mana bar in Moonkin (altBarKey) and the primary bar otherwise.
-		local sub = FindContextSubTarget(classId, specId, "primary", nodeKey, settings)
+		local sub = FindContextSubTarget(classId, specId, "primary", nodeKey, settings) --[[@as table]] -- We already know this is not-nil from the conditional above.
 		contextActive = IsContextSubTargetActive(sub)
 
 		local resolvedKey = "primary"
-		if sub.altBarKey ~= nil and sub.contextAttribute ~= nil
-			and attributes[sub.contextAttribute] == sub.altWhenContextValue then
+		if sub.altBarKey ~= nil and sub.contextAttribute ~= nil	and attributes[sub.contextAttribute] == sub.altWhenContextValue then
 			resolvedKey = sub.altBarKey
 		end
 		local resolvedGroup = GetBarGroup(barGroups, resolvedKey) or group
