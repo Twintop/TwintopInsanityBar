@@ -8794,6 +8794,51 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			end
 		end
 	end
+
+	-- Warrior Fury: seed the Enrage bar's default bar text. Everything else the bar needs merges from
+	-- defaults, but barText is an array, so an existing save would never gain the entry.
+---@diagnostic disable-next-line: need-check-nil
+	local fury = TwintopInsanityBarSettings.warrior and TwintopInsanityBarSettings.warrior.fury
+	if fury ~= nil and fury.displayText ~= nil and fury.displayText.barText ~= nil then
+		local hasEnrageBarText = false
+		for _, entry in ipairs(fury.displayText.barText) do
+			if entry.position and entry.position.relativeToFrame == "EnrageBar" then
+				hasEnrageBarText = true
+				break
+			end
+		end
+		if not hasEnrageBarText then
+			table.insert(fury.displayText.barText, {
+				useDefaultFontColor = false,
+				useDefaultFontOutline = false,
+				useDefaultFontShadow = false,
+				fontOutline = "OUTLINE",
+				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name = L["PositionMiddle"],
+				guid = TRB.Functions.String:Guid(),
+				constrainToParent = false,
+				maxWidthPercent = 100,
+				text = "{$enrageTime}[$enrageTime]",
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = L["PositionCenter"],
+				fontSize = 14,
+				color = { color = "FFFFFFFF" },
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = L["PositionCenter"],
+					relativeToFrame = "EnrageBar",
+					relativeToFrameName = L["EnrageBar"],
+				},
+			})
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -9166,6 +9211,21 @@ function TRB.Functions.Settings:DefaultEbonMightBarColors()
 	colors.endingSoon = { color = "FFFF0000", color2 = "FFFF0000", gradientDirection = "disabled", enabled = true }
 	colors.wontExtend = { color = "FF550000", color2 = "FF550000", gradientDirection = "disabled", enabled = true }
 	return colors
+end
+
+---Gets default Enrage bar dimensions
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultEnrageBarDimensions(classic)
+	local dims = self:DefaultCustomBarDimensions(classic)
+	dims.anchor.barKey = "secondary"
+	return dims
+end
+
+---Gets default Enrage bar colors (light orange bar, dark orange border)
+---@return table
+function TRB.Functions.Settings:DefaultEnrageBarColors()
+	return self:DefaultCustomBarColors("FFFFCC55", "FFAA7711", "66000000")
 end
 
 --[[

@@ -651,13 +651,19 @@ function TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(specId, parentFrame)
         )
     end
 
-    -- Fury has Whirlwind stacks bar (4 nodes) via secondary
+    -- Fury has Whirlwind stacks bar (4 nodes) via secondary, plus a stand-alone Enrage bar
     if specId == 2 then
         barGroups.secondary = TRB.Classes.BarGroup:New(
             UIParent,
             "TwintopResourceBarFrame_Secondary",
             4,
             false
+        )
+        barGroups.enrage = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Enrage",
+            1,
+            false -- not primary
         )
     end
 

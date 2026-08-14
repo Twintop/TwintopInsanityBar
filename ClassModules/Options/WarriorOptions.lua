@@ -348,6 +348,36 @@ local function FuryLoadDefaultBarTextSettings(classic)
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
 	local textSettings = FuryLoadWhirlwindBarTextSettings()
 
+	table.insert(textSettings, {
+		useDefaultFontColor = false,
+		useDefaultFontOutline = false,
+		useDefaultFontShadow = false,
+		fontOutline = "OUTLINE",
+		fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		useDefaultFontFace = false,
+		useDefaultFontSize = false,
+		enabled = true,
+		name = L["PositionMiddle"],
+		guid = TRB.Functions.String:Guid(),
+		constrainToParent = false,
+		maxWidthPercent = 100,
+		text = "{$enrageTime}[$enrageTime]",
+		fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+		fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+		fontJustifyHorizontal = "CENTER",
+		fontJustifyHorizontalName = L["PositionCenter"],
+		fontSize = 14,
+		color = { color = "FFFFFFFF" },
+		position = {
+			xPos = 0,
+			yPos = 0,
+			relativeTo = "CENTER",
+			relativeToName = L["PositionCenter"],
+			relativeToFrame = "EnrageBar",
+			relativeToFrameName = L["EnrageBar"],
+		},
+	})
+
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
@@ -407,6 +437,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			enrage = { neverShow = true, alwaysShow = false, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		overcap = {
 			mode = "relative",
@@ -416,6 +447,9 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Table:Merge(TRB.Functions.Settings:DefaultComboPointsDimensions(classic), { sameColor = false }),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			enrage = TRB.Functions.Settings:DefaultEnrageBarDimensions(classic),
+		},
 		colors = {
 			text = {
 				current = {
@@ -458,6 +492,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			bars = {
 				whirlwind = TRB.Functions.Settings:DefaultWhirlwindBarColors(),
+				enrage = TRB.Functions.Settings:DefaultEnrageBarColors(),
 			},
 			threshold = {
 				under = {
@@ -483,18 +518,27 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 					enrage = {
 						color = "FFFFCC55",
 						enabled = true,
-						targets = { rageBar = { bar = true, border = false, background = false } },
+						targets = {
+							rageBar = { bar = true, border = false, background = false },
+							enrageBar = { bar = false, border = false, background = false },
+						},
 					},
 					zeroStackBackground = {
 						color = "FF333333",
 						enabled = true,
-						targets = { whirlwindBar = { bar = false, border = false, background = true } },
+						targets = {
+							whirlwindBar = { bar = false, border = false, background = true },
+							enrageBar = { bar = false, border = false, background = false },
+						},
 					},
 					borderOvercap = {
 						color = "FF800000",
 						enabled = true,
 						isGradient = true,
-						targets = { rageBar = { bar = false, border = true, background = false } },
+						targets = {
+							rageBar = { bar = false, border = true, background = false },
+							enrageBar = { bar = false, border = false, background = false },
+						},
 					},
 				},
 			}
@@ -521,7 +565,9 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 		},
 		audio = {
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(true),
+		textures = TRB.Functions.Settings:DefaultTextures(true, nil, {
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("enrage"),
+		}),
 	}
 
 	if includeBarText then
@@ -1430,6 +1476,7 @@ local function FuryConstructIndicatorColorsPanel(parent)
 		barTargetDefs = {
 			{ key = "rageBar", label = L["BarNameRageBar"] },
 			{ key = "whirlwindBar", label = L["BarNameWhirlwindBar"] },
+			{ key = "enrageBar", label = L["BarNameEnrage"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Warrior_Fury",
 		overcapConfig = {
@@ -1477,6 +1524,25 @@ local function FuryConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 1, 2, yCoord)
 end
 
+local function FuryConstructEnrageBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.warrior.fury
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.warrior_fury
+	local yCoord = 5
+
+	local enrageBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("enrage")
+	if enrageBarDef then
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 1, 2, yCoord, enrageBarDef, L["ResourceRage"])
+
+		yCoord = yCoord - 90
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 1, 2, yCoord, enrageBarDef)
+	end
+end
+
 local function FuryConstructBarTexturesPanel(parent)
 	if parent == nil then
 		return
@@ -1487,7 +1553,13 @@ local function FuryConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, true, L["ResourceWarriorWhirlwind"])
+	local customBars = {}
+	local enrageBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("enrage")
+	if enrageBarDef then
+		table.insert(customBars, enrageBarDef)
+	end
+
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, true, L["ResourceWarriorWhirlwind"], false, customBars)
 end
 
 local function FuryConstructBarVisibilityPanel(parent)
@@ -1500,7 +1572,13 @@ local function FuryConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.warrior_fury
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", true, L["ResourceWarriorWhirlwind"], true)
+	local customBars = {}
+	local enrageBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("enrage")
+	if enrageBarDef then
+		table.insert(customBars, enrageBarDef)
+	end
+
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", true, L["ResourceWarriorWhirlwind"], true, nil, customBars)
 end
 
 local function FuryConstructThresholdListPanel(parent)
@@ -1675,6 +1753,7 @@ local function FuryConstructOptionsPanel(cache)
 	local tabDefinitions = {
 		{ "rageBar", L["TabRage"], oUi.tabWidth.small, FuryConstructRageBarPanel, visibilityKey = "primary" },
 		{ "whirlwindBar", L["TabWhirlwind"], oUi.tabWidth.small, FuryConstructWhirlwindBarPanel, visibilityKey = "secondary" },
+		{ "enrageBar", L["TabEnrage"], oUi.tabWidth.small, FuryConstructEnrageBarPanel, visibilityKey = "enrage" },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, FuryConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, FuryConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, FuryConstructBarTexturesPanel },

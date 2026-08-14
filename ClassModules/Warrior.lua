@@ -987,6 +987,9 @@ local function UpdateSnapshot_Fury()
 		enrageBuff:Reset()
 	end
 
+	-- Plain (non-secret) up/down flag for everything downstream that has to branch on Enrage.
+	TRB.Data.snapshotData.attributes.enrageActive = enrageBuff.isActive == true
+
 	if wasEnrageActive ~= enrageBuff.isActive then
 		TRB.Data.lookupDirty = true
 	end
@@ -1586,7 +1589,8 @@ local function UpdateResourceBar()
 				end
 			end
 			-- Enrage is fed from the Cooldown Manager, so it is false whenever nothing tracks the buff.
-			local enrageActive = snapshots[spells.enrage.id].buff.isActive == true
+			local cdm = TRB.Functions.CooldownManager
+			local enrageActive = snapshotData.attributes.enrageActive == true
 			do
 				local enrageInd = indicatorColors and indicatorColors.enrage
 				local enrageTargets = enrageInd and enrageInd.enabled and enrageActive
@@ -1608,8 +1612,16 @@ local function UpdateResourceBar()
 				zeroStackBackground = zeroStackActive,
 				enrage = enrageActive,
 			}
-			-- The rage bar is colored bespoke above; the resolver is here for the shared health/cast bar.
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
+
+			local enrageBarColors = specSettings.colors.bars and specSettings.colors.bars.enrage
+			local enrageColors = {
+				bar = enrageBarColors and enrageBarColors.bar.color,
+				border = enrageBarColors and enrageBarColors.border.color,
+				background = enrageBarColors and enrageBarColors.background.color,
+			}
+			-- The rage and Whirlwind bars are colored bespoke above; the resolver covers the Enrage bar
+			-- along with the shared health/cast bar.
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, { enrageBar = enrageColors })
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1777,6 +1789,27 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.secondary.neverShow and (TRB.Data.character.maxResource2 or 0) > 0 then
 				refreshText = true
 				UpdateWhirlwindCharges(specSettings, specCacheSettings)
+			end
+
+			-- Enrage bar
+			if specSettings.displayBar.enrage ~= nil and not specSettings.displayBar.enrage.neverShow then
+				refreshText = true
+				local enrageNode = barGroups and barGroups.enrage and barGroups.enrage:GetNode(1)
+				if enrageNode then
+					-- Driven straight off the Cooldown Manager: SetMinMaxValues/SetValue normalise
+					-- inside the widget, so the secret duration never has to be read.
+					if not enrageActive or not cdm:ApplyToBarNode(enrageNode, spells.enrage.id) then
+						enrageNode:SetMinMax(0, 1)
+						enrageNode:SetValue(0)
+					end
+
+					if enrageBarColors then
+						TRB.Functions.Color:ApplyFillColor(enrageNode, enrageColors.bar)
+						enrageNode:SetBorderColor(enrageColors.border)
+						enrageNode:SetBackgroundColorFromString(enrageColors.background)
+						Bar:ApplyEndCapIndicator(enrageNode, "enrageBar")
+					end
+				end
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -2399,11 +2432,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local enabledDefensiveCount = hasDefensives and GetEnabledDefensiveCount(sharedSettings) or 0
 		local hasWhirlwind = TRB.Data.character.specId == 2 and (TRB.Data.character.maxResource2 or 0) > 0
 		local secondaryVisSettings = (sharedSettings and sharedSettings.displayBar.secondary) or nil
+		local hasEnrage = TRB.Data.character.specId == 2
 
 		local entries = {
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.defensives, sharedSettings and sharedSettings.displayBar.defensives, hasDefensives and enabledDefensiveCount > 0, enabledDefensiveCount, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasWhirlwind, TRB.Data.character.maxResource2 or 0, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.enrage, sharedSettings and sharedSettings.displayBar.enrage, hasEnrage, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, nil, nil),
 		}
 
@@ -2529,8 +2564,18 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		end
 		return nil, true, false
 	elseif relativeToFrame ~= nil then
-		-- Handle Fury's Whirlwind charge nodes
+		-- Handle Fury's Whirlwind charge nodes and Enrage bar
 		if TRB.Data.character.specId == 2 then
+			if relativeToFrame == "EnrageBar" then
+				if barGroups and barGroups.enrage then
+					local enrageNode = barGroups.enrage:GetNode(1)
+					if enrageNode then
+						local isVisible = barGroups.enrage.isVisible and enrageNode.isVisible
+						return enrageNode:GetFrame(), true, isVisible
+					end
+				end
+				return nil, true, false
+			end
 			local whirlwindChargeIndex = string.match(relativeToFrame, "^WhirlwindCharge(%d+)$")
 			if whirlwindChargeIndex ~= nil then
 				local index = tonumber(whirlwindChargeIndex)
@@ -2608,7 +2653,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 ---Returns true when spec-specific buff timers are counting down.
----Arms: no timers; Fury: Whirlwind buff; Protection: Ignore Pain, Shield Block.
+---Arms: no timers; Fury: Whirlwind buff, Enrage; Protection: Ignore Pain, Shield Block.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	local snapshotData = TRB.Data.snapshotData
@@ -2622,6 +2667,9 @@ function TRB.Functions.Class:HasActiveTimers()
 			if buff and buff.isActive then
 				return true
 			end
+		end
+		if spells.enrage and snapshots[spells.enrage.id] and snapshots[spells.enrage.id].buff and snapshots[spells.enrage.id].buff.isActive then
+			return true
 		end
 	elseif specId == 3 then -- Protection
 		if (spells.ignorePain and snapshots[spells.ignorePain.id] and snapshots[spells.ignorePain.id].buff and snapshots[spells.ignorePain.id].buff.isActive)

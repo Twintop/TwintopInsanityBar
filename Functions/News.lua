@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.1.0.2-release (2026-08-14)
+## Warrior
+### Fury
+
+- [#808](#808) Add a new Enrage bar, tracking the time remaining on Enrage. Requires CDM to be enabled and Enrage to be actively tracked to function. Set to Never Show by default; enable it under Bar Visibility.
+
+---
+
 # 12.1.0.1-release (2026-08-14)
 ## General
 ### Cast Bars

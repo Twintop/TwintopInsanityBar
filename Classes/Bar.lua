@@ -2328,6 +2328,34 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end,
 	}))
 
+	-- Enrage bar (Fury Warrior)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "enrage",
+		displayName = L["ResourceWarriorEnrage"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		minMaxMode = "custom",
+		hasSpacing = false,
+		hasThresholds = false,
+		-- Duration and remaining both come from the Cooldown Manager as secrets, so there is no
+		-- plain max to scale a threshold line against.
+		hasCustomThresholds = false,
+		colorCurveType = nil, -- Simple bar color
+		visibilityKey = "enrage",
+		-- Fed entirely by the Cooldown Manager's item for Enrage.
+		cdm = TRB.Data.constants.cdmDependency.REQUIRED,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultEnrageBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultEnrageBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
 	-- Fire Blast Charges bar (Fire Mage)
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "fireBlastCharges",

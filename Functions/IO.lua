@@ -25,7 +25,7 @@ local SECONDARY_BAR_EXPORT_SPECS = {
 
 local CUSTOM_BAR_EXPORT_SPECS = {
 	[1] = {
-		[2] = { "whirlwind" },
+		[2] = { "whirlwind", "enrage" },
 		[3] = { "defensives" },
 	},
 	[5] = {

@@ -425,12 +425,14 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		relativeToFrame[L["WhirlwindCharge2"]] = "Whirlwind_Charge_2"
 		relativeToFrame[L["WhirlwindCharge3"]] = "Whirlwind_Charge_3"
 		relativeToFrame[L["WhirlwindCharge4"]] = "Whirlwind_Charge_4"
+		relativeToFrame[L["EnrageBar"]] = "EnrageBar"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["WhirlwindCharge1"],
 			L["WhirlwindCharge2"],
 			L["WhirlwindCharge3"],
 			L["WhirlwindCharge4"],
+			L["EnrageBar"],
 			L["HealthBar"],
 			L["Screen"],
 		}

@@ -3483,3 +3483,9 @@ L["GlobalOptionsCdmUnknownDisplay"] = "Cooldown Manager value when unavailable"
 L["GlobalOptionsCdmUnknownDisplayNothing"] = "Nothing"
 L["GlobalOptionsCdmUnknownDisplayQuestionMarks"] = "??"
 L["GlobalOptionsCdmUnknownDisplayZero"] = "Zero (0, 0.0, 00:00, etc.)"
+
+-- Warrior Fury: stand-alone Enrage bar
+L["ResourceWarriorEnrage"] = "Enrage"
+L["TabEnrage"] = "Enrage"
+L["EnrageBar"] = "Enrage Bar"
+L["BarNameEnrage"] = "Enrage"
