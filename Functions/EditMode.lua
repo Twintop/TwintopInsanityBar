@@ -48,6 +48,7 @@ local ANCHOR_SIZE_EPSILON = 0.05
 local ANCHOR_LAYOUT_REAPPLY_DEBOUNCE_SECONDS = 0.08
 local isAnchorLayoutReapplyQueued = false
 local queuedAnchorLayoutForceUpdate = false
+local queuedAnchorLayoutDeadline = 0
 
 ---Walks the anchor chain from a bar key up to its tree root.
 ---Returns the root bar key. Used by the Druid per-tree guard in CalculateWrapperLayout.
@@ -1876,8 +1877,6 @@ local function ReapplyAnchorFrameLayout(layoutName, forceUpdate)
 			anyAnchorUsage = true
 			if barData.anchor.matchWidth == true or barData.anchor.matchHeight == true then
 				anyAnchorSizeMatching = true
-			end
-			if anyAnchorSizeMatching then
 				break
 			end
 		end
@@ -1894,33 +1893,43 @@ local function ReapplyAnchorFrameLayout(layoutName, forceUpdate)
 		return
 	end
 
-	if anyAnchorUsage then
-		-- Reapply bar layout to update width/height/position
-		if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
-			-- Use the class-resolved display settings so form-aware classes (Druid)
-			-- apply the correct form-spec settings here. Falls back to the active
-			-- compositeKey for all other classes.
-			local displaySettings
-			if TRB.Functions.Class and TRB.Functions.Class.GetActiveDisplaySettings then
-				displaySettings = TRB.Functions.Class:GetActiveDisplaySettings()
-			end
-			if not displaySettings then
-				local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
-				displaySettings = specSettings and specSettings.settings or nil
-			end
-			if displaySettings then
-				isReapplyingAnchorLayout = true
-				TRB.Functions.Bar:ApplyBarGroupsLayout(displaySettings, TRB.Frames.barGroups)
-				TRB.Functions.BarVisibility:MarkDirty()
-				TRB.Functions.Bar:HideResourceBar()
-				isReapplyingAnchorLayout = false
-			end
+	-- Reapply bar layout to update width/height/position
+	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
+		-- Class-resolved settings so form-aware classes (Druid) get their form-spec settings.
+		local displaySettings
+		if TRB.Functions.Class and TRB.Functions.Class.GetActiveDisplaySettings then
+			displaySettings = TRB.Functions.Class:GetActiveDisplaySettings()
+		end
+		if not displaySettings then
+			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
+			displaySettings = specSettings and specSettings.settings or nil
+		end
+		if displaySettings then
+			isReapplyingAnchorLayout = true
+			TRB.Functions.Bar:ApplyBarGroupsLayout(displaySettings, TRB.Frames.barGroups)
+			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Functions.Bar:HideResourceBar()
+			isReapplyingAnchorLayout = false
 		end
 	end
 end
 
 -- Keep backward-compatible local reference
 local ReapplyCooldownManagerLayout = ReapplyAnchorFrameLayout
+
+local function FireAnchorFrameLayoutReapply()
+	-- Re-arm if a later request pushed the deadline out; C_Timer.After can't be cancelled.
+	local remaining = queuedAnchorLayoutDeadline - GetTime()
+	if remaining > 0 then
+		C_Timer.After(remaining, FireAnchorFrameLayoutReapply)
+		return
+	end
+
+	isAnchorLayoutReapplyQueued = false
+	local queuedForce = queuedAnchorLayoutForceUpdate
+	queuedAnchorLayoutForceUpdate = false
+	ReapplyAnchorFrameLayout(nil, queuedForce)
+end
 
 ---Queues a debounced anchor-frame relayout request.
 ---@param forceUpdate boolean? # If true, ensure queued reapply runs in forced mode
@@ -1930,17 +1939,69 @@ local function QueueAnchorFrameLayoutReapply(forceUpdate, delaySeconds)
 		queuedAnchorLayoutForceUpdate = true
 	end
 
+	local delay = delaySeconds or ANCHOR_LAYOUT_REAPPLY_DEBOUNCE_SECONDS
+	local deadline = GetTime() + delay
+
 	if isAnchorLayoutReapplyQueued then
+		-- OnShow's longer settle delay must outlast an in-flight size-change debounce,
+		-- otherwise the reapply measures the anchor before Blizzard finishes its layout.
+		if deadline > queuedAnchorLayoutDeadline then
+			queuedAnchorLayoutDeadline = deadline
+		end
 		return
 	end
 
 	isAnchorLayoutReapplyQueued = true
-	C_Timer.After(delaySeconds or ANCHOR_LAYOUT_REAPPLY_DEBOUNCE_SECONDS, function()
-		isAnchorLayoutReapplyQueued = false
-		local queuedForce = queuedAnchorLayoutForceUpdate
-		queuedAnchorLayoutForceUpdate = false
-		ReapplyAnchorFrameLayout(nil, queuedForce)
-	end)
+	queuedAnchorLayoutDeadline = deadline
+	C_Timer.After(delay, FireAnchorFrameLayoutReapply)
+end
+
+---Records a frame's dimensions, reusing the stored table to avoid garbage on every resize.
+---@param frame Frame # The hooked frame
+---@param width number # Width in pixels
+---@param height number # Height in pixels
+local function StoreKnownDimensions(frame, width, height)
+	local last = lastKnownDimensions[frame]
+	if last then
+		last.width = width
+		last.height = height
+	else
+		lastKnownDimensions[frame] = { width = width, height = height }
+	end
+end
+
+---Returns true if any enabled bar in the active layout anchors to this frame.
+---All CDM viewers are hooked regardless of use, so unanchored ones would relayout for nothing.
+---@param frame Frame # The frame that changed
+---@param frameKey string # The frame key the hook was created with
+---@return boolean
+local function IsFrameAnchorTargetInUse(frame, frameKey)
+	local layoutName = LibEditMode and LibEditMode:GetActiveLayoutName()
+	if not layoutName then
+		return true
+	end
+
+	local layoutData = TRB.Data.settings.core.editMode.layouts and TRB.Data.settings.core.editMode.layouts[layoutName]
+	if not layoutData or not layoutData.bars then
+		return true
+	end
+
+	for _, barData in pairs(layoutData.bars) do
+		local anchor = barData.anchor
+		if barData.enabled and anchor and anchor.frameKey ~= "none" then
+			if anchor.frameKey == "other" or frameKey == "other" then
+				-- A custom frame name can name a CDM viewer, which is hooked under its own
+				-- key, so only comparing resolved frames is reliable here.
+				if TRB.Functions.EditMode:GetAnchorFrame(anchor.frameKey, anchor.customFrameName) == frame then
+					return true
+				end
+			elseif anchor.frameKey == frameKey then
+				return true
+			end
+		end
+	end
+
+	return false
 end
 
 ---Hooks OnSizeChanged and OnShow on an anchor frame to trigger bar layout updates.
@@ -1968,11 +2029,16 @@ function TRB.Functions.EditMode:HookAnchorFrame(frameKey, customFrameName)
 		height = height or f:GetHeight() or 0
 
 		local last = lastKnownDimensions[f]
-		if last ~= nil and math.abs((last.width or 0) - width) < ANCHOR_SIZE_EPSILON and math.abs((last.height or 0) - height) < ANCHOR_SIZE_EPSILON then
+		if last and math.abs(last.width - width) < ANCHOR_SIZE_EPSILON and math.abs(last.height - height) < ANCHOR_SIZE_EPSILON then
 			return
 		end
 
-		lastKnownDimensions[f] = { width = width, height = height }
+		StoreKnownDimensions(f, width, height)
+
+		if not IsFrameAnchorTargetInUse(f, frameKey) then
+			return
+		end
+
 		QueueAnchorFrameLayoutReapply(false)
 	end)
 
@@ -1982,22 +2048,21 @@ function TRB.Functions.EditMode:HookAnchorFrame(frameKey, customFrameName)
 			return
 		end
 
-		lastKnownDimensions[f] = {
-			width = f:GetWidth() or 0,
-			height = f:GetHeight() or 0
-		}
+		StoreKnownDimensions(f, f:GetWidth() or 0, f:GetHeight() or 0)
+
+		if not IsFrameAnchorTargetInUse(f, frameKey) then
+			return
+		end
+
 		QueueAnchorFrameLayoutReapply(true, 0.1)
 	end)
 
 	hookedFrames[frame] = true
 
-	lastKnownDimensions[frame] = {
-		width = frame:GetWidth() or 0,
-		height = frame:GetHeight() or 0
-	}
+	StoreKnownDimensions(frame, frame:GetWidth() or 0, frame:GetHeight() or 0)
 
 	-- If the frame is already visible when we hook it, trigger layout update immediately
-	if frame:IsShown() then
+	if frame:IsShown() and IsFrameAnchorTargetInUse(frame, frameKey) then
 		QueueAnchorFrameLayoutReapply(true, 0.1)
 	end
 end

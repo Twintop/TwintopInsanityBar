@@ -13,6 +13,11 @@ local content = [====[
 ---
 
 # 12.1.0.2-release (2026-08-14)
+## General
+### Edit Mode
+
+- [#810 - @EricaPomme](#810) Reduce the CPU cost of bars anchored to Cooldown Manager frames.
+
 ## Warrior
 ### Fury
 
