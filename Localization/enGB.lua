@@ -419,4 +419,7 @@ if locale == "enGB" then
 
     -- Health Bar: flat class colour transition type
     L["HealthBarColorTypeClassColor"] = "Single (Class Colour)"
+
+    -- Mage Frost: Fingers of Frost
+    L["MageFrostIndicatorFingersOfFrostTooltip"] = "Changes to this colour when you have at least one Fingers of Frost charge."
 end

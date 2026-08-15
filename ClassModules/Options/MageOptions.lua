@@ -466,9 +466,19 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			shared = {
-				nodeOrder = {},
+				nodeOrder = { "fingersOfFrost" },
 				gradientOrder = {},
-				indicatorColors = {},
+				indicatorColors = {
+					fingersOfFrost = {
+						color = "FF00C8FF",
+						color2 = "FF00C8FF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+						},
+					},
+				},
 			},
 		},
 		displayText={
@@ -1529,8 +1539,33 @@ local function FrostConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 8, 3, yCoord, cache)
 end
 
---local function FrostConstructIndicatorColorsPanel(parent)
---end
+local function FrostConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.mage.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mage_frost
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 8, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "fingersOfFrost", label = L["MageFrostIndicatorFingersOfFrost"], tooltip = L["MageFrostIndicatorFingersOfFrostTooltip"], colorLabel = L["MageFrostIndicatorFingersOfFrostColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "iciclesBar", label = L["TabIcicles"] },
+			{ key = "shatterBar", label = L["TabShatter"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_Mage_Frost",
+	}))
+
+	yCoord = yCoord - 40
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_frost = controls
+end
 
 local function FrostConstructThresholdSettingsPanel(parent)
 	if parent == nil then
@@ -1588,7 +1623,7 @@ local function FrostConstructOptionsPanel(cache)
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = FrostConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "frost", controls),
-		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FrostConstructIndicatorColorsPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FrostConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FrostConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FrostConstructBarVisibilityPanel },
 		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("mage", "frost", controls),

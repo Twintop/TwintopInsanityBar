@@ -18,6 +18,13 @@ local content = [====[
 
 - [#810 - @EricaPomme](#810) Reduce the CPU cost of bars anchored to Cooldown Manager frames.
 
+## Mage
+### Frost
+
+- Add Fingers of Frost tracking. Charges are counted in Lua from `SPELL_UPDATE_USES`, not read from the Cooldown Manager, so no CDM setup is needed.
+- A Color Indicators tab for Frost, with a Fingers of Frost entry. Targets the Mana, Icicles and Shatter bars alongside the shared health and cast bars; defaults to the Mana bar border.
+- Bar text variables `$fingersOfFrostStacks`, `$fingersOfFrostStacksMax` and `$fingersOfFrostTime`, plus the `#fingersOfFrost` icon.
+
 ## Warrior
 ### Fury
 

@@ -3489,3 +3489,11 @@ L["ResourceWarriorEnrage"] = "Enrage"
 L["TabEnrage"] = "Enrage"
 L["EnrageBar"] = "Enrage Bar"
 L["BarNameEnrage"] = "Enrage"
+
+-- Mage Frost: Fingers of Frost
+L["MageFrostBarTextVariable_fingersOfFrostStacks"] = "Number of Fingers of Frost charges you currently have"
+L["MageFrostBarTextVariable_fingersOfFrostStacksMax"] = "Maximum number of Fingers of Frost charges"
+L["MageFrostBarTextVariable_fingersOfFrostTime"] = "Time remaining on Fingers of Frost"
+L["MageFrostIndicatorFingersOfFrost"] = "Fingers of Frost"
+L["MageFrostIndicatorFingersOfFrostTooltip"] = "Changes to this color when you have at least one Fingers of Frost charge."
+L["MageFrostIndicatorFingersOfFrostColor"] = "Fingers of Frost is active"

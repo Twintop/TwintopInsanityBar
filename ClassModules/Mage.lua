@@ -16,6 +16,20 @@ local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 local eventFrame = CreateFrame("Frame")
 local fireBlastChargesFrame = CreateFrame("Frame")
+local fingersOfFrostFrame = CreateFrame("Frame")
+
+-- Set by an Ice Lance cast that had a charge to burn, then claimed by the next SPELL_UPDATE_USES.
+-- Arming on the charge, not the cast, keeps a filler Ice Lance from claiming an unrelated proc.
+local iceLanceSpendArmed = nil
+-- Backstop, not the discriminator: retires an arm whose charge event never came.
+local iceLanceSpendWindow = 0.5
+
+-- Timing out drops every charge at once, which fires the same SPELL_UPDATE_USES a gain does. Banking
+-- when the buff is due to end is what tells the two apart.
+local fingersOfFrostExpectedEnd = nil
+-- How long the banked end outlives its due time, waiting on the event. Measured at ~0.09s between the
+-- buff dropping and its event landing; the bank closes as soon as that event is consumed anyway.
+local fingersOfFrostExpiryGrace = 0.5
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -115,6 +129,7 @@ local function FillSpecializationCache()
 	specCache.mage_frost.snapshotData.attributes.manaRegen = 0
 
 	specCache.mage_frost.snapshotData.snapshots[frostSpells.icicles.id] = TRB.Classes.Snapshot:New(frostSpells.icicles, nil, "always")
+	specCache.mage_frost.snapshotData.snapshots[frostSpells.fingersOfFrost.id] = TRB.Classes.Snapshot:New(frostSpells.fingersOfFrost)
 
 	specCache.mage_frost.barTextVariables = {
 		icons = {},
@@ -702,6 +717,23 @@ local function RefreshLookupData_Frost()
 		end
 	end
 
+	-- Block D: Fingers of Frost ($fingersOfFrostStacks, $fingersOfFrostStacksMax, $fingersOfFrostTime)
+	if not activeVars or activeVars["$fingersOfFrostStacks"] or activeVars["$fingersOfFrostStacksMax"]
+		or activeVars["$fingersOfFrostTime"] then
+		local buff = snapshots[spells.fingersOfFrost.id].buff
+		local _fingersOfFrostStacks = buff.isActive and (buff.applications or 0) or 0
+		local _fingersOfFrostStacksMax = spells.fingersOfFrost.maxStacks
+		local _fingersOfFrostTime = buff.isActive and buff.remaining or 0
+
+		lookupLogic["$fingersOfFrostStacks"] = _fingersOfFrostStacks
+		lookupLogic["$fingersOfFrostStacksMax"] = _fingersOfFrostStacksMax
+		lookupLogic["$fingersOfFrostTime"] = _fingersOfFrostTime
+
+		lookup["$fingersOfFrostStacks"] = _fingersOfFrostStacks
+		lookup["$fingersOfFrostStacksMax"] = _fingersOfFrostStacksMax
+		lookup["$fingersOfFrostTime"] = TRB.Functions.BarText:TimerPrecision(_fingersOfFrostTime)
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -733,6 +765,16 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		end
 	end
 
+	if TRB.Data.character.specId == 3 and event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		if spells ~= nil and spells.iceLance ~= nil and spellId == spells.iceLance.id then
+			local snapshot = spells.fingersOfFrost and snapshotData.snapshots
+				and snapshotData.snapshots[spells.fingersOfFrost.id]
+			if snapshot ~= nil and snapshot.buff.isActive then
+				iceLanceSpendArmed = GetTime()
+			end
+		end
+	end
 end
 
 local function UpdateSnapshot()
@@ -794,13 +836,26 @@ local function UpdateSnapshot_Frost()
 	local snapshots = snapshotData.snapshots
 
 	RefreshShatterStacks()
+
+	local fingersOfFrost = snapshots[spells.fingersOfFrost.id]
+	if fingersOfFrost ~= nil then
+		fingersOfFrost.buff:GetRemainingTime(currentTime)
+		-- Down and past the window the expiry event would have landed in -- death, a dispel, or an
+		-- event that never came. Drop the bank so it can't swallow the next real proc.
+		if not fingersOfFrost.buff.isActive and fingersOfFrostExpectedEnd ~= nil
+			and currentTime > fingersOfFrostExpectedEnd + fingersOfFrostExpiryGrace then
+			fingersOfFrostExpectedEnd = nil
+		end
+	end
 end
 
 ---Updates the Shatter bar nodes (Frost only).
 ---The count is secret, so every node takes the raw value and stepped min/max does the filling.
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
-local function UpdateShatter(specSettings, specCacheSettings)
+---@param barColors table # Indicator-resolved bar/border/background colors for the Shatter bar
+---@param fillIndicated boolean? # An indicator owns the fill, overriding the every-Nth threshold color
+local function UpdateShatter(specSettings, specCacheSettings, barColors, fillIndicated)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
@@ -817,8 +872,7 @@ local function UpdateShatter(specSettings, specCacheSettings)
 		return
 	end
 
-	local backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha = Color:GetRGBAFromString(shatterColors.background.color, true)
-	local borderColor = shatterColors.border.color
+	local backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha = Color:GetRGBAFromString(barColors.background, true)
 
 	local stackThreshold = spells.shatter.attributes and spells.shatter.attributes.stackThreshold
 	local thresholdEnabled = shatterColors.threshold ~= nil and shatterColors.threshold.enabled == true
@@ -828,14 +882,15 @@ local function UpdateShatter(specSettings, specCacheSettings)
 		if shatterNode then
 			Bar:SetBarNodeValue(specCacheSettings, "shatter" .. x, shatterNode, shatterStacks)
 
-			local fillColor = shatterColors.bar
+			local fillColor = barColors.bar
 			-- Every multiple of the threshold, not just the first: 5, 10, 15, 20.
-			if thresholdEnabled and stackThreshold and stackThreshold > 0 and x % stackThreshold == 0 then
+			if not fillIndicated and thresholdEnabled and stackThreshold and stackThreshold > 0 and x % stackThreshold == 0 then
 				fillColor = shatterColors.threshold
 			end
 
 			Color:ApplyFillColor(shatterNode, fillColor)
-			shatterNode:SetBorderColor(borderColor)
+			Bar:ApplyEndCapIndicator(shatterNode, "shatterBar")
+			shatterNode:SetBorderColor(barColors.border)
 			shatterNode:SetBackgroundColor(backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha)
 		end
 	end
@@ -1008,16 +1063,52 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.mage_frost.settings
 		UpdateSnapshot_Frost()
 		if snapshotData.attributes.isTracking then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+			local snapshots = snapshotData.snapshots
+
+			-- Indicators resolve ahead of the bars' visibility guards: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when a resource bar is set to Never Show.
+			local sharedColors = specSettings.colors.shared
+			local conditionMap = {
+				fingersOfFrost = snapshots[spells.fingersOfFrost.id].buff.isActive,
+			}
+
+			local manaBarColors = {
+				bar = specSettings.colors.bar.base,
+				border = specSettings.colors.bar.border.color,
+				background = specSettings.colors.bar.background.color,
+			}
+			local iciclesBarColors = {
+				bar = specSettings.colors.comboPoints.base,
+				border = specSettings.colors.comboPoints.border.color,
+				background = specSettings.colors.comboPoints.background.color,
+			}
+			local shatterColors = specSettings.colors.bars and specSettings.colors.bars.shatter
+			local shatterBarColors = shatterColors and {
+				bar = shatterColors.bar,
+				border = shatterColors.border.color,
+				background = shatterColors.background.color,
+			} or nil
+			local indicatorTargets = {
+				manaBar = { bar = false, border = false, background = false },
+				iciclesBar = { bar = false, border = false, background = false },
+				shatterBar = { bar = false, border = false, background = false },
+			}
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, {
+				manaBar = manaBarColors,
+				iciclesBar = iciclesBarColors,
+				shatterBar = shatterBarColors,
+			}, indicatorTargets)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
-				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				primaryNode:SetBorderColor(manaBarColors.border)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -1025,17 +1116,11 @@ local function UpdateResourceBar()
 			-- Icicles bar (only when Icicles is talented, i.e. maxResource2 > 0)
 			if not specSettings.displayBar.secondary.neverShow and (TRB.Data.character.maxResource2 or 0) > 0 then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
-				local snapshots = snapshotData.snapshots
 				local currentIcicles = snapshots[spells.icicles.id].buff.applications or 0
 				local maxIcicles = spells.icicles.maxStacks
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(iciclesBarColors.background, true)
 				for x = 1, maxIcicles do
-					local cpBorderColor = specSettings.colors.comboPoints.border.color
 					local cpColor = specSettings.colors.comboPoints.base
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
 					local filled = currentIcicles >= x
 
 					if filled then
@@ -1046,13 +1131,19 @@ local function UpdateResourceBar()
 						end
 					end
 
+					-- An indicator on the fill wins over the per-node base/penultimate/final choice.
+					if indicatorTargets.iciclesBar.bar then
+						cpColor = iciclesBarColors.bar
+					end
+
 					if barGroups and barGroups.secondary then
 						local icicleNode = barGroups.secondary:GetNode(x)
 						if icicleNode then
 							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, icicleNode, filled and 1 or 0, 1)
-							icicleNode:SetBorderColor(cpBorderColor)
+							Bar:ApplyEndCapIndicator(icicleNode, "iciclesBar")
+							icicleNode:SetBorderColor(iciclesBarColors.border)
 							TRB.Functions.Color:ApplyFillColor(icicleNode, cpColor)
-							icicleNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+							icicleNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 						end
 					end
 				end
@@ -1060,7 +1151,7 @@ local function UpdateResourceBar()
 
 			if specSettings.displayBar.shatter and not specSettings.displayBar.shatter.neverShow then
 				refreshText = true
-				UpdateShatter(specSettings, specCacheSettings)
+				UpdateShatter(specSettings, specCacheSettings, shatterBarColors, indicatorTargets.shatterBar.bar)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1173,8 +1264,14 @@ local function SwitchSpec()
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#shatter"] = spells.shatter.icon
+		lookup["#fingersOfFrost"] = spells.fingersOfFrost.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
+
+		-- Manual tracking only runs while Frost is played, so anything banked is stale by now.
+		snapshotData.snapshots[spells.fingersOfFrost.id].buff:Reset()
+		iceLanceSpendArmed = nil
+		fingersOfFrostExpectedEnd = nil
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
@@ -1376,6 +1473,53 @@ fireBlastChargesFrame:SetScript("OnEvent", function(self, event, spellId, ...)
 	end
 end)
 
+-- Tracked by hand because the charge count is a secret in combat. Every charge change fires
+-- SPELL_UPDATE_USES on Ice Lance; a spend shares the cast's frame, anything else is a gain.
+local function HandleFingersOfFrostEvent(spellId)
+	if TRB.Data.character.specId ~= 3 then return end
+
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	if not (spells and spells.iceLance and spells.fingersOfFrost) then return end
+	if spellId ~= spells.iceLance.id then return end
+
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshot = snapshotData and snapshotData.snapshots and snapshotData.snapshots[spells.fingersOfFrost.id]
+	if snapshot == nil then return end
+
+	local currentTime = GetTime()
+
+	local isSpend = iceLanceSpendArmed ~= nil and (currentTime - iceLanceSpendArmed) <= iceLanceSpendWindow
+
+	if isSpend then
+		-- One cast burns one charge, so the arm retires here rather than claiming the next event too.
+		iceLanceSpendArmed = nil
+		snapshot.buff:RemoveStack()
+		if not snapshot.buff.isActive then
+			fingersOfFrostExpectedEnd = nil
+		end
+	elseif fingersOfFrostExpectedEnd ~= nil
+		and (not snapshot.buff.isActive or currentTime >= fingersOfFrostExpectedEnd) then
+		-- Timing out, not a new charge. The event trails the drop by a variable 0.02s-0.09s, so the
+		-- tick may or may not have zeroed the buff yet -- neither reading alone catches both cases.
+		snapshot.buff:Reset()
+		fingersOfFrostExpectedEnd = nil
+	else
+		snapshot.buff:AddStackOrInitializeCustom(spells.fingersOfFrost.duration, nil, true, 1)
+		fingersOfFrostExpectedEnd = snapshot.buff.endTime
+	end
+
+	TRB.Data.lookupDirty = true
+	if TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
+end
+
+fingersOfFrostFrame:SetScript("OnEvent", function(self, event, spellId, ...)
+	if event == "SPELL_UPDATE_USES" then
+		HandleFingersOfFrostEvent(spellId)
+	end
+end)
+
 function TRB.Functions.Class:CheckCharacter()
 	local specId = GetSpecialization()
 	if specId ~= TRB.Data.character.specId then
@@ -1435,7 +1579,17 @@ function TRB.Functions.Class:CheckCharacter()
 	end
 end
 
+function TRB.Functions.Class:EnableEvents()
+	fingersOfFrostFrame:RegisterEvent("SPELL_UPDATE_USES")
+end
+
+function TRB.Functions.Class:DisableEvents()
+	fingersOfFrostFrame:UnregisterEvent("SPELL_UPDATE_USES")
+end
+
 function TRB.Functions.Class:EventRegistration()
+	TRB.Functions.Class:DisableEvents()
+
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.mage.arcane then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -1456,6 +1610,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2 = "SPELL"
 		TRB.Data.resource2Id = spells.icicles.id
 		TRB.Data.resource2Factor = 1
+		TRB.Functions.Class:EnableEvents()
 	else -- This should never happen
 		TRB.Data.specSupported = false
 	end
@@ -1532,6 +1687,14 @@ do
 		return TRB.Data.snapshotData.attributes.shatterTracked == true
 	end
 	frost["$shatterStacksMax"] = true
+	local fingersOfFrostActiveFn = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		local snapshot = spells and spells.fingersOfFrost and TRB.Data.snapshotData.snapshots[spells.fingersOfFrost.id]
+		return snapshot ~= nil and snapshot.buff.isActive == true
+	end
+	frost["$fingersOfFrostStacks"] = fingersOfFrostActiveFn
+	frost["$fingersOfFrostStacksMax"] = true
+	frost["$fingersOfFrostTime"] = fingersOfFrostActiveFn
 	-- Fire
 	local fireBlastChargesMaxFn = function()
 		local maxCharges = TRB.Data.character.maxResource2 or 0
@@ -1656,6 +1819,15 @@ function TRB.Functions.Class:HasActiveTimers()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
 		local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells, true)
 		return fireBlastCooldown ~= nil and fireBlastCooldown.isActive == true
+	elseif TRB.Data.character.specId == 3 then
+		local activeVars = TRB.Data.activeVariables
+		if activeVars ~= nil and not activeVars["$fingersOfFrostTime"] then
+			return false
+		end
+
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		local snapshot = spells and spells.fingersOfFrost and TRB.Data.snapshotData.snapshots[spells.fingersOfFrost.id]
+		return snapshot ~= nil and snapshot.buff.isActive == true
 	end
 
 	return false
