@@ -44,6 +44,10 @@ local hookedFrames = {}
 
 -- Track last known dimensions per hooked frame for change detection
 local lastKnownDimensions = {}
+local ANCHOR_SIZE_EPSILON = 0.05
+local ANCHOR_LAYOUT_REAPPLY_DEBOUNCE_SECONDS = 0.08
+local isAnchorLayoutReapplyQueued = false
+local queuedAnchorLayoutForceUpdate = false
 
 ---Walks the anchor chain from a bar key up to its tree root.
 ---Returns the root bar key. Used by the Druid per-tree guard in CalculateWrapperLayout.
@@ -1863,13 +1867,31 @@ local function ReapplyAnchorFrameLayout(layoutName, forceUpdate)
 		return
 	end
 
-	-- Check if any root bar uses anchor frame features
+	-- Check if any root bar uses anchor frame features and whether any root
+	-- needs size-driven relayout (match width/height).
 	local anyAnchorUsage = false
+	local anyAnchorSizeMatching = false
 	for _, barData in pairs(layoutData.bars) do
 		if barData.enabled and barData.anchor and barData.anchor.frameKey ~= "none" then
 			anyAnchorUsage = true
-			break
+			if barData.anchor.matchWidth == true or barData.anchor.matchHeight == true then
+				anyAnchorSizeMatching = true
+			end
+			if anyAnchorSizeMatching then
+				break
+			end
 		end
+	end
+
+	if not anyAnchorUsage then
+		return
+	end
+
+	-- Size change reapply is only needed when at least one anchored root is
+	-- configured to match anchor dimensions. Visibility/availability transitions
+	-- still force a relayout via forceUpdate.
+	if not forceUpdate and not anyAnchorSizeMatching then
+		return
 	end
 
 	if anyAnchorUsage then
@@ -1900,6 +1922,27 @@ end
 -- Keep backward-compatible local reference
 local ReapplyCooldownManagerLayout = ReapplyAnchorFrameLayout
 
+---Queues a debounced anchor-frame relayout request.
+---@param forceUpdate boolean? # If true, ensure queued reapply runs in forced mode
+---@param delaySeconds number? # Optional delay before reapply
+local function QueueAnchorFrameLayoutReapply(forceUpdate, delaySeconds)
+	if forceUpdate then
+		queuedAnchorLayoutForceUpdate = true
+	end
+
+	if isAnchorLayoutReapplyQueued then
+		return
+	end
+
+	isAnchorLayoutReapplyQueued = true
+	C_Timer.After(delaySeconds or ANCHOR_LAYOUT_REAPPLY_DEBOUNCE_SECONDS, function()
+		isAnchorLayoutReapplyQueued = false
+		local queuedForce = queuedAnchorLayoutForceUpdate
+		queuedAnchorLayoutForceUpdate = false
+		ReapplyAnchorFrameLayout(nil, queuedForce)
+	end)
+end
+
 ---Hooks OnSizeChanged and OnShow on an anchor frame to trigger bar layout updates.
 ---Safe to call multiple times for the same frame — will only hook once per frame reference.
 ---@param frameKey string # The frame key (e.g., "cdm-essential", "other")
@@ -1920,7 +1963,17 @@ function TRB.Functions.EditMode:HookAnchorFrame(frameKey, customFrameName)
 		if isTemporarilyShowingCDM then
 			return
 		end
-		ReapplyAnchorFrameLayout()
+
+		width = width or f:GetWidth() or 0
+		height = height or f:GetHeight() or 0
+
+		local last = lastKnownDimensions[f]
+		if last ~= nil and math.abs((last.width or 0) - width) < ANCHOR_SIZE_EPSILON and math.abs((last.height or 0) - height) < ANCHOR_SIZE_EPSILON then
+			return
+		end
+
+		lastKnownDimensions[f] = { width = width, height = height }
+		QueueAnchorFrameLayoutReapply(false)
 	end)
 
 	-- Hook OnShow with guard and delayed reapply
@@ -1928,22 +1981,24 @@ function TRB.Functions.EditMode:HookAnchorFrame(frameKey, customFrameName)
 		if isTemporarilyShowingCDM then
 			return
 		end
-		C_Timer.After(0, function()
-			C_Timer.After(0.1, function()
-				ReapplyAnchorFrameLayout()
-			end)
-		end)
+
+		lastKnownDimensions[f] = {
+			width = f:GetWidth() or 0,
+			height = f:GetHeight() or 0
+		}
+		QueueAnchorFrameLayoutReapply(true, 0.1)
 	end)
 
 	hookedFrames[frame] = true
 
+	lastKnownDimensions[frame] = {
+		width = frame:GetWidth() or 0,
+		height = frame:GetHeight() or 0
+	}
+
 	-- If the frame is already visible when we hook it, trigger layout update immediately
 	if frame:IsShown() then
-		C_Timer.After(0, function()
-			C_Timer.After(0.1, function()
-				ReapplyAnchorFrameLayout()
-			end)
-		end)
+		QueueAnchorFrameLayoutReapply(true, 0.1)
 	end
 end
 
