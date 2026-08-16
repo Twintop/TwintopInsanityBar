@@ -423,4 +423,7 @@ if locale == "enGB" then
     -- Mage Frost: Fingers of Frost
     L["MageFrostIndicatorFingersOfFrostTooltip"] = "Changes to this colour when you have at least one Fingers of Frost charge."
 
+    -- Mage Frost: Brain Freeze
+    L["MageFrostIndicatorBrainFreezeTooltip"] = "Changes to this colour when Brain Freeze is active."
+
 end

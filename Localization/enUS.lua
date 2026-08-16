@@ -3497,3 +3497,9 @@ L["MageFrostBarTextVariable_fingersOfFrostTime"] = "Time remaining on Fingers of
 L["MageFrostIndicatorFingersOfFrost"] = "Fingers of Frost"
 L["MageFrostIndicatorFingersOfFrostTooltip"] = "Changes to this color when you have at least one Fingers of Frost charge."
 L["MageFrostIndicatorFingersOfFrostColor"] = "Fingers of Frost is active"
+
+-- Mage Frost: Brain Freeze
+L["MageFrostBarTextVariable_brainFreezeTime"] = "Time remaining on your Brain Freeze proc. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["MageFrostIndicatorBrainFreeze"] = "Brain Freeze"
+L["MageFrostIndicatorBrainFreezeTooltip"] = "Changes to this color when Brain Freeze is active."
+L["MageFrostIndicatorBrainFreezeColor"] = "Brain Freeze is active"

@@ -17,6 +17,7 @@ local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 local eventFrame = CreateFrame("Frame")
 local fireBlastChargesFrame = CreateFrame("Frame")
 local fingersOfFrostFrame = CreateFrame("Frame")
+local spellEventFrame = CreateFrame("Frame")
 
 -- Set by an Ice Lance cast that had a charge to burn, then claimed by the next SPELL_UPDATE_USES.
 -- Arming on the charge, not the cast, keeps a filler Ice Lance from claiming an unrelated proc.
@@ -30,6 +31,9 @@ local fingersOfFrostExpectedEnd = nil
 -- How long the banked end outlives its due time, waiting on the event. Measured at ~0.09s between the
 -- buff dropping and its event landing; the bank closes as soon as that event is consumed anyway.
 local fingersOfFrostExpiryGrace = 0.5
+
+-- Set by the proc's own overlay, which goes out only on a full loss and lands ahead of the charge event.
+local fingersOfFrostOverlayActive = false
 
 local talents --[[@as TRB.Classes.Talents]]
 
@@ -130,6 +134,9 @@ local function FillSpecializationCache()
 
 	specCache.mage_frost.snapshotData.snapshots[frostSpells.icicles.id] = TRB.Classes.Snapshot:New(frostSpells.icicles, nil, "always")
 	specCache.mage_frost.snapshotData.snapshots[frostSpells.fingersOfFrost.id] = TRB.Classes.Snapshot:New(frostSpells.fingersOfFrost)
+	-- Simple mode, or the UNIT_AURA-driven RefreshAllBuffs would run GetRemainingTime against the nil
+	-- endTime an overlay-tracked proc has and clear isActive between procs.
+	specCache.mage_frost.snapshotData.snapshots[frostSpells.brainFreeze.id] = TRB.Classes.Snapshot:New(frostSpells.brainFreeze, nil, "always")
 
 	specCache.mage_frost.barTextVariables = {
 		icons = {},
@@ -734,6 +741,37 @@ local function RefreshLookupData_Frost()
 		lookup["$fingersOfFrostTime"] = TRB.Functions.BarText:TimerPrecision(_fingersOfFrostTime)
 	end
 
+	-- Block E: Brain Freeze ($brainFreezeTime)
+	if not activeVars or activeVars["$brainFreezeTime"] then
+		local buff = snapshots[spells.brainFreeze.id].buff
+		local _brainFreezeActive = buff.isActive == true
+		local properties = buff.customProperties
+		local _brainFreezeTime = properties.remaining
+		local _brainFreezeTimeText = properties.remainingText
+
+		-- Secret when the Cooldown Manager has it, missing when it does not, so logic only learns whether
+		-- there is a value at all.
+		lookupLogic["$brainFreezeTime"] = _brainFreezeActive and (_brainFreezeTime ~= nil or _brainFreezeTimeText ~= nil)
+
+		-- Proc down is a known zero; proc up with nothing tracking it is unknown. Memoized on the rendered
+		-- string, since both are nil underneath.
+		local timeDisplay
+		if not _brainFreezeActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _brainFreezeTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_brainFreezeTime)
+		elseif _brainFreezeTimeText ~= nil then
+			-- Already formatted, to the viewer's precision rather than ours.
+			timeDisplay = _brainFreezeTimeText
+		else
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		end
+
+		if lookupChanged(prevState, "$brainFreezeTime", timeDisplay) then
+			lookup["$brainFreezeTime"] = timeDisplay
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -828,6 +866,48 @@ local function RefreshShatterStacks()
 	end
 end
 
+---Refreshes the time left on Brain Freeze from the Cooldown Manager. The activation overlay owns
+---whether the proc is up, so this only ever supplies the number the overlay cannot carry.
+local function RefreshBrainFreeze()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	if spells == nil or spells.brainFreeze == nil then
+		return
+	end
+
+	local snapshot = snapshotData.snapshots[spells.brainFreeze.id]
+	if snapshot == nil then
+		return
+	end
+
+	local properties = snapshot.buff.customProperties
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	if not snapshot.buff.isActive then
+		return
+	end
+
+	-- Pinned to the buff viewers, which describe the aura -- a cooldown viewer would describe the cast.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.brainFreeze.id)
+	if trackedId == nil then
+		return
+	end
+
+	-- Only the bar viewer leaves a subtracted remaining value; elsewhere take Blizzard's own countdown
+	-- text, which is empty when that viewer's timers are off -- a settings answer, not a value.
+	local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+	if remainingOk then
+		properties.remaining = remaining
+	else
+		local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+		if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+			properties.remainingText = remainingText
+		end
+	end
+end
+
 local function UpdateSnapshot_Frost()
 	local currentTime = GetTime()
 	UpdateSnapshot()
@@ -836,6 +916,7 @@ local function UpdateSnapshot_Frost()
 	local snapshots = snapshotData.snapshots
 
 	RefreshShatterStacks()
+	RefreshBrainFreeze()
 
 	local fingersOfFrost = snapshots[spells.fingersOfFrost.id]
 	if fingersOfFrost ~= nil then
@@ -1071,6 +1152,7 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local conditionMap = {
 				fingersOfFrost = snapshots[spells.fingersOfFrost.id].buff.isActive,
+				brainFreeze = snapshots[spells.brainFreeze.id].buff.isActive,
 			}
 
 			local manaBarColors = {
@@ -1265,13 +1347,16 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#shatter"] = spells.shatter.icon
 		lookup["#fingersOfFrost"] = spells.fingersOfFrost.icon
+		lookup["#brainFreeze"] = spells.brainFreeze.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
 		-- Manual tracking only runs while Frost is played, so anything banked is stale by now.
 		snapshotData.snapshots[spells.fingersOfFrost.id].buff:Reset()
+		snapshotData.snapshots[spells.brainFreeze.id].buff:Reset()
 		iceLanceSpendArmed = nil
 		fingersOfFrostExpectedEnd = nil
+		fingersOfFrostOverlayActive = false
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
@@ -1497,10 +1582,11 @@ local function HandleFingersOfFrostEvent(spellId)
 		if not snapshot.buff.isActive then
 			fingersOfFrostExpectedEnd = nil
 		end
-	elseif fingersOfFrostExpectedEnd ~= nil
-		and (not snapshot.buff.isActive or currentTime >= fingersOfFrostExpectedEnd) then
-		-- Timing out, not a new charge. The event trails the drop by a variable 0.02s-0.09s, so the
-		-- tick may or may not have zeroed the buff yet -- neither reading alone catches both cases.
+	elseif (snapshot.buff.isActive and not fingersOfFrostOverlayActive)
+		or (fingersOfFrostExpectedEnd ~= nil
+			and (not snapshot.buff.isActive or currentTime >= fingersOfFrostExpectedEnd)) then
+		-- Overlay already out, so every charge dropped at once. Gating on the buff still reading as active
+		-- keeps a proc landing on an empty buff a gain even if its show has not arrived yet.
 		snapshot.buff:Reset()
 		fingersOfFrostExpectedEnd = nil
 	else
@@ -1519,6 +1605,51 @@ fingersOfFrostFrame:SetScript("OnEvent", function(self, event, spellId, ...)
 		HandleFingersOfFrostEvent(spellId)
 	end
 end)
+
+---Updates data based on spell events
+local function HandleSpellEvents(self, event, ...)
+	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
+		local spellId = ...
+		if TRB.Data.character.specId ~= 3 then return end
+		-- A hide-all carries no spell id and is always followed by a re-show of whatever is still up,
+		-- so only an explicit id match counts.
+		if spellId == nil then return end
+
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		if not (spells and spells.brainFreeze and spells.fingersOfFrost) then return end
+
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshots = snapshotData and snapshotData.snapshots
+		if snapshots == nil then return end
+
+		local isShow = event == "SPELL_ACTIVATION_OVERLAY_SHOW"
+
+		if spellId == spells.brainFreeze.id then -- Brain Freeze
+			local snapshot = snapshots[spells.brainFreeze.id]
+			if snapshot == nil then return end
+			if isShow then
+				-- Never GetRemainingTime this buff: there is no endTime behind it to expire against.
+				snapshot.buff:InitializeCustomSimple(false)
+			else
+				snapshot.buff:Reset()
+			end
+		elseif spellId == spells.fingersOfFrost.id then -- Fingers of Frost
+			-- Flag only: a hide never means a partial spend, but leaving the charge count and the spend
+			-- arm to SPELL_UPDATE_USES keeps a misread here from being able to wipe either.
+			fingersOfFrostOverlayActive = isShow
+			return
+		else
+			return
+		end
+
+		TRB.Data.lookupDirty = true
+		if TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end
+end
+
+spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
 
 function TRB.Functions.Class:CheckCharacter()
 	local specId = GetSpecialization()
@@ -1581,10 +1712,14 @@ end
 
 function TRB.Functions.Class:EnableEvents()
 	fingersOfFrostFrame:RegisterEvent("SPELL_UPDATE_USES")
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 end
 
 function TRB.Functions.Class:DisableEvents()
 	fingersOfFrostFrame:UnregisterEvent("SPELL_UPDATE_USES")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 end
 
 function TRB.Functions.Class:EventRegistration()
@@ -1695,6 +1830,18 @@ do
 	frost["$fingersOfFrostStacks"] = fingersOfFrostActiveFn
 	frost["$fingersOfFrostStacksMax"] = true
 	frost["$fingersOfFrostTime"] = fingersOfFrostActiveFn
+	-- Goes false the moment the time is unknown, matching the "??" the text renders.
+	frost["$brainFreezeTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		if spells == nil or spells.brainFreeze == nil then
+			return false
+		end
+		local snap = TRB.Data.snapshotData.snapshots[spells.brainFreeze.id]
+		if snap == nil or snap.buff.isActive ~= true then
+			return false
+		end
+		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
+	end
 	-- Fire
 	local fireBlastChargesMaxFn = function()
 		local maxCharges = TRB.Data.character.maxResource2 or 0

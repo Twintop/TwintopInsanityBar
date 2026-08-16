@@ -466,9 +466,18 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			shared = {
-				nodeOrder = { "fingersOfFrost" },
+				nodeOrder = { "brainFreeze", "fingersOfFrost" },
 				gradientOrder = {},
 				indicatorColors = {
+					brainFreeze = {
+						color = "FFBFA0FF",
+						color2 = "FFBFA0FF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+						},
+					},
 					fingersOfFrost = {
 						color = "FF00C8FF",
 						color2 = "FF00C8FF",
@@ -1552,6 +1561,7 @@ local function FrostConstructIndicatorColorsPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 8, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
+			{ key = "brainFreeze", label = L["MageFrostIndicatorBrainFreeze"], tooltip = L["MageFrostIndicatorBrainFreezeTooltip"], colorLabel = L["MageFrostIndicatorBrainFreezeColor"] },
 			{ key = "fingersOfFrost", label = L["MageFrostIndicatorFingersOfFrost"], tooltip = L["MageFrostIndicatorFingersOfFrostTooltip"], colorLabel = L["MageFrostIndicatorFingersOfFrostColor"] },
 		},
 		barTargetDefs = {

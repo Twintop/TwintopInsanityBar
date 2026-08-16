@@ -159,6 +159,7 @@ end
 ---@field shatter TRB.Classes.SpellBase
 ---@field iceLance TRB.Classes.SpellBase
 ---@field fingersOfFrost TRB.Classes.SpellBase
+---@field brainFreeze TRB.Classes.SpellBase
 TRB.Classes.Mage.FrostSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.FrostSpells.__index = TRB.Classes.Mage.FrostSpells
 
@@ -186,6 +187,9 @@ function TRB.Classes.Mage.FrostSpells:New()
         duration = 15,
         maxStacks = 2
     })
+    self.brainFreeze = TRB.Classes.SpellBase:New({
+        id = 190446
+    })
 
     return self
 end
@@ -203,6 +207,7 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#shatter", icon = spells.shatter.icon, description = spells.shatter.name, printInSettings = true },
 		{ variable = "#fingersOfFrost", icon = spells.fingersOfFrost.icon, description = spells.fingersOfFrost.name, printInSettings = true },
+		{ variable = "#brainFreeze", icon = spells.brainFreeze.icon, description = spells.brainFreeze.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -227,6 +232,8 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$fingersOfFrostStacks", description = L["MageFrostBarTextVariable_fingersOfFrostStacks"], printInSettings = true, color = false },
 		{ variable = "$fingersOfFrostStacksMax", description = L["MageFrostBarTextVariable_fingersOfFrostStacksMax"], printInSettings = true, color = false },
 		{ variable = "$fingersOfFrostTime", description = L["MageFrostBarTextVariable_fingersOfFrostTime"], printInSettings = true, color = false },
+
+		{ variable = "$brainFreezeTime", description = L["MageFrostBarTextVariable_brainFreezeTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 	})
 end
 

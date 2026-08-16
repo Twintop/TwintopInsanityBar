@@ -28,9 +28,9 @@ local content = [====[
 ## Mage
 ### Frost
 
-- Add Fingers of Frost tracking. Charges are counted in Lua from `SPELL_UPDATE_USES`, not read from the Cooldown Manager, so no CDM setup is needed.
-- A Color Indicators tab for Frost, with a Fingers of Frost entry. Targets the Mana, Icicles and Shatter bars alongside the shared health and cast bars; defaults to the Mana bar border.
-- Bar text variables `$fingersOfFrostStacks`, `$fingersOfFrostStacksMax` and `$fingersOfFrostTime`, plus the `#fingersOfFrost` icon.
+- Add Fingers of Frost tracking. Bar text variables `$fingersOfFrostStacks`, `$fingersOfFrostStacksMax` and `$fingersOfFrostTime`, plus the `#fingersOfFrost` icon.
+- Add Brain Freeze tracking. Bar text variable `$brainFreezeTime`, plus the `#brainFreeze` icon. `$brainFreezeTime` requires Brain Freeze to be tracked in the CDM's buff viewers.
+- A Color Indicators tab for Frost, with Fingers of Frost and Brain Freeze entries. Both default to the Mana bar border, with Brain Freeze taking priority.
 
 ## Warrior
 ### Fury
