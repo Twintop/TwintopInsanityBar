@@ -303,8 +303,6 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, "bar", nil, nil, classId, specId)
 			end)
 		end
-		-- Fill only: border and background live on our own frame and repaint immediately.
-		TRB.Functions.OptionsUi.Primitives:AttachReloadBadgeToText(colorControls.bar.Font, barTypeDef.appearanceRequiresReload)
 		yCoord = yCoord - 30
 	end
 
@@ -341,7 +339,10 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 			row.key = nk
 			if row.checkbox then
 				row.checkbox:SetChecked(ncs and ncs.enabled)
-				getglobal(row.checkbox:GetName() .. 'Text'):SetText(nc.displayName)
+				local checkboxText = getglobal(row.checkbox:GetName() .. 'Text')
+				checkboxText:SetText(nc.displayName)
+				-- After the relabel: the badge is placed past the measured end of the new text.
+				TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(checkboxText, nc.cdm)
 				row.checkbox.tooltip = nc.tooltip or nc.displayName
 			end
 			if row.label then
@@ -367,6 +368,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 				end
 				if row.colorPicker.Font then
 					row.colorPicker.Font:SetText(nc.colorLabel or nc.displayName)
+					-- After the relabel: the badge is placed past the measured end of the new text.
+					TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(row.colorPicker.Font, nc.cdm)
 				end
 			end
 			-- Arrow enabled state

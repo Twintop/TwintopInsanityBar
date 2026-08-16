@@ -436,7 +436,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, title, po
 end
 
 local CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B = 1.0, 0.24, 0.24
-local RELOAD_BADGE_R, RELOAD_BADGE_G, RELOAD_BADGE_B = 1.0, 0.82, 0.0
 
 ---Builds a short coloured badge that explains itself on hover.
 ---@param parent Frame
@@ -478,15 +477,40 @@ local function BuildBadge(parent, label, header, tooltip, r, g, b, posX, posY)
 	return f
 end
 
----Places a badge just past the rendered end of a font string. Uses the measured string width, since
----these labels size their font string wider than the text they hold.
+---Places a badge just past the rendered end of a font string, creating it on first need and toggling
+---it thereafter. Reorderable rows re-label in place, so a build-once badge would stay on the wrong row.
 ---@param fontString FontString
+---@param kind string # One badge of each kind per font string
+---@param shown boolean # False hides an existing badge and never builds one
 ---@param padding number?
----@return Frame
-local function AttachBadge(fontString, label, header, tooltip, r, g, b, padding)
-	local badge = BuildBadge(fontString:GetParent(), label, header, tooltip, r, g, b, 0, 0)
+---@return Frame?
+local function AttachBadge(fontString, kind, shown, label, header, tooltip, r, g, b, padding)
+	---@diagnostic disable-next-line: inject-field
+	local badges = fontString.trbBadges
+	local badge = badges and badges[kind]
+
+	if not shown then
+		if badge ~= nil then
+			badge:Hide()
+		end
+		return nil
+	end
+
+	if badge == nil then
+		badge = BuildBadge(fontString:GetParent(), label, header, tooltip, r, g, b, 0, 0)
+		if badges == nil then
+			badges = {}
+			---@diagnostic disable-next-line: inject-field
+			fontString.trbBadges = badges
+		end
+		badges[kind] = badge
+	end
+
+	-- Re-measured every call: these labels size their font string wider than the text they hold, and
+	-- the text itself changes when rows are reordered.
 	badge:ClearAllPoints()
 	badge:SetPoint("LEFT", fontString, "LEFT", fontString:GetStringWidth() + (padding or 6), 0)
+	badge:Show()
 	return badge
 end
 
@@ -505,31 +529,19 @@ function TRB.Functions.OptionsUi.Primitives:BuildCdmBadge(parent, dependency, po
 		CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B, posX, posY)
 end
 
----Attaches a Cooldown Manager reliance badge just past the rendered end of a font string.
+---Attaches a Cooldown Manager reliance badge just past the rendered end of a font string. Safe to call
+---again whenever the label is re-pointed at another feature, which shows, hides and re-places it.
 ---@param fontString FontString # The label to sit beside
 ---@param dependency TRB.CdmDependency? # Absent or unrecognized produces no badge
 ---@param padding number? # Gap between the text and the badge (default 6)
 ---@return Frame? # nil when the feature declares no reliance
 function TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(fontString, dependency, padding)
-	if fontString == nil or dependency ~= TRB.Data.constants.cdmDependency.REQUIRED then
+	if fontString == nil then
 		return nil
 	end
-	return AttachBadge(fontString, L["CdmBadgeLabel"], L["CdmBadgeHeader"], L["CdmBadgeRequiredTooltip"],
+	return AttachBadge(fontString, "cdm", dependency == TRB.Data.constants.cdmDependency.REQUIRED,
+		L["CdmBadgeLabel"], L["CdmBadgeHeader"], L["CdmBadgeRequiredTooltip"],
 		CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B, padding)
-end
-
----Attaches a reload-required badge just past the rendered end of a font string, for settings whose
----value is only read once when the bar is built.
----@param fontString FontString # The label to sit beside
----@param requiresReload boolean? # Anything but true produces no badge
----@param padding number? # Gap between the text and the badge (default 6)
----@return Frame? # nil when the setting applies immediately
-function TRB.Functions.OptionsUi.Primitives:AttachReloadBadgeToText(fontString, requiresReload, padding)
-	if fontString == nil or requiresReload ~= true then
-		return nil
-	end
-	return AttachBadge(fontString, L["ReloadBadgeLabel"], L["ReloadBadgeHeader"], L["ReloadBadgeTooltip"],
-		RELOAD_BADGE_R, RELOAD_BADGE_G, RELOAD_BADGE_B, padding)
 end
 
 ---Creates a two-part help entry: a right-aligned variable name and a left-aligned description below it.

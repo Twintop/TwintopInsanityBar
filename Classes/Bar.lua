@@ -1651,7 +1651,6 @@ end
 ---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
 ---@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color). Multi-node secret bars also get no end cap (which node is highest is unknowable); single-node ones keep it.
 ---@field public hasCustomThresholds boolean? # False to drop this bar from the custom threshold system entirely. For bars whose max is secret (e.g. Ebon Might), a line cannot be positioned at all. Defaults to true.
----@field public appearanceRequiresReload boolean? # True when the fill art is painted once as the bar is built and a change needs a reload, as it does for the aura engine's write-once regions. Badges the fill color and texture options.
 ---@field public endCapMode string? # Multi-node end cap policy: "highest" (default) or "all" (independent nodes, e.g. Warrior defensives)
 ---@field public cdm TRB.CdmDependency? # Declared Cooldown Manager reliance for the whole bar. Options-panel badge only; nothing branches on it at runtime.
 ---@field public isSelfDriven boolean? # True when the bar shows/hides itself from live state (cast bars, GCD, mirror timers) rather than through ProcessBars. Such bars stay in the anchor tree as scaffolds and are never torn down by InvalidateAppliedState.
@@ -1718,7 +1717,6 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
 	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield, Fire Blast charges); forces custom thresholds to static color mode
 	self.hasCustomThresholds = config.hasCustomThresholds ~= false -- Opt out only; a secret max makes a line unpositionable
-	self.appearanceRequiresReload = config.appearanceRequiresReload or false -- Fill art is painted once when the bar is built
 	self.cdm = config.cdm -- Declared Cooldown Manager reliance for the whole bar; options-panel badge only, nothing branches on it
 	self.isCastbar = config.isCastbar or false -- Player/Target/Focus cast bar; display name already ends in "Cast Bar" so labels drop the redundant trailing "Bar"
 	self.isSelfDriven = config.isSelfDriven or false -- Renders itself from live state instead of via ProcessBars
@@ -2303,8 +2301,6 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		-- Duration and remaining both come from the Cooldown Manager as secrets, so there is no
 		-- plain max to scale a threshold line against.
 		hasCustomThresholds = false,
-		-- The aura engine paints this fill once as the bar is built; changes need a reload.
-		appearanceRequiresReload = true,
 		colorCurveType = nil, -- Simple bar color
 		visibilityKey = "ebonMight",
 		-- Fed entirely by the Cooldown Manager's item for Ebon Might.
@@ -2355,8 +2351,6 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		-- Duration and remaining both come from the Cooldown Manager as secrets, so there is no
 		-- plain max to scale a threshold line against.
 		hasCustomThresholds = false,
-		-- The aura engine paints this fill once as the bar is built; changes need a reload.
-		appearanceRequiresReload = true,
 		colorCurveType = nil, -- Simple bar color
 		visibilityKey = "enrage",
 		-- Fed entirely by the Cooldown Manager's item for Enrage.

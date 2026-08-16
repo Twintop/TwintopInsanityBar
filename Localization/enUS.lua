@@ -3497,7 +3497,3 @@ L["MageFrostBarTextVariable_fingersOfFrostTime"] = "Time remaining on Fingers of
 L["MageFrostIndicatorFingersOfFrost"] = "Fingers of Frost"
 L["MageFrostIndicatorFingersOfFrostTooltip"] = "Changes to this color when you have at least one Fingers of Frost charge."
 L["MageFrostIndicatorFingersOfFrostColor"] = "Fingers of Frost is active"
-
-L["ReloadBadgeLabel"] = "RELOAD"
-L["ReloadBadgeHeader"] = "Needs a UI reload"
-L["ReloadBadgeTooltip"] = "This bar's fill is drawn by the game's own aura engine, which only accepts its color and texture at the moment the bar is built. Changes here show up after a /reload."

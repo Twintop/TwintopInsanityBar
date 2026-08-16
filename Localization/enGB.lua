@@ -423,6 +423,4 @@ if locale == "enGB" then
     -- Mage Frost: Fingers of Frost
     L["MageFrostIndicatorFingersOfFrostTooltip"] = "Changes to this colour when you have at least one Fingers of Frost charge."
 
-    -- Reload badge
-    L["ReloadBadgeTooltip"] = "This bar's fill is drawn by the game's own aura engine, which only accepts its colour and texture at the moment the bar is built. Changes here show up after a /reload."
 end

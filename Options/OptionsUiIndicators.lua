@@ -312,6 +312,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			end
 			if row.colorPicker.Font then
 				row.colorPicker.Font:SetText(def.colorLabel)
+				-- After the relabel: the badge is placed past the measured end of the new text.
+				TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(row.colorPicker.Font, def.cdm)
 			end
 			TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
 		end

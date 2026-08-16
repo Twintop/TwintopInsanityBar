@@ -4162,10 +4162,12 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 
 		-- Apply appearance if bar group exists, even if barSettings is missing (use fallbacks)
 		if barGroup then
-			-- Get textures from flat keys (same pattern as manaBar: staggerBar, staggerBorder, staggerBackground)
-			local barTexture = settings.textures and (settings.textures[key .. "Bar"] or settings.textures.resourceBar)
-			local borderTexture = settings.textures and (settings.textures[key .. "Border"] or settings.textures.border)
-			local backgroundTexture = settings.textures and (settings.textures[key .. "Background"] or settings.textures.background)
+			-- Under texture lock the shared textures win: a panel only syncs the per-bar keys it built
+			-- dropdowns for, and the global panel builds none for class-specific bars.
+			local textureLock = settings.textures and settings.textures.textureLock
+			local barTexture = settings.textures and ((not textureLock and settings.textures[key .. "Bar"]) or settings.textures.resourceBar)
+			local borderTexture = settings.textures and ((not textureLock and settings.textures[key .. "Border"]) or settings.textures.border)
+			local backgroundTexture = settings.textures and ((not textureLock and settings.textures[key .. "Background"]) or settings.textures.background)
 
 			-- Get colors from nested structure, falling back to registry defaults for
 			-- newly-added or partially-migrated custom bars.
