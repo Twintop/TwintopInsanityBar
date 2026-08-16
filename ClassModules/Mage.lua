@@ -15,8 +15,6 @@ local frameLevels = TRB.Data.constants.frameLevels
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 local eventFrame = CreateFrame("Frame")
-local fireBlastChargesFrame = CreateFrame("Frame")
-local fingersOfFrostFrame = CreateFrame("Frame")
 local spellEventFrame = CreateFrame("Frame")
 
 local talents --[[@as TRB.Classes.Talents]]
@@ -1529,13 +1527,6 @@ local function HandleFireBlastChargesEvent(spellId)
 	end
 end
 
-fireBlastChargesFrame:RegisterEvent("SPELL_UPDATE_CHARGES")
-fireBlastChargesFrame:SetScript("OnEvent", function(self, event, spellId, ...)
-	if event == "SPELL_UPDATE_CHARGES" then
-		HandleFireBlastChargesEvent(spellId)
-	end
-end)
-
 -- Every Fingers of Frost charge change fires SPELL_UPDATE_USES on Ice Lance, not on the buff itself.
 local function HandleFingersOfFrostEvent(spellId)
 	if TRB.Data.character.specId ~= 3 then return end
@@ -1556,15 +1547,15 @@ local function HandleFingersOfFrostEvent(spellId)
 	end
 end
 
-fingersOfFrostFrame:SetScript("OnEvent", function(self, event, spellId, ...)
-	if event == "SPELL_UPDATE_USES" then
-		HandleFingersOfFrostEvent(spellId)
-	end
-end)
-
 ---Updates data based on spell events
 local function HandleSpellEvents(self, event, ...)
-	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
+	if event == "SPELL_UPDATE_CHARGES" then
+		local spellId = ...
+		HandleFireBlastChargesEvent(spellId)
+	elseif event == "SPELL_UPDATE_USES" then
+		local spellId = ...
+		HandleFingersOfFrostEvent(spellId)
+	elseif event == "SPELL_ACTIVATION_OVERLAY_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
 		local spellId = ...
 		if TRB.Data.character.specId ~= 3 then return end
 		-- A hide-all carries no spell id and is always followed by a re-show of whatever is still up,
@@ -1670,13 +1661,20 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EnableEvents()
-	fingersOfFrostFrame:RegisterEvent("SPELL_UPDATE_USES")
-	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
-	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+	if TRB.Data.character.specId == 2 then
+		spellEventFrame:RegisterEvent("SPELL_UPDATE_CHARGES")
+	elseif TRB.Data.character.specId == 3 then
+		spellEventFrame:RegisterEvent("SPELL_UPDATE_USES")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+	end
 end
 
+-- Ungated on purpose: EventRegistration calls this once specId has already flipped, so a spec check
+-- here would strand the outgoing spec's events.
 function TRB.Functions.Class:DisableEvents()
-	fingersOfFrostFrame:UnregisterEvent("SPELL_UPDATE_USES")
+	spellEventFrame:UnregisterEvent("SPELL_UPDATE_CHARGES")
+	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 end
@@ -1696,6 +1694,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = 1
+		TRB.Functions.Class:EnableEvents()
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.mage.frost then
 		local spells = TRB.Data.specCache["mage_frost"].spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 		TRB.Data.specSupported = true
