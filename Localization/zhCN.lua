@@ -3256,4 +3256,17 @@ if locale == "zhCN" then
 	L["GlobalOptionsCdmUnknownDisplayQuestionMarks"] = "??"
 	L["GlobalOptionsCdmUnknownDisplayZero"] = "显示零（0、0.0、00:00等）"
 
+	-- Warrior Fury: stand-alone Enrage bar
+	L["ResourceWarriorEnrage"] = "激怒"
+	L["TabEnrage"] = "激怒"
+	L["EnrageBar"] = "激怒计时条"
+	L["BarNameEnrage"] = "激怒"
+	
+	-- Mage Frost: Fingers of Frost
+	L["MageFrostBarTextVariable_fingersOfFrostStacks"] = "你当前拥有的寒冰指层数"
+	L["MageFrostBarTextVariable_fingersOfFrostStacksMax"] = "寒冰指最大层数"
+	L["MageFrostBarTextVariable_fingersOfFrostTime"] = "寒冰指剩余持续时间"
+	L["MageFrostIndicatorFingersOfFrost"] = "寒冰指"
+	L["MageFrostIndicatorFingersOfFrostTooltip"] = "当你至少拥有一层寒冰指时，会切换为此颜色。"
+	L["MageFrostIndicatorFingersOfFrostColor"] = "寒冰指已激活"
 end
