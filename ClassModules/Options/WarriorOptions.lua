@@ -1478,6 +1478,11 @@ local function FuryConstructIndicatorColorsPanel(parent)
 			{ key = "whirlwindBar", label = L["BarNameWhirlwindBar"] },
 			{ key = "enrageBar", label = L["BarNameEnrage"] },
 		},
+		-- The Enrage fill is painted by the aura engine, whose regions are write-once at creation; nothing
+		-- can recolor it afterwards. Border and background are ours and still apply.
+		excludedElements = {
+			["enrageBar"] = { bar = true },
+		},
 		ddNamePrefix = "TwintopResourceBar_Warrior_Fury",
 		overcapConfig = {
 			primaryResourceString = L["ResourceRage"],

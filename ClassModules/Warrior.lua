@@ -1615,7 +1615,9 @@ local function UpdateResourceBar()
 
 			local enrageBarColors = specSettings.colors.bars and specSettings.colors.bars.enrage
 			local enrageColors = {
-				bar = enrageBarColors and enrageBarColors.bar.color,
+				-- The whole entry, not just its string: ApplyFillColor only reaches its gradient branch
+				-- for a table, the same way the primary bar's base color is passed.
+				bar = enrageBarColors and enrageBarColors.bar,
 				border = enrageBarColors and enrageBarColors.border.color,
 				background = enrageBarColors and enrageBarColors.background.color,
 			}
@@ -1796,18 +1798,22 @@ local function UpdateResourceBar()
 				refreshText = true
 				local enrageNode = barGroups and barGroups.enrage and barGroups.enrage:GetNode(1)
 				if enrageNode then
-					-- Driven straight off the Cooldown Manager: SetMinMaxValues/SetValue normalise
-					-- inside the widget, so the secret duration never has to be read.
-					if not enrageActive or not cdm:ApplyToBarNode(enrageNode, spells.enrage.id) then
-						enrageNode:SetMinMax(0, 1)
-						enrageNode:SetValue(0)
-					end
-
+					-- Colors first: the engine fill mirrors this node's art, so it would otherwise trail
+					-- a color change by a frame.
 					if enrageBarColors then
 						TRB.Functions.Color:ApplyFillColor(enrageNode, enrageColors.bar)
 						enrageNode:SetBorderColor(enrageColors.border)
 						enrageNode:SetBackgroundColorFromString(enrageColors.background)
 						Bar:ApplyEndCapIndicator(enrageNode, "enrageBar")
+					end
+
+					-- The engine owns the duration; the Cooldown Manager fallback only ever has a
+					-- readable remaining when the spell sits in Tracked Bars.
+					if not TRB.Functions.AuraEngine:Attach(enrageNode, "player", "HELPFUL", spells.enrage.id) then
+						if not enrageActive or not cdm:ApplyToBarNode(enrageNode, spells.enrage.id) then
+							enrageNode:SetMinMax(0, 1)
+							enrageNode:SetValue(0)
+						end
 					end
 				end
 			end

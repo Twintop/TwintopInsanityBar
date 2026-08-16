@@ -1,0 +1,9 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<!-- The duration binding only accepts a region the aura button itself owns, so the button brings
+	     its own StatusBar instead of being handed one of ours. Layers must precede Frames. -->
+	<Button name="TwintopAuraEngineButtonTemplate" virtual="true">
+		<Frames>
+			<StatusBar parentKey="FillBar" setAllPoints="true"/>
+		</Frames>
+	</Button>
+</Ui>

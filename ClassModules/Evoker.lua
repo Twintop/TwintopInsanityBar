@@ -1254,7 +1254,9 @@ local function UpdateResourceBar()
 			local barBackgroundColor = specSettings.colors.bar.background.color
 
 			local ebonMightBarColors = specSettings.colors.bars and specSettings.colors.bars.ebonMight
-			local ebonMightBarColor = ebonMightBarColors and ebonMightBarColors.bar.color
+			-- The whole entry, not just its string: ApplyFillColor only reaches its gradient branch for a
+			-- table, the same way the primary bar's base color is passed.
+			local ebonMightBarColor = ebonMightBarColors and ebonMightBarColors.bar
 			local ebonMightBorderColor = ebonMightBarColors and ebonMightBarColors.border.color
 			local ebonMightBackgroundColor = ebonMightBarColors and ebonMightBarColors.background.color
 
@@ -1305,19 +1307,24 @@ local function UpdateResourceBar()
 				refreshText = true
 				local ebonMightNode = barGroups and barGroups.ebonMight and barGroups.ebonMight:GetNode(1)
 				if ebonMightNode then
-					-- Driven straight off the Cooldown Manager: SetMinMaxValues/SetValue normalise
-					-- inside the widget, so the Mastery-scaled duration never has to be read.
-					if ebonMightTrackedId == nil or not ebonMightActive
-						or not cdm:ApplyToBarNode(ebonMightNode, ebonMightTrackedId) then
-						ebonMightNode:SetMinMax(0, 1)
-						ebonMightNode:SetValue(0)
-					end
-
+					-- Colors first: the engine fill mirrors this node's art, so it would otherwise trail
+					-- a color change by a frame.
 					if ebonMightBarColors then
 						TRB.Functions.Color:ApplyFillColor(ebonMightNode, ebonMightColors.bar)
 						ebonMightNode:SetBorderColor(ebonMightColors.border)
 						ebonMightNode:SetBackgroundColorFromString(ebonMightColors.background)
 						Bar:ApplyEndCapIndicator(ebonMightNode, "ebonMight")
+					end
+
+					-- Mastery scales the duration and Sands of Time extends it, so only the live aura
+					-- knows the timing. The Cooldown Manager fallback needs a Tracked Bars entry.
+					if not TRB.Functions.AuraEngine:Attach(ebonMightNode, "player", "HELPFUL",
+						spells.ebonMight.id, spells.ebonMight.talentId) then
+						if ebonMightTrackedId == nil or not ebonMightActive
+							or not cdm:ApplyToBarNode(ebonMightNode, ebonMightTrackedId) then
+							ebonMightNode:SetMinMax(0, 1)
+							ebonMightNode:SetValue(0)
+						end
 					end
 				end
 			end

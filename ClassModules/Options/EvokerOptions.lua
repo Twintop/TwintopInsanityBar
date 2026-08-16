@@ -1929,6 +1929,11 @@ local function AugmentationConstructIndicatorColorsPanel(parent)
 			{ key = "essences", label = L["BarNameEssences"] },
 			{ key = "ebonMight", label = L["BarNameEbonMight"] },
 		},
+		-- The Ebon Might fill is painted by the aura engine, whose regions are write-once at creation;
+		-- nothing can recolor it afterwards. Border and background are ours and still apply.
+		excludedElements = {
+			["ebonMight"] = { bar = true },
+		},
 		ddNamePrefix = "TwintopResourceBar_Evoker_Augmentation",
 	}))
 

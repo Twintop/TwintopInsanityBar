@@ -585,12 +585,15 @@ function SlashCmdList.TWINTOP(msg)
 		TRB.Functions.News:Show()
 	elseif cmd == "cdm" then
 		local spellArg = ParseCmdString(subcmd)
-		local spellId = spellArg and tonumber(spellArg) or nil
-		if spellId ~= nil then
-			TRB.Functions.CooldownManager:PrintSpellReport(spellId)
-		else
+		if spellArg == nil or spellArg == "" then
 			TRB.Functions.CooldownManager:PrintDiagnostics()
+		elseif tonumber(spellArg) ~= nil then
+			TRB.Functions.CooldownManager:PrintSpellReport(tonumber(spellArg))
+		else
+			print("|cFFFF8800TRB CDM:|r Unknown argument '" .. spellArg .. "'. Usage: /trb cdm [spellId]")
 		end
+	elseif cmd == "auraengine" then
+		TRB.Functions.AuraEngine:PrintDiagnostics()
 	elseif cmd == "minimap" then
 		local minimapCmd = ParseCmdString(subcmd)
 		if minimapCmd == "hide" then
@@ -600,13 +603,15 @@ function SlashCmdList.TWINTOP(msg)
 		else
 			TRB.Functions.MinimapButton:Toggle()
 		end
-	else
+	elseif cmd == nil or cmd == "" then
 		TRB.Options.OptionsFrame:Show()
 		if TRB.Data.barConstructedForSpec ~= nil then
 			TRB.Options.OptionsFrame:SelectCategory(TRB.Data.barConstructedForSpec)
 		else
 			TRB.Options.OptionsFrame:SelectCategory("main")
 		end
+	else
+		print("|cFFFF8800TRB:|r Unknown command '" .. cmd .. "'. Valid: reset, fill, move, news, minimap. Use /trb on its own for options.")
 	end
 end
 

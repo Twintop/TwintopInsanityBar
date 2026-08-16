@@ -18,6 +18,15 @@ local content = [====[
 
 - [#810 - @EricaPomme](#810) Reduce the CPU cost of bars anchored to Cooldown Manager frames.
 
+## Evoker
+### Augmentation
+
+- Fix the Ebon Might bar never filling when Ebon Might is tracked in the Cooldown Manager's Tracked Buffs category. Only Tracked Bars entries expose a readable remaining time; the fill is now driven by the aura engine instead, which does not care which category the spell sits in.
+- Remove End Cap support from the Ebon Might bar. The cap anchors to the fill's leading edge, and an engine-driven fill edge cannot be anchored to from addon code.
+- Remove the Ebon Might bar's Bar element from the Color Indicator targets. The engine paints that fill once and it cannot be recolored afterwards, so the option never did anything. Border and Background still apply.
+- Fix the Ebon Might bar ignoring its gradient color. The render path was handed only the first color, so the second and the gradient direction never reached the bar.
+- Add a RELOAD badge beside the Ebon Might bar's fill color and fill texture. Those are handed to the aura engine as the bar is built and cannot be changed afterwards, so a change needs a `/reload`. Border and background are unaffected and still apply immediately.
+
 ## Mage
 ### Frost
 
@@ -29,6 +38,11 @@ local content = [====[
 ### Fury
 
 - [#808](#808) Add a new Enrage bar, tracking the time remaining on Enrage. Requires CDM to be enabled and Enrage to be actively tracked to function. Set to Never Show by default; enable it under Bar Visibility.
+- Fix the Enrage bar never filling when Enrage is tracked in the Cooldown Manager's Tracked Buffs category. Same aura engine change as the Ebon Might bar above.
+- Remove End Cap support from the Enrage bar, for the same reason as the Ebon Might bar.
+- Remove the Enrage bar's Bar element from the Color Indicator targets, for the same reason. Border and Background still apply.
+- Fix the Enrage bar ignoring its gradient color, same cause as the Ebon Might bar.
+- Add a RELOAD badge beside the Enrage bar's fill color and fill texture, for the same reason as the Ebon Might bar.
 
 ---
 

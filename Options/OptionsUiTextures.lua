@@ -170,7 +170,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		local barKey = barTypeDef.key .. "Bar"
 		-- Cast bar display names already end in "Bar", so use a label that omits the redundant trailing "Bar".
 		local barLabel = barTypeDef.isCastbar and L["CustomBarTextureCastbarBar"] or L["CustomBarTextureBar"]
-		table.insert(barTextureItems, { key = barKey, label = string.format(barLabel, barTypeDef.displayName), callback = function(newValue) StatusbarSetValue(barTypeDef.key, newValue) end })
+		table.insert(barTextureItems, { key = barKey, label = string.format(barLabel, barTypeDef.displayName), callback = function(newValue) StatusbarSetValue(barTypeDef.key, newValue) end, requiresReload = barTypeDef.appearanceRequiresReload })
 	end
 
 	for i, item in ipairs(barTextureItems) do
@@ -179,6 +179,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		end
 		local xPos = (i % 2 == 1) and oUi.xCoord or oUi.xCoord2
 		TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "statusbar", item.key, item.label, L["StatusBarTextures"], item.callback)
+		local dropDown = controls.dropDown.textures[item.key]
+		TRB.Functions.OptionsUi.Primitives:AttachReloadBadgeToText(dropDown and dropDown.label and dropDown.label.font, item.requiresReload)
 	end
 
 	yCoord = yCoord - 70

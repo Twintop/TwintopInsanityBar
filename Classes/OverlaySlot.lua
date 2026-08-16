@@ -586,6 +586,14 @@ function TRB.Classes.OverlaySlot:ReanchorInsetOverlay(force)
 	if not self.insetClipFrame then return end
 
 	local parent = self.parentNode
+	-- Same forbidden fill texture as the end cap: nothing of ours may anchor to an engine-driven edge.
+	if parent:IsEngineDriven() then
+		self.insetClipFrame:Hide()
+		self.insetOverlayReady = false
+		self._insetAnchorSig = nil
+		return
+	end
+
 	local fillDirection = parent.fillDirection or "leftRight"
 	local Bar = TRB.Functions.Bar
 	local isVertical = Bar:IsVerticalFill(fillDirection)
@@ -848,6 +856,15 @@ function TRB.Classes.OverlaySlot:ReanchorEndCap(force)
 	if not self.endCapClipFrame then return end
 
 	local parent = self.parentNode
+	-- The engine's fill texture is forbidden: SetPoint against it errors. A cap on an engine-driven
+	-- bar would have to be a region the engine's own button owns.
+	if parent:IsEngineDriven() then
+		self.endCapClipFrame:Hide()
+		self.endCapReady = false
+		self._endCapAnchorSig = nil
+		return
+	end
+
 	local fillDirection = parent.fillDirection or "leftRight"
 	local Bar = TRB.Functions.Bar
 	local isVertical = Bar:IsVerticalFill(fillDirection)

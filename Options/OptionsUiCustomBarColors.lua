@@ -303,6 +303,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, "bar", nil, nil, classId, specId)
 			end)
 		end
+		-- Fill only: border and background live on our own frame and repaint immediately.
+		TRB.Functions.OptionsUi.Primitives:AttachReloadBadgeToText(colorControls.bar.Font, barTypeDef.appearanceRequiresReload)
 		yCoord = yCoord - 30
 	end
 

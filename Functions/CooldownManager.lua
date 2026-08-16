@@ -775,8 +775,8 @@ local function ApplyBarValues(frame, duration, remaining)
 	frame:SetValue(remaining)
 end
 
----Drives a bar node's fill straight from the CDM. SetMinMaxValues + SetValue normalise inside the
----widget, so no arithmetic ever touches the secret.
+---Drives a bar node's fill straight from the CDM, normalised inside the widget so no arithmetic
+---touches the secret. Bar viewer only -- icon viewers compute no remaining value; they need the aura engine.
 ---@param node TRB.Classes.BarNode
 ---@param spellId integer
 ---@return boolean applied
