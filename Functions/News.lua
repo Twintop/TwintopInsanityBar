@@ -12,11 +12,15 @@ local content = [====[
 
 ---
 
-# 12.1.0.2-release (2026-08-14)
+# 12.1.0.2-release (2026-08-17)
 ## General
 ### Edit Mode
 
 - [#810 - @EricaPomme](#810) Reduce the CPU cost of bars anchored to Cooldown Manager frames.
+
+### Localization
+
+- [#811 - @MOSS099](#811) Updated translations for Simplified Chinese (zhCN).
 
 ## Evoker
 ### Augmentation
@@ -28,17 +32,14 @@ local content = [====[
 ## Mage
 ### Frost
 
-- Add Fingers of Frost tracking. Bar text variables `$fingersOfFrostStacks`, `$fingersOfFrostStacksMax` and `$fingersOfFrostTime`, plus the `#fingersOfFrost` icon.
-- Add Brain Freeze tracking. Bar text variable `$brainFreezeTime`, plus the `#brainFreeze` icon. `$brainFreezeTime` requires Brain Freeze to be tracked in the CDM's buff viewers.
-- A Color Indicators tab for Frost, with Fingers of Frost and Brain Freeze entries. Both default to the Mana bar border, with Brain Freeze taking priority.
+- [#809](#809) Add Fingers of Frost tracking. Bar text variables `$fingersOfFrostStacks`, `$fingersOfFrostStacksMax` and `$fingersOfFrostTime`, plus the `#fingersOfFrost` icon.
+- [#809](#809) Add Brain Freeze tracking. Bar text variable `$brainFreezeTime`, plus the `#brainFreeze` icon. `$brainFreezeTime` requires Brain Freeze to be tracked in the CDM's buff viewers.
+- [#809](#809) A Color Indicators tab for Frost, with Fingers of Frost and Brain Freeze entries. Both default to the Mana bar border, with Brain Freeze taking priority.
 
 ## Warrior
 ### Fury
 
 - [#808](#808) Add a new Enrage bar, tracking the time remaining on Enrage. Requires CDM to be enabled and Enrage to be actively tracked to function. Set to Never Show by default; enable it under Bar Visibility.
-- Fix the Enrage bar never filling when Enrage is tracked in the Cooldown Manager's Tracked Buffs category. Same aura engine change as the Ebon Might bar above.
-- Remove End Cap support from the Enrage bar, for the same reason as the Ebon Might bar.
-- Fix the Enrage bar ignoring its gradient color, same cause as the Ebon Might bar.
 
 ---
 
