@@ -19,22 +19,6 @@ local fireBlastChargesFrame = CreateFrame("Frame")
 local fingersOfFrostFrame = CreateFrame("Frame")
 local spellEventFrame = CreateFrame("Frame")
 
--- Set by an Ice Lance cast that had a charge to burn, then claimed by the next SPELL_UPDATE_USES.
--- Arming on the charge, not the cast, keeps a filler Ice Lance from claiming an unrelated proc.
-local iceLanceSpendArmed = nil
--- Backstop, not the discriminator: retires an arm whose charge event never came.
-local iceLanceSpendWindow = 0.5
-
--- Timing out drops every charge at once, which fires the same SPELL_UPDATE_USES a gain does. Banking
--- when the buff is due to end is what tells the two apart.
-local fingersOfFrostExpectedEnd = nil
--- How long the banked end outlives its due time, waiting on the event. Measured at ~0.09s between the
--- buff dropping and its event landing; the bank closes as soon as that event is consumed anyway.
-local fingersOfFrostExpiryGrace = 0.5
-
--- Set by the proc's own overlay, which goes out only on a full loss and lands ahead of the charge event.
-local fingersOfFrostOverlayActive = false
-
 local talents --[[@as TRB.Classes.Talents]]
 
 Global_TwintopResourceBar = {}
@@ -134,6 +118,8 @@ local function FillSpecializationCache()
 
 	specCache.mage_frost.snapshotData.snapshots[frostSpells.icicles.id] = TRB.Classes.Snapshot:New(frostSpells.icicles, nil, "always")
 	specCache.mage_frost.snapshotData.snapshots[frostSpells.fingersOfFrost.id] = TRB.Classes.Snapshot:New(frostSpells.fingersOfFrost)
+	-- The charge count is a secret in combat, so it is counted in Lua from SPELL_UPDATE_USES instead.
+	specCache.mage_frost.snapshotData.snapshots[frostSpells.fingersOfFrost.id].buff:InitializeProcCharges()
 	-- Simple mode, or the UNIT_AURA-driven RefreshAllBuffs would run GetRemainingTime against the nil
 	-- endTime an overlay-tracked proc has and clear isActive between procs.
 	specCache.mage_frost.snapshotData.snapshots[frostSpells.brainFreeze.id] = TRB.Classes.Snapshot:New(frostSpells.brainFreeze, nil, "always")
@@ -808,8 +794,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		if spells ~= nil and spells.iceLance ~= nil and spellId == spells.iceLance.id then
 			local snapshot = spells.fingersOfFrost and snapshotData.snapshots
 				and snapshotData.snapshots[spells.fingersOfFrost.id]
-			if snapshot ~= nil and snapshot.buff.isActive then
-				iceLanceSpendArmed = GetTime()
+			if snapshot ~= nil then
+				snapshot.buff:ArmProcSpend()
 			end
 		end
 	end
@@ -920,13 +906,7 @@ local function UpdateSnapshot_Frost()
 
 	local fingersOfFrost = snapshots[spells.fingersOfFrost.id]
 	if fingersOfFrost ~= nil then
-		fingersOfFrost.buff:GetRemainingTime(currentTime)
-		-- Down and past the window the expiry event would have landed in -- death, a dispel, or an
-		-- event that never came. Drop the bank so it can't swallow the next real proc.
-		if not fingersOfFrost.buff.isActive and fingersOfFrostExpectedEnd ~= nil
-			and currentTime > fingersOfFrostExpectedEnd + fingersOfFrostExpiryGrace then
-			fingersOfFrostExpectedEnd = nil
-		end
+		fingersOfFrost.buff:RefreshProcCharges(currentTime)
 	end
 end
 
@@ -1353,10 +1333,8 @@ local function SwitchSpec()
 
 		-- Manual tracking only runs while Frost is played, so anything banked is stale by now.
 		snapshotData.snapshots[spells.fingersOfFrost.id].buff:Reset()
+		snapshotData.snapshots[spells.fingersOfFrost.id].buff:ResetProcCharges()
 		snapshotData.snapshots[spells.brainFreeze.id].buff:Reset()
-		iceLanceSpendArmed = nil
-		fingersOfFrostExpectedEnd = nil
-		fingersOfFrostOverlayActive = false
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
@@ -1558,8 +1536,7 @@ fireBlastChargesFrame:SetScript("OnEvent", function(self, event, spellId, ...)
 	end
 end)
 
--- Tracked by hand because the charge count is a secret in combat. Every charge change fires
--- SPELL_UPDATE_USES on Ice Lance; a spend shares the cast's frame, anything else is a gain.
+-- Every Fingers of Frost charge change fires SPELL_UPDATE_USES on Ice Lance, not on the buff itself.
 local function HandleFingersOfFrostEvent(spellId)
 	if TRB.Data.character.specId ~= 3 then return end
 
@@ -1571,28 +1548,7 @@ local function HandleFingersOfFrostEvent(spellId)
 	local snapshot = snapshotData and snapshotData.snapshots and snapshotData.snapshots[spells.fingersOfFrost.id]
 	if snapshot == nil then return end
 
-	local currentTime = GetTime()
-
-	local isSpend = iceLanceSpendArmed ~= nil and (currentTime - iceLanceSpendArmed) <= iceLanceSpendWindow
-
-	if isSpend then
-		-- One cast burns one charge, so the arm retires here rather than claiming the next event too.
-		iceLanceSpendArmed = nil
-		snapshot.buff:RemoveStack()
-		if not snapshot.buff.isActive then
-			fingersOfFrostExpectedEnd = nil
-		end
-	elseif (snapshot.buff.isActive and not fingersOfFrostOverlayActive)
-		or (fingersOfFrostExpectedEnd ~= nil
-			and (not snapshot.buff.isActive or currentTime >= fingersOfFrostExpectedEnd)) then
-		-- Overlay already out, so every charge dropped at once. Gating on the buff still reading as active
-		-- keeps a proc landing on an empty buff a gain even if its show has not arrived yet.
-		snapshot.buff:Reset()
-		fingersOfFrostExpectedEnd = nil
-	else
-		snapshot.buff:AddStackOrInitializeCustom(spells.fingersOfFrost.duration, nil, true, 1)
-		fingersOfFrostExpectedEnd = snapshot.buff.endTime
-	end
+	snapshot.buff:HandleProcChargeEvent()
 
 	TRB.Data.lookupDirty = true
 	if TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -1636,7 +1592,10 @@ local function HandleSpellEvents(self, event, ...)
 		elseif spellId == spells.fingersOfFrost.id then -- Fingers of Frost
 			-- Flag only: a hide never means a partial spend, but leaving the charge count and the spend
 			-- arm to SPELL_UPDATE_USES keeps a misread here from being able to wipe either.
-			fingersOfFrostOverlayActive = isShow
+			local snapshot = snapshots[spells.fingersOfFrost.id]
+			if snapshot ~= nil then
+				snapshot.buff:SetProcOverlay(isShow)
+			end
 			return
 		else
 			return
