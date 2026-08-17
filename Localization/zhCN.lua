@@ -3269,4 +3269,11 @@ if locale == "zhCN" then
 	L["MageFrostIndicatorFingersOfFrost"] = "寒冰指"
 	L["MageFrostIndicatorFingersOfFrostTooltip"] = "当你至少拥有一层寒冰指时，会切换为此颜色。"
 	L["MageFrostIndicatorFingersOfFrostColor"] = "寒冰指已激活"
+
+	-- Mage Frost: Brain Freeze
+	L["MageFrostBarTextVariable_brainFreezeTime"] = "你的冰冷智慧触发剩余时间。用于布尔逻辑判断时返回真/假，底层游戏接口返回的值为保密数据。"
+	L["MageFrostIndicatorBrainFreeze"] = "冰冷智慧"
+	L["MageFrostIndicatorBrainFreezeTooltip"] = "冰冷智慧激活时将切换为此颜色。"
+	L["MageFrostIndicatorBrainFreezeColor"] = "冰冷智慧已激活"
+
 end
