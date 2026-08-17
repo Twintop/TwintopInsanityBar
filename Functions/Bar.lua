@@ -3733,9 +3733,21 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					if iconBorderColor then
 						singleNode:SetIconBorderColorString(iconBorderColor)
 					end
-					-- Only reveal it if something has actually assigned a texture; the render path owns
-					-- visibility from there (the castbar shows it only while a spell is casting).
-					singleNode:SetIconVisible(singleNode._iconTexture ~= nil)
+					-- Same for the background an empty (placeholder) icon shows.
+					local iconBackgroundColor = config.colors and config.colors.background and iconColorSettings and iconColorSettings[config.colors.background]
+					if type(iconBackgroundColor) == "table" then
+						iconBackgroundColor = iconBackgroundColor.color
+					end
+					if iconBackgroundColor then
+						singleNode:SetIconBackgroundColorString(iconBackgroundColor)
+					end
+					-- The strip is reserved either way, so show the frame: with art when something has assigned
+					-- it, else empty, which the render path then keeps asserting between casts.
+					if singleNode._iconTexture ~= nil then
+						singleNode:SetIconVisible(true)
+					else
+						singleNode:ShowIconPlaceholder()
+					end
 				else
 					nodeFrame:SetAllPoints(targetGroup.containerFrame)
 					singleNode:SetIconVisible(false)

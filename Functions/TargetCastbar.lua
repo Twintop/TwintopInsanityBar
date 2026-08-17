@@ -210,12 +210,12 @@ local function GetGroupNode(groupKey)
 end
 
 ---Sets the side icon texture without the memoized comparison SetIconTexture does, so a SECRET icon id
----(which cannot be compared) still applies. Passing nil hides the icon.
+---(which cannot be compared) still applies. Passing nil leaves the empty placeholder in the icon's strip.
 ---@param node TRB.Classes.BarNode
 ---@param iconId any
 local function SetIconRaw(node, iconId)
 	if iconId == nil then
-		node:SetIconVisible(false)
+		node:ShowIconPlaceholder()
 		return
 	end
 	local icon = node:EnsureIcon()
@@ -699,14 +699,20 @@ local function ApplyIdleState(groupKey, idleAlpha)
 	if group == nil or node == nil then
 		return
 	end
-	local _, _, colors = GetBarConfig(groupKey)
+	local _, barSettings, colors = GetBarConfig(groupKey)
 	if node.ClearTimerDuration ~= nil then
 		node:ClearTimerDuration()
 	end
 	node:SetMinMax(0, 1)
 	node:SetValue(0)
 	HideEmpowerStageLines(node)
-	node:SetIconVisible(false)
+	-- No art to show, but the strip stays claimed by the layout: fill it with the empty frame, not a hole.
+	-- Truthy `enabled`, matching GetBarIconReservation -- that is what decides a strip was reserved at all.
+	if barSettings and barSettings.icon and barSettings.icon.enabled then
+		node:ShowIconPlaceholder()
+	else
+		node:SetIconVisible(false)
+	end
 	node:SetShieldCurve(nil)
 	-- No cast means no interruptibility, but the empty bar is on screen, so a Color Indicator targeting
 	-- its border/background/end cap should still show (else the configured colors).

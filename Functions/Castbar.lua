@@ -271,6 +271,20 @@ function TRB.Functions.Castbar:GetIdleAlpha(visibility)
 	return (visibility.inactiveAlpha or 0) / 100
 end
 
+---Whether the castbar has anything on screen: active cast, fade-out, or idle at a visible alpha. Broader
+---than the model's IsActive(), which drops the instant a cast stops; ProcessBars gates bar text on this.
+---@return boolean
+function TRB.Functions.Castbar:IsRendering()
+	local model = TRB.Data.castbar
+	if model ~= nil and model:IsActive() then
+		return true
+	end
+	if fadeOutStart ~= nil then
+		return true
+	end
+	return self:GetIdleAlpha(self:GetVisibilitySettings(nil)) > 0
+end
+
 ---Returns the castbar BarGroup, or nil if not constructed.
 ---@return TRB.Classes.BarGroup?
 function TRB.Functions.Castbar:GetGroup()
@@ -1093,7 +1107,8 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 			node:SetIconTextureRaw(model.castTexture)
 			node:SetIconVisible(true)
 		else
-			node:SetIconVisible(false)
+			-- No art to show, but the layout still reserves the strip: keep the empty frame in it.
+			node:ShowIconPlaceholder()
 		end
 	end
 	-- Uninterruptible shield. A bar-level setting, independent of the icon (a bar-targeted shield shows with
@@ -1177,7 +1192,8 @@ end
 ---@param node TRB.Classes.BarNode
 ---@param idleAlpha number # 0..1
 ---@param colors table?
-function TRB.Functions.Castbar:ApplyIdleState(group, node, idleAlpha, colors)
+---@param barSettings table? # Castbar settings; decides whether the icon strip shows its placeholder
+function TRB.Functions.Castbar:ApplyIdleState(group, node, idleAlpha, colors, barSettings)
 	if self._renderedFrame ~= nil then
 		self._renderedFrame = nil
 		self._renderedIndicatorVersion = nil
@@ -1193,10 +1209,13 @@ function TRB.Functions.Castbar:ApplyIdleState(group, node, idleAlpha, colors)
 		node:ClearTimerDuration()
 	end
 	node:SetValue(0)
-	-- No spell is casting, so the icon has nothing to show. Its reserved strip stays claimed by the
-	-- layout, keeping the bar the same size whether idle or active. Clearing the texture (rather than
-	-- just hiding) stops a layout rebuild from resurrecting the last cast's icon.
-	node:SetIconTexture(nil)
+	-- No art to show, but the strip stays claimed by the layout: fill it with the empty frame rather than
+	-- leaving a hole. Clearing the texture also stops a layout rebuild resurrecting the last cast's icon.
+	if barSettings ~= nil and barSettings.icon ~= nil and barSettings.icon.enabled then
+		node:ShowIconPlaceholder()
+	else
+		node:SetIconTexture(nil)
+	end
 	-- An idle bar is never uninterruptible, so the shield never shows.
 	node:SetShieldVisible(false)
 	-- No model: an idle bar is never uninterruptible, so only the indicator/configured colors apply.
@@ -1362,6 +1381,8 @@ function TRB.Functions.Castbar:BeginFadeOut()
 	fadeOutStart = GetTime()
 	isRunning = true
 	castbarFrame:Show()
+	-- The cast is over: re-evaluate isTracking (and with it bar text) against the post-cast state.
+	TRB.Functions.BarVisibility:MarkDirty()
 end
 
 ---Ensures the idle Always Show / inactive-alpha display is running when no cast is active. Cheap and
@@ -1549,7 +1570,7 @@ castbarFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			-- re-show keeps the resting Always-Show bar healed against transitions without the color work.
 			if not TRB.Functions.Bar:IsRenderTransitionActive() then
 				if throttleTick then
-					self:ApplyIdleState(group, node, idleAlpha, colors)
+					self:ApplyIdleState(group, node, idleAlpha, colors, barSettings)
 				else
 					group.targetAlpha = idleAlpha
 					group.currentAlpha = idleAlpha
@@ -1568,6 +1589,8 @@ castbarFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			ApplyHiddenState(group)
 			isRunning = false
 			castbarFrame:Hide()
+			-- Off screen for good: isTracking must stop counting this bar so its anchored text hides too.
+			TRB.Functions.BarVisibility:MarkDirty()
 		end
 	end
 end)

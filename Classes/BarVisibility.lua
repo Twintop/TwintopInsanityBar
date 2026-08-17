@@ -824,15 +824,12 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 		end
 	end
 
-	-- The castbar isn't a ProcessBars entry (it manages its own visibility), but its anchored bar text
-	-- must keep updating through the shared render path while a cast is active — even when every other
-	-- bar is hidden or we're out of combat. Count it as "showing" so isTracking stays true (which is
-	-- what keeps each class's UpdateResourceBar calling UpdateResourceBarText) and BarText:Show runs.
-	if not anyShowing and TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive() then
+	-- Not a ProcessBars entry, but isTracking gates the bar text its anchored entries render through, so it
+	-- counts as showing for as long as it is on screen -- IsActive() blanks that text through every fade-out.
+	if not anyShowing and TRB.Functions.Castbar:IsRendering() then
 		anyShowing = true
 	end
-	-- Same for the target/focus cast bars, but for as long as either is on screen (cast, fade-out, or idle
-	-- Always Show) -- gating on IsActive() blanked their anchored bar text for every fade-out.
+	-- Same for the target/focus cast bars.
 	if not anyShowing and TRB.Functions.TargetCastbar:IsRendering() then
 		anyShowing = true
 	end

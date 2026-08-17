@@ -37,6 +37,7 @@ local barNodeCounter = 0
 ---@field public isVisible boolean
 ---@field public smooth boolean?
 ---@field public borderTexture string? # Stored border texture path for toggling edge visibility
+---@field public backgroundTexture string? # Stored background texture path, reused for the side ability icon's backdrop
 ---@field public _gradientActive boolean? # Whether a gradient is currently applied to the fill texture
 ---@field public fillDirection trbFillDirection? # Current fill direction for this node
 ---@field public group TRB.Classes.BarGroup? # Back-reference to the owning BarGroup
@@ -45,6 +46,7 @@ local barNodeCounter = 0
 ---@field public endCapIndicatorActive boolean? # Whether a Color Indicator owned the end cap color last frame (so it reverts cleanly when the indicator drops)
 ---@field public icon TRB.Classes.BarNode.Icon? # Side ability icon frame (lazily created by EnsureIcon); nil when the bar has no icon
 ---@field public _iconTexture string|integer? # Last texture applied to the icon, so repeat sets are skipped
+---@field public _iconBorder integer? # Border thickness the icon's backdrop was laid out with, so it can be rebuilt
 ---@field public shield TRB.Classes.BarNode.Shield? # Uninterruptible shield (lazily created by EnsureShield); its own frame so its level can order above the icon or below the bar
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
@@ -316,6 +318,9 @@ end
 ---@param a number # Alpha (0-1)
 function TRB.Classes.BarNode:SetBackgroundColor(r, g, b, a)
 	TRB.Functions.Color:SetBackdropColor(self.frame, self.name .. "_background", r, g, b, a)
+
+	-- The side ability icon's background is part of the same bar, so it tracks every background recolor
+	self:ApplyIconBackgroundColor()
 end
 
 ---Sets the background color from a curve result (bypasses cache comparison for tainted secret values)
@@ -327,6 +332,10 @@ function TRB.Classes.BarNode:SetBackgroundColorCurve(colorResult)
 	end
 	TRB.Data.cache.colors.backdrop[self.name .. "_background"] = nil
 	self.frame:SetBackdropColor(colorResult:GetRGBA())
+	-- Curve results are secret-safe to pass straight through; the icon background follows the same curve
+	if self.icon ~= nil then
+		self.icon:SetBackdropColor(colorResult:GetRGBA())
+	end
 end
 
 ---Sets the background color from a color string
@@ -426,6 +435,8 @@ end
 function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgroundTexture)
 	-- Store border texture for later use in SetDimensions when toggling border
 	self.borderTexture = borderTexture
+	-- Store background texture so the icon's placeholder backdrop can match the bar's
+	self.backgroundTexture = backgroundTexture
 
 	-- Set resource bar (StatusBar fill) texture
 	self.frame:SetStatusBarTexture(resourceTexture)
@@ -463,6 +474,9 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 	TRB.Data.cache.colors.backdrop[self.name .. "_background"] = nil
 	TRB.Data.cache.colors.gradient[self.name .. "_gradient"] = nil
 	self._gradientActive = false
+
+	-- The icon's backdrop is built from these same textures, and layout may have run before them
+	self:ApplyIconBackdrop()
 
 	-- Re-anchor all overlay slots (border insets and fill texture reference may have changed)
 	for _, slot in pairs(self.overlaySlots) do
@@ -696,27 +710,8 @@ function TRB.Classes.BarNode:ApplyIconLayout(side, size, spacing, border, zoom)
 	icon:SetFrameLevel(self.frame:GetFrameLevel() + 1)
 
 	-- Backdrop must come after ClearAllPoints/SetSize: those invalidate BackdropTemplate rendering
-	if border < 1 then
----@diagnostic disable-next-line: missing-fields
-		icon:SetBackdrop({
----@diagnostic disable-next-line: missing-fields
-			insets = {0, 0, 0, 0}
-		})
-	else
----@diagnostic disable-next-line: missing-fields
-		icon:SetBackdrop({
-			edgeFile = "Interface\\Buttons\\WHITE8X8",
-			tile = true,
-			tileSize = 4,
-			edgeSize = border,
----@diagnostic disable-next-line: missing-fields
-			insets = {0, 0, 0, 0}
-		})
-	end
-	icon:SetBackdropColor(0, 0, 0, 0)
-	-- ApplyBackdrop resets the border to white; restore whatever color the bar's border is currently at
-	-- so the icon reads as part of the same bar (including uninterruptible / indicator recolors)
-	self:ApplyIconBorderColor()
+	self._iconBorder = border
+	self:ApplyIconBackdrop()
 
 	-- Inset the texture so it never draws under the border
 	icon.texture:ClearAllPoints()
@@ -835,6 +830,35 @@ function TRB.Classes.BarNode:SetShieldCurve(colorResult)
 	self.shield:Show()
 end
 
+---Rebuilds the side ability icon's backdrop from the bar's own border size and background texture, so an
+---empty icon fills its reserved strip instead of leaving a hole. Re-applied from SetTextures.
+function TRB.Classes.BarNode:ApplyIconBackdrop()
+	local icon = self.icon
+	if icon == nil then
+		return
+	end
+	local border = self._iconBorder or 0
+	---@diagnostic disable-next-line: missing-fields
+	local backdrop = {
+		bgFile = self.backgroundTexture,
+		tile = true,
+		-- Tile at the icon's own side length, as the bar tiles at its width, so a patterned background
+		-- lands at the same scale on both.
+		tileSize = math.max(icon:GetWidth() or 0, 1),
+		---@diagnostic disable-next-line: assign-type-mismatch
+		insets = {0, 0, 0, 0}
+	}
+	if border >= 1 then
+		backdrop.edgeFile = "Interface\\Buttons\\WHITE8X8"
+		backdrop.edgeSize = border
+	end
+	icon:SetBackdrop(backdrop)
+	-- SetBackdrop resets both colors to white; restore whatever the bar is currently at so the icon keeps
+	-- tracking it (including uninterruptible / indicator recolors)
+	self:ApplyIconBorderColor()
+	self:ApplyIconBackgroundColor()
+end
+
 ---Applies the node's current border color to the side ability icon, so the icon border always tracks the
 ---bar's. Falls back to the bar's cached border color; leaves the icon alone when nothing is cached yet.
 function TRB.Classes.BarNode:ApplyIconBorderColor()
@@ -857,6 +881,29 @@ function TRB.Classes.BarNode:SetIconBorderColorString(colorString)
 	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	self.icon:SetBackdropBorderColor(r, g, b, a)
+end
+
+---Applies the node's current background color to the side ability icon, so an empty icon matches the bar
+---it sits against. Falls back to the bar's cached color; leaves the icon alone when nothing is cached yet.
+function TRB.Classes.BarNode:ApplyIconBackgroundColor()
+	if self.icon == nil then
+		return
+	end
+	local cached = TRB.Data.cache.colors.backdrop[self.name .. "_background"]
+	if cached then
+		self.icon:SetBackdropColor(cached.r, cached.g, cached.b, cached.a)
+	end
+end
+
+---Sets the side ability icon's background color directly from an ARGB string, independent of the node's
+---backdrop cache. Seeds the icon at construction, like SetIconBorderColorString.
+---@param colorString string # ARGB hex color string
+function TRB.Classes.BarNode:SetIconBackgroundColorString(colorString)
+	if self.icon == nil or colorString == nil then
+		return
+	end
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
+	self.icon:SetBackdropColor(r, g, b, a)
 end
 
 ---Sets the side ability icon's texture. Passing nil hides the icon.
@@ -889,6 +936,18 @@ function TRB.Classes.BarNode:SetIconTextureRaw(texture)
 	-- Leave _iconTexture unset: a secret can't be stored for comparison, and the next plain SetIconTexture
 	-- must not short-circuit against a stale value.
 	self._iconTexture = nil
+end
+
+---Shows the side ability icon as an empty placeholder: art cleared, backdrop (border + bar background) still
+---drawn, so an idle bar fills the reserved strip. No-op until a layout has reserved that strip.
+function TRB.Classes.BarNode:ShowIconPlaceholder()
+	local icon = self.icon
+	if icon == nil then
+		return
+	end
+	icon.texture:SetTexture(nil)
+	self._iconTexture = nil
+	icon:Show()
 end
 
 ---Shows or hides the side ability icon without discarding its layout or texture.

@@ -16,7 +16,10 @@ local content = [====[
 ## General
 ### Cast Bars
 
-- Fix cast bar width, height, border and text precision changes not taking effect until some unrelated setting was changed. Any enabled Use Global Settings section on that bar froze every other setting on it at whatever value it had when the section was turned on. Also affects the Target and Focus Cast Bars and the Global Cooldown, Fatigue, Breath and Feign Death bars.
+- Fix width, height, border and text precision changes not applying while a Use Global Settings section was enabled.
+- Fix bar text freezing mid-cast and never clearing afterward when every other bar was set to Never Show.
+- Fix bar text hiding while the bar was still on screen fading out or resting at Always Show.
+- Show a placeholder in the icon's strip between casts instead of an empty gap. Target and Focus Cast Bars too.
 
 ---
 

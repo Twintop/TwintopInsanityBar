@@ -2062,6 +2062,9 @@ local function HasActiveSelfDrivenBarVariableInUse()
 	return false
 end
 
+-- Previous tick's HasActiveSelfDrivenBarVariableInUse result, for detecting the tick a cast/timer ends on.
+local selfDrivenBarWasInUse = false
+
 -- Reused per-call cache for GetBarTextFrame results (avoids redundant frame lookups)
 local showFrameCache = {}
 
@@ -2105,10 +2108,17 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	-- entry actually references a cast-bar variable. A live cast that no bar text shows is irrelevant here,
 	-- so it no longer forces a full per-frame refresh (the cast bar's own fill/text render independently).
 	local selfDrivenBarInUse = HasActiveSelfDrivenBarVariableInUse()
-	if not visibilityRefresh and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not selfDrivenBarInUse and not TRB.Functions.Class:HasActiveTimers() then
+	-- The tick a cast/timer ends on: one final pass has to write out its now-empty variables.
+	local selfDrivenBarEnded = selfDrivenBarWasInUse and not selfDrivenBarInUse
+	selfDrivenBarWasInUse = selfDrivenBarInUse
+	if not visibilityRefresh and not selfDrivenBarEnded and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not selfDrivenBarInUse and not TRB.Functions.Class:HasActiveTimers() then
 		return
 	end
 	TRB.Data.lookupDirty = false
+
+	-- Callers only set refreshText while a resource bar renders, so a cast/timer must drive its own write:
+	-- without this its text never updates when every resource bar is set to Never Show.
+	refreshText = refreshText or selfDrivenBarInUse or selfDrivenBarEnded
 
 	-- Rebuild the active variable set if it was invalidated (bar text changed, spec switch, etc.)
 	if TRB.Data.activeVariables == nil then
