@@ -3503,3 +3503,7 @@ L["MageFrostBarTextVariable_brainFreezeTime"] = "Time remaining on your Brain Fr
 L["MageFrostIndicatorBrainFreeze"] = "Brain Freeze"
 L["MageFrostIndicatorBrainFreezeTooltip"] = "Changes to this color when Brain Freeze is active."
 L["MageFrostIndicatorBrainFreezeColor"] = "Brain Freeze is active"
+
+-- Bar icon hover tooltip
+L["BarIconShowTooltip"] = "Show tooltip on hover"
+L["BarIconShowTooltipTooltip"] = "When checked, mousing over the icon shows the tooltip for the spell being cast, the same as any other icon in the game. The icon does not take clicks, so they still pass through to whatever is behind it, but it does block mousing over the world within its square."

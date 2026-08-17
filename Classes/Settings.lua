@@ -239,6 +239,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public spacing number # Gap in pixels between the icon and the bar
 ---@field public collapseBorderWidth boolean # Overlap the icon's border with the bar's (single-width shared border); ignores spacing
 ---@field public zoom number # Percent cropped from each edge of the icon art, to cut the stock spell border
+---@field public showTooltip boolean # Show the spell's HUD tooltip while the mouse is over the icon
 
 ---@alias trbCastBarIconShieldMode
 ---| '"behind"' # Shield drawn behind the target (peeks out around it)

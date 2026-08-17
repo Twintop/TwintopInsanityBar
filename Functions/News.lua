@@ -12,6 +12,14 @@ local content = [====[
 
 ---
 
+# 12.1.0.4-release (2026-08-18)
+## General
+### Cast Bars
+
+- Add `Show tooltip on hover` to the icon options on the Player, Target and Focus cast bars. On by default.
+
+---
+
 # 12.1.0.3-release (2026-08-17)
 ## General
 ### Cast Bars

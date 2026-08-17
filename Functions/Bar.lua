@@ -2527,6 +2527,26 @@ function TRB.Functions.Bar:GetBarIconReservation(barSettings, barHeight)
 	}
 end
 
+-- The only bars whose icon tracks a live spell, and so the only ones with a tooltip to show. Each one's
+-- cast model is stored at TRB.Data under the same key.
+local iconTooltipBarKeys = {
+	castbar = true,
+	targetCastbar = true,
+	focusCastbar = true
+}
+
+---Resolves the spell id (and its comparison token) for a bar icon's hover tooltip from that bar's cast model.
+---@param barKey string
+---@return any spellId # May be secret; nil when the bar has no model or nothing is casting
+---@return integer? token
+function TRB.Functions.Bar:GetBarIconTooltipSpellId(barKey)
+	local model = iconTooltipBarKeys[barKey] and TRB.Data[barKey] or nil
+	if model == nil then
+		return nil, nil
+	end
+	return model:GetTooltipSpellId()
+end
+
 ---In Edit Mode, a visible bar that reserves a side icon strip has no live spell to show (cast bars,
 ---in practice), so its icon box would render blank. Fill it with the default "?" placeholder so the
 ---reserved strip is obviously an icon. Purely a preview aid: the live render path (Functions/Castbar,
@@ -3748,9 +3768,20 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					else
 						singleNode:ShowIconPlaceholder()
 					end
+					-- Hover tooltip for the spell the icon is showing. Opt-in, since a hoverable icon blocks
+					-- world mouseover over its square.
+					local tooltipBarKey = config.barKey
+					if groupSettings.icon.showTooltip and tooltipBarKey ~= nil then
+						singleNode:SetIconTooltipProvider(function()
+							return TRB.Functions.Bar:GetBarIconTooltipSpellId(tooltipBarKey)
+						end)
+					else
+						singleNode:SetIconTooltipProvider(nil)
+					end
 				else
 					nodeFrame:SetAllPoints(targetGroup.containerFrame)
 					singleNode:SetIconVisible(false)
+					singleNode:SetIconTooltipProvider(nil)
 				end
 				-- Uninterruptible shield: cast-bar-only, a bar-level setting (sibling of icon). Laid out
 				-- regardless of the icon being enabled -- a bar-targeted shield shows with the icon off. Size

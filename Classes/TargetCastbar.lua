@@ -32,6 +32,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public castTimeMs any # Base cast time in ms from GetSpellInfo (may be secret); nil if unknown
 ---@field public notInterruptible any # Interruptible flag (secret boolean) for EvaluateColorFromBoolean
 ---@field public durationObject any # DurationObject driving the fill + remaining countdown
+---@field public castGeneration integer # Bumped by Reset, so once per cast; the icon's hover tooltip compares this because a secret spellId cannot be compared
 ---@field public numEmpowerStages integer # Empower stage count (NeverSecret); 0 when not an empower
 ---@field public stagePercentages number[]? # Empower per-stage segment widths (charge+hold frame, sum 1.0; last is the hold-at-max segment). Accumulate for boundary positions.
 TRB.Classes.TargetCastbar = {}
@@ -57,6 +58,7 @@ function TRB.Classes.TargetCastbar:Reset()
 	self.castTimeMs = nil
 	self.notInterruptible = nil
 	self.durationObject = nil
+	self.castGeneration = (self.castGeneration or 0) + 1
 	self.numEmpowerStages = 0
 	self.stagePercentages = nil
 end
@@ -171,6 +173,17 @@ end
 ---@return boolean
 function TRB.Classes.TargetCastbar:IsActive()
 	return self.state ~= "none"
+end
+
+---Returns the spell id feeding the icon's hover tooltip, plus a plain token the refresh compares to decide
+---whether to rebuild it. The id itself may be secret, so the per-cast generation stands in as that token.
+---@return any spellId # May be secret; nil when nothing is casting
+---@return integer? token
+function TRB.Classes.TargetCastbar:GetTooltipSpellId()
+	if self.state == "none" then
+		return nil, nil
+	end
+	return self.spellId, self.castGeneration
 end
 
 ---The fill animation direction for the current state: casts/empowers fill up, channels deplete.
