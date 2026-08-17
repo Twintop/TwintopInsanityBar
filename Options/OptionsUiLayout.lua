@@ -2108,8 +2108,8 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 		{ value = "top", label = L["BarIconSideTop"] },
 		{ value = "bottom", label = L["BarIconSideBottom"] },
 	}
-	-- Row with Side dropdown (left) + Spacing slider (right). A dropdown's label is centered in a 30px header
-	-- frame while a slider's floats 14px above its top, so the slider drops 22px to put both labels on one line.
+	-- Row with Side dropdown (left) + Spacing slider (right). A slider beside a dropdown drops 30px to put
+	-- both labels on one line.
 	iconSubControls.side = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_side", L["BarIconSide"], sideOptions,
 		function() return iconSettings.side or "left" end,
 		function(v)
