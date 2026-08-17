@@ -3276,4 +3276,7 @@ if locale == "zhCN" then
 	L["MageFrostIndicatorBrainFreezeTooltip"] = "冰冷智慧激活时将切换为此颜色。"
 	L["MageFrostIndicatorBrainFreezeColor"] = "冰冷智慧已激活"
 
+	-- Bar icon hover tooltip
+	L["BarIconShowTooltip"] = "鼠标悬浮显示提示框"
+	L["BarIconShowTooltipTooltip"] = "勾选后，鼠标悬停在图标上会显示对应施法法术的提示，和游戏内其他图标行为一致。该图标无法接收点击事件，点击会穿透到后方界面；但图标方块区域会阻挡鼠标对游戏世界的悬停交互。"
 end
