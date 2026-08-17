@@ -12,8 +12,17 @@ local content = [====[
 
 ---
 
+# 12.1.0.3-release (2026-08-17)
+## General
+### Cast Bars
+
+- Fix cast bar width, height, border and text precision changes not taking effect until some unrelated setting was changed. Any enabled Use Global Settings section on that bar froze every other setting on it at whatever value it had when the section was turned on. Also affects the Target and Focus Cast Bars and the Global Cooldown, Fatigue, Breath and Feign Death bars.
+
+---
+
 # 12.1.0.2-release (2026-08-17)
 ## General
+
 ### Edit Mode
 
 - [#810 - @EricaPomme](#810) Reduce the CPU cost of bars anchored to Cooldown Manager frames.

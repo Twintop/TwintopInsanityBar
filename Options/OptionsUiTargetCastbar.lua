@@ -15,11 +15,8 @@ local L = TRB.Localization
 	empower stage boundary lines (stage percentages come back plain even for a secret cast).
 ]]
 
----Reapplies layout + appearance so option changes show immediately. Recomposes the active spec's cache
----first: the render reads the composed cache, whose target/focus bar tables are rebuilt fresh (and thus
----disconnected from the raw settings just edited) whenever any Use Global category is on -- so a raw edit
----only reaches the render after a re-fill. The re-fill is also what carries a global/core edit down to the
----active spec. Without it, bar-setting edits (precision, class color, empower) silently no-op.
+---Reapplies layout + appearance so option changes show immediately. The re-fill first is what carries a
+---core-side edit into the active spec's composed view; without it those edits silently no-op.
 local function ReapplyBars()
 	local char = TRB.Data.character
 	if char ~= nil and char.className ~= nil and char.specName ~= nil

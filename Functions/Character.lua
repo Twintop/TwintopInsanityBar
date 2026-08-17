@@ -1142,6 +1142,20 @@ function TRB.Functions.Character:ResetCaches()
 	TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData.spells, TRB.Data.talents)
 end
 
+---Layers `overrides` over `base` without copying: unset keys resolve through to `base` on every read
+---and writes fall through, so unowned fields never go stale. pairs() sees only the override keys.
+---@param base table
+---@param overrides table
+---@return table
+local function OverlayOn(base, overrides)
+	return setmetatable(overrides, {
+		__index = base,
+		__newindex = function(_, key, value)
+			base[key] = value
+		end
+	})
+end
+
 ---Fills the specialization cache with a combination of global and spec specific settings
 ---@param className string # Class name
 ---| '"deathknight"' # Death Knight
@@ -1435,92 +1449,72 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.bars = spec.colors.bars
 	end
 
-	-- Castbar global sections: compose a merged castbar view when any castbar use-global flag is set.
-	-- Sub-tables (anchor, color entries, empowerStages) are shared by reference with their source so
-	-- live edits propagate; primitive fields (width, precisions, etc.) are value-copied, so option
-	-- handlers that edit them core-side re-run this fill for the active spec.
+	-- Castbar global sections: core-owned fields layer over the spec tables rather than being copied into
+	-- them, so a field no enabled section owns still reads live and a spec-side edit needs no re-fill.
 	local anyCastbarGlobal = s.castbarDimensions or s.castbarColors or s.castbarOverlays or s.castbarEmpower or s.castbarText or s.castbarShield
 	if anyCastbarGlobal and core.bars and core.bars.castbar and spec.bars and spec.bars.castbar then
 		local coreBar = core.bars.castbar
-		local mergedBar = {}
-		for k, v in pairs(spec.bars.castbar) do
-			mergedBar[k] = v
-		end
+		local barOverrides = {}
 		if s.castbarDimensions then
-			mergedBar.width = coreBar.width
-			mergedBar.height = coreBar.height
-			mergedBar.border = coreBar.border
-			mergedBar.xPos = coreBar.xPos
-			mergedBar.yPos = coreBar.yPos
-			mergedBar.anchor = coreBar.anchor
-			mergedBar.fillDirection = coreBar.fillDirection
-			mergedBar.icon = coreBar.icon
+			barOverrides.width = coreBar.width
+			barOverrides.height = coreBar.height
+			barOverrides.border = coreBar.border
+			barOverrides.xPos = coreBar.xPos
+			barOverrides.yPos = coreBar.yPos
+			barOverrides.anchor = coreBar.anchor
+			barOverrides.fillDirection = coreBar.fillDirection
+			barOverrides.icon = coreBar.icon
 		end
 		if s.castbarShield then
-			mergedBar.uninterruptibleShield = coreBar.uninterruptibleShield
+			barOverrides.uninterruptibleShield = coreBar.uninterruptibleShield
 		end
 		if s.castbarOverlays then
-			mergedBar.tickWidth = coreBar.tickWidth
-			mergedBar.tickLatencyWidth = coreBar.tickLatencyWidth
+			barOverrides.tickWidth = coreBar.tickWidth
+			barOverrides.tickLatencyWidth = coreBar.tickLatencyWidth
 		end
 		if s.castbarEmpower then
-			mergedBar.empowerSegmentedFill = coreBar.empowerSegmentedFill
+			barOverrides.empowerSegmentedFill = coreBar.empowerSegmentedFill
 		end
 		if s.castbarText then
-			mergedBar.castTimePrecision = coreBar.castTimePrecision
-			mergedBar.durationPrecision = coreBar.durationPrecision
-			mergedBar.latencyPrecision = coreBar.latencyPrecision
-			mergedBar.disableBlizzardCastbar = coreBar.disableBlizzardCastbar
-			mergedBar.mergeTradeskill = coreBar.mergeTradeskill
-			mergedBar.targetClassColor = coreBar.targetClassColor
-			mergedBar.targetClassColorPvpOnly = coreBar.targetClassColorPvpOnly
-			mergedBar.targetClassColorFriendly = coreBar.targetClassColorFriendly
+			barOverrides.castTimePrecision = coreBar.castTimePrecision
+			barOverrides.durationPrecision = coreBar.durationPrecision
+			barOverrides.latencyPrecision = coreBar.latencyPrecision
+			barOverrides.disableBlizzardCastbar = coreBar.disableBlizzardCastbar
+			barOverrides.mergeTradeskill = coreBar.mergeTradeskill
+			barOverrides.targetClassColor = coreBar.targetClassColor
+			barOverrides.targetClassColorPvpOnly = coreBar.targetClassColorPvpOnly
+			barOverrides.targetClassColorFriendly = coreBar.targetClassColorFriendly
 		end
-		-- Wrap bars in a shallow copy so spec.bars itself is never mutated
-		local mergedBars = {}
-		for k, v in pairs(spec.bars) do
-			mergedBars[k] = v
-		end
-		mergedBars.castbar = mergedBar
-		specCache.settings.bars = mergedBars
+		specCache.settings.bars = OverlayOn(spec.bars, { castbar = OverlayOn(spec.bars.castbar, barOverrides) })
 
 		local coreColors = core.colors and core.colors.bars and core.colors.bars.castbar
 		local specColors = spec.colors and spec.colors.bars and spec.colors.bars.castbar
 		if coreColors and specColors then
-			local mergedColors = {}
-			for k, v in pairs(specColors) do
-				mergedColors[k] = v
-			end
+			local colorOverrides = {}
 			if s.castbarColors then
-				mergedColors.bar = coreColors.bar
-				mergedColors.channel = coreColors.channel
-				mergedColors.uninterruptible = coreColors.uninterruptible
-				mergedColors.uninterruptibleBorder = coreColors.uninterruptibleBorder
-				mergedColors.border = coreColors.border
-				mergedColors.background = coreColors.background
-				mergedColors.endCap = coreColors.endCap
+				colorOverrides.bar = coreColors.bar
+				colorOverrides.channel = coreColors.channel
+				colorOverrides.uninterruptible = coreColors.uninterruptible
+				colorOverrides.uninterruptibleBorder = coreColors.uninterruptibleBorder
+				colorOverrides.border = coreColors.border
+				colorOverrides.background = coreColors.background
+				colorOverrides.endCap = coreColors.endCap
 			end
 			if s.castbarOverlays then
-				mergedColors.latency = coreColors.latency
-				mergedColors.pushback = coreColors.pushback
-				mergedColors.tick = coreColors.tick
+				colorOverrides.latency = coreColors.latency
+				colorOverrides.pushback = coreColors.pushback
+				colorOverrides.tick = coreColors.tick
 			end
 			if s.castbarEmpower then
-				mergedColors.empowerStages = coreColors.empowerStages
+				colorOverrides.empowerStages = coreColors.empowerStages
 			end
-			local mergedColorBars = {}
-			for k, v in pairs(spec.colors.bars) do
-				mergedColorBars[k] = v
-			end
-			mergedColorBars.castbar = mergedColors
-			specCache.settings.colors.bars = mergedColorBars
+			specCache.settings.colors.bars = OverlayOn(spec.colors.bars, { castbar = OverlayOn(specColors, colorOverrides) })
 		end
 	end
 
 	-- Target/Focus cast bars mirror the player cast bar's per-section "Use Global" flags: Dimensions
 	-- (position/size/icon), Colors (fill/interrupt/border/background), and Empower (empower fill color +
-	-- stage lines). Operates on the current cache tables so it composes with the castbar merge above, and
-	-- always shallow-copies before mutating so spec.bars / spec.colors.bars are never touched.
+	-- stage lines). Layers onto the current cache tables so it composes with the castbar merge above.
 	for _, unitKey in ipairs({ "targetCastbar", "focusCastbar" }) do
 		local coreBar = core.bars and core.bars[unitKey]
 		local currentBars = specCache.settings.bars
@@ -1531,79 +1525,63 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		local useText = s[unitKey .. "Text"]
 		local useShield = s[unitKey .. "Shield"]
 		if coreBar and specBar and (useDims or useColors or useEmpower or useText or useShield) then
-			local mergedBar = {}
-			for k, v in pairs(specBar) do
-				mergedBar[k] = v
-			end
+			local barOverrides = {}
 			if useDims then
-				mergedBar.width = coreBar.width
-				mergedBar.height = coreBar.height
-				mergedBar.border = coreBar.border
-				mergedBar.xPos = coreBar.xPos
-				mergedBar.yPos = coreBar.yPos
-				mergedBar.anchor = coreBar.anchor
-				mergedBar.fillDirection = coreBar.fillDirection
-				mergedBar.icon = coreBar.icon
+				barOverrides.width = coreBar.width
+				barOverrides.height = coreBar.height
+				barOverrides.border = coreBar.border
+				barOverrides.xPos = coreBar.xPos
+				barOverrides.yPos = coreBar.yPos
+				barOverrides.anchor = coreBar.anchor
+				barOverrides.fillDirection = coreBar.fillDirection
+				barOverrides.icon = coreBar.icon
 			end
 			if useShield then
-				mergedBar.uninterruptibleShield = coreBar.uninterruptibleShield
+				barOverrides.uninterruptibleShield = coreBar.uninterruptibleShield
 			end
 			if useColors then
-				mergedBar.interruptColor = coreBar.interruptColor
-				mergedBar.interruptHostileOnly = coreBar.interruptHostileOnly
+				barOverrides.interruptColor = coreBar.interruptColor
+				barOverrides.interruptHostileOnly = coreBar.interruptHostileOnly
 			end
 			if useEmpower then
-				mergedBar.showEmpowerStages = coreBar.showEmpowerStages
-				mergedBar.empowerStageLineWidth = coreBar.empowerStageLineWidth
+				barOverrides.showEmpowerStages = coreBar.showEmpowerStages
+				barOverrides.empowerStageLineWidth = coreBar.empowerStageLineWidth
 			end
 			if useText then
-				mergedBar.classColor = coreBar.classColor
-				mergedBar.classColorPvpOnly = coreBar.classColorPvpOnly
-				mergedBar.classColorFriendly = coreBar.classColorFriendly
-				mergedBar.castTimePrecision = coreBar.castTimePrecision
-				mergedBar.durationPrecision = coreBar.durationPrecision
+				barOverrides.classColor = coreBar.classColor
+				barOverrides.classColorPvpOnly = coreBar.classColorPvpOnly
+				barOverrides.classColorFriendly = coreBar.classColorFriendly
+				barOverrides.castTimePrecision = coreBar.castTimePrecision
+				barOverrides.durationPrecision = coreBar.durationPrecision
 			end
-			local mergedBars = {}
-			for k, v in pairs(currentBars) do
-				mergedBars[k] = v
-			end
-			mergedBars[unitKey] = mergedBar
-			specCache.settings.bars = mergedBars
+			specCache.settings.bars = OverlayOn(currentBars, { [unitKey] = OverlayOn(specBar, barOverrides) })
 		end
 
 		local coreColors = core.colors and core.colors.bars and core.colors.bars[unitKey]
 		local currentColorBars = specCache.settings.colors.bars
 		local specColors = currentColorBars and currentColorBars[unitKey]
 		if coreColors and specColors and (useColors or useEmpower) then
-			local mergedColors = {}
-			for k, v in pairs(specColors) do
-				mergedColors[k] = v
-			end
+			local colorOverrides = {}
 			if useColors then
-				mergedColors.bar = coreColors.bar
-				mergedColors.channel = coreColors.channel
-				mergedColors.uninterruptible = coreColors.uninterruptible
-				mergedColors.uninterruptibleBorder = coreColors.uninterruptibleBorder
-				mergedColors.border = coreColors.border
-				mergedColors.background = coreColors.background
-				mergedColors.endCap = coreColors.endCap
+				colorOverrides.bar = coreColors.bar
+				colorOverrides.channel = coreColors.channel
+				colorOverrides.uninterruptible = coreColors.uninterruptible
+				colorOverrides.uninterruptibleBorder = coreColors.uninterruptibleBorder
+				colorOverrides.border = coreColors.border
+				colorOverrides.background = coreColors.background
+				colorOverrides.endCap = coreColors.endCap
 			end
 			if useEmpower then
-				mergedColors.empower = coreColors.empower
-				mergedColors.empowerStageLine = coreColors.empowerStageLine
+				colorOverrides.empower = coreColors.empower
+				colorOverrides.empowerStageLine = coreColors.empowerStageLine
 			end
-			local mergedColorBars = {}
-			for k, v in pairs(currentColorBars) do
-				mergedColorBars[k] = v
-			end
-			mergedColorBars[unitKey] = mergedColors
-			specCache.settings.colors.bars = mergedColorBars
+			specCache.settings.colors.bars = OverlayOn(currentColorBars, { [unitKey] = OverlayOn(specColors, colorOverrides) })
 		end
 	end
 
 	-- Other Bars (GCD + the mirror timers) get the same treatment with two sections each: Dimensions
 	-- (position/size) and Colors (fill/border/background/end cap plus the one behaviour flag each kind
-	-- carries). Same shallow-copy-before-mutate rule so the raw settings are never touched.
+	-- carries), layered the same way.
 	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.otherBarKeys) do
 		-- Class-scoped bars (Feign Death) have no global counterpart, so they never pull from core even if
 		-- an older build left an entry and its Use Global flags behind in saved variables.
@@ -1614,52 +1592,37 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		local useDims = isGlobalScope and s[barKey .. "Dimensions"]
 		local useColors = isGlobalScope and s[barKey .. "Colors"]
 		if coreBar and specBar and (useDims or useColors) then
-			local mergedBar = {}
-			for k, v in pairs(specBar) do
-				mergedBar[k] = v
-			end
+			local barOverrides = {}
 			if useDims then
-				mergedBar.width = coreBar.width
-				mergedBar.height = coreBar.height
-				mergedBar.border = coreBar.border
-				mergedBar.xPos = coreBar.xPos
-				mergedBar.yPos = coreBar.yPos
-				mergedBar.anchor = coreBar.anchor
-				mergedBar.fillDirection = coreBar.fillDirection
+				barOverrides.width = coreBar.width
+				barOverrides.height = coreBar.height
+				barOverrides.border = coreBar.border
+				barOverrides.xPos = coreBar.xPos
+				barOverrides.yPos = coreBar.yPos
+				barOverrides.anchor = coreBar.anchor
+				barOverrides.fillDirection = coreBar.fillDirection
 			end
 			if useColors then
 				-- The behaviour flags and text precision ride with Colors, matching their placement in the
 				-- options panel.
-				mergedBar.timerDirection = coreBar.timerDirection
-				mergedBar.disableBlizzardBar = coreBar.disableBlizzardBar
-				mergedBar.durationPrecision = coreBar.durationPrecision
+				barOverrides.timerDirection = coreBar.timerDirection
+				barOverrides.disableBlizzardBar = coreBar.disableBlizzardBar
+				barOverrides.durationPrecision = coreBar.durationPrecision
 			end
-			local mergedBars = {}
-			for k, v in pairs(currentBars) do
-				mergedBars[k] = v
-			end
-			mergedBars[barKey] = mergedBar
-			specCache.settings.bars = mergedBars
+			specCache.settings.bars = OverlayOn(currentBars, { [barKey] = OverlayOn(specBar, barOverrides) })
 		end
 
 		local coreColors = core.colors and core.colors.bars and core.colors.bars[barKey]
 		local currentColorBars = specCache.settings.colors.bars
 		local specColors = currentColorBars and currentColorBars[barKey]
 		if coreColors and specColors and useColors then
-			local mergedColors = {}
-			for k, v in pairs(specColors) do
-				mergedColors[k] = v
-			end
-			mergedColors.bar = coreColors.bar
-			mergedColors.border = coreColors.border
-			mergedColors.background = coreColors.background
-			mergedColors.endCap = coreColors.endCap
-			local mergedColorBars = {}
-			for k, v in pairs(currentColorBars) do
-				mergedColorBars[k] = v
-			end
-			mergedColorBars[barKey] = mergedColors
-			specCache.settings.colors.bars = mergedColorBars
+			local colorOverrides = {
+				bar = coreColors.bar,
+				border = coreColors.border,
+				background = coreColors.background,
+				endCap = coreColors.endCap
+			}
+			specCache.settings.colors.bars = OverlayOn(currentColorBars, { [barKey] = OverlayOn(specColors, colorOverrides) })
 		end
 	end
 
