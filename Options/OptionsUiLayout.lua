@@ -2081,6 +2081,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.spacing, enabled and not iconSettings.collapseBorderWidth)
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconSubControls.collapse, enabled)
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(iconSubControls.zoom, enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconSubControls.tooltip, enabled)
 	end
 
 	controls[barTypeDef.key .. "IconEnabled"] = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_enabled", L["BarIconEnabled"], L["BarIconEnabledTooltip"], yCoord,
@@ -2090,7 +2091,16 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 			RefreshIconSubControlStates()
 			ApplyIconChange()
 		end)
-	yCoord = yCoord - 40
+	yCoord = yCoord - 20
+
+	iconSubControls.tooltip = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_showTooltip", L["BarIconShowTooltip"], L["BarIconShowTooltipTooltip"], yCoord,
+		function() return iconSettings.showTooltip end,
+		function(v)
+			iconSettings.showTooltip = v
+			ApplyIconChange()
+		end)
+	controls[barTypeDef.key .. "IconShowTooltip"] = iconSubControls.tooltip
+	yCoord = yCoord - 20
 
 	local sideOptions = {
 		{ value = "left", label = L["BarIconSideLeft"] },
@@ -2098,20 +2108,19 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 		{ value = "top", label = L["BarIconSideTop"] },
 		{ value = "bottom", label = L["BarIconSideBottom"] },
 	}
-	-- Row with Side dropdown (left) + Spacing slider (right), and Collapse border width directly under
-	-- Spacing. The dropdown is nudged up 14px so its label lines up with the slider's floating title.
+	-- Row with Side dropdown (left) + Spacing slider (right). A slider beside a dropdown drops 30px to put
+	-- both labels on one line.
 	iconSubControls.side = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_side", L["BarIconSide"], sideOptions,
 		function() return iconSettings.side or "left" end,
 		function(v)
 			iconSettings.side = v
 			ApplyIconChange()
 		end,
-		oUi.xCoord, yCoord + 14)
+		oUi.xCoord, yCoord)
 	controls[barTypeDef.key .. "IconSideDropdown"] = iconSubControls.side
 
-	yCoord = yCoord - 20
 	iconSubControls.spacing = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconSpacing"], 0, 20, iconSettings.spacing, 1, 0,
-		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord - 30)
 	iconSubControls.spacing:SetScript("OnValueChanged", function(sliderFrame, value)
 		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
 		iconSettings.spacing = value
@@ -2119,18 +2128,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 	end)
 	controls[barTypeDef.key .. "IconSpacing"] = iconSubControls.spacing
 
-	-- Collapse checkbox sits 40px under the Spacing slider (same offset the bar-group panel uses)
-	iconSubControls.collapse = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_collapseBorderWidth", L["CollapseBorderWidth"], L["CollapseBorderWidthTooltip"], yCoord,
-		function() return iconSettings.collapseBorderWidth end,
-		function(v)
-			iconSettings.collapseBorderWidth = v
-			RefreshIconSubControlStates()
-			ApplyIconChange()
-		end)
-	iconSubControls.collapse:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 40)
-	controls[barTypeDef.key .. "IconCollapseBorderWidth"] = iconSubControls.collapse
-
-	-- Zoom slider on its own row, clearing the dropdown button and the collapse checkbox above it.
+	-- Zoom slider (left) + Collapse border width (right) share the next row, which clears the dropdown button.
 	yCoord = yCoord - 80
 	iconSubControls.zoom = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["BarIconZoom"], 0, 25, iconSettings.zoom, 1, 0,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -2140,7 +2138,17 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 		ApplyIconChange()
 	end)
 	controls[barTypeDef.key .. "IconZoom"] = iconSubControls.zoom
-	yCoord = yCoord - 40
+
+	iconSubControls.collapse = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_collapseBorderWidth", L["CollapseBorderWidth"], L["CollapseBorderWidthTooltip"], yCoord,
+		function() return iconSettings.collapseBorderWidth end,
+		function(v)
+			iconSettings.collapseBorderWidth = v
+			RefreshIconSubControlStates()
+			ApplyIconChange()
+		end)
+	iconSubControls.collapse:SetPoint("TOPLEFT", oUi.xCoord2, yCoord + 10)
+	controls[barTypeDef.key .. "IconCollapseBorderWidth"] = iconSubControls.collapse
+	yCoord = yCoord - 30
 
 	RefreshIconSubControlStates()
 	return yCoord

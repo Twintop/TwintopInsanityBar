@@ -9455,7 +9455,8 @@ function TRB.Functions.Settings:DefaultBarIconSettings()
 		side = "left",
 		spacing = 2,
 		collapseBorderWidth = false,
-		zoom = 10
+		zoom = 10,
+		showTooltip = false
 	}
 end
 

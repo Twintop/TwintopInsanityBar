@@ -16,6 +16,9 @@ local barNodeCounter = 0
 ---A bar's side ability icon: a bordered backdrop frame wrapping a single texture.
 ---@class TRB.Classes.BarNode.Icon : Frame
 ---@field public texture Texture
+---@field public _tooltipProvider fun():any, integer?|nil # Supplies the hovered spell id and its invalidation token; nil disables the tooltip
+---@field public _tooltipToken integer? # Token the currently-shown tooltip was built from
+---@field public _tooltipElapsed number? # Throttle accumulator for the hover refresh
 
 ---The uninterruptible shield: a dedicated frame wrapping a single texture. It gets its own frame (not just
 ---a texture) so its frame level can be set per-mode -- above the icon frame to draw over it, below the bar
@@ -617,6 +620,11 @@ function TRB.Classes.BarNode:Destroy()
 	-- Before the frame is orphaned: the engine's container is parented to it.
 	TRB.Functions.AuraEngine:Detach(self)
 	if self.icon ~= nil then
+		-- Release a tooltip this icon still owns; the frame is about to be orphaned and can never hide it.
+		if GameTooltip:IsOwned(self.icon) then
+			GameTooltip:Hide()
+		end
+		self.icon._tooltipProvider = nil
 		self.icon:Hide()
 		self.icon:SetParent(nil)
 		self.icon:ClearAllPoints()
@@ -961,6 +969,89 @@ function TRB.Classes.BarNode:SetIconVisible(visible)
 	else
 		self.icon:Hide()
 	end
+end
+
+-- Seconds between hover-tooltip re-evaluations, so a cast ending (or swapping spells) under a stationary
+-- cursor updates the tooltip without rebuilding it every frame.
+local ICON_TOOLTIP_REFRESH_INTERVAL = 0.1
+
+---Rebuilds, keeps, or hides the icon's tooltip against what its provider currently reports.
+---@param icon TRB.Classes.BarNode.Icon
+local function RefreshIconTooltip(icon)
+	local provider = icon._tooltipProvider
+	local spellId, token
+	if provider ~= nil then
+		spellId, token = provider()
+	end
+	if spellId == nil then
+		if GameTooltip:IsOwned(icon) then
+			GameTooltip:Hide()
+		end
+		icon._tooltipToken = nil
+		return
+	end
+	-- No token means the id is secret and so uncomparable; rebuild every refresh rather than go stale.
+	if token ~= nil and token == icon._tooltipToken and GameTooltip:IsOwned(icon) then
+		return
+	end
+	GameTooltip:SetOwner(icon, "ANCHOR_RIGHT")
+	-- The id may be secret. SetSpellByID is a terminal display sink, so it renders one all the same.
+	GameTooltip:SetSpellByID(spellId)
+	icon._tooltipToken = token
+end
+
+---Clears any tooltip the icon currently owns.
+---@param icon TRB.Classes.BarNode.Icon
+local function HideIconTooltip(icon)
+	if GameTooltip:IsOwned(icon) then
+		GameTooltip:Hide()
+	end
+	icon._tooltipToken = nil
+end
+
+---Throttled hover poll, installed only while the cursor is on the icon.
+---@param icon TRB.Classes.BarNode.Icon
+---@param elapsed number
+local function IconTooltipOnUpdate(icon, elapsed)
+	icon._tooltipElapsed = (icon._tooltipElapsed or 0) + elapsed
+	if icon._tooltipElapsed < ICON_TOOLTIP_REFRESH_INTERVAL then
+		return
+	end
+	icon._tooltipElapsed = 0
+	RefreshIconTooltip(icon)
+end
+
+---Wires the hover tooltip on the side ability icon, or removes it when `provider` is nil. The icon takes
+---mouse motion but not clicks, so clicks still pass through to whatever sits beneath the bar.
+---@param provider fun():any, integer?|nil # Returns the spell id to show and a plain token; nil disables the tooltip
+function TRB.Classes.BarNode:SetIconTooltipProvider(provider)
+	local icon = (provider ~= nil) and self:EnsureIcon() or self.icon
+	if icon == nil then
+		return
+	end
+
+	icon._tooltipProvider = provider
+	if provider == nil then
+		HideIconTooltip(icon)
+		icon:SetScript("OnEnter", nil)
+		icon:SetScript("OnLeave", nil)
+		icon:SetScript("OnUpdate", nil)
+		icon:SetMouseMotionEnabled(false)
+		return
+	end
+
+	icon:SetMouseClickEnabled(false)
+	icon:SetMouseMotionEnabled(true)
+	icon:SetScript("OnEnter", function(frame)
+		frame._tooltipElapsed = 0
+		RefreshIconTooltip(frame)
+		-- Poll only while hovered: a cast can start, swap spell, or end under a stationary cursor.
+		frame:SetScript("OnUpdate", IconTooltipOnUpdate)
+	end)
+	icon:SetScript("OnLeave", function(frame)
+		frame:SetScript("OnUpdate", nil)
+		HideIconTooltip(frame)
+	end)
 end
 
 ---Registers a threshold frame with this node, or creates one at the specified index

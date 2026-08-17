@@ -793,6 +793,19 @@ function TRB.Classes.Castbar:IsActive()
 	return self.state ~= "none"
 end
 
+---Returns the spell id feeding the icon's hover tooltip, plus a plain token the refresh compares to decide
+---whether to rebuild it. A secret id never resolves to a spell, so it yields no token and still renders.
+---@return any spellId # nil when nothing is casting
+---@return integer? token # Resolved spell id; nil when the cast id was secret and cannot be compared
+function TRB.Classes.Castbar:GetTooltipSpellId()
+	if self.state == "none" then
+		return nil, nil
+	end
+	-- Prefer the resolved id so the tooltip describes the same spell the icon drew.
+	local resolved = self.spell ~= nil and self.spell.id or nil
+	return resolved or self.spellId, resolved
+end
+
 ---Returns the timeline progress at a point in time.
 ---@param now number? # GetTime() seconds; defaults to GetTime()
 ---@return number elapsed # Seconds elapsed (clamped >= 0)
