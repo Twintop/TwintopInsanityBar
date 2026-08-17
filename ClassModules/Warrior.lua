@@ -1807,9 +1807,9 @@ local function UpdateResourceBar()
 						Bar:ApplyEndCapIndicator(enrageNode, "enrageBar")
 					end
 
-					-- The engine owns the duration; the Cooldown Manager fallback only ever has a
-					-- readable remaining when the spell sits in Tracked Bars.
-					if not TRB.Functions.AuraEngine:Attach(enrageNode, "player", "HELPFUL", spells.enrage.id) then
+					-- Both IDs: the engine matches the aura, not the passive the CDM is keyed by.
+					if not TRB.Functions.AuraEngine:Attach(enrageNode, "player", "HELPFUL",
+						spells.enrage.id, spells.enrage.buffId) then
 						if not enrageActive or not cdm:ApplyToBarNode(enrageNode, spells.enrage.id) then
 							enrageNode:SetMinMax(0, 1)
 							enrageNode:SetValue(0)

@@ -307,8 +307,10 @@ function TRB.Classes.Warrior.FurySpells:New()
 	})
 	
 	--Fury base abilities
+	-- id is the passive the Cooldown Manager keys its buff entry by; buffId is the aura that lands.
 	self.enrage = TRB.Classes.SpellBase:New({
 		id = 184361,
+		buffId = 184362,
 		isTalent = false,
 		baseline = true,
 	})
