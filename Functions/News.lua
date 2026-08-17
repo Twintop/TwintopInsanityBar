@@ -19,7 +19,7 @@ local content = [====[
 - Fix width, height, border and text precision changes not applying while a Use Global Settings section was enabled.
 - Fix bar text freezing mid-cast and never clearing afterward when every other bar was set to Never Show.
 - Fix bar text hiding while the bar was still on screen fading out or resting at Always Show.
-- Show a placeholder in the icon's strip between casts instead of an empty gap. Target and Focus Cast Bars too.
+- Show a placeholder in the icon's strip between casts instead of an empty gap.
 
 ---
 
