@@ -1220,11 +1220,25 @@ local function UpdateResourceBar()
 			end
 		end
 
-		-- Icicles threshold audio cues (independent of bar visibility)
+		-- Audio cues (independent of bar visibility)
 		do
 			local frostSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+			local frostSnapshots = snapshotData.snapshots
 			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "icicles",
-				snapshotData.snapshots[frostSpells.icicles.id].buff.applications or 0)
+				frostSnapshots[frostSpells.icicles.id].buff.applications or 0)
+
+			-- Charges are Lua-tracked, so the second-charge cue wins when a proc takes you straight to
+			-- two, and the first-charge cue can offer a play-on-drop for spending back down to one.
+			local fingersOfFrost = frostSnapshots[frostSpells.fingersOfFrost.id].buff
+			local fingersOfFrostStacks = fingersOfFrost.isActive and (fingersOfFrost.applications or 0) or 0
+			TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, "fingersOfFrostCharges",
+				fingersOfFrostStacks, {
+					{ id = "fingersOfFrostCharge1", threshold = 1 },
+					{ id = "fingersOfFrostCharge2", threshold = 2 },
+				})
+
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "brainFreeze",
+				frostSnapshots[frostSpells.brainFreeze.id].buff.isActive == true)
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end

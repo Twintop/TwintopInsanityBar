@@ -498,6 +498,35 @@ do
 	})
 
 	TRB.Functions.AudioCues:Register("mage_frost", {
+		builtIns = {
+			{
+				id = "fingersOfFrostCharge1",
+				label = L["MageFrostAudioFingersOfFrostCharge1"],
+				trigger = L["MageFrostAudioTriggerFingersOfFrostCharge1"],
+				tooltip = L["MageFrostAudioCheckboxFingersOfFrostCharge1Tooltip"],
+				config = {
+					{
+						key = "playOnDrop",
+						control = "checkbox",
+						label = L["AudioCuePlayOnDropCheckbox"],
+						tooltip = L["MageFrostAudioCheckboxFingersOfFrostPlayOnDropTooltip"],
+						default = false,
+					},
+				},
+			},
+			{
+				id = "fingersOfFrostCharge2",
+				label = L["MageFrostAudioFingersOfFrostCharge2"],
+				trigger = L["MageFrostAudioTriggerFingersOfFrostCharge2"],
+				tooltip = L["MageFrostAudioCheckboxFingersOfFrostCharge2Tooltip"],
+			},
+			{
+				id = "brainFreeze",
+				label = L["MageFrostAudioBrainFreeze"],
+				trigger = L["MageFrostAudioTriggerBrainFreeze"],
+				tooltip = L["MageFrostAudioCheckboxBrainFreezeTooltip"],
+			},
+		},
 		counters = {
 			{
 				id = "icicles",

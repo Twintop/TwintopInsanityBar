@@ -511,6 +511,27 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			fingersOfFrostCharge1={
+				name = L["MageFrostAudioFingersOfFrostCharge1"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOnDrop = false
+				}
+			},
+			fingersOfFrostCharge2={
+				name = L["MageFrostAudioFingersOfFrostCharge2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+			brainFreeze={
+				name = L["MageFrostAudioBrainFreeze"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}

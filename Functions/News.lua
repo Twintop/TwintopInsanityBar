@@ -18,6 +18,15 @@ local content = [====[
 
 - Add `Show tooltip on hover` to the icon options on the Player, Target and Focus cast bars. On by default.
 
+### Localization
+
+- [#812 - @MOSS099](#812) Updated translations for Simplified Chinese (zhCN).
+
+## Mage
+### Frost
+
+- [#809](#809) Add Fingers of Frost and Brain Freeze Audio Cues. Fingers of Frost has separate cues for reaching 1 and 2 charges; the 2 charge cue wins when a proc takes you straight to two. The 1 charge cue offers `Also play when dropping to this value`, for spending your second charge back down to one. All three cues are off by default.
+
 ---
 
 # 12.1.0.3-release (2026-08-17)

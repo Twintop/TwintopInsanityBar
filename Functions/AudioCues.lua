@@ -300,6 +300,54 @@ function TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, entries, 
 	end
 end
 
+---Evaluates a fixed group of built-in cues that rank by a numeric value, like a proc's charge count.
+---Behaves like UpdateCounter -- one audible winner per update, plus the `configuration.playOnDrop`
+---path -- but the thresholds come from the caller instead of from user-owned cues.
+---@param specSettings table
+---@param snapshotData TRB.Classes.SnapshotData
+---@param key string # Names this group in the last-seen value store
+---@param value number?
+---@param entries table[] # { id = string, threshold = number }, lowest threshold first
+---@param canPlay boolean? # Defaults to true
+function TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, key, value, entries, canPlay)
+	if specSettings == nil or specSettings.audio == nil or snapshotData == nil or value == nil then
+		return
+	end
+
+	local counterValues = EnsureCounterValues(snapshotData)
+	local previous = counterValues[key]
+	counterValues[key] = value
+	local isDrop = previous ~= nil and value < previous
+
+	local winner = nil
+	local dropWinner = nil
+
+	-- Highest threshold first, so the first crossing found is also the most urgent one.
+	for x = #entries, 1, -1 do
+		local entry = entries[x]
+		local cue = specSettings.audio[entry.id]
+		if cue ~= nil then
+			-- Latch every member, but withhold playback until we know which one ranks highest.
+			if self:Fire(specSettings, snapshotData, entry.id, value >= entry.threshold, false) then
+				if winner == nil then
+					winner = cue
+				end
+			elseif isDrop and dropWinner == nil and cue.enabled and cue.configuration
+				and cue.configuration.playOnDrop and value == entry.threshold then
+				dropWinner = cue
+			end
+		end
+	end
+
+	if canPlay ~= false then
+		if winner ~= nil then
+			PlayCue(winner)
+		elseif dropWinner ~= nil then
+			PlayCue(dropWinner)
+		end
+	end
+end
+
 ---Re-arms a single cue so it can play again without waiting for its condition to go false.
 ---@param snapshotData TRB.Classes.SnapshotData
 ---@param cueId string

@@ -3507,3 +3507,15 @@ L["MageFrostIndicatorBrainFreezeColor"] = "Brain Freeze is active"
 -- Bar icon hover tooltip
 L["BarIconShowTooltip"] = "Show tooltip on hover"
 L["BarIconShowTooltipTooltip"] = "When checked, mousing over the icon shows the tooltip for the spell being cast, the same as any other icon in the game. The icon does not take clicks, so they still pass through to whatever is behind it, but it does block mousing over the world within its square."
+
+-- Mage Frost: Fingers of Frost and Brain Freeze audio cues
+L["MageFrostAudioFingersOfFrostCharge1"] = "Fingers of Frost (1 Charge)"
+L["MageFrostAudioTriggerFingersOfFrostCharge1"] = "Fingers of Frost reaches 1 charge"
+L["MageFrostAudioCheckboxFingersOfFrostCharge1Tooltip"] = "Play an audio cue when you gain your first Fingers of Frost charge. It will not play again until you have no charges left, unless 'Also play when dropping to this value' is checked, in which case it also plays when spending your second charge leaves you with one."
+L["MageFrostAudioFingersOfFrostCharge2"] = "Fingers of Frost (2 Charges)"
+L["MageFrostAudioTriggerFingersOfFrostCharge2"] = "Fingers of Frost reaches 2 charges"
+L["MageFrostAudioCheckboxFingersOfFrostCharge2Tooltip"] = "Play an audio cue when you reach two Fingers of Frost charges. It will not play again until you are back under two charges."
+L["MageFrostAudioBrainFreeze"] = "Brain Freeze"
+L["MageFrostAudioTriggerBrainFreeze"] = "Brain Freeze procs"
+L["MageFrostAudioCheckboxBrainFreezeTooltip"] = "Play an audio cue when Brain Freeze procs. It will not play again until the proc is consumed or expires."
+L["MageFrostAudioCheckboxFingersOfFrostPlayOnDropTooltip"] = "By default this cue only plays as you gain your first Fingers of Frost charge, then stays silent until you have none left. With this enabled it also plays when spending your second charge leaves you with one."
