@@ -3279,4 +3279,17 @@ if locale == "zhCN" then
 	-- Bar icon hover tooltip
 	L["BarIconShowTooltip"] = "鼠标悬浮显示提示框"
 	L["BarIconShowTooltipTooltip"] = "勾选后，鼠标悬停在图标上会显示对应施法法术的提示，和游戏内其他图标行为一致。该图标无法接收点击事件，点击会穿透到后方界面；但图标方块区域会阻挡鼠标对游戏世界的悬停交互。"
+
+	-- Mage Frost: Fingers of Frost and Brain Freeze audio cues
+	L["MageFrostAudioFingersOfFrostCharge1"] = "寒冰指（1层）"
+	L["MageFrostAudioTriggerFingersOfFrostCharge1"] = "寒冰指叠至1层"
+	L["MageFrostAudioCheckboxFingersOfFrostCharge1Tooltip"] = "获得第1层寒冰指时播放音频提示。在寒冰指归零前不会再次触发；若勾选「降至该数值时同样播放」，消耗掉第2层寒冰指剩余1层时也会播放提示音。"
+	L["MageFrostAudioFingersOfFrostCharge2"] = "寒冰指（2层）"
+	L["MageFrostAudioTriggerFingersOfFrostCharge2"] = "寒冰指叠至2层"
+	L["MageFrostAudioCheckboxFingersOfFrostCharge2Tooltip"] = "寒冰指叠满2层时播放音频提示。寒冰指层数低于2层后才会再次触发。"
+	L["MageFrostAudioBrainFreeze"] = "冰冷智慧"
+	L["MageFrostAudioTriggerBrainFreeze"] = "冰冷智慧触发"
+	L["MageFrostAudioCheckboxBrainFreezeTooltip"] = "冰冷智慧触发时播放音频提示。消耗或过期消失后才会再次触发。"
+	L["MageFrostAudioCheckboxFingersOfFrostPlayOnDropTooltip"] = "默认仅在获取第1层寒冰指时播放提示，寒冰指清零前不再提示。开启此项后，消耗掉第2层寒冰指剩余1层时也会播放提示音。"
+
 end
