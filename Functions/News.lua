@@ -21,6 +21,7 @@ local content = [====[
 ### Localization
 
 - [#812 - @MOSS099](#812) Updated translations for Simplified Chinese (zhCN).
+- [#813 - @MOSS099](#813) Updated translations for Simplified Chinese (zhCN).
 
 ## Mage
 ### Frost
