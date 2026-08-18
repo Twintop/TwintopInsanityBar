@@ -466,7 +466,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			shared = {
-				nodeOrder = { "brainFreeze", "fingersOfFrost" },
+				nodeOrder = { "brainFreeze", "fingersOfFrost2", "fingersOfFrost" },
 				gradientOrder = {},
 				indicatorColors = {
 					brainFreeze = {
@@ -481,6 +481,15 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					fingersOfFrost = {
 						color = "FF00C8FF",
 						color2 = "FF00C8FF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+						},
+					},
+					fingersOfFrost2 = {
+						color = "FF296373",
+						color2 = "FF296373",
 						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
@@ -1584,6 +1593,7 @@ local function FrostConstructIndicatorColorsPanel(parent)
 		indicatorDefs = {
 			{ key = "brainFreeze", label = L["MageFrostIndicatorBrainFreeze"], tooltip = L["MageFrostIndicatorBrainFreezeTooltip"], colorLabel = L["MageFrostIndicatorBrainFreezeColor"] },
 			{ key = "fingersOfFrost", label = L["MageFrostIndicatorFingersOfFrost"], tooltip = L["MageFrostIndicatorFingersOfFrostTooltip"], colorLabel = L["MageFrostIndicatorFingersOfFrostColor"] },
+			{ key = "fingersOfFrost2", label = L["MageFrostIndicatorFingersOfFrost2"], tooltip = L["MageFrostIndicatorFingersOfFrost2Tooltip"], colorLabel = L["MageFrostIndicatorFingersOfFrost2Color"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },

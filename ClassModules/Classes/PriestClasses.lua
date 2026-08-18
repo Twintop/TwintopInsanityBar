@@ -62,8 +62,9 @@ function TRB.Classes.Priest.HealerSpells:New()
 	self.surgeOfLight = TRB.Classes.SpellBase:New({
 		id = 114255,
 		isBuff = true,
+		duration = 20,
 		maxStacks = 2,
-		-- One screen overlay per stack; visible overlay count = stack count
+		-- One screen overlay per stack; used only to tell a full loss from a spend
 		overlayIds = {
 			[114255] = true,
 			[128654] = true
@@ -180,6 +181,7 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "#voidShield", icon = spells.masterTheDarkness.icon, description = spells.masterTheDarkness.name, printInSettings = true },
 		{ variable = "#masterTheDarkness", icon = spells.masterTheDarkness.icon, description = spells.masterTheDarkness.name, printInSettings = false },
 		{ variable = "#harshDiscipline", icon = spells.harshDiscipline.icon, description = spells.harshDiscipline.name, printInSettings = true },
+		{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -206,8 +208,11 @@ function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry
 		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },
 		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
 
+		-- Tracked in Lua off SPELL_UPDATE_USES, so these stay plain numbers rather than secrets.
 		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = false, color = false },
 		{ variable = "$surgeOfLightStacks", description = L["PriestBarTextVariable_surgeOfLightStacks"], printInSettings = true, color = false },
+		{ variable = "$surgeOfLightStacksMax", description = L["PriestBarTextVariable_surgeOfLightStacksMax"], printInSettings = true, color = false },
+		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
 
 		{ variable = "$voidShieldTime", description = L["PriestDisciplineBarTextVariable_voidShieldTime"], printInSettings = true, color = false },
 		{ variable = "$masterTheDarknessTime", description = "", printInSettings = false, color = false },
@@ -482,6 +487,7 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },
 		{ variable = "#af", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = true },
 		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false },
+		{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -521,8 +527,11 @@ function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$afCharges", description = L["PriestBarTextVariable_afCharges"], printInSettings = true, color = false },
 		{ variable = "$afMaxCharges", description = L["PriestBarTextVariable_afMaxCharges"], printInSettings = true, color = false },
 
+		-- Tracked in Lua off SPELL_UPDATE_USES, so these stay plain numbers rather than secrets.
 		{ variable = "$surgeOfLight", description = L["PriestBarTextVariable_surgeOfLight"], printInSettings = false, color = false },
 		{ variable = "$surgeOfLightStacks", description = L["PriestBarTextVariable_surgeOfLightStacks"], printInSettings = true, color = false },
+		{ variable = "$surgeOfLightStacksMax", description = L["PriestBarTextVariable_surgeOfLightStacksMax"], printInSettings = true, color = false },
+		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
 		{ variable = "$benediction", description = L["PriestHolyBarTextVariable_benediction"], printInSettings = true, color = false },
 	})
 end
@@ -1153,6 +1162,21 @@ do
 				label = L["PriestAudioSurgeOfLight"],
 				trigger = L["PriestAudioTriggerSurgeOfLight"],
 				tooltip = L["PriestAudioCheckboxSurgeOfLightTooltip"],
+				config = {
+					{
+						key = "playOnDrop",
+						control = "checkbox",
+						label = L["AudioCuePlayOnDropCheckbox"],
+						tooltip = L["PriestAudioCheckboxSurgeOfLightPlayOnDropTooltip"],
+						default = false,
+					},
+				},
+			},
+			{
+				id = "surgeOfLight2",
+				label = L["PriestAudioSurgeOfLight2"],
+				trigger = L["PriestAudioTriggerSurgeOfLight2"],
+				tooltip = L["PriestAudioCheckboxSurgeOfLight2Tooltip"],
 			},
 		},
 	})
@@ -1164,6 +1188,28 @@ do
 				label = L["PriestAudioSurgeOfLight"],
 				trigger = L["PriestAudioTriggerSurgeOfLight"],
 				tooltip = L["PriestAudioCheckboxSurgeOfLightTooltip"],
+				config = {
+					{
+						key = "requireSpiritwellTalent",
+						control = "checkbox",
+						label = L["PriestAudioCheckboxSurgeOfLightSpiritwellOnly"],
+						tooltip = L["PriestAudioCheckboxSurgeOfLightSpiritwellOnlyTooltip"],
+						default = false,
+					},
+					{
+						key = "playOnDrop",
+						control = "checkbox",
+						label = L["AudioCuePlayOnDropCheckbox"],
+						tooltip = L["PriestAudioCheckboxSurgeOfLightPlayOnDropTooltip"],
+						default = false,
+					},
+				},
+			},
+			{
+				id = "surgeOfLight2",
+				label = L["PriestAudioSurgeOfLight2"],
+				trigger = L["PriestAudioTriggerSurgeOfLight2"],
+				tooltip = L["PriestAudioCheckboxSurgeOfLight2Tooltip"],
 				config = {
 					{
 						key = "requireSpiritwellTalent",

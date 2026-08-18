@@ -436,7 +436,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 			return cursor - 80
 		end
 		control:SetPoint("TOPLEFT", editorContent, "TOPLEFT", oUi.xCoord2, cursor - 5)
-		return cursor - 35
+		return cursor - 20
 	end
 
 	local function RefreshEditor(id)

@@ -26,6 +26,22 @@ local content = [====[
 ### Frost
 
 - [#809](#809) Add Fingers of Frost and Brain Freeze Audio Cues. Fingers of Frost has separate cues for reaching 1 and 2 charges; the 2 charge cue wins when a proc takes you straight to two. The 1 charge cue offers `Also play when dropping to this value`, for spending your second charge back down to one. All three cues are off by default.
+- [#809](#809) Add a Fingers of Frost (2 Charges) Color Indicator, taking priority over Fingers of Frost. Defaults to the Mana bar border.
+
+## Priest
+### Discipline
+
+- Surge of Light tracking no longer requires the CDM.
+- Add the `$surgeOfLightStacksMax` and `$surgeOfLightTime` bar text variables and the `#surgeOfLight` icon.
+- Add a Surge of Light (2 Stacks) Color Indicator, taking priority over Surge of Light.
+- Add a Surge of Light (2 Stacks) Audio Cue. The existing Surge of Light cue is now the 1 stack cue and offers `Also play when dropping to this value`.
+
+### Holy
+
+- Surge of Light tracking no longer requires the CDM.
+- Add the `$surgeOfLightStacksMax` and `$surgeOfLightTime` bar text variables and the `#surgeOfLight` icon.
+- Add a Surge of Light (2 Stacks) Color Indicator, taking priority over Surge of Light.
+- Add a Surge of Light (2 Stacks) Audio Cue. The existing Surge of Light cue is now the 1 stack cue and offers `Also play when dropping to this value`.
 
 ---
 

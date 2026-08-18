@@ -8839,6 +8839,38 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			})
 		end
 	end
+
+	-- The two-stack proc indicators have to be inserted into a saved nodeOrder here; the index-based
+	-- defaults merge would otherwise drop them. Each ranks directly above its one-stack entry.
+	do
+		---@param spec table?
+		---@param oneKey string
+		---@param twoKey string
+		local function InsertTwoStackIndicator(spec, oneKey, twoKey)
+			local shared = spec ~= nil and spec.colors ~= nil and spec.colors.shared or nil
+			if shared == nil or type(shared.nodeOrder) ~= "table" then
+				return
+			end
+			local onePosition = nil
+			for x, v in ipairs(shared.nodeOrder) do
+				if v == twoKey then
+					return
+				end
+				if v == oneKey then
+					onePosition = x
+				end
+			end
+			table.insert(shared.nodeOrder, onePosition or (#shared.nodeOrder + 1), twoKey)
+		end
+
+		if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest ~= nil then
+			InsertTwoStackIndicator(TwintopInsanityBarSettings.priest.discipline, "surgeOfLight", "surgeOfLight2")
+			InsertTwoStackIndicator(TwintopInsanityBarSettings.priest.holy, "surgeOfLight", "surgeOfLight2")
+		end
+		if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.mage ~= nil then
+			InsertTwoStackIndicator(TwintopInsanityBarSettings.mage.frost, "fingersOfFrost", "fingersOfFrost2")
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean

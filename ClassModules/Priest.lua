@@ -235,7 +235,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.voidbinding.id] = TRB.Classes.Snapshot:New(spells.voidbinding)
 	---@type TRB.Classes.Snapshot
-	specCache.priest_discipline.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight, nil, "always")
+	specCache.priest_discipline.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
+	-- The stack count is a secret in combat, so it is counted in Lua from SPELL_UPDATE_USES instead.
+	specCache.priest_discipline.snapshotData.snapshots[spells.surgeOfLight.id].buff:InitializeProcCharges()
 	---@type TRB.Classes.Snapshot
 	specCache.priest_discipline.snapshotData.snapshots[spells.harshDiscipline.id] = TRB.Classes.Snapshot:New(spells.harshDiscipline)
 	--[[---@type TRB.Classes.Snapshot
@@ -297,7 +299,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.benediction.id] = TRB.Classes.Snapshot:New(spells.benediction)
 	---@type TRB.Classes.Snapshot
-	specCache.priest_holy.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight, nil, "always")
+	specCache.priest_holy.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
+	-- The stack count is a secret in combat, so it is counted in Lua from SPELL_UPDATE_USES instead.
+	specCache.priest_holy.snapshotData.snapshots[spells.surgeOfLight.id].buff:InitializeProcCharges()
 
 	-- Shadow
 	specCache.priest_shadow.Global_TwintopResourceBar = {
@@ -801,16 +805,27 @@ local function RefreshLookupData_Discipline()
 		end
 	end
 
-	-- Block D: Buff state ($surgeOfLight, $surgeOfLightStacks)
-	if not activeVars or activeVars["$surgeOfLight"] or activeVars["$surgeOfLightStacks"] then
+	-- Block D: Buff state ($surgeOfLight, $surgeOfLightStacks, $surgeOfLightStacksMax, $surgeOfLightTime)
+	if not activeVars or activeVars["$surgeOfLight"] or activeVars["$surgeOfLightStacks"]
+		or activeVars["$surgeOfLightStacksMax"] or activeVars["$surgeOfLightTime"] then
 		local surgeOfLightBuff = snapshotData.snapshots[spells.surgeOfLight.id]
 		local _surgeOfLightActive = (surgeOfLightBuff ~= nil and surgeOfLightBuff.buff.isActive) or false
 		local _surgeOfLightStacks = (_surgeOfLightActive and (surgeOfLightBuff.buff.applications or 0)) or 0
+		local _surgeOfLightStacksMax = spells.surgeOfLight.maxStacks
+		local _surgeOfLightTime = (_surgeOfLightActive and surgeOfLightBuff.buff.remaining) or 0
 		lookupLogic["$surgeOfLight"] = _surgeOfLightActive
 		lookupLogic["$surgeOfLightStacks"] = _surgeOfLightStacks
+		lookupLogic["$surgeOfLightStacksMax"] = _surgeOfLightStacksMax
+		lookupLogic["$surgeOfLightTime"] = _surgeOfLightTime
 		lookup["$surgeOfLight"] = ""
 		if lookupChanged(prevState, "$surgeOfLightStacks", _surgeOfLightStacks) then
 			lookup["$surgeOfLightStacks"] = string.format("%.0f", _surgeOfLightStacks)
+		end
+		if lookupChanged(prevState, "$surgeOfLightStacksMax", _surgeOfLightStacksMax) then
+			lookup["$surgeOfLightStacksMax"] = string.format("%.0f", _surgeOfLightStacksMax)
+		end
+		if lookupChanged(prevState, "$surgeOfLightTime", _surgeOfLightTime) then
+			lookup["$surgeOfLightTime"] = TRB.Functions.BarText:TimerPrecision(_surgeOfLightTime)
 		end
 	end
 
@@ -1035,16 +1050,27 @@ local function RefreshLookupData_Holy()
 		end
 	end
 
-	-- Block F: Buff state ($surgeOfLight, $surgeOfLightStacks, $benediction)
-	if not activeVars or activeVars["$surgeOfLight"] or activeVars["$surgeOfLightStacks"] or activeVars["$benediction"] then
+	-- Block F: Buff state ($surgeOfLight, $surgeOfLightStacks, $surgeOfLightStacksMax, $surgeOfLightTime, $benediction)
+	if not activeVars or activeVars["$surgeOfLight"] or activeVars["$surgeOfLightStacks"]
+		or activeVars["$surgeOfLightStacksMax"] or activeVars["$surgeOfLightTime"] or activeVars["$benediction"] then
 		local surgeOfLightBuff = snapshotData.snapshots[spells.surgeOfLight.id]
 		local _surgeOfLightActive = (surgeOfLightBuff ~= nil and surgeOfLightBuff.buff.isActive) or false
 		local _surgeOfLightStacks = (_surgeOfLightActive and (surgeOfLightBuff.buff.applications or 0)) or 0
+		local _surgeOfLightStacksMax = spells.surgeOfLight.maxStacks
+		local _surgeOfLightTime = (_surgeOfLightActive and surgeOfLightBuff.buff.remaining) or 0
 		lookupLogic["$surgeOfLight"] = _surgeOfLightActive
 		lookupLogic["$surgeOfLightStacks"] = _surgeOfLightStacks
+		lookupLogic["$surgeOfLightStacksMax"] = _surgeOfLightStacksMax
+		lookupLogic["$surgeOfLightTime"] = _surgeOfLightTime
 		lookup["$surgeOfLight"] = ""
 		if lookupChanged(prevState, "$surgeOfLightStacks", _surgeOfLightStacks) then
 			lookup["$surgeOfLightStacks"] = string.format("%.0f", _surgeOfLightStacks)
+		end
+		if lookupChanged(prevState, "$surgeOfLightStacksMax", _surgeOfLightStacksMax) then
+			lookup["$surgeOfLightStacksMax"] = string.format("%.0f", _surgeOfLightStacksMax)
+		end
+		if lookupChanged(prevState, "$surgeOfLightTime", _surgeOfLightTime) then
+			lookup["$surgeOfLightTime"] = TRB.Functions.BarText:TimerPrecision(_surgeOfLightTime)
 		end
 		lookupLogic["$benediction"] = snapshots[spells.benediction.id].buff.isActive or false
 		lookup["$benediction"] = ""
@@ -1275,6 +1301,17 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			local snapshots = snapshotData.snapshots
 			if snapshots[spells.angelicFeather.id] then
 				snapshots[spells.angelicFeather.id].cooldown:SpendCharge(spells.angelicFeather.duration)
+			end
+		end
+	end
+
+	if (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2) and event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HealerSpells]]
+		if spells.flashHeal ~= nil and spellId == spells.flashHeal.id then
+			local snapshot = spells.surgeOfLight and snapshotData.snapshots
+				and snapshotData.snapshots[spells.surgeOfLight.id]
+			if snapshot ~= nil then
+				snapshot.buff:ArmProcSpend(currentTime)
 			end
 		end
 	end
@@ -1686,115 +1723,131 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 end
 
--- Surge of Light stacks = number of visible overlay artworks (one spellId per stack;
--- see overlayIds on the spell definition). HIDE(nil) is a bulk redraw, not a removal.
+-- One overlay artwork per Surge of Light stack (see overlayIds on the spell definition). The set
+-- only answers "is any stack still up", which is what separates a full loss from a spend.
 ---@type table<integer, boolean>
 local surgeOfLightVisibleOverlays = {}
-local surgeOfLightOverlayToken = 0
 
+---@param snapshotData TRB.Classes.SnapshotData
+---@param spells TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells
 ---@return integer
-local function CountSurgeOfLightOverlays()
-	local count = 0
-	for _ in pairs(surgeOfLightVisibleOverlays) do
-		count = count + 1
+local function GetSurgeOfLightStacks(snapshotData, spells)
+	local snapshot = spells.surgeOfLight and snapshotData.snapshots
+		and snapshotData.snapshots[spells.surgeOfLight.id]
+	if snapshot == nil or not snapshot.buff.isActive then
+		return 0
 	end
-	return count
+	return snapshot.buff.applications or 0
+end
+
+---Fires the Surge of Light stack cues. Stacks are Lua-tracked, so the two-stack cue wins when a proc
+---takes you straight to two, and the one-stack cue can offer a play-on-drop for spending back to one.
+---@param specSettings table
+---@param snapshotData TRB.Classes.SnapshotData
+---@param spells TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells
+local function FireSurgeOfLightCues(specSettings, snapshotData, spells)
+	local spiritwellActive = (talents ~= nil and spells.spiritwell ~= nil
+		and talents:IsTalentActive(spells.spiritwell)) or false
+
+	---Holy's Spiritwell gate is per cue, so each one silences only itself.
+	---@param cueId string
+	---@return boolean
+	local function CanPlay(cueId)
+		local cue = specSettings.audio and specSettings.audio[cueId]
+		local configuration = cue and cue.configuration
+		if configuration ~= nil and configuration.requireSpiritwellTalent then
+			return spiritwellActive
+		end
+		return true
+	end
+
+	TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, "surgeOfLightStacks",
+		GetSurgeOfLightStacks(snapshotData, spells), {
+			{ id = "surgeOfLight", threshold = 1, canPlay = CanPlay("surgeOfLight") },
+			{ id = "surgeOfLight2", threshold = 2, canPlay = CanPlay("surgeOfLight2") },
+		})
+end
+
+---Keeps Surge of Light readable as active for the rest of the frame batch that dropped it.
+---@param snapshotData TRB.Classes.SnapshotData
+local function StartSurgeOfLightGrace(snapshotData)
+	snapshotData.attributes.surgeOfLightActiveGrace = true
+	C_Timer.After(0.05, function()
+		snapshotData.attributes.surgeOfLightActiveGrace = false
+	end)
+end
+
+---Drops everything the manual tracker banked. Manual tracking only runs while a healer spec is
+---played, so anything held over a spec change is stale.
+local function ResetSurgeOfLightTracking()
+	wipe(surgeOfLightVisibleOverlays)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+	local snapshot = spells and spells.surgeOfLight and snapshotData.snapshots
+		and snapshotData.snapshots[spells.surgeOfLight.id]
+	if snapshot ~= nil then
+		snapshot.buff:Reset()
+		snapshot.buff:ResetProcCharges()
+	end
+	snapshotData.attributes.surgeOfLightActiveGrace = false
+	TRB.Functions.AudioCues:ResetLatch(snapshotData, "surgeOfLight")
+	TRB.Functions.AudioCues:ResetLatch(snapshotData, "surgeOfLight2")
+end
+
+---Every Surge of Light stack change fires SPELL_UPDATE_USES on Flash Heal, not on the buff itself.
+---@param spellId integer?
+local function HandleSurgeOfLightEvent(spellId)
+	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 then return end
+
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+	if not (spells and spells.flashHeal and spells.surgeOfLight) then return end
+	if spellId ~= spells.flashHeal.id then return end
+
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshot = snapshotData and snapshotData.snapshots and snapshotData.snapshots[spells.surgeOfLight.id]
+	if snapshot == nil then return end
+
+	local outcome = snapshot.buff:HandleProcChargeEvent()
+	if outcome == "spend" or outcome == "expire" then
+		-- The Holy Word CDR path reads the buff on UNIT_SPELLCAST_SUCCEEDED, which can land after
+		-- this; the grace keeps the cast that burned the charge from missing it.
+		StartSurgeOfLightGrace(snapshotData)
+		if not snapshot.buff.isActive then
+			TRB.Functions.AudioCues:ResetLatch(snapshotData, "surgeOfLight")
+			TRB.Functions.AudioCues:ResetLatch(snapshotData, "surgeOfLight2")
+		end
+	end
+
+	TRB.Data.lookupDirty = true
+	if TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
 end
 
 ---Updates data based on spell events
 local function HandleSpellEvents(self, event, ...)
-	if event == "SPELL_ACTIVATION_OVERLAY_SHOW" then
+	if event == "SPELL_UPDATE_USES" then
+		local spellId = ...
+		HandleSurgeOfLightEvent(spellId)
+	elseif event == "SPELL_ACTIVATION_OVERLAY_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local spellId = ...
+		local isShow = event == "SPELL_ACTIVATION_OVERLAY_SHOW"
 		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
-			if spells.surgeOfLight.attributes.overlayIds[spellId] then -- Surge of Light overlay artwork
-				local surgeOfLightSnapshot = snapshotData.snapshots[spells.surgeOfLight.id]
-				local wasActive = surgeOfLightSnapshot ~= nil and surgeOfLightSnapshot.buff.isActive
-
-				surgeOfLightVisibleOverlays[spellId] = true
-				surgeOfLightOverlayToken = surgeOfLightOverlayToken + 1 -- invalidate any pending bulk-hide confirmation
-
-				if not wasActive then
-					local specSettings = TRB.Data.settings.priest[TRB.Data.character.specName]
-					local configuration = specSettings.audio.surgeOfLight.configuration
-					local spiritwellSatisfied = true
-					if configuration ~= nil and configuration.requireSpiritwellTalent then
-						spiritwellSatisfied = (talents ~= nil and talents:IsTalentActive(spells.spiritwell)) or false
-					end
-					TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "surgeOfLight", spiritwellSatisfied)
-				end
-
-				-- No duration tracked: redraw re-SHOWs are indistinguishable from refreshes.
-				if surgeOfLightSnapshot ~= nil then
-					surgeOfLightSnapshot.buff:InitializeCustomSimple(true)
-					surgeOfLightSnapshot.buff.applications = CountSurgeOfLightOverlays()
-				end
-			end
-		elseif TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
-			if spellId == spells.shadowyInsight.id then
-				snapshotData.attributes.shadowyInsightActive = true
-			end
-		end
-	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
-		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-		local spellId = ...
-		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+			-- Flag only: a hide-all carries no spell id and is always followed by a re-show of whatever is
+			-- still up, and leaving the stack count to SPELL_UPDATE_USES keeps a misread from wiping it.
 			if spellId ~= nil and spells.surgeOfLight.attributes.overlayIds[spellId] then
-				-- Targeted hide: this stack was consumed or expired
-				surgeOfLightVisibleOverlays[spellId] = nil
-				local stacks = CountSurgeOfLightOverlays()
+				surgeOfLightVisibleOverlays[spellId] = isShow or nil
 				local surgeOfLightSnapshot = snapshotData.snapshots[spells.surgeOfLight.id]
-				if stacks > 0 then
-					if surgeOfLightSnapshot ~= nil then
-						surgeOfLightSnapshot.buff.applications = stacks
-					end
-				else
-					if surgeOfLightSnapshot ~= nil then
-						surgeOfLightSnapshot.buff:Reset()
-					end
-					TRB.Functions.AudioCues:ResetLatch(snapshotData, "surgeOfLight")
-
-					snapshotData.attributes.surgeOfLightActiveGrace = true
-
-					C_Timer.After(0, function()
-						C_Timer.After(0.05, function()
-							snapshotData.attributes.surgeOfLightActiveGrace = false
-						end)
-					end)
+				if surgeOfLightSnapshot ~= nil then
+					surgeOfLightSnapshot.buff:SetProcOverlay(next(surgeOfLightVisibleOverlays) ~= nil)
 				end
-			elseif spellId == nil and next(surgeOfLightVisibleOverlays) ~= nil then
-				-- Bulk hide: redraw re-SHOWs land this frame, so confirm the clear next frame
-				wipe(surgeOfLightVisibleOverlays)
-				surgeOfLightOverlayToken = surgeOfLightOverlayToken + 1
-				local token = surgeOfLightOverlayToken
-				C_Timer.After(0, function()
-					if token ~= surgeOfLightOverlayToken or next(surgeOfLightVisibleOverlays) ~= nil then
-						return
-					end
-					local innerSnapshotData = TRB.Data.snapshotData
-					local innerSpells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
-					if innerSnapshotData == nil or innerSpells == nil or innerSpells.surgeOfLight == nil then
-						return
-					end
-					local surgeOfLightSnapshot = innerSnapshotData.snapshots[innerSpells.surgeOfLight.id]
-					if surgeOfLightSnapshot ~= nil then
-						surgeOfLightSnapshot.buff:Reset()
-					end
-					TRB.Functions.AudioCues:ResetLatch(innerSnapshotData, "surgeOfLight")
-
-					innerSnapshotData.attributes.surgeOfLightActiveGrace = true
-					C_Timer.After(0.05, function()
-						innerSnapshotData.attributes.surgeOfLightActiveGrace = false
-					end)
-				end)
 			end
 		elseif TRB.Data.character.specId == 3 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 			if spellId == spells.shadowyInsight.id then
-				snapshotData.attributes.shadowyInsightActive = false
+				snapshotData.attributes.shadowyInsightActive = isShow
 			end
 		end
 	elseif event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
@@ -1837,12 +1890,20 @@ function TRB.Functions.Class:EnableEvents()
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 	spellEventFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
+	-- Surge of Light is a healer proc; toggled both ways because EventRegistration reaches here
+	-- without a DisableEvents() first when moving between supported specs.
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
+		spellEventFrame:RegisterEvent("SPELL_UPDATE_USES")
+	else
+		spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
+	end
 end
 
 function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 	spellEventFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
+	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
 end
 
 local function UpdateSnapshot()
@@ -1858,7 +1919,12 @@ local function UpdateSnapshot_Healers()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
-	
+
+	local surgeOfLight = snapshots[spells.surgeOfLight.id]
+	if surgeOfLight ~= nil then
+		surgeOfLight.buff:RefreshProcCharges()
+	end
+
 	-- Track Flash Heal mana cost to detect Surge of Light via cost reduction
 	local currentFlashHealCost = spells.flashHeal:GetPrimaryResourceCost(true) or 0
 	if currentFlashHealCost > 0 then
@@ -2053,8 +2119,10 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 
+			local surgeOfLightStacks = GetSurgeOfLightStacks(snapshotData, spells)
 			local conditionMap = {
-				surgeOfLight = snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive,
+				surgeOfLight = surgeOfLightStacks >= 1,
+				surgeOfLight2 = surgeOfLightStacks >= 2,
 				voidShield = snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive,
 			}
 
@@ -2170,6 +2238,10 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Surge of Light audio cues (independent of bar visibility)
+		FireSurgeOfLightCues(specSettings, snapshotData, spells)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
@@ -2232,6 +2304,7 @@ local function UpdateResourceBar()
 				apotheosisEndMet = timeLeft <= timeThreshold
 			end
 
+			local surgeOfLightStacks = GetSurgeOfLightStacks(snapshotData, spells)
 			local conditionMap = {
 				benediction = snapshots[spells.benediction.id].buff.isActive,
 				holyWordSerenity = holyWordCooldownCompletesKey == "holyWordSerenity",
@@ -2239,7 +2312,8 @@ local function UpdateResourceBar()
 				holyWordChastise = holyWordCooldownCompletesKey == "holyWordChastise",
 				apotheosisEnd = apotheosisActive and apotheosisEndMet,
 				apotheosis = apotheosisActive,
-				surgeOfLight = snapshots[spells.surgeOfLight.id].buff.isActive,
+				surgeOfLight = surgeOfLightStacks >= 1,
+				surgeOfLight2 = surgeOfLightStacks >= 2,
 				lightweaver = snapshots[spells.lightweaver.id].buff.isActive,
 			}
 
@@ -2467,6 +2541,9 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Surge of Light audio cues (independent of bar visibility)
+		FireSurgeOfLightCues(specSettings, snapshotData, spells)
 
 		-- Lightweaver audio cues (independent of bar visibility)
 		do
@@ -2933,6 +3010,7 @@ local function SwitchSpec()
 		lookup["#angelicFeather"] = spells.angelicFeather.icon
 		lookup["#voidShield"] = spells.masterTheDarkness.icon
 		lookup["#masterTheDarkness"] = spells.masterTheDarkness.icon
+		lookup["#surgeOfLight"] = spells.surgeOfLight.icon
 		--[[lookup["#atonement"] = spells.atonement.icon
 		lookup["#sc"] = spells.shadowCovenant.icon
 		lookup["#shadowCovenant"] = spells.shadowCovenant.icon
@@ -2940,6 +3018,8 @@ local function SwitchSpec()
 
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
+
+		ResetSurgeOfLightTracking()
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
@@ -2991,8 +3071,11 @@ local function SwitchSpec()
 		lookup["#lightweaver"] = spells.lightweaver.icon
 		lookup["#af"] = spells.angelicFeather.icon
 		lookup["#angelicFeather"] = spells.angelicFeather.icon
+		lookup["#surgeOfLight"] = spells.surgeOfLight.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
+
+		ResetSurgeOfLightTracking()
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
@@ -3543,7 +3626,6 @@ end
 
 function TRB.Functions.Class:ResetProcsOnDeath()
 	wipe(surgeOfLightVisibleOverlays)
-	surgeOfLightOverlayToken = surgeOfLightOverlayToken + 1
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData and snapshotData.attributes then
 		snapshotData.attributes.surgeOfLightActiveGrace = false
@@ -3552,7 +3634,10 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 			local surgeOfLightSnapshot = snapshotData.snapshots and snapshotData.snapshots[spells.surgeOfLight.id]
 			if surgeOfLightSnapshot then
 				surgeOfLightSnapshot.buff:Reset()
+				surgeOfLightSnapshot.buff:ResetProcCharges()
 			end
+			TRB.Functions.AudioCues:ResetLatch(snapshotData, "surgeOfLight")
+			TRB.Functions.AudioCues:ResetLatch(snapshotData, "surgeOfLight2")
 		end
 		snapshotData.attributes.shadowyInsightActive = false
 		if TRB.Data.character.specId == 2 then
@@ -3588,6 +3673,11 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.angelicFeather.id].cooldown.charges > 0
 	end
+	local surgeOfLightActiveFn = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		local snap = spells and spells.surgeOfLight and TRB.Data.snapshotData.snapshots[spells.surgeOfLight.id]
+		return snap ~= nil and snap.buff.isActive == true
+	end
 	-- Discipline
 	local pwRadTimeFn = function()
 		local spells = TRB.Data.spellsData.spells
@@ -3615,22 +3705,10 @@ do
 		["$afTime"] = afTimeFn, ["$angelicFeatherTime"] = afTimeFn,
 		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
 		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
-		["$surgeOfLight"] = function()
-			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
-			if spells == nil or spells.surgeOfLight == nil then
-				return false
-			end
-			local snap = TRB.Data.snapshotData.snapshots[spells.surgeOfLight.id]
-			return snap ~= nil and snap.buff.isActive == true
-		end,
-		["$surgeOfLightStacks"] = function()
-			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
-			if spells == nil or spells.surgeOfLight == nil then
-				return false
-			end
-			local snap = TRB.Data.snapshotData.snapshots[spells.surgeOfLight.id]
-			return snap ~= nil and snap.buff.isActive == true
-		end,
+		["$surgeOfLight"] = surgeOfLightActiveFn,
+		["$surgeOfLightStacks"] = surgeOfLightActiveFn,
+		["$surgeOfLightStacksMax"] = true,
+		["$surgeOfLightTime"] = surgeOfLightActiveFn,
 		["$voidShieldTime"] = function()
 			local spells = TRB.Data.spellsData.spells
 			return TRB.Data.snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive
@@ -3705,22 +3783,10 @@ do
 		["$afTime"] = afTimeFn, ["$angelicFeatherTime"] = afTimeFn,
 		["$afCharges"] = afChargesFn, ["$angelicFeatherCharges"] = afChargesFn,
 		["$afMaxCharges"] = true, ["$angelicFeatherMaxCharges"] = true,
-		["$surgeOfLight"] = function()
-			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
-			if spells == nil or spells.surgeOfLight == nil then
-				return false
-			end
-			local snap = TRB.Data.snapshotData.snapshots[spells.surgeOfLight.id]
-			return snap ~= nil and snap.buff.isActive == true
-		end,
-		["$surgeOfLightStacks"] = function()
-			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
-			if spells == nil or spells.surgeOfLight == nil then
-				return false
-			end
-			local snap = TRB.Data.snapshotData.snapshots[spells.surgeOfLight.id]
-			return snap ~= nil and snap.buff.isActive == true
-		end,
+		["$surgeOfLight"] = surgeOfLightActiveFn,
+		["$surgeOfLightStacks"] = surgeOfLightActiveFn,
+		["$surgeOfLightStacksMax"] = true,
+		["$surgeOfLightTime"] = surgeOfLightActiveFn,
 		["$benediction"] = function()
 			local spells = TRB.Data.spellsData.spells
 			return TRB.Data.snapshotData.snapshots[spells.benediction.id].buff.isActive or false
@@ -3942,9 +4008,12 @@ function TRB.Functions.Class:HasActiveTimers()
 	if not snapshotData or not spells then return false end
 	local snapshots = snapshotData.snapshots
 	local specId = TRB.Data.character.specId
+	local surgeOfLightActive = spells.surgeOfLight and snapshots[spells.surgeOfLight.id]
+		and snapshots[spells.surgeOfLight.id].buff.isActive
 	if specId == 1 then -- Discipline
 		if (spells.powerWordRadiance and snapshots[spells.powerWordRadiance.id] and snapshots[spells.powerWordRadiance.id].cooldown and snapshots[spells.powerWordRadiance.id].cooldown.remaining > 0)
-			or (spells.angelicFeather and snapshots[spells.angelicFeather.id] and snapshots[spells.angelicFeather.id].cooldown and snapshots[spells.angelicFeather.id].cooldown.remaining > 0) then
+			or (spells.angelicFeather and snapshots[spells.angelicFeather.id] and snapshots[spells.angelicFeather.id].cooldown and snapshots[spells.angelicFeather.id].cooldown.remaining > 0)
+			or surgeOfLightActive then
 			return true
 		end
 	elseif specId == 2 then -- Holy
@@ -3953,7 +4022,8 @@ function TRB.Functions.Class:HasActiveTimers()
 			or (spells.holyWordSerenity and snapshots[spells.holyWordSerenity.id] and snapshots[spells.holyWordSerenity.id].cooldown and snapshots[spells.holyWordSerenity.id].cooldown.remaining > 0)
 			or (spells.apotheosis and snapshots[spells.apotheosis.id] and snapshots[spells.apotheosis.id].buff and snapshots[spells.apotheosis.id].buff.isActive)
 			or (spells.lightweaver and snapshots[spells.lightweaver.id] and snapshots[spells.lightweaver.id].buff and snapshots[spells.lightweaver.id].buff.isActive)
-			or (spells.angelicFeather and snapshots[spells.angelicFeather.id] and snapshots[spells.angelicFeather.id].cooldown and snapshots[spells.angelicFeather.id].cooldown.remaining > 0) then
+			or (spells.angelicFeather and snapshots[spells.angelicFeather.id] and snapshots[spells.angelicFeather.id].cooldown and snapshots[spells.angelicFeather.id].cooldown.remaining > 0)
+			or surgeOfLightActive then
 			return true
 		end
 	elseif specId == 3 then -- Shadow

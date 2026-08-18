@@ -307,8 +307,8 @@ end
 ---@param snapshotData TRB.Classes.SnapshotData
 ---@param key string # Names this group in the last-seen value store
 ---@param value number?
----@param entries table[] # { id = string, threshold = number }, lowest threshold first
----@param canPlay boolean? # Defaults to true
+---@param entries table[] # { id = string, threshold = number, canPlay = boolean? }, lowest threshold first
+---@param canPlay boolean? # Suppresses the whole group. Defaults to true
 function TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, key, value, entries, canPlay)
 	if specSettings == nil or specSettings.audio == nil or snapshotData == nil or value == nil then
 		return
@@ -330,21 +330,20 @@ function TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, key,
 			-- Latch every member, but withhold playback until we know which one ranks highest.
 			if self:Fire(specSettings, snapshotData, entry.id, value >= entry.threshold, false) then
 				if winner == nil then
-					winner = cue
+					winner = entry
 				end
 			elseif isDrop and dropWinner == nil and cue.enabled and cue.configuration
 				and cue.configuration.playOnDrop and value == entry.threshold then
-				dropWinner = cue
+				dropWinner = entry
 			end
 		end
 	end
 
-	if canPlay ~= false then
-		if winner ~= nil then
-			PlayCue(winner)
-		elseif dropWinner ~= nil then
-			PlayCue(dropWinner)
-		end
+	-- A muted winner still outranks the entry below it, so the group stays silent rather than
+	-- falling through to a cue the user did not cross.
+	local played = winner or dropWinner
+	if canPlay ~= false and played ~= nil and played.canPlay ~= false then
+		PlayCue(specSettings.audio[played.id])
 	end
 end
 

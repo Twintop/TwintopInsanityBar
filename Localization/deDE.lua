@@ -1238,8 +1238,6 @@ if locale == "deDE" then
     L["MageManaTextColorsHeader"] = "Mana Textfarben"
     L["ShamanEnhancementMaelstromWeaponColorsHeader"] = "Mahlstromwaffe Farben"
     L["PriestAudioCheckboxSurgeOfLight"] = "Spiele Audio-Hinweis, wenn ein Woge des Lichts Proc auftritt"
-    L["PriestAudioCheckboxSurgeOfLightTooltip"] = "Spiele einen Audio-Hinweis ab, wenn ein Woge des Lichts Proc auftritt. Dies wird nur abgespielt, wenn du Woge des Lichts nicht bereits hast."
-    L["PriestAudioSurgeOfLight"] = "Woge des Lichts"
     L["PriestCheckboxSurgeOfLight"] = "Woge des Lichts"
     L["MageBarTextVariable_casting"] = "Mana von hart gezauberten Zaubern"
     L["WarlockDestructionBarTextVariable_casting"] = "Mana von hart gezauberten Zaubern"

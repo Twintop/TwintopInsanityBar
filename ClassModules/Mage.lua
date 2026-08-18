@@ -1128,8 +1128,11 @@ local function UpdateResourceBar()
 			-- Indicators resolve ahead of the bars' visibility guards: the health bar and cast bar have
 			-- their own visibility, so they still need coloring when a resource bar is set to Never Show.
 			local sharedColors = specSettings.colors.shared
+			local fingersOfFrostBuff = snapshots[spells.fingersOfFrost.id].buff
+			local fingersOfFrostCharges = fingersOfFrostBuff.isActive and (fingersOfFrostBuff.applications or 0) or 0
 			local conditionMap = {
-				fingersOfFrost = snapshots[spells.fingersOfFrost.id].buff.isActive,
+				fingersOfFrost = fingersOfFrostCharges >= 1,
+				fingersOfFrost2 = fingersOfFrostCharges >= 2,
 				brainFreeze = snapshots[spells.brainFreeze.id].buff.isActive,
 			}
 

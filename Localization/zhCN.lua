@@ -1220,8 +1220,6 @@ if locale == "zhCN" then
     L["MageManaTextColorsHeader"] = "法力文本颜色"
     L["ShamanEnhancementMaelstromWeaponColorsHeader"] = "漩涡武器颜色"
     L["PriestAudioCheckboxSurgeOfLight"] = "光明涌动触发时播放音效"
-    L["PriestAudioCheckboxSurgeOfLightTooltip"] = "光明涌动触发时播放音效，仅在未拥有该效果时触发。"
-    L["PriestAudioSurgeOfLight"] = "光明涌动"
     L["PriestCheckboxSurgeOfLight"] = "光明涌动"
     L["MageBarTextVariable_casting"] = "直接施放技能产生的法力值"
     L["WarlockDestructionBarTextVariable_casting"] = "直接施放技能产生的法力值"
@@ -1833,7 +1831,6 @@ if locale == "zhCN" then
     L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2"] = "圣言术：佑 获得第二层充能时播放语音提示"
     L["PriestHolyAudioCheckboxHolyWordSanctifyCharge2Tooltip"] = "圣言术：佑 获得第二层充能时播放语音提示，需要点出创造奇迹天赋，仅在战斗中生效。"
     L["PriestAudioCheckboxSurgeOfLightSpiritwellOnly"] = "仅在点出灵泉天赋时播放"
-    L["PriestAudioCheckboxSurgeOfLightSpiritwellOnlyTooltip"] = "启用后，仅当你激活灵泉天赋时，才会播放圣光涌动的语音提示。"
     L["PriestHolyAudioHolyWordsHeader"] = "圣言术语音提示"
 
     L["PriestHolyAudioLightweaverThreshold1"] = "织光者阈值1"
@@ -1959,7 +1956,6 @@ if locale == "zhCN" then
     L["PriestHolyIndicatorHolyWordChastiseTooltip"] = "当前施法可完成圣言术：罚冷却时，切换为此颜色。"
     L["PriestHolyIndicatorApotheosisTooltip"] = "神圣化身效果激活时，切换为此颜色。"
     L["PriestHolyIndicatorApotheosisEndTooltip"] = "神圣化身效果将于X个公共冷却或固定时长后结束时，切换为此颜色。可在下方选项中选择判定方式。"
-    L["PriestHolyIndicatorSurgeOfLightTooltip"] = "获得圣光涌动效果时，切换为此颜色。"
     L["PriestHolyIndicatorLightweaverTooltip"] = "获得任意层数织光者效果时，切换为此颜色。"
 
     L["PriestHolyIndicatorBenedictionColor"] = "祈福效果激活"
@@ -1972,7 +1968,6 @@ if locale == "zhCN" then
     L["PriestHolyIndicatorLightweaverColor"] = "织光者拥有层数"
 
     L["PriestDisciplineCheckboxSurgeOfLight"] = "圣光涌动"
-    L["PriestDisciplineIndicatorSurgeOfLightTooltip"] = "获得圣光涌动效果时，切换为此颜色。"
     L["PriestDisciplineIndicatorSurgeOfLightColor"] = "圣光涌动效果激活"
     L["BarNamePowerWordsBar"] = "真言术"
 
@@ -2474,8 +2469,6 @@ if locale == "zhCN" then
     L["EvokerAugmentationBarTextVariable_essenceBurstStacks"] = "当前可用的精华迸发层数。因底层数值未公开，用于布尔逻辑时结果为真或假。"
     L["PaladinBarTextVariable_divinePurposeStacks"] = "当前可用的神圣意志层数。因底层数值未公开，用于布尔逻辑时结果为真或假。"
     L["PaladinBarTextVariable_divinePurposeTime"] = "神圣意志增益效果的剩余持续时间。因底层数值未公开，用于布尔逻辑时结果为真或假。"
-    L["PriestBarTextVariable_surgeOfLightStacks"] = "当前可用的圣光涌动层数。因底层数值未公开，用于布尔逻辑时结果为真或假。"
-    L["PriestBarTextVariable_surgeOfLightTime"] = "圣光涌动增益效果的剩余持续时间。因底层数值未公开，用于布尔逻辑时结果为真或假。"
 
     L["CopyMenuButton"] = "复制..."
     L["CopyMenuButtonTooltip"] = "在配置文件、职业和专精之间复制此模块的配置。"
@@ -3155,7 +3148,6 @@ if locale == "zhCN" then
 	L["MonkWindwalkerAudioTriggerDanceOfChiJi"] = "赤精之舞触发"
 	L["PaladinAudioTriggerDivinePurpose"] = "神圣意志触发"
 	L["PaladinHolyAudioTriggerInfusionOfLight"] = "圣光灌注触发"
-	L["PriestAudioTriggerSurgeOfLight"] = "圣光涌动触发"
 	L["PriestHolyAudioTriggerBenediction"] = "祈福触发"
 	L["PriestHolyAudioTriggerLightweaverExpiring"] = "织光者即将结束"
 	L["PriestHolyAudioTriggerHolyWordChastiseReady"] = "圣言术：罚冷却完成"

@@ -344,6 +344,7 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			shared = {
 				nodeOrder = {
 					"voidShield",
+					"surgeOfLight2",
 					"surgeOfLight",
 				},
 				gradientOrder = {
@@ -352,6 +353,16 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 					surgeOfLight = {
 						color = "FFFCE58E",
 						color2 = "FFFCE58E",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							powerWordsBar = { bar = false, border = false, background = false },
+						},
+					},
+					surgeOfLight2 = {
+						color = "FFAF9942",
+						color2 = "FFAF9942",
 						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
@@ -393,6 +404,15 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 		audio = {
 			surgeOfLight={
 				name = L["PriestAudioSurgeOfLight"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOnDrop = false
+				}
+			},
+			surgeOfLight2={
+				name = L["PriestAudioSurgeOfLight2"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
@@ -822,7 +842,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
 			},
 			shared = {
-				nodeOrder = { "benediction", "holyWordSerenity", "holyWordSanctify", "holyWordChastise", "apotheosisEnd", "apotheosis", "surgeOfLight", "lightweaver" },
+				nodeOrder = { "benediction", "holyWordSerenity", "holyWordSanctify", "holyWordChastise", "apotheosisEnd", "apotheosis", "surgeOfLight2", "surgeOfLight", "lightweaver" },
 				gradientOrder = {},
 				indicatorColors = {
 					benediction = {
@@ -874,6 +894,13 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = { manaBar = { bar = false, border = true, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
 					},
+					surgeOfLight2 = {
+						color = "FFAF9942",
+						color2 = "FFAF9942",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = { manaBar = { bar = false, border = true, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
+					},
 					lightweaver = {
 						color = "FF00FFFF",
 						color2 = "FF00FFFF",
@@ -905,6 +932,16 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 		audio = {
 			surgeOfLight={
 				name = L["PriestAudioSurgeOfLight"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					requireSpiritwellTalent = false,
+					playOnDrop = false
+				}
+			},
+			surgeOfLight2={
+				name = L["PriestAudioSurgeOfLight2"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"],
@@ -1460,6 +1497,7 @@ local function DisciplineConstructIndicatorColorsPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 5, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "surgeOfLight",  label = L["PriestDisciplineCheckboxSurgeOfLight"],  tooltip = L["PriestDisciplineIndicatorSurgeOfLightTooltip"],  colorLabel = L["PriestDisciplineIndicatorSurgeOfLightColor"] },
+			{ key = "surgeOfLight2", label = L["PriestDisciplineCheckboxSurgeOfLight2"], tooltip = L["PriestDisciplineIndicatorSurgeOfLight2Tooltip"], colorLabel = L["PriestDisciplineIndicatorSurgeOfLight2Color"] },
 			{ key = "voidShield",   label = L["PriestDisciplineCheckboxVoidShield"],   tooltip = L["PriestDisciplineIndicatorVoidShieldTooltip"],   colorLabel = L["PriestDisciplineIndicatorVoidShieldColor"] },
 		},
 		barTargetDefs = {
@@ -2080,6 +2118,7 @@ local function HolyConstructIndicatorColorsPanel(parent)
 			{ key = "apotheosisEnd",      label = L["PriestHolyCheckboxApotheosisEndIndicator"],    tooltip = L["PriestHolyIndicatorApotheosisEndTooltip"],      colorLabel = L["PriestHolyIndicatorApotheosisEndColor"] },
 			{ key = "apotheosis",         label = L["PriestHolyCheckboxApotheosis"],                tooltip = L["PriestHolyIndicatorApotheosisTooltip"],         colorLabel = L["PriestHolyIndicatorApotheosisColor"] },
 			{ key = "surgeOfLight",       label = L["PriestCheckboxSurgeOfLight"],                  tooltip = L["PriestHolyIndicatorSurgeOfLightTooltip"],       colorLabel = L["PriestHolyIndicatorSurgeOfLightColor"] },
+			{ key = "surgeOfLight2",      label = L["PriestCheckboxSurgeOfLight2"],                 tooltip = L["PriestHolyIndicatorSurgeOfLight2Tooltip"],      colorLabel = L["PriestHolyIndicatorSurgeOfLight2Color"] },
 			{ key = "lightweaver",        label = L["PriestHolyCheckboxLightweaver"],               tooltip = L["PriestHolyIndicatorLightweaverTooltip"],        colorLabel = L["PriestHolyIndicatorLightweaverColor"] },
 		},
 		barTargetDefs = {
