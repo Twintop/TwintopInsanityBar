@@ -17,6 +17,10 @@ local content = [====[
 
 - Adjust some event hooks to be more tightly scoped to just the `player` where possible.
 
+### Localization
+
+- [#814 - @MOSS099](#814) Updated translations for Simplified Chinese (zhCN).
+
 ---
 
 # 12.1.0.4-release (2026-08-18)
