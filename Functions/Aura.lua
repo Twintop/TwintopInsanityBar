@@ -189,7 +189,7 @@ unitAuraFrame:SetScript("OnEvent", AuraUpdateEvent)
 
 ---Registers the UNIT_AURA event so the addon begins processing aura updates for the player
 function TRB.Functions.Aura:EnableUnitAura()
-	unitAuraFrame:RegisterEvent("UNIT_AURA")
+	unitAuraFrame:RegisterUnitEvent("UNIT_AURA", "player")
 end
 
 ---Unregisters the UNIT_AURA event so the addon stops processing aura updates

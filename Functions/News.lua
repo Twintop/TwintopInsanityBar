@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.1.0.5-release (2026-08-19)
+## General
+
+- Adjust some event hooks to be more tightly scoped to just the `player` where possible.
+
+---
+
 # 12.1.0.4-release (2026-08-18)
 ## General
 ### Cast Bars

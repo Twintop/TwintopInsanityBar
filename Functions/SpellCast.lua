@@ -71,22 +71,19 @@ end
 local spellCastFrame = CreateFrame("Frame")
 spellCastFrame:SetScript("OnEvent", SpellCastEvent)
 
-
--- NOTE: 2025-11-08 -- UNIT_SPELLCAST_CHANNEL_* still returns a secret. Comment out for now.
-
 ---Registers all spell cast related events to begin tracking player spell casts, channels, and empowers
 function TRB.Functions.SpellCast:EnableSpellCast()
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_START")
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED")
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START")
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
-	spellCastFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-	spellCastFrame:RegisterEvent("UNIT_MODEL_CHANGED")
+	spellCastFrame:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")
+	spellCastFrame:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player")
+	spellCastFrame:RegisterUnitEvent("UNIT_SPELLCAST_DELAYED", "player")
+	spellCastFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+	spellCastFrame:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "player")
+	spellCastFrame:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "player")
+	spellCastFrame:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "player")
+	spellCastFrame:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", "player")
+	spellCastFrame:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", "player")
+	spellCastFrame:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player")
+	spellCastFrame:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player")
 	spellCastFrame:RegisterEvent("SPELL_UPDATE_ICON")
 end
 
