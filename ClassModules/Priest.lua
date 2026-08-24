@@ -626,6 +626,28 @@ local function CalculateResourceGain(resource)
 end
 
 
+---Is Surge of Light usable for a Holy Word cooldown reduction right now? The grace covers the frame
+---batch where the spend event lands ahead of the cast that consumed it.
+---@param snapshotData TRB.Classes.SnapshotData
+---@param spells TRB.Classes.Priest.HolySpells
+---@return boolean
+local function SurgeOfLightUsable(snapshotData, spells)
+	return snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive == true
+		or snapshotData.attributes.surgeOfLightActiveGrace == true
+end
+
+---Did the cast that just landed actually have Surge of Light behind it? A hard cast needs it at both
+---ends; an instant fires no START, leaving the reading nil, and there the live value is the whole story.
+---@param snapshotData TRB.Classes.SnapshotData
+---@param spells TRB.Classes.Priest.HolySpells
+---@return boolean
+local function SurgeOfLightEmpoweredCast(snapshotData, spells)
+	if snapshotData.attributes.surgeOfLightAtCastStart == false then
+		return false
+	end
+	return SurgeOfLightUsable(snapshotData, spells)
+end
+
 ---Returns true if the player is currently inside an active M+ dungeon in the Voidbinding key range (2-11).
 ---@return boolean
 local function IsInVoidbindingKeyRange()
@@ -1412,6 +1434,12 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
 
+			-- A proc gained partway through cannot empower a cast already in flight. Recorded on START
+			-- only, so pushback (DELAYED) can't requalify one. Instants fire no START and stay nil.
+			if event == "UNIT_SPELLCAST_START" then
+				snapshotData.attributes.surgeOfLightAtCastStart = SurgeOfLightUsable(snapshotData, spells)
+			end
+
 			if spellId == spells.flashHeal.id then
 				casting.spellKey = "flashHeal"
 			elseif spellId == spells.benediction.id then
@@ -1529,7 +1557,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					cdrSpell = spells.benediction
 				end
 
-				if (snapshots[spells.surgeOfLight.id].buff.isActive or snapshotData.attributes.surgeOfLightActiveGrace) and talents:IsTalentActive(spells.energyCycle) then
+				if SurgeOfLightEmpoweredCast(snapshotData, spells) and talents:IsTalentActive(spells.energyCycle) then
 					local cooldownSpell = spells.holyWordSanctify
 
 					if talents:IsTalentActive(spells.ultimateSerenity) then
@@ -1562,7 +1590,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			elseif spellId == spells.prayerOfHealing.id then
 				cdrSpell = spells.prayerOfHealing
 
-				if talents:IsTalentActive(spells.spiritwell) and (snapshots[spells.surgeOfLight.id].buff.isActive or snapshotData.attributes.surgeOfLightActiveGrace) and talents:IsTalentActive(spells.energyCycle) then
+				if talents:IsTalentActive(spells.spiritwell) and SurgeOfLightEmpoweredCast(snapshotData, spells) and talents:IsTalentActive(spells.energyCycle) then
 					local cooldownSpell = spells.holyWordSanctify
 					local cdrAmount = 0
 
@@ -1608,6 +1636,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					end
 				end
 			end
+
+			snapshotData.attributes.surgeOfLightAtCastStart = nil
+		elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+			-- A stale false would veto the next instant, which fires no START to overwrite it.
+			snapshotData.attributes.surgeOfLightAtCastStart = nil
 		end
 	elseif TRB.Data.character.specId == 3 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
@@ -1845,6 +1878,7 @@ local function ResetSurgeOfLightTracking()
 		snapshot.buff:ResetProcCharges()
 	end
 	snapshotData.attributes.surgeOfLightActiveGrace = false
+	snapshotData.attributes.surgeOfLightAtCastStart = nil
 	TRB.Functions.AudioCues:ResetLatch(snapshotData, "surgeOfLight")
 	TRB.Functions.AudioCues:ResetLatch(snapshotData, "surgeOfLight2")
 end

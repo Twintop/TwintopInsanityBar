@@ -17,6 +17,8 @@ local content = [====[
 ### Holy
 
 - Fix Apotheosis cast out of combat with Sustained Potency ticking down immediately instead of starting paused, which dropped the Holy Word cooldown reduction bonus early.
+- Fix Surge of Light gained partway through a Flash Heal, Benediction or Prayer of Healing counting as if it had empowered that cast, applying Energy Cycle and Spiritwell cooldown reduction it had not earned. Surge of Light expiring mid-cast no longer counts either.
+- Adjust logic tracking for Power Words to improve accuracy of the cooldown remaining.
 
 ### Shadow
 
