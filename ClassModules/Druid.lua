@@ -81,6 +81,9 @@ local function FillSpecializationCache()
 		checkAfter = nil
 	})
 	---@type TRB.Classes.Snapshot
+	specCache.druid_balance.snapshotData.snapshots[spells.starfall.id] = TRB.Classes.Snapshot:New(spells.starfall)
+	specCache.druid_balance.snapshotData.snapshots[spells.starfall.id].buff:InitializeIndependentStacks()
+	---@type TRB.Classes.Snapshot
 	specCache.druid_balance.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 	---@type TRB.Classes.Snapshot
 	specCache.druid_balance.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
@@ -853,6 +856,28 @@ local function RefreshLookupData_Balance()
 		end
 	end
 
+	-- Block D: Starfall ($starfallStacks, $starfallTime, $starfallNextStackTime)
+	if not activeVars or activeVars["$starfallStacks"] or activeVars["$starfallTime"]
+		or activeVars["$starfallNextStackTime"] then
+		local buff = snapshotData.snapshots[spells.starfall.id].buff
+		-- Prune here too: a self-driven bar text refresh can land without UpdateSnapshot_Balance running first
+		local _starfallStacks = buff:UpdateIndependentStacks(currentTime)
+		local _starfallTime = buff.remaining
+		local _starfallNextStackTime = buff.nextStackRemaining
+
+		lookupLogic["$starfallStacks"] = _starfallStacks
+		lookupLogic["$starfallTime"] = _starfallTime
+		lookupLogic["$starfallNextStackTime"] = _starfallNextStackTime
+
+		lookup["$starfallStacks"] = _starfallStacks
+		if lookupChanged(prevState, "$starfallTime", _starfallTime) then
+			lookup["$starfallTime"] = TRB.Functions.BarText:TimerPrecision(_starfallTime)
+		end
+		if lookupChanged(prevState, "$starfallNextStackTime", _starfallNextStackTime) then
+			lookup["$starfallNextStackTime"] = TRB.Functions.BarText:TimerPrecision(_starfallNextStackTime)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -1409,6 +1434,14 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				local duration = spells.incarnationChosenOfElune.duration
 
 				snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:InitializeCustom(duration, currentTime)
+			elseif spellId == spells.starfall.id then
+				local duration = spells.starfall.baseDuration
+
+				if talents:IsTalentActive(spells.meteorStorm) then
+					duration = duration * spells.meteorStorm.attributes.durationMod
+				end
+
+				snapshotData.snapshots[spells.starfall.id].buff:AddIndependentStack(duration, currentTime)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -1539,6 +1572,7 @@ local function UpdateSnapshot_Balance()
 	snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.eclipseSolar.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.eclipseLunar.id].buff:GetRemainingTime(currentTime)
+	snapshotData.snapshots[spells.starfall.id].buff:UpdateIndependentStacks(currentTime)
 end
 
 local function UpdateSnapshot_Feral()
@@ -3881,6 +3915,10 @@ do
 		local snaps = TRB.Data.snapshotData.snapshots
 		return snaps[spells.celestialAlignment.id].buff.isActive or snaps[spells.incarnationChosenOfElune.id].buff.isActive
 	end
+	local starfallActiveFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.starfall.id].buff.isActive
+	end
 	---@type table<string, boolean|function>
 	local balance = {
 		["$eclipse"] = eclipseFn,
@@ -3896,6 +3934,9 @@ do
 			local spells = TRB.Data.spellsData.spells
 			return spells.starfall:IsUsable() or spells.starfall:IsFree()
 		end,
+		["$starfallStacks"] = starfallActiveFn,
+		["$starfallTime"] = starfallActiveFn,
+		["$starfallNextStackTime"] = starfallActiveFn,
 		["$casting"] = castingFn,
 	}
 	for k, v in pairs(healthVars) do balance[k] = v end

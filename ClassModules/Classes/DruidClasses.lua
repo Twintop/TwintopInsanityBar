@@ -135,6 +135,7 @@ end
 ---@field public starsurge2 TRB.Classes.SpellThreshold
 ---@field public starsurge3 TRB.Classes.SpellThreshold
 ---@field public starfall TRB.Classes.SpellThreshold
+---@field public meteorStorm TRB.Classes.SpellBase
 TRB.Classes.Druid.BalanceSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
 TRB.Classes.Druid.BalanceSpells.__index = TRB.Classes.Druid.BalanceSpells
 
@@ -279,6 +280,12 @@ function TRB.Classes.Druid.BalanceSpells:New()
         boundlessMoonlight = 2
     })
 
+    self.meteorStorm = TRB.Classes.SpellBase:New({
+        id = 1240262,
+        isTalent = true,
+        durationMod = 0.5
+    })
+
     -- Elune's Chosen
     self.boundlessMoonlight = TRB.Classes.SpellBase:New({
         id = 424058,
@@ -371,6 +378,9 @@ function TRB.Classes.Druid.BalanceSpells.FillBarTextVariables(specCacheEntry)
 		
 		{ variable = "$starsurgeUsable", description = L["DruidBalanceBarTextVariable_starsurgeUsable"], printInSettings = true, color = false },
 		{ variable = "$starfallUsable", description = L["DruidBalanceBarTextVariable_starfallUsable"], printInSettings = true, color = false },
+		{ variable = "$starfallStacks", description = L["DruidBalanceBarTextVariable_starfallStacks"], printInSettings = true, color = false },
+		{ variable = "$starfallTime", description = L["DruidBalanceBarTextVariable_starfallTime"], printInSettings = true, color = false },
+		{ variable = "$starfallNextStackTime", description = L["DruidBalanceBarTextVariable_starfallNextStackTime"], printInSettings = true, color = false },
 	})
 end
 

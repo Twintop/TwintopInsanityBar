@@ -3534,3 +3534,6 @@ L["PriestDisciplineIndicatorSurgeOfLightTooltip"] = "Changes to this color when 
 L["MageFrostIndicatorFingersOfFrost2"] = "Fingers of Frost (2 Charges)"
 L["MageFrostIndicatorFingersOfFrost2Tooltip"] = "Changes to this color when you have two Fingers of Frost charges."
 L["MageFrostIndicatorFingersOfFrost2Color"] = "Fingers of Frost is at 2 charges"
+L["DruidBalanceBarTextVariable_starfallStacks"] = "Number of Starfall casts currently active."
+L["DruidBalanceBarTextVariable_starfallTime"] = "Time, in seconds, until every active Starfall has expired."
+L["DruidBalanceBarTextVariable_starfallNextStackTime"] = "Time, in seconds, until the next active Starfall expires."

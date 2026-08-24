@@ -18,6 +18,11 @@ local content = [====[
 
 - Fix bar text blanking the moment a cast ended, leaving the Player, Target and Focus cast bars on screen with no text while they faded out. The bar text when the cast finishes now persists until the bar is gone.
 
+## Druid
+### Balance
+
+- Add tracking of individual Starfall casts via the new bar text variables `$starfallStacks`, `$starfallTime` and `$starfallNextStackTime`.
+
 ## Priest
 ### Holy
 

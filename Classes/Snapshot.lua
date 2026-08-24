@@ -176,6 +176,11 @@ end
 ---@field public procSpendArmed number? # When a cast that had a charge to burn armed a spend
 ---@field public procExpectedEnd number? # Banked endTime of the last gain, used to recognize a timeout
 ---@field public procOverlayActive boolean # Whether the proc's activation overlay is currently showing
+---@field public useIndependentStacks boolean # When true, every application expires on its own timer instead of sharing endTime
+---@field public independentStacks number[] # End times of the live applications, sorted ascending
+---@field public maxIndependentStacks integer? # Cap on live applications, nil when uncapped
+---@field public nextStackEndTime number? # End time of the application expiring soonest
+---@field public nextStackRemaining number # Seconds until the application expiring soonest is gone
 TRB.Classes.SnapshotBuff = {}
 TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
 
@@ -274,6 +279,11 @@ function TRB.Classes.SnapshotBuff:Reset(includeAttributes, force)
 	self.pauseElapsedTime = 0
 	self.pauseStartTime = nil
 	self.isPaused = false
+	-- Applications clear, but the mode and isCustom must survive: this buff is manually tracked for life.
+	if self.useIndependentStacks then
+		self:ResetIndependentStacks()
+		self.isCustom = true
+	end
 
 	if includeAttributes then
 		wipe(self.attributes)
@@ -573,6 +583,104 @@ function TRB.Classes.SnapshotBuff:RemoveStack(resetAttributes)
 		end
 		self.applications = self.applications - 1
 	end
+end
+
+---Enables Lua-side tracking for a buff whose applications each run their own timer, rather than
+---sharing the single endTime AddStack maintains. Every application comes from its own cast.
+---@param maxStacks integer? # Cap on live applications. Defaults to the spell's maxStacks, nil for uncapped.
+function TRB.Classes.SnapshotBuff:InitializeIndependentStacks(maxStacks)
+	self.useIndependentStacks = true
+	self.maxIndependentStacks = maxStacks or self.parent.spell.maxStacks
+	-- Permanently manual, so Refresh()/RefreshWithAuraData() can never overwrite it from the real aura.
+	self.isCustom = true
+	self:ResetIndependentStacks()
+end
+
+---Drops every tracked application without disabling tracking.
+function TRB.Classes.SnapshotBuff:ResetIndependentStacks()
+	if self.independentStacks == nil then
+		self.independentStacks = {}
+	else
+		wipe(self.independentStacks)
+	end
+	self.nextStackEndTime = nil
+	self.nextStackRemaining = 0
+end
+
+---Writes the tracked applications onto the standard buff fields so consumers need not know about this
+---mode. endTime is the last application to expire, so GetRemainingTime cannot reset a buff still up.
+---@param currentTime number? # Timestamp to use for calculations. If not specified, `GetTime()` will be used instead.
+function TRB.Classes.SnapshotBuff:SyncIndependentStacks(currentTime)
+	currentTime = currentTime or GetTime()
+	local count = #self.independentStacks
+	self.applications = count
+
+	if count == 0 then
+		self.isActive = false
+		self.endTime = nil
+		self.remaining = 0
+		self.nextStackEndTime = nil
+		self.nextStackRemaining = 0
+		return
+	end
+
+	self.isCustom = true
+	self.isActive = true
+	self.endTime = self.independentStacks[count]
+	self.remaining = math.max(self.endTime - currentTime, 0)
+	self.nextStackEndTime = self.independentStacks[1]
+	self.nextStackRemaining = math.max(self.nextStackEndTime - currentTime, 0)
+	self.lastRefreshGetTime = currentTime
+end
+
+---Adds one application expiring on its own timer, leaving any already live untouched.
+---@param duration number # How long this application lasts
+---@param startTime number? # When this application began. Defaults to `GetTime()`
+function TRB.Classes.SnapshotBuff:AddIndependentStack(duration, startTime)
+	if not self.useIndependentStacks then
+		return
+	end
+
+	local currentTime = GetTime()
+	startTime = startTime or currentTime
+	self:UpdateIndependentStacks(currentTime)
+
+	local endTime = startTime + duration
+	local index = #self.independentStacks + 1
+	while index > 1 and self.independentStacks[index - 1] > endTime do
+		self.independentStacks[index] = self.independentStacks[index - 1]
+		index = index - 1
+	end
+	self.independentStacks[index] = endTime
+
+	if self.maxIndependentStacks ~= nil then
+		while #self.independentStacks > self.maxIndependentStacks do
+			table.remove(self.independentStacks, 1)
+		end
+	end
+
+	self.duration = duration
+	self:SyncIndependentStacks(currentTime)
+end
+
+---Drops expired applications and refreshes the standard buff fields. Call once per update from the
+---spec's `UpdateSnapshot_*`.
+---@param currentTime number? # Timestamp to use for calculations. If not specified, `GetTime()` will be used instead.
+---@return integer # Applications still live
+function TRB.Classes.SnapshotBuff:UpdateIndependentStacks(currentTime)
+	if not self.useIndependentStacks then
+		return 0
+	end
+
+	currentTime = currentTime or GetTime()
+	local stacks = self.independentStacks
+
+	while stacks[1] ~= nil and stacks[1] <= currentTime do
+		table.remove(stacks, 1)
+	end
+
+	self:SyncIndependentStacks(currentTime)
+	return #stacks
 end
 
 ---Enables Lua-side charge tracking for a proc whose real stack count is secret. Every charge change
