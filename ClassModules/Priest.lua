@@ -185,6 +185,15 @@ local function UnregisterSustainedPotencyEvents()
 	sustainedPotencyFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 end
 
+---Starts the buff paused when it was cast out of combat. The pause events only fire on a combat
+---transition, so a cast that never crosses one would otherwise tick from the moment it lands.
+---@param buff TRB.Classes.SnapshotBuff
+local function StartPausedIfOutOfCombat(buff)
+	if not InCombatLockdown() then
+		buff:EnterPauseMode()
+	end
+end
+
 ---@type TRB.Classes.Talents
 local talents
 
@@ -640,12 +649,15 @@ local function AdjustCooldownForVoidbinding(cooldown, cdrPercent, apply)
 	if remaining <= 0 then
 		return
 	end
-	if apply then
-		-- CDR recovery rate: cooldowns tick (1+cdr) times faster
-		cooldown.manualCooldownExpires = now + remaining / (1 + cdrPercent)
-	else
-		-- Reverse: stretch remaining back to normal rate
-		cooldown.manualCooldownExpires = now + remaining * (1 + cdrPercent)
+	-- CDR recovery rate: cooldowns tick (1+cdr) times faster while it holds, normal speed once it drops.
+	local factor = apply and (1 / (1 + cdrPercent)) or (1 + cdrPercent)
+	cooldown.manualCooldownExpires = now + remaining * factor
+	-- The duration fields feed bar progress and every later charge, so they scale with the expiry.
+	if cooldown.manualCooldownDuration ~= nil then
+		cooldown.manualCooldownDuration = cooldown.manualCooldownDuration * factor
+	end
+	if cooldown.manualRechargeDuration ~= nil then
+		cooldown.manualRechargeDuration = cooldown.manualRechargeDuration * factor
 	end
 end
 
@@ -689,6 +701,44 @@ local function CalculatePredictedCooldownRemaining(cooldownRemaining, voidbindin
 	-- After VB drops, the leftover CDR'd time must be stretched back to normal rate
 	local afterVoidbinding = cooldownRemaining - voidbindingRemaining
 	return voidbindingRemaining + afterVoidbinding * (1 + cdrPercent)
+end
+
+---Dumps the manual charge tracker's live state for each Holy Word. Nothing can verify these values
+---against the game in combat, so the comparison has to be made by eye against the action bars.
+function TRB.Functions.Class:PrintHolyWordDiagnostics()
+	if TRB.Data.character.specId ~= 2 then
+		print("|cFFFF8800TRB Holy Words:|r Holy specialization only.")
+		return
+	end
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	---@type table<integer, TRB.Classes.Snapshot>
+	local snapshots = TRB.Data.snapshotData.snapshots
+	local currentTime = GetTime()
+
+	local function Seconds(value)
+		return value and string.format("%.2fs", value) or "none"
+	end
+
+	print("|cFF00FF00TRB Holy Words:|r manual charge tracker state")
+	for _, key in ipairs({ "holyWordSerenity", "holyWordSanctify", "holyWordChastise" }) do
+		local spell = spells[key]
+		local cooldown = snapshots[spell.id].cooldown
+		local remaining = cooldown.manualCooldownExpires and (cooldown.manualCooldownExpires - currentTime)
+		print(string.format("  %s: %d/%d charges | remaining %s | timer %s | recharge %s | expected %s",
+			spell.name or key,
+			cooldown.manualCharges or 0,
+			cooldown.manualMaxCharges or 0,
+			Seconds(remaining),
+			Seconds(cooldown.manualCooldownDuration),
+			Seconds(cooldown.manualRechargeDuration),
+			Seconds(CalculateHolyWordDuration(spell))))
+	end
+
+	print(string.format("  Apotheosis %s | Voidbinding %s | Surge of Light %d",
+		snapshots[spells.apotheosis.id].buff.isActive and "up" or "down",
+		snapshots[spells.voidbinding.id].buff.isActive and "up" or "down",
+		snapshots[spells.surgeOfLight.id].buff.applications or 0))
 end
 
 local function RefreshLookupData_Discipline()
@@ -1402,7 +1452,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 								if cooldown.onCooldown then
 									local cdrAmount = CalculateHolyWordCooldown(spells.halo.holyWordReduction)
-									cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(targetSpell))
+									cooldown:ReduceCooldown(cdrAmount)
 								end
 							end
 						end
@@ -1446,12 +1496,16 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 				snapshots[spells.apotheosis.id].buff:InitializeCustom(duration, currentTime)
 				snapshots[spells.apotheosis.id].buff.attributes["swmCasts"] = 0
+				StartPausedIfOutOfCombat(snapshots[spells.apotheosis.id].buff)
 
-				snapshots[spells.holyWordSerenity.id].cooldown:GetRemainingTime(currentTime)
-				snapshots[spells.holyWordSerenity.id].cooldown:GainCharge(snapshots[spells.holyWordSerenity.id].cooldown.remaining)
-				snapshots[spells.holyWordSanctify.id].cooldown:GetRemainingTime(currentTime)
-				snapshots[spells.holyWordSanctify.id].cooldown:GainCharge(snapshots[spells.holyWordSanctify.id].cooldown.remaining)
-				snapshots[spells.holyWordChastise.id].cooldown:GainCharge()
+				-- The free charge keeps the in-flight timer's progress, but the charge after it recharges in full.
+				-- Settling first stops a charge that was already due from being dropped by this grant.
+				for _, hwSpell in ipairs({ spells.holyWordSerenity, spells.holyWordSanctify, spells.holyWordChastise }) do
+					local hwCooldown = snapshots[hwSpell.id].cooldown
+					hwCooldown:SettleExpiredCharges()
+					hwCooldown:GetRemainingTime(currentTime)
+					hwCooldown:GainCharge(hwCooldown.remaining, CalculateHolyWordDuration(hwSpell))
+				end
 			elseif spellId == spells.holyWordSerenity.id then
 				snapshots[spells.holyWordSerenity.id].cooldown:SpendCharge(CalculateHolyWordDuration(spells.holyWordSerenity))
 			elseif spellId == spells.holyWordSanctify.id then
@@ -1486,7 +1540,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				
 					if cooldown.onCooldown then
 						local cdrAmount = CalculateHolyWordCooldown(spells.energyCycle.holyWordReduction)
-						cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(cooldownSpell))
+						cooldown:ReduceCooldown(cdrAmount)
 					end
 				end
 
@@ -1499,7 +1553,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				if talents:IsTalentActive(spells.energyCycle) and talents:IsTalentActive(spells.ultimateSerenity) then
 					local cooldown = snapshots[spells.holyWordSerenity.id].cooldown
 					local cdrAmount = CalculateHolyWordCooldown(spells.energyCycle.holyWordReduction)
-					cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(spells.holyWordSerenity))
+					cooldown:ReduceCooldown(cdrAmount)
 				end
 
 				if talents:IsTalentActive(spells.lightweaver) then
@@ -1522,7 +1576,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 					local cooldown = snapshots[cooldownSpell.id].cooldown
 					if cooldown.onCooldown then
-						cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(cooldownSpell))
+						cooldown:ReduceCooldown(cdrAmount)
 					end
 				end
 
@@ -1549,7 +1603,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 						local cooldown = snapshots[targetSpell.id].cooldown
 						if cooldown.onCooldown then
 							local cdrAmount = CalculateHolyWordCooldown(hwSpell.holyWordReduction)
-							cooldown:ReduceCooldown(cdrAmount, CalculateHolyWordDuration(targetSpell))
+							cooldown:ReduceCooldown(cdrAmount)
 						end
 					end
 				end
@@ -1692,6 +1746,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 				snapshots[spells.voidform.id].buff:InitializeCustom(duration, currentTime)
 				snapshots[spells.voidform.id].buff.attributes["swmCasts"] = 0
+				StartPausedIfOutOfCombat(snapshots[spells.voidform.id].buff)
 			elseif spellId == spells.shadowWordMadness.castId then
 				if talents:IsTalentActive(spells.screamsOfTheVoid) then
 					snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime)

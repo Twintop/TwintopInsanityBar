@@ -875,6 +875,10 @@ end
 ---@field public useManualCharges boolean # When true, charges are tracked manually via events instead of API
 ---@field public manualCharges integer # Manually tracked current charge count
 ---@field public manualMaxCharges integer # Manually tracked max charge count
+---@field public manualCooldownStart number? # GetTime() when the running recharge timer began
+---@field public manualCooldownDuration number? # Length of the running recharge timer, for progress math only
+---@field public manualRechargeDuration number? # Canonical full recharge length, used to time every subsequent charge
+---@field public manualCooldownExpires number? # GetTime() when the running recharge timer completes
 ---@field private durationObject any? # Cached DurationObject from C_Spell.GetSpellChargeDuration()
 ---@field public hastedCooldown boolean # When true, cooldown remaining is dynamically adjusted when haste changes
 ---@field public lastKnownGcd number? # The GCD duration used when the cooldown was last initialized or recalculated
@@ -909,6 +913,10 @@ function TRB.Classes.SnapshotCooldown:Reset()
 	self.useManualCharges = false
 	self.manualCharges = 0
 	self.manualMaxCharges = 0
+	self.manualCooldownStart = nil
+	self.manualCooldownDuration = nil
+	self.manualRechargeDuration = nil
+	self.manualCooldownExpires = nil
 	self.durationObject = nil
 	self.hastedCooldown = false
 	self.lastKnownGcd = nil
@@ -939,8 +947,10 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 		self.maxCharges = self.manualMaxCharges
 		self.remaining = remainingTime
 
-		if self.manualMaxCharges > 1 and self.manualCharges < self.manualMaxCharges and self.manualCooldownDuration ~= nil then
-			self.remainingTotal = remainingTime + ((self.manualMaxCharges - self.manualCharges - 1) * self.manualCooldownDuration)
+		-- Queued charges each take a full recharge, not however long the running timer happens to be.
+		local queuedDuration = self.manualRechargeDuration or self.manualCooldownDuration
+		if self.manualMaxCharges > 1 and self.manualCharges < self.manualMaxCharges and queuedDuration ~= nil then
+			self.remainingTotal = remainingTime + ((self.manualMaxCharges - self.manualCharges - 1) * queuedDuration)
 		else
 			self.remainingTotal = remainingTime
 		end
@@ -1070,19 +1080,8 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 		self.maxCharges = self.manualMaxCharges
 		self.onCooldown = self.manualCharges < self.manualMaxCharges
 		self.isActive = self.onCooldown
-		-- Manual timer-based cooldown tracking for all manual charge spells.
-		-- Check if the current recharge timer has expired.
-		if self.onCooldown and self.manualCooldownExpires ~= nil then
-			local currentTime = GetTime()
-			if currentTime >= self.manualCooldownExpires then
-				-- Carry any sub-frame overflow into the next charge's timer
-				local overflow = currentTime - self.manualCooldownExpires
-				self:GainCharge(self.manualCooldownDuration)
-				if overflow > 0 and self.onCooldown and self.manualCooldownExpires ~= nil then
-					self.manualCooldownExpires = self.manualCooldownExpires - overflow
-				end
-			end
-		end
+		-- Backstop for ticks with no cast or CDR event to settle the timer.
+		self:SettleExpiredCharges()
 		self:GetRemainingTime()
 		return
 	end
@@ -1221,6 +1220,7 @@ function TRB.Classes.SnapshotCooldown:InitializeManualCharges(maxCharges, curren
 				if expires > now then
 					self.manualCooldownStart = startTime
 					self.manualCooldownDuration = duration
+					self.manualRechargeDuration = duration
 					self.manualCooldownExpires = expires
 				end
 			end
@@ -1230,50 +1230,79 @@ function TRB.Classes.SnapshotCooldown:InitializeManualCharges(maxCharges, curren
 	self:RefreshDurationObject()
 end
 
+---Converts a recharge timer that has run past its expiry into charges. Every manual-charge mutator
+---calls this first, so none of them can act on a timer generation that should already have retired.
+function TRB.Classes.SnapshotCooldown:SettleExpiredCharges()
+	if not self.useManualCharges then return end
+	self.onCooldown = self.manualCharges < self.manualMaxCharges
+	if not self.onCooldown or self.manualCooldownExpires == nil then
+		return
+	end
+
+	local currentTime = GetTime()
+	-- Loops because a large reduction can carry past more than one charge's worth of timer.
+	while self.onCooldown and self.manualCooldownExpires ~= nil and currentTime >= self.manualCooldownExpires do
+		local overflow = currentTime - self.manualCooldownExpires
+		self:GainCharge(self.manualRechargeDuration or self.manualCooldownDuration)
+		if overflow > 0 and self.onCooldown and self.manualCooldownExpires ~= nil then
+			self.manualCooldownExpires = self.manualCooldownExpires - overflow
+		end
+	end
+end
+
 ---Spends a charge (decrements manualCharges, floor at 0)
 ---@param cooldownDuration number? # The total cooldown duration (with talent mods applied). When provided, starts a manual GetTime()-based timer.
 function TRB.Classes.SnapshotCooldown:SpendCharge(cooldownDuration)
 	if not self.useManualCharges then return end
-	-- If our manual tracking shows 0 charges but a cast succeeded (this is only called
-	-- from UNIT_SPELLCAST_SUCCEEDED), then the game must have had at least 1 real charge.
-	-- Resync by assuming exactly 1, so spending it brings us to 0 and starts the timer.
-	-- The old code reset to manualMaxCharges here, which caused a net INCREASE in charges.
+	self:SettleExpiredCharges()
+
+	-- A cast succeeded (this is only called from UNIT_SPELLCAST_SUCCEEDED), so the game had a charge
+	-- even when our count says otherwise. Assume exactly 1 rather than refilling to max.
 	local resynced = false
 	if self.manualCharges <= 0 then
 		self.manualCharges = 1
 		resynced = true
 	end
 
-	-- Capture AFTER resync so that a 0->1 correction doesn't leave wasAlreadyRecharging
-	-- as true (which would prevent the recharge timer from starting).
-	local wasAlreadyRecharging = self.onCooldown and not resynced
-
 	self.manualCharges = self.manualCharges - 1
 	self.charges = self.manualCharges
 	self.onCooldown = self.manualCharges < self.manualMaxCharges
 	self.isActive = self.onCooldown
 
-	-- Start a recharge timer if one isn't already running.
-	-- In WoW's charge system, spending a second charge while the first is recharging
-	-- does NOT reset the existing timer — so only start if there's no active timer.
+	-- Spending a second charge while the first recharges must not reset that timer. A resync is the
+	-- exception: the game completed a recharge we never saw, so our timer is stale by an unknown amount.
 	local now = GetTime()
-	local hasRunningTimer = self.manualCooldownExpires ~= nil and self.manualCooldownExpires > now
+	local hasRunningTimer = not resynced
+		and self.manualCooldownExpires ~= nil
+		and self.manualCooldownExpires > now
 	if self.onCooldown and not hasRunningTimer and cooldownDuration ~= nil and cooldownDuration > 0 then
 		self.manualCooldownStart = now
 		self.manualCooldownDuration = cooldownDuration
 		self.manualCooldownExpires = now + cooldownDuration
 		self.durationObject = nil
 	end
+
+	if cooldownDuration ~= nil and cooldownDuration > 0 then
+		self.manualRechargeDuration = cooldownDuration
+	end
 end
 
 ---Gains a charge (increments manualCharges, cap at manualMaxCharges)
 ---@param cooldownDuration number? # If still on cooldown after gaining, start a new timer with this duration for the next recharge.
-function TRB.Classes.SnapshotCooldown:GainCharge(cooldownDuration)
+---@param rechargeDuration number? # Canonical full recharge length to remember. Defaults to cooldownDuration.
+function TRB.Classes.SnapshotCooldown:GainCharge(cooldownDuration, rechargeDuration)
 	if not self.useManualCharges then return end
 	self.manualCharges = math.min(self.manualMaxCharges, self.manualCharges + 1)
 	self.charges = self.manualCharges
 	self.onCooldown = self.manualCharges < self.manualMaxCharges
 	self.isActive = self.onCooldown
+
+	-- A partial timer (an instant charge grant preserving in-flight progress) must not become the
+	-- length every later charge inherits.
+	rechargeDuration = rechargeDuration or cooldownDuration
+	if rechargeDuration ~= nil and rechargeDuration > 0 then
+		self.manualRechargeDuration = rechargeDuration
+	end
 
 	if self.onCooldown and cooldownDuration ~= nil and cooldownDuration > 0 then
 		-- Still recharging (multi-charge spell): start a new timer for the next charge
@@ -1290,23 +1319,13 @@ function TRB.Classes.SnapshotCooldown:GainCharge(cooldownDuration)
 	self.durationObject = nil
 end
 
----Reduces the remaining manual cooldown by the specified amount.
----If the cooldown expires as a result, GainCharge() is called.
+---Reduces the remaining manual cooldown by the specified amount. Settling first keeps the reduction on
+---the charge that is actually recharging; a reduction carrying past zero is left for the next settle.
 ---@param amount number # Seconds to subtract from remaining cooldown
----@param rechargeDuration number? # If a charge is gained and still on cooldown, start a new timer with this duration
-function TRB.Classes.SnapshotCooldown:ReduceCooldown(amount, rechargeDuration)
+function TRB.Classes.SnapshotCooldown:ReduceCooldown(amount)
+	self:SettleExpiredCharges()
 	if self.manualCooldownExpires == nil then return end
 	self.manualCooldownExpires = self.manualCooldownExpires - amount
-	local now = GetTime()
-	if self.manualCooldownExpires <= now then
-		-- Calculate how much CDR carried past the expiration point
-		local overflow = now - self.manualCooldownExpires
-		self:GainCharge(rechargeDuration)
-		-- If still recharging (multi-charge), apply the overflow to the new timer
-		if overflow > 0 and self.onCooldown and self.manualCooldownExpires ~= nil then
-			self.manualCooldownExpires = self.manualCooldownExpires - overflow
-		end
-	end
 end
 
 ---Returns the progress (0 to 1) of the manual cooldown timer.

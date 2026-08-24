@@ -12,6 +12,18 @@ local content = [====[
 
 ---
 
+# 12.1.0.6-release (2026-08-24)
+## Priest
+### Holy
+
+- Fix Apotheosis cast out of combat with Sustained Potency ticking down immediately instead of starting paused, which dropped the Holy Word cooldown reduction bonus early.
+
+### Shadow
+
+- Fix Voidform cast out of combat with Sustained Potency ticking down immediately instead of starting paused.
+
+---
+
 # 12.1.0.5-release (2026-08-19)
 ## General
 

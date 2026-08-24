@@ -594,6 +594,12 @@ function SlashCmdList.TWINTOP(msg)
 		end
 	elseif cmd == "auraengine" then
 		TRB.Functions.AuraEngine:PrintDiagnostics()
+	elseif cmd == "holywords" then
+		if TRB.Data.character.classId == 5 then
+			TRB.Functions.Class:PrintHolyWordDiagnostics()
+		else
+			print("|cFFFF8800TRB:|r 'holywords' is a Priest command.")
+		end
 	elseif cmd == "minimap" then
 		local minimapCmd = ParseCmdString(subcmd)
 		if minimapCmd == "hide" then
