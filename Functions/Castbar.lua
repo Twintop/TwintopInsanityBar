@@ -285,6 +285,13 @@ function TRB.Functions.Castbar:IsRendering()
 	return self:GetIdleAlpha(self:GetVisibilitySettings(nil)) > 0
 end
 
+---Whether a finished cast is still on screen working through its fade. Bar text anchored to the castbar
+---holds its last frame while this is true, rather than blanking the tick the cast ends.
+---@return boolean
+function TRB.Functions.Castbar:IsFadingOut()
+	return fadeOutStart ~= nil
+end
+
 ---Returns the castbar BarGroup, or nil if not constructed.
 ---@return TRB.Classes.BarGroup?
 function TRB.Functions.Castbar:GetGroup()

@@ -26,6 +26,20 @@ local castbarIconAnchors = {
 	TargetCastBarIcon = true,
 	FocusCastBarIcon = true,
 }
+
+---Is this entry anchored to a cast bar that is finishing its fade? Only the cast bar keys above answer
+---true; the Other Bars timers share that table but blank normally when their timer ends.
+---@param relativeToFrame string?
+---@return boolean
+local function IsAnchoredToFadingCastbar(relativeToFrame)
+	local groupKey = relativeToFrame ~= nil and castbarAnchorGroupKeys[relativeToFrame] or nil
+	if groupKey == "castbar" then
+		return TRB.Functions.Castbar:IsFadingOut()
+	elseif groupKey == "targetCastbar" or groupKey == "focusCastbar" then
+		return TRB.Functions.TargetCastbar:IsFadingOut(groupKey)
+	end
+	return false
+end
 local containerAnchorLabelByResourceType = {
 	AngelicFeather = L["AngelicFeatherContainer"],
 	ArcaneCharges = L["ArcaneChargesContainer"],
@@ -2043,9 +2057,14 @@ local selfDrivenBarVariables = {
 ---invalidated), returns true so the caller refreshes and rebuilds it rather than skipping a frame.
 ---@return boolean
 local function HasActiveSelfDrivenBarVariableInUse()
+	-- A fading cast bar counts as in use so the one final pass that blanks its variables lands when the
+	-- bar leaves the screen, not the tick the cast ended while it is still visible.
 	local anyActive = (TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive())
+		or TRB.Functions.Castbar:IsFadingOut()
 		or (TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
+		or TRB.Functions.TargetCastbar:IsFadingOut("targetCastbar")
 		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())
+		or TRB.Functions.TargetCastbar:IsFadingOut("focusCastbar")
 		or TRB.Functions.OtherBars:HasActiveTimer()
 	if not anyActive then
 		return false
@@ -2161,9 +2180,10 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 					end
 				end
 
-				-- Screen-bound text is always processed; other text only when refreshText is true.
-				-- visibilityRefresh forces processing for all entries after a hidden→visible transition.
-				if refreshText or isScreenText or visibilityRefresh then
+				-- Screen-bound text is always processed; other text only when refreshText is true. A cast
+				-- bar mid fade-out is skipped regardless, which is what holds its finished cast on screen.
+				if (refreshText or isScreenText or visibilityRefresh)
+					and not IsAnchoredToFadingCastbar(e.position.relativeToFrame) then
 					-- Check if the target frame is visible before doing expensive text processing
 					-- Use per-call cache to avoid redundant GetBarTextFrame calls for entries sharing a frame
 					local frameKey = e.position.relativeToFrame

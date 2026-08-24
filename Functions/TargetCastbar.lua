@@ -772,6 +772,14 @@ function TRB.Functions.TargetCastbar:IsRendering()
 	return NeedsUpdater()
 end
 
+---Whether a finished cast is still on screen working through its fade. Bar text anchored to that unit's
+---bar holds its last frame while this is true, rather than blanking the tick the cast ends.
+---@param groupKey string # "targetCastbar" or "focusCastbar"
+---@return boolean
+function TRB.Functions.TargetCastbar:IsFadingOut(groupKey)
+	return fadeStart[groupKey] ~= nil
+end
+
 ---Starts/stops the per-frame updater based on whether any bar needs rendering. Every state-transition
 ---entry point (BeginRender/BeginFadeOut/EndRender/RefreshVisibility) ends here, so forcing a throttle tick
 ---when the updater runs guarantees the next frame re-resolves settings/conditions from the new state

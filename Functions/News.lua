@@ -13,6 +13,11 @@ local content = [====[
 ---
 
 # 12.1.0.6-release (2026-08-24)
+## General
+### Cast Bars
+
+- Fix bar text blanking the moment a cast ended, leaving the Player, Target and Focus cast bars on screen with no text while they faded out. The bar text when the cast finishes now persists until the bar is gone.
+
 ## Priest
 ### Holy
 
