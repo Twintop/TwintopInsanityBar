@@ -20,8 +20,8 @@ local content = [====[
 ## Mage
 ### Fire
 
-- Fix the Fire Blast recharge fill and timer text showing on the last charge node instead of the one refilling.
-- Add Fire Blast (Recharging Charge) as a bar text Relative to Frame target, now used by the default charge timer text.
+- [#763](#763) Fix the Fire Blast recharge fill and timer text showing on the last charge node instead of the one refilling.
+- [#763](#763) Add Fire Blast (Recharging Charge) as a bar text Relative to Frame target, now used by the default charge timer text.
 
 ---
 
