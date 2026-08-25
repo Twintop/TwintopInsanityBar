@@ -709,9 +709,11 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		relativeToFrame[L["MageFireFireBlastCharge1"]] = "FireBlastCharge_1"
 		relativeToFrame[L["MageFireFireBlastCharge2"]] = "FireBlastCharge_2"
 		relativeToFrame[L["MageFireFireBlastCharge3"]] = "FireBlastCharge_3"
+		relativeToFrame[L["MageFireFireBlastChargeRecharging"]] = "FireBlastCharge_Recharging"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["MageFireBlastCharges"],
+			L["MageFireFireBlastChargeRecharging"],
 			L["MageFireFireBlastCharge1"],
 			L["MageFireFireBlastCharge2"],
 			L["MageFireFireBlastCharge3"],

@@ -8871,6 +8871,46 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			InsertTwoStackIndicator(TwintopInsanityBarSettings.mage.frost, "fingersOfFrost", "fingersOfFrost2")
 		end
 	end
+
+	-- Fire Blast charge timers were one entry per node, each shown only at a fixed charge count.
+	-- They collapse to a single entry on the recharging charge, which lands on the node refilling.
+	do
+		local fire = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.mage ~= nil
+			and TwintopInsanityBarSettings.mage.fire or nil
+		local displayText = fire ~= nil and fire.displayText or nil
+		if displayText ~= nil and type(displayText.barText) == "table" then
+			displayText.migrations = displayText.migrations or {}
+			if not displayText.migrations.fireBlastRechargingChargeText then
+				local shipped = {}
+				for index, entry in ipairs(displayText.barText) do
+					local position = entry.position
+					if position ~= nil and entry.text ~= nil then
+						local chargeIndex = string.match(position.relativeToFrame or "", "^FireBlastCharge_(%d+)$")
+						if chargeIndex ~= nil
+							and entry.text == "{$fireBlastChargesMax=" .. chargeIndex .. "&$fireBlastTime}[$fireBlastTime]"
+							and position.relativeTo == "CENTER"
+							and (position.xPos or 0) == 0 and (position.yPos or 0) == 0 then
+							shipped[#shipped + 1] = index
+						end
+					end
+				end
+
+				-- Only when all three are still as shipped; a customized set is left alone entirely.
+				if #shipped == 3 then
+					-- Retarget the first rather than rebuilding, so any font restyling survives.
+					local keep = displayText.barText[shipped[1]]
+					keep.name = "FB"
+					keep.text = "$fireBlastTime"
+					keep.position.relativeToFrame = "FireBlastCharge_Recharging"
+					keep.position.relativeToFrameName = L["MageFireFireBlastChargeRecharging"]
+					table.remove(displayText.barText, shipped[3])
+					table.remove(displayText.barText, shipped[2])
+				end
+
+				displayText.migrations.fireBlastRechargingChargeText = true
+			end
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -11517,27 +11557,22 @@ end
 ---Returns default bar text for Fire Mage Fire Blast charge nodes.
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 function TRB.Functions.Settings:LoadDefaultFireBlastChargeBarTextSettings()
+	-- Anchored to the recharging charge, which slides to whichever node is refilling. It is shown
+	-- only while one is, so the text needs no condition of its own.
 	---@type TRB.Classes.Settings.DisplayTextEntry[]
-	local textSettings = {}
-	local chargeFrameNames = {
-		L["MageFireFireBlastCharge1"],
-		L["MageFireFireBlastCharge2"],
-		L["MageFireFireBlastCharge3"],
-	}
-
-	for chargeIndex = 1, 3 do
-		table.insert(textSettings, {
+	local textSettings = {
+		{
 			useDefaultFontColor = false,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			useDefaultFontOutline = false,
 			useDefaultFontShadow = false,
 			enabled = true,
-			name = "FB" .. chargeIndex,
+			name = "FB",
 			guid = TRB.Functions.String:Guid(),
 			constrainToParent = false,
 			maxWidthPercent = 100,
-			text = "{$fireBlastChargesMax=" .. chargeIndex .. "&$fireBlastTime}[$fireBlastTime]",
+			text = "[$fireBlastTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "CENTER",
@@ -11551,11 +11586,11 @@ function TRB.Functions.Settings:LoadDefaultFireBlastChargeBarTextSettings()
 				yPos = 0,
 				relativeTo = "CENTER",
 				relativeToName = L["PositionCenter"],
-				relativeToFrame = "FireBlastCharge_" .. chargeIndex,
-				relativeToFrameName = chargeFrameNames[chargeIndex],
+				relativeToFrame = "FireBlastCharge_Recharging",
+				relativeToFrameName = L["MageFireFireBlastChargeRecharging"],
 			}
-		})
-	end
+		},
+	}
 
 	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end

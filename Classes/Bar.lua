@@ -1125,6 +1125,7 @@ end
 ---@field public fadeDuration number # Seconds for fade transition (0 = instant)
 ---@field public fadeStartAlpha number # Alpha at the moment a fade began (used for normalized progress)
 ---@field public fadeDelayUntil number # GetTime() timestamp when the fade delay expires (0 = no delay active)
+---@field public chargeTracker table? # Fill-edge tracker for a secret count; see EnableChargeTracker
 ---@field public endCapMode string? # Multi-node end cap policy: "highest" (default; only the highest progressed node) or "all" (independent nodes, e.g. DK runes)
 ---@field public iconReserved boolean? # Whether a side ability icon currently reserves space, so GetAnchorFrame returns the container
 TRB.Classes.BarGroup = {}
@@ -1361,6 +1362,7 @@ function TRB.Classes.BarGroup:SetAllNodeFillDirections(fillDirection)
 			self.nodes[i]:SetFillDirection(fillDirection)
 		end
 	end
+	self:ApplyChargeRechargeFillDirection()
 end
 
 ---Sets frame strata for all nodes
@@ -1673,6 +1675,190 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 				node:Hide()
 			end
 		end
+	end
+
+	self:LayoutChargeTracker(actualNodeExtent, nodeCross, nodeSpacing, border or 0)
+end
+
+---Creates the charge tracker on demand: an invisible group-spanning StatusBar fed the live count,
+---plus a recharge bar anchored to its fill edge, which lands on the node currently refilling.
+---@return table
+function TRB.Classes.BarGroup:EnableChargeTracker()
+	if self.chargeTracker ~= nil then
+		return self.chargeTracker
+	end
+
+	local trackerFrame = CreateFrame("StatusBar", self.name .. "_ChargeTracker", self.containerFrame)
+	trackerFrame:SetStatusBarTexture("Interface\\Buttons\\WHITE8x8")
+	trackerFrame:SetAlpha(0)
+	trackerFrame:Show()
+	local trackerTexture = trackerFrame:GetStatusBarTexture()
+	trackerTexture:SetSnapToPixelGrid(false)
+	trackerTexture:SetTexelSnappingBias(0)
+
+	local rechargeFrame = CreateFrame("StatusBar", self.name .. "_ChargeRecharge", self.containerFrame)
+	rechargeFrame:Hide()
+
+	self.chargeTracker = {
+		frame = trackerFrame,
+		texture = trackerTexture,
+		recharge = rechargeFrame,
+	}
+
+	return self.chargeTracker
+end
+
+---Positions the tracker and the recharge bar that rides its fill edge. No-op until enabled.
+---@param nodeExtent number # Per-node size along the growth axis
+---@param nodeCross number # Per-node size across the growth axis
+---@param nodeSpacing number
+---@param border number
+function TRB.Classes.BarGroup:LayoutChargeTracker(nodeExtent, nodeCross, nodeSpacing, border)
+	local tracker = self.chargeTracker
+	if tracker == nil or self.nodeCount == 0 then
+		return
+	end
+
+	local growthDirection = self.growthDirection or "leftRight"
+	local isVerticalGrowth = growthDirection == "topBottom" or growthDirection == "bottomTop"
+	-- One spacing unit longer than the group, so the fill advances exactly one node pitch per count.
+	local trackerExtent = self.nodeCount * (nodeExtent + nodeSpacing)
+	local innerExtent = math.max(nodeExtent - (border * 2), 1)
+	local innerCross = math.max(nodeCross - (border * 2), 1)
+
+	local anchor, edgeFrom, edgeTo, reverseFill, xOffset, yOffset
+	if growthDirection == "rightLeft" then
+		anchor, edgeFrom, edgeTo, reverseFill = "TOPRIGHT", "RIGHT", "LEFT", true
+		xOffset, yOffset = -border, 0
+	elseif growthDirection == "topBottom" then
+		anchor, edgeFrom, edgeTo, reverseFill = "TOPLEFT", "TOP", "BOTTOM", true
+		xOffset, yOffset = 0, -border
+	elseif growthDirection == "bottomTop" then
+		anchor, edgeFrom, edgeTo, reverseFill = "BOTTOMLEFT", "BOTTOM", "TOP", false
+		xOffset, yOffset = 0, border
+	else
+		anchor, edgeFrom, edgeTo, reverseFill = "TOPLEFT", "LEFT", "RIGHT", false
+		xOffset, yOffset = border, 0
+	end
+
+	tracker.frame:ClearAllPoints()
+	tracker.frame:SetPoint(anchor, self.containerFrame, anchor, 0, 0)
+	tracker.frame:SetOrientation(isVerticalGrowth and "VERTICAL" or "HORIZONTAL")
+	tracker.frame:SetReverseFill(reverseFill)
+	tracker.frame:SetMinMaxValues(0, self.nodeCount)
+
+	tracker.recharge:ClearAllPoints()
+	self:ApplyChargeRechargeFillDirection()
+
+	if isVerticalGrowth then
+		tracker.frame:SetSize(nodeCross, trackerExtent)
+		tracker.recharge:SetSize(innerCross, innerExtent)
+	else
+		tracker.frame:SetSize(trackerExtent, nodeCross)
+		tracker.recharge:SetSize(innerExtent, innerCross)
+	end
+
+	tracker.recharge:SetPoint(edgeFrom, tracker.texture, edgeTo, xOffset, yOffset)
+	self:SyncChargeRechargeFrameLevel()
+end
+
+---Keeps the recharge bar above the nodes it slides across. Node levels are assigned after the
+---layout pass, so this has to be re-checked rather than set once.
+function TRB.Classes.BarGroup:SyncChargeRechargeFrameLevel()
+	local tracker = self.chargeTracker
+	if tracker == nil then
+		return
+	end
+
+	local baseNode = self.nodes[1]
+	local level = (baseNode and baseNode.frame:GetFrameLevel() or self.containerFrame:GetFrameLevel()) + 2
+	if tracker.frameLevel ~= level then
+		tracker.frameLevel = level
+		tracker.recharge:SetFrameLevel(level)
+	end
+end
+
+---Gets the recharge bar, which sits on whichever node is currently refilling. Bar text anchored to
+---it rides along, so the node never has to be named.
+---@return StatusBar?
+function TRB.Classes.BarGroup:GetChargeRechargeFrame()
+	return self.chargeTracker and self.chargeTracker.recharge or nil
+end
+
+---Points the recharge bar's own fill along the nodes' fill direction, not the group's growth axis.
+function TRB.Classes.BarGroup:ApplyChargeRechargeFillDirection()
+	local tracker = self.chargeTracker
+	if tracker == nil then
+		return
+	end
+
+	local Bar = TRB.Functions.Bar
+	local fillDirection = (self.nodes[1] and self.nodes[1].fillDirection) or "leftRight"
+	tracker.recharge:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
+	tracker.recharge:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
+end
+
+---Feeds the tracker the live count. The value may be secret; it is only ever handed to the widget.
+---@param value number
+function TRB.Classes.BarGroup:SetChargeTrackerValue(value)
+	local tracker = self.chargeTracker
+	if tracker == nil then
+		return
+	end
+---@diagnostic disable-next-line: redundant-parameter
+	tracker.frame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
+end
+
+---Sets the recharge bar's texture and fill color.
+---@param texture string?
+---@param colorEntry string|TRB.Classes.Settings.ColorGradientEntry?
+function TRB.Classes.BarGroup:SetChargeRechargeAppearance(texture, colorEntry)
+	local tracker = self.chargeTracker
+	if tracker == nil then
+		return
+	end
+
+	if texture ~= nil and tracker.texturePath ~= texture then
+		tracker.texturePath = texture
+		tracker.recharge:SetStatusBarTexture(texture)
+		local fill = tracker.recharge:GetStatusBarTexture()
+		if fill then
+			fill:SetSnapToPixelGrid(false)
+			fill:SetTexelSnappingBias(0)
+		end
+		-- A texture swap resets the fill's vertex color, so force the color back on.
+		TRB.Data.cache.colors.bar[self.name .. "_chargeRecharge"] = nil
+	end
+
+	if colorEntry ~= nil then
+		TRB.Functions.Color:ApplyFillColorToStatusBar(tracker.recharge, self.name .. "_chargeRecharge", colorEntry)
+	end
+
+	self:SyncChargeRechargeFrameLevel()
+end
+
+---Shows the recharge bar running the given duration, or hides it when there is nothing refilling.
+---@param durationObject any? # A DurationObject, or nil to hide
+function TRB.Classes.BarGroup:SetChargeRechargeDuration(durationObject)
+	local tracker = self.chargeTracker
+	if tracker == nil then
+		return
+	end
+
+	local shouldShow = durationObject ~= nil
+	if shouldShow then
+---@diagnostic disable-next-line: redundant-parameter
+		tracker.recharge:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
+		tracker.recharge:Show()
+	else
+		tracker.recharge:Hide()
+	end
+
+	-- Bar text anchored here is shown by the visibility pass, which only runs while dirty. Nothing
+	-- else marks it when this frame appears, so the text would stay hidden until an unrelated event did.
+	if tracker.shown ~= shouldShow then
+		tracker.shown = shouldShow
+		TRB.Functions.BarVisibility:MarkDirty()
 	end
 end
 

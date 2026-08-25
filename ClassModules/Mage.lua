@@ -266,6 +266,10 @@ local function SyncFireBlastChargeNodes(maxCharges, settings)
 	return targetNodeCount
 end
 
+-- A secret count cannot be compared, so the player's own cast is the only plain signal of a spend.
+local fireBlastSpendSmoothWindow = 0.5
+local fireBlastSpendSmoothUntil = 0
+
 ---@param spells TRB.Classes.Mage.FireSpells?
 ---@param refresh boolean?
 ---@return TRB.Classes.SnapshotCooldown?
@@ -298,6 +302,23 @@ local function GetFireBlastMaxCharges(cooldown)
 	end
 
 	return TRB.Data.character.maxResource2 or 1
+end
+
+---Picks the fill color for the recharging charge. The node it lands on is unknowable from a secret
+---count, so with no dedicated regenerating color the first charge's color stands in for all of them.
+---@param fireBlastColors table?
+---@return string|TRB.Classes.Settings.ColorGradientEntry?
+local function GetFireBlastRechargeColor(fireBlastColors)
+	if fireBlastColors == nil then
+		return nil
+	end
+
+	local regenerating = fireBlastColors.regenerating
+	if regenerating ~= nil and regenerating.enabled == true then
+		return regenerating
+	end
+
+	return fireBlastColors.nodeColors and fireBlastColors.nodeColors.charge1
 end
 
 local function ConstructResourceBar(settings)
@@ -378,6 +399,8 @@ local function ConstructResourceBar(settings)
 				local fireBlastNodeCount = SyncFireBlastChargeNodes(maxFBCharges, settings) or 0
 				barGroups.secondary:SetNodeCount(fireBlastNodeCount)
 				barGroups.secondary:SetLayout(Bar:GetEffectiveSpacing(settings.comboPoints), Bar:GetMatchWidth(settings.comboPoints), "HORIZONTAL")
+				-- Ahead of ApplyLayout, which positions the tracker as part of the layout pass.
+				barGroups.secondary:EnableChargeTracker()
 				barGroups.secondary:Show()
 
 				local effectiveWidth, cdmForced = Bar:GetEffectiveWidthForBarGroup(barGroups, settings, "secondary")
@@ -416,6 +439,11 @@ local function ConstructResourceBar(settings)
 						node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("secondary"))
 					end
 				end
+
+				barGroups.secondary:SetChargeRechargeAppearance(
+					settings.textures.comboPointsBar,
+					GetFireBlastRechargeColor(fireBlastColors)
+				)
 			end
 		elseif TRB.Data.character.specId == 3 then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
@@ -787,6 +815,13 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		end
 	end
 
+	if TRB.Data.character.specId == 2 and event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+		if spells ~= nil and spells.fireBlast ~= nil and spellId == spells.fireBlast.id then
+			fireBlastSpendSmoothUntil = GetTime() + fireBlastSpendSmoothWindow
+		end
+	end
+
 	if TRB.Data.character.specId == 3 and event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
 		if spells ~= nil and spells.iceLance ~= nil and spellId == spells.iceLance.id then
@@ -1098,28 +1133,31 @@ local function UpdateResourceBar()
 					local fireBlastColors = specCacheSettings.colors.bars and specCacheSettings.colors.bars.fireBlastCharges
 					local fireBlastNodeCount = SyncFireBlastChargeNodes(maxCharges, specCacheSettings) or 0
 
+					-- The recharging node is charges+1, which a secret count cannot name. The tracker's
+					-- fill edge lands on it instead, and the recharge bar rides that edge.
+					barGroups.secondary:SetChargeTrackerValue(charges)
+					barGroups.secondary:SetChargeRechargeAppearance(
+						specCacheSettings.textures.comboPointsBar,
+						GetFireBlastRechargeColor(fireBlastColors)
+					)
+					barGroups.secondary:SetChargeRechargeDuration(isRecharging and rechargeDurationObject or nil)
+
+					-- Smoothing a refill fights the recharge overlay handing off to the node, so it is
+					-- allowed only while a spend is in flight.
+					local smoothCharges = GetTime() < fireBlastSpendSmoothUntil
+
 					refreshText = true
 					for x = 1, fireBlastNodeCount do
 						local chargeNode = barGroups.secondary:GetNode(x)
 						if chargeNode then
 							local cpKey = "comboPoint" .. x
-							local isPartialRechargeNode = isRecharging and x == fireBlastNodeCount and rechargeDurationObject ~= nil
-							if isPartialRechargeNode then
-								chargeNode:SetMinMax(0, 1)
-								TRB.Data.cache.values.bar[cpKey] = nil
-								Bar:SetBarNodeTimerDuration(specCacheSettings, cpKey, chargeNode, rechargeDurationObject)
-							else
-								chargeNode:ClearTimerDuration()
-								chargeNode:SetMinMax(x - 1, x)
-								TRB.Data.cache.values.bar[cpKey] = nil
-								chargeNode:SetValue(charges)
-							end
+							chargeNode:ClearTimerDuration()
+							chargeNode:SetMinMax(x - 1, x)
+							TRB.Data.cache.values.bar[cpKey] = nil
+							chargeNode:SetValue(charges, smoothCharges and chargeNode.smooth == true)
 							if fireBlastColors then
 								local chargeKey = "charge" .. x
 								local fillColor = fireBlastColors.nodeColors and fireBlastColors.nodeColors[chargeKey]
-								if isPartialRechargeNode and fireBlastColors.regenerating and fireBlastColors.regenerating.enabled then
-									fillColor = fireBlastColors.regenerating
-								end
 								if fillColor then
 									TRB.Functions.Color:ApplyFillColor(chargeNode, fillColor)
 								end
@@ -1926,6 +1964,18 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			if shatterNode then
 				local isVisible = barGroups.shatter.isVisible and shatterNode.isVisible
 				return shatterNode:GetFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	end
+
+	if normalizedRelativeFrame == "FireBlastChargeRecharging" then
+		if barGroups.secondary then
+			local rechargeFrame = barGroups.secondary:GetChargeRechargeFrame()
+			if rechargeFrame then
+				-- Shown only while a charge is actually refilling, which is what hides the text.
+				local isVisible = barGroups.secondary.isVisible and rechargeFrame:IsShown()
+				return rechargeFrame, true, isVisible
 			end
 		end
 		return nil, true, false

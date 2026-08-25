@@ -17,6 +17,12 @@ local content = [====[
 
 - Improve bar update performance, primarily around threshold lines and bar text.
 
+## Mage
+### Fire
+
+- Fix the Fire Blast recharge fill and timer text showing on the last charge node instead of the one refilling.
+- Add Fire Blast (Recharging Charge) as a bar text Relative to Frame target, now used by the default charge timer text.
+
 ---
 
 # 12.1.0.6-release (2026-08-24)

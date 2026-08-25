@@ -205,6 +205,10 @@ local function BarGroupContainsFrame(frame, barGroup)
 		return true
 	end
 
+	if barGroup.GetChargeRechargeFrame and frame == barGroup:GetChargeRechargeFrame() then
+		return true
+	end
+
 	if barGroup.GetNodes then
 		for _, node in ipairs(barGroup:GetNodes()) do
 			if node and node.GetFrame and frame == node:GetFrame() then

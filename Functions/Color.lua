@@ -807,6 +807,62 @@ function TRB.Functions.Color:ApplyFillColor(node, colorEntry)
 	end
 end
 
+---Applies a fill color to a bare StatusBar, handling gradient entries the same way
+---`ApplyFillColor` does for a BarNode. For fills that are not owned by a node.
+---@param frame StatusBar # The StatusBar to color
+---@param key string # Cache key, unique to this frame
+---@param colorEntry string|TRB.Classes.Settings.ColorGradientEntry # Color string or gradient entry table
+function TRB.Functions.Color:ApplyFillColorToStatusBar(frame, key, colorEntry)
+	if frame == nil or colorEntry == nil then
+		return
+	end
+
+	local colorString = colorEntry
+	local color2String, direction
+	if type(colorEntry) == "table" then
+		colorString = colorEntry.color
+		if colorEntry.gradientDirection and colorEntry.gradientDirection ~= "disabled" and colorEntry.color2 then
+			color2String = colorEntry.color2
+			direction = colorEntry.gradientDirection
+		end
+	end
+
+	local texture = frame:GetStatusBarTexture()
+	if color2String == nil then
+		-- Neutralize any gradient left from a previous entry before the flat color goes on.
+		if texture ~= nil and TRB.Data.cache.colors.gradient[key] ~= nil then
+			local white = CreateColor(1, 1, 1, 1)
+			texture:SetGradient("HORIZONTAL", white, white)
+			TRB.Data.cache.colors.gradient[key] = nil
+		end
+		self:SetStatusBarColorFromRGBAString(frame, key, colorString)
+		return
+	end
+
+	local cached = TRB.Data.cache.colors.gradient[key]
+	if cached and cached.color1 == colorString and cached.color2 == color2String and cached.direction == direction then
+		return
+	end
+
+	local r1, g1, b1, a1 = self:GetRGBAFromString(colorString, true)
+	local r2, g2, b2, a2 = self:GetRGBAFromString(color2String, true)
+	TRB.Data.cache.colors.bar[key] = nil
+	frame:SetStatusBarColor(1, 1, 1, 1)
+
+	if texture then
+		local apiDirection = direction == "vertical" and "VERTICAL" or "HORIZONTAL"
+		local minColor = CreateColor(r1, g1, b1, a1)
+		local maxColor = CreateColor(r2, g2, b2, a2)
+		-- VERTICAL: min=bottom, max=top. Swap so color1 lands at the top.
+		if apiDirection == "VERTICAL" then
+			minColor, maxColor = maxColor, minColor
+		end
+		texture:SetGradient(apiDirection, minColor, maxColor)
+	end
+
+	TRB.Data.cache.colors.gradient[key] = { color1 = colorString, color2 = color2String, direction = direction }
+end
+
 ---Applies a fill color to an OverlaySlot's main overlay, handling gradient entries.
 ---@param slot TRB.Classes.OverlaySlot # The OverlaySlot to color
 ---@param colorEntry string|TRB.Classes.Settings.ColorGradientEntry # Color string or gradient entry table
