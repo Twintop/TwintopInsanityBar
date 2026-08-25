@@ -111,6 +111,7 @@ end
 ---@field private _lastPrimaryResourceValueCheck number? # Timestamp of the last time a check was done
 ---@field private _isFreeCurrently boolean # Is this ability free now when it usually has a resource cost?
 ---@field private _lastSpellUsableCheck number? # Timestamp of the last time a spell usability check was done
+---@field private _spellUsableGeneration number? # SPELL_UPDATE_USABLE generation the cached usability was read at
 ---@field private _isUsable boolean # Is the spell usable currently
 ---@field private _insufficientPower boolean # Is there insufficient power to cast the spell currently
 ---@field private _cacheKey string # Key used to cache the primary resource cost of the spell
@@ -448,7 +449,15 @@ function TRB.Classes.SpellBase:ResetCastTime()
 	self._isInstantCurrently = false
 end
 
-local spellUsableEmbargoTimespan = 0.05
+-- Usability only moves when SPELL_UPDATE_USABLE fires, so spells re-poll on generation change
+-- rather than on a timer. The floor is a backstop for a missed event, not the primary mechanism.
+local spellUsableGeneration = 0
+local spellUsableFloorTimespan = 1.0
+
+---Marks every spell's cached usability stale. Called from the SPELL_UPDATE_USABLE handler.
+function TRB.Classes.SpellBase.InvalidateSpellUsable()
+	spellUsableGeneration = spellUsableGeneration + 1
+end
 
 ---Gets whether the spell is currently usable.
 ---@return boolean # Is the spell usable
@@ -467,8 +476,9 @@ end
 ---Updates IsSpellUsable cache.
 function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 	local currentTime = GetTime()
-	-- A cache hit must not re-stamp _lastSpellUsableCheck, or frequent callers starve the real check.
-	if (self._lastSpellUsableCheck or 0) + spellUsableEmbargoTimespan > currentTime then
+	-- A cache hit must not re-stamp _lastSpellUsableCheck, or the floor never expires.
+	if self._spellUsableGeneration == spellUsableGeneration
+		and (self._lastSpellUsableCheck or 0) + spellUsableFloorTimespan > currentTime then
 		return
 	end
 
@@ -477,6 +487,7 @@ function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 	self._isUsable = isUsable
 	self._insufficientPower = insufficientPower
 	self._lastSpellUsableCheck = currentTime
+	self._spellUsableGeneration = spellUsableGeneration
 end
 
 ---Determines if the current SpellBase is also another type, such as SpellThreshold.

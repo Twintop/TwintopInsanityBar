@@ -452,6 +452,8 @@ local function CharacterChange(self, event, ...)
 			end
 			TRB.Data.lookupDirty = true
 		end
+	elseif event == "SPELL_UPDATE_USABLE" then
+		TRB.Classes.SpellBase.InvalidateSpellUsable()
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" then
 		local unitTarget = ...
 		if unitTarget == "player" then
@@ -604,6 +606,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
+	characterChangeFrame:RegisterEvent("SPELL_UPDATE_USABLE")
 end
 
 ---Unregisters all character-change events from the characterChangeFrame and stops flight polling.
@@ -637,6 +640,7 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
+	characterChangeFrame:UnregisterEvent("SPELL_UPDATE_USABLE")
 	TRB.Functions.Character:StopFlightPolling()
 end
 
