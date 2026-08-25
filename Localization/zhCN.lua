@@ -3306,5 +3306,7 @@ if locale == "zhCN" then
 	L["MageFrostIndicatorFingersOfFrost2"] = "寒冰指（2层）"
 	L["MageFrostIndicatorFingersOfFrost2Tooltip"] = "拥有2层寒冰指时变为该颜色。"
 	L["MageFrostIndicatorFingersOfFrost2Color"] = "寒冰指为2层"
-
+	L["DruidBalanceBarTextVariable_starfallStacks"] = "当前生效的星坠施法层数。"
+	L["DruidBalanceBarTextVariable_starfallTime"] = "所有正在生效的星坠结束前的剩余秒数。"
+	L["DruidBalanceBarTextVariable_starfallNextStackTime"] = "下一个正在生效的星坠结束前的剩余秒数。"
 end
