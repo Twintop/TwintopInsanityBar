@@ -1752,6 +1752,13 @@ end
 ---@return string|nil output The formatted text, or nil when unchanged and not forced
 local function RenderBarTextEntry(state, text, colorCode, force)
 	local signature
+	-- State is keyed by entry index but sigFn/plan are compiled from the text. Drop them when the
+	-- index changes text so the caches stay an optimization, not a correctness requirement.
+	if state.sigText ~= text then
+		state.sigFn = nil
+		state.plan = nil
+		state.sigText = text
+	end
 	local sigFn = state.sigFn
 	if sigFn == nil then
 		sigFn = barTextSignatureFns[text]
@@ -1865,6 +1872,9 @@ local targetCastbarLookupUnits = {
 local castbarLookupWasActive = true
 local targetCastbarLookupWasActive = true
 local otherBarsLookupWasActive = true
+-- The latches assume their idle writes are still present, but SwitchSpec replaces lookupLogic
+-- wholesale. Tracked here so RefreshLookupDataBase can re-arm them on a rebuild.
+local lastLookupLogicTable = nil
 
 ---Refreshes ONLY the castbar bar text lookup variables (cast/channel/empower) from the dedicated
 ---castbar model (TRB.Data.castbar) — deliberately independent of snapshotData.casting, which is the
@@ -2158,6 +2168,15 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	lookup["#casting"] = castingIcon
 
 	lookupLogic["$inCombat"] = tostring(TRB.Data.character.inCombat)
+
+	-- A spec change replaces lookupLogic wholesale, stranding the idle latches. Re-arm on identity
+	-- change rather than depending on SwitchSpec call order.
+	if TRB.Data.lookupLogic ~= lastLookupLogicTable then
+		lastLookupLogicTable = TRB.Data.lookupLogic
+		castbarLookupWasActive = true
+		targetCastbarLookupWasActive = true
+		otherBarsLookupWasActive = true
+	end
 
 	-- Castbar variables live in their own function so the isolated castbar bar text path can refresh
 	-- them independently of this class-driven (combat/isTracking-gated) refresh.
