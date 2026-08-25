@@ -1081,6 +1081,25 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 	end
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	manaBarColors1 = {},
+	essenceColors1 = {},
+	barColorMap1 = {},
+	conditionMap2 = {},
+	manaBarColors2 = {},
+	essenceColors2 = {},
+	barColorMap2 = {},
+	conditionMap3 = {},
+	manaBarColors3 = {},
+	essenceColors3 = {},
+	ebonMightColors1 = {},
+	barColorMap3 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -1146,16 +1165,24 @@ local function UpdateResourceBar()
 				dragonrageEndMet = dragonrageTimeLeft <= timeThreshold
 			end
 
-			local conditionMap = {
-				dragonrageEnd = dragonrageActive and dragonrageEndMet,
-				dragonrage = dragonrageActive,
-				essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.dragonrageEnd = dragonrageActive and dragonrageEndMet
+			conditionMap.dragonrage = dragonrageActive
+			conditionMap.essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive
 
 			-- Color targets: barKey -> elementKey -> current color
-			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local essenceColors = { bar = nil, border = nil, background = nil }
-			local barColorMap = { manaBar = manaBarColors, essences = essenceColors }
+			local manaBarColors = scratch.manaBarColors1
+			wipe(manaBarColors)
+			manaBarColors.bar = barColor
+			manaBarColors.border = barBorderColor
+			manaBarColors.background = barBackgroundColor
+			local essenceColors = scratch.essenceColors1
+			wipe(essenceColors)
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.essences = essenceColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1204,15 +1231,23 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 
-			local conditionMap = {
-				innervate = false,
-				essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap2
+			wipe(conditionMap)
+			conditionMap.innervate = false
+			conditionMap.essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive
 
 			-- Color targets: barKey -> elementKey -> current color
-			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local essenceColors = { bar = nil, border = nil, background = nil }
-			local barColorMap = { manaBar = manaBarColors, essences = essenceColors }
+			local manaBarColors = scratch.manaBarColors2
+			wipe(manaBarColors)
+			manaBarColors.bar = barColor
+			manaBarColors.border = barBorderColor
+			manaBarColors.background = barBackgroundColor
+			local essenceColors = scratch.essenceColors2
+			wipe(essenceColors)
+			local barColorMap = scratch.barColorMap2
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.essences = essenceColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1267,16 +1302,29 @@ local function UpdateResourceBar()
 			local ebonMightTrackedId = snapshotData.attributes.ebonMightTrackedId
 			local ebonMightActive = snapshotData.attributes.ebonMightActive == true
 
-			local conditionMap = {
-				ebonMight = ebonMightActive,
-				essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap3
+			wipe(conditionMap)
+			conditionMap.ebonMight = ebonMightActive
+			conditionMap.essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive
 
 			-- Color targets: barKey -> elementKey -> current color
-			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local essenceColors = { bar = nil, border = nil, background = nil }
-			local ebonMightColors = { bar = ebonMightBarColor, border = ebonMightBorderColor, background = ebonMightBackgroundColor }
-			local barColorMap = { manaBar = manaBarColors, essences = essenceColors, ebonMight = ebonMightColors }
+			local manaBarColors = scratch.manaBarColors3
+			wipe(manaBarColors)
+			manaBarColors.bar = barColor
+			manaBarColors.border = barBorderColor
+			manaBarColors.background = barBackgroundColor
+			local essenceColors = scratch.essenceColors3
+			wipe(essenceColors)
+			local ebonMightColors = scratch.ebonMightColors1
+			wipe(ebonMightColors)
+			ebonMightColors.bar = ebonMightBarColor
+			ebonMightColors.border = ebonMightBorderColor
+			ebonMightColors.background = ebonMightBackgroundColor
+			local barColorMap = scratch.barColorMap3
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.essences = essenceColors
+			barColorMap.ebonMight = ebonMightColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)

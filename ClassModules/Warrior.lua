@@ -1316,6 +1316,17 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 	end
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	conditionMap2 = {},
+	conditionMap3 = {},
+	enrageColors1 = {},
+	barColorMap1 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -1365,9 +1376,9 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
-			local conditionMap = {
-				borderOvercap = affectingCombat,
-			}
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.borderOvercap = affectingCombat
 			-- The rage bar is colored bespoke below; the resolver is here for the shared health/cast bar.
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
 
@@ -1395,8 +1406,16 @@ local function UpdateResourceBar()
 						thresholds = primaryNode:GetThresholds()
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 							---@type string?
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
@@ -1607,23 +1626,26 @@ local function UpdateResourceBar()
 					end
 				end
 			end
-			local conditionMap = {
-				borderOvercap = affectingCombat,
-				zeroStackBackground = zeroStackActive,
-				enrage = enrageActive,
-			}
+			local conditionMap = scratch.conditionMap2
+			wipe(conditionMap)
+			conditionMap.borderOvercap = affectingCombat
+			conditionMap.zeroStackBackground = zeroStackActive
+			conditionMap.enrage = enrageActive
 
 			local enrageBarColors = specSettings.colors.bars and specSettings.colors.bars.enrage
-			local enrageColors = {
-				-- The whole entry, not just its string: ApplyFillColor only reaches its gradient branch
-				-- for a table, the same way the primary bar's base color is passed.
-				bar = enrageBarColors and enrageBarColors.bar,
-				border = enrageBarColors and enrageBarColors.border.color,
-				background = enrageBarColors and enrageBarColors.background.color,
-			}
+			-- The whole entry, not just its string: ApplyFillColor only reaches its gradient branch
+			-- for a table, the same way the primary bar's base color is passed.
+			local enrageColors = scratch.enrageColors1
+			wipe(enrageColors)
+			enrageColors.bar = enrageBarColors and enrageBarColors.bar
+			enrageColors.border = enrageBarColors and enrageBarColors.border.color
+			enrageColors.background = enrageBarColors and enrageBarColors.background.color
 			-- The rage and Whirlwind bars are colored bespoke above; the resolver covers the Enrage bar
 			-- along with the shared health/cast bar.
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, { enrageBar = enrageColors })
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.enrageBar = enrageColors
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1648,8 +1670,16 @@ local function UpdateResourceBar()
 						thresholds = primaryNode:GetThresholds()
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					---@type string?
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
@@ -1841,10 +1871,10 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
-			local conditionMap = {
-				borderOvercap = affectingCombat,
-				violentOutburst = snapshotData.snapshots[spells.violentOutburst.id] ~= nil and snapshotData.snapshots[spells.violentOutburst.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap3
+			wipe(conditionMap)
+			conditionMap.borderOvercap = affectingCombat
+			conditionMap.violentOutburst = snapshotData.snapshots[spells.violentOutburst.id] ~= nil and snapshotData.snapshots[spells.violentOutburst.id].buff.isActive
 			-- The rage bar is colored bespoke below; the resolver is here for the shared health/cast bar.
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
 
@@ -1871,8 +1901,16 @@ local function UpdateResourceBar()
 						thresholds = primaryNode:GetThresholds()
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					---@type string?
 					local thresholdColor = specCacheSettings.colors.threshold.over.color

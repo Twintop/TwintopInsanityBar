@@ -1234,6 +1234,24 @@ function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	manaBarColors1 = {},
+	soulShardsOverride1 = {},
+	barColorMap1 = {},
+	conditionMap2 = {},
+	manaBarColors2 = {},
+	soulShardsOverride2 = {},
+	barColorMap2 = {},
+	conditionMap3 = {},
+	manaBarColors3 = {},
+	soulShardsOverride3 = {},
+	barColorMap3 = {},
+}
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local coreSettings = TRB.Data.settings.core
@@ -1488,13 +1506,21 @@ local function UpdateResourceBar()
 			-- No talent gate: a buff that is up is proof enough the talent is taken, and the talent
 			-- lookup keys off the spell ID, which is not guaranteed to be the tree's node ID.
 			local shardInstabilitySnapshot = snapshots[spells.shardInstability.id]
-			local conditionMap = {
-				shardInstability = shardInstabilitySnapshot ~= nil and shardInstabilitySnapshot.buff.isActive == true,
-			}
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.shardInstability = shardInstabilitySnapshot ~= nil and shardInstabilitySnapshot.buff.isActive == true
 
-			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
-			local soulShardsOverride = { bar = nil, border = nil, background = nil }
-			local barColorMap = { manaBar = manaBarColors, soulShardsBar = soulShardsOverride }
+			local manaBarColors = scratch.manaBarColors1
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			local soulShardsOverride = scratch.soulShardsOverride1
+			wipe(soulShardsOverride)
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.soulShardsBar = soulShardsOverride
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1558,17 +1584,25 @@ local function UpdateResourceBar()
 				doaEndMet = doaSnapshot.buff.remaining <= timeThreshold
 			end
 
-			local conditionMap = {
-				dominionOfArgusEnd = doaActive and doaEndMet,
-				dominionOfArgus = doaActive,
-				demonicCore = snapshotData.snapshots[spells.demonicCore.id] ~= nil and snapshotData.snapshots[spells.demonicCore.id].buff.isActive,
-				infernalBolt = snapshotData.snapshots[spells.infernalBolt.id] ~= nil and snapshotData.snapshots[spells.infernalBolt.id].buff.isActive,
-				ruination = snapshotData.snapshots[spells.ruination.id] ~= nil and snapshotData.snapshots[spells.ruination.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap2
+			wipe(conditionMap)
+			conditionMap.dominionOfArgusEnd = doaActive and doaEndMet
+			conditionMap.dominionOfArgus = doaActive
+			conditionMap.demonicCore = snapshotData.snapshots[spells.demonicCore.id] ~= nil and snapshotData.snapshots[spells.demonicCore.id].buff.isActive
+			conditionMap.infernalBolt = snapshotData.snapshots[spells.infernalBolt.id] ~= nil and snapshotData.snapshots[spells.infernalBolt.id].buff.isActive
+			conditionMap.ruination = snapshotData.snapshots[spells.ruination.id] ~= nil and snapshotData.snapshots[spells.ruination.id].buff.isActive
 
-			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
-			local soulShardsOverride = { bar = nil, border = nil, background = nil }
-			local barColorMap = { manaBar = manaBarColors, soulShardsBar = soulShardsOverride }
+			local manaBarColors = scratch.manaBarColors2
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			local soulShardsOverride = scratch.soulShardsOverride2
+			wipe(soulShardsOverride)
+			local barColorMap = scratch.barColorMap2
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.soulShardsBar = soulShardsOverride
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1617,14 +1651,22 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 
-			local conditionMap = {
-				infernalBolt = snapshots[spells.infernalBolt.id] ~= nil and snapshots[spells.infernalBolt.id].buff.isActive,
-				ruination = snapshots[spells.ruination.id] ~= nil and snapshots[spells.ruination.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap3
+			wipe(conditionMap)
+			conditionMap.infernalBolt = snapshots[spells.infernalBolt.id] ~= nil and snapshots[spells.infernalBolt.id].buff.isActive
+			conditionMap.ruination = snapshots[spells.ruination.id] ~= nil and snapshots[spells.ruination.id].buff.isActive
 
-			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
-			local soulShardsOverride = { bar = nil, border = nil, background = nil }
-			local barColorMap = { manaBar = manaBarColors, soulShardsBar = soulShardsOverride }
+			local manaBarColors = scratch.manaBarColors3
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			local soulShardsOverride = scratch.soulShardsOverride3
+			wipe(soulShardsOverride)
+			local barColorMap = scratch.barColorMap3
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.soulShardsBar = soulShardsOverride
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)

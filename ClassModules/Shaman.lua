@@ -352,27 +352,26 @@ local function RefreshLookupData_Elemental()
 	-- Block C: Mana ($mana, $manaMax, $manaPercent)
 	if not activeVars or activeVars["$mana"] or activeVars["$manaMax"] or activeVars["$manaPercent"] then
 		local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
-		local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
-		local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
 		local manaPrecision = sharedSettings.precision.mana or 1
-		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-		local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-		lookupLogic["$mana"] = normalizedMana
-		lookupLogic["$manaMax"] = normalizedManaMax
-		lookupLogic["$manaPercent"] = _manaPercent
-
-		local manaFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana)
-		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
-			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+		-- Power events only mark dirty; re-derive here at most once per tick, plus first read and
+		-- precision changes.
+		local additionalPower = snapshotData.formatted.additionalPower
+		local mana = additionalPower and additionalPower["MANA"]
+		if mana == nil or mana.dirty or mana.precision ~= manaPrecision then
+			TRB.Functions.Character:UpdateAdditionalPowerValues("MANA", manaPrecision)
+			mana = snapshotData.formatted.additionalPower["MANA"]
 		end
-		local manaMaxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax)
-		if lookupChanged(prevState, "$manaMax", manaMaxFormatted, currentManaColor) then
-			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, manaMaxFormatted)
+		lookupLogic["$mana"] = mana.current
+		lookupLogic["$manaMax"] = mana.max
+		lookupLogic["$manaPercent"] = mana.percent
+		if lookupChanged(prevState, "$mana", mana.currentFormatted, currentManaColor) then
+			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, mana.currentFormatted)
 		end
-		local manaPercentFormatted = string.format("%." .. manaPrecision .. "f", manaPercentRaw)
-		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
-			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+		if lookupChanged(prevState, "$manaMax", mana.maxFormatted, currentManaColor) then
+			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, mana.maxFormatted)
+		end
+		if lookupChanged(prevState, "$manaPercent", mana.percentFormatted, currentManaColor) then
+			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, mana.percentFormatted)
 		end
 	end
 
@@ -673,6 +672,27 @@ local function UpdateSnapshot_Restoration()
 	UpdateSnapshot()
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	maelstromBarColors1 = {},
+	barColorMap1 = {},
+	overcapCurves1 = {},
+	conditionMap2 = {},
+	manaBarColors1 = {},
+	barColorMap2 = {},
+	manaOvercapCurves1 = {},
+	conditionMap3 = {},
+	manaBarColors2 = {},
+	barColorMap3 = {},
+	conditionMap4 = {},
+	conditionMap5 = {},
+	manaBarColors3 = {},
+	barColorMap4 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -741,15 +761,21 @@ local function UpdateResourceBar()
 				ascendanceEndMet = timeLeft <= timeThreshold
 			end
 
-			local conditionMap = {
-				ascendanceEnd = ascendanceActive and ascendanceEndMet,
-				earthShock = earthShockUsable,
-				earthquake = earthquakeUsable,
-				ascendance = ascendanceActive,
-				borderOvercap = affectingCombat,
-			}
-			local maelstromBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local barColorMap = { maelstromBar = maelstromBarColors }
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
+			conditionMap.earthShock = earthShockUsable
+			conditionMap.earthquake = earthquakeUsable
+			conditionMap.ascendance = ascendanceActive
+			conditionMap.borderOvercap = affectingCombat
+			local maelstromBarColors = scratch.maelstromBarColors1
+			wipe(maelstromBarColors)
+			maelstromBarColors.bar = barColor
+			maelstromBarColors.border = barBorderColor
+			maelstromBarColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.maelstromBar = maelstromBarColors
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -779,8 +805,16 @@ local function UpdateResourceBar()
 						thresholds = primaryNode:GetThresholds()
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = frameLevels.thresholdOver
@@ -864,7 +898,8 @@ local function UpdateResourceBar()
 				barBorderColor = maelstromBarColors.border
 				barBackgroundColor = maelstromBarColors.background
 
-				local overcapCurves = {}
+				local overcapCurves = scratch.overcapCurves1
+				wipe(overcapCurves)
 				if overcapIndicator and overcapIndicator.targets then
 					local maelstromTargets = overcapIndicator.targets.maelstromBar
 					if maelstromTargets then
@@ -953,19 +988,21 @@ local function UpdateResourceBar()
 						ascendanceEndMet = timeLeft <= timeThreshold
 					end
 
-					local conditionMap = {
-						ascendanceEnd = ascendanceActive and ascendanceEndMet,
-						earthShock = earthShockUsable,
-						earthquake = earthquakeUsable,
-						ascendance = ascendanceActive,
-						borderOvercap = affectingCombat,
-					}
-					local manaBarColors = {
-						bar = specSettings.colors.bars.mana.bar.color,
-						border = specSettings.colors.bars.mana.border.color,
-						background = specSettings.colors.bars.mana.background.color,
-					}
-					local barColorMap = { manaBar = manaBarColors }
+					local conditionMap = scratch.conditionMap2
+					wipe(conditionMap)
+					conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
+					conditionMap.earthShock = earthShockUsable
+					conditionMap.earthquake = earthquakeUsable
+					conditionMap.ascendance = ascendanceActive
+					conditionMap.borderOvercap = affectingCombat
+					local manaBarColors = scratch.manaBarColors1
+					wipe(manaBarColors)
+					manaBarColors.bar = specSettings.colors.bars.mana.bar.color
+					manaBarColors.border = specSettings.colors.bars.mana.border.color
+					manaBarColors.background = specSettings.colors.bars.mana.background.color
+					local barColorMap = scratch.barColorMap2
+					wipe(barColorMap)
+					barColorMap.manaBar = manaBarColors
 
 					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -985,7 +1022,8 @@ local function UpdateResourceBar()
 					manaNode:SetValue(currentMana)
 					Bar:ApplyEndCapIndicator(manaNode, "manaBar")
 
-					local manaOvercapCurves = {}
+					local manaOvercapCurves = scratch.manaOvercapCurves1
+					wipe(manaOvercapCurves)
 					if overcapIndicator and overcapIndicator.targets then
 						local manaTargets = overcapIndicator.targets.manaBar
 						if manaTargets then
@@ -1054,12 +1092,18 @@ local function UpdateResourceBar()
 				ascendanceEndMet = timeLeft <= timeThreshold
 			end
 
-			local conditionMap = {
-				ascendanceEnd = ascendanceActive and ascendanceEndMet,
-				ascendance = ascendanceActive,
-			}
-			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local barColorMap = { manaBar = manaBarColors }
+			local conditionMap = scratch.conditionMap3
+			wipe(conditionMap)
+			conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
+			conditionMap.ascendance = ascendanceActive
+			local manaBarColors = scratch.manaBarColors2
+			wipe(manaBarColors)
+			manaBarColors.bar = barColor
+			manaBarColors.border = barBorderColor
+			manaBarColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap3
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -1110,10 +1154,10 @@ local function UpdateResourceBar()
 						ascendanceEndMet = timeLeft <= timeThreshold
 					end
 
-					local conditionMap = {
-						ascendanceEnd = ascendanceActive and ascendanceEndMet,
-						ascendance = ascendanceActive,
-					}
+					local conditionMap = scratch.conditionMap4
+					wipe(conditionMap)
+					conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
+					conditionMap.ascendance = ascendanceActive
 					local mwBarOverride = nil
 					local mwBorderOverride = nil
 					local mwBackgroundOverride = nil
@@ -1299,12 +1343,18 @@ local function UpdateResourceBar()
 				ascendanceEndMet = timeLeft <= timeThreshold
 			end
 
-			local conditionMap = {
-				ascendanceEnd = ascendanceActive and ascendanceEndMet,
-				ascendance = ascendanceActive,
-			}
-			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local barColorMap = { manaBar = manaBarColors }
+			local conditionMap = scratch.conditionMap5
+			wipe(conditionMap)
+			conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
+			conditionMap.ascendance = ascendanceActive
+			local manaBarColors = scratch.manaBarColors3
+			wipe(manaBarColors)
+			manaBarColors.bar = barColor
+			manaBarColors.border = barBorderColor
+			manaBarColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap4
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 

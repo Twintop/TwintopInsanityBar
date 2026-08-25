@@ -29,6 +29,7 @@ local holyWordDefsCache = {
 	{ spell = nil --[[@as TRB.Classes.SpellBase]], key = "holyWordChastise", color = "" --[[@as string]], enabled = false },
 }
 
+
 -- Reverse lookup: nodeColor key → holyWordDefsCache entry (populated once, stable)
 local holyWordKeyToDef = {
 	holyWordSerenity = holyWordDefsCache[1],
@@ -1275,26 +1276,26 @@ local function RefreshLookupData_Shadow()
 	-- Block F: Mana ($mana, $manaMax, $manaPercent)
 	if not activeVars or activeVars["$mana"] or activeVars["$manaMax"] or activeVars["$manaPercent"] then
 		local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
-		local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
-		local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
 		local manaPrecision = sharedSettings.precision.mana or 1
-		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-		local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-		lookupLogic["$mana"] = normalizedMana
-		lookupLogic["$manaMax"] = normalizedManaMax
-		lookupLogic["$manaPercent"] = _manaPercent
-		local manaFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana)
-		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
-			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, manaFormatted)
+		-- Power events only mark dirty; re-derive here at most once per tick, plus first read and
+		-- precision changes.
+		local additionalPower = snapshotData.formatted.additionalPower
+		local mana = additionalPower and additionalPower["MANA"]
+		if mana == nil or mana.dirty or mana.precision ~= manaPrecision then
+			TRB.Functions.Character:UpdateAdditionalPowerValues("MANA", manaPrecision)
+			mana = snapshotData.formatted.additionalPower["MANA"]
 		end
-		local manaMaxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax)
-		if lookupChanged(prevState, "$manaMax", manaMaxFormatted, currentManaColor) then
-			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, manaMaxFormatted)
+		lookupLogic["$mana"] = mana.current
+		lookupLogic["$manaMax"] = mana.max
+		lookupLogic["$manaPercent"] = mana.percent
+		if lookupChanged(prevState, "$mana", mana.currentFormatted, currentManaColor) then
+			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, mana.currentFormatted)
 		end
-		local manaPercentFormatted = string.format("%." .. manaPrecision .. "f", manaPercentRaw)
-		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
-			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+		if lookupChanged(prevState, "$manaMax", mana.maxFormatted, currentManaColor) then
+			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, mana.maxFormatted)
+		end
+		if lookupChanged(prevState, "$manaPercent", mana.percentFormatted, currentManaColor) then
+			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, mana.percentFormatted)
 		end
 	end
 
@@ -2166,6 +2167,27 @@ local function UpdateSnapshot_Shadow()
 	--snapshots[spells.mindBlast.id].cooldown:Refresh()
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	manaBarColors1 = {},
+	powerWordsBarColors1 = {},
+	barColorMap1 = {},
+	conditionMap2 = {},
+	manaBarColors2 = {},
+	holyWordsBarColors1 = {},
+	lightweaverBarColors1 = {},
+	barColorMap2 = {},
+	conditionMap3 = {},
+	insanityBarColors1 = {},
+	manaBarColors3 = {},
+	barColorMap3 = {},
+	overcapCurvesInsanity1 = {},
+	overcapCurvesMana1 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -2209,16 +2231,27 @@ local function UpdateResourceBar()
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 
 			local surgeOfLightStacks = GetSurgeOfLightStacks(snapshotData, spells)
-			local conditionMap = {
-				surgeOfLight = surgeOfLightStacks >= 1,
-				surgeOfLight2 = surgeOfLightStacks >= 2,
-				voidShield = snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.surgeOfLight = surgeOfLightStacks >= 1
+			conditionMap.surgeOfLight2 = surgeOfLightStacks >= 2
+			conditionMap.voidShield = snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive
 
 			-- Color targets: barKey -> elementKey -> current color
-			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
-			local powerWordsBarColors = { bar = specSettings.colors.comboPoints.powerWordRadiance, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
-			local barColorMap = { manaBar = manaBarColors, powerWordsBar = powerWordsBarColors }
+			local manaBarColors = scratch.manaBarColors1
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			local powerWordsBarColors = scratch.powerWordsBarColors1
+			wipe(powerWordsBarColors)
+			powerWordsBarColors.bar = specSettings.colors.comboPoints.powerWordRadiance
+			powerWordsBarColors.border = specSettings.colors.comboPoints.border.color
+			powerWordsBarColors.background = specSettings.colors.comboPoints.background.color
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.powerWordsBar = powerWordsBarColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -2394,23 +2427,33 @@ local function UpdateResourceBar()
 			end
 
 			local surgeOfLightStacks = GetSurgeOfLightStacks(snapshotData, spells)
-			local conditionMap = {
-				benediction = snapshots[spells.benediction.id].buff.isActive,
-				holyWordSerenity = holyWordCooldownCompletesKey == "holyWordSerenity",
-				holyWordSanctify = holyWordCooldownCompletesKey == "holyWordSanctify",
-				holyWordChastise = holyWordCooldownCompletesKey == "holyWordChastise",
-				apotheosisEnd = apotheosisActive and apotheosisEndMet,
-				apotheosis = apotheosisActive,
-				surgeOfLight = surgeOfLightStacks >= 1,
-				surgeOfLight2 = surgeOfLightStacks >= 2,
-				lightweaver = snapshots[spells.lightweaver.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap2
+			wipe(conditionMap)
+			conditionMap.benediction = snapshots[spells.benediction.id].buff.isActive
+			conditionMap.holyWordSerenity = holyWordCooldownCompletesKey == "holyWordSerenity"
+			conditionMap.holyWordSanctify = holyWordCooldownCompletesKey == "holyWordSanctify"
+			conditionMap.holyWordChastise = holyWordCooldownCompletesKey == "holyWordChastise"
+			conditionMap.apotheosisEnd = apotheosisActive and apotheosisEndMet
+			conditionMap.apotheosis = apotheosisActive
+			conditionMap.surgeOfLight = surgeOfLightStacks >= 1
+			conditionMap.surgeOfLight2 = surgeOfLightStacks >= 2
+			conditionMap.lightweaver = snapshots[spells.lightweaver.id].buff.isActive
 
 			-- Color targets: barKey -> elementKey -> current color
-			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
-			local holyWordsBarColors = { bar = nil, border = nil, background = nil }
-			local lightweaverBarColors = { bar = nil, border = nil, background = nil }
-			local barColorMap = { manaBar = manaBarColors, holyWordsBar = holyWordsBarColors, lightweaverBar = lightweaverBarColors }
+			local manaBarColors = scratch.manaBarColors2
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			local holyWordsBarColors = scratch.holyWordsBarColors1
+			wipe(holyWordsBarColors)
+			local lightweaverBarColors = scratch.lightweaverBarColors1
+			wipe(lightweaverBarColors)
+			local barColorMap = scratch.barColorMap2
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.holyWordsBar = holyWordsBarColors
+			barColorMap.lightweaverBar = lightweaverBarColors
 
 			-- Holy's own bars are resolved by the node-aware walk below, not the shared resolver: several of
 			-- its indicators apply to one node of a bar rather than the whole bar. The shared health/cast bar
@@ -2682,7 +2725,8 @@ local function UpdateResourceBar()
 		local manaBarColor = specSettings.colors.bars.mana.bar.color
 		local manaBorderColor = specSettings.colors.bars.mana.border.color
 		local manaBackgroundColor = specSettings.colors.bars.mana.background.color
-		local overcapCurvesMana = {}
+		local overcapCurvesMana = scratch.overcapCurvesMana1
+		wipe(overcapCurvesMana)
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
@@ -2714,21 +2758,32 @@ local function UpdateResourceBar()
 
 			local swmUsable = spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()
 
-			local conditionMap = {
-				instantMindBlast = snapshotData.attributes.shadowyInsightActive,
-				voidformEnd = voidformActive and voidformEndMet,
-				mindDevourer = spells.shadowWordMadness:IsFree(),
-				entropicRift = snapshots[spells.entropicRift.id].buff.isActive,
-				borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive,
-				shadowWordMadnessUsable = swmUsable,
-				voidform = voidformActive,
-				borderOvercap = affectingCombat,
-			}
+			local conditionMap = scratch.conditionMap3
+			wipe(conditionMap)
+			conditionMap.instantMindBlast = snapshotData.attributes.shadowyInsightActive
+			conditionMap.voidformEnd = voidformActive and voidformEndMet
+			conditionMap.mindDevourer = spells.shadowWordMadness:IsFree()
+			conditionMap.entropicRift = snapshots[spells.entropicRift.id].buff.isActive
+			conditionMap.borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive
+			conditionMap.shadowWordMadnessUsable = swmUsable
+			conditionMap.voidform = voidformActive
+			conditionMap.borderOvercap = affectingCombat
 
 			-- Color targets: barKey -> elementKey -> current color
-			local insanityBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local manaBarColors = { bar = manaBarColor, border = manaBorderColor, background = manaBackgroundColor }
-			local barColorMap = { insanityBar = insanityBarColors, manaBar = manaBarColors }
+			local insanityBarColors = scratch.insanityBarColors1
+			wipe(insanityBarColors)
+			insanityBarColors.bar = barColor
+			insanityBarColors.border = barBorderColor
+			insanityBarColors.background = barBackgroundColor
+			local manaBarColors = scratch.manaBarColors3
+			wipe(manaBarColors)
+			manaBarColors.bar = manaBarColor
+			manaBarColors.border = manaBorderColor
+			manaBarColors.background = manaBackgroundColor
+			local barColorMap = scratch.barColorMap3
+			wipe(barColorMap)
+			barColorMap.insanityBar = insanityBarColors
+			barColorMap.manaBar = manaBarColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -2769,7 +2824,8 @@ local function UpdateResourceBar()
 				manaBackgroundColor = manaBarColors.background
 
 				-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
-				local overcapCurvesInsanity = {}
+				local overcapCurvesInsanity = scratch.overcapCurvesInsanity1
+				wipe(overcapCurvesInsanity)
 				if overcapIndicator and overcapIndicator.targets then
 					local insanityTargets = overcapIndicator.targets.insanityBar
 					if insanityTargets then
@@ -2811,8 +2867,16 @@ local function UpdateResourceBar()
 						thresholds = primaryNode:GetThresholds()
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color --[[@as string?]]
 					local frameLevel = frameLevels.thresholdOver

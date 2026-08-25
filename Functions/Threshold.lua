@@ -2001,17 +2001,28 @@ function TRB.Functions.Threshold:HideInactiveCustomThresholdFrames(activeFrameKe
 	end
 end
 
+-- Reused per-tick scratch (HideInactiveCustomThresholdFrames only reads it) and the guid ->
+-- namespaced dictionary key memo (guids are stable strings).
+local activeFrameKeysScratch = {}
+local customThresholdKeyByGuid = {}
+
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>?
 function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
-	local activeFrameKeys = {}
+	local activeFrameKeys = activeFrameKeysScratch
+	wipe(activeFrameKeys)
 	if settings == nil or settings.thresholds == nil or settings.thresholds.customThresholds == nil or barGroups == nil then
 		TRB.Functions.Threshold:HideInactiveCustomThresholdFrames(activeFrameKeys)
 		return
 	end
 
 	for guid, customThreshold in pairs(settings.thresholds.customThresholds) do
-		local customThresholdKey = TRB.Functions.Settings:GetCustomThresholdDictionaryKey(customThreshold.guid or guid)
+		local rawGuid = customThreshold.guid or guid
+		local customThresholdKey = customThresholdKeyByGuid[rawGuid]
+		if customThresholdKey == nil then
+			customThresholdKey = TRB.Functions.Settings:GetCustomThresholdDictionaryKey(rawGuid)
+			customThresholdKeyByGuid[rawGuid] = customThresholdKey
+		end
 		local thresholdOverrides = settings.thresholds.thresholdDictionary and settings.thresholds.thresholdDictionary[customThresholdKey]
 		if thresholdOverrides ~= nil and thresholdOverrides.enabled == true then
 			local targetInfo = TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroups, customThreshold.barTarget or "primary")

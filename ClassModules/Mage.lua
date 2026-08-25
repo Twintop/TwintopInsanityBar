@@ -955,6 +955,21 @@ local function UpdateShatter(specSettings, specCacheSettings, barColors, fillInd
 	end
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	manaBarColors1 = {},
+	iciclesBarColors1 = {},
+	shatterBarColors1 = {},
+	manaBarTargets1 = {},
+	iciclesBarTargets1 = {},
+	shatterBarTargets1 = {},
+	indicatorTargets1 = {},
+	barColorMap1 = {},
+}
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local classSettings = TRB.Data.settings.mage
@@ -1130,39 +1145,52 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local fingersOfFrostBuff = snapshots[spells.fingersOfFrost.id].buff
 			local fingersOfFrostCharges = fingersOfFrostBuff.isActive and (fingersOfFrostBuff.applications or 0) or 0
-			local conditionMap = {
-				fingersOfFrost = fingersOfFrostCharges >= 1,
-				fingersOfFrost2 = fingersOfFrostCharges >= 2,
-				brainFreeze = snapshots[spells.brainFreeze.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.fingersOfFrost = fingersOfFrostCharges >= 1
+			conditionMap.fingersOfFrost2 = fingersOfFrostCharges >= 2
+			conditionMap.brainFreeze = snapshots[spells.brainFreeze.id].buff.isActive
 
-			local manaBarColors = {
-				bar = specSettings.colors.bar.base,
-				border = specSettings.colors.bar.border.color,
-				background = specSettings.colors.bar.background.color,
-			}
-			local iciclesBarColors = {
-				bar = specSettings.colors.comboPoints.base,
-				border = specSettings.colors.comboPoints.border.color,
-				background = specSettings.colors.comboPoints.background.color,
-			}
+			local manaBarColors = scratch.manaBarColors1
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			local iciclesBarColors = scratch.iciclesBarColors1
+			wipe(iciclesBarColors)
+			iciclesBarColors.bar = specSettings.colors.comboPoints.base
+			iciclesBarColors.border = specSettings.colors.comboPoints.border.color
+			iciclesBarColors.background = specSettings.colors.comboPoints.background.color
 			local shatterColors = specSettings.colors.bars and specSettings.colors.bars.shatter
-			local shatterBarColors = shatterColors and {
-				bar = shatterColors.bar,
-				border = shatterColors.border.color,
-				background = shatterColors.background.color,
-			} or nil
-			local indicatorTargets = {
-				manaBar = { bar = false, border = false, background = false },
-				iciclesBar = { bar = false, border = false, background = false },
-				shatterBar = { bar = false, border = false, background = false },
-			}
+			local shatterBarColors = nil
+			if shatterColors then
+				shatterBarColors = scratch.shatterBarColors1
+				wipe(shatterBarColors)
+				shatterBarColors.bar = shatterColors.bar
+				shatterBarColors.border = shatterColors.border.color
+				shatterBarColors.background = shatterColors.background.color
+			end
+			-- Wiped rather than reset to false: ApplyIndicatorColors only ever writes true, and every
+			-- reader tests truthiness.
+			local manaBarTargets = scratch.manaBarTargets1
+			wipe(manaBarTargets)
+			local iciclesBarTargets = scratch.iciclesBarTargets1
+			wipe(iciclesBarTargets)
+			local shatterBarTargets = scratch.shatterBarTargets1
+			wipe(shatterBarTargets)
+			local indicatorTargets = scratch.indicatorTargets1
+			wipe(indicatorTargets)
+			indicatorTargets.manaBar = manaBarTargets
+			indicatorTargets.iciclesBar = iciclesBarTargets
+			indicatorTargets.shatterBar = shatterBarTargets
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, {
-				manaBar = manaBarColors,
-				iciclesBar = iciclesBarColors,
-				shatterBar = shatterBarColors,
-			}, indicatorTargets)
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.iciclesBar = iciclesBarColors
+			barColorMap.shatterBar = shatterBarColors
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1214,6 +1242,7 @@ local function UpdateResourceBar()
 
 			if specSettings.displayBar.shatter and not specSettings.displayBar.shatter.neverShow then
 				refreshText = true
+				---@diagnostic disable-next-line: param-type-mismatch
 				UpdateShatter(specSettings, specCacheSettings, shatterBarColors, indicatorTargets.shatterBar.bar)
 			end
 

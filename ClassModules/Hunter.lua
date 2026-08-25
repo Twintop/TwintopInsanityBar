@@ -814,6 +814,28 @@ local function UpdateSnapshot_Survival()
 	snapshots[spells.tipOfTheSpear.id].buff:GetRemainingTime(currentTime)
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	focusBarColors1 = {},
+	barColorMap1 = {},
+	overcapCurves1 = {},
+	conditionMap2 = {},
+	focusBarColors2 = {},
+	barColorMap2 = {},
+	overcapCurves2 = {},
+	conditionMap3 = {},
+	focusBarColors3 = {},
+	tipOfTheSpearBarColors1 = {},
+	tipOfTheSpearOverrides1 = {},
+	indicatorTargets1 = {},
+	barColorMap3 = {},
+	focusOvercapCurves1 = {},
+	tipOfTheSpearOvercapCurves1 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -863,19 +885,25 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
-			local conditionMap = {
-				bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat,
-				bestialWrathEnd = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
+			conditionMap.bestialWrathEnd = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
 					and specSettings.endOf.bestialWrath.enabled
 					and (snapshots[spells.bestialWrath.id].buff:GetRemainingTime(currentTime) <=
 						(specSettings.endOf.bestialWrath.mode == "gcd"
 							and Character:GetCurrentGCDTime() * specSettings.endOf.bestialWrath.gcdsMax
-							or specSettings.endOf.bestialWrath.timeMax)),
-				beastCleave = snapshots[spells.beastCleave.id].buff.isActive,
-				borderOvercap = affectingCombat,
-			}
-			local focusBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local barColorMap = { focusBar = focusBarColors }
+							or specSettings.endOf.bestialWrath.timeMax))
+			conditionMap.beastCleave = snapshots[spells.beastCleave.id].buff.isActive
+			conditionMap.borderOvercap = affectingCombat
+			local focusBarColors = scratch.focusBarColors1
+			wipe(focusBarColors)
+			focusBarColors.bar = barColor
+			focusBarColors.border = barBorderColor
+			focusBarColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.focusBar = focusBarColors
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -906,8 +934,16 @@ local function UpdateResourceBar()
 						thresholds = primaryNode:GetThresholds()
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = frameLevels.thresholdOver
@@ -993,7 +1029,8 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local overcapCurves = {}
+				local overcapCurves = scratch.overcapCurves1
+				wipe(overcapCurves)
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
 						local key = gradientOrder[i]
@@ -1072,18 +1109,24 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
-			local conditionMap = {
-				trueshot = snapshots[spells.trueshot.id].buff.isActive,
-				trueshotEnd = snapshots[spells.trueshot.id].buff.isActive
+			local conditionMap = scratch.conditionMap2
+			wipe(conditionMap)
+			conditionMap.trueshot = snapshots[spells.trueshot.id].buff.isActive
+			conditionMap.trueshotEnd = snapshots[spells.trueshot.id].buff.isActive
 					and specSettings.endOf.trueshot.enabled
 					and (snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime) <=
 						(specSettings.endOf.trueshot.mode == "gcd"
 							and Character:GetCurrentGCDTime() * specSettings.endOf.trueshot.gcdsMax
-							or specSettings.endOf.trueshot.timeMax)),
-				borderOvercap = affectingCombat,
-			}
-			local focusBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local barColorMap = { focusBar = focusBarColors }
+							or specSettings.endOf.trueshot.timeMax))
+			conditionMap.borderOvercap = affectingCombat
+			local focusBarColors = scratch.focusBarColors2
+			wipe(focusBarColors)
+			focusBarColors.bar = barColor
+			focusBarColors.border = barBorderColor
+			focusBarColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap2
+			wipe(barColorMap)
+			barColorMap.focusBar = focusBarColors
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -1115,8 +1158,16 @@ local function UpdateResourceBar()
 						thresholds = primaryNode:GetThresholds()
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = frameLevels.thresholdOver
@@ -1217,7 +1268,8 @@ local function UpdateResourceBar()
 					end
 				end
 
-				local overcapCurves = {}
+				local overcapCurves = scratch.overcapCurves2
+				wipe(overcapCurves)
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
 						local key = gradientOrder[i]
@@ -1280,34 +1332,38 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
-			local conditionMap = {
-				takedown = snapshots[spells.takedown.id].buff.isActive,
-				takedownEnd = snapshots[spells.takedown.id].buff.isActive
+			local conditionMap = scratch.conditionMap3
+			wipe(conditionMap)
+			conditionMap.takedown = snapshots[spells.takedown.id].buff.isActive
+			conditionMap.takedownEnd = snapshots[spells.takedown.id].buff.isActive
 					and specSettings.endOf.takedown.enabled
 					and (snapshots[spells.takedown.id].buff:GetRemainingTime(currentTime) <=
 						(specSettings.endOf.takedown.mode == "gcd"
 							and Character:GetCurrentGCDTime() * specSettings.endOf.takedown.gcdsMax
-							or specSettings.endOf.takedown.timeMax)),
-				borderOvercap = affectingCombat,
-			}
-			local focusBarColors = {
-				bar = specSettings.colors.bar.base,
-				border = specSettings.colors.bar.border.color,
-				background = specSettings.colors.bar.background.color,
-			}
-			local tipOfTheSpearBarColors = {
-				bar = specSettings.colors.comboPoints.base,
-				border = specSettings.colors.comboPoints.border.color,
-				background = specSettings.colors.comboPoints.background.color,
-			}
-			local tipOfTheSpearOverrides = { bar = false, border = false, background = false }
-			local barColorMap = {
-				focusBar = focusBarColors,
-				tipOfTheSpearBar = tipOfTheSpearBarColors,
-			}
+							or specSettings.endOf.takedown.timeMax))
+			conditionMap.borderOvercap = affectingCombat
+			local focusBarColors = scratch.focusBarColors3
+			wipe(focusBarColors)
+			focusBarColors.bar = specSettings.colors.bar.base
+			focusBarColors.border = specSettings.colors.bar.border.color
+			focusBarColors.background = specSettings.colors.bar.background.color
+			local tipOfTheSpearBarColors = scratch.tipOfTheSpearBarColors1
+			wipe(tipOfTheSpearBarColors)
+			tipOfTheSpearBarColors.bar = specSettings.colors.comboPoints.base
+			tipOfTheSpearBarColors.border = specSettings.colors.comboPoints.border.color
+			tipOfTheSpearBarColors.background = specSettings.colors.comboPoints.background.color
+			-- Wiped, not reset to false: ApplyIndicatorColors only writes true and readers test truthiness.
+			local tipOfTheSpearOverrides = scratch.tipOfTheSpearOverrides1
+			wipe(tipOfTheSpearOverrides)
+			local barColorMap = scratch.barColorMap3
+			wipe(barColorMap)
+			barColorMap.focusBar = focusBarColors
+			barColorMap.tipOfTheSpearBar = tipOfTheSpearBarColors
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap,
-				{ tipOfTheSpearBar = tipOfTheSpearOverrides })
+			local indicatorTargets = scratch.indicatorTargets1
+			wipe(indicatorTargets)
+			indicatorTargets.tipOfTheSpearBar = tipOfTheSpearOverrides
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
 
 			local overcapIndicator = nil
 			if gradientOrder and indicatorColors then
@@ -1321,8 +1377,10 @@ local function UpdateResourceBar()
 				end
 			end
 
-			local focusOvercapCurves = {}
-			local tipOfTheSpearOvercapCurves = {}
+			local focusOvercapCurves = scratch.focusOvercapCurves1
+			wipe(focusOvercapCurves)
+			local tipOfTheSpearOvercapCurves = scratch.tipOfTheSpearOvercapCurves1
+			wipe(tipOfTheSpearOvercapCurves)
 			if overcapIndicator and overcapIndicator.targets then
 				local focusTargets = overcapIndicator.targets.focusBar
 				if focusTargets then
@@ -1380,8 +1438,16 @@ local function UpdateResourceBar()
 						thresholds = primaryNode:GetThresholds()
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = frameLevels.thresholdOver

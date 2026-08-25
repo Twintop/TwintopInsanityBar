@@ -962,6 +962,30 @@ local function UpdateSnapshot_Windwalker()
 	snapshots[spells.heartOfTheJadeSerpent.id].buff:GetRemainingTime(currentTime)
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	energyBarColors1 = {},
+	barColorMap1 = {},
+	energyOvercapCurves1 = {},
+	stConditionMap1 = {},
+	stOvercapCurves1 = {},
+	stGradientConditionMap1 = {},
+	conditionMap2 = {},
+	manaBarColors1 = {},
+	barColorMap2 = {},
+	conditionMap3 = {},
+	energyBarColors2 = {},
+	chiBarColors1 = {},
+	chiBarOverrides1 = {},
+	indicatorTargets1 = {},
+	barColorMap3 = {},
+	energyOvercapCurves2 = {},
+	chiOvercapCurves1 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -1017,14 +1041,21 @@ local function UpdateResourceBar()
 				invokeNiuzaoEndMet = niuzaoTimeLeft <= timeThreshold
 			end
 
-			local conditionMap = {
-				invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet,
-				invokeNiuzao = invokeNiuzaoActive,
-				borderOvercap = affectingCombat,
-			}
-			local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet
+			conditionMap.invokeNiuzao = invokeNiuzaoActive
+			conditionMap.borderOvercap = affectingCombat
+			local energyBarColors = scratch.energyBarColors1
+			wipe(energyBarColors)
+			energyBarColors.bar = barColor
+			energyBarColors.border = barBorderColor
+			energyBarColors.background = barBackgroundColor
 			-- Stagger border/background are colored bespoke below; this entry routes flat indicator end cap colors
-			local barColorMap = { energyBar = energyBarColors, staggerBar = {} }
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.energyBar = energyBarColors
+			barColorMap.staggerBar = {}
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -1054,8 +1085,16 @@ local function UpdateResourceBar()
 							thresholds = primaryNode:GetThresholds()
 						end
 						pairOffset = (thresholdId - 1) * 3
-						local resourceAmount = spell:GetPrimaryResourceCost()
-						local isUsable = spell:IsUsable()
+						-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+						-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+						local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+						local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+							or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+						local resourceAmount, isUsable = 0, false
+						if thresholdActive then
+							resourceAmount = spell:GetPrimaryResourceCost()
+							isUsable = spell:IsUsable()
+						end
 						local showThreshold = true
 						local thresholdColor = specCacheSettings.colors.threshold.over.color
 						local frameLevel = frameLevels.thresholdOver
@@ -1124,7 +1163,8 @@ local function UpdateResourceBar()
 					barBorderColor = energyBarColors.border
 					barBackgroundColor = energyBarColors.background
 
-					local energyOvercapCurves = {}
+					local energyOvercapCurves = scratch.energyOvercapCurves1
+					wipe(energyOvercapCurves)
 					if overcapIndicator and overcapIndicator.targets then
 						local energyTargets = overcapIndicator.targets.energyBar
 						if energyTargets then
@@ -1226,10 +1266,10 @@ local function UpdateResourceBar()
 								invokeNiuzaoEndMet = niuzaoTimeLeft <= timeThreshold
 							end
 
-							local stConditionMap = {
-								invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet,
-								invokeNiuzao = invokeNiuzaoActive,
-							}
+							local stConditionMap = scratch.stConditionMap1
+							wipe(stConditionMap)
+							stConditionMap.invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet
+							stConditionMap.invokeNiuzao = invokeNiuzaoActive
 
 							for i = #stNodeOrder, 1, -1 do
 								local key = stNodeOrder[i]
@@ -1245,13 +1285,14 @@ local function UpdateResourceBar()
 						end
 
 						-- Build gradient curves for stagger targets (border/background only, uses energy scale)
-						local stOvercapCurves = {}
+						local stOvercapCurves = scratch.stOvercapCurves1
+						wipe(stOvercapCurves)
 						local stGradientOrder = stSharedColors and stSharedColors.gradientOrder
 						local stAffectingCombat = TRB.Data.character.inCombat
 						if stGradientOrder and stIndicatorColors then
-							local stGradientConditionMap = {
-								borderOvercap = stAffectingCombat,
-							}
+							local stGradientConditionMap = scratch.stGradientConditionMap1
+							wipe(stGradientConditionMap)
+							stGradientConditionMap.borderOvercap = stAffectingCombat
 							for i = #stGradientOrder, 1, -1 do
 								local key = stGradientOrder[i]
 								local indicator = stIndicatorColors[key]
@@ -1353,13 +1394,19 @@ local function UpdateResourceBar()
 			local barBackgroundColor = specSettings.colors.bar.background.color
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local conditionMap = {
-				vivaciousVivification = affectingCombat and (snapshots[spells.vivaciousVivification.id].buff.isActive or snapshots[spells.sereneSurge.id].buff.isActive),
-				heartOfTheJadeSerpent = false,
-				heartOfTheJadeSerpentReady = false,
-			}
-			local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local barColorMap = { manaBar = manaBarColors }
+			local conditionMap = scratch.conditionMap2
+			wipe(conditionMap)
+			conditionMap.vivaciousVivification = affectingCombat and (snapshots[spells.vivaciousVivification.id].buff.isActive or snapshots[spells.sereneSurge.id].buff.isActive)
+			conditionMap.heartOfTheJadeSerpent = false
+			conditionMap.heartOfTheJadeSerpentReady = false
+			local manaBarColors = scratch.manaBarColors1
+			wipe(manaBarColors)
+			manaBarColors.bar = barColor
+			manaBarColors.border = barBorderColor
+			manaBarColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap2
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -1401,30 +1448,34 @@ local function UpdateResourceBar()
 		local sharedColors = specSettings.colors.shared
 		local indicatorColors = sharedColors and sharedColors.indicatorColors
 		local gradientOrder = sharedColors and sharedColors.gradientOrder
-		local conditionMap = {
-			heartOfTheJadeSerpentReady = heartOfTheJadeSerpentReady,
-			heartOfTheJadeSerpent = heartOfTheJadeSerpentActive,
-			danceOfChiJi = danceOfChiJiActive,
-			borderOvercap = affectingCombat,
-		}
-		local energyBarColors = {
-			bar = specSettings.colors.bar.base,
-			border = specSettings.colors.bar.border.color,
-			background = specSettings.colors.bar.background.color,
-		}
-		local chiBarColors = {
-			bar = specSettings.colors.comboPoints.base,
-			border = specSettings.colors.comboPoints.border.color,
-			background = specSettings.colors.comboPoints.background.color,
-		}
-		local chiBarOverrides = { bar = false, border = false, background = false }
-		local barColorMap = {
-			energyBar = energyBarColors,
-			chiBar = chiBarColors,
-		}
+		local conditionMap = scratch.conditionMap3
+		wipe(conditionMap)
+		conditionMap.heartOfTheJadeSerpentReady = heartOfTheJadeSerpentReady
+		conditionMap.heartOfTheJadeSerpent = heartOfTheJadeSerpentActive
+		conditionMap.danceOfChiJi = danceOfChiJiActive
+		conditionMap.borderOvercap = affectingCombat
+		local energyBarColors = scratch.energyBarColors2
+		wipe(energyBarColors)
+		energyBarColors.bar = specSettings.colors.bar.base
+		energyBarColors.border = specSettings.colors.bar.border.color
+		energyBarColors.background = specSettings.colors.bar.background.color
+		local chiBarColors = scratch.chiBarColors1
+		wipe(chiBarColors)
+		chiBarColors.bar = specSettings.colors.comboPoints.base
+		chiBarColors.border = specSettings.colors.comboPoints.border.color
+		chiBarColors.background = specSettings.colors.comboPoints.background.color
+		-- Wiped, not reset to false: ApplyIndicatorColors only writes true and readers test truthiness.
+		local chiBarOverrides = scratch.chiBarOverrides1
+		wipe(chiBarOverrides)
+		local barColorMap = scratch.barColorMap3
+		wipe(barColorMap)
+		barColorMap.energyBar = energyBarColors
+		barColorMap.chiBar = chiBarColors
 
-		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap,
-			{ chiBar = chiBarOverrides })
+		local indicatorTargets = scratch.indicatorTargets1
+		wipe(indicatorTargets)
+		indicatorTargets.chiBar = chiBarOverrides
+		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
 
 		local overcapIndicator = nil
 		if gradientOrder and indicatorColors then
@@ -1438,8 +1489,10 @@ local function UpdateResourceBar()
 			end
 		end
 
-		local energyOvercapCurves = {}
-		local chiOvercapCurves = {}
+		local energyOvercapCurves = scratch.energyOvercapCurves2
+		wipe(energyOvercapCurves)
+		local chiOvercapCurves = scratch.chiOvercapCurves1
+		wipe(chiOvercapCurves)
 		if overcapIndicator and overcapIndicator.targets then
 			local energyTargets = overcapIndicator.targets.energyBar
 			if energyTargets then
@@ -1495,8 +1548,16 @@ local function UpdateResourceBar()
 							thresholds = primaryNode:GetThresholds()
 						end
 						pairOffset = (thresholdId - 1) * 3
-						local resourceAmount = spell:GetPrimaryResourceCost()
-						local isUsable = spell:IsUsable()
+						-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+						-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+						local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+						local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+							or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+						local resourceAmount, isUsable = 0, false
+						if thresholdActive then
+							resourceAmount = spell:GetPrimaryResourceCost()
+							isUsable = spell:IsUsable()
+						end
 						local showThreshold = true
 						local thresholdColor = specCacheSettings.colors.threshold.over.color
 						local frameLevel = frameLevels.thresholdOver

@@ -111,6 +111,7 @@ end
 ---@field private _lastPrimaryResourceValueCheck number? # Timestamp of the last time a check was done
 ---@field private _isFreeCurrently boolean # Is this ability free now when it usually has a resource cost?
 ---@field private _lastSpellUsableCheck number? # Timestamp of the last time a spell usability check was done
+---@field private _spellUsableGeneration number? # SPELL_UPDATE_USABLE generation the cached usability was read at
 ---@field private _isUsable boolean # Is the spell usable currently
 ---@field private _insufficientPower boolean # Is there insufficient power to cast the spell currently
 ---@field private _cacheKey string # Key used to cache the primary resource cost of the spell
@@ -321,7 +322,8 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero, ind
 		    self:GetCacheKey()
         end
 
-		if TRB.Data.cache.values.resource[self._cacheKey] == nil then
+		local cachedCost = TRB.Data.cache.values.resource[self._cacheKey]
+		if cachedCost == nil then
 			local spc = C_Spell.GetSpellPowerCost(self.id)
 			if spc ~= nil then
 				for x = 1, #spc do
@@ -339,12 +341,15 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero, ind
 					end
 				end
 			end
-		else
-			if TRB.Data.cache.values.resource[self._cacheKey] == 0 then
-				self._isFreeCurrently = true
-			else
-				return TRB.Data.cache.values.resource[self._cacheKey]
+			-- Remember a lookup that matched nothing, or this spell re-queries the API on every
+			-- call until the next aura-driven wipe while costed spells only query once.
+			if TRB.Data.cache.values.resource[self._cacheKey] == nil then
+				TRB.Data.cache.values.resource[self._cacheKey] = false
 			end
+		elseif cachedCost == 0 then
+			self._isFreeCurrently = true
+		elseif cachedCost ~= false then
+			return cachedCost
 		end
 	elseif self.primaryResourceTypeProperty == "custom" then
 		return self.primaryResourceTypePropertyValue
@@ -448,7 +453,15 @@ function TRB.Classes.SpellBase:ResetCastTime()
 	self._isInstantCurrently = false
 end
 
-local spellUsableEmbargoTimespan = 0.05
+-- Usability only moves when SPELL_UPDATE_USABLE fires, so spells re-poll on generation change
+-- rather than on a timer. The floor is a backstop for a missed event, not the primary mechanism.
+local spellUsableGeneration = 0
+local spellUsableFloorTimespan = 1.0
+
+---Marks every spell's cached usability stale. Called from the SPELL_UPDATE_USABLE handler.
+function TRB.Classes.SpellBase.InvalidateSpellUsable()
+	spellUsableGeneration = spellUsableGeneration + 1
+end
 
 ---Gets whether the spell is currently usable.
 ---@return boolean # Is the spell usable
@@ -465,12 +478,12 @@ function TRB.Classes.SpellBase:InsufficientPower()
 end
 
 ---Updates IsSpellUsable cache.
----@param force boolean? # Force the update even if within embargo timespan
-function TRB.Classes.SpellBase:UpdateIsSpellUsable(force)
+function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 	local currentTime = GetTime()
-	if (self._lastSpellUsableCheck or 0) + spellUsableEmbargoTimespan > currentTime then
-		self._lastSpellUsableCheck = currentTime
-		return self._isUsable
+	-- A cache hit must not re-stamp _lastSpellUsableCheck, or the floor never expires.
+	if self._spellUsableGeneration == spellUsableGeneration
+		and (self._lastSpellUsableCheck or 0) + spellUsableFloorTimespan > currentTime then
+		return
 	end
 
 	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self.id)
@@ -478,6 +491,7 @@ function TRB.Classes.SpellBase:UpdateIsSpellUsable(force)
 	self._isUsable = isUsable
 	self._insufficientPower = insufficientPower
 	self._lastSpellUsableCheck = currentTime
+	self._spellUsableGeneration = spellUsableGeneration
 end
 
 ---Determines if the current SpellBase is also another type, such as SpellThreshold.

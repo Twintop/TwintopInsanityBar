@@ -728,6 +728,20 @@ function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	overrides1 = {},
+	overrideFlags1 = {},
+	manaBarColors1 = {},
+	holyPowerColors1 = {},
+	manaBarColors2 = {},
+	holyPowerColors2 = {},
+	manaBarColors3 = {},
+	holyPowerColors3 = {},
+}
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local classSettings = TRB.Data.settings.paladin
@@ -811,9 +825,19 @@ local function UpdateResourceBar()
 	local function ApplyFlatIndicatorColors(sharedColors, conditionMap, barColorMap)
 		-- barOverridden tells the render below to skip the resource-threshold fill curve: once an indicator
 		-- owns the fill, its flat color has to survive rather than being recomputed from the resource.
-		local overrides = {}
+		-- Inner flag tables are pooled by barKey and wiped: ApplyIndicatorColors only writes true.
+		local overrides = scratch.overrides1
+		wipe(overrides)
+		local overrideFlags = scratch.overrideFlags1
 		for barKey in pairs(barColorMap) do
-			overrides[barKey] = {}
+			local flags = overrideFlags[barKey]
+			if flags == nil then
+				flags = {}
+				overrideFlags[barKey] = flags
+			else
+				wipe(flags)
+			end
+			overrides[barKey] = flags
 		end
 
 		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
@@ -834,16 +858,16 @@ local function UpdateResourceBar()
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
 		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
-		local manaBarColors = {
-			bar = specSettings.colors.bar.base,
-			border = specSettings.colors.bar.border.color,
-			background = specSettings.colors.bar.background.color,
-		}
-		local holyPowerColors = {
-			bar = specSettings.colors.comboPoints.base,
-			border = specSettings.colors.comboPoints.border.color,
-			background = specSettings.colors.comboPoints.background.color,
-		}
+		local manaBarColors = scratch.manaBarColors1
+		wipe(manaBarColors)
+		manaBarColors.bar = specSettings.colors.bar.base
+		manaBarColors.border = specSettings.colors.bar.border.color
+		manaBarColors.background = specSettings.colors.bar.background.color
+		local holyPowerColors = scratch.holyPowerColors1
+		wipe(holyPowerColors)
+		holyPowerColors.bar = specSettings.colors.comboPoints.base
+		holyPowerColors.border = specSettings.colors.comboPoints.border.color
+		holyPowerColors.background = specSettings.colors.comboPoints.background.color
 		ApplyFlatIndicatorColors(specSettings.colors.shared, { infusionOfLight = infusionOfLightActive, divinePurpose = divinePurposeActive }, {
 			manaBar = manaBarColors,
 			holyPowerBar = holyPowerColors,
@@ -890,16 +914,16 @@ local function UpdateResourceBar()
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
 		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
-		local manaBarColors = {
-			bar = specSettings.colors.bar.base,
-			border = specSettings.colors.bar.border.color,
-			background = specSettings.colors.bar.background.color,
-		}
-		local holyPowerColors = {
-			bar = specSettings.colors.comboPoints.base,
-			border = specSettings.colors.comboPoints.border.color,
-			background = specSettings.colors.comboPoints.background.color,
-		}
+		local manaBarColors = scratch.manaBarColors2
+		wipe(manaBarColors)
+		manaBarColors.bar = specSettings.colors.bar.base
+		manaBarColors.border = specSettings.colors.bar.border.color
+		manaBarColors.background = specSettings.colors.bar.background.color
+		local holyPowerColors = scratch.holyPowerColors2
+		wipe(holyPowerColors)
+		holyPowerColors.bar = specSettings.colors.comboPoints.base
+		holyPowerColors.border = specSettings.colors.comboPoints.border.color
+		holyPowerColors.background = specSettings.colors.comboPoints.background.color
 		ApplyFlatIndicatorColors(specSettings.colors.shared, { infusionOfLight = infusionOfLightActive, divinePurpose = divinePurposeActive }, {
 			manaBar = manaBarColors,
 			holyPowerBar = holyPowerColors,
@@ -942,16 +966,16 @@ local function UpdateResourceBar()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
 		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
-		local manaBarColors = {
-			bar = specSettings.colors.bar.base,
-			border = specSettings.colors.bar.border.color,
-			background = specSettings.colors.bar.background.color,
-		}
-		local holyPowerColors = {
-			bar = specSettings.colors.comboPoints.base,
-			border = specSettings.colors.comboPoints.border.color,
-			background = specSettings.colors.comboPoints.background.color,
-		}
+		local manaBarColors = scratch.manaBarColors3
+		wipe(manaBarColors)
+		manaBarColors.bar = specSettings.colors.bar.base
+		manaBarColors.border = specSettings.colors.bar.border.color
+		manaBarColors.background = specSettings.colors.bar.background.color
+		local holyPowerColors = scratch.holyPowerColors3
+		wipe(holyPowerColors)
+		holyPowerColors.bar = specSettings.colors.comboPoints.base
+		holyPowerColors.border = specSettings.colors.comboPoints.border.color
+		holyPowerColors.background = specSettings.colors.comboPoints.background.color
 		ApplyFlatIndicatorColors(specSettings.colors.shared, { divinePurpose = divinePurposeActive }, {
 			manaBar = manaBarColors,
 			holyPowerBar = holyPowerColors,

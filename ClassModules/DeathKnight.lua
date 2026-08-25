@@ -19,6 +19,16 @@ local spellEventFrame = CreateFrame("Frame")
 
 local talents --[[@as TRB.Classes.Talents]]
 
+-- Per-tick scratch tables, reused so the color resolution path allocates nothing.
+local scratch = {
+	runicPowerBarColors1 = {},
+	barColorMap1 = {},
+	runeBarColors1 = {},
+	barColorMap2 = {},
+	coagulatingBloodColors1 = {},
+	barColorMap3 = {},
+}
+
 -- Max currently applied to the Coagulating Blood node. Its min/max can be tainted by the secret stack
 -- count, so the applied scale is tracked here instead of read back off the frame.
 local coagulatingBloodAppliedMax = nil
@@ -784,13 +794,16 @@ end
 
 local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
 	local indicatorColors, _, gradientOrder, conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
-	local runicPowerBarColors = {
-		bar = specSettings.colors.bar.base,
-		border = specSettings.colors.bar.border.color,
-		background = specSettings.colors.bar.background.color,
-	}
+	local runicPowerBarColors = scratch.runicPowerBarColors1
+	wipe(runicPowerBarColors)
+	runicPowerBarColors.bar = specSettings.colors.bar.base
+	runicPowerBarColors.border = specSettings.colors.bar.border.color
+	runicPowerBarColors.background = specSettings.colors.bar.background.color
+	local barColorMap = scratch.barColorMap1
+	wipe(barColorMap)
+	barColorMap.runicPowerBar = runicPowerBarColors
 
-	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, { runicPowerBar = runicPowerBarColors })
+	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
 	local overcapCurves = BuildGradientCurves(specSettings, "runicPowerBar", runicPowerBarColors, gradientIndicator)
@@ -834,13 +847,16 @@ local function UpdateRunes(specSettings, specCacheSettings)
 	local runeRegenIndicator = indicatorColors and indicatorColors.runeRegenOvercap
 	local runeTargets = runeRegenIndicator and runeRegenIndicator.enabled and conditionMap.runeRegenOvercap
 		and runeRegenIndicator.targets and runeRegenIndicator.targets.runesBar or nil
-	local runeBarColors = {
-		bar = cpBaseColor,
-		border = cpBorderColor,
-		background = cpBackgroundColor,
-	}
+	local runeBarColors = scratch.runeBarColors1
+	wipe(runeBarColors)
+	runeBarColors.bar = cpBaseColor
+	runeBarColors.border = cpBorderColor
+	runeBarColors.background = cpBackgroundColor
+	local barColorMap = scratch.barColorMap2
+	wipe(barColorMap)
+	barColorMap.runesBar = runeBarColors
 
-	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, { runesBar = runeBarColors })
+	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
 	local runeGradientCurves = BuildGradientCurves(specSettings, "runesBar", runeBarColors, gradientIndicator)
 	local runeGradientResults = {}
@@ -1074,13 +1090,16 @@ local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
 	-- Same color resolution as the primary bar. Unlike Bone Shield the fill has no positional scheme
 	-- of its own, so the gradient can target it too.
 	local indicatorColors, _, gradientOrder, conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
-	local coagulatingBloodColors = {
-		bar = colors.bar,
-		border = colors.border.color,
-		background = colors.background.color,
-	}
+	local coagulatingBloodColors = scratch.coagulatingBloodColors1
+	wipe(coagulatingBloodColors)
+	coagulatingBloodColors.bar = colors.bar
+	coagulatingBloodColors.border = colors.border.color
+	coagulatingBloodColors.background = colors.background.color
+	local barColorMap = scratch.barColorMap3
+	wipe(barColorMap)
+	barColorMap.coagulatingBlood = coagulatingBloodColors
 
-	Color:ApplyIndicatorColors(sharedColors, conditionMap, { coagulatingBlood = coagulatingBloodColors })
+	Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
 	local overcapCurves = BuildGradientCurves(specSettings, "coagulatingBlood", coagulatingBloodColors, gradientIndicator)
@@ -1169,8 +1188,16 @@ local function UpdateResourceBar()
 					end
 
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = frameLevels.thresholdOver
@@ -1277,8 +1304,16 @@ local function UpdateResourceBar()
 					end
 
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = frameLevels.thresholdOver
@@ -1375,8 +1410,16 @@ local function UpdateResourceBar()
 					end
 
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = frameLevels.thresholdOver

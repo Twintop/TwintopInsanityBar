@@ -12,6 +12,13 @@ local content = [====[
 
 ---
 
+# 12.1.0.7-release (2026-08-26)
+## General
+
+- Improve bar update performance, primarily around threshold lines and bar text.
+
+---
+
 # 12.1.0.6-release (2026-08-24)
 ## General
 ### Cast Bars

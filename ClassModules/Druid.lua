@@ -343,9 +343,22 @@ local function UpdateResourceValues()
 	end
 end
 
+-- Unified bar mana formatting: power events set the dirty flags; RefreshLookupData_Unified
+-- re-derives the abbreviations at most once per tick.
+local unifiedManaDirty = true
+local unifiedManaMaxDirty = true
+local unifiedManaFormatted = nil
+local unifiedManaMaxFormatted = nil
+local unifiedManaPercentFormatted = nil
+local unifiedManaPercentPrecision = nil
+
 local function DruidPowerEvent(self, event, ...)
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
 		UpdateResourceValues()
+		local _, powerType = ...
+		if powerType == "MANA" then
+			unifiedManaDirty = true
+		end
 		if TRB.Functions.BarVisibility.hasResourceCurve then
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
@@ -362,6 +375,7 @@ local function DruidPowerEvent(self, event, ...)
 				TRB.Data.character.maxRage = UnitPowerMax("player", Enum.PowerType.Rage, true)
 			elseif powerType == "MANA" then
 				TRB.Data.character.maxMana = UnitPowerMax("player", Enum.PowerType.Mana, true)
+				unifiedManaMaxDirty = true
 			elseif powerType == "LUNAR_POWER" then
 				TRB.Data.character.maxAstralPower = UnitPowerMax("player", Enum.PowerType.LunarPower, true)
 			end
@@ -1277,14 +1291,28 @@ local function RefreshLookupData_Unified()
 		lookup["$rageMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
 
 		-- FCS: Mana ($mana, $manaMax, $manaPercent)
-		if lookupChanged(prevState, "u$mana", mana, manaColor, true) then
-			lookup["$mana"] = string.format("|c%s%s|r", manaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(mana))
+		if unifiedManaFormatted == nil or unifiedManaDirty then
+			unifiedManaFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(mana)
+			unifiedManaPercentFormatted = nil
+			unifiedManaDirty = false
 		end
-		if lookupChanged(prevState, "u$manaMax", TRB.Data.character.maxMana, manaColor, true) then
-			lookup["$manaMax"] = string.format("|c%s%s|r", manaColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxMana))
+		if unifiedManaMaxFormatted == nil or unifiedManaMaxDirty then
+			unifiedManaMaxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxMana)
+			unifiedManaPercentFormatted = nil
+			unifiedManaMaxDirty = false
 		end
-		if lookupChanged(prevState, "u$manaPercent", manaPercent, manaColor, true) then
-			lookup["$manaPercent"] = string.format("|c%s%." .. manaPrecision .. "f|r", manaColor, manaPercent)
+		if unifiedManaPercentFormatted == nil or unifiedManaPercentPrecision ~= manaPrecision then
+			unifiedManaPercentFormatted = string.format("%." .. manaPrecision .. "f", manaPercent)
+			unifiedManaPercentPrecision = manaPrecision
+		end
+		if lookupChanged(prevState, "u$mana", unifiedManaFormatted, manaColor) then
+			lookup["$mana"] = string.format("|c%s%s|r", manaColor, unifiedManaFormatted)
+		end
+		if lookupChanged(prevState, "u$manaMax", unifiedManaMaxFormatted, manaColor) then
+			lookup["$manaMax"] = string.format("|c%s%s|r", manaColor, unifiedManaMaxFormatted)
+		end
+		if lookupChanged(prevState, "u$manaPercent", unifiedManaPercentFormatted, manaColor) then
+			lookup["$manaPercent"] = string.format("|c%s%s|r", manaColor, unifiedManaPercentFormatted)
 		end
 
 		-- FCS: Astral Power ($astralPower, $astralPowerMax) - Balance only
@@ -1636,6 +1664,29 @@ local function UpdateSnapshot_Restoration()
 	UpdateSnapshot()
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	astralPowerBarColors1 = {},
+	comboPointColors1 = {},
+	barColorMap1 = {},
+	conditionMap2 = {},
+	energyBarColors1 = {},
+	comboPointColors2 = {},
+	barColorMap2 = {},
+	cpBaseColors1 = {},
+	conditionMap3 = {},
+	rageBarColors1 = {},
+	comboPointColors3 = {},
+	barColorMap3 = {},
+	conditionMap4 = {},
+	manaBarColors1 = {},
+	comboPointColors4 = {},
+	barColorMap4 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -1779,8 +1830,16 @@ local function UpdateResourceBar()
 				end
 			else
 				pairOffset = (thresholdId - 1) * 3
-				local resourceAmount = spell:GetPrimaryResourceCost()
-				local isUsable = spell:IsUsable()
+				-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+				-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+				local thresholdSettings = formSpecCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+				local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+					or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+				local resourceAmount, isUsable = 0, false
+				if thresholdActive then
+					resourceAmount = spell:GetPrimaryResourceCost()
+					isUsable = spell:IsUsable()
+				end
 				local showThreshold = true
 				local thresholdColor = formSpecCacheSettings.colors.threshold.over.color
 				local frameLevel = frameLevels.thresholdOver
@@ -1999,7 +2058,15 @@ local function UpdateResourceBar()
 								thresholds = primaryNode:GetThresholds()
 							end
 							pairOffset = (thresholdId - 1) * 3
-							local resourceAmount = spell:GetPrimaryResourceCost()
+							-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+							-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+							local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+							local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+								or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+							local resourceAmount = 0
+							if thresholdActive then
+								resourceAmount = spell:GetPrimaryResourceCost()
+							end
 							local showThreshold = true
 							local thresholdColor = specCacheSettings.colors.threshold.over.color --[[@as string?]]
 							local frameLevel = frameLevels.thresholdOver
@@ -2165,17 +2232,25 @@ local function UpdateResourceBar()
 
 				local celestialActive = snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive or (snapshots[spells.eclipseSolar.id].buff.isActive and snapshots[spells.eclipseLunar.id].buff.isActive)
 
-				local conditionMap = {
-					eclipseEnd = eclipseActive and eclipseEndMet,
-					celestial = celestialActive,
-					solar = snapshots[spells.eclipseSolar.id].buff.isActive and not celestialActive,
-					lunar = snapshots[spells.eclipseLunar.id].buff.isActive and not celestialActive and not snapshots[spells.eclipseSolar.id].buff.isActive,
-					borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId,
-				}
+				local conditionMap = scratch.conditionMap1
+				wipe(conditionMap)
+				conditionMap.eclipseEnd = eclipseActive and eclipseEndMet
+				conditionMap.celestial = celestialActive
+				conditionMap.solar = snapshots[spells.eclipseSolar.id].buff.isActive and not celestialActive
+				conditionMap.lunar = snapshots[spells.eclipseLunar.id].buff.isActive and not celestialActive and not snapshots[spells.eclipseSolar.id].buff.isActive
+				conditionMap.borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId
 
-				local astralPowerBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local comboPointColors = { bar = nil, border = nil, background = nil }
-				local barColorMap = { astralPowerBar = astralPowerBarColors, comboPoints = comboPointColors }
+				local astralPowerBarColors = scratch.astralPowerBarColors1
+				wipe(astralPowerBarColors)
+				astralPowerBarColors.bar = barColor
+				astralPowerBarColors.border = barBorderColor
+				astralPowerBarColors.background = barBackgroundColor
+				local comboPointColors = scratch.comboPointColors1
+				wipe(comboPointColors)
+				local barColorMap = scratch.barColorMap1
+				wipe(barColorMap)
+				barColorMap.astralPowerBar = astralPowerBarColors
+				barColorMap.comboPoints = comboPointColors
 
 				-- Apply flat indicator colors (priority order, last writer wins)
 				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -2316,8 +2391,16 @@ local function UpdateResourceBar()
 								thresholds = primaryNode:GetThresholds()
 							end
 							pairOffset = (thresholdId - 1) * 3
-							local resourceAmount = spell:GetPrimaryResourceCost()
-							local isUsable = spell:IsUsable()
+							-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+							-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+							local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+							local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+								or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+							local resourceAmount, isUsable = 0, false
+							if thresholdActive then
+								resourceAmount = spell:GetPrimaryResourceCost()
+								isUsable = spell:IsUsable()
+							end
 							local showThreshold = true
 							---@type string?
 							local thresholdColor = specCacheSettings.colors.threshold.over.color
@@ -2515,19 +2598,27 @@ local function UpdateResourceBar()
 
 					local isStealthed = IsStealthed()
 
-					local conditionMap = {
-						apexPredator = apcActive,
-						ravage = snapshots[spells.ravageMinimum.id].buff.isActive,
-						clearcasting = snapshotData.attributes.clearcastingActive,
-						borderStealth = isStealthed,
-						halazzisFury = snapshots[spells.halazzisFury.id].buff.isActive,
-						maxBite = snapshotData.attributes.resource2 == 5 and not apcActive,
-						borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId,
-					}
+					local conditionMap = scratch.conditionMap2
+					wipe(conditionMap)
+					conditionMap.apexPredator = apcActive
+					conditionMap.ravage = snapshots[spells.ravageMinimum.id].buff.isActive
+					conditionMap.clearcasting = snapshotData.attributes.clearcastingActive
+					conditionMap.borderStealth = isStealthed
+					conditionMap.halazzisFury = snapshots[spells.halazzisFury.id].buff.isActive
+					conditionMap.maxBite = snapshotData.attributes.resource2 == 5 and not apcActive
+					conditionMap.borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId
 
-					local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-					local comboPointColors = { bar = nil, border = nil, background = nil }
-					local barColorMap = { energyBar = energyBarColors, comboPoints = comboPointColors }
+					local energyBarColors = scratch.energyBarColors1
+					wipe(energyBarColors)
+					energyBarColors.bar = barColor
+					energyBarColors.border = barBorderColor
+					energyBarColors.background = barBackgroundColor
+					local comboPointColors = scratch.comboPointColors2
+					wipe(comboPointColors)
+					local barColorMap = scratch.barColorMap2
+					wipe(barColorMap)
+					barColorMap.energyBar = energyBarColors
+					barColorMap.comboPoints = comboPointColors
 
 					-- Apply flat indicator colors (priority order, last writer wins)
 					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -2634,7 +2725,11 @@ local function UpdateResourceBar()
 						-- Process combo point elements
 						local maxBiteCpTargets = maxBiteActive and maxBiteInd.targets and maxBiteInd.targets.comboPoints
 						local overcapCpTargets = overcapActive and overcapInd.targets and overcapInd.targets.comboPoints
-						local cpBaseColors = { bar = specSettings.colors.comboPoints.base, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
+						local cpBaseColors = scratch.cpBaseColors1
+						wipe(cpBaseColors)
+						cpBaseColors.bar = specSettings.colors.comboPoints.base
+						cpBaseColors.border = specSettings.colors.comboPoints.border.color
+						cpBaseColors.background = specSettings.colors.comboPoints.background.color
 						for _, elem in ipairs({"bar", "border", "background"}) do
 							local mbTargets = maxBiteCpTargets and maxBiteCpTargets[elem]
 							local ocTargets = overcapCpTargets and overcapCpTargets[elem]
@@ -2835,8 +2930,16 @@ local function UpdateResourceBar()
 								thresholds = primaryNode:GetThresholds()
 							end
 							pairOffset = (thresholdId - 1) * 3
-							local resourceAmount = spell:GetPrimaryResourceCost()
-							local isUsable = spell:IsUsable()
+							-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+							-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+							local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+							local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+								or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+							local resourceAmount, isUsable = 0, false
+							if thresholdActive then
+								resourceAmount = spell:GetPrimaryResourceCost()
+								isUsable = spell:IsUsable()
+							end
 							local showThreshold = true
 							local thresholdColor = specCacheSettings.colors.threshold.over.color --[[@as string?]]
 							local frameLevel = frameLevels.thresholdOver
@@ -3040,15 +3143,23 @@ local function UpdateResourceBar()
 
 				local berserkActive = snapshots[spells.berserk.id].buff.isActive or snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive
 
-				local conditionMap = {
-					berserkEnd = berserkActive and guardianBerserkEndMet,
-					berserk = berserkActive,
-					borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId,
-				}
+				local conditionMap = scratch.conditionMap3
+				wipe(conditionMap)
+				conditionMap.berserkEnd = berserkActive and guardianBerserkEndMet
+				conditionMap.berserk = berserkActive
+				conditionMap.borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId
 
-				local rageBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local comboPointColors = { bar = nil, border = nil, background = nil }
-				local barColorMap = { rageBar = rageBarColors, comboPoints = comboPointColors }
+				local rageBarColors = scratch.rageBarColors1
+				wipe(rageBarColors)
+				rageBarColors.bar = barColor
+				rageBarColors.border = barBorderColor
+				rageBarColors.background = barBackgroundColor
+				local comboPointColors = scratch.comboPointColors3
+				wipe(comboPointColors)
+				local barColorMap = scratch.barColorMap3
+				wipe(barColorMap)
+				barColorMap.rageBar = rageBarColors
+				barColorMap.comboPoints = comboPointColors
 
 				-- Apply flat indicator colors (priority order, last writer wins)
 				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -3160,16 +3271,24 @@ local function UpdateResourceBar()
 
 					local clearcastingActive = snapshotData.attributes.clearcastingActive
 
-					local conditionMap = {
-						incarnationEnd = isNativeForm and incarnationActive and incarnationEndMet,
-						incarnation = isNativeForm and incarnationActive,
-						noEfflorescence = isNativeForm and affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive,
-						clearcasting = isNativeForm and clearcastingActive,
-					}
+					local conditionMap = scratch.conditionMap4
+					wipe(conditionMap)
+					conditionMap.incarnationEnd = isNativeForm and incarnationActive and incarnationEndMet
+					conditionMap.incarnation = isNativeForm and incarnationActive
+					conditionMap.noEfflorescence = isNativeForm and affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive
+					conditionMap.clearcasting = isNativeForm and clearcastingActive
 
-					local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-					local comboPointColors = { bar = nil, border = nil, background = nil }
-					local barColorMap = { manaBar = manaBarColors, comboPoints = comboPointColors }
+					local manaBarColors = scratch.manaBarColors1
+					wipe(manaBarColors)
+					manaBarColors.bar = barColor
+					manaBarColors.border = barBorderColor
+					manaBarColors.background = barBackgroundColor
+					local comboPointColors = scratch.comboPointColors4
+					wipe(comboPointColors)
+					local barColorMap = scratch.barColorMap4
+					wipe(barColorMap)
+					barColorMap.manaBar = manaBarColors
+					barColorMap.comboPoints = comboPointColors
 
 					-- Apply flat indicator colors (priority order, last writer wins)
 					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -3623,6 +3742,8 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxRage = UnitPowerMax("player", Enum.PowerType.Rage, true)
 	TRB.Data.character.maxMana = UnitPowerMax("player", Enum.PowerType.Mana, true)
 	TRB.Data.character.maxAstralPower = UnitPowerMax("player", Enum.PowerType.LunarPower, true)
+	unifiedManaDirty = true
+	unifiedManaMaxDirty = true
 	TRB.Data.character.maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 
 	local function SetupSharedSettingsForSpec()

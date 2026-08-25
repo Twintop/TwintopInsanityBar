@@ -24,6 +24,12 @@ local PowerTypeToToken = {
 	[Enum.PowerType.Essence] = "ESSENCE",
 }
 
+-- Reverse of PowerTypeToToken, for resolving event power tokens back to Enum values.
+local TokenToPowerType = {}
+for powerType, token in pairs(PowerTypeToToken) do
+	TokenToPowerType[token] = powerType
+end
+
 -- Cached format strings for resource/health percent formatting.
 -- Rebuilt only when the precision setting changes (spec switch / options edit).
 local cachedResourcePercentFmt = nil
@@ -156,6 +162,61 @@ function TRB.Functions.Character:UpdateResourceValues()
 	-- ProcessBars re-evaluates on the next tick.
 	if TRB.Functions.BarVisibility.hasResourceCurve then
 		TRB.Functions.BarVisibility:MarkDirty()
+	end
+end
+
+-- "%.Nf" strings memoized by precision so repeated reformats skip rebuilding them.
+local precisionFormatCache = {}
+
+---Reads and pre-formats an additional power's values (e.g. Shadow's mana), so per-tick
+---refreshers only read cached strings. Power events mark the entry dirty; the refresher pulls.
+---@param powerToken string # UNIT_POWER_UPDATE power token, e.g. "MANA"
+---@param precision integer? # Decimal places for the percent string, defaults to 1
+function TRB.Functions.Character:UpdateAdditionalPowerValues(powerToken, precision)
+	local powerType = TokenToPowerType[powerToken]
+	if powerType == nil then
+		return
+	end
+	local formatted = TRB.Data.snapshotData.formatted
+	local store = formatted.additionalPower
+	if store == nil then
+		store = {}
+		formatted.additionalPower = store
+	end
+	local entry = store[powerToken]
+	if entry == nil then
+		entry = {}
+		store[powerToken] = entry
+	end
+
+	precision = precision or 1
+	local percentFormat = precisionFormatCache[precision]
+	if percentFormat == nil then
+		percentFormat = "%." .. precision .. "f"
+		precisionFormatCache[precision] = percentFormat
+	end
+
+	entry.current = UnitPower("player", powerType)
+	entry.max = UnitPowerMax("player", powerType)
+	-- The raw fraction feeds bar text conditionals; the display string wants it scaled to 100.
+	entry.percent = UnitPowerPercent("player", powerType)
+	entry.currentFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(entry.current)
+	entry.maxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(entry.max)
+	entry.percentFormatted = string.format(percentFormat, UnitPowerPercent("player", powerType, false, CurveConstants.ScaleTo100))
+	entry.precision = precision
+	entry.dirty = false
+end
+
+---Marks every cached additional power entry stale. Spec changes stop the events that would
+---otherwise mark them, so the next refresher pull must re-read rather than serve pre-swap values.
+function TRB.Functions.Character:InvalidateAdditionalPowerValues()
+	local store = TRB.Data.snapshotData and TRB.Data.snapshotData.formatted and TRB.Data.snapshotData.formatted.additionalPower
+	if store == nil then
+		return
+	end
+	---@diagnostic disable-next-line: param-type-mismatch
+	for _, entry in pairs(store) do
+		entry.dirty = true
 	end
 end
 
@@ -374,17 +435,25 @@ local function CharacterChange(self, event, ...)
 		end
 	end
 
-	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
+	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" or event == "UNIT_MAXPOWER" then
 		local unitTarget, powerType = ...
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
 			TRB.Functions.Character:UpdateResourceValues()
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "player" and TRB.Data.additionalPowerTokens and TRB.Data.additionalPowerTokens[powerType] then
+			-- Mark only; the 20Hz refresher pulls the reformat, coalescing bursts and UPDATE/FREQUENT pairs.
+			local additionalPower = TRB.Data.snapshotData.formatted.additionalPower
+			local powerEntry = additionalPower and additionalPower[powerType]
+			if powerEntry ~= nil then
+				powerEntry.dirty = true
+			end
 			if TRB.Functions.BarVisibility.hasResourceCurve then
 				TRB.Functions.BarVisibility:MarkDirty()
 			end
 			TRB.Data.lookupDirty = true
 		end
+	elseif event == "SPELL_UPDATE_USABLE" then
+		TRB.Classes.SpellBase.InvalidateSpellUsable()
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" then
 		local unitTarget = ...
 		if unitTarget == "player" then
@@ -510,6 +579,7 @@ end
 function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
+	characterChangeFrame:RegisterUnitEvent("UNIT_MAXPOWER", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_HEALTH", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_MAXHEALTH", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player")
@@ -536,12 +606,14 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
+	characterChangeFrame:RegisterEvent("SPELL_UPDATE_USABLE")
 end
 
 ---Unregisters all character-change events from the characterChangeFrame and stops flight polling.
 function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+	characterChangeFrame:UnregisterEvent("UNIT_MAXPOWER")
 	characterChangeFrame:UnregisterEvent("UNIT_HEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_MAXHEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
@@ -568,6 +640,7 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
+	characterChangeFrame:UnregisterEvent("SPELL_UPDATE_USABLE")
 	TRB.Functions.Character:StopFlightPolling()
 end
 
@@ -1938,6 +2011,9 @@ function TRB.Functions.Character:EventRegistration()
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+
+	-- Runs on every spec change, after the class module has set additionalPowerTokens.
+	TRB.Functions.Character:InvalidateAdditionalPowerValues()
 
 	if TRB.Data.specSupported then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
