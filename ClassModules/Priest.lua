@@ -29,14 +29,6 @@ local holyWordDefsCache = {
 	{ spell = nil --[[@as TRB.Classes.SpellBase]], key = "holyWordChastise", color = "" --[[@as string]], enabled = false },
 }
 
--- Per-tick scratch tables for the Shadow branch of UpdateResourceBar, reused instead of reallocated.
--- barColorMap only ever points at the same two tables, so it is built once and never rebuilt.
-local shadowConditionMap = {}
-local shadowInsanityBarColors = {}
-local shadowManaBarColors = {}
-local shadowBarColorMap = { insanityBar = shadowInsanityBarColors, manaBar = shadowManaBarColors }
-local shadowOvercapCurvesInsanity = {}
-local shadowOvercapCurvesMana = {}
 
 -- Reverse lookup: nodeColor key → holyWordDefsCache entry (populated once, stable)
 local holyWordKeyToDef = {
@@ -2188,6 +2180,12 @@ local scratch = {
 	holyWordsBarColors1 = {},
 	lightweaverBarColors1 = {},
 	barColorMap2 = {},
+	conditionMap3 = {},
+	insanityBarColors1 = {},
+	manaBarColors3 = {},
+	barColorMap3 = {},
+	overcapCurvesInsanity1 = {},
+	overcapCurvesMana1 = {},
 }
 
 local function UpdateResourceBar()
@@ -2733,7 +2731,7 @@ local function UpdateResourceBar()
 		local manaBarColor = specSettings.colors.bars.mana.bar.color
 		local manaBorderColor = specSettings.colors.bars.mana.border.color
 		local manaBackgroundColor = specSettings.colors.bars.mana.background.color
-		local overcapCurvesMana = shadowOvercapCurvesMana
+		local overcapCurvesMana = scratch.overcapCurvesMana1
 		wipe(overcapCurvesMana)
 
 		if snapshotData.attributes.isTracking then
@@ -2766,7 +2764,8 @@ local function UpdateResourceBar()
 
 			local swmUsable = spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()
 
-			local conditionMap = shadowConditionMap
+			local conditionMap = scratch.conditionMap3
+			wipe(conditionMap)
 			conditionMap.instantMindBlast = snapshotData.attributes.shadowyInsightActive
 			conditionMap.voidformEnd = voidformActive and voidformEndMet
 			conditionMap.mindDevourer = spells.shadowWordMadness:IsFree()
@@ -2777,17 +2776,20 @@ local function UpdateResourceBar()
 			conditionMap.borderOvercap = affectingCombat
 
 			-- Color targets: barKey -> elementKey -> current color
-			local insanityBarColors = shadowInsanityBarColors
+			local insanityBarColors = scratch.insanityBarColors1
 			wipe(insanityBarColors)
 			insanityBarColors.bar = barColor
 			insanityBarColors.border = barBorderColor
 			insanityBarColors.background = barBackgroundColor
-			local manaBarColors = shadowManaBarColors
+			local manaBarColors = scratch.manaBarColors3
 			wipe(manaBarColors)
 			manaBarColors.bar = manaBarColor
 			manaBarColors.border = manaBorderColor
 			manaBarColors.background = manaBackgroundColor
-			local barColorMap = shadowBarColorMap
+			local barColorMap = scratch.barColorMap3
+			wipe(barColorMap)
+			barColorMap.insanityBar = insanityBarColors
+			barColorMap.manaBar = manaBarColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -2828,7 +2830,7 @@ local function UpdateResourceBar()
 				manaBackgroundColor = manaBarColors.background
 
 				-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
-				local overcapCurvesInsanity = shadowOvercapCurvesInsanity
+				local overcapCurvesInsanity = scratch.overcapCurvesInsanity1
 				wipe(overcapCurvesInsanity)
 				if overcapIndicator and overcapIndicator.targets then
 					local insanityTargets = overcapIndicator.targets.insanityBar
