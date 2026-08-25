@@ -941,8 +941,16 @@ local function UpdateResourceBar()
 						thresholds = primaryNode:GetThresholds()
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = frameLevels.thresholdOver
@@ -1265,8 +1273,16 @@ local function UpdateResourceBar()
 						thresholds = primaryNode:GetThresholds()
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = frameLevels.thresholdOver
@@ -1642,8 +1658,16 @@ local function UpdateResourceBar()
 						thresholds[thresholdId] = primaryNode:RegisterThreshold(thresholdId)
 					end
 					pairOffset = (thresholdId - 1) * 3
-					local resourceAmount = spell:GetPrimaryResourceCost()
-					local isUsable = spell:IsUsable()
+					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
+					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
+					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
+						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
+					local resourceAmount, isUsable = 0, false
+					if thresholdActive then
+						resourceAmount = spell:GetPrimaryResourceCost()
+						isUsable = spell:IsUsable()
+					end
 					local showThreshold = true
 					local thresholdColor = specCacheSettings.colors.threshold.over.color
 					local frameLevel = frameLevels.thresholdOver
