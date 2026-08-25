@@ -261,6 +261,7 @@ local barTextCacheHash = {}
 -- last plan, color and argument values for the unchanged-skip.
 local barTextRenderPlans = {}
 local barTextEntryStates = {}
+local barTextSignatureFns = {}
 
 ---Returns true if the value or color has changed for this key, indicating the
 ---formatted lookup string needs updating. Reuses existing prevState entries to
@@ -314,6 +315,7 @@ function TRB.Functions.BarText:ClearBarTextCacheHash()
 	for k in pairs(barTextCacheHash) do barTextCacheHash[k] = nil end
 	wipe(barTextRenderPlans)
 	wipe(barTextEntryStates)
+	wipe(barTextSignatureFns)
 end
 
 ---Scans all enabled bar text entries and builds a set of which $variable and #icon
@@ -1139,12 +1141,13 @@ local function GetFromBarTextTreeCache(input)
 end
 
 
----Compiles a conditional expression node into a reusable Lua function.
----The compiled function accepts variable values as positional arguments, eliminating
----the need to rebuild the expression string and call loadstring() every frame.
+---Builds the normalized Lua expression template and positional variable bindings for a
+---conditional node. Shared by the interpreted compiler and the entry codegen.
 ---@param node table A conditional node from the bar text tree
----@return table compiledExpression { fn, varCount, varInfos } or { invalid = true }
-local function CompileConditionalExpression(node)
+---@return string templateString
+---@return table varInfos
+---@return integer varCount
+local function BuildConditionalTemplate(node)
 	local templateParts = {}
 	local varInfos = {}
 	local varCount = 0
@@ -1208,15 +1211,30 @@ local function CompileConditionalExpression(node)
 	templateString = string.gsub(templateString, "&", " and ")
 	templateString = string.gsub(templateString, "||", " or ")
 
-	-- Build the compiled function with positional parameters
+	return templateString, varInfos, varCount
+end
+
+---Builds "function(v1,...) return ( <template> ) end" source for a conditional template.
+---@param templateString string
+---@param varCount integer
+---@return string
+local function BuildConditionalFunctionSource(templateString, varCount)
 	local paramList = {}
 	for i = 1, varCount do
 		paramList[i] = "v" .. i
 	end
 	local paramString = table.concat(paramList, ",")
-	local funcSource = "return function(" .. paramString .. ") return (" .. templateString .. ") end"
+	return "function(" .. paramString .. ") return (" .. templateString .. ") end"
+end
 
-	local chunk = loadstring(funcSource)
+---Compiles a conditional expression node into a reusable Lua function.
+---The compiled function accepts variable values as positional arguments, eliminating
+---the need to rebuild the expression string and call loadstring() every frame.
+---@param node table A conditional node from the bar text tree
+---@return table compiledExpression { fn, varCount, varInfos } or { invalid = true }
+local function CompileConditionalExpression(node)
+	local templateString, varInfos, varCount = BuildConditionalTemplate(node)
+	local chunk = loadstring("return " .. BuildConditionalFunctionSource(templateString, varCount))
 	if chunk then
 		local ok, evalFn = pcall(chunk)
 		if ok and type(evalFn) == "function" then
@@ -1608,6 +1626,122 @@ local function AppendTreeSignature(tree, len)
 	return len
 end
 
+-- Conditionals per entry are capped so numeric signatures (2 bits each) stay exact integers.
+local maxSignatureNodes = 26
+
+---Emits signature-walk source for one tree level: inline arg fetch, secret sanitize, expression
+---eval (pcall only when the expression can raise) and branch dispatch accumulating a base-4 sig.
+---@param tree table
+---@param out table Body lines
+---@param preamble table Hoisted expression function definitions
+---@param indent string
+---@param k integer Next node index
+---@return integer|nil k Next node index, or nil when the entry cannot be compiled
+local function EmitTreeSignatureSource(tree, out, preamble, indent, k)
+	if tree == nil or tree.barText == nil then
+		return k
+	end
+	local barText = tree.barText
+	for idx = 1, #barText do
+		local v = barText[idx]
+		if type(v) ~= "string" then
+			if k >= maxSignatureNodes then
+				return nil
+			end
+			local addT = string.format("%.0f", 1 * 4 ^ k)
+			local addF = string.format("%.0f", 2 * 4 ^ k)
+			local addI = string.format("%.0f", 3 * 4 ^ k)
+			local templateString, varInfos, varCount = BuildConditionalTemplate(v)
+			local exprSource = BuildConditionalFunctionSource(templateString, varCount)
+			if loadstring("return " .. exprSource) == nil then
+				-- Statically invalid logic always resolves to the INVALID outcome.
+				out[#out + 1] = indent .. "sig = sig + " .. addI
+				k = k + 1
+			else
+				local argNames = {}
+				for i = 1, varCount do
+					local info = varInfos[i]
+					local an = "a" .. k .. "_" .. i
+					argNames[i] = an
+					out[#out + 1] = indent .. "local " .. an .. " = Class:IsValidVariableForSpec(" .. string.format("%q", info.variable) .. ")"
+					if info.useLookupLogic then
+						local ln = "l" .. k .. "_" .. i
+						out[#out + 1] = indent .. "local " .. ln .. " = logic[" .. string.format("%q", info.variable) .. "]"
+						out[#out + 1] = indent .. "if " .. ln .. " then " .. an .. " = " .. ln .. " if issecretvalue(" .. an .. ") then " .. an .. " = false end end"
+					end
+				end
+				-- Pure boolean expressions cannot raise, so they inline without pcall.
+				local safe = true
+				for token in string.gmatch(templateString, "[^%s%(%)]+") do
+					if token ~= "and" and token ~= "or" and token ~= "not" and string.match(token, "^v%d+$") == nil then
+						safe = false
+						break
+					end
+				end
+				local nextIndent = indent .. "\t"
+				local rName = "r" .. k
+				if safe then
+					local inlined = string.gsub(templateString, "v(%d+)", "a" .. k .. "_%1")
+					out[#out + 1] = indent .. "local " .. rName .. " = (" .. inlined .. ")"
+					out[#out + 1] = indent .. "if " .. rName .. " then"
+				else
+					preamble[#preamble + 1] = "local e" .. k .. " = " .. exprSource
+					local callArgs = varCount > 0 and (", " .. table.concat(argNames, ", ")) or ""
+					out[#out + 1] = indent .. "local ok" .. k .. ", " .. rName .. " = pcall(e" .. k .. callArgs .. ")"
+					out[#out + 1] = indent .. "if not ok" .. k .. " then"
+					out[#out + 1] = nextIndent .. "sig = sig + " .. addI
+					out[#out + 1] = indent .. "elseif " .. rName .. " then"
+				end
+				out[#out + 1] = nextIndent .. "sig = sig + " .. addT
+				k = EmitTreeSignatureSource(v.trueResult, out, preamble, nextIndent, k + 1)
+				if k == nil then
+					return nil
+				end
+				out[#out + 1] = indent .. "else"
+				out[#out + 1] = nextIndent .. "sig = sig + " .. addF
+				if v.falseResult ~= nil then
+					k = EmitTreeSignatureSource(v.falseResult, out, preamble, nextIndent, k)
+					if k == nil then
+						return nil
+					end
+				end
+				out[#out + 1] = indent .. "end"
+			end
+		end
+	end
+	return k
+end
+
+---Compiles an entry's tree into a signature closure. Returns 0 for trees with no conditionals,
+---or nil when codegen is not possible (the interpreted walk handles those).
+---@param tree table
+---@return function|integer|nil
+local function CompileEntrySignatureFn(tree)
+	local out = {}
+	local preamble = {}
+	local count = EmitTreeSignatureSource(tree, out, preamble, "\t", 0)
+	if count == nil then
+		return nil
+	end
+	if count == 0 then
+		return 0
+	end
+	local src = "local issecretvalue, pcall = issecretvalue, pcall\n"
+		.. table.concat(preamble, "\n") .. (#preamble > 0 and "\n" or "")
+		.. "return function(Class, logic)\nlocal sig = 0\n"
+		.. table.concat(out, "\n")
+		.. "\nreturn sig\nend"
+	local chunk = loadstring(src)
+	if chunk == nil then
+		return nil
+	end
+	local ok, fn = pcall(chunk)
+	if ok and type(fn) == "function" then
+		return fn
+	end
+	return nil
+end
+
 ---Renders one bar text entry via the signature-keyed plan cache. Plans are built once by the
 ---legacy resolver so their skeletons match it exactly; after that a tick only re-reads the
 ---plan's variable values and skips the format entirely when nothing changed.
@@ -1617,9 +1751,28 @@ end
 ---@param force boolean True bypasses the unchanged-skip
 ---@return string|nil output The formatted text, or nil when unchanged and not forced
 local function RenderBarTextEntry(state, text, colorCode, force)
-	local tree = GetFromBarTextTreeCache(text)
-	local len = AppendTreeSignature(tree, 0)
-	local signature = len == 0 and "" or table.concat(signatureBuffer, "", 1, len)
+	local signature
+	local sigFn = state.sigFn
+	if sigFn == nil then
+		sigFn = barTextSignatureFns[text]
+		if sigFn == nil then
+			sigFn = CompileEntrySignatureFn(GetFromBarTextTreeCache(text))
+			if sigFn == nil then
+				sigFn = false
+			end
+			barTextSignatureFns[text] = sigFn
+		end
+		state.sigFn = sigFn
+	end
+	if sigFn == 0 then
+		signature = 0
+	elseif sigFn ~= false then
+		signature = sigFn(TRB.Functions.Class, TRB.Data.lookupLogic)
+	else
+		-- Interpreted fallback for entries codegen cannot handle.
+		local len = AppendTreeSignature(GetFromBarTextTreeCache(text), 0)
+		signature = len == 0 and "" or table.concat(signatureBuffer, "", 1, len)
+	end
 
 	local plans = barTextRenderPlans[text]
 	if plans == nil then
@@ -1628,7 +1781,7 @@ local function RenderBarTextEntry(state, text, colorCode, force)
 	end
 	local plan = plans[signature]
 	if plan == nil then
-		plan = GetFromBarTextCache(RemoveInvalidVariablesFromBarText(tree))
+		plan = GetFromBarTextCache(RemoveInvalidVariablesFromBarText(GetFromBarTextTreeCache(text)))
 		plans[signature] = plan
 	end
 
