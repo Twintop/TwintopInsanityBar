@@ -1574,6 +1574,30 @@ local function AreSecondaryRatingsNil()
 	return false
 end
 
+-- "%.Nf" strings memoized by precision so per-tick refreshes skip rebuilding them.
+local precisionFormatCache = {}
+local function GetPrecisionFormat(precision)
+	local fmt = precisionFormatCache[precision]
+	if fmt == nil then
+		fmt = "%." .. precision .. "f"
+		precisionFormatCache[precision] = fmt
+	end
+	return fmt
+end
+
+-- Unit descriptors for RefreshTargetCastbarLookupData, hoisted with precomputed variable names so
+-- the per-tick refresh allocates nothing.
+local targetCastbarLookupUnits = {
+	{ modelKey = "targetCastbar", nameVar = "$targetCastingSpellName", timeVar = "$targetCastTime", remVar = "$targetCastTimeRemaining", iconVar = "#targetCasting" },
+	{ modelKey = "focusCastbar", nameVar = "$focusCastingSpellName", timeVar = "$focusCastTime", remVar = "$focusCastTimeRemaining", iconVar = "#focusCasting" },
+}
+
+-- Idle short-circuit state for the castbar/other-bars refreshers: their idle writes are constants,
+-- so an idle refresher runs one final blanking pass (or the initial one) and then skips entirely.
+local castbarLookupWasActive = true
+local targetCastbarLookupWasActive = true
+local otherBarsLookupWasActive = true
+
 ---Refreshes ONLY the castbar bar text lookup variables (cast/channel/empower) from the dedicated
 ---castbar model (TRB.Data.castbar) — deliberately independent of snapshotData.casting, which is the
 ---resource-prediction path. Values default to empty/zero when nothing is casting. Called from
@@ -1583,21 +1607,26 @@ end
 ---use latencyPrecision. All values are seconds ($castLatencyMs is always whole milliseconds).
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase? # Active spec settings (for bars.castbar precision fields)
 function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
+	local castbar = TRB.Data.castbar
+	local isActive = castbar ~= nil and castbar:IsActive()
+	if not isActive and not castbarLookupWasActive then
+		return
+	end
+	castbarLookupWasActive = isActive
 	TRB.Data.lookup = TRB.Data.lookup or {}
 	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
 	local lookup = TRB.Data.lookup
 	local lookupLogic = TRB.Data.lookupLogic
 	---@diagnostic disable-next-line: undefined-field
 	local castbarSettings = settings and settings.bars and settings.bars.castbar
-	local castTimeFormat = "%." .. ((castbarSettings and castbarSettings.castTimePrecision) or 1) .. "f"
-	local durationFormat = "%." .. ((castbarSettings and castbarSettings.durationPrecision) or 1) .. "f"
-	local latencyFormat = "%." .. ((castbarSettings and castbarSettings.latencyPrecision) or 1) .. "f"
+	local castTimeFormat = GetPrecisionFormat((castbarSettings and castbarSettings.castTimePrecision) or 1)
+	local durationFormat = GetPrecisionFormat((castbarSettings and castbarSettings.durationPrecision) or 1)
+	local latencyFormat = GetPrecisionFormat((castbarSettings and castbarSettings.latencyPrecision) or 1)
 
-	local castbar = TRB.Data.castbar
 	local castTime, castRemaining, castLatency, castPushback = 0, 0, 0, 0
 	local castSpellName, castSpellId = "", 0
 	local isCasting, notInterruptible = false, false
-	if castbar and castbar:IsActive() then
+	if isActive then
 		local _, remaining, duration = castbar:GetProgress()
 		isCasting = true
 		notInterruptible = castbar.notInterruptible == true
@@ -1652,17 +1681,24 @@ end
 ---arithmetic/comparison conditional engine.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
 function TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
+	local targetModel = TRB.Data.targetCastbar
+	local focusModel = TRB.Data.focusCastbar
+	local isActive = (targetModel ~= nil and targetModel:IsActive()) or (focusModel ~= nil and focusModel:IsActive())
+	if not isActive and not targetCastbarLookupWasActive then
+		return
+	end
+	targetCastbarLookupWasActive = isActive
 	TRB.Data.lookup = TRB.Data.lookup or {}
 	local lookup = TRB.Data.lookup
-	for _, u in ipairs({ { prefix = "target", modelKey = "targetCastbar" }, { prefix = "focus", modelKey = "focusCastbar" } }) do
+	for _, u in ipairs(targetCastbarLookupUnits) do
 		local model = TRB.Data[u.modelKey]
 		local barSettings = settings and settings.bars and settings.bars[u.modelKey] --[[@as TRB.Classes.Settings.CastbarBar?]]
-		local remFmt = "%." .. ((barSettings and barSettings.castTimePrecision) or 1) .. "f"
-		local durFmt = "%." .. ((barSettings and barSettings.durationPrecision) or 1) .. "f"
-		local nameVar = "$" .. u.prefix .. "CastingSpellName"
-		local timeVar = "$" .. u.prefix .. "CastTime"
-		local remVar = "$" .. u.prefix .. "CastTimeRemaining"
-		local iconVar = "#" .. u.prefix .. "Casting"
+		local remFmt = GetPrecisionFormat((barSettings and barSettings.castTimePrecision) or 1)
+		local durFmt = GetPrecisionFormat((barSettings and barSettings.durationPrecision) or 1)
+		local nameVar = u.nameVar
+		local timeVar = u.timeVar
+		local remVar = u.remVar
+		local iconVar = u.iconVar
 
 		-- Default to empty, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
 		-- which is blocked; only nil-checks (==/~= nil) and string.format are allowed on secrets.
@@ -1883,6 +1919,31 @@ local otherBarsSecretVars = {
 	["$gcdDuration"] = true, ["$gcdDurationRemaining"] = true,
 }
 
+---Renders a mirror timer's seconds as mm:ss. Minutes are not capped -- no mirror timer runs an hour,
+---but a longer one would read 61:xx rather than wrap silently.
+---@param seconds number
+---@return string
+local function FormatMinutesSeconds(seconds)
+	if seconds < 0 then
+		seconds = 0
+	end
+	local wholeSeconds = math.floor(seconds)
+	local minutes = math.floor(wholeSeconds / 60)
+	return string.format("%02d:%02d", minutes, wholeSeconds - (minutes * 60))
+end
+
+-- Per-bar "$<key>Duration"/"$<key>DurationRemaining" names, built once (the bar key set is static).
+local otherBarsVarNamesByKey = {}
+local function GetOtherBarsVarNames(barKey)
+	local names = otherBarsVarNamesByKey[barKey]
+	if names == nil then
+		local totalVar = "$" .. barKey .. "Duration"
+		names = { total = totalVar, remaining = totalVar .. "Remaining" }
+		otherBarsVarNamesByKey[barKey] = names
+	end
+	return names
+end
+
 ---Refreshes the Other Bars timer variables ($gcdDuration, $fatigueDurationRemaining, ...). An idle bar
 ---renders as an empty string, so a bare {$fatigueDurationRemaining}[...] gate shows nothing while the
 ---timer is down. Values are formatted with string.format, which is safe on a secret.
@@ -1894,23 +1955,15 @@ local otherBarsSecretVars = {
 ---conditionals still compare against a number rather than the display string.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
 function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
+	local isActive = TRB.Functions.OtherBars:HasActiveTimer()
+	if not isActive and not otherBarsLookupWasActive then
+		return
+	end
+	otherBarsLookupWasActive = isActive
 	TRB.Data.lookup = TRB.Data.lookup or {}
 	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
 	local lookup = TRB.Data.lookup
 	local lookupLogic = TRB.Data.lookupLogic
-
-	---Renders a mirror timer's seconds as mm:ss. Minutes are not capped -- no mirror timer runs an hour,
-	---but a longer one would read 61:xx rather than wrap silently.
-	---@param seconds number
-	---@return string
-	local function FormatMinutesSeconds(seconds)
-		if seconds < 0 then
-			seconds = 0
-		end
-		local wholeSeconds = math.floor(seconds)
-		local minutes = math.floor(wholeSeconds / 60)
-		return string.format("%02d:%02d", minutes, wholeSeconds - (minutes * 60))
-	end
 
 	for _, entry in ipairs(TRB.Functions.OtherBars:GetBars()) do
 		local barKey = entry.key
@@ -1922,10 +1975,11 @@ function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 			-- Only the GCD carries durationPrecision; the mirror timers have no decimals to configure.
 			local fmt
 			if not isMirror then
-				fmt = "%." .. barSettings.durationPrecision .. "f"
+				fmt = GetPrecisionFormat(barSettings.durationPrecision)
 			end
-			local totalVar = "$" .. barKey .. "Duration"
-			local remVar = totalVar .. "Remaining"
+			local names = GetOtherBarsVarNames(barKey)
+			local totalVar = names.total
+			local remVar = names.remaining
 			local isSecret = otherBarsSecretVars[totalVar] == true
 
 			-- Default to empty, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
@@ -2084,8 +2138,10 @@ end
 -- Previous tick's HasActiveSelfDrivenBarVariableInUse result, for detecting the tick a cast/timer ends on.
 local selfDrivenBarWasInUse = false
 
--- Reused per-call cache for GetBarTextFrame results (avoids redundant frame lookups)
-local showFrameCache = {}
+-- Reused per-call caches for GetBarTextFrame results, split into parallel maps so caching a
+-- frame's state allocates nothing. Presence is keyed on showFrameEnabled.
+local showFrameEnabled = {}
+local showFrameVisible = {}
 
 -- Reusable table for passing to GetReturnText (avoids per-entry table allocation)
 local barTextBuffer = { text = "", color = "" }
@@ -2151,7 +2207,8 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	--Only parse bar text if we need to refresh the text (or if there are Screen-bound entries)
 	if settings ~= nil and settings.displayText ~= nil then
 		-- Clear the per-call frame cache so entries get fresh visibility data
-		for k in pairs(showFrameCache) do showFrameCache[k] = nil end
+		wipe(showFrameEnabled)
+		wipe(showFrameVisible)
 
 		---@type Frame[]
 		local textFrames = TRB.Frames.textFrames
@@ -2188,16 +2245,16 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 					-- Use per-call cache to avoid redundant GetBarTextFrame calls for entries sharing a frame
 					local frameKey = e.position.relativeToFrame
 					local isEnabled, isVisible
-					local cached = showFrameCache[frameKey]
-					if cached then
-						isEnabled = cached[1]
-						isVisible = cached[2]
+					if showFrameEnabled[frameKey] ~= nil then
+						isEnabled = showFrameEnabled[frameKey]
+						isVisible = showFrameVisible[frameKey]
 					else
 						_, isEnabled, isVisible = TRB.Functions.BarText:GetAnchorFrame(frameKey)
 						if isScreenText then
 							isVisible = true
 						end
-						showFrameCache[frameKey] = { isEnabled, isVisible }
+						showFrameEnabled[frameKey] = isEnabled == true
+						showFrameVisible[frameKey] = isVisible == true
 					end
 
 					local tfKey = GetTextFrameKey(i)
@@ -2591,8 +2648,8 @@ function TRB.Functions.BarText:Show(settings)
 	local entries = #displayText.barText
 	if entries > 0 then
 		-- Per-call cache: entries sharing the same relativeToFrame skip redundant GetBarTextFrame calls
-		local fCache = showFrameCache
-		for k in pairs(fCache) do fCache[k] = nil end
+		wipe(showFrameEnabled)
+		wipe(showFrameVisible)
 
 		local anyBecameVisible = false
 		local isTransition = TRB.Functions.Bar:IsRenderTransitionActive()
@@ -2600,16 +2657,16 @@ function TRB.Functions.BarText:Show(settings)
 			local e = displayText.barText[i]
 			local key = e.position.relativeToFrame
 			local isEnabled, isVisible
-			local cached = fCache[key]
-			if cached then
-				isEnabled = cached[1]
-				isVisible = cached[2]
+			if showFrameEnabled[key] ~= nil then
+				isEnabled = showFrameEnabled[key]
+				isVisible = showFrameVisible[key]
 			else
 				_, isEnabled, isVisible = TRB.Functions.BarText:GetAnchorFrame(key)
 				if key == "UIParent" then
 					isVisible = true
 				end
-				fCache[key] = { isEnabled, isVisible }
+				showFrameEnabled[key] = isEnabled == true
+				showFrameVisible[key] = isVisible == true
 			end
 
 			if e.enabled and isEnabled and isVisible and textFrames[i] ~= nil then
