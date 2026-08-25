@@ -1316,6 +1316,15 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 	end
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	conditionMap2 = {},
+	conditionMap3 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -1365,9 +1374,9 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
-			local conditionMap = {
-				borderOvercap = affectingCombat,
-			}
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.borderOvercap = affectingCombat
 			-- The rage bar is colored bespoke below; the resolver is here for the shared health/cast bar.
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
 
@@ -1607,11 +1616,11 @@ local function UpdateResourceBar()
 					end
 				end
 			end
-			local conditionMap = {
-				borderOvercap = affectingCombat,
-				zeroStackBackground = zeroStackActive,
-				enrage = enrageActive,
-			}
+			local conditionMap = scratch.conditionMap2
+			wipe(conditionMap)
+			conditionMap.borderOvercap = affectingCombat
+			conditionMap.zeroStackBackground = zeroStackActive
+			conditionMap.enrage = enrageActive
 
 			local enrageBarColors = specSettings.colors.bars and specSettings.colors.bars.enrage
 			local enrageColors = {
@@ -1841,10 +1850,10 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
-			local conditionMap = {
-				borderOvercap = affectingCombat,
-				violentOutburst = snapshotData.snapshots[spells.violentOutburst.id] ~= nil and snapshotData.snapshots[spells.violentOutburst.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap3
+			wipe(conditionMap)
+			conditionMap.borderOvercap = affectingCombat
+			conditionMap.violentOutburst = snapshotData.snapshots[spells.violentOutburst.id] ~= nil and snapshotData.snapshots[spells.violentOutburst.id].buff.isActive
 			-- The rage bar is colored bespoke below; the resolver is here for the shared health/cast bar.
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
 

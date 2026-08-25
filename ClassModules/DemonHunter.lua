@@ -963,6 +963,30 @@ local function UpdateSnapshot_Devourer()
 
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	furyBarColors1 = {},
+	barColorMap1 = {},
+	overcapCurves1 = {},
+	conditionMap2 = {},
+	furyBarColors2 = {},
+	barColorMap2 = {},
+	overcapCurves2 = {},
+	conditionMap3 = {},
+	sfOvercapCurves1 = {},
+	gradientConditionMap1 = {},
+	conditionMap4 = {},
+	furyBarColors3 = {},
+	barColorMap3 = {},
+	overcapCurves3 = {},
+	sfConditionMap1 = {},
+	sfOvercapCurves2 = {},
+	sfGradientConditionMap1 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -1020,15 +1044,21 @@ local function UpdateResourceBar()
 				metamorphosisEndMet = metaTime <= timeThreshold
 			end
 
-			local conditionMap = {
-				metamorphosisEnd = metamorphosisActive and metamorphosisEndMet,
-				metamorphosis = metamorphosisActive,
-				borderOvercap = affectingCombat,
-			}
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.metamorphosisEnd = metamorphosisActive and metamorphosisEndMet
+			conditionMap.metamorphosis = metamorphosisActive
+			conditionMap.borderOvercap = affectingCombat
 
 			-- Color targets: barKey -> elementKey -> current color
-			local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local barColorMap = { furyBar = furyBarColors }
+			local furyBarColors = scratch.furyBarColors1
+			wipe(furyBarColors)
+			furyBarColors.bar = barColor
+			furyBarColors.border = barBorderColor
+			furyBarColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.furyBar = furyBarColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1167,7 +1197,8 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
-					local overcapCurves = {}
+					local overcapCurves = scratch.overcapCurves1
+					wipe(overcapCurves)
 					if overcapIndicator and overcapIndicator.targets then
 						local furyTargets = overcapIndicator.targets.furyBar
 						if furyTargets then
@@ -1251,15 +1282,21 @@ local function UpdateResourceBar()
 				metamorphosisEndMet = metaTime <= timeThreshold
 			end
 
-			local conditionMap = {
-				metamorphosisEnd = metamorphosisActive and metamorphosisEndMet,
-				metamorphosis = metamorphosisActive,
-				borderOvercap = affectingCombat,
-			}
+			local conditionMap = scratch.conditionMap2
+			wipe(conditionMap)
+			conditionMap.metamorphosisEnd = metamorphosisActive and metamorphosisEndMet
+			conditionMap.metamorphosis = metamorphosisActive
+			conditionMap.borderOvercap = affectingCombat
 
 			-- Color targets: barKey -> elementKey -> current color
-			local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local barColorMap = { furyBar = furyBarColors }
+			local furyBarColors = scratch.furyBarColors2
+			wipe(furyBarColors)
+			furyBarColors.bar = barColor
+			furyBarColors.border = barBorderColor
+			furyBarColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap2
+			wipe(barColorMap)
+			barColorMap.furyBar = furyBarColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1367,7 +1404,8 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
-					local overcapCurves = {}
+					local overcapCurves = scratch.overcapCurves2
+					wipe(overcapCurves)
 					if overcapIndicator and overcapIndicator.targets then
 						local furyTargets = overcapIndicator.targets.furyBar
 						if furyTargets then
@@ -1444,10 +1482,10 @@ local function UpdateResourceBar()
 						metamorphosisEndMet = metaTime <= timeThreshold
 					end
 
-					local conditionMap = {
-						metamorphosisEnd = metamorphosisActive and metamorphosisEndMet,
-						metamorphosis = metamorphosisActive,
-					}
+					local conditionMap = scratch.conditionMap3
+					wipe(conditionMap)
+					conditionMap.metamorphosisEnd = metamorphosisActive and metamorphosisEndMet
+					conditionMap.metamorphosis = metamorphosisActive
 
 					-- Apply flat indicators to soul fragment targets (reverse iteration, last writer wins)
 					for i = #nodeOrder, 1, -1 do
@@ -1465,13 +1503,14 @@ local function UpdateResourceBar()
 				end
 
 				-- Build gradient curves for soul fragment targets (border/background only, uses fury scale)
-				local sfOvercapCurves = {}
+				local sfOvercapCurves = scratch.sfOvercapCurves1
+				wipe(sfOvercapCurves)
 				local gradientOrder = sharedColors and sharedColors.gradientOrder
 				if gradientOrder and indicatorColors then
 					local affectingCombat = TRB.Data.character.inCombat
-					local gradientConditionMap = {
-						borderOvercap = affectingCombat,
-					}
+					local gradientConditionMap = scratch.gradientConditionMap1
+					wipe(gradientConditionMap)
+					gradientConditionMap.borderOvercap = affectingCombat
 					for i = #gradientOrder, 1, -1 do
 						local key = gradientOrder[i]
 						local indicator = indicatorColors[key]
@@ -1569,17 +1608,23 @@ local function UpdateResourceBar()
 
 			local voidRayUsable = (not metaActive) and spells.voidRay:IsUsable()
 
-			local conditionMap = {
-				voidMetamorphosisReady = metaUsable,
-				collapsingStarReady = collapsingStarUsable,
-				voidMetamorphosis = metaActive,
-				voidRayReady = voidRayUsable,
-				borderOvercap = affectingCombat,
-			}
+			local conditionMap = scratch.conditionMap4
+			wipe(conditionMap)
+			conditionMap.voidMetamorphosisReady = metaUsable
+			conditionMap.collapsingStarReady = collapsingStarUsable
+			conditionMap.voidMetamorphosis = metaActive
+			conditionMap.voidRayReady = voidRayUsable
+			conditionMap.borderOvercap = affectingCombat
 
 			-- Color targets: barKey -> elementKey -> current color
-			local furyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local barColorMap = { furyBar = furyBarColors }
+			local furyBarColors = scratch.furyBarColors3
+			wipe(furyBarColors)
+			furyBarColors.bar = barColor
+			furyBarColors.border = barBorderColor
+			furyBarColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap3
+			wipe(barColorMap)
+			barColorMap.furyBar = furyBarColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1700,7 +1745,8 @@ local function UpdateResourceBar()
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
-					local overcapCurves = {}
+					local overcapCurves = scratch.overcapCurves3
+					wipe(overcapCurves)
 					if overcapIndicator and overcapIndicator.targets then
 						local furyTargets = overcapIndicator.targets.furyBar
 						if furyTargets then
@@ -1771,12 +1817,12 @@ local function UpdateResourceBar()
 				local sfNodeOrder = sfSharedColors and sfSharedColors.nodeOrder
 
 				if sfNodeOrder and sfIndicatorColors then
-					local sfConditionMap = {
-						voidMetamorphosisReady = metaUsable,
-						collapsingStarReady = collapsingStarUsable,
-						voidMetamorphosis = metaActive,
-						voidRayReady = (not metaActive) and spells.voidRay:IsUsable(),
-					}
+					local sfConditionMap = scratch.sfConditionMap1
+					wipe(sfConditionMap)
+					sfConditionMap.voidMetamorphosisReady = metaUsable
+					sfConditionMap.collapsingStarReady = collapsingStarUsable
+					sfConditionMap.voidMetamorphosis = metaActive
+					sfConditionMap.voidRayReady = (not metaActive) and spells.voidRay:IsUsable()
 
 					for i = #sfNodeOrder, 1, -1 do
 						local key = sfNodeOrder[i]
@@ -1793,13 +1839,14 @@ local function UpdateResourceBar()
 				end
 
 				-- Build gradient curves for soul fragment targets (border/background only, uses fury scale)
-				local sfOvercapCurves = {}
+				local sfOvercapCurves = scratch.sfOvercapCurves2
+				wipe(sfOvercapCurves)
 				local sfGradientOrder = sfSharedColors and sfSharedColors.gradientOrder
 				local sfAffectingCombat = TRB.Data.character.inCombat
 				if sfGradientOrder and sfIndicatorColors then
-					local sfGradientConditionMap = {
-						borderOvercap = sfAffectingCombat,
-					}
+					local sfGradientConditionMap = scratch.sfGradientConditionMap1
+					wipe(sfGradientConditionMap)
+					sfGradientConditionMap.borderOvercap = sfAffectingCombat
 					for i = #sfGradientOrder, 1, -1 do
 						local key = sfGradientOrder[i]
 						local indicator = sfIndicatorColors[key]

@@ -818,6 +818,34 @@ local function EvaluateOvercapCurve(thresholdCurve)
 	return UnitPowerPercent("player", TRB.Data.resource, true, thresholdCurve)
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	comboPointsColors1 = {},
+	comboPointConditionMap1 = {},
+	comboPointBarColorMap1 = {},
+	conditionMap1 = {},
+	energyBarColors1 = {},
+	comboPointsColors2 = {},
+	barColorMap1 = {},
+	comboPointsColors3 = {},
+	comboPointConditionMap2 = {},
+	comboPointBarColorMap2 = {},
+	conditionMap2 = {},
+	energyBarColors2 = {},
+	comboPointsColors4 = {},
+	barColorMap2 = {},
+	comboPointsColors5 = {},
+	comboPointConditionMap3 = {},
+	comboPointBarColorMap3 = {},
+	thresholds1 = {},
+	conditionMap3 = {},
+	energyBarColors3 = {},
+	comboPointsColors6 = {},
+	barColorMap3 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -847,16 +875,18 @@ local function UpdateResourceBar()
 		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 		local comboPointAffectingCombat = TRB.Data.character.inCombat
 		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive
-		local comboPointsColors = {
-			bar = specSettings.colors.comboPoints.base,
-			border = specSettings.colors.comboPoints.border.color,
-			background = specSettings.colors.comboPoints.background.color,
-		}
-		local comboPointConditionMap = {
-			borderStealth = IsStealthed() or comboPointStealthViaBuff,
-			borderOvercap = comboPointAffectingCombat and not (IsStealthed() or comboPointStealthViaBuff),
-		}
-		local comboPointBarColorMap = { comboPointsBar = comboPointsColors }
+		local comboPointsColors = scratch.comboPointsColors1
+		wipe(comboPointsColors)
+		comboPointsColors.bar = specSettings.colors.comboPoints.base
+		comboPointsColors.border = specSettings.colors.comboPoints.border.color
+		comboPointsColors.background = specSettings.colors.comboPoints.background.color
+		local comboPointConditionMap = scratch.comboPointConditionMap1
+		wipe(comboPointConditionMap)
+		comboPointConditionMap.borderStealth = IsStealthed() or comboPointStealthViaBuff
+		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (IsStealthed() or comboPointStealthViaBuff)
+		local comboPointBarColorMap = scratch.comboPointBarColorMap1
+		wipe(comboPointBarColorMap)
+		comboPointBarColorMap.comboPointsBar = comboPointsColors
 		local comboPointIndicatorTargets, comboPointOvercapIndicator = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap)
 		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors)
 		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or { bar = false, border = false, background = false }
@@ -1022,17 +1052,24 @@ local function UpdateResourceBar()
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local stealthActive = IsStealthed() or stealthViaBuff
 				local sharedColors = specSettings.colors.shared
-				local conditionMap = {
-					borderStealth = stealthActive,
-					borderOvercap = affectingCombat and not stealthActive,
-				}
-				local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local comboPointsColors = {
-					bar = specSettings.colors.comboPoints.base,
-					border = specSettings.colors.comboPoints.border.color,
-					background = specSettings.colors.comboPoints.background.color,
-				}
-				local barColorMap = { energyBar = energyBarColors, comboPointsBar = comboPointsColors }
+				local conditionMap = scratch.conditionMap1
+				wipe(conditionMap)
+				conditionMap.borderStealth = stealthActive
+				conditionMap.borderOvercap = affectingCombat and not stealthActive
+				local energyBarColors = scratch.energyBarColors1
+				wipe(energyBarColors)
+				energyBarColors.bar = barColor
+				energyBarColors.border = barBorderColor
+				energyBarColors.background = barBackgroundColor
+				local comboPointsColors = scratch.comboPointsColors2
+				wipe(comboPointsColors)
+				comboPointsColors.bar = specSettings.colors.comboPoints.base
+				comboPointsColors.border = specSettings.colors.comboPoints.border.color
+				comboPointsColors.background = specSettings.colors.comboPoints.background.color
+				local barColorMap = scratch.barColorMap1
+				wipe(barColorMap)
+				barColorMap.energyBar = energyBarColors
+				barColorMap.comboPointsBar = comboPointsColors
 				local flatIndicatorTargets, overcapIndicator = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap)
 				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors)
 				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors)
@@ -1162,16 +1199,18 @@ local function UpdateResourceBar()
 		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 		local comboPointAffectingCombat = TRB.Data.character.inCombat
 		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive
-		local comboPointsColors = {
-			bar = specSettings.colors.comboPoints.base,
-			border = specSettings.colors.comboPoints.border.color,
-			background = specSettings.colors.comboPoints.background.color,
-		}
-		local comboPointConditionMap = {
-			borderStealth = IsStealthed() or comboPointStealthViaBuff,
-			borderOvercap = comboPointAffectingCombat and not (IsStealthed() or comboPointStealthViaBuff),
-		}
-		local comboPointBarColorMap = { comboPointsBar = comboPointsColors }
+		local comboPointsColors = scratch.comboPointsColors3
+		wipe(comboPointsColors)
+		comboPointsColors.bar = specSettings.colors.comboPoints.base
+		comboPointsColors.border = specSettings.colors.comboPoints.border.color
+		comboPointsColors.background = specSettings.colors.comboPoints.background.color
+		local comboPointConditionMap = scratch.comboPointConditionMap2
+		wipe(comboPointConditionMap)
+		comboPointConditionMap.borderStealth = IsStealthed() or comboPointStealthViaBuff
+		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (IsStealthed() or comboPointStealthViaBuff)
+		local comboPointBarColorMap = scratch.comboPointBarColorMap2
+		wipe(comboPointBarColorMap)
+		comboPointBarColorMap.comboPointsBar = comboPointsColors
 		local comboPointIndicatorTargets, comboPointOvercapIndicator = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap)
 		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors)
 		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or { bar = false, border = false, background = false }
@@ -1394,17 +1433,24 @@ local function UpdateResourceBar()
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local stealthActive = IsStealthed() or stealthViaBuff
 				local sharedColors = specSettings.colors.shared
-				local conditionMap = {
-					borderStealth = stealthActive,
-					borderOvercap = affectingCombat and not stealthActive,
-				}
-				local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local comboPointsColors = {
-					bar = specSettings.colors.comboPoints.base,
-					border = specSettings.colors.comboPoints.border.color,
-					background = specSettings.colors.comboPoints.background.color,
-				}
-				local barColorMap = { energyBar = energyBarColors, comboPointsBar = comboPointsColors }
+				local conditionMap = scratch.conditionMap2
+				wipe(conditionMap)
+				conditionMap.borderStealth = stealthActive
+				conditionMap.borderOvercap = affectingCombat and not stealthActive
+				local energyBarColors = scratch.energyBarColors2
+				wipe(energyBarColors)
+				energyBarColors.bar = barColor
+				energyBarColors.border = barBorderColor
+				energyBarColors.background = barBackgroundColor
+				local comboPointsColors = scratch.comboPointsColors4
+				wipe(comboPointsColors)
+				comboPointsColors.bar = specSettings.colors.comboPoints.base
+				comboPointsColors.border = specSettings.colors.comboPoints.border.color
+				comboPointsColors.background = specSettings.colors.comboPoints.background.color
+				local barColorMap = scratch.barColorMap2
+				wipe(barColorMap)
+				barColorMap.energyBar = energyBarColors
+				barColorMap.comboPointsBar = comboPointsColors
 				local flatIndicatorTargets, overcapIndicator = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap)
 				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors)
 				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors)
@@ -1533,16 +1579,18 @@ local function UpdateResourceBar()
 		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 		local comboPointAffectingCombat = TRB.Data.character.inCombat
 		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive or snapshots[comboPointSpells.shadowDance.id].buff.isActive
-		local comboPointsColors = {
-			bar = specSettings.colors.comboPoints.base,
-			border = specSettings.colors.comboPoints.border.color,
-			background = specSettings.colors.comboPoints.background.color,
-		}
-		local comboPointConditionMap = {
-			borderStealth = comboPointStealthViaBuff or IsStealthed(),
-			borderOvercap = comboPointAffectingCombat and not (comboPointStealthViaBuff or IsStealthed()),
-		}
-		local comboPointBarColorMap = { comboPointsBar = comboPointsColors }
+		local comboPointsColors = scratch.comboPointsColors5
+		wipe(comboPointsColors)
+		comboPointsColors.bar = specSettings.colors.comboPoints.base
+		comboPointsColors.border = specSettings.colors.comboPoints.border.color
+		comboPointsColors.background = specSettings.colors.comboPoints.background.color
+		local comboPointConditionMap = scratch.comboPointConditionMap3
+		wipe(comboPointConditionMap)
+		comboPointConditionMap.borderStealth = comboPointStealthViaBuff or IsStealthed()
+		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (comboPointStealthViaBuff or IsStealthed())
+		local comboPointBarColorMap = scratch.comboPointBarColorMap3
+		wipe(comboPointBarColorMap)
+		comboPointBarColorMap.comboPointsBar = comboPointsColors
 		local comboPointIndicatorTargets, comboPointOvercapIndicator = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap)
 		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors)
 		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or { bar = false, border = false, background = false }
@@ -1566,7 +1614,8 @@ local function UpdateResourceBar()
 					Bar:ApplyEndCapIndicator(primaryNode, "energyBar")
 				end
 
-				local thresholds = {}
+				local thresholds = scratch.thresholds1
+				wipe(thresholds)
 				if primaryNode then
 					thresholds = primaryNode:GetThresholds()
 				end
@@ -1750,17 +1799,24 @@ local function UpdateResourceBar()
 				local barBackgroundColor = specSettings.colors.bar.background.color
 				local stealthActive = stealthViaBuff or IsStealthed()
 				local sharedColors = specSettings.colors.shared
-				local conditionMap = {
-					borderStealth = stealthActive,
-					borderOvercap = affectingCombat and not stealthActive,
-				}
-				local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local comboPointsColors = {
-					bar = specSettings.colors.comboPoints.base,
-					border = specSettings.colors.comboPoints.border.color,
-					background = specSettings.colors.comboPoints.background.color,
-				}
-				local barColorMap = { energyBar = energyBarColors, comboPointsBar = comboPointsColors }
+				local conditionMap = scratch.conditionMap3
+				wipe(conditionMap)
+				conditionMap.borderStealth = stealthActive
+				conditionMap.borderOvercap = affectingCombat and not stealthActive
+				local energyBarColors = scratch.energyBarColors3
+				wipe(energyBarColors)
+				energyBarColors.bar = barColor
+				energyBarColors.border = barBorderColor
+				energyBarColors.background = barBackgroundColor
+				local comboPointsColors = scratch.comboPointsColors6
+				wipe(comboPointsColors)
+				comboPointsColors.bar = specSettings.colors.comboPoints.base
+				comboPointsColors.border = specSettings.colors.comboPoints.border.color
+				comboPointsColors.background = specSettings.colors.comboPoints.background.color
+				local barColorMap = scratch.barColorMap3
+				wipe(barColorMap)
+				barColorMap.energyBar = energyBarColors
+				barColorMap.comboPointsBar = comboPointsColors
 				local flatIndicatorTargets, overcapIndicator = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap)
 				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors)
 				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors)

@@ -1636,6 +1636,29 @@ local function UpdateSnapshot_Restoration()
 	UpdateSnapshot()
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	astralPowerBarColors1 = {},
+	comboPointColors1 = {},
+	barColorMap1 = {},
+	conditionMap2 = {},
+	energyBarColors1 = {},
+	comboPointColors2 = {},
+	barColorMap2 = {},
+	cpBaseColors1 = {},
+	conditionMap3 = {},
+	rageBarColors1 = {},
+	comboPointColors3 = {},
+	barColorMap3 = {},
+	conditionMap4 = {},
+	manaBarColors1 = {},
+	comboPointColors4 = {},
+	barColorMap4 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -2165,17 +2188,28 @@ local function UpdateResourceBar()
 
 				local celestialActive = snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive or (snapshots[spells.eclipseSolar.id].buff.isActive and snapshots[spells.eclipseLunar.id].buff.isActive)
 
-				local conditionMap = {
-					eclipseEnd = eclipseActive and eclipseEndMet,
-					celestial = celestialActive,
-					solar = snapshots[spells.eclipseSolar.id].buff.isActive and not celestialActive,
-					lunar = snapshots[spells.eclipseLunar.id].buff.isActive and not celestialActive and not snapshots[spells.eclipseSolar.id].buff.isActive,
-					borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId,
-				}
+				local conditionMap = scratch.conditionMap1
+				wipe(conditionMap)
+				conditionMap.eclipseEnd = eclipseActive and eclipseEndMet
+				conditionMap.celestial = celestialActive
+				conditionMap.solar = snapshots[spells.eclipseSolar.id].buff.isActive and not celestialActive
+				conditionMap.lunar = snapshots[spells.eclipseLunar.id].buff.isActive and not celestialActive and not snapshots[spells.eclipseSolar.id].buff.isActive
+				conditionMap.borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId
 
-				local astralPowerBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local comboPointColors = { bar = nil, border = nil, background = nil }
-				local barColorMap = { astralPowerBar = astralPowerBarColors, comboPoints = comboPointColors }
+				local astralPowerBarColors = scratch.astralPowerBarColors1
+				wipe(astralPowerBarColors)
+				astralPowerBarColors.bar = barColor
+				astralPowerBarColors.border = barBorderColor
+				astralPowerBarColors.background = barBackgroundColor
+				local comboPointColors = scratch.comboPointColors1
+				wipe(comboPointColors)
+				comboPointColors.bar = nil
+				comboPointColors.border = nil
+				comboPointColors.background = nil
+				local barColorMap = scratch.barColorMap1
+				wipe(barColorMap)
+				barColorMap.astralPowerBar = astralPowerBarColors
+				barColorMap.comboPoints = comboPointColors
 
 				-- Apply flat indicator colors (priority order, last writer wins)
 				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -2515,19 +2549,30 @@ local function UpdateResourceBar()
 
 					local isStealthed = IsStealthed()
 
-					local conditionMap = {
-						apexPredator = apcActive,
-						ravage = snapshots[spells.ravageMinimum.id].buff.isActive,
-						clearcasting = snapshotData.attributes.clearcastingActive,
-						borderStealth = isStealthed,
-						halazzisFury = snapshots[spells.halazzisFury.id].buff.isActive,
-						maxBite = snapshotData.attributes.resource2 == 5 and not apcActive,
-						borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId,
-					}
+					local conditionMap = scratch.conditionMap2
+					wipe(conditionMap)
+					conditionMap.apexPredator = apcActive
+					conditionMap.ravage = snapshots[spells.ravageMinimum.id].buff.isActive
+					conditionMap.clearcasting = snapshotData.attributes.clearcastingActive
+					conditionMap.borderStealth = isStealthed
+					conditionMap.halazzisFury = snapshots[spells.halazzisFury.id].buff.isActive
+					conditionMap.maxBite = snapshotData.attributes.resource2 == 5 and not apcActive
+					conditionMap.borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId
 
-					local energyBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-					local comboPointColors = { bar = nil, border = nil, background = nil }
-					local barColorMap = { energyBar = energyBarColors, comboPoints = comboPointColors }
+					local energyBarColors = scratch.energyBarColors1
+					wipe(energyBarColors)
+					energyBarColors.bar = barColor
+					energyBarColors.border = barBorderColor
+					energyBarColors.background = barBackgroundColor
+					local comboPointColors = scratch.comboPointColors2
+					wipe(comboPointColors)
+					comboPointColors.bar = nil
+					comboPointColors.border = nil
+					comboPointColors.background = nil
+					local barColorMap = scratch.barColorMap2
+					wipe(barColorMap)
+					barColorMap.energyBar = energyBarColors
+					barColorMap.comboPoints = comboPointColors
 
 					-- Apply flat indicator colors (priority order, last writer wins)
 					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -2634,7 +2679,11 @@ local function UpdateResourceBar()
 						-- Process combo point elements
 						local maxBiteCpTargets = maxBiteActive and maxBiteInd.targets and maxBiteInd.targets.comboPoints
 						local overcapCpTargets = overcapActive and overcapInd.targets and overcapInd.targets.comboPoints
-						local cpBaseColors = { bar = specSettings.colors.comboPoints.base, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
+						local cpBaseColors = scratch.cpBaseColors1
+						wipe(cpBaseColors)
+						cpBaseColors.bar = specSettings.colors.comboPoints.base
+						cpBaseColors.border = specSettings.colors.comboPoints.border.color
+						cpBaseColors.background = specSettings.colors.comboPoints.background.color
 						for _, elem in ipairs({"bar", "border", "background"}) do
 							local mbTargets = maxBiteCpTargets and maxBiteCpTargets[elem]
 							local ocTargets = overcapCpTargets and overcapCpTargets[elem]
@@ -3040,15 +3089,26 @@ local function UpdateResourceBar()
 
 				local berserkActive = snapshots[spells.berserk.id].buff.isActive or snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive
 
-				local conditionMap = {
-					berserkEnd = berserkActive and guardianBerserkEndMet,
-					berserk = berserkActive,
-					borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId,
-				}
+				local conditionMap = scratch.conditionMap3
+				wipe(conditionMap)
+				conditionMap.berserkEnd = berserkActive and guardianBerserkEndMet
+				conditionMap.berserk = berserkActive
+				conditionMap.borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId
 
-				local rageBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-				local comboPointColors = { bar = nil, border = nil, background = nil }
-				local barColorMap = { rageBar = rageBarColors, comboPoints = comboPointColors }
+				local rageBarColors = scratch.rageBarColors1
+				wipe(rageBarColors)
+				rageBarColors.bar = barColor
+				rageBarColors.border = barBorderColor
+				rageBarColors.background = barBackgroundColor
+				local comboPointColors = scratch.comboPointColors3
+				wipe(comboPointColors)
+				comboPointColors.bar = nil
+				comboPointColors.border = nil
+				comboPointColors.background = nil
+				local barColorMap = scratch.barColorMap3
+				wipe(barColorMap)
+				barColorMap.rageBar = rageBarColors
+				barColorMap.comboPoints = comboPointColors
 
 				-- Apply flat indicator colors (priority order, last writer wins)
 				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -3160,16 +3220,27 @@ local function UpdateResourceBar()
 
 					local clearcastingActive = snapshotData.attributes.clearcastingActive
 
-					local conditionMap = {
-						incarnationEnd = isNativeForm and incarnationActive and incarnationEndMet,
-						incarnation = isNativeForm and incarnationActive,
-						noEfflorescence = isNativeForm and affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive,
-						clearcasting = isNativeForm and clearcastingActive,
-					}
+					local conditionMap = scratch.conditionMap4
+					wipe(conditionMap)
+					conditionMap.incarnationEnd = isNativeForm and incarnationActive and incarnationEndMet
+					conditionMap.incarnation = isNativeForm and incarnationActive
+					conditionMap.noEfflorescence = isNativeForm and affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive
+					conditionMap.clearcasting = isNativeForm and clearcastingActive
 
-					local manaBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-					local comboPointColors = { bar = nil, border = nil, background = nil }
-					local barColorMap = { manaBar = manaBarColors, comboPoints = comboPointColors }
+					local manaBarColors = scratch.manaBarColors1
+					wipe(manaBarColors)
+					manaBarColors.bar = barColor
+					manaBarColors.border = barBorderColor
+					manaBarColors.background = barBackgroundColor
+					local comboPointColors = scratch.comboPointColors4
+					wipe(comboPointColors)
+					comboPointColors.bar = nil
+					comboPointColors.border = nil
+					comboPointColors.background = nil
+					local barColorMap = scratch.barColorMap4
+					wipe(barColorMap)
+					barColorMap.manaBar = manaBarColors
+					barColorMap.comboPoints = comboPointColors
 
 					-- Apply flat indicator colors (priority order, last writer wins)
 					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)

@@ -955,6 +955,16 @@ local function UpdateShatter(specSettings, specCacheSettings, barColors, fillInd
 	end
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	manaBarColors1 = {},
+	iciclesBarColors1 = {},
+	indicatorTargets1 = {},
+}
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local classSettings = TRB.Data.settings.mage
@@ -1130,33 +1140,33 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local fingersOfFrostBuff = snapshots[spells.fingersOfFrost.id].buff
 			local fingersOfFrostCharges = fingersOfFrostBuff.isActive and (fingersOfFrostBuff.applications or 0) or 0
-			local conditionMap = {
-				fingersOfFrost = fingersOfFrostCharges >= 1,
-				fingersOfFrost2 = fingersOfFrostCharges >= 2,
-				brainFreeze = snapshots[spells.brainFreeze.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.fingersOfFrost = fingersOfFrostCharges >= 1
+			conditionMap.fingersOfFrost2 = fingersOfFrostCharges >= 2
+			conditionMap.brainFreeze = snapshots[spells.brainFreeze.id].buff.isActive
 
-			local manaBarColors = {
-				bar = specSettings.colors.bar.base,
-				border = specSettings.colors.bar.border.color,
-				background = specSettings.colors.bar.background.color,
-			}
-			local iciclesBarColors = {
-				bar = specSettings.colors.comboPoints.base,
-				border = specSettings.colors.comboPoints.border.color,
-				background = specSettings.colors.comboPoints.background.color,
-			}
+			local manaBarColors = scratch.manaBarColors1
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			local iciclesBarColors = scratch.iciclesBarColors1
+			wipe(iciclesBarColors)
+			iciclesBarColors.bar = specSettings.colors.comboPoints.base
+			iciclesBarColors.border = specSettings.colors.comboPoints.border.color
+			iciclesBarColors.background = specSettings.colors.comboPoints.background.color
 			local shatterColors = specSettings.colors.bars and specSettings.colors.bars.shatter
 			local shatterBarColors = shatterColors and {
 				bar = shatterColors.bar,
 				border = shatterColors.border.color,
 				background = shatterColors.background.color,
 			} or nil
-			local indicatorTargets = {
-				manaBar = { bar = false, border = false, background = false },
-				iciclesBar = { bar = false, border = false, background = false },
-				shatterBar = { bar = false, border = false, background = false },
-			}
+			local indicatorTargets = scratch.indicatorTargets1
+			wipe(indicatorTargets)
+			indicatorTargets.manaBar = { bar = false, border = false, background = false }
+			indicatorTargets.iciclesBar = { bar = false, border = false, background = false }
+			indicatorTargets.shatterBar = { bar = false, border = false, background = false }
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, {
 				manaBar = manaBarColors,

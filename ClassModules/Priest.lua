@@ -2175,6 +2175,21 @@ local function UpdateSnapshot_Shadow()
 	--snapshots[spells.mindBlast.id].cooldown:Refresh()
 end
 
+
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
+local scratch = {
+	conditionMap1 = {},
+	manaBarColors1 = {},
+	powerWordsBarColors1 = {},
+	barColorMap1 = {},
+	conditionMap2 = {},
+	manaBarColors2 = {},
+	holyWordsBarColors1 = {},
+	lightweaverBarColors1 = {},
+	barColorMap2 = {},
+}
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -2218,16 +2233,27 @@ local function UpdateResourceBar()
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 
 			local surgeOfLightStacks = GetSurgeOfLightStacks(snapshotData, spells)
-			local conditionMap = {
-				surgeOfLight = surgeOfLightStacks >= 1,
-				surgeOfLight2 = surgeOfLightStacks >= 2,
-				voidShield = snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.surgeOfLight = surgeOfLightStacks >= 1
+			conditionMap.surgeOfLight2 = surgeOfLightStacks >= 2
+			conditionMap.voidShield = snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive
 
 			-- Color targets: barKey -> elementKey -> current color
-			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
-			local powerWordsBarColors = { bar = specSettings.colors.comboPoints.powerWordRadiance, border = specSettings.colors.comboPoints.border.color, background = specSettings.colors.comboPoints.background.color }
-			local barColorMap = { manaBar = manaBarColors, powerWordsBar = powerWordsBarColors }
+			local manaBarColors = scratch.manaBarColors1
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			local powerWordsBarColors = scratch.powerWordsBarColors1
+			wipe(powerWordsBarColors)
+			powerWordsBarColors.bar = specSettings.colors.comboPoints.powerWordRadiance
+			powerWordsBarColors.border = specSettings.colors.comboPoints.border.color
+			powerWordsBarColors.background = specSettings.colors.comboPoints.background.color
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.powerWordsBar = powerWordsBarColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -2403,23 +2429,39 @@ local function UpdateResourceBar()
 			end
 
 			local surgeOfLightStacks = GetSurgeOfLightStacks(snapshotData, spells)
-			local conditionMap = {
-				benediction = snapshots[spells.benediction.id].buff.isActive,
-				holyWordSerenity = holyWordCooldownCompletesKey == "holyWordSerenity",
-				holyWordSanctify = holyWordCooldownCompletesKey == "holyWordSanctify",
-				holyWordChastise = holyWordCooldownCompletesKey == "holyWordChastise",
-				apotheosisEnd = apotheosisActive and apotheosisEndMet,
-				apotheosis = apotheosisActive,
-				surgeOfLight = surgeOfLightStacks >= 1,
-				surgeOfLight2 = surgeOfLightStacks >= 2,
-				lightweaver = snapshots[spells.lightweaver.id].buff.isActive,
-			}
+			local conditionMap = scratch.conditionMap2
+			wipe(conditionMap)
+			conditionMap.benediction = snapshots[spells.benediction.id].buff.isActive
+			conditionMap.holyWordSerenity = holyWordCooldownCompletesKey == "holyWordSerenity"
+			conditionMap.holyWordSanctify = holyWordCooldownCompletesKey == "holyWordSanctify"
+			conditionMap.holyWordChastise = holyWordCooldownCompletesKey == "holyWordChastise"
+			conditionMap.apotheosisEnd = apotheosisActive and apotheosisEndMet
+			conditionMap.apotheosis = apotheosisActive
+			conditionMap.surgeOfLight = surgeOfLightStacks >= 1
+			conditionMap.surgeOfLight2 = surgeOfLightStacks >= 2
+			conditionMap.lightweaver = snapshots[spells.lightweaver.id].buff.isActive
 
 			-- Color targets: barKey -> elementKey -> current color
-			local manaBarColors = { bar = specSettings.colors.bar.base, border = specSettings.colors.bar.border.color, background = specSettings.colors.bar.background.color }
-			local holyWordsBarColors = { bar = nil, border = nil, background = nil }
-			local lightweaverBarColors = { bar = nil, border = nil, background = nil }
-			local barColorMap = { manaBar = manaBarColors, holyWordsBar = holyWordsBarColors, lightweaverBar = lightweaverBarColors }
+			local manaBarColors = scratch.manaBarColors2
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			local holyWordsBarColors = scratch.holyWordsBarColors1
+			wipe(holyWordsBarColors)
+			holyWordsBarColors.bar = nil
+			holyWordsBarColors.border = nil
+			holyWordsBarColors.background = nil
+			local lightweaverBarColors = scratch.lightweaverBarColors1
+			wipe(lightweaverBarColors)
+			lightweaverBarColors.bar = nil
+			lightweaverBarColors.border = nil
+			lightweaverBarColors.background = nil
+			local barColorMap = scratch.barColorMap2
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.holyWordsBar = holyWordsBarColors
+			barColorMap.lightweaverBar = lightweaverBarColors
 
 			-- Holy's own bars are resolved by the node-aware walk below, not the shared resolver: several of
 			-- its indicators apply to one node of a bar rather than the whole bar. The shared health/cast bar
