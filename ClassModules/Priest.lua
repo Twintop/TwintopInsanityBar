@@ -29,6 +29,15 @@ local holyWordDefsCache = {
 	{ spell = nil --[[@as TRB.Classes.SpellBase]], key = "holyWordChastise", color = "" --[[@as string]], enabled = false },
 }
 
+-- Per-tick scratch tables for the Shadow branch of UpdateResourceBar, reused instead of reallocated.
+-- barColorMap only ever points at the same two tables, so it is built once and never rebuilt.
+local shadowConditionMap = {}
+local shadowInsanityBarColors = {}
+local shadowManaBarColors = {}
+local shadowBarColorMap = { insanityBar = shadowInsanityBarColors, manaBar = shadowManaBarColors }
+local shadowOvercapCurvesInsanity = {}
+local shadowOvercapCurvesMana = {}
+
 -- Reverse lookup: nodeColor key → holyWordDefsCache entry (populated once, stable)
 local holyWordKeyToDef = {
 	holyWordSerenity = holyWordDefsCache[1],
@@ -2682,7 +2691,8 @@ local function UpdateResourceBar()
 		local manaBarColor = specSettings.colors.bars.mana.bar.color
 		local manaBorderColor = specSettings.colors.bars.mana.border.color
 		local manaBackgroundColor = specSettings.colors.bars.mana.background.color
-		local overcapCurvesMana = {}
+		local overcapCurvesMana = shadowOvercapCurvesMana
+		wipe(overcapCurvesMana)
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
@@ -2714,21 +2724,28 @@ local function UpdateResourceBar()
 
 			local swmUsable = spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable()
 
-			local conditionMap = {
-				instantMindBlast = snapshotData.attributes.shadowyInsightActive,
-				voidformEnd = voidformActive and voidformEndMet,
-				mindDevourer = spells.shadowWordMadness:IsFree(),
-				entropicRift = snapshots[spells.entropicRift.id].buff.isActive,
-				borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive,
-				shadowWordMadnessUsable = swmUsable,
-				voidform = voidformActive,
-				borderOvercap = affectingCombat,
-			}
+			local conditionMap = shadowConditionMap
+			conditionMap.instantMindBlast = snapshotData.attributes.shadowyInsightActive
+			conditionMap.voidformEnd = voidformActive and voidformEndMet
+			conditionMap.mindDevourer = spells.shadowWordMadness:IsFree()
+			conditionMap.entropicRift = snapshots[spells.entropicRift.id].buff.isActive
+			conditionMap.borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive
+			conditionMap.shadowWordMadnessUsable = swmUsable
+			conditionMap.voidform = voidformActive
+			conditionMap.borderOvercap = affectingCombat
 
 			-- Color targets: barKey -> elementKey -> current color
-			local insanityBarColors = { bar = barColor, border = barBorderColor, background = barBackgroundColor }
-			local manaBarColors = { bar = manaBarColor, border = manaBorderColor, background = manaBackgroundColor }
-			local barColorMap = { insanityBar = insanityBarColors, manaBar = manaBarColors }
+			local insanityBarColors = shadowInsanityBarColors
+			wipe(insanityBarColors)
+			insanityBarColors.bar = barColor
+			insanityBarColors.border = barBorderColor
+			insanityBarColors.background = barBackgroundColor
+			local manaBarColors = shadowManaBarColors
+			wipe(manaBarColors)
+			manaBarColors.bar = manaBarColor
+			manaBarColors.border = manaBorderColor
+			manaBarColors.background = manaBackgroundColor
+			local barColorMap = shadowBarColorMap
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -2769,7 +2786,8 @@ local function UpdateResourceBar()
 				manaBackgroundColor = manaBarColors.background
 
 				-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
-				local overcapCurvesInsanity = {}
+				local overcapCurvesInsanity = shadowOvercapCurvesInsanity
+				wipe(overcapCurvesInsanity)
 				if overcapIndicator and overcapIndicator.targets then
 					local insanityTargets = overcapIndicator.targets.insanityBar
 					if insanityTargets then
