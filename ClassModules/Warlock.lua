@@ -1517,9 +1517,6 @@ local function UpdateResourceBar()
 			manaBarColors.background = specSettings.colors.bar.background.color
 			local soulShardsOverride = scratch.soulShardsOverride1
 			wipe(soulShardsOverride)
-			soulShardsOverride.bar = nil
-			soulShardsOverride.border = nil
-			soulShardsOverride.background = nil
 			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors
@@ -1602,9 +1599,6 @@ local function UpdateResourceBar()
 			manaBarColors.background = specSettings.colors.bar.background.color
 			local soulShardsOverride = scratch.soulShardsOverride2
 			wipe(soulShardsOverride)
-			soulShardsOverride.bar = nil
-			soulShardsOverride.border = nil
-			soulShardsOverride.background = nil
 			local barColorMap = scratch.barColorMap2
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors
@@ -1669,9 +1663,6 @@ local function UpdateResourceBar()
 			manaBarColors.background = specSettings.colors.bar.background.color
 			local soulShardsOverride = scratch.soulShardsOverride3
 			wipe(soulShardsOverride)
-			soulShardsOverride.bar = nil
-			soulShardsOverride.border = nil
-			soulShardsOverride.background = nil
 			local barColorMap = scratch.barColorMap3
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors

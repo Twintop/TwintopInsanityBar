@@ -2231,9 +2231,6 @@ local function UpdateResourceBar()
 				astralPowerBarColors.background = barBackgroundColor
 				local comboPointColors = scratch.comboPointColors1
 				wipe(comboPointColors)
-				comboPointColors.bar = nil
-				comboPointColors.border = nil
-				comboPointColors.background = nil
 				local barColorMap = scratch.barColorMap1
 				wipe(barColorMap)
 				barColorMap.astralPowerBar = astralPowerBarColors
@@ -2594,9 +2591,6 @@ local function UpdateResourceBar()
 					energyBarColors.background = barBackgroundColor
 					local comboPointColors = scratch.comboPointColors2
 					wipe(comboPointColors)
-					comboPointColors.bar = nil
-					comboPointColors.border = nil
-					comboPointColors.background = nil
 					local barColorMap = scratch.barColorMap2
 					wipe(barColorMap)
 					barColorMap.energyBar = energyBarColors
@@ -3130,9 +3124,6 @@ local function UpdateResourceBar()
 				rageBarColors.background = barBackgroundColor
 				local comboPointColors = scratch.comboPointColors3
 				wipe(comboPointColors)
-				comboPointColors.bar = nil
-				comboPointColors.border = nil
-				comboPointColors.background = nil
 				local barColorMap = scratch.barColorMap3
 				wipe(barColorMap)
 				barColorMap.rageBar = rageBarColors
@@ -3262,9 +3253,6 @@ local function UpdateResourceBar()
 					manaBarColors.background = barBackgroundColor
 					local comboPointColors = scratch.comboPointColors4
 					wipe(comboPointColors)
-					comboPointColors.bar = nil
-					comboPointColors.border = nil
-					comboPointColors.background = nil
 					local barColorMap = scratch.barColorMap4
 					wipe(barColorMap)
 					barColorMap.manaBar = manaBarColors

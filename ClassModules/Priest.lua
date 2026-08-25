@@ -2447,14 +2447,8 @@ local function UpdateResourceBar()
 			manaBarColors.background = specSettings.colors.bar.background.color
 			local holyWordsBarColors = scratch.holyWordsBarColors1
 			wipe(holyWordsBarColors)
-			holyWordsBarColors.bar = nil
-			holyWordsBarColors.border = nil
-			holyWordsBarColors.background = nil
 			local lightweaverBarColors = scratch.lightweaverBarColors1
 			wipe(lightweaverBarColors)
-			lightweaverBarColors.bar = nil
-			lightweaverBarColors.border = nil
-			lightweaverBarColors.background = nil
 			local barColorMap = scratch.barColorMap2
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors

@@ -1179,9 +1179,6 @@ local function UpdateResourceBar()
 			manaBarColors.background = barBackgroundColor
 			local essenceColors = scratch.essenceColors1
 			wipe(essenceColors)
-			essenceColors.bar = nil
-			essenceColors.border = nil
-			essenceColors.background = nil
 			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors
@@ -1247,9 +1244,6 @@ local function UpdateResourceBar()
 			manaBarColors.background = barBackgroundColor
 			local essenceColors = scratch.essenceColors2
 			wipe(essenceColors)
-			essenceColors.bar = nil
-			essenceColors.border = nil
-			essenceColors.background = nil
 			local barColorMap = scratch.barColorMap2
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors
@@ -1321,9 +1315,6 @@ local function UpdateResourceBar()
 			manaBarColors.background = barBackgroundColor
 			local essenceColors = scratch.essenceColors3
 			wipe(essenceColors)
-			essenceColors.bar = nil
-			essenceColors.border = nil
-			essenceColors.background = nil
 			local ebonMightColors = scratch.ebonMightColors1
 			wipe(ebonMightColors)
 			ebonMightColors.bar = ebonMightBarColor

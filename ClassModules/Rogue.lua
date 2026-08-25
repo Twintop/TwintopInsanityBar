@@ -839,7 +839,6 @@ local scratch = {
 	comboPointsColors5 = {},
 	comboPointConditionMap3 = {},
 	comboPointBarColorMap3 = {},
-	thresholds1 = {},
 	conditionMap3 = {},
 	energyBarColors3 = {},
 	comboPointsColors6 = {},
@@ -1614,11 +1613,7 @@ local function UpdateResourceBar()
 					Bar:ApplyEndCapIndicator(primaryNode, "energyBar")
 				end
 
-				local thresholds = scratch.thresholds1
-				wipe(thresholds)
-				if primaryNode then
-					thresholds = primaryNode:GetThresholds()
-				end
+				local thresholds = primaryNode and primaryNode:GetThresholds() or {}
 				
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
 
