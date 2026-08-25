@@ -12,10 +12,14 @@ local content = [====[
 
 ---
 
-# 12.1.0.7-release (2026-08-26)
+# 12.1.0.7-release (2026-08-25)
 ## General
 
-- Improve bar update performance, primarily around threshold lines and bar text.
+- [#817](#817) Improve bar update performance, primarily around threshold lines and bar text.
+
+### Localization
+
+- [#816 - @MOSS099](#816) Updated translations for Simplified Chinese (zhCN).
 
 ## Mage
 ### Fire
