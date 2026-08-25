@@ -846,26 +846,27 @@ local function RefreshLookupData_Balance()
 	-- Block C: Mana ($mana, $manaMax, $manaPercent)
 	if not activeVars or activeVars["$mana"] or activeVars["$manaMax"] or activeVars["$manaPercent"] then
 		local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
+		local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
+		local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
 		local manaPrecision = sharedSettings.precision.mana or 1
-		-- Power events only mark dirty; re-derive here at most once per tick, plus first read and
-		-- precision changes.
-		local additionalPower = snapshotData.formatted.additionalPower
-		local mana = additionalPower and additionalPower["MANA"]
-		if mana == nil or mana.dirty or mana.precision ~= manaPrecision then
-			TRB.Functions.Character:UpdateAdditionalPowerValues("MANA")
-			mana = snapshotData.formatted.additionalPower["MANA"]
+		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+		local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+
+		lookupLogic["$mana"] = normalizedMana
+		lookupLogic["$manaMax"] = normalizedManaMax
+		lookupLogic["$manaPercent"] = _manaPercent
+
+		local manaFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana)
+		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, manaFormatted)
 		end
-		lookupLogic["$mana"] = mana.current
-		lookupLogic["$manaMax"] = mana.max
-		lookupLogic["$manaPercent"] = mana.percent
-		if lookupChanged(prevState, "$mana", mana.currentFormatted, currentManaColor) then
-			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, mana.currentFormatted)
+		local manaMaxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax)
+		if lookupChanged(prevState, "$manaMax", manaMaxFormatted, currentManaColor) then
+			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, manaMaxFormatted)
 		end
-		if lookupChanged(prevState, "$manaMax", mana.maxFormatted, currentManaColor) then
-			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, mana.maxFormatted)
-		end
-		if lookupChanged(prevState, "$manaPercent", mana.percentFormatted, currentManaColor) then
-			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, mana.percentFormatted)
+		local manaPercentFormatted = string.format("%." .. manaPrecision .. "f", manaPercentRaw)
+		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
 		end
 	end
 
@@ -3827,7 +3828,6 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = ASTRAL_POWER_RESOURCE_FACTOR
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
-		TRB.Data.additionalPowerTokens = { ["MANA"] = true }
 		primaryResourceToken = "LUNAR_POWER"
 		-- Track all resources for form-based switching
 		TRB.Data.resourceEnergy = Enum.PowerType.Energy
@@ -3841,7 +3841,6 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = ENERGY_RESOURCE_FACTOR
 		TRB.Data.resource2 = Enum.PowerType.ComboPoints
 		TRB.Data.resource2Factor = 1
-		TRB.Data.additionalPowerTokens = nil
 		primaryResourceToken = "ENERGY"
 		-- Track all resources for form-based switching
 		TRB.Data.resourceRage = Enum.PowerType.Rage
@@ -3853,7 +3852,6 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = RAGE_RESOURCE_FACTOR
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
-		TRB.Data.additionalPowerTokens = nil
 		primaryResourceToken = "RAGE"
 		-- Track all resources for form-based switching
 		TRB.Data.resourceEnergy = Enum.PowerType.Energy
@@ -3867,7 +3865,6 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = MANA_RESOURCE_FACTOR
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
-		TRB.Data.additionalPowerTokens = nil
 		primaryResourceToken = "MANA"
 		-- Track all resources for form-based switching
 		TRB.Data.resourceEnergy = Enum.PowerType.Energy
@@ -3876,7 +3873,6 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceComboPoints = Enum.PowerType.ComboPoints
 	else
 		TRB.Data.specSupported = false
-		TRB.Data.additionalPowerTokens = nil
 	end
 
 	Character:EventRegistration()
