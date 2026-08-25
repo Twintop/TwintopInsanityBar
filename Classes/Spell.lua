@@ -465,12 +465,11 @@ function TRB.Classes.SpellBase:InsufficientPower()
 end
 
 ---Updates IsSpellUsable cache.
----@param force boolean? # Force the update even if within embargo timespan
-function TRB.Classes.SpellBase:UpdateIsSpellUsable(force)
+function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 	local currentTime = GetTime()
+	-- A cache hit must not re-stamp _lastSpellUsableCheck, or frequent callers starve the real check.
 	if (self._lastSpellUsableCheck or 0) + spellUsableEmbargoTimespan > currentTime then
-		self._lastSpellUsableCheck = currentTime
-		return self._isUsable
+		return
 	end
 
 	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self.id)
