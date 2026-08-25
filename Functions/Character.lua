@@ -165,8 +165,8 @@ function TRB.Functions.Character:UpdateResourceValues()
 	end
 end
 
----Reads and pre-formats an additional power's values (e.g. Shadow's mana) at event time,
----so per-tick refreshers only read cached strings.
+---Reads and pre-formats an additional power's values (e.g. Shadow's mana), so per-tick
+---refreshers only read cached strings. Power events mark the entry dirty; the refresher pulls.
 ---@param powerToken string # UNIT_POWER_UPDATE power token, e.g. "MANA"
 function TRB.Functions.Character:UpdateAdditionalPowerValues(powerToken)
 	local powerType = TokenToPowerType[powerToken]
@@ -198,6 +198,7 @@ function TRB.Functions.Character:UpdateAdditionalPowerValues(powerToken)
 	entry.maxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(entry.max)
 	entry.percentFormatted = string.format("%." .. precision .. "f", UnitPowerPercent("player", powerType, false, CurveConstants.ScaleTo100))
 	entry.precision = precision
+	entry.dirty = false
 end
 
 ---Reads the player's current health, max health, absorbs, and incoming heals from the WoW API, updates snapshotData.attributes, pre-formats display strings, and recalculates the health color curve.
@@ -421,7 +422,12 @@ local function CharacterChange(self, event, ...)
 			TRB.Functions.Character:UpdateResourceValues()
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "player" and TRB.Data.additionalPowerTokens and TRB.Data.additionalPowerTokens[powerType] then
-			TRB.Functions.Character:UpdateAdditionalPowerValues(powerType)
+			-- Mark only; the 20Hz refresher pulls the reformat, coalescing bursts and UPDATE/FREQUENT pairs.
+			local additionalPower = TRB.Data.snapshotData.formatted.additionalPower
+			local powerEntry = additionalPower and additionalPower[powerType]
+			if powerEntry ~= nil then
+				powerEntry.dirty = true
+			end
 			if TRB.Functions.BarVisibility.hasResourceCurve then
 				TRB.Functions.BarVisibility:MarkDirty()
 			end
