@@ -1279,22 +1279,23 @@ local function RefreshLookupData_Shadow()
 		local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
 		local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
 		local manaPrecision = sharedSettings.precision.mana or 1
-		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-		local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
+		-- The percent objects and formatted strings only move when these do, so gate the expensive
+		-- derivation on them; lookupChanged degrades to always-changed if the raws come back secret.
+		local manaChanged = lookupChanged(prevState, "$manaRaw", normalizedMana, currentManaColor)
+		local manaMaxChanged = lookupChanged(prevState, "$manaMaxRaw", normalizedManaMax, currentManaColor)
+		local precisionChanged = lookupChanged(prevState, "$manaPrecisionRaw", manaPrecision)
+		if manaChanged or manaMaxChanged or precisionChanged then
+			local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
+			local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
 
-		lookupLogic["$mana"] = normalizedMana
-		lookupLogic["$manaMax"] = normalizedManaMax
-		lookupLogic["$manaPercent"] = _manaPercent
-		local manaFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana)
-		if lookupChanged(prevState, "$mana", manaFormatted, currentManaColor) then
+			lookupLogic["$mana"] = normalizedMana
+			lookupLogic["$manaMax"] = normalizedManaMax
+			lookupLogic["$manaPercent"] = _manaPercent
+			local manaFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana)
 			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, manaFormatted)
-		end
-		local manaMaxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax)
-		if lookupChanged(prevState, "$manaMax", manaMaxFormatted, currentManaColor) then
+			local manaMaxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax)
 			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, manaMaxFormatted)
-		end
-		local manaPercentFormatted = string.format("%." .. manaPrecision .. "f", manaPercentRaw)
-		if lookupChanged(prevState, "$manaPercent", manaPercentFormatted, currentManaColor) then
+			local manaPercentFormatted = string.format("%." .. manaPrecision .. "f", manaPercentRaw)
 			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
 		end
 	end
