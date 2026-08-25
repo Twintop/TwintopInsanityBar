@@ -830,6 +830,7 @@ local scratch = {
 	focusBarColors3 = {},
 	tipOfTheSpearBarColors1 = {},
 	tipOfTheSpearOverrides1 = {},
+	indicatorTargets1 = {},
 	barColorMap3 = {},
 	focusOvercapCurves1 = {},
 	tipOfTheSpearOvercapCurves1 = {},
@@ -1335,18 +1336,18 @@ local function UpdateResourceBar()
 			tipOfTheSpearBarColors.bar = specSettings.colors.comboPoints.base
 			tipOfTheSpearBarColors.border = specSettings.colors.comboPoints.border.color
 			tipOfTheSpearBarColors.background = specSettings.colors.comboPoints.background.color
+			-- Wiped, not reset to false: ApplyIndicatorColors only writes true and readers test truthiness.
 			local tipOfTheSpearOverrides = scratch.tipOfTheSpearOverrides1
 			wipe(tipOfTheSpearOverrides)
-			tipOfTheSpearOverrides.bar = false
-			tipOfTheSpearOverrides.border = false
-			tipOfTheSpearOverrides.background = false
 			local barColorMap = scratch.barColorMap3
 			wipe(barColorMap)
 			barColorMap.focusBar = focusBarColors
 			barColorMap.tipOfTheSpearBar = tipOfTheSpearBarColors
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap,
-				{ tipOfTheSpearBar = tipOfTheSpearOverrides })
+			local indicatorTargets = scratch.indicatorTargets1
+			wipe(indicatorTargets)
+			indicatorTargets.tipOfTheSpearBar = tipOfTheSpearOverrides
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
 
 			local overcapIndicator = nil
 			if gradientOrder and indicatorColors then

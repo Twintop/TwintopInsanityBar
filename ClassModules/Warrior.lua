@@ -1323,6 +1323,8 @@ local scratch = {
 	conditionMap1 = {},
 	conditionMap2 = {},
 	conditionMap3 = {},
+	enrageColors1 = {},
+	barColorMap1 = {},
 }
 
 local function UpdateResourceBar()
@@ -1623,16 +1625,19 @@ local function UpdateResourceBar()
 			conditionMap.enrage = enrageActive
 
 			local enrageBarColors = specSettings.colors.bars and specSettings.colors.bars.enrage
-			local enrageColors = {
-				-- The whole entry, not just its string: ApplyFillColor only reaches its gradient branch
-				-- for a table, the same way the primary bar's base color is passed.
-				bar = enrageBarColors and enrageBarColors.bar,
-				border = enrageBarColors and enrageBarColors.border.color,
-				background = enrageBarColors and enrageBarColors.background.color,
-			}
+			-- The whole entry, not just its string: ApplyFillColor only reaches its gradient branch
+			-- for a table, the same way the primary bar's base color is passed.
+			local enrageColors = scratch.enrageColors1
+			wipe(enrageColors)
+			enrageColors.bar = enrageBarColors and enrageBarColors.bar
+			enrageColors.border = enrageBarColors and enrageBarColors.border.color
+			enrageColors.background = enrageBarColors and enrageBarColors.background.color
 			-- The rage and Whirlwind bars are colored bespoke above; the resolver covers the Enrage bar
 			-- along with the shared health/cast bar.
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, { enrageBar = enrageColors })
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.enrageBar = enrageColors
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true

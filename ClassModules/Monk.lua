@@ -980,6 +980,7 @@ local scratch = {
 	energyBarColors2 = {},
 	chiBarColors1 = {},
 	chiBarOverrides1 = {},
+	indicatorTargets1 = {},
 	barColorMap3 = {},
 	energyOvercapCurves2 = {},
 	chiOvercapCurves1 = {},
@@ -1455,18 +1456,18 @@ local function UpdateResourceBar()
 		chiBarColors.bar = specSettings.colors.comboPoints.base
 		chiBarColors.border = specSettings.colors.comboPoints.border.color
 		chiBarColors.background = specSettings.colors.comboPoints.background.color
+		-- Wiped, not reset to false: ApplyIndicatorColors only writes true and readers test truthiness.
 		local chiBarOverrides = scratch.chiBarOverrides1
 		wipe(chiBarOverrides)
-		chiBarOverrides.bar = false
-		chiBarOverrides.border = false
-		chiBarOverrides.background = false
 		local barColorMap = scratch.barColorMap3
 		wipe(barColorMap)
 		barColorMap.energyBar = energyBarColors
 		barColorMap.chiBar = chiBarColors
 
-		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap,
-			{ chiBar = chiBarOverrides })
+		local indicatorTargets = scratch.indicatorTargets1
+		wipe(indicatorTargets)
+		indicatorTargets.chiBar = chiBarOverrides
+		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
 
 		local overcapIndicator = nil
 		if gradientOrder and indicatorColors then

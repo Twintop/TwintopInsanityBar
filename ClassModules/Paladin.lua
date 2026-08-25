@@ -733,6 +733,7 @@ end
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
 	overrides1 = {},
+	overrideFlags1 = {},
 	manaBarColors1 = {},
 	holyPowerColors1 = {},
 	manaBarColors2 = {},
@@ -824,10 +825,19 @@ local function UpdateResourceBar()
 	local function ApplyFlatIndicatorColors(sharedColors, conditionMap, barColorMap)
 		-- barOverridden tells the render below to skip the resource-threshold fill curve: once an indicator
 		-- owns the fill, its flat color has to survive rather than being recomputed from the resource.
+		-- Inner flag tables are pooled by barKey and wiped: ApplyIndicatorColors only writes true.
 		local overrides = scratch.overrides1
 		wipe(overrides)
+		local overrideFlags = scratch.overrideFlags1
 		for barKey in pairs(barColorMap) do
-			overrides[barKey] = {}
+			local flags = overrideFlags[barKey]
+			if flags == nil then
+				flags = {}
+				overrideFlags[barKey] = flags
+			else
+				wipe(flags)
+			end
+			overrides[barKey] = flags
 		end
 
 		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
