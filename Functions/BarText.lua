@@ -262,6 +262,8 @@ local barTextCacheHash = {}
 local barTextRenderPlans = {}
 local barTextEntryStates = {}
 local barTextSignatureFns = {}
+-- Consecutive render throws before an entry gives up and stays on the legacy resolver.
+local maxEngineFailures = 3
 
 ---Returns true if the value or color has changed for this key, indicating the
 ---formatted lookup string needs updating. Reuses existing prevState entries to
@@ -2588,9 +2590,22 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 						-- compared but is never empty (it carries the color prefix), so it never forces.
 						local prevText = frameCache.text
 						local forceWrite = visibilityRefresh or (not issecretvalue(prevText) and (prevText == nil or prevText == ""))
-						local renderOk, returnText = pcall(RenderBarTextEntry, entryState, e.text, colorCode, forceWrite)
+						-- An entry that keeps throwing latches to legacy so it stops paying for both paths
+						-- every tick; the latch clears whenever entry state is wiped.
+						local engineFailures = entryState.engineFailures or 0
+						if engineFailures > 0 and entryState.sigText ~= e.text then
+							engineFailures = 0
+						end
+						local renderOk, returnText = false, nil
+						if engineFailures < maxEngineFailures then
+							renderOk, returnText = pcall(RenderBarTextEntry, entryState, e.text, colorCode, forceWrite)
+							if not renderOk then
+								entryState.engineFailures = engineFailures + 1
+							elseif engineFailures > 0 then
+								entryState.engineFailures = nil
+							end
+						end
 						if not renderOk then
-							-- Engine failure: fall back to the legacy resolver for this pass.
 							barTextBuffer.text = e.text
 							barTextBuffer.color = colorCode
 							returnText = GetReturnText(barTextBuffer)
