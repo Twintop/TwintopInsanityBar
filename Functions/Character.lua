@@ -24,6 +24,12 @@ local PowerTypeToToken = {
 	[Enum.PowerType.Essence] = "ESSENCE",
 }
 
+-- Reverse of PowerTypeToToken, for resolving event power tokens back to Enum values.
+local TokenToPowerType = {}
+for powerType, token in pairs(PowerTypeToToken) do
+	TokenToPowerType[token] = powerType
+end
+
 -- Cached format strings for resource/health percent formatting.
 -- Rebuilt only when the precision setting changes (spec switch / options edit).
 local cachedResourcePercentFmt = nil
@@ -157,6 +163,41 @@ function TRB.Functions.Character:UpdateResourceValues()
 	if TRB.Functions.BarVisibility.hasResourceCurve then
 		TRB.Functions.BarVisibility:MarkDirty()
 	end
+end
+
+---Reads and pre-formats an additional power's values (e.g. Shadow's mana) at event time,
+---so per-tick refreshers only read cached strings.
+---@param powerToken string # UNIT_POWER_UPDATE power token, e.g. "MANA"
+function TRB.Functions.Character:UpdateAdditionalPowerValues(powerToken)
+	local powerType = TokenToPowerType[powerToken]
+	if powerType == nil then
+		return
+	end
+	local formatted = TRB.Data.snapshotData.formatted
+	local store = formatted.additionalPower
+	if store == nil then
+		store = {}
+		formatted.additionalPower = store
+	end
+	local entry = store[powerToken]
+	if entry == nil then
+		entry = {}
+		store[powerToken] = entry
+	end
+
+	local precision = 1
+	local specEntry = TRB.Data.specCache and TRB.Data.character and TRB.Data.specCache[TRB.Data.character.compositeKey]
+	if specEntry and specEntry.settings and specEntry.settings.precision then
+		precision = specEntry.settings.precision.mana or 1
+	end
+
+	entry.current = UnitPower("player", powerType)
+	entry.max = UnitPowerMax("player", powerType)
+	entry.percent = UnitPowerPercent("player", powerType)
+	entry.currentFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(entry.current)
+	entry.maxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(entry.max)
+	entry.percentFormatted = string.format("%." .. precision .. "f", UnitPowerPercent("player", powerType, false, CurveConstants.ScaleTo100))
+	entry.precision = precision
 end
 
 ---Reads the player's current health, max health, absorbs, and incoming heals from the WoW API, updates snapshotData.attributes, pre-formats display strings, and recalculates the health color curve.
@@ -374,12 +415,13 @@ local function CharacterChange(self, event, ...)
 		end
 	end
 
-	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
+	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" or event == "UNIT_MAXPOWER" then
 		local unitTarget, powerType = ...
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
 			TRB.Functions.Character:UpdateResourceValues()
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "player" and TRB.Data.additionalPowerTokens and TRB.Data.additionalPowerTokens[powerType] then
+			TRB.Functions.Character:UpdateAdditionalPowerValues(powerType)
 			if TRB.Functions.BarVisibility.hasResourceCurve then
 				TRB.Functions.BarVisibility:MarkDirty()
 			end
@@ -510,6 +552,7 @@ end
 function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
+	characterChangeFrame:RegisterUnitEvent("UNIT_MAXPOWER", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_HEALTH", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_MAXHEALTH", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player")
@@ -542,6 +585,7 @@ end
 function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+	characterChangeFrame:UnregisterEvent("UNIT_MAXPOWER")
 	characterChangeFrame:UnregisterEvent("UNIT_HEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_MAXHEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")

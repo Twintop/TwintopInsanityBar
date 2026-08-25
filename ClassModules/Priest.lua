@@ -1276,27 +1276,26 @@ local function RefreshLookupData_Shadow()
 	-- Block F: Mana ($mana, $manaMax, $manaPercent)
 	if not activeVars or activeVars["$mana"] or activeVars["$manaMax"] or activeVars["$manaPercent"] then
 		local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
-		local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
-		local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
 		local manaPrecision = sharedSettings.precision.mana or 1
-		-- The percent objects and formatted strings only move when these do, so gate the expensive
-		-- derivation on them; lookupChanged degrades to always-changed if the raws come back secret.
-		local manaChanged = lookupChanged(prevState, "$manaRaw", normalizedMana, currentManaColor)
-		local manaMaxChanged = lookupChanged(prevState, "$manaMaxRaw", normalizedManaMax, currentManaColor)
-		local precisionChanged = lookupChanged(prevState, "$manaPrecisionRaw", manaPrecision)
-		if manaChanged or manaMaxChanged or precisionChanged then
-			local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
-			local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
-
-			lookupLogic["$mana"] = normalizedMana
-			lookupLogic["$manaMax"] = normalizedManaMax
-			lookupLogic["$manaPercent"] = _manaPercent
-			local manaFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedMana)
-			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, manaFormatted)
-			local manaMaxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(normalizedManaMax)
-			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, manaMaxFormatted)
-			local manaPercentFormatted = string.format("%." .. manaPrecision .. "f", manaPercentRaw)
-			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, manaPercentFormatted)
+		-- Values are pre-formatted at UNIT_POWER event time; re-derive only on first read or when
+		-- the precision setting changed.
+		local additionalPower = snapshotData.formatted.additionalPower
+		local mana = additionalPower and additionalPower["MANA"]
+		if mana == nil or mana.precision ~= manaPrecision then
+			TRB.Functions.Character:UpdateAdditionalPowerValues("MANA")
+			mana = snapshotData.formatted.additionalPower["MANA"]
+		end
+		lookupLogic["$mana"] = mana.current
+		lookupLogic["$manaMax"] = mana.max
+		lookupLogic["$manaPercent"] = mana.percent
+		if lookupChanged(prevState, "$mana", mana.currentFormatted, currentManaColor) then
+			lookup["$mana"] = string.format("|c%s%s|r", currentManaColor, mana.currentFormatted)
+		end
+		if lookupChanged(prevState, "$manaMax", mana.maxFormatted, currentManaColor) then
+			lookup["$manaMax"] = string.format("|c%s%s|r", currentManaColor, mana.maxFormatted)
+		end
+		if lookupChanged(prevState, "$manaPercent", mana.percentFormatted, currentManaColor) then
+			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, mana.percentFormatted)
 		end
 	end
 
