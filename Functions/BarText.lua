@@ -256,6 +256,12 @@ end
 -- Declared at file scope so ClearBarTextCacheHash and GetFromBarTextCache share the same upvalue.
 local barTextCacheHash = {}
 
+-- Branch-signature render engine state, declared here so ClearBarTextCacheHash can wipe it.
+-- Plans are keyed [entry text][conditional-outcome signature]; entry states hold each entry's
+-- last plan, color and argument values for the unchanged-skip.
+local barTextRenderPlans = {}
+local barTextEntryStates = {}
+
 ---Returns true if the value or color has changed for this key, indicating the
 ---formatted lookup string needs updating. Reuses existing prevState entries to
 ---avoid table allocation after initial warm-up.
@@ -306,6 +312,8 @@ end
 function TRB.Functions.BarText:ClearBarTextCacheHash()
 	-- The hash is a local upvalue; wipe it here where it's in scope
 	for k in pairs(barTextCacheHash) do barTextCacheHash[k] = nil end
+	wipe(barTextRenderPlans)
+	wipe(barTextEntryStates)
 end
 
 ---Scans all enabled bar text entries and builds a set of which $variable and #icon
@@ -1554,6 +1562,113 @@ local function GetReturnText(inputText)
 	return inputText.color .. inputText.text
 end
 
+-- Reusable buffer for building conditional-outcome signatures without allocation.
+local signatureBuffer = {}
+
+---Walks the tree evaluating only taken conditionals, appending one outcome char per node
+---("T"/"F"/"I") so the branch combination can key a cached render plan.
+---@param tree table
+---@param len integer Current signature buffer length
+---@return integer len
+local function AppendTreeSignature(tree, len)
+	if tree == nil or tree.barText == nil then
+		return len
+	end
+	local barText = tree.barText
+	for idx = 1, #barText do
+		local v = barText[idx]
+		if type(v) ~= "string" then
+			if v.compiledExpression == nil then
+				v.compiledExpression = CompileConditionalExpression(v)
+			end
+			local ce = v.compiledExpression
+			local outcome
+			if ce.invalid then
+				outcome = "I"
+			else
+				local args = ResolveConditionalValues(ce)
+				local ok, result = pcall(ce.fn, unpack(args, 1, ce.varCount))
+				if not ok then
+					outcome = "I"
+				elseif result == true or result then
+					outcome = "T"
+				else
+					outcome = "F"
+				end
+			end
+			len = len + 1
+			signatureBuffer[len] = outcome
+			if outcome == "T" then
+				len = AppendTreeSignature(v.trueResult, len)
+			elseif outcome == "F" and v.falseResult ~= nil then
+				len = AppendTreeSignature(v.falseResult, len)
+			end
+		end
+	end
+	return len
+end
+
+---Renders one bar text entry via the signature-keyed plan cache. Plans are built once by the
+---legacy resolver so their skeletons match it exactly; after that a tick only re-reads the
+---plan's variable values and skips the format entirely when nothing changed.
+---@param state table Per-entry state holding the last plan, color and argument values
+---@param text string The entry's raw bar text
+---@param colorCode string The "|cAARRGGBB" default color prefix
+---@param force boolean True bypasses the unchanged-skip
+---@return string|nil output The formatted text, or nil when unchanged and not forced
+local function RenderBarTextEntry(state, text, colorCode, force)
+	local tree = GetFromBarTextTreeCache(text)
+	local len = AppendTreeSignature(tree, 0)
+	local signature = len == 0 and "" or table.concat(signatureBuffer, "", 1, len)
+
+	local plans = barTextRenderPlans[text]
+	if plans == nil then
+		plans = {}
+		barTextRenderPlans[text] = plans
+	end
+	local plan = plans[signature]
+	if plan == nil then
+		plan = GetFromBarTextCache(RemoveInvalidVariablesFromBarText(tree))
+		plans[signature] = plan
+	end
+
+	local lookup = TRB.Data.lookup
+	lookup["color"] = colorCode
+
+	local vars = plan.variables
+	local varCount = #vars
+	local lastArgs = state.args
+	if lastArgs == nil then
+		lastArgs = {}
+		state.args = lastArgs
+	end
+
+	local changed = force or state.plan ~= plan or state.colorCode ~= colorCode
+	for i = 1, varCount do
+		local value = lookup[vars[i]]
+		if not changed and (issecretvalue(value) or issecretvalue(lastArgs[i]) or lastArgs[i] ~= value) then
+			changed = true
+		end
+		lastArgs[i] = value
+	end
+	if not changed then
+		return nil
+	end
+	state.plan = plan
+	state.colorCode = colorCode
+
+	local _
+	local outputText
+	if varCount > 0 then
+		_, outputText = pcall(string.format, plan.stringFormat, unpack(lastArgs, 1, varCount))
+	elseif string.len(plan.stringFormat) > 0 then
+		outputText = plan.stringFormat
+	else
+		outputText = ""
+	end
+	return colorCode .. outputText
+end
+
 ---Checks if any primary stat ratings are nil
 ---@return boolean
 local function ArePrimaryRatingsNil()
@@ -2282,22 +2397,36 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 
 						color = color or "FFFFFFFF"
 
-						barTextBuffer.text = e.text
-						barTextBuffer.color = "|c" .. color
+						local colorCode = "|c" .. color
+						local entryState = barTextEntryStates[i]
+						if entryState == nil then
+							entryState = {}
+							barTextEntryStates[i] = entryState
+						end
+						-- Empty frameCache.text means the frame was hidden or never written; the font
+						-- string may hold stale text, so bypass the unchanged-skip.
+						local forceWrite = visibilityRefresh or frameCache.text == nil or frameCache.text == ""
+						local renderOk, returnText = pcall(RenderBarTextEntry, entryState, e.text, colorCode, forceWrite)
+						if not renderOk then
+							-- Engine failure: fall back to the legacy resolver for this pass.
+							barTextBuffer.text = e.text
+							barTextBuffer.color = colorCode
+							returnText = GetReturnText(barTextBuffer)
+						end
 
-						local returnText = GetReturnText(barTextBuffer)
-
-						if textFrames ~= nil and textFrames[i] ~= nil then
-							pcall(TryUpdateText, textFrames[i],  returnText)
-						else
-							-- Frame list is out of sync; rebuild and try once.
-							TRB.Functions.BarText:CreateBarTextFrames()
-							textFrames = TRB.Frames.textFrames
+						if returnText ~= nil then
 							if textFrames ~= nil and textFrames[i] ~= nil then
 								pcall(TryUpdateText, textFrames[i],  returnText)
+							else
+								-- Frame list is out of sync; rebuild and try once.
+								TRB.Functions.BarText:CreateBarTextFrames()
+								textFrames = TRB.Frames.textFrames
+								if textFrames ~= nil and textFrames[i] ~= nil then
+									pcall(TryUpdateText, textFrames[i],  returnText)
+								end
 							end
+							frameCache.text = returnText
 						end
-						frameCache.text = returnText
 					end
 					
 					if frameCache.level ~= TRB.Data.settings.core.strata.level then
@@ -2411,6 +2540,9 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	if classId ~= TRB.Data.character.classId or specId ~= TRB.Data.character.specId then
 		return
 	end
+
+	-- New font strings start empty; drop the unchanged-skip states so every entry rewrites.
+	wipe(barTextEntryStates)
 	
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
 	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
