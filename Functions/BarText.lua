@@ -2404,8 +2404,10 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 							barTextEntryStates[i] = entryState
 						end
 						-- Empty frameCache.text means the frame was hidden or never written; the font
-						-- string may hold stale text, so bypass the unchanged-skip.
-						local forceWrite = visibilityRefresh or frameCache.text == nil or frameCache.text == ""
+						-- string may hold stale text, so bypass the unchanged-skip. Secret text cannot be
+						-- compared but is never empty (it carries the color prefix), so it never forces.
+						local prevText = frameCache.text
+						local forceWrite = visibilityRefresh or (not issecretvalue(prevText) and (prevText == nil or prevText == ""))
 						local renderOk, returnText = pcall(RenderBarTextEntry, entryState, e.text, colorCode, forceWrite)
 						if not renderOk then
 							-- Engine failure: fall back to the legacy resolver for this pass.
@@ -2414,7 +2416,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 							returnText = GetReturnText(barTextBuffer)
 						end
 
-						if returnText ~= nil then
+						if issecretvalue(returnText) or returnText ~= nil then
 							if textFrames ~= nil and textFrames[i] ~= nil then
 								pcall(TryUpdateText, textFrames[i],  returnText)
 							else
