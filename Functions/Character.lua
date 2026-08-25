@@ -165,10 +165,14 @@ function TRB.Functions.Character:UpdateResourceValues()
 	end
 end
 
+-- "%.Nf" strings memoized by precision so repeated reformats skip rebuilding them.
+local precisionFormatCache = {}
+
 ---Reads and pre-formats an additional power's values (e.g. Shadow's mana), so per-tick
 ---refreshers only read cached strings. Power events mark the entry dirty; the refresher pulls.
 ---@param powerToken string # UNIT_POWER_UPDATE power token, e.g. "MANA"
-function TRB.Functions.Character:UpdateAdditionalPowerValues(powerToken)
+---@param precision integer? # Decimal places for the percent string, defaults to 1
+function TRB.Functions.Character:UpdateAdditionalPowerValues(powerToken, precision)
 	local powerType = TokenToPowerType[powerToken]
 	if powerType == nil then
 		return
@@ -185,20 +189,35 @@ function TRB.Functions.Character:UpdateAdditionalPowerValues(powerToken)
 		store[powerToken] = entry
 	end
 
-	local precision = 1
-	local specEntry = TRB.Data.specCache and TRB.Data.character and TRB.Data.specCache[TRB.Data.character.compositeKey]
-	if specEntry and specEntry.settings and specEntry.settings.precision then
-		precision = specEntry.settings.precision.mana or 1
+	precision = precision or 1
+	local percentFormat = precisionFormatCache[precision]
+	if percentFormat == nil then
+		percentFormat = "%." .. precision .. "f"
+		precisionFormatCache[precision] = percentFormat
 	end
 
 	entry.current = UnitPower("player", powerType)
 	entry.max = UnitPowerMax("player", powerType)
+	-- The raw fraction feeds bar text conditionals; the display string wants it scaled to 100.
 	entry.percent = UnitPowerPercent("player", powerType)
 	entry.currentFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(entry.current)
 	entry.maxFormatted = TRB.Functions.String:ConvertToAbbreviatedNumber(entry.max)
-	entry.percentFormatted = string.format("%." .. precision .. "f", UnitPowerPercent("player", powerType, false, CurveConstants.ScaleTo100))
+	entry.percentFormatted = string.format(percentFormat, UnitPowerPercent("player", powerType, false, CurveConstants.ScaleTo100))
 	entry.precision = precision
 	entry.dirty = false
+end
+
+---Marks every cached additional power entry stale. Spec changes stop the events that would
+---otherwise mark them, so the next refresher pull must re-read rather than serve pre-swap values.
+function TRB.Functions.Character:InvalidateAdditionalPowerValues()
+	local store = TRB.Data.snapshotData and TRB.Data.snapshotData.formatted and TRB.Data.snapshotData.formatted.additionalPower
+	if store == nil then
+		return
+	end
+	---@diagnostic disable-next-line: param-type-mismatch
+	for _, entry in pairs(store) do
+		entry.dirty = true
+	end
 end
 
 ---Reads the player's current health, max health, absorbs, and incoming heals from the WoW API, updates snapshotData.attributes, pre-formats display strings, and recalculates the health color curve.
@@ -1988,6 +2007,9 @@ function TRB.Functions.Character:EventRegistration()
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+
+	-- Runs on every spec change, after the class module has set additionalPowerTokens.
+	TRB.Functions.Character:InvalidateAdditionalPowerValues()
 
 	if TRB.Data.specSupported then
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]

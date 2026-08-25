@@ -358,7 +358,7 @@ local function RefreshLookupData_Elemental()
 		local additionalPower = snapshotData.formatted.additionalPower
 		local mana = additionalPower and additionalPower["MANA"]
 		if mana == nil or mana.dirty or mana.precision ~= manaPrecision then
-			TRB.Functions.Character:UpdateAdditionalPowerValues("MANA")
+			TRB.Functions.Character:UpdateAdditionalPowerValues("MANA", manaPrecision)
 			mana = snapshotData.formatted.additionalPower["MANA"]
 		end
 		lookupLogic["$mana"] = mana.current
