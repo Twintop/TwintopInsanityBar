@@ -1584,7 +1584,8 @@ end
 local signatureBuffer = {}
 
 ---Walks the tree evaluating only taken conditionals, appending one outcome char per node
----("T"/"F"/"I") so the branch combination can key a cached render plan.
+---("T"/"F"/"I") so the branch combination can key a cached render plan. Outcomes must stay identical to
+---EmitTreeSignatureSource; "F" absorbs a missing falseResult because that is a static property of a node.
 ---@param tree table
 ---@param len integer Current signature buffer length
 ---@return integer len
@@ -1685,27 +1686,34 @@ local function EmitTreeSignatureSource(tree, out, preamble, indent, k)
 					out[#out + 1] = indent .. "local " .. rName .. " = (" .. inlined .. ")"
 					out[#out + 1] = indent .. "if " .. rName .. " then"
 				else
-					preamble[#preamble + 1] = "local e" .. k .. " = " .. exprSource
+					-- Hoisted names are indexed by preamble position, not by k: true/false subtrees
+					-- share slot numbers, and these all land in the same chunk-level scope.
+					local eName = "e" .. (#preamble + 1)
+					preamble[#preamble + 1] = "local " .. eName .. " = " .. exprSource
 					local callArgs = varCount > 0 and (", " .. table.concat(argNames, ", ")) or ""
-					out[#out + 1] = indent .. "local ok" .. k .. ", " .. rName .. " = pcall(e" .. k .. callArgs .. ")"
+					out[#out + 1] = indent .. "local ok" .. k .. ", " .. rName .. " = pcall(" .. eName .. callArgs .. ")"
 					out[#out + 1] = indent .. "if not ok" .. k .. " then"
 					out[#out + 1] = nextIndent .. "sig = sig + " .. addI
 					out[#out + 1] = indent .. "elseif " .. rName .. " then"
 				end
 				out[#out + 1] = nextIndent .. "sig = sig + " .. addT
-				k = EmitTreeSignatureSource(v.trueResult, out, preamble, nextIndent, k + 1)
-				if k == nil then
+				-- Branches are mutually exclusive and slot k already records which one ran, so both
+				-- subtrees start at k + 1 and the parent resumes past the deeper of the two.
+				local kTrue = EmitTreeSignatureSource(v.trueResult, out, preamble, nextIndent, k + 1)
+				if kTrue == nil then
 					return nil
 				end
 				out[#out + 1] = indent .. "else"
 				out[#out + 1] = nextIndent .. "sig = sig + " .. addF
+				local kFalse = k + 1
 				if v.falseResult ~= nil then
-					k = EmitTreeSignatureSource(v.falseResult, out, preamble, nextIndent, k)
-					if k == nil then
+					kFalse = EmitTreeSignatureSource(v.falseResult, out, preamble, nextIndent, k + 1)
+					if kFalse == nil then
 						return nil
 					end
 				end
 				out[#out + 1] = indent .. "end"
+				k = kTrue > kFalse and kTrue or kFalse
 			end
 		end
 	end
