@@ -322,7 +322,8 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero, ind
 		    self:GetCacheKey()
         end
 
-		if TRB.Data.cache.values.resource[self._cacheKey] == nil then
+		local cachedCost = TRB.Data.cache.values.resource[self._cacheKey]
+		if cachedCost == nil then
 			local spc = C_Spell.GetSpellPowerCost(self.id)
 			if spc ~= nil then
 				for x = 1, #spc do
@@ -340,12 +341,15 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero, ind
 					end
 				end
 			end
-		else
-			if TRB.Data.cache.values.resource[self._cacheKey] == 0 then
-				self._isFreeCurrently = true
-			else
-				return TRB.Data.cache.values.resource[self._cacheKey]
+			-- Remember a lookup that matched nothing, or this spell re-queries the API on every
+			-- call until the next aura-driven wipe while costed spells only query once.
+			if TRB.Data.cache.values.resource[self._cacheKey] == nil then
+				TRB.Data.cache.values.resource[self._cacheKey] = false
 			end
+		elseif cachedCost == 0 then
+			self._isFreeCurrently = true
+		elseif cachedCost ~= false then
+			return cachedCost
 		end
 	elseif self.primaryResourceTypeProperty == "custom" then
 		return self.primaryResourceTypePropertyValue
