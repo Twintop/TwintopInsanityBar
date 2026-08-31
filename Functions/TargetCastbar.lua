@@ -1089,11 +1089,35 @@ local function OnUnitChanged(entry)
 end
 
 local eventFrame = CreateFrame("Frame")
+
+---Re-resolves both bars against live unit state after a loading screen. UNIT_SPELLCAST_* events fired
+---behind the screen never arrive, so a cast that finished during it leaves its bar stuck at 0.0 remaining.
+local function ResyncAfterLoadingScreen()
+	for _, u in ipairs(UNITS) do
+		OnUnitChanged(u)
+	end
+	-- The unit's casting info can still read empty the instant the screen clears, which would drop a cast
+	-- that outlived it (no START event follows to bring it back). Re-check the bars that landed idle.
+	C_Timer.After(0.5, function()
+		if not eventFrame:IsEventRegistered("PLAYER_ENTERING_WORLD") then
+			return
+		end
+		for _, u in ipairs(UNITS) do
+			local model = TRB.Data[u.modelKey]
+			if (model == nil or not model:IsActive()) and fadeStart[u.groupKey] == nil then
+				OnUnitChanged(u)
+			end
+		end
+	end)
+end
+
 eventFrame:SetScript("OnEvent", function(_, event, unit, _, spellId)
 	if event == "PLAYER_TARGET_CHANGED" then
 		OnUnitChanged(UNITS[1])
 	elseif event == "PLAYER_FOCUS_CHANGED" then
 		OnUnitChanged(UNITS[2])
+	elseif event == "PLAYER_ENTERING_WORLD" or event == "LOADING_SCREEN_DISABLED" then
+		ResyncAfterLoadingScreen()
 	elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" then
 		-- Player vehicle state gates the In Vehicle hard-hide condition; re-resolve idle bars (active bars
 		-- pick it up on the next updater frame).
@@ -1113,6 +1137,8 @@ function TRB.Functions.TargetCastbar:Enable()
 	end
 	eventFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 	eventFrame:RegisterEvent("PLAYER_FOCUS_CHANGED")
+	eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	eventFrame:RegisterEvent("LOADING_SCREEN_DISABLED")
 	eventFrame:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player")
 	eventFrame:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player")
 	-- Show any Always Show idle bar immediately (e.g. a target already selected at login/spec change).
