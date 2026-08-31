@@ -36,6 +36,9 @@ function TRB.Classes.Druid.DruidBaseSpells:New()
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "ironfur",
 		rangeCheck = false,
+        baseDuration = 7,
+        -- Ironfur's 0.5s cooldown against its longest talented duration bounds how many can be live at once
+        maxStacks = 21,
         category = "defensive"
     })
 
@@ -665,6 +668,9 @@ end
 ---@field public incarnationGuardianOfUrsoc TRB.Classes.SpellBase
 ---@field public harnessedRage TRB.Classes.SpellBase
 ---@field public killingBlow TRB.Classes.SpellBase
+---@field public mangle TRB.Classes.SpellBase
+---@field public ursocsEndurance TRB.Classes.SpellBase
+---@field public guardianOfElune TRB.Classes.SpellBase
 ---@field public maul TRB.Classes.SpellThreshold
 ---@field public maulKillingBlow TRB.Classes.SpellThreshold
 ---@field public maulHarnessedRage TRB.Classes.SpellThreshold
@@ -760,6 +766,21 @@ function TRB.Classes.Druid.GuardianSpells:New()
         isTalent = true,
         resourceMod = 20
     })
+    self.mangle = TRB.Classes.SpellBase:New({
+        id = 33917
+    })
+    self.ursocsEndurance = TRB.Classes.SpellBase:New({
+        id = 393611,
+        isTalent = true,
+        durationMod = 2
+    })
+    -- Mangle banks this; the next Ironfur or Frenzied Regeneration consumes it.
+    self.guardianOfElune = TRB.Classes.SpellBase:New({
+        id = 155578,
+        isTalent = true,
+        duration = 15,
+        durationMod = 3
+    })
 
     return self
 end
@@ -776,6 +797,7 @@ function TRB.Classes.Druid.GuardianSpells.FillBarTextVariables(specCacheEntry)
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
+		{ variable = "#ironfur", icon = spells.ironfur.icon, description = spells.ironfur.name, printInSettings = true },
 	})
 
 	local varCategory = TRB.Functions.BarText.VariableCategory
@@ -795,6 +817,10 @@ function TRB.Classes.Druid.GuardianSpells.FillBarTextVariables(specCacheEntry)
 		
 		{ variable = "$berserkTime", description = L["DruidGuardianBarTextVariable_berserkTime"], printInSettings = true, color = false },
 		{ variable = "$incarnationTime", description = "", printInSettings = false, color = false },
+
+		{ variable = "$ironfurStacks", description = L["DruidGuardianBarTextVariable_ironfurStacks"], printInSettings = true, color = false },
+		{ variable = "$ironfurTime", description = L["DruidGuardianBarTextVariable_ironfurTime"], printInSettings = true, color = false },
+		{ variable = "$ironfurNextStackTime", description = L["DruidGuardianBarTextVariable_ironfurNextStackTime"], printInSettings = true, color = false },
 	})
 end
 
@@ -1069,6 +1095,14 @@ function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
             false -- not primary
         )
 
+        -- Ironfur bar (1 node) - remaining duration of the tracked Ironfur applications
+        barGroups.ironfur = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Ironfur",
+            1,
+            false -- not primary
+        )
+
     elseif specId == 4 then -- Restoration
         -- Primary Mana bar only (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -1186,6 +1220,11 @@ function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = false,
                 resourceType = "Health"
+            },
+            ironfur = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "Ironfur"
             }
         }
     elseif specId == 4 then -- Restoration

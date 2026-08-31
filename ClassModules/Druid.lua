@@ -182,6 +182,11 @@ local function FillSpecializationCache()
 	specCache.druid_guardian.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 	---@type TRB.Classes.Snapshot
 	specCache.druid_guardian.snapshotData.snapshots[spells.maim.id] = TRB.Classes.Snapshot:New(spells.maim)
+	---@type TRB.Classes.Snapshot
+	specCache.druid_guardian.snapshotData.snapshots[spells.ironfur.id] = TRB.Classes.Snapshot:New(spells.ironfur)
+	specCache.druid_guardian.snapshotData.snapshots[spells.ironfur.id].buff:InitializeIndependentStacks()
+	---@type TRB.Classes.Snapshot
+	specCache.druid_guardian.snapshotData.snapshots[spells.guardianOfElune.id] = TRB.Classes.Snapshot:New(spells.guardianOfElune)
 
 
 	-- Restoration
@@ -679,6 +684,29 @@ local function ConstructResourceBar(settings)
 		Bar:ConstructBarGroups(settings, barGroups)
 	end
 
+	-- One threshold line per trackable Ironfur application.
+	if barGroups and barGroups.ironfur and TRB.Data.character.specId == 3 then
+		local ironfurNode = barGroups.ironfur:GetNode(1)
+		if ironfurNode then
+			ironfurNode:ClearThresholds()
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local ironfurSettings = settings.bars and settings.bars["ironfur"]
+			local ironfurColors = settings.colors and settings.colors.bars and settings.colors.bars.ironfur
+			local thresholdSize = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
+			local isVertical = Bar:IsVerticalFill(ironfurSettings and ironfurSettings.fillDirection)
+			local ironfurFrame = ironfurNode:GetFrame()
+			local thresholdWidth = isVertical and (ironfurFrame and ironfurFrame:GetWidth() or (ironfurSettings and ironfurSettings.width) or 30) or thresholdSize
+			local thresholdHeight = isVertical and thresholdSize or (ironfurFrame and ironfurFrame:GetHeight() or (ironfurSettings and ironfurSettings.height) or 24)
+			local lineColor = ironfurColors and ironfurColors.stackLine and ironfurColors.stackLine.color
+
+			for _ = 1, spells.ironfur.maxStacks do
+				local thresholdFrame = CreateFrame("Frame", nil, ironfurFrame)
+				Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, lineColor, thresholdSize)
+				ironfurNode:RegisterThreshold(thresholdFrame)
+			end
+		end
+	end
+
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
 	-- Bar:HideResourceBar()
@@ -1115,6 +1143,28 @@ local function RefreshLookupData_Guardian()
 		end
 	end
 
+	-- Block C: Ironfur ($ironfurStacks, $ironfurTime, $ironfurNextStackTime)
+	if not activeVars or activeVars["$ironfurStacks"] or activeVars["$ironfurTime"]
+		or activeVars["$ironfurNextStackTime"] then
+		local buff = snapshotData.snapshots[spells.ironfur.id].buff
+		-- Prune here too: a self-driven bar text refresh can land without UpdateSnapshot_Guardian running first
+		local _ironfurStacks = buff:UpdateIndependentStacks(GetTime())
+		local _ironfurTime = buff.remaining
+		local _ironfurNextStackTime = buff.nextStackRemaining
+
+		lookupLogic["$ironfurStacks"] = _ironfurStacks
+		lookupLogic["$ironfurTime"] = _ironfurTime
+		lookupLogic["$ironfurNextStackTime"] = _ironfurNextStackTime
+
+		lookup["$ironfurStacks"] = _ironfurStacks
+		if lookupChanged(prevState, "$ironfurTime", _ironfurTime) then
+			lookup["$ironfurTime"] = TRB.Functions.BarText:TimerPrecision(_ironfurTime)
+		end
+		if lookupChanged(prevState, "$ironfurNextStackTime", _ironfurNextStackTime) then
+			lookup["$ironfurNextStackTime"] = TRB.Functions.BarText:TimerPrecision(_ironfurNextStackTime)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -1496,6 +1546,30 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshotData.snapshots[spells.berserk.id].buff:InitializeCustom(spells.berserk.duration, currentTime)
 			elseif spellId == spells.incarnationGuardianOfUrsoc.castId then
 				snapshotData.snapshots[spells.incarnationGuardianOfUrsoc.id].buff:InitializeCustom(spells.incarnationGuardianOfUrsoc.duration, currentTime)
+			elseif spellId == spells.mangle.id then
+				if talents:IsTalentActive(spells.guardianOfElune) then
+					snapshotData.snapshots[spells.guardianOfElune.id].buff:InitializeCustom(spells.guardianOfElune.duration, currentTime)
+				end
+			elseif spellId == spells.frenziedRegeneration.id then
+				snapshotData.snapshots[spells.guardianOfElune.id].buff:Reset()
+			elseif spellId == spells.ironfur.id then
+				local duration = spells.ironfur.baseDuration
+
+				if talents:IsTalentActive(spells.ursocsEndurance) then
+					duration = duration + spells.ursocsEndurance.attributes.durationMod
+				end
+
+				local guardianOfElune = snapshotData.snapshots[spells.guardianOfElune.id].buff
+				if guardianOfElune:GetRemainingTime(currentTime) > 0 then
+					duration = duration + spells.guardianOfElune.attributes.durationMod
+					guardianOfElune:Reset()
+				end
+
+				local ironfur = snapshotData.snapshots[spells.ironfur.id].buff
+				ironfur:AddIndependentStack(duration, currentTime)
+				-- Rescale only on cast, and never below a longer application still running, or its line
+				-- would sit off the end of the bar.
+				snapshotData.attributes.ironfurBarMax = ironfur:GetMaxIndependentStackDuration()
 			end
 		elseif event == "SPELL_UPDATE_ICON" then
 
@@ -1657,13 +1731,136 @@ local function UpdateSnapshot_Guardian()
 
 	snapshotData.snapshots[spells.berserk.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.incarnationGuardianOfUrsoc.id].buff:GetRemainingTime(currentTime)
-	-- Add any Guardian-specific snapshot updates here when spells are defined
+	snapshotData.snapshots[spells.guardianOfElune.id].buff:GetRemainingTime(currentTime)
+
+	if snapshotData.snapshots[spells.ironfur.id].buff:UpdateIndependentStacks(currentTime) == 0 then
+		snapshotData.attributes.ironfurBarMax = 0
+	end
 end
 
 local function UpdateSnapshot_Restoration()
 	UpdateSnapshot()
 end
 
+
+-- Last anchor inputs for the Ironfur bar's per-application lines. Fields compare individually so
+-- the per-tick check allocates nothing; `gaps` memoizes each line's distance behind the fill edge.
+local ironfurAnchor = {
+	barMax = nil,
+	extent = nil,
+	border = nil,
+	fillDirection = nil,
+	thickness = nil,
+	overlapBorder = nil,
+	overshoot = nil,
+	lineColor = nil,
+	fillTexture = nil,
+	firstLine = nil,
+	gaps = {},
+	timerEnd = nil,
+	timerMax = nil,
+}
+
+---Renders the Ironfur bar: the fill is time until every application is gone, and one threshold line
+---per live application slides down the bar as that application expires.
+---@param specSettings table # Guardian's settings table
+---@param ironfurColors table # Resolved bar/border/background colors, after indicator overrides
+local function UpdateIronfurBar(specSettings, ironfurColors)
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local ironfurGroup = barGroups and barGroups.ironfur
+	local visibility = specSettings.displayBar and specSettings.displayBar.ironfur
+	if ironfurGroup == nil or visibility == nil or visibility.neverShow then
+		return
+	end
+
+	local ironfurNode = ironfurGroup:GetNode(1)
+	if ironfurNode == nil then
+		return
+	end
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local buff = snapshotData.snapshots[spells.ironfur.id].buff
+	local barMax = snapshotData.attributes.ironfurBarMax or 0
+
+	Color:ApplyFillColor(ironfurNode, ironfurColors.bar)
+	ironfurNode:SetBorderColor(ironfurColors.border)
+	ironfurNode:SetBackgroundColorFromString(ironfurColors.background)
+
+	local stacks = buff.independentStacks
+	local stackCount = #stacks
+	local newestEnd = stackCount > 0 and stacks[stackCount] or 0
+
+	-- A countdown is a timeline, not a resource: the client drains the span linearly every frame,
+	-- where an interpolated SetValue would ease toward each 20Hz target and lurch between ticks.
+	if barMax > 0 and C_DurationUtil ~= nil then
+		if ironfurAnchor.timerEnd ~= newestEnd or ironfurAnchor.timerMax ~= barMax then
+			ironfurAnchor.timerEnd = newestEnd
+			ironfurAnchor.timerMax = barMax
+			local duration = C_DurationUtil.CreateDuration()
+			if duration ~= nil then
+				duration:SetTimeSpan(newestEnd - barMax, newestEnd)
+				ironfurNode:SetMinMax(0, 1)
+				ironfurNode:SetTimerDuration(duration, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.RemainingTime)
+			end
+		end
+	else
+		ironfurAnchor.timerEnd = nil
+		ironfurAnchor.timerMax = nil
+		ironfurNode:ClearTimerDuration()
+		ironfurNode:SetMinMax(0, 1)
+		ironfurNode:SetValue(0, false)
+	end
+
+	local barColors = specSettings.colors.bars and specSettings.colors.bars.ironfur
+	local lineColor = barColors and barColors.stackLine and barColors.stackLine.color
+	local thresholdSize = specSettings.thresholds.properties.width
+	local overlapBorder = specSettings.thresholds.properties.overlapBorder
+	local nodeFrame = ironfurNode:GetFrame()
+	local thresholds = ironfurNode:GetThresholds()
+	-- Bucketed to whole pixels so a sub-pixel change near full does not re-anchor every tick. The
+	-- ratio is passed in because a timer-driven fill does not report one through GetValue.
+	local fillRatio = barMax > 0 and math.min(1, math.max(0, buff.remaining / barMax)) or 0
+	local overshoot = math.floor(Threshold:GetFillEdgeOvershoot(ironfurNode, fillRatio) + 0.5)
+
+	-- firstLine catches a threshold rebuild: ConstructResourceBar drops these frames and creates new
+	-- ones, which the memoized gaps would otherwise leave permanently unanchored.
+	local shared = ironfurAnchor
+	if shared.barMax ~= barMax or shared.extent ~= nodeFrame:GetWidth() or shared.border ~= ironfurNode.border
+		or shared.fillDirection ~= ironfurNode.fillDirection or shared.thickness ~= thresholdSize
+		or shared.overlapBorder ~= overlapBorder or shared.overshoot ~= overshoot
+		or shared.lineColor ~= lineColor or shared.fillTexture ~= nodeFrame:GetStatusBarTexture()
+		or shared.firstLine ~= thresholds[1] then
+		shared.barMax = barMax
+		shared.extent = nodeFrame:GetWidth()
+		shared.border = ironfurNode.border
+		shared.fillDirection = ironfurNode.fillDirection
+		shared.thickness = thresholdSize
+		shared.overlapBorder = overlapBorder
+		shared.overshoot = overshoot
+		shared.lineColor = lineColor
+		shared.fillTexture = nodeFrame:GetStatusBarTexture()
+		shared.firstLine = thresholds[1]
+		wipe(shared.gaps)
+	end
+
+	for i = 1, #thresholds do
+		local line = thresholds[i]
+		if barMax > 0 and i <= stackCount then
+			local gap = newestEnd - stacks[i]
+			if shared.gaps[i] ~= gap then
+				if Threshold:AnchorThresholdToFillEdge(ironfurNode, line, gap, barMax, overshoot, thresholdSize, overlapBorder) then
+					Color:SetThresholdColor(line, lineColor, true)
+					shared.gaps[i] = gap
+					line:Show()
+				end
+			end
+		elseif shared.gaps[i] ~= nil or line:IsShown() then
+			shared.gaps[i] = nil
+			line:Hide()
+		end
+	end
+end
 
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
@@ -1681,6 +1878,7 @@ local scratch = {
 	rageBarColors1 = {},
 	comboPointColors3 = {},
 	barColorMap3 = {},
+	ironfurColors1 = {},
 	conditionMap4 = {},
 	manaBarColors1 = {},
 	comboPointColors4 = {},
@@ -2885,6 +3083,12 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
+			local ironfurBarColors = specSettings.colors.bars and specSettings.colors.bars.ironfur
+			local ironfurColors = scratch.ironfurColors1
+			wipe(ironfurColors)
+			ironfurColors.bar = ironfurBarColors and ironfurBarColors.bar
+			ironfurColors.border = ironfurBarColors and ironfurBarColors.border.color
+			ironfurColors.background = ironfurBarColors and ironfurBarColors.background.color
 			if IsFormBarVisible("primary") then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
@@ -3160,6 +3364,7 @@ local function UpdateResourceBar()
 				wipe(barColorMap)
 				barColorMap.rageBar = rageBarColors
 				barColorMap.comboPoints = comboPointColors
+				barColorMap.ironfurBar = ironfurColors
 
 				-- Apply flat indicator colors (priority order, last writer wins)
 				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -3220,6 +3425,7 @@ local function UpdateResourceBar()
 			refreshText = refreshText or refreshTextFromComboPoints
 
 			UpdateHealthBarGeneric()
+			UpdateIronfurBar(specSettings, ironfurColors)
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 4 then
@@ -3968,11 +4174,17 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local hasMana = TRB.Data.character.specId == 1 and displaySpecId == 1
 		local manaVisSettings = sharedDisplayBar and sharedDisplayBar.mana or nil
 
+		-- Ironfur bar: Guardian only, and its settings are Guardian's own even in a form that routes
+		-- the primary bar to another spec's settings.
+		local hasIronfur = TRB.Data.character.specId == 3
+		local ironfurVisSettings = hasIronfur and TRB.Data.settings.druid.guardian.displayBar.ironfur or nil
+
 		local entries = {
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedDisplayBar and sharedDisplayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasSecondary, TRB.Data.character.maxResource2, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedDisplayBar and sharedDisplayBar.health, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.ironfur, ironfurVisSettings, hasIronfur, 1, nil),
 		}
 
 		if sharedSettings ~= nil and sharedDisplayBar ~= nil then
@@ -4097,9 +4309,16 @@ do
 		local snaps = TRB.Data.snapshotData.snapshots
 		return snaps[spells.berserk.id].buff.isActive or snaps[spells.incarnationGuardianOfUrsoc.id].buff.isActive
 	end
+	local ironfurActiveFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.ironfur.id].buff.isActive
+	end
 	---@type table<string, boolean|function>
 	local guardian = {
 		["$berserkTime"] = berserkGuardianFn, ["$incarnationTime"] = berserkGuardianFn,
+		["$ironfurStacks"] = ironfurActiveFn,
+		["$ironfurTime"] = ironfurActiveFn,
+		["$ironfurNextStackTime"] = ironfurActiveFn,
 	}
 	for k, v in pairs(healthVars) do guardian[k] = v end
 	for k, v in pairs(sharedResourceVars) do guardian[k] = v end
@@ -4224,6 +4443,17 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			if manaNode then
 				local isVisible = barGroups.mana.isVisible and manaNode.isVisible
 				return manaNode:GetFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	end
+
+	if normalizedRelativeFrame == "IronfurBar" then
+		if barGroups.ironfur then
+			local ironfurNode = barGroups.ironfur:GetNode(1)
+			if ironfurNode then
+				local isVisible = barGroups.ironfur.isVisible and ironfurNode.isVisible
+				return ironfurNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

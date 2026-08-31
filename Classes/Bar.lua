@@ -1990,6 +1990,7 @@ end
 ---@field public endCapMode string? # Multi-node end cap policy: "highest" (default) or "all" (independent nodes, e.g. Warrior defensives)
 ---@field public cdm TRB.CdmDependency? # Declared Cooldown Manager reliance for the whole bar. Options-panel badge only; nothing branches on it at runtime.
 ---@field public isSelfDriven boolean? # True when the bar shows/hides itself from live state (cast bars, GCD, mirror timers) rather than through ProcessBars. Such bars stay in the anchor tree as scaffolds and are never torn down by InvalidateAppliedState.
+---@field public timerDrivenFill boolean? # True when the fill is bound to a DurationObject rather than written with SetValue, which leaves the Smooth setting nothing to act on.
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -2056,6 +2057,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.cdm = config.cdm -- Declared Cooldown Manager reliance for the whole bar; options-panel badge only, nothing branches on it
 	self.isCastbar = config.isCastbar or false -- Player/Target/Focus cast bar; display name already ends in "Cast Bar" so labels drop the redundant trailing "Bar"
 	self.isSelfDriven = config.isSelfDriven or false -- Renders itself from live state instead of via ProcessBars
+	self.timerDrivenFill = config.timerDrivenFill or false -- Fill comes from a DurationObject, so the Smooth setting has nothing to act on
 	self.endCapMode = config.endCapMode -- "all" for independent-node bars; nil/"highest" shows the cap only on the highest progressed node
 
 	return self
@@ -2696,6 +2698,35 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end,
 		defaultColorsFunc = function()
 			return TRB.Functions.Settings:DefaultEnrageBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Ironfur bar (Guardian Druid)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "ironfur",
+		displayName = L["ResourceDruidIronfur"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		-- Scale is the longest live application's own duration, resolved per cast by the class module.
+		minMaxMode = "custom",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "ironfur",
+		-- Fill is a DurationObject the client drains, so the Smooth setting has nothing to act on.
+		timerDrivenFill = true,
+		-- Custom threshold lines read in seconds; 12 is the longest talented application.
+		thresholdMax = 12,
+		thresholdDecimals = 1,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultIronfurBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultIronfurBarColors()
 		end,
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()

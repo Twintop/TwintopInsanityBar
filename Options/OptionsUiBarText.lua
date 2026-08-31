@@ -843,7 +843,31 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			L["HealthBar"],
 			L["Screen"],
 		}
-	elseif (classId == 11 and specId > 1 and specId <= 4) then -- Non-Balance Druid
+	elseif (classId == 11 and specId == 3) then -- Guardian Druid (Ironfur bar support)
+		relativeToFrame[L["RageBar"]] = "RageBar"
+		relativeToFrame[L["EnergyBar"]] = "EnergyBar"
+		relativeToFrame[L["ComboPoint1"]] = "ComboPoint_1"
+		relativeToFrame[L["ComboPoint2"]] = "ComboPoint_2"
+		relativeToFrame[L["ComboPoint3"]] = "ComboPoint_3"
+		relativeToFrame[L["ComboPoint4"]] = "ComboPoint_4"
+		relativeToFrame[L["ComboPoint5"]] = "ComboPoint_5"
+		relativeToFrame[L["ManaBar"]] = "ManaBar"
+		relativeToFrame[L["IronfurBar"]] = "IronfurBar"
+		relativeToFrameList = {
+			L["MainResourceBar"],
+			L["RageBar"],
+			L["EnergyBar"],
+			L["ComboPoint1"],
+			L["ComboPoint2"],
+			L["ComboPoint3"],
+			L["ComboPoint4"],
+			L["ComboPoint5"],
+			L["ManaBar"],
+			L["IronfurBar"],
+			L["HealthBar"],
+			L["Screen"],
+		}
+	elseif (classId == 11 and (specId == 2 or specId == 4)) then -- Non-Balance or Guardian Druid
 		relativeToFrame[L["RageBar"]] = "RageBar"
 		relativeToFrame[L["EnergyBar"]] = "EnergyBar"
 		relativeToFrame[L["ComboPoint1"]] = "ComboPoint_1"

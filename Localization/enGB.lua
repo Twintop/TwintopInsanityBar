@@ -433,4 +433,7 @@ if locale == "enGB" then
     -- Mage Frost: Fingers of Frost (2 Charges)
     L["MageFrostIndicatorFingersOfFrost2Tooltip"] = "Changes to this colour when you have two Fingers of Frost charges."
 
+    -- Druid Guardian: Ironfur bar
+    L["DruidGuardianIronfurStackLineColor"] = "Ironfur Application Line Colour"
+
 end

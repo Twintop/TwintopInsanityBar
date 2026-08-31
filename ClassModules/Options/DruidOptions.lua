@@ -1020,6 +1020,38 @@ local function GuardianLoadDefaultBarTextSettings(classic)
 
 	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("berserkTime", "berserk", classic, "CENTER", "RIGHT"))
 
+	-- Keep in step with the Ironfur seed in PortForwardSettings, so a fresh profile and a migrated
+	-- one end up with the same entry.
+	table.insert(textSettings, {
+		useDefaultFontColor = false,
+		useDefaultFontOutline = false,
+		useDefaultFontShadow = false,
+		fontOutline = "OUTLINE",
+		fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		useDefaultFontFace = false,
+		useDefaultFontSize = false,
+		enabled = true,
+		name = L["PositionMiddle"],
+		guid = TRB.Functions.String:Guid(),
+		constrainToParent = false,
+		maxWidthPercent = 100,
+		text = "{$ironfurStacks}[$ironfurStacks - $ironfurTime]",
+		fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+		fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+		fontJustifyHorizontal = "CENTER",
+		fontJustifyHorizontalName = L["PositionCenter"],
+		fontSize = 14,
+		color = { color = "FFFFFFFF" },
+		position = {
+			xPos = 0,
+			yPos = 0,
+			relativeTo = "CENTER",
+			relativeToName = L["PositionCenter"],
+			relativeToFrame = "IronfurBar",
+			relativeToFrameName = L["IronfurBar"],
+		},
+	})
+
 	local sharedTextSettings = SharedLoadDefaultBarTextSettings(3, classic)
 	for k,v in pairs(sharedTextSettings) do table.insert(textSettings, v) end
 	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
@@ -1081,6 +1113,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			ironfur = { neverShow = true, alwaysShow = false, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			enableFormSwitching = true,
 			showComboPoints = false
 		},
@@ -1091,6 +1124,9 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			ironfur = TRB.Functions.Settings:DefaultIronfurBarDimensions(classic),
+		},
 		endOf = {
 			berserk = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
@@ -1139,6 +1175,9 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 				},
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			bars = {
+				ironfur = TRB.Functions.Settings:DefaultIronfurBarColors(),
+			},
 			threshold = {
 				under = {
 					color = "FFFFFFFF"
@@ -1171,6 +1210,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = {
 							rageBar = { bar = true, border = false, background = false },
+							ironfurBar = { bar = false, border = false, background = false },
 						},
 					},
 					berserk = {
@@ -1180,6 +1220,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = {
 							rageBar = { bar = true, border = false, background = false },
+							ironfurBar = { bar = false, border = false, background = false },
 						},
 					},
 					borderOvercap = {
@@ -1188,6 +1229,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 						isGradient = true,
 						targets = {
 							rageBar = { bar = false, border = true, background = false },
+							ironfurBar = { bar = false, border = false, background = false },
 						},
 					},
 				},
@@ -1213,7 +1255,9 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 		},
 		audio = {
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(),
+		textures = TRB.Functions.Settings:DefaultTextures(nil, nil, {
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("ironfur"),
+		}),
 	}
 
 	if includeBarText then
@@ -2677,6 +2721,7 @@ local function GuardianConstructIndicatorColorsPanel(parent)
 			{ key = "comboPoints",  label = L["BarNameComboPoints"] },
 			{ key = "manaBar",      label = L["BarNameManaBar"] },
 			{ key = "energyBar",    label = L["BarNameEnergyBar"] },
+			{ key = "ironfurBar",   label = L["BarNameIronfur"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Druid_Guardian",
 		endOfConfigs = {
@@ -2697,6 +2742,39 @@ local function GuardianConstructIndicatorColorsPanel(parent)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = controls
 end
 
+local function GuardianConstructIronfurBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.druid.guardian
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.druid_guardian
+	local yCoord = 5
+
+	local ironfurBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("ironfur")
+	if ironfurBarDef then
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 11, 3, yCoord, ironfurBarDef, L["ResourceRage"])
+
+		yCoord = yCoord - 60
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 11, 3, yCoord, ironfurBarDef, function(colorParent, colorYCoord)
+			local colorSettings = ironfurBarDef:GetColors(spec)
+			if colorSettings == nil or colorSettings.stackLine == nil then
+				return colorYCoord
+			end
+
+			controls.colors.bars.ironfur.stackLine = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(colorParent, L["DruidGuardianIronfurStackLineColor"], colorSettings.stackLine.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, colorYCoord)
+			controls.colors.bars.ironfur.stackLine:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, controls.colors.bars.ironfur, "stackLine", nil, nil, 11, 3)
+			end)
+			return colorYCoord - 30
+		end)
+	end
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.druid_guardian = controls
+end
+
 local function GuardianConstructBarTexturesPanel(parent)
 	if parent == nil then
 		return
@@ -2708,7 +2786,13 @@ local function GuardianConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.druid_guardian
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 11, 3, yCoord, false)
+	local customBars = {}
+	local ironfurBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("ironfur")
+	if ironfurBarDef then
+		table.insert(customBars, ironfurBarDef)
+	end
+
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 11, 3, yCoord, false, nil, false, customBars)
 end
 
 local function GuardianConstructBarVisibilityPanel(parent)
@@ -2783,8 +2867,14 @@ local function GuardianConstructBarVisibilityPanel(parent)
 		end
 	end)
 
+	local customBars = {}
+	local ironfurBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("ironfur")
+	if ironfurBarDef then
+		table.insert(customBars, ironfurBarDef)
+	end
+
 	yCoord = yCoord - 25
-	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", true, L["ResourceComboPoints"], true)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 11, 3, yCoord, L["ResourceRage"], "guardian", true, L["ResourceComboPoints"], true, nil, customBars)
 end
 
 local function GuardianConstructThresholdListPanel(parent)
@@ -2958,6 +3048,7 @@ local function GuardianConstructOptionsPanel(cache)
 
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
 		{ key = "rageBar", label = L["TabRage"], width = oUi.tabWidth.small, constructor = GuardianConstructRageBarPanel, visibilityKey = "primary" },
+		{ key = "ironfurBar", label = L["TabIronfur"], width = oUi.tabWidth.small, constructor = GuardianConstructIronfurBarPanel, visibilityKey = "ironfur" },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = GuardianConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = GuardianConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = GuardianConstructBarTexturesPanel },

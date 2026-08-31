@@ -1220,6 +1220,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				label = string.format(L["ShowBarVisibilityCustom"], barTypeDef.displayName),
 				globalLabel = string.format(L["ShowBarVisibilityCustom"], globalDisplayName),
 				isCustomBar = true,
+				hidesSmooth = barTypeDef.timerDrivenFill == true,
 				isGlobal = (classId ~= nil and coreDisplayBar[barTypeDef.visibilityKey] ~= nil),
 			})
 		end
@@ -1621,8 +1622,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			return displayText
 		end)
 
-		-- Smooth checkbox (hidden for the self-driven bars: their fill is timeline-driven, not resource-driven)
-		if barEntry.isCastbar or barEntry.isTimerBar then
+		-- Smooth checkbox (hidden wherever the fill is timeline-driven rather than resource-driven)
+		if barEntry.isCastbar or barEntry.isTimerBar or barEntry.hidesSmooth then
 			controls.checkBoxes.selectedSmooth:Hide()
 		else
 			controls.checkBoxes.selectedSmooth:Show()

@@ -8911,6 +8911,55 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			end
 		end
 	end
+
+	-- Guardian Druid: seed the Ironfur bar's default bar text. Everything else the bar needs merges
+	-- from defaults, but barText is an array, so an existing save would never gain the entry.
+	do
+		local guardian = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.druid ~= nil
+			and TwintopInsanityBarSettings.druid.guardian or nil
+		local displayText = guardian ~= nil and guardian.displayText or nil
+		if displayText ~= nil and type(displayText.barText) == "table" then
+			-- Scan rather than flag: a fresh profile already carries this entry from the defaults.
+			local hasIronfurBarText = false
+			for _, entry in ipairs(displayText.barText) do
+				if entry.position and entry.position.relativeToFrame == "IronfurBar" then
+					hasIronfurBarText = true
+					break
+				end
+			end
+			if not hasIronfurBarText then
+				table.insert(displayText.barText, {
+					useDefaultFontColor = false,
+					useDefaultFontOutline = false,
+					useDefaultFontShadow = false,
+					fontOutline = "OUTLINE",
+					fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					enabled = true,
+					name = L["PositionMiddle"],
+					guid = TRB.Functions.String:Guid(),
+					constrainToParent = false,
+					maxWidthPercent = 100,
+					text = "{$ironfurStacks}[$ironfurStacks - $ironfurTime]",
+					fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+					fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+					fontJustifyHorizontal = "CENTER",
+					fontJustifyHorizontalName = L["PositionCenter"],
+					fontSize = 14,
+					color = { color = "FFFFFFFF" },
+					position = {
+						xPos = 0,
+						yPos = 0,
+						relativeTo = "CENTER",
+						relativeToName = L["PositionCenter"],
+						relativeToFrame = "IronfurBar",
+						relativeToFrameName = L["IronfurBar"],
+					},
+				})
+			end
+		end
+	end
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -9298,6 +9347,25 @@ end
 ---@return table
 function TRB.Functions.Settings:DefaultEnrageBarColors()
 	return self:DefaultCustomBarColors("FFFFCC55", "FFAA7711", "66000000")
+end
+
+---Gets default Ironfur bar dimensions
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultIronfurBarDimensions(classic)
+	local dims = self:DefaultCustomBarDimensions(classic)
+	dims.anchor.barKey = "primary"
+	return dims
+end
+
+---Gets default Ironfur bar colors (steel bar, dark steel border) plus the per-application line color
+---@return table
+function TRB.Functions.Settings:DefaultIronfurBarColors()
+	local colors = self:DefaultCustomBarColors("FF8899AA", "FF445566", "66000000")
+	-- The newest application's line doubles as the fill's cap, so this bar offers no end cap.
+	colors.endCap = nil
+	colors.stackLine = { color = "FFFFFFFF" }
+	return colors
 end
 
 --[[

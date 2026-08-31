@@ -755,6 +755,116 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 	end
 end
 
+---Current 0-1 fill ratio of a bar node, or nil when it cannot be read as a plain number.
+---@param node TRB.Classes.BarNode
+---@return number?
+local function GetNodeFillRatio(node)
+	local frame = node and node.frame
+	if frame == nil or frame.GetMinMaxValues == nil or frame.GetValue == nil then
+		return nil
+	end
+
+	local minValue, maxValue = frame:GetMinMaxValues()
+	local value = frame:GetValue()
+	if minValue == nil or maxValue == nil or value == nil then
+		return nil
+	end
+	if IsSecretValue(minValue) or IsSecretValue(maxValue) or IsSecretValue(value) then
+		return nil
+	end
+	if maxValue == minValue then
+		return nil
+	end
+
+	return math.max(0, math.min(1, (value - minValue) / (maxValue - minValue)))
+end
+
+---Anchors a threshold line to the fill texture's leading edge, set back by a fixed distance, so it
+---rides the fill's native interpolation every frame instead of stepping on the 20Hz tick.
+---@param node TRB.Classes.BarNode # Bar node whose fill the line rides
+---@param thresholdLine Frame # The threshold frame to anchor
+---@param gapValue number # How far behind the fill's leading edge the line sits, in bar value units
+---@param maxResource number # The bar's current maximum
+---@param overshoot number # Near-full correction, in pixels, from GetFillEdgeOvershoot
+---@param lineThickness number? # Configured threshold line thickness
+---@param overlapBorder boolean? # Whether the line draws over the bar's side borders
+---@return boolean # False when there is no fill edge to anchor to
+function TRB.Functions.Threshold:AnchorThresholdToFillEdge(node, thresholdLine, gapValue, maxResource, overshoot, lineThickness, overlapBorder)
+	if node == nil or thresholdLine == nil then
+		return false
+	end
+	-- The aura engine's fill texture is a forbidden object: SetPoint against it errors.
+	if node:IsEngineDriven() then
+		return false
+	end
+
+	local frame = node.frame
+	local fillTexture = frame and frame.GetStatusBarTexture and frame:GetStatusBarTexture()
+	if fillTexture == nil then
+		return false
+	end
+
+	local fillDirection = node.fillDirection or "leftRight"
+	local effectiveWidth = frame:GetWidth() or node.width or 0
+	local effectiveHeight = frame:GetHeight() or node.height or 0
+	local extent = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
+	if extent <= 0 or maxResource == nil or maxResource <= 0 then
+		return false
+	end
+
+	lineThickness = tonumber(lineThickness)
+	if lineThickness == nil or lineThickness < 0 then
+		lineThickness = tonumber(thresholdLine.lineThickness) or 1
+	end
+---@diagnostic disable-next-line: inject-field
+	thresholdLine.lineThickness = lineThickness
+
+	-- edgeNudge closes the sub-pixel seam between the fill's leading edge and this frame, the same
+	-- fractional-scale correction the end cap band needs.
+	local edgeNudge = 0.5
+	local setBack = (overshoot or 0) + ((gapValue / maxResource) * extent)
+
+	thresholdLine:ClearAllPoints()
+	if fillDirection == "rightLeft" then
+		thresholdLine:SetPoint("LEFT", fillTexture, "LEFT", setBack - edgeNudge, 0)
+	elseif fillDirection == "bottomTop" then
+		thresholdLine:SetPoint("TOP", fillTexture, "TOP", 0, -setBack + edgeNudge)
+	elseif fillDirection == "topBottom" then
+		thresholdLine:SetPoint("BOTTOM", fillTexture, "BOTTOM", 0, setBack - edgeNudge)
+	else -- leftRight
+		thresholdLine:SetPoint("RIGHT", fillTexture, "RIGHT", -setBack + edgeNudge, 0)
+	end
+
+	local borderSubtraction = 0
+	if overlapBorder == false then
+		borderSubtraction = (tonumber(node.border) or 0) * 2
+	end
+	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
+	return true
+end
+
+---Pixels the raw fill edge overshoots into the border zone near full, which fill-edge-anchored
+---decorations must slide back by to avoid being clipped under the border.
+---@param node TRB.Classes.BarNode
+---@param fillRatio number? # Explicit 0-1 ratio; required for timer-driven fills, which report none through GetValue
+---@return number
+function TRB.Functions.Threshold:GetFillEdgeOvershoot(node, fillRatio)
+	local border = node and node.border or 0
+	if border <= 0 then
+		return 0
+	end
+
+	fillRatio = fillRatio or GetNodeFillRatio(node)
+	if fillRatio == nil then
+		return 0
+	end
+
+	local frame = node.frame
+	local isVertical = IsVerticalFillDirection(node.fillDirection or "leftRight")
+	local extent = isVertical and (frame:GetHeight() or node.height or 0) or (frame:GetWidth() or node.width or 0)
+	return math.max(0, (fillRatio * extent) - (extent - border))
+end
+
 ---@param frame Frame|StatusBar?
 ---@return number currentValue
 ---@return number maxValue

@@ -47,6 +47,7 @@ local CUSTOM_BAR_EXPORT_SPECS = {
 	},
 	[11] = {
 		[1] = { "mana" },
+		[3] = { "ironfur" },
 	},
 	[13] = {
 		[3] = { "ebonMight" },

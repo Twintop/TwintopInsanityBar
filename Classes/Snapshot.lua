@@ -178,6 +178,7 @@ end
 ---@field public procOverlayActive boolean # Whether the proc's activation overlay is currently showing
 ---@field public useIndependentStacks boolean # When true, every application expires on its own timer instead of sharing endTime
 ---@field public independentStacks number[] # End times of the live applications, sorted ascending
+---@field public independentStackDurations number[] # Original durations of the live applications, parallel to `independentStacks`
 ---@field public maxIndependentStacks integer? # Cap on live applications, nil when uncapped
 ---@field public nextStackEndTime number? # End time of the application expiring soonest
 ---@field public nextStackRemaining number # Seconds until the application expiring soonest is gone
@@ -603,8 +604,31 @@ function TRB.Classes.SnapshotBuff:ResetIndependentStacks()
 	else
 		wipe(self.independentStacks)
 	end
+	if self.independentStackDurations == nil then
+		self.independentStackDurations = {}
+	else
+		wipe(self.independentStackDurations)
+	end
 	self.nextStackEndTime = nil
 	self.nextStackRemaining = 0
+end
+
+---Longest original duration among the live applications. Callers scaling a bar against the
+---applications need this: the newest cast is not always the one that expires last.
+---@return number # 0 when nothing is live
+function TRB.Classes.SnapshotBuff:GetMaxIndependentStackDuration()
+	local max = 0
+	local durations = self.independentStackDurations
+	if durations == nil then
+		return max
+	end
+
+	for i = 1, #durations do
+		if durations[i] > max then
+			max = durations[i]
+		end
+	end
+	return max
 end
 
 ---Writes the tracked applications onto the standard buff fields so consumers need not know about this
@@ -649,13 +673,16 @@ function TRB.Classes.SnapshotBuff:AddIndependentStack(duration, startTime)
 	local index = #self.independentStacks + 1
 	while index > 1 and self.independentStacks[index - 1] > endTime do
 		self.independentStacks[index] = self.independentStacks[index - 1]
+		self.independentStackDurations[index] = self.independentStackDurations[index - 1]
 		index = index - 1
 	end
 	self.independentStacks[index] = endTime
+	self.independentStackDurations[index] = duration
 
 	if self.maxIndependentStacks ~= nil then
 		while #self.independentStacks > self.maxIndependentStacks do
 			table.remove(self.independentStacks, 1)
+			table.remove(self.independentStackDurations, 1)
 		end
 	end
 
@@ -677,6 +704,7 @@ function TRB.Classes.SnapshotBuff:UpdateIndependentStacks(currentTime)
 
 	while stacks[1] ~= nil and stacks[1] <= currentTime do
 		table.remove(stacks, 1)
+		table.remove(self.independentStackDurations, 1)
 	end
 
 	self:SyncIndependentStacks(currentTime)
