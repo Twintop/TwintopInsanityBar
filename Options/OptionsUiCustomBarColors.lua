@@ -687,10 +687,92 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 		yCoord = yCoord - 30
 	end
 
-	-- End cap (not offered on secret cast-count bars, whose highest node is unknowable)
-	if not barTypeDef.usesSecretValue and colorSettings.endCap then
+	-- Multi-node secret bars get no cap: which node is highest is unknowable. Single-node ones have one fill edge.
+	if not (barTypeDef.usesSecretValue and barTypeDef.isMultiNode) and colorSettings.endCap then
 		yCoord = yCoord + 30
 		yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colorSettings, namePrefix, "endCap_" .. barTypeDef.key, L["EndCap"], classId, specId)
+	end
+
+	return yCoord
+end
+
+---Generates the gated range color options for a bar whose fill recolors by value range.
+---Slot 1 is the bar's own fill color at 0, so only slots 2..rangeSlots get a row pair here.
+---@param parent Frame # Parent frame for the controls
+---@param controls table # Table to store control references
+---@param spec table # Spec settings table
+---@param classId integer # Class ID
+---@param specId integer # Spec ID
+---@param yCoord number # Starting Y coordinate
+---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
+---@param maxValue number # Highest start value a range can take (the bar's own maximum)
+---@return number # New Y coordinate after adding controls
+function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarRangeColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, maxValue)
+	local colorSettings = barTypeDef:GetColors(spec)
+	if colorSettings == nil or colorSettings.ranges == nil or barTypeDef.rangeSlots == nil then
+		return yCoord
+	end
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
+	local displayName = barTypeDef.displayName
+
+	controls.colors = controls.colors or {}
+	controls.colors.bars = controls.colors.bars or {}
+	controls.colors.bars[barTypeDef.key] = controls.colors.bars[barTypeDef.key] or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+	local colorControls = controls.colors.bars[barTypeDef.key]
+	colorControls.ranges = colorControls.ranges or {}
+
+	local function Repaint()
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end
+
+	controls[barTypeDef.key .. "RangeColorSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, string.format(L["CustomBarRangeColorHeader"], displayName), oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
+	controls[barTypeDef.key .. "RangeColorNote"] = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, string.format(L["CustomBarRangeColorNote"], displayName), oUi.xCoord, yCoord, oUi.dropdownWidth * 2, 28)
+	yCoord = yCoord - 40
+
+	for index = 2, barTypeDef.rangeSlots do
+		local range = colorSettings.ranges[index]
+		if range ~= nil then
+			local slotKey = barTypeDef.key .. "Range" .. index
+
+			-- Checkbox sits beside a slider, so it rides 10px higher than the row.
+			controls.checkBoxes[slotKey .. "Enabled"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_range" .. index .. "Enabled", parent, "ChatConfigCheckButtonTemplate")
+			local checkBox = controls.checkBoxes[slotKey .. "Enabled"]
+			checkBox:SetPoint("TOPLEFT", oUi.xCoord, yCoord + 10)
+			getglobal(checkBox:GetName() .. 'Text'):SetText(string.format(L["CustomBarRangeEnabled"], index))
+			checkBox.tooltip = string.format(L["CustomBarRangeEnabledTooltip"], index, displayName)
+			checkBox:SetChecked(range.enabled)
+			checkBox:SetScript("OnClick", function(self, ...)
+				range.enabled = self:GetChecked()
+				Repaint()
+			end)
+
+			controls[slotKey .. "Value"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, string.format(L["CustomBarRangeValue"], index), 1, maxValue, range.value, 1, 0,
+											oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+			controls[slotKey .. "Value"]:SetScript("OnValueChanged", function(self, value)
+				value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+				range.value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+				Repaint()
+			end)
+			yCoord = yCoord - 50
+
+			colorControls.ranges[index] = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, string.format(L["CustomBarRangeColor"], index), range, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+			local colorPicker = colorControls.ranges[index]
+			colorPicker.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings.ranges, colorControls.ranges, index, nil, nil, classId, specId)
+			end)
+			colorPicker.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+				TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, range, self, classId, specId)
+			end)
+			yCoord = yCoord - 30
+		end
 	end
 
 	return yCoord
@@ -891,8 +973,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColor
 
 	yCoord = math.min(yCoord, yCoord2)
 
-	-- End cap (not offered on secret cast-count bars, whose highest node is unknowable)
-	if not barTypeDef.usesSecretValue and colorSettings.endCap then
+	-- Multi-node secret bars get no cap: which node is highest is unknowable. Single-node ones have one fill edge.
+	if not (barTypeDef.usesSecretValue and barTypeDef.isMultiNode) and colorSettings.endCap then
 		yCoord = yCoord + 50
 		yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colorSettings, namePrefix, "endCap_" .. barTypeDef.key, L["EndCap"], classId, specId)
 		yCoord = yCoord - 30

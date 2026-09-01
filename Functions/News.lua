@@ -14,6 +14,9 @@ local content = [====[
 
 # 12.1.0.8-release (2026-09-01)
 ## General
+
+- Single-node bars whose value is a secret stack count now offer End Cap options. For now, only affects the Coagulating Blood bar for Blood Death Knights.
+
 ### Localization
 
 - [#818 - @MOSS099](#818) Updated translations for Simplified Chinese (zhCN).
@@ -43,6 +46,9 @@ local content = [====[
 - [#820](#820) Add Arcane Surge tracking, with Arcane Surge and Arcane Surge Ending Color Indicators, the `$arcaneSurgeTime` bar text variable and the `#arcaneSurge` icon. Both indicators target the Mana bar fill by default, and new profiles show the timer in the middle of the Mana bar.
 - [#820](#820) The tracked duration includes the Savor the Moment extension for the Spellfire Spheres the cast consumed.
 - [#820](#820) Add the Indicator Colors tab to Arcane, along with Mana and Arcane Charges as Color Indicator targets.
+- [#821](#821) Add a new Arcane Salvo bar, tracking your current stacks. Adds the `$arcaneSalvoStacks` and `$arcaneSalvoStacksMax` bar text variables and the `#arcaneSalvo` icon. Shown by default above the Arcane Charges bar, and hidden entirely without the Arcane Salvo talent.
+- [#821](#821) The whole fill recolors as you reach each range, with five ranges on the Arcane Salvo tab. Ranges start at 0, 12 and 25 by default; the other two are off by default.
+- [#821](#821) Joins the bar text Relative to Frame and Color Indicator target lists. Its threshold lines use a fixed color rather than switching over and under.
 
 ---
 

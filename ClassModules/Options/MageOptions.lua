@@ -4,6 +4,8 @@ local L = TRB.Localization
 
 local oUi = TRB.Data.constants.optionsUi
 
+local ARCANE_MAX_ARCANE_SALVO = TRB.Data.maxResource.mage.arcane.arcaneSalvo
+
 TRB.Options.Mage = {}
 TRB.Options.Mage.Arcane = {}
 TRB.Options.Mage.Fire = {}
@@ -23,6 +25,37 @@ local function ArcaneLoadDefaultBarTextSettings(classic)
 
 	-- Centered in both layouts: the mana text sits on the right of this bar either way.
 	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("arcaneSurgeTime", "arcaneSurge", classic, "CENTER", "CENTER"))
+
+	table.insert(textSettings, {
+		useDefaultFontColor = true,
+		useDefaultFontOutline = true,
+		useDefaultFontShadow = true,
+		fontOutline = "OUTLINE",
+		fontOutlineName = L["FontOutlineOutline"],
+		fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+		useDefaultFontFace = true,
+		guid = TRB.Functions.String:Guid(),
+		constrainToParent = false,
+		maxWidthPercent = 100,
+		fontJustifyHorizontalName = L["PositionCenter"],
+		text = "$arcaneSalvoStacks",
+		fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+		fontSize = 14,
+		name = L["ResourceMageArcaneSalvo"],
+		position = {
+			relativeToName = L["PositionCenter"],
+			relativeTo = "CENTER",
+			xPos = 0,
+			relativeToFrameName = L["ArcaneSalvoBar"],
+			yPos = 0,
+			relativeToFrame = "ArcaneSalvoBar",
+		},
+		fontJustifyHorizontal = "CENTER",
+		useDefaultFontSize = true,
+		color = { color = "FFFFFFFF" },
+		enabled = true,
+	})
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
@@ -55,10 +88,14 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			arcaneSalvo = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			arcaneSalvo = TRB.Functions.Settings:DefaultArcaneSalvoBarDimensions(classic),
+		},
 		colors={
 			text = {
 				current = {
@@ -135,6 +172,9 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 					show = true
 				}
 			},
+			bars = {
+				arcaneSalvo = TRB.Functions.Settings:DefaultArcaneSalvoBarColors(),
+			},
 			shared = {
 				nodeOrder = { "arcaneSurgeEnd", "arcaneSurge" },
 				gradientOrder = {},
@@ -146,6 +186,7 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
+							arcaneSalvo = { bar = false, border = false, background = false },
 						},
 					},
 					arcaneSurgeEnd = {
@@ -155,6 +196,7 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
+							arcaneSalvo = { bar = false, border = false, background = false },
 						},
 					},
 				},
@@ -187,6 +229,14 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
+
+	local arcaneSalvoTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+	settings.textures.arcaneSalvoBar = arcaneSalvoTextures.bar
+	settings.textures.arcaneSalvoBarName = arcaneSalvoTextures.barName
+	settings.textures.arcaneSalvoBorder = arcaneSalvoTextures.border
+	settings.textures.arcaneSalvoBorderName = arcaneSalvoTextures.borderName
+	settings.textures.arcaneSalvoBackground = arcaneSalvoTextures.background
+	settings.textures.arcaneSalvoBackgroundName = arcaneSalvoTextures.backgroundName
 
 	if includeBarText then
 		settings.displayText.barText = ArcaneLoadDefaultBarTextSettings(classic)
@@ -792,6 +842,28 @@ local function ArcaneConstructArcaneChargesPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Mage_Arcane_ComboPoints", "endCapComboPoints", L["EndCap"], 8, 1)
 end
 
+local function ArcaneConstructArcaneSalvoBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.mage.arcane
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mage_arcane
+	local yCoord = 5
+
+	local arcaneSalvoBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("arcaneSalvo")
+	if arcaneSalvoBarDef then
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 8, 1, yCoord, arcaneSalvoBarDef, L["ResourceMana"])
+
+		yCoord = yCoord - 90
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 8, 1, yCoord, arcaneSalvoBarDef)
+
+		yCoord = yCoord - 60
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarRangeColorOptions(parent, controls, spec, 8, 1, yCoord, arcaneSalvoBarDef, ARCANE_MAX_ARCANE_SALVO)
+	end
+end
+
 local function ArcaneConstructHealthBarPanel(parent)
 	if parent == nil then
 		return
@@ -818,7 +890,13 @@ local function ArcaneConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 8, 1, yCoord, true, L["ResourceArcaneCharges"])
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local customBars = {}
+	local arcaneSalvoBarDef = registry:Get("arcaneSalvo")
+	if arcaneSalvoBarDef then
+		table.insert(customBars, arcaneSalvoBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 8, 1, yCoord, true, L["ResourceArcaneCharges"], false, customBars)
 end
 
 local function ArcaneConstructBarVisibilityPanel(parent)
@@ -831,7 +909,13 @@ local function ArcaneConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.mage_arcane
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceArcaneCharges"], true)
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local customBars = {}
+	local arcaneSalvoBarDef = registry:Get("arcaneSalvo")
+	if arcaneSalvoBarDef then
+		table.insert(customBars, arcaneSalvoBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 8, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceArcaneCharges"], true, nil, customBars)
 end
 
 local function ArcaneConstructFontAndTextPanel(parent)
@@ -907,6 +991,7 @@ local function ArcaneConstructIndicatorColorsPanel(parent)
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },
 			{ key = "arcaneChargesBar", label = L["ResourceArcaneCharges"] },
+			{ key = "arcaneSalvo", label = L["ResourceMageArcaneSalvo"] },
 		},
 		endOfConfigs = {
 			{
@@ -978,6 +1063,7 @@ local function ArcaneConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = ArcaneConstructManaBarPanel, visibilityKey = "primary" },
 		{ key = "arcaneChargesBar", label = L["TabArcaneCharges"], width = oUi.tabWidth.small, constructor = ArcaneConstructArcaneChargesPanel, visibilityKey = "secondary" },
+		{ key = "arcaneSalvoBar", label = L["TabArcaneSalvo"], width = oUi.tabWidth.medium, constructor = ArcaneConstructArcaneSalvoBarPanel, visibilityKey = "arcaneSalvo" },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ArcaneConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = ArcaneConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "arcane", controls),

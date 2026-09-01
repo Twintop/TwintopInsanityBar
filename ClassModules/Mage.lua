@@ -557,6 +557,23 @@ local function RefreshLookupData_Arcane()
 		lookup["$arcaneSurgeTime"] = TRB.Functions.BarText:TimerPrecision(_arcaneSurgeTime)
 	end
 
+	-- Block D: Arcane Salvo ($arcaneSalvoStacks, $arcaneSalvoStacksMax)
+	if not activeVars or activeVars["$arcaneSalvoStacks"] or activeVars["$arcaneSalvoStacksMax"] then
+		local _arcaneSalvoStacksMax = spells.arcaneSalvo.maxStacks
+
+		lookupLogic["$arcaneSalvoStacksMax"] = _arcaneSalvoStacksMax
+
+		-- The count is secret, so it goes straight to string.format and is never inspected.
+		local stacksDisplay = string.format("%s", snapshotData.attributes.arcaneSalvoStacks or 0)
+
+		if lookupChanged(prevState, "$arcaneSalvoStacks", stacksDisplay) then
+			lookup["$arcaneSalvoStacks"] = stacksDisplay
+		end
+		if lookupChanged(prevState, "$arcaneSalvoStacksMax", _arcaneSalvoStacksMax) then
+			lookup["$arcaneSalvoStacksMax"] = tostring(_arcaneSalvoStacksMax)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -846,6 +863,97 @@ local function SampleArcaneSurgeDuration()
 	end
 end
 
+---Prints the Arcane Salvo bar's live range-gate geometry, for checking a gate that never paints.
+function TRB.Functions.Class:PrintArcaneSalvoDiagnostics()
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local node = barGroups and barGroups.arcaneSalvo and barGroups.arcaneSalvo:GetNode(1)
+	if node == nil then
+		print("|cFFFF8800TRB Arcane Salvo:|r bar node does not exist.")
+		return
+	end
+
+	local frame = node:GetFrame()
+	local nodeMin, nodeMax = node:GetMinMax()
+	print(string.format("|cFFFF8800TRB Arcane Salvo:|r talented=%s node w=%.1f (cfg %.1f) h=%.1f border=%s min/max=%s/%s fill=%s",
+		tostring(TRB.Data.character.arcaneSalvoTalented),
+		frame:GetWidth() or 0, node.width or 0, frame:GetHeight() or 0,
+		tostring(node.border), tostring(nodeMin), tostring(nodeMax), node.fillDirection or "?"))
+
+	local fillTexture = frame:GetStatusBarTexture()
+	print(string.format("  fillTexture w=%s points=%s shown=%s | inCombat=%s stacksSecret=%s valueSecret=%s",
+		fillTexture and string.format("%.1f", fillTexture:GetWidth() or 0) or "nil",
+		fillTexture and tostring(fillTexture:GetNumPoints()) or "nil",
+		fillTexture and tostring(fillTexture:IsShown()) or "nil",
+		tostring(InCombatLockdown()),
+		tostring(issecretvalue(TRB.Data.snapshotData.attributes.arcaneSalvoStacks)),
+		tostring(issecretvalue(frame:GetValue()))))
+
+	-- The node and the gates are fed the same count, so these two must agree.
+	local liveValue = frame:GetValue()
+	local stacks = TRB.Data.snapshotData.attributes.arcaneSalvoStacks
+	print(string.format("  stacks=%s nodeValue=%s smooth=%s timerDriven=%s engineDriven=%s",
+		issecretvalue(stacks) and "<secret>" or tostring(stacks),
+		issecretvalue(liveValue) and "<secret>" or tostring(liveValue),
+		tostring(node.smooth), tostring(node.hasTimerDuration), tostring(node:IsEngineDriven())))
+
+	-- Is the fill drawn by resizing the texture (geometry readable, anchors follow) or by cropping
+	-- texcoords (geometry stays full, so nothing can anchor to the fill edge)?
+	if fillTexture ~= nil and fillTexture.GetTexCoord ~= nil then
+		local ulX, _, _, _, urX = fillTexture:GetTexCoord()
+		if issecretvalue(urX) then
+			print("  texCoords: right edge is SECRET")
+		else
+			print(string.format("  texCoords: left=%.3f right=%.3f", ulX or 0, urX or 0))
+		end
+		for pointIndex = 1, fillTexture:GetNumPoints() do
+			local point, _, relPoint, xOfs, yOfs = fillTexture:GetPoint(pointIndex)
+			print(string.format("    tex point %d: %s -> %s (%.1f, %.1f)",
+				pointIndex, tostring(point), tostring(relPoint), xOfs or 0, yOfs or 0))
+		end
+	end
+
+	local slot = node:GetOverlaySlot("arcaneSalvoRange")
+	if slot == nil or slot.rangeOverlayFrames == nil then
+		print("  no range overlays built.")
+		return
+	end
+
+	local clip = slot.rangeClipFrame
+	local capSlot = node:GetOverlaySlot("endCap")
+	local capFrame = capSlot and capSlot:GetEndCapFrame()
+	if capSlot ~= nil and capFrame ~= nil then
+		local capConfig = node.endCapConfig
+		print(string.format("  endCap cfgWidth=%s rendered w=%.2f h=%.2f | fillRatio value=%s rendered=%s",
+			tostring(capConfig and capConfig.width),
+			capFrame:GetWidth() or 0, capFrame:GetHeight() or 0,
+			tostring(capSlot:GetParentFillRatio()), tostring(capSlot:GetRenderedFillRatio())))
+	end
+
+	local bounds = slot.rangeBoundsClipFrame
+	print(string.format("  bounds w=%.1f h=%.1f | clip w=%.1f h=%.1f points=%d shown=%s ready=%s",
+		bounds and bounds:GetWidth() or 0, bounds and bounds:GetHeight() or 0,
+		clip:GetWidth() or 0, clip:GetHeight() or 0, clip:GetNumPoints(),
+		tostring(clip:IsShown()), tostring(slot.rangeOverlayReady)))
+
+	-- Screen-space edges: the only way to tell "wrong height" from "right height, wrong place".
+	local firstGate = slot.rangeOverlayFrames[1]
+	print(string.format("  vert: node %.1f..%.1f | fill %.1f..%.1f | cap %s | gate1 %s",
+		frame:GetBottom() or 0, frame:GetTop() or 0,
+		fillTexture and fillTexture:GetBottom() or 0, fillTexture and fillTexture:GetTop() or 0,
+		capFrame and string.format("%.1f..%.1f", capFrame:GetBottom() or 0, capFrame:GetTop() or 0) or "none",
+		firstGate and string.format("%.1f..%.1f", firstGate:GetBottom() or 0, firstGate:GetTop() or 0) or "none"))
+
+	for index = 1, #slot.rangeOverlayFrames do
+		local gate = slot.rangeOverlayFrames[index]
+		local gMin, gMax = gate:GetMinMaxValues()
+		local gTexture = gate:GetStatusBarTexture()
+		print(string.format("  gate %d: minmax=%.3f/%.3f w=%.1f h=%.1f points=%d level=%d shown=%s texW=%s",
+			index, gMin or 0, gMax or 0, gate:GetWidth() or 0, gate:GetHeight() or 0,
+			gate:GetNumPoints(), gate:GetFrameLevel(), tostring(gate:IsShown()),
+			gTexture and string.format("%.1f", gTexture:GetWidth() or 0) or "nil"))
+	end
+end
+
 ---Prints what Arcane Surge's description currently advertises, for checking the duration parse
 ---against a known number of banked Spellfire Spheres.
 function TRB.Functions.Class:PrintArcaneSurgeDiagnostics()
@@ -940,6 +1048,18 @@ function TRB.Functions.Class:OnPlayerUnitAura(info)
 	if arcaneSurgeCasting then
 		SampleArcaneSurgeDuration()
 	end
+end
+
+---Refreshes the Arcane Salvo stack count from Arcane Barrage's cast count. The value is secret in
+---combat, so it is stored raw and never compared.
+local function RefreshArcaneSalvoStacks()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	if not (spells and spells.arcaneSalvo) then
+		return
+	end
+
+	snapshotData.attributes.arcaneSalvoStacks = C_Spell.GetSpellCastCount(spells.arcaneSalvo.id) or 0
 end
 
 local function UpdateSnapshot_Arcane()
@@ -1100,6 +1220,90 @@ local function UpdateShatter(specSettings, specCacheSettings, barColors, fillInd
 end
 
 
+-- Node min/max is the only place the Arcane Salvo scale can take effect, since the secret count is
+-- passed through unscaled. Tracked so it is only re-applied when it actually changes.
+local arcaneSalvoAppliedMax = nil
+-- Enabled range slots for the current tick, rebuilt in place and sorted by start value.
+local arcaneSalvoActiveRanges = {}
+local function ArcaneSalvoRangeSort(a, b)
+	return a.value < b.value
+end
+
+---Updates the Arcane Salvo bar (Arcane only). The count is secret, so SetBarNodeValue passes it
+---through unscaled and the node's own range does the filling.
+---@param specSettings table
+---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barColors table # Indicator-resolved bar/border/background colors for the Arcane Salvo bar
+---@param fillIndicated boolean? # An indicator owns the fill, so the range recolor stands down
+local function UpdateArcaneSalvo(specSettings, specCacheSettings, barColors, fillIndicated)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+
+	if not (barGroups and barGroups.arcaneSalvo) then
+		return
+	end
+
+	local node = barGroups.arcaneSalvo:GetNode(1)
+	if node == nil then
+		return
+	end
+
+	local colors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.arcaneSalvo
+	if colors == nil then
+		return
+	end
+
+	local maxStacks = spells.arcaneSalvo.maxStacks
+	if arcaneSalvoAppliedMax ~= maxStacks then
+		node:SetMinMax(0, maxStacks)
+		arcaneSalvoAppliedMax = maxStacks
+	end
+
+	local stacks = snapshotData.attributes.arcaneSalvoStacks or 0
+	Bar:SetBarNodeValue(specCacheSettings, "arcaneSalvo", node, stacks, maxStacks)
+
+	node:SetBorderColor(barColors.border)
+	Color:ApplyFillColor(node, barColors.bar)
+	node:SetBackgroundColorFromString(barColors.background)
+	Bar:ApplyEndCapIndicator(node, "arcaneSalvo")
+
+	-- Ascending order, so a higher range's gate is levelled above the ones below it.
+	wipe(arcaneSalvoActiveRanges)
+	if not fillIndicated and colors.ranges ~= nil then
+		for _, range in pairs(colors.ranges) do
+			if range.enabled == true and type(range.value) == "number" and range.value > 0 and range.value <= maxStacks then
+				table.insert(arcaneSalvoActiveRanges, range)
+			end
+		end
+		table.sort(arcaneSalvoActiveRanges, ArcaneSalvoRangeSort)
+	end
+
+	local slot = node:GetOverlaySlot("arcaneSalvoRange")
+	if #arcaneSalvoActiveRanges == 0 then
+		-- Nothing to gate, so don't build the overlay frames just to hide them.
+		if slot ~= nil then
+			slot:HideRangeOverlays()
+		end
+		return
+	end
+
+	slot = node:GetOrCreateOverlaySlot("arcaneSalvoRange")
+	slot:CreateRangeOverlays(#arcaneSalvoActiveRanges)
+	for index = 1, #arcaneSalvoActiveRanges do
+		local range = arcaneSalvoActiveRanges[index]
+		slot:SetRangeOverlayThreshold(index, range.value)
+		slot:SetRangeOverlayTexture(index, specSettings.textures.arcaneSalvoBar)
+		Color:ApplyRangeOverlayFillColor(slot, index, range)
+		slot:SetRangeOverlayValue(index, stacks)
+		slot:ShowRangeOverlay(index)
+	end
+	for index = #arcaneSalvoActiveRanges + 1, #slot.rangeOverlayFrames do
+		slot:HideRangeOverlay(index)
+	end
+end
+
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
@@ -1108,10 +1312,12 @@ local scratch = {
 	iciclesBarColors1 = {},
 	shatterBarColors1 = {},
 	arcaneChargesBarColors1 = {},
+	arcaneSalvoBarColors1 = {},
 	manaBarTargets1 = {},
 	iciclesBarTargets1 = {},
 	shatterBarTargets1 = {},
 	arcaneChargesBarTargets1 = {},
+	arcaneSalvoBarTargets1 = {},
 	indicatorTargets1 = {},
 	barColorMap1 = {},
 }
@@ -1186,6 +1392,14 @@ local function UpdateResourceBar()
 			arcaneChargesBarColors.bar = specSettings.colors.comboPoints.base
 			arcaneChargesBarColors.border = specSettings.colors.comboPoints.border.color
 			arcaneChargesBarColors.background = specSettings.colors.comboPoints.background.color
+			local arcaneSalvoColors = specSettings.colors.bars and specSettings.colors.bars.arcaneSalvo
+			local arcaneSalvoBarColors = scratch.arcaneSalvoBarColors1
+			wipe(arcaneSalvoBarColors)
+			if arcaneSalvoColors ~= nil then
+				arcaneSalvoBarColors.bar = arcaneSalvoColors.bar
+				arcaneSalvoBarColors.border = arcaneSalvoColors.border.color
+				arcaneSalvoBarColors.background = arcaneSalvoColors.background.color
+			end
 
 			-- Wiped rather than reset to false: ApplyIndicatorColors only ever writes true, and every
 			-- reader tests truthiness.
@@ -1193,15 +1407,19 @@ local function UpdateResourceBar()
 			wipe(manaBarTargets)
 			local arcaneChargesBarTargets = scratch.arcaneChargesBarTargets1
 			wipe(arcaneChargesBarTargets)
+			local arcaneSalvoBarTargets = scratch.arcaneSalvoBarTargets1
+			wipe(arcaneSalvoBarTargets)
 			local indicatorTargets = scratch.indicatorTargets1
 			wipe(indicatorTargets)
 			indicatorTargets.manaBar = manaBarTargets
 			indicatorTargets.arcaneChargesBar = arcaneChargesBarTargets
+			indicatorTargets.arcaneSalvo = arcaneSalvoBarTargets
 
 			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors
 			barColorMap.arcaneChargesBar = arcaneChargesBarColors
+			barColorMap.arcaneSalvo = arcaneSalvoBarColors
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
 
@@ -1249,6 +1467,11 @@ local function UpdateResourceBar()
 						end
 					end
 				end
+			end
+
+			if specSettings.displayBar.arcaneSalvo ~= nil and not specSettings.displayBar.arcaneSalvo.neverShow then
+				refreshText = true
+				UpdateArcaneSalvo(specSettings, specCacheSettings, arcaneSalvoBarColors, arcaneSalvoBarTargets.bar)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1515,6 +1738,7 @@ local function SwitchSpec()
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#arcaneSurge"] = spells.arcaneSurge.icon
+		lookup["#arcaneSalvo"] = spells.arcaneSalvo.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1525,6 +1749,9 @@ local function SwitchSpec()
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
+
+		-- Seed the stack count; from here SPELL_UPDATE_USES on Arcane Barrage owns it.
+		RefreshArcaneSalvoStacks()
 
 		if TRB.Data.barConstructedForSpec ~= "mage_arcane" then
 			talents = specCache.mage_arcane.talents
@@ -1783,6 +2010,22 @@ local function HandleFireBlastChargesEvent(spellId)
 	end
 end
 
+-- Arcane Salvo stack changes fire SPELL_UPDATE_USES on Arcane Barrage, whose cast count carries them.
+local function HandleArcaneSalvoEvent(spellId)
+	if TRB.Data.character.specId ~= 1 then return end
+
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	if not (spells and spells.arcaneSalvo) then return end
+	if spellId ~= spells.arcaneSalvo.id then return end
+
+	RefreshArcaneSalvoStacks()
+
+	TRB.Data.lookupDirty = true
+	if TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
+end
+
 -- Every Fingers of Frost charge change fires SPELL_UPDATE_USES on Ice Lance, not on the buff itself.
 local function HandleFingersOfFrostEvent(spellId)
 	if TRB.Data.character.specId ~= 3 then return end
@@ -1810,7 +2053,11 @@ local function HandleSpellEvents(self, event, ...)
 		HandleFireBlastChargesEvent(spellId)
 	elseif event == "SPELL_UPDATE_USES" then
 		local spellId = ...
-		HandleFingersOfFrostEvent(spellId)
+		if TRB.Data.character.specId == 1 then
+			HandleArcaneSalvoEvent(spellId)
+		elseif TRB.Data.character.specId == 3 then
+			HandleFingersOfFrostEvent(spellId)
+		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
 		local spellId = ...
 		if TRB.Data.character.specId ~= 3 then return end
@@ -1875,6 +2122,9 @@ function TRB.Functions.Class:CheckCharacter()
 		-- Arcane Charges max is always 4 (fixed game value).
 		local maxComboPoints = 4
 
+		local arcaneTalents = TRB.Data.specCache.mage_arcane and TRB.Data.specCache.mage_arcane.talents
+		TRB.Data.character.arcaneSalvoTalented = arcaneTalents ~= nil and arcaneTalents:IsTalentActive(spells.arcaneSalvo) == true
+
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
@@ -1917,7 +2167,9 @@ function TRB.Functions.Class:CheckCharacter()
 end
 
 function TRB.Functions.Class:EnableEvents()
-	if TRB.Data.character.specId == 2 then
+	if TRB.Data.character.specId == 1 then
+		spellEventFrame:RegisterEvent("SPELL_UPDATE_USES")
+	elseif TRB.Data.character.specId == 2 then
 		spellEventFrame:RegisterEvent("SPELL_UPDATE_CHARGES")
 	elseif TRB.Data.character.specId == 3 then
 		spellEventFrame:RegisterEvent("SPELL_UPDATE_USES")
@@ -1944,6 +2196,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.ArcaneCharges
 		TRB.Data.resource2Factor = 1
+		TRB.Functions.Class:EnableEvents()
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.mage.fire then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
@@ -1990,6 +2243,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, TRB.Data.character.maxResource2, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.shatter, sharedSettings and sharedSettings.displayBar.shatter, TRB.Data.character.specId == 3, barGroups and barGroups.shatter and barGroups.shatter.maxNodes, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.arcaneSalvo, sharedSettings and sharedSettings.displayBar.arcaneSalvo, TRB.Data.character.specId == 1 and TRB.Data.character.arcaneSalvoTalented == true, 1, nil),
 		}
 
 		if sharedSettings ~= nil then
@@ -2029,6 +2283,12 @@ do
 		local snapshot = spells and spells.arcaneSurge and TRB.Data.snapshotData.snapshots[spells.arcaneSurge.id]
 		return snapshot ~= nil and snapshot.buff.isActive == true
 	end
+	-- Both go false untalented, where there is no Arcane Salvo to count.
+	local arcaneSalvoTalentedFn = function()
+		return TRB.Data.character.arcaneSalvoTalented == true
+	end
+	arcane["$arcaneSalvoStacks"] = arcaneSalvoTalentedFn
+	arcane["$arcaneSalvoStacksMax"] = arcaneSalvoTalentedFn
 	-- Frost
 	local frost = {}
 	for k, v in pairs(common) do frost[k] = v end
@@ -2121,6 +2381,17 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
 				return healthNode:GetFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	end
+
+	if normalizedRelativeFrame == "ArcaneSalvoBar" then
+		if barGroups.arcaneSalvo then
+			local salvoNode = barGroups.arcaneSalvo:GetNode(1)
+			if salvoNode then
+				local isVisible = barGroups.arcaneSalvo.isVisible and salvoNode.isVisible
+				return salvoNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

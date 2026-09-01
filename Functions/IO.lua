@@ -40,6 +40,7 @@ local CUSTOM_BAR_EXPORT_SPECS = {
 		[1] = { "mana" },
 	},
 	[8] = {
+		[1] = { "arcaneSalvo" },
 		[3] = { "shatter" },
 	},
 	[10] = {

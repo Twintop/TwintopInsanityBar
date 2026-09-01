@@ -446,4 +446,10 @@ if locale == "enGB" then
     L["MageArcaneIndicatorArcaneSurgeTooltip"] = "Changes to this colour while Arcane Surge is active."
     L["MageArcaneIndicatorArcaneSurgeEndTooltip"] = "Changes to this colour when Arcane Surge is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 
+	-- Custom bar range colours
+	L["CustomBarRangeColorHeader"] = "%s Range Colours"
+	L["CustomBarRangeColorNote"] = "The whole fill takes the colour of the highest range you have reached. Range 1 is the %s bar colour above, and starts at 0."
+	L["CustomBarRangeEnabledTooltip"] = "Recolours the %2$s bar fill once you reach this range's starting value. Range %1$d is ignored while unchecked."
+	L["CustomBarRangeColor"] = "Range %d Colour"
+
 end

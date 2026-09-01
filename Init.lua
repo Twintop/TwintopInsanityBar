@@ -92,6 +92,9 @@ TRB.Data.maxResource = {
 		marksmanship = { focus = 100 },
 		survival = { focus = 100 },
 	},
+	mage = {
+		arcane = { arcaneSalvo = 25 },
+	},
 	monk = {
 		brewmaster = { energy = 100 },
 		windwalker = { energy = 150 },
@@ -153,7 +156,7 @@ TRB.Data.constants = {
 	frameLevels = {
 		-- Every bar is levelled as bar + (anchor depth * barDepthStride), so a bar always draws
 		-- above the bar it is anchored to. The stride leaves room for a bar's own overlays,
-		-- which sit between node level +1 and +3.
+		-- which sit between node level +1 and +9.
 		bar = 100,
 		barDepthStride = 10,
 		thresholdBase = 1000,
@@ -599,6 +602,12 @@ function SlashCmdList.TWINTOP(msg)
 			TRB.Functions.Class:PrintArcaneSurgeDiagnostics()
 		else
 			print("|cFFFF8800TRB:|r 'arcanesurge' is an Arcane Mage command.")
+		end
+	elseif cmd == "arcanesalvo" then
+		if TRB.Data.character.classId == 8 and TRB.Data.character.specId == 1 then
+			TRB.Functions.Class:PrintArcaneSalvoDiagnostics()
+		else
+			print("|cFFFF8800TRB:|r 'arcanesalvo' is an Arcane Mage command.")
 		end
 	elseif cmd == "holywords" then
 		if TRB.Data.character.classId == 5 then

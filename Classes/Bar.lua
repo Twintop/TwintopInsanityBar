@@ -1985,6 +1985,7 @@ end
 ---@field public gradientTooltipNote string? # Localized tooltip shown on gradient direction buttons for threshold fill pickers (e.g., stagger bar).
 ---@field public fillDirection trbFillDirection? # Default fill direction for this bar type
 ---@field public growthDirection trbFillDirection? # Default growth direction for multi-node bars of this type
+---@field public rangeSlots integer? # Number of gated whole-fill recolor slots in `colors.<key>.ranges`. Slot 1 is the base `bar` color at 0; slots 2..N carry a start value, color and enable flag. Set only on bars whose fill recolors by value range.
 ---@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color). Multi-node secret bars also get no end cap (which node is highest is unknowable); single-node ones keep it.
 ---@field public hasCustomThresholds boolean? # False to drop this bar from the custom threshold system entirely. For bars whose max is secret (e.g. Ebon Might), a line cannot be positioned at all. Defaults to true.
 ---@field public endCapMode string? # Multi-node end cap policy: "highest" (default) or "all" (independent nodes, e.g. Warrior defensives)
@@ -2052,6 +2053,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.isAmalgamation = config.isAmalgamation or false -- Multi-type bar (Holy Words, Defensives); custom thresholds expose per-type sub-targets
 	self.fillDirection = config.fillDirection -- Default fill direction override for this bar type
 	self.growthDirection = config.growthDirection -- Default growth direction override for multi-node bars
+	self.rangeSlots = config.rangeSlots -- Gated whole-fill recolor slots; nil on bars with a single fill color
 	self.usesSecretValue = config.usesSecretValue or false -- Secret cast-count bar (e.g. Bone Shield, Fire Blast charges); forces custom thresholds to static color mode
 	self.hasCustomThresholds = config.hasCustomThresholds ~= false -- Opt out only; a secret max makes a line unpositionable
 	self.cdm = config.cdm -- Declared Cooldown Manager reliance for the whole bar; options-panel badge only, nothing branches on it
@@ -2883,6 +2885,36 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end,
 		defaultColorsFunc = function()
 			return TRB.Functions.Settings:DefaultShatterBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Arcane Salvo bar (Arcane Mage)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "arcaneSalvo",
+		displayName = L["ResourceMageArcaneSalvo"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		-- Stacks run 0-25; the class module owns the node's min/max.
+		minMaxMode = "custom",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "arcaneSalvo",
+		-- Stack count is Arcane Barrage's cast count, secret in combat, so custom thresholds on it are
+		-- static-only and the range colors are resolved by gated overlays rather than a ColorCurve.
+		usesSecretValue = true,
+		rangeSlots = 5,
+		thresholdMax = 25,
+		thresholdDecimals = 0,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultArcaneSalvoBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultArcaneSalvoBarColors()
 		end,
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()

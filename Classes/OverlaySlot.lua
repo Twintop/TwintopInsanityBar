@@ -23,6 +23,12 @@ TRB.Classes = TRB.Classes or {}
 ---@field public insetClipFrame Frame? # Clip container for the inset overlay
 ---@field public insetOverlayFrame StatusBar? # Reverse-fill StatusBar inside clip
 ---@field public insetOverlayReady boolean? # One-frame readiness guard for inset overlay
+---@field public rangeBoundsClipFrame Frame? # Outer clip trimming the range overlays to the inner bar
+---@field public rangeClipFrame Frame? # Clip container tracking the fill edge for the range overlays
+---@field public rangeOverlayFrames StatusBar[]? # Gate StatusBars inside the range clip, one per range
+---@field public rangeOverlayReady boolean? # One-frame readiness guard for range overlays
+---@field public rangeTexture string? # Last-applied range gate texture path (for RefreshAppearance)
+---@field public rangeColors table<integer, string|TRB.Classes.Settings.ColorGradientEntry> # Last-applied color entry per range gate
 ---@field public endCapClipFrame Frame? # Clip container for the end cap band
 ---@field public endCapFrame Frame? # Fixed-width band anchored to the fill's leading edge
 ---@field public endCapReady boolean? # One-frame readiness guard for the end cap
@@ -51,6 +57,15 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self.insetClipFrame = nil
 	self.insetOverlayFrame = nil
 	self.insetOverlayReady = nil
+	self.rangeBoundsClipFrame = nil
+	self.rangeClipFrame = nil
+	self.rangeOverlayFrames = nil
+	self.rangeOverlayReady = nil
+	self.rangeTexture = nil
+	self.rangeColors = {}
+	self._rangeTexturePaths = {}
+	self._rangeColorSigs = {}
+	self._rangeGradientActive = {}
 	self.endCapClipFrame = nil
 	self.endCapFrame = nil
 	self.endCapReady = nil
@@ -133,6 +148,30 @@ function TRB.Classes.OverlaySlot:GetParentFillRatio()
 	end
 
 	return math.max(0, math.min(1, (value - minValue) / (maxValue - minValue)))
+end
+
+---Recovers the fill ratio by measuring the rendered fill texture instead of reading the value. The
+---texture's extent stays plain when the value is secret, so this is the only route to a ratio there.
+---@return number?
+function TRB.Classes.OverlaySlot:GetRenderedFillRatio()
+	local parent = self.parentNode
+	local frame = parent and parent.frame
+	if frame == nil or frame.GetStatusBarTexture == nil then
+		return nil
+	end
+	local fillTexture = frame:GetStatusBarTexture()
+	if fillTexture == nil then
+		return nil
+	end
+
+	local isVertical = TRB.Functions.Bar:IsVerticalFill(parent.fillDirection or "leftRight")
+	local filled = isVertical and fillTexture:GetHeight() or fillTexture:GetWidth()
+	local total = isVertical and frame:GetHeight() or frame:GetWidth()
+	if filled == nil or total == nil or issecretvalue(filled) or issecretvalue(total) or total <= 0 then
+		return nil
+	end
+
+	return math.max(0, math.min(1, filled / total))
 end
 
 ---Returns the offset needed to translate the raw StatusBar fill edge to the
@@ -842,6 +881,278 @@ function TRB.Classes.OverlaySlot:GetInsetOverlayFrame()
 end
 
 -- ============================================================================
+-- Range Overlays (gated whole-fill recolor)
+-- ============================================================================
+-- The gate window and the fill-edge clip stand in for a threshold comparison, which is what lets
+-- this recolor a SECRET count.
+
+-- Half a step below the threshold: these bars count whole stacks, so the window can never catch a
+-- value part-way and never lands within float slop of the threshold or of the bar's own maximum.
+local RANGE_GATE_EPSILON = 0.5
+-- Parent-relative frame level of the clip. Gates take clip + (index - 1), keeping the whole stack
+-- above the casting/spending overlays (+1, +2) and below the end cap (+8).
+local RANGE_CLIP_LEVEL_OFFSET = 4
+
+---Re-anchors the range overlay clip frame and its gate StatusBars.
+---Called when border, fill texture, or fill direction changes on the parent node.
+---@param force boolean? # When true, always re-anchors. When false/nil, skips when no geometry-relevant input changed.
+function TRB.Classes.OverlaySlot:ReanchorRangeOverlays(force)
+	if not self.rangeClipFrame then return end
+
+	local parent = self.parentNode
+	-- The engine's fill texture is forbidden: SetPoint against it errors.
+	if parent:IsEngineDriven() then
+		self.rangeBoundsClipFrame:Hide()
+		self.rangeOverlayReady = false
+		self._rangeAnchorSig = nil
+		return
+	end
+
+	local fillDirection = parent.fillDirection or "leftRight"
+	local Bar = TRB.Functions.Bar
+	local isVertical = Bar:IsVerticalFill(fillDirection)
+	local fillTexture = parent.frame:GetStatusBarTexture()
+
+	-- The clip is anchored to the fill texture object, which resizes itself as the value changes, so
+	-- it tracks the fill edge every frame with no re-anchoring. Only geometry changes need a pass.
+	local sig = string.format("%s|%s|%s|%s|%s|%s",
+		tostring(parent.border), tostring(parent.width), tostring(parent.height),
+		fillDirection, tostring(self.fullHeight), tostring(fillTexture))
+	if force ~= true and self.rangeOverlayReady and self._rangeAnchorSig == sig then
+		return
+	end
+	self._rangeAnchorSig = sig
+
+	if fillTexture == nil then
+		return
+	end
+
+	local border = parent.border or 0
+	local crossInset = self.fullHeight and 0 or border
+
+	self.rangeBoundsClipFrame:ClearAllPoints()
+	local boundsLX, boundsTY, boundsRX, boundsBY = self:GetClipInsets(fillDirection)
+	self.rangeBoundsClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", boundsLX, boundsTY)
+	self.rangeBoundsClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", boundsRX, boundsBY)
+	self.rangeBoundsClipFrame:Show()
+
+	-- Leading corner comes from the bar's inner edge, trailing corner from the fill texture, so the
+	-- clip spans exactly the visible fill. The fill texture covers the whole frame on the cross axis
+	-- (the border is drawn over it), so the cross inset applies to its corner as it does the frame's.
+	self.rangeClipFrame:ClearAllPoints()
+	if fillDirection == "rightLeft" then
+		self.rangeClipFrame:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, -crossInset)
+		self.rangeClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -border, crossInset)
+	elseif fillDirection == "bottomTop" then
+		self.rangeClipFrame:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", crossInset, 0)
+		self.rangeClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -crossInset, border)
+	elseif fillDirection == "topBottom" then
+		self.rangeClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", crossInset, -border)
+		self.rangeClipFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", -crossInset, 0)
+	else -- leftRight
+		self.rangeClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", border, -crossInset)
+		self.rangeClipFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, crossInset)
+	end
+	self.rangeClipFrame:Show()
+	self.rangeOverlayReady = true
+
+	-- Covering the clip exactly means an open gate paints the whole fill and nothing more, with no
+	-- dependence on the node's own width bookkeeping.
+	local orientation = Bar:GetOrientationFromFillDirection(fillDirection)
+	local reverseFill = Bar:GetReverseFillFromFillDirection(fillDirection)
+	for _, gate in ipairs(self.rangeOverlayFrames) do
+		gate:SetOrientation(orientation)
+		gate:SetReverseFill(reverseFill)
+		gate:SetRotatesTexture(isVertical)
+		gate:ClearAllPoints()
+		gate:SetAllPoints(self.rangeClipFrame)
+	end
+end
+
+---Creates the range overlay system: one clip container plus `count` gate StatusBars.
+---Idempotent for a given count; a larger count adds only the missing gates.
+---@param count integer # Number of gated ranges this bar can show
+function TRB.Classes.OverlaySlot:CreateRangeOverlays(count)
+	local parent = self.parentNode
+
+	if not self.rangeClipFrame then
+		-- Outer clip trims the fill axis to the inner bar. The raw fill texture spans the whole frame
+		-- with the border drawn over it, so near full the inner clip overshoots into the border zone.
+		local outerName = parent.name .. "_" .. self.slotName .. "_RangeBoundsClip"
+		local outer = CreateFrame("Frame", outerName, parent.frame)
+		outer:SetFrameLevel(parent.frame:GetFrameLevel() + RANGE_CLIP_LEVEL_OFFSET)
+		outer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, 10000)
+		outer:SetSize(1, 1)
+		outer:SetClipsChildren(true)
+
+		local clipName = parent.name .. "_" .. self.slotName .. "_RangeClip"
+		-- Created off-screen so any initial flash is invisible; the timer below anchors it.
+		local clip = CreateFrame("Frame", clipName, outer)
+		clip:SetFrameLevel(outer:GetFrameLevel())
+		clip:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, 10000)
+		clip:SetSize(1, 1)
+		clip:SetClipsChildren(true)
+
+		self.rangeBoundsClipFrame = outer
+		self.rangeClipFrame = clip
+		self.rangeOverlayFrames = {}
+		self.rangeOverlayReady = false
+		self._rangeAnchorSig = nil
+	end
+
+	local Bar = TRB.Functions.Bar
+	local fillDirection = parent.fillDirection or "leftRight"
+	local created = false
+	for index = #self.rangeOverlayFrames + 1, count do
+		local gateName = parent.name .. "_" .. self.slotName .. "_Range" .. index
+		local gate = CreateFrame("StatusBar", gateName, self.rangeClipFrame)
+		gate:SetFrameLevel(self.rangeClipFrame:GetFrameLevel() + index - 1)
+		gate:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
+		gate:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
+		gate:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
+		gate:SetRotatesTexture(Bar:IsVerticalFill(fillDirection))
+		gate:SetMinMaxValues(0, 1)
+		gate:SetValue(0)
+		gate:Hide()
+		self.rangeOverlayFrames[index] = gate
+		self._rangeTexturePaths[index] = nil
+		self._rangeColorSigs[index] = nil
+		self._rangeGradientActive[index] = false
+		created = true
+	end
+
+	if not self.rangeOverlayReady then
+		local slot = self
+		C_Timer.After(0, function()
+			if slot.rangeClipFrame then
+				slot:ReanchorRangeOverlays(true)
+			end
+		end)
+	elseif created then
+		-- A gate added after the first pass has no anchor or size, and the geometry signature has not
+		-- changed, so nothing else would ever anchor it.
+		self:ReanchorRangeOverlays(true)
+	end
+end
+
+---Sets the value at which a range gate opens. Below it the gate's fill is zero-width; at or above it
+---the gate fills the whole bar and the clip trims it to the current fill. No-op if not created.
+---@param index integer
+---@param threshold number # The plain range start value, on the parent bar's own scale. Assumed to be a whole step.
+function TRB.Classes.OverlaySlot:SetRangeOverlayThreshold(index, threshold)
+	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
+	if not gate then return end
+	gate:SetMinMaxValues(threshold - RANGE_GATE_EPSILON, threshold)
+end
+
+---Sets a range gate's value. Accepts a secret: the StatusBar clamps it against the gate window.
+---@param index integer
+---@param value number
+function TRB.Classes.OverlaySlot:SetRangeOverlayValue(index, value)
+	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
+	if not gate then return end
+	gate:SetValue(value)
+end
+
+---Sets a range gate's fill texture. No-op if not created.
+---@param index integer
+---@param texture string # Path to the texture
+function TRB.Classes.OverlaySlot:SetRangeOverlayTexture(index, texture)
+	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
+	if not gate then return end
+	self.rangeTexture = texture
+	if self._rangeTexturePaths[index] == texture then return end
+	self._rangeTexturePaths[index] = texture
+	-- Changing the texture resets the fill texture's vertex color, so force color re-apply.
+	self._rangeColorSigs[index] = nil
+	gate:SetStatusBarTexture(texture)
+	local fillTexture = gate:GetStatusBarTexture()
+	if fillTexture then
+		fillTexture:SetDrawLayer("ARTWORK", 0)
+	end
+end
+
+---Sets a range gate's fill color from an AARRGGBB hex string. No-op if not created.
+---@param index integer
+---@param colorString string # ARGB hex color string
+function TRB.Classes.OverlaySlot:SetRangeOverlayColor(index, colorString)
+	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
+	if not gate then return end
+	local sig = "flat:" .. tostring(colorString)
+	if self._rangeColorSigs[index] == sig then return end
+	self._rangeColorSigs[index] = sig
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
+	local fillTexture = gate:GetStatusBarTexture()
+	if fillTexture then
+		if self._rangeGradientActive[index] then
+			local white = CreateColor(1, 1, 1, 1)
+			fillTexture:SetGradient("HORIZONTAL", white, white)
+			self._rangeGradientActive[index] = false
+		end
+		fillTexture:SetVertexColor(r, g, b, a)
+	end
+end
+
+---Applies a two-color gradient to a range gate's fill texture. No-op if not created.
+---@param index integer
+---@param color1String string # ARGB hex color string for the start color
+---@param color2String string # ARGB hex color string for the end color
+---@param direction string # "horizontal" or "vertical"
+function TRB.Classes.OverlaySlot:SetRangeOverlayColorGradient(index, color1String, color2String, direction)
+	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
+	if not gate then return end
+	local sig = "grad:" .. tostring(color1String) .. ":" .. tostring(color2String) .. ":" .. tostring(direction)
+	if self._rangeColorSigs[index] == sig then return end
+	self._rangeColorSigs[index] = sig
+	local Color = TRB.Functions.Color
+	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
+	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
+	gate:SetStatusBarColor(1, 1, 1, 1)
+	local fillTexture = gate:GetStatusBarTexture()
+	if fillTexture then
+		local apiDirection = direction == "vertical" and "VERTICAL" or "HORIZONTAL"
+		local minColor = CreateColor(r1, g1, b1, a1)
+		local maxColor = CreateColor(r2, g2, b2, a2)
+		if apiDirection == "VERTICAL" then
+			minColor, maxColor = maxColor, minColor
+		end
+		fillTexture:SetGradient(apiDirection, minColor, maxColor)
+	end
+	self._rangeGradientActive[index] = true
+end
+
+---Shows a range gate. No-op if not created.
+---@param index integer
+function TRB.Classes.OverlaySlot:ShowRangeOverlay(index)
+	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
+	if not gate then return end
+	gate:Show()
+end
+
+---Hides a range gate. No-op if not created.
+---@param index integer
+function TRB.Classes.OverlaySlot:HideRangeOverlay(index)
+	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
+	if not gate then return end
+	gate:Hide()
+end
+
+---Hides every range gate on this slot.
+function TRB.Classes.OverlaySlot:HideRangeOverlays()
+	if not self.rangeOverlayFrames then return end
+	for index = 1, #self.rangeOverlayFrames do
+		self.rangeOverlayFrames[index]:Hide()
+	end
+end
+
+---Returns the gate StatusBar at the given index, or nil if not created.
+---@param index integer
+---@return StatusBar?
+function TRB.Classes.OverlaySlot:GetRangeOverlayFrame(index)
+	return self.rangeOverlayFrames and self.rangeOverlayFrames[index]
+end
+
+-- ============================================================================
 -- End Cap (fixed-width band at the fill's leading edge, growing inward)
 -- ============================================================================
 -- The end cap anchors a fixed-width colored band's leading edge to the primary
@@ -869,15 +1180,11 @@ function TRB.Classes.OverlaySlot:ReanchorEndCap(force)
 	local Bar = TRB.Functions.Bar
 	local isVertical = Bar:IsVerticalFill(fillDirection)
 
-	-- The band hugs the RAW rendered fill edge (the fill texture spans the whole frame, with the
-	-- border drawn over its edge), so no inner-normalization offset applies -- unlike the inset
-	-- overlay, which positions on the inner value scale. The only correction needed is near full:
-	-- when the raw edge overshoots into the border zone, slide the band back inside so it stays
-	-- fully visible instead of being clipped away under the border. Overshoot needs the fill
-	-- ratio, so secret-value bars fall back to 0 (their cap loses up to `border` px at full).
+	-- Near full the raw fill edge overshoots into the border zone and the band would be clipped away.
+	-- A secret value yields no ratio, so measure the rendered fill instead.
 	local overshoot = 0
 	if parent.border > 0 then
-		local fillRatio = self:GetParentFillRatio()
+		local fillRatio = self:GetParentFillRatio() or self:GetRenderedFillRatio()
 		if fillRatio ~= nil then
 			local extent = isVertical and parent.height or parent.width
 			overshoot = math.max(0, (fillRatio * extent) - (extent - parent.border))
@@ -898,10 +1205,10 @@ function TRB.Classes.OverlaySlot:ReanchorEndCap(force)
 	end
 	self._endCapAnchorSig = sig
 
-	-- Re-anchor clip frame: it constrains only the FILL axis (so the band can't draw past the bar
-	-- ends). The cross axis is left full -- the explicit band size below handles the side borders.
+	-- Both axes trim to the inner bar: the cap draws above the backdrop edge, so its sub-pixel spill
+	-- would otherwise land on the border and read as a taller cap.
 	self.endCapClipFrame:ClearAllPoints()
-	local clipLX, clipTY, clipRX, clipBY = self:GetClipInsets(fillDirection)
+	local clipLX, clipTY, clipRX, clipBY = self:GetAnchorInsets(fillDirection)
 	self.endCapClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", clipLX, clipTY)
 	self.endCapClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", clipRX, clipBY)
 	self.endCapReady = true
@@ -956,8 +1263,9 @@ function TRB.Classes.OverlaySlot:CreateEndCap()
 	-- Create clip container off-screen so any initial flash is invisible to the user.
 	-- It will be reanchored to the correct position after one frame.
 	local clip = CreateFrame("Frame", clipName, parent.frame)
-	-- +2 keeps the cap above the casting/spending overlays (parent level +1)
-	clip:SetFrameLevel(parent.frame:GetFrameLevel() + 2)
+	-- +8 keeps the cap above the casting/spending overlays (parent level +1) and the range
+	-- overlays above them, while staying inside the bar's frame level stride.
+	clip:SetFrameLevel(parent.frame:GetFrameLevel() + 8)
 	clip:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, 10000)
 	clip:SetSize(1, 1)
 	clip:SetClipsChildren(true)
@@ -1068,6 +1376,9 @@ function TRB.Classes.OverlaySlot:Reanchor()
 	-- Re-anchor inset overlay if it exists
 	self:ReanchorInsetOverlay(true)
 
+	-- Re-anchor range overlays if they exist
+	self:ReanchorRangeOverlays(true)
+
 	-- Re-anchor end cap if it exists
 	self:ReanchorEndCap(true)
 end
@@ -1102,6 +1413,18 @@ function TRB.Classes.OverlaySlot:RefreshAppearance()
 	if self.insetOverlayFrame and (self.spendingColor or self.color) then
 		Color:ApplyOverlayFillColor(self, self.spendingColor or self.color, "inset")
 		end
+
+	if self.rangeOverlayFrames then
+		for index = 1, #self.rangeOverlayFrames do
+			if self.rangeTexture then
+				self:SetRangeOverlayTexture(index, self.rangeTexture)
+			end
+			local rangeColor = self.rangeColors[index]
+			if rangeColor then
+				Color:ApplyRangeOverlayFillColor(self, index, rangeColor)
+			end
+		end
+	end
 end
 
 ---Hides all overlay frame types on this slot.
@@ -1109,5 +1432,6 @@ function TRB.Classes.OverlaySlot:HideAll()
 	self:HideOverlay()
 	self:HideAppendedOverlay()
 	self:HideInsetOverlay()
+	self:HideRangeOverlays()
 	self:HideEndCap()
 end

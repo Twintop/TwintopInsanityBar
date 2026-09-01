@@ -6,6 +6,7 @@ TRB.Classes.Mage = TRB.Classes.Mage or {}
 
 ---@class TRB.Classes.Mage.ArcaneSpells : TRB.Classes.SpecializationSpellsBase
 ---@field arcaneSurge TRB.Classes.SpellBase
+---@field arcaneSalvo TRB.Classes.SpellBase
 TRB.Classes.Mage.ArcaneSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.ArcaneSpells.__index = TRB.Classes.Mage.ArcaneSpells
 
@@ -25,6 +26,14 @@ function TRB.Classes.Mage.ArcaneSpells:New()
 
     -- Arcane Spec Talents
 
+    -- Stacks are read off Arcane Barrage's cast count, so the bar tracks that spell, not the talent.
+    self.arcaneSalvo = TRB.Classes.SpellBase:New({
+        id = 44425,
+        talentId = 384452,
+        isTalent = true,
+        maxStacks = TRB.Data.maxResource.mage.arcane.arcaneSalvo
+    })
+
     return self
 end
 
@@ -40,6 +49,7 @@ function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#arcaneSurge", icon = spells.arcaneSurge.icon, description = spells.arcaneSurge.name, printInSettings = true },
+		{ variable = "#arcaneSalvo", icon = spells.arcaneSalvo.icon, description = spells.arcaneSalvo.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -58,6 +68,10 @@ function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 
 		-- Duration is read from the spell description at cast time, so this stays a plain number.
 		{ variable = "$arcaneSurgeTime", description = L["MageArcaneBarTextVariable_arcaneSurgeTime"], printInSettings = true, color = false },
+
+		-- Stack count comes from Arcane Barrage's cast count, which is secret in combat.
+		{ variable = "$arcaneSalvoStacks", description = L["MageArcaneBarTextVariable_arcaneSalvoStacks"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$arcaneSalvoStacksMax", description = L["MageArcaneBarTextVariable_arcaneSalvoStacksMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 	})
 end
 
@@ -261,7 +275,7 @@ end
     BarGroups Factory for Mage
     Creates the appropriate BarGroup instances for each Mage specialization.
     
-    Arcane: Primary bar (N=1) + Arcane Charges (N=4)
+    Arcane: Primary bar (N=1) + Arcane Charges (N=4) + Arcane Salvo (N=1, 0-25 via GetSpellCastCount)
     Fire: Primary bar (N=1) + Fire Blast Charges (N=3)
     Frost: Primary bar (N=1) + Icicles (N=5)
 ]]
@@ -292,6 +306,14 @@ function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
             UIParent,
             "TwintopResourceBarFrame_ComboPoint",
             4,
+            false -- not primary
+        )
+
+        -- Arcane Salvo stacks (single node filled by the secret cast count)
+        barGroups.arcaneSalvo = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_ArcaneSalvo",
+            1,
             false -- not primary
         )
 
@@ -380,6 +402,12 @@ function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 4,
                 isPrimary = false,
                 resourceType = "ArcaneCharges"
+            },
+            arcaneSalvo = {
+                maxNodes = 1,
+                isPrimary = false,
+                resourceType = "ArcaneSalvo",
+                usesSecretValue = true
             },
             health = {
                 maxNodes = 1,

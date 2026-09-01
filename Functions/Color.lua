@@ -900,6 +900,31 @@ function TRB.Functions.Color:ApplyOverlayFillColor(slot, colorEntry, overlayType
 	end
 end
 
+---Applies a color entry to one range gate, storing it so RefreshAppearance can repaint on its own.
+---@param slot TRB.Classes.OverlaySlot
+---@param index integer # The range gate's index on the slot
+---@param colorEntry string|TRB.Classes.Settings.ColorGradientEntry
+function TRB.Functions.Color:ApplyRangeOverlayFillColor(slot, index, colorEntry)
+	slot.rangeColors[index] = colorEntry
+
+	local colorString, color2String, direction
+	if type(colorEntry) == "string" then
+		colorString = colorEntry
+	elseif type(colorEntry) == "table" then
+		colorString = colorEntry.color
+		if colorEntry.gradientDirection and colorEntry.gradientDirection ~= "disabled" and colorEntry.color2 then
+			color2String = colorEntry.color2
+			direction = colorEntry.gradientDirection
+		end
+	end
+
+	if color2String then
+		slot:SetRangeOverlayColorGradient(index, colorString, color2String, direction)
+	else
+		slot:SetRangeOverlayColor(index, colorString)
+	end
+end
+
 -- ============================================================================
 -- Indicator color resolution
 -- ============================================================================

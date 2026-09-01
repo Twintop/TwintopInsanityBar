@@ -695,12 +695,14 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		relativeToFrame[L["ArcaneCharge2"]] = "ComboPoint_2"
 		relativeToFrame[L["ArcaneCharge3"]] = "ComboPoint_3"
 		relativeToFrame[L["ArcaneCharge4"]] = "ComboPoint_4"
+		relativeToFrame[L["ArcaneSalvoBar"]] = "ArcaneSalvoBar"
 		relativeToFrameList = {
 			L["MainResourceBar"],
 			L["ArcaneCharge1"],
 			L["ArcaneCharge2"],
 			L["ArcaneCharge3"],
 			L["ArcaneCharge4"],
+			L["ArcaneSalvoBar"],
 			L["HealthBar"],
 			L["Screen"],
 		}

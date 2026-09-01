@@ -8981,6 +8981,51 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		AppendDeathKnightIndicator(TwintopInsanityBarSettings.deathknight.blood, "vampiricStrike")
 		AppendDeathKnightIndicator(TwintopInsanityBarSettings.deathknight.unholy, "vampiricStrike")
 	end
+
+	-- Arcane Salvo bar text: barText is an array, so the defaults merge cannot backfill it.
+	local arcaneSettings = TRB.Data.settings and TRB.Data.settings.mage and TRB.Data.settings.mage.arcane
+	if arcaneSettings ~= nil and arcaneSettings.displayText ~= nil and arcaneSettings.displayText.barText ~= nil then
+		local hasArcaneSalvoText = false
+		for _, entry in ipairs(arcaneSettings.displayText.barText) do
+			if entry.position and entry.position.relativeToFrame == "ArcaneSalvoBar" then
+				hasArcaneSalvoText = true
+				break
+			end
+		end
+		if not hasArcaneSalvoText then
+			table.insert(arcaneSettings.displayText.barText, {
+				useDefaultFontColor = true,
+				useDefaultFontOutline = true,
+				useDefaultFontShadow = true,
+				fontOutline = "OUTLINE",
+				fontOutlineName = L["FontOutlineOutline"],
+				fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				useDefaultFontFace = true,
+				guid = TRB.Functions.String:Guid(),
+				constrainToParent = false,
+				maxWidthPercent = 100,
+				fontJustifyHorizontalName = L["PositionCenter"],
+				text = "$arcaneSalvoStacks",
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+				fontSize = 14,
+				name = L["ResourceMageArcaneSalvo"],
+				position = {
+					relativeToName = L["PositionCenter"],
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = L["ArcaneSalvoBar"],
+					yPos = 0,
+					relativeToFrame = "ArcaneSalvoBar",
+				},
+				fontJustifyHorizontal = "CENTER",
+				useDefaultFontSize = true,
+				color = { color = "FFFFFFFF" },
+				enabled = true,
+			})
+		end
+	end
+
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
@@ -10594,6 +10639,33 @@ function TRB.Functions.Settings:DefaultCoagulatingBloodBarColors()
 	return self:DefaultCustomBarColors("FFAA0000", "FF550000", "66000000")
 end
 
+
+---Gets default Arcane Salvo bar dimensions (Arcane Mage, anchored above the Arcane Charges bar)
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultArcaneSalvoBarDimensions(classic)
+	local dims = self:DefaultCustomBarDimensions(classic)
+	dims.anchor.barKey = "secondary"
+	dims.anchor.anchorPoint = "TOP"
+	dims.anchor.attachPoint = "BOTTOM"
+	return dims
+end
+
+---Gets default Arcane Salvo bar colors (Arcane Mage), including the gated range slots. Slot 1 is the
+---base `bar` entry at 0; slots 2-5 recolor the whole fill from their own start value upward.
+---@return table
+function TRB.Functions.Settings:DefaultArcaneSalvoBarColors()
+	local colors = self:DefaultCustomBarColors("FF5C4FCF", "FF2A2470", "66000000")
+	colors.ranges = {
+		-- 12: Arcane Barrage becomes correct with a Clearcasting proc banked behind it.
+		[2] = { enabled = true, value = 12, color = "FFE8C33A", color2 = "FFE8C33A", gradientDirection = "disabled" },
+		-- 25: capped, so the next Barrage is mandatory or stacks are wasted.
+		[3] = { enabled = true, value = 25, color = "FFD13B3B", color2 = "FFD13B3B", gradientDirection = "disabled" },
+		[4] = { enabled = false, value = 18, color = "FFE8853A", color2 = "FFE8853A", gradientDirection = "disabled" },
+		[5] = { enabled = false, value = 22, color = "FFE85C3A", color2 = "FFE85C3A", gradientDirection = "disabled" },
+	}
+	return colors
+end
 
 ---Gets default Shatter bar dimensions (Frost Mage, anchored above the Icicles bar)
 ---@param classic boolean?
