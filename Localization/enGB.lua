@@ -439,4 +439,7 @@ if locale == "enGB" then
     -- Death Knight Unholy: Runic Corruption
     L["DeathKnightIndicatorRunicCorruptionTooltip"] = "Changes to this colour when Runic Corruption is active and Runes are regenerating at an increased rate."
 
+    -- Death Knight: Vampiric Strike
+    L["DeathKnightIndicatorVampiricStrikeTooltip"] = "Changes to this colour when Vampiric Strike is available."
+
 end

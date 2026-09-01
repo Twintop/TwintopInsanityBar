@@ -127,7 +127,6 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.DeathKnight.BloodSpells
 	specCache.deathknight_blood.spellsData.spells = TRB.Classes.DeathKnight.BloodSpells:New()
-	
 
 	specCache.deathknight_blood.barTextVariables = {
 		icons = {},
@@ -215,6 +214,18 @@ spellEventFrame:SetScript("OnEvent", function(self, event, spellId)
 			if spells.marrowrend and spellId == spells.marrowrend.id then
 				local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 				snapshotData.attributes.boneShieldStacks = C_Spell.GetSpellCastCount(spells.marrowrend.id) or 0
+			end
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
+		local spellsData = TRB.Data.spellsData
+		if spellsData and spellsData.spells then
+			local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells|TRB.Classes.DeathKnight.UnholySpells]]
+			if spells.vampiricStrike and spellId == spells.vampiricStrike.id then
+				-- A plain attribute, not a snapshot: the proc has no aura, and RefreshAllBuffs would
+				-- clear a custom buff that has no endTime on the next UNIT_AURA.
+				local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+				snapshotData.attributes.vampiricStrikeActive = event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW"
+				TRB.Data.lookupDirty = true
 			end
 		end
 	end
@@ -840,10 +851,15 @@ local function GetDeathKnightIndicatorState(specSettings)
 	local nodeOrder = sharedColors and sharedColors.nodeOrder
 	local gradientOrder = sharedColors and sharedColors.gradientOrder
 	local runesOnCooldown = CountRunesOnCooldown()
+	-- Talent-gated as well as glow-gated, so an untalented swap cannot strand a stale glow flag.
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	local vampiricStrikeTalented = spells ~= nil and spells.vampiricStrike ~= nil
+		and talents ~= nil and talents:IsTalentActive(spells.vampiricStrike)
 	local conditionMap = {
 		borderOvercap = TRB.Data.character.inCombat,
 		runeRegenOvercap = TRB.Data.character.inCombat and runesOnCooldown < 3,
 		runicCorruption = TRB.Data.character.specId == 3 and TRB.Data.snapshotData.attributes.runicCorruptionActive == true,
+		vampiricStrike = vampiricStrikeTalented and TRB.Data.snapshotData.attributes.vampiricStrikeActive == true,
 	}
 
 	return indicatorColors, nodeOrder, gradientOrder, conditionMap, sharedColors
@@ -951,7 +967,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	local indicatorColors, _, gradientOrder, conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
 
-	-- "Rune" and "Rune (Regenning)" partition the runes, so each resolves its own colors and gradient.
+	-- "Rune (Off Cooldown)" and "Rune (Regenerating)" partition the runes, so each resolves its own colors and gradient.
 	local runeReadyColors = scratch.runeBarColors1
 	wipe(runeReadyColors)
 	runeReadyColors.bar = cpBaseColor
@@ -1625,6 +1641,8 @@ local function SwitchSpec()
 
 	-- Unregister spec-specific events before switching
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 	
 	if TRB.Data.character.specId == 1 then
 		specCache.deathknight_blood.talents:GetTalents()
@@ -1653,6 +1671,8 @@ local function SwitchSpec()
 
 		-- Register Bone Shield tracking via SPELL_UPDATE_USES
 		spellEventFrame:RegisterEvent("SPELL_UPDATE_USES")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 		-- Initialize current bone shield stacks
 		TRB.Data.snapshotData.attributes.boneShieldStacks = C_Spell.GetSpellCastCount(spells.marrowrend.id) or 0
 	elseif TRB.Data.character.specId == 2 then
@@ -1700,6 +1720,9 @@ local function SwitchSpec()
 			TRB.Data.barConstructedForSpec = "deathknight_unholy"
 			ConstructResourceBar(specCache.deathknight_unholy.settings)
 		end
+
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 	else
 		TRB.Data.barConstructedForSpec = nil
 	end

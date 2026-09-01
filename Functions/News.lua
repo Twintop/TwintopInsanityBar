@@ -20,11 +20,16 @@ local content = [====[
 
 ## Death Knight
 
-- Add Rune (Regennerating) as a Color Indicator target, covering the runes currently recharging. Rune now covers only the runes that are off cooldown.
+- Add Rune (Regenerating) as a Color Indicator target, covering the runes currently recharging. The Rune target is now Rune (Off Cooldown) and covers only the runes that are ready.
+
+### Blood
+
+- [#815](#815) Add a Vampiric Strike Color Indicator, active while Vampiric Strike is replacing Heart Strike or Scourge Strike. Defaults to the Runic Power bar border.
 
 ### Unholy
 
-- Add a Runic Corruption Color Indicator, the `$runicCorruptionTime` bar text variable and the `#runicCorruption` icon. Color Indicator change targets Rune (Regenerating) by default. Requires Runic Corruption in the Cooldown Manager's Tracked Buffs.
+- [#815](#815) Add a Runic Corruption Color Indicator, the `$runicCorruptionTime` bar text variable and the `#runicCorruption` icon. Color Indicator change targets Rune (Regenerating) by default. Requires Runic Corruption in the Cooldown Manager's Tracked Buffs.
+- [#815](#815) Add a Vampiric Strike Color Indicator, active while Vampiric Strike is replacing Heart Strike or Scourge Strike. Defaults to the Runic Power bar border.
 
 ## Druid
 ### Guardian

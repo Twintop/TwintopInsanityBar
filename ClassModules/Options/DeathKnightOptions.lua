@@ -395,7 +395,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 				coagulatingBlood = TRB.Functions.Settings:DefaultCoagulatingBloodBarColors(),
 			},
 			shared = {
-				nodeOrder = { "runeRegenOvercap" },
+				nodeOrder = { "runeRegenOvercap", "vampiricStrike" },
 				gradientOrder = { "borderOvercap" },
 				indicatorColors = {
 					runeRegenOvercap = {
@@ -406,6 +406,19 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							runicPowerBar = { bar = false, border = false, background = false },
 							runesBar = { bar = true, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+							boneShield = { bar = false, border = false, background = false },
+							coagulatingBlood = { bar = false, border = false, background = false },
+						},
+					},
+					vampiricStrike = {
+						color = "FFFF7ECE",
+						color2 = "FFFF7ECE",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							runicPowerBar = { bar = false, border = true, background = false },
+							runesBar = { bar = false, border = false, background = false },
 							runesBarRegenerating = { bar = false, border = false, background = false },
 							boneShield = { bar = false, border = false, background = false },
 							coagulatingBlood = { bar = false, border = false, background = false },
@@ -830,7 +843,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			shared = {
-				nodeOrder = { "runeRegenOvercap", "runicCorruption" },
+				nodeOrder = { "runeRegenOvercap", "runicCorruption", "vampiricStrike" },
 				gradientOrder = { "borderOvercap" },
 				indicatorColors = {
 					runeRegenOvercap = {
@@ -841,6 +854,17 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							runicPowerBar = { bar = false, border = false, background = false },
 							runesBar = { bar = true, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+						},
+					},
+					vampiricStrike = {
+						color = "FFFF7ECE",
+						color2 = "FFFF7ECE",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							runicPowerBar = { bar = false, border = true, background = false },
+							runesBar = { bar = false, border = false, background = false },
 							runesBarRegenerating = { bar = false, border = false, background = false },
 						},
 					},
@@ -1421,6 +1445,7 @@ local function BloodConstructIndicatorColorsPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "runeRegenOvercap", label = L["DeathKnightIndicatorRuneRegenOvercap"], tooltip = L["DeathKnightIndicatorRuneRegenOvercapTooltip"], colorLabel = L["DeathKnightIndicatorRuneRegenOvercapColor"] },
+			{ key = "vampiricStrike", label = L["DeathKnightIndicatorVampiricStrike"], tooltip = L["DeathKnightIndicatorVampiricStrikeTooltip"], colorLabel = L["DeathKnightIndicatorVampiricStrikeColor"] },
 		},
 		gradientDefs = {
 			{ key = "borderOvercap", label = L["DeathKnightIndicatorOvercap"], tooltip = L["DeathKnightIndicatorOvercapTooltip"], colorLabel = L["DeathKnightIndicatorOvercapColor"] },
@@ -2283,6 +2308,7 @@ local function UnholyConstructIndicatorColorsPanel(parent)
 		indicatorDefs = {
 			{ key = "runeRegenOvercap", label = L["DeathKnightIndicatorRuneRegenOvercap"], tooltip = L["DeathKnightIndicatorRuneRegenOvercapTooltip"], colorLabel = L["DeathKnightIndicatorRuneRegenOvercapColor"] },
 			{ key = "runicCorruption", label = L["DeathKnightIndicatorRunicCorruption"], tooltip = L["DeathKnightIndicatorRunicCorruptionTooltip"], colorLabel = L["DeathKnightIndicatorRunicCorruptionColor"], cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+			{ key = "vampiricStrike", label = L["DeathKnightIndicatorVampiricStrike"], tooltip = L["DeathKnightIndicatorVampiricStrikeTooltip"], colorLabel = L["DeathKnightIndicatorVampiricStrikeColor"] },
 		},
 		gradientDefs = {
 			{ key = "borderOvercap", label = L["DeathKnightIndicatorOvercap"], tooltip = L["DeathKnightIndicatorOvercapTooltip"], colorLabel = L["DeathKnightIndicatorOvercapColor"] },

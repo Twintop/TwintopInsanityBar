@@ -42,6 +42,7 @@ end
 ---@field marrowrend TRB.Classes.SpellBase
 ---@field ossuary TRB.Classes.SpellBase
 ---@field raiseAlly TRB.Classes.SpellThreshold
+---@field vampiricStrike TRB.Classes.SpellBase
 TRB.Classes.DeathKnight.BloodSpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
 TRB.Classes.DeathKnight.BloodSpells.__index = TRB.Classes.DeathKnight.BloodSpells
 
@@ -84,6 +85,13 @@ function TRB.Classes.DeathKnight.BloodSpells:New()
         id = 219786,
         isTalent = true,
         stackThreshold = 5
+    })
+
+    -- Replaces Heart Strike. No aura, so the action button glow is the only "it is up" signal.
+    self.vampiricStrike = TRB.Classes.SpellBase:New({
+        id = 433895,
+        talentId = 433901,
+        isTalent = true
     })
 
     self.deathStrike.baseline = true
@@ -231,6 +239,7 @@ end
 ---@field raiseAlly TRB.Classes.SpellThreshold
 ---@field zombify TRB.Classes.SpellThreshold
 ---@field runicCorruption TRB.Classes.SpellBase
+---@field vampiricStrike TRB.Classes.SpellBase
 TRB.Classes.DeathKnight.UnholySpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
 TRB.Classes.DeathKnight.UnholySpells.__index = TRB.Classes.DeathKnight.UnholySpells
 
@@ -269,6 +278,13 @@ function TRB.Classes.DeathKnight.UnholySpells:New()
     self.runicCorruption = TRB.Classes.SpellBase:New({
         id = 51460,
         baseline = true
+    })
+
+    -- Replaces Scourge Strike. No aura, so the action button glow is the only "it is up" signal.
+    self.vampiricStrike = TRB.Classes.SpellBase:New({
+        id = 433895,
+        talentId = 433901,
+        isTalent = true
     })
 
     return self

@@ -8962,22 +8962,24 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
-	-- nodeOrder already exists in saves, so the new Runic Corruption indicator has to be appended to it.
-	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.deathknight and TwintopInsanityBarSettings.deathknight.unholy then
-		local spec = TwintopInsanityBarSettings.deathknight.unholy
-		local shared = spec.colors and spec.colors.shared
-		if shared and shared.nodeOrder then
-			local found = false
-			for _, key in ipairs(shared.nodeOrder) do
-				if key == "runicCorruption" then
-					found = true
-					break
+	-- nodeOrder already exists in saves, so new Death Knight indicators have to be appended to it.
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.deathknight then
+		local function AppendDeathKnightIndicator(spec, key)
+			local shared = spec and spec.colors and spec.colors.shared
+			if shared == nil or shared.nodeOrder == nil then
+				return
+			end
+			for _, existingKey in ipairs(shared.nodeOrder) do
+				if existingKey == key then
+					return
 				end
 			end
-			if not found then
-				table.insert(shared.nodeOrder, "runicCorruption")
-			end
+			table.insert(shared.nodeOrder, key)
 		end
+
+		AppendDeathKnightIndicator(TwintopInsanityBarSettings.deathknight.unholy, "runicCorruption")
+		AppendDeathKnightIndicator(TwintopInsanityBarSettings.deathknight.blood, "vampiricStrike")
+		AppendDeathKnightIndicator(TwintopInsanityBarSettings.deathknight.unholy, "vampiricStrike")
 	end
 end
 
