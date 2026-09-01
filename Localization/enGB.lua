@@ -442,4 +442,8 @@ if locale == "enGB" then
     -- Death Knight: Vampiric Strike
     L["DeathKnightIndicatorVampiricStrikeTooltip"] = "Changes to this colour when Vampiric Strike is available."
 
+    -- Mage Arcane: Arcane Surge
+    L["MageArcaneIndicatorArcaneSurgeTooltip"] = "Changes to this colour while Arcane Surge is active."
+    L["MageArcaneIndicatorArcaneSurgeEndTooltip"] = "Changes to this colour when Arcane Surge is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+
 end

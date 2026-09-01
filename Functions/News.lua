@@ -37,6 +37,13 @@ local content = [====[
 - [#765](#765) Add a new Ironfur bar, tracking each Ironfur application on its own timer, with a threshold line per application that slides along the bar as it expires. Adds the `$ironfurStacks`, `$ironfurTime` and `$ironfurNextStackTime` bar text variables and the `#ironfur` icon. Set to Never Show by default; enable it under Bar Visibility.
 - [#765](#765) Fill is the time until every application has expired. Scale is set on each Ironfur cast, holding at a longer application's duration while it is still running. Ursoc's Endurance and Guardian of Elune are included in each application's duration.
 
+## Mage
+### Arcane
+
+- [#820](#820) Add Arcane Surge tracking, with Arcane Surge and Arcane Surge Ending Color Indicators, the `$arcaneSurgeTime` bar text variable and the `#arcaneSurge` icon. Both indicators target the Mana bar fill by default, and new profiles show the timer in the middle of the Mana bar.
+- [#820](#820) The tracked duration includes the Savor the Moment extension for the Spellfire Spheres the cast consumed.
+- [#820](#820) Add the Indicator Colors tab to Arcane, along with Mana and Arcane Charges as Color Indicator targets.
+
 ---
 
 # 12.1.0.7-release (2026-08-25)

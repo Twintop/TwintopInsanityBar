@@ -5,6 +5,7 @@ TRB.Classes.Mage = TRB.Classes.Mage or {}
 
 
 ---@class TRB.Classes.Mage.ArcaneSpells : TRB.Classes.SpecializationSpellsBase
+---@field arcaneSurge TRB.Classes.SpellBase
 TRB.Classes.Mage.ArcaneSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.ArcaneSpells.__index = TRB.Classes.Mage.ArcaneSpells
 
@@ -15,9 +16,13 @@ function TRB.Classes.Mage.ArcaneSpells:New()
     -- Mage Class Baseline Abilities
 
     -- Arcane Baseline Abilities
+    self.arcaneSurge = TRB.Classes.SpellBase:New({
+        id = 365350,
+        duration = 15
+    })
 
     -- Mage Class Talents
-    
+
     -- Arcane Spec Talents
 
     return self
@@ -33,7 +38,9 @@ function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.spellsData:FillSpellData()
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 
-	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#arcaneSurge", icon = spells.arcaneSurge.icon, description = spells.arcaneSurge.name, printInSettings = true },
+	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
@@ -48,6 +55,9 @@ function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		{ variable = "$arcaneChargesMax", description = L["MageArcaneBarTextVariable_arcaneChargesMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+
+		-- Duration is read from the spell description at cast time, so this stays a plain number.
+		{ variable = "$arcaneSurgeTime", description = L["MageArcaneBarTextVariable_arcaneSurgeTime"], printInSettings = true, color = false },
 	})
 end
 

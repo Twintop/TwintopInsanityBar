@@ -56,6 +56,10 @@ local function FillSpecializationCache()
 
 	specCache.mage_arcane.snapshotData.attributes.manaRegen = 0
 
+	-- Savor the Moment lengthens the buff by however many Spellfire Spheres the cast ate, and that
+	-- count is a secret, so the duration is read from the spell description and tracked manually.
+	specCache.mage_arcane.snapshotData.snapshots[spells.arcaneSurge.id] = TRB.Classes.Snapshot:New(spells.arcaneSurge)
+
 	specCache.mage_arcane.barTextVariables = {
 		icons = {},
 		values = {}
@@ -544,6 +548,15 @@ local function RefreshLookupData_Arcane()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
+	-- Block C: Arcane Surge ($arcaneSurgeTime)
+	if not activeVars or activeVars["$arcaneSurgeTime"] then
+		local buff = snapshots[spells.arcaneSurge.id].buff
+		local _arcaneSurgeTime = buff.isActive and buff.remaining or 0
+
+		lookupLogic["$arcaneSurgeTime"] = _arcaneSurgeTime
+		lookup["$arcaneSurgeTime"] = TRB.Functions.BarText:TimerPrecision(_arcaneSurgeTime)
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -801,6 +814,64 @@ local function UpdateCastingResourceFinal()
 	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
 end
 
+-- The description reflects the Spellfire Spheres banked at the instant it is read, and the cast both
+-- spends them and can gain one, so every sample across a cast is kept and the longest one wins.
+local arcaneSurgeCasting = false
+local arcaneSurgeCastDuration = nil
+local arcaneSurgeParseWarned = false
+
+---Reads Arcane Surge's advertised duration off its spell description, which carries the Savor the
+---Moment extension the secret Spellfire Sphere count cannot be read for.
+local function SampleArcaneSurgeDuration()
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	if spells == nil or spells.arcaneSurge == nil then
+		return
+	end
+
+	local description = C_Spell.GetSpellDescription(spells.arcaneSurge.id)
+	local duration = TRB.Functions.String:ParseDurationSeconds(description)
+	-- No baseline floor: it would reject every real value if the baseline is ever tuned down.
+	if duration == nil or duration <= 0 then
+		-- A readable description with no duration in it means the template or locale moved, which the
+		-- silent fallback to baseline would otherwise never surface.
+		if not arcaneSurgeParseWarned and description ~= nil and description ~= "" and not issecretvalue(description) then
+			arcaneSurgeParseWarned = true
+			print(string.format("|cFFFF8800TRB:|r Could not read Arcane Surge's duration from its spell description; using %d sec. Please run /trb arcanesurge and report the output.", spells.arcaneSurge.duration))
+		end
+		return
+	end
+
+	if arcaneSurgeCastDuration == nil or duration > arcaneSurgeCastDuration then
+		arcaneSurgeCastDuration = duration
+	end
+end
+
+---Prints what Arcane Surge's description currently advertises, for checking the duration parse
+---against a known number of banked Spellfire Spheres.
+function TRB.Functions.Class:PrintArcaneSurgeDiagnostics()
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	if spells == nil or spells.arcaneSurge == nil then
+		print("|cFFFF8800TRB Arcane Surge:|r spell data is not loaded.")
+		return
+	end
+
+	local description = C_Spell.GetSpellDescription(spells.arcaneSurge.id)
+	print(string.format("|cFFFF8800TRB Arcane Surge:|r parsed=%s baseline=%s casting=%s bestThisCast=%s locale=%s unit=%q",
+		tostring(TRB.Functions.String:ParseDurationSeconds(description)),
+		tostring(spells.arcaneSurge.duration),
+		tostring(arcaneSurgeCasting),
+		tostring(arcaneSurgeCastDuration),
+		GetLocale(),
+---@diagnostic disable-next-line: undefined-global
+		tostring(SPELL_DURATION_SEC)))
+
+	if description == nil or issecretvalue(description) then
+		print("|cFFFF8800TRB Arcane Surge:|r description is unreadable.")
+	else
+		print(description)
+	end
+end
+
 ---Handles UNIT_SPELLCAST_ events for the class
 ---@param event trbSpellCastType
 ---@param spellId integer
@@ -812,6 +883,29 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START" then
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal()
+		end
+	end
+
+	if TRB.Data.character.specId == 1 then
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		if spells ~= nil and spells.arcaneSurge ~= nil and spellId == spells.arcaneSurge.id then
+			if event == "UNIT_SPELLCAST_START" then
+				arcaneSurgeCasting = true
+				arcaneSurgeCastDuration = nil
+				SampleArcaneSurgeDuration()
+			elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+				SampleArcaneSurgeDuration()
+				local snapshot = snapshotData.snapshots[spells.arcaneSurge.id]
+				if snapshot ~= nil then
+					snapshot.buff:InitializeCustom(arcaneSurgeCastDuration or spells.arcaneSurge.duration)
+				end
+				arcaneSurgeCasting = false
+				arcaneSurgeCastDuration = nil
+				TRB.Data.lookupDirty = true
+			elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+				arcaneSurgeCasting = false
+				arcaneSurgeCastDuration = nil
+			end
 		end
 	end
 
@@ -839,8 +933,23 @@ local function UpdateSnapshot()
 	--local currentTime = GetTime()
 end
 
+---Generic player-aura hook invoked by Functions/Aura.lua on every player UNIT_AURA. Re-samples
+---Arcane Surge mid-cast, so a Spellfire Sphere gained after the cast started still counts.
+---@param info UnitAuraUpdateInfo?
+function TRB.Functions.Class:OnPlayerUnitAura(info)
+	if arcaneSurgeCasting then
+		SampleArcaneSurgeDuration()
+	end
+end
+
 local function UpdateSnapshot_Arcane()
 	UpdateSnapshot()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local arcaneSurge = snapshotData.snapshots[spells.arcaneSurge.id]
+	if arcaneSurge ~= nil then
+		arcaneSurge.buff:GetRemainingTime(GetTime())
+	end
 end
 
 local function UpdateSnapshot_Fire()
@@ -998,9 +1107,11 @@ local scratch = {
 	manaBarColors1 = {},
 	iciclesBarColors1 = {},
 	shatterBarColors1 = {},
+	arcaneChargesBarColors1 = {},
 	manaBarTargets1 = {},
 	iciclesBarTargets1 = {},
 	shatterBarTargets1 = {},
+	arcaneChargesBarTargets1 = {},
 	indicatorTargets1 = {},
 	barColorMap1 = {},
 }
@@ -1040,16 +1151,68 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.mage_arcane.settings
 		UpdateSnapshot_Arcane()
 		if snapshotData.attributes.isTracking then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+			local snapshots = snapshotData.snapshots
+
+			-- Indicators resolve ahead of the bars' visibility guards: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when a resource bar is set to Never Show.
+			local sharedColors = specSettings.colors.shared
+			local arcaneSurgeBuff = snapshots[spells.arcaneSurge.id].buff
+			local arcaneSurgeActive = arcaneSurgeBuff.isActive == true
+			local arcaneSurgeEndMet = false
+			if arcaneSurgeActive then
+				local timeThreshold = 0
+				if specSettings.endOf.arcaneSurge.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.arcaneSurge.gcdsMax
+				elseif specSettings.endOf.arcaneSurge.mode == "time" then
+					timeThreshold = specSettings.endOf.arcaneSurge.timeMax
+				end
+				arcaneSurgeEndMet = arcaneSurgeBuff.remaining <= timeThreshold
+			end
+
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.arcaneSurge = arcaneSurgeActive
+			conditionMap.arcaneSurgeEnd = arcaneSurgeActive and arcaneSurgeEndMet
+
+			local manaBarColors = scratch.manaBarColors1
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			local arcaneChargesBarColors = scratch.arcaneChargesBarColors1
+			wipe(arcaneChargesBarColors)
+			arcaneChargesBarColors.bar = specSettings.colors.comboPoints.base
+			arcaneChargesBarColors.border = specSettings.colors.comboPoints.border.color
+			arcaneChargesBarColors.background = specSettings.colors.comboPoints.background.color
+
+			-- Wiped rather than reset to false: ApplyIndicatorColors only ever writes true, and every
+			-- reader tests truthiness.
+			local manaBarTargets = scratch.manaBarTargets1
+			wipe(manaBarTargets)
+			local arcaneChargesBarTargets = scratch.arcaneChargesBarTargets1
+			wipe(arcaneChargesBarTargets)
+			local indicatorTargets = scratch.indicatorTargets1
+			wipe(indicatorTargets)
+			indicatorTargets.manaBar = manaBarTargets
+			indicatorTargets.arcaneChargesBar = arcaneChargesBarTargets
+
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.arcaneChargesBar = arcaneChargesBarColors
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barColor = specSettings.colors.bar.base
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
-				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				primaryNode:SetBorderColor(manaBarColors.border)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -1057,13 +1220,9 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				local currentCharges = snapshotData.attributes.resource2 or 0
-				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
+				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(arcaneChargesBarColors.background, true)
 				for x = 1, TRB.Data.character.maxResource2 do
-					local cpBorderColor = specSettings.colors.comboPoints.border.color
 					local cpColor = specSettings.colors.comboPoints.base
-					local cpBR = cpBackgroundRed
-					local cpBG = cpBackgroundGreen
-					local cpBB = cpBackgroundBlue
 					local filled = currentCharges >= x
 
 					if filled then
@@ -1074,13 +1233,19 @@ local function UpdateResourceBar()
 						end
 					end
 
+					-- An indicator on the fill wins over the per-node base/penultimate/final choice.
+					if indicatorTargets.arcaneChargesBar.bar then
+						cpColor = arcaneChargesBarColors.bar
+					end
+
 					if barGroups and barGroups.secondary then
 						local chargeNode = barGroups.secondary:GetNode(x)
 						if chargeNode then
 							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chargeNode, filled and 1 or 0, 1)
-							chargeNode:SetBorderColor(cpBorderColor)
+							Bar:ApplyEndCapIndicator(chargeNode, "arcaneChargesBar")
+							chargeNode:SetBorderColor(arcaneChargesBarColors.border)
 							TRB.Functions.Color:ApplyFillColor(chargeNode, cpColor)
-							chargeNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+							chargeNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 						end
 					end
 				end
@@ -1341,6 +1506,7 @@ local function SwitchSpec()
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1348,8 +1514,14 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.mage_arcane.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#arcaneSurge"] = spells.arcaneSurge.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
+
+		-- Manual tracking only runs while Arcane is played, so anything banked is stale by now.
+		snapshotData.snapshots[spells.arcaneSurge.id].buff:Reset()
+		arcaneSurgeCasting = false
+		arcaneSurgeCastDuration = nil
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
@@ -1852,6 +2024,11 @@ do
 	arcane["$arcaneCharges"] = true
 	arcane["$comboPointsMax"] = true
 	arcane["$arcaneChargesMax"] = true
+	arcane["$arcaneSurgeTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local snapshot = spells and spells.arcaneSurge and TRB.Data.snapshotData.snapshots[spells.arcaneSurge.id]
+		return snapshot ~= nil and snapshot.buff.isActive == true
+	end
 	-- Frost
 	local frost = {}
 	for k, v in pairs(common) do frost[k] = v end

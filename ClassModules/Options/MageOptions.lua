@@ -21,6 +21,9 @@ local function ArcaneLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
+	-- Centered in both layouts: the mana text sits on the right of this bar either way.
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("arcaneSurgeTime", "arcaneSurge", classic, "CENTER", "CENTER"))
+
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
@@ -133,10 +136,32 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			shared = {
-				nodeOrder = {},
+				nodeOrder = { "arcaneSurgeEnd", "arcaneSurge" },
 				gradientOrder = {},
-				indicatorColors = {},
+				indicatorColors = {
+					arcaneSurge = {
+						color = "FF9B4DFF",
+						color2 = "FF9B4DFF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+						},
+					},
+					arcaneSurgeEnd = {
+						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+						},
+					},
+				},
 			},
+		},
+		endOf = {
+			arcaneSurge = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		displayText={
 			default = {
@@ -863,8 +888,43 @@ local function ArcaneConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 8, 1, yCoord, cache)
 end
 
---local function ArcaneConstructIndicatorColorsPanel(parent)
---end
+local function ArcaneConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.mage.arcane
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mage_arcane
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 8, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "arcaneSurgeEnd", label = L["MageArcaneIndicatorArcaneSurgeEnd"], tooltip = L["MageArcaneIndicatorArcaneSurgeEndTooltip"], colorLabel = L["MageArcaneIndicatorArcaneSurgeEndColor"] },
+			{ key = "arcaneSurge", label = L["MageArcaneIndicatorArcaneSurge"], tooltip = L["MageArcaneIndicatorArcaneSurgeTooltip"], colorLabel = L["MageArcaneIndicatorArcaneSurgeColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "arcaneChargesBar", label = L["ResourceArcaneCharges"] },
+		},
+		endOfConfigs = {
+			{
+				endOfKey = "arcaneSurge",
+				sectionHeader = L["MageArcaneHeaderEndOfArcaneSurgeConfiguration"],
+				gcdRadioLabel = L["MageArcaneCheckboxArcaneSurgeGcds"],
+				gcdSliderLabel = L["MageArcaneArcaneSurgeGcds"],
+				timeRadioLabel = L["MageArcaneCheckboxArcaneSurgeTime"],
+				timeSliderLabel = L["MageArcaneArcaneSurgeTime"],
+			},
+		},
+		ddNamePrefix = "TwintopResourceBar_Mage_Arcane",
+	}))
+
+	yCoord = yCoord - 40
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_arcane = controls
+end
 
 local function ArcaneConstructThresholdSettingsPanel(parent)
 	if parent == nil then
@@ -921,7 +981,7 @@ local function ArcaneConstructOptionsPanel(cache)
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = ArcaneConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = ArcaneConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "arcane", controls),
-		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = ArcaneConstructIndicatorColorsPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = ArcaneConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = ArcaneConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = ArcaneConstructBarVisibilityPanel },
 		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("mage", "arcane", controls),

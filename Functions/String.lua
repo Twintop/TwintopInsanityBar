@@ -328,6 +328,42 @@ function TRB.Functions.String:ParseLastNumber(str)
 	return ParseNumberFromString(str, true)
 end
 
+-- Built from the game's own "%s sec" template so the unit matched is the client's, not a hardcoded one.
+local function BuildSecondsPattern()
+---@diagnostic disable-next-line: undefined-global
+	local template = SPELL_DURATION_SEC
+	if type(template) ~= "string" then
+		return nil
+	end
+	-- Any format spec, not just %s: locales template this as %s秒, %d Sek., %.1f sec and so on.
+	local suffix = template:gsub("%%[%d%.%-%+ #]*%a", ""):gsub("^[%s\194\160]+", "")
+	if suffix == "" then
+		return nil
+	end
+	-- NBSP separates value from unit in frFR/ruRU, and %s does not match its bytes.
+	local pattern = "(%d+[%.,]?%d*)[%s\194\160]*" .. (suffix:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1"))
+	-- esES/itIT/ptBR/frFR abbreviate to a bare "s", which alone matches the "5 s" of "5 sorts".
+	-- \195 leads the first accented letter, so stopping there still admits the NBSP before ";:!?".
+	if suffix:match("[A-Za-z]$") then
+		pattern = pattern .. "%f[^%a\195-\255]"
+	end
+	return pattern
+end
+
+---Parses a duration in seconds out of a localized spell description, e.g. "For the next 17.4 sec,".
+---Keeps the fractional part, and anchors on the seconds unit so other numbers can't be mistaken for it.
+---@param str string?
+---@return number?
+function TRB.Functions.String:ParseDurationSeconds(str)
+	if not str or issecretvalue(str) then return nil end
+	local pattern = BuildSecondsPattern()
+	if pattern == nil then return nil end
+	str = str:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+	local match = str:match(pattern)
+	if match == nil then return nil end
+	return tonumber((match:gsub(",", ".")))
+end
+
 ---Checks if the original string contains the substring provided
 ---@param original string
 ---@param sub string
