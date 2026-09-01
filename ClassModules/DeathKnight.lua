@@ -24,6 +24,9 @@ local scratch = {
 	runicPowerBarColors1 = {},
 	barColorMap1 = {},
 	runeBarColors1 = {},
+	runeBarColors2 = {},
+	runeGradientResults1 = {},
+	runeGradientResults2 = {},
 	barColorMap2 = {},
 	coagulatingBloodColors1 = {},
 	barColorMap3 = {},
@@ -194,6 +197,9 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.DeathKnight.UnholySpells
 	specCache.deathknight_unholy.spellsData.spells = TRB.Classes.DeathKnight.UnholySpells:New()
 
+	local unholySpells = specCache.deathknight_unholy.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+	---@type TRB.Classes.Snapshot
+	specCache.deathknight_unholy.snapshotData.snapshots[unholySpells.runicCorruption.id] = TRB.Classes.Snapshot:New(unholySpells.runicCorruption)
 
 	specCache.deathknight_unholy.barTextVariables = {
 		icons = {},
@@ -603,6 +609,39 @@ local function RefreshLookupData_Unholy()
 		end
 	end
 
+	-- Block C: Runic Corruption ($runicCorruptionTime)
+	if not activeVars or activeVars["$runicCorruptionTime"] then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+		local snapshot = snapshotData.snapshots[spells.runicCorruption.id]
+		local buff = snapshot and snapshot.buff
+		local properties = buff and buff.customProperties
+		local _runicCorruptionActive = buff ~= nil and buff.isActive == true
+		local _runicCorruptionTime = properties and properties.remaining
+		local _runicCorruptionTimeText = properties and properties.remainingText
+
+		-- Secret when the Cooldown Manager has it and missing entirely when it does not, so logic
+		-- never learns more than whether there is a value at all.
+		lookupLogic["$runicCorruptionTime"] = _runicCorruptionActive and (_runicCorruptionTime ~= nil or _runicCorruptionTimeText ~= nil)
+
+		local timeDisplay
+		if not snapshotData.attributes.runicCorruptionTracked then
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		elseif not _runicCorruptionActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _runicCorruptionTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_runicCorruptionTime)
+		elseif _runicCorruptionTimeText ~= nil then
+			-- Already formatted for us, and to the viewer's precision rather than ours.
+			timeDisplay = _runicCorruptionTimeText
+		else
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		end
+
+		if lookupChanged(prevState, "$runicCorruptionTime", timeDisplay) then
+			lookup["$runicCorruptionTime"] = timeDisplay
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -728,8 +767,60 @@ local function UpdateSnapshot_Frost()
 	snapshotData.snapshots[spells.breathOfSindragosa.id].cooldown:GetRemainingTime(currentTime)
 end
 
+---Refreshes Runic Corruption from the Cooldown Manager, its only source: the rune regeneration rate
+---it changes is unobservable whenever no rune is recharging, and refreshes never move it at all.
+---@param spells TRB.Classes.DeathKnight.UnholySpells
+local function UpdateRunicCorruption(spells)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local attributes = snapshotData.attributes
+	local snapshot = snapshotData.snapshots[spells.runicCorruption.id]
+	if snapshot == nil then
+		return
+	end
+
+	local buff = snapshot.buff
+	local properties = buff.customProperties
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	local wasTracked = attributes.runicCorruptionTracked == true
+	local wasActive = buff.isActive
+
+	-- Pinned to the buff viewers: it is a self-buff, and a cooldown viewer would describe the cast.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.runicCorruption.id)
+	attributes.runicCorruptionTracked = trackedId ~= nil
+
+	if trackedId ~= nil and cdm:IsLive(trackedId, cdm.SourceGroup.BUFF) then
+		buff:InitializeCustomSimple(false)
+
+		-- The bar viewer is the only one where Blizzard subtracts expiry from now. Elsewhere the best
+		-- on offer is the countdown it already formatted.
+		local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+		if remainingOk then
+			properties.remaining = remaining
+		else
+			local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+			if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+				properties.remainingText = remainingText
+			end
+		end
+	else
+		buff:Reset()
+	end
+
+	-- Plain (non-secret) up/down flag for the indicator condition map.
+	attributes.runicCorruptionActive = buff.isActive == true
+
+	if wasTracked ~= attributes.runicCorruptionTracked or wasActive ~= buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
+end
+
 local function UpdateSnapshot_Unholy()
 	UpdateSnapshot()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+	UpdateRunicCorruption(spells)
 end
 
 local function CountRunesOnCooldown()
@@ -752,6 +843,7 @@ local function GetDeathKnightIndicatorState(specSettings)
 	local conditionMap = {
 		borderOvercap = TRB.Data.character.inCombat,
 		runeRegenOvercap = TRB.Data.character.inCombat and runesOnCooldown < 3,
+		runicCorruption = TRB.Data.character.specId == 3 and TRB.Data.snapshotData.attributes.runicCorruptionActive == true,
 	}
 
 	return indicatorColors, nodeOrder, gradientOrder, conditionMap, sharedColors
@@ -790,6 +882,20 @@ local function BuildGradientCurves(specSettings, barKey, currentColors, gradient
 		end
 	end
 	return curves
+end
+
+local function EvaluateGradientResults(curves, results)
+	wipe(results)
+	if curves.border then
+		results.border = UnitPowerPercent("player", TRB.Data.resource, true, curves.border)
+	end
+	if curves.bar then
+		results.bar = UnitPowerPercent("player", TRB.Data.resource, true, curves.bar)
+	end
+	if curves.background then
+		results.background = UnitPowerPercent("player", TRB.Data.resource, true, curves.background)
+	end
+	return results
 end
 
 local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
@@ -844,44 +950,52 @@ local function UpdateRunes(specSettings, specCacheSettings)
 	local runes = TRB.Data.character.runes
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	local indicatorColors, _, gradientOrder, conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
-	local runeRegenIndicator = indicatorColors and indicatorColors.runeRegenOvercap
-	local runeTargets = runeRegenIndicator and runeRegenIndicator.enabled and conditionMap.runeRegenOvercap
-		and runeRegenIndicator.targets and runeRegenIndicator.targets.runesBar or nil
-	local runeBarColors = scratch.runeBarColors1
-	wipe(runeBarColors)
-	runeBarColors.bar = cpBaseColor
-	runeBarColors.border = cpBorderColor
-	runeBarColors.background = cpBackgroundColor
+
+	-- "Rune" and "Rune (Regenning)" partition the runes, so each resolves its own colors and gradient.
+	local runeReadyColors = scratch.runeBarColors1
+	wipe(runeReadyColors)
+	runeReadyColors.bar = cpBaseColor
+	runeReadyColors.border = cpBorderColor
+	runeReadyColors.background = cpBackgroundColor
+	local runeRegenColors = scratch.runeBarColors2
+	wipe(runeRegenColors)
+	runeRegenColors.bar = cpBaseColor
+	runeRegenColors.border = cpBorderColor
+	runeRegenColors.background = cpBackgroundColor
 	local barColorMap = scratch.barColorMap2
 	wipe(barColorMap)
-	barColorMap.runesBar = runeBarColors
+	barColorMap.runesBar = runeReadyColors
+	barColorMap.runesBarRegenerating = runeRegenColors
 
 	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
+	-- An indicator claiming the regenerating fill outranks the per-rune cooldown color.
+	local regenBarIndicated = runeRegenColors.bar ~= cpBaseColor
+
 	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
-	local runeGradientCurves = BuildGradientCurves(specSettings, "runesBar", runeBarColors, gradientIndicator)
-	local runeGradientResults = {}
-	if runeGradientCurves.border then
-		runeGradientResults.border = UnitPowerPercent("player", TRB.Data.resource, true, runeGradientCurves.border)
-	end
-	if runeGradientCurves.bar then
-		runeGradientResults.bar = UnitPowerPercent("player", TRB.Data.resource, true, runeGradientCurves.bar)
-	end
-	if runeGradientCurves.background then
-		runeGradientResults.background = UnitPowerPercent("player", TRB.Data.resource, true, runeGradientCurves.background)
-	end
-	
+	local readyGradientCurves = BuildGradientCurves(specSettings, "runesBar", runeReadyColors, gradientIndicator)
+	local regenGradientCurves = BuildGradientCurves(specSettings, "runesBarRegenerating", runeRegenColors, gradientIndicator)
+	local readyGradientResults = EvaluateGradientResults(readyGradientCurves, scratch.runeGradientResults1)
+	local regenGradientResults = EvaluateGradientResults(regenGradientCurves, scratch.runeGradientResults2)
+
 	for x = 1, TRB.Data.character.maxResource2 do
 		local rune = runes[x]
-		local runeBorderColor = runeBarColors.border
-		local runeColor = runeBarColors.bar
-		local runeBackgroundColor = runeBarColors.background
+		local isReady = rune.ready
+		local runeColors = isReady and runeReadyColors or runeRegenColors
+		local runeGradientCurves = isReady and readyGradientCurves or regenGradientCurves
+		local runeGradientResults = isReady and readyGradientResults or regenGradientResults
+		local runeBarKey = isReady and "runesBar" or "runesBarRegenerating"
 
-		if cpCooldownEnabled and not rune.ready and not (runeTargets and runeTargets.bar) then
+		local runeBorderColor = runeColors.border
+		local runeColor = runeColors.bar
+		local runeBackgroundColor = runeColors.background
+
+		if cpCooldownEnabled and not isReady and not regenBarIndicated then
 			runeColor = cpCooldownColor
 		end
 
 		-- When cooldown display is off, runes are binary: full when ready, empty otherwise
-		local runeValue = cpCooldownEnabled and rune.percentage or (rune.ready and 1 or 0)
+		local runeValue = cpCooldownEnabled and rune.percentage or (isReady and 1 or 0)
 
 		if barGroups and barGroups.secondary then
 			local runeNode = barGroups.secondary:GetNode(x)
@@ -904,7 +1018,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 				else
 					runeNode:SetBackgroundColorFromString(runeBackgroundColor)
 				end
-				Bar:ApplyEndCapIndicator(runeNode, "runesBar")
+				Bar:ApplyEndCapIndicator(runeNode, runeBarKey)
 			end
 		end
 	end
@@ -1577,6 +1691,7 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.deathknight_unholy.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#runicCorruption"] = spells.runicCorruption.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1888,7 +2003,13 @@ do
 		return TRB.Data.snapshotData.attributes.coagulatingBloodTracked == true
 	end
 	blood["$coagulatingBloodStacksMax"] = true
-	specValidVars = { [1] = blood, [2] = shared, [3] = shared }
+	local unholy = {}
+	for k, v in pairs(shared) do unholy[k] = v end
+	-- Goes false when the Cooldown Manager lacks it, matching the "??" the text renders.
+	unholy["$runicCorruptionTime"] = function()
+		return TRB.Data.snapshotData.attributes.runicCorruptionTracked == true
+	end
+	specValidVars = { [1] = blood, [2] = shared, [3] = unholy }
 end
 
 function TRB.Functions.Class:IsValidVariableForSpec(var)

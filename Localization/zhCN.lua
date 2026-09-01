@@ -2172,7 +2172,6 @@ if locale == "zhCN" then
     L["ShamanElementalIndicatorOvercapTooltip"] = "漩涡值即将溢出时逐渐变为该颜色。"
     L["ShamanElementalIndicatorOvercapColor"] = "漩涡值溢出中"
 
-    L["BarNameRunesBar"] = "符文"
     L["DeathKnightIndicatorOvercap"] = "溢出（渐变）"
     L["DeathKnightIndicatorRuneRegenOvercap"] = "符文恢复溢出"
     L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "战斗中少于 3 个符文冷却时变为该颜色。"

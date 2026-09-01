@@ -7332,6 +7332,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		indicator.targets = indicator.targets or {}
 		indicator.targets.runicPowerBar = indicator.targets.runicPowerBar or { bar = false, border = false, background = false }
 		indicator.targets.runesBar = indicator.targets.runesBar or { bar = false, border = false, background = false }
+		indicator.targets.runesBarRegenerating = indicator.targets.runesBarRegenerating or { bar = false, border = false, background = false }
 	end
 
 	local function EnsureDeathKnightBloodIndicatorTargetTables(indicator)
@@ -8957,6 +8958,24 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 						relativeToFrameName = L["IronfurBar"],
 					},
 				})
+			end
+		end
+	end
+
+	-- nodeOrder already exists in saves, so the new Runic Corruption indicator has to be appended to it.
+	if TwintopInsanityBarSettings and TwintopInsanityBarSettings.deathknight and TwintopInsanityBarSettings.deathknight.unholy then
+		local spec = TwintopInsanityBarSettings.deathknight.unholy
+		local shared = spec.colors and spec.colors.shared
+		if shared and shared.nodeOrder then
+			local found = false
+			for _, key in ipairs(shared.nodeOrder) do
+				if key == "runicCorruption" then
+					found = true
+					break
+				end
+			end
+			if not found then
+				table.insert(shared.nodeOrder, "runicCorruption")
 			end
 		end
 	end

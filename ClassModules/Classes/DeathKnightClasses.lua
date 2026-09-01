@@ -230,6 +230,7 @@ end
 ---@field epidemic TRB.Classes.SpellThreshold
 ---@field raiseAlly TRB.Classes.SpellThreshold
 ---@field zombify TRB.Classes.SpellThreshold
+---@field runicCorruption TRB.Classes.SpellBase
 TRB.Classes.DeathKnight.UnholySpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
 TRB.Classes.DeathKnight.UnholySpells.__index = TRB.Classes.DeathKnight.UnholySpells
 
@@ -265,6 +266,11 @@ function TRB.Classes.DeathKnight.UnholySpells:New()
         isTalent = true
     })
 
+    self.runicCorruption = TRB.Classes.SpellBase:New({
+        id = 51460,
+        baseline = true
+    })
+
     return self
 end
 
@@ -278,7 +284,9 @@ function TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables(specCacheEntr
 	specCacheEntry.spellsData:FillSpellData()
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
 
-	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#runicCorruption", icon = spells.runicCorruption.icon, description = spells.runicCorruption.name, printInSettings = true },
+	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$runicPower", description = L["DeathKnightBarTextVariable_runicPower"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
@@ -301,6 +309,8 @@ function TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$rune4Ready", description = L["DeathKnightBarTextVariable_rune4Ready"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$rune5Ready", description = L["DeathKnightBarTextVariable_rune5Ready"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$rune6Ready", description = L["DeathKnightBarTextVariable_rune6Ready"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+
+		{ variable = "$runicCorruptionTime", description = L["DeathKnightBarTextVariable_runicCorruptionTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED, category = varCategory.RESOURCE },
 	})
 end
 

@@ -436,4 +436,7 @@ if locale == "enGB" then
     -- Druid Guardian: Ironfur bar
     L["DruidGuardianIronfurStackLineColor"] = "Ironfur Application Line Colour"
 
+    -- Death Knight Unholy: Runic Corruption
+    L["DeathKnightIndicatorRunicCorruptionTooltip"] = "Changes to this colour when Runic Corruption is active and Runes are regenerating at an increased rate."
+
 end

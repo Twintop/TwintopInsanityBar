@@ -2379,7 +2379,6 @@ L["ShamanElementalIndicatorOvercapTooltip"] = "Gradually changes to this color a
 L["ShamanElementalIndicatorOvercapColor"] = "Overcapping Maelstrom"
 
 -- Death Knight Indicator Colors
-L["BarNameRunesBar"] = "Runes"
 L["DeathKnightIndicatorOvercap"] = "Overcap (gradient)"
 L["DeathKnightIndicatorRuneRegenOvercap"] = "Rune Regen Overcap"
 L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "Changes to this color when fewer than 3 runes are on cooldown while in combat."
@@ -3546,3 +3545,9 @@ L["DruidGuardianIronfurStackLineColor"] = "Ironfur Application Line Color"
 L["DruidGuardianBarTextVariable_ironfurStacks"] = "Number of Ironfur applications currently active."
 L["DruidGuardianBarTextVariable_ironfurTime"] = "Time, in seconds, until every active Ironfur has expired."
 L["DruidGuardianBarTextVariable_ironfurNextStackTime"] = "Time, in seconds, until the next active Ironfur expires."
+L["BarNameRunesBar"] = "Rune (Off Cooldown)"
+L["BarNameRunesBarRegenerating"] = "Rune (Regenerating)"
+L["DeathKnightIndicatorRunicCorruption"] = "Runic Corruption"
+L["DeathKnightIndicatorRunicCorruptionTooltip"] = "Changes to this color when Runic Corruption is active and Runes are regenerating at an increased rate."
+L["DeathKnightIndicatorRunicCorruptionColor"] = "Runic Corruption is Active"
+L["DeathKnightBarTextVariable_runicCorruptionTime"] = "Time, in seconds, remaining on Runic Corruption."

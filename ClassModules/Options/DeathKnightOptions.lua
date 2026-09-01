@@ -406,6 +406,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							runicPowerBar = { bar = false, border = false, background = false },
 							runesBar = { bar = true, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
 							boneShield = { bar = false, border = false, background = false },
 							coagulatingBlood = { bar = false, border = false, background = false },
 						},
@@ -417,6 +418,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							runicPowerBar = { bar = false, border = true, background = false },
 							runesBar = { bar = false, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
 							boneShield = { bar = false, border = false, background = false },
 							coagulatingBlood = { bar = false, border = false, background = false },
 						},
@@ -633,6 +635,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							runicPowerBar = { bar = false, border = false, background = false },
 							runesBar = { bar = true, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
 						},
 					},
 					borderOvercap = {
@@ -642,6 +645,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							runicPowerBar = { bar = false, border = true, background = false },
 							runesBar = { bar = false, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
 						},
 					},
 				},
@@ -826,7 +830,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			shared = {
-				nodeOrder = { "runeRegenOvercap" },
+				nodeOrder = { "runeRegenOvercap", "runicCorruption" },
 				gradientOrder = { "borderOvercap" },
 				indicatorColors = {
 					runeRegenOvercap = {
@@ -837,6 +841,18 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							runicPowerBar = { bar = false, border = false, background = false },
 							runesBar = { bar = true, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+						},
+					},
+					runicCorruption = {
+						color = "FFFF00FF",
+						color2 = "FFFF00FF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							runicPowerBar = { bar = false, border = false, background = false },
+							runesBar = { bar = false, border = false, background = false },
+							runesBarRegenerating = { bar = true, border = false, background = false },
 						},
 					},
 					borderOvercap = {
@@ -846,6 +862,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							runicPowerBar = { bar = false, border = true, background = false },
 							runesBar = { bar = false, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
 						},
 					},
 				},
@@ -1411,6 +1428,7 @@ local function BloodConstructIndicatorColorsPanel(parent)
 		barTargetDefs = {
 			{ key = "runicPowerBar", label = L["BarNameRunicPowerBar"] },
 			{ key = "runesBar", label = L["BarNameRunesBar"] },
+			{ key = "runesBarRegenerating", label = L["BarNameRunesBarRegenerating"] },
 			{ key = "boneShield", label = L["ResourceBoneShield"] },
 			{ key = "coagulatingBlood", label = L["ResourceCoagulatingBlood"] },
 		},
@@ -1846,6 +1864,7 @@ local function FrostConstructIndicatorColorsPanel(parent)
 		barTargetDefs = {
 			{ key = "runicPowerBar", label = L["BarNameRunicPowerBar"] },
 			{ key = "runesBar", label = L["BarNameRunesBar"] },
+			{ key = "runesBarRegenerating", label = L["BarNameRunesBarRegenerating"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_DeathKnight_Frost",
 		overcapConfig = { primaryResourceString = L["ResourceRunicPower"], primaryResourceMax = FROST_MAX_RUNIC_POWER },
@@ -2263,6 +2282,7 @@ local function UnholyConstructIndicatorColorsPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
 		indicatorDefs = {
 			{ key = "runeRegenOvercap", label = L["DeathKnightIndicatorRuneRegenOvercap"], tooltip = L["DeathKnightIndicatorRuneRegenOvercapTooltip"], colorLabel = L["DeathKnightIndicatorRuneRegenOvercapColor"] },
+			{ key = "runicCorruption", label = L["DeathKnightIndicatorRunicCorruption"], tooltip = L["DeathKnightIndicatorRunicCorruptionTooltip"], colorLabel = L["DeathKnightIndicatorRunicCorruptionColor"], cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 		},
 		gradientDefs = {
 			{ key = "borderOvercap", label = L["DeathKnightIndicatorOvercap"], tooltip = L["DeathKnightIndicatorOvercapTooltip"], colorLabel = L["DeathKnightIndicatorOvercapColor"] },
@@ -2270,6 +2290,7 @@ local function UnholyConstructIndicatorColorsPanel(parent)
 		barTargetDefs = {
 			{ key = "runicPowerBar", label = L["BarNameRunicPowerBar"] },
 			{ key = "runesBar", label = L["BarNameRunesBar"] },
+			{ key = "runesBarRegenerating", label = L["BarNameRunesBarRegenerating"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_DeathKnight_Unholy",
 		overcapConfig = { primaryResourceString = L["ResourceRunicPower"], primaryResourceMax = UNHOLY_MAX_RUNIC_POWER },

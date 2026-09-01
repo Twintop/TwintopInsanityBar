@@ -18,6 +18,14 @@ local content = [====[
 
 - [#818 - @MOSS099](#818) Updated translations for Simplified Chinese (zhCN).
 
+## Death Knight
+
+- Add Rune (Regennerating) as a Color Indicator target, covering the runes currently recharging. Rune now covers only the runes that are off cooldown.
+
+### Unholy
+
+- Add a Runic Corruption Color Indicator, the `$runicCorruptionTime` bar text variable and the `#runicCorruption` icon. Color Indicator change targets Rune (Regenerating) by default. Requires Runic Corruption in the Cooldown Manager's Tracked Buffs.
+
 ## Druid
 ### Guardian
 
