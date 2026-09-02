@@ -3338,4 +3338,16 @@ if locale == "zhCN" then
 	L["MageArcaneCheckboxArcaneSurgeTime"] = "奥术涌动结束前剩余时间"
 	L["MageArcaneArcaneSurgeTime"] = "奥术涌动剩余时间（秒）"
 	L["MageArcaneBarTextVariable_arcaneSurgeTime"] = "奥术涌动剩余持续时间（秒）。"
+
+	L["ResourceMageArcaneSalvo"] = "奥术齐射"
+	L["TabArcaneSalvo"] = "奥术齐射"
+	L["ArcaneSalvoBar"] = "奥术齐射计时条"
+	L["MageArcaneBarTextVariable_arcaneSalvoStacks"] = "奥术齐射当前层数，取自奥术弹幕的施放计数。"
+	L["MageArcaneBarTextVariable_arcaneSalvoStacksMax"] = "奥术齐射最大层数。"
+	L["CustomBarRangeColorNote"] = "整条填充将采用你已达到的最高区间的颜色。区间1使用上方的%s计时条颜色，起始值为0。"
+	L["CustomBarRangeEnabled"] = "启用区间 %d"
+	L["CustomBarRangeEnabledTooltip"] = "当达到该区间起始数值时，将%2$s计时条填充切换为此颜色。取消勾选则区间%1$d不生效。"
+	L["CustomBarRangeValue"] = "区间 %d 起始值"
+	L["CustomBarRangeColor"] = "区间 %d 颜色"
+	L["CustomBarRangeValueHeader"] = "%s 区间设置"
 end
