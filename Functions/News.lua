@@ -21,6 +21,7 @@ local content = [====[
 ### Localization
 
 - [#818 - @MOSS099](#818) Updated translations for Simplified Chinese (zhCN).
+- [#824 - @MOSS099](#824) Updated translations for Simplified Chinese (zhCN).
 
 ## Death Knight
 
@@ -38,7 +39,7 @@ local content = [====[
 ## Druid
 ### Guardian
 
-- [#765](#765) Add a new Ironfur bar, tracking each Ironfur application on its own timer, with a threshold line per application that slides along the bar as it expires. Adds the `$ironfurStacks`, `$ironfurTime` and `$ironfurNextStackTime` bar text variables and the `#ironfur` icon. Set to Never Show by default; enable it under Bar Visibility.
+- [#765](#765) Add a new Ironfur bar, tracking each Ironfur application on its own timer, with a threshold line per application that slides along the bar as it expires. Adds the `$ironfurStacks`, `$ironfurTime` and `$ironfurNextStackTime` bar text variables and the `#ironfur` icon.
 - [#765](#765) Fill is the time until every application has expired. Scale is set on each Ironfur cast, holding at a longer application's duration while it is still running. Ursoc's Endurance and Guardian of Elune are included in each application's duration.
 
 ## Mage

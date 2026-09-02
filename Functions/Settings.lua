@@ -9026,6 +9026,46 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 		end
 	end
 
+	-- A new bar inherits the visibility of the bar it sits beside, so an existing save does not get the
+	-- pair showing under different rules.
+	do
+		local coreSettings = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.core or nil
+
+		---@param className string
+		---@param specName string
+		---@param sourceKey string # displayBar key of the bar to inherit from
+		---@param targetKey string # displayBar key of the new bar
+		local function InheritBarVisibility(className, specName, sourceKey, targetKey)
+			local classSettings = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings[className] or nil
+			local specSettings = classSettings and classSettings[specName]
+			local displayBar = specSettings and specSettings.displayBar
+			-- Runs before the defaults merge, so a present target key means this already ran.
+			if displayBar == nil or displayBar[targetKey] ~= nil then
+				return
+			end
+
+			local globalFlags = coreSettings and coreSettings.global and coreSettings.global[className]
+				and coreSettings.global[className][specName]
+			local source = nil
+			if globalFlags ~= nil and globalFlags.displayBar == true and coreSettings.displayBar ~= nil then
+				source = coreSettings.displayBar[sourceKey]
+			end
+			source = source or displayBar[sourceKey]
+			if source == nil then
+				return
+			end
+
+			local entry = TRB.Functions.Table:DeepCopy(source)
+			entry.conditions = entry.conditions or {}
+			entry.hideConditions = TRB.Functions.Table:Merge(
+				TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), entry.hideConditions)
+			displayBar[targetKey] = entry
+		end
+
+		InheritBarVisibility("mage", "arcane", "secondary", "arcaneSalvo")
+		InheritBarVisibility("druid", "guardian", "primary", "ironfur")
+	end
+
 end
 
 ---@param oldSettings table? # The raw saved-variables table to clean
