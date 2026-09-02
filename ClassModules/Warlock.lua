@@ -1360,7 +1360,7 @@ local function UpdateResourceBar()
 					shardNode:SetBorderColor(cpBorderColor)
 					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-					Bar:ApplyEndCapIndicator(shardNode, "soulShardsBar")
+					Bar:ApplyNodeIndicators(shardNode, "soulShardsBar")
 
 					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
 						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nodeSpendingSettings, castingTexture)
@@ -1412,7 +1412,7 @@ local function UpdateResourceBar()
 					shardNode:SetBorderColor(cpBorderColor)
 					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-					Bar:ApplyEndCapIndicator(shardNode, "soulShardsBar")
+					Bar:ApplyNodeIndicators(shardNode, "soulShardsBar")
 
 					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
 						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
@@ -1480,7 +1480,7 @@ local function UpdateResourceBar()
 					shardNode:SetBorderColor(cpBorderColor)
 					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-					Bar:ApplyEndCapIndicator(shardNode, "soulShardsBar")
+					Bar:ApplyNodeIndicators(shardNode, "soulShardsBar")
 
 					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
 						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
@@ -1530,7 +1530,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -1612,7 +1612,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -1676,7 +1676,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)

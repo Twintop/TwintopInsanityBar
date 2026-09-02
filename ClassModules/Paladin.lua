@@ -812,7 +812,7 @@ local function UpdateResourceBar()
 					holyPowerNode:SetBorderColor(cpBorderColor)
 					TRB.Functions.Color:ApplyFillColor(holyPowerNode, cpColor)
 					holyPowerNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-					Bar:ApplyEndCapIndicator(holyPowerNode, "holyPowerBar")
+					Bar:ApplyNodeIndicators(holyPowerNode, "holyPowerBar")
 
 					if castingSettings ~= nil and (overlayAmount ~= 0 or holyPowerNode:GetOverlaySlot("casting") ~= nil) then
 						Bar:UpdateCastingResourceOverlay(holyPowerNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nil, castingTexture)
@@ -880,7 +880,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -933,7 +933,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -985,7 +985,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)

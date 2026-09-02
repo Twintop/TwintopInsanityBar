@@ -884,6 +884,7 @@ local function ApplyBorderAndBackgroundColor(node, colors, model)
 	end
 	Color:ApplyResolvedBorderOrBackground(node, "castbar", "background", background)
 	Color:ApplyResolvedEndCap(node, "castbar")
+	TRB.Functions.Glow:ApplyIndicatorGlow(node, "castbar")
 end
 
 ---Draws the per-level empower segment fills (segmented-fill mode). The main bar fill is blanked in this

@@ -683,6 +683,7 @@ local function ConstructGlobalOptionsPanel()
 		{ "resourceBar", L["TabResource"], oUi.tabWidth.small, ConstructResourceBarPanel, visibilityKey = "primary" },
 		{ "comboPointsBar", L["TabComboPoints"], oUi.tabWidth.small, ConstructComboPointsBarPanel, visibilityKey = "secondary" },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ConstructHealthBarPanel, visibilityKey = "health" },
+		TRB.Functions.OptionsUi.Glows:BuildTabDefinition(controls),
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ConstructBarVisibilityPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ConstructThresholdPanel },

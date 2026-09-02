@@ -143,6 +143,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				precisionHigh = 0,
 				precisionThreshold = 5
 			},
+			-- User-defined Border Glow appearances, keyed by guid. Color Indicators on any spec point at
+			-- these by id, so they live in core rather than per spec.
+			glows = {},
 			thresholds = {
 				properties = {
 					width = 2,

@@ -1174,7 +1174,7 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 						else
 							defensiveNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 						end
-						Bar:ApplyEndCapIndicator(defensiveNode, defensiveBarTargetKey)
+						Bar:ApplyNodeIndicators(defensiveNode, defensiveBarTargetKey)
 					end
 				end
 				
@@ -1311,7 +1311,7 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 			else
 				node:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 			end
-			Bar:ApplyEndCapIndicator(node, "whirlwindBar")
+			Bar:ApplyNodeIndicators(node, "whirlwindBar")
 		end
 	end
 end
@@ -1394,7 +1394,7 @@ local function UpdateResourceBar()
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "rageBar")
+				Bar:ApplyNodeIndicators(primaryNode, "rageBar")
 				
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -1658,7 +1658,7 @@ local function UpdateResourceBar()
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "rageBar")
+				Bar:ApplyNodeIndicators(primaryNode, "rageBar")
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
@@ -1834,7 +1834,7 @@ local function UpdateResourceBar()
 						TRB.Functions.Color:ApplyFillColor(enrageNode, enrageColors.bar)
 						enrageNode:SetBorderColor(enrageColors.border)
 						enrageNode:SetBackgroundColorFromString(enrageColors.background)
-						Bar:ApplyEndCapIndicator(enrageNode, "enrageBar")
+						Bar:ApplyNodeIndicators(enrageNode, "enrageBar")
 					end
 
 					-- Both IDs: the engine matches the aura, not the passive the CDM is keyed by.
@@ -1889,7 +1889,7 @@ local function UpdateResourceBar()
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "rageBar")
+				Bar:ApplyNodeIndicators(primaryNode, "rageBar")
 
 				local pairOffset = 0
 				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do

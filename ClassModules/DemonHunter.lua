@@ -1073,7 +1073,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-					Bar:ApplyEndCapIndicator(primaryNode, "furyBar")
+					Bar:ApplyNodeIndicators(primaryNode, "furyBar")
 					local resourceFrame = primaryNode:GetFrame()
 					local thresholds = primaryNode:GetThresholds()
 
@@ -1320,7 +1320,7 @@ local function UpdateResourceBar()
 				
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-					Bar:ApplyEndCapIndicator(primaryNode, "furyBar")
+					Bar:ApplyNodeIndicators(primaryNode, "furyBar")
 					local resourceFrame = primaryNode:GetFrame()
 					local thresholds = primaryNode:GetThresholds()
 
@@ -1657,7 +1657,7 @@ local function UpdateResourceBar()
 
 				if primaryNode then
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-					Bar:ApplyEndCapIndicator(primaryNode, "furyBar")
+					Bar:ApplyNodeIndicators(primaryNode, "furyBar")
 					local resourceFrame = primaryNode:GetFrame()
 					local thresholds = primaryNode:GetThresholds()
 
@@ -1924,7 +1924,7 @@ local function UpdateResourceBar()
 								sfNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 							end
 						end
-						Bar:ApplyEndCapIndicator(sfNode, "soulFragmentsBar")
+						Bar:ApplyNodeIndicators(sfNode, "soulFragmentsBar")
 						
 						-- Collapsing Star threshold (only visible when buff is active)
 						local thresholds = sfNode:GetThresholds()

@@ -2261,7 +2261,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified --/ TRB.Data.resourceFactor
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				primaryNode:SetBorderColor(manaBarColors.border)
@@ -2305,7 +2305,7 @@ local function UpdateResourceBar()
 								TRB.Functions.Color:ApplyFillColor(cpNode, powerWordsBarColors.bar)
 								cpNode:SetBorderColor(powerWordsBarColors.border)
 								cpNode:SetBackgroundColorFromString(powerWordsBarColors.background)
-								Bar:ApplyEndCapIndicator(cpNode, "powerWordsBar")
+								Bar:ApplyNodeIndicators(cpNode, "powerWordsBar")
 								currentCp = currentCp + 1
 							end
 						end
@@ -2496,7 +2496,7 @@ local function UpdateResourceBar()
 				local barBackgroundColor = manaBarColors.background
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				primaryNode:SetBorderColor(barBorderColor)
@@ -2571,7 +2571,7 @@ local function UpdateResourceBar()
 										TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 										cpNode:SetBorderColor(nodeBorderColor)
 										cpNode:SetBackgroundColor(nodeBgR, nodeBgG, nodeBgB, nodeBgA)
-										Bar:ApplyEndCapIndicator(cpNode, "holyWordsBar")
+										Bar:ApplyNodeIndicators(cpNode, "holyWordsBar")
 									end
 								end
 								currentCp = currentCp + 1
@@ -2667,7 +2667,7 @@ local function UpdateResourceBar()
 								lwBgColor = benIndicator.color
 							end
 							lwNode:SetBackgroundColorFromString(lwBgColor)
-							Bar:ApplyEndCapIndicator(lwNode, "lightweaverBar")
+							Bar:ApplyNodeIndicators(lwNode, "lightweaverBar")
 						end
 					end
 				end
@@ -3017,7 +3017,7 @@ local function UpdateResourceBar()
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "insanityBar")
+				Bar:ApplyNodeIndicators(primaryNode, "insanityBar")
 
 				if overcapCurvesInsanity.border then
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesInsanity.border)
@@ -3056,7 +3056,7 @@ local function UpdateResourceBar()
 				local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 				manaNode:SetMinMax(0, maxMana)
 				manaNode:SetValue(currentMana)
-				Bar:ApplyEndCapIndicator(manaNode, "manaBar")
+				Bar:ApplyNodeIndicators(manaNode, "manaBar")
 				if overcapCurvesMana.bar then
 					local manaBarResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurvesMana.bar)
 					manaNode:SetColorCurve(manaBarResult)

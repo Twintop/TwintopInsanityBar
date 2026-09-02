@@ -1860,6 +1860,8 @@ local function UpdateIronfurBar(specSettings, ironfurColors)
 			line:Hide()
 		end
 	end
+
+	Bar:ApplyNodeIndicators(ironfurNode, "ironfurBar")
 end
 
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
@@ -2177,7 +2179,7 @@ local function UpdateResourceBar()
 						if cpOverrides and cpOverrides.borderCurve then
 							cpNode:SetBorderColorCurve(cpOverrides.borderCurve, Color:EvaluateEndCapCurve(cpNode, cpOverrides.borderCurveSource, cpOverrides.borderCurvePowerType))
 						end
-						Bar:ApplyEndCapIndicator(cpNode, "comboPoints")
+						Bar:ApplyNodeIndicators(cpNode, "comboPoints")
 					end
 				end
 			end
@@ -2223,7 +2225,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
-				Bar:ApplyEndCapIndicator(primaryNode, "astralPowerBar")
+				Bar:ApplyNodeIndicators(primaryNode, "astralPowerBar")
 
 				local barColor = specSettings.colors.bar.base
 				-- Use simple colors when in non-native form
@@ -2523,7 +2525,7 @@ local function UpdateResourceBar()
 					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 					manaNode:SetMinMax(0, maxMana)
 					manaNode:SetValue(currentMana)
-					Bar:ApplyEndCapIndicator(manaNode, "manaBar")
+					Bar:ApplyNodeIndicators(manaNode, "manaBar")
 					TRB.Functions.Color:ApplyFillColor(manaNode, specSettings.colors.bars.mana.bar)
 					manaNode:SetBorderColor(specSettings.colors.bars.mana.border.color)
 					manaNode:SetBackgroundColorFromString(specSettings.colors.bars.mana.background.color)
@@ -2549,7 +2551,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
-				Bar:ApplyEndCapIndicator(primaryNode, "energyBar")
+				Bar:ApplyNodeIndicators(primaryNode, "energyBar")
 
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
@@ -3060,7 +3062,7 @@ local function UpdateResourceBar()
 							else
 								cpNode:SetBorderColor(cpBorderColor)
 							end
-							Bar:ApplyEndCapIndicator(cpNode, "comboPoints")
+							Bar:ApplyNodeIndicators(cpNode, "comboPoints")
 						end
 					end
 				end
@@ -3097,7 +3099,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
-				Bar:ApplyEndCapIndicator(primaryNode, "rageBar")
+				Bar:ApplyNodeIndicators(primaryNode, "rageBar")
 
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
@@ -3444,7 +3446,7 @@ local function UpdateResourceBar()
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 
 				local barBorderColor = formSpecSettings.colors.bar.border.color
 				local barColor = specSettings.colors.bar.base

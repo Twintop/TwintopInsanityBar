@@ -1108,7 +1108,7 @@ local function UpdateShatter(specSettings, specCacheSettings, barColors, fillInd
 			end
 
 			Color:ApplyFillColor(shatterNode, fillColor)
-			Bar:ApplyEndCapIndicator(shatterNode, "shatterBar")
+			Bar:ApplyNodeIndicators(shatterNode, "shatterBar")
 			shatterNode:SetBorderColor(barColors.border)
 			shatterNode:SetBackgroundColor(backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha)
 		end
@@ -1162,7 +1162,7 @@ local function UpdateArcaneSalvo(specSettings, specCacheSettings, barColors, fil
 	node:SetBorderColor(barColors.border)
 	Color:ApplyFillColor(node, barColors.bar)
 	node:SetBackgroundColorFromString(barColors.background)
-	Bar:ApplyEndCapIndicator(node, "arcaneSalvo")
+	Bar:ApplyNodeIndicators(node, "arcaneSalvo")
 
 	-- Ascending order, so a higher range's gate is levelled above the ones below it.
 	wipe(arcaneSalvoActiveRanges)
@@ -1332,7 +1332,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -1365,7 +1365,7 @@ local function UpdateResourceBar()
 						local chargeNode = barGroups.secondary:GetNode(x)
 						if chargeNode then
 							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chargeNode, filled and 1 or 0, 1)
-							Bar:ApplyEndCapIndicator(chargeNode, "arcaneChargesBar")
+							Bar:ApplyNodeIndicators(chargeNode, "arcaneChargesBar")
 							chargeNode:SetBorderColor(arcaneChargesBarColors.border)
 							TRB.Functions.Color:ApplyFillColor(chargeNode, cpColor)
 							chargeNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
@@ -1527,7 +1527,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -1562,7 +1562,7 @@ local function UpdateResourceBar()
 						local icicleNode = barGroups.secondary:GetNode(x)
 						if icicleNode then
 							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, icicleNode, filled and 1 or 0, 1)
-							Bar:ApplyEndCapIndicator(icicleNode, "iciclesBar")
+							Bar:ApplyNodeIndicators(icicleNode, "iciclesBar")
 							icicleNode:SetBorderColor(iciclesBarColors.border)
 							TRB.Functions.Color:ApplyFillColor(icicleNode, cpColor)
 							icicleNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)

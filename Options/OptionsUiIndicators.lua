@@ -35,14 +35,15 @@ local menuRowHeight = 20
 ---@param rootDescription table The root menu description being populated
 ---@param barTargetDefs TRB.Classes.OptionsUi.BarTargetDef[] The bars the menu offers
 ---@param isExcluded fun(barDef: table, elemKey: string): boolean Whether an element is omitted from the menu
-local function ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, isExcluded)
+---@param hasGlowRow boolean? Whether every bar section also draws the Border Glow submenu row
+local function ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, isExcluded, hasGlowRow)
 	if not rootDescription.SetScrollMode then
 		return
 	end
 
 	local rows = 0
 	for _, barDef in ipairs(barTargetDefs) do
-		local sectionRows = 0
+		local sectionRows = hasGlowRow and 1 or 0
 		for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
 			if not isExcluded(barDef, elemDef.key) then
 				sectionRows = sectionRows + 1
@@ -56,6 +57,47 @@ local function ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, isExclu
 
 	if rows > maxMenuRowsBeforeScroll then
 		rootDescription:SetScrollMode(maxMenuRowsBeforeScroll * menuRowHeight)
+	end
+end
+
+---Builds the Border Glow submenu for one bar in a flat indicator's target menu. Any number of glows can be
+---checked and all of them run at once; a glow that pins its own color is marked as such in the list.
+---@param rootDescription table The bar section being populated
+---@param getTargets fun(): table? Resolves the indicator's target table for this bar, live
+---@param onChanged fun() Runs after a pick, to resync the row's summary and enabled state
+local function CreateBorderGlowSubmenu(rootDescription, getTargets, onChanged)
+	---@diagnostic disable-next-line: redundant-parameter, missing-parameter
+	local submenu = rootDescription:CreateButton(L["BarElementBorderGlow"])
+	if type(submenu) ~= "table" or type(submenu.CreateCheckbox) ~= "function" then
+		return
+	end
+
+	local glows = TRB.Functions.Glow:GetOrdered()
+	if #glows == 0 then
+		submenu:CreateTitle(L["GlowIndicatorNoneDefined"])
+		return
+	end
+
+	for _, glow in ipairs(glows) do
+		local guid = glow.guid
+		local label = glow.name or L["GlowDefaultName"]
+		if glow.useCustomColor then
+			label = label .. L["GlowIndicatorFixedColorSuffix"]
+		end
+
+		submenu:CreateCheckbox(label, function()
+			local targets = getTargets()
+			return (targets ~= nil and targets.glows ~= nil and targets.glows[guid]) or false
+		end, function()
+			local targets = getTargets()
+			if targets == nil then
+				return
+			end
+			targets.glows = targets.glows or {}
+			-- Cleared to nil rather than false, so an empty selection is an empty table.
+			targets.glows[guid] = (not targets.glows[guid]) or nil
+			onChanged()
+		end)
 	end
 end
 
@@ -238,6 +280,17 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 						table.insert(elements, elemDef.label)
 					end
 				end
+				if barTargets.glows ~= nil then
+					local glowNames = {}
+					for _, glow in ipairs(TRB.Functions.Glow:GetOrdered()) do
+						if barTargets.glows[glow.guid] then
+							table.insert(glowNames, glow.name or L["GlowDefaultName"])
+						end
+					end
+					if #glowNames > 0 then
+						table.insert(elements, L["BarElementBorderGlow"] .. " (" .. table.concat(glowNames, ", ") .. ")")
+					end
+				end
 				if #elements > 0 then
 					table.insert(parts, barDef.label .. ": " .. table.concat(elements, ", "))
 				end
@@ -259,6 +312,13 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		for _, barDef in ipairs(barTargetDefs) do
 			local barTargets = indicator.targets[barDef.key]
 			if barTargets then
+				if barTargets.glows ~= nil then
+					for guid in pairs(barTargets.glows) do
+						if TRB.Functions.Glow:Get(guid) ~= nil then
+							return true
+						end
+					end
+				end
 				for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
 					if barTargets[elemDef.key] then
 						return true
@@ -423,49 +483,57 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				if not currentIndicator then return end
 				currentIndicator.targets = currentIndicator.targets or {}
 
-				ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, IsExcluded)
+				ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, IsExcluded, true)
 
+				-- Every bar offers a Border Glow, so no bar section can be excluded outright here.
 				local firstBar = true
 				for _, barDef in ipairs(barTargetDefs) do
 					local barElementDefs = barDef.elements or defaultElementDefs
-					local allExcluded = true
+					if not firstBar then
+						rootDescription:CreateDivider()
+					end
+					firstBar = false
+					rootDescription:CreateTitle(barDef.label)
+					currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
+
 					for _, elemDef in ipairs(barElementDefs) do
 						if not IsExcluded(barDef, elemDef.key) then
-							allExcluded = false
-							break
+							rootDescription:CreateCheckbox(
+								elemDef.label,
+								function()
+									local ck = orderedKeys[capturedRowIdx]
+									local ci = indicatorColors[ck]
+									return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
+								end,
+								function()
+									local ck = orderedKeys[capturedRowIdx]
+									local ci = indicatorColors[ck]
+									if not ci then return end
+									ci.targets = ci.targets or {}
+									ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+									ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
+									local targetRow = rows[capturedRowIdx]
+									SyncEnabled(ci, targetRow and targetRow.colorPicker)
+								end
+							)
 						end
 					end
-					if not allExcluded then
-						if not firstBar then
-							rootDescription:CreateDivider()
-						end
-						firstBar = false
-						rootDescription:CreateTitle(barDef.label)
-						currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
 
-						for _, elemDef in ipairs(barElementDefs) do
-							if not IsExcluded(barDef, elemDef.key) then
-								rootDescription:CreateCheckbox(
-									elemDef.label,
-									function()
-										local ck = orderedKeys[capturedRowIdx]
-										local ci = indicatorColors[ck]
-										return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
-									end,
-									function()
-										local ck = orderedKeys[capturedRowIdx]
-										local ci = indicatorColors[ck]
-										if not ci then return end
-										ci.targets = ci.targets or {}
-										ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-										ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
-										local targetRow = rows[capturedRowIdx]
-										SyncEnabled(ci, targetRow and targetRow.colorPicker)
-									end
-								)
-							end
+					CreateBorderGlowSubmenu(rootDescription, function()
+						local ck = orderedKeys[capturedRowIdx]
+						local ci = indicatorColors[ck]
+						if not ci then return nil end
+						ci.targets = ci.targets or {}
+						ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+						return ci.targets[barDef.key]
+					end, function()
+						local ci = indicatorColors[orderedKeys[capturedRowIdx]]
+						local targetRow = rows[capturedRowIdx]
+						SyncEnabled(ci, targetRow and targetRow.colorPicker)
+						if targetRow and targetRow.dropdown then
+							targetRow.dropdown:SetText(nil)
 						end
-					end
+					end)
 				end
 			end)
 

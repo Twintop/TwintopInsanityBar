@@ -478,6 +478,7 @@ local function ApplyBackgroundColor(node, colors, barKey)
 	Color:ApplyResolvedBorderOrBackground(node, barKey, "background", background)
 	-- End cap: a flat/gradient indicator targeting it, else the cap reverts to its own configured color.
 	Color:ApplyResolvedEndCap(node, barKey)
+	TRB.Functions.Glow:ApplyIndicatorGlow(node, barKey)
 end
 
 ---Applies the full visible render for an active cast: fill (native timer), color, name/icon, alpha, Show.

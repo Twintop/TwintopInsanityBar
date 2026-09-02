@@ -1075,7 +1075,7 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 				essenceNode:SetBorderColor(cpBorderColor)
 				TRB.Functions.Color:ApplyFillColor(essenceNode, cpColor)
 				essenceNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
-				Bar:ApplyEndCapIndicator(essenceNode, "essences")
+				Bar:ApplyNodeIndicators(essenceNode, "essences")
 			end
 		end
 	end
@@ -1199,7 +1199,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				primaryNode:SetBorderColor(barBorderColor)
@@ -1262,7 +1262,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				primaryNode:SetBorderColor(barBorderColor)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
@@ -1341,7 +1341,7 @@ local function UpdateResourceBar()
 				local currentResource = snapshotData.attributes.resourceModified
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "manaBar")
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				primaryNode:SetBorderColor(barBorderColor)
@@ -1361,7 +1361,7 @@ local function UpdateResourceBar()
 						TRB.Functions.Color:ApplyFillColor(ebonMightNode, ebonMightColors.bar)
 						ebonMightNode:SetBorderColor(ebonMightColors.border)
 						ebonMightNode:SetBackgroundColorFromString(ebonMightColors.background)
-						Bar:ApplyEndCapIndicator(ebonMightNode, "ebonMight")
+						Bar:ApplyNodeIndicators(ebonMightNode, "ebonMight")
 					end
 
 					-- Mastery scales the duration and Sands of Time extends it, so only the live aura

@@ -12,6 +12,18 @@ local content = [====[
 
 ---
 
+# 12.1.0.9-release (2026-09-04)
+## General
+
+- [#745](#745) Add a Glows tab to Global Options: named glow definitions, each with a style (Pixel Glow, Autocast Shine, Action Button Glow, Proc Glow), its own settings and a live preview.
+- [#745](#745) Add Border Glow as a Color Indicator target on every bar, with a submenu that runs any number of the defined glows at once. A glow set to always use its own color takes that color instead of the indicator's, and is marked in the list.
+
+### Localization
+
+- [#826 - @MOSS099](#826) Updated translations for Simplified Chinese (zhCN).
+
+---
+
 # 12.1.0.8-release (2026-09-02)
 ## General
 

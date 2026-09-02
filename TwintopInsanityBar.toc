@@ -15,9 +15,9 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 12.1.0.8
+## Version: 12.1.0.9
 ## X-ReleaseType: release
-## X-ReleaseDate: 2026-09-02
+## X-ReleaseDate: 2026-09-04
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -49,6 +49,7 @@ Libs\LibMarkdown\LibMarkdown.xml
 Libs\LibScrollingTable\lib-st.xml
 Libs\LibEditMode\namespaced.lua
 Libs\LibEditMode\embed.xml
+Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.xml
 
 Localization\Localization.lua
 Localization\enUS.lua
@@ -113,6 +114,7 @@ Functions\BarText.lua
 Classes\BarVisibility.lua
 Functions\Character.lua
 Functions\Color.lua
+Functions\Glow.lua
 Functions\EditMode.lua
 Functions\Item.lua
 Functions\IO.lua
@@ -137,6 +139,7 @@ Options\OptionsUiProfilePopups.lua
 Options\OptionsUiProfiles.lua
 Options\OptionsUiGlobalSettings.lua
 Options\OptionsUiGlobalCopy.lua
+Options\OptionsUiGlows.lua
 Options\OptionsUiTextureDropdowns.lua
 Options\OptionsUiTextures.lua
 Options\OptionsUiVisibility.lua

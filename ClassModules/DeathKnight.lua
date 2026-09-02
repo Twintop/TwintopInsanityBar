@@ -1034,7 +1034,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 				else
 					runeNode:SetBackgroundColorFromString(runeBackgroundColor)
 				end
-				Bar:ApplyEndCapIndicator(runeNode, runeBarKey)
+				Bar:ApplyNodeIndicators(runeNode, runeBarKey)
 			end
 		end
 	end
@@ -1179,6 +1179,8 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 					boneShieldNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
 				end
 			end
+
+			Bar:ApplyNodeIndicators(boneShieldNode, "boneShield")
 		end
 	end
 end
@@ -1255,7 +1257,7 @@ local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
 		node:SetBackgroundColorFromString(coagulatingBloodColors.background)
 	end
 
-	Bar:ApplyEndCapIndicator(node, "coagulatingBlood")
+	Bar:ApplyNodeIndicators(node, "coagulatingBlood")
 end
 
 local function UpdateResourceBar()
@@ -1304,7 +1306,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "runicPowerBar")
+				Bar:ApplyNodeIndicators(primaryNode, "runicPowerBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0
@@ -1420,7 +1422,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "runicPowerBar")
+				Bar:ApplyNodeIndicators(primaryNode, "runicPowerBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0
@@ -1526,7 +1528,7 @@ local function UpdateResourceBar()
 				end
 
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				Bar:ApplyEndCapIndicator(primaryNode, "runicPowerBar")
+				Bar:ApplyNodeIndicators(primaryNode, "runicPowerBar")
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 
 				local pairOffset = 0

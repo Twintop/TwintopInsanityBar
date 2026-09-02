@@ -78,6 +78,7 @@ Every bar can be shown or hidden independently with granular, mix-and-match visi
 - Node border overlap option for multi-node bars (Combo Points, Runes, etc.)
 - Optional full-bar-height overlays (casting, spending, absorb, incoming heal) that extend across the border for a flush appearance
 - Bar End Caps: a configurable width and color overlay at the leading edge of a bar's fill, available on nearly every bar and selectable as a Color Indicator target
+- Border Glow: animated glows defined on the Global Options **Glows** tab (Pixel Glow, Autocast Shine, Action Button Glow, Proc Glow), each with a live preview, and selectable as a Color Indicator target on every bar, several at a time -- a glow either uses its own fixed color or takes the color of the indicator that turns it on
 - Global color settings that apply across all specializations (e.g., Health Bar colors)
 
 ### Textures and Fonts

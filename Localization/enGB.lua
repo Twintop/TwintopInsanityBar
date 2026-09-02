@@ -451,4 +451,13 @@ if locale == "enGB" then
 	L["CustomBarRangeEnabledTooltip"] = "Recolours the %2$s bar fill once you reach this range's starting value. Range %1$d is ignored while unchecked."
 	L["CustomBarRangeColor"] = "Range %d Colour"
 
+	-- Glows
+	L["GlowTableHeaderColor"] = "Colour"
+	L["GlowTableColorFromIndicator"] = "Indicator colour"
+	L["GlowUseCustomColor"] = "Always use this colour"
+	L["GlowUseCustomColorTooltip"] = "Checked, the glow always uses the colour below. Unchecked, it takes the colour of the Color Indicator that turned it on."
+	L["GlowUseCustomColorNote"] = "This glow takes the colour of whichever Color Indicator turns it on. The swatch above is used for the preview only."
+	L["GlowColor"] = "Glow Colour"
+	L["GlowIndicatorFixedColorSuffix"] = " |cFFFFD100(own colour)|r"
+
 end

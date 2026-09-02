@@ -619,6 +619,8 @@ function TRB.Classes.BarNode:Destroy()
 	self:ClearThresholds()
 	-- Before the frame is orphaned: the engine's container is parented to it.
 	TRB.Functions.AuraEngine:Detach(self)
+	-- And the glow frame, which would otherwise never make it back to the library's pool.
+	TRB.Functions.Glow:ReleaseNode(self)
 	if self.icon ~= nil then
 		-- Release a tooltip this icon still owns; the frame is about to be orphaned and can never hide it.
 		if GameTooltip:IsOwned(self.icon) then

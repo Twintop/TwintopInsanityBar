@@ -2143,18 +2143,19 @@ function TRB.Functions.Bar:UpdateHealthBar(barGroups, snapshotData, settings)
 		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "background",
 			(indicators and indicators.background) or healthColors.background.color)
 		Color:ApplyResolvedEndCap(healthNode, "healthBar")
+		TRB.Functions.Glow:ApplyIndicatorGlow(healthNode, "healthBar")
 	end
 
 	self:UpdateHealthBarOverlays(healthNode, snapshotData, settings)
 end
 
----Applies a spec-owned bar's end cap indicator color (flat or gradient) for the current frame, taking
----priority over the cap's useBorderColor follow. Call once per end-cap-bearing node each frame, after
----ApplyIndicatorColors has run for that bar. Everything is resolved from global indicator state, so the
----caller only needs the node and its indicator target key -- no color map or gradient threading.
+---Applies the per-node Color Indicator effects: Border Glow, and the end cap color (flat or gradient),
+---which outranks the cap's useBorderColor follow. Call once per node each frame, after ApplyIndicatorColors.
 ---@param node TRB.Classes.BarNode
 ---@param barKey string # The indicator target key for this bar (e.g. "insanityBar", "runesBar")
-function TRB.Functions.Bar:ApplyEndCapIndicator(node, barKey)
+function TRB.Functions.Bar:ApplyNodeIndicators(node, barKey)
+	TRB.Functions.Glow:ApplyIndicatorGlow(node, barKey)
+
 	if node == nil or node.endCapConfig == nil then
 		return
 	end

@@ -965,7 +965,10 @@ TRB.Data.resolvedIndicators = {
 	-- on the settings root -- and the composed spec-cache settings the render paths carry don't include it.
 	-- Parking it here is what lets the shared bars step at the same threshold the spec's own bars do.
 	---@type table?
-	specSettings = nil
+	specSettings = nil,
+	-- barKey -> { glows, color }, resolved for every bar at once: glows land on nodes, not on a color map.
+	---@type table<string, table>
+	barGlows = {}
 }
 
 -- Fill elements take the whole indicator entry (so ApplyFillColor can honor color2/gradientDirection);
@@ -973,6 +976,13 @@ TRB.Data.resolvedIndicators = {
 local fillElements = {
 	bar = true,
 	channel = true
+}
+
+-- Target keys that aren't a colorable element: the Border Glow selection, and the pre-multiselect single
+-- glow id an early build wrote. Both are truthy, so the color pass has to skip them by name.
+local nonColorElements = {
+	glow = true,
+	glows = true
 }
 
 -- Cast bar elements, in a fixed order so the change check below can compare without allocating.
@@ -1026,12 +1036,27 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 		end
 	end
 
+	local barGlows = resolved.barGlows
+	wipe(barGlows)
+
 	if indicatorColors and nodeOrder then
 		for i = #nodeOrder, 1, -1 do
 			local key = nodeOrder[i]
 			local indicator = indicatorColors[key]
 			if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
 				for barKey, elements in pairs(indicator.targets) do
+					-- Glows resolve for every bar, not just the ones in this caller's color map: the nodes
+					-- they land on are found from the bar's own render path, well after this runs.
+					if elements.glows ~= nil and next(elements.glows) ~= nil then
+						local glowEntry = barGlows[barKey]
+						if glowEntry == nil then
+							glowEntry = {}
+							barGlows[barKey] = glowEntry
+						end
+						glowEntry.glows = elements.glows
+						glowEntry.color = indicator.color
+					end
+
 					local targetColors
 					if barKey == "healthBar" then
 						targetColors = healthBar
@@ -1047,7 +1072,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 					if targetColors then
 						local targetFlags = overrides and overrides[barKey]
 						for elemKey, isTargeted in pairs(elements) do
-							if isTargeted then
+							if isTargeted and not nonColorElements[elemKey] then
 								targetColors[elemKey] = fillElements[elemKey] and indicator or indicator.color
 								if targetFlags then
 									targetFlags[elemKey] = true
@@ -1101,6 +1126,17 @@ function TRB.Functions.Color:GetResolvedIndicators(barKey)
 		return nil
 	end
 	return resolved[barKey]
+end
+
+---The Border Glows a Color Indicator claims on a bar right now, as { glows, color }, or nil when none does.
+---@param barKey string
+---@return table?
+function TRB.Functions.Color:GetResolvedGlow(barKey)
+	local resolved = TRB.Data.resolvedIndicators
+	if resolved.compositeKey ~= TRB.Data.character.compositeKey then
+		return nil
+	end
+	return resolved.barGlows[barKey]
 end
 
 ---Version stamp of the resolved cast bar colors; changes only when those colors do. The cast bar's render
