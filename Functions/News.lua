@@ -12,7 +12,7 @@ local content = [====[
 
 ---
 
-# 12.1.0.8-release (2026-09-01)
+# 12.1.0.8-release (2026-09-02)
 ## General
 
 - Single-node bars whose value is a secret stack count now offer End Cap options. For now, only affects the Coagulating Blood bar for Blood Death Knights.
