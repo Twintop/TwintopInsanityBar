@@ -597,18 +597,6 @@ function SlashCmdList.TWINTOP(msg)
 		end
 	elseif cmd == "auraengine" then
 		TRB.Functions.AuraEngine:PrintDiagnostics()
-	elseif cmd == "arcanesurge" then
-		if TRB.Data.character.classId == 8 and TRB.Data.character.specId == 1 then
-			TRB.Functions.Class:PrintArcaneSurgeDiagnostics()
-		else
-			print("|cFFFF8800TRB:|r 'arcanesurge' is an Arcane Mage command.")
-		end
-	elseif cmd == "arcanesalvo" then
-		if TRB.Data.character.classId == 8 and TRB.Data.character.specId == 1 then
-			TRB.Functions.Class:PrintArcaneSalvoDiagnostics()
-		else
-			print("|cFFFF8800TRB:|r 'arcanesalvo' is an Arcane Mage command.")
-		end
 	elseif cmd == "holywords" then
 		if TRB.Data.character.classId == 5 then
 			TRB.Functions.Class:PrintHolyWordDiagnostics()
