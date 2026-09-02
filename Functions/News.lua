@@ -16,6 +16,7 @@ local content = [====[
 ## General
 
 - Single-node bars whose value is a secret stack count now offer End Cap options. For now, only affects the Coagulating Blood bar for Blood Death Knights.
+- Ensure the "Smooth Bar Animation" option works correctly on class-specific bars, such as Icicles, Shatter and Arcane Charges.
 
 ### Localization
 

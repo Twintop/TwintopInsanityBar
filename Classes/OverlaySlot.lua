@@ -25,7 +25,10 @@ TRB.Classes = TRB.Classes or {}
 ---@field public insetOverlayReady boolean? # One-frame readiness guard for inset overlay
 ---@field public rangeBoundsClipFrame Frame? # Outer clip trimming the range overlays to the inner bar
 ---@field public rangeClipFrame Frame? # Clip container tracking the fill edge for the range overlays
----@field public rangeOverlayFrames StatusBar[]? # Gate StatusBars inside the range clip, one per range
+---@field public rangeShutterFrames Frame[]? # Clip container per range, holding that range's gate open only while the next range's gate is shut
+---@field public rangeProbeFrames StatusBar[]? # Invisible fixed-width twin of each gate, whose fill edge anchors the shutter below it
+---@field public rangeOverlayFrames StatusBar[]? # Gate StatusBars inside the range clip, one per range, plus index 0 for the baseline
+---@field public rangeActiveCount integer? # Number of ranges currently in use, which sets where the shutter chain ends
 ---@field public rangeOverlayReady boolean? # One-frame readiness guard for range overlays
 ---@field public rangeTexture string? # Last-applied range gate texture path (for RefreshAppearance)
 ---@field public rangeColors table<integer, string|TRB.Classes.Settings.ColorGradientEntry> # Last-applied color entry per range gate
@@ -59,7 +62,10 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self.insetOverlayReady = nil
 	self.rangeBoundsClipFrame = nil
 	self.rangeClipFrame = nil
+	self.rangeShutterFrames = nil
+	self.rangeProbeFrames = nil
 	self.rangeOverlayFrames = nil
+	self.rangeActiveCount = nil
 	self.rangeOverlayReady = nil
 	self.rangeTexture = nil
 	self.rangeColors = {}
@@ -889,9 +895,13 @@ end
 -- Half a step below the threshold: these bars count whole stacks, so the window can never catch a
 -- value part-way and never lands within float slop of the threshold or of the bar's own maximum.
 local RANGE_GATE_EPSILON = 0.5
--- Parent-relative frame level of the clip. Gates take clip + (index - 1), keeping the whole stack
--- above the casting/spending overlays (+1, +2) and below the end cap (+8).
+-- Parent-relative frame level of the clip. Gates take clip + (index - 1) capped at +3, keeping the
+-- whole stack above the casting/spending overlays (+1, +2) and below the end cap (+8).
 local RANGE_CLIP_LEVEL_OFFSET = 4
+local RANGE_MAX_LEVEL_SPREAD = 3
+-- Gate 0 paints the bar's own fill color, so the range system owns every layer and the node's fill
+-- texture can be left transparent rather than bleeding through a range color that has alpha.
+local RANGE_BASELINE_INDEX = 0
 
 ---Re-anchors the range overlay clip frame and its gate StatusBars.
 ---Called when border, fill texture, or fill direction changes on the parent node.
@@ -915,9 +925,10 @@ function TRB.Classes.OverlaySlot:ReanchorRangeOverlays(force)
 
 	-- The clip is anchored to the fill texture object, which resizes itself as the value changes, so
 	-- it tracks the fill edge every frame with no re-anchoring. Only geometry changes need a pass.
-	local sig = string.format("%s|%s|%s|%s|%s|%s",
+	local sig = string.format("%s|%s|%s|%s|%s|%s|%s",
 		tostring(parent.border), tostring(parent.width), tostring(parent.height),
-		fillDirection, tostring(self.fullHeight), tostring(fillTexture))
+		fillDirection, tostring(self.fullHeight), tostring(fillTexture),
+		tostring(self.rangeActiveCount))
 	if force ~= true and self.rangeOverlayReady and self._rangeAnchorSig == sig then
 		return
 	end
@@ -960,17 +971,102 @@ function TRB.Classes.OverlaySlot:ReanchorRangeOverlays(force)
 	-- dependence on the node's own width bookkeeping.
 	local orientation = Bar:GetOrientationFromFillDirection(fillDirection)
 	local reverseFill = Bar:GetReverseFillFromFillDirection(fillDirection)
-	for _, gate in ipairs(self.rangeOverlayFrames) do
+	local activeCount = self.rangeActiveCount or #self.rangeOverlayFrames
+	for index = RANGE_BASELINE_INDEX, #self.rangeOverlayFrames do
+		local gate = self.rangeOverlayFrames[index]
 		gate:SetOrientation(orientation)
 		gate:SetReverseFill(reverseFill)
 		gate:SetRotatesTexture(isVertical)
 		gate:ClearAllPoints()
 		gate:SetAllPoints(self.rangeClipFrame)
+
+		local probe = self.rangeProbeFrames[index]
+		if probe ~= nil then
+			probe:SetOrientation(orientation)
+			probe:SetReverseFill(reverseFill)
+			probe:ClearAllPoints()
+			probe:SetAllPoints(self.rangeBoundsClipFrame)
+		end
+
+		-- A shutter spans what the next range's probe does NOT cover, so only the highest open gate
+		-- paints. Both corners come from non-animating frames: a shut fill edge is (right - width).
+		local shutter = self.rangeShutterFrames[index]
+		local higher = index + 1 <= activeCount and self.rangeProbeFrames[index + 1] or nil
+		local higherFill = higher and higher:GetStatusBarTexture() or nil
+		local bounds = self.rangeBoundsClipFrame
+		shutter:ClearAllPoints()
+		if higherFill == nil then
+			shutter:SetAllPoints(bounds)
+		elseif fillDirection == "rightLeft" then
+			shutter:SetPoint("TOPLEFT", bounds, "TOPLEFT", 0, 0)
+			shutter:SetPoint("BOTTOMRIGHT", higherFill, "BOTTOMLEFT", 0, 0)
+		elseif fillDirection == "bottomTop" then
+			shutter:SetPoint("TOPLEFT", bounds, "TOPLEFT", 0, 0)
+			shutter:SetPoint("BOTTOMRIGHT", higherFill, "TOPRIGHT", 0, 0)
+		elseif fillDirection == "topBottom" then
+			shutter:SetPoint("TOPLEFT", higherFill, "BOTTOMLEFT", 0, 0)
+			shutter:SetPoint("BOTTOMRIGHT", bounds, "BOTTOMRIGHT", 0, 0)
+		else -- leftRight
+			shutter:SetPoint("TOPLEFT", higherFill, "TOPRIGHT", 0, 0)
+			shutter:SetPoint("BOTTOMRIGHT", bounds, "BOTTOMRIGHT", 0, 0)
+		end
+		shutter:Show()
 	end
 end
 
----Creates the range overlay system: one clip container plus `count` gate StatusBars.
----Idempotent for a given count; a larger count adds only the missing gates.
+---Creates one shutter/gate pair inside an existing range clip.
+---@param slot TRB.Classes.OverlaySlot
+---@param index integer # Range index, or RANGE_BASELINE_INDEX for the baseline gate
+---@param fillDirection string
+local function CreateRangeGate(slot, index, fillDirection)
+	local Bar = TRB.Functions.Bar
+	local isBaseline = index == RANGE_BASELINE_INDEX
+	local prefix = slot.parentNode.name .. "_" .. slot.slotName .. "_Range"
+	local suffix = isBaseline and "Baseline" or tostring(index)
+
+	local shutter = CreateFrame("Frame", prefix .. "Shutter" .. suffix, slot.rangeClipFrame)
+	shutter:SetFrameLevel(slot.rangeClipFrame:GetFrameLevel())
+	shutter:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, 10000)
+	shutter:SetSize(1, 1)
+	shutter:SetClipsChildren(true)
+	slot.rangeShutterFrames[index] = shutter
+
+	-- The baseline is never the anchor for a shutter below it, so it needs no probe.
+	if not isBaseline then
+		local probe = CreateFrame("StatusBar", prefix .. "Probe" .. suffix, slot.rangeBoundsClipFrame)
+		probe:SetFrameLevel(slot.rangeClipFrame:GetFrameLevel())
+		probe:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
+		probe:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
+		probe:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
+		probe:SetMinMaxValues(0, 1)
+---@diagnostic disable-next-line: redundant-parameter
+		probe:SetValue(0, Enum.StatusBarInterpolation.Immediate)
+		probe:SetAlpha(0)
+		probe:Show()
+		slot.rangeProbeFrames[index] = probe
+	end
+
+	local gate = CreateFrame("StatusBar", prefix .. suffix, shutter)
+	-- Capped so five ranges still clear the end cap. The shutters make only one gate paint, so the
+	-- ascending order only decides ties.
+	gate:SetFrameLevel(slot.rangeClipFrame:GetFrameLevel() + math.min(index, RANGE_MAX_LEVEL_SPREAD))
+	gate:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
+	gate:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
+	gate:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
+	gate:SetRotatesTexture(Bar:IsVerticalFill(fillDirection))
+	-- The baseline has no threshold: it is always full, and only its shutter decides whether it shows.
+	gate:SetMinMaxValues(0, 1)
+---@diagnostic disable-next-line: redundant-parameter
+	gate:SetValue(isBaseline and 1 or 0, Enum.StatusBarInterpolation.Immediate)
+	gate:Hide()
+	slot.rangeOverlayFrames[index] = gate
+	slot._rangeTexturePaths[index] = nil
+	slot._rangeColorSigs[index] = nil
+	slot._rangeGradientActive[index] = false
+end
+
+---Creates the range overlay system: one clip container, the baseline gate, plus `count` gate
+---StatusBars. Idempotent for a given count; a larger count adds only the missing gates.
 ---@param count integer # Number of gated ranges this bar can show
 function TRB.Classes.OverlaySlot:CreateRangeOverlays(count)
 	local parent = self.parentNode
@@ -995,29 +1091,26 @@ function TRB.Classes.OverlaySlot:CreateRangeOverlays(count)
 
 		self.rangeBoundsClipFrame = outer
 		self.rangeClipFrame = clip
+		self.rangeShutterFrames = {}
+		self.rangeProbeFrames = {}
 		self.rangeOverlayFrames = {}
+		self.rangeActiveCount = nil
 		self.rangeOverlayReady = false
 		self._rangeAnchorSig = nil
 	end
 
-	local Bar = TRB.Functions.Bar
+	-- The shutter chain ends at the last range in use, so the count is anchor-relevant.
+	local countChanged = self.rangeActiveCount ~= count
+	self.rangeActiveCount = count
+
 	local fillDirection = parent.fillDirection or "leftRight"
 	local created = false
+	if self.rangeOverlayFrames[RANGE_BASELINE_INDEX] == nil then
+		CreateRangeGate(self, RANGE_BASELINE_INDEX, fillDirection)
+		created = true
+	end
 	for index = #self.rangeOverlayFrames + 1, count do
-		local gateName = parent.name .. "_" .. self.slotName .. "_Range" .. index
-		local gate = CreateFrame("StatusBar", gateName, self.rangeClipFrame)
-		gate:SetFrameLevel(self.rangeClipFrame:GetFrameLevel() + index - 1)
-		gate:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
-		gate:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
-		gate:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
-		gate:SetRotatesTexture(Bar:IsVerticalFill(fillDirection))
-		gate:SetMinMaxValues(0, 1)
-		gate:SetValue(0)
-		gate:Hide()
-		self.rangeOverlayFrames[index] = gate
-		self._rangeTexturePaths[index] = nil
-		self._rangeColorSigs[index] = nil
-		self._rangeGradientActive[index] = false
+		CreateRangeGate(self, index, fillDirection)
 		created = true
 	end
 
@@ -1028,9 +1121,9 @@ function TRB.Classes.OverlaySlot:CreateRangeOverlays(count)
 				slot:ReanchorRangeOverlays(true)
 			end
 		end)
-	elseif created then
-		-- A gate added after the first pass has no anchor or size, and the geometry signature has not
-		-- changed, so nothing else would ever anchor it.
+	elseif created or countChanged then
+		-- A gate added after the first pass has no anchor or size, and a changed count moves the end
+		-- of the shutter chain. Neither shows up in the geometry signature.
 		self:ReanchorRangeOverlays(true)
 	end
 end
@@ -1043,6 +1136,10 @@ function TRB.Classes.OverlaySlot:SetRangeOverlayThreshold(index, threshold)
 	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
 	if not gate then return end
 	gate:SetMinMaxValues(threshold - RANGE_GATE_EPSILON, threshold)
+	local probe = self.rangeProbeFrames and self.rangeProbeFrames[index]
+	if probe then
+		probe:SetMinMaxValues(threshold - RANGE_GATE_EPSILON, threshold)
+	end
 end
 
 ---Sets a range gate's value. Accepts a secret: the StatusBar clamps it against the gate window.
@@ -1051,7 +1148,15 @@ end
 function TRB.Classes.OverlaySlot:SetRangeOverlayValue(index, value)
 	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
 	if not gate then return end
-	gate:SetValue(value)
+	-- A gate is a threshold test, not a fill: easing it would slide the shutter boundary across the
+	-- bar, which reads as the fill growing from the 0 end.
+---@diagnostic disable-next-line: redundant-parameter
+	gate:SetValue(value, Enum.StatusBarInterpolation.Immediate)
+	local probe = self.rangeProbeFrames and self.rangeProbeFrames[index]
+	if probe then
+---@diagnostic disable-next-line: redundant-parameter
+		probe:SetValue(value, Enum.StatusBarInterpolation.Immediate)
+	end
 end
 
 ---Sets a range gate's fill texture. No-op if not created.
@@ -1070,6 +1175,8 @@ function TRB.Classes.OverlaySlot:SetRangeOverlayTexture(index, texture)
 	if fillTexture then
 		fillTexture:SetDrawLayer("ARTWORK", 0)
 	end
+	-- This texture is what the range below anchors its shutter to, so a swap invalidates that anchor.
+	self:ReanchorRangeOverlays(true)
 end
 
 ---Sets a range gate's fill color from an AARRGGBB hex string. No-op if not created.
@@ -1140,7 +1247,7 @@ end
 ---Hides every range gate on this slot.
 function TRB.Classes.OverlaySlot:HideRangeOverlays()
 	if not self.rangeOverlayFrames then return end
-	for index = 1, #self.rangeOverlayFrames do
+	for index = RANGE_BASELINE_INDEX, #self.rangeOverlayFrames do
 		self.rangeOverlayFrames[index]:Hide()
 	end
 end
@@ -1150,6 +1257,22 @@ end
 ---@return StatusBar?
 function TRB.Classes.OverlaySlot:GetRangeOverlayFrame(index)
 	return self.rangeOverlayFrames and self.rangeOverlayFrames[index]
+end
+
+---Returns the index of the baseline gate, which paints the bar's own fill color.
+---@return integer
+function TRB.Classes.OverlaySlot:GetRangeBaselineIndex()
+	return RANGE_BASELINE_INDEX
+end
+
+---Hides or restores the parent node's own fill texture. The baseline gate repaints it, so leaving it
+---visible would show it through any range color that has alpha.
+---@param hidden boolean
+function TRB.Classes.OverlaySlot:SetParentFillHidden(hidden)
+	local frame = self.parentNode and self.parentNode.frame
+	local fillTexture = frame and frame.GetStatusBarTexture and frame:GetStatusBarTexture()
+	if fillTexture == nil then return end
+	fillTexture:SetAlpha(hidden and 0 or 1)
 end
 
 -- ============================================================================
@@ -1415,7 +1538,7 @@ function TRB.Classes.OverlaySlot:RefreshAppearance()
 		end
 
 	if self.rangeOverlayFrames then
-		for index = 1, #self.rangeOverlayFrames do
+		for index = RANGE_BASELINE_INDEX, #self.rangeOverlayFrames do
 			if self.rangeTexture then
 				self:SetRangeOverlayTexture(index, self.rangeTexture)
 			end

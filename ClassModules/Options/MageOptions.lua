@@ -860,7 +860,7 @@ local function ArcaneConstructArcaneSalvoBarPanel(parent)
 		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 8, 1, yCoord, arcaneSalvoBarDef)
 
 		yCoord = yCoord - 60
-		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarRangeColorOptions(parent, controls, spec, 8, 1, yCoord, arcaneSalvoBarDef, ARCANE_MAX_ARCANE_SALVO)
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarRangeValueOptions(parent, controls, spec, 8, 1, yCoord, arcaneSalvoBarDef, ARCANE_MAX_ARCANE_SALVO)
 	end
 end
 

@@ -13,6 +13,16 @@ local gradientDirectionAbbrevLabels = {
 	vertical = L["GradientDirectionVerticalAbbrev"],
 }
 
+---Repaints the live bar after a range edit, from either the colors or the start values section.
+---@param classId integer
+---@param specId integer
+local function RepaintRangeBar(classId, specId)
+	if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
+end
+
 -- ============================================================================
 -- Secondary and custom bar color options
 -- ============================================================================
@@ -304,6 +314,40 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 			end)
 		end
 		yCoord = yCoord - 30
+	end
+
+	-- Gated range colors sit with the bar color they override. Slot 1 IS that color, so only slots
+	-- 2..rangeSlots get a row; the start values live in their own section.
+	if barTypeDef.rangeSlots ~= nil and colorSettings.ranges ~= nil then
+		colorControls.ranges = colorControls.ranges or {}
+		controls.checkBoxes = controls.checkBoxes or {}
+		for index = 2, barTypeDef.rangeSlots do
+			local range = colorSettings.ranges[index]
+			if range ~= nil then
+				local slotKey = barTypeDef.key .. "Range" .. index
+
+				controls.checkBoxes[slotKey .. "Enabled"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_range" .. index .. "Enabled", parent, "ChatConfigCheckButtonTemplate")
+				local rangeCheckBox = controls.checkBoxes[slotKey .. "Enabled"]
+				rangeCheckBox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+				getglobal(rangeCheckBox:GetName() .. 'Text'):SetText(string.format(L["CustomBarRangeEnabled"], index))
+				rangeCheckBox.tooltip = string.format(L["CustomBarRangeEnabledTooltip"], index, displayName)
+				rangeCheckBox:SetChecked(range.enabled)
+				rangeCheckBox:SetScript("OnClick", function(self, ...)
+					range.enabled = self:GetChecked()
+					RepaintRangeBar(classId, specId)
+				end)
+
+				colorControls.ranges[index] = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, string.format(L["CustomBarRangeColor"], index), range, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+				local rangeColorPicker = colorControls.ranges[index]
+				rangeColorPicker.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings.ranges, colorControls.ranges, index, nil, nil, classId, specId)
+				end)
+				rangeColorPicker.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, range, self, classId, specId)
+				end)
+				yCoord = yCoord - 30
+			end
+		end
 	end
 
 	-- Per-node colors (for multi-node bars like Warrior defensives)
@@ -696,8 +740,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 	return yCoord
 end
 
----Generates the gated range color options for a bar whose fill recolors by value range.
----Slot 1 is the bar's own fill color at 0, so only slots 2..rangeSlots get a row pair here.
+---Generates the start value sliders for a bar whose fill recolors by value range, two per row. Slot 1
+---starts at 0, so only slots 2..rangeSlots get a slider. Their colors sit in the bar's colors section.
 ---@param parent Frame # Parent frame for the controls
 ---@param controls table # Table to store control references
 ---@param spec table # Spec settings table
@@ -707,72 +751,47 @@ end
 ---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
 ---@param maxValue number # Highest start value a range can take (the bar's own maximum)
 ---@return number # New Y coordinate after adding controls
-function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarRangeColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, maxValue)
+function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarRangeValueOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, maxValue)
 	local colorSettings = barTypeDef:GetColors(spec)
 	if colorSettings == nil or colorSettings.ranges == nil or barTypeDef.rangeSlots == nil then
 		return yCoord
 	end
 
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
 	local displayName = barTypeDef.displayName
 
-	controls.colors = controls.colors or {}
-	controls.colors.bars = controls.colors.bars or {}
-	controls.colors.bars[barTypeDef.key] = controls.colors.bars[barTypeDef.key] or {}
-	controls.checkBoxes = controls.checkBoxes or {}
-	local colorControls = controls.colors.bars[barTypeDef.key]
-	colorControls.ranges = colorControls.ranges or {}
-
-	local function Repaint()
-		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Data.lookupDirty = true
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-	end
-
-	controls[barTypeDef.key .. "RangeColorSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, string.format(L["CustomBarRangeColorHeader"], displayName), oUi.xCoord, yCoord)
+	controls[barTypeDef.key .. "RangeValueSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, string.format(L["CustomBarRangeValueHeader"], displayName), oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
 	controls[barTypeDef.key .. "RangeColorNote"] = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, string.format(L["CustomBarRangeColorNote"], displayName), oUi.xCoord, yCoord, oUi.dropdownWidth * 2, 28)
 	yCoord = yCoord - 40
 
+	-- Two per row, so the slider titles and edit boxes stay legible without a column of dead space.
+	local column = 0
 	for index = 2, barTypeDef.rangeSlots do
 		local range = colorSettings.ranges[index]
 		if range ~= nil then
 			local slotKey = barTypeDef.key .. "Range" .. index
-
-			-- Checkbox sits beside a slider, so it rides 10px higher than the row.
-			controls.checkBoxes[slotKey .. "Enabled"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_range" .. index .. "Enabled", parent, "ChatConfigCheckButtonTemplate")
-			local checkBox = controls.checkBoxes[slotKey .. "Enabled"]
-			checkBox:SetPoint("TOPLEFT", oUi.xCoord, yCoord + 10)
-			getglobal(checkBox:GetName() .. 'Text'):SetText(string.format(L["CustomBarRangeEnabled"], index))
-			checkBox.tooltip = string.format(L["CustomBarRangeEnabledTooltip"], index, displayName)
-			checkBox:SetChecked(range.enabled)
-			checkBox:SetScript("OnClick", function(self, ...)
-				range.enabled = self:GetChecked()
-				Repaint()
-			end)
+			local xCoord = column == 0 and oUi.xCoord or oUi.xCoord2
 
 			controls[slotKey .. "Value"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, string.format(L["CustomBarRangeValue"], index), 1, maxValue, range.value, 1, 0,
-											oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+											oUi.sliderWidth, oUi.sliderHeight, xCoord, yCoord)
 			controls[slotKey .. "Value"]:SetScript("OnValueChanged", function(self, value)
 				value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 				range.value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-				Repaint()
+				RepaintRangeBar(classId, specId)
 			end)
-			yCoord = yCoord - 50
 
-			colorControls.ranges[index] = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, string.format(L["CustomBarRangeColor"], index), range, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
-			local colorPicker = colorControls.ranges[index]
-			colorPicker.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
-				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings.ranges, colorControls.ranges, index, nil, nil, classId, specId)
-			end)
-			colorPicker.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
-				TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, range, self, classId, specId)
-			end)
-			yCoord = yCoord - 30
+			column = column + 1
+			if column == 2 then
+				column = 0
+				yCoord = yCoord - 60
+			end
 		end
+	end
+
+	-- An odd count leaves the last row half-filled and unadvanced.
+	if column > 0 then
+		yCoord = yCoord - 60
 	end
 
 	return yCoord

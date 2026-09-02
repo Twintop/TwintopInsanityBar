@@ -943,14 +943,34 @@ function TRB.Functions.Class:PrintArcaneSalvoDiagnostics()
 		capFrame and string.format("%.1f..%.1f", capFrame:GetBottom() or 0, capFrame:GetTop() or 0) or "none",
 		firstGate and string.format("%.1f..%.1f", firstGate:GetBottom() or 0, firstGate:GetTop() or 0) or "none"))
 
-	for index = 1, #slot.rangeOverlayFrames do
+	-- A gate paints only where its shutter is open, so shutW is the deciding number: it should be the
+	-- clip width for the one live range and 0 for every range below it.
+	print(string.format("  activeCount=%s parentFillAlpha=%.2f (gate 0 is the baseline)",
+		tostring(slot.rangeActiveCount), fillTexture and fillTexture:GetAlpha() or -1))
+	print(string.format("  horiz: node %.1f..%.1f | fill %.1f..%.1f | clip %.1f..%.1f",
+		frame:GetLeft() or 0, frame:GetRight() or 0,
+		fillTexture and fillTexture:GetLeft() or 0, fillTexture and fillTexture:GetRight() or 0,
+		clip and clip:GetLeft() or 0, clip and clip:GetRight() or 0))
+	for index = slot:GetRangeBaselineIndex(), #slot.rangeOverlayFrames do
 		local gate = slot.rangeOverlayFrames[index]
 		local gMin, gMax = gate:GetMinMaxValues()
 		local gTexture = gate:GetStatusBarTexture()
-		print(string.format("  gate %d: minmax=%.3f/%.3f w=%.1f h=%.1f points=%d level=%d shown=%s texW=%s",
+		local shutter = slot.rangeShutterFrames and slot.rangeShutterFrames[index]
+		print(string.format("  gate %d: minmax=%.3f/%.3f w=%.1f h=%.1f points=%d level=%d shown=%s texW=%s texShown=%s | shutW=%s shutPts=%s",
 			index, gMin or 0, gMax or 0, gate:GetWidth() or 0, gate:GetHeight() or 0,
 			gate:GetNumPoints(), gate:GetFrameLevel(), tostring(gate:IsShown()),
-			gTexture and string.format("%.1f", gTexture:GetWidth() or 0) or "nil"))
+			gTexture and string.format("%.1f", gTexture:GetWidth() or 0) or "nil",
+			gTexture and tostring(gTexture:IsShown()) or "nil",
+			shutter and string.format("%.1f", shutter:GetWidth() or 0) or "nil",
+			shutter and tostring(shutter:GetNumPoints()) or "nil"))
+		-- Which edge is moving mid-animation: run this repeatedly while the fill is easing. The probe
+		-- edges must be identical across samples; only the clip's fill edge may move.
+		local probe = slot.rangeProbeFrames and slot.rangeProbeFrames[index]
+		local pTexture = probe and probe:GetStatusBarTexture()
+		print(string.format("          horiz: tex %.1f..%.1f | shutter %s | probeTex %s",
+			gTexture and gTexture:GetLeft() or 0, gTexture and gTexture:GetRight() or 0,
+			shutter and string.format("%.1f..%.1f", shutter:GetLeft() or 0, shutter:GetRight() or 0) or "none",
+			pTexture and string.format("%.1f..%.1f", pTexture:GetLeft() or 0, pTexture:GetRight() or 0) or "none"))
 	end
 end
 
@@ -1284,12 +1304,21 @@ local function UpdateArcaneSalvo(specSettings, specCacheSettings, barColors, fil
 		-- Nothing to gate, so don't build the overlay frames just to hide them.
 		if slot ~= nil then
 			slot:HideRangeOverlays()
+			slot:SetParentFillHidden(false)
 		end
 		return
 	end
 
 	slot = node:GetOrCreateOverlaySlot("arcaneSalvoRange")
 	slot:CreateRangeOverlays(#arcaneSalvoActiveRanges)
+
+	-- The baseline gate takes over painting the bar color so the node's own fill can go transparent.
+	local baseline = slot:GetRangeBaselineIndex()
+	slot:SetParentFillHidden(true)
+	slot:SetRangeOverlayTexture(baseline, specSettings.textures.arcaneSalvoBar)
+	Color:ApplyRangeOverlayFillColor(slot, baseline, barColors.bar)
+	slot:ShowRangeOverlay(baseline)
+
 	for index = 1, #arcaneSalvoActiveRanges do
 		local range = arcaneSalvoActiveRanges[index]
 		slot:SetRangeOverlayThreshold(index, range.value)

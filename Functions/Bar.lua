@@ -1173,26 +1173,15 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- after that anchor has been resized in this layout pass.
 	self:ApplyAnchoredBarGroupsLayoutInTreeOrder(layoutSettings, barGroups, forest)
 
-	-- Apply per-bar smooth animation settings from displayBar
+	-- Driven off the groups themselves so a new bar's Smooth checkbox works without being listed here.
+	-- Self-driven bars (cast bars, GCD, mirror timers) fill from their own updaters.
 	if settings.displayBar then
-		if barGroups.primary and settings.displayBar.primary then
-			barGroups.primary:SetSmooth(settings.displayBar.primary.smooth or false)
-		end
-		if barGroups.secondary and settings.displayBar.secondary then
-			barGroups.secondary:SetSmooth(settings.displayBar.secondary.smooth or false)
-		end
-		if barGroups.health and settings.displayBar.health then
-			barGroups.health:SetSmooth(settings.displayBar.health.smooth or false)
-		end
-		-- Custom bars (mana, stagger, defensives, etc.)
-		if barGroups.mana and settings.displayBar.mana then
-			barGroups.mana:SetSmooth(settings.displayBar.mana.smooth or false)
-		end
-		if barGroups.stagger and settings.displayBar.stagger then
-			barGroups.stagger:SetSmooth(settings.displayBar.stagger.smooth or false)
-		end
-		if barGroups.defensives and settings.displayBar.defensives then
-			barGroups.defensives:SetSmooth(settings.displayBar.defensives.smooth or false)
+		for barKey, barGroup in pairs(barGroups) do
+			local barDisplaySettings = settings.displayBar[barKey]
+			if barDisplaySettings ~= nil and type(barGroup) == "table" and barGroup.SetSmooth ~= nil and
+				not TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
+				barGroup:SetSmooth(barDisplaySettings.smooth or false)
+			end
 		end
 	end
 
