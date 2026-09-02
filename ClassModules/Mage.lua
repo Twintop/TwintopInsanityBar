@@ -308,21 +308,34 @@ local function GetFireBlastMaxCharges(cooldown)
 	return TRB.Data.character.maxResource2 or 1
 end
 
----Picks the fill color for the recharging charge. The node it lands on is unknowable from a secret
----count, so with no dedicated regenerating color the first charge's color stands in for all of them.
+-- Held by reference by the bar group, so entries are overwritten in place rather than wiped.
+local fireBlastRechargeColors = {}
+local fireBlastRechargeColorCount = 0
+
+---Fill colors for the recharging charge, one per node. The dedicated regenerating color, when
+---enabled, overrides every charge's own color.
 ---@param fireBlastColors table?
----@return string|TRB.Classes.Settings.ColorGradientEntry?
-local function GetFireBlastRechargeColor(fireBlastColors)
-	if fireBlastColors == nil then
-		return nil
+---@param nodeCount integer
+---@return table
+local function GetFireBlastRechargeColors(fireBlastColors, nodeCount)
+	local regenerating = fireBlastColors and fireBlastColors.regenerating
+	local useRegenerating = regenerating ~= nil and regenerating.enabled == true
+	local nodeColors = fireBlastColors and fireBlastColors.nodeColors
+
+	for i = 1, nodeCount do
+		if useRegenerating then
+			fireBlastRechargeColors[i] = regenerating
+		else
+			fireBlastRechargeColors[i] = nodeColors and nodeColors["charge" .. i]
+		end
 	end
 
-	local regenerating = fireBlastColors.regenerating
-	if regenerating ~= nil and regenerating.enabled == true then
-		return regenerating
+	for i = nodeCount + 1, fireBlastRechargeColorCount do
+		fireBlastRechargeColors[i] = nil
 	end
 
-	return fireBlastColors.nodeColors and fireBlastColors.nodeColors.charge1
+	fireBlastRechargeColorCount = nodeCount
+	return fireBlastRechargeColors
 end
 
 local function ConstructResourceBar(settings)
@@ -446,7 +459,7 @@ local function ConstructResourceBar(settings)
 
 				barGroups.secondary:SetChargeRechargeAppearance(
 					settings.textures.comboPointsBar,
-					GetFireBlastRechargeColor(fireBlastColors)
+					GetFireBlastRechargeColors(fireBlastColors, fireBlastMaxNodes)
 				)
 			end
 		elseif TRB.Data.character.specId == 3 then
@@ -1418,7 +1431,7 @@ local function UpdateResourceBar()
 					barGroups.secondary:SetChargeTrackerValue(charges)
 					barGroups.secondary:SetChargeRechargeAppearance(
 						specCacheSettings.textures.comboPointsBar,
-						GetFireBlastRechargeColor(fireBlastColors)
+						GetFireBlastRechargeColors(fireBlastColors, fireBlastNodeCount)
 					)
 					barGroups.secondary:SetChargeRechargeDuration(isRecharging and rechargeDurationObject or nil)
 

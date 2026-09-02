@@ -51,6 +51,10 @@ local content = [====[
 - [#821](#821) The whole fill recolors as you reach each range, with five ranges on the Arcane Salvo tab. Ranges start at 0, 12 and 25 by default; the other two are off by default.
 - [#821](#821) Joins the bar text Relative to Frame and Color Indicator target lists. Its threshold lines use a fixed color rather than switching over and under.
 
+### Fire
+
+- [#825](#825) Fix the Fire Blast recharge fill always using Charge 1's color when "Use partial fill color" is unchecked. It now uses the color of the charge that is refilling.
+
 ---
 
 # 12.1.0.7-release (2026-08-25)

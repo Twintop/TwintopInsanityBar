@@ -1681,7 +1681,8 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 end
 
 ---Creates the charge tracker on demand: an invisible group-spanning StatusBar fed the live count,
----plus a recharge bar anchored to its fill edge, which lands on the node currently refilling.
+---plus a one-node window anchored to its fill edge. The window clips one recharge fill per node, so
+---only the refilling node's fill, in that charge's own color, is visible.
 ---@return table
 function TRB.Classes.BarGroup:EnableChargeTracker()
 	if self.chargeTracker ~= nil then
@@ -1696,16 +1697,56 @@ function TRB.Classes.BarGroup:EnableChargeTracker()
 	trackerTexture:SetSnapToPixelGrid(false)
 	trackerTexture:SetTexelSnappingBias(0)
 
-	local rechargeFrame = CreateFrame("StatusBar", self.name .. "_ChargeRecharge", self.containerFrame)
+	-- Bar text parents itself to the window, so the clipping lives on a child instead.
+	local rechargeFrame = CreateFrame("Frame", self.name .. "_ChargeRecharge", self.containerFrame)
 	rechargeFrame:Hide()
+
+	local rechargeClip = CreateFrame("Frame", nil, rechargeFrame)
+	rechargeClip:SetAllPoints(rechargeFrame)
+	rechargeClip:SetClipsChildren(true)
 
 	self.chargeTracker = {
 		frame = trackerFrame,
 		texture = trackerTexture,
 		recharge = rechargeFrame,
+		clip = rechargeClip,
+		fills = {},
 	}
 
 	return self.chargeTracker
+end
+
+---Applies the stored texture and this charge's color to one recharge fill.
+---@param barGroup TRB.Classes.BarGroup
+---@param index integer
+local function ApplyChargeRechargeFillAppearance(barGroup, index)
+	local tracker = barGroup.chargeTracker
+	if tracker == nil then
+		return
+	end
+
+	local fill = tracker.fills[index]
+	if fill == nil then
+		return
+	end
+
+	local key = barGroup.name .. "_chargeRecharge" .. index
+	if tracker.texturePath ~= nil and fill.texturePath ~= tracker.texturePath then
+		fill.texturePath = tracker.texturePath
+		fill:SetStatusBarTexture(tracker.texturePath)
+		local texture = fill:GetStatusBarTexture()
+		if texture then
+			texture:SetSnapToPixelGrid(false)
+			texture:SetTexelSnappingBias(0)
+		end
+		-- A texture swap resets the fill's vertex color, so force the color back on.
+		TRB.Data.cache.colors.bar[key] = nil
+	end
+
+	local colorEntry = tracker.colorEntries and tracker.colorEntries[index]
+	if colorEntry ~= nil then
+		TRB.Functions.Color:ApplyFillColorToStatusBar(fill, key, colorEntry)
+	end
 end
 
 ---Positions the tracker and the recharge bar that rides its fill edge. No-op until enabled.
@@ -1748,7 +1789,6 @@ function TRB.Classes.BarGroup:LayoutChargeTracker(nodeExtent, nodeCross, nodeSpa
 	tracker.frame:SetMinMaxValues(0, self.nodeCount)
 
 	tracker.recharge:ClearAllPoints()
-	self:ApplyChargeRechargeFillDirection()
 
 	if isVerticalGrowth then
 		tracker.frame:SetSize(nodeCross, trackerExtent)
@@ -1759,6 +1799,31 @@ function TRB.Classes.BarGroup:LayoutChargeTracker(nodeExtent, nodeCross, nodeSpa
 	end
 
 	tracker.recharge:SetPoint(edgeFrom, tracker.texture, edgeTo, xOffset, yOffset)
+
+	for i = 1, self.maxNodes do
+		local node = self.nodes[i]
+		local fill = tracker.fills[i]
+		if node ~= nil and i <= self.nodeCount then
+			if fill == nil then
+				fill = CreateFrame("StatusBar", self.name .. "_ChargeRecharge" .. i, tracker.clip)
+				tracker.fills[i] = fill
+				tracker.frameLevel = nil
+				ApplyChargeRechargeFillAppearance(self, i)
+			end
+			fill:ClearAllPoints()
+			if isVerticalGrowth then
+				fill:SetSize(innerCross, innerExtent)
+			else
+				fill:SetSize(innerExtent, innerCross)
+			end
+			fill:SetPoint(edgeFrom, node.frame, edgeFrom, xOffset, yOffset)
+			fill:Show()
+		elseif fill ~= nil then
+			fill:Hide()
+		end
+	end
+
+	self:ApplyChargeRechargeFillDirection()
 	self:SyncChargeRechargeFrameLevel()
 end
 
@@ -1775,12 +1840,16 @@ function TRB.Classes.BarGroup:SyncChargeRechargeFrameLevel()
 	if tracker.frameLevel ~= level then
 		tracker.frameLevel = level
 		tracker.recharge:SetFrameLevel(level)
+		tracker.clip:SetFrameLevel(level)
+		for _, fill in ipairs(tracker.fills) do
+			fill:SetFrameLevel(level)
+		end
 	end
 end
 
----Gets the recharge bar, which sits on whichever node is currently refilling. Bar text anchored to
----it rides along, so the node never has to be named.
----@return StatusBar?
+---Gets the recharge window, which sits on whichever node is currently refilling. Bar text anchored
+---to it rides along, so the node never has to be named.
+---@return Frame?
 function TRB.Classes.BarGroup:GetChargeRechargeFrame()
 	return self.chargeTracker and self.chargeTracker.recharge or nil
 end
@@ -1794,8 +1863,12 @@ function TRB.Classes.BarGroup:ApplyChargeRechargeFillDirection()
 
 	local Bar = TRB.Functions.Bar
 	local fillDirection = (self.nodes[1] and self.nodes[1].fillDirection) or "leftRight"
-	tracker.recharge:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
-	tracker.recharge:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
+	local orientation = Bar:GetOrientationFromFillDirection(fillDirection)
+	local reverseFill = Bar:GetReverseFillFromFillDirection(fillDirection)
+	for _, fill in ipairs(tracker.fills) do
+		fill:SetOrientation(orientation)
+		fill:SetReverseFill(reverseFill)
+	end
 end
 
 ---Feeds the tracker the live count. The value may be secret; it is only ever handed to the widget.
@@ -1809,29 +1882,20 @@ function TRB.Classes.BarGroup:SetChargeTrackerValue(value)
 	tracker.frame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 end
 
----Sets the recharge bar's texture and fill color.
+---Sets the recharge fills' texture and per-charge colors.
 ---@param texture string?
----@param colorEntry string|TRB.Classes.Settings.ColorGradientEntry?
-function TRB.Classes.BarGroup:SetChargeRechargeAppearance(texture, colorEntry)
+---@param colorEntries table? # Color entries keyed by charge number. Held by reference, so the caller must not reuse a wiped table.
+function TRB.Classes.BarGroup:SetChargeRechargeAppearance(texture, colorEntries)
 	local tracker = self.chargeTracker
 	if tracker == nil then
 		return
 	end
 
-	if texture ~= nil and tracker.texturePath ~= texture then
-		tracker.texturePath = texture
-		tracker.recharge:SetStatusBarTexture(texture)
-		local fill = tracker.recharge:GetStatusBarTexture()
-		if fill then
-			fill:SetSnapToPixelGrid(false)
-			fill:SetTexelSnappingBias(0)
-		end
-		-- A texture swap resets the fill's vertex color, so force the color back on.
-		TRB.Data.cache.colors.bar[self.name .. "_chargeRecharge"] = nil
-	end
+	tracker.texturePath = texture or tracker.texturePath
+	tracker.colorEntries = colorEntries or tracker.colorEntries
 
-	if colorEntry ~= nil then
-		TRB.Functions.Color:ApplyFillColorToStatusBar(tracker.recharge, self.name .. "_chargeRecharge", colorEntry)
+	for i = 1, #tracker.fills do
+		ApplyChargeRechargeFillAppearance(self, i)
 	end
 
 	self:SyncChargeRechargeFrameLevel()
@@ -1847,8 +1911,10 @@ function TRB.Classes.BarGroup:SetChargeRechargeDuration(durationObject)
 
 	local shouldShow = durationObject ~= nil
 	if shouldShow then
+		for _, fill in ipairs(tracker.fills) do
 ---@diagnostic disable-next-line: redundant-parameter
-		tracker.recharge:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
+			fill:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
+		end
 		tracker.recharge:Show()
 	else
 		tracker.recharge:Hide()
