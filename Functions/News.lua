@@ -17,6 +17,7 @@ local content = [====[
 
 - [#745](#745) Add a Glows tab to Global Options: named glow definitions, each with a style (Pixel Glow, Autocast Shine, Action Button Glow, Proc Glow), its own settings and a live preview.
 - [#745](#745) Add Border Glow as a Color Indicator target on every bar, with a submenu that runs any number of the defined glows at once. A glow set to always use its own color takes that color instead of the indicator's, and is marked in the list.
+- Fix the End Cap trailing a couple of pixels behind the fill edge on the cast bars, and on any other bar the client animates, which left a sliver of the bar showing past the cap.
 
 ### Localization
 
