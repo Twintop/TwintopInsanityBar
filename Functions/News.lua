@@ -12,7 +12,7 @@ local content = [====[
 
 ---
 
-# 12.1.0.9-release (2026-09-04)
+# 12.1.0.9-release (2026-09-03)
 ## General
 
 - [#745](#745) Add a Glows tab to Global Options: named glow definitions, each with a style (Pixel Glow, Autocast Shine, Action Button Glow, Proc Glow), its own settings and a live preview.
@@ -22,6 +22,7 @@ local content = [====[
 ### Localization
 
 - [#826 - @MOSS099](#826) Updated translations for Simplified Chinese (zhCN).
+- [#827 - @MOSS099](#827) Updated translations for Simplified Chinese (zhCN).
 
 ---
 

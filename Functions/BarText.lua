@@ -3043,4 +3043,4 @@ function TRB.Functions.BarText:Show(settings)
 			TRB.Data.barTextVisibilityRefreshNeeded = true
 		end
 	end
-end
+end

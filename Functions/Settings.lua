@@ -9050,7 +9050,7 @@ function TRB.Functions.Settings:PortForwardSettings(settings)
 			local globalFlags = coreSettings and coreSettings.global and coreSettings.global[className]
 				and coreSettings.global[className][specName]
 			local source = nil
-			if globalFlags ~= nil and globalFlags.displayBar == true and coreSettings.displayBar ~= nil then
+			if globalFlags ~= nil and globalFlags.displayBar == true and coreSettings ~= nil and coreSettings.displayBar ~= nil then
 				source = coreSettings.displayBar[sourceKey]
 			end
 			source = source or displayBar[sourceKey]
