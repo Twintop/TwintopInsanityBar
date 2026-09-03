@@ -67,11 +67,23 @@ local function BuildUseGlobalRow(parent, controls, classId, specId, classNameLow
 	return yCoord
 end
 
+-- Per-unit labels: the bar's own name, and the noun the class-color options talk about.
+local unitLabels = {
+	targetCastbar = L["ResourceTargetCastbar"],
+	focusCastbar = L["ResourceFocusCastbar"],
+	petCastbar = L["ResourcePetCastbar"],
+}
+local unitNouns = {
+	targetCastbar = L["ResourceTarget"],
+	focusCastbar = L["ResourceFocus"],
+	petCastbar = L["ResourcePet"],
+}
+
 ---Constructs the appearance options for one unit's cast bar within a spec.
 ---@param parent Frame # The tab's scroll child
 ---@param classId integer? # nil edits core (global) scope
 ---@param specId integer?
----@param unitKey string # "targetCastbar" or "focusCastbar"
+---@param unitKey string # "targetCastbar", "focusCastbar" or "petCastbar"
 function TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(parent, classId, specId, unitKey)
 	if parent == nil then
 		return
@@ -103,7 +115,7 @@ function TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(parent, classId, s
 	cc.fill = {}
 
 	local namePrefix = "TwintopResourceBar_" .. controlsKey .. "_" .. unitKey
-	local resourceLabel = (unitKey == "focusCastbar") and L["ResourceFocusCastbar"] or L["ResourceTargetCastbar"]
+	local resourceLabel = unitLabels[unitKey] or L["ResourceTargetCastbar"]
 	local yCoord = 5
 
 	-- Dimensions / anchoring (standalone screen-anchored root by default). Per-section "Use Global" toggles
@@ -197,7 +209,7 @@ function TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(parent, classId, s
 
 	-- Additional Settings: color the fill by the monitored unit's class color + cast time/duration text
 	-- precision, under their own per-section global toggle (same layout as the player cast bar's section).
-	local unitNoun = (unitKey == "focusCastbar") and L["ResourceFocus"] or L["ResourceTarget"]
+	local unitNoun = unitNouns[unitKey] or L["ResourceTarget"]
 	controls[unitKey .. "AdditionalSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarTimersHeader"], oUi.xCoord, yCoord)
 	yCoord = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, unitKey .. "Text", yCoord)
 	yCoord = yCoord - 30

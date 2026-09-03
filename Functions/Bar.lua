@@ -725,6 +725,20 @@ local function EnsureOtherBarGroups(settings, barGroups)
 	end
 end
 
+---Pet bars are all-spec-shaped but only exist on the specs that can hold a permanent pet; guarantee
+---their groups exist wherever the castbar group is ensured. Only bars the spec has settings for get a
+---group -- one without would join the anchor forest as a zero-size node.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsurePetBarGroups(settings, barGroups)
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.petScopeKeys) do
+		if barGroups[key] == nil and settings.bars ~= nil and settings.bars[key] ~= nil then
+			local frameName = "TwintopResourceBarFrame_" .. key:gsub("^%l", string.upper)
+			barGroups[key] = TRB.Classes.BarGroup:New(UIParent, frameName, 1, false)
+		end
+	end
+end
+
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
@@ -768,6 +782,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	EnsureCastbarBarGroup(barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
 	EnsureOtherBarGroups(settings, barGroups)
+	EnsurePetBarGroups(settings, barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
@@ -818,6 +833,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	EnsureCastbarBarGroup(barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
 	EnsureOtherBarGroups(settings, barGroups)
+	EnsurePetBarGroups(settings, barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
 
@@ -2522,7 +2538,8 @@ end
 local iconTooltipBarKeys = {
 	castbar = true,
 	targetCastbar = true,
-	focusCastbar = true
+	focusCastbar = true,
+	petCastbar = true
 }
 
 ---Resolves the spell id (and its comparison token) for a bar icon's hover tooltip from that bar's cast model.
@@ -2852,8 +2869,12 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 			if not TRB.Functions.Castbar:IsEnabled(displayBar and displayBar.castbar) then
 				return false
 			end
-		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
-			if not TRB.Functions.TargetCastbar:IsEnabled(displayBar and displayBar[barKey]) then
+		elseif barKey == "targetCastbar" or barKey == "focusCastbar" or barKey == "petCastbar" then
+			if not TRB.Functions.TargetCastbar:IsEnabled(displayBar and displayBar[barKey], barKey) then
+				return false
+			end
+		elseif TRB.Classes.BarTypeRegistry:IsPetBar(barKey) then
+			if not TRB.Functions.PetBars:IsEnabled(displayBar and displayBar[barKey]) then
 				return false
 			end
 		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
@@ -4104,8 +4125,10 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 		local disabled = false
 		if barKey == "castbar" then
 			disabled = not TRB.Functions.Castbar:IsEnabled(visibility)
-		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
-			disabled = not TRB.Functions.TargetCastbar:IsEnabled(visibility)
+		elseif barKey == "targetCastbar" or barKey == "focusCastbar" or barKey == "petCastbar" then
+			disabled = not TRB.Functions.TargetCastbar:IsEnabled(visibility, barKey)
+		elseif TRB.Classes.BarTypeRegistry:IsPetBar(barKey) then
+			disabled = not TRB.Functions.PetBars:IsEnabled(visibility)
 		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
 			disabled = not TRB.Functions.OtherBars:IsEnabled(visibility)
 		end

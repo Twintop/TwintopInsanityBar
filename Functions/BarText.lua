@@ -11,13 +11,17 @@ local castbarAnchorGroupKeys = {
 	CastBar = "castbar",
 	TargetCastBar = "targetCastbar",
 	FocusCastBar = "focusCastbar",
+	PetCastBar = "petCastbar",
 	CastBarIcon = "castbar",
 	TargetCastBarIcon = "targetCastbar",
 	FocusCastBarIcon = "focusCastbar",
+	PetCastBarIcon = "petCastbar",
 	GcdBar = "gcd",
 	FatigueBar = "fatigue",
 	BreathBar = "breath",
 	FeignDeathBar = "feignDeath",
+	PetHealthBar = "petHealth",
+	PetPowerBar = "petPower",
 }
 
 -- Which of the above keys target the side icon frame rather than the bar itself.
@@ -25,6 +29,7 @@ local castbarIconAnchors = {
 	CastBarIcon = true,
 	TargetCastBarIcon = true,
 	FocusCastBarIcon = true,
+	PetCastBarIcon = true,
 }
 
 ---Is this entry anchored to a cast bar that is finishing its fade? Only the cast bar keys above answer
@@ -35,7 +40,7 @@ local function IsAnchoredToFadingCastbar(relativeToFrame)
 	local groupKey = relativeToFrame ~= nil and castbarAnchorGroupKeys[relativeToFrame] or nil
 	if groupKey == "castbar" then
 		return TRB.Functions.Castbar:IsFadingOut()
-	elseif groupKey == "targetCastbar" or groupKey == "focusCastbar" then
+	elseif groupKey == "targetCastbar" or groupKey == "focusCastbar" or groupKey == "petCastbar" then
 		return TRB.Functions.TargetCastbar:IsFadingOut(groupKey)
 	end
 	return false
@@ -360,6 +365,7 @@ function TRB.Functions.BarText:GetCommonIcons(additionalIcons)
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#targetCasting", icon = "", description = L["BarTextIconTargetCasting"], printInSettings = true },
 		{ variable = "#focusCasting", icon = "", description = L["BarTextIconFocusCasting"], printInSettings = true },
+		{ variable = "#petCasting", icon = "", description = L["BarTextIconPetCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 	}
@@ -394,6 +400,7 @@ TRB.Functions.BarText.VariableCategory = {
 	RESOURCES = "resources",
 	ABILITIES = "abilities",
 	CAST_BAR = "castBar",
+	PET = "pet",
 	OTHER = "other",
 	ICONS = "icons",
 }
@@ -660,6 +667,10 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 			logicType = logicTypes.TEXT, booleanCheck = true },
 		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
 		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$petCastingSpellName", description = L["BarTextVariablePetCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+		{ variable = "$petCastTime", description = L["BarTextVariablePetCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$petCastTimeRemaining", description = L["BarTextVariablePetCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
 
 		-- Other Bars timers. A bare check gates on that bar's timer running (see otherBarsVars).
 		-- The GCD's seconds come from a DurationObject whose values are secret in restricted content, so
@@ -670,6 +681,21 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$fatigueDurationRemaining", description = L["BarTextVariableFatigueDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
 		{ variable = "$breathDuration", description = L["BarTextVariableBreathDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
 		{ variable = "$breathDurationRemaining", description = L["BarTextVariableBreathDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+
+		-- Pet bars. Health and power are secret in restricted content, so they are display-only; a bare
+		-- check on one resolves to "is a pet out?" instead. $petState reads out as text and can be compared.
+		{ variable = "$petName", description = L["BarTextVariablePetName"], printInSettings = true, color = false, category = self.VariableCategory.PET,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+		{ variable = "$petState", description = L["BarTextVariablePetState"], printInSettings = true, color = false, category = self.VariableCategory.PET,
+			logicType = logicTypes.TEXT, renderType = renderTypes.TEXT },
+		{ variable = "$petHealth", description = L["BarTextVariablePetHealth"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petHealthMax", description = L["BarTextVariablePetHealthMax"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petHealthPercent", description = L["BarTextVariablePetHealthPercent"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petPower", description = L["BarTextVariablePetPower"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petPowerMax", description = L["BarTextVariablePetPowerMax"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petPowerPercent", description = L["BarTextVariablePetPowerPercent"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petPowerName", description = L["BarTextVariablePetPowerName"], printInSettings = true, color = false, category = self.VariableCategory.PET,
+			logicType = logicTypes.TEXT, booleanCheck = true },
 	}
 	-- Any shared value not explicitly categorized above is a stat.
 	for _, v in ipairs(values) do
@@ -1879,6 +1905,7 @@ end
 local targetCastbarLookupUnits = {
 	{ modelKey = "targetCastbar", nameVar = "$targetCastingSpellName", timeVar = "$targetCastTime", remVar = "$targetCastTimeRemaining", iconVar = "#targetCasting" },
 	{ modelKey = "focusCastbar", nameVar = "$focusCastingSpellName", timeVar = "$focusCastTime", remVar = "$focusCastTimeRemaining", iconVar = "#focusCasting" },
+	{ modelKey = "petCastbar", nameVar = "$petCastingSpellName", timeVar = "$petCastTime", remVar = "$petCastTimeRemaining", iconVar = "#petCasting" },
 }
 
 -- Idle short-circuit state for the castbar/other-bars refreshers: their idle writes are constants,
@@ -1973,9 +2000,14 @@ end
 ---arithmetic/comparison conditional engine.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
 function TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
-	local targetModel = TRB.Data.targetCastbar
-	local focusModel = TRB.Data.focusCastbar
-	local isActive = (targetModel ~= nil and targetModel:IsActive()) or (focusModel ~= nil and focusModel:IsActive())
+	local isActive = false
+	for _, u in ipairs(targetCastbarLookupUnits) do
+		local m = TRB.Data[u.modelKey]
+		if m ~= nil and m:IsActive() then
+			isActive = true
+			break
+		end
+	end
 	if not isActive and not targetCastbarLookupWasActive then
 		return
 	end
@@ -2190,6 +2222,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		castbarLookupWasActive = true
 		targetCastbarLookupWasActive = true
 		otherBarsLookupWasActive = true
+		petLookupWasActive = true
 	end
 
 	-- Castbar variables live in their own function so the isolated castbar bar text path can refresh
@@ -2197,12 +2230,65 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 	TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
 	TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
+	TRB.Functions.BarText:RefreshPetLookupData(settings)
 
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
 
 	Global_TwintopResourceBar.resource = Global_TwintopResourceBar.resource or {}
 	Global_TwintopResourceBar.resource.resource = snapshotData.attributes.resource-- or 0
 	Global_TwintopResourceBar.resource.casting = castingAmount
+end
+
+-- Pet bar variables, all of which gate on "is a pet out?" in bar text logic.
+local petVars = {
+	["$petName"] = true, ["$petHealth"] = true, ["$petHealthMax"] = true, ["$petHealthPercent"] = true,
+	["$petPower"] = true, ["$petPowerMax"] = true, ["$petPowerPercent"] = true, ["$petPowerName"] = true,
+}
+
+-- Idle short-circuit latch: one final pass has to blank the variables when the pet goes away.
+local petLookupWasActive = true
+
+---Refreshes the pet bar variables. Health and power are read with allowSecret, so they only ever reach
+---`lookup` as formatted strings and never `lookupLogic`, where they could be compared. With no pet they
+---all render empty, so a bare {$petHealthPercent}[...] gate reads as "is a pet out?".
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
+function TRB.Functions.BarText:RefreshPetLookupData(settings)
+	local hasPet = TRB.Functions.PetBars:HasPet()
+	if not hasPet and not petLookupWasActive then
+		return
+	end
+	petLookupWasActive = hasPet
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
+	local lookup = TRB.Data.lookup
+
+	for var in pairs(petVars) do
+		lookup[var] = ""
+	end
+	local state = TRB.Functions.PetBars:GetPetState()
+	lookup["$petState"] = state
+	TRB.Data.lookupLogic["$petState"] = state
+
+	if not hasPet then
+		return
+	end
+
+	local precision = settings and settings.precision or nil
+	lookup["$petName"] = TRB.Functions.PetBars:GetPetName() or ""
+	-- Only reached with a live pet, so the unit APIs below always have something to answer.
+	lookup["$petHealth"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitHealth("pet", true))
+	lookup["$petHealthMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitHealthMax("pet"))
+	lookup["$petHealthPercent"] = string.format(GetPrecisionFormat((precision and precision.health) or 1),
+		UnitHealthPercent("pet", true, CurveConstants.ScaleTo100))
+
+	local powerType = TRB.Functions.PetBars:GetPetPowerType()
+	if powerType ~= nil then
+		lookup["$petPower"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitPower("pet", powerType, true))
+		lookup["$petPowerMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitPowerMax("pet", powerType))
+		lookup["$petPowerPercent"] = string.format(GetPrecisionFormat((precision and precision.mana) or 1),
+			UnitPowerPercent("pet", powerType, true, CurveConstants.ScaleTo100))
+		lookup["$petPowerName"] = TRB.Functions.PetBars:GetPetPowerName() or ""
+	end
 end
 
 -- Other Bars variable -> bar key. Each bar contributes $<key>Duration and $<key>DurationRemaining.
@@ -2368,6 +2454,8 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		castbarModelKey = "targetCastbar"
 	elseif var == "$focusCastingSpellName" or var == "$focusCastTime" or var == "$focusCastTimeRemaining" then
 		castbarModelKey = "focusCastbar"
+	elseif var == "$petCastingSpellName" or var == "$petCastTime" or var == "$petCastTimeRemaining" then
+		castbarModelKey = "petCastbar"
 	end
 	if castbarModelKey ~= nil then
 		local model = TRB.Data[castbarModelKey]
@@ -2379,6 +2467,9 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	local otherBarKey = otherBarsVars[var]
 	if otherBarKey ~= nil then
 		return TRB.Functions.OtherBars:IsBarActive(otherBarKey)
+	end
+	if petVars[var] then
+		return TRB.Functions.PetBars:HasPet()
 	end
 	return false
 end
@@ -2398,11 +2489,17 @@ local selfDrivenBarVariables = {
 	["#targetCasting"] = true,
 	["$focusCastingSpellName"] = true, ["$focusCastTime"] = true, ["$focusCastTimeRemaining"] = true,
 	["#focusCasting"] = true,
+	["$petCastingSpellName"] = true, ["$petCastTime"] = true, ["$petCastTimeRemaining"] = true,
+	["#petCasting"] = true,
 	-- Other Bars timers (see RefreshOtherBarsLookupData)
 	["$gcdDuration"] = true, ["$gcdDurationRemaining"] = true,
 	["$fatigueDuration"] = true, ["$fatigueDurationRemaining"] = true,
 	["$breathDuration"] = true, ["$breathDurationRemaining"] = true,
 	["$feignDeathDuration"] = true, ["$feignDeathDurationRemaining"] = true,
+	-- Pet bars (see RefreshPetLookupData)
+	["$petName"] = true, ["$petState"] = true,
+	["$petHealth"] = true, ["$petHealthMax"] = true, ["$petHealthPercent"] = true,
+	["$petPower"] = true, ["$petPowerMax"] = true, ["$petPowerPercent"] = true, ["$petPowerName"] = true,
 }
 
 ---Whether any running self-driven bar (the player/target/focus cast bars, or an Other Bars timer)
@@ -2420,7 +2517,10 @@ local function HasActiveSelfDrivenBarVariableInUse()
 		or TRB.Functions.TargetCastbar:IsFadingOut("targetCastbar")
 		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())
 		or TRB.Functions.TargetCastbar:IsFadingOut("focusCastbar")
+		or (TRB.Data.petCastbar ~= nil and TRB.Data.petCastbar:IsActive())
+		or TRB.Functions.TargetCastbar:IsFadingOut("petCastbar")
 		or TRB.Functions.OtherBars:HasActiveTimer()
+		or TRB.Functions.PetBars:IsRendering()
 	if not anyActive then
 		return false
 	end

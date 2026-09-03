@@ -4,10 +4,10 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.TargetCastbar = {}
 
 --[[
-	Functions.TargetCastbar: render + event bridge for the target/focus cast bars.
-	Drives the per-unit TRB.Classes.TargetCastbar models (TRB.Data.targetCastbar / focusCastbar) from
-	UNIT_SPELLCAST_* events on the target/focus tokens, plus PLAYER_TARGET_CHANGED / PLAYER_FOCUS_CHANGED
-	to pick up a cast already in progress when the unit changes.
+	Functions.TargetCastbar: render + event bridge for the target/focus/pet cast bars.
+	Drives the per-unit TRB.Classes.TargetCastbar models (TRB.Data.targetCastbar / focusCastbar /
+	petCastbar) from UNIT_SPELLCAST_* events on those unit tokens, plus PLAYER_TARGET_CHANGED /
+	PLAYER_FOCUS_CHANGED / UNIT_PET to pick up a cast already in progress when the unit changes.
 
 	Everything is secret-safe: the fill is native self-animation via StatusBar:SetTimerDuration(durationObject),
 	the remaining countdown formats the DurationObject's (possibly secret) seconds via string.format, the
@@ -18,10 +18,12 @@ TRB.Functions.TargetCastbar = {}
 	re-asserts alpha/visibility every frame to self-heal after render transitions.
 ]]
 
--- Unit key -> model + bar-group key. Focus is a second, independently-positioned bar.
+-- Unit key -> model + bar-group key. Each is an independently-positioned bar. Pet is offered only to the
+-- specs that can hold one, and is gated on the same pet talent the other pet bars are.
 local UNITS = {
 	{ unit = "target", modelKey = "targetCastbar", groupKey = "targetCastbar" },
 	{ unit = "focus", modelKey = "focusCastbar", groupKey = "focusCastbar" },
+	{ unit = "pet", modelKey = "petCastbar", groupKey = "petCastbar" },
 }
 local ENTRY_BY_GROUP = {}
 for _, u in ipairs(UNITS) do
@@ -94,7 +96,13 @@ end
 ---@return TRB.Classes.TargetCastbar
 local function GetModel(modelKey)
 	if TRB.Data[modelKey] == nil then
-		local unit = modelKey == "focusCastbar" and "focus" or "target"
+		local unit = "target"
+		for _, u in ipairs(UNITS) do
+			if u.modelKey == modelKey then
+				unit = u.unit
+				break
+			end
+		end
 		TRB.Data[modelKey] = TRB.Classes.TargetCastbar:New(unit)
 	end
 	return TRB.Data[modelKey]
@@ -119,10 +127,15 @@ local function GetBarConfig(groupKey)
 	return settings, barSettings, colors, visibility
 end
 
----Whether the bar is enabled at all (mirrors the castbar's IsEnabled rules).
+---Whether the bar is enabled at all (mirrors the castbar's IsEnabled rules). The Pet bar additionally
+---needs a spec that can have a pet right now, ahead of Always Show.
 ---@param visibility table?
+---@param groupKey string?
 ---@return boolean
-local function IsEnabled(visibility)
+local function IsEnabled(visibility, groupKey)
+	if groupKey == "petCastbar" and not TRB.Functions.PetBars:IsPetGateActive() then
+		return false
+	end
 	if visibility == nil or visibility.neverShow == true then
 		return false
 	end
@@ -139,9 +152,10 @@ end
 ---Public wrapper over the local IsEnabled: whether the bar is enabled at all (not Never Show / has a
 ---show condition). Layout consults this to collapse a disabled bar's reserved container space.
 ---@param visibility table?
+---@param groupKey string?
 ---@return boolean
-function TRB.Functions.TargetCastbar:IsEnabled(visibility)
-	return IsEnabled(visibility)
+function TRB.Functions.TargetCastbar:IsEnabled(visibility, groupKey)
+	return IsEnabled(visibility, groupKey)
 end
 
 ---Whether the given cast state may show per the visibility conditions.
@@ -188,9 +202,10 @@ end
 ---Container alpha to rest at while no cast is active: activeAlpha when Always Show, else inactiveAlpha.
 ---0 whenever the bar is disabled (Never Show / nothing checked) or a hard-hide condition is active.
 ---@param visibility table?
+---@param groupKey string?
 ---@return number # 0..1
-local function GetIdleAlpha(visibility)
-	if visibility == nil or not IsEnabled(visibility) or IsForceHidden(visibility) then
+local function GetIdleAlpha(visibility, groupKey)
+	if visibility == nil or not IsEnabled(visibility, groupKey) or IsForceHidden(visibility) then
 		return 0
 	end
 	if visibility.alwaysShow then
@@ -737,7 +752,7 @@ end
 local function ApplyInactiveState(groupKey)
 	local entry = ENTRY_BY_GROUP[groupKey]
 	local _, _, _, visibility = GetBarConfig(groupKey)
-	local idleAlpha = GetIdleAlpha(visibility)
+	local idleAlpha = GetIdleAlpha(visibility, groupKey)
 	if idleAlpha > 0 and entry ~= nil and UnitExists(entry.unit)
 		and not TRB.Functions.Bar:IsRenderTransitionActive() then
 		ApplyIdleState(groupKey, idleAlpha)
@@ -759,7 +774,7 @@ local function NeedsUpdater()
 			return true
 		end
 		local _, _, _, visibility = GetBarConfig(u.groupKey)
-		if GetIdleAlpha(visibility) > 0 and UnitExists(u.unit) then
+		if GetIdleAlpha(visibility, u.groupKey) > 0 and UnitExists(u.unit) then
 			return true
 		end
 	end
@@ -801,7 +816,7 @@ end
 local function BeginRender(groupKey, model)
 	fadeStart[groupKey] = nil
 	local _, _, _, visibility = GetBarConfig(groupKey)
-	if not IsEnabled(visibility) or not IsStateAllowed(visibility, model.state) then
+	if not IsEnabled(visibility, groupKey) or not IsStateAllowed(visibility, model.state) then
 		forceHidden[groupKey] = nil
 		ApplyInactiveState(groupKey)
 		TRB.Functions.BarVisibility:MarkDirty()
@@ -831,7 +846,7 @@ local function BeginFadeOut(groupKey)
 	local _, _, _, visibility = GetBarConfig(groupKey)
 	local delay = (visibility and visibility.fadeDelay) or 0
 	local duration = (visibility and visibility.fadeDuration) or 0
-	if not IsEnabled(visibility) or IsForceHidden(visibility) or (delay <= 0 and duration <= 0 and GetIdleAlpha(visibility) <= 0) then
+	if not IsEnabled(visibility, groupKey) or IsForceHidden(visibility) or (delay <= 0 and duration <= 0 and GetIdleAlpha(visibility, groupKey) <= 0) then
 		fadeStart[groupKey] = nil
 		ApplyInactiveState(groupKey)
 	else
@@ -937,7 +952,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			-- Fading out after a cast: hold for fadeDelay, then interpolate activeAlpha -> idleAlpha.
 			needsUpdater = true
 			local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
-			local idleAlpha = GetIdleAlpha(visibility)
+			local idleAlpha = GetIdleAlpha(visibility, u.groupKey)
 			local delay = (visibility and visibility.fadeDelay) or 0
 			local duration = (visibility and visibility.fadeDuration) or 0
 			local elapsed = now - fadeStart[u.groupKey]
@@ -965,7 +980,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			-- Idle Always Show / inactive-alpha bar: full re-assert on the tick (resolves idle alpha, which
 			-- hits the Unit condition APIs, plus the color re-assert inside ApplyIdleState). Cache the alpha so
 			-- between-tick frames can cheaply self-heal without re-resolving.
-			local idleAlpha = GetIdleAlpha(visibility)
+			local idleAlpha = GetIdleAlpha(visibility, u.groupKey)
 			if idleAlpha > 0 and UnitExists(u.unit) then
 				needsUpdater = true
 				cachedIdleAlpha[u.groupKey] = idleAlpha
@@ -1090,8 +1105,11 @@ local function OnUnitChanged(entry)
 end
 
 local eventFrame = CreateFrame("Frame")
+-- RegisterUnitEvent takes at most two unit filters and replaces any earlier one for the same event on the
+-- same frame, so the pet's copies of the cast events need a frame of their own.
+local petEventFrame = CreateFrame("Frame")
 
----Re-resolves both bars against live unit state after a loading screen. UNIT_SPELLCAST_* events fired
+---Re-resolves every bar against live unit state after a loading screen. UNIT_SPELLCAST_* events fired
 ---behind the screen never arrive, so a cast that finished during it leaves its bar stuck at 0.0 remaining.
 local function ResyncAfterLoadingScreen()
 	for _, u in ipairs(UNITS) do
@@ -1117,6 +1135,8 @@ eventFrame:SetScript("OnEvent", function(_, event, unit, _, spellId)
 		OnUnitChanged(UNITS[1])
 	elseif event == "PLAYER_FOCUS_CHANGED" then
 		OnUnitChanged(UNITS[2])
+	elseif event == "UNIT_PET" then
+		OnUnitChanged(UNITS[3])
 	elseif event == "PLAYER_ENTERING_WORLD" or event == "LOADING_SCREEN_DISABLED" then
 		ResyncAfterLoadingScreen()
 	elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" then
@@ -1128,14 +1148,21 @@ eventFrame:SetScript("OnEvent", function(_, event, unit, _, spellId)
 	end
 end)
 
----Registers all events to begin tracking target + focus casts, then resolves the initial idle display.
+petEventFrame:SetScript("OnEvent", eventFrame:GetScript("OnEvent"))
+
+-- The cast events every tracked unit needs.
+local CAST_EVENTS = { "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_DELAYED",
+	"UNIT_SPELLCAST_CHANNEL_START", "UNIT_SPELLCAST_CHANNEL_UPDATE", "UNIT_SPELLCAST_CHANNEL_STOP",
+	"UNIT_SPELLCAST_EMPOWER_START", "UNIT_SPELLCAST_EMPOWER_STOP", "UNIT_SPELLCAST_INTERRUPTED",
+	"UNIT_SPELLCAST_SUCCEEDED" }
+
+---Registers all events to begin tracking target + focus + pet casts, then resolves the initial idle display.
 function TRB.Functions.TargetCastbar:Enable()
-	for _, e in ipairs({ "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_DELAYED",
-		"UNIT_SPELLCAST_CHANNEL_START", "UNIT_SPELLCAST_CHANNEL_UPDATE", "UNIT_SPELLCAST_CHANNEL_STOP",
-		"UNIT_SPELLCAST_EMPOWER_START", "UNIT_SPELLCAST_EMPOWER_STOP", "UNIT_SPELLCAST_INTERRUPTED",
-		"UNIT_SPELLCAST_SUCCEEDED" }) do
+	for _, e in ipairs(CAST_EVENTS) do
 		eventFrame:RegisterUnitEvent(e, "target", "focus")
+		petEventFrame:RegisterUnitEvent(e, "pet")
 	end
+	petEventFrame:RegisterUnitEvent("UNIT_PET", "player")
 	eventFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 	eventFrame:RegisterEvent("PLAYER_FOCUS_CHANGED")
 	eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -1146,9 +1173,10 @@ function TRB.Functions.TargetCastbar:Enable()
 	self:RefreshVisibility()
 end
 
----Unregisters all target/focus cast tracking events.
+---Unregisters all target/focus/pet cast tracking events.
 function TRB.Functions.TargetCastbar:Disable()
 	eventFrame:UnregisterAllEvents()
+	petEventFrame:UnregisterAllEvents()
 	for _, u in ipairs(UNITS) do
 		local model = TRB.Data[u.modelKey]
 		if model ~= nil then
@@ -1158,7 +1186,7 @@ function TRB.Functions.TargetCastbar:Disable()
 	end
 end
 
----Returns the model for a unit key ("targetCastbar" / "focusCastbar"), creating it if needed.
+---Returns the model for a unit key ("targetCastbar" / "focusCastbar" / "petCastbar"), creating it if needed.
 ---@param modelKey string
 ---@return TRB.Classes.TargetCastbar
 function TRB.Functions.TargetCastbar:GetModel(modelKey)

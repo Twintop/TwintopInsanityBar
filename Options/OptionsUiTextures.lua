@@ -49,6 +49,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendTargetFocusCastbars(customBars)
 	-- Other Bars (GCD + mirror timers) too, scoped so Feign Death only appears for Hunters.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendOtherBars(customBars, classId)
+	-- Pet bars, scoped so they only appear on the specs that can hold a permanent pet.
+	TRB.Classes.BarTypeRegistry:GetInstance():AppendPetBars(customBars, classId, specId)
 
 	if secondaryResourceString == nil then
 		secondaryResourceString = L["ResourceComboPoints"]

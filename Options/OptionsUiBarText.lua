@@ -986,6 +986,23 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		end
 	end
 
+	-- Pet bars are offered wherever they can exist: the spec's own panel when it has a pet, and the
+	-- Global bar text panel (nil classId), which every spec's list is merged from.
+	if TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId) or classId == nil then
+		for _, petBarKey in ipairs(TRB.Classes.BarTypeRegistry.petBarKeys) do
+			local petBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(petBarKey)
+			if petBarDef ~= nil then
+				local anchorKey = petBarKey:gsub("^%l", string.upper) .. "Bar"
+				relativeToFrame[petBarDef.displayName] = anchorKey
+				table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), petBarDef.displayName)
+			end
+		end
+		relativeToFrame[L["ResourcePetCastbar"]] = "PetCastBar"
+		table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourcePetCastbar"])
+		relativeToFrame[L["ResourcePetCastbarIcon"]] = "PetCastBarIcon"
+		table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourcePetCastbarIcon"])
+	end
+
 	local containerAnchorOptions = TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
 	if #containerAnchorOptions > 0 then
 		for _, containerAnchor in ipairs(containerAnchorOptions) do

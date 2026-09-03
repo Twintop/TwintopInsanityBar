@@ -1586,10 +1586,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
-	-- Target/Focus cast bars mirror the player cast bar's per-section "Use Global" flags: Dimensions
+	-- Target/Focus/Pet cast bars mirror the player cast bar's per-section "Use Global" flags: Dimensions
 	-- (position/size/icon), Colors (fill/interrupt/border/background), and Empower (empower fill color +
 	-- stage lines). Layers onto the current cache tables so it composes with the castbar merge above.
-	for _, unitKey in ipairs({ "targetCastbar", "focusCastbar" }) do
+	for _, unitKey in ipairs({ "targetCastbar", "focusCastbar", "petCastbar" }) do
 		local coreBar = core.bars and core.bars[unitKey]
 		local currentBars = specCache.settings.bars
 		local specBar = currentBars and currentBars[unitKey]
@@ -1697,6 +1697,22 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				endCap = coreColors.endCap
 			}
 			specCache.settings.colors.bars = OverlayOn(currentColorBars, { [barKey] = OverlayOn(specColors, colorOverrides) })
+		end
+	end
+
+	-- Pet Resource and Pet Health take Dimensions and Colors. These tables hold nothing spec-only, so each
+	-- section swaps the whole table by reference like healthBarColors, keeping primitives such as `type` live.
+	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.petBarKeys) do
+		local coreBar = core.bars and core.bars[barKey]
+		local currentBars = specCache.settings.bars
+		if coreBar and s[barKey .. "Dimensions"] then
+			specCache.settings.bars = OverlayOn(currentBars, { [barKey] = coreBar })
+		end
+
+		local coreColors = core.colors and core.colors.bars and core.colors.bars[barKey]
+		local currentColorBars = specCache.settings.colors.bars
+		if coreColors and s[barKey .. "Colors"] then
+			specCache.settings.colors.bars = OverlayOn(currentColorBars, { [barKey] = coreColors })
 		end
 	end
 
@@ -1836,6 +1852,12 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 			-- Other Bars (GCD + the mirror timers) are all-spec standalone bars too. classId scopes out
 			-- Feign Death, which only ever fires for Hunters.
 			TRB.Functions.Settings:InjectOtherBarsDefaults(specDefaults, TRB.Functions.Character:GetClassIdFromName(className))
+
+			-- Pet bars, for the specs that can hold a permanent pet. Every other spec gets nothing, which is
+			-- what keeps them off its tab strip, anchor target list and custom threshold targets.
+			local petClassId = TRB.Functions.Character:GetClassIdFromName(className)
+			local petSpecEntry = petClassId ~= nil and TRB.Data.specRegistry[className .. "_" .. specName] or nil
+			TRB.Functions.Settings:InjectPetBarsDefaults(specDefaults, petClassId, petSpecEntry and petSpecEntry.specId or nil)
 
 			-- End caps are a universal per-bar setting; inject their defaults the same way
 			TRB.Functions.Settings:InjectEndCapDefaults(specDefaults)
@@ -2051,6 +2073,7 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.SpellCast:EnableSpellCast()
 		TRB.Functions.TargetCastbar:Enable()
 		TRB.Functions.OtherBars:Enable()
+		TRB.Functions.PetBars:Enable()
 		TRB.Functions.Character:EnableCharacterChange()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)

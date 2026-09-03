@@ -2499,6 +2499,121 @@ function TRB.Classes.BarTypeRegistry:AppendOtherBars(list, classId, includeAllSc
 	end
 end
 
+---The Pet tab's bar keys, in tab order. Pet Resource is the tree root and Pet Health stacks below it,
+---mirroring the player's own resource-over-health pair.
+TRB.Classes.BarTypeRegistry.petBarKeys = { "petPower", "petHealth" }
+
+---Every bar key scoped to the specs with a pet. The Pet Cast Bar is configured under Cast Bars beside
+---the Player/Target/Focus ones, but shares this scoping everywhere else: settings, textures, targets.
+TRB.Classes.BarTypeRegistry.petScopeKeys = { "petPower", "petHealth", "petCastbar" }
+
+-- Specs that can hold a permanent, controllable pet. `power` fixes the resource bar's default fill;
+-- `talentId` names the talent granting the pet, absent when it is baseline.
+local petSpecs = {
+	hunter_beastMastery = { power = "FOCUS" },
+	hunter_marksmanship = { power = "FOCUS", talentId = 1223323 },
+	hunter_survival = { power = "FOCUS" },
+	warlock_affliction = { power = "ENERGY" },
+	warlock_demonology = { power = "ENERGY" },
+	warlock_destruction = { power = "ENERGY" },
+	deathknight_unholy = { power = "ENERGY" },
+	mage_frost = { power = "MANA", talentId = 31687 },
+}
+
+---The pet record for a spec, or nil for a spec that has no permanent pet.
+---@param classId integer?
+---@param specId integer?
+---@return table? # { power = string, talentId = integer? }
+function TRB.Classes.BarTypeRegistry:GetPetSpecInfo(classId, specId)
+	if classId == nil or specId == nil then
+		return nil
+	end
+	local compositeKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+	if compositeKey == nil then
+		return nil
+	end
+	return petSpecs[compositeKey]
+end
+
+---Whether a spec can hold a permanent pet, and so gets the Pet bars at all.
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId)
+	return self:GetPetSpecInfo(classId, specId) ~= nil
+end
+
+---Returns the Pet tab's bar keys for a spec, in tab order. Empty for a spec with no permanent pet.
+---@param classId integer?
+---@param specId integer?
+---@return string[]
+function TRB.Classes.BarTypeRegistry:GetPetBarKeys(classId, specId)
+	if not self:SpecHasPet(classId, specId) then
+		return {}
+	end
+	local keys = {}
+	for _, key in ipairs(self.petBarKeys) do
+		keys[#keys + 1] = key
+	end
+	return keys
+end
+
+---Returns every pet-scoped bar key for a spec, the Pet Cast Bar included. Empty for a spec with no
+---permanent pet.
+---@param classId integer?
+---@param specId integer?
+---@return string[]
+function TRB.Classes.BarTypeRegistry:GetPetScopeKeys(classId, specId)
+	if not self:SpecHasPet(classId, specId) then
+		return {}
+	end
+	local keys = {}
+	for _, key in ipairs(self.petScopeKeys) do
+		keys[#keys + 1] = key
+	end
+	return keys
+end
+
+---Whether a bar key is one of the pet bars.
+---@param key string?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsPetBar(key)
+	if key == nil then
+		return false
+	end
+	for _, petKey in ipairs(self.petBarKeys) do
+		if petKey == key then
+			return true
+		end
+	end
+	return false
+end
+
+---Appends the Pet bar definitions to a customBars list if registered and not already present.
+---Mirrors AppendOtherBars.
+---@param list TRB.Classes.BarTypeDefinition[]
+---@param classId integer? # The scope; a spec without a permanent pet appends nothing
+---@param specId integer?
+---@param includeAllScopes boolean? # Ignore the scope and append every pet bar
+function TRB.Classes.BarTypeRegistry:AppendPetBars(list, classId, specId, includeAllScopes)
+	local keys = includeAllScopes and self.petScopeKeys or self:GetPetScopeKeys(classId, specId)
+	for _, key in ipairs(keys) do
+		local def = self.definitions[key]
+		if def ~= nil then
+			local exists = false
+			for _, d in ipairs(list) do
+				if d.key == key then
+					exists = true
+					break
+				end
+			end
+			if not exists then
+				list[#list + 1] = def
+			end
+		end
+	end
+end
+
 ---Whether a bar key renders itself from live state (cast bars, GCD, mirror timers) rather than
 ---through ProcessBars. Such bars stay in the anchor tree as scaffolds even while hidden.
 ---Resolves the singleton itself, so callers can reach it straight off the class table.
@@ -2551,6 +2666,13 @@ function TRB.Classes.BarTypeRegistry:GetBarTypesForSpec(classId, specId)
 	-- include it when registered.
 	if self.definitions.castbar then
 		result.castbar = self.definitions.castbar
+	end
+
+	-- Pet bars are likewise not declared per-spec; add them for the specs that can hold a pet.
+	for _, key in ipairs(self:GetPetScopeKeys(classId, specId)) do
+		if self.definitions[key] then
+			result[key] = self.definitions[key]
+		end
 	end
 
 	return result
@@ -3106,4 +3228,91 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			end
 		}))
 	end
+
+	-- Pet Resource bar. Whichever power the live pet uses, read from UnitPowerType("pet") rather than
+	-- fixed per class: one Hunter spec can hold pets on Focus and one on Energy.
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "petPower",
+		displayName = L["ResourcePetPower"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		minMaxMode = "percentage",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "petPower",
+		isSelfDriven = true,
+		usesSecretValue = true,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultPetBarSettings(classic, "petPower")
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultPetPowerBarColors(TRB.Data.character.classId, TRB.Data.character.specId)
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Pet Health bar. UnitHealth("pet") is secret in restricted content, so minMaxMode is "percentage"
+	-- (thresholds position against 0-100%) and the fill color comes from a curve, not a Lua comparison.
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "petHealth",
+		displayName = L["ResourcePetHealth"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		minMaxMode = "percentage",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = "step",
+		thresholdLevels = {
+			{ key = "low", colorLabel = L["PetBarColorLow"] },
+			{ key = "medium", colorLabel = L["PetBarColorMedium"], sliderLabel = L["PetBarThresholdMedium"], sliderTooltip = L["PetBarThresholdMediumTooltip"] },
+			{ key = "high", colorLabel = L["PetBarColorHigh"], sliderLabel = L["PetBarThresholdHigh"], sliderTooltip = L["PetBarThresholdHighTooltip"] }
+		},
+		colorTypeLabel = L["PetBarColorType"],
+		colorTypeStepLabel = L["ColorTypeStep"],
+		colorTypeLinearLabel = L["ColorTypeLinear"],
+		colorTypeNoneLabel = L["ColorTypeNone"],
+		visibilityKey = "petHealth",
+		isSelfDriven = true,
+		usesSecretValue = true,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultPetBarSettings(classic, "petHealth")
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultPetHealthBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Pet Cast Bar. Same secret-safe timer-driven render as the Target and Focus bars, on the "pet" unit,
+	-- and only offered to the specs that can hold a pet.
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "petCastbar",
+		displayName = L["ResourcePetCastbar"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		minMaxMode = "custom",
+		hasSpacing = false,
+		hasThresholds = false,
+		colorCurveType = nil,
+		visibilityKey = "petCastbar",
+		isCastbar = true,
+		isSelfDriven = true,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic, "petCastbar")
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultTargetCastbarBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
 end

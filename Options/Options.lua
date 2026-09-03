@@ -728,6 +728,9 @@ local function ConstructCastbarOptionsPanel()
 		{ "focus", L["ResourceFocusCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, nil, nil, "focusCastbar")
 		end, visibilityKey = "focusCastbar" },
+		{ "pet", L["ResourcePetCastbar"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, nil, nil, "petCastbar")
+		end, visibilityKey = "petCastbar" },
 	}
 
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Castbar", tabDefinitions, -37)
@@ -773,6 +776,48 @@ local function ConstructOtherBarsOptionsPanel()
 	end
 
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "OtherBars", tabDefinitions, -37)
+end
+
+---Constructs the top-level Pet Bars options panel: global (core-scope) settings for the Pet Resource and
+---Pet Health bars, in a tabbed screen like the Other Bars one. The Pet Cast Bar is configured under Cast
+---Bars instead, beside the Player/Target/Focus ones.
+local function ConstructPetBarsOptionsPanel()
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.core or {}
+	interfaceSettingsFrame.controls.core = controls
+	controls.colors = controls.colors or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.petBarsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_PetBarsPanel")
+	TRB.Options.OptionsFrame:RegisterCategory("petBars", L["TabPetBars"], interfaceSettingsFrame.petBarsPanel)
+
+	local parent = interfaceSettingsFrame.petBarsPanel
+
+	controls.petBarsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["PetBarsGlobalOptionsHeader"], oUi.xCoord, -5)
+
+	-- Core-scope profile dropdown, same position as on Global Options.
+	controls.petBarsProfileDropdown = TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, -10, "core", nil, nil, L["GlobalOptions"], "_PetBars")
+
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local tabDefinitions = {}
+	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.petBarKeys) do
+		local barDef = registry:Get(barKey)
+		if barDef ~= nil then
+			local capturedKey = barKey
+			tabDefinitions[#tabDefinitions + 1] = {
+				capturedKey,
+				barDef.displayName,
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.PetBars:ConstructPanel(scrollChild, nil, nil, capturedKey)
+				end,
+				visibilityKey = capturedKey,
+			}
+		end
+	end
+
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "PetBars", tabDefinitions, -37)
 end
 
 -- Localized labels for the profile/nav catalogs. Identity comes from
@@ -2143,6 +2188,7 @@ function TRB.Options:ConstructOptionsPanel()
 	ConstructGlobalOptionsPanel()
 	ConstructCastbarOptionsPanel()
 	ConstructOtherBarsOptionsPanel()
+	ConstructPetBarsOptionsPanel()
 	ConstructImportExportPanel()
 	ConstructProfileDefaultsPanel()
 

@@ -955,6 +955,14 @@ TRB.Data.resolvedIndicators = {
 	targetCastbar = {},
 	---@type table<string, string>
 	focusCastbar = {},
+	---@type table<string, string>
+	petCastbar = {},
+	-- Pet bars: shared like the cast bars, and resolved the same way. Pet Health takes border/background/
+	-- endCap only (its fill is a health curve); Pet Resource adds the fill.
+	---@type table<string, string|table>
+	petHealthBar = {},
+	---@type table<string, string|table>
+	petPowerBar = {},
 	-- The active gradient (secret-value) indicator, or nil. Its color isn't resolved here like the flat ones:
 	-- a gradient is a curve from whatever color the element would otherwise use up to the indicator's color,
 	-- and only the render path knows that base color. So the indicator itself is parked and the consumer
@@ -1008,10 +1016,16 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 	local castbar = resolved.castbar
 	local targetCastbar = resolved.targetCastbar
 	local focusCastbar = resolved.focusCastbar
+	local petCastbar = resolved.petCastbar
+	local petHealthBar = resolved.petHealthBar
+	local petPowerBar = resolved.petPowerBar
 	wipe(healthBar)
 	wipe(castbar)
 	wipe(targetCastbar)
 	wipe(focusCastbar)
+	wipe(petCastbar)
+	wipe(petHealthBar)
+	wipe(petPowerBar)
 
 	local character = TRB.Data.character
 	resolved.compositeKey = character.compositeKey
@@ -1066,6 +1080,12 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 						targetColors = targetCastbar
 					elseif barKey == "focusCastbar" then
 						targetColors = focusCastbar
+					elseif barKey == "petCastbar" then
+						targetColors = petCastbar
+					elseif barKey == "petHealthBar" then
+						targetColors = petHealthBar
+					elseif barKey == "petPowerBar" then
+						targetColors = petPowerBar
 					else
 						targetColors = barColorMap and barColorMap[barKey]
 					end

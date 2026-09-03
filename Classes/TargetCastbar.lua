@@ -3,7 +3,7 @@ local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
 --[[
-	TargetCastbar: secret-safe cast/channel/empower model for a tracked unit (target or focus).
+	TargetCastbar: secret-safe cast/channel/empower model for a tracked unit (target, focus or pet).
 	One instance per unit. Unlike the player Castbar, a target's timing is generally secret, so this
 	model never does Lua arithmetic on times: the fill and the remaining countdown are driven by a
 	DurationObject (UnitCastingDuration / UnitChannelDuration / UnitEmpoweredChannelDuration), and the
@@ -23,7 +23,7 @@ TRB.Classes = TRB.Classes or {}
 ---| '"empower"' # Empowered cast (fills up through stages)
 
 ---@class TRB.Classes.TargetCastbar
----@field public unit string # "target" or "focus"
+---@field public unit string # "target", "focus" or "pet"
 ---@field public state trbTargetCastbarState
 ---@field public isSecret boolean # Whether this unit's cast queries produce secret values (branchable)
 ---@field public spellId any # Spell id from the event (may be a secret number; nil when unavailable)
@@ -39,7 +39,7 @@ TRB.Classes.TargetCastbar = {}
 TRB.Classes.TargetCastbar.__index = TRB.Classes.TargetCastbar
 
 ---Creates a new TargetCastbar model bound to a unit.
----@param unit string # "target" or "focus"
+---@param unit string # "target", "focus" or "pet"
 ---@return TRB.Classes.TargetCastbar
 function TRB.Classes.TargetCastbar:New(unit)
 	local self = setmetatable({}, TRB.Classes.TargetCastbar)

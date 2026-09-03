@@ -264,7 +264,7 @@ end
 ---@param yCoord number # Starting Y coordinate
 ---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
 ---@return number # New Y coordinate after adding controls
-function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, afterNodesCallback)
+function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, afterNodesCallback, useGlobalSettingKey)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName .. "_" .. barTypeDef.key
 	local f = nil
@@ -280,6 +280,11 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 	-- Section header
 	local headerText = string.format(L["CustomBarColorHeader"], displayName)
 	controls[barTypeDef.key .. "ColorSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
+
+	-- Optional "Use global settings" row, mirroring the one the dimensions generator builds.
+	if useGlobalSettingKey ~= nil then
+		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, useGlobalSettingKey, yCoord)
+	end
 
 	yCoord = yCoord - 30
 	controls.colors = controls.colors or {}

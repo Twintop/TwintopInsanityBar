@@ -126,12 +126,13 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 	-- =============================================
 	local allData = {}     -- flat array for LibScrollingTable
 	-- Fixed group order. Sorting reorders a group's contents but never the groups themselves.
-	local groupOrder = { "resources", "abilities", "stats", "castBar", "other", "icons" }
+	local groupOrder = { "resources", "abilities", "stats", "castBar", "pet", "other", "icons" }
 	local groupLabels = {
 		resources = L["BarTextVariablesSectionResources"],
 		abilities = L["BarTextVariablesSectionAbilities"],
 		stats = L["BarTextVariablesSectionStats"],
 		castBar = L["BarTextVariablesSectionCastBars"],
+		pet = L["BarTextVariablesSectionPet"],
 		other = L["BarTextVariablesSectionOther"],
 		icons = L["BarTextVariablesSectionIcons"],
 	}

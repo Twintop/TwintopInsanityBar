@@ -839,6 +839,11 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	if not anyShowing and TRB.Functions.OtherBars:HasActiveTimer() then
 		anyShowing = true
 	end
+	-- And for the pet bars, which are usually up out of combat -- exactly when isTracking would
+	-- otherwise be false and take their anchored bar text down with it.
+	if not anyShowing and TRB.Functions.PetBars:IsRendering() then
+		anyShowing = true
+	end
 
 	-- Kick the castbar's idle display (Always Show / non-zero inactive alpha) when no cast is active:
 	-- its self-driven updater stops while idle-hidden, so this is what restarts it after settings

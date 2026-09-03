@@ -460,4 +460,21 @@ if locale == "enGB" then
 	L["GlowColor"] = "Glow Colour"
 	L["GlowIndicatorFixedColorSuffix"] = " |cFFFFD100(own colour)|r"
 
+	-- Pet bars
+	L["PetBarColorType"] = "Colour Transition Type"
+	L["PetBarColorLow"] = "Low Health Colour"
+	L["PetBarColorMedium"] = "Medium Health Colour"
+	L["PetBarColorHigh"] = "High Health Colour"
+	L["PetBarThresholdMediumTooltip"] = "Pet health percentage at which the bar takes the Medium Health Colour."
+	L["PetBarThresholdHighTooltip"] = "Pet health percentage at which the bar takes the High Health Colour."
+
+	-- Pet cast bar and pet bar global options
+	L["CheckboxUseGlobalTooltip_PetPowerColors"] = "When checked, this bar's colours come from the global Pet Bars screen instead of this specialization's own settings. Off by default, so each specialization can colour the bar to match the resource its pet actually uses."
+	L["CheckboxUseGlobalTooltip_PetHealthColors"] = "When checked, this bar's colours come from the global Pet Bars screen instead of this specialization's own settings."
+	L["CheckboxUseGlobalTooltip_PetCastbarColors"] = "When checked, the global Pet Cast Bar fill, interrupt, border, and background colours will be used."
+	L["CheckboxUseGlobalTooltip_PetCastbarEmpower"] = "When checked, the global Pet Cast Bar empower colouring and stage line settings will be used."
+	L["CopyMenuSection_petPowerColors"] = "Pet Resource Bar - Colours"
+	L["CopyMenuSection_petHealthColors"] = "Pet Health Bar - Colours"
+	L["CopyMenuSection_petCastbarColors"] = "Pet Cast Bar - Colours"
+
 end

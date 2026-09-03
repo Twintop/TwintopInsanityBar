@@ -27,6 +27,8 @@ local DRUID_FORM_CONDITION_KEYS = { "isDruidHumanoidForm", "isDruidTravelFormAny
 local CASTBAR_CONDITION_KEYS = { "casting", "channeling", "empowered" }
 -- Other Bars (GCD + the mirror timers) have exactly one show state: their timer is running.
 local TIMER_CONDITION_KEYS = { "whenActive" }
+-- Pet bars show against the four states a pet can be in, which are mutually exclusive at any moment.
+local PET_CONDITION_KEYS = { "petPermanent", "petTemporary", "petDead", "petMissing" }
 local STANDARD_HIDE_CONDITION_KEYS ={ "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
 
 -- Every condition key the addon can store, show-side and hide-side alike.
@@ -68,6 +70,10 @@ local CONDITION_LABELS = {
 	channeling = L["ShowBarVisibilityConditionChanneling"],
 	empowered = L["ShowBarVisibilityConditionEmpowered"],
 	whenActive = L["ShowBarVisibilityWhenActive"],
+	petPermanent = L["ShowBarVisibilityConditionPetPermanent"],
+	petTemporary = L["ShowBarVisibilityConditionPetTemporary"],
+	petDead = L["ShowBarVisibilityConditionPetDead"],
+	petMissing = L["ShowBarVisibilityConditionPetMissing"],
 }
 
 -- Deterministic iteration order for show-side summaries: standard, then Druid forms, then cast states,
@@ -83,6 +89,9 @@ for _, key in ipairs(CASTBAR_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
 for _, key in ipairs(TIMER_CONDITION_KEYS) do
+	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
+end
+for _, key in ipairs(PET_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
 
@@ -257,6 +266,7 @@ function TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specI
 	-- Same for the Other Bars, which also re-arms the GCD events and Blizzard Duration Bar suppression.
 	TRB.Functions.OtherBars:SyncGcdEvents()
 	TRB.Functions.OtherBars:RefreshVisibility()
+	TRB.Functions.PetBars:RefreshVisibility()
 end
 
 -- ============================================================================
@@ -759,6 +769,18 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideGroups = hideConditionGroups,
 		supportsThresholds = false,
 	}
+	-- Pet bars: the show states are the pet's, and the hard-hide list is the full standard one. Resource
+	-- and health thresholds are the player's, so they don't apply to a bar showing the pet's.
+	local petConditionKeys = CopyKeys(PET_CONDITION_KEYS)
+	local petBarProfile = {
+		showKeys = petConditionKeys,
+		showLabels = LabelsFor(petConditionKeys),
+		showGroups = { { title = L["ShowBarVisibilityGroupPet"], keys = petConditionKeys } },
+		hideKeys = hideConditionKeys,
+		hideLabels = hideConditionLabels,
+		hideGroups = hideConditionGroups,
+		supportsThresholds = false,
+	}
 	local standardProfile = {
 		showKeys = conditionKeys,
 		showLabels = conditionLabels,
@@ -773,11 +795,15 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---@param barEntry table?
 	---@return table profile
 	local function GetProfileForEntry(barEntry)
+		if barEntry ~= nil and barEntry.isPetBar then
+			return petBarProfile
+		end
 		if barEntry ~= nil and barEntry.isTimerBar then
 			return timerBarProfile
 		end
 		if barEntry ~= nil and barEntry.isCastbar then
-			if barEntry.displayBarKey == "targetCastbar" or barEntry.displayBarKey == "focusCastbar" then
+			if barEntry.displayBarKey == "targetCastbar" or barEntry.displayBarKey == "focusCastbar"
+				or barEntry.displayBarKey == "petCastbar" then
 				return targetCastbarProfile
 			end
 			return castbarProfile
@@ -796,7 +822,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local function GetThresholdTypesForBarEntry(barEntry)
 		-- Self-driven bars (cast bars, GCD, mirror timers) fill from a timeline, not a resource, so a
 		-- resource/health threshold condition has nothing to compare against.
-		if barEntry ~= nil and (barEntry.isCastbar or barEntry.isTimerBar) then
+		if barEntry ~= nil and (barEntry.isCastbar or barEntry.isTimerBar or barEntry.isPetBar) then
 			return {}
 		end
 		local types = {}
@@ -1286,6 +1312,28 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
+	-- Pet bars: self-driven render (Functions/PetBars.lua), shown against the pet's own states, and only on
+	-- the specs that have the settings. The Pet Cast Bar rides along but takes the cast bars' states.
+	local petBarKeysForPanel = (classId == nil) and TRB.Classes.BarTypeRegistry.petScopeKeys
+		or TRB.Classes.BarTypeRegistry:GetPetScopeKeys(classId, specId)
+	for _, petBarKey in ipairs(petBarKeysForPanel) do
+		if spec.displayBar and spec.displayBar[petBarKey] ~= nil then
+			local petBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(petBarKey)
+			local petBarLabel = petBarDef and petBarDef.displayName or petBarKey
+			local isCastbar = petBarKey == "petCastbar"
+			table.insert(barEntries, {
+				key = petBarKey,
+				displayBarKey = petBarKey,
+				label = petBarLabel,
+				globalLabel = petBarLabel,
+				isCustomBar = false,
+				isCastbar = isCastbar,
+				isPetBar = not isCastbar,
+				isGlobal = (classId ~= nil and coreDisplayBar[petBarKey] ~= nil),
+			})
+		end
+	end
+
 	-- Create the LibScrollingTable for bar selection
 	local columns = {
 		{
@@ -1623,7 +1671,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end)
 
 		-- Smooth checkbox (hidden wherever the fill is timeline-driven rather than resource-driven)
-		if barEntry.isCastbar or barEntry.isTimerBar or barEntry.hidesSmooth then
+		if barEntry.isCastbar or barEntry.isTimerBar or barEntry.isPetBar or barEntry.hidesSmooth then
 			controls.checkBoxes.selectedSmooth:Hide()
 		else
 			controls.checkBoxes.selectedSmooth:Show()

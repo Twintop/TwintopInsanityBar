@@ -127,6 +127,7 @@ Functions\SpellCast.lua
 Functions\Castbar.lua
 Functions\TargetCastbar.lua
 Functions\OtherBars.lua
+Functions\PetBars.lua
 Functions\String.lua
 Functions\Talent.lua
 Functions\Threshold.lua
@@ -158,6 +159,7 @@ Options\OptionsUiBarText.lua
 Options\OptionsUiCastbar.lua
 Options\OptionsUiTargetCastbar.lua
 Options\OptionsUiOtherBars.lua
+Options\OptionsUiPetBars.lua
 Options\OptionsUiTabs.lua
 Options\OptionsFrame.lua
 Options\Options.lua

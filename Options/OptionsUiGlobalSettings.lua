@@ -86,6 +86,27 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "breath", "width"}, {"bars", "breath", "height"}, {"bars", "breath", "border"}, {"bars", "breath", "xPos"}, {"bars", "breath", "yPos"}, {"bars", "breath", "anchor"}, {"bars", "breath", "fillDirection"} } },
 	breathColors         = { checkboxSuffix = "breathColors",         tabKey = "breath",     categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_breathColors"],
 		paths = { {"colors", "bars", "breath", "bar"}, {"colors", "bars", "breath", "border"}, {"colors", "bars", "breath", "background"}, {"colors", "bars", "breath", "endCap"}, {"bars", "breath", "disableBlizzardBar"} } },
+	-- Pet bar sections live on the top-level "Pet Bars" nav category, two per bar. Whole-table paths, not
+	-- field-level: these tables carry nothing spec-only, so there is no spec data for a copy to clobber.
+	petPowerDimensions   = { checkboxSuffix = "petPowerDimensions",   tabKey = "petPower",   categoryKey = "petBars", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petPowerDimensions"],
+		paths = { {"bars", "petPower"} } },
+	petPowerColors       = { checkboxSuffix = "petPowerColors",       tabKey = "petPower",   categoryKey = "petBars", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petPowerColors"],
+		paths = { {"colors", "bars", "petPower"} } },
+	petHealthDimensions  = { checkboxSuffix = "petHealthDimensions",  tabKey = "petHealth",  categoryKey = "petBars", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petHealthDimensions"],
+		paths = { {"bars", "petHealth"} } },
+	petHealthColors      = { checkboxSuffix = "petHealthColors",      tabKey = "petHealth",  categoryKey = "petBars", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petHealthColors"],
+		paths = { {"colors", "bars", "petHealth"} } },
+	-- The Pet Cast Bar takes the same five sections as the Target and Focus bars.
+	petCastbarDimensions    = { checkboxSuffix = "petCastbarDimensions",    tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarDimensions"],
+		paths = { {"bars", "petCastbar", "width"}, {"bars", "petCastbar", "height"}, {"bars", "petCastbar", "border"}, {"bars", "petCastbar", "xPos"}, {"bars", "petCastbar", "yPos"}, {"bars", "petCastbar", "anchor"}, {"bars", "petCastbar", "fillDirection"}, {"bars", "petCastbar", "icon"} } },
+	petCastbarColors        = { checkboxSuffix = "petCastbarColors",        tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarColors"],
+		paths = { {"bars", "petCastbar", "interruptColor"}, {"bars", "petCastbar", "interruptHostileOnly"}, {"colors", "bars", "petCastbar", "bar"}, {"colors", "bars", "petCastbar", "channel"}, {"colors", "bars", "petCastbar", "uninterruptible"}, {"colors", "bars", "petCastbar", "uninterruptibleBorder"}, {"colors", "bars", "petCastbar", "border"}, {"colors", "bars", "petCastbar", "background"}, {"colors", "bars", "petCastbar", "endCap"} } },
+	petCastbarEmpower       = { checkboxSuffix = "petCastbarEmpower",       tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarEmpower"],
+		paths = { {"bars", "petCastbar", "showEmpowerStages"}, {"bars", "petCastbar", "empowerStageLineWidth"}, {"colors", "bars", "petCastbar", "empower"}, {"colors", "bars", "petCastbar", "empowerStageLine"} } },
+	petCastbarText          = { checkboxSuffix = "petCastbarText",          tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarText"],
+		paths = { {"bars", "petCastbar", "classColor"}, {"bars", "petCastbar", "classColorPvpOnly"}, {"bars", "petCastbar", "classColorFriendly"}, {"bars", "petCastbar", "castTimePrecision"}, {"bars", "petCastbar", "durationPrecision"} } },
+	petCastbarShield        = { checkboxSuffix = "petCastbarShield",        tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarShield"],
+		paths = { {"bars", "petCastbar", "uninterruptibleShield"} } },
 }
 
 ---Sets a checkbox to tristate visual mode
@@ -120,6 +141,50 @@ end
 ---@return table?
 function TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(settingKey)
 	return globalSettingDefinitions[settingKey]
+end
+
+---Builds one section's global-settings row: a "Use global settings" checkbox with its shortcut link and
+---Copy... button on a spec panel, or the bulk all-specs toggle on the Global panel. Same row the custom
+---bar dimensions generator builds inline, for sections that need one of their own.
+---@param parent Frame
+---@param controls table
+---@param classId integer? # nil (or a nil specId) is the Global panel
+---@param specId integer?
+---@param settingKey string
+---@param yCoord number
+---@return number yCoord
+function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, settingKey, yCoord)
+	local settingKeyUpper = settingKey:gsub("^%l", string.upper)
+	if classId == nil or specId == nil then
+		return self:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKeyUpper, settingKey, yCoord)
+	end
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local lowerClassName = string.lower(className)
+	yCoord = yCoord - 30
+	controls.checkBoxes = controls.checkBoxes or {}
+	local cb = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_useGlobal_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes["useGlobal" .. settingKeyUpper] = cb
+	cb:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+	local settingDef = self:GetGlobalSettingDefinition(settingKey)
+	getglobal(cb:GetName() .. "Text"):SetText(settingDef and settingDef.useGlobalLabel or L["CheckboxUseGlobal"])
+	getglobal(cb:GetName() .. "Text"):SetTextColor(GetUseGlobalSettingsColor())
+	self:BuildUseGlobalShortcutLink(cb, settingDef and settingDef.tabKey or "resourceBar", settingDef and settingDef.categoryKey or nil)
+	cb.tooltip = L["CheckboxUseGlobalTooltip_" .. settingKeyUpper]
+	cb:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][settingKey])
+	cb:SetScript("OnClick", function(checkbox)
+		TRB.Data.settings.core.global[lowerClassName][specName][settingKey] = checkbox:GetChecked()
+		TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+		if TRB.Frames.barGroups ~= nil then
+			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		end
+		TRB.Data.lookupDirty = true
+		TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(settingKey)
+	end)
+	TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(cb, classId, specId, settingKey)
+	return yCoord
 end
 
 ---Returns true if the panel being edited belongs to (or affects) the currently active spec.
@@ -329,6 +394,9 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 	elseif navKey == "otherBars" then
 		linkText = L["OpenGlobalOtherBarsSettings"]
 		linkTooltip = L["OpenGlobalOtherBarsSettingsTooltip"]
+	elseif navKey == "petBars" then
+		linkText = L["OpenGlobalPetBarsSettings"]
+		linkTooltip = L["OpenGlobalPetBarsSettingsTooltip"]
 	end
 
 	local link = CreateFrame("Button", nil, checkbox)
