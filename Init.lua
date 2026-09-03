@@ -563,6 +563,199 @@ minimapButtonInitFrame:SetScript("OnEvent", function(self)
 end)
 
 
+-- TEMPORARY DIAGNOSTIC (/trb endcap), remove once end cap tracking is fixed: samples the rendered fill
+-- edge against the cap band edge, alongside the overshoot the slot computes versus the one it applied.
+local END_CAP_PROBE_MAX = 30
+local END_CAP_PROBE_TIMEOUT = 20
+local END_CAP_PROBE_INTERVAL = 0.05
+local endCapProbeFrame = CreateFrame("Frame")
+endCapProbeFrame:Hide()
+local endCapProbeSamples = {}
+local endCapProbeGroupKey = "castbar"
+local endCapProbeStarted = 0
+local endCapProbeNextSample = 0
+local endCapProbeLastSpan = nil
+
+---Classifies a raw widget read: a number, the string "SECRET", or "nil".
+local function EndCapProbeFmt(value)
+	if value == nil then
+		return "nil"
+	end
+	if issecretvalue(value) then
+		return "SECRET"
+	end
+	if type(value) == "number" then
+		return string.format("%.2f", value)
+	end
+	return tostring(value)
+end
+
+---True when a raw read is a plain number we are allowed to do arithmetic on.
+local function EndCapProbePlain(value)
+	return value ~= nil and not issecretvalue(value) and type(value) == "number"
+end
+
+---The region leading-edge screen coordinate for this fill direction, unprocessed.
+local function EndCapProbeRawEdge(region, fillDirection)
+	if region == nil then
+		return nil
+	end
+	if fillDirection == "rightLeft" then
+		return region:GetLeft()
+	elseif fillDirection == "bottomTop" then
+		return region:GetTop()
+	elseif fillDirection == "topBottom" then
+		return region:GetBottom()
+	end
+	return region:GetRight()
+end
+
+---The bar frame fill-start screen coordinate for this fill direction, unprocessed.
+local function EndCapProbeRawOrigin(frame, fillDirection)
+	if frame == nil then
+		return nil
+	end
+	if fillDirection == "rightLeft" then
+		return frame:GetRight()
+	elseif fillDirection == "bottomTop" then
+		return frame:GetBottom()
+	elseif fillDirection == "topBottom" then
+		return frame:GetTop()
+	end
+	return frame:GetLeft()
+end
+
+---Distance from the fill start to an edge. nil when either read is missing or secret.
+local function EndCapProbeSpan(edge, origin, fillDirection)
+	if not EndCapProbePlain(edge) or not EndCapProbePlain(origin) then
+		return nil
+	end
+	if fillDirection == "rightLeft" or fillDirection == "topBottom" then
+		return origin - edge
+	end
+	return edge - origin
+end
+
+---Resolves the probed bar node, frame, end cap slot, cap band, and fill texture.
+local function EndCapProbeParts()
+	local group = TRB.Frames.barGroups and TRB.Frames.barGroups[endCapProbeGroupKey] or nil
+	local node = group and group:GetNode(1) or nil
+	if node == nil then
+		return nil
+	end
+	local slot = node.overlaySlots and node.overlaySlots.endCap or nil
+	local frame = node.frame
+	local tex = (frame ~= nil and frame.GetStatusBarTexture ~= nil) and frame:GetStatusBarTexture() or nil
+	return node, frame, slot, (slot and slot.endCapFrame or nil), tex
+end
+
+local function EndCapProbeFinish(reason)
+	endCapProbeFrame:Hide()
+	local node, frame, slot = EndCapProbeParts()
+	print(string.format("|cFF00FF00TRB EndCap:|r %s -- %d sample(s) [%s] combat=%s",
+		endCapProbeGroupKey, #endCapProbeSamples, reason, tostring(InCombatLockdown())))
+	if node ~= nil and frame ~= nil then
+		print(string.format("  w=%s border=%s dir=%s capW=%s ready=%s cfg=%s",
+			EndCapProbeFmt(node.width), EndCapProbeFmt(node.border), tostring(node.fillDirection),
+			EndCapProbeFmt(slot and slot.endCapWidth or nil), tostring(slot and slot.endCapReady),
+			tostring(node.endCapConfig ~= nil)))
+		print("  sig=" .. tostring(slot and slot._endCapAnchorSig))
+	end
+	if #endCapProbeSamples == 0 then
+		print("  No frames captured at all -- the bar group had no node or no end cap band.")
+		return
+	end
+
+	local sum, worst, deltas = 0, 0, 0
+	for _, s in ipairs(endCapProbeSamples) do
+		if s.delta ~= nil then
+			deltas = deltas + 1
+			sum = sum + s.delta
+			if math.abs(s.delta) > math.abs(worst) then
+				worst = s.delta
+			end
+		end
+	end
+	if deltas > 0 then
+		print(string.format("  tex-cap: mean %.2fpx, worst %.2fpx over %d row(s) (positive = cap trails the fill edge)",
+			sum / deltas, worst, deltas))
+	else
+		print("  tex-cap: not computable on any row.")
+	end
+
+	print("  t(ms) | texEdge | capEdge | tex-cap | oNow | oApp | ticks | GetValue")
+	for _, s in ipairs(endCapProbeSamples) do
+		print(string.format("  %5d | %7s | %7s | %7s | %4s | %4s | %5s | %s",
+			s.t, s.texEdge, s.capEdge, s.delta ~= nil and string.format("%.2f", s.delta) or "-",
+			s.oNow, s.oApp, s.ticks, s.value))
+	end
+end
+
+endCapProbeFrame:SetScript("OnUpdate", function()
+	local now = GetTime()
+	if now - endCapProbeStarted > END_CAP_PROBE_TIMEOUT then
+		EndCapProbeFinish("timeout")
+		return
+	end
+	if now < endCapProbeNextSample then
+		return
+	end
+
+	local node, frame, slot, band, tex = EndCapProbeParts()
+	if node == nil then
+		EndCapProbeFinish("bar group has no node")
+		return
+	end
+	if band == nil or tex == nil then
+		EndCapProbeFinish("no end cap band on this bar -- is End Cap enabled for it?")
+		return
+	end
+
+	local fillDirection = node.fillDirection or "leftRight"
+	local origin = EndCapProbeRawOrigin(frame, fillDirection)
+	local texSpan = EndCapProbeSpan(EndCapProbeRawEdge(tex, fillDirection), origin, fillDirection)
+	local capSpan = EndCapProbeSpan(EndCapProbeRawEdge(band, fillDirection), origin, fillDirection)
+
+	-- Hold off until the fill is actually moving, but only when that is knowable.
+	if texSpan ~= nil then
+		if endCapProbeLastSpan ~= nil and math.abs(texSpan - endCapProbeLastSpan) < 0.01 then
+			return
+		end
+		endCapProbeLastSpan = texSpan
+	end
+	endCapProbeNextSample = now + END_CAP_PROBE_INTERVAL
+
+	-- oNow is what the slot would compute this frame; oApp is what its current anchor was built with.
+	-- They diverge exactly when the watcher is not keeping up.
+	endCapProbeSamples[#endCapProbeSamples + 1] = {
+		t = math.floor((now - endCapProbeStarted) * 1000 + 0.5),
+		texEdge = texSpan ~= nil and string.format("%.2f", texSpan) or "?",
+		capEdge = capSpan ~= nil and string.format("%.2f", capSpan) or "?",
+		delta = (texSpan ~= nil and capSpan ~= nil) and (texSpan - capSpan) or nil,
+		oNow = EndCapProbeFmt(slot:GetEndCapOvershoot()),
+		oApp = EndCapProbeFmt(slot._endCapOvershoot),
+		ticks = tostring(slot._endCapTrackTicks or 0),
+		value = EndCapProbeFmt(frame:GetValue()),
+	}
+
+	if #endCapProbeSamples >= END_CAP_PROBE_MAX then
+		EndCapProbeFinish("buffer full")
+	end
+end)
+
+---Arms the probe on a bar group and starts sampling.
+---@param groupKey string
+local function StartEndCapProbe(groupKey)
+	endCapProbeGroupKey = groupKey
+	endCapProbeSamples = {}
+	endCapProbeStarted = GetTime()
+	endCapProbeNextSample = 0
+	endCapProbeLastSpan = nil
+	endCapProbeFrame:Show()
+	print(string.format("|cFF00FF00TRB EndCap:|r Probing %s. Move that bar now -- reports after %d sample(s) or %ds.",
+		groupKey, END_CAP_PROBE_MAX, END_CAP_PROBE_TIMEOUT))
+end
+
 local function ParseCmdString(msg)
 	if msg then
 		while (strfind(msg,"  ") ~= nil) do
@@ -599,6 +792,21 @@ function SlashCmdList.TWINTOP(msg)
 		end
 	elseif cmd == "auraengine" then
 		TRB.Functions.AuraEngine:PrintDiagnostics()
+	elseif cmd == "endcap" then
+		local barArg = ParseCmdString(subcmd)
+		if barArg == nil or barArg == "" then
+			barArg = "castbar"
+		elseif barArg == "target" then
+			barArg = "targetCastbar"
+		elseif barArg == "focus" then
+			barArg = "focusCastbar"
+		end
+		local barGroups = TRB.Frames.barGroups
+		if barGroups == nil or barGroups[barArg] == nil then
+			print("|cFFFF8800TRB EndCap:|r Unknown bar '" .. barArg .. "'. Usage: /trb endcap [castbar|target|focus|<barGroupKey>]")
+		else
+			StartEndCapProbe(barArg)
+		end
 	elseif cmd == "holywords" then
 		if TRB.Data.character.classId == 5 then
 			TRB.Functions.Class:PrintHolyWordDiagnostics()

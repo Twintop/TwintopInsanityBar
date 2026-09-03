@@ -460,4 +460,7 @@ if locale == "enGB" then
 	L["GlowColor"] = "Glow Colour"
 	L["GlowIndicatorFixedColorSuffix"] = " |cFFFFD100(own colour)|r"
 
+	-- Priest Shadow: Resonant Energy
+	L["PriestShadowIndicatorResonantEnergyTooltip"] = "Changes to this colour when Resonant Energy is active at or above the number of stacks selected below."
+
 end

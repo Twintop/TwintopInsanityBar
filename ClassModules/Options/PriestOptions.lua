@@ -1095,6 +1095,9 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 		endOf = {
 			voidform = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
+		stacks = {
+			resonantEnergy = { min = 4 }
+		},
 		colors={
 			text = {
 				current = {
@@ -1158,6 +1161,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					"mindDevourer",
 					"entropicRift",
 					"borderMindFlayInsanity",
+					"resonantEnergy",
 				},
 				gradientOrder = {
 					"borderOvercap",
@@ -1205,6 +1209,16 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					},
 					borderMindFlayInsanity = {
 						color = "FF00FF00",
+						enabled = true,
+						targets = {
+							insanityBar = { bar = false, border = true, background = false },
+							manaBar = { bar = false, border = false, background = false },
+						},
+					},
+					resonantEnergy = {
+						color = "FFB3E0FF",
+						color2 = "FFB3E0FF",
+						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
 							insanityBar = { bar = false, border = true, background = false },
@@ -2347,6 +2361,7 @@ local function ShadowConstructIndicatorColorsPanel(parent)
 			{ key = "mindDevourer",                    label = L["PriestShadowCheckboxMindDevourer"],                    tooltip = L["PriestShadowIndicatorMindDevourerTooltip"],                    colorLabel = L["PriestShadowIndicatorMindDevourerColor"] },
 			{ key = "entropicRift",                    label = L["PriestShadowCheckboxEntropicRift"],                    tooltip = L["PriestShadowIndicatorEntropicRiftTooltip"],                    colorLabel = L["PriestShadowIndicatorEntropicRiftColor"] },
 			{ key = "borderMindFlayInsanity",          label = L["PriestShadowCheckboxMindFlayInsanity"],                tooltip = L["PriestShadowIndicatorMindFlayInsanityTooltip"],                colorLabel = L["PriestShadowIndicatorMindFlayInsanityColor"] },
+			{ key = "resonantEnergy",                  label = L["PriestShadowCheckboxResonantEnergy"],                  tooltip = L["PriestShadowIndicatorResonantEnergyTooltip"],                  colorLabel = L["PriestShadowIndicatorResonantEnergyColor"] },
 		},
 		gradientDefs = {
 			{ key = "borderOvercap",                   label = L["PriestShadowCheckboxBorderOvercap"],                   tooltip = L["PriestShadowIndicatorOvercapTooltip"],                        colorLabel = L["PriestShadowIndicatorOvercapColor"] },
@@ -2364,6 +2379,14 @@ local function ShadowConstructIndicatorColorsPanel(parent)
 				gcdSliderLabel = L["PriestShadowVoidformGcds"],
 				timeRadioLabel = L["PriestShadowCheckboxVoidformTime"],
 				timeSliderLabel = L["PriestShadowVoidformTime"],
+			},
+		},
+		stacksConfigs = {
+			{
+				stacksKey = "resonantEnergy",
+				sectionHeader = L["PriestShadowHeaderResonantEnergyConfiguration"],
+				sliderLabel = L["PriestShadowResonantEnergyStacks"],
+				sliderMax = 4,
 			},
 		},
 		overcapConfig = { primaryResourceString = L["ResourceInsanity"], primaryResourceMax = SHADOW_MAX_INSANITY },

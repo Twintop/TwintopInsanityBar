@@ -354,6 +354,10 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.sustainedPotency.id] = TRB.Classes.Snapshot:New(spells.sustainedPotency)
 	---@type TRB.Classes.Snapshot
+	specCache.priest_shadow.snapshotData.snapshots[spells.resonantEnergy.id] = TRB.Classes.Snapshot:New(spells.resonantEnergy)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_shadow.snapshotData.snapshots[spells.voidVolley.id] = TRB.Classes.Snapshot:New(spells.voidVolley)
+	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.angelicFeather.id] = TRB.Classes.Snapshot:New(spells.angelicFeather)
 	--[[
 	---@type TRB.Classes.Snapshot
@@ -366,8 +370,6 @@ local function FillSpecializationCache()
 	specCache.priest_shadow.snapshotData.snapshots[spells.thingFromBeyond.id] = TRB.Classes.Snapshot:New(spells.thingFromBeyond)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.horrificVisions.id] = TRB.Classes.Snapshot:New(spells.horrificVisions)
-	---@type TRB.Classes.Snapshot
-	specCache.priest_shadow.snapshotData.snapshots[spells.voidVolley.id] = TRB.Classes.Snapshot:New(spells.voidVolley)
 	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.powerSurge.id] = TRB.Classes.Snapshot:New(spells.powerSurge)]]
 end
@@ -1332,6 +1334,42 @@ local function RefreshLookupData_Shadow()
 		end
 	end
 
+	-- Block H: Resonant Energy ($resonantEnergyStacks, $resonantEnergyTime)
+	if not activeVars or activeVars["$resonantEnergyStacks"] or activeVars["$resonantEnergyTime"] then
+		local _resonantEnergyTime = 0
+		local _resonantEnergyStacks = 0
+		if snapshots[spells.resonantEnergy.id].buff.isActive then
+			_resonantEnergyTime = snapshots[spells.resonantEnergy.id].buff:GetRemainingTime(currentTime)
+			_resonantEnergyStacks = snapshots[spells.resonantEnergy.id].buff.applications or 0
+		end
+		lookupLogic["$resonantEnergyTime"] = _resonantEnergyTime
+		lookupLogic["$resonantEnergyStacks"] = _resonantEnergyStacks
+		if lookupChanged(prevState, "$resonantEnergyTime", _resonantEnergyTime) then
+			lookup["$resonantEnergyTime"] = TRB.Functions.BarText:TimerPrecision(_resonantEnergyTime)
+		end
+		if lookupChanged(prevState, "$resonantEnergyStacks", _resonantEnergyStacks) then
+			lookup["$resonantEnergyStacks"] = string.format("%.0f", _resonantEnergyStacks)
+		end
+	end
+
+	-- Block I: Void Volley ($voidVolleyCharges, $voidVolleyTime)
+	if not activeVars or activeVars["$voidVolleyCharges"] or activeVars["$voidVolleyTime"] then
+		local _voidVolleyTime = 0
+		local _voidVolleyCharges = 0
+		if snapshots[spells.voidVolley.id].buff.isActive then
+			_voidVolleyTime = snapshots[spells.voidVolley.id].buff:GetRemainingTime(currentTime)
+			_voidVolleyCharges = snapshots[spells.voidVolley.id].buff.applications or 0
+		end
+		lookupLogic["$voidVolleyTime"] = _voidVolleyTime
+		lookupLogic["$voidVolleyCharges"] = _voidVolleyCharges
+		if lookupChanged(prevState, "$voidVolleyTime", _voidVolleyTime) then
+			lookup["$voidVolleyTime"] = TRB.Functions.BarText:TimerPrecision(_voidVolleyTime)
+		end
+		if lookupChanged(prevState, "$voidVolleyCharges", _voidVolleyCharges) then
+			lookup["$voidVolleyCharges"] = string.format("%.0f", _voidVolleyCharges)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -1356,6 +1394,29 @@ end
 
 local function UpdateCastingResourceFinal_Shadow()
 	TRB.Data.snapshotData.casting.resourceFinal = CalculateResourceGain(TRB.Data.snapshotData.casting.resourceRaw)
+end
+
+---Drops Void Volley back to its out-of-Voidform cap, which the buff is held to whenever Voidform is down.
+local function ClampVoidVolleyCharges()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local snapshots = TRB.Data.snapshotData.snapshots
+	local buff = snapshots[spells.voidVolley.id].buff
+	local cap = spells.voidVolley.attributes.maxChargesOutOfVoidform
+
+	if buff.isActive and not snapshots[spells.voidform.id].buff.isActive and buff.applications > cap then
+		buff.applications = cap
+	end
+end
+
+---Grants Void Volley charges and refreshes its duration. Charges come from events rather than the aura,
+---which reads nil in combat.
+---@param charges integer
+local function AddVoidVolleyCharges(charges)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local snapshots = TRB.Data.snapshotData.snapshots
+
+	snapshots[spells.voidVolley.id].buff:AddStackOrInitializeCustom(spells.voidVolley.duration, GetTime(), true, charges)
+	ClampVoidVolleyCharges()
 end
 
 ---Handles UNIT_SPELLCAST_ events for the class
@@ -1721,7 +1782,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			UpdateCastingResourceFinal_Shadow()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.halo.id then
-				local function SustainedPotencyStack()
+				-- Everything Halo grants per tick, so the cast and each Power Surge pulse stay in step.
+				local function HaloTick()
 					if talents:IsTalentActive(spells.sustainedPotency) then
 						if snapshots[spells.voidform.id].buff.isActive then
 							snapshots[spells.voidform.id].buff:AddTimeOrInitializeCustom(spells.sustainedPotency.attributes.durationMod)
@@ -1729,10 +1791,14 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 							snapshots[spells.sustainedPotency.id].buff:AddStackOrInitializeCustom(spells.sustainedPotency.duration, currentTime, true)
 						end
 					end
+
+					if talents:IsTalentActive(spells.resonantEnergy) then
+						snapshots[spells.resonantEnergy.id].buff:AddStackOrInitializeCustom(spells.resonantEnergy.duration, currentTime, true)
+					end
 				end
 
-				SustainedPotencyStack()
-				if talents:IsTalentActive(spells.manifestedPower) or talents:IsTalentActive(spells.sustainedPotency) then
+				HaloTick()
+				if talents:IsTalentActive(spells.manifestedPower) or talents:IsTalentActive(spells.sustainedPotency) or talents:IsTalentActive(spells.resonantEnergy) then
 					if talents:IsTalentActive(spells.manifestedPower) then
 						snapshots[spells.mindFlayInsanity.id].buff:InitializeCustom(spells.mindFlayInsanity.duration, currentTime, true)
 					end
@@ -1749,7 +1815,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 								if talents:IsTalentActive(spells.manifestedPower) then
 									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + spells.powerSurge.tickRate, true)
 								end
-								SustainedPotencyStack()
+								HaloTick()
 							end)
 							C_Timer.After((spells.powerSurge.tickRate * 2), function()
 								if Character:GetDeathCount() ~= deathCountAtCast then
@@ -1758,7 +1824,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 								if talents:IsTalentActive(spells.manifestedPower) then
 									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 2), true)
 								end
-								SustainedPotencyStack()
+								HaloTick()
 							end)
 							if talents:IsTalentActive(spells.energyConservation) then
 								C_Timer.After((spells.powerSurge.tickRate * 3), function()
@@ -1768,7 +1834,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 								if talents:IsTalentActive(spells.manifestedPower) then
 									snapshots[spells.mindFlayInsanity.id].buff:AddStackOrInitializeCustom(spells.mindFlayInsanity.duration, currentTime + (spells.powerSurge.tickRate * 3), true)
 								end
-								SustainedPotencyStack()
+								HaloTick()
 								end)
 							end
 						end)
@@ -1781,6 +1847,14 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshots[spells.voidform.id].buff:InitializeCustom(duration, currentTime)
 				snapshots[spells.voidform.id].buff.attributes["swmCasts"] = 0
 				StartPausedIfOutOfCombat(snapshots[spells.voidform.id].buff)
+
+				local voidVolleyCharges = spells.voidVolley.attributes.voidformCharges
+				if talents:IsTalentActive(spells.improvedVoidform) then
+					voidVolleyCharges = voidVolleyCharges + spells.voidVolley.attributes.improvedVoidformCharges
+				end
+				AddVoidVolleyCharges(voidVolleyCharges)
+			elseif spellId == spells.voidVolley.castId then
+				snapshots[spells.voidVolley.id].buff:RemoveStack()
 			elseif spellId == spells.shadowWordMadness.castId then
 				if talents:IsTalentActive(spells.screamsOfTheVoid) then
 					snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime)
@@ -1792,6 +1866,10 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					snapshots[spells.voidform.id].buff.attributes["swmCasts"] = snapshots[spells.voidform.id].buff.attributes["swmCasts"] + 1
 				end
 			elseif spellId == spells.tentacleSlam.castId then
+				if TRB.Functions.Item:HasSetBonus(TRB.Classes.Priest.ShadowSpells.midnightSeason2SetKey, 4) then
+					AddVoidVolleyCharges(spells.voidVolley.attributes.tentacleSlamCharges)
+				end
+
 				if talents:IsTalentActive(spells.screamsOfTheVoid) and talents:IsTalentActive(spells.maddeningTentacles) then
 					local deathCountAtCast = Character:GetDeathCount()
 					C_Timer.After((spells.tentacleSlam.attributes.delay), function()
@@ -2161,9 +2239,21 @@ local function UpdateSnapshot_Shadow()
 
 	snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.sustainedPotency.id].buff:GetRemainingTime(currentTime)
-	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.resonantEnergy.id].buff:GetRemainingTime(currentTime)
+	snapshots[spells.voidVolley.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
+
+	-- Voidform ends on its own timer rather than an event, so the exit grant and cap ride the transition.
+	local wasVoidformActive = snapshots[spells.voidform.id].buff.isActive
+	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
+	if wasVoidformActive and not snapshots[spells.voidform.id].buff.isActive then
+		if talents:IsTalentActive(spells.crushingVoid) then
+			AddVoidVolleyCharges(spells.voidVolley.attributes.crushingVoidCharges)
+		else
+			ClampVoidVolleyCharges()
+		end
+	end
 	--snapshots[spells.mindBlast.id].cooldown:Refresh()
 end
 
@@ -2764,6 +2854,8 @@ local function UpdateResourceBar()
 			conditionMap.voidformEnd = voidformActive and voidformEndMet
 			conditionMap.mindDevourer = spells.shadowWordMadness:IsFree()
 			conditionMap.entropicRift = snapshots[spells.entropicRift.id].buff.isActive
+			conditionMap.resonantEnergy = snapshots[spells.resonantEnergy.id].buff.isActive
+				and snapshots[spells.resonantEnergy.id].buff.applications >= specSettings.stacks.resonantEnergy.min
 			conditionMap.borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive
 			conditionMap.shadowWordMadnessUsable = swmUsable
 			conditionMap.voidform = voidformActive
@@ -3324,6 +3416,8 @@ local function SwitchSpec()
 		lookup["#swm"] = spells.shadowWordMadness.icon
 		lookup["#shadowWordMadness"] = spells.shadowWordMadness.icon
 		lookup["#halo"] = spells.halo.icon
+		lookup["#re"] = spells.resonantEnergy.icon
+		lookup["#resonantEnergy"] = spells.resonantEnergy.icon
 		lookup["#af"] = spells.angelicFeather.icon
 		lookup["#angelicFeather"] = spells.angelicFeather.icon
 		lookup["#si"] = spells.shadowyInsight.icon
@@ -3955,6 +4049,14 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.entropicRift.id].buff.isActive
 	end
+	local resonantEnergyActiveFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.resonantEnergy.id].buff.isActive
+	end
+	local voidVolleyActiveFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.voidVolley.id].buff.isActive
+	end
 	local shadow = {
 		["$resource"] = false, ["$insanity"] = false,
 		["$resourceMax"] = true, ["$insanityMax"] = true,
@@ -3970,6 +4072,10 @@ do
 			local spells = TRB.Data.spellsData.spells
 			return TRB.Data.snapshotData.snapshots[spells.screamsOfTheVoid.id].buff.isActive
 		end,
+		["$resonantEnergyStacks"] = resonantEnergyActiveFn,
+		["$resonantEnergyTime"] = resonantEnergyActiveFn,
+		["$voidVolleyCharges"] = voidVolleyActiveFn,
+		["$voidVolleyTime"] = voidVolleyActiveFn,
 		["$shadowWordMadnessUsable"] = function()
 			local spells = TRB.Data.spellsData.spells
 			return spells.shadowWordMadness:IsUsable() or spells.shadowWordMadness:IsFree()
@@ -4153,7 +4259,7 @@ end
 
 ---Returns true when any spec-specific cooldown or buff timer is counting down.
 ---Disc: PW:Radiance CD, Angelic Feather CD; Holy: Holy Words CDs, Apotheosis, Lightweaver, AF CD;
----Shadow: Voidform, MFI, SotV, Entropic Rift, AF CD.
+---Shadow: Voidform, MFI, SotV, Entropic Rift, Resonant Energy, Void Volley, AF CD.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	local snapshotData = TRB.Data.snapshotData
@@ -4184,6 +4290,8 @@ function TRB.Functions.Class:HasActiveTimers()
 			or (spells.mindFlayInsanity and snapshots[spells.mindFlayInsanity.id] and snapshots[spells.mindFlayInsanity.id].buff and snapshots[spells.mindFlayInsanity.id].buff.isActive)
 			or (spells.screamsOfTheVoid and snapshots[spells.screamsOfTheVoid.id] and snapshots[spells.screamsOfTheVoid.id].buff and snapshots[spells.screamsOfTheVoid.id].buff.isActive)
 			or (spells.entropicRift and snapshots[spells.entropicRift.id] and snapshots[spells.entropicRift.id].buff and snapshots[spells.entropicRift.id].buff.isActive)
+			or (spells.resonantEnergy and snapshots[spells.resonantEnergy.id] and snapshots[spells.resonantEnergy.id].buff and snapshots[spells.resonantEnergy.id].buff.isActive)
+			or (spells.voidVolley and snapshots[spells.voidVolley.id] and snapshots[spells.voidVolley.id].buff and snapshots[spells.voidVolley.id].buff.isActive)
 			or (spells.angelicFeather and snapshots[spells.angelicFeather.id] and snapshots[spells.angelicFeather.id].cooldown and snapshots[spells.angelicFeather.id].cooldown.remaining > 0) then
 			return true
 		end

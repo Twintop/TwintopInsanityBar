@@ -811,6 +811,14 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		end
 	end
 
+	-- Optional minimum stacks configuration sections
+	if config.stacksConfigs then
+		for _, stacksConfig in ipairs(config.stacksConfigs) do
+			yCoord = yCoord - 40
+			yCoord = TRB.Functions.OptionsUi.Colors:GenerateStacksConfigurationOptions(parent, controls, spec, yCoord, stacksConfig)
+		end
+	end
+
 	-- Optional Overcap configuration
 	if config.overcapConfig then
 		yCoord = yCoord - 40

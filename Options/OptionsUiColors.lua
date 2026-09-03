@@ -1169,3 +1169,28 @@ function TRB.Functions.OptionsUi.Colors:GenerateEndOfConfigurationOptions(parent
 
 	return yCoord
 end
+
+---Generates the minimum stacks configuration options UI for a stacking buff's indicator.
+---@param parent Frame # The parent frame
+---@param controls table # The controls table
+---@param spec table # The spec settings table
+---@param yCoord number # Current Y coordinate
+---@param config TRB.Classes.OptionsUi.StacksConfig # Configuration for this stacking buff
+---@return number # Updated Y coordinate
+function TRB.Functions.OptionsUi.Colors:GenerateStacksConfigurationOptions(parent, controls, spec, yCoord, config)
+	local stacksSettings = spec.stacks[config.stacksKey]
+	local sliderMin = config.sliderMin or 1
+
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, config.sectionHeader, oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 40
+
+	controls["stacks" .. config.stacksKey .. "Min"] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, config.sliderLabel, sliderMin, config.sliderMax, stacksSettings.min, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls["stacks" .. config.stacksKey .. "Min"]:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		stacksSettings.min = value
+	end)
+
+	return yCoord
+end

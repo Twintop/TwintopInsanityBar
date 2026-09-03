@@ -1328,6 +1328,9 @@ end
 ---@param state table
 ---@return boolean
 local function EndCapTrackSlot(slot, state)
+	-- TEMPORARY: tick counter for /trb endcap. Remove with the probe.
+---@diagnostic disable-next-line: inject-field
+	slot._endCapTrackTicks = (slot._endCapTrackTicks or 0) + 1
 	if slot.endCapClipFrame == nil or slot.parentNode == nil or slot.parentNode:IsEngineDriven() then
 		return false
 	end

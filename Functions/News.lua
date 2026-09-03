@@ -12,6 +12,15 @@ local content = [====[
 
 ---
 
+# 12.1.0.10-release (2026-09-05)
+## Priest
+### Shadow
+
+- [#828](#828) Add Resonant Energy tracking, with a Resonant Energy Color Indicator, the `$resonantEnergyStacks` and `$resonantEnergyTime` bar text variables, and the `#resonantEnergy` icon. The indicator defaults to the Insanity bar border, and only turns on at the stack count set on the Indicator Colors tab.
+- [#829](#829) Add Void Volley stack tracking, with the `$voidVolleyCharges` and `$voidVolleyTime` bar text variables and `#vv` icon.
+
+---
+
 # 12.1.0.9-release (2026-09-03)
 ## General
 

@@ -3618,3 +3618,13 @@ L["GlowFieldStartAnimTooltip"] = "Plays the one-shot burst before the glow settl
 L["BarElementBorderGlow"] = "Border Glow"
 L["GlowIndicatorNoneDefined"] = "No glows defined yet"
 L["GlowIndicatorFixedColorSuffix"] = " |cFFFFD100(own color)|r"
+
+L["PriestShadowBarTextVariable_resonantEnergyStacks"] = "Number of stacks of Resonant Energy buff"
+L["PriestShadowBarTextVariable_resonantEnergyTime"] = "Time remaining on Resonant Energy buff"
+L["PriestShadowBarTextVariable_voidVolleyCharges"] = "Number of charges of Void Volley available"
+L["PriestShadowBarTextVariable_voidVolleyTime"] = "Time remaining on Void Volley buff"
+L["PriestShadowCheckboxResonantEnergy"] = "Resonant Energy"
+L["PriestShadowIndicatorResonantEnergyTooltip"] = "Changes to this color when Resonant Energy is active at or above the number of stacks selected below."
+L["PriestShadowIndicatorResonantEnergyColor"] = "Resonant Energy is active"
+L["PriestShadowHeaderResonantEnergyConfiguration"] = "Resonant Energy Configuration"
+L["PriestShadowResonantEnergyStacks"] = "Minimum Resonant Energy Stacks"
