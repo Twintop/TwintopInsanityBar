@@ -7,7 +7,7 @@ local locale = GetLocale()
 if locale == "zhCN" then
     local L = TRB.Localization
 	
-	-- General strings
+		-- General strings
     L["TwintopsResourceBar"] = "Twintop资源条"
     L["OK"] = "确定"
     L["Cancel"] = "取消"
