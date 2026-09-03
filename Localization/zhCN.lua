@@ -43,7 +43,7 @@ if locale == "zhCN" then
     L["AudioChannelDescription"] = "音效播放通道"
     L["ExperimentalFeatures"] = "实验性功能"
 	
-		--- Import/Export
+	--- Import/Export
     L["Import"] = "导入"
     L["Export"] = "导出"
     L["ExportMessageAll"] = "全部"
@@ -52,15 +52,15 @@ if locale == "zhCN" then
     L["ExportMessageAudioTracking"] = "音效与追踪"
     L["ExportMessageBarText"] = "资源条文字"
 	
-		-- OptionsUi.lua
-		--- ToggleCheckboxOnOff
+	-- OptionsUi.lua
+	--- ToggleCheckboxOnOff
     L["Enabled"] = "已启用"
     L["Disabled"] = "已禁用"
 		
-		--- Abilities and items
+	--- Abilities and items
     L["Innervate"] = "激活"
 
-		--- GenerateBarDimensionsOptions
+	--- GenerateBarDimensionsOptions
     L["BarPositionSize"] = "资源条位置与尺寸"
     L["BarWidth"] = "资源条宽度"
     L["BarHeight"] = "资源条高度"
@@ -69,7 +69,7 @@ if locale == "zhCN" then
     L["BarBorderWidth"] = "资源条边框宽度"
     L["ThresholdLineWidth"] = "阈值线宽度"
 
-		--- GenerateComboPointDimensionsOptions
+	--- GenerateComboPointDimensionsOptions
     L["SecondaryPositionAndSize"] = "%s位置与尺寸"
     L["SecondaryWidth"] = "%s宽度"
     L["SecondaryHeight"] = "%s高度"
@@ -78,7 +78,7 @@ if locale == "zhCN" then
     L["SecondaryBorderWidth"] = "%s边框宽度"
     L["SecondarySpacing"] = "%s间距"
 
-		--- GenerateBarTexturesOptions
+	--- GenerateBarTexturesOptions
     L["BarTexturesHeader"] = "资源条材质"
     L["MainBarTexture"] = "主资源条材质"
     L["SecondaryBarTexture"] = "%s条材质"
@@ -92,14 +92,14 @@ if locale == "zhCN" then
     L["TextureLock"] = "所有条、边框、背景分别使用统一材质"
     L["TextureLockTooltip"] = "锁定同类材质全局统一，例如：所有资源条材质一致、所有边框材质一致、所有背景材质一致。"
 
-		--- GenerateFlashOptions / GenerateBarVisibilityOptions
+	--- GenerateFlashOptions / GenerateBarVisibilityOptions
     L["BarDisplayHeader"] = "资源条显示"
     L["FlashAlpha"] = "%s闪烁透明度"
     L["FlashPeriod"] = "%s闪烁周期（秒）"
     L["FlashBar"] = "%s可用时资源条闪烁"
     L["FlashBarTooltip"] = "%s可施放时资源条闪烁提示。"
 
-		--- GenerateThresholdLineIconsOptions
+	--- GenerateThresholdLineIconsOptions
     L["ThresholdIconRelativePosition"] = "阈值线图标相对位置"
     L["ThresholdIconShow"] = "显示阈值线对应技能图标？"
     L["ThresholdIconShowTooltip"] = "勾选后显示各阈值线对应的技能图标，图标尺寸与位置设置在下方。"
@@ -111,28 +111,28 @@ if locale == "zhCN" then
     L["ThresholdIconVertical"] = "阈值图标垂直位置（相对）"
     L["ThresholdIconBorderWidth"] = "阈值图标边框宽度"
 
-		--- GeneratePotionOnCooldownConfigurationOptions
+	--- GeneratePotionOnCooldownConfigurationOptions
 	
-		--- Thresholds
+	--- Thresholds
 
 
-		--- GenerateThresholdLinesForHealers
+	--- GenerateThresholdLinesForHealers
 
-		--- GenerateBarColorOptions
+	--- GenerateBarColorOptions
     L["BarColorsChangingHeader"] = "资源条颜色+动态变色"
 
 		--- GenerateBarBorderColorOptions
     L["BarBorderColorsChangingHeader"] = "资源条边框颜色+动态变色"
     L["BorderColorBase"] = "常规/基础边框颜色"
 	
-		--- GenerateOvercapOptions
+	--- GenerateOvercapOptions
 
-		--- GenerateDefaultFontOptions
+	--- GenerateDefaultFontOptions
     L["DefaultBarTextFontSettingsHeader"] = "共享资源条文字字体设置"
     L["DefaultFontColor"] = "共享字体颜色"
     L["DefaultFontSize"] = "共享字体大小"
 
-		--- GenerateBarTextEditor
+	--- GenerateBarTextEditor
     L["AddNewBarTextArea"] = "添加新文字区域"
     L["Name"] = "名称"
     L["BarTextEntryEnabledTooltip"] = "该文字区域是否启用并显示？"
@@ -197,7 +197,7 @@ if locale == "zhCN" then
     L["NewBarTextEntry"] = "新建文字条目"
     L["BarTextDeleteConfirmation"] = "确定要删除「%s」吗？"
 
-		--- Options dropdowns
+	--- Options dropdowns
     L["StrataBackground"] = "背景层"
     L["StrataLow"] = "低"
     L["StrataMedium"] = "中"
@@ -212,7 +212,7 @@ if locale == "zhCN" then
     L["AudioChannelAmbience"] = "环境音"
     L["AudioChannelDialog"] = "对话音"
 
-		--- Positional dropdowns
+	--- Positional dropdowns
     L["PositionAboveLeft"] = "上方-左侧"
     L["PositionAboveMiddle"] = "上方-居中"
     L["PositionAboveRight"] = "上方-右侧"
@@ -230,7 +230,7 @@ if locale == "zhCN" then
     L["PositionBottom"] = "底部"
     L["PositionBottomRight"] = "右下角"
 
-		-- Warnings
+	-- Warnings
     L["LSMInvalidFont"] = "TRB：|cFFFF5555无效字体（%s资源条文字「%s」）：|r%s|cFFFF5555，已重置为默认字体。|r"
     L["LSMInvalidBarBackgroundTexture"] = "TRB：|cFFFF5555无效材质（%s资源条背景）：|r%s|cFFFF5555，已重置为默认材质。|r"
     L["LSMInvalidBarBorderTexture"] = "TRB：|cFFFF5555无效材质（%s资源条边框）：|r%s|cFFFF5555，已重置为默认材质。|r"
@@ -243,12 +243,12 @@ if locale == "zhCN" then
     L["LSMInvalidSoundNameOnlyName"] = "TRB：|cFFFF5555无效音效（%s「%s」），已重置为默认音效。|r"
     L["LSMInvalidSound"] = "TRB：|cFFFF5555无效音效（%s），已重置为默认音效。|r"
 
-		-- LibSharedMedia entries
+	-- LibSharedMedia entries
     L["LSMSoundWilhelmScream"] = "TRB：威廉尖叫"
     L["LSMSoundBoxingArenaGong"] = "TRB：擂台锣声"
     L["LSMSoundAirHorn"] = "TRB：气喇叭"
 
-		-- Bar text
+	-- Bar text
     L["BarTextNewline"] = "插入换行，替代回车键。"
     L["BarTextInvalidIfElseLogic"] = "{无效的IF/ELSE逻辑}"
 
@@ -277,7 +277,7 @@ if locale == "zhCN" then
     L["TabBarText"] = "资源条文字"
     L["TabResetDefaults"] = "重置默认设置"
 
-		-- DemonHunterOptions
+	-- DemonHunterOptions
     L["DemonHunterHavocThresholdCheckboxChaosNova"] = "混乱新星（未点释放能量天赋）"
     L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"] = "资源条显示施放混乱新星所需狂乱值阈值线，仅未点释放能量时显示。"
     L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "投掷利刃（狂怒投掷天赋）"
@@ -334,7 +334,7 @@ if locale == "zhCN" then
     L["DPSManaTextColorsHeader"] = "法力文字颜色"
     L["DPSColorPickerCurrentMana"] = "当前法力"
 
-		-- DruidOptions
+	-- DruidOptions
     L["DruidBalanceAudioStarsurgeReady"] = "星涌术就绪"
     L["DruidBalanceAudioStarfallReady"] = "星辰坠落就绪"
     L["DruidBalanceStarsurge"] = "星涌术"
@@ -396,7 +396,7 @@ if locale == "zhCN" then
     L["DruidRestorationCheckboxIncarnationTime"] = "按剩余时间判定化身末期"
     L["DruidRestorationIncarnationTime"] = "化身剩余时间（秒）"
 
-		-- EvokerOptions
+	-- EvokerOptions
     L["EvokerEssenceColorsHeader"] = "精华颜色"
     L["EvokerColorPickerEssenceBorderHeader"] = "精华边框色"
     L["EvokerEssenceColorPickerPenultimate"] = "倒数第二个精华"
@@ -405,7 +405,7 @@ if locale == "zhCN" then
     L["EvokerEssenceCheckboxUseHighestForAllTooltip"] = "勾选后所有精华使用最高阶颜色，例如上限5点当前4点时，全部显示倒数第二点颜色。"
     L["EvokerEssenceColorPickerBackground"] = "空精华背景色"
 
-		-- HunterOptions
+	-- HunterOptions
     L["HunterThresholdCheckboxRevivePet"] = "复活宠物"
     L["HunterThresholdCheckboxRevivePetTooltip"] = "资源条显示施放复活宠物所需集中值阈值线。"
     L["HunterThresholdCheckboxScareBeast"] = "恐吓野兽"
@@ -449,7 +449,7 @@ if locale == "zhCN" then
     L["HunterMarksmanshipCheckboxAimedShotTime"] = "满充能前秒数"
     L["HunterMarksmanshipAimedShotTime"] = "时长（秒）"
 
-		-- MonkOptions
+	-- MonkOptions
     L["ChiColorsHeader"] = "真气颜色"
     L["ChiColorPickerBorder"] = "真气边框色"
     L["ChiColorPickerPenultimate"] = "倒数第二个真气"
@@ -473,7 +473,7 @@ if locale == "zhCN" then
     L["MonkWindwalkerThresholdCheckboxVivify"] = "活血术"
     L["MonkWindwalkerThresholdCheckboxVivifyTooltip"] = "资源条显示施放活血术所需能量阈值线。"
 
-		-- PriestOptions
+	-- PriestOptions
     L["PriestShadowAudioMindDevourer"] = "心灵吞噬者触发"
     L["PriestShadowAudioShadowWordMadness"] = "暗言术：癫就绪"
     L["PriestDisciplinePowerWords"] = "真言术系列"
@@ -514,7 +514,7 @@ if locale == "zhCN" then
     L["PriestShadowAudioCheckboxShadowWordMadnessTooltip"] = "暗影真言：狂乱可施放时，播放提示音效"
     L["PriestShadowAudioCheckboxMindDevourer"] = "心灵吞噬者触发时播放音效"
 
-		-- ShamanOptions
+	-- ShamanOptions
     L["ResourceMaelstromWeapon"] = "漩涡武器"
     L["ShamanManaCheckboxAscendanceEnd"] = "启用升腾结束前颜色变化"
     L["ShamanHeaderEndOfAscendanceConfiguration"] = "升腾结束设置"
@@ -544,7 +544,7 @@ if locale == "zhCN" then
     L["MaelstromWeaponCheckboxUseHighestForAllTooltip"] = "勾选后，全部漩涡武器层数使用最高层颜色。例如：漩涡武器上限10层，当前9层时，所有层数均显示倒数第二层颜色，而非仅最后第二层"
     L["MaelstromWeaponColorPickerBackground"] = "未填充漩涡武器背景"
 
-		-- WarriorOptions
+	-- WarriorOptions
     L["WarriorAudioSuddenDeathProc"] = "猝死触发"
     L["WarriorTextColorsHeader"] = "怒气文字颜色"
     L["WarriorColorPickerTextCurrent"] = "当前怒气"
@@ -589,7 +589,7 @@ if locale == "zhCN" then
     L["WarriorFuryThresholdThunderClap"] = "雷霆一击"
     L["WarriorFuryThresholdThunderClapTooltip"] = "在资源条上显示竖线，标记施放雷霆一击所需的怒气阈值"
 
-		-- RogueOptions
+	-- RogueOptions
     L["RogueAssassinationAudioBlindsideProc"] = "伏击大师触发"
     L["RogueOutlawAudioOpportunityProc"] = "机遇触发"
     L["RogueColorPickerEchoingReprimand"] = "超充状态下的连击点"
@@ -935,7 +935,7 @@ if locale == "zhCN" then
     L["WarlockColorPickerCurrentMana"] = "当前法力值"
     L["WarlockColorPickerCastingMana"] = "读条技能消耗的法力值"
 
-		-- 11.0
+	-- 11.0
     L["HunterBeastMasteryThresholdCheckboxBlackArrow"] = "黑箭"
     L["HunterBeastMasteryThresholdCheckboxBlackArrowTooltip"] = "在资源条上显示竖线，标记施放黑箭所需的集中值阈值"
     L["HunterMarksmanshipThresholdCheckboxBlackArrow"] = "黑箭"
@@ -1048,7 +1048,7 @@ if locale == "zhCN" then
     L["WarriorProtectionBarTextVariable_shieldBlockMaxCharges"] = "盾牌格挡最大层数"
     L["WarriorColorPickerThresholdOver"] = "拥有足够怒气使用已启用阈值的技能"
 
-		-- Midnight additions
+	-- Midnight additions
 	
     L["DemonHunterDevourerCheckboxVoidMetamorphosis"] = "虚空变身期间变色"
     L["DemonHunterDevourerHeaderSoulFragmentColors"] = "灵魂残片与坍缩之星颜色"
@@ -1092,17 +1092,17 @@ if locale == "zhCN" then
     L["WarlockDemonologyBarTextVariable_soulShards"] = "当前灵魂碎片"
     L["WarlockDemonologyBarTextVariable_soulShardsMax"] = "灵魂碎片上限"
 
-		-- Protection Paladin	
+	-- Protection Paladin	
     L["PaladinProtectionManaTextColorsHeader"] = "法力文本颜色"
     L["PaladinProtectionColorPickerCurrentMana"] = "当前法力值"
     L["PaladinProtectionColorPickerCastingMana"] = "直接施放技能消耗的法力值"
 
-		-- Retribution Paladin
+	-- Retribution Paladin
     L["PaladinRetributionManaTextColorsHeader"] = "法力文本颜色"
     L["PaladinRetributionColorPickerCurrentMana"] = "当前法力值"
     L["PaladinRetributionColorPickerCastingMana"] = "直接施放技能消耗的法力值"
 
-		-- Death Knight
+	-- Death Knight
     L["Rune1"] = "符文1"
     L["Rune2"] = "符文2"
     L["Rune3"] = "符文3"
@@ -1174,7 +1174,7 @@ if locale == "zhCN" then
     L["MageArcaneChargesColorPickerFinal"] = "最终层奥术充能"
     L["MageArcaneChargesColorPickerPenultimate"] = "倒数第二层奥术充能"
 
-		-- Bar Visibility Dropdown Options
+	-- Bar Visibility Dropdown Options
     L["ShowBarVisibilitySecondary"] = "%s显示"
     L["ShowBarVisibilityAlways"] = "始终显示"
     L["ShowBarVisibilityCombat"] = "战斗中显示"
@@ -1208,13 +1208,13 @@ if locale == "zhCN" then
     L["DruidGuardianCheckboxBerserkTime"] = "距狂暴结束剩余时间"
     L["DruidGuardianEndOfBerserkConfigurationHeader"] = "狂暴结束设置"
 
-		-- Health Bar
+	-- Health Bar
     L["HealthBar"] = "生命值进度条"
     L["BarTextVariable_health"] = "当前生命值"
     L["BarTextVariable_healthMax"] = "生命值上限"
     L["BarTextVariable_healthPercent"] = "当前生命值百分比"
 
-		-- Texture Section Headers
+	-- Texture Section Headers
     L["BarTexturesSectionHeader"] = "进度条材质"
     L["BorderTexturesSectionHeader"] = "边框材质"
     L["BackgroundTexturesSectionHeader"] = "背景材质"
@@ -1222,7 +1222,7 @@ if locale == "zhCN" then
     L["HealthBorderTexture"] = "生命值边框材质"
     L["HealthBackgroundTexture"] = "生命值背景（空进度条）材质"
 
-		-- Health Bar Color Curve
+	-- Health Bar Color Curve
     L["HealthBarColorHeader"] = "生命值进度条颜色"
     L["HealthBarColorType"] = "颜色过渡类型"
     L["HealthBarColorTypeStep"] = "阶跃式"
@@ -1235,7 +1235,7 @@ if locale == "zhCN" then
     L["HealthBarThresholdHigh"] = "高血量阈值"
     L["HealthBarThresholdHighTooltip"] = "进度条颜色从中等血量过渡到高血量的生命值百分比。"
 
-		-- Stagger Bar Color Curve
+	-- Stagger Bar Color Curve
     L["StaggerBarColorHeader"] = "醉拳进度条颜色"
     L["StaggerBarColorType"] = "颜色过渡类型"
     L["StaggerBarColorTypeStep"] = "阶跃式"
@@ -1250,18 +1250,18 @@ if locale == "zhCN" then
     L["StaggerBarThresholdHeavy"] = "重度醉拳阈值"
     L["StaggerBarThresholdHeavyTooltip"] = "进度条颜色从中度醉拳过渡到重度醉拳的醉拳百分比。"
 
-		-- Stagger Levels Threshold Lines
+	-- Stagger Levels Threshold Lines
     L["StaggerLevelsHeader"] = "醉拳等级"
     L["StaggerLevelMediumCheckbox"] = "中度醉拳"
     L["StaggerLevelMediumTooltip"] = "在醉拳进度条显示中度醉拳等级的阈值线。"
     L["StaggerLevelHeavyCheckbox"] = "重度醉拳"
     L["StaggerLevelHeavyTooltip"] = "在醉拳进度条显示重度醉拳等级的阈值线。"
 
-		-- Health Bar Position and Size
+	-- Health Bar Position and Size
     L["LSMStatusBarClean"] = "TRB: 简洁"
     L["LSMStatusBarSmoother"] = "TRB: 顺滑"
 
-		-- Reset Defaults Panel - Classic/Compact options
+	-- Reset Defaults Panel - Classic/Compact options
     L["ResetToClassic"] = "重置为经典模式"
     L["ResetBarClassicDialog"] = "确定将%s资源进度条重置为|cFFFFAAAA经典|r默认设置？此操作会同时重置进度条文本设置，并|cFFFF0000重载界面|r！"
     L["ResetBarTextCompact"] = "重置进度条文本（紧凑）"
@@ -1288,7 +1288,7 @@ if locale == "zhCN" then
     L["ManaBarBackgroundTexture"] = "法力值背景材质"
     L["ManaBarTextColor"] = "法力值进度条文本颜色"
 
-		-- Custom Bar System
+	-- Custom Bar System
     L["CustomBarColorHeader"] = "%s颜色"
     L["CustomBarColorBar"] = "%s进度条"
     L["CustomBarColorBorder"] = "%s边框"
@@ -1299,7 +1299,7 @@ if locale == "zhCN" then
     L["CustomBarTextureBackground"] = "%s背景材质"
     L["ShowBarVisibilityCustom"] = "%s显示"
 
-		-- Evoker Augmentation Ebon Might
+	-- Evoker Augmentation Ebon Might
     L["EvokerAugmentationCheckboxEbonMight"] = "暗影之力激活时变色"
     L["MageColorPickerArcaneChargesBorderHeader"] = "奥术充能边框"
     L["CheckboxUseGlobalTooltip_HealthBar"] = "勾选后，将套用生命值进度条显示的全局设置。"
@@ -1326,7 +1326,7 @@ if locale == "zhCN" then
     L["ShamanEnhancementCheckboxMaelstromWeaponCompressedViewTooltip"] = "启用后显示5个节点，1-5层使用基础颜色填充，6-10层从左至右覆盖为溢出颜色；禁用后单独显示全部10个节点。"
     L["ShamanEnhancementMaelstromWeaponColorPickerOverflowBase"] = "漩涡武器溢出颜色（6-10层）"
 
-		-- Overcap text color
+	-- Overcap text color
     L["BorderColorOvercap"] = "%s溢出时的边框颜色"
     L["BorderColorOvercapToggle"] = "资源溢出时更改边框颜色"
     L["BorderColorOvercapToggleTooltip"] = "当前资源已超出上限，或当前施放技能会导致%s溢出（按设置）时，进度条边框颜色发生变化。"
@@ -1403,7 +1403,7 @@ if locale == "zhCN" then
     L["PaladinAudioCheckboxHolyPowerThreshold2Tooltip"] = "当前神圣能量达到设置数值及以上时，播放音效。"
     L["PaladinHolyPowerThresholdSliderTitle"] = "达到及高于X点神圣能量"
 
-		-- End Of Invoke Niuzao for Monk Brewmaster
+	-- End Of Invoke Niuzao for Monk Brewmaster
     L["MonkBrewmasterBarTextVariable_niuzaoTime"] = "玄牛下凡剩余持续时间"
     L["MonkBrewmasterBarTextIcon_niuzao"] = "玄牛下凡"
     L["MonkBrewmasterCheckboxInvokeNiuzao"] = "玄牛下凡激活时变色"
@@ -1414,7 +1414,7 @@ if locale == "zhCN" then
     L["MonkBrewmasterCheckboxInvokeNiuzaoTime"] = "距玄牛下凡结束剩余时间"
     L["MonkBrewmasterInvokeNiuzaoTime"] = "玄牛下凡剩余时间（秒）"
 
-		-- End Of Dragonrage for Evoker Devastation
+	-- End Of Dragonrage for Evoker Devastation
     L["EvokerDevastationBarTextVariable_dragonrageTime"] = "守护巨龙之怒剩余持续时间"
     L["EvokerDevastationColorPickerDragonrage"] = "守护巨龙之怒"
     L["EvokerDevastationColorPickerDragonrageEnd"] = "守护巨龙之怒 - 即将结束"
@@ -1427,22 +1427,22 @@ if locale == "zhCN" then
     L["EvokerAudioCheckboxEssenceBurstTooltip"] = "精华迸发触发时播放音效，仅在未拥有该效果时触发。"
     L["EvokerEssenceBurst"] = "精华迸发"
 
-		-- Edit Mode Integration
+	-- Edit Mode Integration
     L["TRBAddonName"] = "Twintop资源条"
     L["EditModeEnableForLayout"] = "对此布局启用"
     L["EditModeEnableForLayoutTooltip"] = "启用后，编辑模式将控制此布局下进度条的位置，而非使用各专精或全局设置。"
     L["EditModePositionOverrideNotice"] = "若当前界面布局已启用编辑模式整合，下方的水平与垂直位置设置将被忽略。"
     L["DefaultFontSettingsNotice"] = "这些设置仅适用于在「进度条文本」标签页中配置为使用共享字体设置的文本区域。"
 
-		-- Edit Mode - Cooldown Manager Integration
+	-- Edit Mode - Cooldown Manager Integration
     L["EditModeAnchorFreePosition"] = "自由定位"
 
-		-- Edit Mode Reset
+	-- Edit Mode Reset
     L["EditModeSettings"] = "编辑模式"
     L["ResetEditModeDataButton"] = "重置编辑模式数据"
     L["ResetEditModeDataDialog"] = "确定重置Twintop资源条存储的所有编辑模式布局数据？此操作会清除所有关联编辑模式布局的进度条位置，并|cFFFF0000重载界面|r！"
 		
-		-- Stagger Bar Enhancements (Brewmaster Monk)
+	-- Stagger Bar Enhancements (Brewmaster Monk)
     L["StaggerBarMaxScaleSlider"] = "醉拳进度条占生命值上限百分比"
     L["StaggerBarMaxScaleTooltip"] = "醉拳进度条上可显示的最大生命值百分比，超出该数值的部分会以满进度条显示。"
     L["StaggerBarColorExtreme"] = "极重醉拳颜色"
@@ -1451,16 +1451,16 @@ if locale == "zhCN" then
     L["StaggerLevelExtremeCheckbox"] = "极重醉拳"
     L["StaggerLevelExtremeTooltip"] = "在醉拳进度条上显示极重醉拳等级的阈值线。"
 
-		-- Infusion of Light (Holy Paladin)
+	-- Infusion of Light (Holy Paladin)
     L["PaladinHolyInfusionOfLight"] = "圣光灌注"
     L["PaladinHolyAudioCheckboxInfusionOfLight"] = "圣光灌注触发时播放音效"
     L["PaladinHolyAudioCheckboxInfusionOfLightTooltip"] = "圣光灌注触发时播放音效，每次触发仅播放一次。"
 
-		-- Bulk Global Toggle Checkboxes
+	-- Bulk Global Toggle Checkboxes
     L["CheckboxEnableForAllSpecs"] = "为所有专精启用此功能"
     L["CheckboxEnableForAllSpecsTooltip"] = "勾选该选项后，此项全局设置会对所有职业下的每一种专精生效启用；取消勾选后，则对全部职业与专精禁用该设置。"
 
-		-- Bar Color Enabled Checkboxes
+	-- Bar Color Enabled Checkboxes
     L["PriestHolyCheckboxApotheosis"] = "启迪"
     L["PriestShadowCheckboxVoidform"] = "虚空形态"
     L["ShamanElementalCheckboxAscendance"] = "升腾"
@@ -1479,7 +1479,7 @@ if locale == "zhCN" then
     L["HunterMarksmanshipCheckboxTrueshot"] = "强击光环"
     L["CheckboxBorderStealth"] = "潜行"
 
-		-- Secondary Resource Audio Thresholds
+	-- Secondary Resource Audio Thresholds
     L["RogueAudioComboPointThreshold1"] = "连击点阈值1"
     L["RogueAudioCheckboxComboPointThreshold1"] = "连击点≥X时触发 (阈值1)"
     L["RogueAudioCheckboxComboPointThreshold1Tooltip"] = "当你的当前连击点达到或超过右侧设定值时，播放音频提示。"
@@ -1529,24 +1529,24 @@ if locale == "zhCN" then
     L["MonkAudioCheckboxChiThreshold3"] = "真气≥X时触发 (阈值3)"
     L["MonkAudioCheckboxChiThreshold3Tooltip"] = "当你的当前真气值达到或超过右侧设定值时，播放音频提示。"
 
-		-- Standalone Options Frame
+	-- Standalone Options Frame
     L["OpenTRBOptions"] = "打开Twintop资源条设置"
     L["OpenTRBOptionsDescription"] = "点击下方按钮或输入 /trb 打开设置界面。"
 
-		-- Drag & Drop removal
+	-- Drag & Drop removal
     L["DragAndDropEditModeMessage"] = "如需拖动调整资源条位置，请使用编辑模式。"
 
-		-- Options Frame Footer
+	-- Options Frame Footer
     L["AboutTwintopsResourceBar"] = "关于Twintop资源条"
     L["FooterDiscord"] = "Discord社区"
     L["FooterGitHubIssues"] = "GitHub反馈"
     L["FooterNews"] = "最新动态"
 
-		-- Minimap Button
+	-- Minimap Button
     L["MinimapTooltipLeftClick"] = "左键点击打开设置"
     L["FooterKofi"] = "Ko-fi上捐赠"
 
-		-- Tab Labels for Split Bar Display
+	-- Tab Labels for Split Bar Display
     L["TabEnergy"] = "能量"
     L["TabStagger"] = "醉拳值"
     L["TabHealth"] = "生命值"
@@ -1587,7 +1587,7 @@ if locale == "zhCN" then
     L["CheckboxSmoothBar"] = "平滑进度条动画"
     L["CheckboxSmoothBarTooltip"] = "勾选后，此进度条的数值更新将以短暂平滑的动画效果呈现，而非瞬间跳变。"
 
-		-- Anchor System
+	-- Anchor System
     L["AnchorPoint"] = "锚点位置"
     L["AttachPoint"] = "附着点位置"
     L["MatchAnchorWidth"] = "匹配锚定资源条宽度"
@@ -1598,9 +1598,9 @@ if locale == "zhCN" then
     L["AnchorBarHealth"] = "生命值条"
     L["AnchorBarScreen"] = "屏幕（自由定位）"
 
-		-- Anchor Point Display Names (9-point system)
+	-- Anchor Point Display Names (9-point system)
 
-		-- Anchor UI Labels
+	-- Anchor UI Labels
     L["AnchorToBarLabel"] = "将 %s 锚定至："
     L["GlobalOptionsCheckboxNumberAbbreviation"] = "使用数字缩写格式"
     L["GlobalOptionsCheckboxNumberAbbreviationTooltip"] = "勾选后，大数将以缩写形式显示（万、亿）。取消勾选则显示完整数字，并使用符合地区习惯的分隔符（例如 100,000 或 1.500.000）。"
@@ -1615,7 +1615,7 @@ if locale == "zhCN" then
     L["BarTextVariablesAddButton"] = "+"
     L["BarTextVariablesPanelTitle"] = "条形图文本变量"
 
-		-- Wrapper Display Name (Edit Mode overlay)
+	-- Wrapper Display Name (Edit Mode overlay)
     L["WrapperDisplayNameFormat"] = "%s - %s"
 
     L["PriestShadowThresholdCheckboxOnlyCurrentNextTooltip"] = "仅当你已拥有足够狂乱值可施放暗言术：癫，或该阈值是你即将达到的下一个阈值时，才会显示暗言术：癫的阈值线。仅当上一个阈值线达成后，才会触发下一个阈值线的显示（即使上方未勾选该选项）！"
@@ -1623,7 +1623,7 @@ if locale == "zhCN" then
     L["PriestShadowCheckboxThresholdOverTooltip"] = "当你能够施放暗言术：癫时，此项会改变狂乱值文本的颜色"
     L["PriestShadowAudioCheckboxMindDevourerTooltip"] = "当心灵吞噬者触发时播放音效提示。此音效将替代常规的暗言术：癫音效。"
 
-		-- Global Health Bar Colors
+	-- Global Health Bar Colors
     L["CheckboxUseGlobalTooltip_HealthBarColors"] = "勾选后，生命值条颜色将使用全局设置，而非专精专属设置。"
 
     L["TabHolyWords"] = "圣言术"
@@ -1637,7 +1637,7 @@ if locale == "zhCN" then
     L["PriestDisciplineBarTextNamePWRadiance1"] = "真言术：耀 1"
     L["PriestDisciplineBarTextNamePWRadiance2"] = "真言术：耀 2"
 
-		-- Warrior Fury Whirlwind Charges
+	-- Warrior Fury Whirlwind Charges
     L["TabWhirlwind"] = "旋风斩"
     L["ResourceWarriorWhirlwind"] = "旋风斩层数"
     L["WhirlwindCharge1"] = "旋风斩（第1层充能）"
@@ -1654,24 +1654,24 @@ if locale == "zhCN" then
     L["WhirlwindColorPickerPenultimate"] = "旋风斩充能（3层）"
     L["WhirlwindColorPickerFinal"] = "旋风斩充能（4层）"
 
-		-- Absorb Shield
+	-- Absorb Shield
     L["BarTextVariable_absorb"] = "你当前的吸收护盾总数值。"
     L["AbsorbBarTexture"] = "吸收护盾叠加纹理"
     L["HealthBarAbsorbColor"] = "吸收护盾叠加层颜色"
     L["HealthBarShowAbsorb"] = "在生命值条显示吸收护盾叠加层"
     L["HealthBarShowAbsorbTooltip"] = "勾选后，生命值条上会显示半透明的叠加层，直观展示你当前的吸收护盾总数值，上限为最大生命值的100%。"
 
-		-- Absorb Display Mode
+	-- Absorb Display Mode
     L["HealthBarAbsorbMode"] = "吸收护盾显示模式"
     L["HealthBarAbsorbModeTooltip"] = "控制吸收护盾在生命值条上的显示方式。"
     L["OverlayModeAppended"] = "追加显示"
     L["OverlayModeOverlay"] = "叠加显示（从左侧）"
     L["OverlayModeInset"] = "叠加显示（从右侧/内嵌）"
 
-		-- Overlay Textures
+	-- Overlay Textures
     L["OverlayTexturesSectionHeader"] = "叠加层纹理"
 
-		-- Casting Overlay
+	-- Casting Overlay
     L["CastingBarTexture"] = "施法覆盖层材质"
     L["BarColorCastingOverlay"] = "施法覆盖层"
     L["BarColorCastingOverlayCheckbox"] = "在资源条上显示施法覆盖层"
@@ -1680,16 +1680,16 @@ if locale == "zhCN" then
     L["DemonHunterDevourerBarTextVariable_furyMax"] = "最大恶魔之怒值"
     L["DemonHunterDevourerBarTextVariable_casting"] = "手动施法技能获得的恶魔之怒值（生成型）"
 
-		-- Spending Overlay
+	-- Spending Overlay
     L["BarColorSpendingOverlay"] = "消耗覆盖层"
     L["BarColorSpendingOverlayCheckbox"] = "在资源条上显示消耗覆盖层"
     L["BarColorSpendingOverlayCheckboxTooltip"] = "勾选后，消耗资源的技能将使用此覆盖层颜色进行标识。"
 
-		-- Death Knight missed abilities
+	-- Death Knight missed abilities
     L["DeathKnightUnholyThresholdCheckboxEpidemic"] = "传染"
     L["DeathKnightUnholyThresholdCheckboxEpidemicTooltip"] = "此选项会在资源条上显示一条竖线，标识释放“传染”所需的符文能量值。"
 
-		-- Frost Mage Icicles
+	-- Frost Mage Icicles
     L["ResourceIcicles"] = "冰刺"
     L["TabIcicles"] = "冰刺"
     L["Icicle1"] = "冰刺 1"
@@ -1711,7 +1711,7 @@ if locale == "zhCN" then
     L["MageAudioCheckboxIciclesThreshold1Tooltip"] = "当你的冰刺达到或超过指定阈值时播放音效。"
     L["MageIciclesThresholdSliderTitle"] = "冰刺阈值"
 
-		-- Hunter Survival Tip of the Spear
+	-- Hunter Survival Tip of the Spear
     L["ResourceTipOfTheSpear"] = "利刃之矛"
     L["TabTipOfTheSpear"] = "利刃之矛"
     L["TipOfTheSpear1"] = "利刃之矛 1"
@@ -1732,7 +1732,7 @@ if locale == "zhCN" then
     L["HunterSurvivalAudioCheckboxTotsThreshold1Tooltip"] = "当你的利刃之矛层数达到或超过指定阈值时播放音效。"
     L["HunterSurvivalTotsThresholdSliderTitle"] = "利刃之矛阈值"
 
-		-- Edit Mode Enhanced Anchoring
+	-- Edit Mode Enhanced Anchoring
     L["EditModeAnchorToFrame"] = "锚定到"
     L["EditModeAnchorToFrameTooltip"] = "将本条锚定到另一个框架。目标框架必须启用并可见，锚定才能生效。如果目标不可用，将使用自由定位。"
     L["EditModeAnchorCDMEssential"] = "CDM - 核心冷却"
@@ -1756,7 +1756,7 @@ if locale == "zhCN" then
     L["EditModeCustomFrameDialogText"] = "输入要锚定的魔兽框架全局名称（例如 PlayerFrame、TargetFrame）："
     L["EditModeCustomFrameWarning"] = "警告：未找到框架“%s”。在框架可用前，将使用自由定位。"
 
-		-- Incoming Heal Overlay
+	-- Incoming Heal Overlay
     L["BarTextVariable_incomingHeal"] = "你当前的总预期治疗量。"
     L["IncomingHealBarTexture"] = "预期治疗覆盖层纹理"
     L["HealthBarIncomingHealColor"] = "预期治疗覆盖层颜色"
@@ -1773,7 +1773,7 @@ if locale == "zhCN" then
     L["PaladinHolyPowerColorPickerSecond"] = "第二点神圣能量"
     L["PaladinHolyPowerColorPickerThird"] = "第三点神圣能量"
 
-		-- Global Bar Text
+	-- Global Bar Text
     L["GlobalBarTextWarningComboPoints"] = "|n|n警告：并非所有专精都支持该变量。请在条件语句中使用，例如：|n{$comboPoints}[显示 $comboPoints][隐藏]。"
     L["GlobalBarTextVariable_resource"] = "当前主要资源值（随专精变化）"
     L["GlobalBarTextVariable_resourceMax"] = "主要资源最大值（随专精变化）"
@@ -1785,12 +1785,12 @@ if locale == "zhCN" then
     L["CheckboxUseGlobalBarText"] = "启用全局施法条文本"
     L["CheckboxUseGlobalTooltip_GlobalBarText"] = "勾选后，除该专精自身的施法条文本项外，还会显示在全局选项-施法条文本中配置的所有文本项。"
 
-		-- Global Bar Text Reset
+	-- Global Bar Text Reset
     L["ResetGlobalBarTextHeader"] = "重置全局施法条文本"
     L["ResetGlobalBarText"] = "将全局施法条文本恢复为默认设置"
     L["ResetGlobalBarTextDialog"] = "是否确认将全局施法条文本项恢复为默认配置？此操作仅重置全局施法条文本项，但会影响所有启用了全局施法条文本的专精所显示的施法条文本内容。"
 
-		-- Utility Bar (Angelic Feather - Priest)
+	-- Utility Bar (Angelic Feather - Priest)
     L["TabAngelicFeather"] = "天堂之羽"
     L["ResourceUtility"] = "功能资源"
     L["AngelicFeatherCharge1"] = "天堂之羽充能1"
@@ -1804,27 +1804,27 @@ if locale == "zhCN" then
     L["PriestBarTextNameAFCharge3"] = "天堂之羽充能3（简写）"
     L["ResourceAngelicFeather"] = "天堂之羽"
 
-		-- Druid Combo Points outside Cat Form
+	-- Druid Combo Points outside Cat Form
     L["DruidCheckboxShowComboPoints"] = "所有变形形态显示连击点"
     L["DruidCheckboxShowComboPointsTooltip"] = "勾选后，无论当前处于何种变形形态，连击点条均会显示；取消勾选则仅在猎豹形态下显示连击点条。上方的「连击点显示时机」下拉选项仍会控制连击点条的整体显示规则。"
 
     L["DemonHunterDevourerBarTextVariable_rollingTormentFury"] = "坍缩之星结束后，通过翻滚折磨获得的恶魔之怒值"
 
-		-- Warrior Fury Whirlwind Charge Color Split
+	-- Warrior Fury Whirlwind Charge Color Split
     L["WhirlwindColorPickerSecondary"] = "旋风斩充能（2层）"
 
-		-- Bar Visibility Conditions (Phase 1)
+	-- Bar Visibility Conditions (Phase 1)
     L["ShowBarVisibilityNeverShow"] = "永不显示"
     L["ShowBarVisibilityConditionInCombat"] = "战斗中"
     L["ShowBarVisibilityConditionInVehicle"] = "载具中"
     L["ShowBarVisibilityConditionFriendlyTarget"] = "目标为友方"
     L["ShowBarVisibilityConditionUnfriendlyTarget"] = "目标为敌对"
 
-		-- Bar Visibility Conditions (Phase 1a)
+	-- Bar Visibility Conditions (Phase 1a)
     L["ShowBarVisibilityAlwaysShow"] = "始终显示"
     L["ShowBarVisibilitySelectedCount"] = "已选 %d 项"
 
-		-- Bar Visibility Conditions (Phase 2)
+	-- Bar Visibility Conditions (Phase 2)
     L["ShowBarVisibilityConditionIsMountedAny"] = "已骑乘 (任意坐骑)"
     L["ShowBarVisibilityConditionIsMountedGround"] = "地面坐骑"
     L["ShowBarVisibilityConditionIsSkyriding"] = "飞行/驭空"
@@ -1845,13 +1845,13 @@ if locale == "zhCN" then
     L["ShowBarVisibilityConditionInDungeon"] = "在5人地下城中"
     L["ShowBarVisibilityConditionInRaidInstance"] = "在团队副本中"
 
-		-- Phase 3a: Alpha-based bar visibility
+	-- Phase 3a: Alpha-based bar visibility
     L["ShowBarVisibilityActiveAlpha"] = "激活透明度"
     L["ShowBarVisibilityInactiveAlpha"] = "未激活透明度"
     L["ShowBarVisibilityFadeDuration"] = "渐变时长"
     L["ShowBarVisibilityFadeDelay"] = "渐变延迟"
 
-		-- Bar Visibility Table UI
+	-- Bar Visibility Table UI
     L["BarVisibilityTableHeaderBar"] = "资源条"
     L["BarVisibilityBarNamePrimary"] = "%s 资源条"
     L["BarVisibilityBarNameHealth"] = "生命条"
@@ -1859,24 +1859,24 @@ if locale == "zhCN" then
     L["BarVisibilityDetailHeader"] = "%s 设置"
     L["FlashSectionHeader"] = "资源条闪烁"
 
-		-- Collapse Border Width
+	-- Collapse Border Width
     L["CollapseBorderWidth"] = "折叠边框宽度"
     L["CollapseBorderWidthTooltip"] = "启用后，会重叠相邻节点的边框，使其显示为单一边框宽度，而非双倍边框。此功能会禁用间距滑块，并将节点间距设置为边框宽度的负值。"
 
-		-- Druid Guardian Killing Blow / Harnessed Rage Thresholds
+	-- Druid Guardian Killing Blow / Harnessed Rage Thresholds
 
-		-- Overlay Mode: Appended (Overflow)
+	-- Overlay Mode: Appended (Overflow)
     L["OverlayModeAppendedOverflow"] = "追加（溢出）"
 
-		-- Display names used by barTypeDef objects in GenerateCustomBarThresholdColorOptions
+	-- Display names used by barTypeDef objects in GenerateCustomBarThresholdColorOptions
     L["HealthBarThresholdDisplayName"] = "生命值"
 
-		-- Warlock Per-Soul Shard Color Pickers
+	-- Warlock Per-Soul Shard Color Pickers
     L["WarlockSoulShardsColorPickerBase"] = "第1个灵魂碎片"
     L["WarlockSoulShardsColorPickerSecond"] = "第2个灵魂碎片"
     L["WarlockSoulShardsColorPickerThird"] = "第3个灵魂碎片"
 
-		-- Font Outline Options
+	-- Font Outline Options
     L["FontOutlineHeader"] = "字体描边"
     L["DefaultFontOutline"] = "共享字体描边"
     L["FontOutlineNone"] = "无"
@@ -1886,7 +1886,7 @@ if locale == "zhCN" then
     L["UseDefaultFontOutline"] = "使用共享字体描边"
     L["UseDefaultFontOutlineTooltip"] = "使此资源条文字区域使用共享字体描边设置，而非上方选择的描边样式。"
 
-		-- Font Shadow Options
+	-- Font Shadow Options
     L["FontShadowEnable"] = "启用字体阴影"
     L["FontShadowEnableTooltip"] = "在资源条文字后方添加阴影效果。"
     L["FontShadowColor"] = "阴影颜色"
@@ -1896,16 +1896,16 @@ if locale == "zhCN" then
     L["UseDefaultFontShadow"] = "使用共享字体阴影"
     L["UseDefaultFontShadowTooltip"] = "使此资源条文字区域使用共享字体阴影设置，而非上方选择的阴影样式。"
 
-		-- Node Ordering
+	-- Node Ordering
     L["NodeOrderMoveUp"] = "上移"
     L["NodeOrderMoveDown"] = "下移"
     L["NodeOrderMoveUpTooltip"] = "将此资源条在显示顺序中向左移动一格。"
     L["NodeOrderMoveDownTooltip"] = "将此资源条在显示顺序中向右移动一格。"
 
-		L["ShieldBlockBarEnable"] = "启用盾牌格挡"
+	L["ShieldBlockBarEnable"] = "启用盾牌格挡"
     L["ShieldBlockBarEnableTooltip"] = "显示盾牌格挡条。"
 
-		-- Holy Priest Holy Words Reordering
+	-- Holy Priest Holy Words Reordering
     L["ResourcePriestHolyWords"] = "圣言术"
     L["HolyWordSerenityBarEnable"] = "启用圣言术：静"
     L["HolyWordSerenityBarEnableTooltip"] = "显示圣言术：静的圣言术条。"
@@ -1917,7 +1917,7 @@ if locale == "zhCN" then
     L["HolyWordSanctifyBarColor"] = "圣言术：灵"
     L["HolyWordChastiseBarColor"] = "圣言术：罚"
 
-		-- Bar Visibility: Resource / Health Threshold
+	-- Bar Visibility: Resource / Health Threshold
     L["BarVisibilityThresholdHeader"] = "资源 / 生命值阈值"
     L["BarVisibilityThresholdResourcePercent"] = "主要资源百分比"
     L["BarVisibilityThresholdResourceValue"] = "主要资源数值"
@@ -1936,10 +1936,10 @@ if locale == "zhCN" then
     L["BarVisibilityThresholdHealthValueComparison"] = "生命值数值 比较条件"
     L["BarVisibilityThresholdHealthValueValue"] = "生命值数值"
 
-		-- Shaman Enhancement: 5-stack Maelstrom Weapon color
+	-- Shaman Enhancement: 5-stack Maelstrom Weapon color
     L["ShamanEnhancementMaelstromWeaponColorPickerFiveStack"] = "5层漩涡武器"
 
-		-- Holy Priest: Audio cues for Lightweaver max stacks, Holy Word charge-ready, Surge of Light Spiritwell restriction
+	-- Holy Priest: Audio cues for Lightweaver max stacks, Holy Word charge-ready, Surge of Light Spiritwell restriction
     L["PriestHolyAudioHolyWordChastiseReady"] = "圣言术：罚 就绪"
     L["PriestHolyAudioCheckboxHolyWordChastiseReady"] = "圣言术：罚 冷却完成时播放语音提示"
     L["PriestHolyAudioCheckboxHolyWordChastiseReadyTooltip"] = "圣言术：罚 冷却完成时播放语音提示，仅在战斗中生效。"
@@ -1958,7 +1958,7 @@ if locale == "zhCN" then
     L["PriestAudioCheckboxSurgeOfLightSpiritwellOnly"] = "仅在点出灵泉天赋时播放"
     L["PriestHolyAudioHolyWordsHeader"] = "圣言术语音提示"
 
-		-- Holy Priest: Configurable Lightweaver audio thresholds (replaces fixed gain/max-stacks cues)
+	-- Holy Priest: Configurable Lightweaver audio thresholds (replaces fixed gain/max-stacks cues)
     L["PriestHolyAudioLightweaverThreshold1"] = "织光者阈值1"
     L["PriestHolyAudioCheckboxLightweaverThreshold1"] = "织光者层数达到X时播放（阈值1）"
     L["PriestHolyAudioCheckboxLightweaverThreshold1Tooltip"] = "织光者层数恰好达到该数值时播放语音提示。"
@@ -1967,14 +1967,14 @@ if locale == "zhCN" then
     L["PriestHolyAudioCheckboxLightweaverThreshold2Tooltip"] = "织光者层数恰好达到该数值时播放语音提示。"
     L["PriestHolyAudioLightweaverThresholdSliderTitle"] = "织光者层数达到X时"
 
-		-- Holy Priest: Lightweaver expiring audio cue
+	-- Holy Priest: Lightweaver expiring audio cue
     L["PriestHolyAudioLightweaverExpiring"] = "织光者效果即将消失"
     L["PriestHolyAudioCheckboxLightweaverExpiring"] = "织光者剩余时间小于X秒时播放"
     L["PriestHolyAudioCheckboxLightweaverExpiringTooltip"] = "当你的织光者增益激活且剩余时间低于设定值时，播放音效提示。"
     L["PriestHolyAudioLightweaverExpiringSliderTitle"] = "剩余时间小于X秒"
     L["PriestHolyAudioLightweaverHeader"] = "织光者音效提示"
 
-		-- Holy Priest: Lightweaver Bar
+	-- Holy Priest: Lightweaver Bar
     L["TabLightweaver"] = "织光者"
     L["ResourcePriestLightweaver"] = "织光者层数"
     L["LightweaverCharge1"] = "织光者层数 1"
@@ -1992,26 +1992,26 @@ if locale == "zhCN" then
     L["ShamanElementalCheckboxEarthShock"] = "大地震击/元素冲击 可用"
     L["ShamanElementalCheckboxEarthquakeBarColor"] = "地震术可用"
 
-		-- Priest Holy Benediction
+	-- Priest Holy Benediction
     L["PriestHolyAudioBenediction"] = "祈福"
     L["PriestHolyAudioCheckboxBenediction"] = "祈福触发时播放音效"
     L["PriestHolyAudioCheckboxBenedictionTooltip"] = "祈福触发时播放音效，该效果会使你的下一次快速治疗施法被替换。"
 
-		-- Priest Bar Text Logic Variables
+	-- Priest Bar Text Logic Variables
     L["PriestBarTextVariable_surgeOfLight"] = "圣光涌动当前是否激活？【仅用于逻辑变量】"
     L["PriestHolyBarTextVariable_benediction"] = "祈福当前是否激活（已替换快速治疗）？【仅用于逻辑变量】"
 
-		-- Bar Visibility Global Column
+	-- Bar Visibility Global Column
     L["BarVisibilityTableHeaderSettingsSource"] = "设置来源"
     L["BarVisibilitySettingsSourceGlobal"] = "全局"
     L["BarVisibilitySettingsSourceGlobalNamed"] = "全局 - %s"
     L["BarVisibilitySettingsSourceSpec"] = "专精"
 
-		-- Open Global Settings shortcut link
+	-- Open Global Settings shortcut link
     L["OpenGlobalSettings"] = "[打开全局设置]"
     L["OpenGlobalSettingsTooltip"] = "点击跳转至该设置的全局选项面板。"
 
-		-- Ignore Pain (Absorb) bar for Protection Warrior
+	-- Ignore Pain (Absorb) bar for Protection Warrior
     L["IgnorePainTime"] = "无视痛苦（持续时间）"
     L["IgnorePainAbsorb"] = "无视痛苦（吸收值）"
     L["IgnorePainAbsorbBarEnable"] = "启用无视痛苦（吸收值）条"
@@ -2019,7 +2019,7 @@ if locale == "zhCN" then
     L["IgnorePainTimeBarEnable"] = "启用无视痛苦条"
     L["IgnorePainTimeBarEnableTooltip"] = "显示无视痛苦的持续时间进度条。"
 
-		-- Bone Shield bar for Blood Death Knight
+	-- Bone Shield bar for Blood Death Knight
     L["ResourceBoneShield"] = "白骨之盾"
     L["TabBoneShield"] = "白骨之盾"
     L["DeathKnightBarTextVariable_boneShieldStacks"] = "当前白骨之盾层数"
@@ -2041,13 +2041,13 @@ if locale == "zhCN" then
     L["TabEbonMight"] = "黑檀之力"
     L["EbonMightBar"] = "黑檀之力条"
 
-		-- Evoker Essence Burst Border Target Dropdown
+	-- Evoker Essence Burst Border Target Dropdown
     L["BarNameDisabled"] = "禁用"
     L["BarNameManaBar"] = "法力值"
     L["BarNameEssences"] = "精华"
     L["BarNameEbonMight"] = "黑檀之力"
 
-		-- Indicator Colors System
+	-- Indicator Colors System
     L["TabIndicatorColors"] = "颜色指示器"
     L["IndicatorColorPriorityHeader"] = "颜色指示器优先级"
     L["BarNameInsanityBar"] = "狂乱值"
@@ -2056,11 +2056,11 @@ if locale == "zhCN" then
     L["BarElementBackground"] = "背景"
     L["PriestShadowCheckboxBorderOvercap"] = "溢出（渐变）"
 
-		-- Gradient Color Overrides section
+	-- Gradient Color Overrides section
     L["GradientColorOverridesHeader"] = "渐变颜色（隐藏设置）"
     L["GradientColorOverridesNote"] = "渐变指示器使用内置判定参数，满足触发条件时可能会覆盖颜色指示器优先级的配色。"
 
-		-- Shadow Priest Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Shadow Priest Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["PriestShadowIndicatorInstantMindBlastTooltip"] = "当暗影洞察触发，心灵震爆可瞬发时，切换为此颜色。"
     L["PriestShadowIndicatorInstantMindBlastColor"] = "心灵震爆瞬发可用"
     L["PriestShadowIndicatorVoidformEndTooltip"] = "当虚空形态在接下来X个公共冷却或固定时间内结束时，切换为此颜色。可在下方选项中选择触发方式。"
@@ -2078,19 +2078,19 @@ if locale == "zhCN" then
     L["PriestShadowIndicatorOvercapTooltip"] = "当你的狂乱值即将达到溢出上限时，切换为此颜色。"
     L["PriestShadowIndicatorOvercapColor"] = "狂乱值即将溢出"
 
-		-- Priest Holy Indicator Colors
-		-- Bar target names
+	-- Priest Holy Indicator Colors
+	-- Bar target names
     L["BarNameHolyWordsBar"] = "圣言术"
     L["BarNameLightweaverBar"] = "织光者"
 
-		-- Indicator labels (new, bar-agnostic)
+	-- Indicator labels (new, bar-agnostic)
     L["PriestHolyCheckboxBenedictionIndicator"] = "祈福"
     L["PriestHolyCheckboxHolyWordSerenityCooldown"] = "圣言术：静 冷却"
     L["PriestHolyCheckboxHolyWordSanctifyCooldown"] = "圣言术：灵 冷却"
     L["PriestHolyCheckboxHolyWordChastiseCooldown"] = "圣言术：罚 冷却"
     L["PriestHolyCheckboxApotheosisEndIndicator"] = "神圣化身即将结束"
 
-		-- Indicator tooltips (all bar-agnostic)
+	-- Indicator tooltips (all bar-agnostic)
     L["PriestHolyIndicatorBenedictionTooltip"] = "祈福替换快速治疗期间，切换为此颜色。若启用织光者背景，下一个未填充的织光者节点将显示此颜色。"
     L["PriestHolyIndicatorHolyWordSerenityTooltip"] = "当前施法可完成圣言术：静冷却时，切换为此颜色。"
     L["PriestHolyIndicatorHolyWordSanctifyTooltip"] = "当前施法可完成圣言术：灵冷却时，切换为此颜色。"
@@ -2099,7 +2099,7 @@ if locale == "zhCN" then
     L["PriestHolyIndicatorApotheosisEndTooltip"] = "神圣化身效果将于X个公共冷却或固定时长后结束时，切换为此颜色。可在下方选项中选择判定方式。"
     L["PriestHolyIndicatorLightweaverTooltip"] = "获得任意层数织光者效果时，切换为此颜色。"
 
-		-- Indicator color labels (condition descriptions, no bar references)
+	-- Indicator color labels (condition descriptions, no bar references)
     L["PriestHolyIndicatorBenedictionColor"] = "祈福效果激活"
     L["PriestHolyIndicatorHolyWordSerenityColor"] = "施法完成圣言术：静冷却"
     L["PriestHolyIndicatorHolyWordSanctifyColor"] = "施法完成圣言术：灵冷却"
@@ -2109,18 +2109,18 @@ if locale == "zhCN" then
     L["PriestHolyIndicatorSurgeOfLightColor"] = "圣光涌动效果激活"
     L["PriestHolyIndicatorLightweaverColor"] = "织光者拥有层数"
 
-		-- Discipline Priest Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Discipline Priest Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["PriestDisciplineCheckboxSurgeOfLight"] = "圣光涌动"
     L["PriestDisciplineIndicatorSurgeOfLightColor"] = "圣光涌动效果激活"
     L["BarNamePowerWordsBar"] = "真言术"
 
-		-- Discipline Priest Void Shield indicator and bar text
+	-- Discipline Priest Void Shield indicator and bar text
     L["PriestDisciplineCheckboxVoidShield"] = "虚空之盾"
     L["PriestDisciplineIndicatorVoidShieldTooltip"] = "虚空之盾触发激活时，切换为此颜色。"
     L["PriestDisciplineIndicatorVoidShieldColor"] = "虚空之盾触发激活"
     L["PriestDisciplineBarTextVariable_voidShieldTime"] = "虚空之盾触发剩余时间"
 
-		-- Demon Hunter Havoc Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Demon Hunter Havoc Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["BarNameFuryBar"] = "恶魔之怒"
     L["DemonHunterHavocCheckboxOvercap"] = "溢出（渐变）"
     L["DemonHunterHavocIndicatorMetamorphosisTooltip"] = "恶魔变形效果激活时，切换为此颜色。"
@@ -2130,11 +2130,11 @@ if locale == "zhCN" then
     L["DemonHunterHavocIndicatorMetamorphosisEndColor"] = "恶魔变形即将结束（已配置）"
     L["DemonHunterHavocIndicatorOvercapColor"] = "恶魔之怒溢出"
 
-		-- Base Colors section header
+	-- Base Colors section header
     L["BaseColorsHeader"] = "基础颜色"
     L["ColorPickerBorder"] = "边框"
 
-		-- Demon Hunter Vengeance Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Demon Hunter Vengeance Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["DemonHunterVengeanceIndicatorMetamorphosisTooltip"] = "恶魔变形效果激活时，切换为此颜色。"
     L["DemonHunterVengeanceIndicatorMetamorphosisEndTooltip"] = "恶魔变形将于X个公共冷却或固定时长后结束时，切换为此颜色。可在下方选项中选择判定方式。"
     L["DemonHunterVengeanceIndicatorOvercapTooltip"] = "恶魔之怒即将达到溢出阈值时，切换为此颜色。"
@@ -2143,10 +2143,10 @@ if locale == "zhCN" then
     L["DemonHunterVengeanceIndicatorOvercapColor"] = "恶魔之怒溢出"
     L["DemonHunterVengeanceCheckboxOvercap"] = "溢出（渐变）"
 
-		-- Demon Hunter Vengeance Soul Fragments bar name for indicator color targets
+	-- Demon Hunter Vengeance Soul Fragments bar name for indicator color targets
     L["BarNameSoulFragmentsBar"] = "灵魂残片"
 
-		-- Demon Hunter Devourer Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Demon Hunter Devourer Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["DemonHunterDevourerIndicatorVoidMetamorphosisTooltip"] = "虚空变形激活时，切换为此颜色。"
     L["DemonHunterDevourerIndicatorVoidMetamorphosisColor"] = "虚空变形激活"
     L["DemonHunterDevourerIndicatorVoidMetamorphosisReadyTooltip"] = "虚空变形就绪时，切换为此颜色。"
@@ -2157,12 +2157,12 @@ if locale == "zhCN" then
     L["DemonHunterDevourerIndicatorOvercapTooltip"] = "恶魔之怒趋近溢出阈值时，逐渐切换为此颜色。"
     L["DemonHunterDevourerIndicatorOvercapColor"] = "恶魔之怒溢出"
 
-		-- Demon Hunter Devourer Void Ray Ready Indicator
+	-- Demon Hunter Devourer Void Ray Ready Indicator
     L["DemonHunterDevourerCheckboxVoidRayReady"] = "虚空射线就绪"
     L["DemonHunterDevourerIndicatorVoidRayReadyTooltip"] = "虚空射线可使用且虚空变形未激活时，切换为此颜色。"
     L["DemonHunterDevourerIndicatorVoidRayReadyColor"] = "虚空射线可使用"
 
-		-- Evoker Devastation Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Evoker Devastation Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["EvokerDevastationIndicatorDragonrageTooltip"] = "狂龙之怒激活时，切换为此颜色。"
     L["EvokerDevastationIndicatorDragonrageEndTooltip"] = "狂龙之怒将于X个公共冷却或固定时长后结束时，切换为此颜色。可在下方选项中选择判定方式。"
     L["EvokerDevastationIndicatorDragonrageColor"] = "狂龙之怒激活"
@@ -2170,32 +2170,32 @@ if locale == "zhCN" then
     L["EvokerDevastationIndicatorEssenceBurstTooltip"] = "获得精华迸发效果时，切换为此颜色。"
     L["EvokerDevastationIndicatorEssenceBurstColor"] = "精华迸发激活"
 
-		-- Evoker Preservation Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Evoker Preservation Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["EvokerPreservationCheckboxInnervate"] = "激活"
     L["EvokerPreservationIndicatorInnervateTooltip"] = "获得激活效果时，切换为此颜色。"
     L["EvokerPreservationIndicatorInnervateColor"] = "激活效果激活"
     L["EvokerPreservationIndicatorEssenceBurstTooltip"] = "获得精华迸发效果时，切换为此颜色。"
     L["EvokerPreservationIndicatorEssenceBurstColor"] = "精华迸发激活"
 
-		-- Evoker Augmentation Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Evoker Augmentation Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["EvokerAugmentationIndicatorEbonMightTooltip"] = "黑檀之力激活时，切换为此颜色。"
     L["EvokerAugmentationIndicatorEbonMightColor"] = "黑檀之力激活"
     L["EvokerAugmentationIndicatorEssenceBurstTooltip"] = "获得精华迸发效果时，切换为此颜色。"
     L["EvokerAugmentationIndicatorEssenceBurstColor"] = "精华迸发激活"
 
-		-- Druid Indicator Colors: BarName keys
+	-- Druid Indicator Colors: BarName keys
     L["BarNameAstralPowerBar"] = "星界能量"
     L["BarNameEnergyBar"] = "能量"
     L["BarNameRageBar"] = "怒气"
     L["BarNameComboPoints"] = "连击点"
 
-		-- Druid Indicator Colors: New label keys
+	-- Druid Indicator Colors: New label keys
     L["DruidBalanceCheckboxEclipseEnding"] = "日蚀/月蚀即将结束"
     L["DruidGuardianCheckboxBerserkActive"] = "狂暴/化身"
     L["DruidGuardianCheckboxBerserkEnding"] = "狂暴即将结束"
     L["DruidRestorationCheckboxIncarnationEnding"] = "化身即将结束"
 
-		-- Druid Balance Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Druid Balance Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["DruidBalanceIndicatorSolarTooltip"] = "处于日蚀状态时，切换为此颜色。"
     L["DruidBalanceIndicatorLunarTooltip"] = "处于月蚀状态时，切换为此颜色。"
     L["DruidBalanceIndicatorCelestialTooltip"] = "获得星辰坠落或化身：艾露恩之眷效果时，切换为此颜色。"
@@ -2204,7 +2204,7 @@ if locale == "zhCN" then
     L["DruidBalanceIndicatorEclipseEndColor"] = "日蚀/月蚀即将结束（已配置）"
     L["DruidBalanceIndicatorBorderOvercapColor"] = "星界能量溢出"
 
-		-- Druid Feral Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Druid Feral Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["DruidFeralIndicatorMaxBiteTooltip"] = "能量趋近最大伤害凶猛撕咬所需值时，逐渐切换为此颜色。"
     L["DruidFeralIndicatorApexPredatorTooltip"] = "获得顶级捕食者的渴望触发效果时，切换为此颜色。"
     L["DruidFeralIndicatorBorderStealthTooltip"] = "处于潜行状态时，切换为此颜色。"
@@ -2214,7 +2214,7 @@ if locale == "zhCN" then
     L["DruidFeralIndicatorBorderStealthColor"] = "潜行中"
     L["DruidFeralIndicatorBorderOvercapColor"] = "能量溢出"
 
-		-- Druid Guardian Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Druid Guardian Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["DruidGuardianIndicatorBerserkTooltip"] = "狂暴或化身：乌索克的守护者激活时，切换为此颜色。"
     L["DruidGuardianIndicatorBerserkEndTooltip"] = "狂暴将于X个公共冷却或固定时长后结束时，切换为此颜色。可在下方选项中选择判定方式。"
     L["DruidGuardianIndicatorBorderOvercapTooltip"] = "怒气趋近溢出阈值时，逐渐切换为此颜色。"
@@ -2222,7 +2222,7 @@ if locale == "zhCN" then
     L["DruidGuardianIndicatorBerserkEndColor"] = "狂暴即将结束（已配置）"
     L["DruidGuardianIndicatorBorderOvercapColor"] = "怒气溢出"
 
-		-- Druid Restoration Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Druid Restoration Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["DruidRestorationIndicatorNoEfflorescenceTooltip"] = "地面未激活百花齐放时，切换为此颜色。"
     L["DruidRestorationIndicatorIncarnationTooltip"] = "获得化身：生命之树效果时，切换为此颜色。"
     L["DruidRestorationIndicatorIncarnationEndTooltip"] = "化身将于X个公共冷却或固定时长后结束时，切换为此颜色。可在下方选项中选择判定方式。"
@@ -2233,10 +2233,10 @@ if locale == "zhCN" then
     L["DruidFeralIndicatorRavageTooltip"] = "狂暴：掠食触发激活时，切换为此颜色。"
     L["DruidFeralIndicatorRavageColor"] = "狂暴：掠食触发激活"
 
-		-- Focus bar name for Hunter Indicator Color targets
+	-- Focus bar name for Hunter Indicator Color targets
     L["BarNameFocusBar"] = "集中值"
 
-		-- Hunter Beast Mastery Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Hunter Beast Mastery Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["HunterBeastMasteryIndicatorBestialWrathTooltip"] = "狂野怒火激活时变为该颜色。"
     L["HunterBeastMasteryIndicatorBestialWrathColor"] = "狂野怒火已激活"
     L["HunterBeastMasteryIndicatorBestialWrathEndTooltip"] = "狂野怒火即将在 X 个 GCD 或固定时间后结束时变为该颜色。可在下方选项中选择触发方式。"
@@ -2244,34 +2244,34 @@ if locale == "zhCN" then
     L["HunterBeastMasteryIndicatorBeastCleaveTooltip"] = "野兽顺劈激活时变为该颜色。"
     L["HunterBeastMasteryIndicatorBeastCleaveColor"] = "野兽顺劈已激活"
 
-		-- Hunter Marksmanship Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Hunter Marksmanship Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["HunterMarksmanshipIndicatorTrueshotTooltip"] = "百发百中激活时变为该颜色。"
     L["HunterMarksmanshipIndicatorTrueshotColor"] = "百发百中已激活"
     L["HunterMarksmanshipIndicatorTrueshotEndTooltip"] = "百发百中即将结束时变为该颜色。"
     L["HunterMarksmanshipIndicatorTrueshotEndColor"] = "百发百中即将结束（按设置）"
 
-		-- Hunter Survival Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Hunter Survival Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["HunterSurvivalIndicatorTakedownTooltip"] = "守魂一击激活时变为该颜色。"
     L["HunterSurvivalIndicatorTakedownColor"] = "守魂一击已激活"
     L["HunterSurvivalIndicatorTakedownEndTooltip"] = "守魂一击即将结束时变为该颜色。"
     L["HunterSurvivalIndicatorTakedownEndColor"] = "守魂一击即将结束（按设置）"
 
-		-- Shaman Indicator Colors: BarName key
+	-- Shaman Indicator Colors: BarName key
     L["BarNameMaelstromBar"] = "漩涡值"
 
-		-- Monk Brewmaster Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Monk Brewmaster Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["MonkBrewmasterIndicatorInvokeNiuzaoTooltip"] = "玄牛下凡激活时变为该颜色。"
     L["MonkBrewmasterIndicatorInvokeNiuzaoColor"] = "玄牛下凡已激活"
     L["MonkBrewmasterIndicatorInvokeNiuzaoEndTooltip"] = "玄牛下凡即将结束时变为该颜色。"
     L["MonkBrewmasterIndicatorInvokeNiuzaoEndColor"] = "玄牛下凡即将结束（按设置）"
 
-		-- Monk Mistweaver Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Monk Mistweaver Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "玉珑之心准备就绪时变为该颜色。"
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentReadyColor"] = "玉珑之心已就绪"
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentTooltip"] = "玉珑之心激活时变为该颜色。"
     L["MonkMistweaverIndicatorHeartOfTheJadeSerpentColor"] = "玉珑之心已激活"
 
-		-- Monk Windwalker Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Monk Windwalker Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyTooltip"] = "玉珑之心准备就绪时变为该颜色。"
     L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyColor"] = "玉珑之心已就绪"
     L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentTooltip"] = "玉珑之心激活时变为该颜色。"
@@ -2279,19 +2279,19 @@ if locale == "zhCN" then
     L["MonkWindwalkerIndicatorDanceOfChiJiTooltip"] = "赤精之舞激活时变为该颜色。"
     L["MonkWindwalkerIndicatorDanceOfChiJiColor"] = "赤精之舞已激活"
 
-		-- Paladin Holy Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Paladin Holy Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["PaladinHolyIndicatorInfusionOfLightTooltip"] = "圣光灌注激活时（圣光闪现瞬发）变为该颜色。"
     L["PaladinHolyIndicatorInfusionOfLightColor"] = "圣光灌注已激活"
 
-		-- Rogue Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Rogue Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["RogueIndicatorStealthTooltip"] = "潜行时变为该颜色。"
     L["RogueIndicatorStealthColor"] = "已潜行"
 
-		-- Shaman Elemental Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Shaman Elemental Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["ShamanElementalIndicatorEarthShockTooltip"] = "大地震击 / 元素冲击可用时变为该颜色。"
     L["ShamanElementalIndicatorEarthShockColor"] = "大地震击 / 元素冲击可用"
 
-		-- Threshold Detail Panel
+	-- Threshold Detail Panel
     L["ThresholdDetailEnabledCheckbox"] = "阈值线已启用"
     L["ShamanElementalIndicatorEarthquakeTooltip"] = "地震术可用时变为该颜色。"
     L["ShamanElementalIndicatorEarthquakeColor"] = "地震术可用"
@@ -2300,69 +2300,69 @@ if locale == "zhCN" then
     L["ShamanElementalIndicatorAscendanceEndTooltip"] = "升腾即将结束时变为该颜色。"
     L["ShamanElementalIndicatorAscendanceEndColor"] = "升腾即将结束（按设置）"
 
-		-- Shaman Enhancement Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Shaman Enhancement Indicator Colors (bar-agnostic tooltips and color picker labels)
 
-		-- Shaman Restoration Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Shaman Restoration Indicator Colors (bar-agnostic tooltips and color picker labels)
 
-		-- Warrior Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Warrior Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["WarriorIndicatorBorderOvercap"] = "溢出（渐变）"
     L["WarriorIndicatorOvercapTooltip"] = "怒气即将溢出时逐渐变为该颜色。"
     L["WarriorIndicatorOvercapColor"] = "怒气溢出中"
 
-		-- Death Knight Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Death Knight Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["BarNameRunicPowerBar"] = "符文能量"
     L["DeathKnightIndicatorOvercapTooltip"] = "符文能量即将溢出时逐渐变为该颜色。"
     L["DeathKnightIndicatorOvercapColor"] = "符文能量溢出中"
 
-		-- Paladin Protection Indicator Colors (bar-agnostic tooltips and color picker labels)
+	-- Paladin Protection Indicator Colors (bar-agnostic tooltips and color picker labels)
     L["PaladinProtectionCheckboxInfusionOfLight"] = "圣光灌注"
     L["PaladinProtectionIndicatorInfusionOfLightTooltip"] = "圣光灌注激活时变为该颜色。"
     L["PaladinProtectionIndicatorInfusionOfLightColor"] = "圣光灌注已激活"
 
-		-- Monk Brewmaster Indicator Colors
+	-- Monk Brewmaster Indicator Colors
     L["BarNameStaggerBar"] = "醉拳"
 
-		-- Shaman Enhancement Indicator Colors
+	-- Shaman Enhancement Indicator Colors
     L["BarNameMaelstromWeaponBar"] = "漩涡武器"
 
-		-- Warrior Fury Indicator Colors
+	-- Warrior Fury Indicator Colors
     L["BarNameWhirlwindBar"] = "旋风斩"
     L["WarriorFuryCheckboxZeroStackBackground"] = "0 层旋风斩"
     L["WarriorFuryIndicatorZeroStackBackgroundTooltip"] = "旋风斩层数为 0 时变为该颜色。"
     L["WarriorFuryIndicatorZeroStackBackgroundColor"] = "0 层旋风斩"
 
-		-- Warrior Protection Indicator Colors
+	-- Warrior Protection Indicator Colors
     L["BarNameDefensivesIgnorePainTimeBar"] = "无视痛苦（持续时间）"
     L["BarNameDefensivesIgnorePainAbsorbBar"] = "无视痛苦（吸收量）"
     L["BarNameDefensivesShieldBlockBar"] = "盾牌格挡"
 
-		-- Hunter Indicator Colors
+	-- Hunter Indicator Colors
     L["HunterIndicatorBorderOvercap"] = "溢出（渐变）"
     L["HunterIndicatorOvercapTooltip"] = "集中值即将溢出时逐渐变为该颜色。"
     L["HunterIndicatorOvercapColor"] = "集中值溢出中"
 
-		-- Monk Indicator Colors
+	-- Monk Indicator Colors
     L["MonkIndicatorBorderOvercap"] = "溢出（渐变）"
     L["MonkIndicatorOvercapTooltip"] = "能量即将溢出时逐渐变为该颜色。"
     L["MonkIndicatorOvercapColor"] = "能量溢出中"
 
-		-- Rogue Indicator Colors
+	-- Rogue Indicator Colors
     L["RogueIndicatorBorderOvercap"] = "溢出（渐变）"
     L["RogueIndicatorOvercapTooltip"] = "能量即将溢出时逐渐变为该颜色。"
     L["RogueIndicatorOvercapColor"] = "能量溢出中"
 
-		-- Shaman Elemental Indicator Colors
+	-- Shaman Elemental Indicator Colors
     L["ShamanElementalIndicatorBorderOvercap"] = "溢出（渐变）"
     L["ShamanElementalIndicatorOvercapTooltip"] = "漩涡值即将溢出时逐渐变为该颜色。"
     L["ShamanElementalIndicatorOvercapColor"] = "漩涡值溢出中"
 
-		-- Death Knight Indicator Colors
+	-- Death Knight Indicator Colors
     L["DeathKnightIndicatorOvercap"] = "溢出（渐变）"
     L["DeathKnightIndicatorRuneRegenOvercap"] = "符文恢复溢出"
     L["DeathKnightIndicatorRuneRegenOvercapTooltip"] = "战斗中少于 3 个符文冷却时变为该颜色。"
     L["DeathKnightIndicatorRuneRegenOvercapColor"] = "符文恢复溢出中"
 
-		-- Gradient Color System
+	-- Gradient Color System
     L["GradientDirectionDisabledAbbrev"] = "|cFFFF0000禁|r"
     L["GradientBarFillOnlyTooltip"] = "渐变仅应用于进度条填充区域，边框和背景将使用第一种颜色。"
     L["GradientStaggerTooltip"] = "渐变仅应用于醉拳池填充区域，不影响醉拳阈值线条。"
@@ -2498,18 +2498,18 @@ if locale == "zhCN" then
     L["ThresholdDetailColorsPrefixOutOfRange"] = "超出射程"
 
     -- Threshold Detail: Color Mode (Static/Dynamic)
-		L["ThresholdDetailColorModeStatic"] = "静态"
+	L["ThresholdDetailColorModeStatic"] = "静态"
     L["ThresholdDetailColorModeDynamic"] = "动态"
     L["ThresholdDetailColorModeTooltip"] = "静态：阈值线始终使用固定颜色，忽略所有条件颜色规则。\n\n动态：阈值线根据状态（低于/高于阈值、不可用、超出射程）切换颜色，使用下方设置。"
     L["ThresholdDetailColorModeStaticColor"] = "静态颜色"
     L["ThresholdDetailColorModePrefix"] = "颜色模式"
 
-		-- Spec-specific threshold shared settings headers
+	-- Spec-specific threshold shared settings headers
     L["DruidBalanceStarsurgeThresholdsHeader"] = "星涌术阈值"
     L["PriestShadowSWMThresholdsHeader"] = "暗言术：癫阈值"
     L["DruidIndicatorOvercap"] = "溢出（渐变）"
 
-		-- Anchor Point Display Names (9-point system)
+	-- Anchor Point Display Names (9-point system)
     L["AnchorPointTOPLEFT"] = "左上"
     L["AnchorPointTOP"] = "上中"
     L["AnchorPointTOPRIGHT"] = "右上"
@@ -2520,7 +2520,7 @@ if locale == "zhCN" then
     L["AnchorPointBOTTOM"] = "下中"
     L["AnchorPointBOTTOMRIGHT"] = "右下"
 
-		-- Container Anchor Labels (bar text system)
+	-- Container Anchor Labels (bar text system)
     L["AngelicFeatherContainer"] = "天使之羽容器"
     L["ArcaneChargesContainer"] = "奥术充能容器"
     L["ChiContainer"] = "真气容器"
@@ -2536,33 +2536,33 @@ if locale == "zhCN" then
     L["TipOfTheSpearContainer"] = "利矛之刃容器"
     L["WhirlwindChargesContainer"] = "旋风斩充能容器"
 
-		-- Gradient Direction Abbreviations
+	-- Gradient Direction Abbreviations
     L["GradientDirectionHorizontalAbbrev"] = "水"
     L["GradientDirectionVerticalAbbrev"] = "垂"
 
-		-- Paladin Divine Purpose Indicator Colors
+	-- Paladin Divine Purpose Indicator Colors
     L["PaladinIndicatorDivinePurpose"] = "神圣意志"
     L["PaladinIndicatorDivinePurposeTooltip"] = "获得神圣意志效果时，指示器将切换为此颜色。"
     L["PaladinIndicatorDivinePurposeColor"] = "神圣意志已激活"
 
    	-- Paladin Divine Purpose Audio
-		L["PaladinAudioDivinePurpose"] = "神圣意志"
+	L["PaladinAudioDivinePurpose"] = "神圣意志"
     L["PaladinAudioCheckboxDivinePurpose"] = "神圣意志触发时播放音效"
     L["PaladinAudioCheckboxDivinePurposeTooltip"] = "神圣意志触发时播放音效，每次触发仅播放一次。"
 
-	  -- Druid Restoration Clearcasting Indicator Colors
+	-- Druid Restoration Clearcasting Indicator Colors
     L["DruidRestorationBarTextVariable_clearcastingActive"] = "节能施法当前是否生效？仅用于逻辑变量！"
     L["DruidRestorationCheckboxClearcasting"] = "节能施法"
     L["DruidRestorationIndicatorClearcastingTooltip"] = "触发节能施法效果时，指示器变为该颜色。"
     L["DruidRestorationIndicatorClearcastingColor"] = "节能施法效果已触发"
 
-		-- Druid Feral Clearcasting Indicator Colors
+	-- Druid Feral Clearcasting Indicator Colors
     L["DruidFeralBarTextVariable_clearcastingActive"] = "节能施法当前是否生效？仅用于逻辑变量！"
     L["DruidFeralCheckboxClearcasting"] = "节能施法"
     L["DruidFeralIndicatorClearcastingTooltip"] = "触发节能施法效果时，指示器变为该颜色。"
     L["DruidFeralIndicatorClearcastingColor"] = "节能施法效果已触发"
 
-		-- Profiles (Phase 2)
+	-- Profiles (Phase 2)
     L["ProfileDropdownButtonFormat"] = "配置文件：%s"
     L["ProfileMenuHeaderManage"] = "管理"
     L["ProfileMenuHeaderProfiles"] = "配置文件"
@@ -2588,7 +2588,7 @@ if locale == "zhCN" then
 
     L["ProfilePopupDeleteReloadMessage"] = "已删除当前使用的配置文件，必须重新加载界面才能继续。"
 
-		-- Phase 3: Profile Import/Export
+	-- Phase 3: Profile Import/Export
     L["ProfileExportMessageFormat"] = "配置文件“%s”的导出字符串："
     L["ProfileImportPastePrompt"] = "请在下方粘贴Twintop资源条的配置文件或设置导出字符串："
     L["ProfileImportNamePrompt"] = "为导入的配置文件输入名称："
@@ -2601,7 +2601,7 @@ if locale == "zhCN" then
     L["ProfileImportErrorDecode"] = "无法解析导入字符串，数据可能已损坏或不完整。"
     L["ProfilePopupImportSuccessText"] = "配置文件“%s”导入成功。是否将该角色切换为导入的配置并重新加载界面？点击“否”可保留数据但不启用。"
 
-		-- Profile Manager (Import/Export tab redesign)
+	-- Profile Manager (Import/Export tab redesign)
     L["ProfileManagerProfilesHeader"] = "配置文件"
     L["ProfileManagerActionRename"] = "重命名配置文件"
     L["ProfileManagerActionCopyFull"] = "复制完整配置"
@@ -2621,16 +2621,16 @@ if locale == "zhCN" then
     L["ProfileManagerButtonRename"] = "重命名"
     L["ProfileManagerButtonCopy"] = "复制"
 
-		-- Profile export popup target labels
+	-- Profile export popup target labels
     L["ProfilePopupExportIncludeCoreTargetText"] = "导出配置文件“%s”中的 %s 时，包含当前全局选项吗？"
     L["ProfileExportMessageTargetFormat"] = "配置文件“%s”中的 %s 导出字符串："
 
-		-- Profile Manager action button and icon tooltips
+	-- Profile Manager action button and icon tooltips
 
-		-- Profile Manager contents header (replaces ProfileMgrContentsHeader; uses string.format)
+	-- Profile Manager contents header (replaces ProfileMgrContentsHeader; uses string.format)
     L["ProfileManagerContentsHeaderFormat"] = "配置文件：|cffffffff%s|r"
 
-		-- Profile Manager per-row action tooltips (take the class/spec name so the message is specific)
+	-- Profile Manager per-row action tooltips (take the class/spec name so the message is specific)
     L["ProfileManagerDeleteClassTooltipFormat"] = "从该配置中移除所有 %s 专精。"
     L["ProfileManagerDeleteSpecTooltipFormat"] = "从该配置中移除 %s %s。"
     L["ProfileManagerDeleteGlobalTooltip"] = "从该配置中移除全局选项。"
@@ -2641,29 +2641,29 @@ if locale == "zhCN" then
     L["ProfileManagerSelectSpecTooltipFormat"] = "使用“复制选中项/导出选中项”时，包含 %s %s。"
     L["ProfileManagerSelectGlobalTooltip"] = "使用“复制选中项/导出选中项”时，包含全局选项。"
 
-		-- Profile Manager: Export buttons below the profile table
+	-- Profile Manager: Export buttons below the profile table
     L["ProfileManagerActionExportFull"] = "导出完整配置"
     L["ProfileManagerActionExportSelected"] = "导出选中项"
 
-		-- Profile Manager: Default-profile remove/reset messaging
+	-- Profile Manager: Default-profile remove/reset messaging
     L["ProfileManagerResetPieceConfirm"] = "将默认配置中的 %s 重置为初始设置？此操作无法撤销。"
     L["ProfileManagerResetClassConfirm"] = "将默认配置中的所有 %s 专精重置为初始设置？此操作无法撤销。"
     L["ProfileManagerResetClassTooltipFormat"] = "将默认配置中的所有 %s 专精重置为初始设置。"
     L["ProfileManagerResetSpecTooltipFormat"] = "将默认配置中的 %s %s 重置为初始设置。"
     L["ProfileManagerResetGlobalTooltip"] = "将默认配置中的全局选项重置为初始设置。"
 
-		-- Profile Import Reload popup
+	-- Profile Import Reload popup
     L["ProfilePopupImportReloadText"] = "导入的配置文件“%s”当前正在该角色上使用，必须重新加载界面以应用更新内容。"
     L["ProfileManagerActionImport"] = "导入配置文件"
     L["ProfileActionCopyMenu"] = "复制"
     L["ProfileActionCopyToNew"] = "复制为新配置文件..."
 
-		-- Profile Defaults panel
+	-- Profile Defaults panel
     L["ProfileDefaults"] = "配置默认项"
     L["ProfileDefaultsHeader"] = "配置默认项"
     L["ProfileDefaultsDescription"] = "为新角色首次登录时的各专精（及全局选项）选择默认配置文件。已有角色将保留各自的配置选择。"
 
-		-- Hunter Marksmanship Explosive Shot	
+	-- Hunter Marksmanship Explosive Shot	
     L["HunterMarksmanshipThresholdCheckboxExplosiveShot"] = "爆炸射击"
     L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"] = "在资源条上显示竖线，标记使用爆炸射击所需的集中值。技能冷却中时，将显示为“不可用”颜色。"
 
@@ -2676,7 +2676,7 @@ if locale == "zhCN" then
     L["PaladinBarTextVariable_divinePurposeStacks"] = "当前可用的神圣意志层数。因底层数值未公开，用于布尔逻辑时结果为真或假。"
     L["PaladinBarTextVariable_divinePurposeTime"] = "神圣意志增益效果的剩余持续时间。因底层数值未公开，用于布尔逻辑时结果为真或假。"
 
-		-- Use Global Copy menu (per-spec and bulk-toggle "Copy..." button)
+	-- Use Global Copy menu (per-spec and bulk-toggle "Copy..." button)
     L["CopyMenuButton"] = "复制..."
     L["CopyMenuButtonTooltip"] = "在配置文件、职业和专精之间复制此模块的配置。"
     L["CopyMenuTitleFormat"] = "复制：%s"
@@ -2718,7 +2718,7 @@ if locale == "zhCN" then
     L["SecondaryCastingOverlayCheckboxTooltip"] = "勾选后，%s上会显示覆盖层，用于展示当前施法所产生的资源数值。"
     L["SecondaryCastingOverlayTexture"] = "次级%s施法覆盖层材质"
 
-		-- Bar Orientation & Fill Direction
+	-- Bar Orientation & Fill Direction
     L["FillDirection"] = "填充方向"
     L["FillDirectionLeftRight"] = "从左到右"
     L["FillDirectionRightLeft"] = "从右到左"
@@ -2732,28 +2732,28 @@ if locale == "zhCN" then
     L["MatchAnchorHeight"] = "匹配锚定进度条高度"
     L["MatchAnchorHeightTooltip"] = "启用后，该进度条高度将与其锚定的进度条保持一致。"
 
-		-- Threshold Icon Position Labels
+	-- Threshold Icon Position Labels
     L["ThresholdIconPositionAboveLeft"] = "上方/左侧"
     L["ThresholdIconPositionBelowRight"] = "下方/右侧"
 
-		-- Bar Visibility Hard Hide Conditions
+	-- Bar Visibility Hard Hide Conditions
     L["ShowBarVisibilityConditionInPetBattle"] = "宠物对战中"
     L["ShowBarVisibilityConditionOnTaxi"] = "乘坐飞行路线时"
 
-		-- Bar Visibility Column Headers
+	-- Bar Visibility Column Headers
     L["ShowBarVisibilityShowColumnHeader"] = "何时显示状态栏"
     L["ShowBarVisibilityForceHideColumnHeader"] = "何时始终隐藏状态栏"
 
-		-- Bar Visibility Split Table Columns
+	-- Bar Visibility Split Table Columns
     L["BarVisibilityTableHeaderShow"] = "显示"
     L["BarVisibilityTableHeaderAlwaysHide"] = "始终隐藏"
     L["BarVisibilityTableShowNeverShown"] = "从不"
 
-		-- Bar Visibility Dropdown Tooltips
+	-- Bar Visibility Dropdown Tooltips
     L["ShowBarVisibilityShowDropdownTooltip"] = "控制该状态栏允许显示的时机。始终显示和从不显示会覆盖所选的显示条件；资源和生命值阈值仅在未选择这两个覆盖选项时生效。"
     L["ShowBarVisibilityForceHideDropdownTooltip"] = "控制会强制隐藏该状态栏的条件。这些选项优先级高于“何时显示状态栏”、始终显示、透明度，以及资源或生命值阈值设置。"
 
-		-- Bar Visibility Mana Thresholds
+	-- Bar Visibility Mana Thresholds
     L["BarVisibilityThresholdManaPercent"] = "法力值百分比"
     L["BarVisibilityThresholdManaValue"] = "法力值数值"
     L["BarVisibilityThresholdManaPercentComparison"] = "法力值百分比条件"
@@ -2762,7 +2762,7 @@ if locale == "zhCN" then
     L["BarVisibilityThresholdManaValueValue"] = "法力值数值"
     L["BarVisibilityThresholdHeaderWithMana"] = "资源/法力/生命值阈值"
 
-		-- Mage Fire - Fire Blast Charges Bar
+	-- Mage Fire - Fire Blast Charges Bar
     L["MageFireBlastCharges"] = "火焰冲击层数"
     L["MageFireFireBlastCharge1"] = "火焰冲击（第一层）"
     L["MageFireFireBlastCharge2"] = "火焰冲击（第二层）"
@@ -2776,17 +2776,17 @@ if locale == "zhCN" then
     L["MageFireBarTextVariable_fireBlastChargesMax"] = "火焰冲击最大层数。"
     L["MageFireFireBlast"] = "火焰冲击"
 	
-		-- Druid Form Visibility Conditions
-		L["ShowBarVisibilityGroupDruidForms"] = "德鲁伊形态"
-		L["ShowBarVisibilityConditionDruidHumanoidForm"] = "人形态"
-		L["ShowBarVisibilityConditionDruidTravelFormAny"] = "旅行形态(所有)"
-		L["ShowBarVisibilityConditionDruidStagForm"] = "雄鹿形态"
-		L["ShowBarVisibilityConditionDruidFlightForm"] = "飞行形态"
-		L["ShowBarVisibilityConditionDruidSwiftFlightForm"] = "迅捷飞行形态"
-		L["ShowBarVisibilityConditionDruidAquaticForm"] = "水栖形态"
-		L["ShowBarVisibilityConditionDruidCatForm"] = "猎豹形态"
-		L["ShowBarVisibilityConditionDruidBearForm"] = "熊形态"
-		L["ShowBarVisibilityConditionDruidMoonkinForm"] = "枭兽形态"
+	-- Druid Form Visibility Conditions
+	L["ShowBarVisibilityGroupDruidForms"] = "德鲁伊形态"
+	L["ShowBarVisibilityConditionDruidHumanoidForm"] = "人形态"
+	L["ShowBarVisibilityConditionDruidTravelFormAny"] = "旅行形态(所有)"
+	L["ShowBarVisibilityConditionDruidStagForm"] = "雄鹿形态"
+	L["ShowBarVisibilityConditionDruidFlightForm"] = "飞行形态"
+	L["ShowBarVisibilityConditionDruidSwiftFlightForm"] = "迅捷飞行形态"
+	L["ShowBarVisibilityConditionDruidAquaticForm"] = "水栖形态"
+	L["ShowBarVisibilityConditionDruidCatForm"] = "猎豹形态"
+	L["ShowBarVisibilityConditionDruidBearForm"] = "熊形态"
+	L["ShowBarVisibilityConditionDruidMoonkinForm"] = "枭兽形态"
 
 		-- Bar Text Entry Copy Menu
 		L["BarTextCopyMenuTitleFormat"] = "资源条文本：%s"
