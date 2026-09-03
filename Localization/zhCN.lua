@@ -7,7 +7,7 @@ local locale = GetLocale()
 if locale == "zhCN" then
     local L = TRB.Localization
 	
-		-- General strings
+	-- General strings
     L["TwintopsResourceBar"] = "Twintop资源条"
     L["OK"] = "确定"
     L["Cancel"] = "取消"
@@ -19,8 +19,8 @@ if locale == "zhCN" then
     L["Released"] = "发布日期"
     L["SupportedSpecs"] = "支持专精（至暗之夜）"
 	
-		-- Options.lua
-		--- Global Options
+	-- Options.lua
+	--- Global Options
     L["BarTextInstructions1"] = "如需了解资源条文字自定义的详细说明，查阅GitHub上的TRB维基文档。\n\n"
     L["BarTextInstructions2"] = "条件显示规则（仅当$VARIABLE生效/非零时显示）：\n    {$VARIABLE}[$VARIABLE为真时显示的内容]\n\n"
     L["BarTextInstructions3"] = "支持条件逻辑中的与(&)、或(|)、非(!)及括号嵌套：\n    {$A&$B}[两者均为真时显示]\n    {$A|$B}[其一或全部为真时显示]\n    {!$A}[$A为假时显示]\n    {!$A&($B|$C)}[$A为假且$B或$C为真时显示]\n\n"
