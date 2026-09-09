@@ -3074,8 +3074,6 @@ local function UpdateResourceBar()
 
 			UpdateHealthBarGeneric()
 		end
-
-		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
@@ -3530,6 +3528,9 @@ local function UpdateResourceBar()
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
+
+	-- Every spec holds combo points in Cat Form, and Feral's settings own their cues for all four.
+	TRB.Functions.AudioCues:UpdateCounter(classSettings.feral, snapshotData, "comboPoints", snapshotData.attributes.resource2, "druid_feral")
 end
 
 function targetsTimerFrame:onUpdate(sinceLastUpdate)

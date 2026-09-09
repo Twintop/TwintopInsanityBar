@@ -572,7 +572,7 @@ local function RefreshLookupData_Arcane()
 
 	-- Block D: Arcane Salvo ($arcaneSalvoStacks, $arcaneSalvoStacksMax)
 	if not activeVars or activeVars["$arcaneSalvoStacks"] or activeVars["$arcaneSalvoStacksMax"] then
-		local _arcaneSalvoStacksMax = spells.arcaneSalvo.maxStacks
+		local _arcaneSalvoStacksMax = TRB.Data.character.arcaneSalvoMaxStacks or spells.arcaneSalvo.maxStacks
 
 		lookupLogic["$arcaneSalvoStacksMax"] = _arcaneSalvoStacksMax
 
@@ -1068,12 +1068,29 @@ local function UpdateSnapshot_Frost()
 	end
 end
 
+---Checks whether a Shatter custom indicator's mode matches the talented hero tree.
+---@param mode string? # "disabled", "spellslinger", "frostfire", or "enabled"
+---@return boolean
+local function ShatterCustomIndicatorActive(mode)
+	if mode == "enabled" then
+		return true
+	elseif mode == "spellslinger" then
+		return TRB.Data.character.spellslingerTalented == true
+	elseif mode == "frostfire" then
+		return TRB.Data.character.frostfireTalented == true
+	end
+	return false
+end
+
+-- Wiped and refilled every pass: stack index -> the custom indicator color that owns that node.
+local shatterCustomIndicatorByStack = {}
+
 ---Updates the Shatter bar nodes (Frost only).
 ---The count is secret, so every node takes the raw value and stepped min/max does the filling.
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barColors table # Indicator-resolved bar/border/background colors for the Shatter bar
----@param fillIndicated boolean? # An indicator owns the fill, overriding the every-Nth threshold color
+---@param fillIndicated boolean? # An indicator owns the fill, overriding the threshold and custom indicator colors
 local function UpdateShatter(specSettings, specCacheSettings, barColors, fillIndicated)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
@@ -1093,8 +1110,19 @@ local function UpdateShatter(specSettings, specCacheSettings, barColors, fillInd
 
 	local backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha = Color:GetRGBAFromString(barColors.background, true)
 
-	local stackThreshold = spells.shatter.attributes and spells.shatter.attributes.stackThreshold
+	local stackThreshold = TRB.Data.character.shatterStackThreshold or spells.shatter.attributes.stackThreshold
 	local thresholdEnabled = shatterColors.threshold ~= nil and shatterColors.threshold.enabled == true
+
+	-- First indicator on a stack wins, so two set to the same stack cannot fight over the node.
+	wipe(shatterCustomIndicatorByStack)
+	if not fillIndicated and shatterColors.customIndicators ~= nil then
+		for index = 1, #shatterColors.customIndicators do
+			local indicator = shatterColors.customIndicators[index]
+			if indicator.value ~= nil and shatterCustomIndicatorByStack[indicator.value] == nil and ShatterCustomIndicatorActive(indicator.mode) then
+				shatterCustomIndicatorByStack[indicator.value] = indicator
+			end
+		end
+	end
 
 	for x = 1, maxShatter do
 		local shatterNode = barGroups.shatter:GetNode(x)
@@ -1102,8 +1130,10 @@ local function UpdateShatter(specSettings, specCacheSettings, barColors, fillInd
 			Bar:SetBarNodeValue(specCacheSettings, "shatter" .. x, shatterNode, shatterStacks)
 
 			local fillColor = barColors.bar
-			-- Every multiple of the threshold, not just the first: 5, 10, 15, 20.
-			if not fillIndicated and thresholdEnabled and stackThreshold and stackThreshold > 0 and x % stackThreshold == 0 then
+			if shatterCustomIndicatorByStack[x] ~= nil then
+				fillColor = shatterCustomIndicatorByStack[x]
+			-- Every multiple of the threshold, not just the first: 5, 10, 15, 20, or 6, 12, 18 with Polished Focus.
+			elseif not fillIndicated and thresholdEnabled and stackThreshold and stackThreshold > 0 and x % stackThreshold == 0 then
 				fillColor = shatterColors.threshold
 			end
 
@@ -1150,7 +1180,7 @@ local function UpdateArcaneSalvo(specSettings, specCacheSettings, barColors, fil
 		return
 	end
 
-	local maxStacks = spells.arcaneSalvo.maxStacks
+	local maxStacks = TRB.Data.character.arcaneSalvoMaxStacks or spells.arcaneSalvo.maxStacks
 	if arcaneSalvoAppliedMax ~= maxStacks then
 		node:SetMinMax(0, maxStacks)
 		arcaneSalvoAppliedMax = maxStacks
@@ -2030,6 +2060,13 @@ function TRB.Functions.Class:CheckCharacter()
 		local arcaneTalents = TRB.Data.specCache.mage_arcane and TRB.Data.specCache.mage_arcane.talents
 		TRB.Data.character.arcaneSalvoTalented = arcaneTalents ~= nil and arcaneTalents:IsTalentActive(spells.arcaneSalvo) == true
 
+		-- Spellfire Salvo raises the stack cap above Arcane Salvo's base.
+		local arcaneSalvoMaxStacks = spells.arcaneSalvo.maxStacks or 20
+		if arcaneTalents ~= nil and arcaneTalents:IsTalentActive(spells.spellfireSalvo) then
+			arcaneSalvoMaxStacks = arcaneSalvoMaxStacks + (spells.spellfireSalvo.attributes.maxStacksMod or 5)
+		end
+		TRB.Data.character.arcaneSalvoMaxStacks = arcaneSalvoMaxStacks
+
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
@@ -2059,6 +2096,16 @@ function TRB.Functions.Class:CheckCharacter()
 		if frostTalents and frostTalents:IsTalentActive(spells.icicles) then
 			maxIcicles = 5
 		end
+
+		-- Polished Focus makes Ice Lance consume one more Shatter stack, moving the threshold marks.
+		local shatterStackThreshold = spells.shatter.attributes.stackThreshold
+		if frostTalents and frostTalents:IsTalentActive(spells.polishedFocus) then
+			shatterStackThreshold = shatterStackThreshold + spells.polishedFocus.attributes.stackThresholdMod
+		end
+		TRB.Data.character.shatterStackThreshold = shatterStackThreshold
+
+		TRB.Data.character.spellslingerTalented = frostTalents ~= nil and frostTalents:IsTalentActive(spells.splinteringSorcery) == true
+		TRB.Data.character.frostfireTalented = frostTalents ~= nil and frostTalents:IsTalentActive(spells.frostfireBolt) == true
 
 		if sharedSettings ~= nil then
 			if maxIcicles ~= TRB.Data.character.maxResource2 then

@@ -380,12 +380,13 @@ end
 ---@param snapshotData TRB.Classes.SnapshotData
 ---@param sourceId string
 ---@param value number?
-function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourceId, value)
+---@param compositeKey string? # Overrides the active spec's key, for a counter one spec owns for the whole class
+function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourceId, value, compositeKey)
 	if specSettings == nil or specSettings.audio == nil or snapshotData == nil or value == nil then
 		return
 	end
 
-	local source = self:GetCounterSource(GetActiveCompositeKey(), sourceId)
+	local source = self:GetCounterSource(compositeKey or GetActiveCompositeKey(), sourceId)
 	if source == nil then
 		return
 	end

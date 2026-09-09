@@ -1703,6 +1703,15 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				end
 			end
 
+			-- Bars whose frame min/max reads secret (the stack count taints it) cannot use
+			-- thresholdScaleFromLiveMax, so they hand over a plain live max instead.
+			if barTypeDef.thresholdRuntimeMaxFunc ~= nil then
+				local liveMax = GetPlainNumber(barTypeDef.thresholdRuntimeMaxFunc(), 0)
+				if liveMax > 0 then
+					maxValue = liveMax
+				end
+			end
+
 			-- Gate this bar's custom thresholds on a live "is this mechanic active?" snapshot
 			-- attribute (e.g. hide Ebon Might's lines while the buff is down). contextActive == false
 			-- makes UpdateCustomThresholdLines hide the line until the attribute is truthy again.

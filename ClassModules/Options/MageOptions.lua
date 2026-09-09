@@ -5,6 +5,7 @@ local L = TRB.Localization
 local oUi = TRB.Data.constants.optionsUi
 
 local ARCANE_MAX_ARCANE_SALVO = TRB.Data.maxResource.mage.arcane.arcaneSalvo
+local FROST_MAX_SHATTER = TRB.Data.maxResource.mage.frost.shatter
 
 TRB.Options.Mage = {}
 TRB.Options.Mage.Arcane = {}
@@ -1562,6 +1563,22 @@ local function FrostConstructIciclesBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "Mage_Frost_ComboPoints", "endCapComboPoints", L["EndCap"], 8, 3)
 end
 
+---Repaints the Shatter bar after one of its color settings changes.
+local function RepaintShatterBar()
+	if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(8, 3) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		TRB.Data.cache.colors.bar = {}
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
+end
+
+local shatterCustomIndicatorModes = {
+	{ value = "disabled", label = L["Disabled"] },
+	{ value = "spellslinger", label = L["MageFrostShatterCustomIndicatorModeSpellslinger"] },
+	{ value = "frostfire", label = L["MageFrostShatterCustomIndicatorModeFrostfire"] },
+	{ value = "enabled", label = L["Enabled"] },
+}
+
 local function FrostConstructShatterBarPanel(parent)
 	if parent == nil then
 		return
@@ -1586,7 +1603,7 @@ local function FrostConstructShatterBarPanel(parent)
 					return callbackYCoord
 				end
 
-				-- Threshold stack, applied to every multiple of it (5, 10, 15, 20)
+				-- Threshold stack, applied to every multiple of it (5, 10, 15, 20; 6, 12, 18 with Polished Focus)
 				controls.checkBoxes.shatterThreshold = CreateFrame("CheckButton", "TwintopResourceBar_Mage_Frost_shatterThresholdEnabled", callbackParent, "ChatConfigCheckButtonTemplate")
 				f = controls.checkBoxes.shatterThreshold
 				f:SetPoint("TOPLEFT", oUi.xCoord, callbackYCoord)
@@ -1595,11 +1612,7 @@ local function FrostConstructShatterBarPanel(parent)
 				f:SetChecked(shatterColors.threshold.enabled)
 				f:SetScript("OnClick", function(self, ...)
 					shatterColors.threshold.enabled = self:GetChecked()
-					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(8, 3) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-						TRB.Data.cache.colors.bar = {}
-						TRB.Data.lookupDirty = true
-						TRB.Functions.Class:TriggerResourceBarUpdates()
-					end
+					RepaintShatterBar()
 				end)
 
 				controls.colors.bars = controls.colors.bars or {}
@@ -1613,8 +1626,83 @@ local function FrostConstructShatterBarPanel(parent)
 					TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, shatterColors.threshold, self, 8, 3)
 				end)
 
-				return callbackYCoord - 30
+				callbackYCoord = callbackYCoord - 30
+
+				-- Custom indicators: a title-less mode dropdown in place of an enable checkbox, since each
+				-- one is gated on a hero talent tree. Their stacks live in their own section.
+				local indicators = shatterColors.customIndicators
+				if indicators ~= nil then
+					controls.dropDown = controls.dropDown or {}
+					controls.colors.bars.shatter.customIndicators = controls.colors.bars.shatter.customIndicators or {}
+					local indicatorControls = controls.colors.bars.shatter.customIndicators
+
+					for index = 1, #indicators do
+						local indicator = indicators[index]
+						local capturedIndex = index
+
+						controls.dropDown["shatterCustomIndicator" .. index] = TRB.Functions.OptionsUi.Primitives:BuildDropdown(callbackParent,
+							"TwintopResourceBar_Mage_Frost_shatterCustomIndicator" .. index, nil, shatterCustomIndicatorModes,
+							function()
+								return indicator.mode or "disabled"
+							end,
+							function(value)
+								indicator.mode = value
+								RepaintShatterBar()
+							end,
+							oUi.xCoord, callbackYCoord)
+
+						indicatorControls[index] = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(callbackParent, string.format(L["MageFrostShatterCustomIndicatorColor"], index), indicator, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+						f = indicatorControls[index]
+						f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+							TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicators, indicatorControls, capturedIndex, nil, nil, 8, 3)
+						end)
+						f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+							TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, indicator, self, 8, 3)
+						end)
+
+						callbackYCoord = callbackYCoord - 35
+					end
+				end
+
+				return callbackYCoord
 			end)
+
+		local indicators = shatterColors.customIndicators
+		if indicators ~= nil then
+			yCoord = yCoord - 30
+			controls.shatterCustomIndicatorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MageFrostHeaderShatterCustomIndicators"], oUi.xCoord, yCoord)
+			yCoord = yCoord - 30
+
+			controls.shatterCustomIndicatorNote = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["MageFrostShatterCustomIndicatorNote"], oUi.xCoord, yCoord, oUi.dropdownWidth * 2, 28)
+			yCoord = yCoord - 40
+
+			-- Two per row, matching the Arcane Salvo range values.
+			local column = 0
+			for index = 1, #indicators do
+				local indicator = indicators[index]
+				local xCoord = column == 0 and oUi.xCoord or oUi.xCoord2
+				local sliderKey = "shatterCustomIndicator" .. index .. "Stacks"
+
+				controls[sliderKey] = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, string.format(L["MageFrostShatterCustomIndicatorStacks"], index), 1, FROST_MAX_SHATTER, indicator.value, 1, 0,
+												oUi.sliderWidth, oUi.sliderHeight, xCoord, yCoord)
+				controls[sliderKey]:SetScript("OnValueChanged", function(self, value)
+					value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+					indicator.value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+					RepaintShatterBar()
+				end)
+
+				column = column + 1
+				if column == 2 then
+					column = 0
+					yCoord = yCoord - 60
+				end
+			end
+
+			-- An odd count leaves the last row half-filled and unadvanced.
+			if column > 0 then
+				yCoord = yCoord - 60
+			end
+		end
 	end
 end
 

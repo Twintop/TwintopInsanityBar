@@ -390,7 +390,6 @@ if locale == "enGB" then
 
     -- Frost Mage Shatter bar
     L["MageFrostCheckboxShatterThresholdMultiples"] = "Change Shatter colour at threshold stacks"
-    L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fill colour at every multiple of the threshold stack (5, 10, 15, 20)."
 
     -- Per-bar tab visibility header
     L["BarTabVisibilityGlobalTooltip"] = "This bar's visibility is being controlled by Global Options, so it cannot be changed here. Open Global Settings to change it, or uncheck Use global settings on the Visibility tab to control it for this specialisation only."
@@ -476,5 +475,13 @@ if locale == "enGB" then
 	L["CopyMenuSection_petPowerColors"] = "Pet Resource Bar - Colours"
 	L["CopyMenuSection_petHealthColors"] = "Pet Health Bar - Colours"
 	L["CopyMenuSection_petCastbarColors"] = "Pet Cast Bar - Colours"
+
+	-- Priest Shadow: Resonant Energy
+	L["PriestShadowIndicatorResonantEnergyTooltip"] = "Changes to this colour when Resonant Energy is active at or above the number of stacks selected below."
+
+	-- Frost Mage Shatter custom indicators
+	L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fill colour at every multiple of the stacks Ice Lance consumes: 5, 10, 15, and 20; or 6, 12, and 18 with Polished Focus."
+	L["MageFrostShatterCustomIndicatorColor"] = "Custom Indicator %d Colour"
+	L["MageFrostShatterCustomIndicatorNote"] = "Each custom indicator recolours the single Shatter stack set below, overriding the Ice Lance stack colour on it. Spellslinger Only and Frostfire Only apply only while that hero talent tree is active."
 
 end

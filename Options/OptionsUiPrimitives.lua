@@ -723,7 +723,7 @@ end
 ---the selection, so callers only supply the value list and the two accessors.
 ---@param parent Frame
 ---@param name string # Unique global frame name
----@param label string # Header text drawn above the dropdown
+---@param label string? # Header text drawn above the dropdown, or nil to sit on the row itself
 ---@param options table[] # Ordered list of { value = any, label = string }
 ---@param getFn fun():any # Returns the currently selected value
 ---@param setFn fun(value:any) # Applies a newly selected value
@@ -733,9 +733,12 @@ end
 function TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, name, label, options, getFn, setFn, posX, posY)
 	local dropdown = CreateFrame("DropdownButton", name, parent, "WowStyle1DropdownTemplate")
 	dropdown:SetWidth(oUi.sliderWidth)
-	dropdown.label = self:BuildSectionHeader(parent, label, posX, posY)
-	dropdown.label.font:SetFontObject(GameFontNormal)
-	dropdown:SetPoint("TOPLEFT", posX, posY - 30)
+	if label ~= nil then
+		dropdown.label = self:BuildSectionHeader(parent, label, posX, posY)
+		dropdown.label.font:SetFontObject(GameFontNormal)
+		posY = posY - 30
+	end
+	dropdown:SetPoint("TOPLEFT", posX, posY)
 
 	local function LabelFor(value)
 		for _, opt in ipairs(options) do

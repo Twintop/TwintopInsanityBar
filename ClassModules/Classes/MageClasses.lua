@@ -7,6 +7,7 @@ TRB.Classes.Mage = TRB.Classes.Mage or {}
 ---@class TRB.Classes.Mage.ArcaneSpells : TRB.Classes.SpecializationSpellsBase
 ---@field arcaneSurge TRB.Classes.SpellBase
 ---@field arcaneSalvo TRB.Classes.SpellBase
+---@field spellfireSalvo TRB.Classes.SpellBase
 TRB.Classes.Mage.ArcaneSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.ArcaneSpells.__index = TRB.Classes.Mage.ArcaneSpells
 
@@ -31,7 +32,12 @@ function TRB.Classes.Mage.ArcaneSpells:New()
         id = 44425,
         talentId = 384452,
         isTalent = true,
-        maxStacks = TRB.Data.maxResource.mage.arcane.arcaneSalvo
+        maxStacks = 20
+    })
+    self.spellfireSalvo = TRB.Classes.SpellBase:New({
+        id = 1260616,
+        isTalent = true,
+        maxStacksMod = 5
     })
 
     return self
@@ -184,6 +190,9 @@ end
 ---@field iceLance TRB.Classes.SpellBase
 ---@field fingersOfFrost TRB.Classes.SpellBase
 ---@field brainFreeze TRB.Classes.SpellBase
+---@field polishedFocus TRB.Classes.SpellBase
+---@field splinteringSorcery TRB.Classes.SpellBase
+---@field frostfireBolt TRB.Classes.SpellBase
 TRB.Classes.Mage.FrostSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.FrostSpells.__index = TRB.Classes.Mage.FrostSpells
 
@@ -213,6 +222,20 @@ function TRB.Classes.Mage.FrostSpells:New()
     })
     self.brainFreeze = TRB.Classes.SpellBase:New({
         id = 190446
+    })
+    self.polishedFocus = TRB.Classes.SpellBase:New({
+        id = 1261082,
+        isTalent = true,
+        stackThresholdMod = 1
+    })
+    -- Hero talent tree markers: a talented entry in each tree stands in for the tree itself.
+    self.splinteringSorcery = TRB.Classes.SpellBase:New({
+        id = 443739,
+        isTalent = true
+    })
+    self.frostfireBolt = TRB.Classes.SpellBase:New({
+        id = 431044,
+        isTalent = true
     })
 
     return self

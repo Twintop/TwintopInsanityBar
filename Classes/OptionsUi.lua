@@ -40,6 +40,14 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public timeRadioLabel string Localized label for the time radio button
 ---@field public timeSliderLabel string Localized label for the time slider
 
+---Minimum-stacks configuration for a single stacking buff tracked by the Indicator Colors panel.
+---@class TRB.Classes.OptionsUi.StacksConfig
+---@field public stacksKey string Key matching stacks.* in spec settings
+---@field public sectionHeader string Localized section header text
+---@field public sliderLabel string Localized label for the minimum stacks slider
+---@field public sliderMin integer? Lowest selectable stack count (default: 1)
+---@field public sliderMax integer Highest selectable stack count
+
 ---Overcap configuration for the Indicator Colors panel.
 ---@class TRB.Classes.OptionsUi.OvercapConfig
 ---@field public primaryResourceString string Localized primary resource name (e.g., L["ResourceFury"])
@@ -54,6 +62,7 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public gradientExcludedElements table<string, table<string, boolean>>? Map of barKey -> { elementKey = true } to exclude from gradient dropdowns only
 ---@field public ddNamePrefix string Unique prefix for dropdown frame names (e.g., "TwintopResourceBar_Priest_Shadow")
 ---@field public endOfConfigs TRB.Classes.OptionsUi.EndOfConfig[]? List of EndOf configuration entries
+---@field public stacksConfigs TRB.Classes.OptionsUi.StacksConfig[]? List of minimum-stacks configuration entries
 ---@field public overcapConfig TRB.Classes.OptionsUi.OvercapConfig? Overcap configuration
 TRB.Classes.OptionsUi.IndicatorColorsPanelConfig = {}
 TRB.Classes.OptionsUi.IndicatorColorsPanelConfig.__index = TRB.Classes.OptionsUi.IndicatorColorsPanelConfig
@@ -70,6 +79,7 @@ function TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New(data)
 	obj.gradientExcludedElements = data.gradientExcludedElements
 	obj.ddNamePrefix = data.ddNamePrefix
 	obj.endOfConfigs = data.endOfConfigs
+	obj.stacksConfigs = data.stacksConfigs
 	obj.overcapConfig = data.overcapConfig
 	return obj
 end

@@ -12,21 +12,56 @@ local content = [====[
 
 ---
 
-# 12.1.0.9-release (2026-09-04)
+# 12.1.0.11-release (2026-09-16)
 ## General
-
-- [#745](#745) Add a Glows tab to Global Options: named glow definitions, each with a style (Pixel Glow, Autocast Shine, Action Button Glow, Proc Glow), its own settings and a live preview.
-- [#745](#745) Add Border Glow as a Color Indicator target on every bar, with a submenu that runs any number of the defined glows at once. A glow set to always use its own color takes that color instead of the indicator's, and is marked in the list.
-
 ### Pet Bars
 
 - [#551](#551) Add a Pet tab with Pet Resource and Pet Health bars, plus a Pet Cast Bar under Cast Bars, for the specializations that can hold a permanent pet: all three Hunter and Warlock specializations, Unholy Death Knight and Frost Mage. Marksmanship Hunter and Frost Mage get them only while Unbreakable Bond or Summon Water Elemental is selected. Adds the `$petName`, `$petState`, `$petHealth`, `$petHealthMax`, `$petHealthPercent`, `$petPower`, `$petPowerMax`, `$petPowerPercent`, `$petPowerName`, `$petCastingSpellName`, `$petCastTime` and `$petCastTimeRemaining` bar text variables and the `#petCasting` icon. All three bars are Never Show by default.
 - Pet Resource fills from whichever resource your pet uses -- Focus, Energy or Mana -- in that resource's color; Pet Health fills with a Low/Medium/High color curve. They show against four pet states -- permanent pet out, temporary pet out, pet dead, and no pet -- and stack Resource over Health on their own screen anchor left of center, with the Pet Cast Bar under them.
 - All three join the bar text Relative to Frame, Color Indicator and Custom Threshold target lists, and their bar text defaults live in the global list. Each has global options, Pet Resource colors excepted, which default to per-specialization. Pet Health offers no Bar color indicator target, as its fill is already a health curve.
 
+---
+
+# 12.1.0.10-release (2026-09-09)
+## General
+### Localization
+
+- [#829 - @MOSS099](#829) Updated translations for Simplified Chinese (zhCN).
+- [#835 - @MOSS099](#835) Updated translations for Simplified Chinese (zhCN).
+
+## Druid
+
+- Fix Combo Point audio cues never firing outside the Feral specialization. They are configured on Feral's Audio Cues tab and apply to all specializations.
+
+## Mage
+### Arcane
+
+- [#833](#833) Ensure that Arcane Salvo's maximum stack count is 20 when Spellfire Salvo is not talented.
+
+### Frost
+
+- [#834](#834) Change Shatter color at Ice Lance stacks now marks 6, 12, and 18 when Polished Focus is talented.
+- [#834](#834) Add two Shatter custom indicators, each recoloring a single stack of your choosing and set to Disabled, Spellslinger Only, Frostfire Only, or Enabled. The first defaults to stack 12 for Frostfire.
+
+## Priest
+### Shadow
+
+- [#828](#828) Add Resonant Energy tracking, with a Resonant Energy Color Indicator, the `$resonantEnergyStacks` and `$resonantEnergyTime` bar text variables, and the `#resonantEnergy` icon. The indicator defaults to the Insanity bar border, and only turns on at the stack count set on the Indicator Colors tab.
+- [#829](#829) Add Void Volley stack tracking, with the `$voidVolleyCharges` and `$voidVolleyTime` bar text variables and `#vv` icon.
+
+---
+
+# 12.1.0.9-release (2026-09-03)
+## General
+
+- [#745](#745) Add a Glows tab to Global Options: named glow definitions, each with a style (Pixel Glow, Autocast Shine, Action Button Glow, Proc Glow), its own settings and a live preview.
+- [#745](#745) Add Border Glow as a Color Indicator target on every bar, with a submenu that runs any number of the defined glows at once. A glow set to always use its own color takes that color instead of the indicator's, and is marked in the list.
+- Fix the End Cap trailing a couple of pixels behind the fill edge on the cast bars, and on any other bar the client animates, which left a sliver of the bar showing past the cap.
+
 ### Localization
 
 - [#826 - @MOSS099](#826) Updated translations for Simplified Chinese (zhCN).
+- [#827 - @MOSS099](#827) Updated translations for Simplified Chinese (zhCN).
 
 ---
 

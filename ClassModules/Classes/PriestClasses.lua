@@ -556,6 +556,7 @@ end
 ---@field public improvedVoidform TRB.Classes.SpellBase
 ---@field public ancientMadness TRB.Classes.SpellBase
 ---@field public voidVolley TRB.Classes.SpellBase
+---@field public crushingVoid TRB.Classes.SpellBase
 ---@field public halo TRB.Classes.SpellBase
 ---@field public manifestedPower TRB.Classes.SpellBase
 ---@field public mindFlayInsanity TRB.Classes.SpellBase
@@ -572,8 +573,10 @@ end
 ---@field public tentacleSlam TRB.Classes.SpellBase
 ---@field public maddeningTentacles TRB.Classes.SpellBase
 ---@field public sustainedPotency TRB.Classes.SpellBase
+---@field public resonantEnergy TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
 ---@field public mindDevourer TRB.Classes.SpellBase
+---@field public midnightSeason2SetKey string # Key the set's pieces are registered under in TRB.Data.itemSetRegistry
 ---@field public shadowWordMadness TRB.Classes.SpellThreshold
 ---@field public shadowWordMadness2 TRB.Classes.SpellThreshold
 ---@field public shadowWordMadness3 TRB.Classes.SpellThreshold
@@ -688,9 +691,21 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		durationMod = 1.5,
 		maxCasts = 5
 	})
+	-- Charges are granted by events rather than read from the aura, so every source's count lives here.
 	self.voidVolley = TRB.Classes.SpellBase:New({
 		id = 1242173,
+		castId = 1242173,
 		resource = 10,
+		isTalent = true,
+		duration = 30,
+		maxChargesOutOfVoidform = 4,
+		voidformCharges = 3,
+		improvedVoidformCharges = 2,
+		crushingVoidCharges = 1,
+		tentacleSlamCharges = 1
+	})
+	self.crushingVoid = TRB.Classes.SpellBase:New({
+		id = 1279354,
 		isTalent = true
 	})
 	self.screamsOfTheVoid = TRB.Classes.SpellBase:New({
@@ -752,6 +767,12 @@ function TRB.Classes.Priest.ShadowSpells:New()
 		pauseDuration = 20,
 		durationMod = 1
 	})
+	self.resonantEnergy = TRB.Classes.SpellBase:New({
+		id = 453845,
+		isTalent = true,
+		duration = 10,
+		maxStacks = 4
+	})
 
 	-- Voidweaver
 	self.voidTorrent = TRB.Classes.SpellBase:New({
@@ -792,6 +813,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
 	})
 
     --Set Bonuses
+	-- 4pc grants a Void Volley stack on Tentacle Slam; the piece ids are registered at the bottom of this file.
 
 	return self
 end
@@ -827,6 +849,9 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 
 		{ variable = "#mf", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = true },
 		{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = false },
+
+		{ variable = "#re", icon = spells.resonantEnergy.icon, description = spells.resonantEnergy.name, printInSettings = true },
+		{ variable = "#resonantEnergy", icon = spells.resonantEnergy.icon, description = spells.resonantEnergy.name, printInSettings = false },
 
 		{ variable = "#sotv", icon = spells.screamsOfTheVoid.icon, description = spells.screamsOfTheVoid.name, printInSettings = true },
 		{ variable = "#screamsOfTheVoid", icon = spells.screamsOfTheVoid.icon, description = spells.screamsOfTheVoid.name, printInSettings = false },
@@ -865,6 +890,12 @@ function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$mfiStacks", description = L["PriestShadowBarTextVariable_mfiStacks"], printInSettings = true, color = false },
 
 		{ variable = "$sotvTime", description = L["PriestShadowBarTextVariable_sotvTime"], printInSettings = true, color = false },
+
+		{ variable = "$resonantEnergyStacks", description = L["PriestShadowBarTextVariable_resonantEnergyStacks"], printInSettings = true, color = false },
+		{ variable = "$resonantEnergyTime", description = L["PriestShadowBarTextVariable_resonantEnergyTime"], printInSettings = true, color = false },
+
+		{ variable = "$voidVolleyCharges", description = L["PriestShadowBarTextVariable_voidVolleyCharges"], printInSettings = true, color = false },
+		{ variable = "$voidVolleyTime", description = L["PriestShadowBarTextVariable_voidVolleyTime"], printInSettings = true, color = false },
 
 		{ variable = "$entropicRiftTime", description = L["PriestShadowBarTextVariable_entropicRiftTime"], printInSettings = true, color = false },
 		{ variable = "$entropicRiftExtensionsRemaining", description = L["PriestShadowBarTextVariable_entropicRiftExtensionsRemaining"], printInSettings = true, color = false },
@@ -1150,6 +1181,19 @@ TRB.Data.castbarTickProfilesRegistry["priest_holy"] = TRB.Classes.Priest.HolySpe
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
 TRB.Data.castbarTickModifiersRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.GetCastbarTickModifiers
+
+-- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
+-- every registered set once per gear change and caches it.
+TRB.Classes.Priest.ShadowSpells.midnightSeason2SetKey = "priest_shadow_midnightSeason2"
+TRB.Data.itemSetRegistry = TRB.Data.itemSetRegistry or {}
+---@type TRB.Classes.ItemSetDefinition
+TRB.Data.itemSetRegistry[TRB.Classes.Priest.ShadowSpells.midnightSeason2SetKey] = {
+	headId = 271555,
+	shoulderId = 271553,
+	chestId = 271558,
+	handId = 271556,
+	legId = 271554,
+}
 
 -- Register audio cue vocabularies
 do
