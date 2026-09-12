@@ -590,6 +590,10 @@ local function HandleImport(input)
 	-- Merging them in leaves them without kind/source, so re-normalize the merged result.
 	TRB.Functions.Settings:NormalizeAllAudioCues(TRB.Data.settings)
 
+	-- The merge overlays indicator order lists by index, so an older export can hide newer default
+	-- indicators or leave removed ones behind. Reconcile against the defaults.
+	TRB.Functions.Settings:ReconcileAllSharedIndicators(TRB.Data.settings)
+
 	return 1
 end
 

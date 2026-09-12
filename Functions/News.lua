@@ -12,6 +12,18 @@ local content = [====[
 
 ---
 
+# 12.1.0.11-release (2026-09-14)
+## General
+
+- Fix Color Indicators added in a newer version sometimes missing from the Color Indicator Priority list when the saved list still carried an indicator that no longer exists.
+
+## Priest
+### Shadow
+
+- [#828](#828) Fix Resonant Energy color indicator not always being added to the list on version update.
+
+---
+
 # 12.1.0.10-release (2026-09-09)
 ## General
 ### Localization

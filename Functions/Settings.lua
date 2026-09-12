@@ -550,6 +550,9 @@ function TRB.Functions.Settings:PortForwardProfile(profile)
 	-- normalized here keeps whatever cue shape it was saved or exported with.
 	self:SeedAllAudioCues(profile)
 	self:NormalizeAllAudioCues(profile)
+	-- Same for the indicator order lists: ApplyToRuntime overlays them by index, so a profile whose
+	-- list is shorter than the live one would leave a duplicate of the live tail behind.
+	self:ReconcileAllSharedIndicators(profile)
 end
 
 ---Migrates legacy and outdated TwintopInsanityBar saved-variable structures to the current settings format, handling renames, restructures, threshold refactors, bar text format changes, color standardizations, and displayBar enum conversions across all classes and specs.
@@ -9148,6 +9151,10 @@ function TRB.Functions.Settings:CleanupSettings(oldSettings)
 	TRB.Functions.Settings:SeedAllAudioCues(newSettings)
 	TRB.Functions.Settings:NormalizeAllAudioCues(newSettings)
 
+	-- The merge above overlays nodeOrder/gradientOrder by index, so a saved list can hide a default
+	-- key appended past its end. Reconcile against the defaults.
+	TRB.Functions.Settings:ReconcileAllSharedIndicators(newSettings)
+
 	return newSettings
 end
 
@@ -11397,6 +11404,146 @@ function TRB.Functions.Settings:NormalizeAllAudioCues(settings)
 		local class = settings[entry.className]
 		if class ~= nil then
 			TRB.Functions.Settings:NormalizeAudioCues(class[entry.specName], compositeKey)
+		end
+	end
+end
+
+---Brings a spec's `colors.shared` order lists in line with the indicators the spec defines today.
+---
+---`Table:Merge(defaults, saved)` and the profile overlays merge `nodeOrder`/`gradientOrder` by array
+---index, so a saved list only ever picks up a new default by accident: a key appended at index N
+---survives when the save has fewer than N entries and is overwritten otherwise. A key removed from the
+---code but still in saves (Shadow's `shadowWordMadnessUsableCasting`) holds a slot, which is exactly
+---how Resonant Energy went missing from lists that predate it.
+---
+---Every saved key lands in whichever list the defaults put it in (a gradient key stranded in `nodeOrder`
+---moves over), duplicates collapse, and any default key the save lacks is appended -- lowest priority,
+---with its default `indicatorColors` entry when the save has none. Keys the defaults no longer define
+---stay where they are: the options panel hides them, the runtime has no condition for them, and a
+---feature that comes back picks its saved priority and colors up again. Surviving keys keep their
+---relative order, both lists keep their table identity, and nothing else in `indicatorColors` is touched.
+---@param spec table? # A single spec's settings table
+---@param defaultShared table? # That spec's default `colors.shared` (nodeOrder, gradientOrder, indicatorColors)
+function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
+	if spec == nil or type(spec.colors) ~= "table" or type(spec.colors.shared) ~= "table" then
+		return
+	end
+	if defaultShared == nil or type(defaultShared.nodeOrder) ~= "table" then
+		return
+	end
+
+	local shared = spec.colors.shared
+	local defaultGradientOrder = defaultShared.gradientOrder or {}
+	local defaultIndicatorColors = defaultShared.indicatorColors or {}
+
+	-- Which list the defaults keep each key in
+	local listFor = {} ---@type table<string, string>
+	for _, key in ipairs(defaultShared.nodeOrder) do
+		listFor[key] = "nodeOrder"
+	end
+	for _, key in ipairs(defaultGradientOrder) do
+		listFor[key] = "gradientOrder"
+	end
+
+	local seen = {} ---@type table<string, boolean>
+	local result = { nodeOrder = {}, gradientOrder = {} } ---@type table<string, string[]>
+
+	---Copies a saved list's not-yet-seen keys into the list the defaults assign them to; a key the
+	---defaults don't know stays in the list it was saved in.
+	---@param listName string
+	local function Take(listName)
+		if type(shared[listName]) ~= "table" then
+			return
+		end
+		for _, key in ipairs(shared[listName]) do
+			if not seen[key] then
+				seen[key] = true
+				table.insert(result[listFor[key] or listName], key)
+			end
+		end
+	end
+
+	Take("nodeOrder")
+	Take("gradientOrder")
+
+	shared.indicatorColors = shared.indicatorColors or {}
+
+	---Appends the default keys the save never had, seeding their colors from the defaults.
+	---@param defaultList string[]
+	---@param target string
+	local function Append(defaultList, target)
+		for _, key in ipairs(defaultList) do
+			if not seen[key] then
+				seen[key] = true
+				table.insert(result[target], key)
+				if shared.indicatorColors[key] == nil and defaultIndicatorColors[key] ~= nil then
+					shared.indicatorColors[key] = TRB.Functions.Table:DeepCopy(defaultIndicatorColors[key])
+				end
+			end
+		end
+	end
+
+	Append(defaultShared.nodeOrder, "nodeOrder")
+	Append(defaultGradientOrder, "gradientOrder")
+
+	-- Refill in place: the options panel and spec caches hold on to these tables.
+	for listName, keys in pairs(result) do
+		if type(shared[listName]) == "table" then
+			wipe(shared[listName])
+		else
+			shared[listName] = {}
+		end
+		for i, key in ipairs(keys) do
+			shared[listName][i] = key
+		end
+	end
+end
+
+-- Default `colors.shared` per spec, keyed by compositeKey and kept for the session: the reconcile runs
+-- once per stored profile plus twice on the live table at every login, and each class's defaults
+-- factory builds the whole class. `false` marks a spec whose defaults define no shared indicators.
+local sharedIndicatorDefaults = {} ---@type table<string, table|false>
+
+---Returns a spec's default `colors.shared`, building and caching its whole class on first use.
+---@param entry TRB.Data.SpecRegistryEntry
+---@return table?
+local function GetSharedIndicatorDefaults(entry)
+	local cached = sharedIndicatorDefaults[entry.compositeKey]
+	if cached ~= nil then
+		return cached or nil
+	end
+
+	local options = TRB.Options and TRB.Options[entry.classModuleName]
+	local classDefaults = nil
+	if options ~= nil and type(options.LoadDefaultSettings) == "function" then
+		local loaded = options.LoadDefaultSettings(false)
+		classDefaults = loaded and loaded[entry.className] or nil
+	end
+
+	for _, specEntry in ipairs(TRB.Data.classRegistry[entry.className].specs) do
+		local specDefaults = classDefaults and classDefaults[specEntry.specName] or nil
+		local shared = nil
+		if type(specDefaults) == "table" and type(specDefaults.colors) == "table" then
+			shared = specDefaults.colors.shared
+		end
+		sharedIndicatorDefaults[specEntry.compositeKey] = shared or false
+	end
+
+	return sharedIndicatorDefaults[entry.compositeKey] or nil
+end
+
+---Runs ReconcileSharedIndicators across every spec in a settings table.
+---@param settings table? # The full addon settings table, or a profile shaped like one
+function TRB.Functions.Settings:ReconcileAllSharedIndicators(settings)
+	if settings == nil then
+		return
+	end
+
+	for _, entry in pairs(TRB.Data.specRegistry) do
+		local class = settings[entry.className]
+		local spec = class ~= nil and class[entry.specName] or nil
+		if type(spec) == "table" then
+			TRB.Functions.Settings:ReconcileSharedIndicators(spec, GetSharedIndicatorDefaults(entry))
 		end
 	end
 end

@@ -1365,6 +1365,10 @@ profilesFrame:SetScript("OnEvent", function(_, event)
 		if Settings ~= nil and Settings.NormalizeAllAudioCues ~= nil then
 			Settings:NormalizeAllAudioCues(TRB.Data.settings)
 		end
+		-- The overlay also merges the indicator order lists by index, so reconcile them once more too.
+		if Settings ~= nil and Settings.ReconcileAllSharedIndicators ~= nil then
+			Settings:ReconcileAllSharedIndicators(TRB.Data.settings)
+		end
 	elseif event == "PLAYER_LOGOUT" then
 		if TRB.Data == nil or TRB.Data.settings == nil then
 			return
