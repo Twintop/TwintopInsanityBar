@@ -2208,7 +2208,12 @@ function TRB.Functions.Bar:UpdateCastingResourceOverlay(node, snapshotData, sett
 		spendingSettings = settings.colors and settings.colors.bar and settings.colors.bar.spending
 	end
 	local castingEnabled = castingSettings and castingSettings.enabled == true
-	local spendingEnabled = spendingSettings and spendingSettings.enabled == true
+	local spendingEnabled
+	if spendingSettings ~= nil then
+		spendingEnabled = spendingSettings.enabled == true
+	else
+		spendingEnabled = castingEnabled
+	end
 	if not castingEnabled and not spendingEnabled then
 		-- Zero out any existing overlays but don't create them
 		castingSlot:SetAppendedOverlayValue(0)
