@@ -302,6 +302,10 @@ local function RefreshLookupData_Elemental()
 			end
 		end
 
+		if snapshotData.casting.resourceFinal < 0 then
+			castingMaelstromColor = sharedSettings.colors.text.spending.color
+		end
+
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$maelstrom"] = snapshotData.attributes.resource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -536,6 +540,12 @@ local function FillSnapshotDataCasting(spell, resourceMod)
 	if spell.resource ~= nil and spell.resource > 0 then
 		snapshotData.casting.resourceRaw = (spell.resource + resourceMod) * resourceMultMod
 		snapshotData.casting.resourceFinal = (spell.resource + resourceMod) * resourceMultMod
+	else
+		-- Costed hardcasts (Elemental Blast) predict the spend as a negative amount: Bar.lua renders it as
+		-- the inset spending overlay and the lookup colors $casting with colors.text.spending. A currently
+		-- free cast reports 0 rather than the last non-zero cost, so nothing is predicted for it.
+		snapshotData.casting.resourceRaw = -spell:GetPrimaryResourceCost(true)
+		snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 	end
 	snapshotData.casting.startTime = currentTime
 	snapshotData.casting.spellId = spell.id

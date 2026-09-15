@@ -102,6 +102,9 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				casting = {
 					color = "FFFFFFFF"
 				},
+				spending = {
+					color = "FF555555"
+				},
 				passive = {
 					color = "FF995BDD"
 				},
@@ -135,6 +138,12 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				casting = {
 					color = "FFFFFFFF",
 					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+				spending = {
+					color = "FFAAAAAA",
+					color2 = "FFAAAAAA",
 					gradientDirection = "disabled",
 					enabled = true
 				},
@@ -749,7 +758,7 @@ local function ElementalConstructMaelstromBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], nil, true)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], 1, ELEMENTAL_MAX_MAELSTROM)
@@ -956,6 +965,13 @@ local function ElementalConstructFontAndTextPanel(parent)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.text.spending = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ShamanElementalColorPickerTextSpending"], spec.colors.text.spending.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.text.spending
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "spending")
 	end)
 
 	yCoord = yCoord - 30

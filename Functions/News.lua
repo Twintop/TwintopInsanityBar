@@ -23,6 +23,11 @@ local content = [====[
 
 - [#828](#828) Fix Resonant Energy color indicator not always being added to the list on version update.
 
+## Shaman
+### Elemental
+
+- Add predictive resource spending for hardcasted Elemental Blast.
+
 ## Warlock
 ### Demonology
 

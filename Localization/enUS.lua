@@ -3636,3 +3636,5 @@ L["MageFrostShatterCustomIndicatorStacks"] = "Custom Indicator %d Stacks"
 L["MageFrostShatterCustomIndicatorModeSpellslinger"] = "Spellslinger Only"
 L["MageFrostShatterCustomIndicatorModeFrostfire"] = "Frostfire Only"
 L["MageFrostShatterCustomIndicatorNote"] = "Each custom indicator recolors the single Shatter stack set below, overriding the Ice Lance stack color on it. Spellslinger Only and Frostfire Only apply only while that hero talent tree is active."
+
+L["ShamanElementalColorPickerTextSpending"] = "Maelstrom loss from hardcasting Elemental Blast"
