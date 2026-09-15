@@ -23,6 +23,11 @@ local content = [====[
 
 - [#828](#828) Fix Resonant Energy color indicator not always being added to the list on version update.
 
+## Warlock
+### Demonology
+
+- Fix Ruination always predicting a Soul Shard gain. It now only predicts the refunded Soul Shard while Dominion of Argus is active and talented at 4/4.
+
 ---
 
 # 12.1.0.10-release (2026-09-09)

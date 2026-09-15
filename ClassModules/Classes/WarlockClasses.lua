@@ -145,7 +145,6 @@ function TRB.Classes.Warlock.DemonologySpells:New()
     self.ruination = TRB.Classes.SpellBase:New({
         id = 434635,
         isTalent = true,
-        resource = 1,
         duration = 20
     })
     self.handOfGuldan = TRB.Classes.SpellBase:New({

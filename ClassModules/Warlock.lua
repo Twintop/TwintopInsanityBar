@@ -863,7 +863,12 @@ local function UpdateCastingResourceFinal_Demonology()
 	elseif casting.spellId == spells.infernalBolt.id then
 		casting.resource2Casting = spells.infernalBolt.resource
 	elseif casting.spellId == spells.ruination.id then
-		casting.resource2Casting = spells.ruination.resource
+		-- Ruination replaces Hand of Gul'dan and costs nothing; it only nets a Soul Shard
+		-- via the 4/4 Dominion of Argus refund while the buff is active.
+		local dominionOfArgusTalent = talents.talents[spells.dominionOfArgus.talentId] or talents.talents[spells.dominionOfArgus2.talentId] or talents.talents[spells.dominionOfArgus3.talentId]
+		if snapshotData.snapshots[spells.dominionOfArgus.id].buff.isActive and dominionOfArgusTalent and dominionOfArgusTalent.currentRank == dominionOfArgusTalent.maxRank then
+			casting.resource2Casting = spells.dominionOfArgus.attributes.resourceMod
+		end
 	elseif casting.spellId == spells.summonDemonicTyrant.id and talents:IsTalentActive(spells.shadowOfDeath) then
 		casting.resource2Casting = spells.shadowOfDeath.resource
 	elseif casting.spellId == spells.handOfGuldan.id then
