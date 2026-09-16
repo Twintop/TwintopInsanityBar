@@ -1,0 +1,37 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<!-- Core stage 1: localization, version gate, OOP classes, bootstrap data. Loads after the flavor Manifest and before the flavor class definitions. -->
+	<Script file="FlavorRegistry.lua"/>
+	<Script file="Localization\Localization.lua"/>
+	<Script file="Localization\enUS.lua"/>
+	<Script file="Localization\deDE.lua"/>
+	<Script file="Localization\enCN.lua"/>
+	<Script file="Localization\enGB.lua"/>
+	<Script file="Localization\enTW.lua"/>
+	<Script file="Localization\esES.lua"/>
+	<Script file="Localization\esMX.lua"/>
+	<Script file="Localization\frFR.lua"/>
+	<Script file="Localization\itIT.lua"/>
+	<Script file="Localization\koKR.lua"/>
+	<Script file="Localization\ptBR.lua"/>
+	<Script file="Localization\ptPT.lua"/>
+	<Script file="Localization\ruRU.lua"/>
+	<Script file="Localization\zhCN.lua"/>
+	<Script file="Localization\zhTW.lua"/>
+	<Script file="Localization\LocalizationPost.lua"/>
+	<Script file="Functions\VersionGate.lua"/>
+	<Script file="Classes\CombatLog.lua"/>
+	<Script file="Classes\Snapshot.lua"/>
+	<Script file="Classes\Target.lua"/>
+	<Script file="Classes\Spell.lua"/>
+	<Script file="Classes\Talent.lua"/>
+	<Script file="Classes\OverlaySlot.lua"/>
+	<Script file="Classes\Bar.lua"/>
+	<Script file="Classes\Castbar.lua"/>
+	<Script file="Classes\TargetCastbar.lua"/>
+	<Script file="Classes\Settings.lua"/>
+	<Script file="Classes\SpecCache.lua"/>
+	<Script file="Classes\SpecDescriptor.lua"/>
+	<Script file="Classes\OptionsUi.lua"/>
+	<Script file="Init.lua"/>
+	<Script file="Functions\AudioCues.lua"/>
+</Ui>

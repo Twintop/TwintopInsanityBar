@@ -1,0 +1,149 @@
+name: Release
+
+# One tag builds one flavor:
+#   12.1.0.11-release           -> mainline (retail) build, zip attached to the GitHub release
+#   12.1.0.11-beta01            -> mainline pre-release
+#   forever-1.0.0.0-release     -> WoW Forever build
+# The tag's version and release type are stamped into the staged TOC; the repository TOC is untouched.
+# Uploads to CurseForge / Wago / WoWInterface run only for mainline and only when the API secrets exist.
+
+on:
+  push:
+    tags:
+      - "*-release"
+      - "*-beta*"
+      - "*-alpha*"
+  workflow_dispatch:
+    inputs:
+      flavor:
+        description: "Flavor to stage (mainline, forever)"
+        required: true
+        default: "mainline"
+      version:
+        description: "Version to stamp (blank keeps the TOC value)"
+        required: false
+        default: ""
+      releaseType:
+        description: "release, beta or alpha"
+        required: false
+        default: "alpha"
+
+permissions:
+  contents: write
+
+jobs:
+  stage:
+    name: Stage and package
+    runs-on: ubuntu-latest
+    outputs:
+      flavor: ${{ steps.meta.outputs.flavor }}
+      version: ${{ steps.meta.outputs.version }}
+      releaseType: ${{ steps.meta.outputs.releaseType }}
+      prerelease: ${{ steps.meta.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve flavor and version from the tag
+        id: meta
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            FLAVOR="${{ github.event.inputs.flavor }}"
+            VERSION="${{ github.event.inputs.version }}"
+            RELEASE_TYPE="${{ github.event.inputs.releaseType }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+            # Optional "<flavor>-" prefix; no prefix means mainline.
+            if [[ "$TAG" =~ ^([A-Za-z]+)-([0-9][0-9.]*)-(release|beta[0-9]*|alpha[0-9]*)$ ]]; then
+              FLAVOR="${BASH_REMATCH[1]}"; VERSION="${BASH_REMATCH[2]}"; RELEASE_TYPE="${BASH_REMATCH[3]}"
+            elif [[ "$TAG" =~ ^([0-9][0-9.]*)-(release|beta[0-9]*|alpha[0-9]*)$ ]]; then
+              FLAVOR="mainline"; VERSION="${BASH_REMATCH[1]}"; RELEASE_TYPE="${BASH_REMATCH[2]}"
+            else
+              echo "Tag '$TAG' is not <flavor->x.y.z.w-<release|betaNN|alphaNN>"; exit 1
+            fi
+          fi
+          FLAVOR="$(echo "$FLAVOR" | tr '[:upper:]' '[:lower:]')"
+          PRERELEASE=true; [ "$RELEASE_TYPE" = "release" ] && PRERELEASE=false
+          echo "flavor=$FLAVOR" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "releaseType=$RELEASE_TYPE" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "flavor=$FLAVOR version=$VERSION type=$RELEASE_TYPE"
+
+      - name: Lint Core for class/spec leakage
+        shell: pwsh
+        run: ./build/lint-core.ps1
+
+      - name: Syntax-check every Lua file
+        shell: bash
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 > /dev/null
+          status=0
+          while IFS= read -r f; do
+            luac5.1 -p "$f" || status=1
+          done < <(git ls-files '*.lua' | grep -v '^Libs/')
+          exit $status
+
+      - name: Smoke-load every flavor for every class
+        shell: pwsh
+        run: ./build/smoke.ps1 -Lua lua5.1
+
+      - name: Stage flavor
+        shell: pwsh
+        run: |
+          $zip = ./build/stage.ps1 -Flavor "${{ steps.meta.outputs.flavor }}" -Version "${{ steps.meta.outputs.version }}" -ReleaseType "${{ steps.meta.outputs.releaseType }}" -OutDir "${{ github.workspace }}/dist" | Select-Object -Last 1
+          "ZIP_PATH=$zip" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TwintopInsanityBar-${{ steps.meta.outputs.flavor }}-${{ steps.meta.outputs.version }}-${{ steps.meta.outputs.releaseType }}
+          path: ${{ env.ZIP_PATH }}
+          if-no-files-found: error
+
+      - name: Attach to GitHub release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIP_PATH }}
+          prerelease: ${{ steps.meta.outputs.prerelease }}
+          generate_release_notes: false
+
+  publish:
+    # Site uploads through the BigWigs packager, which reads X-Curse-Project-ID / X-WoWI-ID / X-Wago-ID
+    # from the TOC. Mainline only until the sites expose a Forever game version; skipped when no token
+    # secret is configured so a fork or a Forever tag never fails here.
+    name: Publish to addon sites
+    needs: stage
+    if: github.event_name == 'push' && needs.stage.outputs.flavor == 'mainline'
+    runs-on: ubuntu-latest
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+      WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Check for site credentials
+        id: creds
+        shell: bash
+        run: |
+          if [ -z "$CF_API_KEY" ] && [ -z "$WAGO_API_TOKEN" ] && [ -z "$WOWI_API_TOKEN" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"; echo "No site tokens configured; skipping."
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.creds.outputs.enabled == 'true'
+        with:
+          fetch-depth: 0
+
+      - name: Package and upload with the BigWigs packager
+        if: steps.creds.outputs.enabled == 'true'
+        uses: BigWigsMods/packager@v2
+        with:
+          # .pkgmeta ignores the other flavors and the build tooling; -o skips creating another GitHub
+          # release (the stage job already attached the canonical zip).
+          args: -m .pkgmeta -o

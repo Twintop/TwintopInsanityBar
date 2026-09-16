@@ -1,0 +1,591 @@
+local _, TRB = ...
+TRB.Classes = TRB.Classes or {}
+TRB.Classes.Warlock = TRB.Classes.Warlock or {}
+
+---@class TRB.Classes.Warlock.AfflictionSpells : TRB.Classes.SpecializationSpellsBase
+---@field public seedOfCorruption TRB.Classes.SpellBase
+---@field public unstableAffliction TRB.Classes.SpellBase
+---@field public darkHarvest TRB.Classes.SpellBase
+---@field public shadowOfDeath TRB.Classes.SpellBase
+---@field public shardInstability TRB.Classes.SpellBase
+TRB.Classes.Warlock.AfflictionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Warlock.AfflictionSpells.__index = TRB.Classes.Warlock.AfflictionSpells
+
+function TRB.Classes.Warlock.AfflictionSpells:New()
+    ---@type TRB.Classes.SpecializationSpellsBase
+    local base = TRB.Classes.SpecializationSpellsBase
+    self = setmetatable(base:New(), TRB.Classes.Warlock.AfflictionSpells) --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+
+    self.seedOfCorruption = TRB.Classes.SpellBase:New({
+        id = 27243,
+        baseline = true,
+        resource = -1
+    })
+    self.unstableAffliction = TRB.Classes.SpellBase:New({
+        id = 1259790,
+        isTalent = true,
+        resource = -1
+    })
+    self.darkHarvest = TRB.Classes.SpellBase:New({
+        id = 1257052,
+        isTalent = true
+    })
+    self.shadowOfDeath = TRB.Classes.SpellBase:New({
+        id = 449638,
+        isTalent = true,
+        resource = 1
+    })
+    self.shardInstability = TRB.Classes.SpellBase:New({
+        id = 1260264,
+        isTalent = true,
+        buffId = 1260269,
+        maxStacks = 3
+    })
+
+    return self
+end
+
+---Fills barTextVariables for Affliction Warlock options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Warlock.AfflictionSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#seedOfCorruption", icon = spells.seedOfCorruption.icon, description = spells.seedOfCorruption.name, printInSettings = true },
+		{ variable = "#unstableAffliction", icon = spells.unstableAffliction.icon, description = spells.unstableAffliction.name, printInSettings = true },
+		{ variable = "#shadowOfDeath", icon = spells.shadowOfDeath.icon, description = spells.shadowOfDeath.name, printInSettings = true },
+		{ variable = "#shardInstability", icon = spells.shardInstability.icon, description = spells.shardInstability.name, printInSettings = true },
+	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$mana", description = L["WarlockAfflictionBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["WarlockAfflictionBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["WarlockAfflictionBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+        { variable = "$casting", description = L["WarlockAfflictionBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingShards", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingFragments", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingSoulShards", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+					
+		{ variable = "$soulShards", description = L["WarlockAfflictionBarTextVariable_soulShards"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsPlusCasting", description = L["WarlockAfflictionBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+
+		-- The Unstable Affliction glow says the proc is up but carries no numbers; these render "??".
+		{ variable = "$shardInstabilityTime", description = L["WarlockAfflictionBarTextVariable_shardInstabilityTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$shardInstabilityStacks", description = L["WarlockAfflictionBarTextVariable_shardInstabilityStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$shardInstabilityMaxStacks", description = L["WarlockAfflictionBarTextVariable_shardInstabilityMaxStacks"], printInSettings = true, color = false },
+	})
+end
+
+---Gets built-in castbar channel tick profiles for Affliction, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles()
+	return {
+		-- Drain Life
+		[234153] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
+        -- Dark Harvest
+		[1257052] = { mode = "fixedCount", baseDuration = 3, tickCount = 4, firstTickAtStart = true },
+        -- Drain Soul
+        [198590] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
+        -- Malefic Grasp
+        [1261153] = { mode = "pandemic", baseDuration = 4, tickCount = 4, chains = true },
+    }
+end
+
+---@class TRB.Classes.Warlock.DemonologySpells : TRB.Classes.SpecializationSpellsBase
+---@field public shadowBolt TRB.Classes.SpellBase
+---@field public demonbolt TRB.Classes.SpellBase
+---@field public infernalBolt TRB.Classes.SpellBase
+---@field public ruination TRB.Classes.SpellBase
+---@field public handOfGuldan TRB.Classes.SpellBase
+---@field public shadowOfDeath TRB.Classes.SpellBase
+---@field public summonFelguard TRB.Classes.SpellBase
+---@field public summonDemonicTyrant TRB.Classes.SpellBase
+---@field public callDreadstalkers TRB.Classes.SpellBase
+---@field public demonicCalling TRB.Classes.SpellBase
+---@field public dominionOfArgus TRB.Classes.SpellBase
+---@field public dominionOfArgus2 TRB.Classes.SpellBase
+---@field public dominionOfArgus3 TRB.Classes.SpellBase
+---@field public demonicCore TRB.Classes.SpellBase
+TRB.Classes.Warlock.DemonologySpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Warlock.DemonologySpells.__index = TRB.Classes.Warlock.DemonologySpells
+
+function TRB.Classes.Warlock.DemonologySpells:New()
+    ---@type TRB.Classes.SpecializationSpellsBase
+    local base = TRB.Classes.SpecializationSpellsBase
+    self = setmetatable(base:New(), TRB.Classes.Warlock.DemonologySpells) --[[@as TRB.Classes.Warlock.DemonologySpells]]
+
+    self.shadowBolt = TRB.Classes.SpellBase:New({
+        id = 686,
+        baseline = true,
+        resource = 1
+    })
+    self.demonbolt = TRB.Classes.SpellBase:New({
+        id = 264178,
+        baseline = true,
+        resource = 2
+    })
+    self.infernalBolt = TRB.Classes.SpellBase:New({
+        id = 434506,
+        isTalent = true,
+        resource = 3,
+        duration = 20
+    })
+    self.ruination = TRB.Classes.SpellBase:New({
+        id = 434635,
+        isTalent = true,
+        duration = 20
+    })
+    self.handOfGuldan = TRB.Classes.SpellBase:New({
+        id = 105174,
+        baseline = true,
+        resource = -3
+    })
+    self.shadowOfDeath = TRB.Classes.SpellBase:New({
+        id = 449638,
+        isTalent = true,
+        resource = 3
+    })
+    self.summonFelguard = TRB.Classes.SpellBase:New({
+        id = 30146,
+        baseline = true,
+        resource = -1
+    })
+    self.summonDemonicTyrant = TRB.Classes.SpellBase:New({
+        id = 265187
+    })
+    self.callDreadstalkers = TRB.Classes.SpellBase:New({
+        id = 104316,
+        isTalent = true,
+        resource = -2
+    })
+    self.demonicCalling = TRB.Classes.SpellBase:New({
+        id = 1276947,
+        isTalent = true,
+        resourceMod = 1
+    })
+    --1/4 ranks
+    self.dominionOfArgus = TRB.Classes.SpellBase:New({
+        id = 1276166,
+        talentId = 1276163,
+        isTalent = true,
+        duration = 15,
+        durationMod = 5,
+        resourceMod = 1
+    })
+    --2/4 and 3/4 ranks
+    self.dominionOfArgus2 = TRB.Classes.SpellBase:New({
+        id = 1276166,
+        talentId = 1276190,
+        isTalent = true,
+        duration = 15,
+        durationMod = 5,
+        resourceMod = 1
+    })
+    --4/4 ranks
+    self.dominionOfArgus3 = TRB.Classes.SpellBase:New({
+        id = 1276166,
+        talentId = 1276222,
+        isTalent = true,
+        duration = 15,
+        durationMod = 5,
+        resourceMod = 1
+    })
+    self.demonicCore = TRB.Classes.SpellBase:New({
+        id = 264173,
+        duration = 20,
+        maxStacks = 4
+    })
+
+    return self
+end
+
+---Fills barTextVariables for Demonology Warlock options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Warlock.DemonologySpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#shadowBolt", icon = spells.shadowBolt.icon, description = spells.shadowBolt.name, printInSettings = true },
+		{ variable = "#demonbolt", icon = spells.demonbolt.icon, description = spells.demonbolt.name, printInSettings = true },
+		{ variable = "#infernalBolt", icon = spells.infernalBolt.icon, description = spells.infernalBolt.name, printInSettings = true },
+		{ variable = "#ruination", icon = spells.ruination.icon, description = spells.ruination.name, printInSettings = true },
+		{ variable = "#handOfGuldan", icon = spells.handOfGuldan.icon, description = spells.handOfGuldan.name, printInSettings = true },
+		{ variable = "#shadowOfDeath", icon = spells.shadowOfDeath.icon, description = spells.shadowOfDeath.name, printInSettings = true },
+		{ variable = "#summonFelguard", icon = spells.summonFelguard.icon, description = spells.summonFelguard.name, printInSettings = true },
+		{ variable = "#callDreadstalkers", icon = spells.callDreadstalkers.icon, description = spells.callDreadstalkers.name, printInSettings = true },
+		{ variable = "#demonicCore", icon = spells.demonicCore.icon, description = spells.demonicCore.name, printInSettings = true },
+		{ variable = "#doa", icon = spells.dominionOfArgus.icon, description = spells.dominionOfArgus.name, printInSettings = true },
+	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$mana", description = L["WarlockDemonologyBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["WarlockDemonologyBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["WarlockDemonologyBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["WarlockDemonologyBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingShards", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingFragments", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingSoulShards", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+					
+		{ variable = "$soulShards", description = L["WarlockDemonologyBarTextVariable_soulShards"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsMax", description = L["WarlockDemonologyBarTextVariable_soulShardsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsPlusCasting", description = L["WarlockDemonologyBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+
+		-- The Demonbolt glow stays lit unchanged as stacks come and go; these render "??" without it.
+		{ variable = "$demonicCoreTime", description = L["WarlockDemonologyBarTextVariable_demonicCoreTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$demonicCoreStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreStacks"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$demonicCoreMaxStacks", description = L["WarlockDemonologyBarTextVariable_demonicCoreMaxStacks"], printInSettings = true, color = false },
+
+		{ variable = "$doaTime", description = L["WarlockDemonologyBarTextVariable_doaTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+
+		{ variable = "$infernalBoltTime", description = L["WarlockDemonologyBarTextVariable_infernalBoltTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+		{ variable = "$ruinationTime", description = L["WarlockDemonologyBarTextVariable_ruinationTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+	})
+end
+
+---Gets built-in castbar channel tick profiles for Demonology, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles()
+	return {
+		-- Drain Life
+		[234153] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
+    }
+end
+
+
+---@class TRB.Classes.Warlock.DestructionSpells : TRB.Classes.SpecializationSpellsBase
+---@field public incinerate TRB.Classes.SpellBase
+---@field public diabolicEmbers TRB.Classes.SpellBase
+---@field public soulFire TRB.Classes.SpellBase
+---@field public infernalBolt TRB.Classes.SpellBase
+---@field public chaosBolt TRB.Classes.SpellBase
+---@field public ruination TRB.Classes.SpellBase
+TRB.Classes.Warlock.DestructionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Warlock.DestructionSpells.__index = TRB.Classes.Warlock.DestructionSpells
+
+function TRB.Classes.Warlock.DestructionSpells:New()
+    ---@type TRB.Classes.SpecializationSpellsBase
+    local base = TRB.Classes.SpecializationSpellsBase
+    self = setmetatable(base:New(), TRB.Classes.Warlock.DestructionSpells) --[[@as TRB.Classes.Warlock.DestructionSpells]]
+
+    self.incinerate = TRB.Classes.SpellBase:New({
+        id = 29722,
+        baseline = true,
+        resource = 2
+    })
+    self.diabolicEmbers = TRB.Classes.SpellBase:New({
+        id = 387173,
+        isTalent = true,
+        resourceMod = 2
+    })
+    self.soulFire = TRB.Classes.SpellBase:New({
+        id = 6353,
+        isTalent = true,
+        resource = 10
+    })
+    self.infernalBolt = TRB.Classes.SpellBase:New({
+        id = 434506,
+        isTalent = true,
+        resource = 20,
+        duration = 20
+    })
+    self.chaosBolt = TRB.Classes.SpellBase:New({
+        id = 116858,
+        baseline = true,
+        resource = -20
+    })
+    self.ruination = TRB.Classes.SpellBase:New({
+        id = 434635,
+        isTalent = true,
+        duration = 20
+    })
+
+    return self
+end
+
+---Fills barTextVariables for Destruction Warlock options panel display
+---@param specCacheEntry TRB.Classes.SpecCache
+function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEntry)
+	local L = TRB.Localization
+	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
+		specCacheEntry.spellsData.spells = TRB.Classes.Warlock.DestructionSpells:New()
+	end
+	specCacheEntry.spellsData:FillSpellData()
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#incinerate", icon = spells.incinerate.icon, description = spells.incinerate.name, printInSettings = true },
+		{ variable = "#soulFire", icon = spells.soulFire.icon, description = spells.soulFire.name, printInSettings = true },
+		{ variable = "#infernalBolt", icon = spells.infernalBolt.icon, description = spells.infernalBolt.name, printInSettings = true },
+		{ variable = "#chaosBolt", icon = spells.chaosBolt.icon, description = spells.chaosBolt.name, printInSettings = true },
+		{ variable = "#ruination", icon = spells.ruination.icon, description = spells.ruination.name, printInSettings = true },
+	})
+	local varCategory = TRB.Functions.BarText.VariableCategory
+	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
+		{ variable = "$mana", description = L["WarlockDestructionBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaPercent", description = L["WarlockDestructionBarTextVariable_manaPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$manaMax", description = L["WarlockDestructionBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$casting", description = L["WarlockDestructionBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingFragments", description = L["WarlockDestructionBarTextVariable_castingFragments"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingShards", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$castingSoulShards", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+		{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+        
+		{ variable = "$soulShards", description = L["WarlockDestructionBarTextVariable_soulShards"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsMax", description = L["WarlockDestructionBarTextVariable_soulShardsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+		{ variable = "$soulShardsPlusCasting", description = L["WarlockDestructionBarTextVariable_soulShardsPlusCasting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$comboPointsPlusCasting", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+
+		{ variable = "$infernalBoltTime", description = L["WarlockDestructionBarTextVariable_infernalBoltTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+		{ variable = "$ruinationTime", description = L["WarlockDestructionBarTextVariable_ruinationTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+	})
+end
+
+---Gets built-in castbar channel tick profiles for Destruction, keyed by spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles()
+	return {
+		-- Drain Life
+		[234153] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
+        -- Channel Demonfire
+		[196447] = { mode = "fixedCount", baseDuration = 3, tickCount = 15 },
+    }
+end
+
+---Gets built-in castbar tick modifiers for Discipline (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickModifiers()
+	return {
+		-- Channel Demonfire
+		[196447] = {
+			-- Raging Demonfirre: +2 bolt while talented
+			{ talentId = 387166, bonusTicks = 2 },
+		},
+	}
+end
+
+
+--[[
+    BarGroups Factory for Warlock
+    Creates the appropriate BarGroup instances for each Warlock specialization.
+    
+    All specs use Soul Shards as secondary resource:
+    Affliction: Primary bar (N=1) + Soul Shards (N=5) - binary fill
+    Demonology: Primary bar (N=1) + Soul Shards (N=5) - binary fill
+    Destruction: Primary bar (N=1) + Soul Shards (N=5) - percentage fill (partial shards)
+]]
+
+---@class TRB.Classes.Warlock.BarGroupsFactory
+TRB.Classes.Warlock.BarGroupsFactory = {}
+TRB.Classes.Warlock.BarGroupsFactory.__index = TRB.Classes.Warlock.BarGroupsFactory
+
+---Creates BarGroup instances for the specified Warlock specialization
+---@param specId integer # 1=Affliction, 2=Demonology, 3=Destruction
+---@param parentFrame Frame # The parent frame to attach bar groups to
+---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
+function TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+    local barGroups = {}
+
+    -- Primary mana bar (1 node)
+    barGroups.primary = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame",
+        1,
+        true -- isPrimary
+    )
+
+    -- Soul Shards (5 nodes) - all specs use secondary resource
+    -- Secondary bars are parented to UIParent for independent visibility
+    barGroups.secondary = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame_ComboPoint",
+        5,
+        false -- not primary
+    )
+
+    -- Health bar
+    barGroups.health = TRB.Classes.BarGroup:New(
+        UIParent,
+        "TwintopResourceBarFrame_Health",
+        1,
+        false -- not primary
+    )
+
+    return barGroups
+end
+
+---Gets the bar group configuration for a spec
+---@param specId integer
+---@return table # Configuration describing the bar groups for this spec
+function TRB.Classes.Warlock.BarGroupsFactory:GetSpecConfiguration(specId)
+    return {
+        primary = {
+            maxNodes = 1,
+            isPrimary = true,
+            resourceType = "Mana"
+        },
+        secondary = {
+            maxNodes = 5,
+            isPrimary = false,
+            resourceType = "SoulShards"
+        },
+        health = {
+            maxNodes = 1,
+            isPrimary = false,
+            resourceType = "Health"
+        }
+    }
+end
+
+-- Register barTextVariables fillers for cross-class options panel support
+TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
+TRB.Data.barTextVariablesRegistry["warlock_affliction"] = TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["warlock_demonology"] = TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables
+
+-- Register built-in castbar channel tick profiles for spec default settings
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["warlock_affliction"] = TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warlock_demonology"] = TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles
+
+-- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
+TRB.Data.castbarTickModifiersRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickModifiers
+
+-- Register audio cue vocabularies
+do
+	local L = TRB.Localization
+
+	---Destruction tracks Soul Shard fragments, so its threshold runs to one decimal place.
+	---@param decimals number
+	local function SoulShardSource(decimals)
+		return {
+			id = "soulShards",
+			label = L["WarlockAudioCueSourceSoulShards"],
+			description = L["WarlockAudioCueSourceSoulShardsDescription"],
+			sliderLabel = L["WarlockSoulShardThresholdSliderTitle"],
+			defaultName = L["WarlockAudioCueSoulShardDefaultName"],
+			min = 0,
+			max = 5,
+			step = decimals > 0 and 0.1 or 1,
+			decimals = decimals,
+			compare = "atLeast",
+			requiresCombat = true,
+			legacyIds = { "soulShardThreshold1", "soulShardThreshold2" },
+			defaultCues = {
+				{
+					id = "soulShardThreshold1",
+					name = L["WarlockAudioSoulShardThreshold1"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 3,
+				},
+				{
+					id = "soulShardThreshold2",
+					name = L["WarlockAudioSoulShardThreshold2"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 5,
+				},
+			},
+		}
+	end
+
+	local infernalBolt = {
+		id = "infernalBolt",
+		label = L["WarlockAudioInfernalBolt"],
+		trigger = L["WarlockAudioTriggerInfernalBolt"],
+		tooltip = L["WarlockAudioCheckboxInfernalBoltTooltip"],
+	}
+	local ruination = {
+		id = "ruination",
+		label = L["WarlockAudioRuination"],
+		trigger = L["WarlockAudioTriggerRuination"],
+		tooltip = L["WarlockAudioCheckboxRuinationTooltip"],
+	}
+
+	TRB.Functions.AudioCues:Register("warlock_affliction", {
+		counters = { SoulShardSource(0) },
+	})
+
+	TRB.Functions.AudioCues:Register("warlock_demonology", {
+		builtIns = {
+			{
+				id = "demonicCore",
+				label = L["WarlockAudioDemonicCore"],
+				trigger = L["WarlockAudioTriggerDemonicCore"],
+				tooltip = L["WarlockAudioCheckboxDemonicCoreTooltip"],
+			},
+			infernalBolt,
+			ruination,
+		},
+		counters = { SoulShardSource(0) },
+	})
+
+	TRB.Functions.AudioCues:Register("warlock_destruction", {
+		builtIns = { infernalBolt, ruination },
+		counters = { SoulShardSource(1) },
+	})
+end
+
+-- Spec descriptors: the traits Core needs to know about these specs (see Core\Classes\SpecDescriptor.lua).
+-- Everything class-specific that shared code used to hard-code by class/spec id is declared here instead.
+do
+	local L = TRB.Localization
+	local SpecDescriptor = TRB.Classes.SpecDescriptor
+	SpecDescriptor:Declare("warlock_affliction", {
+		manaBar = true,
+		secondary = { exportable = true },
+		barTextAnchorFrames = {
+			{ label = L["SoulShard1"], frame = "ComboPoint_1" }, { label = L["SoulShard2"], frame = "ComboPoint_2" }, { label = L["SoulShard3"], frame = "ComboPoint_3" }, { label = L["SoulShard4"], frame = "ComboPoint_4" },
+			{ label = L["SoulShard5"], frame = "ComboPoint_5" },
+		},
+	})
+	SpecDescriptor:Declare("warlock_demonology", {
+		manaBar = true,
+		secondary = { exportable = true },
+		barTextAnchorFrames = {
+			{ label = L["SoulShard1"], frame = "ComboPoint_1" }, { label = L["SoulShard2"], frame = "ComboPoint_2" }, { label = L["SoulShard3"], frame = "ComboPoint_3" }, { label = L["SoulShard4"], frame = "ComboPoint_4" },
+			{ label = L["SoulShard5"], frame = "ComboPoint_5" },
+		},
+	})
+	SpecDescriptor:Declare("warlock_destruction", {
+		manaBar = true,
+		secondary = { exportable = true, thresholdDecimals = 1 },
+		barTextAnchorFrames = {
+			{ label = L["SoulShard1"], frame = "ComboPoint_1" }, { label = L["SoulShard2"], frame = "ComboPoint_2" }, { label = L["SoulShard3"], frame = "ComboPoint_3" }, { label = L["SoulShard4"], frame = "ComboPoint_4" },
+			{ label = L["SoulShard5"], frame = "ComboPoint_5" },
+		},
+	})
+end

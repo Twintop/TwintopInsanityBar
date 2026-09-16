@@ -1,0 +1,22 @@
+# BigWigs packager metadata for the MAINLINE flavor. Used by the optional site-upload job in
+# .github/workflows/release.yml; the canonical zips come from build/stage.ps1, which needs none of this.
+# Other flavors are excluded here because the packager cannot rename TOC files: the mainline TOC is the
+# one at the repository root.
+package-as: TwintopInsanityBar
+
+enable-nolib-creation: no
+
+ignore:
+    - Flavors/Forever
+    - build
+    - dist
+    - docs
+    - memories
+    - .github
+    - .vscode
+    - .VSCodeCounter
+    - .patches
+    - .luarc.json
+    - .pkgmeta
+    - TwintopInsanityBar.wowproj
+    - TwintopInsanityBar.wowsln

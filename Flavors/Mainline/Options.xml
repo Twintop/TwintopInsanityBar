@@ -1,0 +1,16 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<!-- Mainline flavor: per-class options panels and default-settings factories. Loads for every class. -->
+	<Script file="ClassModules\Options\DeathKnightOptions.lua"/>
+	<Script file="ClassModules\Options\DemonHunterOptions.lua"/>
+	<Script file="ClassModules\Options\DruidOptions.lua"/>
+	<Script file="ClassModules\Options\EvokerOptions.lua"/>
+	<Script file="ClassModules\Options\HunterOptions.lua"/>
+	<Script file="ClassModules\Options\MageOptions.lua"/>
+	<Script file="ClassModules\Options\MonkOptions.lua"/>
+	<Script file="ClassModules\Options\PaladinOptions.lua"/>
+	<Script file="ClassModules\Options\PriestOptions.lua"/>
+	<Script file="ClassModules\Options\RogueOptions.lua"/>
+	<Script file="ClassModules\Options\ShamanOptions.lua"/>
+	<Script file="ClassModules\Options\WarlockOptions.lua"/>
+	<Script file="ClassModules\Options\WarriorOptions.lua"/>
+</Ui>

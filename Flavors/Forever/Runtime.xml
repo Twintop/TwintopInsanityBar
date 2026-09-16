@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<!-- Forever flavor: migrations (none yet), news content, the runtime template and one runtime module per class (each returns early unless it is the player's class). -->
+	<Script file="Migrations.lua"/>
+	<Script file="News.lua"/>
+	<Script file="ClassModules\Templates\Runtime.lua"/>
+	<Script file="ClassModules\Warrior.lua"/>
+	<Script file="ClassModules\Paladin.lua"/>
+	<Script file="ClassModules\Hunter.lua"/>
+	<Script file="ClassModules\Rogue.lua"/>
+	<Script file="ClassModules\Priest.lua"/>
+	<Script file="ClassModules\Shaman.lua"/>
+	<Script file="ClassModules\Mage.lua"/>
+	<Script file="ClassModules\Warlock.lua"/>
+	<Script file="ClassModules\Druid.lua"/>
+</Ui>

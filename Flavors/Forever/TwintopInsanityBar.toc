@@ -1,8 +1,8 @@
 ﻿## Interface: 120100
 ## X-TargetInterface: 120100
 ## X-VersionCheck: disabled
-## X-Flavor: mainline
-## X-FlavorCheck: enabled
+## X-Flavor: forever
+## X-FlavorCheck: disabled
 ## Title: Twintop's Resource Bar
 ## Title-deDE: Twintops Ressourcenleiste
 ## Title-esES: Barra de Recursos de Twintop
@@ -17,13 +17,13 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 12.1.0.10
-## X-ReleaseType: release
-## X-ReleaseDate: 2026-09-09
-## SavedVariables: TwintopInsanityBarSettings
+## Version: 1.0.0.0
+## X-ReleaseType: alpha
+## X-ReleaseDate: 2026-09-16
+## SavedVariables: TwintopInsanityBarForeverSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
-## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
+## Notes: Multi-class Resource Bar for World of Warcraft: Forever, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
 ## Category-enUS: Combat
 ## Category-deDE: Kampf
 ## Category-esES: Combate
@@ -55,12 +55,12 @@ Libs\LibEditMode\embed.xml
 Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.xml
 
 # Flavor manifest: game lineage identity plus class/spec registry data. Must load before Core.
-Flavors\Mainline\Manifest.lua
+Flavors\Forever\Manifest.lua
 
 # Core and flavor stages interleave; each XML file says what it contains and why it sits where it does.
 Core\Stage1.xml
-Flavors\Mainline\Classes.xml
+Flavors\Forever\Classes.xml
 Core\Stage2.xml
-Flavors\Mainline\Runtime.xml
+Flavors\Forever\Runtime.xml
 Core\Stage3.xml
-Flavors\Mainline\Options.xml
+Flavors\Forever\Options.xml
