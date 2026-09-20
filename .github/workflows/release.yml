@@ -71,6 +71,27 @@ jobs:
           echo "releaseType=$RELEASE_TYPE" >> "$GITHUB_OUTPUT"
           echo "flavor=$FLAVOR version=$VERSION type=$RELEASE_TYPE"
 
+      - name: Require the tag version to match the flavor TOC
+        if: steps.meta.outputs.version != ''
+        shell: bash
+        run: |
+          FLAVOR="${{ steps.meta.outputs.flavor }}"
+          VERSION="${{ steps.meta.outputs.version }}"
+          toc_version() { tr -d '\r' < "$1" | sed -n 's/^\xEF\xBB\xBF//; s/^## Version:[[:space:]]*//p' | head -n 1; }
+          if [ "$FLAVOR" = "mainline" ]; then TOC="TwintopInsanityBar.toc"; else TOC="$(find Flavors -mindepth 2 -maxdepth 2 -ipath "Flavors/$FLAVOR/TwintopInsanityBar.toc" | head -n 1)"; fi
+          if [ -z "$TOC" ] || [ ! -f "$TOC" ]; then echo "No TOC for flavor '$FLAVOR'"; exit 1; fi
+          TOC_VERSION="$(toc_version "$TOC")"
+          if [ "$TOC_VERSION" = "$VERSION" ]; then echo "$TOC is $TOC_VERSION"; exit 0; fi
+          echo "Tag version $VERSION does not match $TOC (## Version: $TOC_VERSION), so this tag is not a $FLAVOR release."
+          # Name the flavor whose TOC does carry this version, if any, so the fix is one retag.
+          for other in TwintopInsanityBar.toc Flavors/*/TwintopInsanityBar.toc; do
+            if [ "$(toc_version "$other")" = "$VERSION" ]; then
+              prefix=""; [ "$other" != "TwintopInsanityBar.toc" ] && prefix="$(basename "$(dirname "$other")" | tr '[:upper:]' '[:lower:]')-"
+              echo "$other is $VERSION; tag it as ${prefix}${VERSION}-${{ steps.meta.outputs.releaseType }}"
+            fi
+          done
+          exit 1
+
       - name: Lint Core for class/spec leakage
         shell: pwsh
         run: ./build/lint-core.ps1
