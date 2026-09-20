@@ -85,13 +85,31 @@ saved-variables replay and golden-snapshot options used to verify refactors.
 
 ## 4. Releasing
 
-Push a tag; the workflow in `.github\workflows\release.yml` lints, syntax-checks, smoke-loads, stages
-the matching flavor with the tag's version stamped into the TOC, and attaches the zip to a GitHub
-release:
+Before tagging, stamp `## Version:` and `## X-ReleaseDate:` in the flavor's TOC and add the release's
+section to the top of `Flavors\<Flavor>\News.lua`; the packager rewrites neither. Then push a tag. The
+workflow in `.github\workflows\release.yml` lints, syntax-checks, smoke-loads, stages the flavor with
+`stage.ps1` as a workflow artifact, and hands the checkout to the BigWigs packager, which builds the
+zip, creates the GitHub release with it attached, and uploads to every addon site whose token secret
+exists (`CF_API_KEY`, `WAGO_API_TOKEN`, `WOWI_API_TOKEN`):
 
 - `12.1.0.11-release`, `12.1.0.11-beta01`, `12.1.0.11-alpha03` — mainline
-- `forever-1.0.0.0-release` — World of Warcraft: Forever
+- `forever-1.60.1.0-release` — World of Warcraft: Forever
 
-Site uploads (CurseForge / Wago / WoWInterface) run for mainline only and only when the
-`CF_API_KEY` / `WAGO_API_TOKEN` / `WOWI_API_TOKEN` repository secrets exist, through the BigWigs
-packager and `.pkgmeta`. Without secrets the job skips itself.
+Both tags may point at the same commit. A tag containing `alpha` or `beta` is a pre-release on every
+site. The changelog everywhere (GitHub release body, CurseForge, Wago, WoWInterface) is the newest
+`# <version>` section of that flavor's `News.lua`, extracted into `CHANGELOG.md` by the workflow with
+`(#NNN)` links pointed at GitHub issues and `(tab:...)` links flattened to text; touch up the site copy
+by hand if it reads oddly.
+
+The packager only reads the TOC at the repository root and the ids in its `X-Curse-Project-ID` /
+`X-WoWI-ID` / `X-Wago-ID` lines, so the workflow copies `Flavors\Forever\TwintopInsanityBar.toc` into
+place for a Forever tag and selects `.pkgmeta-forever` (which ignores `Flavors\Mainline`) instead of
+`.pkgmeta` (which ignores `Flavors\Forever`). CurseForge and Wago have a Forever game version and the
+packager maps the `16xxx` interface number to it; WoWInterface has none, and the packager skips that
+upload with a warning.
+
+**Dry run.** Run the workflow by hand (workflow_dispatch) with a flavor: the packager builds the zip
+with `-d` (no uploads, no GitHub release) and the zip is attached to the run as the `packager-<flavor>`
+artifact. Locally it needs bash, `zip`, `jq`, and pandoc, which WSL has (`sudo apt install zip jq
+pandoc`); clone the packager and run `release.sh -d -m .pkgmeta` from the checkout root. Output lands in
+`.release\`, which is git-ignored.

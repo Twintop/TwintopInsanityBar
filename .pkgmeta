@@ -1,13 +1,18 @@
-# BigWigs packager metadata for the MAINLINE flavor. Used by the optional site-upload job in
-# .github/workflows/release.yml; the canonical zips come from build/stage.ps1, which needs none of this.
-# Other flavors are excluded here because the packager cannot rename TOC files: the mainline TOC is the
-# one at the repository root.
+# BigWigs packager metadata for the MAINLINE flavor; .pkgmeta-forever is the Forever counterpart.
+# The packager reads the TOC at the repository root, so .github/workflows/release.yml copies the Forever
+# TOC into place before running with -m .pkgmeta-forever. CHANGELOG.md is generated from the flavor's
+# News.lua by the workflow; it is read from the repository root and never shipped in the zip.
 package-as: TwintopInsanityBar
 
 enable-nolib-creation: no
 
+manual-changelog:
+    filename: CHANGELOG.md
+    markup-type: markdown
+
 ignore:
     - Flavors/Forever
+    - CHANGELOG.md
     - build
     - dist
     - docs
@@ -18,5 +23,6 @@ ignore:
     - .patches
     - .luarc.json
     - .pkgmeta
+    - .pkgmeta-forever
     - TwintopInsanityBar.wowproj
     - TwintopInsanityBar.wowsln

@@ -1,0 +1,27 @@
+# BigWigs packager metadata for the World of Warcraft: FOREVER flavor. Selected with -m .pkgmeta-forever
+# after .github/workflows/release.yml has copied Flavors/Forever/TwintopInsanityBar.toc to the repository
+# root, which is the only place the packager looks for a TOC.
+package-as: TwintopInsanityBar
+
+enable-nolib-creation: no
+
+manual-changelog:
+    filename: CHANGELOG.md
+    markup-type: markdown
+
+ignore:
+    - Flavors/Mainline
+    - CHANGELOG.md
+    - build
+    - dist
+    - docs
+    - memories
+    - .github
+    - .vscode
+    - .VSCodeCounter
+    - .patches
+    - .luarc.json
+    - .pkgmeta
+    - .pkgmeta-forever
+    - TwintopInsanityBar.wowproj
+    - TwintopInsanityBar.wowsln
