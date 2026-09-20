@@ -12,11 +12,15 @@ local content = [====[
 
 ---
 
-# 12.1.0.11-release (2026-09-14)
+# 12.1.0.11-release (2026-09-20)
 ## General
 
 - [#837](#837) Fixed an issue where predictive resource spending would not show up for Mana bar users.
 - Fix Color Indicators added in a newer version sometimes missing from the Color Indicator Priority list when the saved list still carried an indicator that no longer exists.
+
+### Localization
+
+- [#839 - @MOSS099](#839) Updated translations for Simplified Chinese (zhCN).
 
 ## Priest
 ### Shadow
@@ -26,6 +30,7 @@ local content = [====[
 ## Shaman
 ### Elemental
 
+- Add predictive resource generation for Stormkeeper when talented into Stormwell.
 - Add predictive resource spending for hardcasted Elemental Blast.
 
 ## Warlock

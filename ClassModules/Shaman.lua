@@ -608,6 +608,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * snapshots[spells.chainLightning.id].attributes.targetsHit
 			elseif spellId == spells.hex.id and talents:IsTalentActive(spells.inundate) and affectingCombat then
 				FillSnapshotDataCasting(spells.hex)
+			elseif spellId == spells.stormkeeper.id and talents:IsTalentActive(spells.stormwell) then
+				FillSnapshotDataCasting(spells.stormkeeper)
+
+				snapshotData.casting.resourceRaw = spells.stormwell.resource
+				snapshotData.casting.resourceFinal = spells.stormwell.resource
 			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.ascendance.castId then
