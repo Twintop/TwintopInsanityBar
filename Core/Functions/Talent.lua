@@ -16,7 +16,7 @@ function TRB.Functions.Talent:ArePvpTalentsActive()
 		local talents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs()
 		for _, pvpTalent in pairs(talents) do
 ---@diagnostic disable-next-line: missing-parameter
-			local spellId = select(6, GetPvpTalentInfoByID(pvpTalent))
+			local spellId = select(6, C_SpecializationInfo.GetPvpTalentInfo(pvpTalent))
 			if C_SpellBook.IsSpellKnown(spellId) then
 				return true
 			end

@@ -50,20 +50,21 @@ end
 ---Creates a new independent copy of NewSpecGlobalDefaults()
 ---@return TRB.Classes.Settings.SpecializationGlobalEnabled
 local function NewSpecGlobalDefaults()
+	-- Every toggle but the Font & Text tab's ships on: Global Options drives a fresh install until the user opts a spec out.
     return {
 		--specEnable = false,
-		bar = false,
-		comboPoints = false,
-		healthBar = false,
-		thresholdIcons = false,
-		displayBar = false,
+		bar = true,
+		comboPoints = true,
+		healthBar = true,
+		thresholdIcons = true,
+		displayBar = true,
 		displayText = false,
 		globalBarText = true,
 		textColors = false,
-		thresholdColors = false,
-		healthBarColors = false,
+		thresholdColors = true,
+		healthBarColors = true,
 		precision = false,
-		textures = false,
+		textures = true,
 		castbarDimensions = true,
 		castbarColors = true,
 		castbarOverlays = true,
@@ -80,8 +81,6 @@ local function NewSpecGlobalDefaults()
 		focusCastbarEmpower = true,
 		focusCastbarText = true,
 		focusCastbarShield = true,
-		-- Other Bars default to the global scope, like the cast bars: a GCD or Fatigue bar is the same
-		-- thing on every spec, so nobody should have to configure it forty times.
 		gcdDimensions = true,
 		gcdColors = true,
 		fatigueDimensions = true,
@@ -289,9 +288,11 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				migrations = {
 					healthBarText = true,
 					castBarText = true,
-					-- Both sets are already in the defaults above (Other Bars) and in the Hunter specs'
-					-- own bar text (Feign Death), so a fresh install must start with these marked done or
-					-- PortForwardSettings would add a second copy on the next login.
+					-- These sets are already in the defaults above (Target and Focus Cast Bars, Other Bars) and
+					-- in the Hunter specs' own bar text (Feign Death), so a fresh install must start with them
+					-- marked done or PortForwardSettings would add a second copy on the next login.
+					targetCastBarText = true,
+					focusCastBarText = true,
 					otherBarsText = true,
 					hunterFeignDeathBarText = true
 				}
@@ -1128,6 +1129,18 @@ function TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings(relati
 			}
 		}
 	}
+end
+
+---Default Target Cast Bar text; the fresh-install defaults and the targetCastBarText migration share it.
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultTargetCastBarTextSettings()
+	return self:LoadDefaultTargetFocusCastBarTextSettings("TargetCastBar", L["ResourceTargetCastbar"], "$targetCastingSpellName", "$targetCastTimeRemaining", "$targetCastTime", 20, 20)
+end
+
+---Default Focus Cast Bar text; the fresh-install defaults and the focusCastBarText migration share it.
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultFocusCastBarTextSettings()
+	return self:LoadDefaultTargetFocusCastBarTextSettings("FocusCastBar", L["ResourceFocusCastbar"], "$focusCastingSpellName", "$focusCastTimeRemaining", "$focusCastTime", 14, 12)
 end
 
 ---Gets the default bar text entry for one of the Other Bars: its remaining time, sitting on the bar
@@ -2461,6 +2474,15 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 
 	for x = 1, #castBarTextSettings do
 		table.insert(textSettings, castBarTextSettings[x])
+	end
+
+	-- Target and Focus Cast Bar text carries its own font sizes too. Existing users get it through the
+	-- targetCastBarText and focusCastBarText migrations.
+	for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultTargetCastBarTextSettings()) do
+		table.insert(textSettings, entry)
+	end
+	for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultFocusCastBarTextSettings()) do
+		table.insert(textSettings, entry)
 	end
 	return textSettings
 end

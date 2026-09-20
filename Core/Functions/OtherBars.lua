@@ -783,6 +783,55 @@ function TRB.Functions.OtherBars:RefreshVisibility()
 	SyncUpdater()
 end
 
+-- TEMPORARY DIAGNOSTIC (/trb otherbars), remove once the Forever mirror timers render: dumps each bar's
+-- resolved state and echoes raw MIRROR_TIMER_* payloads to chat until toggled off.
+local echoMirrorEvents = false
+local echoFrame = CreateFrame("Frame")
+echoFrame:SetScript("OnEvent", function(_, event, ...)
+	local parts = {}
+	for i = 1, select("#", ...) do
+		local v = select(i, ...)
+		parts[i] = issecretvalue(v) and ("<secret " .. type(v) .. ">") or tostring(v)
+	end
+	print("|cFFFF8800TRB OtherBars:|r " .. event .. "(" .. table.concat(parts, ", ") .. ")")
+end)
+
+function TRB.Functions.OtherBars:PrintDiagnostics()
+	local settings = GetActiveSettings()
+	print("|cFFFF8800TRB OtherBars:|r settings=" .. tostring(settings ~= nil) .. " compositeKey=" .. tostring(TRB.Data.character and TRB.Data.character.compositeKey) .. " updater=" .. tostring(updaterFrame:IsShown()))
+	for _, entry in ipairs(BARS) do
+		local barSettings, colors, visibility = GetBarConfig(entry.key)
+		local group, node = GetGroupNode(entry.key)
+		print(string.format("  %-10s bar=%s colors=%s vis=%s enabled=%s never=%s always=%s whenActive=%s forceHidden=%s group=%s node=%s active=%s max=%s",
+			entry.key, tostring(barSettings ~= nil), tostring(colors ~= nil), tostring(visibility ~= nil), tostring(IsEnabled(visibility)),
+			tostring(visibility and visibility.neverShow), tostring(visibility and visibility.alwaysShow), tostring(visibility and visibility.conditions and visibility.conditions.whenActive),
+			tostring(visibility ~= nil and IsForceHidden(visibility)), tostring(group ~= nil), tostring(node ~= nil), tostring(active[entry.key]), tostring(mirrorMax[entry.key])))
+	end
+	if GetMirrorTimerInfo ~= nil then
+		for i = 1, MIRROR_TIMER_COUNT do
+			local timer, value, maxValue, scale, paused, label = GetMirrorTimerInfo(i)
+			print(string.format("  GetMirrorTimerInfo(%d) = %s, %s, %s, %s, %s, %s", i, tostring(timer), tostring(value), tostring(maxValue), tostring(scale), tostring(paused), tostring(label)))
+		end
+		for _, entry in ipairs(BARS) do
+			if entry.timerName ~= nil then
+				local progress = GetMirrorTimerProgress(entry.timerName)
+				print("  GetMirrorTimerProgress(" .. entry.timerName .. ") = " .. (issecretvalue(progress) and ("<secret " .. type(progress) .. ">") or tostring(progress)))
+			end
+		end
+	end
+	local container = MirrorTimerContainer
+	print("  MirrorTimerContainer=" .. tostring(container ~= nil) .. " mirrorTimers=" .. tostring(container and container.mirrorTimers ~= nil) .. " hooks=" .. tostring(mirrorHooksInstalled) .. " registered=" .. tostring(eventFrame:IsEventRegistered("MIRROR_TIMER_START")))
+	echoMirrorEvents = not echoMirrorEvents
+	for _, event in ipairs({ "MIRROR_TIMER_START", "MIRROR_TIMER_STOP", "MIRROR_TIMER_PAUSE" }) do
+		if echoMirrorEvents then
+			echoFrame:RegisterEvent(event)
+		else
+			echoFrame:UnregisterEvent(event)
+		end
+	end
+	print("  MIRROR_TIMER_* echo " .. (echoMirrorEvents and "ON: swim underwater, then paste the lines it prints" or "OFF"))
+end
+
 ---Registers the events these bars need, then resolves the initial display. The GCD events are the only
 ---high-frequency ones, so they are registered only while that bar is enabled.
 function TRB.Functions.OtherBars:Enable()

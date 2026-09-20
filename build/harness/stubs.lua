@@ -378,6 +378,7 @@ function M.install(opts)
 	G.MAX_PLAYER_LEVEL = 80
 	G.Enum = setmetatable({
 		PowerType = { HealthCost = -2, None = -1, Mana = 0, Rage = 1, Focus = 2, Energy = 3, ComboPoints = 4, Runes = 5, RunicPower = 6, SoulShards = 7, LunarPower = 8, HolyPower = 9, Alternate = 10, Maelstrom = 11, Chi = 12, Insanity = 13, Obsolete = 14, Obsolete2 = 15, ArcaneCharges = 16, Fury = 17, Pain = 18, Essence = 19, RuneBlood = 20, RuneFrost = 21, RuneUnholy = 22, AlternateMount = 23, AlternateQuest = 24, AlternateEncounter = 25, NumPowerTypes = 26 },
+		Damageclass = { Physical = 0, Holy = 1, Fire = 2, Nature = 3, Frost = 4, Shadow = 5, Arcane = 6 },
 		EditModeLayoutType = { Preset = 0, Account = 1, Character = 2 },
 		EditModeSettingDisplayType = { Dropdown = 0, Slider = 1, Checkbox = 2 },
 		CooldownViewerCategory = { Essential = 0, Utility = 1, TrackedBuff = 2, TrackedBar = 3 },
@@ -491,7 +492,10 @@ function M.install(opts)
 	G.GetNumClasses = function() return 13 end
 	G.LocalizedClassList = function() local r = {} for _, c in pairs(classes) do r[c[2]] = c[1] end return r end
 	G.FillLocalizedClassList = function(t) for _, c in pairs(classes) do t[c[2]] = c[1] end return t end
-	G.GetBuildInfo = function() return "12.1.0", "68675", "Sep 1 2026", 120100 end
+	-- The interface number follows the TOC under test so each flavor's client gate sees its own client.
+	local interfaceVersion = tonumber(tostring(metadata.Interface or ""):match("%d+")) or 120100
+	local buildVersion = string.format("%d.%d.%d", math.floor(interfaceVersion / 10000), math.floor(interfaceVersion / 100) % 100, interfaceVersion % 100)
+	G.GetBuildInfo = function() return buildVersion, "68675", "Sep 1 2026", interfaceVersion end
 	G.GetTime = function() return os.clock() end
 	G.GetTimePreciseSec = function() return os.clock() end
 	G.GetServerTime = os.time
@@ -543,6 +547,24 @@ function M.install(opts)
 	G.GetAvoidance = retZero
 	G.GetPowerRegen = function() return 0, 0 end
 	G.GetManaRegen = function() return 0, 0 end
+	-- Forever (Vanilla) character-sheet stats, with the client's return shapes.
+	G.UnitDefenseSkill = function() return 300, 0 end
+	G.GetDodgeChance = function() return 5 end
+	G.GetParryChance = function() return 5 end
+	G.GetBlockChance = function() return 5 end
+	G.GetShieldBlock = function() return 20 end
+	G.UnitArmor = function() return 100, 100, 100, 0 end
+	G.UnitResistance = function() return 0, 0, 0, 0 end
+	G.GetHitModifier = retZero
+	G.GetRangedHitModifier = retZero
+	G.GetSpellHitModifier = retZero
+	G.GetExpertise = function() return 0, 0, 0 end
+	G.GetArmorPenetration = retZero
+	G.GetSpellBonusDamage = retZero
+	G.GetSpellBonusHealing = retZero
+	G.GetSpellPenetration = retZero
+	G.UnitAttackPower = function() return 100, 0, 0 end
+	G.UnitRangedAttackPower = function() return 100, 0, 0 end
 	G.GetPowerRegenForPowerType = function() return 0, 0 end
 	G.GetComboPoints = retZero
 	G.GetRuneCooldown = function() return 0, 10, true end
@@ -666,7 +688,18 @@ function M.install(opts)
 	G.C_UnitAuras = ns({ GetPlayerAuraBySpellID = retNil, GetAuraDataByIndex = retNil, GetBuffDataByIndex = retNil, GetDebuffDataByIndex = retNil, GetAuraDataByAuraInstanceID = retNil, GetAuraSlots = retNil, GetAuraDataBySlot = retNil, GetUnitAuraBySpellID = retNil, GetAuraDataBySpellName = retNil, IsAuraFilteredOutByInstanceID = retFalse, GetAuraDurationInfo = retNil, GetCooldownAuraBySpellID = retNil, GetAuraApplicationDisplayCount = retZero, AuraIsPrivate = retFalse })
 	G.C_ClassTalents = ns({ GetActiveConfigID = retNil, GetConfigIDsBySpecID = retEmpty, GetLastSelectedSavedConfigID = retNil, GetStarterBuildActive = retFalse, GetHeroTalentSpecsForClassSpec = retNil, GetActiveHeroTalentSpec = retNil })
 	G.C_Traits = ns({ GetConfigInfo = retNil, GetTreeNodes = retEmpty, GetNodeInfo = retNil, GetEntryInfo = retNil, GetDefinitionInfo = retNil, GetTreeInfo = retNil, GetSubTreeInfo = retNil, GetTraitSystemFlags = retZero, GetConditionInfo = retNil, GetTreeCurrencyInfo = retEmpty, GetNodeCost = retEmpty })
-	G.C_SpecializationInfo = ns({ GetAllSelectedPvpTalentIDs = retEmpty, GetSpecialization = function() return 1 end, GetSpecializationInfo = G.GetSpecializationInfo, GetPvpTalentSlotInfo = retNil, GetSpecIDs = retEmpty, CanPlayerUseTalentSpecUI = retTrue, IsInitialized = retTrue, GetActiveSpecGroup = function() return 1 end, GetNumSpecializationsForClassID = G.GetNumSpecializationsForClassID, GetSpecializationInfoForClassID = G.GetSpecializationInfoForClassID, GetSpecializationInfoByID = G.GetSpecializationInfoByID, GetSpecializationRole = function() return "DAMAGER" end, GetSpecializationSpells = retEmpty })
+	-- Exactly the namespace live retail documents (no unknown-method fallback): neither client has GetSpecializationInfoForClassID
+	-- or GetSpecializationInfoForSpecID here; those are plain globals on both.
+	G.C_SpecializationInfo = { GetAllSelectedPvpTalentIDs = retEmpty, GetSpecialization = function() return 1 end, GetSpecializationInfo = G.GetSpecializationInfo, GetPvpTalentSlotInfo = retNil, GetSpecIDs = retEmpty, CanPlayerUseTalentSpecUI = retTrue, IsInitialized = retTrue, GetActiveSpecGroup = function() return 1 end, GetNumSpecializationsForClassID = G.GetNumSpecializationsForClassID, GetPvpTalentInfo = G.GetPvpTalentInfoByID, GetTalentInfo = retNil, GetClassIDFromSpecID = retNil }
+	-- Forever registers a smaller global surface (per the beta probe): these read as nil instead of auto-stubbing for a
+	-- 1.x TOC, so a leftover call fails the way it does in that client.
+	local absentGlobals = {}
+	if interfaceVersion < 20000 then
+		for _, name in ipairs({ "GetSpecialization", "GetSpecializationInfo", "GetNumSpecializationsForClassID", "CombatLogGetCurrentEventInfo" }) do
+			G[name] = nil
+			absentGlobals[name] = true
+		end
+	end
 	G.C_PetBattles = ns({ IsInBattle = retFalse })
 	G.C_PlayerInfo = ns({ GetGlidingInfo = function() return false, false, 0 end, IsPlayerNPERestricted = retFalse, GetPlayerCharacterData = retNil, UnitIsSameServer = retTrue, GetClass = function() return classId end, GetRace = function() return 1 end, GetSex = function() return 2 end, IsPlayerInGuildFromGUID = retFalse, GUIDIsPlayer = retTrue, GetContentDifficultyCreatureForPlayer = retNil, GetInstancedContentDifficulty = retNil, IsMercenary = retFalse, CanPlayerEnterChromieTime = retFalse, IsPlayerEligibleForNPE = retFalse, IsConnectionValid = retTrue })
 	G.C_CooldownViewer = ns({ GetCooldownViewerCategorySet = retEmpty, GetCooldownViewerCooldownInfo = retNil, IsCooldownViewerAvailable = retTrue, GetCooldownViewerCooldownIDs = retEmpty, GetCooldownViewerCooldownList = retEmpty, GetCooldownInfoForSpellID = retNil, SetCooldownViewerCategorySet = noop })
@@ -777,7 +810,7 @@ function M.install(opts)
 	setmetatable(G, {
 		__index = function(t, k)
 			if type(k) ~= "string" then return nil end
-			if savedVariableNames[k] then return nil end
+			if savedVariableNames[k] or absentGlobals[k] then return nil end
 			if k == "arg" or k == "_PROMPT" or k == "_PROMPT2" then return nil end
 			unknownGlobals[k] = (unknownGlobals[k] or 0) + 1
 			if k:match("^[A-Z][A-Z0-9_]+$") then

@@ -3232,7 +3232,7 @@ local function SwitchSpec()
 		Bar:HideResourceBar(true)
 	end
 	Character:DisableSpellRangeCheckUpdate()
-	TRB.Data.character.specId = GetSpecialization() or 0
+	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex() or 0
 	if TRB.Data.character.specId == 1 then
 		specCache.priest_discipline.talents:GetTalents()
 		FillSpellData_Discipline()
@@ -3567,7 +3567,7 @@ TRB.Functions.Bootstrap:RegisterClassModule({
 })
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	local specId = TRB.Flavor.GetSpecializationIndex()
 	if specId ~= TRB.Data.character.specId then
 		SwitchSpec()
 	end

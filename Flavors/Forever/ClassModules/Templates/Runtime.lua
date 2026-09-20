@@ -324,7 +324,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			Bar:HideResourceBar(true)
 		end
 		Character:DisableSpellRangeCheckUpdate()
-		TRB.Data.character.specId = GetSpecialization()
+		TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
 
 		local spec = ActiveSpec()
 		if spec ~= nil then
@@ -374,7 +374,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 	runtime.SwitchSpec = SwitchSpec
 
 	function TRB.Functions.Class:CheckCharacter()
-		local specId = GetSpecialization()
+		local specId = TRB.Flavor.GetSpecializationIndex()
 		if specId ~= TRB.Data.character.specId then
 			SwitchSpec()
 		end

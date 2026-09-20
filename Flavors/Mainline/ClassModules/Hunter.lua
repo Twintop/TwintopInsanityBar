@@ -1649,7 +1649,7 @@ local function SwitchSpec()
 		Bar:HideResourceBar(true)
 	end
 	Character:DisableSpellRangeCheckUpdate()
-	TRB.Data.character.specId = GetSpecialization()
+	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
 	spellEventFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 
 	if TRB.Data.character.specId == 1 then
@@ -1791,7 +1791,7 @@ TRB.Functions.Bootstrap:RegisterClassModule({
 })
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	local specId = TRB.Flavor.GetSpecializationIndex()
 	if specId ~= TRB.Data.character.specId then
 		SwitchSpec()
 	end

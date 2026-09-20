@@ -2042,7 +2042,7 @@ local function SwitchSpec()
 		Bar:HideResourceBar(true)
 	end
 	Character:DisableSpellRangeCheckUpdate()
-	TRB.Data.character.specId = GetSpecialization()
+	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
@@ -2193,7 +2193,7 @@ TRB.Functions.Bootstrap:RegisterClassModule({
 })
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	local specId = TRB.Flavor.GetSpecializationIndex()
 	if specId ~= TRB.Data.character.specId then
 		SwitchSpec()
 	end

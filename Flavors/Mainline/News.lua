@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.0.12-release (2026-09-20)
+## General
+### Core Changes
+
+- See [Core Changes](tab:core).
+
+---
+
 # 12.1.0.11-release (2026-09-14)
 ## General
 

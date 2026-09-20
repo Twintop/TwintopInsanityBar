@@ -1607,6 +1607,39 @@ end)
 -- Event bridge (called from Functions/SpellCast.lua)
 -- ============================================================================
 
+-- TEMPORARY DIAGNOSTIC (/trb castname), remove once the "Opening - No Text" display is settled: echoes what
+-- UnitCastingInfo/UnitChannelInfo report at cast start next to the spell record's name and the model's pick.
+local echoCastNames = false
+local function DescribeValue(v)
+	if issecretvalue(v) then
+		return "<secret " .. type(v) .. ">"
+	end
+	if v == nil then
+		return "nil"
+	end
+	return '"' .. tostring(v) .. '"'
+end
+local function EchoCastName(event, spellId, model)
+	if not echoCastNames then
+		return
+	end
+	local name, text, infoId
+	if event == "UNIT_SPELLCAST_START" then
+		name, text, _, _, _, _, _, _, infoId = UnitCastingInfo("player")
+	else
+		name, text, _, _, _, _, _, infoId = UnitChannelInfo("player")
+	end
+	local recordId = (spellId ~= nil and spellId ~= 0 and not issecretvalue(spellId)) and spellId or infoId
+	local record = (recordId ~= nil and not issecretvalue(recordId)) and C_Spell.GetSpellInfo(recordId) or nil
+	print(string.format("|cFFFF8800TRB Castbar:|r %s event id=%s | info name=%s text=%s id=%s | GetSpellInfo name=%s | model spell=%s displayName=%s",
+		event, DescribeValue(spellId), DescribeValue(name), DescribeValue(text), DescribeValue(infoId), DescribeValue(record and record.name),
+		DescribeValue(model.spell and model.spell.name), DescribeValue(model.displayName)))
+end
+function TRB.Functions.Castbar:ToggleCastNameEcho()
+	echoCastNames = not echoCastNames
+	print("|cFFFF8800TRB Castbar:|r cast name echo " .. (echoCastNames and "ON: open a chest or cast something, then paste the lines it prints" or "OFF"))
+end
+
 ---Handles a player UNIT_SPELLCAST_* event for the castbar model + render.
 ---@param event trbSpellCastType|string
 ---@param spellId integer?
@@ -1669,6 +1702,7 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 		end
 		if RejectDisallowedType("cast") then return end
 		model:StartCast(spellId)
+		EchoCastName(event, spellId, model)
 		self:BeginRender()
 	elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		if RejectDisallowedType("channel") then return end
@@ -1680,6 +1714,7 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 		end
 		local profile = self:ResolveTickProfile(barSettings, channelId)
 		model:StartChannel(channelId, profile)
+		EchoCastName(event, spellId, model)
 		self:BeginRender()
 	elseif event == "UNIT_SPELLCAST_EMPOWER_START" then
 		if RejectDisallowedType("empower") then return end

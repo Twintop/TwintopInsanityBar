@@ -168,7 +168,7 @@ local function EnsureProfilePopupsRegistered()
 		local classLabel = localizedClass or HumanizeInternalToken(className)
 
 		local specLabel
-		if classId ~= nil and specId ~= nil and GetSpecializationInfoForClassID ~= nil then
+		if classId ~= nil and specId ~= nil then
 			local _, localizedSpec = GetSpecializationInfoForClassID(classId, specId)
 			specLabel = localizedSpec
 		end

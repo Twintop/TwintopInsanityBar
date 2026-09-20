@@ -140,7 +140,7 @@ local function OnEvent(_, event, arg1, ...)
 	end
 
 	if TRB.Data.character.specId == nil or TRB.Data.character.specId == 0 then
-		TRB.Data.character.specId = GetSpecialization() or 0
+		TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex() or 0
 	end
 
 	local module = registeredModule

@@ -100,7 +100,7 @@ local function GetNavIcon(classKey, specKey)
 		if classEntry and specEntry then
 			local classId = classEntry.classId
 			local specIndex = specEntry.specId
-			if classId and specIndex and GetSpecializationInfoForClassID then
+			if classId and specIndex then
 				local _, _, _, icon = GetSpecializationInfoForClassID(classId, specIndex)
 				if icon then
 					return { texture = icon }

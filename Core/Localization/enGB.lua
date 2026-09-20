@@ -466,5 +466,8 @@ if locale == "enGB" then
 	L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fill colour at every multiple of the stacks Ice Lance consumes: 5, 10, 15, and 20; or 6, 12, and 18 with Polished Focus."
 	L["MageFrostShatterCustomIndicatorColor"] = "Custom Indicator %d Colour"
 	L["MageFrostShatterCustomIndicatorNote"] = "Each custom indicator recolours the single Shatter stack set below, overriding the Ice Lance stack colour on it. Spellslinger Only and Frostfire Only apply only while that hero talent tree is active."
+	L["BarTextVariableArmorPenetration"] = "Current Armour Penetration"
+	L["BarTextVariableDefense"] = "Current Defence skill"
+	L["BarTextVariableArmor"] = "Current Armour"
 
 end

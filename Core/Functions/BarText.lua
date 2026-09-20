@@ -591,35 +591,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		-- $gcd is the one stat here that is not secret: it comes from the cached GCD duration rather
 		-- than haste math, precisely so it stays usable in comparisons (see UpdateSecondaryStatsSnapshot).
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
-		-- Secondary stats: UnitSpellHaste/GetCritChance/GetMasteryEffect/GetCombatRating(Bonus) are secret.
-		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false, secret = true },
-		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false, secret = true },
-		{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false, secret = true },
-		{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false, secret = true },
-		{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false, secret = true },
-		{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false, secret = true },
-		{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false, secret = true },
-		{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false, secret = true },
-		{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false, secret = true },
-		{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false, secret = true },
-		{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false, secret = true },
-		{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false, secret = true },
-		{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false, secret = true },
-		{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false, secret = true },
-		{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false, secret = true },
-		{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false, secret = true },
-		{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false, secret = true },
-		{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false, secret = true },
-
-		-- Primary stats: UnitStat is secret. Whole numbers, so integer rather than the inferred number.
-		{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
-		{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
-		{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
-		{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
-		{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
-		{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
-		{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
-		{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false, secret = true, logicType = logicTypes.INTEGER },
+		-- The flavor's stat variables are spliced in after $gcd below.
 
 		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
 		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
@@ -671,6 +643,17 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$breathDuration", description = L["BarTextVariableBreathDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
 		{ variable = "$breathDurationRemaining", description = L["BarTextVariableBreathDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
 	}
+	-- Flavor stats follow $gcd; the first variable of each is listed in the options, the rest are aliases.
+	local statIndex = 1
+	for _, stat in ipairs(TRB.Flavor.stats) do
+		for i, variable in ipairs(stat.variables) do
+			statIndex = statIndex + 1
+			table.insert(values, statIndex, {
+				variable = variable, description = L[stat.descriptionKey], printInSettings = i == 1, color = false, secret = stat.secret,
+				logicType = stat.integer and logicTypes.INTEGER or nil,
+			})
+		end
+	end
 	-- Any shared value not explicitly categorized above is a stat.
 	for _, v in ipairs(values) do
 		if v.category == nil then
@@ -1843,24 +1826,11 @@ local function RenderBarTextEntry(state, text, colorCode, force)
 	return colorCode .. outputText
 end
 
----Checks if any primary stat ratings are nil
+---Whether a stat bucket has not been read since it was last invalidated (or ever).
+---@param bucket "primary"|"secondary"
 ---@return boolean
-local function ArePrimaryRatingsNil()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	if snapshotData.attributes.primaryRefresh ~= false or snapshotData.attributes.strength == nil or snapshotData.attributes.strength == nil or snapshotData.attributes.agility == nil or snapshotData.attributes.stamina == nil or snapshotData.attributes.intellect == nil then
-		return true
-	end
-	return false
-end
-
----Checks if any secondary stat ratings are nil
----@return boolean
-local function AreSecondaryRatingsNil()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	if snapshotData.attributes.secondaryRefresh ~= false or snapshotData.attributes.critRating == nil or snapshotData.attributes.masteryRating == nil or snapshotData.attributes.hasteRating == nil or snapshotData.attributes.versatilityOffensive == nil or snapshotData.attributes.versatilityDefensive == nil or snapshotData.attributes.versatilityRating == nil then
-		return true
-	end
-	return false
+local function AreStatsStale(bucket)
+	return TRB.Data.snapshotData.attributes[bucket .. "Refresh"] ~= false
 end
 
 -- "%.Nf" strings memoized by precision so per-tick refreshes skip rebuilding them.
@@ -1927,7 +1897,7 @@ function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 		castLatency = castbar.latency or 0
 		castPushback = castbar.pushback or 0
 		if castbar.spell then
-			castSpellName = castbar.spell.name or ""
+			castSpellName = castbar.displayName or castbar.spell.name or ""
 			castSpellId = castbar.spell.id or 0
 			-- Source of truth for #casting: the castbar caches spell data for EVERY cast/channel/empower,
 			-- so while a cast is active it drives #casting. The resource-prediction snapshot only fills its
@@ -2036,37 +2006,23 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local lookupChanged = TRB.Functions.BarText.LookupChanged
 
 	-- Ensure stats are populated if this is the first call
-	if ArePrimaryRatingsNil() then
+	if AreStatsStale("primary") then
 		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
 	end
-	if AreSecondaryRatingsNil() then
+	if AreStatsStale("secondary") then
 		TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	end
 
-	-- Primary stat display strings – pre-formatted at event time in UpdatePrimaryStatsSnapshot
+	-- Stats: pre-formatted strings from UpdateStatsSnapshot for display, raw values for the logic side.
 	local formatted = snapshotData.formatted
-	local fmtInt  = formatted.int  or ""
-	local fmtStr  = formatted.str  or ""
-	local fmtAgi  = formatted.agi  or ""
-	local fmtStam = formatted.stam or ""
-
-	lookup["$int"]       = fmtInt
-	lookup["$intellect"] = fmtInt
-	lookup["$str"]       = fmtStr
-	lookup["$strength"]  = fmtStr
-	lookup["$agi"]       = fmtAgi
-	lookup["$agility"]   = fmtAgi
-	lookup["$stam"]      = fmtStam
-	lookup["$stamina"]   = fmtStam
-
-	lookupLogic["$int"]       = snapshotData.attributes.intellect
-	lookupLogic["$intellect"] = snapshotData.attributes.intellect
-	lookupLogic["$str"]       = snapshotData.attributes.strength
-	lookupLogic["$strength"]  = snapshotData.attributes.strength
-	lookupLogic["$agi"]       = snapshotData.attributes.agility
-	lookupLogic["$agility"]   = snapshotData.attributes.agility
-	lookupLogic["$stam"]      = snapshotData.attributes.stamina
-	lookupLogic["$stamina"]   = snapshotData.attributes.stamina
+	for _, stat in ipairs(TRB.Flavor.stats) do
+		local statText = formatted[stat.key] or ""
+		local statValue = snapshotData.attributes[stat.key]
+		for _, variable in ipairs(stat.variables) do
+			lookup[variable] = statText
+			lookupLogic[variable] = statValue
+		end
+	end
 
 	--$health, $healthMax, $healthPercent
 	-- Raw secret values for lookupLogic (conditionals use arithmetic, not equality)
@@ -2092,62 +2048,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	lookupLogic["$healAbsorb"] = snapshotData.attributes.healAbsorb
 	lookup["$healAbsorb"] = formatted.healAbsorb or ""
 
-	-- Secondary stat display strings – pre-formatted at event time in UpdateSecondaryStatsSnapshot
-	local fmtHaste      = formatted.haste      or ""
-	local fmtCrit       = formatted.crit       or ""
-	local fmtMastery    = formatted.mastery    or ""
-	local fmtVersOff    = formatted.versOff    or ""
-	local fmtVersDef    = formatted.versDef    or ""
-	local fmtHasteRat   = formatted.hasteRating  or ""
-	local fmtCritRat    = formatted.critRating   or ""
-	local fmtMasteryRat = formatted.masteryRating or ""
-	local fmtVersRat    = formatted.versRating    or ""
-	local fmtGcd        = formatted.gcd        or ""
-
-	lookup["$haste"]              = fmtHaste
-	lookup["$hastePercent"]       = fmtHaste
-	lookup["$crit"]               = fmtCrit
-	lookup["$critPercent"]        = fmtCrit
-	lookup["$mastery"]            = fmtMastery
-	lookup["$masteryPercent"]     = fmtMastery
-	lookup["$vers"]               = fmtVersOff
-	lookup["$versPercent"]        = fmtVersOff
-	lookup["$versatility"]        = fmtVersOff
-	lookup["$versatilityPercent"] = fmtVersOff
-	lookup["$oVers"]              = fmtVersOff
-	lookup["$oVersPercent"]       = fmtVersOff
-	lookup["$dVers"]              = fmtVersDef
-	lookup["$dVersPercent"]       = fmtVersDef
-
-	lookup["$hasteRating"]        = fmtHasteRat
-	lookup["$critRating"]         = fmtCritRat
-	lookup["$masteryRating"]      = fmtMasteryRat
-	lookup["$versRating"]         = fmtVersRat
-	lookup["$versatilityRating"]  = fmtVersRat
-
-	lookup["$gcd"] = fmtGcd
-
-	lookupLogic["$haste"]              = snapshotData.attributes.haste
-	lookupLogic["$hastePercent"]       = snapshotData.attributes.haste
-	lookupLogic["$crit"]               = snapshotData.attributes.crit
-	lookupLogic["$critPercent"]        = snapshotData.attributes.crit
-	lookupLogic["$mastery"]            = snapshotData.attributes.mastery
-	lookupLogic["$masteryPercent"]     = snapshotData.attributes.mastery
-	lookupLogic["$vers"]               = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$versPercent"]        = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$versatility"]        = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$versatilityPercent"] = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$oVers"]              = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$oVersPercent"]       = snapshotData.attributes.versatilityOffensive
-	lookupLogic["$dVers"]              = snapshotData.attributes.versatilityDefensive
-	lookupLogic["$dVersPercent"]       = snapshotData.attributes.versatilityDefensive
-
-	lookupLogic["$hasteRating"]        = snapshotData.attributes.hasteRating
-	lookupLogic["$critRating"]         = snapshotData.attributes.critRating
-	lookupLogic["$masteryRating"]      = snapshotData.attributes.masteryRating
-	lookupLogic["$versRating"]         = snapshotData.attributes.versatilityRating
-	lookupLogic["$versatilityRating"]  = snapshotData.attributes.versatilityRating
-
+	lookup["$gcd"] = formatted.gcd or ""
 	lookupLogic["$gcd"] = formatted.gcdRaw or 0
 
 	if lookup["||n"] == nil then

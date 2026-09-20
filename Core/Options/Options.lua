@@ -1331,11 +1331,9 @@ local function ConstructImportExportPanel()
 			SetButtonTooltip(sExpBtn, string.format(L["ProfileManagerExportSpecTooltipFormat"], specLabel, classLabel))
 			SetButtonTooltip(sCb, string.format(L["ProfileManagerSelectSpecTooltipFormat"], specLabel, classLabel))
 			local sIcon = BuildIcon(specRow, SPEC_ICO_X, -2, 18)
-			if GetSpecializationInfoForClassID then
-				local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, spec.specId)
-				if iconId then
-					sIcon:SetTexture(iconId)
-				end
+			local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, spec.specId)
+			if iconId then
+				sIcon:SetTexture(iconId)
 			end
 			local sLbl = BuildLabel(specRow, SPEC_LBL_X, -2,
 				IE_COL_W - SPEC_LBL_X - 4, specLabel)
@@ -1949,11 +1947,7 @@ local function ConstructProfileDefaultsPanel()
 
 		controls.dropDowns[classDef.className] = controls.dropDowns[classDef.className] or {}
 		for _, specDef in ipairs(classDef.specs) do
-			local specIconId
-			if GetSpecializationInfoForClassID then
-				local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, specDef.specId)
-				specIconId = iconId
-			end
+			local _, _, _, specIconId = GetSpecializationInfoForClassID(classDef.classId, specDef.specId)
 			controls.dropDowns[classDef.className][specDef.specName], yCoord = BuildProfileDefaultRow(
 				parent, yCoord, specDef.specFullLabel,
 				"spec", classDef.className, specDef.specName,

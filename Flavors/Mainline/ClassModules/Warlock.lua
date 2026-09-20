@@ -1727,7 +1727,7 @@ local function SwitchSpec()
 		Bar:HideResourceBar(true)
 	end
 	Character:DisableSpellRangeCheckUpdate()
-	TRB.Data.character.specId = GetSpecialization()
+	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
 
 	if TRB.Data.character.specId == 1 then
 		specCache.warlock_affliction.talents:GetTalents()
@@ -1862,7 +1862,7 @@ TRB.Functions.Bootstrap:RegisterClassModule({
 })
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	local specId = TRB.Flavor.GetSpecializationIndex()
 	if specId ~= TRB.Data.character.specId then
 		SwitchSpec()
 	end

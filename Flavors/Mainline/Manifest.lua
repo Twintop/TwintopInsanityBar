@@ -16,7 +16,7 @@ local addonName, TRB = ...
 --   classModuleName  PascalCase key for TRB.Classes / TRB.Options modules, e.g. "DeathKnight"
 --   specs[].specId        specialization index (GetSpecialization order)
 --   specs[].specName      camelCase settings-tree key, e.g. "beastMastery"
---   specs[].specGlobalId  global specialization ID for GetSpecializationInfoByID (localized names)
+--   specs[].specGlobalId  global specialization ID (GetSpecializationInfoByID); informational, names come from GetSpecializationInfoForClassID
 --   specs[].resources     per-resource maximums shared by options panels and custom thresholds
 
 ---@type TRB.Flavor
@@ -29,13 +29,24 @@ TRB.Flavor = {
 	savedVariablesName = "TwintopInsanityBarSettings",
 
 	---True when the running client is this flavor's game. Checked by the version gate when the TOC
-	---sets X-FlavorCheck to enabled. An unreadable project ID is not evidence of a mismatch.
+	---sets X-FlavorCheck to enabled. An unreadable project ID or interface number is not evidence of a
+	---mismatch. WoW Forever also reports the mainline project; only its 1.x interface number tells it apart.
 	---@return boolean
 	IsClientMatch = function()
 		if WOW_PROJECT_ID == nil or WOW_PROJECT_MAINLINE == nil then
 			return true
 		end
-		return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+		if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+			return false
+		end
+		local interfaceVersion = tonumber((select(4, GetBuildInfo())))
+		return interfaceVersion == nil or interfaceVersion >= 100000
+	end,
+
+	---Active specialization index (specs[] order), or nil before the client reports one.
+	---@return integer?
+	GetSpecializationIndex = function()
+		return C_SpecializationInfo.GetSpecialization()
 	end,
 
 	classes = {

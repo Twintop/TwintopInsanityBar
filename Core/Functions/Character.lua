@@ -460,16 +460,12 @@ local function CharacterChange(self, event, ...)
 			TRB.Functions.Character:UpdateHealthValues()
 			TRB.Data.lookupDirty = true
 		end
-	elseif event == "UNIT_STATS" then
-		local unitTarget = ...
-		if unitTarget == "player" then
-			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-			snapshotData.attributes.primaryRefresh = true
-			TRB.Data.lookupDirty = true
-		end
-	elseif event == "COMBAT_RATING_UPDATE" then
+	elseif TRB.Data.statEventBuckets[event] ~= nil then
+		-- Unit events are registered for the player only, so no unit filter is needed here.
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-		snapshotData.attributes.secondaryRefresh = true
+		for _, bucket in ipairs(TRB.Data.statEventBuckets[event]) do
+			snapshotData.attributes[bucket .. "Refresh"] = true
+		end
 		TRB.Data.lookupDirty = true
 	elseif event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_CONTROL_LOST" then
 		C_Timer.After(0, function()
@@ -585,8 +581,13 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", "player")
-	characterChangeFrame:RegisterUnitEvent("UNIT_STATS", "player")
-	characterChangeFrame:RegisterEvent("COMBAT_RATING_UPDATE")
+	for event in pairs(TRB.Data.statEventBuckets) do
+		if string.sub(event, 1, 5) == "UNIT_" then
+			characterChangeFrame:RegisterUnitEvent(event, "player")
+		else
+			characterChangeFrame:RegisterEvent(event)
+		end
+	end
 	characterChangeFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	characterChangeFrame:RegisterEvent("PLAYER_CONTROL_GAINED")
 	characterChangeFrame:RegisterEvent("PLAYER_CONTROL_LOST")
@@ -619,8 +620,9 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
 	characterChangeFrame:UnregisterEvent("UNIT_HEAL_PREDICTION")
 	characterChangeFrame:UnregisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
-	characterChangeFrame:UnregisterEvent("UNIT_STATS")
-	characterChangeFrame:UnregisterEvent("COMBAT_RATING_UPDATE")
+	for event in pairs(TRB.Data.statEventBuckets) do
+		characterChangeFrame:UnregisterEvent(event)
+	end
 	characterChangeFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	characterChangeFrame:UnregisterEvent("PLAYER_CONTROL_GAINED")
 	characterChangeFrame:UnregisterEvent("PLAYER_CONTROL_LOST")
@@ -1122,84 +1124,56 @@ function TRB.Functions.Character:CheckCharacter()
 	end
 end
 
----Reads Strength, Agility, Stamina, and Intellect from the WoW API into snapshotData.attributes and pre-formats display strings.
-function TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
+---Reads one refresh bucket of the flavor's stats into snapshotData.attributes and pre-formats their display strings.
+---@param bucket "primary"|"secondary"
+local function UpdateStatsSnapshot(bucket)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	snapshotData.attributes.strength, _, _, _ = UnitStat("player", 1)
-	snapshotData.attributes.agility, _, _, _ = UnitStat("player", 2)
-	snapshotData.attributes.stamina, _, _, _ = UnitStat("player", 3)
-	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
+	local attributes = snapshotData.attributes
+	local formatted = snapshotData.formatted
 
-	-- Pre-format primary stat display strings at event time
 	local precision = 2
 	local entry = TRB.Functions.Character:GetActiveSpecCache()
 	if entry and entry.settings and entry.settings.precision then
 		precision = entry.settings.precision.secondary or 2
 	end
-	local formatted = snapshotData.formatted
-	local shortNum = TRB.Functions.String.ConvertToShortNumberNotation
-	formatted.int = shortNum(TRB.Functions.String, snapshotData.attributes.intellect, precision, "floor", true)
-	formatted.str = shortNum(TRB.Functions.String, snapshotData.attributes.strength, precision, "floor", true)
-	formatted.agi = shortNum(TRB.Functions.String, snapshotData.attributes.agility, precision, "floor", true)
-	formatted.stam = shortNum(TRB.Functions.String, snapshotData.attributes.stamina, precision, "floor", true)
-
-	snapshotData.attributes.cacheRefresh = true
-	snapshotData.attributes.primaryRefresh = false
-end
-
----Reads haste, crit, mastery, and versatility (percentages and ratings) from the WoW API, recalculates hasted cooldowns if haste changed, pre-formats display strings, and computes the GCD value.
-function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-
-	snapshotData.attributes.haste = UnitSpellHaste("player")
-
-	-- Try to immediately read the new GCD; if unreadable or unchanged, UpdateGCD queues a
-	-- deferred recalc actioned on the next cast event.
-	snapshotData:UpdateGCD(GetTime())
-
-	snapshotData.attributes.crit = GetCritChance()
-	snapshotData.attributes.mastery = GetMasteryEffect()
-	snapshotData.attributes.versatilityOffensive = GetCombatRatingBonus(29)
-	snapshotData.attributes.versatilityDefensive = GetCombatRatingBonus(31)
-
-	snapshotData.attributes.hasteRating = GetCombatRating(20)
-	snapshotData.attributes.critRating = GetCombatRating(11)
-	snapshotData.attributes.masteryRating = GetCombatRating(26)
-	snapshotData.attributes.versatilityRating = GetCombatRating(29)
-
-	-- Pre-format secondary stat display strings at event time
-	local precision = 2
-	local entry = TRB.Functions.Character:GetActiveSpecCache()
-	if entry and entry.settings and entry.settings.precision then
-		precision = entry.settings.precision.secondary or 2
-	end
-	local formatted = snapshotData.formatted
 	local shortNum = TRB.Functions.String.ConvertToShortNumberNotation
 	local roundTo = TRB.Functions.Number.RoundTo
-	local numLib = TRB.Functions.Number
-	local strLib = TRB.Functions.String
 
-	formatted.hasteRating = shortNum(strLib, snapshotData.attributes.hasteRating, precision, "floor", true)
-	formatted.critRating = shortNum(strLib, snapshotData.attributes.critRating, precision, "floor", true)
-	formatted.masteryRating = shortNum(strLib, snapshotData.attributes.masteryRating, precision, "floor", true)
-	formatted.versRating = shortNum(strLib, snapshotData.attributes.versatilityRating, precision, "floor", true)
+	for _, stat in ipairs(TRB.Data.statsByBucket[bucket]) do
+		local value = stat.read()
+		attributes[stat.key] = value
+		if value == nil then
+			formatted[stat.key] = ""
+		elseif stat.format == "percent" then
+			formatted[stat.key] = roundTo(TRB.Functions.Number, value, precision)
+		else
+			formatted[stat.key] = shortNum(TRB.Functions.String, value, precision, "floor", true)
+		end
+	end
 
-	formatted.haste = roundTo(numLib, snapshotData.attributes.haste, precision)
-	formatted.crit = roundTo(numLib, snapshotData.attributes.crit, precision)
-	formatted.mastery = roundTo(numLib, snapshotData.attributes.mastery, precision)
-	formatted.versOff = roundTo(numLib, snapshotData.attributes.versatilityOffensive, precision)
-	formatted.versDef = roundTo(numLib, snapshotData.attributes.versatilityDefensive, precision)
+	attributes.cacheRefresh = true
+	attributes[bucket .. "Refresh"] = false
+end
 
-	-- GCD (always 2 decimal places, clamped 0.75 – 1.5)
-	-- Uses cached GCD duration from SnapshotData:UpdateGCD instead of haste math (haste is secret)
-	local _gcd = snapshotData.attributes.gcdDuration or 1.5
-	if _gcd > 1.5 then _gcd = 1.5 elseif _gcd < 0.75 then _gcd = 0.75 end
-	formatted.gcd = string.format("%.2f", _gcd)
+---Reads the primary stat bucket (UNIT_STATS).
+function TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
+	UpdateStatsSnapshot("primary")
+end
+
+---Reads the secondary stat bucket, then the GCD: its length comes from the cached GCD duration, not haste math (haste is secret).
+function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	UpdateStatsSnapshot("secondary")
+
+	-- An unreadable or unchanged GCD leaves a deferred recalc queued for the next cast event.
+	snapshotData:UpdateGCD(GetTime())
+
+	-- Always 2 decimal places, clamped 0.75 to 1.5.
+	local gcd = snapshotData.attributes.gcdDuration or 1.5
+	if gcd > 1.5 then gcd = 1.5 elseif gcd < 0.75 then gcd = 0.75 end
+	snapshotData.formatted.gcd = string.format("%.2f", gcd)
 ---@diagnostic disable-next-line: assign-type-mismatch
-	formatted.gcdRaw = _gcd
-
-	snapshotData.attributes.cacheRefresh = true
-	snapshotData.attributes.secondaryRefresh = false
+	snapshotData.formatted.gcdRaw = gcd
 end
 
 ---Re-reads live API values and re-formats all pre-formatted display strings.
@@ -1243,7 +1217,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	-- The cached character table may carry a stale specId from the previous time this spec
 	-- was active. Always stamp the current specId so downstream code (EventRegistration,
 	-- UpdateResourceBar, etc.) branches into the correct spec.
-	TRB.Data.character.specId = GetSpecialization() or TRB.Data.character.specId
+	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex() or TRB.Data.character.specId
 	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
 	TRB.Data.character.inCombat = InCombatLockdown()
 	TRB.Data.character.inVehicle = UnitInVehicle("player") or false

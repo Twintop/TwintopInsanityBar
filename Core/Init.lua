@@ -20,11 +20,15 @@ do
 		return a.classModuleName < b.classModuleName
 	end)
 	for _, classEntry in ipairs(classEntries) do
-		local specNames = {}
-		for i, specEntry in ipairs(classEntry.specs) do
-			specNames[i] = L[specEntry.specLocaleKey]
+		local line = "|c" .. select(4, GetClassColor(classEntry.classToken)) .. L[classEntry.classModuleName] .. "|r"
+		if #classEntry.specs > 1 then
+			local specNames = {}
+			for i, specEntry in ipairs(classEntry.specs) do
+				specNames[i] = L[specEntry.specLocaleKey]
+			end
+			line = line .. " - " .. table.concat(specNames, ", ")
 		end
-		TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|c" .. select(4, GetClassColor(classEntry.classToken)) .. L[classEntry.classModuleName] .. "|r - " .. table.concat(specNames, ", ") .. "\n"
+		TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. line .. "\n"
 	end
 end
 
@@ -229,7 +233,7 @@ TRB.Data.specCache = {}
 TRB.Data.character = {
 	guid = UnitGUID("player"),
 	raceId = 0,
-	specId = GetSpecialization() or 0,
+	specId = TRB.Flavor.GetSpecializationIndex() or 0,
 	classId = classIndexId,
 	className = "",
 	specName = "",
@@ -626,6 +630,10 @@ function SlashCmdList.TWINTOP(msg)
 		end
 	elseif cmd == "auraengine" then
 		TRB.Functions.AuraEngine:PrintDiagnostics()
+	elseif cmd == "otherbars" then
+		TRB.Functions.OtherBars:PrintDiagnostics()
+	elseif cmd == "castname" then
+		TRB.Functions.Castbar:ToggleCastNameEcho()
 	elseif cmd == "endcap" then
 		local barArg = ParseCmdString(subcmd)
 		if barArg == nil or barArg == "" then

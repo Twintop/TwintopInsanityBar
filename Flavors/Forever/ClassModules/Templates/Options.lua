@@ -426,7 +426,9 @@ function TRB.Forever.Templates.Options:Install(className)
 			tabDefinitions[#tabDefinitions + 1] = { "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, resetDefaultsPanel }
 
 			interfaceSettingsFrame.controls[compositeKey] = controls
-			TRB.Functions.OptionsUi.Tabs:BuildTabGroup(panel, className .. "_" .. specName, tabDefinitions, yCoord)
+			-- BuildTabGroup recognizes a spec panel by its classToken_specName prefix; that earns it the Cast Bars and Other Bars tabs and spec-scoped tab headers.
+			local tabClassName, tabSpecName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+			TRB.Functions.OptionsUi.Tabs:BuildTabGroup(panel, tabClassName .. "_" .. tabSpecName, tabDefinitions, yCoord)
 		end
 	end
 

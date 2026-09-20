@@ -19,8 +19,8 @@ do
 
 	for _, specEntry in ipairs(TRB.Data.specRegistryOrder) do
 		local specName = nil
-		if specEntry.specGlobalId ~= nil and GetSpecializationInfoByID ~= nil then
-			specName = select(2, GetSpecializationInfoByID(specEntry.specGlobalId))
+		if specEntry.classId ~= nil and specEntry.specId ~= nil then
+			specName = select(2, GetSpecializationInfoForClassID(specEntry.classId, specEntry.specId))
 		end
 		if specName == nil or specName == "" then
 			specName = string.upper(string.sub(specEntry.specName, 1, 1)) .. string.sub(specEntry.specName, 2)
@@ -28,8 +28,13 @@ do
 		L[specEntry.specLocaleKey] = specName
 	end
 
+	-- A class with a single specialization (Forever) is labelled by its class name alone.
 	for _, specEntry in ipairs(TRB.Data.specRegistryOrder) do
-		L[specEntry.specLocaleKey .. "Full"] = string.format("%s %s", L[specEntry.specLocaleKey], L[specEntry.classModuleName])
+		if #TRB.Data.classRegistry[specEntry.className].specs == 1 then
+			L[specEntry.specLocaleKey .. "Full"] = L[specEntry.classModuleName]
+		else
+			L[specEntry.specLocaleKey .. "Full"] = string.format("%s %s", L[specEntry.specLocaleKey], L[specEntry.classModuleName])
+		end
 	end
 end
 

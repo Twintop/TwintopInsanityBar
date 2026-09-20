@@ -18,23 +18,43 @@ local addonName, TRB = ...
 ---@field public classModuleName string
 ---@field public specs TRB.Flavor.SpecEntry[]
 
+---@class TRB.Flavor.StatDefinition
+---@field public key string # snapshotData.attributes / .formatted key, e.g. "haste"
+---@field public variables string[] # Bar text variables; the first is listed in the options, the rest are aliases
+---@field public descriptionKey string # Localization key of the options description
+---@field public refresh "primary"|"secondary" # Refresh bucket; TRB.Flavor.statEvents says which events invalidate each
+---@field public read fun(): number? # Live value; may be secret, nil renders empty
+---@field public format "percent"|"number" # percent rounds to the secondary precision; number uses short notation
+---@field public integer boolean? # Whole number: options logic type INTEGER
+---@field public secret boolean? # May hold a secret, so display only (default true)
+
+---@class TRB.Flavor.StatEvents
+---@field public primary string[] # Events that invalidate the primary bucket; UNIT_ events register for the player
+---@field public secondary string[]
+
 ---@class TRB.Flavor
 ---@field public id string # Flavor identifier; must equal the TOC's X-Flavor field
 ---@field public nameKey string # Localization key of the flavor's display name
 ---@field public savedVariablesName string # Global declared by the TOC's SavedVariables line
 ---@field public IsClientMatch fun(): boolean
+---@field public GetSpecializationIndex fun(): integer? # Active specialization index in specs[] order, or nil when the client reports none
 ---@field public classes TRB.Flavor.ClassEntry[]
+---@field public stats TRB.Flavor.StatDefinition[] # Bar text stat variables (Flavors\<Flavor>\Stats.lua)
+---@field public statEvents TRB.Flavor.StatEvents
 ---@field public PortForwardSettings (fun(settings: table?))? # Saved-variable migrations, if the flavor has any
 ---@field public DefaultManualUpdateChecks (fun(): table)? # Seed for settings.manualUpdateChecks
 ---@field public OnBarTextSeeded (fun(settings: table, className: string))? # Hook after a class receives fresh default bar text
 ---@field public RunManualUpdateChecks (fun(settings: table, classEntry: TRB.Data.ClassRegistryEntry): table)? # One-shot per-class manual migrations run right after the saved variables are merged
 ---@field public ShowMidnightBarTextResetMessage (fun(className: string))? # Mainline-only chat notice for its bar text reset
----@field public newsContent string? # Markdown changelog shown by the News window
+---@field public newsContent string? # Markdown changelog shown by the News window's flavor tab; Core\News.lua holds the Core tab's
 
 assert(type(TRB.Flavor) == "table", "TwintopInsanityBar: no flavor manifest loaded before Core. Check the TOC.")
 assert(type(TRB.Flavor.id) == "string" and TRB.Flavor.id ~= "", "TwintopInsanityBar: flavor manifest has no id.")
 assert(type(TRB.Flavor.savedVariablesName) == "string", "TwintopInsanityBar: flavor manifest has no savedVariablesName.")
 assert(type(TRB.Flavor.classes) == "table", "TwintopInsanityBar: flavor manifest has no classes.")
+assert(type(TRB.Flavor.GetSpecializationIndex) == "function", "TwintopInsanityBar: flavor manifest has no GetSpecializationIndex.")
+assert(type(TRB.Flavor.stats) == "table", "TwintopInsanityBar: flavor has no stats (Stats.lua must load after Manifest.lua).")
+assert(type(TRB.Flavor.statEvents) == "table" and type(TRB.Flavor.statEvents.primary) == "table" and type(TRB.Flavor.statEvents.secondary) == "table", "TwintopInsanityBar: flavor statEvents needs primary and secondary event lists.")
 
 do
 	local tocFlavor = C_AddOns.GetAddOnMetadata(addonName, "X-Flavor")
@@ -171,5 +191,30 @@ do
 
 	for _, classDef in ipairs(TRB.Flavor.classes) do
 		regClass(classDef)
+	end
+end
+
+-- Stat definitions by refresh bucket, and the events that invalidate each bucket. Character reads the
+-- buckets on those events; BarText declares and exposes the variables.
+---@type table<string, TRB.Flavor.StatDefinition[]>
+TRB.Data.statsByBucket = { primary = {}, secondary = {} }
+
+---@type table<string, string[]> # event -> buckets it invalidates
+TRB.Data.statEventBuckets = {}
+
+do
+	for _, stat in ipairs(TRB.Flavor.stats) do
+		assert(type(stat.key) == "string" and type(stat.variables) == "table" and type(stat.read) == "function" and TRB.Data.statsByBucket[stat.refresh] ~= nil,
+			"TwintopInsanityBar: malformed stat definition '" .. tostring(stat.key) .. "'")
+		if stat.secret == nil then
+			stat.secret = true
+		end
+		table.insert(TRB.Data.statsByBucket[stat.refresh], stat)
+	end
+	for bucket, events in pairs(TRB.Flavor.statEvents) do
+		for _, event in ipairs(events) do
+			TRB.Data.statEventBuckets[event] = TRB.Data.statEventBuckets[event] or {}
+			table.insert(TRB.Data.statEventBuckets[event], bucket)
+		end
 	end
 end

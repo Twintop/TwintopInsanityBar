@@ -3550,7 +3550,7 @@ local function SwitchSpec()
 		Bar:HideResourceBar(true)
 	end
 	Character:DisableSpellRangeCheckUpdate()
-	TRB.Data.character.specId = GetSpecialization()
+	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
 	
 	TRB.Data.character.currentShapeshiftFormId = 0
 	TRB.Data.character.currentShapeshiftForm = "humanoid"
@@ -3805,7 +3805,7 @@ function TRB.Functions.Class:GetActiveDisplayCompositeKey()
 end
 
 function TRB.Functions.Class:CheckCharacter()
-	local specId = GetSpecialization()
+	local specId = TRB.Flavor.GetSpecializationIndex()
 	if specId ~= TRB.Data.character.specId then
 		SwitchSpec()
 	end

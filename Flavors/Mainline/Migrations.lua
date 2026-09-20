@@ -8085,7 +8085,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 		TwintopInsanityBarSettings.core.displayText.migrations ~= nil then
 
 		if not TwintopInsanityBarSettings.core.displayText.migrations.targetCastBarText then
-			local entries = TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings("TargetCastBar", L["ResourceTargetCastbar"], "$targetCastingSpellName", "$targetCastTimeRemaining", "$targetCastTime", 20, 20)
+			local entries = TRB.Functions.Settings:LoadDefaultTargetCastBarTextSettings()
 			for x = 1, #entries do
 				table.insert(TwintopInsanityBarSettings.core.displayText.barText, entries[x])
 			end
@@ -8093,7 +8093,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 
 		if not TwintopInsanityBarSettings.core.displayText.migrations.focusCastBarText then
-			local entries = TRB.Functions.Settings:LoadDefaultTargetFocusCastBarTextSettings("FocusCastBar", L["ResourceFocusCastbar"], "$focusCastingSpellName", "$focusCastTimeRemaining", "$focusCastTime", 14, 12)
+			local entries = TRB.Functions.Settings:LoadDefaultFocusCastBarTextSettings()
 			for x = 1, #entries do
 				table.insert(TwintopInsanityBarSettings.core.displayText.barText, entries[x])
 			end
