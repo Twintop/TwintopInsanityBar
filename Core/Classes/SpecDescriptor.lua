@@ -36,6 +36,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field empowerCastbar boolean? # The spec casts empowered spells, so the castbar options show empower level colors
 ---@field secondaryTransitionOnFullAuraUpdate string? # snapshotData.attributes key stamped with GetTime() on a full UNIT_AURA update (a spec whose secondary resource resets on such updates)
 ---@field slashCommands table<string, fun(subcommand: string?)>? # Extra /trb sub-commands the spec module handles
+---@field useGlobalDefaults table<string, boolean>? # "Use global settings" toggles seeded differently from the shipped defaults (key -> value), for a spec whose layout the global options cannot describe
 
 TRB.Classes.SpecDescriptor = {}
 

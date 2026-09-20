@@ -321,41 +321,28 @@ function TRB.Functions.EditMode:RefreshFormWrapperVisibility(settings, forest)
 	-- Fallback to the passed-in settings only if the specCache isn't ready yet.
 	local visSource = activeSettings or settings
 
-	-- Secondary (Combo Points): the class module decides form eligibility (e.g. native in cat form,
-	-- otherwise the showComboPoints checkbox); a "Never Show" visibility still wins.
-	local secondaryVis = visSource and visSource.displayBar and visSource.displayBar.secondary
-	local secondaryNotNever = not secondaryVis or not secondaryVis.neverShow
-	local secondaryEligible = forms.IsBarEligibleForLayout("secondary", visSource)
-	local shouldShowSecondary = secondaryEligible ~= false and secondaryNotNever
-
-	-- Mana bar: eligible only while the primary bar shows something other than mana (the class
-	-- module knows which forms that is). This matches HideResourceBar, UpdateResourceBar, and
-	-- GetBarTextFrame.
-	local shouldShowMana = forms.IsBarEligibleForLayout("mana", visSource) ~= false
-
-	-- Check if secondary is its own tree root (has a wrapper)
-	local secondaryWrapper = editModeWrapperFrames["secondary"]
-	if secondaryWrapper then
-		-- Only manage visibility if secondary is actually a root in the current forest
-		local isSecondaryRoot = forest and forest["secondary"] ~= nil
-		if isSecondaryRoot then
-			if shouldShowSecondary then
-				secondaryWrapper:Show()
-			else
-				secondaryWrapper:Hide()
+	-- A wrapper carries its root's whole tree, so it hides only when every bar in that tree is ruled out
+	-- by the form (the class module decides) or by Never Show; a bar the module has no opinion on keeps it up.
+	local function TreeCanShow(node)
+		local eligible = forms.IsBarEligibleForLayout(node.barKey, visSource)
+		local vis = visSource and visSource.displayBar and visSource.displayBar[node.barKey]
+		if eligible ~= false and (not vis or not vis.neverShow) then
+			return true
+		end
+		for _, child in ipairs(node.children or {}) do
+			if TreeCanShow(child) then
+				return true
 			end
 		end
+		return false
 	end
-
-	-- Check if mana is its own tree root (has a wrapper)
-	local manaWrapper = editModeWrapperFrames["mana"]
-	if manaWrapper then
-		local isManaRoot = forest and forest["mana"] ~= nil
-		if isManaRoot then
-			if shouldShowMana then
-				manaWrapper:Show()
+	for rootBarKey, rootNode in pairs(forest or {}) do
+		local wrapper = editModeWrapperFrames[rootBarKey]
+		if wrapper ~= nil and forms.IsBarEligibleForLayout(rootBarKey, visSource) ~= nil then
+			if TreeCanShow(rootNode) then
+				wrapper:Show()
 			else
-				manaWrapper:Hide()
+				wrapper:Hide()
 			end
 		end
 	end

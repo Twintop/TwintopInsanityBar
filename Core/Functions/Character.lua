@@ -695,7 +695,7 @@ local function SpellRangeCheckUpdateEvent(self, event, spellIdentifier, isInRang
 	if TRB.Data.specCache[TRB.Data.barConstructedForSpec] ~= nil then
 		local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
 		for _, v in pairs(specCache.spellsData.spells) do
-			if v.id == spellIdentifier then
+			if v:GetRankedId() == spellIdentifier then
 				v:UpdateIsSpellInRange()
 				return
 			end
@@ -713,7 +713,7 @@ function TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	if specCache ~= nil and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(specCache.settings) then
 		for _, v in pairs(specCache.spellsData.spells) do
 			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
-				C_Spell.EnableSpellRangeCheck(v.id, true)
+				C_Spell.EnableSpellRangeCheck(v:GetRankedId(), true)
 				v:UpdateIsSpellInRange()
 			end
 		end
@@ -734,7 +734,7 @@ function TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	if specCache ~= nil then
 		for _, v in pairs(specCache.spellsData.spells) do
 			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
-				C_Spell.EnableSpellRangeCheck(v.id, false)
+				C_Spell.EnableSpellRangeCheck(v:GetRankedId(), false)
 			end
 		end
 	end
@@ -1425,6 +1425,12 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.text.overThreshold = spec.colors.text.overThreshold
 		specCache.settings.colors.text.overcap = spec.colors.text.overcap
 		specCache.settings.colors.text.manaBar = spec.colors.text.manaBar
+	end
+	-- Spec-only text colors (a form's resource, say) have no global counterpart.
+	for key, value in pairs(spec.colors.text) do
+		if specCache.settings.colors.text[key] == nil then
+			specCache.settings.colors.text[key] = value
+		end
 	end
 
 ---@diagnostic disable-next-line: missing-fields

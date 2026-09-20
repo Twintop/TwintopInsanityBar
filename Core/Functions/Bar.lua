@@ -544,6 +544,48 @@ function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod, maxAlpha)
 	frame:SetAlpha(maxAlpha * (((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime() / flashPeriod)))) + alphaOffset))
 end
 
+---Dumps every bar group's live render state and the anchor forest to chat (/trb bars).
+function TRB.Functions.Bar:PrintDiagnostics()
+	local barGroups = TRB.Frames.barGroups
+	local settings = TRB.Functions.Class:GetActiveDisplaySettings()
+	print(string.format("|cFFFF8800TRB Bars:|r spec=%s form=%s (id %s, live %s) specSupported=%s transition=%s editMode=%s dirty=%s", tostring(TRB.Data.character and TRB.Data.character.compositeKey), tostring(TRB.Data.character and TRB.Data.character.currentShapeshiftForm),
+		tostring(TRB.Data.character and TRB.Data.character.currentShapeshiftFormId), tostring(GetShapeshiftFormID and GetShapeshiftFormID()),
+		tostring(TRB.Data.specSupported), tostring((self:IsRenderTransitionActive())), tostring((TRB.Functions.EditMode:IsInEditMode())), tostring((TRB.Functions.BarVisibility:IsDirty(false)))))
+	if barGroups == nil or settings == nil then
+		print("  no bar groups or settings")
+		return
+	end
+	local forest = self:BuildAnchorForest(settings, barGroups, false, true)
+	local barKeyToRoot = BuildBarKeyToRootMap(forest)
+	local keys = {}
+	for barKey in pairs(barGroups) do
+		if type(barGroups[barKey]) == "table" and barGroups[barKey].containerFrame ~= nil then
+			table.insert(keys, barKey)
+		end
+	end
+	table.sort(keys)
+	for _, barKey in ipairs(keys) do
+		local group = barGroups[barKey]
+		local container = group.containerFrame
+		local parent = container:GetParent()
+		local anchor = self:GetBarAnchor(settings, barKey)
+		local visibility = settings.displayBar and settings.displayBar[barKey]
+		local rootKey = barKeyToRoot[barKey]
+		local wrapper = TRB.Functions.EditMode:GetWrapperFrame(rootKey)
+		local shownNodes = 0
+		for i = 1, group.nodeCount or 0 do
+			local node = group:GetNode(i)
+			if node ~= nil and node.isVisible then
+				shownNodes = shownNodes + 1
+			end
+		end
+		print(string.format("  %-14s isVisible=%s shown=%s visible=%s alpha=%.2f cur=%.2f tgt=%.2f size=%.0fx%.0f nodes=%d/%d parent=%s anchor=%s root=%s wrapperShown=%s never=%s always=%s",
+			barKey, tostring(group.isVisible), tostring((container:IsShown())), tostring((container:IsVisible())), container:GetAlpha() or -1, group.currentAlpha or -1, group.targetAlpha or -1, container:GetWidth() or -1, container:GetHeight() or -1,
+			shownNodes, group.nodeCount or 0, tostring(parent and (parent:GetName() or parent)), tostring(anchor and anchor.barKey), tostring(rootKey), tostring(wrapper ~= nil and (wrapper:IsShown())),
+			tostring(visibility and visibility.neverShow), tostring(visibility and visibility.alwaysShow)))
+	end
+end
+
 ---Sets the bar position by updating the horizontal and vertical offset sliders in the options UI, clamping values to screen bounds
 ---@param xOfs number Horizontal offset from screen center in pixels
 ---@param yOfs number Vertical offset from screen center in pixels
@@ -1232,6 +1274,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
 		TRB.Functions.Class:CheckCharacter()
 	end
+
+	-- Construction re-shows every settings-visible group, so runtime-hidden bars (form, combat) need a
+	-- fresh ProcessBars pass or they stay revealed until the next unrelated dirty mark.
+	TRB.Functions.BarVisibility:MarkDirty()
+	self:HideResourceBar()
 end
 
 ---Applies anchor frame positioning to the bar groups wrapper.

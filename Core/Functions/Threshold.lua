@@ -186,8 +186,13 @@ end
 ---@param value number # The resource value at which to position the threshold
 ---@param maxResource number? # The maximum resource value (defaults to character's maxResource or 100)
 ---@param growRight boolean? # Whether the bar grows left-to-right (default true); ignored when fillDirection is present
-function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight)
-	if not showThreshold or settings == nil or settings.bar == nil or thresholdLine == nil then
+---@param barSettings table? # Dimension block of the bar hosting the line (a custom bar's `bars.<key>`); defaults to `settings.bar`
+function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight, barSettings)
+	if not showThreshold or settings == nil or thresholdLine == nil then
+		return
+	end
+	local bar = barSettings or settings.bar
+	if bar == nil then
 		return
 	end
 
@@ -202,7 +207,7 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 		end
 	end
 
-	local fillDirection = settings.bar.fillDirection
+	local fillDirection = bar.fillDirection
 	if fillDirection == nil then
 		fillDirection = growRight and "leftRight" or "rightLeft"
 	end
@@ -220,7 +225,7 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 	end
 	local borderSubtraction = 0
 	if not overlapBorder then
-		borderSubtraction = settings.bar.border * 2
+		borderSubtraction = bar.border * 2
 	end
 	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
 
@@ -250,10 +255,12 @@ end
 ---@param threshold frame
 ---@param settings table
 ---@param thresholdOverrides table? Per-threshold overrides from thresholdDictionary (optional)
-function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides)
+---@param barSettings table? # Dimension block of the bar hosting the line; defaults to `settings.bar`
+function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides, barSettings)
 	if threshold == nil or threshold.icon == nil then
 		return
 	end
+	local fillDirection = (barSettings or settings.bar).fillDirection
 
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	local cache = TRB.Data.cache.values.threshold[key]
@@ -315,8 +322,8 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 			effectiveRelativeTo = activeIconOverrides.relativeTo
 		end
 
-		if cache.iconWidth ~= width or cache.iconHeight ~= height or cache.iconXPos ~= xPos or cache.iconYPos ~= yPos or cache.iconRelativeTo ~= effectiveRelativeTo or cache.iconFillDirection ~= settings.bar.fillDirection then
-			local isVertical = IsVerticalFillDirection(settings.bar.fillDirection)
+		if cache.iconWidth ~= width or cache.iconHeight ~= height or cache.iconXPos ~= xPos or cache.iconYPos ~= yPos or cache.iconRelativeTo ~= effectiveRelativeTo or cache.iconFillDirection ~= fillDirection then
+			local isVertical = IsVerticalFillDirection(fillDirection)
 
 			local setPoint, setPointRelativeTo
 			if isVertical then
@@ -353,7 +360,7 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 			cache.iconXPos = xPos
 			cache.iconYPos = yPos
 			cache.iconRelativeTo = effectiveRelativeTo
-			cache.iconFillDirection = settings.bar.fillDirection
+			cache.iconFillDirection = fillDirection
 			-- ClearAllPoints/SetSize invalidate BackdropTemplate rendering; force the
 			-- border block below to re-call SetBackdrop on this same pass.
 			cache.iconBorder = nil
@@ -417,8 +424,10 @@ end
 ---@param threshold Frame # The threshold frame to reset
 ---@param settings table # The spec settings containing bar dimensions, threshold properties, icon configuration, and color defaults
 ---@param hasIcon boolean? # Whether this threshold should have an icon sub-frame created and configured
-function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon)
+---@param barSettings table? # Dimension block of the bar hosting the line (a custom bar's `bars.<key>`); defaults to `settings.bar`
+function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon, barSettings)
 	hasIcon = hasIcon or false
+	local bar = barSettings or settings.bar
 	--[[
 		Threshold StrataFrameLevel info, decreasing:
 		- Starts at 1200 for unusable
@@ -436,11 +445,11 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	local borderSubtraction = 0
 
 	if not settings.thresholds.properties.overlapBorder then
-		borderSubtraction = settings.bar.border * 2
+		borderSubtraction = bar.border * 2
 	end
 
 	-- For vertical bars, the threshold is a horizontal stripe (swap width/height)
-	SetThresholdLineDimensions(threshold, settings.bar.fillDirection, settings.bar.width, settings.bar.height, settings.thresholds.properties.width, borderSubtraction)
+	SetThresholdLineDimensions(threshold, bar.fillDirection, bar.width, bar.height, settings.thresholds.properties.width, borderSubtraction)
 ---@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
@@ -465,7 +474,7 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 
 		if settings.thresholds.icons.enabled then
 			threshold.icon:Show()
-			SetThresholdIconSizeAndPosition(settings, threshold, settings.bar.fillDirection)
+			SetThresholdIconSizeAndPosition(settings, threshold, bar.fillDirection)
 		else
 			threshold.icon:Hide()
 		end
@@ -1695,6 +1704,11 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				maxValue = 100
 			end
 
+			-- A custom bar filled by a player power compares through that power's secret-safe curve.
+			if barTypeDef.powerType ~= nil then
+				resourceType = barTypeDef.powerType
+			end
+
 			-- Explicit per-definition value scale (e.g. Shield Block 0-8s) overrides the node-count max.
 			local minOverride, maxOverride = GetCustomThresholdScaleConfig(barTarget)
 			if maxOverride ~= nil then
@@ -2353,6 +2367,21 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 				end
 			end
 		end
+
+		-- Custom bars that host spell threshold lines (hasThresholds) size them from their own dimension block.
+		for barKey, barGroup in pairs(barGroups) do
+			local barTypeDef = GetBarTypeDefinition(barKey)
+			local barSettings = settings.bars and settings.bars[barKey]
+			if barTypeDef ~= nil and barTypeDef.hasThresholds and barSettings ~= nil and type(barGroup) == "table" and barGroup.GetNode ~= nil then
+				local node = barGroup:GetNode(1)
+				local thresholds = node and node:GetThresholds()
+				if thresholds then
+					for _, threshold in ipairs(thresholds) do
+						TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true, barSettings)
+					end
+				end
+			end
+		end
 	end
 
 	TRB.Data.cache.values.threshold = {}
@@ -2539,8 +2568,9 @@ end
 ---@param snapshot TRB.Classes.Snapshot
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param thresholdOverrides table? Per-threshold overrides from thresholdDictionary (optional)
+---@param barSettings table? # Dimension block of the bar hosting the line (a custom bar's `bars.<key>`); defaults to `settings.bar`
 ---@return boolean
-function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings, thresholdOverrides)
+function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings, thresholdOverrides, barSettings)
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
 	local cache = TRB.Data.cache.values.threshold[key]
 
@@ -2669,10 +2699,10 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		
 		if threshold ~= nil then
 			if threshold.texture == nil or threshold.icon == nil then
-				TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true)
+				TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true, barSettings)
 			end
 
-			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides)
+			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides, barSettings)
 
 			-- Per-threshold line width override (thickness of the line)
 			local lineThickness = settings.thresholds.properties.width

@@ -185,7 +185,8 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			end
 		end
 
-		if archetype.secondary ~= nil then
+		-- TEMPORARY: the current beta build wrongly marks Combo Points secret; skip them until Blizzard fixes it.
+		if archetype.secondary ~= nil and not issecretvalue(snapshotData.attributes.resource2) then
 			local secondaryVariable = "$" .. archetype.secondary.variable
 			if not activeVars or activeVars[secondaryVariable] or activeVars[secondaryVariable .. "Max"] then
 				local current = snapshotData.attributes.resource2 or 0
@@ -267,7 +268,8 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
-			if spec.archetype.secondary ~= nil and barGroups.secondary and not specSettings.displayBar.secondary.neverShow then
+			-- TEMPORARY: same secret Combo Points guard as RefreshLookupData.
+			if spec.archetype.secondary ~= nil and barGroups.secondary and not specSettings.displayBar.secondary.neverShow and not issecretvalue(snapshotData.attributes.resource2) then
 				refreshText = true
 				local comboPointsColors = specSettings.colors.comboPoints
 				local current = snapshotData.attributes.resource2 or 0

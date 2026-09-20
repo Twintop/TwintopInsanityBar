@@ -9,6 +9,7 @@ TRB.Details.coreNewsContent = [====[
 - Every specialization starts with its Use Global toggles on, apart from Font & Text. Global Options drives a fresh install until a toggle is unticked; existing settings keep their toggles.
 - The cast bar shows a cast's display name, e.g. `Opening` instead of `Opening - No Text`.
 - A fresh install starts with the Target and Focus Cast Bar text entries.
+- Bars hidden by a runtime condition (a shapeshift form, In Combat) no longer reappear after changing any bar's anchor, size, or offset.
 
 ---
 ]====]

@@ -36,6 +36,8 @@ local addonName, TRB = ...
 ---@field public id string # Flavor identifier; must equal the TOC's X-Flavor field
 ---@field public nameKey string # Localization key of the flavor's display name
 ---@field public savedVariablesName string # Global declared by the TOC's SavedVariables line
+---@field public gcdSpellId integer? # Dummy spell whose cooldown is the global cooldown; defaults to retail's 61304
+---@field public unavailableVisibilityConditions table<string, boolean>? # Bar visibility condition keys the client can never satisfy (no flying, say); dropped from the options and the defaults
 ---@field public IsClientMatch fun(): boolean
 ---@field public GetSpecializationIndex fun(): integer? # Active specialization index in specs[] order, or nil when the client reports none
 ---@field public classes TRB.Flavor.ClassEntry[]
@@ -46,6 +48,7 @@ local addonName, TRB = ...
 ---@field public OnBarTextSeeded (fun(settings: table, className: string))? # Hook after a class receives fresh default bar text
 ---@field public RunManualUpdateChecks (fun(settings: table, classEntry: TRB.Data.ClassRegistryEntry): table)? # One-shot per-class manual migrations run right after the saved variables are merged
 ---@field public ShowMidnightBarTextResetMessage (fun(className: string))? # Mainline-only chat notice for its bar text reset
+---@field public ResolveSpellRankId (fun(spell: TRB.Classes.SpellBase): integer?)? # The rank of a `rankIds` spell to hand the client API; flavors without ranked spells leave it unset and get the spell's `id`
 ---@field public newsContent string? # Markdown changelog shown by the News window's flavor tab; Core\News.lua holds the Core tab's
 
 assert(type(TRB.Flavor) == "table", "TwintopInsanityBar: no flavor manifest loaded before Core. Check the TOC.")
@@ -73,6 +76,22 @@ end
 ---@param value table?
 function TRB.Flavor.SetSavedVariables(value)
 	_G[TRB.Flavor.savedVariablesName] = value
+end
+
+if TRB.Flavor.gcdSpellId == nil then
+	TRB.Flavor.gcdSpellId = 61304
+end
+if TRB.Flavor.unavailableVisibilityConditions == nil then
+	TRB.Flavor.unavailableVisibilityConditions = {}
+end
+
+-- Placeholder rank resolution: a flavor with ranked spells (Forever, and any Classic lineage later) replaces it.
+if TRB.Flavor.ResolveSpellRankId == nil then
+	---@param spell TRB.Classes.SpellBase
+	---@return integer
+	function TRB.Flavor.ResolveSpellRankId(spell)
+		return spell.id
+	end
 end
 
 -- Working data root. Init.lua fills in the rest.

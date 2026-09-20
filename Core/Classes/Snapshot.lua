@@ -55,7 +55,7 @@ function TRB.Classes.SnapshotData:RecalculateHastedCooldowns(oldGcd, newGcd, cha
 	end
 end
 
----Reads the GCD length from dummy GCD spell 61304 (haste is secret) and updates the cached duration, formatted strings, and pending haste recalc
+---Reads the GCD length from the flavor's dummy GCD spell (haste is secret) and updates the cached duration, formatted strings, and pending haste recalc
 ---@param statChangeTime number? # GetTime() of a stat change; when set, an unreadable or unchanged reading queues pendingGcdRecalc instead of writing
 ---@return boolean # True when the cached GCD duration was written
 function TRB.Classes.SnapshotData:UpdateGCD(statChangeTime)
@@ -63,7 +63,7 @@ function TRB.Classes.SnapshotData:UpdateGCD(statChangeTime)
 
 	-- GetTotalDuration() returns the full GCD length in seconds while a GCD is active (0 otherwise)
 	local newGcd
-	local durationObj = C_Spell.GetSpellCooldownDuration(61304)
+	local durationObj = C_Spell.GetSpellCooldownDuration(TRB.Flavor.gcdSpellId)
 	if durationObj then
 		local totalDuration = durationObj:GetTotalDuration()
 		if not issecretvalue(totalDuration) and totalDuration > 0 then
@@ -1104,7 +1104,7 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 	end
 
 	if issecretvalue(self.startTime) or issecretvalue(self.duration) then
-		local dObj = C_Spell.GetSpellChargeDuration(self.parent.spell.id)
+		local dObj = C_Spell.GetSpellChargeDuration(self.parent.spell:GetRankedId())
 		if dObj ~= nil then
 			local remaining = dObj:GetRemainingDuration()
 			if not issecretvalue(remaining) then
@@ -1226,7 +1226,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 		local startTime = nil
 		local duration = 0
 		if self.parent.spell.hasCharges == true then
-			local spellCharges = C_Spell.GetSpellCharges(self.parent.spell.id)
+			local spellCharges = C_Spell.GetSpellCharges(self.parent.spell:GetRankedId())
 			if spellCharges ~= nil then
 				self.charges = spellCharges.currentCharges
 				self.maxCharges = spellCharges.maxCharges
@@ -1250,7 +1250,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 				duration = 0
 			end
 		else
-			local spellCooldown = C_Spell.GetSpellCooldown(self.parent.spell.id) --[[@as SpellCooldownInfo]]
+			local spellCooldown = C_Spell.GetSpellCooldown(self.parent.spell:GetRankedId()) --[[@as SpellCooldownInfo]]
 			self.isActive = false
 			self.durationObject = nil
 			startTime = spellCooldown.startTime
@@ -1258,7 +1258,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 		end
 
 		if self.parent.spell.hasCastCount == true then
-			self.castCount = C_Spell.GetSpellCastCount(self.parent.spell.id)
+			self.castCount = C_Spell.GetSpellCastCount(self.parent.spell:GetRankedId())
 		end
 
 ---@diagnostic disable-next-line: param-type-mismatch
@@ -1325,7 +1325,7 @@ function TRB.Classes.SnapshotCooldown:InitializeManualCharges(maxCharges, curren
 	else
 		-- Try to read current charges from the API
 		if self.parent.spell ~= nil and self.parent.spell.id ~= nil then
-			local spellCharges = C_Spell.GetSpellCharges(self.parent.spell.id)
+			local spellCharges = C_Spell.GetSpellCharges(self.parent.spell:GetRankedId())
 			if spellCharges ~= nil and not issecretvalue(spellCharges.currentCharges) then
 				self.manualCharges = spellCharges.currentCharges
 			else
@@ -1345,7 +1345,7 @@ function TRB.Classes.SnapshotCooldown:InitializeManualCharges(maxCharges, curren
 	-- If on cooldown, try to bootstrap a recharge timer from the API so charges
 	-- aren't permanently stuck after /reload.
 	if self.onCooldown and self.manualCooldownExpires == nil and self.parent.spell ~= nil and self.parent.spell.id ~= nil then
-		local spellCharges = C_Spell.GetSpellCharges(self.parent.spell.id)
+		local spellCharges = C_Spell.GetSpellCharges(self.parent.spell:GetRankedId())
 		if spellCharges ~= nil then
 			local startTime = spellCharges.cooldownStartTime
 			local duration = spellCharges.cooldownDuration
@@ -1482,9 +1482,9 @@ end
 function TRB.Classes.SnapshotCooldown:RefreshDurationObject()
 	if self.parent.spell ~= nil and self.parent.spell.id ~= nil then
 		if self.parent.spell.hasCharges == true then
-			self.durationObject = C_Spell.GetSpellChargeDuration(self.parent.spell.id)
+			self.durationObject = C_Spell.GetSpellChargeDuration(self.parent.spell:GetRankedId())
 		else
-			self.durationObject = C_Spell.GetSpellCooldownDuration(self.parent.spell.id)
+			self.durationObject = C_Spell.GetSpellCooldownDuration(self.parent.spell:GetRankedId())
 		end
 	else
 		self.durationObject = nil
@@ -1590,7 +1590,7 @@ function TRB.Classes.SnapshotCasting:SnapshotManaSpell()
 	end
 end
 
----Computes and caches the remaining global cooldown lock time using the GCD spell (61304)
+---Computes and caches the remaining global cooldown lock time using the flavor's dummy GCD spell
 ---@return number # Remaining GCD lock time in seconds
 function TRB.Classes.SnapshotCasting:GetCurrentGCDLockRemaining()
 	local currentTime = GetTime()
@@ -1598,7 +1598,7 @@ function TRB.Classes.SnapshotCasting:GetCurrentGCDLockRemaining()
 		return self.gcdLockRemaining
 	end
 	local startTime, duration
-	local spellCooldown = C_Spell.GetSpellCooldown(61304) --[[@as SpellCooldownInfo]]
+	local spellCooldown = C_Spell.GetSpellCooldown(TRB.Flavor.gcdSpellId) --[[@as SpellCooldownInfo]]
 	startTime = spellCooldown.startTime
 	duration = spellCooldown.duration
 	if issecretvalue(startTime) or issecretvalue(duration) then

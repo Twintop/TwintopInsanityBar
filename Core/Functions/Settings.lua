@@ -24,7 +24,7 @@ end
 ---Creates a new independent copy of the default hard-hide visibility conditions.
 ---@return trbBarVisibilityHideConditions
 function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
-	return {
+	local conditions = {
 		isMountedAny = false,
 		isMountedGround = false,
 		isMountedFlying = false,
@@ -45,6 +45,10 @@ function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
 		onTaxi = true,
 		isDead = false,
 	}
+	for key in pairs(TRB.Flavor.unavailableVisibilityConditions) do
+		conditions[key] = nil
+	end
+	return conditions
 end
 
 ---Creates a new independent copy of NewSpecGlobalDefaults()
@@ -318,6 +322,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 		local globalClass, enabledClass, specClass = {}, {}, {}
 		for _, specEntry in ipairs(classEntry.specs) do
 			globalClass[specEntry.specName] = NewSpecGlobalDefaults()
+			for key, value in pairs(specEntry.descriptor and specEntry.descriptor.useGlobalDefaults or {}) do
+				globalClass[specEntry.specName][key] = value
+			end
 			enabledClass[specEntry.specName] = true
 			specClass[specEntry.specName] = {}
 		end
@@ -2532,7 +2539,7 @@ function TRB.Functions.Settings:LoadDefaultCastBarTextSettings()
 			guid = TRB.Functions.String:Guid(),
 			constrainToParent = false,
 			maxWidthPercent = 100,
-			text = "{$castTime>0}[{$castPushback>0}[||cFFFF00FF$castPushback||r + ] $castTimeRemaining / $castTime]",
+			text = "{$castTime>0}[{$castPushback>0}[||cFFFF00FF$castPushback||r + ]$castTimeRemaining / $castTime]",
 			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			fontJustifyHorizontal = "RIGHT",

@@ -354,6 +354,47 @@ local function Run()
 	Probe("power", "GetUnitChargedPowerPoints", function() return GetUnitChargedPowerPoints("player") end)
 	Probe("power", "UnitHealth/Max", function() return UnitHealth("player"), UnitHealthMax("player") end)
 
+	-- Spell ranks and shapeshift forms (Druid): which "known" API sees ranks, what each rank costs, and the form ids.
+	local rankedSpells = {
+		{ name = "Healing Touch", ids = { 5185, 5186, 5187, 5188, 5189, 6778, 8903, 9758, 9888, 9889, 25297 } },
+		{ name = "Rejuvenation", ids = { 774, 1058, 1430, 2090, 2091, 3627, 8910, 9839, 9840, 9841, 25299 } },
+		{ name = "Maul", ids = { 6807, 6808, 6809, 8972, 9745, 9880, 9881 } },
+		{ name = "Demoralizing Roar", ids = { 99, 1735, 9490, 9747, 9898 } },
+		{ name = "Claw", ids = { 1082, 3029, 5201, 9849, 9850 } },
+		{ name = "Rip", ids = { 1079, 9492, 9493, 9752, 9894, 9896 } },
+	}
+	for _, ranked in ipairs(rankedSpells) do
+		Probe("spellranks", ranked.name .. " IsSpellKnown/IsPlayerSpell per rank", function()
+			local out = {}
+			for i, id in ipairs(ranked.ids) do
+				out[i] = id .. ":" .. Value(C_SpellBook.IsSpellKnown(id)) .. "/" .. Value(IsPlayerSpell(id))
+			end
+			return table.concat(out, " ")
+		end)
+		Probe("spellranks", ranked.name .. " GetSpellPowerCost per rank", function()
+			local out = {}
+			for i, id in ipairs(ranked.ids) do
+				out[i] = id .. ":" .. Value(C_Spell.GetSpellPowerCost(id))
+			end
+			return table.concat(out, " ")
+		end)
+		Probe("spellranks", ranked.name .. " GetSpellInfo by name", function() return C_Spell.GetSpellInfo(ranked.name) end)
+		Probe("spellranks", ranked.name .. " GetSpellInfo rank 1 / subtext", function() return C_Spell.GetSpellInfo(ranked.ids[1]), C_Spell.GetSpellSubtext(ranked.ids[1]) end)
+	end
+	Exists("spellranks", "IsPlayerSpell")
+	Exists("spellranks", "C_Spell.GetSpellSubtext")
+	Exists("spellranks", "C_SpellBook.FindSpellBookSlotForSpell")
+	Exists("spellranks", "SPELLS_CHANGED")
+	Probe("spellranks", "GetShapeshiftFormID/GetShapeshiftForm (current form)", function() return GetShapeshiftFormID(), GetShapeshiftForm(), GetNumShapeshiftForms() end)
+	Probe("spellranks", "GetShapeshiftFormInfo(1..6)", function()
+		local out = {}
+		for i = 1, 6 do out[i] = Value({ GetShapeshiftFormInfo(i) }) end
+		return table.concat(out, " | ")
+	end)
+	for _, name in ipairs({ "CAT_FORM", "BEAR_FORM", "DIRE_BEAR_FORM", "TRAVEL_FORM", "AQUATIC_FORM", "MOONKIN_FORM", "TREE_OF_LIFE_FORM" }) do
+		Probe("spellranks", "global " .. name, function() return _G[name] end)
+	end
+
 	-- Secret values and combat restrictions.
 	Exists("secrets", "issecretvalue")
 	Exists("secrets", "canaccessvalue")
@@ -442,7 +483,7 @@ local function Run()
 
 	-- Everything goes to the copy window; chat only gets the client section as a sanity check.
 	local lines = { "TRB Forever Probe " .. results.probedAt .. " " .. key }
-	local sections = { "client", "character", "talents", "power", "secrets", "systems", "stats", "globals" }
+	local sections = { "client", "character", "talents", "power", "spellranks", "secrets", "systems", "stats", "globals" }
 	for _, section in ipairs(sections) do
 		local entries = results[section] or {}
 		local keys = {}

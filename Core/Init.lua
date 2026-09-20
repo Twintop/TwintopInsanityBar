@@ -632,6 +632,8 @@ function SlashCmdList.TWINTOP(msg)
 		TRB.Functions.AuraEngine:PrintDiagnostics()
 	elseif cmd == "otherbars" then
 		TRB.Functions.OtherBars:PrintDiagnostics()
+	elseif cmd == "bars" then
+		TRB.Functions.Bar:PrintDiagnostics()
 	elseif cmd == "castname" then
 		TRB.Functions.Castbar:ToggleCastNameEcho()
 	elseif cmd == "endcap" then
@@ -672,7 +674,7 @@ function SlashCmdList.TWINTOP(msg)
 		if handler ~= nil then
 			handler(subcmd)
 		else
-			print("|cFFFF8800TRB:|r Unknown command '" .. cmd .. "'. Valid: reset, fill, move, news, minimap. Use /trb on its own for options.")
+			print("|cFFFF8800TRB:|r Unknown command '" .. cmd .. "'. Valid: reset, fill, move, news, minimap, bars, otherbars, cdm, auraengine, castname, endcap. Use /trb on its own for options.")
 		end
 	end
 end

@@ -103,10 +103,25 @@ end
 ---Copies the given keys into a new array, in order.
 ---@param keys string[]
 ---@return string[]
+---Copies a key list, leaving out the conditions this flavor's client can never satisfy.
 local function CopyKeys(keys)
 	local result = {}
 	for _, key in ipairs(keys) do
-		result[#result + 1] = key
+		if not TRB.Flavor.unavailableVisibilityConditions[key] then
+			result[#result + 1] = key
+		end
+	end
+	return result
+end
+
+---Filters each group's keys the same way and drops any group left empty.
+local function AvailableGroups(groups)
+	local result = {}
+	for _, group in ipairs(groups) do
+		local keys = CopyKeys(group.keys)
+		if #keys > 0 then
+			result[#result + 1] = { title = group.title, keys = keys }
+		end
 	end
 	return result
 end
@@ -694,6 +709,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			keys = druidFormConditionKeys,
 		})
 	end
+	conditionGroups = AvailableGroups(conditionGroups)
 
 	local hideConditionKeys = CopyKeys(STANDARD_HIDE_CONDITION_KEYS)
 	local hideConditionLabels = LabelsFor(STANDARD_HIDE_CONDITION_KEYS)
@@ -717,6 +733,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			keys = druidFormConditionKeys,
 		})
 	end
+	hideConditionGroups = AvailableGroups(hideConditionGroups)
 
 	-- Castbar-specific condition profile: show conditions are cast states (not environment), the only
 	-- hard-hide condition is In Vehicle, and resource/health thresholds don't apply. Empowered is only

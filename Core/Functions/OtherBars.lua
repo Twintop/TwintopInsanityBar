@@ -8,7 +8,7 @@ TRB.Functions.OtherBars = {}
 
 	Two kinds live here, sharing one updater and one visibility model:
 
-	  * Global Cooldown -- the fill is bound to the DurationObject for Blizzard's dummy GCD spell (61304)
+	  * Global Cooldown -- the fill is bound to the DurationObject for Blizzard's dummy GCD spell (TRB.Flavor.gcdSpellId)
 	    via StatusBar:SetTimerDuration, so it animates natively even when the cooldown values are secret.
 	    The cooldown API is read only on events that start a GCD or end one early; never polled.
 
@@ -21,7 +21,7 @@ TRB.Functions.OtherBars = {}
 ]]
 
 -- Blizzard's dummy GCD spell. Its cooldown is the global cooldown; no real spell's cooldown may be read.
-local GCD_SPELL_ID = 61304
+local GCD_SPELL_ID = TRB.Flavor.gcdSpellId
 
 -- Bar key -> kind + (for mirror timers) the timer name GetMirrorTimerInfo reports. The four timer names
 -- are the ones in Blizzard's own MirrorTimerAtlas.
@@ -60,6 +60,13 @@ local cachedIdleAlpha = {}
 -- Per-bar cache of the last throttle tick's resolved visibility table, reused by the between-tick frames
 -- (fade interpolation, mirror fill) so settings are resolved at 20Hz rather than every frame.
 local cachedVisibility = {}
+-- TEMPORARY DIAGNOSTIC (/trb otherbars): echo every GCD start/stop decision to chat.
+local echoGcd = false
+local function GcdEcho(fmt, ...)
+	if echoGcd then
+		print("|cFFFF8800TRB GCD:|r " .. string.format(fmt, ...))
+	end
+end
 
 local updaterFrame = CreateFrame("Frame")
 updaterFrame:Hide()
@@ -500,10 +507,12 @@ local function CheckGcdStart(fromCast)
 	local entry = BARS[1]
 	local _, _, visibility = GetBarConfig(entry.key)
 	if not IsEnabled(visibility) then
+		GcdEcho("start(fromCast=%s): bar not enabled", tostring(fromCast))
 		return
 	end
 	local readable = IsGcdRunningReadable()
 	if readable == false then
+		GcdEcho("start(fromCast=%s): cooldown API says no GCD running", tostring(fromCast))
 		return
 	end
 	-- Secret cooldown values: SPELL_UPDATE_COOLDOWN fires for every cooldown in the game and can't be
@@ -513,10 +522,15 @@ local function CheckGcdStart(fromCast)
 	end
 	local duration = ReadGcdDurationObject()
 	if duration == nil then
+		GcdEcho("start(fromCast=%s): readable=%s, no DurationObject", tostring(fromCast), tostring(readable))
 		return
 	end
 	gcdDuration = duration
 	gcdExpiry = GetTime() + ReadGcdLength(duration)
+	if echoGcd then
+		local _, node = GetGroupNode(entry.key)
+		GcdEcho("start(fromCast=%s): readable=%s length=%s node=%s SetTimerDuration=%s", tostring(fromCast), tostring(readable), tostring(gcdExpiry - GetTime()), tostring(node ~= nil), tostring(node ~= nil and node.SetTimerDuration ~= nil))
+	end
 	active[entry.key] = true
 	BeginRender(entry)
 end
@@ -529,6 +543,7 @@ local function CheckGcdStop()
 		return
 	end
 	if IsGcdRunningReadable() == false then
+		GcdEcho("stop: cast failed with no GCD running")
 		StopTimer(entry)
 	end
 end
@@ -821,7 +836,22 @@ function TRB.Functions.OtherBars:PrintDiagnostics()
 	end
 	local container = MirrorTimerContainer
 	print("  MirrorTimerContainer=" .. tostring(container ~= nil) .. " mirrorTimers=" .. tostring(container and container.mirrorTimers ~= nil) .. " hooks=" .. tostring(mirrorHooksInstalled) .. " registered=" .. tostring(eventFrame:IsEventRegistered("MIRROR_TIMER_START")))
+	local function describe(v)
+		return issecretvalue(v) and ("<secret " .. type(v) .. ">") or tostring(v)
+	end
+	print(string.format("  GCD spell %d: DoesSpellExist=%s GetSpellInfo=%s GetSpellCooldownDuration=%s", GCD_SPELL_ID,
+		tostring(C_Spell.DoesSpellExist and C_Spell.DoesSpellExist(GCD_SPELL_ID)), tostring(C_Spell.GetSpellInfo(GCD_SPELL_ID) ~= nil), tostring(C_Spell.GetSpellCooldownDuration ~= nil)))
+	local cooldown = C_Spell.GetSpellCooldown(GCD_SPELL_ID)
+	print(string.format("  GetSpellCooldown: %s startTime=%s duration=%s isEnabled=%s modRate=%s", tostring(cooldown ~= nil),
+		describe(cooldown and cooldown.startTime), describe(cooldown and cooldown.duration), describe(cooldown and cooldown.isEnabled), describe(cooldown and cooldown.modRate)))
+	local durationObject = ReadGcdDurationObject()
+	print(string.format("  DurationObject: %s GetTotalDuration=%s GetRemainingDuration=%s", tostring(durationObject),
+		describe(durationObject and durationObject.GetTotalDuration and durationObject:GetTotalDuration()), describe(durationObject and durationObject.GetRemainingDuration and durationObject:GetRemainingDuration())))
+	local _, gcdNode = GetGroupNode("gcd")
+	print(string.format("  node SetTimerDuration=%s Enum.StatusBarTimerDirection=%s GetCurrentGCDTime=%s events=%s",
+		tostring(gcdNode ~= nil and gcdNode.SetTimerDuration ~= nil), tostring(Enum.StatusBarTimerDirection ~= nil), describe(TRB.Functions.Character:GetCurrentGCDTime()), tostring(eventFrame:IsEventRegistered("SPELL_UPDATE_COOLDOWN"))))
 	echoMirrorEvents = not echoMirrorEvents
+	echoGcd = echoMirrorEvents
 	for _, event in ipairs({ "MIRROR_TIMER_START", "MIRROR_TIMER_STOP", "MIRROR_TIMER_PAUSE" }) do
 		if echoMirrorEvents then
 			echoFrame:RegisterEvent(event)
@@ -829,7 +859,7 @@ function TRB.Functions.OtherBars:PrintDiagnostics()
 			echoFrame:UnregisterEvent(event)
 		end
 	end
-	print("  MIRROR_TIMER_* echo " .. (echoMirrorEvents and "ON: swim underwater, then paste the lines it prints" or "OFF"))
+	print("  MIRROR_TIMER_* and GCD echo " .. (echoMirrorEvents and "ON: cast something or swim underwater, then paste the lines it prints" or "OFF"))
 end
 
 ---Registers the events these bars need, then resolves the initial display. The GCD events are the only

@@ -44,6 +44,14 @@ function TRB.Classes.SpellsData:FillSpellData()
 		TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, spell.talentId, spell)
 		TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, spell.castId, spell)
 		TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, spell.tickId, spell)
+		-- Events report the rank that was cast, so every rank resolves to the one definition.
+		if spell.rankIds ~= nil then
+			for _, rankId in ipairs(spell.rankIds) do
+				if rankId ~= spell.id then
+					TRB.Functions.Table:AddToDictionaryOfListsById(self.spellsById, rankId, spell)
+				end
+			end
+		end
 	end
 end
 
@@ -63,6 +71,7 @@ end
 
 ---@class TRB.Classes.SpellBase
 ---@field public id integer # Primary spell ID of the spell. This can be the spellbook ID, spell associated with the talent ID, the buff/debuff ID, an energize ID, or something else. This is the spell ID that is used, by default, to populate the `name` and `icon` properties.
+---@field public rankIds integer[]? # Every rank's spell ID, lowest first, on flavors whose spells have ranks; `id` is rank 1. Client API calls go through `GetRankedId()`.
 ---@field public spellId integer? # Spell ID differs from the main `id`.
 ---@field public buffId integer? # Spell ID of a buff that differs from the main `id`.
 ---@field public debuffId integer? # Spell ID of a debuff that differs from the main `id`.
@@ -119,6 +128,8 @@ end
 ---@field private _lastCastTimeValue number # Current cast time of the spell in seconds
 ---@field private _baseCastTime number? # Base (first non-zero) cast time seen, used to detect procs
 ---@field private _isInstantCurrently boolean # Is this ability instant cast currently when it usually has a cast time?
+---@field private _rankedId integer? # Rank resolved by the flavor's ResolveSpellRankId, cached by the flavor
+---@field private _rankGeneration integer? # Spellbook generation the cached rank was resolved at
 TRB.Classes.SpellBase = {}
 TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
 
@@ -138,6 +149,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
 	local attributes = {}
 	for key, value in pairs(spellAttributes) do
 		if  (key == "id"								and type(value) == "number" and tonumber(value, 10) ~= nil) or
+			(key == "rankIds"							and type(value) == "table") or
 			(key == "spellId"						  	and type(value) == "number" and tonumber(value, 10) ~= nil) or
 			(key == "buffId"						   	and type(value) == "number" and tonumber(value, 10) ~= nil) or
 			(key == "debuffId"						 	and type(value) == "number" and tonumber(value, 10) ~= nil) or
@@ -235,6 +247,15 @@ function TRB.Classes.SpellBase:GetTickRate()
 	return self.tickRate
 end
 
+---The spell ID to hand the client API: the flavor's resolved rank when the spell has `rankIds`, otherwise `id`.
+---@return integer
+function TRB.Classes.SpellBase:GetRankedId()
+	if self.rankIds == nil then
+		return self.id
+	end
+	return TRB.Flavor.ResolveSpellRankId(self) or self.id
+end
+
 ---Gets the cache key for the spell. If the _cacheKey is not set, it will be set to the id, primaryResourceTypeProperty, and primaryResourceTypeMod.
 ---@return string # Cache key
 function TRB.Classes.SpellBase:GetCacheKey()
@@ -316,15 +337,19 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero, ind
 			return self._lastNonZeroPrimaryResourceValue
 		end
 
+		-- Indirect callers pass a bare table with no metatable, so the methods must be reached through the class.
+		local rankedId
 		if indirectCall == true then
-            TRB.Classes.SpellBase.GetCacheKey(self)
-        else
-		    self:GetCacheKey()
-        end
+			TRB.Classes.SpellBase.GetCacheKey(self)
+			rankedId = TRB.Classes.SpellBase.GetRankedId(self)
+		else
+			self:GetCacheKey()
+			rankedId = self:GetRankedId()
+		end
 
 		local cachedCost = TRB.Data.cache.values.resource[self._cacheKey]
 		if cachedCost == nil then
-			local spc = C_Spell.GetSpellPowerCost(self.id)
+			local spc = C_Spell.GetSpellPowerCost(rankedId)
 			if spc ~= nil then
 				for x = 1, #spc do
 					if spc[x].type == self.primaryResourceType then
@@ -387,7 +412,7 @@ function TRB.Classes.SpellBase:GetCastTime()
 
 	local cacheKey = self.id
 	if TRB.Data.cache.values.castTime[cacheKey] == nil then
-		local spellInfo = C_Spell.GetSpellInfo(self.id)
+		local spellInfo = C_Spell.GetSpellInfo(self:GetRankedId())
 		if spellInfo ~= nil and spellInfo.castTime ~= nil then
 			local value = spellInfo.castTime / 1000 -- Convert ms to seconds
 			self._lastCastTimeValue = value
@@ -463,6 +488,12 @@ function TRB.Classes.SpellBase.InvalidateSpellUsable()
 	spellUsableGeneration = spellUsableGeneration + 1
 end
 
+---Whether the player has learned the spell (its highest known rank on flavors with ranks).
+---@return boolean
+function TRB.Classes.SpellBase:IsKnown()
+	return C_SpellBook.IsSpellKnown(self:GetRankedId()) == true
+end
+
 ---Gets whether the spell is currently usable.
 ---@return boolean # Is the spell usable
 function TRB.Classes.SpellBase:IsUsable()
@@ -486,7 +517,7 @@ function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 		return
 	end
 
-	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self.id)
+	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self:GetRankedId())
 	--We previously only cared about insufficient power, but since we are not doing a check based on just primary and secondary resources we might as well use the full usability.
 	self._isUsable = isUsable
 	self._insufficientPower = insufficientPower
@@ -515,7 +546,8 @@ end
 ---Updates the cache value for the spell check of if it is in range.
 function TRB.Classes.SpellBase:UpdateIsSpellInRange()
 	if self.rangeCheck == true then
-		TRB.Data.cache.values.range[self.id] = C_Spell.IsSpellInRange(self.id, self.targetUnit or "target")
+		local rankedId = self:GetRankedId()
+		TRB.Data.cache.values.range[rankedId] = C_Spell.IsSpellInRange(rankedId, self.targetUnit or "target")
 	end
 end
 
@@ -525,11 +557,12 @@ function TRB.Classes.SpellBase:GetIsSpellInRange()
 	if self.rangeCheck ~= true then
 		return true
 	end
-	if TRB.Data.cache.values.range[self.id] == nil then
+	local rankedId = self:GetRankedId()
+	if TRB.Data.cache.values.range[rankedId] == nil then
 		self:UpdateIsSpellInRange()
 	end
 
-	return TRB.Data.cache.values.range[self.id]
+	return TRB.Data.cache.values.range[rankedId]
 end
 
 
