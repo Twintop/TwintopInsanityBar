@@ -37,6 +37,7 @@ end
 ---@field public hex TRB.Classes.SpellBase
 ---@field public inundate TRB.Classes.SpellBase
 ---@field public stormkeeper TRB.Classes.SpellBase
+---@field public stormwell TRB.Classes.SpellBase
 ---@field public echoesOfGreatSundering TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
 ---@field public preeminence TRB.Classes.SpellBase
@@ -133,6 +134,11 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         id = 191634,
         stacks = 2,
         duration = 15
+    })
+    self.stormwell = TRB.Classes.SpellBase:New({
+        id = 1264762,
+        isTalent = true,
+        resource = 10
     })
     self.powerOfTheMaelstrom = TRB.Classes.SpellBase:New({
         id = 191877,
