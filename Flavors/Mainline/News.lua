@@ -10,6 +10,9 @@ TRB.Flavor.newsContent = [====[
 
 # 12.1.0.12-release (2026-09-20)
 ## General
+
+- Refactor the addon to be a bit more flavor agnostic. From now on, only changes relating to the mainline flavor will be listed here. Changes that impact the Core infrastructure will go in the new Core news tab.
+
 ### Core Changes
 
 - See [Core Changes](tab:core).
