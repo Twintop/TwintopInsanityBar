@@ -8,6 +8,20 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.1-release (2026-09-21)
+## Warrior
+
+- Threshold lines on the Rage bar for Heroic Strike, Cleave, Rend, Thunder Clap, Overpower, Execute, Sunder Armor, Revenge, Slam, Whirlwind, Shield Slam, Mortal Strike, Bloodthirst, Death Wish, Sweeping Strikes, Spearing Strike, Hamstring, Shield Bash, Intercept, Pummel, Battle Shout, Demoralizing Shout, Intimidating Shout, Disarm, Concussion Blow, Piercing Howl, Shield Block, Challenging Shout, and Mocking Blow, on the Thresholds tab. A stance-restricted ability only draws its line in a stance that can cast it.
+- Bar text icon variables for every one of those abilities.
+- `/trb stance` reports the stance the addon reads.
+
+## Rogue
+
+- Threshold lines on the Energy bar for Sinister Strike, Backstab, Mutilate, Hemorrhage, Ghostly Strike, Ambush, Garrote, Cheap Shot, Gouge, Riposte, Eviscerate, Rupture, Slice and Dice, Kidney Shot, Expose Armor, Venom, Feint, Sap, Kick, Distract, Blind, and Blade Flurry, on the Thresholds tab. Ambush, Garrote, Cheap Shot, and Sap only draw while stealthed.
+- Bar text variables `$inStealth`, `#ambush`, `#backstab`, `#cheapShot`, `#eviscerate`, `#exposeArmor`, `#garrote`, `#gouge`, `#hemorrhage`, `#kick`, `#kidneyShot`, `#mutilate`, `#rupture`, `#sinisterStrike`, and `#sliceAndDice`.
+
+---
+
 # 1.60.1.0-release (2026-09-20)
 ## General
 

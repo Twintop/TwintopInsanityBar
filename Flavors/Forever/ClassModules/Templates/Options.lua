@@ -18,10 +18,11 @@ TRB.Forever.Templates.Options = {}
 ---@param classDef TRB.Forever.ClassDefinition
 ---@param spec TRB.Forever.SpecDefinition
 ---@param loadDefaultBarText fun(classic: boolean?): table
+---@param loadThresholdDictionary (fun(): table)?
 ---@param includeBarText boolean?
 ---@param classic boolean?
 ---@return table
-local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, includeBarText, classic)
+local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadThresholdDictionary, includeBarText, classic)
 	local archetype = spec.archetype
 	local colors = archetype.colors
 	local hasSecondary = archetype.secondary ~= nil
@@ -40,7 +41,7 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, inclu
 				overlapBorder = true,
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
-			thresholdDictionary = {},
+			thresholdDictionary = loadThresholdDictionary ~= nil and loadThresholdDictionary() or {},
 			customThresholds = {},
 		},
 		displayBar = {
@@ -273,7 +274,8 @@ end
 
 ---Installs TRB.Options.<Class> for one class.
 ---@param className string
-function TRB.Forever.Templates.Options:Install(className)
+---@param specThresholds table<string, fun(): table>? # specName -> builder returning that spec's default threshold dictionary
+function TRB.Forever.Templates.Options:Install(className, specThresholds)
 	local classDef = TRB.Forever.Classes[className]
 	assert(classDef ~= nil, "TwintopInsanityBar: Forever options install for undefined class '" .. tostring(className) .. "'")
 	local moduleName = classDef.classModuleName
@@ -292,6 +294,7 @@ function TRB.Forever.Templates.Options:Install(className)
 		local resourceName = L[archetype.nameKey]
 		local hasSecondary = archetype.secondary ~= nil
 		local fullLabel = L[spec.entry.specLocaleKey .. "Full"]
+		local loadThresholdDictionary = specThresholds and specThresholds[specName] or nil
 
 		options[spec.specPascal] = {}
 		TRB.Frames.interfaceSettingsFrameContainer.controls[compositeKey] = {}
@@ -310,7 +313,7 @@ function TRB.Forever.Templates.Options:Install(className)
 		options[spec.specPascal .. "LoadDefaultBarTextSettings"] = loadDefaultBarText
 
 		local function loadDefaultSettings(includeBarText, classic)
-			return LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, includeBarText, classic)
+			return LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadThresholdDictionary, includeBarText, classic)
 		end
 		options[spec.specPascal .. "LoadDefaultSettings"] = loadDefaultSettings
 
@@ -349,6 +352,12 @@ function TRB.Forever.Templates.Options:Install(className)
 			yCoord = yCoord - 40
 			TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, specSettings, classId, specId, yCoord)
 		end)
+
+		local thresholdListPanel = loadThresholdDictionary ~= nil and withSpec(function(parent, specSettings, controls)
+			TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, specSettings, classId, specId, 5, {
+				barTargetLabels = { primary = resourceName },
+			})
+		end) or nil
 
 		local texturesPanel = withSpec(function(parent, specSettings, controls)
 			TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, specSettings, classId, specId, 5, hasSecondary, hasSecondary and L[archetype.secondary.nameKey] or nil)
@@ -418,6 +427,9 @@ function TRB.Forever.Templates.Options:Install(className)
 			end
 			tabDefinitions[#tabDefinitions + 1] = { "healthBar", L["TabHealth"], oUi.tabWidth.small, healthBarPanel, visibilityKey = "health" }
 			tabDefinitions[#tabDefinitions + 1] = { "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, thresholdSettingsPanel }
+			if thresholdListPanel ~= nil then
+				tabDefinitions[#tabDefinitions + 1] = { "thresholds", L["TabThresholds"], oUi.tabWidth.large, thresholdListPanel, true }
+			end
 			tabDefinitions[#tabDefinitions + 1] = TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition(className, specName, controls)
 			tabDefinitions[#tabDefinitions + 1] = { "barTextures", L["TabTextures"], oUi.tabWidth.small, texturesPanel }
 			tabDefinitions[#tabDefinitions + 1] = { "barVisibility", L["TabVisibility"], oUi.tabWidth.small, visibilityPanel }

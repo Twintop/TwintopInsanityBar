@@ -122,30 +122,47 @@ TRB.Forever.Archetypes = {
 ---@field public archetype TRB.Forever.Archetype
 ---@field public spellsClass table # TRB.Classes.<Class>.<Spec>Spells
 ---@field public specPascal string # e.g. "BeastMastery"
+---@field public fillSpells fun(spells: TRB.Classes.SpecializationSpellsBase)? # adds the spec's abilities to a new spell set
+---@field public icons string[]? # spell field names offered as #icon bar text variables
+---@field public stealth boolean? # spec cares about stealth: $inStealth and stealth-gated thresholds
+
+---How one spec is declared to DefineClass: an archetype key on its own, or a table when the spec
+---brings abilities, icons, or stealth along with it.
+---@class TRB.Forever.SpecDeclaration
+---@field public archetype string
+---@field public spells fun(spells: TRB.Classes.SpecializationSpellsBase)?
+---@field public icons string[]?
+---@field public stealth boolean?
 
 ---@type table<string, TRB.Forever.ClassDefinition>
 TRB.Forever.Classes = TRB.Forever.Classes or {}
 
 TRB.Forever.Templates.Classes = {}
 
----Builds the spell-set class for one spec: an empty SpecializationSpellsBase derivative plus the
----FillBarTextVariables filler the options panel and cross-class views use.
+---Builds the spell-set class for one spec: a SpecializationSpellsBase derivative the spec's own
+---spell builder fills, plus the FillBarTextVariables filler the options panel and cross-class views use.
 ---@param classModule table # TRB.Classes.<Class>
 ---@param spec TRB.Forever.SpecDefinition
 local function DefineSpellsClass(classModule, spec)
 	local base = TRB.Classes.SpecializationSpellsBase
 	local spellsClass = setmetatable({}, { __index = base })
 	spellsClass.__index = spellsClass
+	local fillSpells = spec.fillSpells
 
-	---Creates the spec's spell set. Empty until the class file adds abilities; extend by wrapping New.
+	---Creates the spec's spell set. Empty for a spec that declared no abilities.
 	function spellsClass:New()
 		local self = setmetatable(base:New(), spellsClass)
+		if fillSpells ~= nil then
+			fillSpells(self)
+		end
 		return self
 	end
 
 	local archetype = spec.archetype
 	local variable = archetype.variable
 	local resourceName = L[archetype.nameKey]
+	local icons = spec.icons
+	local stealth = spec.stealth
 
 	---Fills barTextVariables for the options panel display.
 	---@param specCacheEntry TRB.Classes.SpecCache
@@ -154,9 +171,15 @@ local function DefineSpellsClass(classModule, spec)
 			specCacheEntry.spellsData.spells = spellsClass:New()
 		end
 		specCacheEntry.spellsData:FillSpellData()
+		local spells = specCacheEntry.spellsData.spells
 
 		local varCategory = TRB.Functions.BarText.VariableCategory
-		specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({})
+		local iconVariables = {}
+		for _, key in ipairs(icons or {}) do
+			local spell = spells[key]
+			iconVariables[#iconVariables + 1] = { variable = "#" .. key, icon = spell.icon, description = spell.name, printInSettings = true }
+		end
+		specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons(iconVariables)
 		local values = {
 			{ variable = "$" .. variable, description = string.format(L["ForeverBarTextVariable_resource"], resourceName), printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
 			{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
@@ -171,6 +194,9 @@ local function DefineSpellsClass(classModule, spec)
 			local secondaryVariable = archetype.secondary.variable
 			values[#values + 1] = { variable = "$" .. secondaryVariable, description = string.format(L["ForeverBarTextVariable_secondary"], secondaryName), printInSettings = true, color = false, category = varCategory.RESOURCES }
 			values[#values + 1] = { variable = "$" .. secondaryVariable .. "Max", description = string.format(L["ForeverBarTextVariable_secondaryMax"], secondaryName), printInSettings = true, color = false, category = varCategory.RESOURCES }
+		end
+		if stealth then
+			values[#values + 1] = { variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false }
 		end
 		specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues(values)
 	end
@@ -229,9 +255,9 @@ end
 ---Declares a class: one archetype per spec. Generates TRB.Classes.<Class> (spell sets, BarGroupsFactory),
 ---registers the bar text variable fillers and declares the spec descriptors.
 ---@param className string # lowercase class key, e.g. "priest"
----@param specArchetypes table<string, string> # specName -> archetype key, e.g. { discipline = "mana", ... }
+---@param specDeclarations table<string, string|TRB.Forever.SpecDeclaration> # specName -> archetype key or declaration
 ---@return TRB.Forever.ClassDefinition
-function TRB.Forever.Templates.Classes:DefineClass(className, specArchetypes)
+function TRB.Forever.Templates.Classes:DefineClass(className, specDeclarations)
 	local classEntry = TRB.Data.classRegistry[className]
 	assert(classEntry ~= nil, "TwintopInsanityBar: Forever DefineClass for unknown class '" .. tostring(className) .. "'")
 
@@ -249,8 +275,11 @@ function TRB.Forever.Templates.Classes:DefineClass(className, specArchetypes)
 	}
 
 	for _, entry in ipairs(classEntry.specs) do
-		local archetypeKey = specArchetypes[entry.specName]
-		local archetype = archetypeKey and TRB.Forever.Archetypes[archetypeKey]
+		local declaration = specDeclarations[entry.specName]
+		if type(declaration) == "string" then
+			declaration = { archetype = declaration }
+		end
+		local archetype = declaration ~= nil and TRB.Forever.Archetypes[declaration.archetype] or nil
 		assert(archetype ~= nil, "TwintopInsanityBar: Forever DefineClass '" .. className .. "' has no archetype for spec '" .. entry.specName .. "'")
 
 		---@type TRB.Forever.SpecDefinition
@@ -259,6 +288,9 @@ function TRB.Forever.Templates.Classes:DefineClass(className, specArchetypes)
 			archetype = archetype,
 			specPascal = entry.specLocaleKey:sub(#classEntry.classModuleName + 1),
 			spellsClass = nil,
+			fillSpells = declaration.spells,
+			icons = declaration.icons,
+			stealth = declaration.stealth,
 		}
 		DefineSpellsClass(classModule, spec)
 		classDef.specs[entry.specName] = spec

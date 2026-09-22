@@ -19,11 +19,13 @@ local Bar = TRB.Functions.Bar
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 local Threshold = TRB.Functions.Threshold
+local frameLevels = TRB.Data.constants.frameLevels
 
 ---@class TRB.Forever.Runtime
 ---@field public classDef TRB.Forever.ClassDefinition
 ---@field public specCache table<string, TRB.Classes.SpecCache>
 ---@field public talents TRB.Classes.Talents?
+---@field public stance string? # stance the class module last read, matched against a threshold's `stances` set
 ---@field public SwitchSpec fun()
 ---@field public ConstructResourceBar fun(settings: table)
 ---@field public FillSpellData table<string, fun()> # keyed by specName
@@ -202,6 +204,10 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			end
 		end
 
+		if spec.stealth and (not activeVars or activeVars["$inStealth"]) then
+			lookupLogic["$inStealth"] = IsStealthed()
+		end
+
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = lookupLogic
 	end
@@ -212,6 +218,84 @@ function TRB.Forever.Templates.Runtime:Install(className)
 
 	-- Reused per-tick scratch tables so UpdateResourceBar allocates nothing.
 	local scratch = { conditionMap = {}, barColors = {}, barColorMap = {} }
+
+	---Draws the primary bar's spell threshold lines, creating them on demand.
+	---@param node TRB.Classes.BarNode
+	---@param specCacheSettings table
+	---@param maxResource number
+	local function UpdateThresholds(node, specCacheSettings, maxResource)
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshots = snapshotData.snapshots
+		local thresholds = node:GetThresholds()
+		local nodeFrame = node:GetFrame()
+		local isStealthed = IsStealthed()
+
+		for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
+			if thresholds[thresholdId] == nil then
+				local thresholdFrame = CreateFrame("Frame", nil, nodeFrame)
+				Threshold:ResetThresholdLine(thresholdFrame, specCacheSettings, true)
+				node:RegisterThreshold(thresholdFrame)
+				thresholds = node:GetThresholds()
+			end
+			local pairOffset = (thresholdId - 1) * 3
+			local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
+			local thresholdActive = dictEntry == nil or dictEntry.enabled == true
+				or (dictEntry.audio ~= nil and dictEntry.audio.enabled == true and dictEntry.audio.sound ~= nil)
+			local resourceAmount, isUsable = 0, false
+			if thresholdActive then
+				resourceAmount = spell:GetPrimaryResourceCost()
+				isUsable = spell:IsUsable()
+			end
+			local showThreshold = true
+			local thresholdColor = specCacheSettings.colors.threshold.over.color
+			local frameLevel = frameLevels.thresholdOver
+			local snapshot = snapshots[spell.id]
+
+			if spell.attributes.stealth and not isStealthed then
+				showThreshold = false
+			elseif spell.attributes.stances ~= nil and not spell.attributes.stances[runtime.stance] then
+				showThreshold = false
+			elseif resourceAmount == 0 then
+				showThreshold = false
+			elseif not spell:IsKnown() then
+				showThreshold = false
+			elseif spell.isTalent and not runtime.talents:IsTalentActive(spell) then
+				showThreshold = false
+			elseif spell.hasCooldown and snapshot ~= nil and snapshot.cooldown:IsUnusable() then
+				thresholdColor = specCacheSettings.colors.threshold.unusable.color
+				frameLevel = frameLevels.thresholdUnusable
+			elseif not isUsable then
+				thresholdColor = specCacheSettings.colors.threshold.under.color
+				frameLevel = frameLevels.thresholdUnder
+			end
+
+			if resourceAmount >= maxResource then
+				showThreshold = false
+			end
+
+			if spell:Is("TRB.Classes.SpellComboPointThreshold") and spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and not isUsable then
+				thresholdColor = specCacheSettings.colors.threshold.unusable.color
+				frameLevel = frameLevels.thresholdUnusable
+			end
+
+			if thresholds[thresholdId] then
+				local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
+				Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeFrame, resourceAmount, maxResource)
+			end
+			-- Per-threshold audio cue (independent of line visibility)
+			if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
+				snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
+				if isUsable then
+					if not snapshotData.audio.thresholdCues[spell.settingKey] then
+						snapshotData.audio.thresholdCues[spell.settingKey] = true
+						PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+					end
+				else
+					snapshotData.audio.thresholdCues[spell.settingKey] = false
+				end
+			end
+		end
+	end
 
 	local function UpdateResourceBar()
 		local refreshText = false
@@ -266,6 +350,10 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				Color:ApplyFillColor(primaryNode, barColors.bar)
 				primaryNode:SetBackgroundColorFromString(barColors.background)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
+				-- A secret maximum leaves nothing to place the lines against.
+				if not issecretvalue(TRB.Data.character.maxResource) then
+					UpdateThresholds(primaryNode, specCacheSettings, TRB.Data.character.maxResource)
+				end
 			end
 
 			-- TEMPORARY: same secret Combo Points guard as RefreshLookupData.
@@ -340,7 +428,11 @@ function TRB.Forever.Templates.Runtime:Install(className)
 
 			TRB.Functions.RefreshLookupData = RefreshLookupData
 			Bar:UpdateSanityCheckValues(cache.settings)
-			TRB.Data.lookup = TRB.Data.lookup or {}
+			local lookup = TRB.Data.lookup or {}
+			for _, key in ipairs(spec.icons or {}) do
+				lookup["#" .. key] = cache.spellsData.spells[key].icon
+			end
+			TRB.Data.lookup = lookup
 			TRB.Data.lookupLogic = {}
 
 			-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar.
@@ -468,18 +560,28 @@ function TRB.Forever.Templates.Runtime:Install(className)
 	end
 
 	---Mana specs snapshot the cast's mana cost so the casting overlay and $casting can show it; the
-	---other archetypes have no cast-time resource spending to predict.
+	---other archetypes have no cast-time resource spending to predict. A finished cast refreshes its cooldown.
 	---@param event string
 	---@param spellId integer?
 	function TRB.Functions.Class:SpellCast(event, spellId)
 		local spec = ActiveSpec()
-		if spec == nil or spec.archetype.key ~= "mana" then
+		if spec == nil then
 			return
 		end
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
-			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-			snapshotData.casting:SnapshotManaSpell()
-			snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
+			if spec.archetype.key == "mana" then
+				snapshotData.casting:SnapshotManaSpell()
+				snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
+			end
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" and spellId ~= nil then
+			local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+			local spells = spellsData.spellsById[spellId]
+			local spell = spells and spells[1]
+			local snapshot = spell and snapshotData.snapshots[spell.id]
+			if snapshot ~= nil and spell.hasCooldown then
+				snapshot.cooldown:Refresh(true)
+			end
 		end
 	end
 
@@ -500,6 +602,9 @@ function TRB.Forever.Templates.Runtime:Install(className)
 		end
 		if var == "$casting" then
 			return castingFn() or false
+		end
+		if spec.stealth and var == "$inStealth" then
+			return true
 		end
 		if spec.archetype.secondary ~= nil then
 			local secondaryVariable = "$" .. spec.archetype.secondary.variable
