@@ -1295,7 +1295,12 @@ function TRB.Classes.OverlaySlot:GetEndCapOvershoot()
 
 	-- Rendered first: a bound DurationObject freezes GetValue at whatever was last written by hand,
 	-- so the value ratio goes stale mid-cast while the texture keeps moving.
-	local fillRatio = self:GetRenderedFillRatio() or self:GetParentFillRatio()
+	local fillRatio = self:GetRenderedFillRatio()
+	if fillRatio == nil and not parent.hasTimerDuration then
+		-- Only reachable with no timer bound: under one, the range is pinned to 0..1 while GetValue counts
+		-- the duration, so the ratio clamps to 1 and slides the cap back by a full border all cast long.
+		fillRatio = self:GetParentFillRatio()
+	end
 	if fillRatio == nil then
 		return 0
 	end

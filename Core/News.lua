@@ -4,6 +4,12 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.0.13-release / Forever 1.60.1.2-release (2026-09-22)
+
+- Fix the End Cap sitting a couple of pixels short of the fill's leading edge on the cast bars, the Global Cooldown bar, and any other bar the client animates.
+
+---
+
 # Live 12.1.0.12-release / Forever 1.0.0.0-alpha (2026-09-20)
 
 - Every specialization starts with its Use Global toggles on, apart from Font & Text. Global Options drives a fresh install until a toggle is unticked; existing settings keep their toggles.

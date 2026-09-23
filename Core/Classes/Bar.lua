@@ -45,6 +45,7 @@ local barNodeCounter = 0
 ---@field public fillDirection trbFillDirection? # Current fill direction for this node
 ---@field public group TRB.Classes.BarGroup? # Back-reference to the owning BarGroup
 ---@field public engineDriven boolean? # True while the aura engine owns this node's fill; nil when the node fills itself
+---@field public hasTimerDuration boolean? # True while a bound DurationObject animates the fill C-side, which leaves GetValue meaningless
 ---@field public endCapConfig table? # Active end cap config: { color, width, useBorderColor, useBorderColorExceptDefault, defaultBorderColor }; nil when disabled
 ---@field public endCapIndicatorActive boolean? # Whether a Color Indicator owned the end cap color last frame (so it reverts cleanly when the indicator drops)
 ---@field public icon TRB.Classes.BarNode.Icon? # Side ability icon frame (lazily created by EnsureIcon); nil when the bar has no icon
