@@ -14,8 +14,8 @@ TRB.Forever.Templates = TRB.Forever.Templates or {}
 -- needs real ability tracking overrides or extends the generated pieces in its own files; the template
 -- is the starting point, not a ceiling.
 --
--- This file loads in the flavor's Classes stage, before Core's Functions, so nothing here may call into
--- TRB.Functions at load time.
+-- This file loads in the flavor's Classes stage, before Core's Stage 2 Functions, so of TRB.Functions only the
+-- Stage 1 registries (AudioCues) may be called at load time.
 
 ---@class TRB.Forever.Archetype
 ---@field public key string # archetype name
@@ -29,6 +29,19 @@ TRB.Forever.Templates = TRB.Forever.Templates or {}
 ---@field public isHealerLike boolean # FillSpecializationCacheSettings isHealer flag
 ---@field public colors TRB.Forever.ArchetypeColors
 ---@field public secondary TRB.Forever.ArchetypeSecondary?
+---@field public overcap TRB.Forever.ArchetypeOvercap? # a resource that can overcap: its Overcap indicator and text colors
+
+---The default Overcap indicator color and the locale keys labelling a resource's overcap and over-threshold options.
+---@class TRB.Forever.ArchetypeOvercap
+---@field public color string
+---@field public barNameKey string
+---@field public indicatorKey string
+---@field public indicatorTooltipKey string
+---@field public indicatorColorKey string
+---@field public textOverThresholdKey string
+---@field public textOverThresholdTooltipKey string
+---@field public textOvercapKey string
+---@field public textOvercapTooltipKey string
 
 ---@class TRB.Forever.ArchetypeColors
 ---@field public textCurrent string
@@ -53,6 +66,32 @@ local comboPointsSecondary = {
 	nameKey = "ResourceComboPoints",
 	variable = "comboPoints",
 	maxNodes = 5,
+}
+
+---@type TRB.Forever.ArchetypeOvercap
+local rageOvercap = {
+	color = "FF800000",
+	barNameKey = "BarNameRageBar",
+	indicatorKey = "WarriorIndicatorBorderOvercap",
+	indicatorTooltipKey = "WarriorIndicatorOvercapTooltip",
+	indicatorColorKey = "WarriorIndicatorOvercapColor",
+	textOverThresholdKey = "WarriorColorPickerThresholdOver",
+	textOverThresholdTooltipKey = "WarriorCheckboxThresholdOverTooltip",
+	textOvercapKey = "WarriorColorPickerOvercap",
+	textOvercapTooltipKey = "WarriorCheckboxThresholdOvercapTooltip",
+}
+
+---@type TRB.Forever.ArchetypeOvercap
+local energyOvercap = {
+	color = "FFFF0000",
+	barNameKey = "BarNameEnergyBar",
+	indicatorKey = "RogueIndicatorBorderOvercap",
+	indicatorTooltipKey = "RogueIndicatorOvercapTooltip",
+	indicatorColorKey = "RogueIndicatorOvercapColor",
+	textOverThresholdKey = "ColorPickerHaveEnoughEnergyToUseAbilityThreshold",
+	textOverThresholdTooltipKey = "CheckboxThresholdOverTooltip",
+	textOvercapKey = "RogueColorPickerOvercap",
+	textOvercapTooltipKey = "RogueCheckboxThresholdOvercapTooltip",
 }
 
 ---@type table<string, TRB.Forever.Archetype>
@@ -80,6 +119,7 @@ TRB.Forever.Archetypes = {
 		defaultText = "resource",
 		isHealerLike = false,
 		colors = { textCurrent = "FFFF0000", textCasting = "FFFFFFFF", textPassive = "FFFF8080", barBase = "FFFF0000", barBorder = "FF990000", barBackground = "66000000" },
+		overcap = rageOvercap,
 	},
 	energy = {
 		key = "energy",
@@ -92,6 +132,7 @@ TRB.Forever.Archetypes = {
 		defaultText = "resource",
 		isHealerLike = false,
 		colors = { textCurrent = "FFFFFF00", textCasting = "FFFFFFFF", textPassive = "FFD59900", barBase = "FFFFFF00", barBorder = "FFFFD300", barBackground = "66000000" },
+		overcap = energyOvercap,
 	},
 	energyComboPoints = {
 		key = "energyComboPoints",
@@ -104,6 +145,7 @@ TRB.Forever.Archetypes = {
 		defaultText = "resource",
 		isHealerLike = false,
 		colors = { textCurrent = "FFFFFF00", textCasting = "FFFFFFFF", textPassive = "FFD59900", barBase = "FFFFFF00", barBorder = "FFFFD300", barBackground = "66000000" },
+		overcap = energyOvercap,
 		secondary = comboPointsSecondary,
 	},
 }
@@ -138,6 +180,60 @@ TRB.Forever.Archetypes = {
 TRB.Forever.Classes = TRB.Forever.Classes or {}
 
 TRB.Forever.Templates.Classes = {}
+
+---The Combo Points counter for a combo point spec's audio cues, seeded with cues at 3 and 5, both off.
+---@return TRB.Classes.AudioCueCounterSource
+function TRB.Forever.Templates.Classes:ComboPointAudioCueSource()
+	return {
+		id = "comboPoints",
+		label = L["RogueAudioCueSourceComboPoints"],
+		description = L["RogueAudioCueSourceComboPointsDescription"],
+		sliderLabel = L["RogueComboPointThresholdSliderTitle"],
+		defaultName = L["RogueAudioCueComboPointDefaultName"],
+		min = 0,
+		max = comboPointsSecondary.maxNodes,
+		step = 1,
+		decimals = 0,
+		compare = "atLeast",
+		requiresCombat = true,
+		defaultCues = {
+			{
+				id = "comboPointThreshold1",
+				name = L["RogueAudioComboPointThreshold1"],
+				enabled = false,
+				sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				thresholdValue = 3,
+			},
+			{
+				id = "comboPointThreshold2",
+				name = L["RogueAudioComboPointThreshold2"],
+				enabled = false,
+				sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				thresholdValue = 5,
+			},
+		},
+	}
+end
+
+---Channel tick profiles for a spell set, keyed by every rank's spell ID. A spell opts in with a `tickProfile`
+---for all ranks, or a `rankTickProfiles` list in `rankIds` order for ranks that tick differently.
+---@param spells TRB.Classes.SpecializationSpellsBase
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+function TRB.Forever.Templates.Classes:CastbarTickProfilesFromSpells(spells)
+	local profiles = {}
+	for _, spell in pairs(spells) do
+		local profile = spell.attributes.tickProfile
+		local rankProfiles = spell.attributes.rankTickProfiles
+		if profile ~= nil or rankProfiles ~= nil then
+			for rank, rankId in ipairs(spell.rankIds or { spell.id }) do
+				profiles[rankId] = rankProfiles and rankProfiles[rank] or profile
+			end
+		end
+	end
+	return profiles
+end
 
 ---Builds the spell-set class for one spec: a SpecializationSpellsBase derivative the spec's own
 ---spell builder fills, plus the FillBarTextVariables filler the options panel and cross-class views use.
@@ -300,8 +396,14 @@ function TRB.Forever.Templates.Classes:DefineClass(className, specDeclarations)
 		TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 		TRB.Data.barTextVariablesRegistry[entry.compositeKey] = spec.spellsClass.FillBarTextVariables
 
+		local spellsClass = spec.spellsClass
+		TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+		TRB.Data.castbarTickProfilesRegistry[entry.compositeKey] = function()
+			return self:CastbarTickProfilesFromSpells(spellsClass:New())
+		end
+
 		-- Descriptor: every Forever spec shows mana precision when mana is its resource; combo point
-		-- specs export their secondary bar and offer its nodes as bar text anchors.
+		-- specs export their secondary bar, offer its nodes as bar text anchors, and get combo point audio cues.
 		local descriptor = { manaBar = archetype.key == "mana" }
 		if archetype.secondary ~= nil then
 			descriptor.secondary = { exportable = true }
@@ -310,6 +412,7 @@ function TRB.Forever.Templates.Classes:DefineClass(className, specDeclarations)
 				anchors[i] = { label = L["ComboPoint" .. i], frame = "ComboPoint_" .. i }
 			end
 			descriptor.barTextAnchorFrames = anchors
+			TRB.Functions.AudioCues:Register(entry.compositeKey, { counters = { self:ComboPointAudioCueSource() } })
 		end
 		TRB.Classes.SpecDescriptor:Declare(entry.compositeKey, descriptor)
 	end

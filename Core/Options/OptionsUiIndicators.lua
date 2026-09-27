@@ -109,7 +109,8 @@ end
 ---@return boolean
 local function SpecHasCastbarTickProfiles(classId, specId)
 	local compositeKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
-	local getter = compositeKey and TRB.Data.castbarTickProfilesRegistry[compositeKey]
+	local registry = TRB.Data.castbarTickProfilesRegistry
+	local getter = compositeKey and registry and registry[compositeKey]
 	if type(getter) ~= "function" then
 		return false
 	end
@@ -205,6 +206,25 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	end
 	for _, barDef in ipairs(BuildSharedBarTargetDefs(classId, specId)) do
 		barTargetDefs[#barTargetDefs + 1] = barDef
+	end
+
+	---The bars an indicator's target menu offers: all of them, or only the ones its def names.
+	---@param def TRB.Classes.OptionsUi.IndicatorDef?
+	---@return TRB.Classes.OptionsUi.BarTargetDef[]
+	local function GetBarTargetDefsFor(def)
+		if def == nil or def.barKeys == nil then
+			return barTargetDefs
+		end
+		local allowed = {}
+		for _, barDef in ipairs(barTargetDefs) do
+			for _, barKey in ipairs(def.barKeys) do
+				if barKey == barDef.key then
+					allowed[#allowed + 1] = barDef
+					break
+				end
+			end
+		end
+		return allowed
 	end
 
 	-- Build a quick lookup from key -> indicatorDef
@@ -483,11 +503,12 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				if not currentIndicator then return end
 				currentIndicator.targets = currentIndicator.targets or {}
 
-				ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, IsExcluded, true)
+				local rowBarTargetDefs = GetBarTargetDefsFor(indicatorDefByKey[currentKey])
+				ApplyTargetMenuScrollMode(rootDescription, rowBarTargetDefs, IsExcluded, true)
 
 				-- Every bar offers a Border Glow, so no bar section can be excluded outright here.
 				local firstBar = true
-				for _, barDef in ipairs(barTargetDefs) do
+				for _, barDef in ipairs(rowBarTargetDefs) do
 					local barElementDefs = barDef.elements or defaultElementDefs
 					if not firstBar then
 						rootDescription:CreateDivider()
@@ -738,10 +759,11 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 					if not ci then return end
 					ci.targets = ci.targets or {}
 
-					ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, IsGradientExcluded)
+					local rowBarTargetDefs = GetBarTargetDefsFor(indicatorDefByKey[ck])
+					ApplyTargetMenuScrollMode(rootDescription, rowBarTargetDefs, IsGradientExcluded)
 
 					local firstBar = true
-					for _, barDef in ipairs(barTargetDefs) do
+					for _, barDef in ipairs(rowBarTargetDefs) do
 						local barElementDefs = barDef.elements or defaultElementDefs
 						local allExcluded = true
 						for _, elemDef in ipairs(barElementDefs) do

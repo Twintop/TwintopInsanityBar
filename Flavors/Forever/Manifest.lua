@@ -63,7 +63,7 @@ TRB.Flavor = {
 			{ specId = 1, specName = "general", specGlobalId = 1485 },
 		} },
 		{ classId = 4, className = "rogue", classToken = "ROGUE", classModuleName = "Rogue", specs = {
-			{ specId = 1, specName = "general", specGlobalId = 1488, resources = { energy = 100 } },
+			{ specId = 1, specName = "general", specGlobalId = 1488, resources = { energy = 110 } },
 		} },
 		{ classId = 5, className = "priest", classToken = "PRIEST", classModuleName = "Priest", specs = {
 			{ specId = 1, specName = "general", specGlobalId = 1487 },

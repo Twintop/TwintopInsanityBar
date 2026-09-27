@@ -5,7 +5,8 @@ TRB.Classes = TRB.Classes or {}
 TRB.Classes.Druid = TRB.Classes.Druid or {}
 
 -- Druid (World of Warcraft: Forever): Mana, Rage, Energy, and Combo Points are four separate bars that follow
--- the shapeshift form. Loads in the Classes stage, before Core's Functions, so nothing here calls TRB.Functions.
+-- the shapeshift form. Loads in the Classes stage, before Core's Stage 2 Functions, so of TRB.Functions only the
+-- Stage 1 AudioCues registry is called here.
 
 ---@class TRB.Classes.Druid.GeneralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public maul TRB.Classes.SpellThreshold
@@ -271,6 +272,11 @@ end
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["druid_general"] = TRB.Classes.Druid.GeneralSpells.FillBarTextVariables
 
+TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
+TRB.Data.castbarTickProfilesRegistry["druid_general"] = function()
+	return TRB.Forever.Templates.Classes:CastbarTickProfilesFromSpells(TRB.Classes.Druid.GeneralSpells:New())
+end
+
 TRB.Classes.Druid.BarGroupsFactory = {}
 TRB.Classes.Druid.BarGroupsFactory.__index = TRB.Classes.Druid.BarGroupsFactory
 
@@ -327,3 +333,7 @@ do
 		},
 	})
 end
+
+TRB.Functions.AudioCues:Register("druid_general", {
+	counters = { TRB.Forever.Templates.Classes:ComboPointAudioCueSource() },
+})

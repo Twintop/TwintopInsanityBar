@@ -70,6 +70,13 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				items = {},
 			}
 			cache.spellsData.spells = spec.spellsClass:New()
+			-- A cooldown ability's threshold line and icon swipe read its snapshot.
+			local snapshots = cache.snapshotData.snapshots
+			for _, spell in pairs(cache.spellsData.spells) do
+				if spell.hasCooldown then
+					snapshots[spell.id] = TRB.Classes.Snapshot:New(spell)
+				end
+			end
 			cache.barTextVariables = { icons = {}, values = {} }
 		end
 	end
@@ -131,6 +138,21 @@ function TRB.Forever.Templates.Runtime:Install(className)
 	end
 	runtime.ConstructResourceBar = ConstructResourceBar
 
+	---Whether any enabled threshold ability can be cast right now, for the over-threshold text color.
+	---@param specCacheSettings table
+	---@return boolean
+	local function AnyThresholdUsable(specCacheSettings)
+		local dictionary = specCacheSettings.thresholds.thresholdDictionary
+		for _, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
+			local dictEntry = dictionary[spell.settingKey]
+			if (dictEntry == nil or dictEntry.enabled == true) and spell:IsKnown()
+				and (not spell.isTalent or runtime.talents:IsTalentActive(spell)) and spell:IsUsable() then
+				return true
+			end
+		end
+		return false
+	end
+
 	---Refreshes lookup/lookupLogic for the archetype's variables: $resource and its named alias, the
 	---max and percent forms, $casting, and the secondary resource when the spec has one.
 	local function RefreshLookupData()
@@ -152,10 +174,27 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			or activeVars[variable .. "Max"] or activeVars["$resourceMax"]
 			or activeVars[variable .. "Percent"] or activeVars["$resourcePercent"] then
 			local normalizedResource = snapshotData.attributes.resourceModified
-			local currentColor = sharedSettings.colors.text.current.color
-			local castingColor = sharedSettings.colors.text.casting.color
+			local textColors = sharedSettings.colors.text
+			local currentColor = textColors.current.color
+			local castingColor = textColors.casting.color
 			local castingResource = snapshotData.casting.resourceFinal
 			local resourcePercent = UnitPowerPercent("player", archetype.powerType)
+
+			-- The live value's text takes the overcap curve's color, when one applies, in place of currentColor.
+			local overcapColor = nil
+			if archetype.overcap ~= nil and TRB.Data.character.inCombat then
+				if textColors.overThreshold.enabled and AnyThresholdUsable(sharedSettings) then
+					currentColor = textColors.overThreshold.color
+					castingColor = textColors.overThreshold.color
+				end
+				if textColors.overcap.enabled and not (spec.stealth and IsStealthed()) then
+					-- The raw settings: the spec cache's composed copy carries no overcap threshold.
+					local overcapCurve = Color:BuildResourceThresholdCurve(TRB.Data.settings[className][spec.entry.specName], currentColor, textColors.overcap.color)
+					if overcapCurve ~= nil then
+						overcapColor = UnitPowerPercent("player", archetype.powerType, true, overcapCurve)
+					end
+				end
+			end
 
 			lookupLogic["$resource"] = normalizedResource
 			lookupLogic[variable] = normalizedResource
@@ -166,8 +205,8 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			lookupLogic["$casting"] = castingResource
 
 			local resourceFormatted = snapshotData.formatted.resourceAbbrev or ""
-			if lookupChanged(prevState, variable, resourceFormatted, currentColor) then
-				local formatted = string.format("|c%s%s|r", currentColor, resourceFormatted)
+			if lookupChanged(prevState, variable, resourceFormatted, currentColor, overcapColor ~= nil) then
+				local formatted = overcapColor ~= nil and overcapColor:WrapTextInColorCode(resourceFormatted) or string.format("|c%s%s|r", currentColor, resourceFormatted)
 				lookup[variable] = formatted
 				lookup["$resource"] = formatted
 			end
@@ -177,8 +216,8 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				lookup["$resourceMax"] = formatted
 			end
 			local percentFormatted = snapshotData.formatted.resourcePercent or ""
-			if lookupChanged(prevState, variable .. "Percent", percentFormatted, currentColor) then
-				local formatted = string.format("|c%s%s|r", currentColor, percentFormatted)
+			if lookupChanged(prevState, variable .. "Percent", percentFormatted, currentColor, overcapColor ~= nil) then
+				local formatted = overcapColor ~= nil and overcapColor:WrapTextInColorCode(percentFormatted) or string.format("|c%s%s|r", currentColor, percentFormatted)
 				lookup[variable .. "Percent"] = formatted
 				lookup["$resourcePercent"] = formatted
 			end
@@ -187,8 +226,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			end
 		end
 
-		-- TEMPORARY: the current beta build wrongly marks Combo Points secret; skip them until Blizzard fixes it.
-		if archetype.secondary ~= nil and not issecretvalue(snapshotData.attributes.resource2) then
+		if archetype.secondary ~= nil then
 			local secondaryVariable = "$" .. archetype.secondary.variable
 			if not activeVars or activeVars[secondaryVariable] or activeVars[secondaryVariable .. "Max"] then
 				local current = snapshotData.attributes.resource2 or 0
@@ -217,7 +255,10 @@ function TRB.Forever.Templates.Runtime:Install(className)
 	end
 
 	-- Reused per-tick scratch tables so UpdateResourceBar allocates nothing.
-	local scratch = { conditionMap = {}, barColors = {}, barColorMap = {} }
+	local scratch = {
+		conditionMap = {}, barColors = {}, barColorMap = {}, comboPointColors = {}, comboPointNodeColors = {},
+		claimed = { comboPointsBar = {} },
+	}
 
 	---Draws the primary bar's spell threshold lines, creating them on demand.
 	---@param node TRB.Classes.BarNode
@@ -273,7 +314,8 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				showThreshold = false
 			end
 
-			if spell:Is("TRB.Classes.SpellComboPointThreshold") and spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and not isUsable then
+			-- A finisher short only on the resource keeps the below color; with no combo points it can't be cast at all.
+			if spell:Is("TRB.Classes.SpellComboPointThreshold") and spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and (snapshotData.attributes.resource2 or 0) == 0 then
 				thresholdColor = specCacheSettings.colors.threshold.unusable.color
 				frameLevel = frameLevels.thresholdUnusable
 			end
@@ -329,8 +371,12 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar
 			-- have their own visibility, so they still need coloring when the resource bar is set to Never Show.
 			local sharedColors = specSettings.colors.shared
+			local powerType = spec.archetype.powerType
+			local isStealthed = spec.stealth == true and IsStealthed()
 			local conditionMap = scratch.conditionMap
 			wipe(conditionMap)
+			conditionMap.borderStealth = isStealthed
+			conditionMap.borderOvercap = TRB.Data.character.inCombat and not isStealthed
 			local barColors = scratch.barColors
 			wipe(barColors)
 			barColors.bar = specSettings.colors.bar.base
@@ -339,16 +385,25 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			local barColorMap = scratch.barColorMap
 			wipe(barColorMap)
 			barColorMap.resourceBar = barColors
+			local comboPointColors = scratch.comboPointColors
+			wipe(comboPointColors)
+			if spec.archetype.secondary ~= nil then
+				comboPointColors.bar = specSettings.colors.comboPoints.base
+				comboPointColors.border = specSettings.colors.comboPoints.border.color
+				comboPointColors.background = specSettings.colors.comboPoints.background.color
+				barColorMap.comboPointsBar = comboPointColors
+			end
+			local claimed = scratch.claimed
+			wipe(claimed.comboPointsBar)
 
-			Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, claimed)
+			local gradient = Color:GetResolvedGradient()
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, snapshotData.attributes.resourceModified)
 				Bar:ApplyNodeIndicators(primaryNode, "resourceBar")
-				primaryNode:SetBorderColor(barColors.border)
-				Color:ApplyFillColor(primaryNode, barColors.bar)
-				primaryNode:SetBackgroundColorFromString(barColors.background)
+				Color:ApplyNodeGradientColors(primaryNode, "resourceBar", barColors, gradient, powerType, specSettings.overcap)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				-- A secret maximum leaves nothing to place the lines against.
 				if not issecretvalue(TRB.Data.character.maxResource) then
@@ -356,31 +411,58 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				end
 			end
 
-			-- TEMPORARY: same secret Combo Points guard as RefreshLookupData.
-			if spec.archetype.secondary ~= nil and barGroups.secondary and not specSettings.displayBar.secondary.neverShow and not issecretvalue(snapshotData.attributes.resource2) then
+			if spec.archetype.secondary ~= nil and barGroups.secondary and not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				local comboPointsColors = specSettings.colors.comboPoints
 				local current = snapshotData.attributes.resource2 or 0
 				local max = TRB.Data.character.maxResource2 or spec.archetype.secondary.maxNodes
+				-- An element an indicator owns keeps the indicator's color over the per-point colors.
+				local gradientTargets = gradient ~= nil and gradient.targets and gradient.targets.comboPointsBar or nil
+				local fillClaimed = claimed.comboPointsBar.bar or (gradientTargets ~= nil and gradientTargets.bar)
+				local borderClaimed = claimed.comboPointsBar.border or (gradientTargets ~= nil and gradientTargets.border)
+				local backgroundClaimed = claimed.comboPointsBar.background or (gradientTargets ~= nil and gradientTargets.background)
+				local charged = GetUnitChargedPowerPoints("player")
+				local nodeColors = scratch.comboPointNodeColors
 				for x = 1, max do
 					local node = barGroups.secondary:GetNode(x)
 					if node then
-						local fillColor = comboPointsColors.base
+						nodeColors.bar = comboPointColors.bar
+						nodeColors.border = comboPointColors.border
+						nodeColors.background = comboPointColors.background
 						if current >= x then
 							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, 1, 1)
-							local penultimateActive = (specSettings.comboPoints.sameColor and current == max - 1) or (not specSettings.comboPoints.sameColor and x == max - 1)
-							local finalActive = (specSettings.comboPoints.sameColor and current == max) or x == max
-							if penultimateActive then
-								fillColor = comboPointsColors.penultimate
-							elseif finalActive then
-								fillColor = comboPointsColors.final
+							if not fillClaimed then
+								local penultimateActive = (specSettings.comboPoints.sameColor and current == max - 1) or (not specSettings.comboPoints.sameColor and x == max - 1)
+								local finalActive = (specSettings.comboPoints.sameColor and current == max) or x == max
+								if penultimateActive then
+									nodeColors.bar = comboPointsColors.penultimate
+								elseif finalActive then
+									nodeColors.bar = comboPointsColors.final
+								end
 							end
 						else
 							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, 0, 1)
 						end
-						Color:ApplyFillColor(node, fillColor)
-						node:SetBorderColor(comboPointsColors.border.color)
-						node:SetBackgroundColorFromString(comboPointsColors.background.color)
+						if charged ~= nil then
+							for _, chargedIndex in ipairs(charged) do
+								if chargedIndex == x then
+									local chargedColors = comboPointsColors.echoingReprimand
+									if not fillClaimed then
+										nodeColors.bar = chargedColors
+									end
+									if not borderClaimed then
+										nodeColors.border = chargedColors.color
+									end
+									if not backgroundClaimed then
+										-- The charged color's hue at the background's own opacity.
+										nodeColors.background = string.sub(comboPointColors.background, 1, 2) .. string.sub(chargedColors.color, 3)
+									end
+									break
+								end
+							end
+						end
+						Bar:ApplyNodeIndicators(node, "comboPointsBar")
+						Color:ApplyNodeGradientColors(node, "comboPointsBar", nodeColors, gradient, powerType, specSettings.overcap)
 					end
 				end
 			end
@@ -389,6 +471,10 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+		end
+
+		if spec.archetype.secondary ~= nil then
+			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
 		end
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)

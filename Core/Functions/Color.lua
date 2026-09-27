@@ -526,11 +526,13 @@ function TRB.Functions.Color:ClearStepColorCurveCache()
 end
 
 ---Builds a resource threshold ColorCurve for use with UnitPowerPercent (e.g., overcap border/text color)
----@param specSettings table The spec-specific settings table (e.g., specSettings.overcap)
+---@param specSettings table? The spec-specific settings table (e.g., specSettings.overcap)
 ---@param belowColor string The color hex string for below threshold (e.g., "FF00FF00")
 ---@param aboveColor string The color hex string for at/above threshold
+---@param overcap table? A non-primary bar's own overcap settings, in place of specSettings.overcap
+---@param maxResource number? That bar's unmodified maximum, in place of the primary resource's
 ---@return table? colorCurve A ColorCurve object ready for UnitPowerPercent
-function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColor, aboveColor)
+function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColor, aboveColor, overcap, maxResource)
 	if type(belowColor) == "table" then
 		belowColor = belowColor.color
 	end
@@ -541,14 +543,15 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 		return nil
 	end
 
-	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
+	maxResource = maxResource or TRB.Data.character.maxResourceUnmodified or 100
+	overcap = overcap or (specSettings and specSettings.overcap)
 	local thresholdValue = maxResource
 
-	if specSettings and specSettings.overcap then
-		if specSettings.overcap.mode == "relative" then
-			thresholdValue = maxResource + (specSettings.overcap.relative or 0)
+	if overcap then
+		if overcap.mode == "relative" then
+			thresholdValue = maxResource + (overcap.relative or 0)
 		else
-			thresholdValue = specSettings.overcap.fixed or maxResource
+			thresholdValue = overcap.fixed or maxResource
 		end
 	end
 
@@ -1220,4 +1223,46 @@ function TRB.Functions.Color:ApplyResolvedEndCap(node, barKey)
 
 	local indicators = self:GetResolvedIndicators(barKey)
 	node:ApplyEndCapIndicator(indicators and indicators.endCap or nil, nil)
+end
+
+-- Read-only stand-in for a bar no gradient targets; never written to.
+local noGradientTargets = {}
+
+---Colors a spec bar node's fill, border, and background, letting a gradient indicator step any element it
+---targets from that color up to its own at the overcap threshold of the resource the curve tracks.
+---@param node TRB.Classes.BarNode
+---@param barKey string # The indicator target key for this bar
+---@param colors table # { bar = color entry, border = color string, background = color string }
+---@param gradient table? # The gradient indicator in effect for this bar, or nil
+---@param powerType Enum.PowerType # The resource the overcap threshold is measured against
+---@param overcap table? # That resource's overcap settings
+---@param maxResource number? # That resource's unmodified maximum, when it isn't the primary resource
+function TRB.Functions.Color:ApplyNodeGradientColors(node, barKey, colors, gradient, powerType, overcap, maxResource)
+	local targets = noGradientTargets
+	local gradientColor = ""
+	if gradient ~= nil and gradient.targets ~= nil and gradient.targets[barKey] ~= nil then
+		targets = gradient.targets[barKey]
+		gradientColor = gradient.color
+	end
+
+	local curve = targets.border and self:BuildResourceThresholdCurve(nil, colors.border, gradientColor, overcap, maxResource) or nil
+	if curve ~= nil then
+		node:SetBorderColorCurve(UnitPowerPercent("player", powerType, true, curve), self:EvaluateEndCapCurve(node, curve, powerType))
+	else
+		node:SetBorderColor(colors.border)
+	end
+
+	curve = targets.bar and self:BuildResourceThresholdCurve(nil, colors.bar, gradientColor, overcap, maxResource) or nil
+	if curve ~= nil then
+		node:SetColorCurve(UnitPowerPercent("player", powerType, true, curve))
+	else
+		self:ApplyFillColor(node, colors.bar)
+	end
+
+	curve = targets.background and self:BuildResourceThresholdCurve(nil, colors.background, gradientColor, overcap, maxResource) or nil
+	if curve ~= nil then
+		node:SetBackgroundColorCurve(UnitPowerPercent("player", powerType, true, curve))
+	else
+		node:SetBackgroundColorFromString(colors.background)
+	end
 end

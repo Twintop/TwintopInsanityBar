@@ -25,10 +25,13 @@ local talents = nil
 
 Global_TwintopResourceBar = {}
 
--- The two form resource bars and the keys their values, indicators, and thresholds use.
+-- The two form resource bars and the keys their values, indicators, thresholds, and text colors use. Energy's
+-- overcap colors pause in stealth, where pooling Energy is the point.
 local formBars = {
-	{ key = "rage", powerType = Enum.PowerType.Rage, token = "RAGE", indicator = "rageBar", variable = "$rage" },
-	{ key = "energy", powerType = Enum.PowerType.Energy, token = "ENERGY", indicator = "energyBar", variable = "$energy" },
+	{ key = "rage", powerType = Enum.PowerType.Rage, token = "RAGE", indicator = "rageBar", variable = "$rage",
+		overcapIndicator = "rageOvercap", overThresholdText = "rageOverThreshold", overcapText = "rageOvercap", overcapPausedInStealth = false },
+	{ key = "energy", powerType = Enum.PowerType.Energy, token = "ENERGY", indicator = "energyBar", variable = "$energy",
+		overcapIndicator = "energyOvercap", overThresholdText = "energyOverThreshold", overcapText = "energyOvercap", overcapPausedInStealth = true },
 }
 
 -- Form ids confirmed on the beta: Bear 5, humanoid nil. Cat, Travel, Aquatic, and Moonkin follow retail's numbering.
@@ -132,6 +135,37 @@ local function ConstructResourceBar(settings)
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
+---Whether any enabled threshold ability on one form bar can be cast right now, for its over-threshold text color.
+---@param specCacheSettings table
+---@param barKey string
+---@return boolean
+local function AnyThresholdUsable(specCacheSettings, barKey)
+	local dictionary = specCacheSettings.thresholds.thresholdDictionary
+	for _, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
+		local dictEntry = dictionary[spell.settingKey]
+		if spell.barTarget == barKey and (dictEntry == nil or dictEntry.enabled == true) and spell:IsKnown()
+			---@diagnostic disable-next-line: need-check-nil
+			and (not spell.isTalent or talents:IsTalentActive(spell)) and spell:IsUsable() then
+			return true
+		end
+	end
+	return false
+end
+
+---The step curve from one color to another at a form bar's own overcap threshold, or nil while its maximum is unreadable.
+---@param formBar table
+---@param specSettings table
+---@param belowColor string|table
+---@param aboveColor string
+---@return table?
+local function FormBarOvercapCurve(formBar, specSettings, belowColor, aboveColor)
+	local maxPower = UnitPowerMax("player", formBar.powerType, true)
+	if maxPower == nil or issecretvalue(maxPower) or maxPower == 0 then
+		return nil
+	end
+	return Color:BuildResourceThresholdCurve(nil, belowColor, aboveColor, specSettings.bars[formBar.key].overcap, maxPower)
+end
+
 ---Refreshes lookup/lookupLogic: Mana on the primary variables, the form powers, and Combo Points.
 local function RefreshLookupData()
 	local sharedSettings = specCache[compositeKey].settings
@@ -181,11 +215,29 @@ local function RefreshLookupData()
 		end
 	end
 
+	local specSettings = TRB.Data.settings[className][specName]
+	local isStealthed = IsStealthed()
 	for _, formBar in ipairs(formBars) do
 		local variable = formBar.variable
 		if not activeVars or activeVars[variable] or activeVars[variable .. "Max"] then
 			local token = formBar.token
-			local currentColor = sharedSettings.colors.text[formBar.key].color
+			local textColors = sharedSettings.colors.text
+			local currentColor = textColors[formBar.key].color
+			-- The live value's text takes the overcap curve's color, when one applies, in place of currentColor.
+			local overcapColor = nil
+			if TRB.Data.character.inCombat then
+				local overThreshold = textColors[formBar.overThresholdText]
+				if overThreshold.enabled and AnyThresholdUsable(sharedSettings, formBar.key) then
+					currentColor = overThreshold.color
+				end
+				local overcap = textColors[formBar.overcapText]
+				if overcap.enabled and not (formBar.overcapPausedInStealth and isStealthed) then
+					local overcapCurve = FormBarOvercapCurve(formBar, specSettings, currentColor, overcap.color)
+					if overcapCurve ~= nil then
+						overcapColor = UnitPowerPercent("player", formBar.powerType, true, overcapCurve)
+					end
+				end
+			end
 			-- Power events only mark the entry dirty; the value is re-read here at most once per tick.
 			local additionalPower = snapshotData.formatted.additionalPower --[[@as table<string, table>?]]
 			local power = additionalPower and additionalPower[token]
@@ -195,8 +247,8 @@ local function RefreshLookupData()
 			end
 			lookupLogic[variable] = power.current
 			lookupLogic[variable .. "Max"] = power.max
-			if lookupChanged(prevState, variable, power.currentFormatted, currentColor) then
-				lookup[variable] = string.format("|c%s%s|r", currentColor, power.currentFormatted)
+			if lookupChanged(prevState, variable, power.currentFormatted, currentColor, overcapColor ~= nil) then
+				lookup[variable] = overcapColor ~= nil and overcapColor:WrapTextInColorCode(power.currentFormatted) or string.format("|c%s%s|r", currentColor, power.currentFormatted)
 			end
 			if lookupChanged(prevState, variable .. "Max", power.maxFormatted, currentColor) then
 				lookup[variable .. "Max"] = string.format("|c%s%s|r", currentColor, power.maxFormatted)
@@ -204,8 +256,7 @@ local function RefreshLookupData()
 		end
 	end
 
-	-- TEMPORARY: same secret Combo Points guard as UpdateResourceBar.
-	if (not activeVars or activeVars["$comboPoints"] or activeVars["$comboPointsMax"]) and not issecretvalue(snapshotData.attributes.resource2) then
+	if not activeVars or activeVars["$comboPoints"] or activeVars["$comboPointsMax"] then
 		local current = snapshotData.attributes.resource2 or 0
 		local max = TRB.Data.character.maxResource2 or 5
 		lookupLogic["$comboPoints"] = current
@@ -231,7 +282,24 @@ local function UpdateSnapshot()
 end
 
 -- Reused per-tick scratch tables so UpdateResourceBar allocates nothing.
-local scratch = { conditionMap = {}, barColors = {}, barColorMap = {}, formBarColors = { rage = {}, energy = {} }, comboPointColors = {}, formBarMax = {} }
+local scratch = { conditionMap = {}, barColors = {}, barColorMap = {}, formBarColors = { rage = {}, energy = {} }, comboPointColors = {}, formBarMax = {}, claimed = { comboPointsBar = {} } }
+
+---A form bar's own Overcap gradient while its condition holds, or nil. These gradients stay out of the shared
+---resolver, which measures every gradient against the primary resource: Mana here.
+---@param formBar table
+---@param sharedColors table
+---@param isStealthed boolean
+---@return table?
+local function ActiveFormBarGradient(formBar, sharedColors, isStealthed)
+	if not TRB.Data.character.inCombat or (formBar.overcapPausedInStealth and isStealthed) then
+		return nil
+	end
+	local indicator = sharedColors.indicatorColors[formBar.overcapIndicator]
+	if indicator ~= nil and indicator.enabled and indicator.isGradient then
+		return indicator
+	end
+	return nil
+end
 
 ---Draws one bar's spell threshold lines, creating them on demand.
 ---@param barKey string
@@ -290,7 +358,8 @@ local function UpdateBarThresholds(barKey, node, specCacheSettings, maxResource)
 				showThreshold = false
 			end
 
-			if spell:Is("TRB.Classes.SpellComboPointThreshold") and spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and not isUsable then
+			-- A finisher short only on Energy keeps the below color; with no combo points it can't be cast at all.
+			if spell:Is("TRB.Classes.SpellComboPointThreshold") and spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and (snapshotData.attributes.resource2 or 0) == 0 then
 				thresholdColor = specCacheSettings.colors.threshold.unusable.color
 				frameLevel = frameLevels.thresholdUnusable
 			end
@@ -344,8 +413,10 @@ local function UpdateResourceBar()
 		-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar
 		-- have their own visibility, so they still need coloring when the resource bar is set to Never Show.
 		local sharedColors = specSettings.colors.shared
+		local isStealthed = IsStealthed()
 		local conditionMap = scratch.conditionMap
 		wipe(conditionMap)
+		conditionMap.borderStealth = isStealthed
 		local barColors = scratch.barColors
 		wipe(barColors)
 		barColors.bar = specSettings.colors.bar.base
@@ -369,8 +440,10 @@ local function UpdateResourceBar()
 		comboPointColors.border = specSettings.colors.comboPoints.border.color
 		comboPointColors.background = specSettings.colors.comboPoints.background.color
 		barColorMap.comboPointsBar = comboPointColors
+		local claimed = scratch.claimed
+		wipe(claimed.comboPointsBar)
 
-		Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+		Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, claimed)
 
 		if not specSettings.displayBar.primary.neverShow then
 			refreshText = true
@@ -398,18 +471,24 @@ local function UpdateResourceBar()
 				end
 				Bar:SetBarNodeValue(specCacheSettings, formBar.key, node, UnitPower("player", formBar.powerType), maxPower)
 				Bar:ApplyNodeIndicators(node, formBar.indicator)
-				local colors = barColorMap[formBar.indicator]
-				node:SetBorderColor(colors.border)
-				Color:ApplyFillColor(node, colors.bar)
-				node:SetBackgroundColorFromString(colors.background)
+				-- A secret maximum leaves no threshold to step the gradient at.
+				local gradient = not issecretvalue(maxPower) and ActiveFormBarGradient(formBar, sharedColors, isStealthed) or nil
+				local overcap = specSettings.bars[formBar.key].overcap
+				Color:ApplyNodeGradientColors(node, formBar.indicator, barColorMap[formBar.indicator], gradient, formBar.powerType, overcap, maxPower)
+				local gradientTargets = gradient ~= nil and gradient.targets and gradient.targets[formBar.indicator] or nil
+				if gradient ~= nil and gradientTargets ~= nil and gradientTargets.endCap and node.endCapConfig ~= nil then
+					local curve = Color:BuildResourceThresholdCurve(nil, node.endCapConfig.color, gradient.color, overcap, maxPower)
+					if curve ~= nil then
+						node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", formBar.powerType, true, curve))
+					end
+				end
 				if not issecretvalue(maxPower) then
 					UpdateBarThresholds(formBar.key, node, specCacheSettings, maxPower)
 				end
 			end
 		end
 
-		-- TEMPORARY: the current beta build wrongly marks Combo Points secret; skip the fill until Blizzard fixes it.
-		if barGroups.secondary and not specSettings.displayBar.secondary.neverShow and not issecretvalue(snapshotData.attributes.resource2) then
+		if barGroups.secondary and not specSettings.displayBar.secondary.neverShow then
 			refreshText = true
 			local comboPointsColors = specSettings.colors.comboPoints
 			local current = snapshotData.attributes.resource2 or 0
@@ -420,12 +499,15 @@ local function UpdateResourceBar()
 					local fillColor = comboPointColors.bar
 					if current >= x then
 						Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, 1, 1)
-						local penultimateActive = (specSettings.comboPoints.sameColor and current == max - 1) or (not specSettings.comboPoints.sameColor and x == max - 1)
-						local finalActive = (specSettings.comboPoints.sameColor and current == max) or x == max
-						if penultimateActive then
-							fillColor = comboPointsColors.penultimate
-						elseif finalActive then
-							fillColor = comboPointsColors.final
+						-- An indicator on the fill keeps its color over the per-point colors.
+						if not claimed.comboPointsBar.bar then
+							local penultimateActive = (specSettings.comboPoints.sameColor and current == max - 1) or (not specSettings.comboPoints.sameColor and x == max - 1)
+							local finalActive = (specSettings.comboPoints.sameColor and current == max) or x == max
+							if penultimateActive then
+								fillColor = comboPointsColors.penultimate
+							elseif finalActive then
+								fillColor = comboPointsColors.final
+							end
 						end
 					else
 						Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, 0, 1)
@@ -443,6 +525,8 @@ local function UpdateResourceBar()
 			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 		end
 	end
+
+	TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
 
 	TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 end

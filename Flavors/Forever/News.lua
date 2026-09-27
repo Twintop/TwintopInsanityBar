@@ -9,16 +9,32 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 1.60.1.1-release (2026-09-21)
-## Warrior
+## General
 
-- Threshold lines on the Rage bar for Heroic Strike, Cleave, Rend, Thunder Clap, Overpower, Execute, Sunder Armor, Revenge, Slam, Whirlwind, Shield Slam, Mortal Strike, Bloodthirst, Death Wish, Sweeping Strikes, Spearing Strike, Hamstring, Shield Bash, Intercept, Pummel, Battle Shout, Demoralizing Shout, Intimidating Shout, Disarm, Concussion Blow, Piercing Howl, Shield Block, Challenging Shout, and Mocking Blow, on the Thresholds tab. A stance-restricted ability only draws its line in a stance that can cast it.
-- Bar text icon variables for every one of those abilities.
-- `/trb stance` reports the stance the addon reads.
+- Combo Points for Rogues and Druids are enabled.
+
+## Druid
+
+- Add Color Indicators tab with Stealth, plus Rage and Energy Overcap gradients that each target only their own bar and have their own overcap threshold.
+- Add Font & Text colors for Rage and Energy text, set separately, when an enabled threshold ability on that bar is usable and when that resource is at or above its overcap threshold.
+- Add Audio Cues tab with Combo Point threshold cues at 3 and 5, both off.
+- Finisher threshold lines use the below color, not unusable, when you have Combo Points but not enough Energy.
 
 ## Rogue
 
-- Threshold lines on the Energy bar for Sinister Strike, Backstab, Mutilate, Hemorrhage, Ghostly Strike, Ambush, Garrote, Cheap Shot, Gouge, Riposte, Eviscerate, Rupture, Slice and Dice, Kidney Shot, Expose Armor, Venom, Feint, Sap, Kick, Distract, Blind, and Blade Flurry, on the Thresholds tab. Ambush, Garrote, Cheap Shot, and Sap only draw while stealthed.
-- Bar text variables `$inStealth`, `#ambush`, `#backstab`, `#cheapShot`, `#eviscerate`, `#exposeArmor`, `#garrote`, `#gouge`, `#hemorrhage`, `#kick`, `#kidneyShot`, `#mutilate`, `#rupture`, `#sinisterStrike`, and `#sliceAndDice`.
+- Add Threshold lines on the Energy bar for Sinister Strike, Backstab, Mutilate, Hemorrhage, Ghostly Strike, Ambush, Garrote, Cheap Shot, Gouge, Riposte, Eviscerate, Rupture, Slice and Dice, Kidney Shot, Expose Armor, Venom, Feint, Sap, Kick, Distract, Blind, and Blade Flurry, on the Thresholds tab. Ambush, Garrote, Cheap Shot, and Sap only draw while stealthed.
+- Add Bar text variables `$inStealth`, `#ambush`, `#backstab`, `#cheapShot`, `#eviscerate`, `#exposeArmor`, `#garrote`, `#gouge`, `#hemorrhage`, `#kick`, `#kidneyShot`, `#mutilate`, `#rupture`, `#sinisterStrike`, and `#sliceAndDice`.
+- Add Color Indicators tab with Stealth and an Overcap gradient.
+- Add Font & Text colors for Energy text when an enabled threshold ability is usable and when Energy is at or above the overcap threshold.
+- Add Audio Cues tab with Combo Point threshold cues at 3 and 5, both off.
+- Maximum Energy Value, Relative Energy Offset Amount, and Overcap Above Energy sliders reach 110 Energy.
+
+## Warrior
+
+- Add Threshold lines on the Rage bar for Heroic Strike, Cleave, Rend, Thunder Clap, Overpower, Execute, Sunder Armor, Revenge, Slam, Whirlwind, Shield Slam, Mortal Strike, Bloodthirst, Death Wish, Sweeping Strikes, Spearing Strike, Hamstring, Shield Bash, Intercept, Pummel, Battle Shout, Demoralizing Shout, Intimidating Shout, Disarm, Concussion Blow, Piercing Howl, Shield Block, Challenging Shout, and Mocking Blow, on the Thresholds tab. A stance-restricted ability only draws its line in a stance that can cast it.
+- Add Bar text icon variables for every one of those abilities.
+- Add Color Indicators tab with an Overcap gradient.
+- Add Font & Text colors for Rage text when an enabled threshold ability is usable and when Rage is at or above the overcap threshold.
 
 ---
 

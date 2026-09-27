@@ -846,59 +846,68 @@ end
 ---@return number yCoord The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi.Colors:GenerateOvercapOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, primaryResourceMax)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName
-	local f = nil
-	local title = ""
 
 	controls.overcappingConfiguration = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["OvercappingConfigurationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
-	controls.checkBoxes.overcapModeRelative = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Overcap_RadioButton_Relative", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.overcapModeRelative
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapRelativeOffset"], primaryResourceString))
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.overcap.mode == "relative" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.overcapModeRelative:SetChecked(true)
-		controls.checkBoxes.overcapModeFixed:SetChecked(false)
-		spec.overcap.mode = "relative"
+	return self:GenerateOvercapThresholdRows(parent, controls, spec.overcap, className .. "_" .. specName, "", yCoord, primaryResourceString, primaryResourceMax)
+end
+
+---Generates the relative offset and fixed value rows that set one resource's overcap threshold.
+---@param parent frame The parent frame to attach controls to
+---@param controls table The controls table to store created UI elements
+---@param overcap table The overcap settings the rows edit ({ mode, relative, fixed })
+---@param namePrefix string className_specName, for the frame names
+---@param keySuffix string Keeps this resource's controls apart from another's on the same panel; "" for the primary resource
+---@param yCoord number The current Y coordinate for layout positioning
+---@param resourceString string The localized name of the resource
+---@param resourceMax number The maximum value of the resource
+---@return number yCoord The updated Y coordinate after placing all controls
+function TRB.Functions.OptionsUi.Colors:GenerateOvercapThresholdRows(parent, controls, overcap, namePrefix, keySuffix, yCoord, resourceString, resourceMax)
+	local relativeRadio = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Overcap" .. keySuffix .. "_RadioButton_Relative", parent, "UIRadioButtonTemplate")
+	local fixedRadio = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Overcap" .. keySuffix .. "_RadioButton_Fixed", parent, "UIRadioButtonTemplate")
+	controls.checkBoxes["overcapModeRelative" .. keySuffix] = relativeRadio
+	controls.checkBoxes["overcapModeFixed" .. keySuffix] = fixedRadio
+
+	relativeRadio:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(relativeRadio:GetName() .. 'Text'):SetText(string.format(L["OvercapRelativeOffset"], resourceString))
+	getglobal(relativeRadio:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	relativeRadio:SetChecked(overcap.mode == "relative")
+	relativeRadio:SetScript("OnClick", function()
+		relativeRadio:SetChecked(true)
+		fixedRadio:SetChecked(false)
+		overcap.mode = "relative"
 	end)
 
-	title = string.format(L["OvercapRelativeOffsetAmount"], primaryResourceString)
-	controls.overcapRelative = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, -primaryResourceMax, 0, spec.overcap.relative, 1, 2,
+	local title = string.format(L["OvercapRelativeOffsetAmount"], resourceString)
+	local relativeSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, -resourceMax, 0, overcap.relative, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.overcapRelative:SetScript("OnValueChanged", function(self, value)
+	controls["overcapRelative" .. keySuffix] = relativeSlider
+	relativeSlider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		spec.overcap.relative = value
+		overcap.relative = value
 	end)
-
 
 	yCoord = yCoord - 60
-	controls.checkBoxes.overcapModeFixed = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_Overcap_RadioButton_Fixed", parent, "UIRadioButtonTemplate")
-	f = controls.checkBoxes.overcapModeFixed
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapFixedValue"], primaryResourceString))
-	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	if spec.overcap.mode == "fixed" then
-		f:SetChecked(true)
-	end
-	f:SetScript("OnClick", function(self, ...)
-		controls.checkBoxes.overcapModeRelative:SetChecked(false)
-		controls.checkBoxes.overcapModeFixed:SetChecked(true)
-		spec.overcap.mode = "fixed"
+	fixedRadio:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(fixedRadio:GetName() .. 'Text'):SetText(string.format(L["OvercapFixedValue"], resourceString))
+	getglobal(fixedRadio:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	fixedRadio:SetChecked(overcap.mode == "fixed")
+	fixedRadio:SetScript("OnClick", function()
+		relativeRadio:SetChecked(false)
+		fixedRadio:SetChecked(true)
+		overcap.mode = "fixed"
 	end)
 
-	title = string.format(L["OvercapAbove"], primaryResourceString)
-	controls.overcapFixed = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, primaryResourceMax, spec.overcap.fixed, 1, 2,
+	title = string.format(L["OvercapAbove"], resourceString)
+	local fixedSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, resourceMax, overcap.fixed, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-	controls.overcapFixed:SetScript("OnValueChanged", function(self, value)
+	controls["overcapFixed" .. keySuffix] = fixedSlider
+	fixedSlider:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		spec.overcap.fixed = value
+		overcap.fixed = value
 	end)
 
 	return yCoord

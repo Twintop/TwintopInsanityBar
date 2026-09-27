@@ -10,9 +10,8 @@ TRB.Forever.Templates.Options = {}
 --
 -- Installs TRB.Options.<Class> for a class from its DefineClass definition: the per-spec default
 -- settings and default bar text factories the bootstrap, profiles and reset buttons call, and the
--- options panel with the standard tabs (resource bar, combo points where the archetype has them,
--- health bar, thresholds, custom thresholds, textures, visibility, font & text, bar text, reset). Loads
--- for every class so the cross-class options panel can show all of them.
+-- options panel, whose tabs follow what the archetype offers. Loads for every class so the cross-class
+-- options panel can show all of them.
 
 ---Default settings for one spec.
 ---@param classDef TRB.Forever.ClassDefinition
@@ -102,6 +101,16 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadT
 		settings.overcap = { mode = "relative", relative = 0, fixed = maxResource }
 	end
 
+	local shared = settings.colors.shared
+	if spec.stealth then
+		shared.nodeOrder[#shared.nodeOrder + 1] = "borderStealth"
+		shared.indicatorColors.borderStealth = { color = "FF000000", enabled = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
+	end
+	if archetype.overcap ~= nil then
+		shared.gradientOrder[#shared.gradientOrder + 1] = "borderOvercap"
+		shared.indicatorColors.borderOvercap = { color = archetype.overcap.color, enabled = true, isGradient = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
+	end
+
 	if hasSecondary then
 		settings.comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 		settings.colors.comboPoints = {
@@ -110,6 +119,7 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadT
 			base = { color = colors.barBase, color2 = colors.barBase, gradientDirection = "disabled" },
 			penultimate = { color = "FFFF9900", color2 = "FFFF9900", gradientDirection = "disabled" },
 			final = { color = "FFFF0000", color2 = "FFFF0000", gradientDirection = "disabled" },
+			echoingReprimand = { color = "FF68CCEF", color2 = "FF68CCEF", gradientDirection = "disabled" },
 			sameColor = false,
 		}
 	end
@@ -256,6 +266,8 @@ local function BuildComboPointsPanel(classDef, spec)
 			specSettings.comboPoints.sameColor = self:GetChecked()
 		end)
 
+		gradientPicker("echoingReprimand", L["RogueColorPickerEchoingReprimand"])
+
 		yCoord = yCoord - 30
 		controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ComboPointColorPickerBorder"], specSettings.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		controls.colors.comboPoints.border:SetScript("OnMouseDown", function(_, button)
@@ -292,8 +304,10 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 		local compositeKey = spec.entry.compositeKey
 		local archetype = spec.archetype
 		local resourceName = L[archetype.nameKey]
+		local maxResource = spec.entry.resources[archetype.variable] or archetype.defaultMax
 		local hasSecondary = archetype.secondary ~= nil
 		local fullLabel = L[spec.entry.specLocaleKey .. "Full"]
+		local namePrefix = moduleName .. "_" .. spec.specPascal
 		local loadThresholdDictionary = specThresholds and specThresholds[specName] or nil
 
 		options[spec.specPascal] = {}
@@ -335,7 +349,7 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 			yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, specSettings, classId, specId, yCoord, resourceName)
 			if specSettings.maxResource ~= nil then
 				yCoord = yCoord - 40
-				TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, specSettings, classId, specId, yCoord, resourceName, 1, specSettings.maxResource.value)
+				TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, specSettings, classId, specId, yCoord, resourceName, 1, maxResource)
 			end
 		end)
 
@@ -384,8 +398,43 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 			end
 			textPicker("current", string.format(L["ForeverColorPickerCurrentResource"], resourceName), oUi.xCoord)
 			textPicker("casting", string.format(L["ForeverColorPickerCastingResource"], resourceName), oUi.xCoord2)
+
+			if archetype.overcap ~= nil then
+				yCoord = yCoord - 30
+				textPicker("overThreshold", L[archetype.overcap.textOverThresholdKey], oUi.xCoord)
+				textPicker("overcap", L[archetype.overcap.textOvercapKey], oUi.xCoord2)
+
+				yCoord = yCoord - 30
+				controls.checkBoxes.overThresholdEnabled = TRB.Functions.OptionsUi.Primitives:BuildEnabledCheckbox(parent, "TwintopResourceBar_" .. namePrefix .. "_OverThresholdTextEnable",
+					L[archetype.overcap.textOverThresholdTooltipKey], specSettings.colors.text.overThreshold, oUi.xCoord + oUi.xPadding, yCoord)
+				controls.checkBoxes.overcapTextEnabled = TRB.Functions.OptionsUi.Primitives:BuildEnabledCheckbox(parent, "TwintopResourceBar_" .. namePrefix .. "_OvercapTextEnable",
+					L[archetype.overcap.textOvercapTooltipKey], specSettings.colors.text.overcap, oUi.xCoord2 + oUi.xPadding, yCoord)
+			end
 			TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, specSettings, classId, specId, yCoord)
 		end)
+
+		local indicatorColorsPanel = archetype.overcap ~= nil and withSpec(function(parent, specSettings, controls)
+			local indicatorDefs = {}
+			if spec.stealth then
+				indicatorDefs[1] = { key = "borderStealth", label = L["RogueCheckboxStealth"], tooltip = L["RogueIndicatorStealthTooltip"], colorLabel = L["RogueIndicatorStealthColor"] }
+			end
+			local barTargetDefs = { { key = "resourceBar", label = L[archetype.overcap.barNameKey] } }
+			if hasSecondary then
+				barTargetDefs[2] = { key = "comboPointsBar", label = L[archetype.secondary.nameKey] }
+			end
+			TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, specSettings, classId, specId, 5, {
+				indicatorDefs = indicatorDefs,
+				gradientDefs = {
+					{ key = "borderOvercap", label = L[archetype.overcap.indicatorKey], tooltip = L[archetype.overcap.indicatorTooltipKey], colorLabel = L[archetype.overcap.indicatorColorKey] },
+				},
+				barTargetDefs = barTargetDefs,
+				ddNamePrefix = "TwintopResourceBar_" .. namePrefix,
+				overcapConfig = {
+					primaryResourceString = resourceName,
+					primaryResourceMax = maxResource,
+				},
+			})
+		end) or nil
 
 		local barTextPanel = function(parent, cache)
 			if parent == nil then
@@ -426,11 +475,17 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 				tabDefinitions[#tabDefinitions + 1] = { "comboPoints", L[archetype.secondary.nameKey], oUi.tabWidth.medium, comboPointsPanel, visibilityKey = "secondary" }
 			end
 			tabDefinitions[#tabDefinitions + 1] = { "healthBar", L["TabHealth"], oUi.tabWidth.small, healthBarPanel, visibilityKey = "health" }
+			if indicatorColorsPanel ~= nil then
+				tabDefinitions[#tabDefinitions + 1] = { "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, indicatorColorsPanel }
+			end
 			tabDefinitions[#tabDefinitions + 1] = { "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, thresholdSettingsPanel }
 			if thresholdListPanel ~= nil then
 				tabDefinitions[#tabDefinitions + 1] = { "thresholds", L["TabThresholds"], oUi.tabWidth.large, thresholdListPanel, true }
 			end
 			tabDefinitions[#tabDefinitions + 1] = TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition(className, specName, controls)
+			if hasSecondary then
+				tabDefinitions[#tabDefinitions + 1] = TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition(className, specName, controls)
+			end
 			tabDefinitions[#tabDefinitions + 1] = { "barTextures", L["TabTextures"], oUi.tabWidth.small, texturesPanel }
 			tabDefinitions[#tabDefinitions + 1] = { "barVisibility", L["TabVisibility"], oUi.tabWidth.small, visibilityPanel }
 			tabDefinitions[#tabDefinitions + 1] = { "fontText", L["TabFontText"], oUi.tabWidth.medium, fontTextPanel }

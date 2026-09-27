@@ -719,6 +719,26 @@ function TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, name, label
 	return cb
 end
 
+---Builds the "Enabled?" checkbox that toggles a setting's `enabled` flag, such as a color that only applies when on.
+---@param parent Frame
+---@param name string # Unique global frame name
+---@param tooltip string?
+---@param setting table # The settings entry holding `enabled`
+---@param posX number
+---@param posY number
+---@return CheckButton
+function TRB.Functions.OptionsUi.Primitives:BuildEnabledCheckbox(parent, name, tooltip, setting, posX, posY)
+	local cb = CreateFrame("CheckButton", name, parent, "ChatConfigCheckButtonTemplate")
+	cb:SetPoint("TOPLEFT", posX, posY)
+	getglobal(cb:GetName() .. "Text"):SetText(L["CheckboxEnabledQuestion"])
+	cb.tooltip = tooltip
+	cb:SetChecked(setting.enabled)
+	cb:SetScript("OnClick", function(self)
+		setting.enabled = self:GetChecked()
+	end)
+	return cb
+end
+
 ---Builds a labeled radio dropdown bound to a getter/setter. Keeps the button's display text in sync with
 ---the selection, so callers only supply the value list and the two accessors.
 ---@param parent Frame

@@ -12,9 +12,12 @@ local className, specName, compositeKey, classId, specId = "druid", "general", "
 local namePrefix = "Druid_General"
 local fullLabel = L["DruidGeneralFull"]
 local formBars = {
-	{ key = "rage", tabKey = "rageBar", label = L["TabRage"], resourceName = L["ResourceRage"], frame = "RageBar", frameName = L["RageBar"], variable = "$rage" },
-	{ key = "energy", tabKey = "energyBar", label = L["TabEnergy"], resourceName = L["ResourceEnergy"], frame = "EnergyBar", frameName = L["EnergyBar"], variable = "$energy" },
+	{ key = "rage", tabKey = "rageBar", label = L["TabRage"], resourceName = L["ResourceRage"], frame = "RageBar", frameName = L["RageBar"], variable = "$rage",
+		indicator = "rageBar", overcapKey = "rageOvercap", keySuffix = "Rage", archetype = TRB.Forever.Archetypes.rage },
+	{ key = "energy", tabKey = "energyBar", label = L["TabEnergy"], resourceName = L["ResourceEnergy"], frame = "EnergyBar", frameName = L["EnergyBar"], variable = "$energy",
+		indicator = "energyBar", overcapKey = "energyOvercap", keySuffix = "Energy", archetype = TRB.Forever.Archetypes.energy },
 }
+local maxResources = TRB.Data.maxResource[className][specName]
 
 ---The registered form bar types, in options order.
 ---@return TRB.Classes.BarTypeDefinition[]
@@ -137,6 +140,10 @@ local function LoadDefaultSettings(includeBarText, classic)
 				current = { color = "FF4D4DFF" },
 				rage = { color = "FFFF0000" },
 				energy = { color = "FFFFFF00" },
+				rageOverThreshold = { color = "FF00FF00", enabled = false },
+				rageOvercap = { color = "FFFF0000", enabled = true },
+				energyOverThreshold = { color = "FF00FF00", enabled = false },
+				energyOvercap = { color = "FFFF0000", enabled = true },
 				casting = { color = "FFFFFFFF" },
 				passive = { color = "FF8080FF" },
 				overThreshold = { color = "FF00FF00", enabled = false },
@@ -170,9 +177,11 @@ local function LoadDefaultSettings(includeBarText, classic)
 				outOfRange = { color = "FF440000", enabled = true, show = true },
 			},
 			shared = {
-				nodeOrder = {},
+				nodeOrder = { "borderStealth" },
 				gradientOrder = {},
-				indicatorColors = {},
+				indicatorColors = {
+					borderStealth = { color = "FF000000", enabled = true, targets = { energyBar = { bar = false, border = true, background = false } } },
+				},
 			},
 		},
 		displayText = {
@@ -191,6 +200,14 @@ local function LoadDefaultSettings(includeBarText, classic)
 		audio = {},
 		textures = TRB.Functions.Settings:DefaultTextures(true, false, GetFormBarTypes()),
 	}
+
+	-- Each form bar's Overcap gradient steps at that bar's own threshold.
+	local shared = settings.colors.shared
+	for _, formBar in ipairs(formBars) do
+		settings.bars[formBar.key].overcap = { mode = "relative", relative = 0, fixed = maxResources[formBar.key] }
+		shared.gradientOrder[#shared.gradientOrder + 1] = formBar.overcapKey
+		shared.indicatorColors[formBar.overcapKey] = { color = formBar.archetype.overcap.color, enabled = true, isGradient = true, targets = { [formBar.indicator] = { bar = false, border = true, background = false } } }
+	end
 
 	if includeBarText then
 		settings.displayText.barText = LoadDefaultBarTextSettings(classic)
@@ -343,7 +360,51 @@ local fontTextPanel = withSpec(function(parent, specSettings, controls)
 	yCoord = yCoord - 30
 	textPicker("rage", string.format(L["ForeverColorPickerCurrentResource"], L["ResourceRage"]), oUi.xCoord)
 	textPicker("energy", string.format(L["ForeverColorPickerCurrentResource"], L["ResourceEnergy"]), oUi.xCoord2)
+
+	for _, formBar in ipairs(formBars) do
+		local labels = formBar.archetype.overcap
+		local overThresholdKey = formBar.key .. "OverThreshold"
+		local overcapKey = formBar.key .. "Overcap"
+		yCoord = yCoord - 30
+		textPicker(overThresholdKey, L[labels.textOverThresholdKey], oUi.xCoord)
+		textPicker(overcapKey, L[labels.textOvercapKey], oUi.xCoord2)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes[overThresholdKey .. "Enabled"] = TRB.Functions.OptionsUi.Primitives:BuildEnabledCheckbox(parent, "TwintopResourceBar_" .. namePrefix .. "_" .. overThresholdKey .. "TextEnable",
+			L[labels.textOverThresholdTooltipKey], specSettings.colors.text[overThresholdKey], oUi.xCoord + oUi.xPadding, yCoord)
+		controls.checkBoxes[overcapKey .. "Enabled"] = TRB.Functions.OptionsUi.Primitives:BuildEnabledCheckbox(parent, "TwintopResourceBar_" .. namePrefix .. "_" .. overcapKey .. "TextEnable",
+			L[labels.textOvercapTooltipKey], specSettings.colors.text[overcapKey], oUi.xCoord2 + oUi.xPadding, yCoord)
+	end
 	TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, specSettings, classId, specId, yCoord)
+end)
+
+local indicatorColorsPanel = withSpec(function(parent, specSettings, controls)
+	local gradientDefs = {}
+	for _, formBar in ipairs(formBars) do
+		local labels = formBar.archetype.overcap
+		gradientDefs[#gradientDefs + 1] = { key = formBar.overcapKey, label = L[labels.indicatorKey], tooltip = L[labels.indicatorTooltipKey], colorLabel = L[labels.indicatorColorKey], barKeys = { formBar.indicator } }
+	end
+
+	local yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, specSettings, classId, specId, 5, {
+		indicatorDefs = {
+			{ key = "borderStealth", label = L["CheckboxBorderStealth"], tooltip = L["DruidFeralIndicatorBorderStealthTooltip"], colorLabel = L["DruidFeralIndicatorBorderStealthColor"] },
+		},
+		gradientDefs = gradientDefs,
+		barTargetDefs = {
+			{ key = "resourceBar", label = L["BarNameManaBar"] },
+			{ key = "rageBar", label = L["BarNameRageBar"] },
+			{ key = "energyBar", label = L["BarNameEnergyBar"] },
+			{ key = "comboPointsBar", label = L["BarNameComboPoints"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_" .. namePrefix,
+	})
+
+	yCoord = yCoord - 40
+	controls.overcappingConfiguration = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["OvercappingConfigurationHeader"], oUi.xCoord, yCoord)
+	for i, formBar in ipairs(formBars) do
+		yCoord = yCoord - (i == 1 and 40 or 60)
+		yCoord = TRB.Functions.OptionsUi.Colors:GenerateOvercapThresholdRows(parent, controls, specSettings.bars[formBar.key].overcap, namePrefix, formBar.keySuffix, yCoord, formBar.resourceName, maxResources[formBar.key])
+	end
 end)
 
 local function barTextPanel(parent, cache)
@@ -453,9 +514,11 @@ local function ConstructSpecPanel(cache)
 	end
 	tabDefinitions[#tabDefinitions + 1] = { "comboPoints", L["TabComboPoints"], oUi.tabWidth.medium, comboPointsPanel, visibilityKey = "secondary" }
 	tabDefinitions[#tabDefinitions + 1] = { "healthBar", L["TabHealth"], oUi.tabWidth.small, healthBarPanel, visibilityKey = "health" }
+	tabDefinitions[#tabDefinitions + 1] = { "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, indicatorColorsPanel }
 	tabDefinitions[#tabDefinitions + 1] = { "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, thresholdSettingsPanel }
 	tabDefinitions[#tabDefinitions + 1] = { "thresholds", L["TabThresholds"], oUi.tabWidth.large, thresholdListPanel, true }
 	tabDefinitions[#tabDefinitions + 1] = TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition(className, specName, controls)
+	tabDefinitions[#tabDefinitions + 1] = TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition(className, specName, controls)
 	tabDefinitions[#tabDefinitions + 1] = { "barTextures", L["TabTextures"], oUi.tabWidth.small, texturesPanel }
 	tabDefinitions[#tabDefinitions + 1] = { "barVisibility", L["TabVisibility"], oUi.tabWidth.small, visibilityPanel }
 	tabDefinitions[#tabDefinitions + 1] = { "fontText", L["TabFontText"], oUi.tabWidth.medium, fontTextPanel }
