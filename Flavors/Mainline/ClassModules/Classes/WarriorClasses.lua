@@ -775,14 +775,18 @@ do
 		talentGatedBars = { secondary = "improvedWhirlwind" },
 		customBars = { "whirlwind", "enrage" },
 		barTextAnchorFrames = {
-			{ label = L["WhirlwindCharge1"], frame = "Whirlwind_Charge_1" }, { label = L["WhirlwindCharge2"], frame = "Whirlwind_Charge_2" }, { label = L["WhirlwindCharge3"], frame = "Whirlwind_Charge_3" }, { label = L["WhirlwindCharge4"], frame = "Whirlwind_Charge_4" },
-			{ label = L["EnrageBar"], frame = "EnrageBar" },
+			secondary = {
+				{ label = L["WhirlwindCharge1"], frame = "Whirlwind_Charge_1" }, { label = L["WhirlwindCharge2"], frame = "Whirlwind_Charge_2" }, { label = L["WhirlwindCharge3"], frame = "Whirlwind_Charge_3" }, { label = L["WhirlwindCharge4"], frame = "Whirlwind_Charge_4" },
+			},
+			enrage = { { label = L["EnrageBar"], frame = "EnrageBar" } },
 		},
 	})
 	SpecDescriptor:Declare("warrior_protection", {
 		customBars = { "defensives" },
 		barTextAnchorFrames = {
-			{ label = L["IgnorePainTime"], frame = "IgnorePain" }, { label = L["IgnorePainAbsorb"], frame = "IgnorePainAbsorb" }, { label = L["ShieldBlock"], frame = "ShieldBlock" },
+			defensives = {
+				{ label = L["IgnorePainTime"], frame = "IgnorePain" }, { label = L["IgnorePainAbsorb"], frame = "IgnorePainAbsorb" }, { label = L["ShieldBlock"], frame = "ShieldBlock" },
+			},
 		},
 	})
 end

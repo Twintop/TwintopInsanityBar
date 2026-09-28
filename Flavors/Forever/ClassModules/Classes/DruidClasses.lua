@@ -328,8 +328,12 @@ do
 		-- The global panel has no notion of a form-following bar set, so visibility and combo point layout stay spec-owned.
 		useGlobalDefaults = { displayBar = false, comboPoints = false },
 		barTextAnchorFrames = {
-			{ label = L["RageBar"], frame = "RageBar" }, { label = L["EnergyBar"], frame = "EnergyBar" }, { label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" },
-			{ label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" }, { label = L["ComboPoint5"], frame = "ComboPoint_5" },
+			secondary = {
+				{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
+				{ label = L["ComboPoint5"], frame = "ComboPoint_5" },
+			},
+			energy = { { label = L["EnergyBar"], frame = "EnergyBar" } },
+			rage = { { label = L["RageBar"], frame = "RageBar" } },
 		},
 	})
 end

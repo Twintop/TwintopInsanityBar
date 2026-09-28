@@ -1155,6 +1155,7 @@ do
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local utilityDef = registry:Get("utility")
 	if utilityDef then
+		utilityDef.displayName = L["ResourceAngelicFeather"]
 		utilityDef.nodeColors = {
 			{ key = "angelicFeather1", displayName = L["AngelicFeatherCharge1"], hasEnabled = false },
 			{ key = "angelicFeather2", displayName = L["AngelicFeatherCharge2"], hasEnabled = false },
@@ -1394,8 +1395,10 @@ do
 		talentGatedBars = { utility = "angelicFeather" },
 		customBars = { "utility" },
 		barTextAnchorFrames = {
-			{ label = L["PowerWordRadianceCharge1"], frame = "PowerWord_Radiance_1" }, { label = L["PowerWordRadianceCharge2"], frame = "PowerWord_Radiance_2" }, { label = L["AngelicFeatherCharge1"], frame = "Angelic_Feather_Charge_1" }, { label = L["AngelicFeatherCharge2"], frame = "Angelic_Feather_Charge_2" },
-			{ label = L["AngelicFeatherCharge3"], frame = "Angelic_Feather_Charge_3" },
+			secondary = { { label = L["PowerWordRadianceCharge1"], frame = "PowerWord_Radiance_1" }, { label = L["PowerWordRadianceCharge2"], frame = "PowerWord_Radiance_2" } },
+			utility = {
+				{ label = L["AngelicFeatherCharge1"], frame = "Angelic_Feather_Charge_1" }, { label = L["AngelicFeatherCharge2"], frame = "Angelic_Feather_Charge_2" }, { label = L["AngelicFeatherCharge3"], frame = "Angelic_Feather_Charge_3" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("priest_holy", {
@@ -1403,9 +1406,16 @@ do
 		talentGatedBars = { lightweaver = "lightweaver", utility = "angelicFeather" },
 		customBars = { "holyWords", "lightweaver", "utility" },
 		barTextAnchorFrames = {
-			{ label = L["HolyWordSerenityCharge1"], frame = "HolyWord_Serenity_1" }, { label = L["HolyWordSerenityCharge2"], frame = "HolyWord_Serenity_2" }, { label = L["HolyWordSanctifyCharge1"], frame = "HolyWord_Sanctify_1" }, { label = L["HolyWordSanctifyCharge2"], frame = "HolyWord_Sanctify_2" },
-			{ label = L["HolyWordChastiseCharge1"], frame = "HolyWord_Chastise_1" }, { label = L["LightweaverCharge1"], frame = "Lightweaver_Charge_1" }, { label = L["LightweaverCharge2"], frame = "Lightweaver_Charge_2" }, { label = L["LightweaverCharge3"], frame = "Lightweaver_Charge_3" },
-			{ label = L["LightweaverCharge4"], frame = "Lightweaver_Charge_4" }, { label = L["AngelicFeatherCharge1"], frame = "Angelic_Feather_Charge_1" }, { label = L["AngelicFeatherCharge2"], frame = "Angelic_Feather_Charge_2" }, { label = L["AngelicFeatherCharge3"], frame = "Angelic_Feather_Charge_3" },
+			holyWords = {
+				{ label = L["HolyWordSerenityCharge1"], frame = "HolyWord_Serenity_1" }, { label = L["HolyWordSerenityCharge2"], frame = "HolyWord_Serenity_2" }, { label = L["HolyWordSanctifyCharge1"], frame = "HolyWord_Sanctify_1" }, { label = L["HolyWordSanctifyCharge2"], frame = "HolyWord_Sanctify_2" },
+				{ label = L["HolyWordChastiseCharge1"], frame = "HolyWord_Chastise_1" },
+			},
+			lightweaver = {
+				{ label = L["LightweaverCharge1"], frame = "Lightweaver_Charge_1" }, { label = L["LightweaverCharge2"], frame = "Lightweaver_Charge_2" }, { label = L["LightweaverCharge3"], frame = "Lightweaver_Charge_3" }, { label = L["LightweaverCharge4"], frame = "Lightweaver_Charge_4" },
+			},
+			utility = {
+				{ label = L["AngelicFeatherCharge1"], frame = "Angelic_Feather_Charge_1" }, { label = L["AngelicFeatherCharge2"], frame = "Angelic_Feather_Charge_2" }, { label = L["AngelicFeatherCharge3"], frame = "Angelic_Feather_Charge_3" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("priest_shadow", {
@@ -1414,7 +1424,10 @@ do
 		customBars = { "mana", "utility" },
 		exportExtras = { "hasteApproachingThreshold", "hasteThreshold" },
 		barTextAnchorFrames = {
-			{ label = L["ManaBar"], frame = "ManaBar" }, { label = L["AngelicFeatherCharge1"], frame = "Angelic_Feather_Charge_1" }, { label = L["AngelicFeatherCharge2"], frame = "Angelic_Feather_Charge_2" }, { label = L["AngelicFeatherCharge3"], frame = "Angelic_Feather_Charge_3" },
+			mana = { { label = L["ManaBar"], frame = "ManaBar" } },
+			utility = {
+				{ label = L["AngelicFeatherCharge1"], frame = "Angelic_Feather_Charge_1" }, { label = L["AngelicFeatherCharge2"], frame = "Angelic_Feather_Charge_2" }, { label = L["AngelicFeatherCharge3"], frame = "Angelic_Feather_Charge_3" },
+			},
 		},
 	})
 end

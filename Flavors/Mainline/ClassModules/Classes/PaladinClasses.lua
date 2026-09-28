@@ -367,24 +367,30 @@ do
 		manaBar = true,
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["HolyPower1"], frame = "ComboPoint_1" }, { label = L["HolyPower2"], frame = "ComboPoint_2" }, { label = L["HolyPower3"], frame = "ComboPoint_3" }, { label = L["HolyPower4"], frame = "ComboPoint_4" },
-			{ label = L["HolyPower5"], frame = "ComboPoint_5" },
+			secondary = {
+				{ label = L["HolyPower1"], frame = "ComboPoint_1" }, { label = L["HolyPower2"], frame = "ComboPoint_2" }, { label = L["HolyPower3"], frame = "ComboPoint_3" }, { label = L["HolyPower4"], frame = "ComboPoint_4" },
+				{ label = L["HolyPower5"], frame = "ComboPoint_5" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("paladin_protection", {
 		manaBar = true,
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["HolyPower1"], frame = "ComboPoint_1" }, { label = L["HolyPower2"], frame = "ComboPoint_2" }, { label = L["HolyPower3"], frame = "ComboPoint_3" }, { label = L["HolyPower4"], frame = "ComboPoint_4" },
-			{ label = L["HolyPower5"], frame = "ComboPoint_5" },
+			secondary = {
+				{ label = L["HolyPower1"], frame = "ComboPoint_1" }, { label = L["HolyPower2"], frame = "ComboPoint_2" }, { label = L["HolyPower3"], frame = "ComboPoint_3" }, { label = L["HolyPower4"], frame = "ComboPoint_4" },
+				{ label = L["HolyPower5"], frame = "ComboPoint_5" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("paladin_retribution", {
 		manaBar = true,
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["HolyPower1"], frame = "ComboPoint_1" }, { label = L["HolyPower2"], frame = "ComboPoint_2" }, { label = L["HolyPower3"], frame = "ComboPoint_3" }, { label = L["HolyPower4"], frame = "ComboPoint_4" },
-			{ label = L["HolyPower5"], frame = "ComboPoint_5" },
+			secondary = {
+				{ label = L["HolyPower1"], frame = "ComboPoint_1" }, { label = L["HolyPower2"], frame = "ComboPoint_2" }, { label = L["HolyPower3"], frame = "ComboPoint_3" }, { label = L["HolyPower4"], frame = "ComboPoint_4" },
+				{ label = L["HolyPower5"], frame = "ComboPoint_5" },
+			},
 		},
 	})
 end

@@ -3011,12 +3011,87 @@ function TRB.Functions.Bar:GetAllBarKeysFromSettings(settings)
 	return keys
 end
 
+-- Bar-target list order; unlisted keys are spec bars (3) or Other Bars (8), both sorted by name.
+local barTargetRanks = { screen = 0, primary = 1, secondary = 2, health = 4, castbar = 5, targetCastbar = 6, focusCastbar = 7 }
+
+---Where a bar sorts in every bar-target list: Screen, primary, secondary, spec bars, health, the three cast
+---bars, then Other Bars.
+---@param barKey string
+---@return integer
+function TRB.Functions.Bar:GetBarTargetRank(barKey)
+	local rank = barTargetRanks[barKey]
+	if rank ~= nil then
+		return rank
+	end
+	for _, otherBarKey in ipairs(TRB.Classes.BarTypeRegistry.otherBarKeys) do
+		if otherBarKey == barKey then
+			return 8
+		end
+	end
+	return 3
+end
+
+---Sorts bar-target entries by rank, then group name; entries sharing a group keep their given order.
+---@param entries any[] # Distinct values: tables, or bar key strings
+---@param getSortKey fun(entry: any): string, string # Returns the bar key to rank by and the group's name
+function TRB.Functions.Bar:SortBarTargets(entries, getSortKey)
+	local sortKeys = {}
+	for index, entry in ipairs(entries) do
+		local barKey, name = getSortKey(entry)
+		sortKeys[entry] = { rank = self:GetBarTargetRank(barKey), name = name, index = index }
+	end
+	table.sort(entries, function(a, b)
+		local keyA, keyB = sortKeys[a], sortKeys[b]
+		if keyA.rank ~= keyB.rank then
+			return keyA.rank < keyB.rank
+		end
+		if keyA.name ~= keyB.name then
+			return keyA.name < keyB.name
+		end
+		return keyA.index < keyB.index
+	end)
+end
+
+---Names a bar after a resource type, e.g. "Insanity Bar", or nil for an unknown type.
+---@param resourceType string?
+---@return string?
+function TRB.Functions.Bar:GetResourceBarName(resourceType)
+	local resourceName = TRB.Functions.Character:GetResourceTypeName(resourceType)
+	if resourceName == nil then
+		return nil
+	end
+	return string.format(TRB.Localization["ResourceBarName"], resourceName)
+end
+
+---The primary or secondary bar named after its spec's resource, or nil without a spec or for a form-switched bar.
+---@param barKey string
+---@param classId integer?
+---@param specId integer?
+---@return string?
+function TRB.Functions.Bar:GetSpecResourceBarName(barKey, classId, specId)
+	if barKey ~= "primary" and barKey ~= "secondary" then
+		return nil
+	end
+	local config = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
+	local barConfig = config and config[barKey]
+	-- A form-switched bar shows a different resource per form, so no one name fits it.
+	if barConfig == nil or barConfig.subTargetsRequireFormSwitching == true then
+		return nil
+	end
+	return self:GetResourceBarName(barConfig.resourceType)
+end
+
 ---Gets a human-readable display name for a bar key (for Options UI dropdowns).
 ---@param barKey string
+---@param classId integer? # With specId, names the primary and secondary bars after the spec's resources
+---@param specId integer?
 ---@return string
-function TRB.Functions.Bar:GetBarDisplayName(barKey)
+function TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId)
 	local L = TRB.Localization
-	if barKey == "screen" then
+	local resourceBarName = self:GetSpecResourceBarName(barKey, classId, specId)
+	if resourceBarName ~= nil then
+		return resourceBarName
+	elseif barKey == "screen" then
 		return L["AnchorBarScreen"]
 	elseif barKey == "primary" then
 		return L["AnchorBarPrimary"]
@@ -3098,8 +3173,10 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>?
 ---@param barKeys string[]? # If provided, use these bar keys instead of deriving from barGroups
----@return string[] # List of valid anchor target bar keys (includes "screen")
-function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGroups, barKeys)
+---@param classId integer? # With specId, sorts by the same names the dropdown shows
+---@param specId integer?
+---@return string[] # List of valid anchor target bar keys (includes "screen"), in bar-target order
+function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGroups, barKeys, classId, specId)
 	local valid = { "screen" }
 	local allKeys = barKeys or self:GetAllBarKeys(barGroups)
 	for _, candidate in ipairs(allKeys) do
@@ -3110,6 +3187,9 @@ function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGr
 			end
 		end
 	end
+	self:SortBarTargets(valid, function(barKey)
+		return barKey, self:GetBarDisplayName(barKey, classId, specId)
+	end)
 	return valid
 end
 

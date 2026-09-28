@@ -693,15 +693,19 @@ do
 	SpecDescriptor:Declare("demonhunter_vengeance", {
 		secondary = { exportable = true, minMaxMode = "stepped" },
 		barTextAnchorFrames = {
-			{ label = L["SoulFragment1"], frame = "ComboPoint_1" }, { label = L["SoulFragment2"], frame = "ComboPoint_2" }, { label = L["SoulFragment3"], frame = "ComboPoint_3" }, { label = L["SoulFragment4"], frame = "ComboPoint_4" },
-			{ label = L["SoulFragment5"], frame = "ComboPoint_5" }, { label = L["SoulFragment6"], frame = "ComboPoint_6" },
+			secondary = {
+				{ label = L["SoulFragment1"], frame = "ComboPoint_1" }, { label = L["SoulFragment2"], frame = "ComboPoint_2" }, { label = L["SoulFragment3"], frame = "ComboPoint_3" }, { label = L["SoulFragment4"], frame = "ComboPoint_4" },
+				{ label = L["SoulFragment5"], frame = "ComboPoint_5" }, { label = L["SoulFragment6"], frame = "ComboPoint_6" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("demonhunter_devourer", {
 		secondary = { exportable = true, minMaxMode = "resource" },
 		secondaryTransitionOnFullAuraUpdate = "devourerTransitionAt",
 		barTextAnchorFrames = {
-			{ label = L["SoulFragments"], frame = "ComboPoint_1" },
+			secondary = {
+				{ label = L["SoulFragments"], frame = "ComboPoint_1" },
+			},
 		},
 	})
 end

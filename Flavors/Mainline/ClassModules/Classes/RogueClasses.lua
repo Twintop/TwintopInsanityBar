@@ -923,22 +923,28 @@ do
 	SpecDescriptor:Declare("rogue_assassination", {
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
-			{ label = L["ComboPoint5"], frame = "ComboPoint_5" }, { label = L["ComboPoint6"], frame = "ComboPoint_6" },
+			secondary = {
+				{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
+				{ label = L["ComboPoint5"], frame = "ComboPoint_5" }, { label = L["ComboPoint6"], frame = "ComboPoint_6" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("rogue_outlaw", {
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
-			{ label = L["ComboPoint5"], frame = "ComboPoint_5" }, { label = L["ComboPoint6"], frame = "ComboPoint_6" }, { label = L["ComboPoint7"], frame = "ComboPoint_7" },
+			secondary = {
+				{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
+				{ label = L["ComboPoint5"], frame = "ComboPoint_5" }, { label = L["ComboPoint6"], frame = "ComboPoint_6" }, { label = L["ComboPoint7"], frame = "ComboPoint_7" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("rogue_subtlety", {
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
-			{ label = L["ComboPoint5"], frame = "ComboPoint_5" }, { label = L["ComboPoint6"], frame = "ComboPoint_6" }, { label = L["ComboPoint7"], frame = "ComboPoint_7" },
+			secondary = {
+				{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
+				{ label = L["ComboPoint5"], frame = "ComboPoint_5" }, { label = L["ComboPoint6"], frame = "ComboPoint_6" }, { label = L["ComboPoint7"], frame = "ComboPoint_7" },
+			},
 		},
 	})
 end

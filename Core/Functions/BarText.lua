@@ -59,25 +59,6 @@ local containerAnchorLabelByResourceType = {
 	WhirlwindCharges = L["WhirlwindChargesContainer"],
 }
 
-local containerAnchorFirstNodeLabelByResourceType = {
-	AngelicFeather = L["AngelicFeatherCharge1"],
-	ArcaneCharges = L["ArcaneCharge1"],
-	BoneShield = L["BoneShield1"],
-	Chi = L["Chi1"],
-	ComboPoints = L["ComboPoint1"],
-	Essence = L["Essence1"],
-	HolyPower = L["HolyPower1"],
-	Icicles = L["Icicle1"],
-	Lightweaver = L["LightweaverCharge1"],
-	MaelstromWeapon = L["Maelstrom1"],
-	Runes = L["Rune1"],
-	Shatter = L["Shatter1"],
-	SoulFragments = L["SoulFragment1"],
-	SoulShards = L["SoulShard1"],
-	TipOfTheSpear = L["TipOfTheSpear1"],
-	WhirlwindCharges = L["WhirlwindCharge1"],
-}
-
 local function GetContainerAnchorBarGroupKey(relativeToFrame)
 	if type(relativeToFrame) ~= "string" then
 		return nil
@@ -106,10 +87,10 @@ local function GetContainerAnchorDefinition(classId, specId, barGroupKey)
 		id = containerAnchorPrefix .. barGroupKey,
 		label = label,
 		barGroupKey = barGroupKey,
-		insertBeforeLabel = containerAnchorFirstNodeLabelByResourceType[barGroupConfig.resourceType],
 	}
 end
 
+---The spec's multi-node bar containers the bar text editor offers, in no particular order.
 ---@param classId integer?
 ---@param specId integer?
 ---@return table[]
@@ -127,10 +108,6 @@ function TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
 			table.insert(options, definition)
 		end
 	end
-
-	table.sort(options, function(a, b)
-		return a.label < b.label
-	end)
 
 	return options
 end

@@ -766,7 +766,7 @@ do
 	SpecDescriptor:Declare("monk_brewmaster", {
 		customBars = { "stagger" },
 		barTextAnchorFrames = {
-			{ label = L["Stagger"], frame = "ComboPoint_1" },
+			stagger = { { label = L["Stagger"], frame = "ComboPoint_1" } },
 		},
 	})
 	SpecDescriptor:Declare("monk_mistweaver", {
@@ -776,8 +776,10 @@ do
 		secondary = { exportable = true },
 		empowerCastbar = true,
 		barTextAnchorFrames = {
-			{ label = L["Chi1"], frame = "ComboPoint_1" }, { label = L["Chi2"], frame = "ComboPoint_2" }, { label = L["Chi3"], frame = "ComboPoint_3" }, { label = L["Chi4"], frame = "ComboPoint_4" },
-			{ label = L["Chi5"], frame = "ComboPoint_5" }, { label = L["Chi6"], frame = "ComboPoint_6" },
+			secondary = {
+				{ label = L["Chi1"], frame = "ComboPoint_1" }, { label = L["Chi2"], frame = "ComboPoint_2" }, { label = L["Chi3"], frame = "ComboPoint_3" }, { label = L["Chi4"], frame = "ComboPoint_4" },
+				{ label = L["Chi5"], frame = "ComboPoint_5" }, { label = L["Chi6"], frame = "ComboPoint_6" },
+			},
 		},
 	})
 end

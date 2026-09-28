@@ -425,8 +425,11 @@ do
 		customBars = { "dragonrage" },
 		empowerCastbar = true,
 		barTextAnchorFrames = {
-			{ label = L["Essence1"], frame = "ComboPoint_1" }, { label = L["Essence2"], frame = "ComboPoint_2" }, { label = L["Essence3"], frame = "ComboPoint_3" }, { label = L["Essence4"], frame = "ComboPoint_4" },
-			{ label = L["Essence5"], frame = "ComboPoint_5" }, { label = L["Essence6"], frame = "ComboPoint_6" }, { label = L["DragonrageBar"], frame = "DragonrageBar" },
+			secondary = {
+				{ label = L["Essence1"], frame = "ComboPoint_1" }, { label = L["Essence2"], frame = "ComboPoint_2" }, { label = L["Essence3"], frame = "ComboPoint_3" }, { label = L["Essence4"], frame = "ComboPoint_4" },
+				{ label = L["Essence5"], frame = "ComboPoint_5" }, { label = L["Essence6"], frame = "ComboPoint_6" },
+			},
+			dragonrage = { { label = L["DragonrageBar"], frame = "DragonrageBar" } },
 		},
 	})
 	SpecDescriptor:Declare("evoker_preservation", {
@@ -434,8 +437,10 @@ do
 		secondary = { exportable = true },
 		empowerCastbar = true,
 		barTextAnchorFrames = {
-			{ label = L["Essence1"], frame = "ComboPoint_1" }, { label = L["Essence2"], frame = "ComboPoint_2" }, { label = L["Essence3"], frame = "ComboPoint_3" }, { label = L["Essence4"], frame = "ComboPoint_4" },
-			{ label = L["Essence5"], frame = "ComboPoint_5" }, { label = L["Essence6"], frame = "ComboPoint_6" },
+			secondary = {
+				{ label = L["Essence1"], frame = "ComboPoint_1" }, { label = L["Essence2"], frame = "ComboPoint_2" }, { label = L["Essence3"], frame = "ComboPoint_3" }, { label = L["Essence4"], frame = "ComboPoint_4" },
+				{ label = L["Essence5"], frame = "ComboPoint_5" }, { label = L["Essence6"], frame = "ComboPoint_6" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("evoker_augmentation", {
@@ -444,8 +449,11 @@ do
 		customBars = { "ebonMight" },
 		empowerCastbar = true,
 		barTextAnchorFrames = {
-			{ label = L["Essence1"], frame = "ComboPoint_1" }, { label = L["Essence2"], frame = "ComboPoint_2" }, { label = L["Essence3"], frame = "ComboPoint_3" }, { label = L["Essence4"], frame = "ComboPoint_4" },
-			{ label = L["Essence5"], frame = "ComboPoint_5" }, { label = L["Essence6"], frame = "ComboPoint_6" }, { label = L["EbonMightBar"], frame = "EbonMightBar" },
+			secondary = {
+				{ label = L["Essence1"], frame = "ComboPoint_1" }, { label = L["Essence2"], frame = "ComboPoint_2" }, { label = L["Essence3"], frame = "ComboPoint_3" }, { label = L["Essence4"], frame = "ComboPoint_4" },
+				{ label = L["Essence5"], frame = "ComboPoint_5" }, { label = L["Essence6"], frame = "ComboPoint_6" },
+			},
+			ebonMight = { { label = L["EbonMightBar"], frame = "EbonMightBar" } },
 		},
 	})
 end

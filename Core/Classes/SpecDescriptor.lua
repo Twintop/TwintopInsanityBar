@@ -30,7 +30,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field secondary TRB.Classes.SpecDescriptor.Secondary?
 ---@field forms TRB.Classes.SpecDescriptor.Forms? # Declared by every spec of a class whose display follows shapeshift forms
 ---@field talentGatedBars table<string, string>? # barKey -> key in spellsData.spells whose talent must be active for the bar to show
----@field barTextAnchorFrames TRB.Classes.SpecDescriptor.AnchorFrame[]? # Extra "relative to" anchor frames offered by the bar text editor (between the primary bar and the health bar entries)
+---@field barTextAnchorFrames table<string, TRB.Classes.SpecDescriptor.AnchorFrame[]>? # Extra "relative to" anchor frames offered by the bar text editor, keyed by the bar group they sort with (e.g. secondary, boneShield); a key that is no bar group sorts with the spec bars
 ---@field exportExtras string[]? # Extra top-level spec settings keys exported with the Font & Text section
 ---@field customBars string[]? # Custom bar keys always included in exports, in addition to the bar group config's
 ---@field empowerCastbar boolean? # The spec casts empowered spells, so the castbar options show empower level colors

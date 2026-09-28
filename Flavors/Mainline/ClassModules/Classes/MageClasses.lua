@@ -627,16 +627,20 @@ do
 		secondary = { exportable = true },
 		customBars = { "arcaneSalvo" },
 		barTextAnchorFrames = {
-			{ label = L["ArcaneCharge1"], frame = "ComboPoint_1" }, { label = L["ArcaneCharge2"], frame = "ComboPoint_2" }, { label = L["ArcaneCharge3"], frame = "ComboPoint_3" }, { label = L["ArcaneCharge4"], frame = "ComboPoint_4" },
-			{ label = L["ArcaneSalvoBar"], frame = "ArcaneSalvoBar" },
+			secondary = {
+				{ label = L["ArcaneCharge1"], frame = "ComboPoint_1" }, { label = L["ArcaneCharge2"], frame = "ComboPoint_2" }, { label = L["ArcaneCharge3"], frame = "ComboPoint_3" }, { label = L["ArcaneCharge4"], frame = "ComboPoint_4" },
+			},
+			arcaneSalvo = { { label = L["ArcaneSalvoBar"], frame = "ArcaneSalvoBar" } },
 		},
 	})
 	SpecDescriptor:Declare("mage_fire", {
 		manaBar = true,
 		secondary = { minMaxMode = "stepped" },
 		barTextAnchorFrames = {
-			{ label = L["MageFireBlastCharges"], frame = "FireBlastChargesBar" }, { label = L["MageFireFireBlastCharge1"], frame = "FireBlastCharge_1" }, { label = L["MageFireFireBlastCharge2"], frame = "FireBlastCharge_2" }, { label = L["MageFireFireBlastCharge3"], frame = "FireBlastCharge_3" },
-			{ label = L["MageFireFireBlastChargeRecharging"], frame = "FireBlastCharge_Recharging" },
+			secondary = {
+				{ label = L["MageFireBlastCharges"], frame = "FireBlastChargesBar" }, { label = L["MageFireFireBlastCharge1"], frame = "FireBlastCharge_1" }, { label = L["MageFireFireBlastCharge2"], frame = "FireBlastCharge_2" }, { label = L["MageFireFireBlastCharge3"], frame = "FireBlastCharge_3" },
+				{ label = L["MageFireFireBlastChargeRecharging"], frame = "FireBlastCharge_Recharging" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("mage_frost", {
@@ -644,13 +648,17 @@ do
 		secondary = { exportable = true },
 		customBars = { "shatter" },
 		barTextAnchorFrames = {
-			{ label = L["Icicle1"], frame = "ComboPoint_1" }, { label = L["Icicle2"], frame = "ComboPoint_2" }, { label = L["Icicle3"], frame = "ComboPoint_3" }, { label = L["Icicle4"], frame = "ComboPoint_4" },
-			{ label = L["Icicle5"], frame = "ComboPoint_5" }, { label = L["Shatter1"], frame = "Shatter_1" }, { label = L["Shatter2"], frame = "Shatter_2" }, { label = L["Shatter3"], frame = "Shatter_3" },
-			{ label = L["Shatter4"], frame = "Shatter_4" }, { label = L["Shatter5"], frame = "Shatter_5" }, { label = L["Shatter6"], frame = "Shatter_6" }, { label = L["Shatter7"], frame = "Shatter_7" },
-			{ label = L["Shatter8"], frame = "Shatter_8" }, { label = L["Shatter9"], frame = "Shatter_9" }, { label = L["Shatter10"], frame = "Shatter_10" }, { label = L["Shatter11"], frame = "Shatter_11" },
-			{ label = L["Shatter12"], frame = "Shatter_12" }, { label = L["Shatter13"], frame = "Shatter_13" }, { label = L["Shatter14"], frame = "Shatter_14" }, { label = L["Shatter15"], frame = "Shatter_15" },
-			{ label = L["Shatter16"], frame = "Shatter_16" }, { label = L["Shatter17"], frame = "Shatter_17" }, { label = L["Shatter18"], frame = "Shatter_18" }, { label = L["Shatter19"], frame = "Shatter_19" },
-			{ label = L["Shatter20"], frame = "Shatter_20" },
+			secondary = {
+				{ label = L["Icicle1"], frame = "ComboPoint_1" }, { label = L["Icicle2"], frame = "ComboPoint_2" }, { label = L["Icicle3"], frame = "ComboPoint_3" }, { label = L["Icicle4"], frame = "ComboPoint_4" },
+				{ label = L["Icicle5"], frame = "ComboPoint_5" },
+			},
+			shatter = {
+				{ label = L["Shatter1"], frame = "Shatter_1" }, { label = L["Shatter2"], frame = "Shatter_2" }, { label = L["Shatter3"], frame = "Shatter_3" }, { label = L["Shatter4"], frame = "Shatter_4" },
+				{ label = L["Shatter5"], frame = "Shatter_5" }, { label = L["Shatter6"], frame = "Shatter_6" }, { label = L["Shatter7"], frame = "Shatter_7" }, { label = L["Shatter8"], frame = "Shatter_8" },
+				{ label = L["Shatter9"], frame = "Shatter_9" }, { label = L["Shatter10"], frame = "Shatter_10" }, { label = L["Shatter11"], frame = "Shatter_11" }, { label = L["Shatter12"], frame = "Shatter_12" },
+				{ label = L["Shatter13"], frame = "Shatter_13" }, { label = L["Shatter14"], frame = "Shatter_14" }, { label = L["Shatter15"], frame = "Shatter_15" }, { label = L["Shatter16"], frame = "Shatter_16" },
+				{ label = L["Shatter17"], frame = "Shatter_17" }, { label = L["Shatter18"], frame = "Shatter_18" }, { label = L["Shatter19"], frame = "Shatter_19" }, { label = L["Shatter20"], frame = "Shatter_20" },
+			},
 		},
 	})
 end

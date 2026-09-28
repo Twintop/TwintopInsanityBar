@@ -20,6 +20,10 @@ TRB.Flavor.newsContent = [====[
 - The bar's scale is Dragonrage's full duration, including time added by Animosity.
 - Joins the bar text Relative to Frame and Color Indicator target lists. Does not offer custom thresholds.
 
+## Priest
+
+- Fix the Angelic Feather bar being called Utility in bar anchoring, Edit Mode, and Global Options Bar Visibility.
+
 ## Warrior
 ### Fury
 

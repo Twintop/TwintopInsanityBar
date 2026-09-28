@@ -1439,33 +1439,53 @@ do
 		manaBar = true,
 		customBars = { "mana" },
 		barTextAnchorFrames = {
-			{ label = L["AstralPowerBar"], frame = "AstralPowerBar" }, { label = L["RageBar"], frame = "RageBar" }, { label = L["EnergyBar"], frame = "EnergyBar" }, { label = L["ComboPoint1"], frame = "ComboPoint_1" },
-			{ label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" }, { label = L["ComboPoint5"], frame = "ComboPoint_5" },
-			{ label = L["ManaBar"], frame = "ManaBar" },
+			secondary = {
+				{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
+				{ label = L["ComboPoint5"], frame = "ComboPoint_5" },
+			},
+			astralPower = { { label = L["AstralPowerBar"], frame = "AstralPowerBar" } },
+			energy = { { label = L["EnergyBar"], frame = "EnergyBar" } },
+			mana = { { label = L["ManaBar"], frame = "ManaBar" } },
+			rage = { { label = L["RageBar"], frame = "RageBar" } },
 		},
 	})
 	SpecDescriptor:Declare("druid_feral", {
 		manaBar = true,
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["RageBar"], frame = "RageBar" }, { label = L["EnergyBar"], frame = "EnergyBar" }, { label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" },
-			{ label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" }, { label = L["ComboPoint5"], frame = "ComboPoint_5" }, { label = L["ManaBar"], frame = "ManaBar" },
+			secondary = {
+				{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
+				{ label = L["ComboPoint5"], frame = "ComboPoint_5" },
+			},
+			energy = { { label = L["EnergyBar"], frame = "EnergyBar" } },
+			mana = { { label = L["ManaBar"], frame = "ManaBar" } },
+			rage = { { label = L["RageBar"], frame = "RageBar" } },
 		},
 	})
 	SpecDescriptor:Declare("druid_guardian", {
 		manaBar = true,
 		customBars = { "ironfur" },
 		barTextAnchorFrames = {
-			{ label = L["RageBar"], frame = "RageBar" }, { label = L["EnergyBar"], frame = "EnergyBar" }, { label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" },
-			{ label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" }, { label = L["ComboPoint5"], frame = "ComboPoint_5" }, { label = L["ManaBar"], frame = "ManaBar" },
-			{ label = L["IronfurBar"], frame = "IronfurBar" },
+			secondary = {
+				{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
+				{ label = L["ComboPoint5"], frame = "ComboPoint_5" },
+			},
+			energy = { { label = L["EnergyBar"], frame = "EnergyBar" } },
+			ironfur = { { label = L["IronfurBar"], frame = "IronfurBar" } },
+			mana = { { label = L["ManaBar"], frame = "ManaBar" } },
+			rage = { { label = L["RageBar"], frame = "RageBar" } },
 		},
 	})
 	SpecDescriptor:Declare("druid_restoration", {
 		manaBar = true,
 		barTextAnchorFrames = {
-			{ label = L["RageBar"], frame = "RageBar" }, { label = L["EnergyBar"], frame = "EnergyBar" }, { label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" },
-			{ label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" }, { label = L["ComboPoint5"], frame = "ComboPoint_5" }, { label = L["ManaBar"], frame = "ManaBar" },
+			secondary = {
+				{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
+				{ label = L["ComboPoint5"], frame = "ComboPoint_5" },
+			},
+			energy = { { label = L["EnergyBar"], frame = "EnergyBar" } },
+			mana = { { label = L["ManaBar"], frame = "ManaBar" } },
+			rage = { { label = L["RageBar"], frame = "RageBar" } },
 		},
 	})
 end

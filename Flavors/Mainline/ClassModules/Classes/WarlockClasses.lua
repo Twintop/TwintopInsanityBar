@@ -568,24 +568,30 @@ do
 		manaBar = true,
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["SoulShard1"], frame = "ComboPoint_1" }, { label = L["SoulShard2"], frame = "ComboPoint_2" }, { label = L["SoulShard3"], frame = "ComboPoint_3" }, { label = L["SoulShard4"], frame = "ComboPoint_4" },
-			{ label = L["SoulShard5"], frame = "ComboPoint_5" },
+			secondary = {
+				{ label = L["SoulShard1"], frame = "ComboPoint_1" }, { label = L["SoulShard2"], frame = "ComboPoint_2" }, { label = L["SoulShard3"], frame = "ComboPoint_3" }, { label = L["SoulShard4"], frame = "ComboPoint_4" },
+				{ label = L["SoulShard5"], frame = "ComboPoint_5" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("warlock_demonology", {
 		manaBar = true,
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["SoulShard1"], frame = "ComboPoint_1" }, { label = L["SoulShard2"], frame = "ComboPoint_2" }, { label = L["SoulShard3"], frame = "ComboPoint_3" }, { label = L["SoulShard4"], frame = "ComboPoint_4" },
-			{ label = L["SoulShard5"], frame = "ComboPoint_5" },
+			secondary = {
+				{ label = L["SoulShard1"], frame = "ComboPoint_1" }, { label = L["SoulShard2"], frame = "ComboPoint_2" }, { label = L["SoulShard3"], frame = "ComboPoint_3" }, { label = L["SoulShard4"], frame = "ComboPoint_4" },
+				{ label = L["SoulShard5"], frame = "ComboPoint_5" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("warlock_destruction", {
 		manaBar = true,
 		secondary = { exportable = true, thresholdDecimals = 1 },
 		barTextAnchorFrames = {
-			{ label = L["SoulShard1"], frame = "ComboPoint_1" }, { label = L["SoulShard2"], frame = "ComboPoint_2" }, { label = L["SoulShard3"], frame = "ComboPoint_3" }, { label = L["SoulShard4"], frame = "ComboPoint_4" },
-			{ label = L["SoulShard5"], frame = "ComboPoint_5" },
+			secondary = {
+				{ label = L["SoulShard1"], frame = "ComboPoint_1" }, { label = L["SoulShard2"], frame = "ComboPoint_2" }, { label = L["SoulShard3"], frame = "ComboPoint_3" }, { label = L["SoulShard4"], frame = "ComboPoint_4" },
+				{ label = L["SoulShard5"], frame = "ComboPoint_5" },
+			},
 		},
 	})
 end

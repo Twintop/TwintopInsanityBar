@@ -1658,10 +1658,10 @@ local function BalanceConstructIndicatorColorsPanel(parent)
 			{ key = "borderOvercap", label = L["DruidIndicatorOvercap"], tooltip = L["DruidBalanceIndicatorBorderOvercapTooltip"], colorLabel = L["DruidBalanceIndicatorBorderOvercapColor"] },
 		},
 		barTargetDefs = {
-			{ key = "astralPowerBar", label = L["BarNameAstralPowerBar"] },
 			{ key = "comboPoints",    label = L["BarNameComboPoints"] },
-			{ key = "manaBar",        label = L["BarNameManaBar"] },
+			{ key = "astralPowerBar", label = L["BarNameAstralPowerBar"] },
 			{ key = "energyBar",      label = L["BarNameEnergyBar"] },
+			{ key = "manaBar",        label = L["BarNameManaBar"] },
 			{ key = "rageBar",        label = L["BarNameRageBar"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Druid_Balance",
@@ -2253,8 +2253,8 @@ local function FeralConstructIndicatorColorsPanel(parent)
 			{ key = "borderOvercap", label = L["DruidIndicatorOvercap"],                  tooltip = L["DruidFeralIndicatorBorderOvercapTooltip"],   colorLabel = L["DruidFeralIndicatorBorderOvercapColor"] },
 		},
 		barTargetDefs = {
-			{ key = "energyBar",    label = L["BarNameEnergyBar"] },
 			{ key = "comboPoints",  label = L["BarNameComboPoints"] },
+			{ key = "energyBar",    label = L["BarNameEnergyBar"] },
 			{ key = "manaBar",      label = L["BarNameManaBar"] },
 			{ key = "rageBar",      label = L["BarNameRageBar"] },
 		},
@@ -2718,11 +2718,11 @@ local function GuardianConstructIndicatorColorsPanel(parent)
 			{ key = "borderOvercap", label = L["DruidIndicatorOvercap"],                     tooltip = L["DruidGuardianIndicatorBorderOvercapTooltip"],   colorLabel = L["DruidGuardianIndicatorBorderOvercapColor"] },
 		},
 		barTargetDefs = {
-			{ key = "rageBar",      label = L["BarNameRageBar"] },
 			{ key = "comboPoints",  label = L["BarNameComboPoints"] },
-			{ key = "manaBar",      label = L["BarNameManaBar"] },
 			{ key = "energyBar",    label = L["BarNameEnergyBar"] },
 			{ key = "ironfurBar",   label = L["BarNameIronfur"] },
+			{ key = "manaBar",      label = L["BarNameManaBar"] },
+			{ key = "rageBar",      label = L["BarNameRageBar"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Druid_Guardian",
 		endOfConfigs = {
@@ -3219,9 +3219,9 @@ local function RestorationConstructIndicatorColorsPanel(parent)
 			{ key = "clearcasting",      label = L["DruidRestorationCheckboxClearcasting"],       tooltip = L["DruidRestorationIndicatorClearcastingTooltip"],        colorLabel = L["DruidRestorationIndicatorClearcastingColor"] },
 		},
 		barTargetDefs = {
-			{ key = "manaBar",      label = L["BarNameManaBar"] },
 			{ key = "comboPoints",  label = L["BarNameComboPoints"] },
 			{ key = "energyBar",    label = L["BarNameEnergyBar"] },
+			{ key = "manaBar",      label = L["BarNameManaBar"] },
 			{ key = "rageBar",      label = L["BarNameRageBar"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Druid_Restoration",

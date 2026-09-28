@@ -578,16 +578,18 @@ do
 		manaBar = true,
 		customBars = { "mana" },
 		barTextAnchorFrames = {
-			{ label = L["ManaBar"], frame = "ManaBar" },
+			mana = { { label = L["ManaBar"], frame = "ManaBar" } },
 		},
 	})
 	SpecDescriptor:Declare("shaman_enhancement", {
 		manaBar = true,
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["Maelstrom1"], frame = "ComboPoint_1" }, { label = L["Maelstrom2"], frame = "ComboPoint_2" }, { label = L["Maelstrom3"], frame = "ComboPoint_3" }, { label = L["Maelstrom4"], frame = "ComboPoint_4" },
-			{ label = L["Maelstrom5"], frame = "ComboPoint_5" }, { label = L["Maelstrom6"], frame = "ComboPoint_6" }, { label = L["Maelstrom7"], frame = "ComboPoint_7" }, { label = L["Maelstrom8"], frame = "ComboPoint_8" },
-			{ label = L["Maelstrom9"], frame = "ComboPoint_9" }, { label = L["Maelstrom10"], frame = "ComboPoint_10" },
+			secondary = {
+				{ label = L["Maelstrom1"], frame = "ComboPoint_1" }, { label = L["Maelstrom2"], frame = "ComboPoint_2" }, { label = L["Maelstrom3"], frame = "ComboPoint_3" }, { label = L["Maelstrom4"], frame = "ComboPoint_4" },
+				{ label = L["Maelstrom5"], frame = "ComboPoint_5" }, { label = L["Maelstrom6"], frame = "ComboPoint_6" }, { label = L["Maelstrom7"], frame = "ComboPoint_7" }, { label = L["Maelstrom8"], frame = "ComboPoint_8" },
+				{ label = L["Maelstrom9"], frame = "ComboPoint_9" }, { label = L["Maelstrom10"], frame = "ComboPoint_10" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("shaman_restoration", {

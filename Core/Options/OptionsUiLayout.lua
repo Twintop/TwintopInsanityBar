@@ -492,7 +492,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 		DualWriteAnchorToLegacy(spec.bar)
 		-- Defer UI updates to avoid taint from secure menu callback context
 		C_Timer.After(0, function()
-			primaryAnchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
+			primaryAnchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue, classId, specId))
 			-- Update UI controls if anchor type changed (screen <-> bar)
 			if transitioned then
 				controls.horizontal:SetValue(a.xOffset)
@@ -521,14 +521,14 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	---@param rootDescription table The root menu description to add radio items to
 	local function PrimaryAnchorToGenerator(dropdown, rootDescription)
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
-		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets("primary", spec, nil, specBarKeys)
+		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets("primary", spec, nil, specBarKeys, classId, specId)
 		for _, barKey in ipairs(targets) do
-			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey), PrimaryAnchorToIsSelected, PrimaryAnchorToSetSelected, barKey)
+			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId), PrimaryAnchorToIsSelected, PrimaryAnchorToSetSelected, barKey)
 		end
 	end
 	primaryAnchorToDropdown:SetupMenu(PrimaryAnchorToGenerator)
 	primaryAnchorToDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
-	primaryAnchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(primaryAnchor.barKey))
+	primaryAnchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(primaryAnchor.barKey, classId, specId))
 
 	-- Match Width checkbox
 	controls.checkBoxes.primaryMatchWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_barMatchWidth", parent, "ChatConfigCheckButtonTemplate")
@@ -1062,7 +1062,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 		DualWriteAnchorToLegacy(spec[settingKey])
 		-- Defer UI updates to avoid taint from secure menu callback context
 		C_Timer.After(0, function()
-			anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
+			anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue, classId, specId))
 			-- Update UI controls if anchor type changed (screen <-> bar)
 			if transitioned then
 				controls[settingKey .. "Horizontal"]:SetValue(a.xOffset)
@@ -1094,14 +1094,14 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	local function AnchorToGenerator(dropdown, rootDescription)
 		-- Build list of valid targets
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
-		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, spec, nil, specBarKeys)
+		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, spec, nil, specBarKeys, classId, specId)
 		for _, barKey in ipairs(targets) do
-			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey), AnchorToIsSelected, AnchorToSetSelected, barKey)
+			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId), AnchorToIsSelected, AnchorToSetSelected, barKey)
 		end
 	end
 	anchorToDropdown:SetupMenu(AnchorToGenerator)
 	anchorToDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
-	anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey))
+	anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey, classId, specId))
 
 	-- Match Width checkbox
 	controls.checkBoxes[settingKey .. "MatchWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. settingKey .. "MatchWidth", parent, "ChatConfigCheckButtonTemplate")
@@ -1705,7 +1705,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 		DualWriteAnchorToLegacy(barSettings)
 		-- Defer UI updates to avoid taint from secure menu callback context
 		C_Timer.After(0, function()
-			anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue))
+			anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(newValue, classId, specId))
 			-- Update UI controls if anchor type changed (screen <-> bar)
 			if transitioned then
 				controls[barTypeDef.key .. "XPos"]:SetValue(a.xOffset)
@@ -1739,14 +1739,14 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	---@param rootDescription table The root menu description to add radio items to
 	local function AnchorToGenerator(dropdown, rootDescription)
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
-		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, spec, nil, specBarKeys)
+		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, spec, nil, specBarKeys, classId, specId)
 		for _, barKey in ipairs(targets) do
-			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey), AnchorToIsSelected, AnchorToSetSelected, barKey)
+			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId), AnchorToIsSelected, AnchorToSetSelected, barKey)
 		end
 	end
 	anchorToDropdown:SetupMenu(AnchorToGenerator)
 	anchorToDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
-	anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey))
+	anchorToDropdown:SetDefaultText(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey, classId, specId))
 
 	-- Match Width checkbox
 	controls[barTypeDef.key .. "MatchWidth"] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_MatchWidth", parent, "ChatConfigCheckButtonTemplate")

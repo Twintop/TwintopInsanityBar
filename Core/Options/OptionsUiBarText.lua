@@ -394,81 +394,84 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	barTextRelativeToFrame.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(barTextOptionsFrame, L["BoundToBar"], oUi.xCoord, yCoord)
 	barTextRelativeToFrame.label.font:SetFontObject(GameFontNormal)
 
-	-- "Bound to" anchor frames: the primary bar, the spec's own extra frames (declared through its
-	-- descriptor's barTextAnchorFrames, e.g. combo point nodes or a class bar), the health bar and the
-	-- screen. The Global panel offers a generic five-node secondary bar instead of spec frames.
+	-- Grouped by bar key so a bar's container, nodes, and icon stay together.
 	local relativeToFrame = {}
-	relativeToFrame[L["MainResourceBar"]] = "Resource"
-	relativeToFrame[L["HealthBar"]] = "HealthBar"
-	relativeToFrame[L["Screen"]] = "UIParent"
-	local relativeToFrameList = { L["MainResourceBar"] }
+	local anchorGroups = {}
+	---@param barKey string
+	---@param label string
+	---@param frame string
+	local function AddAnchorFrame(barKey, label, frame)
+		if relativeToFrame[label] ~= nil then
+			return
+		end
+		relativeToFrame[label] = frame
+		if anchorGroups[barKey] == nil then
+			anchorGroups[barKey] = { barKey = barKey, labels = {} }
+		end
+		table.insert(anchorGroups[barKey].labels, label)
+	end
+
+	local primaryLabel = TRB.Functions.Bar:GetSpecResourceBarName("primary", classId, specId) or L["MainResourceBar"]
+	AddAnchorFrame("screen", L["Screen"], "UIParent")
+	AddAnchorFrame("primary", primaryLabel, "Resource")
+	-- Containers go in first so each leads its bar's nodes.
+	for _, containerAnchor in ipairs(TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)) do
+		AddAnchorFrame(containerAnchor.barGroupKey, containerAnchor.label, containerAnchor.id)
+	end
 	local anchorFrames
 	if classId == nil then -- Global Bar Text
-		anchorFrames = {}
+		anchorFrames = { secondary = {} }
 		for i = 1, 5 do
-			anchorFrames[i] = { label = L["ComboPoint" .. i], frame = "ComboPoint_" .. i }
+			anchorFrames.secondary[i] = { label = L["ComboPoint" .. i], frame = "ComboPoint_" .. i }
 		end
 	else
 		local descriptor = TRB.Functions.Character:GetSpecDescriptor(classId, specId)
-		anchorFrames = descriptor and descriptor.barTextAnchorFrames or nil
+		anchorFrames = descriptor and descriptor.barTextAnchorFrames or {}
 	end
-	for _, entry in ipairs(anchorFrames or {}) do
-		if relativeToFrame[entry.label] == nil then
-			relativeToFrame[entry.label] = entry.frame
-			relativeToFrameList[#relativeToFrameList + 1] = entry.label
+	for barKey, entries in pairs(anchorFrames) do
+		for _, entry in ipairs(entries) do
+			AddAnchorFrame(barKey, entry.label, entry.frame)
 		end
 	end
-	relativeToFrameList[#relativeToFrameList + 1] = L["HealthBar"]
-	relativeToFrameList[#relativeToFrameList + 1] = L["Screen"]
+	AddAnchorFrame("health", L["HealthBar"], "HealthBar")
+	AddAnchorFrame("castbar", L["CastBar"], "CastBar")
+	AddAnchorFrame("castbar", L["CastBarIcon"], "CastBarIcon")
+	AddAnchorFrame("targetCastbar", L["ResourceTargetCastbar"], "TargetCastBar")
+	AddAnchorFrame("targetCastbar", L["ResourceTargetCastbarIcon"], "TargetCastBarIcon")
+	AddAnchorFrame("focusCastbar", L["ResourceFocusCastbar"], "FocusCastBar")
+	AddAnchorFrame("focusCastbar", L["ResourceFocusCastbarIcon"], "FocusCastBarIcon")
 
-	-- Castbar is an all-spec bar not covered by the per-class/spec chain above; add it as a bar text
-	-- anchor target for every spec (and the global bar text panel) here, just before Screen.
-	relativeToFrame[L["CastBar"]] = "CastBar"
-	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["CastBar"])
-	relativeToFrame[L["CastBarIcon"]] = "CastBarIcon"
-	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["CastBarIcon"])
-	relativeToFrame[L["ResourceTargetCastbar"]] = "TargetCastBar"
-	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourceTargetCastbar"])
-	relativeToFrame[L["ResourceTargetCastbarIcon"]] = "TargetCastBarIcon"
-	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourceTargetCastbarIcon"])
-	relativeToFrame[L["ResourceFocusCastbar"]] = "FocusCastBar"
-	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourceFocusCastbar"])
-	relativeToFrame[L["ResourceFocusCastbarIcon"]] = "FocusCastBarIcon"
-	table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), L["ResourceFocusCastbarIcon"])
-
-	-- Other Bars are all-spec too, so their frames are bar text anchor targets everywhere. GetOtherBarKeys
-	-- scopes the list, so the Hunter-only Feign Death bar is only offered to Hunter specs. The label is
-	-- the definition's already-localized displayName, never a key looked up from a variable.
+	-- GetOtherBarKeys scopes the list, so a class-scoped bar like Feign Death only reaches its own class.
 	local otherBarsRegistry = TRB.Classes.BarTypeRegistry:GetInstance()
 	for _, otherBarKey in ipairs(otherBarsRegistry:GetOtherBarKeys(classId)) do
 		local otherBarDef = otherBarsRegistry:Get(otherBarKey)
 		if otherBarDef ~= nil then
-			local anchorKey = otherBarKey:gsub("^%l", string.upper) .. "Bar"
-			relativeToFrame[otherBarDef.displayName] = anchorKey
-			table.insert(relativeToFrameList, math.max(#relativeToFrameList, 1), otherBarDef.displayName)
+			AddAnchorFrame(otherBarKey, otherBarDef.displayName, otherBarKey:gsub("^%l", string.upper) .. "Bar")
 		end
 	end
 
-	local containerAnchorOptions = TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
-	if #containerAnchorOptions > 0 then
-		for _, containerAnchor in ipairs(containerAnchorOptions) do
-			local insertIndex = math.max(#relativeToFrameList, 1)
-			if #relativeToFrameList >= 2 then
-				insertIndex = #relativeToFrameList - 1
-			end
-
-			if containerAnchor.insertBeforeLabel ~= nil then
-				for i, label in ipairs(relativeToFrameList) do
-					if label == containerAnchor.insertBeforeLabel then
-						insertIndex = i
-						break
-					end
-				end
-			end
-
-			relativeToFrame[containerAnchor.label] = containerAnchor.id
-			table.insert(relativeToFrameList, insertIndex, containerAnchor.label)
+	-- A group sorts by its first label; the labels within it keep the order they were added in.
+	local sortedAnchorGroups = {}
+	for _, group in pairs(anchorGroups) do
+		sortedAnchorGroups[#sortedAnchorGroups + 1] = group
+	end
+	TRB.Functions.Bar:SortBarTargets(sortedAnchorGroups, function(group)
+		return group.barKey, group.labels[1]
+	end)
+	local relativeToFrameList = {}
+	local relativeToFrameLabels = {}
+	for _, group in ipairs(sortedAnchorGroups) do
+		for _, label in ipairs(group.labels) do
+			relativeToFrameList[#relativeToFrameList + 1] = label
+			relativeToFrameLabels[relativeToFrame[label]] = label
 		end
+	end
+
+	---An entry's anchor label, looked up from its frame so a renamed bar shows its current name.
+	---@param position table
+	---@return string
+	local function GetRelativeToFrameLabel(position)
+		return relativeToFrameLabels[position.relativeToFrame] or position.relativeToFrameName
 	end
 
 	local function RelativeToFrameIsSelected(value)
@@ -497,7 +500,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	end
 
 	local function RelativeToFrameGenerator(dropdown, rootDescription)
-		for k, v in pairs(relativeToFrameList) do
+		for _, v in ipairs(relativeToFrameList) do
 			rootDescription:CreateRadio(v, RelativeToFrameIsSelected, RelativeToFrameSetSelected, relativeToFrame[v])
 		end
 		rootDescription:SetScrollMode(400)
@@ -863,7 +866,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 							color = nameColor,
 						},
 						{
-							value = displayText.barText[i].position.relativeToFrameName,
+							value = GetRelativeToFrameLabel(displayText.barText[i].position),
 						},
 						{
 							value = displayText.barText[i].text,
@@ -934,7 +937,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 				relativeTo = "LEFT",
 				relativeToName = L["PositionLeft"],
 				relativeToFrame = "Resource",
-				relativeToFrameName = L["MainResourceBar"]
+				relativeToFrameName = primaryLabel
 			}
 		}
 	end
@@ -967,7 +970,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		barTextRelativeTo:SetupMenu(RelativeToGenerator)
 		barTextFontFace:SetupMenu(FontFaceGenerator)
 		barTextFontJustifyHorizontal:SetupMenu(FontJustifyHorizontalGenerator)
-		barTextRelativeToFrame:SetDefaultText(workingBarText.position.relativeToFrameName)
+		barTextRelativeToFrame:SetDefaultText(GetRelativeToFrameLabel(workingBarText.position))
 		barTextRelativeTo:SetDefaultText(workingBarText.position.relativeToName)
 		barTextFontFace:SetDefaultText(workingBarText.fontFaceName)
 		barTextFontJustifyHorizontal:SetDefaultText(workingBarText.fontJustifyHorizontalName)

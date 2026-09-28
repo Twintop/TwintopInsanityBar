@@ -411,7 +411,7 @@ function TRB.Forever.Templates.Classes:DefineClass(className, specDeclarations)
 			for i = 1, archetype.secondary.maxNodes do
 				anchors[i] = { label = L["ComboPoint" .. i], frame = "ComboPoint_" .. i }
 			end
-			descriptor.barTextAnchorFrames = anchors
+			descriptor.barTextAnchorFrames = { secondary = anchors }
 			TRB.Functions.AudioCues:Register(entry.compositeKey, { counters = { self:ComboPointAudioCueSource() } })
 		end
 		TRB.Classes.SpecDescriptor:Declare(entry.compositeKey, descriptor)

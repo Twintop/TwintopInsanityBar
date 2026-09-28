@@ -469,25 +469,34 @@ do
 		customBars = { "boneShield", "coagulatingBlood" },
 		empowerCastbar = true,
 		barTextAnchorFrames = {
-			{ label = L["Rune1"], frame = "ComboPoint_1" }, { label = L["Rune2"], frame = "ComboPoint_2" }, { label = L["Rune3"], frame = "ComboPoint_3" }, { label = L["Rune4"], frame = "ComboPoint_4" },
-			{ label = L["Rune5"], frame = "ComboPoint_5" }, { label = L["Rune6"], frame = "ComboPoint_6" }, { label = L["BoneShield1"], frame = "BoneShield_1" }, { label = L["BoneShield2"], frame = "BoneShield_2" },
-			{ label = L["BoneShield3"], frame = "BoneShield_3" }, { label = L["BoneShield4"], frame = "BoneShield_4" }, { label = L["BoneShield5"], frame = "BoneShield_5" }, { label = L["BoneShield6"], frame = "BoneShield_6" },
-			{ label = L["BoneShield7"], frame = "BoneShield_7" }, { label = L["BoneShield8"], frame = "BoneShield_8" }, { label = L["BoneShield9"], frame = "BoneShield_9" }, { label = L["BoneShield10"], frame = "BoneShield_10" },
-			{ label = L["BoneShield11"], frame = "BoneShield_11" }, { label = L["BoneShield12"], frame = "BoneShield_12" }, { label = L["CoagulatingBloodBar"], frame = "CoagulatingBloodBar" },
+			secondary = {
+				{ label = L["Rune1"], frame = "ComboPoint_1" }, { label = L["Rune2"], frame = "ComboPoint_2" }, { label = L["Rune3"], frame = "ComboPoint_3" }, { label = L["Rune4"], frame = "ComboPoint_4" },
+				{ label = L["Rune5"], frame = "ComboPoint_5" }, { label = L["Rune6"], frame = "ComboPoint_6" },
+			},
+			boneShield = {
+				{ label = L["BoneShield1"], frame = "BoneShield_1" }, { label = L["BoneShield2"], frame = "BoneShield_2" }, { label = L["BoneShield3"], frame = "BoneShield_3" }, { label = L["BoneShield4"], frame = "BoneShield_4" },
+				{ label = L["BoneShield5"], frame = "BoneShield_5" }, { label = L["BoneShield6"], frame = "BoneShield_6" }, { label = L["BoneShield7"], frame = "BoneShield_7" }, { label = L["BoneShield8"], frame = "BoneShield_8" },
+				{ label = L["BoneShield9"], frame = "BoneShield_9" }, { label = L["BoneShield10"], frame = "BoneShield_10" }, { label = L["BoneShield11"], frame = "BoneShield_11" }, { label = L["BoneShield12"], frame = "BoneShield_12" },
+			},
+			coagulatingBlood = { { label = L["CoagulatingBloodBar"], frame = "CoagulatingBloodBar" } },
 		},
 	})
 	SpecDescriptor:Declare("deathknight_frost", {
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["Rune1"], frame = "ComboPoint_1" }, { label = L["Rune2"], frame = "ComboPoint_2" }, { label = L["Rune3"], frame = "ComboPoint_3" }, { label = L["Rune4"], frame = "ComboPoint_4" },
-			{ label = L["Rune5"], frame = "ComboPoint_5" }, { label = L["Rune6"], frame = "ComboPoint_6" },
+			secondary = {
+				{ label = L["Rune1"], frame = "ComboPoint_1" }, { label = L["Rune2"], frame = "ComboPoint_2" }, { label = L["Rune3"], frame = "ComboPoint_3" }, { label = L["Rune4"], frame = "ComboPoint_4" },
+				{ label = L["Rune5"], frame = "ComboPoint_5" }, { label = L["Rune6"], frame = "ComboPoint_6" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("deathknight_unholy", {
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["Rune1"], frame = "ComboPoint_1" }, { label = L["Rune2"], frame = "ComboPoint_2" }, { label = L["Rune3"], frame = "ComboPoint_3" }, { label = L["Rune4"], frame = "ComboPoint_4" },
-			{ label = L["Rune5"], frame = "ComboPoint_5" }, { label = L["Rune6"], frame = "ComboPoint_6" },
+			secondary = {
+				{ label = L["Rune1"], frame = "ComboPoint_1" }, { label = L["Rune2"], frame = "ComboPoint_2" }, { label = L["Rune3"], frame = "ComboPoint_3" }, { label = L["Rune4"], frame = "ComboPoint_4" },
+				{ label = L["Rune5"], frame = "ComboPoint_5" }, { label = L["Rune6"], frame = "ComboPoint_6" },
+			},
 		},
 	})
 end

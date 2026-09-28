@@ -1124,23 +1124,23 @@ function TRB.Functions.Threshold:BarTargetUsesSecretValue(barTarget, classId, sp
 	return false
 end
 
----Resolves the display name for a custom-threshold bound-bar target. Unlike the generic
----bar anchoring UI (which intentionally says "Primary Resource Bar"), custom thresholds show
----the actual resource (e.g. "Insanity", "Soul Shards", "Health"). Registry bars already carry
----a meaningful displayName, so only primary/secondary/health are special-cased.
+---Resolves the display name for a custom-threshold bound-bar target: "Insanity Bar" for the primary and
+---secondary bars, the resource alone ("Angelic Feather", "Health") for the rest.
 ---@param classId integer?
 ---@param specId integer?
 ---@param barKey string
 ---@return string
 local function GetCustomThresholdBarTargetName(classId, specId, barKey)
 	local Character = TRB.Functions.Character
-	-- Prefer the bar group's declared resourceType (primary/secondary/health/utility/custom
-	-- all declare it in GetSpecConfiguration). This gives the resource-accurate name, e.g.
-	-- Priest's "utility" bar resolves to "Angelic Feather" rather than the generic registry
-	-- display name "Utility".
+	-- The declared resourceType beats the registry name, e.g. Priest's "utility" is "Angelic Feather", not "Utility".
 	local config = Character:GetSpecBarGroupConfig(classId, specId)
-	local barConfig = config and config[barKey]
-	local name = barConfig and Character:GetResourceTypeName(barConfig.resourceType)
+	local resourceType = config and config[barKey] and config[barKey].resourceType
+	local name
+	if barKey == "primary" or barKey == "secondary" then
+		name = TRB.Functions.Bar:GetResourceBarName(resourceType)
+	else
+		name = Character:GetResourceTypeName(resourceType)
+	end
 	if name ~= nil then
 		return name
 	end
@@ -1216,11 +1216,22 @@ function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId,
 		end
 	end
 
+	local config = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
+	local sortKeys = {}
+	---@param target table
+	---@param sortBarKey string
+	---@param groupName string
+	local function AddTarget(target, sortBarKey, groupName)
+		table.insert(targets, target)
+		sortKeys[target] = { barKey = sortBarKey, name = groupName }
+	end
+
 	for _, barKey in ipairs(keys) do
 		local barTypeDef = GetBarTypeDefinition(barKey)
 		-- Bars that opted out entirely (secret max, so a line cannot be positioned) are never offered.
 		local supportsCustom = barTypeDef == nil or barTypeDef.hasCustomThresholds ~= false
 		if barKey ~= "screen" and not suppressed[barKey] and supportsCustom then
+			local barName = GetCustomThresholdBarTargetName(classId, specId, barKey)
 			if barTypeDef ~= nil and barTypeDef.isAmalgamation and barTypeDef.nodeColors ~= nil then
 				-- Amalgamation bars (Holy Words, Defensives) expose one sub-target per node
 				-- type (e.g. "Holy Word: Serenity") instead of a single bar-wide target.
@@ -1233,37 +1244,52 @@ function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId,
 				for _, nodeKey in ipairs(orderedKeys) do
 					local nodeConfig = defByKey[nodeKey]
 					if nodeConfig ~= nil then
-						table.insert(targets, {
+						AddTarget({
 							key = barKey .. ":" .. nodeKey,
 							label = nodeConfig.colorLabel or nodeConfig.displayName or nodeKey,
 							decimals = nodeConfig.thresholdDecimals or 0,
-						})
+						}, barKey, barName)
 					end
 				end
 			else
 				local subTargets = GetBarContextSubTargets(classId, specId, barKey, settings)
 				if subTargets ~= nil then
 					-- Context-switched bars (e.g. Devourer secondary) expose one sub-target per context.
+					local isResourceBar = barKey == "primary" or barKey == "secondary"
+					local isFormSwitched = config[barKey].subTargetsRequireFormSwitching == true
 					for _, sub in ipairs(subTargets) do
-						table.insert(targets, {
+						local label = isResourceBar and TRB.Functions.Bar:GetResourceBarName(sub.resourceType)
+							or (sub.resourceType and TRB.Functions.Character:GetResourceTypeName(sub.resourceType))
+							or sub.label or sub.key
+						local target = {
 							key = barKey .. ":" .. sub.key,
-							label = (sub.resourceType and TRB.Functions.Character:GetResourceTypeName(sub.resourceType)) or sub.label or sub.key,
+							label = label,
 							decimals = sub.decimals or 0,
 							isPercent = sub.scale == "percent",
-						})
+						}
+						-- A form's resource is the bar in that form only, so it sorts with the spec bars by its own name.
+						if isFormSwitched then
+							AddTarget(target, sub.key, label)
+						else
+							AddTarget(target, barKey, barName)
+						end
 					end
 				else
-					table.insert(targets, {
+					AddTarget({
 						key = barKey,
-						label = GetCustomThresholdBarTargetName(classId, specId, barKey),
+						label = barName,
 						decimals = GetCustomThresholdTargetDecimals(classId, specId, barKey),
 						isPercent = IsPercentScaleTarget(classId, specId, barKey, barTypeDef),
-					})
+					}, barKey, barName)
 				end
 			end
 		end
 	end
 
+	TRB.Functions.Bar:SortBarTargets(targets, function(target)
+		local sortKey = sortKeys[target]
+		return sortKey.barKey, sortKey.name
+	end)
 	return targets
 end
 

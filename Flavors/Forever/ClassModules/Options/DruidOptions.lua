@@ -392,9 +392,9 @@ local indicatorColorsPanel = withSpec(function(parent, specSettings, controls)
 		gradientDefs = gradientDefs,
 		barTargetDefs = {
 			{ key = "resourceBar", label = L["BarNameManaBar"] },
-			{ key = "rageBar", label = L["BarNameRageBar"] },
-			{ key = "energyBar", label = L["BarNameEnergyBar"] },
 			{ key = "comboPointsBar", label = L["BarNameComboPoints"] },
+			{ key = "energyBar", label = L["BarNameEnergyBar"] },
+			{ key = "rageBar", label = L["BarNameRageBar"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_" .. namePrefix,
 	})

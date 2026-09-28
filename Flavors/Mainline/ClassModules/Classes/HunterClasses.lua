@@ -715,7 +715,9 @@ do
 	SpecDescriptor:Declare("hunter_survival", {
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
-			{ label = L["TipOfTheSpear1"], frame = "ComboPoint_1" }, { label = L["TipOfTheSpear2"], frame = "ComboPoint_2" }, { label = L["TipOfTheSpear3"], frame = "ComboPoint_3" },
+			secondary = {
+				{ label = L["TipOfTheSpear1"], frame = "ComboPoint_1" }, { label = L["TipOfTheSpear2"], frame = "ComboPoint_2" }, { label = L["TipOfTheSpear3"], frame = "ComboPoint_3" },
+			},
 		},
 	})
 end

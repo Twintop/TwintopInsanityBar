@@ -12,21 +12,6 @@ TRB.Options.Priest.Shadow = {}
 
 local SHADOW_MAX_INSANITY = TRB.Data.maxResource.priest.shadow.insanity
 
-local function GetPriestUtilityBarTypeDefinition()
-	local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
-	if utilityBarDef == nil then
-		return nil
-	end
-
-	local priestUtilityBarDef = {
-		displayName = L["ResourceAngelicFeather"]
-	}
-	setmetatable(priestUtilityBarDef, { __index = utilityBarDef })
-
-	return priestUtilityBarDef
-end
-
-
 ---Loads only the Angelic Feather charge bar text entries (shared across all Priest specs)
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
 local function LoadAngelicFeatherBarTextSettings()
@@ -419,7 +404,7 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true, nil, {
-			GetPriestUtilityBarTypeDefinition(),
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("utility"),
 		}),
 	}
 
@@ -998,7 +983,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 		textures = TRB.Functions.Settings:DefaultTextures(false, nil, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords"),
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver"),
-			GetPriestUtilityBarTypeDefinition(),
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("utility"),
 		}),
 	}
 
@@ -1308,7 +1293,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(false, true, {
-			GetPriestUtilityBarTypeDefinition(),
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("utility"),
 		}),
 	}
 
@@ -1617,7 +1602,7 @@ local function DisciplineConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.priest.discipline
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord, true, L["PriestDisciplinePowerWords"], false, { GetPriestUtilityBarTypeDefinition() })
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord, true, L["PriestDisciplinePowerWords"], false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("utility") })
 end
 
 local function DisciplineConstructBarVisibilityPanel(parent)
@@ -1632,7 +1617,7 @@ local function DisciplineConstructBarVisibilityPanel(parent)
 	local spec = TRB.Data.settings.priest.discipline
 
 	local customBars = {}
-	local utilityBarDef = GetPriestUtilityBarTypeDefinition()
+	local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
 	if utilityBarDef then
 		table.insert(customBars, utilityBarDef)
 	end
@@ -1716,7 +1701,7 @@ local function PriestConstructAngelicFeatherBarPanel(spec, controls, classId, sp
 
 		local yCoord = 5
 
-		local utilityBarDef = GetPriestUtilityBarTypeDefinition()
+		local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
 		if utilityBarDef then
 			yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, utilityBarDef)
 		end
@@ -1967,7 +1952,7 @@ local function HolyConstructBarTexturesPanel(parent)
 
 	local spec = TRB.Data.settings.priest.holy
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords"), TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver"), GetPriestUtilityBarTypeDefinition() })
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false, nil, false, { TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords"), TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver"), TRB.Classes.BarTypeRegistry:GetInstance():Get("utility") })
 end
 
 local function HolyConstructBarVisibilityPanel(parent)
@@ -1990,7 +1975,7 @@ local function HolyConstructBarVisibilityPanel(parent)
 	if lightweaverBarDef then
 		table.insert(customBars, lightweaverBarDef)
 	end
-	local utilityBarDef = GetPriestUtilityBarTypeDefinition()
+	local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
 	if utilityBarDef then
 		table.insert(customBars, utilityBarDef)
 	end
@@ -2464,7 +2449,7 @@ local function ShadowConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.priest_shadow
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true, { GetPriestUtilityBarTypeDefinition() })
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false, nil, true, { TRB.Classes.BarTypeRegistry:GetInstance():Get("utility") })
 end
 
 local function ShadowConstructBarVisibilityPanel(parent)
@@ -2479,7 +2464,7 @@ local function ShadowConstructBarVisibilityPanel(parent)
 	local yCoord = 5
 
 	local customBars = {}
-	local utilityBarDef = GetPriestUtilityBarTypeDefinition()
+	local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
 	if utilityBarDef then
 		table.insert(customBars, utilityBarDef)
 	end
