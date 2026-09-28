@@ -147,14 +147,16 @@ jobs:
           FLAVOR="${{ needs.stage.outputs.flavor }}"
           FLAVOR_DIR="$(find Flavors -mindepth 1 -maxdepth 1 -type d -iname "$FLAVOR" | head -n 1)"
           if [ -z "$FLAVOR_DIR" ]; then echo "Unknown flavor '$FLAVOR'"; exit 1; fi
-          # Newest "# <version>" section of the flavor news, then the newest Core section retitled.
+          # The newest flavor "# <version>" title, then the newest Core section retitled, then the rest of that flavor section.
           # In-addon "(#NNN)" links become GitHub issue links and "(tab:...)" links become plain text,
           # since neither resolves outside the News window.
-          newest() { tr -d '\r' < "$1" | awk '/^# /{n++} n==2||/^\]====\]/{exit} n==1 && !/^---$/{print}'; }
-          { newest "$FLAVOR_DIR/News.lua"; echo; newest Core/News.lua | sed -E '1s/^# .*/## Core Changes/'; } \
+          # Blank lines are only printed ahead of content, so each section's trailing blanks drop and sections join with one.
+          newest() { tr -d '\r' < "$1" | awk '/^# /{n++} n==2||/^\]====\]/{exit} n==1 && !/^---$/{ if ($0 ~ /^[[:space:]]*$/) { blank++ } else { for (; blank > 0; blank--) print ""; print } }'; }
+          FLAVOR_NEWS="$(newest "$FLAVOR_DIR/News.lua")"
+          if [ -z "$FLAVOR_NEWS" ]; then echo "No release section found in $FLAVOR_DIR/News.lua"; exit 1; fi
+          { echo "$FLAVOR_NEWS" | head -n 1; echo; newest Core/News.lua | sed -E '1s/^# .*/## Core Changes/'; echo; echo "$FLAVOR_NEWS" | tail -n +2 | sed '/./,$!d'; } \
             | sed -E 's#\]\(\#([0-9]+)\)#](https://github.com/Twintop/TwintopInsanityBar/issues/\1)#g' \
             | sed -E 's#\[([^]]+)\]\(tab:[A-Za-z]+\)#\1#g' > CHANGELOG.md
-          if [ ! -s CHANGELOG.md ]; then echo "No release section found in $FLAVOR_DIR/News.lua"; exit 1; fi
           echo "flavorDir=$FLAVOR_DIR" >> "$GITHUB_OUTPUT"
           cat CHANGELOG.md
 
@@ -173,8 +175,8 @@ jobs:
           else
             ARGS="-m .pkgmeta-$FLAVOR -g $FLAVOR"
           fi
-          # The tag already carries the flavor prefix, so name the zip from it alone.
-          ARGS="$ARGS -n \"{package-name}-{project-version}\""
+          # The tag already carries the flavor prefix. The ":label" half is required; without it the packager reuses the zip name as the upload label.
+          ARGS="$ARGS -n \"{package-name}-{project-version}:{project-version}\""
           # A manual run is a build-only dry run.
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then ARGS="$ARGS -d"; fi
           echo "args=$ARGS" >> "$GITHUB_OUTPUT"
