@@ -210,6 +210,36 @@ local function DevastationLoadDefaultBarTextSettings(classic)
 
 	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("dragonrageTime", "dragonrage", classic, "CENTER", "CENTER"))
 
+	table.insert(textSettings, {
+		useDefaultFontColor = false,
+		useDefaultFontOutline = false,
+		useDefaultFontShadow = false,
+		fontOutline = "OUTLINE",
+		fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		useDefaultFontFace = false,
+		useDefaultFontSize = false,
+		enabled = true,
+		name = L["PositionMiddle"],
+		guid = TRB.Functions.String:Guid(),
+		constrainToParent = false,
+		maxWidthPercent = 100,
+		text = "{$dragonrageTime}[$dragonrageTime]",
+		fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+		fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+		fontJustifyHorizontal = "CENTER",
+		fontJustifyHorizontalName = L["PositionCenter"],
+		fontSize = 14,
+		color = { color = "FFFFFFFF" },
+		position = {
+			xPos = 0,
+			yPos = 0,
+			relativeTo = "CENTER",
+			relativeToName = L["PositionCenter"],
+			relativeToFrame = "DragonrageBar",
+			relativeToFrameName = L["DragonrageBar"],
+		},
+	})
+
 	local extraTextSettings = EvokerLoadExtraBarTextSettings(classic)
 
 	for x = 1, #extraTextSettings do
@@ -244,6 +274,7 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			dragonrage = { neverShow = true, alwaysShow = false, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		endOf = {
 			dragonrage = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
@@ -251,6 +282,9 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			dragonrage = TRB.Functions.Settings:DefaultDragonrageBarDimensions(classic),
+		},
 		colors = {
 			text = {
 				current = {
@@ -320,6 +354,9 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				},
 				sameColor=false
 			},
+			bars = {
+				dragonrage = TRB.Functions.Settings:DefaultDragonrageBarColors(),
+			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			threshold = {
 				under = {
@@ -353,6 +390,7 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
 							essences = { bar = false, border = false, background = false },
+							dragonrageBar = { bar = false, border = false, background = false },
 						},
 					},
 					dragonrage = {
@@ -363,6 +401,7 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
 							essences = { bar = false, border = false, background = false },
+							dragonrageBar = { bar = false, border = false, background = false },
 						},
 					},
 					essenceBurst = {
@@ -373,6 +412,7 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							manaBar = { bar = false, border = true, background = false },
 							essences = { bar = false, border = false, background = false },
+							dragonrageBar = { bar = false, border = false, background = false },
 						},
 					},
 				},
@@ -394,6 +434,7 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 					yOffset = -1,
 				},
 			},
+			migrations = { dragonrageBarTextSeeded = true },
 			barText = {}
 		},
 		audio = {
@@ -404,7 +445,9 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(true),
+		textures = TRB.Functions.Settings:DefaultTextures(true, nil, {
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("dragonrage"),
+		}),
 	}
 
 	if includeBarText then
@@ -856,6 +899,7 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 					yOffset = -1,
 				},
 			},
+			migrations = { ebonMightBarTextSeeded = true },
 			barText = {}
 		},
 		audio = {
@@ -1101,6 +1145,27 @@ local function DevastationConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 13, 1, yCoord)
 end
 
+local function DevastationConstructDragonrageBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.evoker.devastation
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.evoker_devastation
+	local yCoord = 5
+
+	local dragonrageBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("dragonrage")
+	if dragonrageBarDef then
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 13, 1, yCoord, dragonrageBarDef, L["ResourceMana"])
+	end
+
+	yCoord = yCoord - 90
+	if dragonrageBarDef then
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 13, 1, yCoord, dragonrageBarDef)
+	end
+end
+
 local function DevastationConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -1121,6 +1186,7 @@ local function DevastationConstructIndicatorColorsPanel(parent)
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },
 			{ key = "essences", label = L["BarNameEssences"] },
+			{ key = "dragonrageBar", label = L["BarNameDragonrage"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Evoker_Devastation",
 		endOfConfigs = {
@@ -1148,7 +1214,12 @@ local function DevastationConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 13, 1, yCoord, true, L["ResourceEssence"])
+	local dragonrageBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("dragonrage")
+	local customBars = {}
+	if dragonrageBarDef then
+		table.insert(customBars, dragonrageBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 13, 1, yCoord, true, L["ResourceEssence"], false, customBars)
 end
 
 local function DevastationConstructBarVisibilityPanel(parent)
@@ -1161,7 +1232,13 @@ local function DevastationConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.evoker_devastation
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceEssence"], true)
+	local dragonrageBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("dragonrage")
+	local customBars = {}
+	if dragonrageBarDef then
+		table.insert(customBars, dragonrageBarDef)
+	end
+
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], "notFull", true, L["ResourceEssence"], true, nil, customBars)
 end
 
 local function DevastationConstructFontAndTextPanel(parent)
@@ -1264,6 +1341,7 @@ local function DevastationConstructOptionsPanel(cache)
 	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
 		{ key = "manaBar", label = L["TabMana"], width = oUi.tabWidth.small, constructor = DevastationConstructManaBarPanel, visibilityKey = "primary" },
 		{ key = "essenceBar", label = L["TabEssence"], width = oUi.tabWidth.small, constructor = DevastationConstructEssenceBarPanel, visibilityKey = "secondary" },
+		{ key = "dragonrageBar", label = L["TabDragonrage"], width = oUi.tabWidth.medium, constructor = DevastationConstructDragonrageBarPanel, visibilityKey = "dragonrage" },
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = DevastationConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = DevastationConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("evoker", "devastation", controls),

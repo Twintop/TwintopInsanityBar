@@ -290,6 +290,16 @@ function TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(specId)
         false -- not primary
     )
 
+    -- Dragonrage bar (1 node, Devastation only)
+    if specId == 1 then
+        barGroups.dragonrage = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Dragonrage",
+            1,
+            false -- not primary
+        )
+    end
+
     -- Ebon Might bar (1 node, Augmentation only)
     if specId == 3 then
         barGroups.ebonMight = TRB.Classes.BarGroup:New(
@@ -412,10 +422,11 @@ do
 	SpecDescriptor:Declare("evoker_devastation", {
 		manaBar = true,
 		secondary = { exportable = true },
+		customBars = { "dragonrage" },
 		empowerCastbar = true,
 		barTextAnchorFrames = {
 			{ label = L["Essence1"], frame = "ComboPoint_1" }, { label = L["Essence2"], frame = "ComboPoint_2" }, { label = L["Essence3"], frame = "ComboPoint_3" }, { label = L["Essence4"], frame = "ComboPoint_4" },
-			{ label = L["Essence5"], frame = "ComboPoint_5" }, { label = L["Essence6"], frame = "ComboPoint_6" },
+			{ label = L["Essence5"], frame = "ComboPoint_5" }, { label = L["Essence6"], frame = "ComboPoint_6" }, { label = L["DragonrageBar"], frame = "DragonrageBar" },
 		},
 	})
 	SpecDescriptor:Declare("evoker_preservation", {

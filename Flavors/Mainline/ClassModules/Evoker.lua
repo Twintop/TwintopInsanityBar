@@ -812,6 +812,8 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			if spellId == spells.dragonrage.id then
 				snapshots[spells.dragonrage.id].buff:InitializeCustom(spells.dragonrage.duration, currentTime)
 				snapshots[spells.dragonrage.id].buff.attributes["empoweredCasts"] = 0
+				-- Animosity rebases the buff's duration on each extension; the bar scales against the whole buff.
+				snapshots[spells.dragonrage.id].buff.attributes["startTime"] = currentTime
 			end
 		elseif event == "UNIT_SPELLCAST_EMPOWER_STOP" then
 			if snapshots[spells.dragonrage.id].buff.isActive and talents:IsTalentActive(spells.animosity) then
@@ -1087,6 +1089,7 @@ local scratch = {
 	conditionMap1 = {},
 	manaBarColors1 = {},
 	essenceColors1 = {},
+	dragonrageColors1 = {},
 	barColorMap1 = {},
 	conditionMap2 = {},
 	manaBarColors2 = {},
@@ -1145,15 +1148,19 @@ local function UpdateResourceBar()
 			local barBorderColor = specSettings.colors.bar.border.color
 			local barBackgroundColor = specSettings.colors.bar.background.color
 
+			local dragonrageBarColors = specSettings.colors.bars and specSettings.colors.bars.dragonrage
+
 			-- Indicator color system
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 
 			-- Precompute dragonrage end timing threshold
-			local dragonrageActive = snapshots[spells.dragonrage.id].buff.isActive
+			local dragonrageBuff = snapshots[spells.dragonrage.id].buff
+			local dragonrageActive = dragonrageBuff.isActive
+			local dragonrageTimeLeft = 0
 			local dragonrageEndMet = false
 			if dragonrageActive then
-				local dragonrageTimeLeft = snapshots[spells.dragonrage.id].buff:GetRemainingTime(currentTime)
+				dragonrageTimeLeft = dragonrageBuff:GetRemainingTime(currentTime)
 				local timeThreshold = 0
 				if specSettings.endOf.dragonrage.mode == "gcd" then
 					local gcd = Character:GetCurrentGCDTime()
@@ -1178,10 +1185,16 @@ local function UpdateResourceBar()
 			manaBarColors.background = barBackgroundColor
 			local essenceColors = scratch.essenceColors1
 			wipe(essenceColors)
+			local dragonrageColors = scratch.dragonrageColors1
+			wipe(dragonrageColors)
+			dragonrageColors.bar = dragonrageBarColors and dragonrageBarColors.bar
+			dragonrageColors.border = dragonrageBarColors and dragonrageBarColors.border.color
+			dragonrageColors.background = dragonrageBarColors and dragonrageBarColors.background.color
 			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors
 			barColorMap.essences = essenceColors
+			barColorMap.dragonrageBar = dragonrageColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1205,6 +1218,30 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
+			end
+
+			-- Update Dragonrage bar
+			if specSettings.displayBar.dragonrage ~= nil and not specSettings.displayBar.dragonrage.neverShow then
+				refreshText = true
+				local dragonrageNode = barGroups and barGroups.dragonrage and barGroups.dragonrage:GetNode(1)
+				if dragonrageNode then
+					if dragonrageBarColors then
+						TRB.Functions.Color:ApplyFillColor(dragonrageNode, dragonrageColors.bar)
+						dragonrageNode:SetBorderColor(dragonrageColors.border)
+						dragonrageNode:SetBackgroundColorFromString(dragonrageColors.background)
+						Bar:ApplyNodeIndicators(dragonrageNode, "dragonrageBar")
+					end
+
+					-- Read after GetRemainingTime above: an expired buff resets and drops its start time.
+					local dragonrageStartTime = dragonrageBuff.attributes["startTime"]
+					if dragonrageBuff.isActive and dragonrageStartTime ~= nil then
+						dragonrageNode:SetMinMax(0, dragonrageBuff.endTime - dragonrageStartTime)
+						dragonrageNode:SetValue(dragonrageTimeLeft)
+					else
+						dragonrageNode:SetMinMax(0, 1)
+						dragonrageNode:SetValue(0)
+					end
+				end
 			end
 
 			refreshText = UpdateEssenceOuter(specSettings, specCacheSettings, essenceColors) or refreshText
@@ -1596,11 +1633,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
+		local hasDragonrage = TRB.Data.character.specId == 1
 		local hasEbonMight = TRB.Data.character.specId == 3
 
 		local entries = {
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, true, TRB.Data.character.maxResource2, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.dragonrage, sharedSettings and sharedSettings.displayBar.dragonrage, hasDragonrage, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.ebonMight, sharedSettings and sharedSettings.displayBar.ebonMight, hasEbonMight, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
 		}
@@ -1735,6 +1774,15 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			if healthNode then
 				local isVisible = barGroups.health.isVisible and healthNode.isVisible
 				return healthNode:GetFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	elseif relativeToFrame == "DragonrageBar" then
+		if barGroups and barGroups.dragonrage then
+			local dragonrageNode = barGroups.dragonrage:GetNode(1)
+			if dragonrageNode then
+				local isVisible = barGroups.dragonrage.isVisible and dragonrageNode.isVisible
+				return dragonrageNode:GetFrame(), true, isVisible
 			end
 		end
 		return nil, true, false

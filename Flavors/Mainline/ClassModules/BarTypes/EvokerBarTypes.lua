@@ -27,6 +27,25 @@ function TRB.Functions.Settings:DefaultEbonMightBarColors()
 	return colors
 end
 
+---Gets default Dragonrage bar dimensions
+---@param classic boolean?
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultDragonrageBarDimensions(classic)
+	local dims = self:DefaultCustomBarDimensions(classic)
+	dims.relativeTo = "BOTTOM"
+	dims.relativeToName = L["PositionBelowMiddle"]
+	dims.anchor.barKey = "health"
+	dims.anchor.anchorPoint = "BOTTOM"
+	dims.anchor.attachPoint = "TOP"
+	return dims
+end
+
+---Gets default Dragonrage bar colors (orange bar, dark orange border)
+---@return table
+function TRB.Functions.Settings:DefaultDragonrageBarColors()
+	return self:DefaultCustomBarColors("FFFF6B00", "FFAA4700", "66000000")
+end
+
 do
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 
@@ -52,6 +71,30 @@ do
 		end,
 		defaultColorsFunc = function()
 			return TRB.Functions.Settings:DefaultEbonMightBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Dragonrage bar (Devastation Evoker)
+	registry:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "dragonrage",
+		displayName = L["ResourceEvokerDragonrage"],
+		isMultiNode = false,
+		maxNodes = 1,
+		hasSameColor = false,
+		minMaxMode = "custom",
+		hasSpacing = false,
+		hasThresholds = false,
+		hasCustomThresholds = false,
+		colorCurveType = nil, -- Simple bar color
+		visibilityKey = "dragonrage",
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultDragonrageBarDimensions(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultDragonrageBarColors()
 		end,
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()

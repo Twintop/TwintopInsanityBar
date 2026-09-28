@@ -1949,6 +1949,9 @@ function TRB.Flavor.PortForwardSettings(settings)
 						end
 
 						if specSettings.displayText and specSettings.displayText.barText then
+							-- Flagged so a deleted entry stays deleted; the scan covers saves seeded before the flag.
+							specSettings.displayText.migrations = specSettings.displayText.migrations or {}
+							local migrations = specSettings.displayText.migrations
 							local hasBoneShieldText = false
 							for _, entry in ipairs(specSettings.displayText.barText) do
 								if entry.position and entry.position.relativeToFrame == "Container::boneShield" then
@@ -1956,7 +1959,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 									break
 								end
 							end
-							if not hasBoneShieldText then
+							if not hasBoneShieldText and not migrations.boneShieldBarTextSeeded then
 								table.insert(specSettings.displayText.barText, {
 									useDefaultFontColor = true,
 									useDefaultFontOutline = true,
@@ -1987,6 +1990,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 									enabled = true,
 								})
 							end
+							migrations.boneShieldBarTextSeeded = true
 
 							-- barText is an array, so the defaults merge cannot backfill it
 							local hasCoagulatingBloodText = false
@@ -1996,7 +2000,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 									break
 								end
 							end
-							if not hasCoagulatingBloodText then
+							if not hasCoagulatingBloodText and not migrations.coagulatingBloodBarTextSeeded then
 								table.insert(specSettings.displayText.barText, {
 									useDefaultFontColor = true,
 									useDefaultFontOutline = true,
@@ -2028,6 +2032,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 									enabled = true,
 								})
 							end
+							migrations.coagulatingBloodBarTextSeeded = true
 						end
 					end
 
@@ -2067,6 +2072,8 @@ function TRB.Flavor.PortForwardSettings(settings)
 						-- the Icicles bar's visibility rather than landing on a bare default.
 
 						if specSettings.displayText and specSettings.displayText.barText then
+							-- Flagged so a deleted entry stays deleted; the scan covers saves seeded before the flag.
+							specSettings.displayText.migrations = specSettings.displayText.migrations or {}
 							local hasShatterText = false
 							for _, entry in ipairs(specSettings.displayText.barText) do
 								if entry.position and entry.position.relativeToFrame == "Container::shatter" then
@@ -2074,7 +2081,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 									break
 								end
 							end
-							if not hasShatterText then
+							if not hasShatterText and not specSettings.displayText.migrations.shatterBarTextSeeded then
 								table.insert(specSettings.displayText.barText, {
 									useDefaultFontColor = true,
 									useDefaultFontOutline = true,
@@ -2106,6 +2113,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 									enabled = true,
 								})
 							end
+							specSettings.displayText.migrations.shatterBarTextSeeded = true
 						end
 					end
 
@@ -2214,6 +2222,8 @@ function TRB.Flavor.PortForwardSettings(settings)
 						end
 
 						if specSettings.displayText and specSettings.displayText.barText then
+							-- Flagged so a deleted entry stays deleted; the scan covers saves seeded before the flag.
+							specSettings.displayText.migrations = specSettings.displayText.migrations or {}
 							local hasEbonMightBarText = false
 							for _, entry in ipairs(specSettings.displayText.barText) do
 								if entry.position and entry.position.relativeToFrame == "EbonMightBar" then
@@ -2221,7 +2231,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 									break
 								end
 							end
-							if not hasEbonMightBarText then
+							if not hasEbonMightBarText and not specSettings.displayText.migrations.ebonMightBarTextSeeded then
 								table.insert(specSettings.displayText.barText, {
 									useDefaultFontColor = false,
 									useDefaultFontOutline = false,
@@ -2252,6 +2262,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 									},
 								})
 							end
+							specSettings.displayText.migrations.ebonMightBarTextSeeded = true
 						end
 					end
 
@@ -8293,6 +8304,8 @@ function TRB.Flavor.PortForwardSettings(settings)
 ---@diagnostic disable-next-line: need-check-nil
 	local fury = TwintopInsanityBarSettings.warrior and TwintopInsanityBarSettings.warrior.fury
 	if fury ~= nil and fury.displayText ~= nil and fury.displayText.barText ~= nil then
+		-- Flagged so a deleted entry stays deleted; the scan covers saves seeded before the flag.
+		fury.displayText.migrations = fury.displayText.migrations or {}
 		local hasEnrageBarText = false
 		for _, entry in ipairs(fury.displayText.barText) do
 			if entry.position and entry.position.relativeToFrame == "EnrageBar" then
@@ -8300,7 +8313,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 				break
 			end
 		end
-		if not hasEnrageBarText then
+		if not hasEnrageBarText and not fury.displayText.migrations.enrageBarTextSeeded then
 			table.insert(fury.displayText.barText, {
 				useDefaultFontColor = false,
 				useDefaultFontOutline = false,
@@ -8331,6 +8344,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 				},
 			})
 		end
+		fury.displayText.migrations.enrageBarTextSeeded = true
 	end
 
 	-- The two-stack proc indicators have to be inserted into a saved nodeOrder here; the index-based
@@ -8412,7 +8426,8 @@ function TRB.Flavor.PortForwardSettings(settings)
 			and TwintopInsanityBarSettings.druid.guardian or nil
 		local displayText = guardian ~= nil and guardian.displayText or nil
 		if displayText ~= nil and type(displayText.barText) == "table" then
-			-- Scan rather than flag: a fresh profile already carries this entry from the defaults.
+			-- Flagged so a deleted entry stays deleted; the scan covers saves seeded before the flag.
+			displayText.migrations = displayText.migrations or {}
 			local hasIronfurBarText = false
 			for _, entry in ipairs(displayText.barText) do
 				if entry.position and entry.position.relativeToFrame == "IronfurBar" then
@@ -8420,7 +8435,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 					break
 				end
 			end
-			if not hasIronfurBarText then
+			if not hasIronfurBarText and not displayText.migrations.ironfurBarTextSeeded then
 				table.insert(displayText.barText, {
 					useDefaultFontColor = false,
 					useDefaultFontOutline = false,
@@ -8451,6 +8466,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 					},
 				})
 			end
+			displayText.migrations.ironfurBarTextSeeded = true
 		end
 	end
 
@@ -8475,8 +8491,11 @@ function TRB.Flavor.PortForwardSettings(settings)
 	end
 
 	-- Arcane Salvo bar text: barText is an array, so the defaults merge cannot backfill it.
-	local arcaneSettings = TRB.Data.settings and TRB.Data.settings.mage and TRB.Data.settings.mage.arcane
+---@diagnostic disable-next-line: need-check-nil
+	local arcaneSettings = TwintopInsanityBarSettings.mage and TwintopInsanityBarSettings.mage.arcane
 	if arcaneSettings ~= nil and arcaneSettings.displayText ~= nil and arcaneSettings.displayText.barText ~= nil then
+		-- Flagged so a deleted entry stays deleted; the scan covers saves seeded before the flag.
+		arcaneSettings.displayText.migrations = arcaneSettings.displayText.migrations or {}
 		local hasArcaneSalvoText = false
 		for _, entry in ipairs(arcaneSettings.displayText.barText) do
 			if entry.position and entry.position.relativeToFrame == "ArcaneSalvoBar" then
@@ -8484,7 +8503,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 				break
 			end
 		end
-		if not hasArcaneSalvoText then
+		if not hasArcaneSalvoText and not arcaneSettings.displayText.migrations.arcaneSalvoBarTextSeeded then
 			table.insert(arcaneSettings.displayText.barText, {
 				useDefaultFontColor = true,
 				useDefaultFontOutline = true,
@@ -8516,6 +8535,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 				enabled = true,
 			})
 		end
+		arcaneSettings.displayText.migrations.arcaneSalvoBarTextSeeded = true
 	end
 
 	-- A new bar inherits the visibility of the bar it sits beside, so an existing save does not get the
@@ -8556,6 +8576,56 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 		InheritBarVisibility("mage", "arcane", "secondary", "arcaneSalvo")
 		InheritBarVisibility("druid", "guardian", "primary", "ironfur")
+	end
+
+	-- Devastation Evoker: seed the Dragonrage bar's default bar text; barText is an array the defaults merge cannot backfill.
+	do
+		local devastation = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.evoker ~= nil
+			and TwintopInsanityBarSettings.evoker.devastation or nil
+		local displayText = devastation ~= nil and devastation.displayText or nil
+		if displayText ~= nil and type(displayText.barText) == "table" then
+			-- Flagged so a deleted entry stays deleted; the scan covers saves seeded before the flag.
+			displayText.migrations = displayText.migrations or {}
+			local hasDragonrageBarText = false
+			for _, entry in ipairs(displayText.barText) do
+				if entry.position and entry.position.relativeToFrame == "DragonrageBar" then
+					hasDragonrageBarText = true
+					break
+				end
+			end
+			if not hasDragonrageBarText and not displayText.migrations.dragonrageBarTextSeeded then
+				table.insert(displayText.barText, {
+					useDefaultFontColor = false,
+					useDefaultFontOutline = false,
+					useDefaultFontShadow = false,
+					fontOutline = "OUTLINE",
+					fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					enabled = true,
+					name = L["PositionMiddle"],
+					guid = TRB.Functions.String:Guid(),
+					constrainToParent = false,
+					maxWidthPercent = 100,
+					text = "{$dragonrageTime}[$dragonrageTime]",
+					fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+					fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+					fontJustifyHorizontal = "CENTER",
+					fontJustifyHorizontalName = L["PositionCenter"],
+					fontSize = 14,
+					color = { color = "FFFFFFFF" },
+					position = {
+						xPos = 0,
+						yPos = 0,
+						relativeTo = "CENTER",
+						relativeToName = L["PositionCenter"],
+						relativeToFrame = "DragonrageBar",
+						relativeToFrameName = L["DragonrageBar"],
+					},
+				})
+			end
+			displayText.migrations.dragonrageBarTextSeeded = true
+		end
 	end
 
 end

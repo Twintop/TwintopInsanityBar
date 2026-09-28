@@ -1251,6 +1251,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 					yOffset = -1,
 				},
 			},
+			migrations = { ironfurBarTextSeeded = true },
 			barText = {}
 		},
 		audio = {

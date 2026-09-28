@@ -561,6 +561,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 					yOffset = -1,
 				},
 			},
+			migrations = { enrageBarTextSeeded = true },
 			barText = {}
 		},
 		audio = {
@@ -572,6 +573,8 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 
 	if includeBarText then
 		settings.displayText.barText = FuryLoadDefaultBarTextSettings(classic)
+		-- OnSettingsLoaded seeds Whirlwind after the defaults merge, so only a list built with it may claim it.
+		settings.displayText.migrations.whirlwindBarTextSeeded = true
 	end
 
 	return settings

@@ -224,6 +224,7 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 					yOffset = -1,
 				},
 			},
+			migrations = { arcaneSalvoBarTextSeeded = true },
 			barText = {}
 		},
 		audio = {
@@ -593,6 +594,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					yOffset = -1,
 				},
 			},
+			migrations = { shatterBarTextSeeded = true },
 			barText = {}
 		},
 		audio = {

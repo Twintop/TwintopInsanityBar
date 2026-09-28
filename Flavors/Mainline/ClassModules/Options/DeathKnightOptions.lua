@@ -477,6 +477,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 					yOffset = -1,
 				},
 			},
+			migrations = { boneShieldBarTextSeeded = true, coagulatingBloodBarTextSeeded = true },
 			barText = {}
 		},
 		audio = {

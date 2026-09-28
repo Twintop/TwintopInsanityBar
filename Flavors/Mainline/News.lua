@@ -8,6 +8,25 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.0.13-release (2026-09-28)
+## General
+
+- Fix deleted default bar text for the Bone Shield, Coagulating Blood, Shatter, Arcane Salvo, Ebon Might, Enrage, and Ironfur bars being added back on the next login.
+
+## Evoker
+### Devastation
+
+- Add a new Dragonrage bar, tracking the time remaining on Dragonrage, with a default `$dragonrageTime` bar text. Set to Never Show by default; enable it under Bar Visibility.
+- The bar's scale is Dragonrage's full duration, including time added by Animosity.
+- Joins the bar text Relative to Frame and Color Indicator target lists. Does not offer custom thresholds.
+
+## Warrior
+### Fury
+
+- Fix the Whirlwind charge bar text being added a second time on a new install.
+
+---
+
 # 12.1.0.12-release (2026-09-20)
 ## General
 
