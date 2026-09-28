@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 1.60.1.1-release (2026-09-21)
+# 1.60.1.1-release (2026-09-28)
 ## General
 
 - Combo Points for Rogues and Druids are enabled.
