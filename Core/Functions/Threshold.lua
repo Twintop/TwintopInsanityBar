@@ -2850,3 +2850,118 @@ function TRB.Functions.Threshold:Show(key, threshold)
 		threshold:Show()
 	end
 end
+
+-- One record serves every line, so a tick allocates nothing.
+local spellThresholdLine = TRB.Classes.ThresholdLine:New()
+
+---Draws one bar's built-in spell threshold lines. Spell data drives the generic rules; spells flagged
+---`isSnowflake`, and rules that span a spec, go through the snowflakes the spec passes in.
+---@param bar TRB.Classes.ThresholdBar
+---@param state TRB.Classes.ThresholdState
+---@param data TRB.Classes.ThresholdData
+---@param snowflakes TRB.Classes.ThresholdSnowflakes?
+function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowflakes)
+	local frameLevels = TRB.Data.constants.frameLevels
+	local settings = state.settings
+	local dictionary = settings.thresholds.thresholdDictionary
+	local overColor = settings.colors.threshold.over.color
+	local snapshotData = state.snapshotData
+	local snapshots = snapshotData.snapshots
+	local talents = data.talents
+	local node = bar.node
+	local nodeFrame = node:GetFrame()
+	local thresholds = node:GetThresholds()
+	local handlers = snowflakes and snowflakes.spells
+	local before = snowflakes and snowflakes.before
+	local after = snowflakes and snowflakes.after
+	local line = spellThresholdLine
+	line.bar = bar
+	line.state = state
+	line.data = data
+
+	local index = 0
+	for _, spell in ipairs(data.thresholdSpells) do
+		if spell.barTarget == bar.barTarget then
+			index = index + 1
+			local frame = thresholds[index]
+			if frame == nil then
+				frame = CreateFrame("Frame", nil, nodeFrame)
+				self:ResetThresholdLine(frame, settings, true, bar.barSettings)
+				node:RegisterThreshold(frame)
+				thresholds = node:GetThresholds()
+			end
+
+			if bar.resourceType ~= nil and spell.primaryResourceType ~= bar.resourceType then
+				-- Hidden in place rather than skipped, so a form swap never hands this frame to another spell.
+				frame:Hide()
+			else
+				local dictEntry = dictionary[spell.settingKey]
+				-- Cost and usability can reach the WoW API, so only a line that draws or has an audio cue reads them.
+				local isActive = dictEntry == nil or dictEntry.enabled == true
+					or (dictEntry.audio ~= nil and dictEntry.audio.enabled == true and dictEntry.audio.sound ~= nil)
+				line.spell = spell
+				line.frame = frame
+				line.pairOffset = (index - 1) * 3
+				line.dictEntry = dictEntry
+				line.snapshot = snapshots[spell.id]
+				line.resourceAmount = 0
+				line.isUsable = false
+				if isActive then
+					line.resourceAmount = spell:GetPrimaryResourceCost()
+					line.isUsable = spell:IsUsable()
+				end
+				line.show = true
+				line.color = overColor
+				line.frameLevel = frameLevels.thresholdOver
+
+				if before == nil or not before(line) then
+					local handler = spell.isSnowflake and handlers ~= nil and handlers[spell.settingKey] or nil
+					if spell.attributes.stealth and not state.isStealthed then
+						line:Hide()
+					elseif spell.attributes.stances ~= nil and not spell.attributes.stances[state.stance] then
+						line:Hide()
+					elseif spell.isTalent and not talents:IsTalentActive(spell) then
+						line:Hide()
+					elseif spell.isPvp and (not state.isPvp or not talents:IsTalentActive(spell)) then
+						line:Hide()
+					elseif data.requireKnown and not spell:IsKnown() then
+						line:Hide()
+					elseif handler ~= nil then
+						handler(line)
+					elseif line.resourceAmount == 0 then
+						line:Hide()
+					elseif spell.hasCooldown then
+						line:ColorByCooldown()
+					else
+						line:ColorByUsable()
+					end
+				end
+
+				if line.resourceAmount == nil or line.resourceAmount > bar.maxResource then
+					line:Hide()
+				end
+
+				if after ~= nil then
+					after(line)
+				end
+
+				local isDrawn = self:AdjustThresholdDisplay(spell, spell.settingKey, frame, line.show, line.frameLevel, line.pairOffset, line.color, line.snapshot, settings, dictEntry, bar.barSettings)
+				self:RepositionThreshold(settings, spell.settingKey, frame, line.show and isDrawn, nodeFrame, line.resourceAmount, bar.maxResource, nil, bar.barSettings)
+
+				-- The audio cue follows usability, not whether the line is drawn.
+				if spell.canHaveAudioCue == true and dictEntry ~= nil and dictEntry.audio ~= nil and dictEntry.audio.enabled and dictEntry.audio.sound then
+					local cues = snapshotData.audio.thresholdCues or {}
+					snapshotData.audio.thresholdCues = cues
+					if line.isUsable then
+						if not cues[spell.settingKey] then
+							cues[spell.settingKey] = true
+							PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					else
+						cues[spell.settingKey] = false
+					end
+				end
+			end
+		end
+	end
+end

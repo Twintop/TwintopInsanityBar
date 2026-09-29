@@ -292,6 +292,11 @@ local function DefineSpellsClass(classModule, spec)
 		specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues(values)
 	end
 
+	---@type TRB.Classes.ThresholdSnowflakes
+	spellsClass.thresholdSnowflakes = {
+		after = TRB.Classes.ThresholdLine.UnusableWithoutComboPoints,
+	}
+
 	classModule[spec.specPascal .. "Spells"] = spellsClass
 	spec.spellsClass = spellsClass
 end

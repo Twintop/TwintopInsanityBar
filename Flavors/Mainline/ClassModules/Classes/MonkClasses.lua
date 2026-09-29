@@ -537,6 +537,21 @@ function TRB.Classes.Monk.WindwalkerSpells.GetCastbarTickProfiles()
 	}
 end
 
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Monk.WindwalkerSpells.thresholdSnowflakes = {
+	spells = {
+		expelHarm = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+			if line.data.talents:IsTalentActive(spells.combatWisdom) then
+				line:Hide()
+			else
+				line:ColorByCooldown()
+			end
+		end,
+	},
+	after = TRB.Classes.ThresholdLine.UnusableWithoutComboPoints,
+}
+
 
 --[[
     BarGroups Factory for Monk

@@ -222,6 +222,14 @@ function TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles()
     }
 end
 
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Shaman.ElementalSpells.thresholdSnowflakes = {
+	spells = {
+		earthquake = TRB.Classes.ThresholdLine.ColorByUsable,
+		earthquakeTargeted = TRB.Classes.ThresholdLine.ColorByUsable,
+	},
+}
+
 
 ---@class TRB.Classes.Shaman.EnhancementSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public maelstromWeapon TRB.Classes.SpellBase

@@ -220,6 +220,49 @@ function TRB.Classes.Warrior.ArmsSpells.GetCastbarTickProfiles()
 	}
 end
 
+---@param line TRB.Classes.ThresholdLine
+local function ExecuteMinimum(line)
+	if line.isUsable then
+		line:Over()
+	else
+		line:Hide()
+	end
+end
+
+---Execute's maximum-cost line compares against secret Rage, so a curve colors it.
+---@param line TRB.Classes.ThresholdLine
+local function ExecuteMaximum(line)
+	if line.isUsable then
+		line:ApplyCostCurve(1, line.resourceAmount)
+	else
+		line:Hide()
+	end
+end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Warrior.ArmsSpells.thresholdSnowflakes = {
+	spells = {
+		executeMinimum = ExecuteMinimum,
+		executeMaximum = ExecuteMaximum,
+		whirlwind = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+			if line.data.talents:IsTalentActive(spells.cleave) then
+				line:Hide()
+			else
+				line:ColorByUsable()
+			end
+		end,
+		cleave = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+			if not line.data.talents:IsTalentActive(spells.cleave) then
+				line:Hide()
+			else
+				line:ColorByUsable()
+			end
+		end,
+	},
+}
+
 
 ---@class TRB.Classes.Warrior.FurySpells : TRB.Classes.Warrior.WarriorBaseSpells
 ---@field public improvedWhirlwind TRB.Classes.SpellBase
@@ -426,6 +469,47 @@ function TRB.Classes.Warrior.FurySpells.GetCastbarTickProfiles()
 	return {}
 end
 
+---@param line TRB.Classes.ThresholdLine
+---@return boolean
+local function HasImprovedExecute(line)
+	local spells = line.data.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+	return line.data.talents:IsTalentActive(spells.improvedExecute)
+end
+
+---@param line TRB.Classes.ThresholdLine
+local function FuryExecute(line)
+	if HasImprovedExecute(line) then
+		line:Hide()
+	else
+		line:ColorByUsable()
+	end
+end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Warrior.FurySpells.thresholdSnowflakes = {
+	spells = {
+		execute = FuryExecute,
+		executeMinimum = FuryExecute,
+		executeMaximum = function(line)
+			if HasImprovedExecute(line) then
+				line:Hide()
+			elseif line.isUsable then
+				line:ApplyCostCurve(1, line.resourceAmount)
+			else
+				line:Under()
+			end
+		end,
+		thunderClap = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+			if line.data.talents:IsTalentActive(spells.crashingThunder) then
+				line:Hide()
+			else
+				line:ColorByUsable()
+			end
+		end,
+	},
+}
+
 ---@class TRB.Classes.Warrior.ProtectionSpells : TRB.Classes.Warrior.WarriorBaseSpells
 ---@field public enduringDefenses TRB.Classes.SpellBase
 ---@field public shieldCharge TRB.Classes.SpellBase
@@ -611,6 +695,14 @@ function TRB.Classes.Warrior.ProtectionSpells.GetCastbarTickProfiles()
 		[436358] = { mode = "fixedCount", baseDuration = 2, tickCount = 4, skipTicks = { 3 } },
 	}
 end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Warrior.ProtectionSpells.thresholdSnowflakes = {
+	spells = {
+		executeMinimum = ExecuteMinimum,
+		executeMaximum = ExecuteMaximum,
+	},
+}
 
 
 --[[

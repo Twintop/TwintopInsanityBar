@@ -10,12 +10,15 @@ local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
-local frameLevels = TRB.Data.constants.frameLevels
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 
 local talents --[[@as TRB.Classes.Talents]]
+
+local thresholdBar = TRB.Classes.ThresholdBar:New()
+local thresholdState = TRB.Classes.ThresholdState:New()
+local thresholdData = TRB.Classes.ThresholdData:New()
 
 --- Lowest Rage value Shield Slam's tooltip has reported since the last gear/talent change.
 --- Acts as the floor/baseline; a Violent Outburst proc reads ~50% higher than this.
@@ -1357,8 +1360,6 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local primaryResourceFrame = primaryNode:GetFrame()
-
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.arms
 		local specCacheSettings = TRB.Data.specCache.warrior_arms.settings
@@ -1395,127 +1396,10 @@ local function UpdateResourceBar()
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				Bar:ApplyNodeIndicators(primaryNode, "rageBar")
 				
-				local pairOffset = 0
-				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
-					local thresholds = primaryNode:GetThresholds()
-					if thresholds[thresholdId] == nil then
-						local thresholdFrame = CreateFrame("Frame", nil, primaryResourceFrame)
-						Threshold:ResetThresholdLine(thresholdFrame, specCacheSettings, true)
-						primaryNode:RegisterThreshold(thresholdFrame)
-						thresholds = primaryNode:GetThresholds()
-					end
-					pairOffset = (thresholdId - 1) * 3
-					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
-					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
-					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
-					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
-						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
-					local resourceAmount, isUsable = 0, false
-					if thresholdActive then
-						resourceAmount = spell:GetPrimaryResourceCost()
-						isUsable = spell:IsUsable()
-					end
-					local showThreshold = true
-							---@type string?
-					local thresholdColor = specCacheSettings.colors.threshold.over.color
-					local frameLevel = frameLevels.thresholdOver
-					local snapshot = snapshots[spell.id]
-
-					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-						if spell.id == spells.executeMinimum.id then
-							if spell.settingKey == "executeMinimum" then
-								if isUsable then
-									thresholdColor = specCacheSettings.colors.threshold.over.color
-								else
-									showThreshold = false
-								end
-							elseif spell.settingKey == "executeMaximum" then
-								if isUsable then
-									-- Use ColorCurve to correctly evaluate max cost against secret Rage
-									local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
-									local thresholdCurve = Color:BuildThresholdCurve(
-										1,
-										resourceAmount,
-										curveUnderColor,
-										curveOverColor
-									)
-									local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
-									frameLevel = frameLevels.thresholdOver
-									local curveApplied = Threshold:ApplyThresholdCurveColor(
-										spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
-									)
-									if curveApplied then
-										thresholdColor = nil -- Skip normal color application
-									else
-										thresholdColor = curveUnderColor
-									end
-								else
-									showThreshold = false
-								end
-							end
-						elseif spell.id == spells.whirlwind.id then
-							if talents:IsTalentActive(spells.cleave) then
-								showThreshold = false
-							elseif isUsable then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-							else
-								thresholdColor = specCacheSettings.colors.threshold.under.color
-								frameLevel = frameLevels.thresholdUnder
-							end
-						elseif spell.id == spells.cleave.id then
-							if not talents:IsTalentActive(spells.cleave) then
-								showThreshold = false
-							elseif isUsable then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-							else
-								thresholdColor = specCacheSettings.colors.threshold.under.color
-								frameLevel = frameLevels.thresholdUnder
-							end
-						end
-					elseif resourceAmount == 0 then
-						showThreshold = false
-					elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-						showThreshold = false
-					elseif spell.hasCooldown then
-						if snapshots[spell.id].cooldown:IsUnusable() then
-							thresholdColor = specCacheSettings.colors.threshold.unusable.color
-							frameLevel = frameLevels.thresholdUnusable
-						elseif isUsable then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
-							thresholdColor = specCacheSettings.colors.threshold.under.color
-							frameLevel = frameLevels.thresholdUnder
-						end
-					else -- This is an active/available/normal spell threshold
-						if isUsable then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
-							thresholdColor = specCacheSettings.colors.threshold.under.color
-							frameLevel = frameLevels.thresholdUnder
-						end
-					end
-					
-					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
-						showThreshold = false
-					end
-
-					local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
-					local thresholdFrame = thresholds[thresholdId]
-					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
-					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
-					-- Per-threshold audio cue (independent of line visibility)
-					if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
-						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
-						if isUsable then
-							if not snapshotData.audio.thresholdCues[spell.settingKey] then
-								snapshotData.audio.thresholdCues[spell.settingKey] = true
-								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
-							end
-						else
-							snapshotData.audio.thresholdCues[spell.settingKey] = false
-						end
-					end
-				end
+				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
+				thresholdState:Refresh(specCacheSettings)
+				thresholdData:Refresh(talents)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Warrior.ArmsSpells.thresholdSnowflakes)
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1659,121 +1543,10 @@ local function UpdateResourceBar()
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				Bar:ApplyNodeIndicators(primaryNode, "rageBar")
 
-				local pairOffset = 0
-				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
-					local thresholds = primaryNode:GetThresholds()
-					if thresholds[thresholdId] == nil then
-						local thresholdFrame = CreateFrame("Frame", nil, primaryResourceFrame)
-						Threshold:ResetThresholdLine(thresholdFrame, specCacheSettings, true)
-						primaryNode:RegisterThreshold(thresholdFrame)
-						thresholds = primaryNode:GetThresholds()
-					end
-					pairOffset = (thresholdId - 1) * 3
-					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
-					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
-					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
-					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
-						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
-					local resourceAmount, isUsable = 0, false
-					if thresholdActive then
-						resourceAmount = spell:GetPrimaryResourceCost()
-						isUsable = spell:IsUsable()
-					end
-					local showThreshold = true
-					---@type string?
-					local thresholdColor = specCacheSettings.colors.threshold.over.color
-					local frameLevel = frameLevels.thresholdOver
-					local snapshot = snapshots[spell.id]
-					
-					if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-						if spell.id == spells.execute.id then
-							if talents:IsTalentActive(spells.improvedExecute) then
-								showThreshold = false
-							elseif spell.settingKey == "executeMaximum" then
-								if isUsable then
-									-- Use ColorCurve to correctly evaluate max cost against secret Rage
-									local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
-									local thresholdCurve = Color:BuildThresholdCurve(
-										1,
-										resourceAmount,
-										curveUnderColor,
-										curveOverColor
-									)
-									local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
-									frameLevel = frameLevels.thresholdOver
-									local curveApplied = Threshold:ApplyThresholdCurveColor(
-										spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
-									)
-									if curveApplied then
-										thresholdColor = nil -- Skip normal color application
-									else
-										thresholdColor = curveUnderColor
-									end
-								else
-									thresholdColor = specCacheSettings.colors.threshold.under.color
-									frameLevel = frameLevels.thresholdUnder
-								end
-							else
-								if isUsable then
-									thresholdColor = specCacheSettings.colors.threshold.over.color
-								else
-									thresholdColor = specCacheSettings.colors.threshold.under.color
-									frameLevel = frameLevels.thresholdUnder
-								end
-							end
-						elseif spell.id == spells.thunderClap.id then
-							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-								showThreshold = false
-							elseif talents:IsTalentActive(spells.crashingThunder) then
-								showThreshold = false
-							elseif isUsable then
-								thresholdColor = specCacheSettings.colors.threshold.over.color
-							else
-								thresholdColor = specCacheSettings.colors.threshold.under.color
-								frameLevel = frameLevels.thresholdUnder
-							end
-						end
-					elseif resourceAmount == 0 then
-						showThreshold = false
-					elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-						showThreshold = false
-					elseif spell.hasCooldown then
-						if isUsable then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
-							thresholdColor = specCacheSettings.colors.threshold.under.color
-							frameLevel = frameLevels.thresholdUnder
-						end
-					else -- This is an active/available/normal spell threshold
-						if isUsable then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
-							thresholdColor = specCacheSettings.colors.threshold.under.color
-							frameLevel = frameLevels.thresholdUnder
-						end
-					end
-					
-					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
-						showThreshold = false
-					end
-
-					local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
-					local thresholdFrame = thresholds[thresholdId]
-					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
-					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
-					-- Per-threshold audio cue (independent of line visibility)
-					if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
-						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
-						if isUsable then
-							if not snapshotData.audio.thresholdCues[spell.settingKey] then
-								snapshotData.audio.thresholdCues[spell.settingKey] = true
-								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
-							end
-						else
-							snapshotData.audio.thresholdCues[spell.settingKey] = false
-						end
-					end
-				end
+				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
+				thresholdState:Refresh(specCacheSettings)
+				thresholdData:Refresh(talents)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Warrior.FurySpells.thresholdSnowflakes)
 
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
@@ -1890,112 +1663,10 @@ local function UpdateResourceBar()
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				Bar:ApplyNodeIndicators(primaryNode, "rageBar")
 
-				local pairOffset = 0
-				for thresholdId, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
-					local thresholds = primaryNode:GetThresholds()
-					if thresholds[thresholdId] == nil then
-						local thresholdFrame = CreateFrame("Frame", nil, primaryResourceFrame)
-						Threshold:ResetThresholdLine(thresholdFrame, specCacheSettings, true)
-						primaryNode:RegisterThreshold(thresholdFrame)
-						thresholds = primaryNode:GetThresholds()
-					end
-					pairOffset = (thresholdId - 1) * 3
-					-- Nothing below reads these unless the line draws or its own audio cue fires, and both
-					-- calls can reach the WoW API. A missing dictionary entry stays active, as before.
-					local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
-					local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
-						or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
-					local resourceAmount, isUsable = 0, false
-					if thresholdActive then
-						resourceAmount = spell:GetPrimaryResourceCost()
-						isUsable = spell:IsUsable()
-					end
-					local showThreshold = true
-					---@type string?
-					local thresholdColor = specCacheSettings.colors.threshold.over.color
-					local frameLevel = frameLevels.thresholdOver
-					local snapshot = snapshots[spell.id]
-					if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-						showThreshold = false
-					elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
-						showThreshold = false
-					elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-						if spell.id == spells.executeMinimum.id then
-							if spell.settingKey == "executeMinimum" then
-								if isUsable then
-									thresholdColor = specCacheSettings.colors.threshold.over.color
-								else
-									showThreshold = false
-									thresholdColor = specCacheSettings.colors.threshold.under.color
-									frameLevel = frameLevels.thresholdUnder
-								end
-							elseif spell.settingKey == "executeMaximum" then
-								if isUsable then
-									-- Use ColorCurve to correctly evaluate max cost against secret Rage
-									local curveUnderColor, curveOverColor = Threshold:ResolveThresholdCurveColors(spell, specCacheSettings)
-									local thresholdCurve = Color:BuildThresholdCurve(
-										1,
-										resourceAmount,
-										curveUnderColor,
-										curveOverColor
-									)
-									local iconCurve = Color:BuildIconVertexColorCurve(1, resourceAmount)
-									frameLevel = frameLevels.thresholdOver
-									local curveApplied = Threshold:ApplyThresholdCurveColor(
-										spell, thresholds[thresholdId], thresholdCurve, TRB.Data.resource, specCacheSettings, iconCurve, frameLevel, pairOffset, isUsable
-									)
-									if curveApplied then
-										thresholdColor = nil -- Skip normal color application
-									else
-										thresholdColor = curveUnderColor
-									end
-								else
-									showThreshold = false
-								end
-							end
-						end
-					elseif resourceAmount == 0 then
-						showThreshold = false
-					elseif spell.hasCooldown then
-						if snapshots[spell.id].cooldown:IsUnusable() then
-							thresholdColor = specCacheSettings.colors.threshold.unusable.color
-							frameLevel = frameLevels.thresholdUnusable
-						elseif isUsable then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
-							thresholdColor = specCacheSettings.colors.threshold.under.color
-							frameLevel = frameLevels.thresholdUnder
-						end
-					else -- This is an active/available/normal spell threshold
-						if isUsable then
-							thresholdColor = specCacheSettings.colors.threshold.over.color
-						else
-							thresholdColor = specCacheSettings.colors.threshold.under.color
-							frameLevel = frameLevels.thresholdUnder
-						end
-					end
-					
-					if resourceAmount >= maxPrimaryBarResourceUnnormalized then
-						showThreshold = false
-					end
-
-					local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
-					local thresholdFrame = thresholds[thresholdId]
-					local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholdFrame, showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry)
-					Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholdFrame, showThreshold and isDrawn, primaryResourceFrame, resourceAmount, maxPrimaryBarResourceUnnormalized)
-					-- Per-threshold audio cue (independent of line visibility)
-					if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
-						snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
-						if isUsable then
-							if not snapshotData.audio.thresholdCues[spell.settingKey] then
-								snapshotData.audio.thresholdCues[spell.settingKey] = true
-								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
-							end
-						else
-							snapshotData.audio.thresholdCues[spell.settingKey] = false
-						end
-					end
-				end
+				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
+				thresholdState:Refresh(specCacheSettings)
+				thresholdData:Refresh(talents)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Warrior.ProtectionSpells.thresholdSnowflakes)
 				
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then

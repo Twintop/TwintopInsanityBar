@@ -189,6 +189,39 @@ function TRB.Classes.Hunter.BeastMasterySpells.GetCastbarTickProfiles()
 	return {}
 end
 
+---@param line TRB.Classes.ThresholdLine
+local function UsableOrHidden(line)
+	if line.snapshot ~= nil and line.snapshot.cooldown:IsUnusable() then
+		line:Unusable()
+	elseif line.isUsable then
+		line:Over()
+	else
+		line:Hide()
+	end
+end
+
+---Wailing Arrow only draws while Bestial Wrath or Trueshot is up and Wailing Arrow is off cooldown.
+---@param line TRB.Classes.ThresholdLine
+---@param buffSpell TRB.Classes.SpellBase
+local function WailingArrow(line, buffSpell)
+	if not line.state.snapshotData.snapshots[buffSpell.id].buff.isActive or (line.snapshot ~= nil and line.snapshot.cooldown:IsUnusable()) then
+		line:Hide()
+	else
+		line:ColorByUsable()
+	end
+end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Hunter.BeastMasterySpells.thresholdSnowflakes = {
+	spells = {
+		blackArrow = TRB.Classes.ThresholdLine.ColorByUsable,
+		killCommand = TRB.Classes.ThresholdLine.ColorByCooldown,
+		wailingArrow = function(line)
+			WailingArrow(line, (line.data.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]).bestialWrath)
+		end,
+	},
+}
+
 
 ---@class TRB.Classes.Hunter.MarksmanshipSpells : TRB.Classes.Hunter.HunterBaseSpells
 ---@field public steadyShot TRB.Classes.SpellBase
@@ -330,7 +363,7 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     })
 
     -- Sentinel
-    self.cantMissWontMiss = TRB.Classes.SpellThreshold:New({
+    self.cantMissWontMiss = TRB.Classes.SpellBase:New({
         id = 1253830,
         isTalent = true,
         duration = 2
@@ -408,6 +441,31 @@ function TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickModifiers()
 		},
 	}
 end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Hunter.MarksmanshipSpells.thresholdSnowflakes = {
+	spells = {
+		aimedShot = function(line)
+			if line.snapshot ~= nil and line.snapshot.cooldown:IsUnusable() then
+				line:Unusable()
+			else
+				line:Under()
+			end
+		end,
+		killShot = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+			if line.data.talents:IsTalentActive(spells.blackArrow) then
+				line:Hide()
+			else
+				UsableOrHidden(line)
+			end
+		end,
+		blackArrow = UsableOrHidden,
+		wailingArrow = function(line)
+			WailingArrow(line, (line.data.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]).trueshot)
+		end,
+	},
+}
 
 
 ---@class TRB.Classes.Hunter.SurvivalSpells : TRB.Classes.Hunter.HunterBaseSpells
@@ -516,7 +574,7 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
     })
 
     -- Sentinel
-    self.cantMissWontMiss = TRB.Classes.SpellThreshold:New({
+    self.cantMissWontMiss = TRB.Classes.SpellBase:New({
         id = 1253830,
         isTalent = true,
         duration = 2
@@ -576,6 +634,29 @@ function TRB.Classes.Hunter.SurvivalSpells.GetCastbarTickProfiles()
 		[212640] = { mode = "fixedCount", baseDuration = 6.0, tickCount = 6 },
 	}
 end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Hunter.SurvivalSpells.thresholdSnowflakes = {
+	spells = {
+		raptorStrike = function(line)
+			if line.state.snapshotData.attributes.raptorStrikeOverride then
+				line:Hide()
+			else
+				line:ColorByUsable()
+			end
+		end,
+		raptorSwipe = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			local talentData = line.data.talents
+			local talented = talentData:IsTalentActive(spells.raptorSwipeTalent1) or talentData:IsTalentActive(spells.raptorSwipeTalent2) or talentData:IsTalentActive(spells.raptorSwipeTalent3)
+			if not talented or not line.state.snapshotData.attributes.raptorStrikeOverride then
+				line:Hide()
+			else
+				line:ColorByUsable()
+			end
+		end,
+	},
+}
 
 
 --[[

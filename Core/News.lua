@@ -11,6 +11,8 @@ TRB.Details.coreNewsContent = [====[
 - Spec panels cover and badge sections using global settings, and each Enable for all specializations box shows how many specs use it.
 - Fix global threshold line colors and textures not always applying, and spec textures overwriting the global ones.
 - Rename Threshold Line Colors for DPS and Tanks to Threshold Line Colors, and fix the Brewmaster Energy bar's Base Colors header spacing.
+- Built-in threshold lines for every specialization share one renderer.
+- A threshold line whose cost equals the bar's maximum is now drawn.
 
 ---
 

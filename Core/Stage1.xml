@@ -23,6 +23,7 @@
 	<Script file="Classes\Snapshot.lua"/>
 	<Script file="Classes\Target.lua"/>
 	<Script file="Classes\Spell.lua"/>
+	<Script file="Classes\ThresholdLine.lua"/>
 	<Script file="Classes\Talent.lua"/>
 	<Script file="Classes\OverlaySlot.lua"/>
 	<Script file="Classes\Bar.lua"/>

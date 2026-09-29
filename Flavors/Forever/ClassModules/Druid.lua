@@ -13,7 +13,6 @@ local Character = TRB.Functions.Character
 local Threshold = TRB.Functions.Threshold
 
 local className, specName, compositeKey, specId, classId = "druid", "general", "druid_general", 1, 11
-local frameLevels = TRB.Data.constants.frameLevels
 
 TRB.Functions.Class = TRB.Functions.Class or {}
 
@@ -301,89 +300,9 @@ local function ActiveFormBarGradient(formBar, sharedColors, isStealthed)
 	return nil
 end
 
----Draws one bar's spell threshold lines, creating them on demand.
----@param barKey string
----@param node TRB.Classes.BarNode
----@param specCacheSettings table
----@param maxResource number
-local function UpdateBarThresholds(barKey, node, specCacheSettings, maxResource)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local barSettings = GetBarSettings(specCacheSettings, barKey)
-	local thresholds = node:GetThresholds()
-	local nodeFrame = node:GetFrame()
-	local isStealthed = IsStealthed()
-	local thresholdId = 0
-
-	for _, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
-		if spell.barTarget == barKey then
-			thresholdId = thresholdId + 1
-			if thresholds[thresholdId] == nil then
-				local thresholdFrame = CreateFrame("Frame", nil, nodeFrame)
-				Threshold:ResetThresholdLine(thresholdFrame, specCacheSettings, true, barSettings)
-				node:RegisterThreshold(thresholdFrame)
-				thresholds = node:GetThresholds()
-			end
-			local pairOffset = (thresholdId - 1) * 3
-			local thresholdSettings = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
-			local thresholdActive = thresholdSettings == nil or thresholdSettings.enabled == true
-				or (thresholdSettings.audio ~= nil and thresholdSettings.audio.enabled == true and thresholdSettings.audio.sound ~= nil)
-			local resourceAmount, isUsable = 0, false
-			if thresholdActive then
-				resourceAmount = spell:GetPrimaryResourceCost()
-				isUsable = spell:IsUsable()
-			end
-			local showThreshold = true
-			local thresholdColor = specCacheSettings.colors.threshold.over.color
-			local frameLevel = frameLevels.thresholdOver
-			local snapshot = snapshots[spell.id]
-
-			if spell.attributes.stealth and not isStealthed then
-				showThreshold = false
-			elseif resourceAmount == 0 then
-				showThreshold = false
-			elseif not spell:IsKnown() then
-				showThreshold = false
-			elseif spell.isTalent and not talents:IsTalentActive(spell) then
-				showThreshold = false
-			elseif spell.hasCooldown and snapshot ~= nil and snapshot.cooldown:IsUnusable() then
-				thresholdColor = specCacheSettings.colors.threshold.unusable.color
-				frameLevel = frameLevels.thresholdUnusable
-			elseif not isUsable then
-				thresholdColor = specCacheSettings.colors.threshold.under.color
-				frameLevel = frameLevels.thresholdUnder
-			end
-
-			if resourceAmount >= maxResource then
-				showThreshold = false
-			end
-
-			-- A finisher short only on Energy keeps the below color; with no combo points it can't be cast at all.
-			if spell:Is("TRB.Classes.SpellComboPointThreshold") and spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and (snapshotData.attributes.resource2 or 0) == 0 then
-				thresholdColor = specCacheSettings.colors.threshold.unusable.color
-				frameLevel = frameLevels.thresholdUnusable
-			end
-
-			local dictEntry = specCacheSettings.thresholds.thresholdDictionary[spell.settingKey]
-			if thresholds[thresholdId] then
-				local isDrawn = Threshold:AdjustThresholdDisplay(spell, spell.settingKey, thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specCacheSettings, dictEntry, barSettings)
-				Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[thresholdId], showThreshold and isDrawn, nodeFrame, resourceAmount, maxResource, nil, barSettings)
-			end
-			-- Per-threshold audio cue (independent of line visibility)
-			if spell.canHaveAudioCue == true and dictEntry and dictEntry.audio and dictEntry.audio.enabled and dictEntry.audio.sound then
-				snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
-				if isUsable then
-					if not snapshotData.audio.thresholdCues[spell.settingKey] then
-						snapshotData.audio.thresholdCues[spell.settingKey] = true
-						PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
-					end
-				else
-					snapshotData.audio.thresholdCues[spell.settingKey] = false
-				end
-			end
-		end
-	end
-end
+local thresholdBars = { rage = TRB.Classes.ThresholdBar:New("rage"), energy = TRB.Classes.ThresholdBar:New("energy") }
+local thresholdState = TRB.Classes.ThresholdState:New()
+local thresholdData = TRB.Classes.ThresholdData:New(true)
 
 local function UpdateResourceBar()
 	local refreshText = false
@@ -483,7 +402,11 @@ local function UpdateResourceBar()
 					end
 				end
 				if not issecretvalue(maxPower) then
-					UpdateBarThresholds(formBar.key, node, specCacheSettings, maxPower)
+					local thresholdBar = thresholdBars[formBar.key]
+					thresholdBar:Set(node, maxPower, nil, GetBarSettings(specCacheSettings, formBar.key))
+					thresholdState:Refresh(specCacheSettings)
+					thresholdData:Refresh(talents)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Druid.GeneralSpells.thresholdSnowflakes)
 				end
 			end
 		end

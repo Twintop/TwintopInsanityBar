@@ -328,6 +328,96 @@ function TRB.Classes.Rogue.AssassinationSpells.GetCastbarTickProfiles()
 	return {}
 end
 
+---@class TRB.Classes.Rogue.ThresholdState : TRB.Classes.ThresholdState
+---@field public stealthViaBuff boolean # A buff lets stealth abilities be cast out of stealth
+
+---Out of stealth, a stealth ability draws only while a buff lets it be cast. Returns true when it handled the line.
+---@param line TRB.Classes.ThresholdLine
+---@return boolean
+local function StealthViaBuff(line)
+	if not line.spell.attributes.stealth or line.state.isStealthed then
+		return false
+	end
+	if (line.state --[[@as TRB.Classes.Rogue.ThresholdState]]).stealthViaBuff then
+		line:ColorByUsable()
+	else
+		line:Hide()
+	end
+	return true
+end
+
+---@param line TRB.Classes.ThresholdLine
+local function FinisherUnusable(line)
+	if line:IsComboPointFinisher() and not line.isUsable then
+		line:Unusable()
+	end
+end
+
+---@param line TRB.Classes.ThresholdLine
+local function CoupDeGrace(line)
+	if not line.state.snapshotData.attributes.coupDeGraceActive then
+		line:Hide()
+	elseif line.state.settings.colors.threshold.special.enabled then
+		line:Special("special")
+	else
+		line:Over()
+	end
+end
+
+---The special color while a buff empowers the ability, otherwise the usual usable colors.
+---@param line TRB.Classes.ThresholdLine
+---@param buffSpell TRB.Classes.SpellBase
+local function SpecialWhileBuffed(line, buffSpell)
+	if line.state.settings.colors.threshold.special.enabled and line.state.snapshotData.snapshots[buffSpell.id].buff.isActive then
+		line:Special("special")
+	else
+		line:ColorByUsable()
+	end
+end
+
+---@param line TRB.Classes.ThresholdLine
+---@return boolean
+local function EchoingReprimand(line)
+	local spells = line.data.spells --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
+	if line.state.settings.colors.threshold.echoingReprimand.enabled and line.state.snapshotData.snapshots[spells.echoingReprimand.id].buff.isActive then
+		line:Special("echoingReprimand")
+		return true
+	end
+	return false
+end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Rogue.AssassinationSpells.thresholdSnowflakes = {
+	before = function(line)
+		local spells = line.data.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+		-- Blindside lets Ambush be cast out of stealth.
+		if line.spell.id == spells.ambush.id and line.spell.attributes.stealth and not line.state.isStealthed
+			and not (line.state --[[@as TRB.Classes.Rogue.ThresholdState]]).stealthViaBuff and line.state.snapshotData.snapshots[spells.blindside.id].buff.isActive then
+			line:Over()
+			return true
+		end
+		return StealthViaBuff(line)
+	end,
+	spells = {
+		sliceAndDice = TRB.Classes.ThresholdLine.ColorByUsable,
+		garrote = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+			local improvedGarrote = line.state.snapshotData.snapshots[spells.improvedGarrote.id]
+			if (line.state.settings.colors.threshold.special.enabled and improvedGarrote.attributes.isActiveStealth) or improvedGarrote.buff.isActive then
+				line:Special("special")
+			else
+				line:ColorByCooldown()
+			end
+		end,
+		mutilate = function(line)
+			if not EchoingReprimand(line) then
+				line:ColorByUsable()
+			end
+		end,
+	},
+	after = FinisherUnusable,
+}
+
 
 ---@class TRB.Classes.Rogue.OutlawSpells : TRB.Classes.Rogue.RogueBaseSpells
 ---@field public opportunity TRB.Classes.SpellBase
@@ -572,6 +662,49 @@ function TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles()
     }
 end
 
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Rogue.OutlawSpells.thresholdSnowflakes = {
+	before = StealthViaBuff,
+	spells = {
+		sinisterStrike = function(line)
+			if not EchoingReprimand(line) then
+				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]).skullAndCrossbones)
+			end
+		end,
+		pistolShot = function(line)
+			SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]).opportunity)
+		end,
+		betweenTheEyes = function(line)
+			if line.snapshot ~= nil and line.snapshot.cooldown:IsUnusable() then
+				line:Unusable()
+			else
+				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]).ruthlessPrecision)
+			end
+		end,
+		sliceAndDice = TRB.Classes.ThresholdLine.ColorByUsable,
+		dispatch = function(line)
+			if line.state.snapshotData.attributes.coupDeGraceActive then
+				line:Hide()
+			else
+				line:ColorByUsable()
+			end
+		end,
+		coupDeGrace = CoupDeGrace,
+	},
+	after = function(line)
+		FinisherUnusable(line)
+		local spells = line.data.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+		local attributes = line.spell.attributes
+		local snapshot = line.snapshot
+		-- Restless Blades: a finisher with the current Combo Points would bring this ability off cooldown.
+		if line.state.settings.colors.threshold.restlessBlades.enabled and attributes.restlessBlades
+			and (attributes.floatLikeAButterfly == nil or (attributes.floatLikeAButterfly and line.data.talents:IsTalentActive(spells.floatLikeAButterfly)))
+			and snapshot ~= nil and snapshot.cooldown.remainingTotal > 0 and snapshot.cooldown.remaining <= line.state.snapshotData.attributes.resource2 then
+			line:SetColor("restlessBlades", TRB.Data.constants.frameLevels.thresholdUnder)
+		end
+	end,
+}
+
 
 ---@class TRB.Classes.Rogue.SubtletySpells : TRB.Classes.Rogue.RogueBaseSpells
 ---@field public shadowTechniques TRB.Classes.SpellBase
@@ -784,6 +917,63 @@ end
 function TRB.Classes.Rogue.SubtletySpells.GetCastbarTickProfiles()
 	return {}
 end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Rogue.SubtletySpells.thresholdSnowflakes = {
+	before = StealthViaBuff,
+	spells = {
+		sliceAndDice = TRB.Classes.ThresholdLine.ColorByUsable,
+		backstab = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+			if line.data.talents:IsTalentActive(spells.gloomblade) then
+				line:Hide()
+			else
+				line:ColorByUsable()
+			end
+		end,
+		gloomblade = function(line)
+			if not EchoingReprimand(line) then
+				line:ColorByUsable()
+			end
+		end,
+		cheapShot = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+			if line.state.snapshotData.snapshots[spells.shotInTheDark.id].buff.isActive then
+				line:Special("over")
+			else
+				line:ColorByUsable()
+			end
+		end,
+		shurikenStorm = function(line)
+			SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]).silentStorm)
+		end,
+		blackPowder = function(line)
+			SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]).finalityBlackPowder)
+		end,
+		eviscerate = function(line)
+			if line.state.snapshotData.attributes.coupDeGraceActive then
+				line:Hide()
+			else
+				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]).finalityEviscerate)
+			end
+		end,
+		coupDeGrace = CoupDeGrace,
+	},
+	after = function(line)
+		if not line:IsComboPointFinisher() then
+			return
+		end
+		if not line.isUsable then
+			line:Unusable()
+			return
+		end
+		local spells = line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+		if line.color ~= line.state.settings.colors.threshold.special.color and line.state.snapshotData.snapshots[spells.goremawsBite.id].buff.isActive
+			and (line.snapshot == nil or line.snapshot.cooldown:IsUsable()) then
+			line:Over()
+		end
+	end,
+}
 
 
 --[[

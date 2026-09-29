@@ -409,6 +409,41 @@ function TRB.Classes.Druid.BalanceSpells.GetCastbarTickModifiers()
 	}
 end
 
+---The second and third Starsurge lines step their color on a curve at that cast's multiple of the cost.
+---@param line TRB.Classes.ThresholdLine
+local function StarsurgeMulticast(line)
+	if line.state.settings.thresholds.specProperties.starsurgeThresholdOnlyOverShow then
+		line:Hide()
+		return
+	end
+	if not line.isUsable then
+		line.frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+	end
+	local multiplier = line.spell.primaryResourceTypeMod
+	line:ApplyCostCurve(multiplier, line.resourceAmount / multiplier)
+end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Druid.BalanceSpells.thresholdSnowflakes = {
+	-- The Starsurge and Starfall audio cues fire from usability even while their lines are turned off.
+	before = function(line)
+		line.isUsable = line.spell:IsUsable()
+		return false
+	end,
+	spells = {
+		starsurge = function(line)
+			line:ColorByUsable()
+			TRB.Functions.AudioCues:Fire(TRB.Data.settings.druid.balance, line.state.snapshotData, "ssReady", line.isUsable)
+		end,
+		starsurge2 = StarsurgeMulticast,
+		starsurge3 = StarsurgeMulticast,
+		starfall = function(line)
+			line:ColorByUsable()
+			TRB.Functions.AudioCues:Fire(TRB.Data.settings.druid.balance, line.state.snapshotData, "sfReady", line.isUsable)
+		end,
+	},
+}
+
 
 ---@class TRB.Classes.Druid.FeralSpells : TRB.Classes.Druid.DruidBaseSpells
 ---@field public clearcasting TRB.Classes.SpellBase
@@ -662,6 +697,114 @@ function TRB.Classes.Druid.FeralSpells.GetCastbarTickModifiers()
 	}
 end
 
+---@class TRB.Classes.Druid.ThresholdState : TRB.Classes.ThresholdState
+---@field public apexPredatorsCraving boolean
+
+---@param line TRB.Classes.ThresholdLine
+---@return boolean
+local function IsRavageActive(line)
+	local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	return line.state.snapshotData.snapshots[spells.ravageMinimum.id].buff.isActive == true
+end
+
+---@param line TRB.Classes.ThresholdLine
+local function FinisherMinimum(line)
+	if line.isUsable or (line.state --[[@as TRB.Classes.Druid.ThresholdState]]).apexPredatorsCraving then
+		line:Over()
+	else
+		line:Under()
+	end
+end
+
+---The maximum-cost line compares against secret Energy, so a curve colors it.
+---@param line TRB.Classes.ThresholdLine
+local function FinisherMaximum(line)
+	if (line.state --[[@as TRB.Classes.Druid.ThresholdState]]).apexPredatorsCraving then
+		line:Over()
+	elseif line.isUsable then
+		local multiplier = line.spell.primaryResourceTypeMod
+		line:ApplyCostCurve(multiplier, line.resourceAmount / multiplier)
+	else
+		line:Under()
+	end
+end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Druid.FeralSpells.thresholdSnowflakes = {
+	-- A Clearcasting-empowered ability keeps the over color and skips every other rule.
+	before = function(line)
+		if not line.spell.attributes.isClearcasting then
+			return false
+		end
+		local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+		local applications = line.state.snapshotData.snapshots[spells.clearcasting.id].buff.applications
+		return applications ~= nil and applications > 0
+	end,
+	spells = {
+		ferociousBiteMinimum = function(line)
+			if IsRavageActive(line) then
+				line:Hide()
+			else
+				FinisherMinimum(line)
+			end
+		end,
+		ferociousBiteMaximum = function(line)
+			if IsRavageActive(line) then
+				line:Hide()
+			else
+				FinisherMaximum(line)
+			end
+		end,
+		ravageMinimum = function(line)
+			if not IsRavageActive(line) then
+				line:Hide()
+			else
+				FinisherMinimum(line)
+			end
+		end,
+		ravageMaximum = function(line)
+			if not IsRavageActive(line) then
+				line:Hide()
+			else
+				FinisherMaximum(line)
+			end
+		end,
+		moonfire = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+			if not line.data.talents:IsTalentActive(spells.lunarInspiration) then
+				line:Hide()
+			else
+				line:ColorByUsable()
+			end
+		end,
+		swipe = TRB.Classes.ThresholdLine.ColorByUsable,
+		frenziedRegeneration = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+			if not line.data.talents:IsTalentActive(spells.empoweredShapeshifting) then
+				line:Hide()
+			else
+				line:ColorByCooldown()
+			end
+		end,
+		feralFrenzy = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+			if line.data.talents:IsTalentActive(spells.franticFrenzy) then
+				line:Hide()
+			else
+				line:ColorByCooldown()
+			end
+		end,
+		franticFrenzy = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+			if not line.data.talents:IsTalentActive(spells.franticFrenzy) then
+				line:Hide()
+			else
+				line:ColorByCooldown()
+			end
+		end,
+	},
+}
+
 
 ---@class TRB.Classes.Druid.GuardianSpells : TRB.Classes.Druid.DruidBaseSpells
 ---@field public berserk TRB.Classes.SpellBase
@@ -845,6 +988,65 @@ function TRB.Classes.Druid.GuardianSpells.GetCastbarTickModifiers()
 		},
 	}
 end
+
+---Killing Blow and Harnessed Rage move the line off Maul or Raze's cost; a curve colors it against secret Rage.
+---@param line TRB.Classes.ThresholdLine
+---@param resourceAmount number
+local function ModifiedRageCost(line, resourceAmount)
+	line.resourceAmount = resourceAmount
+	line:ApplyCostCurve(1, resourceAmount)
+end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Druid.GuardianSpells.thresholdSnowflakes = {
+	spells = {
+		maul = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local talentData = line.data.talents
+			if talentData:IsTalentActive(spells.raze) or not talentData:IsTalentActive(spells.maul) then
+				line:Hide()
+			else
+				line:ColorByUsable()
+			end
+		end,
+		maulKillingBlow = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local talentData = line.data.talents
+			if talentData:IsTalentActive(spells.raze) or not talentData:IsTalentActive(spells.maul) or not talentData:IsTalentActive(spells.killingBlow) then
+				line:Hide()
+			else
+				ModifiedRageCost(line, line.resourceAmount + spells.killingBlow.attributes.resourceMod)
+			end
+		end,
+		maulHarnessedRage = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local talentData = line.data.talents
+			if talentData:IsTalentActive(spells.raze) or not talentData:IsTalentActive(spells.maul) or not talentData:IsTalentActive(spells.harnessedRage) then
+				line:Hide()
+			else
+				ModifiedRageCost(line, line.resourceAmount * spells.harnessedRage.attributes.resourceMod)
+			end
+		end,
+		razeKillingBlow = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local talentData = line.data.talents
+			if not talentData:IsTalentActive(spells.raze) or not talentData:IsTalentActive(spells.killingBlow) then
+				line:Hide()
+			else
+				ModifiedRageCost(line, line.resourceAmount + spells.killingBlow.attributes.resourceMod)
+			end
+		end,
+		razeHarnessedRage = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local talentData = line.data.talents
+			if not talentData:IsTalentActive(spells.raze) or not talentData:IsTalentActive(spells.harnessedRage) then
+				line:Hide()
+			else
+				ModifiedRageCost(line, line.resourceAmount * spells.harnessedRage.attributes.resourceMod)
+			end
+		end,
+	},
+}
 
 
 ---@class TRB.Classes.Druid.RestorationSpells : TRB.Classes.Healer.HealerSpells, TRB.Classes.Druid.DruidBaseSpells

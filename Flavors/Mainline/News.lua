@@ -9,6 +9,37 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.0.14-release (2026-09-29)
+## Demon Hunter
+### Devourer
+
+- Remove Collapsing Star from the Fury bar's threshold lines.
+
+### Vengeance
+
+- Threshold lines for abilities on cooldown use the unusable color.
+
+## Hunter
+
+- Remove Can't Miss, Won't Miss from the threshold spell list.
+
+### Survival
+
+- Remove the free-cast check from threshold line colors.
+
+## Rogue
+### Assassination
+
+- Cheap Shot's threshold line uses the below color when it can't be cast.
+
+### Outlaw
+
+- Cheap Shot's threshold line uses the below color when it can't be cast.
+- Fix threshold lines for stealth abilities ignoring Use Global colors while Subterfuge is active.
+
+## Warrior
+### Fury
+
+- Threshold lines for abilities on cooldown use the unusable color.
 
 ---
 

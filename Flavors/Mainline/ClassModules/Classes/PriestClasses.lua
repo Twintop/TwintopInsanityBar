@@ -923,6 +923,44 @@ function TRB.Classes.Priest.ShadowSpells.GetCastbarTickProfiles()
 	}
 end
 
+---The second and third Shadow Word: Madness lines step their color on a curve at that cast's multiple of the cost.
+---@param line TRB.Classes.ThresholdLine
+---@param maxResource number
+local function ShadowWordMadnessMulticast(line, maxResource)
+	if line.resourceAmount > maxResource or line.state.settings.thresholds.specProperties.shadowWordMadnessThresholdOnlyOverShow then
+		line:Hide()
+		return
+	end
+	if not line.isUsable then
+		line.frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+	end
+	local multiplier = line.spell.primaryResourceTypeMod
+	line:ApplyCostCurve(multiplier, line.resourceAmount / multiplier)
+end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Priest.ShadowSpells.thresholdSnowflakes = {
+	spells = {
+		shadowWordMadness = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+			local mindDevourer = line.state.snapshotData.snapshots[spells.mindDevourer.id].buff
+			if line.resourceAmount > TRB.Data.character.maxResource then
+				line:Hide()
+			elseif (mindDevourer.endTime ~= nil and line.state.currentTime < mindDevourer.endTime) or line.spell:IsFree() then
+				line:Over()
+			else
+				line:ColorByUsable()
+			end
+		end,
+		shadowWordMadness2 = function(line)
+			ShadowWordMadnessMulticast(line, TRB.Data.character.maxResource)
+		end,
+		shadowWordMadness3 = function(line)
+			ShadowWordMadnessMulticast(line, line.bar.maxResource)
+		end,
+	},
+}
+
 
 --[[
     BarGroups Factory for Priest

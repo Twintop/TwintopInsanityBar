@@ -199,6 +199,41 @@ function TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickProfiles()
 	}
 end
 
+---@class TRB.Classes.DemonHunter.ThresholdState : TRB.Classes.ThresholdState
+---@field public metamorphosis boolean
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.DemonHunter.HavocSpells.thresholdSnowflakes = {
+	-- Abilities replaced during Metamorphosis hide in the form they don't exist in.
+	before = function(line)
+		local demonForm = line.spell.attributes.demonForm
+		if demonForm ~= nil and demonForm ~= (line.state --[[@as TRB.Classes.DemonHunter.ThresholdState]]).metamorphosis then
+			line:Hide()
+			return true
+		end
+		return false
+	end,
+	spells = {
+		chaosStrike = TRB.Classes.ThresholdLine.ColorByUsable,
+		bladeDance = TRB.Classes.ThresholdLine.ColorByCooldown,
+		deathSweep = TRB.Classes.ThresholdLine.ColorByCooldown,
+		eyeBeam = function(line)
+			if line.state.snapshotData.attributes.eyeBeamOverride then
+				line:Hide()
+			else
+				line:ColorByCooldown()
+			end
+		end,
+		abyssalGaze = function(line)
+			if not line.state.snapshotData.attributes.eyeBeamOverride then
+				line:Hide()
+			else
+				line:ColorByCooldown()
+			end
+		end,
+	},
+}
+
 
 ---@class TRB.Classes.DemonHunter.VengeanceSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public soulFragments TRB.Classes.SpellBase
@@ -352,6 +387,14 @@ function TRB.Classes.DemonHunter.VengeanceSpells.GetCastbarTickProfiles()
 		[205630] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
 	}
 end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.DemonHunter.VengeanceSpells.thresholdSnowflakes = {
+	spells = {
+		soulCleave = TRB.Classes.ThresholdLine.ColorByUsable,
+		spiritBomb = TRB.Classes.ThresholdLine.ColorByUsable,
+	},
+}
 
 
 ---@class TRB.Classes.DemonHunter.DevourerSpells : TRB.Classes.SpecializationSpellsBase
@@ -511,6 +554,24 @@ function TRB.Classes.DemonHunter.DevourerSpells.GetCastbarTickProfiles()
 		[473728] = { mode = "fixedCount", baseDuration = 3, tickCount = 20, firstTickAtStart = false },
 	}
 end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.DemonHunter.DevourerSpells.thresholdSnowflakes = {
+	spells = {
+		voidRay = function(line)
+			if (line.state --[[@as TRB.Classes.DemonHunter.ThresholdState]]).metamorphosis then
+				line:Hide()
+				return
+			end
+			line.resourceAmount = line.spell.resource
+			if line.state.snapshotData.casting.spellId == line.spell.id then
+				line:Unusable()
+			else
+				line:ColorByCooldown()
+			end
+		end,
+	},
+}
 
 
 --[[

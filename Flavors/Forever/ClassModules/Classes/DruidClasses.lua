@@ -269,6 +269,11 @@ function TRB.Classes.Druid.GeneralSpells.FillBarTextVariables(specCacheEntry)
 	})
 end
 
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Druid.GeneralSpells.thresholdSnowflakes = {
+	after = TRB.Classes.ThresholdLine.UnusableWithoutComboPoints,
+}
+
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
 TRB.Data.barTextVariablesRegistry["druid_general"] = TRB.Classes.Druid.GeneralSpells.FillBarTextVariables
 
