@@ -8,6 +8,13 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.0.14-release (2026-09-29)
+## General
+
+- Update LibEditMode to version 18.
+
+---
+
 # 12.1.0.13-release (2026-09-28)
 ## General
 
