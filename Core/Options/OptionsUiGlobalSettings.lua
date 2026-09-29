@@ -172,6 +172,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 	local global = TRB.Data.settings.core.global
 	local settingDef = globalSettingDefinitions[settingKey]
 	local checkboxSuffix = settingDef and settingDef.checkboxSuffix
+	local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
 
 	-- Update settings for all class/specs
 	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
@@ -181,6 +182,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 			global[className][specName][settingKey] = value
 		end
 	end
+	TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
 
 	-- Update all existing per-spec checkboxes in the UI across ALL classes
 	if checkboxSuffix then

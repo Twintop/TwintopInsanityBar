@@ -51,8 +51,10 @@ local function BuildUseGlobalRow(parent, controls, classId, specId, classNameLow
 		cb.tooltip = L["CheckboxUseGlobalTooltip_" .. settingKeyUpper]
 		cb:SetChecked(TRB.Data.settings.core.global[classNameLower][specName][settingKey])
 		cb:SetScript("OnClick", function(self)
+			local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
 			TRB.Data.settings.core.global[classNameLower][specName][settingKey] = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(classNameLower, specName)
+			TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)

@@ -4,7 +4,14 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
-# Live 12.1.0.13-release / Forever 1.60.1.2-release (2026-09-22)
+# Live 12.1.0.14-release / Forever 1.60.1.2-release (2026-09-29)
+
+- Fix bar text and threshold icon positions rotating with a spec's own Fill Direction instead of the direction its bar displays, such as while Use global settings is checked.
+- Update LibEditMode to version 18.
+
+---
+
+# Live 12.1.0.13-release / Forever 1.60.1.1-release (2026-09-22)
 
 - Fix the End Cap sitting a couple of pixels short of the fill's leading edge on the cast bars, the Global Cooldown bar, and any other bar the client animates.
 - Bar anchoring, bar text Relative to Frame, custom threshold, and Color Indicator target lists share one order: Screen, the primary bar, the secondary bar and its nodes, spec bars A to Z, Health, Cast Bar, Target Cast Bar, Focus Cast Bar, then Other Bars A to Z.

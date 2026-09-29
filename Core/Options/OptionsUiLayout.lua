@@ -212,6 +212,93 @@ local function RotateBarTextPositions(spec, toVertical, barGroupKey, classId, sp
 	end
 end
 
+---Whether each of a spec's bars renders vertically, taking Global's direction wherever its Use Global box is ticked.
+---@param entry TRB.Data.SpecRegistryEntry
+---@return table<string, boolean>?
+local function GetRenderedOrientations(entry)
+	local core = TRB.Data.settings.core
+	local classSettings = TRB.Data.settings[entry.className]
+	local spec = classSettings and classSettings[entry.specName]
+	local flags = core.global[entry.className] and core.global[entry.className][entry.specName]
+	if spec == nil or flags == nil then
+		return nil
+	end
+
+	local orientations = {}
+	local function Record(barKey, useGlobal, coreBar, specBar)
+		if type(specBar) ~= "table" then
+			return
+		end
+		local source = (useGlobal and coreBar) or specBar
+		orientations[barKey] = TRB.Functions.Bar:IsVerticalFill(source.fillDirection)
+	end
+
+	Record("primary", flags.bar, core.bar, spec.bar)
+	-- A spec with no secondary group can reuse ComboPoint anchor names for another bar (Brewmaster's Stagger).
+	local barGroupConfig = TRB.Functions.Character:GetSpecBarGroupConfig(entry.classId, entry.specId)
+	if barGroupConfig == nil or barGroupConfig.secondary ~= nil then
+		Record("secondary", flags.comboPoints, core.comboPoints, spec.comboPoints)
+	end
+	Record("health", flags.healthBar, core.healthBar, spec.healthBar)
+	local coreBars = core.bars or {}
+	for barKey, specBar in pairs(spec.bars or {}) do
+		Record(barKey, flags[barKey .. "Dimensions"] and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(barKey), coreBars[barKey], specBar)
+	end
+	return orientations
+end
+
+---Records every spec's rendered bar orientations, to diff after a change that can flip them.
+---@return table<string, table<string, boolean>>
+function TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
+	local snapshot = {}
+	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+		snapshot[entry.compositeKey] = GetRenderedOrientations(entry)
+	end
+	return snapshot
+end
+
+---Rotates the bar text and threshold icon offsets of every spec whose rendered bar orientation changed since the snapshot.
+---@param snapshot table<string, table<string, boolean>>
+---@return table<string, table<string, boolean>> # compositeKey -> barKey -> now vertical, for each bar that flipped
+function TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(snapshot)
+	local flipped = {}
+	local rotatedThresholds = false
+	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+		local before = snapshot[entry.compositeKey]
+		local after = before and GetRenderedOrientations(entry)
+		if after then
+			local specFlips = nil
+			for barKey, isVertical in pairs(after) do
+				if before[barKey] ~= nil and before[barKey] ~= isVertical then
+					specFlips = specFlips or {}
+					specFlips[barKey] = isVertical
+				end
+			end
+			if specFlips then
+				flipped[entry.compositeKey] = specFlips
+				local spec = TRB.Data.settings[entry.className][entry.specName]
+				if specFlips.primary ~= nil then
+					-- The resource bar rotates every entry, so any other bar flipping with it is already covered.
+					RotateBarTextPositions(spec, specFlips.primary)
+					RotateThresholdIconOffsets(spec, specFlips.primary)
+					rotatedThresholds = true
+				else
+					for barKey, isVertical in pairs(specFlips) do
+						RotateBarTextPositions(spec, isVertical, barKey, entry.classId, entry.specId)
+					end
+				end
+			end
+		end
+	end
+	if next(flipped) ~= nil and TRB.Frames.barGroups ~= nil then
+		TRB.Functions.BarText:CreateBarTextFrames()
+	end
+	if rotatedThresholds then
+		TRB.Functions.Threshold:RedrawThresholdLines()
+	end
+	return flipped
+end
+
 ---Swaps the min/max bounds of two sliders (width ↔ height) when crossing orientation boundary.
 ---@param widthSlider table The width slider control
 ---@param heightSlider table The height slider control
@@ -276,8 +363,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 		f.tooltip = L["CheckboxUseGlobalTooltip_BarDimensions"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].bar)
 		f:SetScript("OnClick", function(self, ...)
+			local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
 			TRB.Data.settings.core.global[lowerClassName][specName].bar = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -667,13 +756,14 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 
 	local function PrimaryFillDirectionSetSelected(newValue)
 		local oldValue = spec.bar.fillDirection or "leftRight"
+		local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
 		spec.bar.fillDirection = newValue
 		C_Timer.After(0, function()
 			primaryFillDirectionDropdown:SetDefaultText(GetFillDirectionLabel(newValue))
 			local isVert = TRB.Functions.Bar:IsVerticalFill(newValue)
 			local wasVert = TRB.Functions.Bar:IsVerticalFill(oldValue)
 
-			-- Rotation: when crossing horizontal↔vertical boundary, swap dimensions/offsets/positions
+			-- Rotation: when crossing horizontal↔vertical boundary, swap dimensions
 			if wasVert ~= isVert then
 				-- Swap bar width ↔ height; suppress OnValueChanged during bounds swap to prevent intermediate clamping
 				spec.bar.width, spec.bar.height = spec.bar.height, spec.bar.width
@@ -688,17 +778,32 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 				controls.height.EditBox:SetText(spec.bar.height)
 				controls.width:SetScript("OnValueChanged", wHandler)
 				controls.height:SetScript("OnValueChanged", hHandler)
+			end
 
-				-- Rotate per-threshold icon override X/Y offsets and redraw
-				RotateThresholdIconOffsets(spec, isVert)
-				TRB.Functions.Threshold:RedrawThresholdLines()
+			local flipped = TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
+			local rotatedTo = nil
+			if classId == nil then
+				-- Global's own threshold icons and bar text follow this panel's value.
+				if wasVert ~= isVert then
+					RotateThresholdIconOffsets(spec, isVert)
+					TRB.Functions.Threshold:RedrawThresholdLines()
+					RotateBarTextPositions(spec, isVert)
+					TRB.Functions.BarText:CreateBarTextFrames()
+					rotatedTo = isVert
+				end
+			else
+				-- On a spec panel they follow the direction the bar renders, which Use Global can hold fixed.
+				local panelFlips = flipped[TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)]
+				rotatedTo = panelFlips and panelFlips.primary
+			end
 
+			if rotatedTo ~= nil then
 				-- Refresh per-threshold icon override X/Y sliders if currently visible
 				if controls.sliders and controls.sliders.thresholdIconXPos and controls.sliders.thresholdIconXPos:IsVisible() then
 					local curX = controls.sliders.thresholdIconXPos:GetValue()
 					local curY = controls.sliders.thresholdIconYPos:GetValue()
 					local newX, newY
-					if isVert then
+					if rotatedTo then
 						newX, newY = -(curY or 0), (curX or 0)
 					else
 						newX, newY = (curY or 0), -(curX or 0)
@@ -709,16 +814,12 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 					controls.sliders.thresholdIconYPos.EditBox:SetText(newY)
 				end
 
-				-- Rotate bar text positions and reposition
-				RotateBarTextPositions(spec, isVert)
-				TRB.Functions.BarText:CreateBarTextFrames()
-
 				-- Refresh bar text editor X/Y sliders if currently visible
 				if controls.barTextHorizontal and controls.barTextHorizontal:IsVisible() then
 					local curX = controls.barTextHorizontal:GetValue()
 					local curY = controls.barTextVertical:GetValue()
 					local newX, newY
-					if isVert then
+					if rotatedTo then
 						newX, newY = -(curY or 0), (curX or 0)
 					else
 						newX, newY = (curY or 0), -(curX or 0)
@@ -815,8 +916,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 		f.tooltip = globalTooltip or L["CheckboxUseGlobalTooltip_ComboPoints"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][globalSettingKey])
 		f:SetScript("OnClick", function(self, ...)
+			local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
 			TRB.Data.settings.core.global[lowerClassName][specName][globalSettingKey] = self:GetChecked()
 			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+			TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				TRB.Functions.BarVisibility:MarkDirty()
@@ -1274,6 +1377,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 
 	local function AncFillDirectionSetSelected(newValue)
 		local oldValue = spec[settingKey].fillDirection or "leftRight"
+		local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
 		spec[settingKey].fillDirection = newValue
 		C_Timer.After(0, function()
 			ancFillDirectionDropdown:SetDefaultText(GetAncFillDirectionLabel(newValue))
@@ -1297,9 +1401,13 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 				controls[wKey]:SetScript("OnValueChanged", wHandler)
 				controls[hKey]:SetScript("OnValueChanged", hHandler)
 
-				RotateBarTextPositions(spec, isVert, thisBarKey, classId, specId)
-				TRB.Functions.BarText:CreateBarTextFrames()
+				-- Global's own bar text follows this panel's value; a spec's follows its rendered direction below.
+				if classId == nil then
+					RotateBarTextPositions(spec, isVert, thisBarKey, classId, specId)
+					TRB.Functions.BarText:CreateBarTextFrames()
+				end
 			end
+			TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
 
 			ApplyAnchorLayout()
 			TRB.Functions.Character:ResetCaches()
@@ -1500,8 +1608,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 			f.tooltip = L["CheckboxUseGlobalTooltip_" .. settingKeyUpper]
 			f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][useGlobalSettingKey])
 			f:SetScript("OnClick", function(self, ...)
+				local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
 				TRB.Data.settings.core.global[lowerClassName][specName][useGlobalSettingKey] = self:GetChecked()
 				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+				TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
 
 				if TRB.Frames.barGroups ~= nil then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -1825,6 +1935,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 
 	local function FillDirectionSetSelected(newValue)
 		local oldValue = barSettings.fillDirection or "leftRight"
+		local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
 		barSettings.fillDirection = newValue
 		C_Timer.After(0, function()
 			for _, opt in ipairs(fillDirectionOptions) do
@@ -1853,9 +1964,13 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 				controls[wKey]:SetScript("OnValueChanged", wHandler)
 				controls[hKey]:SetScript("OnValueChanged", hHandler)
 
-				RotateBarTextPositions(spec, isVert, barTypeDef.key, classId, specId)
-				TRB.Functions.BarText:CreateBarTextFrames()
+				-- Global's own bar text follows this panel's value; a spec's follows its rendered direction below.
+				if classId == nil then
+					RotateBarTextPositions(spec, isVert, barTypeDef.key, classId, specId)
+					TRB.Functions.BarText:CreateBarTextFrames()
+				end
 			end
+			TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
 
 			RefreshActiveSpecCacheForGlobalEdit()
 			if TRB.Frames.barGroups ~= nil then

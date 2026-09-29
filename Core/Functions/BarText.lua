@@ -67,6 +67,33 @@ local function GetContainerAnchorBarGroupKey(relativeToFrame)
 	return string.match(relativeToFrame, "^Container::(.+)$")
 end
 
+-- Anchor names every class module resolves to the same bar group, so an inactive spec's text can be matched without live frames.
+local sharedAnchorGroupKeys = {
+	Resource = "primary",
+	ResourceBar = "primary",
+	Health = "health",
+	HealthBar = "health",
+}
+
+---The bar group a shared anchor name resolves to, or nil for a class-specific name.
+---@param relativeToFrame string
+---@return string?
+local function GetSharedAnchorBarGroupKey(relativeToFrame)
+	local groupKey = castbarAnchorGroupKeys[relativeToFrame]
+	if groupKey ~= nil then
+		return groupKey
+	end
+	local normalized = (string.gsub(relativeToFrame, "_", ""))
+	groupKey = sharedAnchorGroupKeys[normalized]
+	if groupKey ~= nil then
+		return groupKey
+	end
+	if string.match(normalized, "^ComboPoint%d+$") then
+		return "secondary"
+	end
+	return nil
+end
+
 local function GetContainerAnchorDefinition(classId, specId, barGroupKey)
 	local specConfig = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	if specConfig == nil then
@@ -220,7 +247,7 @@ function TRB.Functions.BarText:IsEntryAnchoredToBarGroup(barTextEntry, barGroupK
 	local activeClassId = TRB.Data.character.classId
 	local activeSpecId = TRB.Data.character.specId
 	if classId ~= nil and specId ~= nil and (classId ~= activeClassId or specId ~= activeSpecId) then
-		return false
+		return GetSharedAnchorBarGroupKey(relativeToFrame) == barGroupKey
 	end
 
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]

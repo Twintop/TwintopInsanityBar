@@ -12,7 +12,6 @@ TRB.Flavor.newsContent = [====[
 ## General
 
 - Fix a Lua error when enabling Edit Mode for a bar group.
-- Update LibEditMode to version 18.
 
 ---
 

@@ -235,10 +235,12 @@ local function EnsureCopyConfigPopupsRegistered()
 		if src == nil or dst == nil then
 			return
 		end
+		local orientations = isLive and TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations() or nil
 		if not CopySettingsByPaths(src, dst, def.paths) then
 			return
 		end
 		if isLive then
+			TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
 			RefreshAfterLiveCopy(data.dstScope, data.dstClassName, data.dstSpecName)
 			-- The bar updates immediately via RefreshAfterLiveCopy, but the
 			-- options panel controls (sliders, color pickers, etc.) were
