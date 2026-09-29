@@ -9,23 +9,6 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.0.14-release (2026-09-29)
-## Demon Hunter
-### Devourer
-
-- Remove Collapsing Star from the Fury bar's threshold lines.
-
-### Vengeance
-
-- Threshold lines for abilities on cooldown use the unusable color.
-
-## Hunter
-
-- Remove Can't Miss, Won't Miss from the threshold spell list.
-
-### Survival
-
-- Remove the free-cast check from threshold line colors.
-
 ## Rogue
 ### Assassination
 
@@ -35,6 +18,13 @@ TRB.Flavor.newsContent = [====[
 
 - Cheap Shot's threshold line uses the below color when it can't be cast.
 - Fix threshold lines for stealth abilities ignoring Use Global colors while Subterfuge is active.
+
+## Shaman
+### Elemental
+
+- Add a new Elemental Blast Buffs bar, tracking the time remaining on each Elemental Blast buff, with default `$ebCritTime`, `$ebHasteTime`, and `$ebMasteryTime` bar text. Requires CDM to be enabled and the buffs to be actively tracked to function. Set to Never Show by default; enable it under Bar Visibility.
+- Each buff fills its own node, and nodes can be reordered or disabled. Hidden without Elemental Blast talented.
+- Joins the bar text Relative to Frame and Color Indicator target lists. Does not offer End Cap, Smooth, or custom thresholds.
 
 ## Warrior
 ### Fury

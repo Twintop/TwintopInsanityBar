@@ -32,6 +32,8 @@ local function ElementalLoadDefaultBarTextSettings(classic)
 	local manaBarTextSettings = TRB.Functions.Settings:LoadDefaultManaBarTextSettings(classic)
 	for k,v in pairs(manaBarTextSettings) do table.insert(textSettings, v) end
 
+	for _, v in ipairs(TRB.Functions.Settings:LoadDefaultElementalBlastBuffsBarTextSettings()) do table.insert(textSettings, v) end
+
 	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 end
 TRB.Options.Shaman.ElementalLoadDefaultBarTextSettings = ElementalLoadDefaultBarTextSettings
@@ -79,6 +81,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			mana = { neverShow = true, alwaysShow = false, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			elementalBlastBuffs = { neverShow = true, alwaysShow = false, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		barVisibilityThresholds = TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds(),
 		endOf = {
@@ -93,6 +96,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
 		bars = {
 			mana = TRB.Functions.Settings:DefaultManaBarDimensions(classic),
+			elementalBlastBuffs = TRB.Functions.Settings:DefaultElementalBlastBuffsBarDimensions(classic),
 		},
 		colors = {
 			text = {
@@ -167,6 +171,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			bars = {
 				mana = TRB.Functions.Settings:DefaultManaBarColors(),
+				elementalBlastBuffs = TRB.Functions.Settings:DefaultElementalBlastBuffsBarColors(),
 			},
 			shared = {
 				nodeOrder = {
@@ -242,6 +247,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					yOffset = -1,
 				},
 			},
+			migrations = { elementalBlastBuffsBarTextSeeded = true },
 			barText = {}
 		},
 		audio = {
@@ -252,7 +258,9 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(false, true),
+		textures = TRB.Functions.Settings:DefaultTextures(false, true, {
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("elementalBlastBuffs"),
+		}),
 	}
 
 	if includeBarText then
@@ -783,6 +791,23 @@ local function ElementalConstructManaBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 7, 1, yCoord, TRB.Classes.BarTypeRegistry:GetInstance():Get("mana"))
 end
 
+local function ElementalConstructElementalBlastBuffsBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.shaman.elemental
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.shaman_elemental
+	local yCoord = 5
+	local elementalBlastBuffsBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("elementalBlastBuffs")
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord, elementalBlastBuffsBarDef, L["ResourceMaelstrom"])
+
+	yCoord = yCoord - 90
+	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 7, 1, yCoord, elementalBlastBuffsBarDef)
+end
+
 local function ElementalConstructHealthBarPanel(parent)
 	if parent == nil then
 		return
@@ -824,6 +849,20 @@ local function ElementalConstructIndicatorColorsPanel(parent)
 		barTargetDefs = {
 			{ key = "maelstromBar", label = L["BarNameMaelstromBar"] },
 			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "elementalBlastCriticalStrikeBar", label = L["ElementalBlastCriticalStrike"] },
+			{ key = "elementalBlastHasteBar", label = L["ElementalBlastHaste"] },
+			{ key = "elementalBlastMasteryBar", label = L["ElementalBlastMastery"] },
+		},
+		-- The aura engine owns these fills: no end cap to color, and no color curve on the fill.
+		excludedElements = {
+			elementalBlastCriticalStrikeBar = { endCap = true },
+			elementalBlastHasteBar = { endCap = true },
+			elementalBlastMasteryBar = { endCap = true },
+		},
+		gradientExcludedElements = {
+			elementalBlastCriticalStrikeBar = { bar = true },
+			elementalBlastHasteBar = { bar = true },
+			elementalBlastMasteryBar = { bar = true },
 		},
 		ddNamePrefix = "TwintopResourceBar_Shaman_Elemental",
 		endOfConfigs = {
@@ -855,7 +894,7 @@ local function ElementalConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.shaman_elemental
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false, nil, true)
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false, nil, true, { TRB.Classes.BarTypeRegistry:GetInstance():Get("elementalBlastBuffs") })
 end
 
 local function ElementalConstructBarVisibilityPanel(parent)
@@ -872,7 +911,7 @@ local function ElementalConstructBarVisibilityPanel(parent)
 		{ key = "manaValue", label = L["BarVisibilityThresholdManaValue"], comparisonLabel = L["BarVisibilityThresholdManaValueComparison"], valueLabel = L["BarVisibilityThresholdManaValueValue"], isPercent = false, header = L["BarVisibilityThresholdHeaderWithMana"] },
 	})
 
-	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", false, nil, true, true, nil, extraThresholdTypes)
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", false, nil, true, true, { TRB.Classes.BarTypeRegistry:GetInstance():Get("elementalBlastBuffs") }, extraThresholdTypes)
 end
 
 local function ElementalConstructThresholdListPanel(parent)
@@ -1059,6 +1098,7 @@ local function ElementalConstructOptionsPanel(cache)
 	local tabDefinitions = {
 		{ "maelstromBar", L["TabMaelstrom"], oUi.tabWidth.small, ElementalConstructMaelstromBarPanel, visibilityKey = "primary" },
 		{ "manaBar", L["TabMana"], oUi.tabWidth.small, ElementalConstructManaBarPanel, visibilityKey = "mana" },
+		{ "elementalBlastBuffsBar", L["TabElementalBlastBuffs"], oUi.tabWidth.medium, ElementalConstructElementalBlastBuffsBarPanel, visibilityKey = "elementalBlastBuffs" },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ElementalConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, ElementalConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ElementalConstructBarTexturesPanel },

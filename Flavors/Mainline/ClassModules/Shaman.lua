@@ -20,6 +20,39 @@ local thresholdBar = TRB.Classes.ThresholdBar:New()
 local thresholdState = TRB.Classes.ThresholdState:New()
 local thresholdData = TRB.Classes.ThresholdData:New()
 
+-- Elemental Blast Buffs node key to its buff spell, Color Indicator target, bar text frame, and variable.
+local elementalBlastBuffNodes = {
+	criticalStrike = { spellKey = "elementalBlastCriticalStrike", targetKey = "elementalBlastCriticalStrikeBar", frame = "ElementalBlastCriticalStrike", variable = "$ebCritTime" },
+	haste = { spellKey = "elementalBlastHaste", targetKey = "elementalBlastHasteBar", frame = "ElementalBlastHaste", variable = "$ebHasteTime" },
+	mastery = { spellKey = "elementalBlastMastery", targetKey = "elementalBlastMasteryBar", frame = "ElementalBlastMastery", variable = "$ebMasteryTime" },
+}
+
+---Node index each enabled Elemental Blast buff landed on after ordering; nil while disabled.
+---@type table<string, integer?>
+local elementalBlastBuffNodeMapping = {}
+
+---Maps each enabled Elemental Blast buff to its node, in the user's order.
+---@param colorSettings table # colors.bars.elementalBlastBuffs
+---@return boolean changed # True when a buff moved node, so its bar text must be re-anchored
+local function MapElementalBlastBuffNodes(colorSettings)
+	local barDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("elementalBlastBuffs")
+	local changed = false
+	local nodeIndex = 0
+	for _, key in ipairs(barDef:GetOrderedNodeKeys(colorSettings)) do
+		local mapped = nil
+		local nodeColor = colorSettings.nodeColors[key]
+		if nodeColor and nodeColor.enabled then
+			nodeIndex = nodeIndex + 1
+			mapped = nodeIndex
+		end
+		if elementalBlastBuffNodeMapping[key] ~= mapped then
+			elementalBlastBuffNodeMapping[key] = mapped
+			changed = true
+		end
+	end
+	return changed
+end
+
 Global_TwintopResourceBar = {}
 
 local specCache = {
@@ -77,6 +110,12 @@ local function FillSpecializationCache()
 	specCache.shaman_elemental.snapshotData.snapshots[spells.stormkeeper.id] = TRB.Classes.Snapshot:New(spells.stormkeeper)
 	---@type TRB.Classes.Snapshot
 	specCache.shaman_elemental.snapshotData.snapshots[spells.echoesOfGreatSundering.id] = TRB.Classes.Snapshot:New(spells.echoesOfGreatSundering)
+	---@type TRB.Classes.Snapshot
+	specCache.shaman_elemental.snapshotData.snapshots[spells.elementalBlastCriticalStrike.id] = TRB.Classes.Snapshot:New(spells.elementalBlastCriticalStrike, nil, "always")
+	---@type TRB.Classes.Snapshot
+	specCache.shaman_elemental.snapshotData.snapshots[spells.elementalBlastHaste.id] = TRB.Classes.Snapshot:New(spells.elementalBlastHaste, nil, "always")
+	---@type TRB.Classes.Snapshot
+	specCache.shaman_elemental.snapshotData.snapshots[spells.elementalBlastMastery.id] = TRB.Classes.Snapshot:New(spells.elementalBlastMastery, nil, "always")
 
 
 	-- Enhancement
@@ -233,6 +272,11 @@ local function ConstructResourceBar(settings)
 		TRB.Data.character.maxResource2 = maxStacks
 	end
 
+	-- Before ConstructBarGroups, whose bar text frames resolve the Elemental Blast buff nodes through it.
+	if TRB.Data.character.specId == 1 then
+		MapElementalBlastBuffNodes(settings.colors.bars.elementalBlastBuffs)
+	end
+
 	-- Create thresholds on the BarNode (new system)
 	if barGroups and barGroups.primary then
 		local primaryNode = barGroups.primary:GetNode(1)
@@ -378,6 +422,36 @@ local function RefreshLookupData_Elemental()
 		end
 		if lookupChanged(prevState, "$manaPercent", mana.percentFormatted, currentManaColor) then
 			lookup["$manaPercent"] = string.format("|c%s%s|r", currentManaColor, mana.percentFormatted)
+		end
+	end
+
+	-- Block D: Elemental Blast buffs ($ebCritTime, $ebHasteTime, $ebMasteryTime)
+	for _, node in pairs(elementalBlastBuffNodes) do
+		local variable = node.variable
+		if not activeVars or activeVars[variable] then
+			local buff = snapshots[spells[node.spellKey].id].buff
+			local isActive = buff.isActive == true
+			local remaining = buff.customProperties.remaining
+			local remainingText = buff.customProperties.remainingText
+
+			-- Secret when the Cooldown Manager has it, so logic only learns whether a value exists.
+			lookupLogic[variable] = isActive and (remaining ~= nil or remainingText ~= nil)
+
+			local timeDisplay
+			if not isActive then
+				timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			elseif remaining ~= nil then
+				timeDisplay = TRB.Functions.BarText:TimerPrecision(remaining)
+			elseif remainingText ~= nil then
+				-- Already formatted, to the viewer's precision rather than ours.
+				timeDisplay = remainingText
+			else
+				timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			end
+
+			if lookupChanged(prevState, variable, timeDisplay) then
+				lookup[variable] = timeDisplay
+			end
 		end
 	end
 
@@ -664,12 +738,49 @@ local function UpdateSnapshot()
 	snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
 end
 
+---Refreshes one Elemental Blast buff from the Cooldown Manager.
+---@param buff TRB.Classes.SnapshotBuff
+---@param spellId integer
+---@return boolean changed # True when the buff went up or down
+local function UpdateElementalBlastBuff(buff, spellId)
+	local properties = buff.customProperties
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	-- Pinned to the buff viewers: a cooldown viewer reports every spell it holds as active.
+	local cdm = TRB.Functions.CooldownManager
+	local wasActive = buff.isActive
+	if cdm:HasSignal(spellId, cdm.Signal.APPLICATIONS, cdm.SourceGroup.BUFF) then
+		buff:InitializeCustomSimple()
+
+		-- Only the bar viewer leaves a subtracted remaining value; elsewhere take Blizzard's countdown text.
+		local remainingOk, remaining = cdm:Read(spellId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+		if remainingOk then
+			properties.remaining = remaining
+		else
+			local textOk, remainingText = cdm:Read(spellId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+			if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+				properties.remainingText = remainingText
+			end
+		end
+	elseif wasActive then
+		buff:Reset()
+	end
+
+	return wasActive ~= buff.isActive
+end
+
 local function UpdateSnapshot_Elemental()
-	local currentTime = GetTime()
 	UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
+	local snapshots = TRB.Data.snapshotData.snapshots
+
+	for _, node in pairs(elementalBlastBuffNodes) do
+		local spellId = spells[node.spellKey].id
+		if UpdateElementalBlastBuff(snapshots[spellId].buff, spellId) then
+			TRB.Data.lookupDirty = true
+		end
+	end
 end
 
 local function UpdateSnapshot_Enhancement()
@@ -708,7 +819,61 @@ local scratch = {
 	conditionMap5 = {},
 	manaBarColors3 = {},
 	barColorMap4 = {},
+	elementalBlastBuffColors1 = { criticalStrike = {}, haste = {}, mastery = {} },
 }
+
+---Renders each enabled Elemental Blast buff on its node, in the user's order.
+---@param specSettings table
+local function UpdateElementalBlastBuffs(specSettings)
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local group = barGroups.elementalBlastBuffs
+	if group == nil then
+		return
+	end
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	local snapshots = TRB.Data.snapshotData.snapshots
+	local cdm = TRB.Functions.CooldownManager
+	local gradient = Color:GetResolvedGradient()
+	local mappingChanged = MapElementalBlastBuffNodes(specSettings.colors.bars.elementalBlastBuffs)
+
+	for key, nodeIndex in pairs(elementalBlastBuffNodeMapping) do
+		local buffNode = group:GetNode(nodeIndex)
+		if buffNode then
+			local nodeInfo = elementalBlastBuffNodes[key]
+			local spellId = spells[nodeInfo.spellKey].id
+			local colors = scratch.elementalBlastBuffColors1[key]
+			local gradientTargets = gradient and gradient.targets and gradient.targets[nodeInfo.targetKey]
+
+			-- Colors first: the engine fill mirrors this node's art, so it would otherwise trail a color change by a frame.
+			Color:ApplyFillColor(buffNode, colors.bar)
+			if gradientTargets and gradientTargets.border then
+				local borderCurve = Color:BuildResourceThresholdCurve(specSettings, colors.border, gradient.color)
+				buffNode:SetBorderColorCurve(UnitPowerPercent("player", TRB.Data.resource, true, borderCurve), Color:EvaluateEndCapCurve(buffNode, borderCurve))
+			else
+				buffNode:SetBorderColor(colors.border)
+			end
+			if gradientTargets and gradientTargets.background then
+				local backgroundCurve = Color:BuildResourceThresholdCurve(specSettings, colors.background, gradient.color)
+				buffNode:SetBackgroundColorCurve(UnitPowerPercent("player", TRB.Data.resource, true, backgroundCurve))
+			else
+				buffNode:SetBackgroundColorFromString(colors.background)
+			end
+			Bar:ApplyNodeIndicators(buffNode, nodeInfo.targetKey)
+
+			if not TRB.Functions.AuraEngine:Attach(buffNode, "player", "HELPFUL", spellId) then
+				if not snapshots[spellId].buff.isActive or not cdm:ApplyToBarNode(buffNode, spellId) then
+					buffNode:SetMinMax(0, 1)
+					buffNode:SetValue(0)
+				end
+			end
+		end
+	end
+
+	if mappingChanged then
+		TRB.Functions.BarText:CreateBarTextFrames()
+	end
+end
 
 local function UpdateResourceBar()
 	local currentTime = GetTime()
@@ -793,6 +958,15 @@ local function UpdateResourceBar()
 			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.maelstromBar = maelstromBarColors
+			local elementalBlastBuffColors = specSettings.colors.bars.elementalBlastBuffs
+			for key, node in pairs(elementalBlastBuffNodes) do
+				local nodeColors = scratch.elementalBlastBuffColors1[key]
+				wipe(nodeColors)
+				nodeColors.bar = elementalBlastBuffColors.nodeColors[key]
+				nodeColors.border = elementalBlastBuffColors.border.color
+				nodeColors.background = elementalBlastBuffColors.background.color
+				barColorMap[node.targetKey] = nodeColors
+			end
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -991,6 +1165,12 @@ local function UpdateResourceBar()
 						manaNode:SetBackgroundColorFromString(manaBarColors.background)
 					end
 				end
+			end
+
+			if specSettings.displayBar.elementalBlastBuffs ~= nil and not specSettings.displayBar.elementalBlastBuffs.neverShow
+				and talents:IsTalentActive(spells.elementalBlast) then
+				refreshText = true
+				UpdateElementalBlastBuffs(specSettings)
 			end
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -1560,11 +1740,21 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local manaVisSettings = (sharedSettings and sharedSettings.displayBar.mana) or nil
 		local healthVisSettings = (sharedSettings and sharedSettings.displayBar.health) or nil
 
+		-- Elemental (1) shows one Elemental Blast Buffs node per enabled buff, only with Elemental Blast talented
+		local elementalBlastBuffNodeCount = 0
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if TRB.Data.character.specId == 1 and sharedSettings ~= nil and spells ~= nil and spells.elementalBlastCriticalStrike ~= nil
+			and specCache.shaman_elemental.talents:IsTalentActive(spells.elementalBlast) then
+			elementalBlastBuffNodeCount = TRB.Classes.BarTypeRegistry:GetInstance():Get("elementalBlastBuffs"):GetEnabledNodeCount(sharedSettings.colors.bars.elementalBlastBuffs)
+		end
+		local elementalBlastBuffsVisSettings = (sharedSettings and sharedSettings.displayBar.elementalBlastBuffs) or nil
+
 		local entries = {
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, healthVisSettings, true, 1, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),
+			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.elementalBlastBuffs, elementalBlastBuffsVisSettings, elementalBlastBuffNodeCount > 0, elementalBlastBuffNodeCount, nil),
 		}
 
 		if sharedSettings ~= nil then
@@ -1612,6 +1802,17 @@ do
 		["$mana"] = true, ["$manaMax"] = true, ["$manaPercent"] = true,
 	}
 	for k, v in pairs(healthVars) do elemental[k] = v end
+	-- False the moment the value is unknown, matching the blank the text renders.
+	for _, node in pairs(elementalBlastBuffNodes) do
+		local spellKey = node.spellKey
+		elemental[node.variable] = function()
+			local snap = TRB.Data.snapshotData.snapshots[TRB.Data.spellsData.spells[spellKey].id]
+			if snap == nil or snap.buff.isActive ~= true then
+				return false
+			end
+			return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
+		end
+	end
 	-- Enhancement
 	local enhancement = {
 		["$casting"] = function()
@@ -1690,6 +1891,21 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 
+	-- Elemental Blast buff nodes follow the user's order, so resolve through the live mapping
+	for key, node in pairs(elementalBlastBuffNodes) do
+		if normalizedRelativeFrame == node.frame then
+			local nodeIndex = elementalBlastBuffNodeMapping[key]
+			if nodeIndex and barGroups.elementalBlastBuffs then
+				local buffNode = barGroups.elementalBlastBuffs:GetNode(nodeIndex)
+				if buffNode then
+					local isVisible = barGroups.elementalBlastBuffs.isVisible and buffNode.isVisible
+					return buffNode:GetFrame(), true, isVisible
+				end
+			end
+			return nil, true, false
+		end
+	end
+
 	-- Handle health bar
 	if normalizedRelativeFrame == "HealthBar" or normalizedRelativeFrame == "Health" then
 		if barGroups and barGroups.health then
@@ -1717,7 +1933,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil, true, false
 end
 
----Returns true when Ascendance buff is active (all 3 specs).
+---Returns true when Ascendance buff is active (all 3 specs), or an Elemental Blast buff (Elemental).
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	local snapshotData = TRB.Data.snapshotData
@@ -1726,6 +1942,14 @@ function TRB.Functions.Class:HasActiveTimers()
 		local snapshot = snapshotData.snapshots[spells.ascendance.id]
 		if snapshot and snapshot.buff and snapshot.buff.isActive then
 			return true
+		end
+	end
+	if snapshotData and spells and spells.elementalBlastCriticalStrike then
+		for _, node in pairs(elementalBlastBuffNodes) do
+			local snapshot = snapshotData.snapshots[spells[node.spellKey].id]
+			if snapshot and snapshot.buff.isActive then
+				return true
+			end
 		end
 	end
 	return false

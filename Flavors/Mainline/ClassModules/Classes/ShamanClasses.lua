@@ -49,6 +49,9 @@ end
 ---@field public earthquake TRB.Classes.SpellThreshold
 ---@field public earthquakeTargeted TRB.Classes.SpellThreshold
 ---@field public elementalBlast TRB.Classes.SpellThreshold
+---@field public elementalBlastCriticalStrike TRB.Classes.SpellBase
+---@field public elementalBlastHaste TRB.Classes.SpellBase
+---@field public elementalBlastMastery TRB.Classes.SpellBase
 TRB.Classes.Shaman.ElementalSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Shaman.ElementalSpells.__index = TRB.Classes.Shaman.ElementalSpells
 
@@ -151,6 +154,15 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         isTalent = true,
         category = "offensive"
     })
+    self.elementalBlastCriticalStrike = TRB.Classes.SpellBase:New({
+        id = 118522
+    })
+    self.elementalBlastHaste = TRB.Classes.SpellBase:New({
+        id = 173183
+    })
+    self.elementalBlastMastery = TRB.Classes.SpellBase:New({
+        id = 173184
+    })
     self.echoesOfGreatSundering = TRB.Classes.SpellBase:New({
         id = 384088,
         isTalent = true
@@ -206,6 +218,10 @@ function TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$manaMax", description = L["ShamanElementalBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$ascendanceTime", description = L["ShamanElementalBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
+
+		{ variable = "$ebCritTime", description = L["ShamanElementalBarTextVariable_ebCritTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$ebHasteTime", description = L["ShamanElementalBarTextVariable_ebHasteTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$ebMasteryTime", description = L["ShamanElementalBarTextVariable_ebMasteryTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 
 		{ variable = "$earthShockUsable", description = L["ShamanElementalBarTextVariable_earthShockUsable"], printInSettings = true, color = false },
 		{ variable = "$elementalBlastUsable", description = L["ShamanElementalBarTextVariable_elementalBlastUsable"], printInSettings = true, color = false },
@@ -412,6 +428,13 @@ function TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(specId)
             false -- not primary
         )
 
+        barGroups.elementalBlastBuffs = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_ElementalBlastBuffs",
+            3, -- Critical Strike, Haste, Mastery
+            false -- not primary
+        )
+
     elseif specId == 2 then -- Enhancement
         -- Primary mana bar (1 node)
         barGroups.primary = TRB.Classes.BarGroup:New(
@@ -469,6 +492,12 @@ function TRB.Classes.Shaman.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = true,
                 resourceType = "Maelstrom"
+            },
+            elementalBlastBuffs = {
+                maxNodes = 3,
+                isPrimary = false,
+                resourceType = "ElementalBlastBuffs",
+                allowContainerAnchor = false
             },
             health = {
                 maxNodes = 1,
@@ -584,9 +613,13 @@ do
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
 	SpecDescriptor:Declare("shaman_elemental", {
 		manaBar = true,
-		customBars = { "mana" },
+		talentGatedBars = { elementalBlastBuffs = "elementalBlast" },
+		customBars = { "mana", "elementalBlastBuffs" },
 		barTextAnchorFrames = {
 			mana = { { label = L["ManaBar"], frame = "ManaBar" } },
+			elementalBlastBuffs = {
+				{ label = L["ElementalBlastCriticalStrike"], frame = "ElementalBlastCriticalStrike" }, { label = L["ElementalBlastHaste"], frame = "ElementalBlastHaste" }, { label = L["ElementalBlastMastery"], frame = "ElementalBlastMastery" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("shaman_enhancement", {

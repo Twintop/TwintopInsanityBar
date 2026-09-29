@@ -9,6 +9,7 @@
 	<Script file="ClassModules\BarTypes\MonkBarTypes.lua"/>
 	<Script file="ClassModules\BarTypes\DruidBarTypes.lua"/>
 	<Script file="ClassModules\BarTypes\EvokerBarTypes.lua"/>
+	<Script file="ClassModules\BarTypes\ShamanBarTypes.lua"/>
 	<Script file="Migrations.lua"/>
 	<Script file="News.lua"/>
 	<Script file="ClassModules\DeathKnight.lua"/>

@@ -8628,6 +8628,31 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
+	-- Elemental Shaman: seed the Elemental Blast Buffs bar's default bar text; barText is an array the defaults merge cannot backfill.
+	do
+		local elemental = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.shaman ~= nil
+			and TwintopInsanityBarSettings.shaman.elemental or nil
+		local displayText = elemental ~= nil and elemental.displayText or nil
+		if displayText ~= nil and type(displayText.barText) == "table" then
+			-- Flagged so a deleted entry stays deleted; the scan skips any buff that already has text.
+			displayText.migrations = displayText.migrations or {}
+			if not displayText.migrations.elementalBlastBuffsBarTextSeeded then
+				local anchoredFrames = {}
+				for _, entry in ipairs(displayText.barText) do
+					if entry.position and entry.position.relativeToFrame then
+						anchoredFrames[entry.position.relativeToFrame] = true
+					end
+				end
+				for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultElementalBlastBuffsBarTextSettings()) do
+					if not anchoredFrames[entry.position.relativeToFrame] then
+						table.insert(displayText.barText, entry)
+					end
+				end
+			end
+			displayText.migrations.elementalBlastBuffsBarTextSeeded = true
+		end
+	end
+
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

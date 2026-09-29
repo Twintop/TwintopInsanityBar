@@ -821,6 +821,7 @@ local resourceTypeNames = {
 	DefensiveBuffs = TRB.Localization["ResourceWarriorDefensives"],
 	WhirlwindCharges = TRB.Localization["ResourceWarriorWhirlwind"],
 	EbonMight = TRB.Localization["ResourceEvokerEbonMight"],
+	ElementalBlastBuffs = TRB.Localization["ResourceShamanElementalBlastBuffs"],
 	FireBlastCharges = TRB.Localization["MageFireBlastCharges"],
 	Castbar = TRB.Localization["ResourceCastbar"],
 }
