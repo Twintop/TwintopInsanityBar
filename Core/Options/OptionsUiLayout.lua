@@ -351,11 +351,13 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	controls.editModeNotice:SetJustifyH("LEFT")
 	controls.editModeNotice:SetText("|cFFCCCCCC" .. L["EditModePositionOverrideNotice"] .. "|r")
 
+	local useGlobalCheckbox = nil
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
 		controls.checkBoxes.useGlobalBarDimensions = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_barDimensions", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalBarDimensions
+		useGlobalCheckbox = f
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
@@ -849,6 +851,9 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 
 	yCoord = yCoord - 30
 
+	-- The returned row is the Fill Direction dropdown's top, so the cover reaches past its bottom.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, controls.barPositionSection, yCoord - 30)
+
 	return yCoord
 end
 
@@ -901,11 +906,13 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	controls[settingKey .. "PositionSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, sectionHeader, oUi.xCoord, yCoord)
 
 	-- Global checkbox (if applicable)
+	local useGlobalCheckbox = nil
 	if globalSettingKey and classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
 		controls.checkBoxes["useGlobal" .. settingKey:gsub("^%l", string.upper)] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_useGlobal_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes["useGlobal" .. settingKey:gsub("^%l", string.upper)]
+		useGlobalCheckbox = f
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
@@ -1478,6 +1485,9 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 
 	yCoord = yCoord - 30
 
+	-- The returned row is the Fill Direction dropdown's top, so the cover reaches past its bottom.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, controls[settingKey .. "PositionSection"], yCoord - 30)
+
 	return yCoord
 end
 
@@ -1592,6 +1602,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(controls[barTypeDef.key .. "DimensionsSection"].font, barTypeDef.cdm)
 
 	-- Optional "Use global settings" row (spec panels) / bulk all-specs toggle (Global panel)
+	local useGlobalCheckbox = nil
 	if useGlobalSettingKey ~= nil then
 		local settingKeyUpper = useGlobalSettingKey:gsub("^%l", string.upper)
 		if classId ~= nil and specId ~= nil then
@@ -1600,6 +1611,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 			controls.checkBoxes = controls.checkBoxes or {}
 			controls.checkBoxes["useGlobal" .. settingKeyUpper] = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_useGlobal_" .. useGlobalSettingKey, parent, "ChatConfigCheckButtonTemplate")
 			f = controls.checkBoxes["useGlobal" .. settingKeyUpper]
+			useGlobalCheckbox = f
 			f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 			local settingDef = TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(useGlobalSettingKey)
 			getglobal(f:GetName() .. 'Text'):SetText(settingDef and settingDef.useGlobalLabel or L["CheckboxUseGlobal"])
@@ -2131,6 +2143,9 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	attachPointDropdown:SetupMenu(AttachPointGenerator)
 	attachPointDropdown:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 30)
 	attachPointDropdown:SetDefaultText(GetAnchorPointDisplayName(anchor.attachPoint))
+
+	-- The returned row is the Anchor Point labels, so the cover reaches past the dropdowns below them.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, controls[barTypeDef.key .. "DimensionsSection"], yCoord - 60)
 
 	return yCoord
 end

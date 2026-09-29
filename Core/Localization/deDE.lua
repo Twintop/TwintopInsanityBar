@@ -944,7 +944,6 @@ if locale == "deDE" then
     L["TabThresholds"] = "Schwellenwertlinien"
     L["ThresholdLinePositionHeader"] = "Schwellenwert-Linien und Icon Position und Größe"
     L["ThresholdLineColorsHeader"] = "Schwellenwert-Linien Farben"
-    L["ThresholdLineColorsForDpsAndTanksHeader"] = "Schwellenwert-Linien Farben für DPS und Tanks"
     L["ThresholdGenericSpecial"] = "Spezieller Bonus, Proc oder Status"
     L["CheckboxUseGlobalTooltip_ThresholdIcons"] = "Wenn aktiviert, werden die globalen Einstellungen für Schwellenwert-Icon Größe und Position sowie Linienbreite verwendet."
     L["CheckboxUseGlobalTooltip_ThresholdColors"] = "Wenn aktiviert, werden die globalen Einstellungen für Schwellenwert-Farben verwendet. Die genutzte globale Einstellung variiert je nach Spezialisierungs-Rolle."

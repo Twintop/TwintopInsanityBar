@@ -91,6 +91,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("textures")
 		end)
 		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "textures")
+		TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalBadge(f, controls.textBarTexturesSection, L["UseGlobalBadgeTooltipTextures"])
 	else
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllTextures", "textures", yCoord)
@@ -127,7 +128,10 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		end
 		TRB.Functions.Character:ResetCaches()
 		if TRB.Frames.barGroups ~= nil then
-			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+			local character = TRB.Data.character
+			-- The cache holds its own copy of global textures, so an edit only reaches the bar through a re-fill.
+			TRB.Functions.Character:FillSpecializationCacheSettings(character.className, character.specName)
+			local settings = TRB.Data.specCache[character.compositeKey].settings
 			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then

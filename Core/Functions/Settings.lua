@@ -333,6 +333,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 		settings[classEntry.className] = specClass
 	end
 
+	-- The player cast bar's core bars, colors, and displayBar are inline above; this adds its textures.
+	self:InjectCastbarDefaults(settings.core, nil, nil, classic)
+
 	-- Target/Focus cast bars are all-spec standalone bars; core is the global-defaults source for the
 	-- per-spec "Use Global" toggle, so seed its bars/colors/displayBar/textures the same way specs do.
 	-- Table:Merge(defaults, saved) then backfills these into existing saved core settings.

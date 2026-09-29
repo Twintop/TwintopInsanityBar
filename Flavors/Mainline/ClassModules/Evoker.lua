@@ -158,7 +158,7 @@ local function FillSpellData_Devastation()
 end
 
 local function Setup_Preservation()
-	Character:FillSpecializationCacheSettings("evoker", "preservation", true)
+	Character:FillSpecializationCacheSettings("evoker", "preservation")
 
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "evoker_preservation" then

@@ -286,7 +286,7 @@ local function FillSpellData_Guardian()
 end
 
 local function Setup_Restoration()
-	Character:FillSpecializationCacheSettings("druid", "restoration", true)
+	Character:FillSpecializationCacheSettings("druid", "restoration")
 	
 	-- Destroy existing bar groups before creating new ones
 	--Bar:DestroyBarGroups()

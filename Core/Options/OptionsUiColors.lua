@@ -342,11 +342,13 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	-- Build the header
 	controls.healthBarColorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HealthBarColorHeader"], oUi.xCoord, yCoord)
 
+	local useGlobalCheckbox = nil
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
 		controls.checkBoxes.useGlobalHealthBarColors = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_healthBarColors", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalHealthBarColors
+		useGlobalCheckbox = f
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
@@ -665,7 +667,10 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		end
 	end)
 
-	return yCoord - 30
+	yCoord = yCoord - 30
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, controls.healthBarColorSection, yCoord)
+
+	return yCoord
 end
 
 ---Generates the Brewmaster Monk stagger bar color options panel, including light/medium/heavy threshold colors, color transition type, threshold sliders, border, and background colors.

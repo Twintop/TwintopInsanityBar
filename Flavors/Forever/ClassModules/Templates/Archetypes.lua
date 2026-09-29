@@ -26,7 +26,6 @@ TRB.Forever.Templates = TRB.Forever.Templates or {}
 ---@field public variable string # bar text variable stem (without "$"), e.g. "mana" -> $mana, $manaMax
 ---@field public defaultMax integer # maxResource before the client reports one
 ---@field public defaultText "resource"|"mana" # GlobalLoadDefaultBarTextSettings resource type
----@field public isHealerLike boolean # FillSpecializationCacheSettings isHealer flag
 ---@field public colors TRB.Forever.ArchetypeColors
 ---@field public secondary TRB.Forever.ArchetypeSecondary?
 ---@field public overcap TRB.Forever.ArchetypeOvercap? # a resource that can overcap: its Overcap indicator and text colors
@@ -105,7 +104,6 @@ TRB.Forever.Archetypes = {
 		variable = "mana",
 		defaultMax = 100,
 		defaultText = "mana",
-		isHealerLike = true,
 		colors = { textCurrent = "FF4D4DFF", textCasting = "FFFFFFFF", textPassive = "FF8080FF", barBase = "FF0000FF", barBorder = "FF000099", barBackground = "66000000" },
 	},
 	rage = {
@@ -117,7 +115,6 @@ TRB.Forever.Archetypes = {
 		variable = "rage",
 		defaultMax = 100,
 		defaultText = "resource",
-		isHealerLike = false,
 		colors = { textCurrent = "FFFF0000", textCasting = "FFFFFFFF", textPassive = "FFFF8080", barBase = "FFFF0000", barBorder = "FF990000", barBackground = "66000000" },
 		overcap = rageOvercap,
 	},
@@ -130,7 +127,6 @@ TRB.Forever.Archetypes = {
 		variable = "energy",
 		defaultMax = 100,
 		defaultText = "resource",
-		isHealerLike = false,
 		colors = { textCurrent = "FFFFFF00", textCasting = "FFFFFFFF", textPassive = "FFD59900", barBase = "FFFFFF00", barBorder = "FFFFD300", barBackground = "66000000" },
 		overcap = energyOvercap,
 	},
@@ -143,7 +139,6 @@ TRB.Forever.Archetypes = {
 		variable = "energy",
 		defaultMax = 100,
 		defaultText = "resource",
-		isHealerLike = false,
 		colors = { textCurrent = "FFFFFF00", textCasting = "FFFFFFFF", textPassive = "FFD59900", barBase = "FFFFFF00", barBorder = "FFFFD300", barBackground = "66000000" },
 		overcap = energyOvercap,
 		secondary = comboPointsSecondary,

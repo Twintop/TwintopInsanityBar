@@ -35,13 +35,15 @@ end
 ---Copy... button on spec panels, or a bulk all-specs toggle (with Copy...) on the Global panel. Keyed
 ---by the per-section setting (e.g. "targetCastbarColors"). Mirrors the player cast bar's rows.
 ---@return number yCoord
+---@return CheckButton? checkbox # The spec panel's Use Global box; nil on the Global panel
 local function BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, settingKey, yCoord)
 	local settingKeyUpper = settingKey:gsub("^%l", string.upper)
+	local cb = nil
 	if classId ~= nil then
 		yCoord = yCoord - 30
 		local classToken = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 		controls.checkBoxes = controls.checkBoxes or {}
-		local cb = CreateFrame("CheckButton", "TwintopResourceBar_" .. classToken .. "_" .. specName .. "_useGlobal_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
+		cb = CreateFrame("CheckButton", "TwintopResourceBar_" .. classToken .. "_" .. specName .. "_useGlobal_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
 		controls.checkBoxes["useGlobal" .. settingKeyUpper] = cb
 		cb:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
 		local settingDef = TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(settingKey)
@@ -66,7 +68,7 @@ local function BuildUseGlobalRow(parent, controls, classId, specId, classNameLow
 	else
 		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKeyUpper, settingKey, yCoord)
 	end
-	return yCoord
+	return yCoord, cb
 end
 
 ---Constructs the appearance options for one unit's cast bar within a spec.
@@ -117,20 +119,25 @@ function TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(parent, classId, s
 	-- Side ability icon.
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls, spec, classId, specId, yCoord, barDef)
 	yCoord = yCoord - 20
+	local dimensionsCheckbox = controls.checkBoxes["useGlobal" .. (unitKey .. "Dimensions"):gsub("^%l", string.upper)]
+	TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(dimensionsCheckbox, controls[barDef.key .. "DimensionsSection"], controls[barDef.key .. "IconSection"], yCoord)
 
 	-- Uninterruptible shield (its own global-settings section, decoupled from the icon)
 	controls[unitKey .. "ShieldSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarIconShieldHeader"], oUi.xCoord, yCoord)
-	yCoord = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, unitKey .. "Shield", yCoord)
+	local shieldCheckbox
+	yCoord, shieldCheckbox = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, unitKey .. "Shield", yCoord)
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCastbarShieldOptions(parent, controls, spec, classId, specId, yCoord, barDef)
 	yCoord = yCoord - 20
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(shieldCheckbox, controls[unitKey .. "ShieldSection"], yCoord)
 
 	-- Colors: fill/interrupt/border/background, under the "Colors" per-section global toggle. Optional
 	-- colors follow the standard row layout -- enable checkbox in the left column, color swatch in the
 	-- right -- like the player cast bar's overlay colors; always-applied colors are plain swatch rows.
 	-- (Spell name / cast time / remaining are shown via the standard Bar Text editor anchored to this bar.)
 	controls[unitKey .. "ColorSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["TargetCastbarColorsHeader"], oUi.xCoord, yCoord)
-	yCoord = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, unitKey .. "Colors", yCoord)
+	local colorsCheckbox
+	yCoord, colorsCheckbox = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, unitKey .. "Colors", yCoord)
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "bar", L["CastbarColorCast"], yCoord, classId, specId)
 	yCoord = yCoord - 30
@@ -166,11 +173,13 @@ function TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(parent, classId, s
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "background", L["ColorPickerUnfilledBarBackground"], yCoord, classId, specId)
 	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colors, controlsKey .. "_" .. unitKey, "endCap_" .. unitKey, L["EndCap"], classId, specId)
 	yCoord = yCoord - 40
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(colorsCheckbox, controls[unitKey .. "ColorSection"], yCoord)
 
 	-- Empower: distinct fill color for empowered casts + stage boundary lines, under the "Empower"
 	-- per-section global toggle. Stage-lines row = enable checkbox + line-color swatch; width slider below.
 	controls[unitKey .. "EmpowerSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["TargetCastbarEmpowerHeader"], oUi.xCoord, yCoord)
-	yCoord = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, unitKey .. "Empower", yCoord)
+	local empowerCheckbox
+	yCoord, empowerCheckbox = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, unitKey .. "Empower", yCoord)
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "empower", L["CastbarColorEmpower"], yCoord, classId, specId)
 	yCoord = yCoord - 30
@@ -196,12 +205,14 @@ function TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(parent, classId, s
 	end)
 	TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(empowerWidthSlider, barSettings.showEmpowerStages ~= false)
 	yCoord = yCoord - 50
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(empowerCheckbox, controls[unitKey .. "EmpowerSection"], yCoord)
 
 	-- Additional Settings: color the fill by the monitored unit's class color + cast time/duration text
 	-- precision, under their own per-section global toggle (same layout as the player cast bar's section).
 	local unitNoun = (unitKey == "focusCastbar") and L["ResourceFocus"] or L["ResourceTarget"]
 	controls[unitKey .. "AdditionalSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarTimersHeader"], oUi.xCoord, yCoord)
-	yCoord = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, unitKey .. "Text", yCoord)
+	local textCheckbox
+	yCoord, textCheckbox = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, unitKey .. "Text", yCoord)
 	yCoord = yCoord - 30
 
 	-- Class color: recolor the fill by the monitored unit's class (enemy players by default). Two indented
@@ -251,6 +262,7 @@ function TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(parent, classId, s
 	cc.castTimePrecision = BuildPrecisionSlider(L["CastbarCastTimePrecision"], "castTimePrecision", oUi.xCoord)
 	cc.durationPrecision = BuildPrecisionSlider(L["CastbarDurationPrecision"], "durationPrecision", oUi.xCoord2)
 	yCoord = yCoord - 60
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(textCheckbox, controls[unitKey .. "AdditionalSection"], yCoord)
 
 	return yCoord
 end

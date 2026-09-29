@@ -195,7 +195,7 @@ local function FillSpellData_Marksmanship()
 end
 
 local function Setup_Survival()
-	Character:FillSpecializationCacheSettings("hunter", "survival", true)
+	Character:FillSpecializationCacheSettings("hunter", "survival")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "hunter_survival" then

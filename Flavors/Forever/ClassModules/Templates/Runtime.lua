@@ -83,7 +83,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 
 	---@param spec TRB.Forever.SpecDefinition
 	local function Setup(spec)
-		Character:FillSpecializationCacheSettings(className, spec.entry.specName, spec.archetype.isHealerLike)
+		Character:FillSpecializationCacheSettings(className, spec.entry.specName)
 		-- Only destroy and recreate bar groups when switching to this spec
 		if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= spec.entry.compositeKey then
 			Bar:DestroyBarGroups()

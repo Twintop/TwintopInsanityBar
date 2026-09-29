@@ -374,7 +374,7 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Discipline()
-	Character:FillSpecializationCacheSettings("priest", "discipline", true)
+	Character:FillSpecializationCacheSettings("priest", "discipline")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "priest_discipline" then
@@ -393,7 +393,7 @@ local function FillSpellData_Discipline()
 end
 
 local function Setup_Holy()
-	Character:FillSpecializationCacheSettings("priest", "holy", true)
+	Character:FillSpecializationCacheSettings("priest", "holy")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "priest_holy" then

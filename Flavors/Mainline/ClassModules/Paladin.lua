@@ -127,7 +127,7 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Holy()
-	Character:FillSpecializationCacheSettings("paladin", "holy", true)
+	Character:FillSpecializationCacheSettings("paladin", "holy")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "paladin_holy" then
@@ -145,7 +145,7 @@ local function FillSpellData_Holy()
 end
 
 local function Setup_Protection()
-	Character:FillSpecializationCacheSettings("paladin", "protection", true)
+	Character:FillSpecializationCacheSettings("paladin", "protection")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "paladin_protection" then
@@ -163,7 +163,7 @@ local function FillSpellData_Protection()
 end
 
 local function Setup_Retribution()
-	Character:FillSpecializationCacheSettings("paladin", "retribution", true)
+	Character:FillSpecializationCacheSettings("paladin", "retribution")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "paladin_retribution" then

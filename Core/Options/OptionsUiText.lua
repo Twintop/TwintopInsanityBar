@@ -47,11 +47,13 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 	controls.defaultFontNotice:SetJustifyH("LEFT")
 	controls.defaultFontNotice:SetText("|cFFCCCCCC" .. L["DefaultFontSettingsNotice"] .. "|r")
 
+	local useGlobalCheckbox = nil
 	if specId ~= nil and classId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
 		controls.checkBoxes.useGlobal = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_displayText", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobal
+		useGlobalCheckbox = f
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
@@ -184,6 +186,9 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end)
 
+	-- The returned row is the shadow offset sliders' top, so the cover reaches past their edit boxes.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, controls.textDisplayDefaultSection, yCoord - 40)
+
 	return yCoord
 end
 
@@ -221,6 +226,8 @@ function TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, contr
 		TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("textColors")
 	end)
 	TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "textColors")
+	-- Every caller builds its text colors header as textDisplaySection just before this.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalBadge(f, controls.textDisplaySection, L["UseGlobalBadgeTooltipTextColors"])
 
 	return yCoord
 end
@@ -245,11 +252,13 @@ function TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent,
 
 	yCoord = yCoord - 30
 	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
+	local useGlobalCheckbox = nil
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 25
 		local lowerClassName = string.lower(className)
 		controls.checkBoxes.useGlobalPrecision = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_precision", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalPrecision
+		useGlobalCheckbox = f
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
@@ -317,6 +326,8 @@ function TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent,
 		TRB.Functions.Character:RecomputeFormattedValues()
 	end)
 
+	-- The returned row is the Health slider's top, so the cover reaches past its edit box.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, controls.textDisplaySection, yCoord - 40)
 
 	return yCoord
 end

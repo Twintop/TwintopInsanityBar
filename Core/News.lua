@@ -8,6 +8,9 @@ TRB.Details.coreNewsContent = [====[
 
 - Fix bar text and threshold icon positions rotating with a spec's own Fill Direction instead of the direction its bar displays, such as while Use global settings is checked.
 - Update LibEditMode to version 18.
+- Spec panels cover and badge sections using global settings, and each Enable for all specializations box shows how many specs use it.
+- Fix global threshold line colors and textures not always applying, and spec textures overwriting the global ones.
+- Rename Threshold Line Colors for DPS and Tanks to Threshold Line Colors, and fix the Brewmaster Energy bar's Base Colors header spacing.
 
 ---
 

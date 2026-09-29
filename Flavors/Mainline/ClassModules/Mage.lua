@@ -132,7 +132,7 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Arcane()
-	Character:FillSpecializationCacheSettings("mage", "arcane", true)
+	Character:FillSpecializationCacheSettings("mage", "arcane")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "mage_arcane" then

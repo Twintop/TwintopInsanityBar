@@ -435,7 +435,47 @@ function TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, title, po
 	return f
 end
 
+---Builds a translucent, bordered panel that blocks clicks on a section's controls, spanning the parent between two y offsets.
+---Hidden until shown.
+---@param parent Frame # The panel's scroll child
+---@param topY number # Y offset of the cover's top edge from parent's TOPLEFT
+---@param bottomY number # Y offset of the cover's bottom edge from parent's TOPLEFT
+---@return Frame|BackdropTemplate
+function TRB.Functions.OptionsUi.Primitives:BuildSectionCover(parent, topY, bottomY)
+	local f = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	f:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, topY)
+	f:SetPoint("BOTTOMRIGHT", parent, "TOPRIGHT", 0, bottomY)
+	-- Above every control in the section, including a slider's edit box and a dropdown's button.
+	f:SetFrameLevel(parent:GetFrameLevel() + 20)
+	f:EnableMouse(true)
+	f:EnableMouseWheel(true)
+	-- Sliders underneath would otherwise take the wheel, so hand it to the panel's scroll frame.
+	f:SetScript("OnMouseWheel", function(cover, delta)
+		local scrollFrame = cover:GetParent()
+		while scrollFrame ~= nil and scrollFrame:GetObjectType() ~= "ScrollFrame" do
+			scrollFrame = scrollFrame:GetParent()
+		end
+		local handler = scrollFrame and scrollFrame:GetScript("OnMouseWheel")
+		if handler ~= nil then
+			handler(scrollFrame, delta)
+		end
+	end)
+
+	---@diagnostic disable-next-line: missing-fields
+	f:SetBackdrop({
+		bgFile = "Interface\\Buttons\\WHITE8X8",
+		edgeFile = "Interface\\Buttons\\WHITE8X8",
+		edgeSize = 2,
+	})
+	f:SetBackdropColor(0, 0, 0, 0.8)
+	f:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
+
+	f:Hide()
+	return f
+end
+
 local CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B = 1.0, 0.24, 0.24
+local GLOBAL_BADGE_R, GLOBAL_BADGE_G, GLOBAL_BADGE_B = 100/255, 225/255, 200/255
 
 ---Builds a short coloured badge that explains itself on hover.
 ---@param parent Frame
@@ -542,6 +582,24 @@ function TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(fontString, dep
 	return AttachBadge(fontString, "cdm", dependency == TRB.Data.constants.cdmDependency.REQUIRED,
 		L["CdmBadgeLabel"], L["CdmBadgeHeader"], L["CdmBadgeRequiredTooltip"],
 		CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B, padding)
+end
+
+---Shows or hides a "Global" badge just past a section header's text, after its CDM badge when it has one.
+---@param fontString FontString # The header's label
+---@param shown boolean
+---@param tooltip string # Fixed on first build
+---@return Frame?
+function TRB.Functions.OptionsUi.Primitives:AttachGlobalBadgeToText(fontString, shown, tooltip)
+	if fontString == nil then
+		return nil
+	end
+	local padding = 6
+	local cdmBadge = fontString.trbBadges and fontString.trbBadges.cdm
+	if cdmBadge ~= nil and cdmBadge:IsShown() then
+		padding = padding + cdmBadge:GetWidth() + 6
+	end
+	return AttachBadge(fontString, "global", shown, L["UseGlobalBadgeLabel"], L["UseGlobalBadgeHeader"], tooltip,
+		GLOBAL_BADGE_R, GLOBAL_BADGE_G, GLOBAL_BADGE_B, padding)
 end
 
 ---Creates a two-part help entry: a right-aligned variable name and a left-aligned description below it.

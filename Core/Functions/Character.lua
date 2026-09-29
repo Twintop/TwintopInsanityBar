@@ -1335,8 +1335,7 @@ end
 ---| '"arms"' # Arms (Warrior)
 ---| '"fury"' # Fury (Warrior)
 ---| '"protection"' # Protection (Paladin, Warrior)
----@param isHealer boolean
-function TRB.Functions.Character:FillSpecializationCacheSettings(className, specName, isHealer)
+function TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
 	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
 	local specCache = TRB.Data.specCache[compositeKey] --[[@as TRB.Classes.SpecCache]]
 	local core = TRB.Data.settings.core --[[@as TRB.Classes.Settings.Core]]
@@ -1442,13 +1441,8 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	end
 
 	if s.thresholdColors then
-		if isHealer then
-		else
-			specCache.settings.colors.threshold.over = core.colors.threshold.over
-			specCache.settings.colors.threshold.under = core.colors.threshold.under
-			specCache.settings.colors.threshold.unusable = core.colors.threshold.unusable
-			specCache.settings.colors.threshold.special = core.colors.threshold.special
-			specCache.settings.colors.threshold.outOfRange = core.colors.threshold.outOfRange
+		for _, key in ipairs(TRB.Data.constants.globalThresholdColorKeys) do
+			specCache.settings.colors.threshold[key] = core.colors.threshold[key]
 		end
 	end
 
@@ -1503,73 +1497,45 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	end
 	
 	if s.textures then
-		specCache.settings.textures = core.textures
+		-- A copy, so layering this spec's own textures on top never writes them into Global's saved table.
+		local textures = {}
+		for key, value in pairs(core.textures) do
+			textures[key] = value
+		end
+		specCache.settings.textures = textures
+
+		-- The bars Global's Textures panel offers take Global's textures; the mana bar and class bars keep
+		-- the spec's own, and Texture Lock matches every one of them to Global's main bar.
+		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+		local globalTextureBars = {}
+		registry:AppendCastbar(globalTextureBars)
+		registry:AppendTargetFocusCastbars(globalTextureBars)
+		registry:AppendOtherBars(globalTextureBars, nil)
+		local isGlobalTextureBar = {}
+		for _, barTypeDef in ipairs(globalTextureBars) do
+			isGlobalTextureBar[barTypeDef.key] = true
+		end
+
+		local specTextures = spec.textures or {}
+		local lockSources = { Bar = "resourceBar", Border = "border", Background = "background" }
+		local prefixes = { "manaBar" }
+		for key in pairs(registry:GetAll()) do
+			prefixes[#prefixes + 1] = key
+		end
+		for _, prefix in ipairs(prefixes) do
+			for suffix, lockSource in pairs(lockSources) do
+				local key = prefix .. suffix
+				if textures.textureLock then
+					textures[key] = textures[lockSource]
+					textures[key .. "Name"] = textures[lockSource .. "Name"]
+				elseif specTextures[key] ~= nil and (not isGlobalTextureBar[prefix] or textures[key] == nil) then
+					textures[key] = specTextures[key]
+					textures[key .. "Name"] = specTextures[key .. "Name"]
+				end
+			end
+		end
 	else
 		specCache.settings.textures = spec.textures
-	end
-
-	-- Mana bar and custom bar textures are spec-specific (not available in core settings)
-	-- When using global textures with texture lock enabled, sync from primary bar texture
-	-- When using global textures with texture lock disabled, use spec-specific textures
-	-- When using spec textures, always use spec-specific textures
-	if spec.textures then
-		local useGlobalWithTextureLock = s.textures and specCache.settings.textures.textureLock
-		
-		-- Mana bar textures
-		if useGlobalWithTextureLock then
-			-- Sync mana bar textures to primary bar texture from global settings
-			specCache.settings.textures.manaBarBar = specCache.settings.textures.resourceBar
-			specCache.settings.textures.manaBarBarName = specCache.settings.textures.resourceBarName
-			specCache.settings.textures.manaBarBorder = specCache.settings.textures.border
-			specCache.settings.textures.manaBarBorderName = specCache.settings.textures.borderName
-			specCache.settings.textures.manaBarBackground = specCache.settings.textures.background
-			specCache.settings.textures.manaBarBackgroundName = specCache.settings.textures.backgroundName
-		else
-			-- Use spec-specific mana bar textures
-			if spec.textures.manaBarBar then
-				specCache.settings.textures.manaBarBar = spec.textures.manaBarBar
-				specCache.settings.textures.manaBarBarName = spec.textures.manaBarBarName
-			end
-			if spec.textures.manaBarBorder then
-				specCache.settings.textures.manaBarBorder = spec.textures.manaBarBorder
-				specCache.settings.textures.manaBarBorderName = spec.textures.manaBarBorderName
-			end
-			if spec.textures.manaBarBackground then
-				specCache.settings.textures.manaBarBackground = spec.textures.manaBarBackground
-				specCache.settings.textures.manaBarBackgroundName = spec.textures.manaBarBackgroundName
-			end
-		end
-		
-		-- Custom bar textures using flat keys (e.g., staggerBar, staggerBorder, staggerBackground)
-		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
-		for key, _ in pairs(registry:GetAll()) do
-			local barKey = key .. "Bar"
-			local borderKey = key .. "Border"
-			local bgKey = key .. "Background"
-			if useGlobalWithTextureLock then
-				-- Sync custom bar textures to primary bar texture from global settings
-				specCache.settings.textures[barKey] = specCache.settings.textures.resourceBar
-				specCache.settings.textures[barKey .. "Name"] = specCache.settings.textures.resourceBarName
-				specCache.settings.textures[borderKey] = specCache.settings.textures.border
-				specCache.settings.textures[borderKey .. "Name"] = specCache.settings.textures.borderName
-				specCache.settings.textures[bgKey] = specCache.settings.textures.background
-				specCache.settings.textures[bgKey .. "Name"] = specCache.settings.textures.backgroundName
-			else
-				-- Use spec-specific custom bar textures
-				if spec.textures[barKey] then
-					specCache.settings.textures[barKey] = spec.textures[barKey]
-					specCache.settings.textures[barKey .. "Name"] = spec.textures[barKey .. "Name"]
-				end
-				if spec.textures[borderKey] then
-					specCache.settings.textures[borderKey] = spec.textures[borderKey]
-					specCache.settings.textures[borderKey .. "Name"] = spec.textures[borderKey .. "Name"]
-				end
-				if spec.textures[bgKey] then
-					specCache.settings.textures[bgKey] = spec.textures[bgKey]
-					specCache.settings.textures[bgKey .. "Name"] = spec.textures[bgKey .. "Name"]
-				end
-			end
-		end
 	end
 
 	-- Custom bar dimensions (stagger, defensives, mana, etc.) - always spec-specific
@@ -1936,9 +1902,7 @@ function TRB.Functions.Character:EnsureSpecCache(compositeKey)
 	end
 
 	-- Populate merged settings into the specCache entry
-	-- isHealer=false is safe for lazy loading; the active class's FillSpecializationCacheSettings
-	-- call with the correct isHealer value will override this when the spec becomes active.
-	TRB.Functions.Character:FillSpecializationCacheSettings(className, specName, false)
+	TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
 
 	-- Populate barTextVariables for cross-class options panel display.
 	-- For the active class, barTextVariables are populated by FillSpellData_[Spec] at load time.

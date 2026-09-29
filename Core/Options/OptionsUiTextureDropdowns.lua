@@ -269,7 +269,10 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(contr
 
 	TRB.Functions.Character:ResetCaches()
 	if TRB.Frames.barGroups ~= nil then
-		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		local character = TRB.Data.character
+		-- The cache holds its own copy of global textures, so an edit only reaches the bar through a re-fill.
+		TRB.Functions.Character:FillSpecializationCacheSettings(character.className, character.specName)
+		local settings = TRB.Data.specCache[character.compositeKey].settings
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -306,7 +309,10 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateOverlayDropdowns(control
 
 	TRB.Functions.Character:ResetCaches()
 	if TRB.Frames.barGroups ~= nil then
-		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		local character = TRB.Data.character
+		-- The cache holds its own copy of global textures, so an edit only reaches the bar through a re-fill.
+		TRB.Functions.Character:FillSpecializationCacheSettings(character.className, character.specName)
+		local settings = TRB.Data.specCache[character.compositeKey].settings
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then

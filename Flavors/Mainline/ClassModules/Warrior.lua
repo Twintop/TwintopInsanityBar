@@ -215,7 +215,7 @@ local function FillSpellData_Fury()
 end
 
 local function Setup_Protection()
-	Character:FillSpecializationCacheSettings("warrior", "protection", true)
+	Character:FillSpecializationCacheSettings("warrior", "protection")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warrior_protection" then

@@ -76,7 +76,7 @@ local function FillSpecializationCache()
 end
 
 local function Setup()
-	Character:FillSpecializationCacheSettings(className, specName, false)
+	Character:FillSpecializationCacheSettings(className, specName)
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= compositeKey then
 		Bar:DestroyBarGroups()

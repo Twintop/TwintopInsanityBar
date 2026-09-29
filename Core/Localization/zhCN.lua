@@ -975,7 +975,6 @@ if locale == "zhCN" then
     L["TabThresholds"] = "阈值线"
     L["ThresholdLinePositionHeader"] = "阈值线与图标位置和尺寸"
     L["ThresholdLineColorsHeader"] = "阈值线颜色"
-    L["ThresholdLineColorsForDpsAndTanksHeader"] = "输出与坦克职业阈值线颜色"
     L["ThresholdGenericSpecial"] = "特殊增益、触发效果或状态"
     L["CheckboxUseGlobalTooltip_ThresholdIcons"] = "勾选后，将套用阈值图标尺寸、位置与阈值线宽度的全局设置。"
     L["CheckboxUseGlobalTooltip_ThresholdColors"] = "勾选后，将套用阈值颜色的全局设置，全局设置会根据专精职责自动匹配。"

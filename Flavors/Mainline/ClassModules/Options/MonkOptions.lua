@@ -877,7 +877,7 @@ local function BrewmasterConstructEnergyBarPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord)
 
-	yCoord = yCoord - 20
+	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"])
 
 	yCoord = yCoord - 40

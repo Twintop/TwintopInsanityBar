@@ -25,9 +25,8 @@ end
 ---@param classId integer? The class ID, or nil for global settings
 ---@param specId integer? The spec ID, or nil for global settings
 ---@param yCoord number The current Y coordinate for layout positioning
----@param isHealer boolean? Whether the spec is a healer (affects global setting handling)
 ---@return number yCoord The updated Y coordinate after placing all controls
-function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, classId, specId, yCoord, isHealer)
+function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, classId, specId, yCoord)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	local namePrefix = className .. "_" .. specName
 	local f = nil
@@ -36,12 +35,15 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 
 	yCoord = yCoord - 30
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ThresholdLinePositionHeader"], oUi.xCoord, yCoord)
+	local sectionHeader = controls.abilityThresholdSection
 
+	local useGlobalCheckbox = nil
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
 		controls.checkBoxes.useGlobalThresholdIcons = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_thresholdIcons", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalThresholdIcons
+		useGlobalCheckbox = f
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
@@ -50,7 +52,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdIcons)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.global[lowerClassName][specName].thresholdIcons = self:GetChecked()
-			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName, isHealer)
+			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
@@ -268,6 +270,9 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		TRB.Functions.Threshold:RedrawThresholdLines()
 	end)
 
+	-- The returned row is the Overlap Border checkbox's top, so the cover reaches past it.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, yCoord - 30)
+
 	return yCoord
 end
 
@@ -292,17 +297,16 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 
 	controls.colors.threshold = controls.colors.threshold or {}
 
-	if classId == nil and specId == nil then
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ThresholdLineColorsForDpsAndTanksHeader"], oUi.xCoord, yCoord)
-	else
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
-	end
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ThresholdLineColorsHeader"], oUi.xCoord, yCoord)
 
+	local sectionHeader = controls.abilityThresholdSection
+	local useGlobalCheckbox = nil
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
 		local lowerClassName = string.lower(className)
 		controls.checkBoxes.useGlobalThresholdColors = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_useGlobal_thresholdColors", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalThresholdColors
+		useGlobalCheckbox = f
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
@@ -323,6 +327,9 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllThresholdColors", "thresholdColors", yCoord)
 	end
 
+	-- The cover stops above the first custom color that stays per spec.
+	local globalRowsBottomY = nil
+
 	if under == true then
 		yCoord = yCoord - 30
 		controls.colors.threshold.under = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], localizationResource), spec.colors.threshold.under.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -330,6 +337,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
+		globalRowsBottomY = yCoord - 30
 	end
 
 	if over == true then
@@ -339,6 +347,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
+		globalRowsBottomY = yCoord - 30
 	end
 
 	if unusable == true then
@@ -348,6 +357,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
+		globalRowsBottomY = yCoord - 30
 	end
 
 	if outOfRange == true then
@@ -397,12 +407,22 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
 		end)
+		globalRowsBottomY = yCoord - 30
 	end
 
 	if custom ~= nil and #custom > 0 then
-		for _, value in pairs(custom) do
+		local specRowBuilt = false
+		for _, value in ipairs(custom) do
 			yCoord, _, _ = TRB.Functions.OptionsUi.ColorPickers:BuildColorPickerWithEnable(parent, yCoord, controls, "threshold", spec.colors.threshold, namePrefix, value)
+			specRowBuilt = specRowBuilt or not tContains(TRB.Data.constants.globalThresholdColorKeys, value.name)
+			if not specRowBuilt then
+				globalRowsBottomY = yCoord - 30
+			end
 		end
+	end
+
+	if globalRowsBottomY ~= nil then
+		TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, globalRowsBottomY)
 	end
 
 	return yCoord

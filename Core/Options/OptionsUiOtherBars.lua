@@ -38,13 +38,15 @@ end
 ---Copy... button on spec panels, or a bulk all-specs toggle (with Copy...) on the Global panel. Mirrors
 ---the cast bar panels' rows.
 ---@return number yCoord
+---@return CheckButton? checkbox # The spec panel's Use Global box; nil on the Global panel
 local function BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, settingKey, yCoord)
 	local settingKeyUpper = settingKey:gsub("^%l", string.upper)
+	local cb = nil
 	if classId ~= nil then
 		yCoord = yCoord - 30
 		local classToken = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 		controls.checkBoxes = controls.checkBoxes or {}
-		local cb = CreateFrame("CheckButton", "TwintopResourceBar_" .. classToken .. "_" .. specName .. "_useGlobal_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
+		cb = CreateFrame("CheckButton", "TwintopResourceBar_" .. classToken .. "_" .. specName .. "_useGlobal_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
 		controls.checkBoxes["useGlobal" .. settingKeyUpper] = cb
 		cb:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
 		local settingDef = TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(settingKey)
@@ -69,7 +71,7 @@ local function BuildUseGlobalRow(parent, controls, classId, specId, classNameLow
 	else
 		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKeyUpper, settingKey, yCoord)
 	end
-	return yCoord
+	return yCoord, cb
 end
 
 ---Constructs the appearance options for one Other Bar within a spec.
@@ -121,8 +123,9 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 
 	-- Colors: fill / border / background / end cap.
 	controls[barKey .. "ColorSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["OtherBarsColorsHeader"], oUi.xCoord, yCoord)
+	local colorsCheckbox = nil
 	if hasGlobalScope then
-		yCoord = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, barKey .. "Colors", yCoord)
+		yCoord, colorsCheckbox = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, barKey .. "Colors", yCoord)
 	end
 	yCoord = yCoord - 30
 	-- The fill takes a gradient; border and background are single-color, as everywhere else.
@@ -133,6 +136,7 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "background", L["ColorPickerUnfilledBarBackground"], yCoord, classId, specId)
 	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colors, controlsKey .. "_" .. barKey, "endCap_" .. barKey, L["EndCap"], classId, specId)
 	yCoord = yCoord - 40
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(colorsCheckbox, controls[barKey .. "ColorSection"], yCoord)
 
 	-- Behaviour: one option each. The GCD picks its fill direction; a mirror timer decides whether to
 	-- take Blizzard's own bar off screen.
@@ -170,6 +174,9 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 		end)
 		yCoord = yCoord - 60
 	end
+
+	-- The Colors section's box also carries this section's settings.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(colorsCheckbox, controls[barKey .. "ColorSection"], controls[barKey .. "BehaviorSection"], yCoord)
 
 	return yCoord
 end

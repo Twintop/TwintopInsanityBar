@@ -183,7 +183,7 @@ local function FillSpellData_Brewmaster()
 end
 
 local function Setup_Mistweaver()
-	Character:FillSpecializationCacheSettings("monk", "mistweaver", true)
+	Character:FillSpecializationCacheSettings("monk", "mistweaver")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	-- (guards against redundant delayed SwitchSpec calls that would orphan initialized bars)

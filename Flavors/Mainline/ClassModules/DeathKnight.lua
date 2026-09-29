@@ -231,7 +231,7 @@ spellEventFrame:SetScript("OnEvent", function(self, event, spellId)
 end)
 
 local function Setup_Blood()
-	Character:FillSpecializationCacheSettings("deathknight", "blood", true)
+	Character:FillSpecializationCacheSettings("deathknight", "blood")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	-- (guards against redundant delayed SwitchSpec calls that would orphan initialized bars)

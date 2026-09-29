@@ -161,7 +161,7 @@ local function Setup_Elemental()
 end
 
 local function Setup_Enhancement()
-	Character:FillSpecializationCacheSettings("shaman", "enhancement", true)
+	Character:FillSpecializationCacheSettings("shaman", "enhancement")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "shaman_enhancement" then
@@ -171,7 +171,7 @@ local function Setup_Enhancement()
 end
 
 local function Setup_Restoration()
-	Character:FillSpecializationCacheSettings("shaman", "restoration", true)
+	Character:FillSpecializationCacheSettings("shaman", "restoration")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "shaman_restoration" then

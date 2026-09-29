@@ -183,7 +183,9 @@ TRB.Data.constants = {
 		["BOTTOMLEFT"]  = "BOTTOMLEFT",
 		["BOTTOM"]      = "BOTTOM",
 		["BOTTOMRIGHT"] = "BOTTOMRIGHT",
-	}
+	},
+	---Threshold line colors a spec takes from Global Options while its Use Global box is checked
+	globalThresholdColorKeys = { "over", "under", "unusable", "special", "outOfRange" }
 }
 
 TRB.Data.constants.optionsUi.xOffset2 = TRB.Data.constants.optionsUi.xCoord2 + TRB.Data.constants.optionsUi.xOffset1

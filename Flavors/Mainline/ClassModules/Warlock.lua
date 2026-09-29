@@ -146,7 +146,7 @@ local function FillSpecializationCache()
 end
 
 local function Setup_Affliction()
-	Character:FillSpecializationCacheSettings("warlock", "affliction", true)
+	Character:FillSpecializationCacheSettings("warlock", "affliction")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warlock_affliction" then
@@ -164,7 +164,7 @@ local function FillSpellData_Affliction()
 end
 
 local function Setup_Demonology()
-	Character:FillSpecializationCacheSettings("warlock", "demonology", true)
+	Character:FillSpecializationCacheSettings("warlock", "demonology")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warlock_demonology" then
@@ -184,7 +184,7 @@ end
 
 
 local function Setup_Destruction()
-	Character:FillSpecializationCacheSettings("warlock", "destruction", true)
+	Character:FillSpecializationCacheSettings("warlock", "destruction")
 	
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warlock_destruction" then

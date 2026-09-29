@@ -136,33 +136,133 @@ function TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, spe
 	return TRB.Functions.Character:IsPanelForLiveSpec(classId, specId)
 end
 
----Gets the aggregate state of a global setting across all class/specs
+---Counts the specs that carry a section's Use Global flag, and how many of them have it on.
 ---@param settingKey string # The setting key (e.g., "bar", "comboPoints", "textures")
----@return boolean|nil # true if all enabled, false if all disabled, nil if mixed
-local function GetAllSpecsGlobalState(settingKey)
+---@return integer used
+---@return integer total
+local function CountSpecsUsingGlobal(settingKey)
 	local global = TRB.Data.settings.core.global
-	local allTrue = true
-	local allFalse = true
+	local used = 0
+	local total = 0
 
 	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
-		local className = entry.className
-		local specName = entry.specName
-		if global[className] and global[className][specName] and global[className][specName][settingKey] ~= nil then
-			if global[className][specName][settingKey] then
-				allFalse = false
-			else
-				allTrue = false
+		local flags = global[entry.className] and global[entry.className][entry.specName]
+		if flags ~= nil and flags[settingKey] ~= nil then
+			total = total + 1
+			if flags[settingKey] then
+				used = used + 1
 			end
 		end
 	end
 
-	if allTrue then
+	return used, total
+end
+
+---Gets the aggregate state of a global setting across all class/specs
+---@param settingKey string # The setting key (e.g., "bar", "comboPoints", "textures")
+---@return boolean|nil # true if all enabled, false if all disabled, nil if mixed
+local function GetAllSpecsGlobalState(settingKey)
+	local used, total = CountSpecsUsingGlobal(settingKey)
+	if used == total then
 		return true
-	elseif allFalse then
+	elseif used == 0 then
 		return false
 	else
 		return nil -- Mixed state
 	end
+end
+
+---Updates a bulk toggle's count of the specs using that section's global settings.
+---@param checkbox CheckButton # A bulk toggle from BuildBulkGlobalToggleCheckbox
+local function RefreshSpecCount(checkbox)
+	local used, total = CountSpecsUsingGlobal(checkbox.settingKey)
+	checkbox.specCount:SetText(string.format(L["UseGlobalSpecCountFormat"], used, total))
+end
+
+-- Clears a Use Global checkbox row, or a section header's text, above where a cover starts.
+local COVER_ROW_CLEARANCE = 25
+
+---Returns the y offset just below a frame anchored by a single TOPLEFT offset from the panel.
+---@param frame Frame
+---@return number
+local function GetYBelow(frame)
+	local _, _, _, _, y = frame:GetPoint(1)
+	return (y or 0) - COVER_ROW_CLEARANCE
+end
+
+---Shows each cover and Global badge tied to a Use Global checkbox while it is checked.
+---@param checkbox CheckButton
+local function RefreshUseGlobalLinked(checkbox)
+	if checkbox.useGlobalLinked == nil then
+		return
+	end
+	local checked = checkbox:GetChecked() == true
+	for _, linked in ipairs(checkbox.useGlobalLinked) do
+		if linked.cover ~= nil then
+			linked.cover:SetShown(checked)
+		end
+		TRB.Functions.OptionsUi.Primitives:AttachGlobalBadgeToText(linked.header.font, checked, linked.tooltip)
+	end
+end
+
+---Ties a cover and header badge to a Use Global checkbox so both follow its clicks.
+---@param checkbox CheckButton
+---@param header Frame # Section header from BuildSectionHeader
+---@param tooltip string
+---@param cover Frame?
+local function LinkToCheckbox(checkbox, header, tooltip, cover)
+	if checkbox.useGlobalLinked == nil then
+		---@diagnostic disable-next-line: inject-field
+		checkbox.useGlobalLinked = {}
+		checkbox:HookScript("OnClick", RefreshUseGlobalLinked)
+	end
+	table.insert(checkbox.useGlobalLinked, { header = header, tooltip = tooltip, cover = cover })
+	RefreshUseGlobalLinked(checkbox)
+end
+
+local COVER_BUTTON_HEIGHT = 22
+local COVER_BUTTON_GAP = 8
+
+---Builds a cover carrying the Use Global message, an Open button for the checkbox's shortcut link, and a Customize button that unchecks it.
+---@param checkbox CheckButton
+---@param topY number
+---@param bottomY number
+---@return Frame
+local function BuildUseGlobalCover(checkbox, topY, bottomY)
+	local cover = TRB.Functions.OptionsUi.Primitives:BuildSectionCover(checkbox:GetParent(), topY, bottomY)
+
+	local message = cover:CreateFontString(nil, "OVERLAY")
+	message:SetFontObject(GameFontHighlightLarge)
+	message:SetTextColor(GetUseGlobalSettingsColor())
+	message:SetJustifyH("CENTER")
+	message:SetText(L["UseGlobalCoverText"])
+	-- Raised by half the button row so the message and buttons sit centered as one block.
+	local messageYOffset = (COVER_BUTTON_GAP + COVER_BUTTON_HEIGHT) / 2
+	message:SetPoint("LEFT", cover, "LEFT", 20, messageYOffset)
+	message:SetPoint("RIGHT", cover, "RIGHT", -20, messageYOffset)
+
+	local customize = CreateFrame("Button", nil, cover, "UIPanelButtonTemplate")
+	customize:SetText(L["UseGlobalCoverCustomize"])
+	customize:SetSize(customize:GetTextWidth() + 30, COVER_BUTTON_HEIGHT)
+	customize:SetScript("OnClick", function()
+		checkbox:Click()
+	end)
+
+	local link = checkbox.useGlobalLink
+	if link ~= nil then
+		local open = CreateFrame("Button", nil, cover, "UIPanelButtonTemplate")
+		open:SetText(link.coverButtonText)
+		open:SetSize(open:GetTextWidth() + 30, COVER_BUTTON_HEIGHT)
+		open:SetPoint("TOPRIGHT", message, "BOTTOM", -5, -COVER_BUTTON_GAP)
+		open:SetScript("OnClick", function()
+			link:Click()
+		end)
+		customize:SetPoint("TOPLEFT", message, "BOTTOM", 5, -COVER_BUTTON_GAP)
+	else
+		customize:SetPoint("TOP", message, "BOTTOM", 0, -COVER_BUTTON_GAP)
+	end
+
+	return cover
 end
 
 ---Sets a global setting for all class/specs and updates related UI checkboxes
@@ -191,6 +291,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 			local checkbox = _G[frameName]
 			if checkbox then
 				checkbox:SetChecked(value)
+				RefreshUseGlobalLinked(checkbox)
 			end
 		end
 	end
@@ -265,6 +366,13 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(pa
 	-- Store the setting key for the click handler
 	f.settingKey = settingKey
 
+	---@diagnostic disable-next-line: inject-field
+	f.specCount = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	f.specCount:SetTextColor(0.75, 0.75, 0.75)
+	-- The template's label keeps its own width, so sit past the rendered text rather than its right edge.
+	f.specCount:SetPoint("LEFT", f, "RIGHT", getglobal(f:GetName() .. 'Text'):GetStringWidth() + 14, 0)
+	RefreshSpecCount(f)
+
 	f:SetScript("OnClick", function(self, ...)
 		-- Get current tristate: Unchecked->Checked, Mixed->Checked, Checked->Unchecked
 		local currentState = GetAllSpecsGlobalState(self.settingKey)
@@ -280,6 +388,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(pa
 
 		-- Update this checkbox's visual state
 		SetCheckboxTriState(self, newValue)
+		RefreshSpecCount(self)
 	end)
 
 	-- Add a "Copy..." button next to the bulk-toggle checkbox so users can
@@ -301,6 +410,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(
 	if checkbox then
 		local currentState = GetAllSpecsGlobalState(settingKey)
 		SetCheckboxTriState(checkbox, currentState)
+		RefreshSpecCount(checkbox)
 	end
 end
 
@@ -322,12 +432,15 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 	local navKey = categoryKey or "global"
 	local linkText = L["OpenGlobalSettings"]
 	local linkTooltip = L["OpenGlobalSettingsTooltip"]
+	local coverButtonText = L["UseGlobalCoverOpenGlobal"]
 	if navKey == "castbar" then
 		linkText = L["OpenGlobalCastbarSettings"]
 		linkTooltip = L["OpenGlobalCastbarSettingsTooltip"]
+		coverButtonText = L["UseGlobalCoverOpenGlobalCastbar"]
 	elseif navKey == "otherBars" then
 		linkText = L["OpenGlobalOtherBarsSettings"]
 		linkTooltip = L["OpenGlobalOtherBarsSettingsTooltip"]
+		coverButtonText = L["OpenGlobalOtherBarsSettings"]
 	end
 
 	local link = CreateFrame("Button", nil, checkbox)
@@ -339,6 +452,10 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 	link:SetHeight(16)
 	link:SetPoint("LEFT", textRegion, "RIGHT", 8, 0)
 	link.tooltip = linkTooltip
+	---@diagnostic disable-next-line: inject-field
+	link.coverButtonText = coverButtonText
+	---@diagnostic disable-next-line: inject-field
+	checkbox.useGlobalLink = link
 
 	link:SetScript("OnEnter", function(self)
 		self:GetFontString():SetTextColor(1, 1, 1)
@@ -368,5 +485,40 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 	end)
 
 	return link
+end
+
+---Covers a section's controls from below its Use Global row down to bottomY, and badges its header, while the box is checked.
+---@param checkbox CheckButton? # nil on the Global panel, which gets no cover
+---@param header Frame # The section's header from BuildSectionHeader
+---@param bottomY number # Y offset of the section's end from the panel's TOPLEFT
+function TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(checkbox, header, bottomY)
+	if checkbox == nil then
+		return
+	end
+	LinkToCheckbox(checkbox, header, L["UseGlobalBadgeTooltip"], BuildUseGlobalCover(checkbox, GetYBelow(checkbox), bottomY))
+end
+
+---Covers a section whose settings follow another section's Use Global box, from below its own header down to bottomY.
+---@param checkbox CheckButton? # The governing section's box; nil on the Global panel
+---@param governingHeader Frame # The governing section's header, named in the badge tooltip
+---@param header Frame # This section's header
+---@param bottomY number # Y offset of the section's end from the panel's TOPLEFT
+function TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(checkbox, governingHeader, header, bottomY)
+	if checkbox == nil then
+		return
+	end
+	local tooltip = string.format(L["UseGlobalBadgeTooltipLinkedFormat"], governingHeader.font:GetText())
+	LinkToCheckbox(checkbox, header, tooltip, BuildUseGlobalCover(checkbox, GetYBelow(header), bottomY))
+end
+
+---Badges a section's header while its Use Global box is checked, for a section the global settings only partly cover.
+---@param checkbox CheckButton? # nil on the Global panel
+---@param header Frame # The section's header from BuildSectionHeader
+---@param tooltip string # Which parts of the section follow the global settings
+function TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalBadge(checkbox, header, tooltip)
+	if checkbox == nil then
+		return
+	end
+	LinkToCheckbox(checkbox, header, tooltip, nil)
 end
 

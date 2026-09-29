@@ -99,7 +99,6 @@ if locale == "enGB" then
     L["GlobalTextColorsHeader"] = "Resource Text Colours"
     L["GlobalCheckboxThresholdOverTooltip"] = "This will change the Resource text colour when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
     L["ThresholdLineColorsHeader"] = "Threshold Line Colours"
-    L["ThresholdLineColorsForDpsAndTanksHeader"] = "Threshold Line Colours for DPS and Tanks"
     L["CheckboxUseGlobalTooltip_ThresholdColors"] = "When checked, the global settings for threshold colours will be used. The global setting used varies by specialisation role."
     L["RogueAssassinationColorPickerThresholdEchoingReprimandEnabled"] = "Change Mutilate threshold line colour?"
     L["RogueAssassinationColorPickerThresholdEchoingReprimandEnabledTooltip"] = "When checked, the threshold line colour of Mutilate will be changed when the next use will have its damage buffed by Echoing Reprimand."
@@ -469,5 +468,7 @@ if locale == "enGB" then
 	L["BarTextVariableArmorPenetration"] = "Current Armour Penetration"
 	L["BarTextVariableDefense"] = "Current Defence skill"
 	L["BarTextVariableArmor"] = "Current Armour"
+	L["UseGlobalCoverCustomize"] = "Customise for this spec"
+	L["UseGlobalBadgeTooltipTextColors"] = "Current, casting, spending, passive, over threshold, and overcap text colours use the global settings, including whether each is enabled. The Mana Bar text colour and colours unique to this spec stay per spec."
 
 end
