@@ -8,6 +8,13 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.3-release (2026-10-03)
+## General
+
+- Fix the Flavor check from preventing the addon from loading.
+
+---
+
 # 1.60.1.2-release (2026-09-29)
 ## General
 

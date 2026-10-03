@@ -4,6 +4,13 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.0.15-release / Forever 1.60.1.3-release (2026-10-03)
+## Localization
+
+- [#842 - @MOSS099](#842) Updated translations for Simplified Chinese (zhCN).
+
+---
+
 # Live 12.1.0.14-release / Forever 1.60.1.2-release (2026-09-29)
 
 - Fix bar text and threshold icon positions rotating with a spec's own Fill Direction instead of the direction its bar displays, such as while Use global settings is checked.

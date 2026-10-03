@@ -34,7 +34,7 @@ TRB.Flavor = {
 	---(the same rule AceDB uses). An unreadable project ID or interface number is not evidence of a mismatch.
 	---@return boolean
 	IsClientMatch = function()
-		if WOW_PROJECT_ID ~= nil and WOW_PROJECT_MAINLINE ~= nil and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+		if WOW_PROJECT_ID ~= nil and WOW_PROJECT_CAMELOT ~= nil and WOW_PROJECT_ID ~= WOW_PROJECT_CAMELOT then
 			return false
 		end
 		local interfaceVersion = tonumber((select(4, GetBuildInfo())))
