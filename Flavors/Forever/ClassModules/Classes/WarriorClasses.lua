@@ -189,6 +189,7 @@ local function FillSpells(spells)
 		settingKey = "spearingStrike",
 		isTalent = true,
 		hasCooldown = true,
+		stances = battle,
 		category = "offensive",
 	})
 

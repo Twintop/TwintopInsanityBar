@@ -103,6 +103,7 @@ local function LoadDefaultSettings(includeBarText, classic)
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
 			thresholdDictionary = {
 				maul = { enabled = true },
+				primalBite = { enabled = true },
 				demoralizingRoar = { enabled = true },
 				bash = { enabled = true },
 				challengingRoar = { enabled = false },
@@ -117,7 +118,6 @@ local function LoadDefaultSettings(includeBarText, classic)
 				rip = { enabled = true },
 				ferociousBite = { enabled = true },
 				cower = { enabled = false },
-				tigersFury = { enabled = true },
 			},
 			customThresholds = {},
 		},

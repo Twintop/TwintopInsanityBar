@@ -8,6 +8,18 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.4-release (2026-10-03)
+## Druid
+
+- Add a Primal Bite threshold line on the Rage bar and the `#primalBite` bar text variable.
+- Remove the Tiger's Fury threshold line and the `#tigersFury` bar text variable.
+
+## Warrior
+
+- Spearing Strike's threshold line only draws in Battle Stance.
+
+---
+
 # 1.60.1.3-release (2026-10-03)
 ## General
 

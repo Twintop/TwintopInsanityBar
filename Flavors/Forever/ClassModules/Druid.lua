@@ -68,7 +68,7 @@ local function FillSpecializationCache()
 	local spells = cache.spellsData.spells --[[@as TRB.Classes.Druid.GeneralSpells]]
 	local snapshots = cache.snapshotData.snapshots
 	cache.snapshotData.attributes.resource2 = 0
-	for _, spell in ipairs({ spells.bash, spells.challengingRoar, spells.frenziedRegeneration, spells.feralCharge, spells.cower }) do
+	for _, spell in ipairs({ spells.primalBite, spells.bash, spells.challengingRoar, spells.frenziedRegeneration, spells.feralCharge, spells.cower }) do
 		snapshots[spell.id] = TRB.Classes.Snapshot:New(spell)
 	end
 	cache.barTextVariables = { icons = {}, values = {} }
@@ -512,12 +512,12 @@ local function SwitchSpec()
 		lookup["#claw"] = spells.claw.icon
 		lookup["#ferociousBite"] = spells.ferociousBite.icon
 		lookup["#maul"] = spells.maul.icon
+		lookup["#primalBite"] = spells.primalBite.icon
 		lookup["#prowl"] = spells.prowl.icon
 		lookup["#rake"] = spells.rake.icon
 		lookup["#rip"] = spells.rip.icon
 		lookup["#shred"] = spells.shred.icon
 		lookup["#swipe"] = spells.swipe.icon
-		lookup["#tigersFury"] = spells.tigersFury.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 

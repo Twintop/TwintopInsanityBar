@@ -10,6 +10,7 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 
 ---@class TRB.Classes.Druid.GeneralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public maul TRB.Classes.SpellThreshold
+---@field public primalBite TRB.Classes.SpellThreshold
 ---@field public demoralizingRoar TRB.Classes.SpellThreshold
 ---@field public bash TRB.Classes.SpellThreshold
 ---@field public challengingRoar TRB.Classes.SpellThreshold
@@ -24,7 +25,6 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public rip TRB.Classes.SpellComboPointThreshold
 ---@field public ferociousBite TRB.Classes.SpellComboPointThreshold
 ---@field public cower TRB.Classes.SpellComboPointThreshold
----@field public tigersFury TRB.Classes.SpellComboPointThreshold
 ---@field public bearForm TRB.Classes.SpellBase
 ---@field public direBearForm TRB.Classes.SpellBase
 ---@field public catForm TRB.Classes.SpellBase
@@ -46,6 +46,16 @@ function TRB.Classes.Druid.GeneralSpells:New()
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "maul",
 		baseline = true,
+		category = "offensive",
+		barTarget = "rage",
+	})
+	self.primalBite = TRB.Classes.SpellThreshold:New({
+		id = 407995,
+		rankIds = { 407995, 1238069, 1238070, 1238073 },
+		primaryResourceType = Enum.PowerType.Rage,
+		settingKey = "primalBite",
+		isTalent = true,
+		hasCooldown = true,
 		category = "offensive",
 		barTarget = "rage",
 	})
@@ -189,14 +199,6 @@ function TRB.Classes.Druid.GeneralSpells:New()
 		category = "defensive",
 		barTarget = "energy",
 	})
-	self.tigersFury = TRB.Classes.SpellComboPointThreshold:New({
-		id = 5217,
-		primaryResourceType = Enum.PowerType.Energy,
-		settingKey = "tigersFury",
-		baseline = true,
-		category = "offensive",
-		barTarget = "energy",
-	})
 
 	-- Shapeshift forms
 	self.bearForm = TRB.Classes.SpellBase:New({
@@ -241,12 +243,12 @@ function TRB.Classes.Druid.GeneralSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#claw", icon = spells.claw.icon, description = spells.claw.name, printInSettings = true },
 		{ variable = "#ferociousBite", icon = spells.ferociousBite.icon, description = spells.ferociousBite.name, printInSettings = true },
 		{ variable = "#maul", icon = spells.maul.icon, description = spells.maul.name, printInSettings = true },
+		{ variable = "#primalBite", icon = spells.primalBite.icon, description = spells.primalBite.name, printInSettings = true },
 		{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
 		{ variable = "#rake", icon = spells.rake.icon, description = spells.rake.name, printInSettings = true },
 		{ variable = "#rip", icon = spells.rip.icon, description = spells.rip.name, printInSettings = true },
 		{ variable = "#shred", icon = spells.shred.icon, description = spells.shred.name, printInSettings = true },
 		{ variable = "#swipe", icon = spells.swipe.icon, description = spells.swipe.name, printInSettings = true },
-		{ variable = "#tigersFury", icon = spells.tigersFury.icon, description = spells.tigersFury.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
