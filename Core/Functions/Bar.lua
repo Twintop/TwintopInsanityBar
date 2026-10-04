@@ -555,6 +555,7 @@ function TRB.Functions.Bar:PrintDiagnostics()
 		print("  no bar groups or settings")
 		return
 	end
+	settings = self:ResolveFormIndependentBarSettings(settings)
 	local forest = self:BuildAnchorForest(settings, barGroups, false, true)
 	local barKeyToRoot = BuildBarKeyToRootMap(forest)
 	local keys = {}
@@ -874,6 +875,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	if barGroups.secondary then
 		layoutSettings = self:ResolveSharedSecondarySettings(settings, false)
 	end
+	layoutSettings = self:ResolveFormIndependentBarSettings(layoutSettings)
 
 	-- ========================
 	-- Build the anchor forest and per-root metadata
@@ -1401,6 +1403,7 @@ function TRB.Functions.Bar:RefreshWrapperPositioning()
 	if barGroups.secondary then
 		layoutSettings = self:ResolveSharedSecondarySettings(settings, true)
 	end
+	layoutSettings = self:ResolveFormIndependentBarSettings(layoutSettings)
 
 	-- Build forest to iterate per-root (include hidden bars as scaffolds)
 	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, true)
@@ -2892,6 +2895,47 @@ function TRB.Functions.Bar:ResolveSharedSecondarySettings(settings, layoutOnly, 
 		end
 	end
 	return effective, true, sharedSettings
+end
+
+---Returns `settings` with the active spec's own layout and visibility swapped in for each descriptor
+---`formIndependentBars` key it lacks, as when a Druid form lays out with another spec's settings.
+---@param settings table
+---@return table effectiveSettings
+function TRB.Functions.Bar:ResolveFormIndependentBarSettings(settings)
+	local descriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
+	local barKeys = descriptor and descriptor.formIndependentBars
+	if barKeys == nil then
+		return settings
+	end
+	local ownSettings = TRB.Functions.Character:GetSpecSettingsByKey(TRB.Data.character.compositeKey)
+	if ownSettings == nil or ownSettings.bars == nil then
+		return settings
+	end
+
+	local effective
+	for _, barKey in ipairs(barKeys) do
+		local ownBar = ownSettings.bars[barKey]
+		if ownBar ~= nil and (settings.bars == nil or settings.bars[barKey] == nil) then
+			if effective == nil then
+				-- New nested tables, not shared references, so the form spec's own settings stay untouched.
+				effective = {}
+				for k, v in pairs(settings) do
+					effective[k] = v
+				end
+				effective.bars = {}
+				for k, v in pairs(settings.bars or {}) do
+					effective.bars[k] = v
+				end
+				effective.displayBar = {}
+				for k, v in pairs(settings.displayBar or {}) do
+					effective.displayBar[k] = v
+				end
+			end
+			effective.bars[barKey] = ownBar
+			effective.displayBar[barKey] = ownSettings.displayBar and ownSettings.displayBar[barKey]
+		end
+	end
+	return effective or settings
 end
 
 ---How the active spec's secondary bar nodes are ranged, from its descriptor: "discrete" (each node

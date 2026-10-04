@@ -378,6 +378,7 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 	if not settings then
 		return 100, 100, 0, 0, 0
 	end
+	settings = TRB.Functions.Bar:ResolveFormIndependentBarSettings(settings)
 
 	-- Get effective width (may be CDM-matched) for this root
 	local effectiveWidth

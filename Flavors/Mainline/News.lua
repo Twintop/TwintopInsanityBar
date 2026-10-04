@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.0.16-release (2026-10-04)
+## Druid
+### Guardian
+
+- Fix the Ironfur bar not following its anchor outside Bear Form.
+
+---
+
 # 12.1.0.15-release (2026-10-03)
 ## General
 ### Core Changes

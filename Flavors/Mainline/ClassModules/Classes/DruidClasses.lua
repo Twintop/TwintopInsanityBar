@@ -1667,6 +1667,7 @@ do
 	SpecDescriptor:Declare("druid_guardian", {
 		manaBar = true,
 		customBars = { "ironfur" },
+		formIndependentBars = { "ironfur" },
 		barTextAnchorFrames = {
 			secondary = {
 				{ label = L["ComboPoint1"], frame = "ComboPoint_1" }, { label = L["ComboPoint2"], frame = "ComboPoint_2" }, { label = L["ComboPoint3"], frame = "ComboPoint_3" }, { label = L["ComboPoint4"], frame = "ComboPoint_4" },
