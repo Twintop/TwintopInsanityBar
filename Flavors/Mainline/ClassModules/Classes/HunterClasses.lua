@@ -232,6 +232,7 @@ TRB.Classes.Hunter.BeastMasterySpells.thresholdSnowflakes = {
 ---@field public trueshot TRB.Classes.SpellBase
 ---@field public cantMissWontMiss TRB.Classes.SpellBase
 ---@field public invigoratingPulse TRB.Classes.SpellBase
+---@field public unbreakableBond TRB.Classes.SpellBase
 ---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public aimedShot TRB.Classes.SpellThreshold
 ---@field public multiShot TRB.Classes.SpellThreshold
@@ -332,6 +333,11 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         cooldown = 30,
         isTalent = true,
         category = "offensive"
+    })
+    -- Unbreakable Bond: lets Marksmanship keep a pet, which gates the Pet bars
+    self.unbreakableBond = TRB.Classes.SpellBase:New({
+        id = 1223323,
+        isTalent = true
     })
 
     -- Dark Ranger
@@ -792,7 +798,8 @@ do
 	local L = TRB.Localization
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
 	-- Feign Death is a class-scoped Other Bar; claiming it here is what makes Core offer it to Hunter specs.
-	SpecDescriptor:DeclareForClass("hunter", { otherBars = { "feignDeath" } })
+	SpecDescriptor:DeclareForClass("hunter", { otherBars = { "feignDeath" }, pet = { power = "FOCUS" } })
+	SpecDescriptor:Declare("hunter_marksmanship", { pet = { power = "FOCUS", talent = "unbreakableBond" } })
 	SpecDescriptor:Declare("hunter_survival", {
 		secondary = { exportable = true },
 		barTextAnchorFrames = {

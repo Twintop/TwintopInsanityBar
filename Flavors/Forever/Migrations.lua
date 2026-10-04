@@ -1,7 +1,15 @@
 local _, TRB = ...
 
--- World of Warcraft: Forever saved-variable migrations. There is no settings history yet, so no hook is
--- defined: Core's TRB.Functions.Settings:PortForwardSettings does nothing and manualUpdateChecks starts
--- empty. When the first settings-shape change ships, add TRB.Flavor.PortForwardSettings here (and, for
--- one-shot per-class checks, TRB.Flavor.DefaultManualUpdateChecks / RunManualUpdateChecks) following
--- Flavors\Mainline\Migrations.lua; every step must be idempotent because it runs on every login.
+-- World of Warcraft: Forever saved-variable migrations; every step runs on every login, so each must be idempotent.
+
+---Applies every settings migration to a saved-variables shaped table.
+---@param settings table? # Defaults to the live saved variables
+function TRB.Flavor.PortForwardSettings(settings)
+	local savedSettings = settings or TRB.Flavor.GetSavedVariables()
+	if savedSettings == nil then
+		return
+	end
+
+	-- Pet bars: seed their default text into the global list; barText is an array the defaults merge cannot backfill.
+	TRB.Functions.Settings:SeedPetBarsText(savedSettings.core)
+end

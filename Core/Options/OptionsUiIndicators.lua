@@ -179,9 +179,17 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		},
 	}
 
-	-- Pet bars, on the specs that have them. Neither Pet Health nor the Pet Cast Bar offers a plain "Bar"
-	-- element: those fills are a health curve and a per-cast-state secret, as on the player's own bars.
+	-- Pet bars on specs with a pet; Pet Health and the Pet Cast Bar offer no Bar element, as on the player's own.
 	if TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId) then
+		defs[#defs + 1] = {
+			key = "petCastbar",
+			label = L["ResourcePetCastbar"],
+			elements = {
+				{ key = "border", label = L["BarElementBorder"] },
+				{ key = "background", label = L["BarElementBackground"] },
+				{ key = "endCap", label = L["EndCap"] },
+			}
+		}
 		defs[#defs + 1] = {
 			key = "petPowerBar",
 			label = L["ResourcePetPower"],
@@ -195,15 +203,6 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		defs[#defs + 1] = {
 			key = "petHealthBar",
 			label = L["ResourcePetHealth"],
-			elements = {
-				{ key = "border", label = L["BarElementBorder"] },
-				{ key = "background", label = L["BarElementBackground"] },
-				{ key = "endCap", label = L["EndCap"] },
-			}
-		}
-		defs[#defs + 1] = {
-			key = "petCastbar",
-			label = L["ResourcePetCastbar"],
 			elements = {
 				{ key = "border", label = L["BarElementBorder"] },
 				{ key = "background", label = L["BarElementBackground"] },

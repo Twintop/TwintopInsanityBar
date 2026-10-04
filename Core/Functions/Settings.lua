@@ -91,8 +91,7 @@ local function NewSpecGlobalDefaults()
 		fatigueColors = true,
 		breathDimensions = true,
 		breathColors = true,
-		-- Pet bars follow suit, except the resource fill: a shared one would paint a Water Elemental's mana
-		-- in the Hunter pet's focus orange.
+		-- Pet Resource colors stay per spec: pets run on different powers, so one shared fill would miscolor most.
 		petPowerDimensions = true,
 		petPowerColors = false,
 		petHealthDimensions = true,
@@ -309,7 +308,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					targetCastBarText = true,
 					focusCastBarText = true,
 					otherBarsText = true,
-					hunterFeignDeathBarText = true
+					hunterFeignDeathBarText = true,
+					petBarsText = true
 				}
 			},
 			-- Per-class/spec "use global" toggles; populated from the class/spec registry below.
@@ -1263,6 +1263,33 @@ function TRB.Functions.Settings:LoadDefaultPetCastBarTextSettings()
 	return self:LoadDefaultTargetFocusCastBarTextSettings("PetCastBar", L["ResourcePetCastbar"], "$petCastingSpellName", "$petCastTimeRemaining", "$petCastTime", 12, 10)
 end
 
+---Seeds the Pet bars' default text into saved global bar text, from each flavor's PortForwardSettings.
+---Flagged so deleted entries stay deleted; the scan skips any pet frame that already has text.
+---@param core table? # The saved core settings
+function TRB.Functions.Settings:SeedPetBarsText(core)
+	local displayText = core ~= nil and core.displayText or nil
+	if displayText == nil or type(displayText.barText) ~= "table" then
+		return
+	end
+	displayText.migrations = displayText.migrations or {}
+	if not displayText.migrations.petBarsText then
+		local anchoredFrames = {}
+		for _, entry in ipairs(displayText.barText) do
+			if entry.position ~= nil and entry.position.relativeToFrame ~= nil then
+				anchoredFrames[entry.position.relativeToFrame] = true
+			end
+		end
+		for _, entries in ipairs({ self:LoadDefaultPetBarTextSettings(), self:LoadDefaultPetCastBarTextSettings() }) do
+			for _, entry in ipairs(entries) do
+				if not anchoredFrames[entry.position.relativeToFrame] then
+					table.insert(displayText.barText, entry)
+				end
+			end
+		end
+	end
+	displayText.migrations.petBarsText = true
+end
+
 ---Gets the default Target/Focus Cast Bar colors. `bar` is the standard-cast fill, `channel` recolors a
 ---channel, `empower` recolors an empowered cast (differentiated by event), `uninterruptible` /
 ---`uninterruptibleBorder` recolor the fill / border when a hostile cast can't be interrupted (via the
@@ -1565,11 +1592,11 @@ function TRB.Functions.Settings:DefaultPetBarSettings(classic, barKey)
 	return settings
 end
 
----Default Pet Health colors: the player health bar's red, yellow, and green curve, so the two read alike.
+---Default Pet Health colors: the player health bar's border and red, yellow, and green curve, so the two read alike.
 ---@return table
 function TRB.Functions.Settings:DefaultPetHealthBarColors()
 	local colors = self:DefaultCustomBarThresholdColors("FFFF0000", "FFFFFF00", "FF00FF00", 0.30, 0.70, "step")
-	colors.border = { color = "FF000000" }
+	colors.border = self:DefaultHealthBarColors().border
 	colors.endCap = self:DefaultEndCapColorEntry()
 	return colors
 end

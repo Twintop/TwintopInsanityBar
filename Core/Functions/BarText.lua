@@ -1887,6 +1887,7 @@ local targetCastbarLookupUnits = {
 local castbarLookupWasActive = true
 local targetCastbarLookupWasActive = true
 local otherBarsLookupWasActive = true
+local petLookupWasActive = true
 -- The latches assume their idle writes are still present, but SwitchSpec replaces lookupLogic
 -- wholesale. Tracked here so RefreshLookupDataBase can re-arm them on a rebuild.
 local lastLookupLogicTable = nil
@@ -2149,9 +2150,6 @@ local petVars = {
 	["$petName"] = true, ["$petHealth"] = true, ["$petHealthMax"] = true, ["$petHealthPercent"] = true,
 	["$petPower"] = true, ["$petPowerMax"] = true, ["$petPowerPercent"] = true, ["$petPowerName"] = true,
 }
-
--- Idle short-circuit latch: one final pass has to blank the variables when the pet goes away.
-local petLookupWasActive = true
 
 ---Refreshes the pet bar variables. Health and power are read with allowSecret, so they only ever reach
 ---`lookup` as formatted strings and never `lookupLogic`, where they could be compared. With no pet they

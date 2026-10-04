@@ -6,3 +6,6 @@ local _, TRB = ...
 TRB.Forever.Templates.Classes:DefineClass("hunter", {
 	general = "mana",
 })
+
+-- The pet's power awaits in-game confirmation; it only picks the Pet Resource bar's default colors.
+TRB.Classes.SpecDescriptor:DeclareForClass("hunter", { pet = { power = "FOCUS" } })

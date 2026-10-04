@@ -143,9 +143,8 @@ function TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(setti
 	return globalSettingDefinitions[settingKey]
 end
 
----Builds one section's global-settings row: a "Use global settings" checkbox with its shortcut link and
----Copy... button on a spec panel, or the bulk all-specs toggle on the Global panel. Same row the custom
----bar dimensions generator builds inline, for sections that need one of their own.
+---Builds one section's Use Global row: the spec panel's checkbox with its shortcut link and Copy... button,
+---or the Global panel's bulk all-specs toggle. The same row the custom bar dimensions generator builds inline.
 ---@param parent Frame
 ---@param controls table
 ---@param classId integer? # nil (or a nil specId) is the Global panel
@@ -153,10 +152,11 @@ end
 ---@param settingKey string
 ---@param yCoord number
 ---@return number yCoord
+---@return CheckButton? checkbox # The spec panel's Use Global box; nil on the Global panel
 function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, settingKey, yCoord)
 	local settingKeyUpper = settingKey:gsub("^%l", string.upper)
 	if classId == nil or specId == nil then
-		return self:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKeyUpper, settingKey, yCoord)
+		return self:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKeyUpper, settingKey, yCoord), nil
 	end
 
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
@@ -173,8 +173,10 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent,
 	cb.tooltip = L["CheckboxUseGlobalTooltip_" .. settingKeyUpper]
 	cb:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][settingKey])
 	cb:SetScript("OnClick", function(checkbox)
+		local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
 		TRB.Data.settings.core.global[lowerClassName][specName][settingKey] = checkbox:GetChecked()
 		TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+		TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
 		if TRB.Frames.barGroups ~= nil then
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
@@ -184,7 +186,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent,
 		TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(settingKey)
 	end)
 	TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(cb, classId, specId, settingKey)
-	return yCoord
+	return yCoord, cb
 end
 
 ---Returns true if the panel being edited belongs to (or affects) the currently active spec.

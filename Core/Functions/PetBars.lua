@@ -10,8 +10,8 @@ TRB.Functions.PetBars = {}
 	value goes straight from the API into SetValue and the health color comes from a UnitHealthPercent
 	curve -- nothing is compared or stored. The max is plain, so it can set the node's scale.
 
-	Which power the resource bar shows comes from UnitPowerType("pet"): Focus for a Hunter pet, Energy
-	for a demon or a ghoul, Mana for a Water Elemental.
+	The resource bar shows the live pet's UnitPowerType. Which specs get the bars, and the talent any of
+	them need, comes from the spec descriptor's `pet` trait.
 
 	Like the cast bars and the Other Bars these are NOT in BarVisibility:ProcessBars, so the updater
 	re-asserts alpha/visibility while a bar is on screen to self-heal after render transitions.
@@ -19,7 +19,7 @@ TRB.Functions.PetBars = {}
 
 local BAR_KEYS = { "petPower", "petHealth" }
 
--- Live pet state: "none", "permanent", "temporary" (a timed summon) or "dead".
+-- Live pet state: "none", "permanent", "temporary" (a timed summon), or "dead".
 local petState = "none"
 -- The power type the resource bar is showing, or nil when the pet has none, and its localized name.
 local petPowerType = nil
@@ -40,35 +40,22 @@ local wasShowing = {}
 local healthCurve = nil
 local healthCurveKey = nil
 
--- The active spec's pet record, plus a reusable spell-shaped table for the talent lookup so the gate
--- check allocates nothing per tick. petGateSpell is nil on a spec whose pet is baseline.
-local petSpecInfo = nil
-local petGateSpell = nil
-
----Re-reads the active spec's pet record.
-local function RefreshPetSpec()
-	petSpecInfo = TRB.Classes.BarTypeRegistry:GetPetSpecInfo(TRB.Data.character.classId, TRB.Data.character.specId)
-	local talentId = petSpecInfo ~= nil and petSpecInfo.talentId or nil
-	if talentId == nil then
-		petGateSpell = nil
-	elseif petGateSpell == nil or petGateSpell.id ~= talentId then
-		petGateSpell = { id = talentId, talentId = talentId }
-	end
-end
-
----Whether this spec can have a pet at all right now: it owns one, and the talent granting it (where the
----pet is talented rather than baseline) is picked. Read live rather than latched on the talent event --
----the talent cache behind it is rebuilt a moment later, so a latch would hold the old configuration.
+---Whether the active spec can have a pet right now: it declares one, and any talent granting it is picked.
+---Read live, because the talent cache is rebuilt a moment after the talent event.
 ---@return boolean
 local function IsPetGateActive()
-	if petSpecInfo == nil then
+	local character = TRB.Data.character
+	local pet = TRB.Classes.BarTypeRegistry:GetPetSpecInfo(character.classId, character.specId)
+	if pet == nil then
 		return false
 	end
-	if petGateSpell == nil then
+	if pet.talent == nil then
 		return true
 	end
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	local spell = spells and spells[pet.talent]
 	local talents = TRB.Data.talents
-	return talents ~= nil and talents:IsTalentActive(petGateSpell)
+	return spell ~= nil and talents ~= nil and talents:IsTalentActive(spell)
 end
 
 local updaterFrame = CreateFrame("Frame")
@@ -234,7 +221,9 @@ local function RefreshPetState()
 		end
 		newName = UnitName("pet")
 		local powerType, powerToken = UnitPowerType("pet")
-		if powerType ~= nil and (UnitPowerMax("pet", powerType) or 0) > 0 then
+		local maxPower = powerType ~= nil and UnitPowerMax("pet", powerType) or nil
+		-- A secret maximum can't be compared, so it counts as a resource rather than throwing every tick.
+		if maxPower ~= nil and (issecretvalue(maxPower) or maxPower > 0) then
 			newPowerType = powerType
 			-- The power token doubles as the key of Blizzard's own localized global string ("FOCUS", "MANA").
 			newPowerName = powerToken ~= nil and _G[powerToken] or nil
@@ -255,7 +244,7 @@ function TRB.Functions.PetBars:IsPetGateActive()
 	return IsPetGateActive()
 end
 
----The live pet state: "none", "permanent", "temporary" or "dead".
+---The live pet state: "none", "permanent", "temporary", or "dead".
 ---@return string
 function TRB.Functions.PetBars:GetPetState()
 	return petState
@@ -654,7 +643,6 @@ eventFrame:SetScript("OnEvent", function(_, event)
 		return
 	end
 
-	RefreshPetSpec()
 	if RefreshPetState() then
 		TRB.Data.lookupDirty = true
 	end
@@ -676,8 +664,7 @@ end)
 function TRB.Functions.PetBars:Enable()
 	eventFrame:RegisterUnitEvent("UNIT_PET", "player")
 	eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	-- A spec change can enable or disable both bars, and nothing else would restart the updater. A talent
-	-- change does the same on the two specs whose pet is talented.
+	-- Spec and talent changes can open or close the pet gate, and nothing else would restart the updater.
 	eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	eventFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 	eventFrame:RegisterUnitEvent("UNIT_DISPLAYPOWER", "pet")
@@ -686,7 +673,6 @@ function TRB.Functions.PetBars:Enable()
 	eventFrame:RegisterUnitEvent("UNIT_POWER_UPDATE", "pet")
 	eventFrame:RegisterUnitEvent("UNIT_MAXPOWER", "pet")
 
-	RefreshPetSpec()
 	RefreshPetState()
 	self:RefreshVisibility()
 end

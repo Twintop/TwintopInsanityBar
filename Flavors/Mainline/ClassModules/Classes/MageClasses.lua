@@ -191,6 +191,7 @@ end
 ---@field fingersOfFrost TRB.Classes.SpellBase
 ---@field brainFreeze TRB.Classes.SpellBase
 ---@field polishedFocus TRB.Classes.SpellBase
+---@field summonWaterElemental TRB.Classes.SpellBase
 ---@field splinteringSorcery TRB.Classes.SpellBase
 ---@field frostfireBolt TRB.Classes.SpellBase
 TRB.Classes.Mage.FrostSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
@@ -227,6 +228,11 @@ function TRB.Classes.Mage.FrostSpells:New()
         id = 1261082,
         isTalent = true,
         stackThresholdMod = 1
+    })
+    -- Summon Water Elemental: grants Frost's pet, which gates the Pet bars
+    self.summonWaterElemental = TRB.Classes.SpellBase:New({
+        id = 31687,
+        isTalent = true
     })
     -- Hero talent tree markers: a talented entry in each tree stands in for the tree itself.
     self.splinteringSorcery = TRB.Classes.SpellBase:New({
@@ -647,6 +653,7 @@ do
 		manaBar = true,
 		secondary = { exportable = true },
 		customBars = { "shatter" },
+		pet = { power = "MANA", talent = "summonWaterElemental" },
 		barTextAnchorFrames = {
 			secondary = {
 				{ label = L["Icicle1"], frame = "ComboPoint_1" }, { label = L["Icicle2"], frame = "ComboPoint_2" }, { label = L["Icicle3"], frame = "ComboPoint_3" }, { label = L["Icicle4"], frame = "ComboPoint_4" },

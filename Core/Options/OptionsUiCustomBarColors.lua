@@ -263,6 +263,8 @@ end
 ---@param specId integer # Spec ID
 ---@param yCoord number # Starting Y coordinate
 ---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
+---@param afterNodesCallback (fun(parent: Frame, yCoord: number): number)? # Extra rows between the node colors and the border
+---@param useGlobalSettingKey string? # Adds a Use Global row, and its cover, for this setting
 ---@return number # New Y coordinate after adding controls
 function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef, afterNodesCallback, useGlobalSettingKey)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
@@ -282,8 +284,9 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 	controls[barTypeDef.key .. "ColorSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, headerText, oUi.xCoord, yCoord)
 
 	-- Optional "Use global settings" row, mirroring the one the dimensions generator builds.
+	local useGlobalCheckbox = nil
 	if useGlobalSettingKey ~= nil then
-		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, useGlobalSettingKey, yCoord)
+		yCoord, useGlobalCheckbox = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, useGlobalSettingKey, yCoord)
 	end
 
 	yCoord = yCoord - 30
@@ -294,7 +297,10 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 
 	-- For threshold-based color bars (like Stagger), use the threshold color UI
 	if barTypeDef.colorCurveType == "step" or barTypeDef.colorCurveType == "linear" then
-		return TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColorOptions(parent, controls, spec, classId, specId, yCoord, barTypeDef)
+		-- It already stepped 30 past the End Cap row, whose width slider reaches 40 below it.
+		TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, controls[barTypeDef.key .. "ColorSection"], yCoord - 10)
+		return yCoord
 	end
 
 	-- Simple bar/border/background colors
@@ -742,6 +748,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 		yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colorSettings, namePrefix, "endCap_" .. barTypeDef.key, L["EndCap"], classId, specId)
 	end
 
+	-- The End Cap width slider reaches 40 below the row this returns.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, controls[barTypeDef.key .. "ColorSection"], yCoord - 40)
 	return yCoord
 end
 

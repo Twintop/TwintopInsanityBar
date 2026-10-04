@@ -8,6 +8,18 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.5-release (2026-10-04)
+## General
+### Core Changes
+
+- See [Core Changes](tab:core).
+
+### Pet Bars
+
+- [#551](#551) Available to Hunters and Warlocks.
+
+---
+
 # 1.60.1.4-release (2026-10-03)
 ## Druid
 

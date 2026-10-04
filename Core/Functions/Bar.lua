@@ -3076,11 +3076,11 @@ function TRB.Functions.Bar:GetAllBarKeysFromSettings(settings)
 	return keys
 end
 
--- Bar-target list order; unlisted keys are spec bars (3) or Other Bars (8), both sorted by name.
-local barTargetRanks = { screen = 0, primary = 1, secondary = 2, health = 4, castbar = 5, targetCastbar = 6, focusCastbar = 7 }
+-- Bar-target list order; unlisted keys are spec bars (3) or Other Bars (9), both sorted by name.
+local barTargetRanks = { screen = 0, primary = 1, secondary = 2, health = 4, castbar = 5, targetCastbar = 6, focusCastbar = 7, petCastbar = 8, petPower = 10, petHealth = 11 }
 
----Where a bar sorts in every bar-target list: Screen, primary, secondary, spec bars, health, the three cast
----bars, then Other Bars.
+---Where a bar sorts in every bar-target list: Screen, primary, secondary, spec bars, health, the four cast
+---bars, Other Bars, then Pet Resource and Pet Health.
 ---@param barKey string
 ---@return integer
 function TRB.Functions.Bar:GetBarTargetRank(barKey)
@@ -3090,7 +3090,7 @@ function TRB.Functions.Bar:GetBarTargetRank(barKey)
 	end
 	for _, otherBarKey in ipairs(TRB.Classes.BarTypeRegistry.otherBarKeys) do
 		if otherBarKey == barKey then
-			return 8
+			return 9
 		end
 	end
 	return 3

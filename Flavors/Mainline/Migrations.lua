@@ -8653,30 +8653,8 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
-	-- Decided by scanning for an entry already bound to a pet frame, not by a migrations flag.
-	if TwintopInsanityBarSettings ~= nil and
-		TwintopInsanityBarSettings.core ~= nil and
-		TwintopInsanityBarSettings.core.displayText ~= nil and
-		TwintopInsanityBarSettings.core.displayText.barText ~= nil then
-
-		local barText = TwintopInsanityBarSettings.core.displayText.barText
-		local seen = {}
-		for _, entry in ipairs(barText) do
-			if entry.position ~= nil and entry.position.relativeToFrame ~= nil then
-				seen[entry.position.relativeToFrame] = true
-			end
-		end
-		if not seen.PetHealthBar and not seen.PetPowerBar then
-			for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultPetBarTextSettings()) do
-				table.insert(barText, entry)
-			end
-		end
-		if not seen.PetCastBar then
-			for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultPetCastBarTextSettings()) do
-				table.insert(barText, entry)
-			end
-		end
-	end
+	-- Pet bars: seed their default text into the global list; barText is an array the defaults merge cannot backfill.
+	TRB.Functions.Settings:SeedPetBarsText(TwintopInsanityBarSettings.core)
 
 end
 

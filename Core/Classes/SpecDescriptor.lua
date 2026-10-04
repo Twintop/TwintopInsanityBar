@@ -25,6 +25,10 @@ TRB.Classes = TRB.Classes or {}
 ---@field label string # Localized name shown in the bar text "relative to" dropdown
 ---@field frame string # Frame key the entry resolves to (e.g. "ComboPoint_3", "EnrageBar")
 
+---@class TRB.Classes.SpecDescriptor.Pet
+---@field power "FOCUS"|"ENERGY"|"MANA" # Power token of the spec's pet; picks the Pet Resource bar's default colors
+---@field talent string? # Key in spellsData.spells whose talent grants the pet; nil when the pet is baseline
+
 ---@class TRB.Classes.SpecDescriptor
 ---@field manaBar boolean? # The spec shows a mana bar / mana bar text, so mana precision options apply
 ---@field secondary TRB.Classes.SpecDescriptor.Secondary?
@@ -38,6 +42,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field slashCommands table<string, fun(subcommand: string?)>? # Extra /trb sub-commands the spec module handles
 ---@field useGlobalDefaults table<string, boolean>? # "Use global settings" toggles seeded differently from the shipped defaults (key -> value), for a spec whose layout the global options cannot describe
 ---@field formIndependentBars string[]? # Custom bar keys that keep this spec's own layout and visibility while a shapeshift form lays out with another spec's settings
+---@field pet TRB.Classes.SpecDescriptor.Pet? # The spec can hold a permanent pet, so it gets the Pet bars
 
 TRB.Classes.SpecDescriptor = {}
 

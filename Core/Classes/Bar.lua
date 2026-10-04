@@ -2545,32 +2545,13 @@ TRB.Classes.BarTypeRegistry.petBarKeys = { "petPower", "petHealth" }
 ---the Player/Target/Focus ones, but shares this scoping everywhere else: settings, textures, targets.
 TRB.Classes.BarTypeRegistry.petScopeKeys = { "petPower", "petHealth", "petCastbar" }
 
--- Specs that can hold a permanent, controllable pet. `power` fixes the resource bar's default fill;
--- `talentId` names the talent granting the pet, absent when it is baseline.
-local petSpecs = {
-	hunter_beastMastery = { power = "FOCUS" },
-	hunter_marksmanship = { power = "FOCUS", talentId = 1223323 },
-	hunter_survival = { power = "FOCUS" },
-	warlock_affliction = { power = "ENERGY" },
-	warlock_demonology = { power = "ENERGY" },
-	warlock_destruction = { power = "ENERGY" },
-	deathknight_unholy = { power = "ENERGY" },
-	mage_frost = { power = "MANA", talentId = 31687 },
-}
-
----The pet record for a spec, or nil for a spec that has no permanent pet.
+---The pet a spec declares through its descriptor, or nil for a spec with no permanent pet.
 ---@param classId integer?
 ---@param specId integer?
----@return table? # { power = string, talentId = integer? }
+---@return TRB.Classes.SpecDescriptor.Pet?
 function TRB.Classes.BarTypeRegistry:GetPetSpecInfo(classId, specId)
-	if classId == nil or specId == nil then
-		return nil
-	end
-	local compositeKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
-	if compositeKey == nil then
-		return nil
-	end
-	return petSpecs[compositeKey]
+	local descriptor = TRB.Classes.SpecDescriptor:Get(classId, specId)
+	return descriptor and descriptor.pet or nil
 end
 
 ---Whether a spec can hold a permanent pet, and so gets the Pet bars at all.
@@ -2889,8 +2870,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		}))
 	end
 
-	-- Pet Resource bar. Whichever power the live pet uses, read from UnitPowerType("pet") rather than
-	-- fixed per class: one Hunter spec can hold pets on Focus and one on Energy.
+	-- Pet Resource bar: the live pet's UnitPowerType, since one spec can field pets on different powers.
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "petPower",
 		displayName = L["ResourcePetPower"],
