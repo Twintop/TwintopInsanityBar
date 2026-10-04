@@ -1,0 +1,2384 @@
+local _, TRB = ...
+
+local L = TRB.Localization
+
+local oUi = TRB.Data.constants.optionsUi
+
+TRB.Options.DeathKnight = {}
+TRB.Options.DeathKnight.Blood = {}
+TRB.Options.DeathKnight.Frost = {}
+TRB.Options.DeathKnight.Unholy = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_blood = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy = {}
+
+local BLOOD_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.blood.runicPower
+local BLOOD_MAX_COAGULATING_BLOOD = TRB.Data.maxResource.deathknight.blood.coagulatingBlood
+local FROST_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.frost.runicPower
+local UNHOLY_MAX_RUNIC_POWER = TRB.Data.maxResource.deathknight.unholy.runicPower
+
+---Loads extra default bar text settings
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function DeathKnightLoadExtraBarTextSettings(classic)
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			enabled = true,
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune1Time}[$rune1Time]",
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			name = L["Rune1"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune1"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_1",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		},
+		{
+			enabled = true,
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune2Time}[$rune2Time]",
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			name = L["Rune2"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune2"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_2",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		},
+		{
+			enabled = true,
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune3Time}[$rune3Time]",
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			name = L["Rune3"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune3"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_3",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		},
+		{
+			enabled = true,
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune4Time}[$rune4Time]",
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			name = L["Rune4"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune4"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_4",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		},
+		{
+			enabled = true,
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune5Time}[$rune5Time]",
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			name = L["Rune5"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune5"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_5",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		},
+		{
+			enabled = true,
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = false,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionLeft"],
+			text = "{$rune6Time}[$rune6Time]",
+			fontSize = 14,
+			color = { color = "FFFFFFFF" },
+			name = L["Rune6"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["Rune6"],
+				yPos = 0,
+				relativeToFrame = "ComboPoint_6",
+			},
+			fontJustifyHorizontal = "LEFT",
+			useDefaultFontSize = false,
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			useDefaultFontColor = false,
+			useDefaultFontOutline = false,
+			useDefaultFontShadow = false,
+			fontOutline = "OUTLINE",
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+		}
+	}
+
+	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
+	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+end
+
+-- Blood
+---Loads default bar text settings
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function BloodLoadDefaultBarTextSettings(classic)
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			fontOutline = "OUTLINE",
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = true,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionCenter"],
+			text = "$boneShieldStacks",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontSize = 14,
+			name = L["ResourceBoneShield"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["BoneShieldContainer"],
+				yPos = 0,
+				relativeToFrame = "Container::boneShield",
+			},
+			fontJustifyHorizontal = "CENTER",
+			useDefaultFontSize = true,
+			color = { color = "FFFFFFFF" },
+			enabled = true,
+		},
+		{
+			useDefaultFontColor = true,
+			useDefaultFontOutline = true,
+			useDefaultFontShadow = true,
+			fontOutline = "OUTLINE",
+			fontOutlineName = L["FontOutlineOutline"],
+			fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+			useDefaultFontFace = true,
+			guid = TRB.Functions.String:Guid(),
+			constrainToParent = false,
+			maxWidthPercent = 100,
+			fontJustifyHorizontalName = L["PositionCenter"],
+			text = "$coagulatingBloodStacks",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+			fontSize = 14,
+			name = L["ResourceCoagulatingBlood"],
+			position = {
+				relativeToName = L["PositionCenter"],
+				relativeTo = "CENTER",
+				xPos = 0,
+				relativeToFrameName = L["CoagulatingBloodBar"],
+				yPos = 0,
+				relativeToFrame = "CoagulatingBloodBar",
+			},
+			fontJustifyHorizontal = "CENTER",
+			useDefaultFontSize = true,
+			color = { color = "FFFFFFFF" },
+			enabled = true,
+		},
+	}
+
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings(classic)
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+end
+TRB.Options.DeathKnight.BloodLoadDefaultBarTextSettings = BloodLoadDefaultBarTextSettings
+
+---Loads default settings for Blood
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function BloodLoadDefaultSettings(includeBarText, classic)
+	local settings = {
+		precision = {
+			health = 1,
+			secondary = 2,
+			resource = 0
+		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder=true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {
+				deathCoil = {
+					enabled = true
+				},
+				deathStrike = {
+					enabled = true
+				},
+				raiseAlly = {
+					enabled = false
+				}
+			},
+			customThresholds = {}
+		},
+		maxResource = {
+			value = BLOOD_MAX_RUNIC_POWER,
+			enabled = false
+		},
+		displayBar = {
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			boneShield = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			coagulatingBlood = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = BLOOD_MAX_RUNIC_POWER
+		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		bars = {
+			boneShield = TRB.Functions.Settings:DefaultBoneShieldBarDimensions(classic),
+			coagulatingBlood = TRB.Functions.Settings:DefaultCoagulatingBloodBarDimensions(classic),
+		},
+		colors={
+			text = {
+				current = {
+					color = "FF00D1FF"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FF8080FF"
+				},
+				overcap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+			},
+			bar = {
+				border = {
+					color = "FF009ABD"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF00D1FF",
+					color2 = "FF00D1FF",
+					gradientDirection = "disabled"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+			},
+			comboPoints = {
+				border = {
+					color = "FF600000"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFC41E3A",
+					color2 = "FFC41E3A",
+					gradientDirection = "disabled"
+				},
+				cooldown = {
+					color = "FFCCCCCC",
+					color2 = "FFCCCCCC",
+					gradientDirection = "disabled"
+				},
+				sortRunes = true,
+				cooldownEnabled = true
+			},
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			bars = {
+				boneShield = TRB.Functions.Settings:DefaultBoneShieldBarColors(),
+				coagulatingBlood = TRB.Functions.Settings:DefaultCoagulatingBloodBarColors(),
+			},
+			shared = {
+				nodeOrder = { "runeRegenOvercap", "vampiricStrike" },
+				gradientOrder = { "borderOvercap" },
+				indicatorColors = {
+					runeRegenOvercap = {
+						color = "FFFF4500",
+						color2 = "FFFF4500",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							runicPowerBar = { bar = false, border = false, background = false },
+							runesBar = { bar = true, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+							boneShield = { bar = false, border = false, background = false },
+							coagulatingBlood = { bar = false, border = false, background = false },
+						},
+					},
+					vampiricStrike = {
+						color = "FFFF7ECE",
+						color2 = "FFFF7ECE",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							runicPowerBar = { bar = false, border = true, background = false },
+							runesBar = { bar = false, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+							boneShield = { bar = false, border = false, background = false },
+							coagulatingBlood = { bar = false, border = false, background = false },
+						},
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							runicPowerBar = { bar = false, border = true, background = false },
+							runesBar = { bar = false, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+							boneShield = { bar = false, border = false, background = false },
+							coagulatingBlood = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			}
+		},
+		displayText={
+			default = {
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = L["PositionLeft"],
+				fontSize=14,
+				color = {
+					color = "FFFFFFFF"
+				},
+				fontOutline = "OUTLINE",
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
+			},
+			migrations = { boneShieldBarTextSeeded = true, coagulatingBloodBarTextSeeded = true },
+			barText = {}
+		},
+		audio = {
+		},
+		textures = TRB.Functions.Settings:DefaultTextures(true),
+	}
+
+	-- Add Bone Shield bar textures
+	local boneShieldTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+	settings.textures.boneShieldBar = boneShieldTextures.bar
+	settings.textures.boneShieldBarName = boneShieldTextures.barName
+	settings.textures.boneShieldBorder = boneShieldTextures.border
+	settings.textures.boneShieldBorderName = boneShieldTextures.borderName
+	settings.textures.boneShieldBackground = boneShieldTextures.background
+	settings.textures.boneShieldBackgroundName = boneShieldTextures.backgroundName
+
+	-- Add Coagulating Blood bar textures
+	local coagulatingBloodTextures = TRB.Functions.Settings:DefaultCustomBarTextures()
+	settings.textures.coagulatingBloodBar = coagulatingBloodTextures.bar
+	settings.textures.coagulatingBloodBarName = coagulatingBloodTextures.barName
+	settings.textures.coagulatingBloodBorder = coagulatingBloodTextures.border
+	settings.textures.coagulatingBloodBorderName = coagulatingBloodTextures.borderName
+	settings.textures.coagulatingBloodBackground = coagulatingBloodTextures.background
+	settings.textures.coagulatingBloodBackgroundName = coagulatingBloodTextures.backgroundName
+
+	if includeBarText then
+		settings.displayText.barText = BloodLoadDefaultBarTextSettings(classic)
+	end
+
+	return settings
+end
+
+-- Frost
+---Loads default bar text settings
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function FrostLoadDefaultBarTextSettings(classic)
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+	}
+	
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings(classic)
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+end
+TRB.Options.DeathKnight.FrostLoadDefaultBarTextSettings = FrostLoadDefaultBarTextSettings
+
+---Loads default settings for Frost
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function FrostLoadDefaultSettings(includeBarText, classic)
+	local settings = {
+		precision = {
+			health = 1,
+			secondary = 2,
+			resource = 0
+		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder=true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {
+				deathCoil = {
+					enabled = false
+				},
+				deathStrike = {
+					enabled = false
+				},
+				breathOfSindragosa = {
+					enabled = true
+				},
+				frostStrike = {
+					enabled = true
+				},
+				glacialAdvance = {
+					enabled = false
+				}
+			},
+			customThresholds = {}
+		},
+		maxResource = {
+			value = FROST_MAX_RUNIC_POWER,
+			enabled = false
+		},
+		displayBar = {
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = FROST_MAX_RUNIC_POWER
+		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		colors={
+			text = {
+				current = {
+					color = "FF00D1FF"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FF8080FF"
+				},
+				overcap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+			},
+			bar = {
+				border = {
+					color = "FF009ABD"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF00D1FF",
+					color2 = "FF00D1FF",
+					gradientDirection = "disabled"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+			},
+			comboPoints = {
+				border = {
+					color = "FF00426A"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF368BC1",
+					color2 = "FF368BC1",
+					gradientDirection = "disabled"
+				},
+				cooldown = {
+					color = "FFCCCCCC",
+					color2 = "FFCCCCCC",
+					gradientDirection = "disabled"
+				},
+				sortRunes = true,
+				cooldownEnabled = true
+			},
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = { "runeRegenOvercap" },
+				gradientOrder = { "borderOvercap" },
+				indicatorColors = {
+					runeRegenOvercap = {
+						color = "FFFF4500",
+						color2 = "FFFF4500",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							runicPowerBar = { bar = false, border = false, background = false },
+							runesBar = { bar = true, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+						},
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							runicPowerBar = { bar = false, border = true, background = false },
+							runesBar = { bar = false, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			}
+		},
+		displayText={
+			default = {
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = L["PositionLeft"],
+				fontSize=14,
+				color = {
+					color = "FFFFFFFF"
+				},
+				fontOutline = "OUTLINE",
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
+			},
+			barText = {}
+		},
+		audio = {
+		},
+		textures = TRB.Functions.Settings:DefaultTextures(true),
+	}
+
+	if includeBarText then
+		settings.displayText.barText = FrostLoadDefaultBarTextSettings(classic)
+	end
+
+	return settings
+end
+
+---Loads default bar text settings
+---@param classic boolean?
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+local function UnholyLoadDefaultBarTextSettings(classic)
+	---@type TRB.Classes.Settings.DisplayTextEntry[]
+	local textSettings = {
+	}
+	
+	local extraTextSettings = DeathKnightLoadExtraBarTextSettings(classic)
+
+	for x = 1, #extraTextSettings do
+		table.insert(textSettings, extraTextSettings[x])
+	end
+	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
+end
+TRB.Options.DeathKnight.UnholyLoadDefaultBarTextSettings = UnholyLoadDefaultBarTextSettings
+
+---Loads default settings for Unholy
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function UnholyLoadDefaultSettings(includeBarText, classic)
+	local settings = {
+		precision = {
+			health = 1,
+			secondary = 2,
+			resource = 0
+		},
+		thresholds = {
+			properties = {
+				width = 2,
+				overlapBorder=true
+			},
+			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			thresholdDictionary = {
+				deathCoil = {
+					enabled = true
+				},
+				deathStrike = {
+					enabled = true
+				},
+				epidemic = {
+					enabled = true
+				},
+				raiseAlly = {
+					enabled = false
+				},
+				zombify = {
+					enabled = true
+				}
+			},
+			customThresholds = {}
+		},
+		maxResource = {
+			value = UNHOLY_MAX_RUNIC_POWER,
+			enabled = false
+		},
+		displayBar = {
+			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			secondary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = false, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+		},
+		overcap = {
+			mode = "relative",
+			relative = 0,
+			fixed = UNHOLY_MAX_RUNIC_POWER
+		},
+		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
+		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
+		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		colors={
+			text = {
+				current = {
+					color = "FF00D1FF"
+				},
+				casting = {
+					color = "FFFFFFFF"
+				},
+				passive = {
+					color = "FF8080FF"
+				},
+				overcap = {
+					color = "FFFF0000",
+					enabled = true
+				},
+			},
+			bar = {
+				border = {
+					color = "FF009ABD"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FF00D1FF",
+					color2 = "FF00D1FF",
+					gradientDirection = "disabled"
+				},
+				casting = {
+					color = "FFFFFFFF",
+					color2 = "FFFFFFFF",
+					gradientDirection = "disabled",
+					enabled = true
+				},
+			},
+			comboPoints = {
+				border = {
+					color = "FF12721A"
+				},
+				background = {
+					color = "66000000"
+				},
+				base = {
+					color = "FFA6FF49",
+					color2 = "FFA6FF49",
+					gradientDirection = "disabled"
+				},
+				cooldown = {
+					color = "FFCCCCCC",
+					color2 = "FFCCCCCC",
+					gradientDirection = "disabled"
+				},
+				sortRunes = true,
+				cooldownEnabled = true
+			},
+			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
+			shared = {
+				nodeOrder = { "runeRegenOvercap", "runicCorruption", "vampiricStrike" },
+				gradientOrder = { "borderOvercap" },
+				indicatorColors = {
+					runeRegenOvercap = {
+						color = "FFFF4500",
+						color2 = "FFFF4500",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							runicPowerBar = { bar = false, border = false, background = false },
+							runesBar = { bar = true, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+						},
+					},
+					vampiricStrike = {
+						color = "FFFF7ECE",
+						color2 = "FFFF7ECE",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							runicPowerBar = { bar = false, border = true, background = false },
+							runesBar = { bar = false, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+						},
+					},
+					runicCorruption = {
+						color = "FFFF00FF",
+						color2 = "FFFF00FF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							runicPowerBar = { bar = false, border = false, background = false },
+							runesBar = { bar = false, border = false, background = false },
+							runesBarRegenerating = { bar = true, border = false, background = false },
+						},
+					},
+					borderOvercap = {
+						color = "FFFF0000",
+						enabled = true,
+						isGradient = true,
+						targets = {
+							runicPowerBar = { bar = false, border = true, background = false },
+							runesBar = { bar = false, border = false, background = false },
+							runesBarRegenerating = { bar = false, border = false, background = false },
+						},
+					},
+				},
+			},
+			threshold = {
+				under = {
+					color = "FFFFFFFF"
+				},
+				over = {
+					color = "FF00FF00"
+				},
+				unusable = {
+					color = "FFFF0000"
+				},
+				special = {
+					color = "FFFF00FF",
+					enabled = true
+				},
+				outOfRange = {
+					color = "FF440000",
+					enabled = true,
+					show = true
+				}
+			}
+		},
+		displayText={
+			default = {
+				fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
+				fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = L["PositionLeft"],
+				fontSize=14,
+				color = {
+					color = "FFFFFFFF"
+				},
+				fontOutline = "OUTLINE",
+				fontShadow = {
+					enabled = false,
+					color = "FF000000",
+					xOffset = 1,
+					yOffset = -1,
+				},
+			},
+			barText = {}
+		},
+		audio = {
+		},
+		textures = TRB.Functions.Settings:DefaultTextures(true),
+	}
+
+	if includeBarText then
+		settings.displayText.barText = UnholyLoadDefaultBarTextSettings(classic)
+	end
+
+	return settings
+end
+
+---Loads default settings for Death Knight
+---@param includeBarText boolean?
+---@param classic boolean?
+---@return table
+local function LoadDefaultSettings(includeBarText, classic)
+	local settings = TRB.Functions.Settings:LoadDefaultSettings()
+
+	settings.deathknight.blood = BloodLoadDefaultSettings(includeBarText, classic)
+	settings.deathknight.frost = FrostLoadDefaultSettings(includeBarText, classic)
+	settings.deathknight.unholy = UnholyLoadDefaultSettings(includeBarText, classic)
+	return settings
+end
+TRB.Options.DeathKnight.LoadDefaultSettings = LoadDefaultSettings
+
+
+--[[
+
+Blood Option Menus
+
+]]
+
+local function BloodConstructResetDefaultsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_blood
+	local yCoord = 5
+
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Blood_Reset"] = {
+		text = string.format(L["ResetBarDialog"], L["DeathKnightBloodFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.deathknight.blood = BloodLoadDefaultSettings(true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Blood_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DeathKnightBloodFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.deathknight.blood = BloodLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Blood_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DeathKnightBloodFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BloodLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.bloodDisplayPanel, "barText")
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Blood_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DeathKnightBloodFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = BloodLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.bloodDisplayPanel, "barText")
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_ResetClassic")
+	end)
+
+	yCoord = yCoord - 40
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Blood_ResetBarTextClassic")
+	end)
+	yCoord = yCoord - 40
+end
+
+local function BloodConstructRunicPowerBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], 1, BLOOD_MAX_RUNIC_POWER)
+end
+
+local function BloodConstructRunesBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+
+	yCoord = yCoord - 60
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
+	controls.colors.comboPoints = {}
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.base
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+	end)
+
+	controls.checkBoxes.sortRunesComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_comboPointsSortRunes", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sortRunesComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxSortRunes"])
+	f.tooltip = L["DeathKnightRunesCheckboxSortRunesTooltip"]
+	f:SetChecked(spec.colors.comboPoints.sortRunes)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.sortRunes = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.cooldownEnabledComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_comboPointsCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.cooldownEnabledComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxShowCooldown"])
+	f.tooltip = L["DeathKnightRunesCheckboxShowCooldownTooltip"]
+	f:SetChecked(spec.colors.comboPoints.cooldownEnabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.cooldownEnabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.cooldown
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.cooldown, self)
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
+	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "DeathKnight_Blood_ComboPoints", "endCapComboPoints", L["EndCap"], 6, 1)
+end
+
+local function BloodConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 6, 1, yCoord)
+end
+
+local function BloodConstructBoneShieldBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+	local boneShieldColors = spec.colors.bars.boneShield
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+
+	local boneShieldBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("boneShield")
+	if boneShieldBarDef then
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef, L["ResourceRunicPower"])
+
+		yCoord = yCoord - 90
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 6, 1, yCoord, boneShieldBarDef,
+			function(callbackParent, callbackYCoord)
+				local f = nil
+
+				-- Ossuary building range (nodes 1-5)
+				controls.checkBoxes.boneShieldOssuary = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_boneShieldOssuaryEnabled", callbackParent, "ChatConfigCheckButtonTemplate")
+				f = controls.checkBoxes.boneShieldOssuary
+				f:SetPoint("TOPLEFT", oUi.xCoord, callbackYCoord)
+				getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightBloodCheckboxBoneShieldOssuaryRange"])
+				f.tooltip = L["DeathKnightBloodCheckboxBoneShieldOssuaryRangeTooltip"]
+				f:SetChecked(boneShieldColors.ossuary.enabled)
+				f:SetScript("OnClick", function(self, ...)
+					boneShieldColors.ossuary.enabled = self:GetChecked()
+					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(6, 1) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Data.cache.colors.bar = {}
+						TRB.Data.lookupDirty = true
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				end)
+
+				controls.colors.bars = controls.colors.bars or {}
+				controls.colors.bars.boneShield = controls.colors.bars.boneShield or {}
+				controls.colors.bars.boneShield.ossuary = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(callbackParent, L["DeathKnightBloodColorPickerBoneShieldOssuaryRange"], boneShieldColors.ossuary, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+				f = controls.colors.bars.boneShield.ossuary
+				f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, boneShieldColors, controls.colors.bars.boneShield, "ossuary", nil, nil, 6, 1)
+				end)
+				f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, boneShieldColors.ossuary, self, 6, 1)
+				end)
+
+				callbackYCoord = callbackYCoord - 30
+
+				-- Ossuary threshold (node 5 specifically)
+				controls.checkBoxes.boneShieldOssuaryThreshold = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_boneShieldOssuaryThresholdEnabled", callbackParent, "ChatConfigCheckButtonTemplate")
+				f = controls.checkBoxes.boneShieldOssuaryThreshold
+				f:SetPoint("TOPLEFT", oUi.xCoord, callbackYCoord)
+				getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightBloodCheckboxBoneShieldOssuaryThreshold"])
+				f.tooltip = L["DeathKnightBloodCheckboxBoneShieldOssuaryThresholdTooltip"]
+				f:SetChecked(boneShieldColors.ossuaryThreshold.enabled)
+				f:SetScript("OnClick", function(self, ...)
+					boneShieldColors.ossuaryThreshold.enabled = self:GetChecked()
+					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(6, 1) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+						TRB.Data.cache.colors.bar = {}
+						TRB.Data.lookupDirty = true
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end
+				end)
+
+				controls.colors.bars.boneShield.ossuaryThreshold = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(callbackParent, L["DeathKnightBloodColorPickerBoneShieldOssuaryThreshold"], boneShieldColors.ossuaryThreshold, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, callbackYCoord)
+				f = controls.colors.bars.boneShield.ossuaryThreshold
+				f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, boneShieldColors, controls.colors.bars.boneShield, "ossuaryThreshold", nil, nil, 6, 1)
+				end)
+				f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+					TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, boneShieldColors.ossuaryThreshold, self, 6, 1)
+				end)
+
+				return callbackYCoord - 30
+			end)
+	end
+end
+
+local function BloodConstructCoagulatingBloodBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+
+	local coagulatingBloodBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("coagulatingBlood")
+	if coagulatingBloodBarDef then
+		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 6, 1, yCoord, coagulatingBloodBarDef, L["ResourceRunicPower"])
+
+		yCoord = yCoord - 90
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 6, 1, yCoord, coagulatingBloodBarDef)
+
+		yCoord = yCoord - 60
+		yCoord = TRB.Functions.OptionsUi.Colors:GenerateCustomBarMaxValueOptions(parent, controls, spec, 6, 1, yCoord, "coagulatingBlood", L["ResourceCoagulatingBlood"], 1, BLOOD_MAX_COAGULATING_BLOOD)
+	end
+end
+
+local function BloodConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local customBars = {}
+	local boneShieldBarDef = registry:Get("boneShield")
+	if boneShieldBarDef then
+		table.insert(customBars, boneShieldBarDef)
+	end
+	local coagulatingBloodBarDef = registry:Get("coagulatingBlood")
+	if coagulatingBloodBarDef then
+		table.insert(customBars, coagulatingBloodBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 6, 1, yCoord, true, L["ResourceRunes"], false, customBars)
+end
+
+local function BloodConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local customBars = {}
+	local boneShieldBarDef = registry:Get("boneShield")
+	if boneShieldBarDef then
+		table.insert(customBars, boneShieldBarDef)
+	end
+	local coagulatingBloodBarDef = registry:Get("coagulatingBlood")
+	if coagulatingBloodBarDef then
+		table.insert(customBars, coagulatingBloodBarDef)
+	end
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true, nil, customBars)
+end
+
+local function BloodConstructThresholdListPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+	controls.colors.threshold = {}
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 6, 1, yCoord, {
+		barTargetLabels = { primary = L["ResourceRunicPower"] },
+		labels = {
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
+		},
+		tooltips = {
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
+			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAllyTooltip"],
+		},
+	})
+end
+
+local function BloodConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 1, yCoord)
+end
+
+local function BloodConstructFontAndTextPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+	local f = nil
+
+	local title = ""
+
+
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 6, 1, yCoord)
+
+	yCoord = yCoord - 40
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 6, 1, yCoord)
+	
+	yCoord = yCoord - 30
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	f = controls.colors.text.current
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+	end)
+
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
+	yCoord = yCoord - 30
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Blood_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DeathKnightCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
+	end)
+
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 1, yCoord)
+end
+
+local function BloodConstructBarTextDisplayPanel(parent, cache)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 6, 1, yCoord, cache)
+end
+
+local function BloodConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.blood
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_blood
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 1, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "runeRegenOvercap", label = L["DeathKnightIndicatorRuneRegenOvercap"], tooltip = L["DeathKnightIndicatorRuneRegenOvercapTooltip"], colorLabel = L["DeathKnightIndicatorRuneRegenOvercapColor"] },
+			{ key = "vampiricStrike", label = L["DeathKnightIndicatorVampiricStrike"], tooltip = L["DeathKnightIndicatorVampiricStrikeTooltip"], colorLabel = L["DeathKnightIndicatorVampiricStrikeColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["DeathKnightIndicatorOvercap"], tooltip = L["DeathKnightIndicatorOvercapTooltip"], colorLabel = L["DeathKnightIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "runicPowerBar", label = L["BarNameRunicPowerBar"] },
+			{ key = "runesBar", label = L["BarNameRunesBar"] },
+			{ key = "runesBarRegenerating", label = L["BarNameRunesBarRegenerating"] },
+			{ key = "boneShield", label = L["ResourceBoneShield"] },
+			{ key = "coagulatingBlood", label = L["ResourceCoagulatingBlood"] },
+		},
+		excludedElements = {
+			["boneShield"] = { endCap = true },
+		},
+		gradientExcludedElements = {
+			["boneShield"] = { bar = true },
+		},
+		ddNamePrefix = "TwintopResourceBar_DeathKnight_Blood",
+		overcapConfig = { primaryResourceString = L["ResourceRunicPower"], primaryResourceMax = BLOOD_MAX_RUNIC_POWER },
+	}))
+
+	yCoord = yCoord - 40
+end
+
+local function BloodConstructOptionsPanel(cache)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(6, 1)
+	local namePrefix = className .. "_" .. specName
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local parent = interfaceSettingsFrame.panel
+	local controls = interfaceSettingsFrame.controls.deathknight_blood or {}
+	local yCoord = 0
+	local f = nil
+
+	controls.colors = {}
+	controls.labels = {}
+	controls.textbox = {}
+	controls.checkBoxes = {}
+	controls.dropDown = {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.bloodDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Blood")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathknight", "deathknight_blood", L["DeathKnightBloodFull"], interfaceSettingsFrame.bloodDisplayPanel)
+	
+	parent = interfaceSettingsFrame.bloodDisplayPanel
+
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["DeathKnightBloodFull"],
+		TRB.Data.settings.core.enabled.deathknight, "blood",
+		"TwintopResourceBar_DeathKnight_Blood_bloodDeathKnightEnabled", "bloodDeathKnightEnabled",
+		"deathknight", "blood")
+
+	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_blood = controls
+
+	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
+		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = BloodConstructRunicPowerBarPanel, visibilityKey = "primary" },
+		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = BloodConstructRunesBarPanel, visibilityKey = "secondary" },
+		{ key = "boneShieldBar", label = L["TabBoneShield"], width = oUi.tabWidth.medium, constructor = BloodConstructBoneShieldBarPanel, visibilityKey = "boneShield" },
+		{ key = "coagulatingBloodBar", label = L["TabCoagulatingBlood"], width = oUi.tabWidth.large, constructor = BloodConstructCoagulatingBloodBarPanel, visibilityKey = "coagulatingBlood" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = BloodConstructHealthBarPanel, visibilityKey = "health" },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = BloodConstructIndicatorColorsPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = BloodConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = BloodConstructBarVisibilityPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = BloodConstructThresholdSettingsPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = BloodConstructThresholdListPanel, isManualScrollFrame = true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("deathknight", "blood", controls),
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = BloodConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) BloodConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = BloodConstructResetDefaultsPanel },
+	}, yCoord)
+end
+
+
+-- Frost Option Menus
+local function FrostConstructResetDefaultsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost
+	local yCoord = 5
+
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Frost_Reset"] = {
+		text = string.format(L["ResetBarDialog"], L["DeathKnightFrostFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.deathknight.frost = FrostLoadDefaultSettings(true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Frost_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DeathKnightFrostFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.deathknight.frost = FrostLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Frost_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DeathKnightFrostFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = FrostLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.frostDisplayPanel, "barText")
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Frost_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DeathKnightFrostFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = FrostLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.frostDisplayPanel, "barText")
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_ResetClassic")
+	end)
+
+	yCoord = yCoord - 40
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Frost_ResetBarTextClassic")
+	end)
+	yCoord = yCoord - 40
+end
+
+local function FrostConstructRunicPowerBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], 1, FROST_MAX_RUNIC_POWER)
+end
+
+local function FrostConstructRunesBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+
+	yCoord = yCoord - 60
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
+	controls.colors.comboPoints = {}
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.base
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+	end)
+
+	controls.checkBoxes.sortRunesComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_comboPointsSortRunes", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sortRunesComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxSortRunes"])
+	f.tooltip = L["DeathKnightRunesCheckboxSortRunesTooltip"]
+	f:SetChecked(spec.colors.comboPoints.sortRunes)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.sortRunes = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.cooldownEnabledComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_comboPointsCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.cooldownEnabledComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxShowCooldown"])
+	f.tooltip = L["DeathKnightRunesCheckboxShowCooldownTooltip"]
+	f:SetChecked(spec.colors.comboPoints.cooldownEnabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.cooldownEnabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.cooldown
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.cooldown, self)
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
+	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "DeathKnight_Frost_ComboPoints", "endCapComboPoints", L["EndCap"], 6, 2)
+end
+
+local function FrostConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 6, 2, yCoord)
+end
+
+local function FrostConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 6, 2, yCoord, true, L["ResourceRunes"])
+end
+
+local function FrostConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
+end
+
+local function FrostConstructThresholdListPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
+	controls.colors.threshold = {}
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 6, 2, yCoord, {
+		barTargetLabels = { primary = L["ResourceRunicPower"] },
+		labels = {
+			breathOfSindragosa = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosa"],
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+			frostStrike = L["DeathKnightFrostThresholdCheckboxFrostStrike"],
+			glacialAdvance = L["DeathKnightFrostThresholdCheckboxGlacialAdvance"],
+		},
+		tooltips = {
+			breathOfSindragosa = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosaTooltip"],
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
+			frostStrike = L["DeathKnightFrostThresholdCheckboxFrostStrikeTooltip"],
+			glacialAdvance = L["DeathKnightFrostThresholdCheckboxGlacialAdvanceTooltip"],
+		},
+	})
+end
+
+local function FrostConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
+
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 2, yCoord)
+end
+
+local function FrostConstructFontAndTextPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
+	local f = nil
+
+	local title = ""
+
+
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 6, 2, yCoord)
+
+	yCoord = yCoord - 40
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 6, 2, yCoord)
+	
+	yCoord = yCoord - 30
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	f = controls.colors.text.current
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+	end)
+
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
+	yCoord = yCoord - 30
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Frost_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DeathKnightCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
+	end)
+
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 2, yCoord)
+end
+
+local function FrostConstructBarTextDisplayPanel(parent, cache)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
+
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 6, 2, yCoord, cache)
+end
+
+local function FrostConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.frost
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_frost
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "runeRegenOvercap", label = L["DeathKnightIndicatorRuneRegenOvercap"], tooltip = L["DeathKnightIndicatorRuneRegenOvercapTooltip"], colorLabel = L["DeathKnightIndicatorRuneRegenOvercapColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["DeathKnightIndicatorOvercap"], tooltip = L["DeathKnightIndicatorOvercapTooltip"], colorLabel = L["DeathKnightIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "runicPowerBar", label = L["BarNameRunicPowerBar"] },
+			{ key = "runesBar", label = L["BarNameRunesBar"] },
+			{ key = "runesBarRegenerating", label = L["BarNameRunesBarRegenerating"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_DeathKnight_Frost",
+		overcapConfig = { primaryResourceString = L["ResourceRunicPower"], primaryResourceMax = FROST_MAX_RUNIC_POWER },
+	}))
+
+	yCoord = yCoord - 40
+end
+
+local function FrostConstructOptionsPanel(cache)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(6, 2)
+	local namePrefix = className .. "_" .. specName
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local parent = interfaceSettingsFrame.panel
+	local controls = interfaceSettingsFrame.controls.deathknight_frost or {}
+	local yCoord = 0
+	local f = nil
+
+	controls.colors = {}
+	controls.labels = {}
+	controls.textbox = {}
+	controls.checkBoxes = {}
+	controls.dropDown = {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.frostDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Frost")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathknight", "deathknight_frost", L["DeathKnightFrostFull"], interfaceSettingsFrame.frostDisplayPanel)
+	
+	parent = interfaceSettingsFrame.frostDisplayPanel
+
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["DeathKnightFrostFull"],
+		TRB.Data.settings.core.enabled.deathknight, "frost",
+		"TwintopResourceBar_DeathKnight_Frost_frostDeathKnightEnabled", "frostDeathKnightEnabled",
+		"deathknight", "frost")
+
+	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_frost = controls
+
+	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
+		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = FrostConstructRunicPowerBarPanel, visibilityKey = "primary" },
+		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = FrostConstructRunesBarPanel, visibilityKey = "secondary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FrostConstructHealthBarPanel, visibilityKey = "health" },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FrostConstructIndicatorColorsPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FrostConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FrostConstructBarVisibilityPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = FrostConstructThresholdSettingsPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = FrostConstructThresholdListPanel, isManualScrollFrame = true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("deathknight", "frost", controls),
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = FrostConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) FrostConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = FrostConstructResetDefaultsPanel },
+	}, yCoord)
+end
+
+-- Unholy Option Menus
+local function UnholyConstructResetDefaultsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy
+	local yCoord = 5
+
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Unholy_Reset"] = {
+		text = string.format(L["ResetBarDialog"], L["DeathKnightUnholyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.deathknight.unholy = UnholyLoadDefaultSettings(true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Unholy_ResetClassic"] = {
+		text = string.format(L["ResetBarClassicDialog"], L["DeathKnightUnholyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			TRB.Data.settings.deathknight.unholy = UnholyLoadDefaultSettings(true, true)
+			C_UI.Reload()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Unholy_ResetBarTextCompact"] = {
+		text = string.format(L["ResetBarTextCompactDialog"], L["DeathKnightUnholyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = UnholyLoadDefaultBarTextSettings()
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.unholyDisplayPanel, "barText")
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_DeathKnight_Unholy_ResetBarTextClassic"] = {
+		text = string.format(L["ResetBarTextClassicDialog"], L["DeathKnightUnholyFull"]),
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			spec.displayText.barText = UnholyLoadDefaultBarTextSettings(true)
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(TRB.Frames.interfaceSettingsFrameContainer.unholyDisplayPanel, "barText")
+			controls.barTextFields.ResetTableValues(spec.displayText.barText)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarToDefaultsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_Reset")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetToClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_ResetClassic")
+	end)
+
+	yCoord = yCoord - 40
+	controls.textCustomSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ResetResourceBarTextHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextCompactButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextCompact"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextCompactButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_ResetBarTextCompact")
+	end)
+
+	yCoord = yCoord - 30
+	controls.resetBarTextClassicButton = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["ResetBarTextClassic"], oUi.xCoord, yCoord, 250, 30)
+	controls.resetBarTextClassicButton:SetScript("OnClick", function(self, ...)
+		StaticPopup_Show("TwintopResourceBar_DeathKnight_Unholy_ResetBarTextClassic")
+	end)
+	yCoord = yCoord - 40
+end
+
+local function UnholyConstructRunicPowerBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], 1, UNHOLY_MAX_RUNIC_POWER)
+end
+
+local function UnholyConstructRunesBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
+	local f = nil
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], L["ResourceRunes"])
+
+	yCoord = yCoord - 60
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunesColorsHeader"], oUi.xCoord, yCoord)
+	controls.colors.comboPoints = {}
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["ResourceRunes"], spec.colors.comboPoints.base, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.base
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.base, self)
+	end)
+
+	controls.checkBoxes.sortRunesComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_comboPointsSortRunes", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.sortRunesComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxSortRunes"])
+	f.tooltip = L["DeathKnightRunesCheckboxSortRunesTooltip"]
+	f:SetChecked(spec.colors.comboPoints.sortRunes)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.sortRunes = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.cooldownEnabledComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_comboPointsCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.cooldownEnabledComboPoint
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["DeathKnightRunesCheckboxShowCooldown"])
+	f.tooltip = L["DeathKnightRunesCheckboxShowCooldownTooltip"]
+	f:SetChecked(spec.colors.comboPoints.cooldownEnabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.cooldownEnabled = self:GetChecked()
+	end)
+
+	controls.colors.comboPoints.cooldown = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["DeathKnightRunesColorPickerCooldown"], spec.colors.comboPoints.cooldown, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.cooldown
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "cooldown")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.cooldown, self)
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerRunesBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+	end)
+
+	yCoord = yCoord - 30
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightRunesColorPickerBackground"], spec.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.background
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
+	end)
+
+	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, spec.colors.comboPoints, "DeathKnight_Unholy_ComboPoints", "endCapComboPoints", L["EndCap"], 6, 3)
+end
+
+local function UnholyConstructHealthBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"])
+
+	yCoord = yCoord - 60
+	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 6, 3, yCoord)
+end
+
+local function UnholyConstructBarTexturesPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 6, 3, yCoord, true, L["ResourceRunes"])
+end
+
+local function UnholyConstructBarVisibilityPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
+end
+
+local function UnholyConstructThresholdListPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
+	controls.colors.threshold = {}
+	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 6, 3, yCoord, {
+		barTargetLabels = { primary = L["ResourceRunicPower"] },
+		labels = {
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+			epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemic"],
+			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
+			zombify = L["DeathKnightUnholyThresholdCheckboxZombify"],
+		},
+		tooltips = {
+			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
+			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
+			epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemicTooltip"],
+			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAllyTooltip"],
+			zombify = L["DeathKnightUnholyThresholdCheckboxZombifyTooltip"],
+		},
+	})
+end
+
+local function UnholyConstructThresholdSettingsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
+
+
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], true, true, true, true, nil)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 6, 3, yCoord)
+end
+
+local function UnholyConstructFontAndTextPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
+	local f = nil
+
+	local title = ""
+
+
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, controls, spec, 6, 3, yCoord)
+
+	yCoord = yCoord - 40
+	controls.textDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["DeathKnightRunicPowerTextColorsHeader"], oUi.xCoord, yCoord)
+
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultTextColors(parent, controls, spec, 6, 3, yCoord)
+	
+	yCoord = yCoord - 30
+	controls.colors.text.current = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerCurrentRunicPower"], spec.colors.text.current.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord, yCoord)
+	f = controls.colors.text.current
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+	end)
+
+	controls.colors.text.overcap = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["DeathKnightColorPickerOvercap"], spec.colors.text.overcap.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.text.overcap
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
+	end)
+
+	yCoord = yCoord - 30
+
+	controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DeathKnight_Unholy_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.overcapTextEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+	f.tooltip = L["DeathKnightCheckboxThresholdOvercapTooltip"]
+	f:SetChecked(spec.colors.text.overcap.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.text.overcap.enabled = self:GetChecked()
+	end)
+
+	yCoord = TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, spec, 6, 3, yCoord)
+end
+
+local function UnholyConstructBarTextDisplayPanel(parent, cache)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
+
+	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 6, 3, yCoord, cache)
+end
+
+local function UnholyConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.deathknight.unholy
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 6, 3, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "runeRegenOvercap", label = L["DeathKnightIndicatorRuneRegenOvercap"], tooltip = L["DeathKnightIndicatorRuneRegenOvercapTooltip"], colorLabel = L["DeathKnightIndicatorRuneRegenOvercapColor"] },
+			{ key = "runicCorruption", label = L["DeathKnightIndicatorRunicCorruption"], tooltip = L["DeathKnightIndicatorRunicCorruptionTooltip"], colorLabel = L["DeathKnightIndicatorRunicCorruptionColor"], cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+			{ key = "vampiricStrike", label = L["DeathKnightIndicatorVampiricStrike"], tooltip = L["DeathKnightIndicatorVampiricStrikeTooltip"], colorLabel = L["DeathKnightIndicatorVampiricStrikeColor"] },
+		},
+		gradientDefs = {
+			{ key = "borderOvercap", label = L["DeathKnightIndicatorOvercap"], tooltip = L["DeathKnightIndicatorOvercapTooltip"], colorLabel = L["DeathKnightIndicatorOvercapColor"] },
+		},
+		barTargetDefs = {
+			{ key = "runicPowerBar", label = L["BarNameRunicPowerBar"] },
+			{ key = "runesBar", label = L["BarNameRunesBar"] },
+			{ key = "runesBarRegenerating", label = L["BarNameRunesBarRegenerating"] },
+		},
+		ddNamePrefix = "TwintopResourceBar_DeathKnight_Unholy",
+		overcapConfig = { primaryResourceString = L["ResourceRunicPower"], primaryResourceMax = UNHOLY_MAX_RUNIC_POWER },
+	}))
+
+	yCoord = yCoord - 40
+end
+
+local function UnholyConstructOptionsPanel(cache)
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(6, 3)
+	local namePrefix = className .. "_" .. specName
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local parent = interfaceSettingsFrame.panel
+	local controls = interfaceSettingsFrame.controls.deathknight_unholy or {}
+	local yCoord = 0
+	local f = nil
+
+	controls.colors = {}
+	controls.labels = {}
+	controls.textbox = {}
+	controls.checkBoxes = {}
+	controls.dropDown = {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.unholyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DeathKnight_Unholy")
+	TRB.Options.OptionsFrame:RegisterSpecPanel("deathknight", "deathknight_unholy", L["DeathKnightUnholyFull"], interfaceSettingsFrame.unholyDisplayPanel)
+	
+	parent = interfaceSettingsFrame.unholyDisplayPanel
+
+	yCoord = TRB.Functions.OptionsUi.Profiles:BuildSpecTitleRow(parent, controls, L["DeathKnightUnholyFull"],
+		TRB.Data.settings.core.enabled.deathknight, "unholy",
+		"TwintopResourceBar_DeathKnight_Unholy_unholyDeathKnightEnabled", "unholyDeathKnightEnabled",
+		"deathknight", "unholy")
+
+	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+	TRB.Frames.interfaceSettingsFrameContainer.controls.deathknight_unholy = controls
+
+	yCoord = TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, {
+		{ key = "runicPowerBar", label = L["TabRunicPower"], width = oUi.tabWidth.small, constructor = UnholyConstructRunicPowerBarPanel, visibilityKey = "primary" },
+		{ key = "runesBar", label = L["TabRunes"], width = oUi.tabWidth.small, constructor = UnholyConstructRunesBarPanel, visibilityKey = "secondary" },
+		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = UnholyConstructHealthBarPanel, visibilityKey = "health" },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = UnholyConstructIndicatorColorsPanel },
+		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = UnholyConstructBarTexturesPanel },
+		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = UnholyConstructBarVisibilityPanel },
+		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.xlarge, constructor = UnholyConstructThresholdSettingsPanel },
+		{ key = "thresholds", label = L["TabThresholds"], width = oUi.tabWidth.large, constructor = UnholyConstructThresholdListPanel, isManualScrollFrame = true },
+		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("deathknight", "unholy", controls),
+		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = UnholyConstructFontAndTextPanel },
+		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) UnholyConstructBarTextDisplayPanel(scrollChild, cache) end },
+		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = UnholyConstructResetDefaultsPanel },
+	}, yCoord)
+end
+
+local function ConstructOptionsPanel(specCache)
+	TRB.Options:ConstructOptionsPanel()
+	TRB.Options.OptionsFrame:RegisterClassHeader("deathknight", L["DeathKnight"])
+
+	BloodConstructOptionsPanel(specCache.deathknight_blood)
+	FrostConstructOptionsPanel(specCache.deathknight_frost)
+	UnholyConstructOptionsPanel(specCache.deathknight_unholy)
+
+	TRB.Options.OptionsFrame:RefreshNav()
+end
+TRB.Options.DeathKnight.ConstructOptionsPanel = ConstructOptionsPanel

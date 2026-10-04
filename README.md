@@ -363,6 +363,35 @@ If you're interested in helping translate TRB into other languages, please [join
 
 ---
 
+## Game Flavors and Repository Layout
+
+TRB supports more than one World of Warcraft game lineage that shares the modern addon API. Each lineage is a *flavor*; the same Core serves all of them and each flavor brings its own class modules.
+
+- `mainline` -- modern World of Warcraft (Midnight). Its TOC is `TwintopInsanityBar.toc` at the repository root, so a checkout works in place as a `_retail_` install.
+- `forever` -- World of Warcraft: Forever. Its TOC is `Flavors/Forever/TwintopInsanityBar.toc`; the packaged zip puts it at the addon root.
+
+```
+Core/                     Class-agnostic engine: Init.lua, Classes/, Functions/, Options/, Localization/.
+                          Nothing here may name a class, spec or class bar; build/lint-core.ps1 enforces it.
+Flavors/<Flavor>/         One folder per game lineage:
+  Manifest.lua              identity (id, saved-variables global, client detection) + the class/spec registry
+  Migrations.lua            saved-variable migrations (frozen history; Forever has none yet)
+  News.lua                  the changelog shown by /trb news
+  Classes.xml / Runtime.xml / Options.xml   load lists that interleave with Core/Stage1-3.xml
+  ClassModules/             Classes/ (spell sets, bar types, spec descriptors), <Class>.lua (runtime), Options/
+Libs/  Images/  Sounds/  StatusBars/   shared libraries and media
+build/                    stage.ps1 (package one flavor), dev-link.ps1 (junction a client to this checkout),
+                          lint-core.ps1, smoke.ps1 + harness/ (load every flavor under a stubbed API), forever-probe/
+```
+
+Everything shared code needs to know about a spec comes from its **spec descriptor** (declared in the flavor's `*Classes.lua`, see `Core/Classes/SpecDescriptor.lua`) or from the manifest's registry, never from a class id in Core.
+
+**Developing against a client:** keep the checkout inside `_retail_\Interface\AddOns` (mainline works in place with no setup) and link the Forever client to it with `build\dev-link.ps1 -Flavor forever -AddOnsPath "<Forever>\Interface\AddOns"` -- that creates a real addon folder of junctions plus a copy of the flavor's TOC, so one checkout serves both clients live. Step-by-step per-machine setup, the optional Lua smoke tests and the release tagging scheme are in [build/README.md](build/README.md).
+
+**Releases:** pushing a tag builds the matching flavor and attaches the zip to a GitHub release: `12.1.0.11-release` (mainline), `12.1.0.11-beta01`, `forever-1.0.0.0-release`. `build\stage.ps1 -Flavor <name>` produces the same zip locally under `dist\`.
+
+---
+
 ## Support
 
 Found an issue? Report it on [GitHub](https://github.com/Twintop/TwintopInsanityBar/issues/) or join the discussion on [Discord](https://discord.gg/eThqxM78xm).

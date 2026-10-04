@@ -1,0 +1,3051 @@
+local _, TRB = ...
+local L = TRB.Localization
+TRB.Functions = TRB.Functions or {}
+TRB.Functions.BarText = {}
+
+local containerAnchorPrefix = "Container::"
+
+-- Self-driven bar anchor keys → their bar group key. For the cast bars both the bar and its side icon
+-- resolve through the same node; the Other Bars have no icon, so they map bar-only.
+local castbarAnchorGroupKeys = {
+	CastBar = "castbar",
+	TargetCastBar = "targetCastbar",
+	FocusCastBar = "focusCastbar",
+	PetCastBar = "petCastbar",
+	CastBarIcon = "castbar",
+	TargetCastBarIcon = "targetCastbar",
+	FocusCastBarIcon = "focusCastbar",
+	PetCastBarIcon = "petCastbar",
+	GcdBar = "gcd",
+	FatigueBar = "fatigue",
+	BreathBar = "breath",
+	FeignDeathBar = "feignDeath",
+	PetHealthBar = "petHealth",
+	PetPowerBar = "petPower",
+}
+
+-- Which of the above keys target the side icon frame rather than the bar itself.
+local castbarIconAnchors = {
+	CastBarIcon = true,
+	TargetCastBarIcon = true,
+	FocusCastBarIcon = true,
+	PetCastBarIcon = true,
+}
+
+---Is this entry anchored to a cast bar that is finishing its fade? Only the cast bar keys above answer
+---true; the Other Bars timers share that table but blank normally when their timer ends.
+---@param relativeToFrame string?
+---@return boolean
+local function IsAnchoredToFadingCastbar(relativeToFrame)
+	local groupKey = relativeToFrame ~= nil and castbarAnchorGroupKeys[relativeToFrame] or nil
+	if groupKey == "castbar" then
+		return TRB.Functions.Castbar:IsFadingOut()
+	elseif groupKey == "targetCastbar" or groupKey == "focusCastbar" or groupKey == "petCastbar" then
+		return TRB.Functions.TargetCastbar:IsFadingOut(groupKey)
+	end
+	return false
+end
+local containerAnchorLabelByResourceType = {
+	AngelicFeather = L["AngelicFeatherContainer"],
+	ArcaneCharges = L["ArcaneChargesContainer"],
+	BoneShield = L["BoneShieldContainer"],
+	Chi = L["ChiContainer"],
+	ComboPoints = L["ComboPointsContainer"],
+	Essence = L["EssenceContainer"],
+	Icicles = L["IciclesContainer"],
+	Lightweaver = L["LightweaverContainer"],
+	HolyPower = L["HolyPowerContainer"],
+	MaelstromWeapon = L["MaelstromWeaponContainer"],
+	Runes = L["RunesContainer"],
+	Shatter = L["ShatterContainer"],
+	SoulFragments = L["SoulFragmentsContainer"],
+	SoulShards = L["SoulShardsContainer"],
+	TipOfTheSpear = L["TipOfTheSpearContainer"],
+	WhirlwindCharges = L["WhirlwindChargesContainer"],
+}
+
+local function GetContainerAnchorBarGroupKey(relativeToFrame)
+	if type(relativeToFrame) ~= "string" then
+		return nil
+	end
+
+	return string.match(relativeToFrame, "^Container::(.+)$")
+end
+
+-- Anchor names every class module resolves to the same bar group, so an inactive spec's text can be matched without live frames.
+local sharedAnchorGroupKeys = {
+	Resource = "primary",
+	ResourceBar = "primary",
+	Health = "health",
+	HealthBar = "health",
+}
+
+---The bar group a shared anchor name resolves to, or nil for a class-specific name.
+---@param relativeToFrame string
+---@return string?
+local function GetSharedAnchorBarGroupKey(relativeToFrame)
+	local groupKey = castbarAnchorGroupKeys[relativeToFrame]
+	if groupKey ~= nil then
+		return groupKey
+	end
+	local normalized = (string.gsub(relativeToFrame, "_", ""))
+	groupKey = sharedAnchorGroupKeys[normalized]
+	if groupKey ~= nil then
+		return groupKey
+	end
+	if string.match(normalized, "^ComboPoint%d+$") then
+		return "secondary"
+	end
+	return nil
+end
+
+local function GetContainerAnchorDefinition(classId, specId, barGroupKey)
+	local specConfig = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
+	if specConfig == nil then
+		return nil
+	end
+
+	local barGroupConfig = specConfig[barGroupKey]
+	if barGroupConfig == nil or (barGroupConfig.maxNodes or 1) <= 1 or barGroupConfig.allowContainerAnchor == false then
+		return nil
+	end
+
+	local label = containerAnchorLabelByResourceType[barGroupConfig.resourceType]
+	if label == nil then
+		return nil
+	end
+
+	return {
+		id = containerAnchorPrefix .. barGroupKey,
+		label = label,
+		barGroupKey = barGroupKey,
+	}
+end
+
+---The spec's multi-node bar containers the bar text editor offers, in no particular order.
+---@param classId integer?
+---@param specId integer?
+---@return table[]
+function TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
+	local specConfig = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
+	local options = {}
+
+	if specConfig == nil then
+		return options
+	end
+
+	for barGroupKey, _ in pairs(specConfig) do
+		local definition = GetContainerAnchorDefinition(classId, specId, barGroupKey)
+		if definition ~= nil then
+			table.insert(options, definition)
+		end
+	end
+
+	return options
+end
+
+---@param relativeToFrame string
+---@param classId integer?
+---@param specId integer?
+---@return Frame|nil, boolean, boolean
+function TRB.Functions.BarText:GetAnchorFrame(relativeToFrame, classId, specId)
+	classId = classId or TRB.Data.character.classId
+	specId = specId or TRB.Data.character.specId
+
+	if relativeToFrame == "UIParent" then
+		return UIParent, true, true
+	end
+
+	-- Castbar is an all-spec bar not handled by any class's per-spec GetBarTextFrame; resolve it here
+	-- centrally so bar text can anchor to it (or its side icon) regardless of class/spec.
+	local castbarGroupKey = castbarAnchorGroupKeys[relativeToFrame]
+	if castbarGroupKey ~= nil then
+		local wantsIcon = castbarIconAnchors[relativeToFrame]
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+		local barGroup = barGroups and barGroups[castbarGroupKey]
+		if barGroup ~= nil then
+			local node = barGroup:GetNode(1)
+			if node ~= nil then
+				if wantsIcon then
+					local iconFrame = node:GetIconFrame()
+					-- The icon only shows while a spell is casting; track its live shown state, not just the group's.
+					local isVisible = barGroup.isVisible and node.isVisible and iconFrame ~= nil and iconFrame:IsShown()
+					return iconFrame, true, isVisible == true
+				end
+				local isVisible = barGroup.isVisible and node.isVisible
+				return node:GetFrame(), true, isVisible
+			end
+		end
+		return nil, true, false
+	end
+
+	local barGroupKey = GetContainerAnchorBarGroupKey(relativeToFrame)
+	if barGroupKey ~= nil then
+		local definition = GetContainerAnchorDefinition(classId, specId, barGroupKey)
+		if definition == nil then
+			return nil, false, false
+		end
+
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+		local barGroup = barGroups and barGroups[barGroupKey]
+		if barGroup ~= nil then
+			return barGroup:GetContainerFrame(), true, barGroup.isVisible
+		end
+
+		return nil, true, false
+	end
+
+	return TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+end
+
+---@param frame Frame?
+---@param barGroup TRB.Classes.BarGroup?
+---@return boolean
+local function BarGroupContainsFrame(frame, barGroup)
+	if frame == nil or barGroup == nil then
+		return false
+	end
+
+	if barGroup.GetContainerFrame and frame == barGroup:GetContainerFrame() then
+		return true
+	end
+
+	if barGroup.GetAnchorFrame and frame == barGroup:GetAnchorFrame() then
+		return true
+	end
+
+	if barGroup.GetChargeRechargeFrame and frame == barGroup:GetChargeRechargeFrame() then
+		return true
+	end
+
+	if barGroup.GetNodes then
+		for _, node in ipairs(barGroup:GetNodes()) do
+			if node and node.GetFrame and frame == node:GetFrame() then
+				return true
+			end
+			-- Bar text can anchor to a node's side icon frame too, so treat that as belonging to the group.
+			if node and node.GetIconFrame and frame == node:GetIconFrame() then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+---@param barTextEntry table?
+---@param barGroupKey string
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Functions.BarText:IsEntryAnchoredToBarGroup(barTextEntry, barGroupKey, classId, specId)
+	local relativeToFrame = barTextEntry and barTextEntry.position and barTextEntry.position.relativeToFrame
+	if type(relativeToFrame) ~= "string" then
+		return false
+	end
+
+	local containerBarGroupKey = GetContainerAnchorBarGroupKey(relativeToFrame)
+	if containerBarGroupKey ~= nil then
+		return containerBarGroupKey == barGroupKey
+	end
+
+	local activeClassId = TRB.Data.character.classId
+	local activeSpecId = TRB.Data.character.specId
+	if classId ~= nil and specId ~= nil and (classId ~= activeClassId or specId ~= activeSpecId) then
+		return GetSharedAnchorBarGroupKey(relativeToFrame) == barGroupKey
+	end
+
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local barGroup = barGroups and barGroups[barGroupKey]
+	if barGroup == nil then
+		return false
+	end
+
+	local anchorFrame = self:GetAnchorFrame(relativeToFrame, classId, specId)
+	return BarGroupContainsFrame(anchorFrame, barGroup)
+end
+
+-- Hash table for O(1) bar text cache lookups (keyed by cleanedText).
+-- Declared at file scope so ClearBarTextCacheHash and GetFromBarTextCache share the same upvalue.
+local barTextCacheHash = {}
+
+-- Branch-signature render engine state, declared here so ClearBarTextCacheHash can wipe it.
+-- Plans are keyed [entry text][conditional-outcome signature]; entry states hold each entry's
+-- last plan, color and argument values for the unchanged-skip.
+local barTextRenderPlans = {}
+local barTextEntryStates = {}
+local barTextSignatureFns = {}
+-- Consecutive render throws before an entry gives up and stays on the legacy resolver.
+local maxEngineFailures = 3
+
+---Returns true if the value or color has changed for this key, indicating the
+---formatted lookup string needs updating. Reuses existing prevState entries to
+---avoid table allocation after initial warm-up.
+---@param prevState table Memoization state table (TRB.Data.prevLookupState)
+---@param key string The lookup key (e.g., "$resource")
+---@param rawValue any The current raw value (used for equality comparison only)
+---@param color string|nil The current color hex string (nil for uncolored variables)
+---@param isSecret boolean|nil When true, the value originates from a WoW API that returns
+---        "secret" numbers (e.g., UnitPower, UnitHealth). Secret numbers cannot be
+---        compared or stored safely, so we always assume the value has changed.
+---@return boolean changed True if the formatted lookup[key] needs rewriting
+function TRB.Functions.BarText.LookupChanged(prevState, key, rawValue, color, isSecret)
+	if isSecret or issecretvalue(rawValue) then
+		-- Invalidate prevState so the next non-secret value is guaranteed to trigger an update
+		prevState[key] = nil
+		return true
+	end
+	local prev = prevState[key]
+	if prev ~= nil and prev[1] == rawValue and prev[2] == color then
+		return false
+	end
+	if prev == nil then
+		prevState[key] = { rawValue, color }
+	else
+		prev[1] = rawValue
+		prev[2] = color
+	end
+	return true
+end
+
+---Marks the lookup data as dirty so the next tick will refresh all lookup variables.
+---This is very cheap (a single boolean write) and should be called from any event handler
+---that changes data consumed by RefreshLookupData.
+function TRB.Functions.BarText:MarkLookupDirty()
+	TRB.Data.lookupDirty = true
+end
+
+---Clears the lookup memoization state, forcing all variables to be recomputed on next tick.
+---Also marks lookup data as dirty.
+function TRB.Functions.BarText:InvalidateLookupMemoization()
+	TRB.Data.prevLookupState = TRB.Data.prevLookupState or {}
+	wipe(TRB.Data.prevLookupState)
+	TRB.Data.lookupDirty = true
+end
+
+---Clears the bar text format cache hash. Must be called whenever TRB.Data.cache.barText
+---is reassigned (spec switch, settings edit, etc.) to keep the O(1) hash in sync.
+function TRB.Functions.BarText:ClearBarTextCacheHash()
+	-- The hash is a local upvalue; wipe it here where it's in scope
+	for k in pairs(barTextCacheHash) do barTextCacheHash[k] = nil end
+	wipe(barTextRenderPlans)
+	wipe(barTextEntryStates)
+	wipe(barTextSignatureFns)
+end
+
+---Scans all enabled bar text entries and builds a set of which $variable and #icon
+---keys are actually referenced. This set is used by RefreshLookupData functions to
+---skip computation of variables that no enabled bar text entry uses.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+function TRB.Functions.BarText:BuildActiveVariableSet(settings)
+	local activeVars = {}
+	if settings ~= nil and settings.displayText ~= nil then
+		local displayText = settings.displayText
+		local entries = #displayText.barText
+		for i = 1, entries do
+			if displayText.barText[i].enabled then
+				local text = displayText.barText[i].text
+				if text and text ~= "" then
+					-- Extract $variable references (e.g., $resource, $eclipseTime)
+					for var in string.gmatch(text, "%$[%a_][%w_]*") do
+						activeVars[var] = true
+					end
+					-- Extract #icon references (e.g., #casting, #eclipse)
+					for icon in string.gmatch(text, "#[%a_][%w_]*") do
+						activeVars[icon] = true
+					end
+				end
+			end
+		end
+	end
+	TRB.Data.activeVariables = activeVars
+end
+
+---Creates and returns the common bar text icons shared by all specializations, with any additional spec-specific icons appended.
+---@param additionalIcons table|nil Optional array of spec-specific icon entries to append
+---@return table # Combined icons table
+function TRB.Functions.BarText:GetCommonIcons(additionalIcons)
+	local icons = {
+		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+		{ variable = "#targetCasting", icon = "", description = L["BarTextIconTargetCasting"], printInSettings = true },
+		{ variable = "#focusCasting", icon = "", description = L["BarTextIconFocusCasting"], printInSettings = true },
+		{ variable = "#petCasting", icon = "", description = L["BarTextIconPetCasting"], printInSettings = true },
+		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
+	}
+	if additionalIcons then
+		for _, v in ipairs(additionalIcons) do
+			table.insert(icons, v)
+		end
+	end
+	return icons
+end
+
+TRB.Functions.BarText.VariableLogicType = {
+	NONE = "none",
+	BOOLEAN = "boolean",
+	INTEGER = "integer",
+	NUMBER = "number",
+	TEXT = "text",
+	UNKNOWN = "unknown",
+}
+
+TRB.Functions.BarText.VariableRenderType = {
+	TEXT = "text",
+	LOGIC_ONLY = "logicOnly",
+	ICON = "icon",
+	COMMAND = "command",
+	UNKNOWN = "unknown",
+}
+
+-- Display groups the bar text variables panel splits its entries into.
+TRB.Functions.BarText.VariableCategory = {
+	STATS = "stats",
+	RESOURCES = "resources",
+	ABILITIES = "abilities",
+	CAST_BAR = "castBar",
+	PET = "pet",
+	OTHER = "other",
+	ICONS = "icons",
+}
+
+---Determines which display group a bar text variable belongs to.
+---Icons are their own group; pipe commands fold into Other alongside the miscellaneous values.
+---Every other group comes from the entry's own `category`, declared where the variable is defined:
+---GetCommonValues stamps the shared entries, each spec's FillBarTextVariables tags its own.
+---@param entry table
+---@param sectionKey string
+---@return string
+function TRB.Functions.BarText:GetVariableCategory(entry, sectionKey)
+	if sectionKey == "icons" then
+		return self.VariableCategory.ICONS
+	elseif sectionKey == "pipe" then
+		return self.VariableCategory.OTHER
+	end
+
+	entry = entry or {}
+	if type(entry.category) == "string" and entry.category ~= "" then
+		return entry.category
+	end
+
+	return self.VariableCategory.ABILITIES
+end
+
+-- Health only. Everything else is decided per spec: the same variable name can be secret in one
+-- spec and plain in another (Vengeance reads Soul Fragments from GetSpellCastCount, Devourer counts
+-- them itself), so resource flags belong in each spec's FillBarTextVariables list, not here.
+local defaultSecretBarTextVariables = {
+	["$health"] = true,
+	["$healthMax"] = true,
+	["$healthPercent"] = true,
+	["$absorb"] = true,
+	["$incomingHeal"] = true,
+	["$healAbsorb"] = true,
+}
+
+---@param variable string|nil
+---@param sectionKey string
+---@param entry table
+---@return string
+local function InferBarTextVariableLogicType(variable, sectionKey, entry)
+	if sectionKey == "icons" or sectionKey == "pipe" then
+		return TRB.Functions.BarText.VariableLogicType.NONE
+	end
+
+	if type(entry.logicType) == "string" and entry.logicType ~= "" then
+		return entry.logicType
+	end
+
+	local variableName = string.gsub(variable or "", "^%$", "")
+	variableName = string.lower(variableName)
+
+	if variableName == "" then
+		return TRB.Functions.BarText.VariableLogicType.UNKNOWN
+	end
+
+	if entry.logicOnly == true then
+		return TRB.Functions.BarText.VariableLogicType.BOOLEAN
+	end
+
+	if variableName == "incombat" or variableName == "instealth" or variableName == "eclipse" or
+		variableName == "lunar" or variableName == "solar" or variableName == "celestialalignment" or
+		variableName == "rtbgoodbuff" or variableName == "benediction" or
+		string.match(variableName, "usable$") ~= nil or string.match(variableName, "ready$") ~= nil or
+		string.match(variableName, "active$") ~= nil then
+		return TRB.Functions.BarText.VariableLogicType.BOOLEAN
+	end
+
+	if string.match(variableName, "percent$") ~= nil or string.match(variableName, "time$") ~= nil or
+		variableName == "gcd" or variableName == "haste" or variableName == "crit" or
+		variableName == "mastery" or variableName == "vers" or variableName == "versatility" or
+		variableName == "overs" or variableName == "dvers" then
+		return TRB.Functions.BarText.VariableLogicType.NUMBER
+	end
+
+	if string.match(variableName, "stacks$") ~= nil or string.match(variableName, "charges$") ~= nil or
+		string.match(variableName, "count$") ~= nil or string.match(variableName, "rating$") ~= nil or
+		string.match(variableName, "max$") ~= nil or string.match(variableName, "maxcharges$") ~= nil or
+		string.match(variableName, "remainingstacks$") ~= nil or string.match(variableName, "extensionsremaining$") ~= nil then
+		return TRB.Functions.BarText.VariableLogicType.INTEGER
+	end
+
+	return TRB.Functions.BarText.VariableLogicType.NUMBER
+end
+
+---@param variable string|nil
+---@param sectionKey string
+---@param entry table
+---@param logicType string
+---@return boolean
+local function InferBarTextVariableBooleanCheck(variable, sectionKey, entry, logicType)
+	if entry.booleanCheck ~= nil then
+		return entry.booleanCheck == true
+	end
+
+	if sectionKey == "icons" or sectionKey == "pipe" then
+		return false
+	end
+
+	if entry.logicOnly == true or logicType == TRB.Functions.BarText.VariableLogicType.BOOLEAN then
+		return true
+	end
+
+	local variableName = string.gsub(variable or "", "^%$", "")
+	variableName = string.lower(variableName)
+
+	if variableName == "resource" or variableName == "mana" or variableName == "energy" or
+		variableName == "rage" or variableName == "focus" or variableName == "fury" or
+		variableName == "pain" or variableName == "insanity" or variableName == "astralpower" or
+		variableName == "maelstrom" or variableName == "runicpower" or variableName == "holypower" or
+		variableName == "resourcepercent" or variableName == "manapercent" then
+		return false
+	end
+
+	if variableName == "casting" or variableName == "health" or variableName == "healthmax" or
+		variableName == "healthpercent" or variableName == "absorb" or variableName == "incomingheal" or
+		variableName == "gcd" or variableName == "haste" or variableName == "crit" or
+		variableName == "mastery" or variableName == "vers" or variableName == "versatility" or
+		variableName == "overs" or variableName == "dvers" then
+		return true
+	end
+
+	return string.match(variableName, "time$") ~= nil or string.match(variableName, "stacks$") ~= nil or
+		string.match(variableName, "charges$") ~= nil or string.match(variableName, "count$") ~= nil or
+		string.match(variableName, "rating$") ~= nil or string.match(variableName, "max$") ~= nil or
+		string.match(variableName, "remainingstacks$") ~= nil or string.match(variableName, "extensionsremaining$") ~= nil
+end
+
+---Normalizes an entry's declared Cooldown Manager reliance, dropping unrecognized values.
+---@param entry table
+---@return string? # nil when the variable declares no reliance
+local function GetBarTextVariableCdmDependency(entry)
+	if entry.cdm == TRB.Data.constants.cdmDependency.REQUIRED then
+		return entry.cdm
+	end
+	return nil
+end
+
+---@param entry table
+---@param sectionKey string
+---@return table
+function TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
+	entry = entry or {}
+	sectionKey = sectionKey or "values"
+
+	local secret = entry.secret == true or defaultSecretBarTextVariables[entry.variable] == true
+	local logicType = InferBarTextVariableLogicType(entry.variable, sectionKey, entry)
+
+	-- Comparison operators need a real value in lookupLogic. Icons and pipe commands never write one,
+	-- and secret variables write either nothing or a presence boolean -- ResolveConditionalValues also
+	-- scrubs any secret that does land there to false, so comparing against one can never succeed.
+	-- Booleans compare fine against their "true"/"false" literal, which is why they are not excluded.
+	local comparisonUsable = entry.comparisonUsable
+	if comparisonUsable == nil then
+		comparisonUsable = (not secret) and logicType ~= self.VariableLogicType.NONE and
+			logicType ~= self.VariableLogicType.UNKNOWN
+	end
+
+	local booleanCheck = InferBarTextVariableBooleanCheck(entry.variable, sectionKey, entry, logicType)
+
+	local renderType = entry.renderType
+	if renderType == nil then
+		if sectionKey == "icons" then
+			renderType = self.VariableRenderType.ICON
+		elseif sectionKey == "pipe" then
+			renderType = self.VariableRenderType.COMMAND
+		-- Booleans render nothing unless the entry declares otherwise, so they default to logic-only.
+		elseif entry.logicOnly == true or entry.renderText == false or logicType == self.VariableLogicType.BOOLEAN then
+			renderType = self.VariableRenderType.LOGIC_ONLY
+		else
+			renderType = self.VariableRenderType.TEXT
+		end
+	end
+
+	return {
+		secret = secret,
+		logicType = logicType,
+		comparisonUsable = comparisonUsable == true,
+		booleanCheck = booleanCheck == true,
+		logicOnly = renderType == self.VariableRenderType.LOGIC_ONLY,
+		renderType = renderType,
+		cdm = GetBarTextVariableCdmDependency(entry),
+	}
+end
+
+---Creates and returns the common bar text values shared by all specializations, with any additional spec-specific values appended.
+---@param additionalValues table|nil Optional array of spec-specific value entries to append
+---@return table # Combined values table
+function TRB.Functions.BarText:GetCommonValues(additionalValues)
+	local logicTypes = self.VariableLogicType
+	local renderTypes = self.VariableRenderType
+	local values = {
+		-- $gcd is the one stat here that is not secret: it comes from the cached GCD duration rather
+		-- than haste math, precisely so it stays usable in comparisons (see UpdateSecondaryStatsSnapshot).
+		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+		-- The flavor's stat variables are spliced in after $gcd below.
+
+		{ variable = "$health", description = L["BarTextVariable_health"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$healthMax", description = L["BarTextVariable_healthMax"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$healthPercent", description = L["BarTextVariable_healthPercent"], printInSettings = true, color = false, secret = true },
+		{ variable = "$absorb", description = L["BarTextVariable_absorb"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$incomingHeal", description = L["BarTextVariable_incomingHeal"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+		{ variable = "$healAbsorb", description = L["BarTextVariable_healAbsorb"], printInSettings = true, color = false, secret = true, logicType = logicTypes.INTEGER },
+
+		-- Booleans default to logic-only (they'd render nothing); this one reads out as "true"/"false"
+		-- text, so both types are stated rather than inferred.
+		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT },
+		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false, category = self.VariableCategory.OTHER },
+
+		-- Player cast bar. A bare check gates on the cast being in progress (see playerCastbarVars).
+		-- $castSpellName is the one entry here with no lookupLogic value, so it cannot be compared.
+		{ variable = "$castTime", description = L["BarTextVariableCastTime"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castTimeRemaining", description = L["BarTextVariableCastTimeRemaining"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castLatency", description = L["BarTextVariableCastLatency"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castLatencyMs", description = L["BarTextVariableCastLatencyMs"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castPushback", description = L["BarTextVariableCastPushback"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$castSpellName", description = L["BarTextVariableCastSpellName"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true, comparisonUsable = false },
+		{ variable = "$castSpellId", description = L["BarTextVariableCastSpellId"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.INTEGER, booleanCheck = true },
+		{ variable = "$castInterruptible", description = L["BarTextVariableCastInterruptible"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT, booleanCheck = true },
+		{ variable = "$castUninterruptible", description = L["BarTextVariableCastUninterruptible"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT, booleanCheck = true },
+
+		-- Target/Focus cast bars. Values may be secret (enemy casts), so they are display-only: nothing
+		-- reaches lookupLogic. A bare check on any of them resolves to "is that unit casting?" instead.
+		{ variable = "$targetCastingSpellName", description = L["BarTextVariableTargetCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+		{ variable = "$targetCastTime", description = L["BarTextVariableTargetCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$targetCastTimeRemaining", description = L["BarTextVariableTargetCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$focusCastingSpellName", description = L["BarTextVariableFocusCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$petCastingSpellName", description = L["BarTextVariablePetCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+		{ variable = "$petCastTime", description = L["BarTextVariablePetCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$petCastTimeRemaining", description = L["BarTextVariablePetCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+
+		-- Other Bars timers. A bare check gates on that bar's timer running (see otherBarsVars).
+		-- The GCD's seconds come from a DurationObject whose values are secret in restricted content, so
+		-- those two are display-only. The mirror timers report plain numbers and can be compared.
+		{ variable = "$gcdDuration", description = L["BarTextVariableGcdDuration"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$gcdDurationRemaining", description = L["BarTextVariableGcdDurationRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$fatigueDuration", description = L["BarTextVariableFatigueDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$fatigueDurationRemaining", description = L["BarTextVariableFatigueDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$breathDuration", description = L["BarTextVariableBreathDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+		{ variable = "$breathDurationRemaining", description = L["BarTextVariableBreathDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+
+		-- Pet bars. Health and power are secret in restricted content, so they are display-only; a bare
+		-- check on one resolves to "is a pet out?" instead. $petState reads out as text and can be compared.
+		{ variable = "$petName", description = L["BarTextVariablePetName"], printInSettings = true, color = false, category = self.VariableCategory.PET,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+		{ variable = "$petState", description = L["BarTextVariablePetState"], printInSettings = true, color = false, category = self.VariableCategory.PET,
+			logicType = logicTypes.TEXT, renderType = renderTypes.TEXT },
+		{ variable = "$petHealth", description = L["BarTextVariablePetHealth"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petHealthMax", description = L["BarTextVariablePetHealthMax"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petHealthPercent", description = L["BarTextVariablePetHealthPercent"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petPower", description = L["BarTextVariablePetPower"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petPowerMax", description = L["BarTextVariablePetPowerMax"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petPowerPercent", description = L["BarTextVariablePetPowerPercent"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petPowerName", description = L["BarTextVariablePetPowerName"], printInSettings = true, color = false, category = self.VariableCategory.PET,
+			logicType = logicTypes.TEXT, booleanCheck = true },
+	}
+	-- Flavor stats follow $gcd; the first variable of each is listed in the options, the rest are aliases.
+	local statIndex = 1
+	for _, stat in ipairs(TRB.Flavor.stats) do
+		for i, variable in ipairs(stat.variables) do
+			statIndex = statIndex + 1
+			table.insert(values, statIndex, {
+				variable = variable, description = L[stat.descriptionKey], printInSettings = i == 1, color = false, secret = stat.secret,
+				logicType = stat.integer and logicTypes.INTEGER or nil,
+			})
+		end
+	end
+	-- Any shared value not explicitly categorized above is a stat.
+	for _, v in ipairs(values) do
+		if v.category == nil then
+			v.category = self.VariableCategory.STATS
+		end
+	end
+	if additionalValues then
+		for _, v in ipairs(additionalValues) do
+			table.insert(values, v)
+		end
+	end
+	return values
+end
+
+---Sets the text on a bar text frame's font string via a protected call wrapper
+---@param frame Frame The bar text frame containing a .font FontString
+---@param text string The text to display
+local function TryUpdateText(frame, text)
+---@diagnostic disable-next-line: undefined-field
+	frame.font:SetText(text)
+end
+
+---Applies (or clears) the per-entry text width constraint on a bar text font string.
+---When the entry opts in and isn't bound to Screen, the font is clamped to a percentage
+---of the bound frame's width and truncated with an ellipsis; otherwise it auto-sizes.
+---Memoized on the font so it can be called every refresh (to track live bound-bar resizes)
+---without redundant SetWidth calls, which would force text relayout each tick.
+---@param font FontString The bar text font string
+---@param entry table The bar text entry (DisplayTextEntry)
+---@param relativeToFrame Frame? The frame the entry is bound to
+local function ApplyBarTextWidthConstraint(font, entry, relativeToFrame)
+	local targetWidth = 0
+	local wrap = true
+	if entry.constrainToParent and relativeToFrame ~= nil and relativeToFrame ~= UIParent then
+		local frameWidth = relativeToFrame:GetWidth() or 0
+		local maxWidth = frameWidth * ((entry.maxWidthPercent or 100) / 100)
+		if maxWidth > 0 then
+			targetWidth = maxWidth
+			wrap = false
+		end
+	end
+
+---@diagnostic disable-next-line: inject-field
+	if font.trbConstrainWidth ~= targetWidth or font.trbConstrainWrap ~= wrap then
+---@diagnostic disable-next-line: inject-field
+		font.trbConstrainWidth = targetWidth
+---@diagnostic disable-next-line: inject-field
+		font.trbConstrainWrap = wrap
+		font:SetWordWrap(wrap)
+		font:SetWidth(targetWidth)
+	end
+end
+
+---Scans the input string for logic symbols and returns their positions and levels
+---@param input string
+---@return table
+local function ScanForLogicSymbols(input)
+	local returnTable = {
+		all = {}
+	}
+
+	if input == nil or string.len(input) == 0 then
+		return returnTable
+	end
+
+	local a, b, c, d, e, e_1, e_2, e_3, f, g, h, i, j, k, k_1, l, m, n, o, p, q, r, s, t
+	local _
+	local currentLevel = 0
+	local currentParenthesisLevel = 0
+	local min
+	local index = 0
+
+	local all = {}
+	local ins = {}
+
+	local endLength = (string.len(input) + 1)
+
+	local currentPosition = 0
+	while currentPosition <= string.len(input) do
+		a, _ = string.find(input, "{", currentPosition)
+		b, _ = string.find(input, "}", currentPosition)
+		c, _ = string.find(input, "%[", currentPosition) --Escape because this isn't regex
+		d, _ = string.find(input, "]", currentPosition)
+		e, _ = string.find(input, "||", currentPosition)
+		e_1, _ = string.find(input, "|n", currentPosition)
+		e_2, _ = string.find(input, "|c", currentPosition)
+		e_3, _ = string.find(input, "|r", currentPosition)
+		f, _ = string.find(input, "&", currentPosition)
+		g, _ = string.find(input, "!", currentPosition)
+		h, _ = string.find(input, "%$", currentPosition) --Escape because this isn't regex
+		i, _ = string.find(input, "%(", currentPosition) --Escape because this isn't regex
+		j, _ = string.find(input, ")", currentPosition)
+		k, _ = string.find(input, "==", currentPosition)
+		k_1, _ = string.find(input, "=", currentPosition)
+		l, _ = string.find(input, "~=", currentPosition)
+		m, _ = string.find(input, ">=", currentPosition)
+		n, _ = string.find(input, "<=", currentPosition)
+		o, _ = string.find(input, ">", currentPosition)
+		p, _ = string.find(input, "<", currentPosition)
+		q, _ = string.find(input, "+", currentPosition)
+		r, _ = string.find(input, "-", currentPosition)
+		s, _ = string.find(input, "*", currentPosition)
+		t, _ = string.find(input, "/", currentPosition)
+
+
+		a = a or endLength
+		b = b or endLength
+		c = c or endLength
+		d = d or endLength
+		e = e or endLength
+		e_1 = e_1 or endLength
+		e_2 = e_2 or endLength
+		e_3 = e_3 or endLength
+		f = f or endLength
+		g = g or endLength
+		h = h or endLength
+		i = i or endLength
+		j = j or endLength
+		k = k or endLength
+		k_1 = k_1 or endLength
+		l = l or endLength
+		m = m or endLength
+		n = n or endLength
+		o = o or endLength
+		p = p or endLength
+		q = q or endLength
+		r = r or endLength
+		s = s or endLength
+		t = t or endLength
+
+		if e == e_1 or e == e_2 or e == e_3 then
+			e = endLength
+		end
+
+		min = math.min(a, b, c, d, e, f, g, h, i, j, k, k_1, l, m, n, o, p, q, r, s, t)
+		index = index + 1
+
+		if min <= string.len(input) then
+			ins.position = min
+			ins.level = currentLevel
+			ins.parenthesisLevel = currentParenthesisLevel
+			ins.index = index
+
+			if min == a then
+				currentLevel = currentLevel + 1
+				currentParenthesisLevel = currentParenthesisLevel + 1
+				ins.level = currentLevel
+				ins.parenthesisLevel = currentParenthesisLevel
+				ins.symbol = "{"
+				currentPosition = a + 1
+			elseif min == b then
+				currentLevel = currentLevel - 1
+				currentParenthesisLevel = currentParenthesisLevel - 1
+				ins.symbol = "}"
+				currentPosition = b + 1
+			elseif min == c then
+				currentLevel = currentLevel + 1
+				currentParenthesisLevel = currentParenthesisLevel + 1
+				ins.level = currentLevel
+				ins.parenthesisLevel = currentParenthesisLevel
+				ins.symbol = "["
+				currentPosition = c + 1
+			elseif min == d then
+				currentLevel = currentLevel - 1
+				currentParenthesisLevel = currentParenthesisLevel - 1
+				ins.symbol = "]"
+				currentPosition = d + 1
+			elseif min == e then
+				ins.symbol = "|"
+				currentPosition = e + 1
+			elseif min == f then
+				ins.symbol = "&"
+				currentPosition = f + 1
+			elseif min == g then
+				ins.symbol = "!"
+				currentPosition = g + 1
+			elseif min == h then
+				ins.symbol = "$"
+				currentPosition = h + 1
+			elseif min == i then
+				currentParenthesisLevel = currentParenthesisLevel + 1
+				ins.parenthesisLevel = currentParenthesisLevel
+				ins.symbol = "("
+				currentPosition = i + 1
+			elseif min == j then
+				ins.symbol = ")"
+				currentParenthesisLevel = currentParenthesisLevel - 1
+				currentPosition = j + 1
+			elseif min == k then
+				ins.symbol = "=="
+				currentPosition = k + 2
+			elseif min == l then
+				ins.symbol = "~="
+				currentPosition = l + 2
+			elseif min == m then
+				ins.symbol = ">="
+				currentPosition = m + 2
+			elseif min == n then
+				ins.symbol = "<="
+				currentPosition = n + 2
+			elseif min == k_1 then
+				ins.symbol = "="
+				currentPosition = k_1 + 1
+			elseif min == o then
+				ins.symbol = ">"
+				currentPosition = o + 1
+			elseif min == p then
+				ins.symbol = "<"
+				currentPosition = p + 1
+			elseif min == q then
+				ins.symbol = "+"
+				currentPosition = q + 1
+			elseif min == r then
+				ins.symbol = "-"
+				currentPosition = r + 1
+			elseif min == s then
+				ins.symbol = "*"
+				currentPosition = s + 1
+			elseif min == t then
+				ins.symbol = "/"
+				currentPosition = t + 1
+			else -- Something went wrong. Break for safety
+				currentPosition = string.len(input) + 1
+				break
+			end
+
+			table.insert(all, {
+				position = ins.position,
+				level = ins.level,
+				parenthesisLevel = ins.parenthesisLevel,
+				index = ins.index,
+				symbol = ins.symbol
+			})
+		else
+			currentPosition = string.len(input) + 1
+			break
+		end
+	end
+	returnTable.all = all
+
+	return returnTable
+end
+
+---Finds the next symbol index in the table
+---@param t table
+---@param symbol string
+---@param notSymbol boolean?
+---@param minIndex number
+---@param maxIndex number?
+---@param minPosition number?
+---@param maxPosition number?
+---@return table|nil
+local function FindNextSymbolIndex(t, symbol, notSymbol, minIndex, maxIndex, minPosition, maxPosition)
+	if t == nil or symbol == nil then
+		return nil
+	end
+
+	local len = #t
+	if len == 0 then
+		return nil
+	end
+
+	minIndex = minIndex or 0
+	minPosition = minPosition or 0
+	notSymbol = notSymbol or false
+	maxIndex = maxIndex or t[len].index
+	maxPosition = maxPosition or t[len].position
+
+	for k, _ in ipairs(t) do
+		if t[k] ~= nil and
+			((t[k].symbol == symbol and not notSymbol) or (t[k].symbol ~= symbol and notSymbol)) and
+			t[k].index >= minIndex and
+			t[k].index <= maxIndex and
+			t[k].position >= minPosition and
+			t[k].position <= maxPosition then
+			return t[k]
+		end
+	end
+	return nil
+end
+
+---Finds the next symbol level in the table
+---@param t table
+---@param symbol string
+---@param minIndex number
+---@param level number
+---@return table|nil
+local function FindNextSymbolLevel(t, symbol, minIndex, level)
+	if t == nil or symbol == nil or level == nil or level < 0 then
+		return nil
+	end
+
+	minIndex = minIndex or 0
+
+	local len = #t
+
+	if len > 0 then
+		for k, _ in ipairs(t) do
+			if t[k] ~= nil and t[k].level ~= nil and t[k].index >= minIndex and t[k].symbol == symbol and t[k].level == level then
+				return t[k]
+			end
+		end
+	end
+	return nil
+end
+
+---Gets the symbols cache for the input string
+---@param inputString string
+---@return table
+local function GetFromSymbolsCache(inputString)
+	if TRB.Data.cache.symbols[inputString] == nil then
+		TRB.Data.cache.symbols[inputString] = ScanForLogicSymbols(inputString)
+	end
+
+	return TRB.Data.cache.symbols[inputString]
+end
+
+---Converts the supplied string into a table of text and logic blocks
+---@param input string
+---@return table
+local function CreateBarTextTree(input)
+    local inputLength = #input
+
+	local returnText = {
+		symbols = GetFromSymbolsCache(input),
+		barText = {}
+	}
+
+    ---@diagnostic disable-next-line: undefined-field
+    if inputLength == 0 then
+        return returnText
+    end
+
+    local p = 0
+    local indexOffset = 0
+    local positionOffset = 0
+    local lastIndex = indexOffset
+
+    while p <= inputLength do
+        local nextOpenIf = FindNextSymbolIndex(returnText.symbols.all, '{', nil, lastIndex)
+        if nextOpenIf then
+            local matchedCloseIf = FindNextSymbolLevel(returnText.symbols.all, '}', nextOpenIf.index + 1, nextOpenIf.level)
+
+            if nextOpenIf.position - positionOffset > p then
+                table.insert(returnText.barText, string.sub(input, p, nextOpenIf.position - positionOffset - 1))
+                p = nextOpenIf.position - positionOffset
+            end
+
+            if matchedCloseIf and matchedCloseIf.symbol == '}' and matchedCloseIf.level == nextOpenIf.level then -- no weird nesting of if logic, which is unsupported
+                local nextOpenResult = FindNextSymbolLevel(returnText.symbols.all, '[', matchedCloseIf.index + 1, nextOpenIf.level)
+
+                if nextOpenResult and nextOpenResult.symbol == '[' and matchedCloseIf.position - positionOffset + 1 == nextOpenResult.position - positionOffset then -- no weird spacing/nesting
+                    local nextCloseResult = FindNextSymbolLevel(returnText.symbols.all, ']', nextOpenResult.index, nextOpenResult.level)
+                    if nextCloseResult then
+                        local hasElse = false
+                        local elseOpenResult = FindNextSymbolLevel(returnText.symbols.all, '[', nextCloseResult.index, nextOpenResult.level)
+                        local elseCloseResult
+
+                        if elseOpenResult and elseOpenResult.position - positionOffset == nextCloseResult.position - positionOffset + 1 then
+                            elseCloseResult = FindNextSymbolLevel(returnText.symbols.all, ']', elseOpenResult.index, nextOpenResult.level)
+                            if elseCloseResult then
+                                -- We have if/else
+                                hasElse = true
+                            end
+                        end
+
+                        local logicString = string.trim(string.sub(input, nextOpenIf.position - positionOffset + 1, matchedCloseIf.position - positionOffset - 1))
+
+						local trueText = string.sub(input, nextOpenResult.position - positionOffset + 1, nextCloseResult.position - positionOffset - 1)
+
+						local innerReturnText = {
+							logic = logicString,
+							logicVariables = {},
+							processedLogicStrings = {},
+							trueResult = CreateBarTextTree(trueText),
+							symbols = GetFromSymbolsCache(logicString)
+						}
+						
+						local s = 1
+						local lastLogicIndex = 0
+						local logicLength = #logicString
+						while s <= logicLength do
+							local nextVariable = FindNextSymbolIndex(innerReturnText.symbols.all, '$', nil, lastLogicIndex)
+							if nextVariable then
+								local nextSymbol = FindNextSymbolIndex(innerReturnText.symbols.all, '$', true, nextVariable.index)
+								local variableEnd = logicLength
+			
+								if nextSymbol then
+									variableEnd = nextSymbol.position - 1
+								end
+			
+								local var = string.trim(string.gsub(string.sub(innerReturnText.logic, nextVariable.position, variableEnd), " ", ""))
+								local beforeVar = string.trim(string.sub(innerReturnText.logic, s, nextVariable.position - 1))
+								local prevSymbol = FindNextSymbolIndex(innerReturnText.symbols.all, '$', true, nextVariable.index - 1, nextVariable.index, nil, nil)
+								local nextNextSymbol = FindNextSymbolIndex(innerReturnText.symbols.all, '$', true, nextVariable.index + 1, nextVariable.index + 1, nil, nil)
+								local pSymbol = "{"
+								local nSymbol = "}"
+			
+								if prevSymbol then
+									pSymbol = prevSymbol.symbol
+								end
+								if nextNextSymbol then
+									nSymbol = nextNextSymbol.symbol
+								end
+			
+								table.insert(innerReturnText.logicVariables, {
+									variable = var,
+									beforeVar = beforeVar,
+									beforeVarIsNot = string.sub(beforeVar, #beforeVar) == "!",
+									beforeVarIsNotSubString = string.sub(beforeVar, 0, #beforeVar - 1),
+									prevSymbol = pSymbol,
+									nextSymbol = nSymbol,
+									variableEnd = variableEnd
+								})
+
+								s = variableEnd + 1
+								lastLogicIndex = nextVariable.index + 1
+							else
+								s = logicLength + 2
+							end
+						end
+
+						if elseOpenResult and elseCloseResult then
+							local falseText = string.sub(input, elseOpenResult.position - positionOffset + 1, elseCloseResult.position - positionOffset - 1)
+							innerReturnText.falseResult = CreateBarTextTree(falseText)
+						end
+
+						table.insert(returnText.barText, innerReturnText)
+
+                        if elseCloseResult ~= nil and hasElse == true then
+                            p = elseCloseResult.position - positionOffset + 1
+                            lastIndex = elseCloseResult.index
+                        else
+                            p = nextCloseResult.position - positionOffset + 1
+                            lastIndex = nextCloseResult.index
+                        end
+					else -- TRUE result block doesn't close, no matching ]
+                        table.insert(returnText.barText, string.sub(input, p, nextOpenResult.position - positionOffset))
+                        p = nextOpenResult.position - positionOffset + 1
+                        lastIndex = nextOpenResult.index
+                    end
+				else -- Dump all of the previous "if" stuff verbatim
+                    table.insert(returnText.barText, string.sub(input, p, matchedCloseIf.position - positionOffset))
+                    p = matchedCloseIf.position - positionOffset + 1
+                    lastIndex = matchedCloseIf.index
+                end
+			elseif matchedCloseIf then --nextCloseIf.position+1 is not [
+                table.insert(returnText.barText, string.sub(input, p, matchedCloseIf.position - positionOffset))
+                p = matchedCloseIf.position - positionOffset + 1
+                lastIndex = matchedCloseIf.index
+			else -- End of string
+                table.insert(returnText.barText, string.sub(input, p, -1))
+                p = inputLength + 1
+            end
+        else
+            table.insert(returnText.barText, string.sub(input, p))
+            p = inputLength
+            break
+        end
+    end
+
+    return returnText
+end
+
+---Gets the bar text tree cache for the input string
+---@param input string
+---@return table
+local function GetFromBarTextTreeCache(input)
+	if TRB.Data.cache.barTextTree[input] == nil then
+		TRB.Data.cache.barTextTree[input] = CreateBarTextTree(input)
+	end
+
+	return TRB.Data.cache.barTextTree[input]
+end
+
+
+---Builds the normalized Lua expression template and positional variable bindings for a
+---conditional node. Shared by the interpreted compiler and the entry codegen.
+---@param node table A conditional node from the bar text tree
+---@return string templateString
+---@return table varInfos
+---@return integer varCount
+local function BuildConditionalTemplate(node)
+	local templateParts = {}
+	local varInfos = {}
+	local varCount = 0
+	local s = 1
+	local index = 1
+
+	while s <= #node.logic do
+		local nextVariable = node.logicVariables[index]
+		if nextVariable then
+			varCount = varCount + 1
+			local paramName = "v" .. varCount
+
+			-- Pre-compute whether this variable occurrence should use lookupLogic values
+			-- (numeric context) vs IsValidVariableForSpec (boolean context), based on
+			-- the surrounding symbols which are fixed at parse time.
+			local useLookupLogic = nextVariable.prevSymbol ~= "!" and
+				((nextVariable.prevSymbol ~= "{" and nextVariable.prevSymbol ~= "|" and nextVariable.prevSymbol ~= "&" and nextVariable.prevSymbol ~= "(") or
+				 (nextVariable.nextSymbol ~= "}" and nextVariable.nextSymbol ~= "|" and nextVariable.nextSymbol ~= "&" and nextVariable.nextSymbol ~= ")"))
+
+			varInfos[varCount] = {
+				variable = nextVariable.variable,
+				useLookupLogic = useLookupLogic
+			}
+
+			if nextVariable.beforeVarIsNot then
+				table.insert(templateParts, " ")
+				table.insert(templateParts, nextVariable.beforeVarIsNotSubString)
+				table.insert(templateParts, " (not ")
+				table.insert(templateParts, paramName)
+				table.insert(templateParts, ") ")
+			else
+				table.insert(templateParts, " ")
+				table.insert(templateParts, nextVariable.beforeVar)
+				table.insert(templateParts, " ")
+				table.insert(templateParts, paramName)
+			end
+
+			s = nextVariable.variableEnd + 1
+			index = index + 1
+		else
+			local remainder = string.trim(string.sub(node.logic, s))
+			table.insert(templateParts, " ")
+			table.insert(templateParts, remainder)
+			s = #node.logic + 2
+		end
+	end
+
+	local templateString = table.concat(templateParts)
+
+	-- Apply operator normalizations
+	templateString = string.lower(templateString)
+	templateString = string.gsub(templateString, "%(%)", "")
+	templateString = string.gsub(templateString, "=", "==")
+	templateString = string.gsub(templateString, "!==", "!=")
+	templateString = string.gsub(templateString, "~==", "~=")
+	templateString = string.gsub(templateString, ">==", ">=")
+	templateString = string.gsub(templateString, "<==", "<=")
+	templateString = string.gsub(templateString, "===", "==")
+	templateString = string.gsub(templateString, "!=", "~=")
+	templateString = string.gsub(templateString, "!", " not ")
+	templateString = string.gsub(templateString, "&", " and ")
+	templateString = string.gsub(templateString, "||", " or ")
+
+	return templateString, varInfos, varCount
+end
+
+---Builds "function(v1,...) return ( <template> ) end" source for a conditional template.
+---@param templateString string
+---@param varCount integer
+---@return string
+local function BuildConditionalFunctionSource(templateString, varCount)
+	local paramList = {}
+	for i = 1, varCount do
+		paramList[i] = "v" .. i
+	end
+	local paramString = table.concat(paramList, ",")
+	return "function(" .. paramString .. ") return (" .. templateString .. ") end"
+end
+
+---Compiles a conditional expression node into a reusable Lua function.
+---The compiled function accepts variable values as positional arguments, eliminating
+---the need to rebuild the expression string and call loadstring() every frame.
+---@param node table A conditional node from the bar text tree
+---@return table compiledExpression { fn, varCount, varInfos } or { invalid = true }
+local function CompileConditionalExpression(node)
+	local templateString, varInfos, varCount = BuildConditionalTemplate(node)
+	local chunk = loadstring("return " .. BuildConditionalFunctionSource(templateString, varCount))
+	if chunk then
+		local ok, evalFn = pcall(chunk)
+		if ok and type(evalFn) == "function" then
+			return {
+				fn = evalFn,
+				varCount = varCount,
+				varInfos = varInfos
+			}
+		end
+	end
+
+	return { invalid = true }
+end
+
+---Resolves the current values for a compiled expression's variables
+---@param compiledExpr table The compiledExpression table with varInfos
+---@return table args Array of resolved values in parameter order
+local function ResolveConditionalValues(compiledExpr)
+	-- Reuse the args table stored on compiledExpr to avoid per-tick allocation
+	local args = compiledExpr.args
+	if args == nil then
+		args = {}
+		compiledExpr.args = args
+	end
+	for i = 1, compiledExpr.varCount do
+		local info = compiledExpr.varInfos[i]
+		local val = TRB.Functions.Class:IsValidVariableForSpec(info.variable)
+		if info.useLookupLogic and TRB.Data.lookupLogic[info.variable] then
+			val = TRB.Data.lookupLogic[info.variable]
+			if issecretvalue(val) then
+				val = false
+			end
+		end
+		args[i] = val
+	end
+	return args
+end
+
+-- Reusable buffer stack for RemoveInvalidVariablesFromBarText to avoid per-call table allocation.
+-- Stack depth handles recursive calls (conditional true/false branches).
+local rivBufferStack = {}
+local rivBufferDepth = 0
+
+---Removes invalid variables from the bar text represented within the tree.
+---Conditional expressions are compiled to reusable Lua functions on first evaluation,
+---then re-evaluated each frame by passing current values as arguments — avoiding
+---per-frame string building, operator normalization, and loadstring() compilation.
+---@param tree table
+---@return string
+local function RemoveInvalidVariablesFromBarText(tree)
+	if tree == nil or tree.barText == nil then
+		return ""
+	end
+
+	local barText = tree.barText
+	local barTextLen = #barText
+
+	-- Fast path: single-element tree with a plain string (very common for true/false branches)
+	if barTextLen == 1 and type(barText[1]) == "string" then
+		return barText[1]
+	end
+
+	-- Acquire a buffer from the stack (or create one)
+	rivBufferDepth = rivBufferDepth + 1
+	local returnText = rivBufferStack[rivBufferDepth]
+	if returnText == nil then
+		returnText = {}
+		rivBufferStack[rivBufferDepth] = returnText
+	end
+	local rtLen = 0
+
+	for idx = 1, barTextLen do
+		local v = barText[idx]
+		if type(v) == "string" then
+			rtLen = rtLen + 1
+			returnText[rtLen] = v
+		else
+			-- Compile the expression template on first evaluation of this node
+			if v.compiledExpression == nil then
+				v.compiledExpression = CompileConditionalExpression(v)
+			end
+
+			local processResult
+			local ce = v.compiledExpression
+
+			if ce.invalid then
+				processResult = "INVALID"
+			else
+				local args = ResolveConditionalValues(ce)
+				local ok, result = pcall(ce.fn, unpack(args, 1, ce.varCount))
+				if not ok then
+					processResult = "INVALID"
+				elseif result == true or result then
+					processResult = "TRUE"
+				elseif v.falseResult then
+					processResult = "FALSE"
+				else
+					processResult = "NONE"
+				end
+			end
+
+			if processResult == "INVALID" then-- Something went wrong, show the error text instead
+				rtLen = rtLen + 1
+				returnText[rtLen] = L["BarTextInvalidIfElseLogic"]
+			elseif processResult == "TRUE" then
+				rtLen = rtLen + 1
+				returnText[rtLen] = RemoveInvalidVariablesFromBarText(v.trueResult)
+			elseif processResult == "FALSE" then
+				rtLen = rtLen + 1
+				returnText[rtLen] = RemoveInvalidVariablesFromBarText(v.falseResult)
+			end
+		end
+	end
+
+	-- Clear trailing stale entries and release buffer back to stack
+	for i = rtLen + 1, #returnText do
+		returnText[i] = nil
+	end
+	local result = table.concat(returnText, "", 1, rtLen)
+	rivBufferDepth = rivBufferDepth - 1
+    return result
+end
+
+---Adds the input to the bar text cache
+---@param input string
+---@return table
+local function AddToBarTextCache(input)
+	local barTextVariables = TRB.Data.barTextVariables
+	local iconEntries = #barTextVariables.icons
+	local valueEntries = #barTextVariables.values
+	local pipeEntries = #barTextVariables.pipe
+	local percentEntries = #barTextVariables.percent
+	local returnText = ""
+	local returnVariables = {}
+	local p = 0
+	local infinity = 0
+	local barTextValuesVars = barTextVariables.values
+	table.sort(barTextValuesVars,
+		function(a, b)
+			return string.len(a.variable) > string.len(b.variable)
+		end)
+	local barTextIconsVars = barTextVariables.icons
+	table.sort(barTextIconsVars,
+		function(a, b)
+			return string.len(a.variable) > string.len(b.variable)
+		end)
+	
+	--Only loop through this while we're not at the end of the string AND we haven't done 1000 checks. This is a sanity checker to prevent an infinite run for some reason!
+	while p <= string.len(input) and infinity < 1000 do
+		infinity = infinity + 1
+		local a, b, c, d, z, z1
+		local match = false
+		a, _ = string.find(input, "#", p)
+		b, _ = string.find(input, "%$", p)
+		c, _ = string.find(input, "|", p)
+		d, _ = string.find(input, "%%", p)
+		if a ~= nil and (b == nil or a < b) and (c == nil or a < c) and (d == nil or a < d) then
+			if string.sub(input, a+1, a+6) == "spell_" then
+				z, z1 = string.find(input, "_", a+7)
+				if z ~= nil then
+					local iconName = string.sub(input, a, z)
+					local spellId = string.sub(input, a+7, z-1)
+					local spellInfo = C_Spell.GetSpellInfo(spellId) --[[@as SpellInfo]]
+
+					if spellInfo.iconID ~= nil then
+						match = true
+						if p ~= a then
+							returnText = returnText .. string.sub(input, p, a-1)
+						end
+
+						returnText = returnText .. "%s"
+						TRB.Data.lookup[iconName] = string.format("|T%s:0|t", spellInfo.iconID)
+						table.insert(returnVariables, iconName)
+						p = z1 + 1
+					end
+				end
+			elseif string.sub(input, a+1, a+5) == "item_" then
+				z, z1 = string.find(input, "_", a+6)
+				if z ~= nil then
+					local iconName = string.sub(input, a, z)
+					local itemId = string.sub(input, a+6, z-1)
+					local _, icon
+					_, _, _, _, _, _, _, _, _, icon = C_Item.GetItemInfo(itemId)
+
+					if icon ~= nil then
+						match = true
+						if p ~= a then
+							returnText = returnText .. string.sub(input, p, a-1)
+						end
+
+						returnText = returnText .. "%s"
+						TRB.Data.lookup[iconName] = string.format("|T%s:0|t", icon)
+						table.insert(returnVariables, iconName)
+						p = z1 + 1
+					end
+				end
+			else
+				for x = 1, iconEntries do
+					z, z1 = string.find(input, barTextIconsVars[x].variable, a-1)
+					if z ~= nil and z == a then
+						match = true
+						if p ~= a then
+							returnText = returnText .. string.sub(input, p, a-1)
+						end
+
+						returnText = returnText .. "%s"
+						table.insert(returnVariables, barTextIconsVars[x].variable)
+
+						p = z1 + 1
+						break
+					end
+				end
+			end
+		elseif b ~= nil and (c == nil or b < c) and (d == nil or b < d) then
+			for x = 1, valueEntries do
+				z, z1 = string.find(input, barTextValuesVars[x].variable, b-1)
+				if z ~= nil and z == b then
+					match = true
+					if p ~= b then
+						returnText = returnText .. string.sub(input, p, b-1)
+					end
+
+					returnText = returnText .. "%s"
+					table.insert(returnVariables, barTextValuesVars[x].variable)
+
+					if barTextValuesVars[x].color == true then
+						returnText = returnText .. "%s"
+						table.insert(returnVariables, "color")
+					end
+
+					p = z1 + 1
+					break
+				end
+			end
+		elseif c ~= nil and (d == nil or c < d) then
+			for x = 1, pipeEntries do
+				z, z1 = string.find(input, barTextVariables.pipe[x].variable, c-1)
+				if z ~= nil and z == c then
+					match = true
+
+					if p == 0 then --Prevent weird newline issues
+						returnText = " "
+					end
+
+					if p ~= c then
+						returnText = returnText .. string.sub(input, p, c-1)
+					end
+
+					returnText = returnText .. "%s"
+					table.insert(returnVariables, barTextVariables.pipe[x].variable)
+					p = z1 + 1
+				end
+			end
+		elseif d ~= nil then
+			for x = 1, percentEntries do
+				z, z1 = string.find(input, barTextVariables.percent[x].variable, d-1)
+				if z ~= nil and z == d then
+					match = true
+					if p ~= d then
+						returnText = returnText .. string.sub(input, p, d-1)
+					end
+
+					returnText = returnText .. "%s"
+					table.insert(returnVariables, barTextVariables.percent[x].variable)
+
+					p = z1 + 1
+					break
+				end
+			end
+		else
+			returnText = returnText .. string.sub(input, p, -1)
+			p = string.len(input) + 1
+			match = true
+		end
+
+		if match == false then
+			returnText = returnText .. string.sub(input, p, p)
+			p = p + 1
+		end
+	end
+
+	local barTextCacheEntry = {}
+	barTextCacheEntry.cleanedText = input
+	barTextCacheEntry.stringFormat = returnText
+	barTextCacheEntry.variables = returnVariables
+
+	table.insert(TRB.Data.cache.barText, barTextCacheEntry)
+	return barTextCacheEntry
+end
+
+---Gets the bar text cache for the input string
+---@param barText string
+---@return table
+local function GetFromBarTextCache(barText)
+	local cached = barTextCacheHash[barText]
+	if cached then
+		return cached
+	end
+
+	local result = AddToBarTextCache(barText)
+	barTextCacheHash[barText] = result
+	return result
+end
+
+-- Reusable buffer for GetReturnText to avoid allocating a new table every call
+local mappingBuffer = {}
+
+---Gets the return text after processing the input text
+---@param inputText table
+---@return string
+local function GetReturnText(inputText)
+	local lookup = TRB.Data.lookup
+	lookup["color"] = inputText.color
+	inputText.text = RemoveInvalidVariablesFromBarText(GetFromBarTextTreeCache(inputText.text))
+
+	local cache = GetFromBarTextCache(inputText.text)
+	local cachedTextVariableLength = #cache.variables
+
+	-- Reuse the shared mapping buffer; clear previous entries
+	local mapping = mappingBuffer
+	local mappingLen = 0
+
+	if cachedTextVariableLength > 0 then
+		for y = 1, cachedTextVariableLength do
+			mappingLen = mappingLen + 1
+			mapping[mappingLen] = lookup[cache.variables[y]]
+		end
+	end
+
+	-- Nil out any stale entries beyond current length
+	for i = mappingLen + 1, #mapping do
+		mapping[i] = nil
+	end
+
+	if mappingLen > 0 then
+		_, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping, 1, mappingLen))
+	elseif string.len(cache.stringFormat) > 0 then
+		inputText.text = cache.stringFormat
+	else
+		inputText.text = ""
+	end
+
+	return inputText.color .. inputText.text
+end
+
+-- Reusable buffer for building conditional-outcome signatures without allocation.
+local signatureBuffer = {}
+
+---Walks the tree evaluating only taken conditionals, appending one outcome char per node
+---("T"/"F"/"I") so the branch combination can key a cached render plan. Outcomes must stay identical to
+---EmitTreeSignatureSource; "F" absorbs a missing falseResult because that is a static property of a node.
+---@param tree table
+---@param len integer Current signature buffer length
+---@return integer len
+local function AppendTreeSignature(tree, len)
+	if tree == nil or tree.barText == nil then
+		return len
+	end
+	local barText = tree.barText
+	for idx = 1, #barText do
+		local v = barText[idx]
+		if type(v) ~= "string" then
+			if v.compiledExpression == nil then
+				v.compiledExpression = CompileConditionalExpression(v)
+			end
+			local ce = v.compiledExpression
+			local outcome
+			if ce.invalid then
+				outcome = "I"
+			else
+				local args = ResolveConditionalValues(ce)
+				local ok, result = pcall(ce.fn, unpack(args, 1, ce.varCount))
+				if not ok then
+					outcome = "I"
+				elseif result == true or result then
+					outcome = "T"
+				else
+					outcome = "F"
+				end
+			end
+			len = len + 1
+			signatureBuffer[len] = outcome
+			if outcome == "T" then
+				len = AppendTreeSignature(v.trueResult, len)
+			elseif outcome == "F" and v.falseResult ~= nil then
+				len = AppendTreeSignature(v.falseResult, len)
+			end
+		end
+	end
+	return len
+end
+
+-- Conditionals per entry are capped so numeric signatures (2 bits each) stay exact integers.
+local maxSignatureNodes = 26
+
+---Emits signature-walk source for one tree level: inline arg fetch, secret sanitize, expression
+---eval (pcall only when the expression can raise) and branch dispatch accumulating a base-4 sig.
+---@param tree table
+---@param out table Body lines
+---@param preamble table Hoisted expression function definitions
+---@param indent string
+---@param k integer Next node index
+---@return integer|nil k Next node index, or nil when the entry cannot be compiled
+local function EmitTreeSignatureSource(tree, out, preamble, indent, k)
+	if tree == nil or tree.barText == nil then
+		return k
+	end
+	local barText = tree.barText
+	for idx = 1, #barText do
+		local v = barText[idx]
+		if type(v) ~= "string" then
+			if k >= maxSignatureNodes then
+				return nil
+			end
+			local addT = string.format("%.0f", 1 * 4 ^ k)
+			local addF = string.format("%.0f", 2 * 4 ^ k)
+			local addI = string.format("%.0f", 3 * 4 ^ k)
+			local templateString, varInfos, varCount = BuildConditionalTemplate(v)
+			local exprSource = BuildConditionalFunctionSource(templateString, varCount)
+			if loadstring("return " .. exprSource) == nil then
+				-- Statically invalid logic always resolves to the INVALID outcome.
+				out[#out + 1] = indent .. "sig = sig + " .. addI
+				k = k + 1
+			else
+				local argNames = {}
+				for i = 1, varCount do
+					local info = varInfos[i]
+					local an = "a" .. k .. "_" .. i
+					argNames[i] = an
+					out[#out + 1] = indent .. "local " .. an .. " = Class:IsValidVariableForSpec(" .. string.format("%q", info.variable) .. ")"
+					if info.useLookupLogic then
+						local ln = "l" .. k .. "_" .. i
+						out[#out + 1] = indent .. "local " .. ln .. " = logic[" .. string.format("%q", info.variable) .. "]"
+						out[#out + 1] = indent .. "if " .. ln .. " then " .. an .. " = " .. ln .. " if issecretvalue(" .. an .. ") then " .. an .. " = false end end"
+					end
+				end
+				-- Pure boolean expressions cannot raise, so they inline without pcall.
+				local safe = true
+				for token in string.gmatch(templateString, "[^%s%(%)]+") do
+					if token ~= "and" and token ~= "or" and token ~= "not" and string.match(token, "^v%d+$") == nil then
+						safe = false
+						break
+					end
+				end
+				local nextIndent = indent .. "\t"
+				local rName = "r" .. k
+				if safe then
+					local inlined = string.gsub(templateString, "v(%d+)", "a" .. k .. "_%1")
+					out[#out + 1] = indent .. "local " .. rName .. " = (" .. inlined .. ")"
+					out[#out + 1] = indent .. "if " .. rName .. " then"
+				else
+					-- Hoisted names are indexed by preamble position, not by k: true/false subtrees
+					-- share slot numbers, and these all land in the same chunk-level scope.
+					local eName = "e" .. (#preamble + 1)
+					preamble[#preamble + 1] = "local " .. eName .. " = " .. exprSource
+					local callArgs = varCount > 0 and (", " .. table.concat(argNames, ", ")) or ""
+					out[#out + 1] = indent .. "local ok" .. k .. ", " .. rName .. " = pcall(" .. eName .. callArgs .. ")"
+					out[#out + 1] = indent .. "if not ok" .. k .. " then"
+					out[#out + 1] = nextIndent .. "sig = sig + " .. addI
+					out[#out + 1] = indent .. "elseif " .. rName .. " then"
+				end
+				out[#out + 1] = nextIndent .. "sig = sig + " .. addT
+				-- Branches are mutually exclusive and slot k already records which one ran, so both
+				-- subtrees start at k + 1 and the parent resumes past the deeper of the two.
+				local kTrue = EmitTreeSignatureSource(v.trueResult, out, preamble, nextIndent, k + 1)
+				if kTrue == nil then
+					return nil
+				end
+				out[#out + 1] = indent .. "else"
+				out[#out + 1] = nextIndent .. "sig = sig + " .. addF
+				local kFalse = k + 1
+				if v.falseResult ~= nil then
+					kFalse = EmitTreeSignatureSource(v.falseResult, out, preamble, nextIndent, k + 1)
+					if kFalse == nil then
+						return nil
+					end
+				end
+				out[#out + 1] = indent .. "end"
+				k = kTrue > kFalse and kTrue or kFalse
+			end
+		end
+	end
+	return k
+end
+
+---Compiles an entry's tree into a signature closure. Returns 0 for trees with no conditionals,
+---or nil when codegen is not possible (the interpreted walk handles those).
+---@param tree table
+---@return function|integer|nil
+local function CompileEntrySignatureFn(tree)
+	local out = {}
+	local preamble = {}
+	local count = EmitTreeSignatureSource(tree, out, preamble, "\t", 0)
+	if count == nil then
+		return nil
+	end
+	if count == 0 then
+		return 0
+	end
+	local src = "local issecretvalue, pcall = issecretvalue, pcall\n"
+		.. table.concat(preamble, "\n") .. (#preamble > 0 and "\n" or "")
+		.. "return function(Class, logic)\nlocal sig = 0\n"
+		.. table.concat(out, "\n")
+		.. "\nreturn sig\nend"
+	local chunk = loadstring(src)
+	if chunk == nil then
+		return nil
+	end
+	local ok, fn = pcall(chunk)
+	if ok and type(fn) == "function" then
+		return fn
+	end
+	return nil
+end
+
+---Renders one bar text entry via the signature-keyed plan cache. Plans are built once by the
+---legacy resolver so their skeletons match it exactly; after that a tick only re-reads the
+---plan's variable values and skips the format entirely when nothing changed.
+---@param state table Per-entry state holding the last plan, color and argument values
+---@param text string The entry's raw bar text
+---@param colorCode string The "|cAARRGGBB" default color prefix
+---@param force boolean True bypasses the unchanged-skip
+---@return string|nil output The formatted text, or nil when unchanged and not forced
+local function RenderBarTextEntry(state, text, colorCode, force)
+	local signature
+	-- State is keyed by entry index but sigFn/plan are compiled from the text. Drop them when the
+	-- index changes text so the caches stay an optimization, not a correctness requirement.
+	if state.sigText ~= text then
+		state.sigFn = nil
+		state.plan = nil
+		state.sigText = text
+	end
+	local sigFn = state.sigFn
+	if sigFn == nil then
+		sigFn = barTextSignatureFns[text]
+		if sigFn == nil then
+			sigFn = CompileEntrySignatureFn(GetFromBarTextTreeCache(text))
+			if sigFn == nil then
+				sigFn = false
+			end
+			barTextSignatureFns[text] = sigFn
+		end
+		state.sigFn = sigFn
+	end
+	if sigFn == 0 then
+		signature = 0
+	elseif sigFn ~= false then
+		signature = sigFn(TRB.Functions.Class, TRB.Data.lookupLogic)
+	else
+		-- Interpreted fallback for entries codegen cannot handle.
+		local len = AppendTreeSignature(GetFromBarTextTreeCache(text), 0)
+		signature = len == 0 and "" or table.concat(signatureBuffer, "", 1, len)
+	end
+
+	local plans = barTextRenderPlans[text]
+	if plans == nil then
+		plans = {}
+		barTextRenderPlans[text] = plans
+	end
+	local plan = plans[signature]
+	if plan == nil then
+		plan = GetFromBarTextCache(RemoveInvalidVariablesFromBarText(GetFromBarTextTreeCache(text)))
+		plans[signature] = plan
+	end
+
+	local lookup = TRB.Data.lookup
+	lookup["color"] = colorCode
+
+	local vars = plan.variables
+	local varCount = #vars
+	local lastArgs = state.args
+	if lastArgs == nil then
+		lastArgs = {}
+		state.args = lastArgs
+	end
+
+	local changed = force or state.plan ~= plan or state.colorCode ~= colorCode
+	for i = 1, varCount do
+		local value = lookup[vars[i]]
+		if not changed and (issecretvalue(value) or issecretvalue(lastArgs[i]) or lastArgs[i] ~= value) then
+			changed = true
+		end
+		lastArgs[i] = value
+	end
+	if not changed then
+		return nil
+	end
+	state.plan = plan
+	state.colorCode = colorCode
+
+	local _
+	local outputText
+	if varCount > 0 then
+		_, outputText = pcall(string.format, plan.stringFormat, unpack(lastArgs, 1, varCount))
+	elseif string.len(plan.stringFormat) > 0 then
+		outputText = plan.stringFormat
+	else
+		outputText = ""
+	end
+	return colorCode .. outputText
+end
+
+---Whether a stat bucket has not been read since it was last invalidated (or ever).
+---@param bucket "primary"|"secondary"
+---@return boolean
+local function AreStatsStale(bucket)
+	return TRB.Data.snapshotData.attributes[bucket .. "Refresh"] ~= false
+end
+
+-- "%.Nf" strings memoized by precision so per-tick refreshes skip rebuilding them.
+local precisionFormatCache = {}
+local function GetPrecisionFormat(precision)
+	local fmt = precisionFormatCache[precision]
+	if fmt == nil then
+		fmt = "%." .. precision .. "f"
+		precisionFormatCache[precision] = fmt
+	end
+	return fmt
+end
+
+-- Unit descriptors for RefreshTargetCastbarLookupData, hoisted with precomputed variable names so
+-- the per-tick refresh allocates nothing.
+local targetCastbarLookupUnits = {
+	{ modelKey = "targetCastbar", nameVar = "$targetCastingSpellName", timeVar = "$targetCastTime", remVar = "$targetCastTimeRemaining", iconVar = "#targetCasting" },
+	{ modelKey = "focusCastbar", nameVar = "$focusCastingSpellName", timeVar = "$focusCastTime", remVar = "$focusCastTimeRemaining", iconVar = "#focusCasting" },
+	{ modelKey = "petCastbar", nameVar = "$petCastingSpellName", timeVar = "$petCastTime", remVar = "$petCastTimeRemaining", iconVar = "#petCasting" },
+}
+
+-- Idle short-circuit state for the castbar/other-bars refreshers: their idle writes are constants,
+-- so an idle refresher runs one final blanking pass (or the initial one) and then skips entirely.
+local castbarLookupWasActive = true
+local targetCastbarLookupWasActive = true
+local otherBarsLookupWasActive = true
+-- The latches assume their idle writes are still present, but SwitchSpec replaces lookupLogic
+-- wholesale. Tracked here so RefreshLookupDataBase can re-arm them on a rebuild.
+local lastLookupLogicTable = nil
+
+---Refreshes ONLY the castbar bar text lookup variables (cast/channel/empower) from the dedicated
+---castbar model (TRB.Data.castbar) — deliberately independent of snapshotData.casting, which is the
+---resource-prediction path. Values default to empty/zero when nothing is casting. Called from
+---RefreshLookupDataBase so castbar variables flow through the single, shared bar text render pipeline.
+---Timers format with the castbar's own precision settings (independent of the shared timer precision):
+---$castTimeRemaining uses castTimePrecision, $castTime uses durationPrecision, and $castLatency/$castPushback
+---use latencyPrecision. All values are seconds ($castLatencyMs is always whole milliseconds).
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase? # Active spec settings (for bars.castbar precision fields)
+function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
+	local castbar = TRB.Data.castbar
+	local isActive = castbar ~= nil and castbar:IsActive()
+	if not isActive and not castbarLookupWasActive then
+		return
+	end
+	castbarLookupWasActive = isActive
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
+	local lookup = TRB.Data.lookup
+	local lookupLogic = TRB.Data.lookupLogic
+	---@diagnostic disable-next-line: undefined-field
+	local castbarSettings = settings and settings.bars and settings.bars.castbar
+	local castTimeFormat = GetPrecisionFormat((castbarSettings and castbarSettings.castTimePrecision) or 1)
+	local durationFormat = GetPrecisionFormat((castbarSettings and castbarSettings.durationPrecision) or 1)
+	local latencyFormat = GetPrecisionFormat((castbarSettings and castbarSettings.latencyPrecision) or 1)
+
+	local castTime, castRemaining, castLatency, castPushback = 0, 0, 0, 0
+	local castSpellName, castSpellId = "", 0
+	local isCasting, notInterruptible = false, false
+	if isActive then
+		local _, remaining, duration = castbar:GetProgress()
+		isCasting = true
+		notInterruptible = castbar.notInterruptible == true
+		castTime = duration or 0
+		castRemaining = remaining or 0
+		castLatency = castbar.latency or 0
+		castPushback = castbar.pushback or 0
+		if castbar.spell then
+			castSpellName = castbar.displayName or castbar.spell.name or ""
+			castSpellId = castbar.spell.id or 0
+			-- Source of truth for #casting: the castbar caches spell data for EVERY cast/channel/empower,
+			-- so while a cast is active it drives #casting. The resource-prediction snapshot only fills its
+			-- icon for resource-relevant spells, which is why #casting was blank for most abilities. When the
+			-- castbar is idle/disabled, #casting keeps the snapshot fallback set in RefreshLookupDataBase.
+			if castbar.spell.icon and castbar.spell.icon ~= "" then
+				lookup["#casting"] = castbar.spell.icon
+			end
+		end
+		-- Bulk crafting merge: append the craft progress so $castSpellName reads "Recipe Name 3 / 10".
+		if castbar.tradeskill and castbar.tradeskillTotal > 1 then
+			local progress = string.format("%d / %d", castbar:GetTradeskillIndex(), castbar.tradeskillTotal)
+			castSpellName = castSpellName ~= "" and (castSpellName .. " " .. progress) or progress
+		end
+	end
+	lookup["$castTime"] = castTime > 0 and string.format(durationFormat, castTime) or ""
+	lookup["$castTimeRemaining"] = castTime > 0 and string.format(castTimeFormat, castRemaining) or ""
+	lookup["$castLatency"] = castTime > 0 and string.format(latencyFormat, castLatency) or ""
+	lookup["$castLatencyMs"] = castTime > 0 and string.format("%d", math.floor(castLatency * 1000 + 0.5)) or ""
+	lookup["$castPushback"] = castTime > 0 and string.format(latencyFormat, castPushback) or ""
+	lookup["$castSpellName"] = castSpellName
+	lookup["$castSpellId"] = castTime > 0 and tostring(castSpellId) or ""
+	-- With nothing casting BOTH read false, rather than $castInterruptible being vacuously true.
+	local interruptible = isCasting and not notInterruptible
+	local uninterruptible = isCasting and notInterruptible
+	lookup["$castInterruptible"] = tostring(interruptible)
+	lookup["$castUninterruptible"] = tostring(uninterruptible)
+	lookupLogic["$castTime"] = castTime
+	lookupLogic["$castTimeRemaining"] = castRemaining
+	lookupLogic["$castLatency"] = castLatency
+	lookupLogic["$castLatencyMs"] = castLatency * 1000
+	lookupLogic["$castPushback"] = castPushback
+	lookupLogic["$castSpellId"] = castSpellId
+	-- Stored as strings, matching how $inCombat feeds the conditional engine.
+	lookupLogic["$castInterruptible"] = tostring(interruptible)
+	lookupLogic["$castUninterruptible"] = tostring(uninterruptible)
+end
+
+---Refreshes the Target/Focus Cast Bar bar text variables from their models. Everything here is
+---secret-safe: name/icon are stored raw (SetText/inline-texture handle secret values), and the
+---remaining/total seconds come from the DurationObject and are formatted with string.format (allowed on
+---secrets). Nothing is written to lookupLogic -- these values may be secret and must not feed the
+---arithmetic/comparison conditional engine.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
+function TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
+	local isActive = false
+	for _, u in ipairs(targetCastbarLookupUnits) do
+		local m = TRB.Data[u.modelKey]
+		if m ~= nil and m:IsActive() then
+			isActive = true
+			break
+		end
+	end
+	if not isActive and not targetCastbarLookupWasActive then
+		return
+	end
+	targetCastbarLookupWasActive = isActive
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	local lookup = TRB.Data.lookup
+	for _, u in ipairs(targetCastbarLookupUnits) do
+		local model = TRB.Data[u.modelKey]
+		local barSettings = settings and settings.bars and settings.bars[u.modelKey] --[[@as TRB.Classes.Settings.CastbarBar?]]
+		local remFmt = GetPrecisionFormat((barSettings and barSettings.castTimePrecision) or 1)
+		local durFmt = GetPrecisionFormat((barSettings and barSettings.durationPrecision) or 1)
+		local nameVar = u.nameVar
+		local timeVar = u.timeVar
+		local remVar = u.remVar
+		local iconVar = u.iconVar
+
+		-- Default to empty, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
+		-- which is blocked; only nil-checks (==/~= nil) and string.format are allowed on secrets.
+		lookup[nameVar] = ""
+		lookup[remVar] = ""
+		lookup[timeVar] = ""
+		lookup[iconVar] = ""
+		if model ~= nil and model:IsActive() then
+			local name = model.spellName
+			if name ~= nil then
+				lookup[nameVar] = name
+			end
+			local rem = model:GetRemainingSeconds()
+			if rem ~= nil then
+				lookup[remVar] = string.format(remFmt, rem)
+			end
+			local total = model:GetTotalSeconds()
+			if total ~= nil then
+				lookup[timeVar] = string.format(durFmt, total)
+			end
+			-- Inline icon texture; icon id may be secret (%d works on secret numbers, %s may not).
+			local iconId = model.spellIconId
+			if iconId ~= nil then
+				lookup[iconVar] = string.format("|T%d:0|t", iconId)
+			end
+		end
+	end
+end
+
+---Refreshes the baseline lookup data with the current values.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+function TRB.Functions.BarText:RefreshLookupDataBase(settings)
+	--Spec specific implementations also needed. This is general/cross-spec data
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local targetData = snapshotData.targetData
+	local target = targetData.targets[targetData.currentTargetGuid]
+	
+	local lookup = TRB.Data.lookup or {}
+	local lookupLogic = TRB.Data.lookupLogic or {}
+
+	TRB.Data.prevLookupState = TRB.Data.prevLookupState or {}
+	local prevState = TRB.Data.prevLookupState
+	local lookupChanged = TRB.Functions.BarText.LookupChanged
+
+	-- Ensure stats are populated if this is the first call
+	if AreStatsStale("primary") then
+		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
+	end
+	if AreStatsStale("secondary") then
+		TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
+	end
+
+	-- Stats: pre-formatted strings from UpdateStatsSnapshot for display, raw values for the logic side.
+	local formatted = snapshotData.formatted
+	for _, stat in ipairs(TRB.Flavor.stats) do
+		local statText = formatted[stat.key] or ""
+		local statValue = snapshotData.attributes[stat.key]
+		for _, variable in ipairs(stat.variables) do
+			lookup[variable] = statText
+			lookupLogic[variable] = statValue
+		end
+	end
+
+	--$health, $healthMax, $healthPercent
+	-- Raw secret values for lookupLogic (conditionals use arithmetic, not equality)
+	lookupLogic["$health"] = snapshotData.attributes.health
+	lookupLogic["$healthMax"] = snapshotData.attributes.healthMax
+	lookupLogic["$healthPercent"] = snapshotData.attributes.healthPercent
+
+	-- Use pre-formatted strings from event time (see UpdateHealthValues)
+	local formatted = snapshotData.formatted
+	lookup["$health"] = formatted.health or ""
+	lookup["$healthMax"] = formatted.healthMax or ""
+	lookup["$healthPercent"] = formatted.healthPercent or ""
+
+	--$absorb
+	lookupLogic["$absorb"] = snapshotData.attributes.absorb
+	lookup["$absorb"] = formatted.absorb or ""
+
+	--$incomingHeal
+	lookupLogic["$incomingHeal"] = snapshotData.attributes.incomingHeal or 0
+	lookup["$incomingHeal"] = formatted.incomingHeal or ""
+
+	--$healAbsorb
+	lookupLogic["$healAbsorb"] = snapshotData.attributes.healAbsorb
+	lookup["$healAbsorb"] = formatted.healAbsorb or ""
+
+	lookup["$gcd"] = formatted.gcd or ""
+	lookupLogic["$gcd"] = formatted.gcdRaw or 0
+
+	if lookup["||n"] == nil then
+		lookup["||n"] = "\n"
+		lookup["||c"] = "|c"
+		lookup["||r"] = "|r"
+		lookup["%%"] = "%"
+	end
+
+	--$inCombatTime
+	local _inCombatTime = 0
+	if TRB.Data.character.inCombat and TRB.Data.character.combatStartTime ~= nil then
+		_inCombatTime = GetTime() - TRB.Data.character.combatStartTime
+	end
+	lookupLogic["$inCombatTime"] = _inCombatTime
+	-- Floor to seconds so we only reformat once per second instead of every tick
+	local _inCombatTimeSeconds = math.floor(_inCombatTime)
+	if lookupChanged(prevState, "$inCombatTime", _inCombatTimeSeconds) then
+		if _inCombatTime > 0 then
+			local minutes = math.floor(_inCombatTime / 60)
+			local seconds = _inCombatTimeSeconds - (minutes * 60)
+			lookup["$inCombatTime"] = string.format("%02d:%02d", minutes, seconds)
+		else
+			lookup["$inCombatTime"] = "00:00"
+		end
+	end
+	--#castingIcon
+	local castingIcon = snapshotData.casting.icon or ""
+	local castingAmount = snapshotData.casting.resourceFinal or 0
+
+	lookup["$inCombat"] = tostring(TRB.Data.character.inCombat)
+	lookup["#casting"] = castingIcon
+
+	lookupLogic["$inCombat"] = tostring(TRB.Data.character.inCombat)
+
+	-- A spec change replaces lookupLogic wholesale, stranding the idle latches. Re-arm on identity
+	-- change rather than depending on SwitchSpec call order.
+	if TRB.Data.lookupLogic ~= lastLookupLogicTable then
+		lastLookupLogicTable = TRB.Data.lookupLogic
+		castbarLookupWasActive = true
+		targetCastbarLookupWasActive = true
+		otherBarsLookupWasActive = true
+		petLookupWasActive = true
+	end
+
+	-- Castbar variables live in their own function so the isolated castbar bar text path can refresh
+	-- them independently of this class-driven (combat/isTracking-gated) refresh.
+	TRB.Functions.BarText:RefreshCastbarLookupData(settings)
+	TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
+	TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
+	TRB.Functions.BarText:RefreshPetLookupData(settings)
+
+	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
+
+	Global_TwintopResourceBar.resource = Global_TwintopResourceBar.resource or {}
+	Global_TwintopResourceBar.resource.resource = snapshotData.attributes.resource-- or 0
+	Global_TwintopResourceBar.resource.casting = castingAmount
+end
+
+-- Pet bar variables, all of which gate on "is a pet out?" in bar text logic.
+local petVars = {
+	["$petName"] = true, ["$petHealth"] = true, ["$petHealthMax"] = true, ["$petHealthPercent"] = true,
+	["$petPower"] = true, ["$petPowerMax"] = true, ["$petPowerPercent"] = true, ["$petPowerName"] = true,
+}
+
+-- Idle short-circuit latch: one final pass has to blank the variables when the pet goes away.
+local petLookupWasActive = true
+
+---Refreshes the pet bar variables. Health and power are read with allowSecret, so they only ever reach
+---`lookup` as formatted strings and never `lookupLogic`, where they could be compared. With no pet they
+---all render empty, so a bare {$petHealthPercent}[...] gate reads as "is a pet out?".
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
+function TRB.Functions.BarText:RefreshPetLookupData(settings)
+	local hasPet = TRB.Functions.PetBars:HasPet()
+	if not hasPet and not petLookupWasActive then
+		return
+	end
+	petLookupWasActive = hasPet
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
+	local lookup = TRB.Data.lookup
+
+	for var in pairs(petVars) do
+		lookup[var] = ""
+	end
+	local state = TRB.Functions.PetBars:GetPetState()
+	lookup["$petState"] = state
+	TRB.Data.lookupLogic["$petState"] = state
+
+	if not hasPet then
+		return
+	end
+
+	local precision = settings and settings.precision or nil
+	lookup["$petName"] = TRB.Functions.PetBars:GetPetName() or ""
+	-- Only reached with a live pet, so the unit APIs below always have something to answer.
+	lookup["$petHealth"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitHealth("pet", true))
+	lookup["$petHealthMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitHealthMax("pet"))
+	lookup["$petHealthPercent"] = string.format(GetPrecisionFormat((precision and precision.health) or 1),
+		UnitHealthPercent("pet", true, CurveConstants.ScaleTo100))
+
+	local powerType = TRB.Functions.PetBars:GetPetPowerType()
+	if powerType ~= nil then
+		lookup["$petPower"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitPower("pet", powerType, true))
+		lookup["$petPowerMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitPowerMax("pet", powerType))
+		lookup["$petPowerPercent"] = string.format(GetPrecisionFormat((precision and precision.mana) or 1),
+			UnitPowerPercent("pet", powerType, true, CurveConstants.ScaleTo100))
+		lookup["$petPowerName"] = TRB.Functions.PetBars:GetPetPowerName() or ""
+	end
+end
+
+-- Other Bars variable -> bar key. Each bar contributes $<key>Duration and $<key>DurationRemaining.
+local otherBarsVars = {
+	["$gcdDuration"] = "gcd", ["$gcdDurationRemaining"] = "gcd",
+	["$fatigueDuration"] = "fatigue", ["$fatigueDurationRemaining"] = "fatigue",
+	["$breathDuration"] = "breath", ["$breathDurationRemaining"] = "breath",
+	["$feignDeathDuration"] = "feignDeath", ["$feignDeathDurationRemaining"] = "feignDeath",
+}
+
+-- The GCD's seconds ride on a DurationObject and are secret in restricted content, so they are
+-- display-only. The mirror timers come back as plain numbers from GetMirrorTimerProgress, so those
+-- also reach lookupLogic and can be compared in bar text conditionals.
+local otherBarsSecretVars = {
+	["$gcdDuration"] = true, ["$gcdDurationRemaining"] = true,
+}
+
+---Renders a mirror timer's seconds as mm:ss. Minutes are not capped -- no mirror timer runs an hour,
+---but a longer one would read 61:xx rather than wrap silently.
+---@param seconds number
+---@return string
+local function FormatMinutesSeconds(seconds)
+	if seconds < 0 then
+		seconds = 0
+	end
+	local wholeSeconds = math.floor(seconds)
+	local minutes = math.floor(wholeSeconds / 60)
+	return string.format("%02d:%02d", minutes, wholeSeconds - (minutes * 60))
+end
+
+-- Per-bar "$<key>Duration"/"$<key>DurationRemaining" names, built once (the bar key set is static).
+local otherBarsVarNamesByKey = {}
+local function GetOtherBarsVarNames(barKey)
+	local names = otherBarsVarNamesByKey[barKey]
+	if names == nil then
+		local totalVar = "$" .. barKey .. "Duration"
+		names = { total = totalVar, remaining = totalVar .. "Remaining" }
+		otherBarsVarNamesByKey[barKey] = names
+	end
+	return names
+end
+
+---Refreshes the Other Bars timer variables ($gcdDuration, $fatigueDurationRemaining, ...). An idle bar
+---renders as an empty string, so a bare {$fatigueDurationRemaining}[...] gate shows nothing while the
+---timer is down. Values are formatted with string.format, which is safe on a secret.
+---
+---The two kinds format differently. The GCD is under two seconds, so it reads as seconds to the
+---configured decimal precision -- and it has no choice: its value is a secret, and mm:ss needs division
+---and subtraction, which a secret does not permit. The mirror timers run for minutes and come back as
+---plain numbers, so they read as mm:ss. `lookupLogic` always carries the raw seconds either way, so
+---conditionals still compare against a number rather than the display string.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
+function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
+	local isActive = TRB.Functions.OtherBars:HasActiveTimer()
+	if not isActive and not otherBarsLookupWasActive then
+		return
+	end
+	otherBarsLookupWasActive = isActive
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
+	local lookup = TRB.Data.lookup
+	local lookupLogic = TRB.Data.lookupLogic
+
+	for _, entry in ipairs(TRB.Functions.OtherBars:GetBars()) do
+		local barKey = entry.key
+		local barSettings = settings and settings.bars and settings.bars[barKey] --[[@as TRB.Classes.Settings.OtherBar?]]
+		-- A spec without this bar's settings doesn't have the bar at all (Feign Death outside Hunter),
+		-- so it gets no lookup entries either.
+		if barSettings ~= nil then
+			local isMirror = entry.kind == "mirror"
+			-- Only the GCD carries durationPrecision; the mirror timers have no decimals to configure.
+			local fmt
+			if not isMirror then
+				fmt = GetPrecisionFormat(barSettings.durationPrecision)
+			end
+			local names = GetOtherBarsVarNames(barKey)
+			local totalVar = names.total
+			local remVar = names.remaining
+			local isSecret = otherBarsSecretVars[totalVar] == true
+
+			-- Default to empty, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
+			-- which is blocked; only nil-checks and string.format are allowed on secrets.
+			lookup[totalVar] = ""
+			lookup[remVar] = ""
+			if not isSecret then
+				lookupLogic[totalVar] = nil
+				lookupLogic[remVar] = nil
+			end
+
+			local remaining, total = TRB.Functions.OtherBars:GetTimerValues(barKey)
+			if remaining ~= nil then
+				lookup[remVar] = isMirror and FormatMinutesSeconds(remaining) or string.format(fmt, remaining)
+				if not isSecret then
+					lookupLogic[remVar] = remaining
+				end
+			end
+			if total ~= nil then
+				lookup[totalVar] = isMirror and FormatMinutesSeconds(total) or string.format(fmt, total)
+				if not isSecret then
+					lookupLogic[totalVar] = total
+				end
+			end
+		end
+	end
+end
+
+-- Static set of always-valid base variables (O(1) lookup instead of if/elseif chain)
+local validBaseVars = {
+	["$crit"] = true, ["$critPercent"] = true,
+	["$mastery"] = true, ["$masteryPercent"] = true,
+	["$haste"] = true, ["$hastePercent"] = true,
+	["$gcd"] = true,
+	["$vers"] = true, ["$versatility"] = true, ["$oVers"] = true, ["$versPercent"] = true, ["$versatilityPercent"] = true, ["$oVersPercent"] = true,
+	["$dVers"] = true, ["$dversPercent"] = true,
+	["$critRating"] = true, ["$masteryRating"] = true, ["$hasteRating"] = true,
+	["$versRating"] = true, ["$versatilityRating"] = true,
+	["$dVersRating"] = true,
+	["$int"] = true, ["$intellect"] = true,
+	["$agi"] = true, ["$agility"] = true,
+	["$str"] = true, ["$strength"] = true,
+	["$stam"] = true, ["$stamina"] = true,
+}
+
+-- Player cast bar variables, which no spec wires up itself. A bare {$castTime}[...] shortcircuits to
+-- "$castTime ~= nil" -- is a cast in progress at all -- matching how the Target/Focus ones below behave.
+local playerCastbarVars = {
+	["$castTime"] = true, ["$castTimeRemaining"] = true,
+	["$castLatency"] = true, ["$castLatencyMs"] = true, ["$castPushback"] = true,
+	["$castSpellName"] = true, ["$castSpellId"] = true,
+}
+
+---Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
+---@param var string
+---@return boolean
+function TRB.Functions.BarText:IsValidVariableBase(var)
+	if validBaseVars[var] then
+		return true
+	end
+	if var == "$inCombat" or var == "$inCombatTime" then
+		return TRB.Data.character.inCombat == true
+	end
+	if playerCastbarVars[var] then
+		local castbar = TRB.Data.castbar
+		return castbar ~= nil and castbar:IsActive()
+	end
+	-- These two are already booleans that read false when nothing is casting, so they answer for
+	-- themselves rather than gating on the cast the way the timers above do.
+	if var == "$castInterruptible" or var == "$castUninterruptible" then
+		local castbar = TRB.Data.castbar
+		if castbar == nil or not castbar:IsActive() then
+			return false
+		end
+		if var == "$castInterruptible" then
+			return castbar.notInterruptible ~= true
+		end
+		return castbar.notInterruptible == true
+	end
+	-- Target/Focus cast bar variables are secret in display, but in bar text LOGIC they resolve to a
+	-- plain boolean: "is that unit currently casting?" So {$targetCastTimeRemaining}[...] gates on the cast.
+	-- Read via computed key (as elsewhere) so the model field isn't flagged undefined-field.
+	local castbarModelKey
+	if var == "$targetCastingSpellName" or var == "$targetCastTime" or var == "$targetCastTimeRemaining" then
+		castbarModelKey = "targetCastbar"
+	elseif var == "$focusCastingSpellName" or var == "$focusCastTime" or var == "$focusCastTimeRemaining" then
+		castbarModelKey = "focusCastbar"
+	elseif var == "$petCastingSpellName" or var == "$petCastTime" or var == "$petCastTimeRemaining" then
+		castbarModelKey = "petCastbar"
+	end
+	if castbarModelKey ~= nil then
+		local model = TRB.Data[castbarModelKey]
+		return model ~= nil and model:IsActive()
+	end
+	-- Other Bars timers resolve, in bar text LOGIC, to "is that bar's timer running", so a bare
+	-- {$breathDurationRemaining}[...] gates on the timer the same way a cast variable gates on a cast.
+	-- The mirror timers additionally reach lookupLogic, so they can be compared as well.
+	local otherBarKey = otherBarsVars[var]
+	if otherBarKey ~= nil then
+		return TRB.Functions.OtherBars:IsBarActive(otherBarKey)
+	end
+	if petVars[var] then
+		return TRB.Functions.PetBars:HasPet()
+	end
+	return false
+end
+
+-- Bar text variables whose values come from a self-driven bar: the cast bars (player $cast* / #casting
+-- and the target/focus $target*|$focus* / #targetCasting|#focusCasting) and the Other Bars timers. Those
+-- bars only need to force a per-frame bar text refresh when one of THESE is actually referenced by an
+-- enabled entry -- otherwise a running timer changes nothing the bar text shows and the normal early-out
+-- applies. Keyed by variable/icon name.
+local selfDrivenBarVariables = {
+	-- Player cast bar (see RefreshCastbarLookupData)
+	["$castTime"] = true, ["$castTimeRemaining"] = true, ["$castLatency"] = true, ["$castLatencyMs"] = true,
+	["$castPushback"] = true, ["$castSpellName"] = true, ["$castSpellId"] = true,
+	["$castInterruptible"] = true, ["$castUninterruptible"] = true, ["#casting"] = true,
+	-- Target / Focus cast bars (see RefreshTargetCastbarLookupData)
+	["$targetCastingSpellName"] = true, ["$targetCastTime"] = true, ["$targetCastTimeRemaining"] = true,
+	["#targetCasting"] = true,
+	["$focusCastingSpellName"] = true, ["$focusCastTime"] = true, ["$focusCastTimeRemaining"] = true,
+	["#focusCasting"] = true,
+	["$petCastingSpellName"] = true, ["$petCastTime"] = true, ["$petCastTimeRemaining"] = true,
+	["#petCasting"] = true,
+	-- Other Bars timers (see RefreshOtherBarsLookupData)
+	["$gcdDuration"] = true, ["$gcdDurationRemaining"] = true,
+	["$fatigueDuration"] = true, ["$fatigueDurationRemaining"] = true,
+	["$breathDuration"] = true, ["$breathDurationRemaining"] = true,
+	["$feignDeathDuration"] = true, ["$feignDeathDurationRemaining"] = true,
+	-- Pet bars (see RefreshPetLookupData)
+	["$petName"] = true, ["$petState"] = true,
+	["$petHealth"] = true, ["$petHealthMax"] = true, ["$petHealthPercent"] = true,
+	["$petPower"] = true, ["$petPowerMax"] = true, ["$petPowerPercent"] = true, ["$petPowerName"] = true,
+}
+
+---Whether any running self-driven bar (the player/target/focus cast bars, or an Other Bars timer)
+---drives a variable that an enabled bar text entry actually references. This is what justifies
+---bypassing the early-out for a live cast or timer: if nothing on screen shows one of those values, it
+---is irrelevant to bar text. When the active variable set hasn't been built yet (nil, e.g. just
+---invalidated), returns true so the caller refreshes and rebuilds it rather than skipping a frame.
+---@return boolean
+local function HasActiveSelfDrivenBarVariableInUse()
+	-- A fading cast bar counts as in use so the one final pass that blanks its variables lands when the
+	-- bar leaves the screen, not the tick the cast ended while it is still visible.
+	local anyActive = (TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive())
+		or TRB.Functions.Castbar:IsFadingOut()
+		or (TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
+		or TRB.Functions.TargetCastbar:IsFadingOut("targetCastbar")
+		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())
+		or TRB.Functions.TargetCastbar:IsFadingOut("focusCastbar")
+		or (TRB.Data.petCastbar ~= nil and TRB.Data.petCastbar:IsActive())
+		or TRB.Functions.TargetCastbar:IsFadingOut("petCastbar")
+		or TRB.Functions.OtherBars:HasActiveTimer()
+		or TRB.Functions.PetBars:IsRendering()
+	if not anyActive then
+		return false
+	end
+	local activeVars = TRB.Data.activeVariables
+	if activeVars == nil then
+		return true
+	end
+	for var in pairs(selfDrivenBarVariables) do
+		if activeVars[var] then
+			return true
+		end
+	end
+	return false
+end
+
+-- Previous tick's HasActiveSelfDrivenBarVariableInUse result, for detecting the tick a cast/timer ends on.
+local selfDrivenBarWasInUse = false
+
+-- Reused per-call caches for GetBarTextFrame results, split into parallel maps so caching a
+-- frame's state allocates nothing. Presence is keyed on showFrameEnabled.
+local showFrameEnabled = {}
+local showFrameVisible = {}
+
+-- Reusable table for passing to GetReturnText (avoids per-entry table allocation)
+local barTextBuffer = { text = "", color = "" }
+
+-- Pre-computed "textFrames"..i key strings (populated on demand, avoids per-frame string concat)
+local textFrameKeys = {}
+---Returns the cached "textFrames"..i key string for a given bar text entry index, creating it on first access to avoid per-frame string concatenation
+---@param i integer The 1-based bar text entry index
+---@return string key The cached key string (e.g. "textFrames1")
+local function GetTextFrameKey(i)
+	local key = textFrameKeys[i]
+	if key == nil then
+		key = "textFrames" .. i
+		textFrameKeys[i] = key
+	end
+	return key
+end
+
+---Updates the resource bar text based on the settings
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param refreshText boolean
+function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
+	-- Consume the visibility-refresh flag set by ProcessBars on hidden→visible
+	-- transition. When true, we must bypass the early-out AND force all bar text
+	-- entries to be processed, ensuring text content is written to frames that
+	-- were just made visible (they may have empty/stale text from when the bar
+	-- was hidden).
+	local visibilityRefresh = TRB.Data.barTextVisibilityRefreshNeeded
+	if visibilityRefresh then
+		TRB.Data.barTextVisibilityRefreshNeeded = false
+	end
+
+	-- Early-out: if nothing changed since the last refresh and no timers are
+	-- ticking down, all lookup values are identical to last tick — skip the refresh and
+	-- bar text rendering entirely. During combat $inCombatTime keeps changing, so we
+	-- always refresh when in combat. A pending visibility refresh also bypasses this.
+	-- An active cast bar bypasses it too -- its $castTimeRemaining etc. change every frame and must keep
+	-- updating even out of combat / when every other bar is hidden -- BUT only when an enabled bar text
+	-- entry actually references a cast-bar variable. A live cast that no bar text shows is irrelevant here,
+	-- so it no longer forces a full per-frame refresh (the cast bar's own fill/text render independently).
+	local selfDrivenBarInUse = HasActiveSelfDrivenBarVariableInUse()
+	-- The tick a cast/timer ends on: one final pass has to write out its now-empty variables.
+	local selfDrivenBarEnded = selfDrivenBarWasInUse and not selfDrivenBarInUse
+	selfDrivenBarWasInUse = selfDrivenBarInUse
+	if not visibilityRefresh and not selfDrivenBarEnded and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not selfDrivenBarInUse and not TRB.Functions.Class:HasActiveTimers() then
+		return
+	end
+	TRB.Data.lookupDirty = false
+
+	-- Callers only set refreshText while a resource bar renders, so a cast/timer must drive its own write:
+	-- without this its text never updates when every resource bar is set to Never Show.
+	refreshText = refreshText or selfDrivenBarInUse or selfDrivenBarEnded
+
+	-- Rebuild the active variable set if it was invalidated (bar text changed, spec switch, etc.)
+	if TRB.Data.activeVariables == nil then
+		TRB.Functions.BarText:BuildActiveVariableSet(settings)
+	end
+
+	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
+	TRB.Functions.BarText:RefreshLookupDataBase(settings)
+	TRB.Functions.RefreshLookupData()
+
+	--Only parse bar text if we need to refresh the text (or if there are Screen-bound entries)
+	if settings ~= nil and settings.displayText ~= nil then
+		-- Clear the per-call frame cache so entries get fresh visibility data
+		wipe(showFrameEnabled)
+		wipe(showFrameVisible)
+
+		---@type Frame[]
+		local textFrames = TRB.Frames.textFrames
+		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
+		local entries = #displayText.barText
+		-- Ensure frames exist before trying to update them.
+		-- This used to be guaranteed by the legacy bar constructor; the OOP bar system must do this too.
+		if textFrames == nil or textFrames[1] == nil then
+			TRB.Functions.BarText:CreateBarTextFrames()
+			textFrames = TRB.Frames.textFrames
+		end
+		for i = 1, entries do
+			if displayText.barText[i].enabled then
+				local e = displayText.barText[i]
+				local isScreenText = e.position.relativeToFrame == "UIParent"
+
+				-- Re-apply the width constraint against the bound bar's live width so the clamp
+				-- tracks bar resizes (the font's parent is the bound bar). Runs independent of the
+				-- refreshText gate below so it still updates when only the bar width changed; memoized,
+				-- so it's a no-op unless the width actually changed.
+				if e.constrainToParent and textFrames[i] ~= nil then
+---@diagnostic disable-next-line: undefined-field
+					local entryFont = textFrames[i].font
+					if entryFont ~= nil then
+						ApplyBarTextWidthConstraint(entryFont, e, textFrames[i]:GetParent())
+					end
+				end
+
+				-- Screen-bound text is always processed; other text only when refreshText is true. A cast
+				-- bar mid fade-out is skipped regardless, which is what holds its finished cast on screen.
+				if (refreshText or isScreenText or visibilityRefresh)
+					and not IsAnchoredToFadingCastbar(e.position.relativeToFrame) then
+					-- Check if the target frame is visible before doing expensive text processing
+					-- Use per-call cache to avoid redundant GetBarTextFrame calls for entries sharing a frame
+					local frameKey = e.position.relativeToFrame
+					local isEnabled, isVisible
+					if showFrameEnabled[frameKey] ~= nil then
+						isEnabled = showFrameEnabled[frameKey]
+						isVisible = showFrameVisible[frameKey]
+					else
+						_, isEnabled, isVisible = TRB.Functions.BarText:GetAnchorFrame(frameKey)
+						if isScreenText then
+							isVisible = true
+						end
+						showFrameEnabled[frameKey] = isEnabled == true
+						showFrameVisible[frameKey] = isVisible == true
+					end
+
+					local tfKey = GetTextFrameKey(i)
+					local frameCache = TRB.Data.cache.values.frame[tfKey]
+					if frameCache == nil then
+						frameCache = {}
+						TRB.Data.cache.values.frame[tfKey] = frameCache
+					end
+
+					-- Skip expensive text processing if the target bar is not visible
+					if not isEnabled or not isVisible then
+						frameCache.text = ""
+					else
+						local color = e.color and e.color.color
+						
+						if e.useDefaultFontColor then
+							-- displayText.default.color uses the new table format { color = "..." }
+							local defaultColor = displayText.default and displayText.default.color
+							if type(defaultColor) == "table" then
+								color = defaultColor.color
+							elseif type(defaultColor) == "string" then
+								color = defaultColor
+							end
+						end
+
+						color = color or "FFFFFFFF"
+
+						local colorCode = "|c" .. color
+						local entryState = barTextEntryStates[i]
+						if entryState == nil then
+							entryState = {}
+							barTextEntryStates[i] = entryState
+						end
+						-- Empty frameCache.text means the frame was hidden or never written; the font
+						-- string may hold stale text, so bypass the unchanged-skip. Secret text cannot be
+						-- compared but is never empty (it carries the color prefix), so it never forces.
+						local prevText = frameCache.text
+						local forceWrite = visibilityRefresh or (not issecretvalue(prevText) and (prevText == nil or prevText == ""))
+						-- An entry that keeps throwing latches to legacy so it stops paying for both paths
+						-- every tick; the latch clears whenever entry state is wiped.
+						local engineFailures = entryState.engineFailures or 0
+						if engineFailures > 0 and entryState.sigText ~= e.text then
+							engineFailures = 0
+						end
+						local renderOk, returnText = false, nil
+						if engineFailures < maxEngineFailures then
+							renderOk, returnText = pcall(RenderBarTextEntry, entryState, e.text, colorCode, forceWrite)
+							if not renderOk then
+								entryState.engineFailures = engineFailures + 1
+							elseif engineFailures > 0 then
+								entryState.engineFailures = nil
+							end
+						end
+						if not renderOk then
+							barTextBuffer.text = e.text
+							barTextBuffer.color = colorCode
+							returnText = GetReturnText(barTextBuffer)
+						end
+
+						if issecretvalue(returnText) or returnText ~= nil then
+							if textFrames ~= nil and textFrames[i] ~= nil then
+								pcall(TryUpdateText, textFrames[i],  returnText)
+							else
+								-- Frame list is out of sync; rebuild and try once.
+								TRB.Functions.BarText:CreateBarTextFrames()
+								textFrames = TRB.Frames.textFrames
+								if textFrames ~= nil and textFrames[i] ~= nil then
+									pcall(TryUpdateText, textFrames[i],  returnText)
+								end
+							end
+							frameCache.text = returnText
+						end
+					end
+					
+					if frameCache.level ~= TRB.Data.settings.core.strata.level then
+						if textFrames ~= nil and textFrames[i] ~= nil then
+							textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+							textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+						end
+						frameCache.level = TRB.Data.settings.core.strata.level
+					end
+				end
+			end
+		end
+	end
+
+	if TRB.Functions.Threshold and TRB.Functions.Threshold.UpdateCustomThresholdLines then
+		TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, TRB.Frames.barGroups)
+	end
+end
+
+---Runs the shared visibility + bar text pipeline now instead of on the next 20Hz tick, for self-driven
+---bars that go on screen mid-tick. Marking lookup dirty forces the render past the early-out.
+function TRB.Functions.BarText:RenderNow()
+	if not TRB.Data.specSupported or TRB.Functions.Bar:IsRenderTransitionActive() then
+		return
+	end
+	local specCache = TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey]
+	local settings = specCache and specCache.settings
+	if settings == nil then
+		return
+	end
+	TRB.Functions.Bar:HideResourceBar()
+	self:MarkLookupDirty()
+	self:UpdateResourceBarText(settings, true)
+end
+
+---Repositions an existing bar text frame without rebuilding all bar text frames.
+---@param entryIndex integer
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Functions.BarText:RepositionBarTextEntry(entryIndex, classId, specId)
+	classId = classId or TRB.Data.character.classId
+	specId = specId or TRB.Data.character.specId
+
+	if classId ~= TRB.Data.character.classId or specId ~= TRB.Data.character.specId then
+		return false
+	end
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
+	local settings = TRB.Data.specCache[compositeKey] and TRB.Data.specCache[compositeKey].settings
+	local displayText = settings and settings.displayText
+	local textFrames = TRB.Frames.textFrames
+	local entry = displayText and displayText.barText and displayText.barText[entryIndex]
+
+	if entry == nil or textFrames == nil or textFrames[entryIndex] == nil then
+		return false
+	end
+
+	---@diagnostic disable-next-line: undefined-field
+	local font = textFrames[entryIndex].font
+	if font == nil then
+		return false
+	end
+
+	local relativeToFrame
+	local isEnabled = true
+	if entry.position.relativeToFrame == "UIParent" then
+		relativeToFrame = UIParent
+	elseif entry.position.relativeToFrame ~= "AllComboPoints" then
+		relativeToFrame, isEnabled, _ = TRB.Functions.BarText:GetAnchorFrame(entry.position.relativeToFrame, classId, specId)
+		if relativeToFrame == nil and isEnabled then
+			relativeToFrame = _G["TwintopResourceBarFrame_" .. entry.position.relativeToFrame]
+		end
+	end
+
+	textFrames[entryIndex]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+	textFrames[entryIndex]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+
+	if relativeToFrame ~= nil and entry.enabled and isEnabled then
+		font:ClearAllPoints()
+		font:SetPoint(entry.position.relativeTo, relativeToFrame, entry.position.relativeTo, entry.position.xPos, entry.position.yPos)
+		ApplyBarTextWidthConstraint(font, entry, relativeToFrame)
+		textFrames[entryIndex]:SetParent(relativeToFrame)
+		textFrames[entryIndex]:ClearAllPoints()
+		textFrames[entryIndex]:SetAllPoints(font)
+
+		if TRB.Functions.Bar:IsRenderTransitionActive() then
+			font:Hide()
+			textFrames[entryIndex]:Hide()
+		else
+			font:Show()
+			textFrames[entryIndex]:Show()
+		end
+	else
+		textFrames[entryIndex]:Hide()
+		font:Hide()
+	end
+
+	return true
+end
+
+---Builds the required bar text frames
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
+	classId = classId or TRB.Data.character.classId
+	specId = specId or TRB.Data.character.specId
+
+	-- Don't do this if we're not modifying the current spec's bar text
+	if classId ~= TRB.Data.character.classId or specId ~= TRB.Data.character.specId then
+		return
+	end
+
+	-- New font strings start empty; drop the unchanged-skip states so every entry rewrites.
+	wipe(barTextEntryStates)
+	
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
+	local settings = TRB.Data.specCache[compositeKey].settings
+
+	---@type Frame[]
+	local textFrames = TRB.Frames.textFrames
+	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
+	
+	local entries = #displayText.barText
+	local frameCount = 1
+	if entries > 0 then
+		if displayText.default.fontFace == nil or displayText.default.fontFace == "" or displayText.default.fontFaceName == nil or displayText.default.fontFaceName == "" then
+			displayText.default.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
+			displayText.default.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
+		end
+
+		for i = 1, entries do
+			local e = displayText.barText[i]
+
+			if e.fontFace == nil or e.fontFace == "" or e.fontFaceName == nil or e.fontFaceName == "" then
+				e.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
+				e.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
+			end
+
+			local fontFace = e.fontFace
+			local fontSize = e.fontSize
+			local fontJustifyHorizontal = e.fontJustifyHorizontal
+
+			if e.useDefaultFontFace then
+				fontFace = displayText.default.fontFace
+			end
+
+			if e.useDefaultFontSize then
+				fontSize = displayText.default.fontSize
+			end
+
+			local fontOutline = e.fontOutline or "OUTLINE"
+			if e.useDefaultFontOutline then
+				fontOutline = displayText.default.fontOutline or "OUTLINE"
+			end
+
+			local fontShadow = e.fontShadow
+			if e.useDefaultFontShadow and displayText.default.fontShadow then
+				-- Inherit only appearance (color, offsets) from spec defaults; enabled stays per-entry
+				fontShadow = fontShadow or {}
+				fontShadow = {
+					enabled = fontShadow.enabled,
+					color = displayText.default.fontShadow.color,
+					xOffset = displayText.default.fontShadow.xOffset,
+					yOffset = displayText.default.fontShadow.yOffset,
+				}
+			end
+
+			local relativeTo = e.position.relativeTo
+			---@type Frame
+			local relativeToFrame
+			local isEnabled = true
+			
+			if e.position.relativeToFrame == "UIParent" then
+				relativeToFrame = UIParent
+			elseif e.position.relativeToFrame == "AllComboPoints" then
+			else
+				-- Capture isVisible but don't use it for frame creation - parenting needs the frame regardless
+				relativeToFrame, isEnabled, _ = TRB.Functions.BarText:GetAnchorFrame(e.position.relativeToFrame, classId, specId)
+
+				if relativeToFrame == nil and isEnabled then
+					relativeToFrame = _G["TwintopResourceBarFrame_"..e.position.relativeToFrame]
+				end
+			end
+			
+			if textFrames[frameCount] == nil then
+				textFrames[frameCount] = CreateFrame("Frame", "TwintopResourceBarFrame_TextFrame"..frameCount, relativeToFrame)
+			end
+
+			textFrames[frameCount]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+			textFrames[frameCount]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+
+---@diagnostic disable-next-line: undefined-field
+			if textFrames[frameCount].font == nil then
+				---@diagnostic disable-next-line: inject-field
+				textFrames[frameCount].font = TRB.Frames.textFrames[frameCount]:CreateFontString(nil, "BACKGROUND")
+			end
+---@diagnostic disable-next-line: undefined-field
+			local font = textFrames[frameCount].font
+
+			if relativeToFrame ~= nil and e.enabled and isEnabled then
+				font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+				font:SetJustifyH(fontJustifyHorizontal)
+				font:SetFont(fontFace, fontSize, fontOutline)
+
+				-- Apply font shadow settings
+				if fontShadow and fontShadow.enabled then
+					local sr, sg, sb, sa = TRB.Functions.Color:GetRGBAFromString(fontShadow.color or "FF000000", true)
+					font:SetShadowColor(sr, sg, sb, sa)
+					font:SetShadowOffset(fontShadow.xOffset or 1, fontShadow.yOffset or -1)
+				else
+					font:SetShadowColor(0, 0, 0, 0)
+					font:SetShadowOffset(0, 0)
+				end
+
+				-- Clear any stale text from a previous configuration so old bar text
+				-- doesn't linger after a reset or entry change.
+				font:SetText("")
+				font:ClearAllPoints()
+				font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)
+				ApplyBarTextWidthConstraint(font, e, relativeToFrame)
+				textFrames[frameCount]:SetParent(relativeToFrame)
+				textFrames[frameCount]:ClearAllPoints()
+				textFrames[frameCount]:SetAllPoints(font)
+
+				if TRB.Functions.Bar:IsRenderTransitionActive() then
+					font:Hide()
+					textFrames[frameCount]:Hide()
+				else
+					font:Show()
+					textFrames[frameCount]:Show()
+				end
+			else
+				-- Clear stale text on disabled/hidden frames too
+				if font.SetText and font.GetFont and font:GetFont() then
+					font:SetText("")
+				end
+				textFrames[frameCount]:Hide()
+				font:Hide()
+			end
+			frameCount = frameCount + 1
+		end
+	end
+	
+	local textFramesEntries = #textFrames
+	-- We have extra frames we don't need now, probably because we changed talents/specs/deleted one in config. Hide extras.
+	if textFramesEntries >= frameCount then
+		for i = frameCount, textFramesEntries do
+			textFrames[i]:Hide()
+			---@diagnostic disable-next-line: undefined-field
+			local extraFont = textFrames[i].font
+			if extraFont and extraFont.GetFont and extraFont:GetFont() then
+				extraFont:SetText("")
+			end
+			extraFont:Hide()
+		end
+	end
+
+	-- All font strings were just cleared to ""; mark lookup dirty so the next tick
+	-- repaints instead of early-outing (otherwise text stays blank out of combat).
+	TRB.Data.lookupDirty = true
+end
+
+---Returns what a Cooldown Manager fed bar text variable renders when the CDM holds no value for it --
+---the ability was never added to a viewer, or its group is hidden. Distinct from a known zero: the value
+---is unavailable, not absent. The viewer picks the treatment in Global Options; the default is to render
+---nothing, so an untracked ability leaves no debris on the bar.
+---@param zeroText string? # How this variable renders a zero, used by the "zero" treatment. Callers pass
+---                          their own zero rendering so a timer reads "0.0" where a stack count reads "0".
+---@return string
+function TRB.Functions.BarText:UnknownValue(zeroText)
+	local display = TRB.Data.settings.core.cdmUnknownDisplay
+	if display == "questionMarks" then
+		return "??"
+	elseif display == "zero" then
+		return zeroText or "0"
+	end
+	return ""
+end
+
+---Returns a string formatted time value based on settings for precision
+---@param value number # Timer value to format
+---@param positiveOnly boolean? # Should the timer only ever show a positive number?
+---@return string # String formatted value with correct precision based on thresholds
+function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
+	if positiveOnly == nil then
+		positiveOnly = true
+	end
+
+	if issecretvalue(value) then
+		-- Secret values cannot be compared, but `string.format` is allowed on them
+		-- per the Secret Values rules and produces a secret string that still flows
+		-- through `FontString:SetText` for display. Skip the sign and threshold
+		-- checks (which would crash) and always render with low precision.
+		return string.format("%."..TRB.Data.settings.core.timers.precisionLow.."f", value)
+	end
+
+	if positiveOnly and value < 0 then
+		value = 0
+	end
+
+	if value >= TRB.Data.settings.core.timers.precisionThreshold then
+		return string.format("%."..TRB.Data.settings.core.timers.precisionHigh.."f", value)
+	else
+		return string.format("%."..TRB.Data.settings.core.timers.precisionLow.."f", value)
+	end
+end
+
+---Hides all bar text, except UIParent-bound ("Screen") entries which remain visible
+---at full opacity, independent of bar state.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+function TRB.Functions.BarText:Hide(settings)
+	local textFrames = TRB.Frames.textFrames
+	if settings ~= nil and settings.displayText ~= nil then
+		local barText = settings.displayText.barText
+		local entries = barText and #barText or 0
+		for i = 1, #textFrames do
+			-- UIParent-attached bar text stays visible even when bars are hidden
+			if i <= entries and barText[i] ~= nil
+				and barText[i].enabled
+				and barText[i].position.relativeToFrame == "UIParent"
+				and not TRB.Functions.Bar:IsRenderTransitionActive() then
+				textFrames[i]:Show()
+				---@diagnostic disable-next-line: undefined-field
+				textFrames[i].font:Show()
+				-- Screen-bound text is independent of the bar; always fully opaque
+				textFrames[i]:SetAlpha(1.0)
+			else
+				textFrames[i]:Hide()
+				---@diagnostic disable-next-line: undefined-field
+				textFrames[i].font:Hide()
+			end
+		end
+	else
+		for i = 1, #textFrames do
+			textFrames[i]:Hide()
+			---@diagnostic disable-next-line: undefined-field
+			textFrames[i].font:Hide()
+		end
+	end
+end
+
+---Shows all enabled bar text
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+function TRB.Functions.BarText:Show(settings)
+	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
+	---@type Frame[]
+	local textFrames = TRB.Frames.textFrames
+	local entries = #displayText.barText
+	if entries > 0 then
+		-- Per-call cache: entries sharing the same relativeToFrame skip redundant GetBarTextFrame calls
+		wipe(showFrameEnabled)
+		wipe(showFrameVisible)
+
+		local anyBecameVisible = false
+		local isTransition = TRB.Functions.Bar:IsRenderTransitionActive()
+		for i = 1, entries do
+			local e = displayText.barText[i]
+			local key = e.position.relativeToFrame
+			local isEnabled, isVisible
+			if showFrameEnabled[key] ~= nil then
+				isEnabled = showFrameEnabled[key]
+				isVisible = showFrameVisible[key]
+			else
+				_, isEnabled, isVisible = TRB.Functions.BarText:GetAnchorFrame(key)
+				if key == "UIParent" then
+					isVisible = true
+				end
+				showFrameEnabled[key] = isEnabled == true
+				showFrameVisible[key] = isVisible == true
+			end
+
+			if e.enabled and isEnabled and isVisible and textFrames[i] ~= nil then
+				if isTransition then
+					textFrames[i]:Hide()
+					---@diagnostic disable-next-line: undefined-field
+					textFrames[i].font:Hide()
+				else
+					-- Detect bar text frame transitioning from hidden to shown.
+					-- This catches cases where the bar was already "tracking"
+					-- (isTracking=true) but individual nodes were not yet visible
+					-- — e.g., after a layout rebuild from the options panel.
+					-- When such a frame becomes visible for the first time, its
+					-- text content is empty because UpdateResourceBarText skipped
+					-- it while isVisible was false.
+					if not textFrames[i]:IsShown() then
+						anyBecameVisible = true
+					end
+					textFrames[i]:Show()
+					---@diagnostic disable-next-line: undefined-field
+					textFrames[i].font:Show()
+					-- Screen-bound text is independent of the bar; always fully opaque
+					if key == "UIParent" then
+						textFrames[i]:SetAlpha(1.0)
+					end
+				end
+			elseif textFrames[i] ~= nil then
+				textFrames[i]:Hide()
+				---@diagnostic disable-next-line: undefined-field
+				textFrames[i].font:Hide()
+			end
+		end
+
+		-- If any text frame just became visible (was hidden, now shown), force a
+		-- full bar text refresh so that UpdateResourceBarText populates content
+		-- into the newly-visible frames. Without this, the text stays empty
+		-- because the early-out / per-entry skip wrote frameCache.text = "" when
+		-- the frame was hidden, and no flag was set to reprocess it.
+		if anyBecameVisible and not isTransition then
+			self:InvalidateLookupMemoization()
+			TRB.Data.barTextVisibilityRefreshNeeded = true
+		end
+	end
+end

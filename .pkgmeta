@@ -1,0 +1,28 @@
+# BigWigs packager metadata for the MAINLINE flavor; .pkgmeta-forever is the Forever counterpart.
+# The packager reads the TOC at the repository root, so .github/workflows/release.yml copies the Forever
+# TOC into place before running with -m .pkgmeta-forever. CHANGELOG.md is generated from the flavor's
+# News.lua by the workflow; it is read from the repository root and never shipped in the zip.
+package-as: TwintopInsanityBar
+
+enable-nolib-creation: no
+
+manual-changelog:
+    filename: CHANGELOG.md
+    markup-type: markdown
+
+ignore:
+    - Flavors/Forever
+    - CHANGELOG.md
+    - build
+    - dist
+    - docs
+    - memories
+    - .github
+    - .vscode
+    - .VSCodeCounter
+    - .patches
+    - .luarc.json
+    - .pkgmeta
+    - .pkgmeta-forever
+    - TwintopInsanityBar.wowproj
+    - TwintopInsanityBar.wowsln

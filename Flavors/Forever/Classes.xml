@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<!-- Forever flavor: the class template (spell sets, bar group factories, spec descriptors) and one definition file per class. Loads for every class. -->
+	<Script file="ClassModules\Templates\Archetypes.lua"/>
+	<Script file="ClassModules\Classes\WarriorClasses.lua"/>
+	<Script file="ClassModules\Classes\PaladinClasses.lua"/>
+	<Script file="ClassModules\Classes\HunterClasses.lua"/>
+	<Script file="ClassModules\Classes\RogueClasses.lua"/>
+	<Script file="ClassModules\Classes\PriestClasses.lua"/>
+	<Script file="ClassModules\Classes\ShamanClasses.lua"/>
+	<Script file="ClassModules\Classes\MageClasses.lua"/>
+	<Script file="ClassModules\Classes\WarlockClasses.lua"/>
+	<Script file="ClassModules\Classes\DruidClasses.lua"/>
+</Ui>
