@@ -3,7 +3,7 @@ local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
 --[[
-	Castbar: player cast/channel/empower state model for the castbar bar type.
+	Castbar: cast/channel/empower state model for the player's and the pet's cast bars, one instance per unit.
 	Holds the currently-active cast timeline in Lua-known times (GetTime based), a cached
 	lookup of the casting spell's data, computed channel tick fractions (with chaining carry),
 	and empower stage boundaries. It is presentation-agnostic: Functions/Castbar.lua renders it.
@@ -33,6 +33,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public fraction number # Position along the bar, 0 (start) .. 1 (end)
 
 ---@class TRB.Classes.Castbar
+---@field public unit string # The unit whose casts this tracks: "player" or "pet"
 ---@field public state trbCastbarState
 ---@field public spellId integer?
 ---@field public spell TRB.Classes.CastbarSpell?
@@ -75,8 +76,9 @@ local spellCache = {}
 
 -- Chaining carry: when a chainable channel ends mid-tick, the leftover phase (and the channel's tick rate)
 -- is stored here so the next channel of the same spell can place its first tick at the rescaled remainder.
----@type { spellId: integer, phaseRemaining: number, oldTickRate: number, oldHaste: number, expireTime: number }?
-local chainCarry = nil
+-- Keyed by unit, so one unit's channel never picks up another's carry.
+---@type table<string, { spellId: integer, phaseRemaining: number, oldTickRate: number, oldHaste: number, expireTime: number }>
+local chainCarries = {}
 
 -- Grace window (seconds) during which a channel-end carry remains valid for the next channel.
 local CHAIN_CARRY_GRACE = 1.0
@@ -88,7 +90,7 @@ local TRADESKILL_RESUME_GRACE = 1.0
 -- Craft-boundary tick lines get unreadably dense on large queues; skip drawing them past this count.
 local TRADESKILL_MAX_TICKS = 40
 
----Banks the leftover tick phase of the model's active chainable channel into chainCarry so the next
+---Banks the leftover tick phase of the model's active chainable channel into chainCarries so the next
 ---channel of the same spell (within the grace window) starts with the carried partial tick. Anchored to
 ---the channel's first-tick offset, which itself may have been carried in (chain of chains).
 ---@param model TRB.Classes.Castbar
@@ -110,7 +112,7 @@ local function StoreChainCarry(model)
 	if remaining <= 0 or remaining >= model.tickInterval then
 		return
 	end
-	chainCarry = {
+	chainCarries[model.unit] = {
 		spellId = model.spellId,
 		phaseRemaining = remaining,
 		oldTickRate = model.tickInterval,
@@ -120,12 +122,23 @@ local function StoreChainCarry(model)
 end
 
 ---Creates a new Castbar model
+---@param unit string # "player" or "pet"
 ---@return TRB.Classes.Castbar
-function TRB.Classes.Castbar:New()
+function TRB.Classes.Castbar:New(unit)
 	local self = {}
 	setmetatable(self, TRB.Classes.Castbar)
+	self.unit = unit
 	self:Reset()
 	return self
+end
+
+---The latency to mark at the end of this unit's casts: the player's own network delay, and none for a pet.
+---@return number
+function TRB.Classes.Castbar:GetStartLatency()
+	if self.unit ~= "player" then
+		return 0
+	end
+	return TRB.Data.character and TRB.Data.character.latency or 0
 end
 
 ---Resets the model to the idle (nothing casting) state
@@ -232,12 +245,12 @@ function TRB.Classes.Castbar:RefreshDurationObject()
 	if not self.reconstructed and not self.tradeskill then
 		local liveObject
 		if self.state == "cast" then
-			liveObject = UnitCastingDuration and UnitCastingDuration("player") or nil
+			liveObject = UnitCastingDuration and UnitCastingDuration(self.unit) or nil
 		elseif self.state == "channel" then
-			liveObject = UnitChannelDuration and UnitChannelDuration("player") or nil
+			liveObject = UnitChannelDuration and UnitChannelDuration(self.unit) or nil
 		elseif self.state == "empower" then
-			liveObject = (UnitEmpoweredChannelDuration and UnitEmpoweredChannelDuration("player"))
-				or (UnitChannelDuration and UnitChannelDuration("player")) or nil
+			liveObject = (UnitEmpoweredChannelDuration and UnitEmpoweredChannelDuration(self.unit))
+				or (UnitChannelDuration and UnitChannelDuration(self.unit)) or nil
 		end
 		if liveObject ~= nil then
 			self.durationObject = liveObject
@@ -277,10 +290,11 @@ local function FallbackDisplayName(spell)
 	return name:match("^(.-) %- ") or name
 end
 
----Reads player cast timing from UnitCastingInfo, returning seconds. Values may be secret.
+---Reads a unit's cast timing from UnitCastingInfo, returning seconds. Values may be secret.
+---@param unit string
 ---@return integer? spellId, number? startTime, number? endTime, boolean notInterruptible, any texture, string? displayName
-local function ReadCastingInfo()
-	local _, text, texture, startMS, endMS, _, _, notInterruptible, spellId = UnitCastingInfo("player")
+local function ReadCastingInfo(unit)
+	local _, text, texture, startMS, endMS, _, _, notInterruptible, spellId = UnitCastingInfo(unit)
 	if spellId == nil then
 		return nil, nil, nil, false, nil, nil
 	end
@@ -292,10 +306,11 @@ local function ReadCastingInfo()
 	return spellId, startTime, endTime, notInterruptible == true, texture, ReadableDisplayName(text)
 end
 
----Reads player channel/empower timing from UnitChannelInfo, returning seconds. Values may be secret.
+---Reads a unit's channel/empower timing from UnitChannelInfo, returning seconds. Values may be secret.
+---@param unit string
 ---@return integer? spellId, number? startTime, number? endTime, boolean notInterruptible, boolean isEmpowered, integer numStages, any texture, string? displayName
-local function ReadChannelInfo()
-	local _, text, texture, startMS, endMS, _, notInterruptible, spellId, isEmpowered, numStages = UnitChannelInfo("player")
+local function ReadChannelInfo(unit)
+	local _, text, texture, startMS, endMS, _, notInterruptible, spellId, isEmpowered, numStages = UnitChannelInfo(unit)
 	local startTime, endTime
 	if startMS ~= nil and endMS ~= nil and not issecretvalue(startMS) and not issecretvalue(endMS) then
 		startTime = startMS / 1000
@@ -311,7 +326,7 @@ end
 ---Begins tracking a standard cast. Reads real timing from UnitCastingInfo when available.
 ---@param spellId integer? # Spell id from the event (authoritative name/icon source)
 function TRB.Classes.Castbar:StartCast(spellId)
-	local infoSpellId, startTime, endTime, notInterruptible, texture, displayName = ReadCastingInfo()
+	local infoSpellId, startTime, endTime, notInterruptible, texture, displayName = ReadCastingInfo(self.unit)
 	local resolvedId = spellId
 	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
 		resolvedId = infoSpellId
@@ -324,7 +339,7 @@ function TRB.Classes.Castbar:StartCast(spellId)
 	self.displayName = displayName or FallbackDisplayName(self.spell)
 	self.castTexture = texture
 	self.notInterruptible = notInterruptible
-	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
+	self.latency = self:GetStartLatency()
 
 	local now = GetTime()
 	if startTime ~= nil and endTime ~= nil and endTime > startTime then
@@ -346,7 +361,7 @@ end
 ---@param spellId integer? # Channel spell id resolved by the caller (may be nil if secret)
 ---@param profile table? # Resolved tick profile { mode, baseDuration, tickCount?, baseTickRate?, firstTickAtStart?, chains? }; kept on the model so recomputes don't re-evaluate conditional bonuses
 function TRB.Classes.Castbar:StartChannel(spellId, profile)
-	local infoSpellId, startTime, endTime, notInterruptible, _, _, texture, displayName = ReadChannelInfo()
+	local infoSpellId, startTime, endTime, notInterruptible, _, _, texture, displayName = ReadChannelInfo(self.unit)
 	local resolvedId = spellId
 	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
 		resolvedId = (not issecretvalue(infoSpellId)) and infoSpellId or nil
@@ -363,19 +378,20 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	self.displayName = displayName or FallbackDisplayName(self.spell)
 	self.castTexture = texture
 	self.notInterruptible = notInterruptible
-	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
+	self.latency = self:GetStartLatency()
 	self.chains = (profile ~= nil and profile.chains) == true
 	self.profile = profile
 
 	-- Consume a pending carry (same spell, within grace): the leftover until the previous channel's next
 	-- tick lengthens this channel by one tick (see the duration adjustment below).
+	local chainCarry = chainCarries[self.unit]
 	if self.chains and chainCarry ~= nil and self.spellId ~= nil
 		and chainCarry.spellId == self.spellId and GetTime() <= chainCarry.expireTime then
 		self.chainCarry = chainCarry.phaseRemaining
 		self.chainOldRate = chainCarry.oldTickRate
 		self.chainOldHaste = chainCarry.oldHaste
 	end
-	chainCarry = nil
+	chainCarries[self.unit] = nil
 
 	local now = GetTime()
 	local haste = self:GetHasteMultiplier()
@@ -583,7 +599,7 @@ end
 ---@param spellId integer? # Recipe cast spell id from the event
 ---@param count integer # Number of crafts queued (> 1)
 function TRB.Classes.Castbar:StartTradeskill(spellId, count)
-	local infoSpellId, startTime, endTime, notInterruptible, texture = ReadCastingInfo()
+	local infoSpellId, startTime, endTime, notInterruptible, texture = ReadCastingInfo(self.unit)
 	local resolvedId = spellId
 	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
 		resolvedId = infoSpellId
@@ -595,7 +611,7 @@ function TRB.Classes.Castbar:StartTradeskill(spellId, count)
 	self.spell = self:GetSpellData(self.spellId)
 	self.castTexture = texture
 	self.notInterruptible = notInterruptible
-	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
+	self.latency = self:GetStartLatency()
 	self.tradeskill = true
 	self.tradeskillTotal = count
 	self.tradeskillRemaining = count
@@ -680,7 +696,7 @@ end
 ---secret values), computing cumulative stage boundary fractions for threshold placement.
 ---@param spellId integer?
 function TRB.Classes.Castbar:StartEmpower(spellId)
-	local infoSpellId, startTime, endTime, notInterruptible, _, numStages, texture = ReadChannelInfo()
+	local infoSpellId, startTime, endTime, notInterruptible, _, numStages, texture = ReadChannelInfo(self.unit)
 	local resolvedId = spellId
 	if resolvedId == nil or resolvedId == 0 or issecretvalue(resolvedId) then
 		resolvedId = (not issecretvalue(infoSpellId)) and infoSpellId or nil
@@ -692,7 +708,7 @@ function TRB.Classes.Castbar:StartEmpower(spellId)
 	self.spell = self:GetSpellData(self.spellId)
 	self.castTexture = texture
 	self.notInterruptible = notInterruptible
-	self.latency = TRB.Data.character and TRB.Data.character.latency or 0
+	self.latency = self:GetStartLatency()
 
 	local now = GetTime()
 	if startTime ~= nil and endTime ~= nil and endTime > startTime then
@@ -713,7 +729,7 @@ function TRB.Classes.Castbar:StartEmpower(spellId)
 	self.empowerChargeDuration = self.endTime - self.startTime
 	local hold = 0
 	if GetUnitEmpowerHoldAtMaxTime then
-		local h = GetUnitEmpowerHoldAtMaxTime("player")
+		local h = GetUnitEmpowerHoldAtMaxTime(self.unit)
 		if type(h) == "number" and not issecretvalue(h) and h > 0 then
 			hold = h / 1000
 		end
@@ -749,7 +765,7 @@ function TRB.Classes.Castbar:ComputeEmpowerStages()
 	local ok = true
 	local fractions = {}
 	for i = 0, numStages - 1 do
-		local d = GetUnitEmpowerStageDuration("player", i)
+		local d = GetUnitEmpowerStageDuration(self.unit, i)
 		if d == nil or issecretvalue(d) or type(d) ~= "number" or d < 0 then
 			ok = false
 			break
@@ -776,7 +792,7 @@ function TRB.Classes.Castbar:Delayed()
 	if self.state ~= "cast" then
 		return
 	end
-	local _, startTime, endTime = ReadCastingInfo()
+	local _, startTime, endTime = ReadCastingInfo(self.unit)
 	if startTime ~= nil and endTime ~= nil and endTime > startTime then
 		if self.endTime then
 			local delta = endTime - self.endTime
@@ -798,7 +814,7 @@ function TRB.Classes.Castbar:ChannelUpdate()
 	if self.state ~= "channel" or self.tradeskill then
 		return
 	end
-	local _, startTime, endTime = ReadChannelInfo()
+	local _, startTime, endTime = ReadChannelInfo(self.unit)
 	if startTime ~= nil and endTime ~= nil and endTime > startTime then
 		self.startTime = startTime
 		self.endTime = endTime

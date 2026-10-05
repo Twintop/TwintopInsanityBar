@@ -988,6 +988,7 @@ local function UpdateResourceBar()
 			refreshText = true
 			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 		end
+		refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.marksmanship
@@ -1099,6 +1100,7 @@ local function UpdateResourceBar()
 			refreshText = true
 			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 		end
+		refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.survival
@@ -1313,6 +1315,7 @@ local function UpdateResourceBar()
 			refreshText = true
 			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 		end
+		refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end
@@ -1574,6 +1577,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, TRB.Data.character.maxResource2, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
 		}
+		TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
 			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)

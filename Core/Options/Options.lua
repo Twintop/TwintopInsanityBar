@@ -729,7 +729,7 @@ local function ConstructCastbarOptionsPanel()
 			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, nil, nil, "focusCastbar")
 		end, visibilityKey = "focusCastbar" },
 		{ "pet", L["ResourcePetCastbar"], oUi.tabWidth.small, function(scrollChild)
-			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, nil, nil, "petCastbar")
+			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, nil, nil, false, "petCastbar")
 		end, visibilityKey = "petCastbar" },
 	}
 
@@ -778,9 +778,8 @@ local function ConstructOtherBarsOptionsPanel()
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "OtherBars", tabDefinitions, -37)
 end
 
----Constructs the top-level Pet Bars options panel: global (core-scope) settings for the Pet Resource and
----Pet Health bars, in a tabbed screen like the Other Bars one. The Pet Cast Bar is configured under Cast
----Bars instead, beside the Player/Target/Focus ones.
+---Constructs the top-level Pet Bars panel: global settings for the Pet Resource and Pet Health bars, tabbed
+---like Other Bars. The Pet Cast Bar is configured under Cast Bars instead.
 local function ConstructPetBarsOptionsPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.core or {}

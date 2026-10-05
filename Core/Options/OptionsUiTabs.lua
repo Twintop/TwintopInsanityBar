@@ -357,7 +357,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(parent, classId,
 	-- Pet joins the strip only on the specs that can hold one.
 	if TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId) then
 		innerTabs[#innerTabs + 1] = { "pet", TRB.Localization["ResourcePetCastbar"], oUi.tabWidth.small, function(scrollChild)
-			TRB.Functions.OptionsUi.TargetCastbar:ConstructPanel(scrollChild, classId, specId, "petCastbar")
+			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, classId, specId, false, "petCastbar")
 		end, visibilityKey = "petCastbar" }
 	end
 	-- The synthesized namePrefix never matches the castbar spec map, so the scope is passed explicitly.

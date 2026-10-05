@@ -475,7 +475,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildSectionCover(parent, topY, bott
 end
 
 local CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B = 1.0, 0.24, 0.24
-local GLOBAL_BADGE_R, GLOBAL_BADGE_G, GLOBAL_BADGE_B = 100/255, 225/255, 200/255
 
 ---Builds a short coloured badge that explains itself on hover.
 ---@param parent Frame
@@ -598,8 +597,8 @@ function TRB.Functions.OptionsUi.Primitives:AttachGlobalBadgeToText(fontString, 
 	if cdmBadge ~= nil and cdmBadge:IsShown() then
 		padding = padding + cdmBadge:GetWidth() + 6
 	end
-	return AttachBadge(fontString, "global", shown, L["UseGlobalBadgeLabel"], L["UseGlobalBadgeHeader"], tooltip,
-		GLOBAL_BADGE_R, GLOBAL_BADGE_G, GLOBAL_BADGE_B, padding)
+	local r, g, b = TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor()
+	return AttachBadge(fontString, "global", shown, L["UseGlobalBadgeLabel"], L["UseGlobalBadgeHeader"], tooltip, r, g, b, padding)
 end
 
 ---Creates a two-part help entry: a right-aligned variable name and a left-aligned description below it.

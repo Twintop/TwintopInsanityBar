@@ -1552,6 +1552,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Soul Shard threshold audio cues (independent of bar visibility)
@@ -1634,6 +1635,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Soul Shard threshold audio cues (independent of bar visibility)
@@ -1698,6 +1700,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Soul Shard threshold audio cues (independent of bar visibility)
@@ -1953,6 +1956,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, true, TRB.Data.character.maxResource2, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
 		}
+		TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
 			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)

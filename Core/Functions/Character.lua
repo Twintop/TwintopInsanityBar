@@ -265,87 +265,66 @@ function TRB.Functions.Character:UpdateHealthValues()
 		return
 	end
 
-	-- Build a composite cache key from the settings that feed into the curve.
-	-- The curve object itself is normal (non-secret); only the evaluation result is secret.
-	-- Caching the curve avoids ~4 C-side object allocations per health event.
-	local highColor = (healthBarSettings.high and healthBarSettings.high.color) or ""
-	local highThreshold = (healthBarSettings.high and healthBarSettings.high.threshold) or 0.7
-	local lowColor = (healthBarSettings.low and healthBarSettings.low.color) or ""
-	local lowThreshold = (healthBarSettings.low and healthBarSettings.low.threshold) or 0.0
-	local medColor = (healthBarSettings.medium and healthBarSettings.medium.color) or ""
-	local medThreshold = (healthBarSettings.medium and healthBarSettings.medium.threshold) or 0.3
-	local curveTypeStr = healthBarSettings.type or ""
-	-- "classColor" paints a single flat color pulled from the player's class rather than the threshold colors
-	local classColor = ""
-	if curveTypeStr == "classColor" then
-		classColor = TRB.Functions.Color:GetPlayerClassColor() or ""
-	end
-	local cacheKey = highColor .. highThreshold .. lowColor .. lowThreshold .. medColor .. medThreshold .. curveTypeStr .. classColor
-
-	local cache = TRB.Data.cache
-	if cache.healthCurve == nil or cache.healthCurveKey ~= cacheKey then
-		-- Rebuild the curve — settings have changed
-		---@type integer?
-		local curveType = Enum.LuaCurveType.Step
-
-		local highR, highG, highB, highA = 0, 1, 0, 1
-		if classColor ~= "" then
-			-- Class color stands in for the high health color and takes the flat single-point path below
-			highR, highG, highB, highA = TRB.Functions.Color:GetRGBAFromString(classColor, true)
-		elseif healthBarSettings.high and healthBarSettings.high.color then
-			highR, highG, highB, highA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.high.color, true)
-		end
-
-		if healthBarSettings.type == "linear" then
-			curveType = Enum.LuaCurveType.Linear
-		elseif healthBarSettings.type == "step" then
-			curveType = Enum.LuaCurveType.Step
-		else
-			curveType = nil
-		end
-
-		local curve = C_CurveUtil.CreateColorCurve()
-
-		if curveType == nil then
-			curve:SetType(Enum.LuaCurveType.Step)
-			curve:AddPoint(0, CreateColor(highR, highG, highB, highA))
-		else
-			local lowR, lowG, lowB, lowA = 1, 0, 0, 1
-			local mediumR, mediumG, mediumB, mediumA = 1, 1, 0, 1
-
-			if healthBarSettings.low and healthBarSettings.low.color then
-				lowR, lowG, lowB, lowA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.low.color, true)
-			end
-			if healthBarSettings.medium and healthBarSettings.medium.color then
-				mediumR, mediumG, mediumB, mediumA = TRB.Functions.Color:GetRGBAFromString(healthBarSettings.medium.color, true)
-			end
-
-			local adjMedThreshold = medThreshold
-			if adjMedThreshold >= highThreshold then
-				adjMedThreshold = highThreshold - 0.000001
-			end
-
-			local adjLowThreshold = lowThreshold
-			if adjLowThreshold >= adjMedThreshold then
-				adjLowThreshold = adjMedThreshold - 0.000001
-			end
-
-			curve:SetType(curveType)
-			curve:AddPoint(adjLowThreshold, CreateColor(lowR, lowG, lowB, lowA))
-			curve:AddPoint(adjMedThreshold, CreateColor(mediumR, mediumG, mediumB, mediumA))
-			curve:AddPoint(highThreshold, CreateColor(highR, highG, highB, highA))
-		end
-
-		cache.healthCurve = curve
-		cache.healthCurveKey = cacheKey
-	end
-
 	-- Evaluate the cached curve — the result is a secret ColorMixin
-	snapshotData.attributes.healthColor = UnitHealthPercent("player", true, cache.healthCurve)
+	snapshotData.attributes.healthColor = UnitHealthPercent("player", true, TRB.Functions.Color:GetHealthColorCurve(healthBarSettings))
 
 	-- If any bar has a resource/health threshold curve, mark visibility dirty so
 	-- ProcessBars re-evaluates on the next tick.
 	if TRB.Functions.BarVisibility.hasResourceCurve then
+		TRB.Functions.BarVisibility:MarkDirty()
+	end
+end
+
+---Reads the pet's state, name, health, and power into snapshotData.attributes, as UpdateHealthValues does
+---for the player. A spec without a pet always reads as having none.
+function TRB.Functions.Character:UpdatePetValues()
+	local attributes = TRB.Data.snapshotData.attributes
+	local character = TRB.Data.character
+	local previousState = attributes.petState
+	local state = "none"
+	if TRB.Classes.BarTypeRegistry:SpecHasPet(character.classId, character.specId) and UnitExists("pet") then
+		state = UnitIsDead("pet") and "dead" or "alive"
+	end
+	attributes.petState = state
+
+	attributes.petName = nil
+	attributes.petHealth = nil
+	attributes.petHealthMax = nil
+	attributes.petHealthPercent = nil
+	attributes.petHealthColor = nil
+	attributes.petPowerType = nil
+	attributes.petPowerToken = nil
+	attributes.petPowerName = nil
+	attributes.petPower = nil
+	attributes.petPowerMax = nil
+	attributes.petPowerPercent = nil
+
+	if state ~= "none" then
+		attributes.petName = UnitName("pet")
+		attributes.petHealth = UnitHealth("pet", true)
+		attributes.petHealthMax = UnitHealthMax("pet")
+		attributes.petHealthPercent = UnitHealthPercent("pet", true, CurveConstants.ScaleTo100)
+		local specCache = TRB.Data.specCache[character.compositeKey]
+		local colorBars = specCache and specCache.settings and specCache.settings.colors and specCache.settings.colors.bars
+		if colorBars ~= nil and colorBars.petHealth ~= nil then
+			attributes.petHealthColor = UnitHealthPercent("pet", true, TRB.Functions.Color:GetHealthColorCurve(colorBars.petHealth))
+		end
+
+		local powerType, powerToken = UnitPowerType("pet")
+		local maxPower = powerType ~= nil and UnitPowerMax("pet", powerType) or nil
+		-- A secret maximum can't be compared, so it counts as a resource.
+		if maxPower ~= nil and (issecretvalue(maxPower) or maxPower > 0) then
+			attributes.petPowerType = powerType
+			attributes.petPowerToken = powerToken
+			-- The power token doubles as the key of Blizzard's own localized global string ("FOCUS", "MANA").
+			attributes.petPowerName = powerToken ~= nil and _G[powerToken] or nil
+			attributes.petPower = UnitPower("pet", powerType)
+			attributes.petPowerMax = maxPower
+			attributes.petPowerPercent = UnitPowerPercent("pet", powerType, true, CurveConstants.ScaleTo100)
+		end
+	end
+
+	if state ~= previousState or TRB.Functions.BarVisibility.hasResourceCurve then
 		TRB.Functions.BarVisibility:MarkDirty()
 	end
 end
@@ -451,6 +430,9 @@ local function CharacterChange(self, event, ...)
 				TRB.Functions.BarVisibility:MarkDirty()
 			end
 			TRB.Data.lookupDirty = true
+		elseif unitTarget == "pet" then
+			TRB.Functions.Character:UpdatePetValues()
+			TRB.Data.lookupDirty = true
 		end
 	elseif event == "SPELL_UPDATE_USABLE" then
 		TRB.Classes.SpellBase.InvalidateSpellUsable()
@@ -459,7 +441,13 @@ local function CharacterChange(self, event, ...)
 		if unitTarget == "player" then
 			TRB.Functions.Character:UpdateHealthValues()
 			TRB.Data.lookupDirty = true
+		elseif unitTarget == "pet" then
+			TRB.Functions.Character:UpdatePetValues()
+			TRB.Data.lookupDirty = true
 		end
+	elseif event == "UNIT_PET" or event == "UNIT_DISPLAYPOWER" then
+		TRB.Functions.Character:UpdatePetValues()
+		TRB.Data.lookupDirty = true
 	elseif TRB.Data.statEventBuckets[event] ~= nil then
 		-- Unit events are registered for the player only, so no unit filter is needed here.
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -523,6 +511,7 @@ local function CharacterChange(self, event, ...)
 		local _, instanceType = GetInstanceInfo()
 		TRB.Data.character.instanceType = instanceType or "none"
 		TRB.Functions.Character:CheckCharacter()
+		TRB.Functions.Character:UpdatePetValues()
 		TRB.Functions.BarVisibility:MarkDirty()
 		TRB.Data.lookupDirty = true
 	elseif event == "GROUP_ROSTER_UPDATE" then
@@ -573,11 +562,23 @@ end
 
 ---Registers all character-change events (power updates, health, stats, mounting, zone changes, etc.) on the characterChangeFrame.
 function TRB.Functions.Character:EnableCharacterChange()
-	characterChangeFrame:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
+	-- Runs on every spec change, so re-registering replaces the last spec's unit filters.
+	if TRB.Classes.BarTypeRegistry:SpecHasPet(TRB.Data.character.classId, TRB.Data.character.specId) then
+		characterChangeFrame:RegisterUnitEvent("UNIT_POWER_UPDATE", "player", "pet")
+		characterChangeFrame:RegisterUnitEvent("UNIT_MAXPOWER", "player", "pet")
+		characterChangeFrame:RegisterUnitEvent("UNIT_HEALTH", "player", "pet")
+		characterChangeFrame:RegisterUnitEvent("UNIT_MAXHEALTH", "player", "pet")
+		characterChangeFrame:RegisterUnitEvent("UNIT_DISPLAYPOWER", "pet")
+		characterChangeFrame:RegisterUnitEvent("UNIT_PET", "player")
+	else
+		characterChangeFrame:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
+		characterChangeFrame:RegisterUnitEvent("UNIT_MAXPOWER", "player")
+		characterChangeFrame:RegisterUnitEvent("UNIT_HEALTH", "player")
+		characterChangeFrame:RegisterUnitEvent("UNIT_MAXHEALTH", "player")
+		characterChangeFrame:UnregisterEvent("UNIT_DISPLAYPOWER")
+		characterChangeFrame:UnregisterEvent("UNIT_PET")
+	end
 	characterChangeFrame:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
-	characterChangeFrame:RegisterUnitEvent("UNIT_MAXPOWER", "player")
-	characterChangeFrame:RegisterUnitEvent("UNIT_HEALTH", "player")
-	characterChangeFrame:RegisterUnitEvent("UNIT_MAXHEALTH", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", "player")
@@ -617,6 +618,8 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_MAXPOWER")
 	characterChangeFrame:UnregisterEvent("UNIT_HEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_MAXHEALTH")
+	characterChangeFrame:UnregisterEvent("UNIT_DISPLAYPOWER")
+	characterChangeFrame:UnregisterEvent("UNIT_PET")
 	characterChangeFrame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
 	characterChangeFrame:UnregisterEvent("UNIT_HEAL_PREDICTION")
 	characterChangeFrame:UnregisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
@@ -1235,6 +1238,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	-- The single point where a spec's composed settings become active (login, spec switch, talent
 	-- change). Pass them directly: compositeKey isn't stamped yet on first login.
 	TRB.Functions.Castbar:SyncEnabledState(cache.settings)
+	TRB.Functions.PetCastbar:SyncEnabledState(cache.settings)
 end
 
 ---Clears all cached color data (border, bar, backdrop, health curve, absorb border curve) and resets the RGBA parse memoization.
@@ -1243,9 +1247,8 @@ function TRB.Functions.Character:ResetColorCaches()
 	wipe(TRB.Data.cache.colors.bar)
 	wipe(TRB.Data.cache.colors.backdrop)
 	wipe(TRB.Data.cache.colors.gradient)
-	-- Invalidate cached health color curve so it rebuilds from fresh settings
-	TRB.Data.cache.healthCurve = nil
-	TRB.Data.cache.healthCurveKey = nil
+	-- Invalidate cached health color curves so they rebuild from fresh settings
+	TRB.Data.cache.healthCurves = nil
 	-- Clear RGBA parse memoization to bound memory
 	TRB.Functions.Color:ClearRGBACache()
 end 
@@ -1372,8 +1375,11 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	local globalBarTextCount = 0
 	if s.globalBarText and core.displayText and core.displayText.barText and #core.displayText.barText > 0 then
 		mergedBarText = {}
+		local registryEntry = TRB.Functions.Character:GetSpecRegistryEntry(compositeKey)
 		for _, entry in ipairs(core.displayText.barText) do
-			mergedBarText[#mergedBarText + 1] = entry
+			if registryEntry == nil or TRB.Functions.BarText:IsEntryInScope(entry, registryEntry.classId, registryEntry.specId) then
+				mergedBarText[#mergedBarText + 1] = entry
+			end
 		end
 		globalBarTextCount = #mergedBarText
 		for _, entry in ipairs(spec.displayText.barText) do
@@ -1612,10 +1618,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
-	-- Target/Focus/Pet cast bars mirror the player cast bar's per-section "Use Global" flags: Dimensions
+	-- Target/Focus cast bars mirror the player cast bar's per-section "Use Global" flags: Dimensions
 	-- (position/size/icon), Colors (fill/interrupt/border/background), and Empower (empower fill color +
 	-- stage lines). Layers onto the current cache tables so it composes with the castbar merge above.
-	for _, unitKey in ipairs({ "targetCastbar", "focusCastbar", "petCastbar" }) do
+	for _, unitKey in ipairs({ "targetCastbar", "focusCastbar" }) do
 		local coreBar = core.bars and core.bars[unitKey]
 		local currentBars = specCache.settings.bars
 		local specBar = currentBars and currentBars[unitKey]
@@ -1677,6 +1683,51 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			end
 			specCache.settings.colors.bars = OverlayOn(currentColorBars, { [unitKey] = OverlayOn(specColors, colorOverrides) })
 		end
+	end
+
+	-- The Pet Cast Bar takes the player cast bar's sections, less the ones only the player's casts have.
+	local corePetBar = core.bars and core.bars.petCastbar
+	local petBars = specCache.settings.bars
+	local specPetBar = petBars and petBars.petCastbar
+	if corePetBar and specPetBar and (s.petCastbarDimensions or s.petCastbarShield or s.petCastbarText) then
+		local barOverrides = {}
+		if s.petCastbarDimensions then
+			barOverrides.width = corePetBar.width
+			barOverrides.height = corePetBar.height
+			barOverrides.border = corePetBar.border
+			barOverrides.xPos = corePetBar.xPos
+			barOverrides.yPos = corePetBar.yPos
+			barOverrides.anchor = corePetBar.anchor
+			barOverrides.fillDirection = corePetBar.fillDirection
+			barOverrides.icon = corePetBar.icon
+		end
+		if s.petCastbarShield then
+			barOverrides.uninterruptibleShield = corePetBar.uninterruptibleShield
+		end
+		if s.petCastbarText then
+			barOverrides.castTimePrecision = corePetBar.castTimePrecision
+			barOverrides.durationPrecision = corePetBar.durationPrecision
+		end
+		specCache.settings.bars = OverlayOn(petBars, { petCastbar = OverlayOn(specPetBar, barOverrides) })
+	end
+	local corePetColors = core.colors and core.colors.bars and core.colors.bars.petCastbar
+	local petColorBars = specCache.settings.colors.bars
+	local specPetColors = petColorBars and petColorBars.petCastbar
+	if corePetColors and specPetColors and (s.petCastbarColors or s.petCastbarOverlays) then
+		local colorOverrides = {}
+		if s.petCastbarColors then
+			colorOverrides.bar = corePetColors.bar
+			colorOverrides.channel = corePetColors.channel
+			colorOverrides.uninterruptible = corePetColors.uninterruptible
+			colorOverrides.uninterruptibleBorder = corePetColors.uninterruptibleBorder
+			colorOverrides.border = corePetColors.border
+			colorOverrides.background = corePetColors.background
+			colorOverrides.endCap = corePetColors.endCap
+		end
+		if s.petCastbarOverlays then
+			colorOverrides.pushback = corePetColors.pushback
+		end
+		specCache.settings.colors.bars = OverlayOn(petColorBars, { petCastbar = OverlayOn(specPetColors, colorOverrides) })
 	end
 
 	-- Other Bars (GCD + the mirror timers) get the same treatment with two sections each: Dimensions
@@ -1792,6 +1843,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	-- settings, which only become valid/refreshed here (initial login fill lands after PLAYER_ENTERING_WORLD).
 	if TRB.Functions.Class:GetActiveDisplayCompositeKey() == compositeKey then
 		TRB.Functions.Castbar:SyncEnabledState()
+		TRB.Functions.PetCastbar:SyncEnabledState()
 	end
 end
 
@@ -2060,6 +2112,7 @@ function TRB.Functions.Character:EventRegistration()
 		end
 		TRB.Functions.Character:UpdateResourceValues()
 		TRB.Functions.Character:UpdateHealthValues()
+		TRB.Functions.Character:UpdatePetValues()
 		TRB.Functions.Class:CheckCharacter()
 		combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 		combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -2072,8 +2125,8 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.CooldownManager:Enable()
 		TRB.Functions.SpellCast:EnableSpellCast()
 		TRB.Functions.TargetCastbar:Enable()
+		TRB.Functions.PetCastbar:Enable()
 		TRB.Functions.OtherBars:Enable()
-		TRB.Functions.PetBars:Enable()
 		TRB.Functions.Character:EnableCharacterChange()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
@@ -2121,6 +2174,7 @@ function TRB.Functions.Character:EventRegistration()
 		combatFrame:UnregisterEvent("PLAYER_ALIVE")
 		TRB.Functions.Aura:DisableUnitAura()
 		TRB.Functions.SpellCast:DisableSpellCast()
+		TRB.Functions.PetCastbar:Disable()
 		TRB.Functions.Character:DisableCharacterChange()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Details.addonData.registered = false

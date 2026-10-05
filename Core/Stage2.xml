@@ -23,7 +23,6 @@
 	<Script file="Functions\Castbar.lua"/>
 	<Script file="Functions\TargetCastbar.lua"/>
 	<Script file="Functions\OtherBars.lua"/>
-	<Script file="Functions\PetBars.lua"/>
 	<Script file="Functions\String.lua"/>
 	<Script file="Functions\Talent.lua"/>
 	<Script file="Functions\Threshold.lua"/>

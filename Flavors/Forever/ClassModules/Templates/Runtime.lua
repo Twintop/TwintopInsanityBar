@@ -404,6 +404,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		if spec.archetype.secondary ~= nil then
@@ -567,6 +568,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil),
 				TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
 			}
+			TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
 			if sharedSettings ~= nil then
 				local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
 				TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)

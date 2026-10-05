@@ -799,7 +799,9 @@ do
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
 	-- Feign Death is a class-scoped Other Bar; claiming it here is what makes Core offer it to Hunter specs.
 	SpecDescriptor:DeclareForClass("hunter", { otherBars = { "feignDeath" }, pet = { power = "FOCUS" } })
-	SpecDescriptor:Declare("hunter_marksmanship", { pet = { power = "FOCUS", talent = "unbreakableBond" } })
+	SpecDescriptor:Declare("hunter_marksmanship", {
+		talentGatedBars = { petPower = "unbreakableBond", petHealth = "unbreakableBond", petCastbar = "unbreakableBond" },
+	})
 	SpecDescriptor:Declare("hunter_survival", {
 		secondary = { exportable = true },
 		barTextAnchorFrames = {

@@ -1408,6 +1408,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
@@ -1646,6 +1647,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.boneShield, sharedSettings and sharedSettings.displayBar.boneShield, TRB.Data.character.specId == 1, TRB.Data.character.maxBoneShield, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.coagulatingBlood, sharedSettings and sharedSettings.displayBar.coagulatingBlood, TRB.Data.character.specId == 1, 1, nil),
 		}
+		TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
 			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)

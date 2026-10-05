@@ -653,7 +653,8 @@ do
 		manaBar = true,
 		secondary = { exportable = true },
 		customBars = { "shatter" },
-		pet = { power = "MANA", talent = "summonWaterElemental" },
+		pet = { power = "MANA" },
+		talentGatedBars = { petPower = "summonWaterElemental", petHealth = "summonWaterElemental", petCastbar = "summonWaterElemental" },
 		barTextAnchorFrames = {
 			secondary = {
 				{ label = L["Icicle1"], frame = "ComboPoint_1" }, { label = L["Icicle2"], frame = "ComboPoint_2" }, { label = L["Icicle3"], frame = "ComboPoint_3" }, { label = L["Icicle4"], frame = "ComboPoint_4" },

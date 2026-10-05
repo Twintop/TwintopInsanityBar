@@ -27,7 +27,6 @@ TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.SpecDescriptor.Pet
 ---@field power "FOCUS"|"ENERGY"|"MANA" # Power token of the spec's pet; picks the Pet Resource bar's default colors
----@field talent string? # Key in spellsData.spells whose talent grants the pet; nil when the pet is baseline
 
 ---@class TRB.Classes.SpecDescriptor
 ---@field manaBar boolean? # The spec shows a mana bar / mana bar text, so mana precision options apply

@@ -146,6 +146,89 @@ function TRB.Functions.Color:GetPlayerClassColor()
 	return playerClassColorHex
 end
 
+---Builds, or reuses, the Low, Medium, and High health color curve that UnitHealthPercent evaluates.
+---Shared by the player and pet health bars, each cached under its own settings.
+---@param healthColors table # The health bar's colors: type plus low, medium, and high color and threshold
+---@return any # A ColorCurve
+function TRB.Functions.Color:GetHealthColorCurve(healthColors)
+	local highColor = (healthColors.high and healthColors.high.color) or ""
+	local highThreshold = (healthColors.high and healthColors.high.threshold) or 0.7
+	local lowColor = (healthColors.low and healthColors.low.color) or ""
+	local lowThreshold = (healthColors.low and healthColors.low.threshold) or 0.0
+	local medColor = (healthColors.medium and healthColors.medium.color) or ""
+	local medThreshold = (healthColors.medium and healthColors.medium.threshold) or 0.3
+	local curveTypeStr = healthColors.type or ""
+	-- "classColor" paints a single flat color pulled from the player's class rather than the threshold colors
+	local classColor = ""
+	if curveTypeStr == "classColor" then
+		classColor = self:GetPlayerClassColor() or ""
+	end
+	local cacheKey = highColor .. highThreshold .. lowColor .. lowThreshold .. medColor .. medThreshold .. curveTypeStr .. classColor
+
+	local curves = TRB.Data.cache.healthCurves
+	if curves == nil then
+		curves = {}
+		TRB.Data.cache.healthCurves = curves
+	end
+	if curves[cacheKey] ~= nil then
+		return curves[cacheKey]
+	end
+
+	---@type integer?
+	local curveType = Enum.LuaCurveType.Step
+
+	local highR, highG, highB, highA = 0, 1, 0, 1
+	if classColor ~= "" then
+		-- Class color stands in for the high health color and takes the flat single-point path below
+		highR, highG, highB, highA = self:GetRGBAFromString(classColor, true)
+	elseif healthColors.high and healthColors.high.color then
+		highR, highG, highB, highA = self:GetRGBAFromString(healthColors.high.color, true)
+	end
+
+	if healthColors.type == "linear" then
+		curveType = Enum.LuaCurveType.Linear
+	elseif healthColors.type == "step" then
+		curveType = Enum.LuaCurveType.Step
+	else
+		curveType = nil
+	end
+
+	local curve = C_CurveUtil.CreateColorCurve()
+
+	if curveType == nil then
+		curve:SetType(Enum.LuaCurveType.Step)
+		curve:AddPoint(0, CreateColor(highR, highG, highB, highA))
+	else
+		local lowR, lowG, lowB, lowA = 1, 0, 0, 1
+		local mediumR, mediumG, mediumB, mediumA = 1, 1, 0, 1
+
+		if healthColors.low and healthColors.low.color then
+			lowR, lowG, lowB, lowA = self:GetRGBAFromString(healthColors.low.color, true)
+		end
+		if healthColors.medium and healthColors.medium.color then
+			mediumR, mediumG, mediumB, mediumA = self:GetRGBAFromString(healthColors.medium.color, true)
+		end
+
+		local adjMedThreshold = medThreshold
+		if adjMedThreshold >= highThreshold then
+			adjMedThreshold = highThreshold - 0.000001
+		end
+
+		local adjLowThreshold = lowThreshold
+		if adjLowThreshold >= adjMedThreshold then
+			adjLowThreshold = adjMedThreshold - 0.000001
+		end
+
+		curve:SetType(curveType)
+		curve:AddPoint(adjLowThreshold, CreateColor(lowR, lowG, lowB, lowA))
+		curve:AddPoint(adjMedThreshold, CreateColor(mediumR, mediumG, mediumB, mediumA))
+		curve:AddPoint(highThreshold, CreateColor(highR, highG, highB, highA))
+	end
+
+	curves[cacheKey] = curve
+	return curve
+end
+
 ---Sets a frame's backdrop color, using a cache to skip redundant SetBackdropColor calls when the color hasn't changed
 ---@param frame table # The frame whose backdrop color to set
 ---@param key string? # Cache key for deduplication; if nil, always applies the color
@@ -999,6 +1082,7 @@ local nonColorElements = {
 -- Cast bar elements, in a fixed order so the change check below can compare without allocating.
 local castbarElements = { "bar", "channel", "border", "background", "tick", "endCap" }
 local previousCastbar = {}
+local previousPetCastbar = {}
 
 ---Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
 ---nodeOrder back to front so earlier (higher-priority) entries overwrite later ones. The spec's bars are
@@ -1123,7 +1207,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 		end
 	end
 
-	-- The version only moves when the cast bar's resolved colors actually change. Comparing by identity is
+	-- The version only moves when a cast bar's resolved colors actually change. Comparing by identity is
 	-- enough: a flat element resolves to a color string, a fill element to the indicator's own settings
 	-- table, and both are stable while the same indicator stays active.
 	local changed = false
@@ -1131,6 +1215,10 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 		local elemKey = castbarElements[i]
 		if previousCastbar[elemKey] ~= castbar[elemKey] then
 			previousCastbar[elemKey] = castbar[elemKey]
+			changed = true
+		end
+		if previousPetCastbar[elemKey] ~= petCastbar[elemKey] then
+			previousPetCastbar[elemKey] = petCastbar[elemKey]
 			changed = true
 		end
 	end
@@ -1162,8 +1250,8 @@ function TRB.Functions.Color:GetResolvedGlow(barKey)
 	return resolved.barGlows[barKey]
 end
 
----Version stamp of the resolved cast bar colors; changes only when those colors do. The cast bar's render
----path applies its fill and overlays once per cast, and re-applies when this moves.
+---Version stamp of the resolved player and pet cast bar colors; changes only when those colors do. Each cast
+---bar's render path applies its fill and overlays once per cast, and re-applies when this moves.
 ---@return integer
 function TRB.Functions.Color:GetResolvedIndicatorVersion()
 	return TRB.Data.resolvedIndicators.version

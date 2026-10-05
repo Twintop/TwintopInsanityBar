@@ -40,7 +40,9 @@ local function IsAnchoredToFadingCastbar(relativeToFrame)
 	local groupKey = relativeToFrame ~= nil and castbarAnchorGroupKeys[relativeToFrame] or nil
 	if groupKey == "castbar" then
 		return TRB.Functions.Castbar:IsFadingOut()
-	elseif groupKey == "targetCastbar" or groupKey == "focusCastbar" or groupKey == "petCastbar" then
+	elseif groupKey == "petCastbar" then
+		return TRB.Functions.PetCastbar:IsFadingOut()
+	elseif groupKey == "targetCastbar" or groupKey == "focusCastbar" then
 		return TRB.Functions.TargetCastbar:IsFadingOut(groupKey)
 	end
 	return false
@@ -97,6 +99,26 @@ local function GetSharedAnchorBarGroupKey(relativeToFrame)
 		return "secondary"
 	end
 	return nil
+end
+
+---The bar a bar text Relative to Frame name anchors to, or nil when it names no single bar.
+---@param relativeToFrame string?
+---@return string?
+function TRB.Functions.BarText:GetAnchorBarKey(relativeToFrame)
+	if relativeToFrame == nil then
+		return nil
+	end
+	return GetSharedAnchorBarGroupKey(relativeToFrame)
+end
+
+---Whether a spec can show a bar text entry: one anchored to a bar the spec can't have stays off it.
+---@param entry TRB.Classes.Settings.DisplayTextEntry
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Functions.BarText:IsEntryInScope(entry, classId, specId)
+	local barKey = self:GetAnchorBarKey(entry.position and entry.position.relativeToFrame)
+	return barKey == nil or TRB.Classes.BarTypeRegistry:IsBarInScope(barKey, classId, specId)
 end
 
 local function GetContainerAnchorDefinition(classId, specId, barGroupKey)
@@ -369,7 +391,7 @@ function TRB.Functions.BarText:GetCommonIcons(additionalIcons)
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#targetCasting", icon = "", description = L["BarTextIconTargetCasting"], printInSettings = true },
 		{ variable = "#focusCasting", icon = "", description = L["BarTextIconFocusCasting"], printInSettings = true },
-		{ variable = "#petCasting", icon = "", description = L["BarTextIconPetCasting"], printInSettings = true },
+		{ variable = "#petCasting", icon = "", description = L["BarTextIconPetCasting"], printInSettings = true, pet = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 	}
@@ -617,7 +639,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT },
 		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false, category = self.VariableCategory.OTHER },
 
-		-- Player cast bar. A bare check gates on the cast being in progress (see playerCastbarVars).
+		-- Player cast bar. A bare check gates on the cast being in progress (see castbarTimerVars).
 		-- $castSpellName is the one entry here with no lookupLogic value, so it cannot be compared.
 		{ variable = "$castTime", description = L["BarTextVariableCastTime"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
 		{ variable = "$castTimeRemaining", description = L["BarTextVariableCastTimeRemaining"], printInSettings = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
@@ -643,10 +665,19 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 			logicType = logicTypes.TEXT, booleanCheck = true },
 		{ variable = "$focusCastTime", description = L["BarTextVariableFocusCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
 		{ variable = "$focusCastTimeRemaining", description = L["BarTextVariableFocusCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
-		{ variable = "$petCastingSpellName", description = L["BarTextVariablePetCastSpellName"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR,
-			logicType = logicTypes.TEXT, booleanCheck = true },
-		{ variable = "$petCastTime", description = L["BarTextVariablePetCastTime"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
-		{ variable = "$petCastTimeRemaining", description = L["BarTextVariablePetCastTimeRemaining"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+
+		-- Pet cast bar, which runs on the player cast bar's model: its values are plain, so they compare like the player's.
+		{ variable = "$petCastTime", description = L["BarTextVariablePetCastTime"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$petCastTimeRemaining", description = L["BarTextVariablePetCastTimeRemaining"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$petCastPushback", description = L["BarTextVariablePetCastPushback"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.CAST_BAR, booleanCheck = true },
+		{ variable = "$petCastSpellName", description = L["BarTextVariablePetCastSpellName"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.TEXT, booleanCheck = true, comparisonUsable = false },
+		{ variable = "$petCastSpellId", description = L["BarTextVariablePetCastSpellId"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.INTEGER, booleanCheck = true },
+		{ variable = "$petCastInterruptible", description = L["BarTextVariablePetCastInterruptible"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT, booleanCheck = true },
+		{ variable = "$petCastUninterruptible", description = L["BarTextVariablePetCastUninterruptible"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.CAST_BAR,
+			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT, booleanCheck = true },
 
 		-- Other Bars timers. A bare check gates on that bar's timer running (see otherBarsVars).
 		-- The GCD's seconds come from a DurationObject whose values are secret in restricted content, so
@@ -660,17 +691,17 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 
 		-- Pet bars. Health and power are secret in restricted content, so they are display-only; a bare
 		-- check on one resolves to "is a pet out?" instead. $petState reads out as text and can be compared.
-		{ variable = "$petName", description = L["BarTextVariablePetName"], printInSettings = true, color = false, category = self.VariableCategory.PET,
+		{ variable = "$petName", description = L["BarTextVariablePetName"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.PET,
 			logicType = logicTypes.TEXT, booleanCheck = true },
-		{ variable = "$petState", description = L["BarTextVariablePetState"], printInSettings = true, color = false, category = self.VariableCategory.PET,
+		{ variable = "$petState", description = L["BarTextVariablePetState"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.PET,
 			logicType = logicTypes.TEXT, renderType = renderTypes.TEXT },
-		{ variable = "$petHealth", description = L["BarTextVariablePetHealth"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
-		{ variable = "$petHealthMax", description = L["BarTextVariablePetHealthMax"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
-		{ variable = "$petHealthPercent", description = L["BarTextVariablePetHealthPercent"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
-		{ variable = "$petPower", description = L["BarTextVariablePetPower"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
-		{ variable = "$petPowerMax", description = L["BarTextVariablePetPowerMax"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
-		{ variable = "$petPowerPercent", description = L["BarTextVariablePetPowerPercent"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
-		{ variable = "$petPowerName", description = L["BarTextVariablePetPowerName"], printInSettings = true, color = false, category = self.VariableCategory.PET,
+		{ variable = "$petHealth", description = L["BarTextVariablePetHealth"], printInSettings = true, pet = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petHealthMax", description = L["BarTextVariablePetHealthMax"], printInSettings = true, pet = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petHealthPercent", description = L["BarTextVariablePetHealthPercent"], printInSettings = true, pet = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petResource", description = L["BarTextVariablePetResource"], printInSettings = true, pet = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petResourceMax", description = L["BarTextVariablePetResourceMax"], printInSettings = true, pet = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petResourcePercent", description = L["BarTextVariablePetResourcePercent"], printInSettings = true, pet = true, color = false, secret = true, category = self.VariableCategory.PET, booleanCheck = true },
+		{ variable = "$petResourceName", description = L["BarTextVariablePetResourceName"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.PET,
 			logicType = logicTypes.TEXT, booleanCheck = true },
 	}
 	-- Flavor stats follow $gcd; the first variable of each is listed in the options, the rest are aliases.
@@ -1382,6 +1413,9 @@ end
 ---@return table
 local function AddToBarTextCache(input)
 	local barTextVariables = TRB.Data.barTextVariables
+	-- A spec without a pet leaves the pet variables as plain text, like any other spec's variable.
+	local character = TRB.Data.character
+	local hasPet = TRB.Classes.BarTypeRegistry:SpecHasPet(character.classId, character.specId)
 	local iconEntries = #barTextVariables.icons
 	local valueEntries = #barTextVariables.values
 	local pipeEntries = #barTextVariables.pipe
@@ -1453,7 +1487,7 @@ local function AddToBarTextCache(input)
 			else
 				for x = 1, iconEntries do
 					z, z1 = string.find(input, barTextIconsVars[x].variable, a-1)
-					if z ~= nil and z == a then
+					if z ~= nil and z == a and (hasPet or not barTextIconsVars[x].pet) then
 						match = true
 						if p ~= a then
 							returnText = returnText .. string.sub(input, p, a-1)
@@ -1470,7 +1504,7 @@ local function AddToBarTextCache(input)
 		elseif b ~= nil and (c == nil or b < c) and (d == nil or b < d) then
 			for x = 1, valueEntries do
 				z, z1 = string.find(input, barTextValuesVars[x].variable, b-1)
-				if z ~= nil and z == b then
+				if z ~= nil and z == b and (hasPet or not barTextValuesVars[x].pet) then
 					match = true
 					if p ~= b then
 						returnText = returnText .. string.sub(input, p, b-1)
@@ -1879,12 +1913,20 @@ end
 local targetCastbarLookupUnits = {
 	{ modelKey = "targetCastbar", nameVar = "$targetCastingSpellName", timeVar = "$targetCastTime", remVar = "$targetCastTimeRemaining", iconVar = "#targetCasting" },
 	{ modelKey = "focusCastbar", nameVar = "$focusCastingSpellName", timeVar = "$focusCastTime", remVar = "$focusCastTimeRemaining", iconVar = "#focusCasting" },
-	{ modelKey = "petCastbar", nameVar = "$petCastingSpellName", timeVar = "$petCastTime", remVar = "$petCastTimeRemaining", iconVar = "#petCasting" },
 }
 
 -- Idle short-circuit state for the castbar/other-bars refreshers: their idle writes are constants,
 -- so an idle refresher runs one final blanking pass (or the initial one) and then skips entirely.
-local castbarLookupWasActive = true
+-- The cast bars the player cast bar's model drives, with their variable names and idle latches. The pet
+-- has no latency, and its icon is its own variable rather than #casting.
+local castbarLookupUnits = {
+	{ modelKey = "castbar", time = "$castTime", remaining = "$castTimeRemaining", latency = "$castLatency", latencyMs = "$castLatencyMs",
+		pushback = "$castPushback", spellName = "$castSpellName", spellId = "$castSpellId", interruptible = "$castInterruptible",
+		uninterruptible = "$castUninterruptible", wasActive = true },
+	{ modelKey = "petCastbar", time = "$petCastTime", remaining = "$petCastTimeRemaining", pushback = "$petCastPushback",
+		spellName = "$petCastSpellName", spellId = "$petCastSpellId", interruptible = "$petCastInterruptible",
+		uninterruptible = "$petCastUninterruptible", icon = "#petCasting", wasActive = true },
+}
 local targetCastbarLookupWasActive = true
 local otherBarsLookupWasActive = true
 local petLookupWasActive = true
@@ -1892,30 +1934,30 @@ local petLookupWasActive = true
 -- wholesale. Tracked here so RefreshLookupDataBase can re-arm them on a rebuild.
 local lastLookupLogicTable = nil
 
----Refreshes ONLY the castbar bar text lookup variables (cast/channel/empower) from the dedicated
----castbar model (TRB.Data.castbar) — deliberately independent of snapshotData.casting, which is the
----resource-prediction path. Values default to empty/zero when nothing is casting. Called from
----RefreshLookupDataBase so castbar variables flow through the single, shared bar text render pipeline.
----Timers format with the castbar's own precision settings (independent of the shared timer precision):
----$castTimeRemaining uses castTimePrecision, $castTime uses durationPrecision, and $castLatency/$castPushback
----use latencyPrecision. All values are seconds ($castLatencyMs is always whole milliseconds).
----@param settings TRB.Classes.Settings.SpecializationSettingsBase? # Active spec settings (for bars.castbar precision fields)
-function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
-	local castbar = TRB.Data.castbar
+---Refreshes one cast bar's lookup variables from its model. Its pushback formats with latencyPrecision when
+---the bar has latency, and with durationPrecision when it does not.
+---@param unit table # A castbarLookupUnits entry
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
+local function RefreshCastbarUnitLookupData(unit, settings)
+	local castbar = TRB.Data[unit.modelKey]
 	local isActive = castbar ~= nil and castbar:IsActive()
-	if not isActive and not castbarLookupWasActive then
+	if not isActive and not unit.wasActive then
 		return
 	end
-	castbarLookupWasActive = isActive
+	unit.wasActive = isActive
 	TRB.Data.lookup = TRB.Data.lookup or {}
 	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
 	local lookup = TRB.Data.lookup
 	local lookupLogic = TRB.Data.lookupLogic
 	---@diagnostic disable-next-line: undefined-field
-	local castbarSettings = settings and settings.bars and settings.bars.castbar
+	local castbarSettings = settings and settings.bars and settings.bars[unit.modelKey]
 	local castTimeFormat = GetPrecisionFormat((castbarSettings and castbarSettings.castTimePrecision) or 1)
 	local durationFormat = GetPrecisionFormat((castbarSettings and castbarSettings.durationPrecision) or 1)
 	local latencyFormat = GetPrecisionFormat((castbarSettings and castbarSettings.latencyPrecision) or 1)
+	local pushbackFormat = unit.latency ~= nil and latencyFormat or durationFormat
+	if unit.icon ~= nil then
+		lookup[unit.icon] = ""
+	end
 
 	local castTime, castRemaining, castLatency, castPushback = 0, 0, 0, 0
 	local castSpellName, castSpellId = "", 0
@@ -1936,7 +1978,7 @@ function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 			-- icon for resource-relevant spells, which is why #casting was blank for most abilities. When the
 			-- castbar is idle/disabled, #casting keeps the snapshot fallback set in RefreshLookupDataBase.
 			if castbar.spell.icon and castbar.spell.icon ~= "" then
-				lookup["#casting"] = castbar.spell.icon
+				lookup[unit.icon or "#casting"] = castbar.spell.icon
 			end
 		end
 		-- Bulk crafting merge: append the craft progress so $castSpellName reads "Recipe Name 3 / 10".
@@ -1945,27 +1987,43 @@ function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
 			castSpellName = castSpellName ~= "" and (castSpellName .. " " .. progress) or progress
 		end
 	end
-	lookup["$castTime"] = castTime > 0 and string.format(durationFormat, castTime) or ""
-	lookup["$castTimeRemaining"] = castTime > 0 and string.format(castTimeFormat, castRemaining) or ""
-	lookup["$castLatency"] = castTime > 0 and string.format(latencyFormat, castLatency) or ""
-	lookup["$castLatencyMs"] = castTime > 0 and string.format("%d", math.floor(castLatency * 1000 + 0.5)) or ""
-	lookup["$castPushback"] = castTime > 0 and string.format(latencyFormat, castPushback) or ""
-	lookup["$castSpellName"] = castSpellName
-	lookup["$castSpellId"] = castTime > 0 and tostring(castSpellId) or ""
+	lookup[unit.time] = castTime > 0 and string.format(durationFormat, castTime) or ""
+	lookup[unit.remaining] = castTime > 0 and string.format(castTimeFormat, castRemaining) or ""
+	lookup[unit.pushback] = castTime > 0 and string.format(pushbackFormat, castPushback) or ""
+	lookup[unit.spellName] = castSpellName
+	lookup[unit.spellId] = castTime > 0 and tostring(castSpellId) or ""
 	-- With nothing casting BOTH read false, rather than $castInterruptible being vacuously true.
 	local interruptible = isCasting and not notInterruptible
 	local uninterruptible = isCasting and notInterruptible
-	lookup["$castInterruptible"] = tostring(interruptible)
-	lookup["$castUninterruptible"] = tostring(uninterruptible)
-	lookupLogic["$castTime"] = castTime
-	lookupLogic["$castTimeRemaining"] = castRemaining
-	lookupLogic["$castLatency"] = castLatency
-	lookupLogic["$castLatencyMs"] = castLatency * 1000
-	lookupLogic["$castPushback"] = castPushback
-	lookupLogic["$castSpellId"] = castSpellId
+	lookup[unit.interruptible] = tostring(interruptible)
+	lookup[unit.uninterruptible] = tostring(uninterruptible)
+	lookupLogic[unit.time] = castTime
+	lookupLogic[unit.remaining] = castRemaining
+	lookupLogic[unit.pushback] = castPushback
+	lookupLogic[unit.spellId] = castSpellId
 	-- Stored as strings, matching how $inCombat feeds the conditional engine.
-	lookupLogic["$castInterruptible"] = tostring(interruptible)
-	lookupLogic["$castUninterruptible"] = tostring(uninterruptible)
+	lookupLogic[unit.interruptible] = tostring(interruptible)
+	lookupLogic[unit.uninterruptible] = tostring(uninterruptible)
+	if unit.latency ~= nil then
+		lookup[unit.latency] = castTime > 0 and string.format(latencyFormat, castLatency) or ""
+		lookup[unit.latencyMs] = castTime > 0 and string.format("%d", math.floor(castLatency * 1000 + 0.5)) or ""
+		lookupLogic[unit.latency] = castLatency
+		lookupLogic[unit.latencyMs] = castLatency * 1000
+	end
+end
+
+---Refreshes ONLY the player and pet cast bar lookup variables (cast/channel/empower) from their dedicated
+---models (TRB.Data.castbar, TRB.Data.petCastbar) — deliberately independent of snapshotData.casting, which is
+---the resource-prediction path. Values default to empty/zero when nothing is casting. Called from
+---RefreshLookupDataBase so castbar variables flow through the single, shared bar text render pipeline.
+---Timers format with each bar's own precision settings (independent of the shared timer precision):
+---the remaining time uses castTimePrecision, the total uses durationPrecision, and the player's
+---$castLatency/$castPushback use latencyPrecision. All values are seconds ($castLatencyMs is whole milliseconds).
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase? # Active spec settings (for the bars' precision fields)
+function TRB.Functions.BarText:RefreshCastbarLookupData(settings)
+	for _, unit in ipairs(castbarLookupUnits) do
+		RefreshCastbarUnitLookupData(unit, settings)
+	end
 end
 
 ---Refreshes the Target/Focus Cast Bar bar text variables from their models. Everything here is
@@ -2125,7 +2183,9 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	-- change rather than depending on SwitchSpec call order.
 	if TRB.Data.lookupLogic ~= lastLookupLogicTable then
 		lastLookupLogicTable = TRB.Data.lookupLogic
-		castbarLookupWasActive = true
+		for _, unit in ipairs(castbarLookupUnits) do
+			unit.wasActive = true
+		end
 		targetCastbarLookupWasActive = true
 		otherBarsLookupWasActive = true
 		petLookupWasActive = true
@@ -2148,15 +2208,16 @@ end
 -- Pet bar variables, all of which gate on "is a pet out?" in bar text logic.
 local petVars = {
 	["$petName"] = true, ["$petHealth"] = true, ["$petHealthMax"] = true, ["$petHealthPercent"] = true,
-	["$petPower"] = true, ["$petPowerMax"] = true, ["$petPowerPercent"] = true, ["$petPowerName"] = true,
+	["$petResource"] = true, ["$petResourceMax"] = true, ["$petResourcePercent"] = true, ["$petResourceName"] = true,
 }
 
----Refreshes the pet bar variables. Health and power are read with allowSecret, so they only ever reach
----`lookup` as formatted strings and never `lookupLogic`, where they could be compared. With no pet they
----all render empty, so a bare {$petHealthPercent}[...] gate reads as "is a pet out?".
+---Refreshes the pet bar variables from the cached pet values. Secret health and power reach only `lookup`,
+---as formatted strings, and with no pet every one renders empty.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
 function TRB.Functions.BarText:RefreshPetLookupData(settings)
-	local hasPet = TRB.Functions.PetBars:HasPet()
+	local attributes = TRB.Data.snapshotData.attributes
+	local state = attributes.petState or "none"
+	local hasPet = state ~= "none"
 	if not hasPet and not petLookupWasActive then
 		return
 	end
@@ -2168,7 +2229,6 @@ function TRB.Functions.BarText:RefreshPetLookupData(settings)
 	for var in pairs(petVars) do
 		lookup[var] = ""
 	end
-	local state = TRB.Functions.PetBars:GetPetState()
 	lookup["$petState"] = state
 	TRB.Data.lookupLogic["$petState"] = state
 
@@ -2177,20 +2237,16 @@ function TRB.Functions.BarText:RefreshPetLookupData(settings)
 	end
 
 	local precision = settings and settings.precision or nil
-	lookup["$petName"] = TRB.Functions.PetBars:GetPetName() or ""
-	-- Only reached with a live pet, so the unit APIs below always have something to answer.
-	lookup["$petHealth"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitHealth("pet", true))
-	lookup["$petHealthMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitHealthMax("pet"))
-	lookup["$petHealthPercent"] = string.format(GetPrecisionFormat((precision and precision.health) or 1),
-		UnitHealthPercent("pet", true, CurveConstants.ScaleTo100))
+	lookup["$petName"] = attributes.petName or ""
+	lookup["$petHealth"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petHealth)
+	lookup["$petHealthMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petHealthMax)
+	lookup["$petHealthPercent"] = string.format(GetPrecisionFormat((precision and precision.health) or 1), attributes.petHealthPercent)
 
-	local powerType = TRB.Functions.PetBars:GetPetPowerType()
-	if powerType ~= nil then
-		lookup["$petPower"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitPower("pet", powerType, true))
-		lookup["$petPowerMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(UnitPowerMax("pet", powerType))
-		lookup["$petPowerPercent"] = string.format(GetPrecisionFormat((precision and precision.mana) or 1),
-			UnitPowerPercent("pet", powerType, true, CurveConstants.ScaleTo100))
-		lookup["$petPowerName"] = TRB.Functions.PetBars:GetPetPowerName() or ""
+	if attributes.petPowerType ~= nil then
+		lookup["$petResource"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petPower)
+		lookup["$petResourceMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petPowerMax)
+		lookup["$petResourcePercent"] = string.format(GetPrecisionFormat((precision and precision.mana) or 1), attributes.petPowerPercent)
+		lookup["$petResourceName"] = attributes.petPowerName or ""
 	end
 end
 
@@ -2315,12 +2371,23 @@ local validBaseVars = {
 	["$stam"] = true, ["$stamina"] = true,
 }
 
--- Player cast bar variables, which no spec wires up itself. A bare {$castTime}[...] shortcircuits to
--- "$castTime ~= nil" -- is a cast in progress at all -- matching how the Target/Focus ones below behave.
-local playerCastbarVars = {
-	["$castTime"] = true, ["$castTimeRemaining"] = true,
-	["$castLatency"] = true, ["$castLatencyMs"] = true, ["$castPushback"] = true,
-	["$castSpellName"] = true, ["$castSpellId"] = true,
+-- Player and pet cast bar variables, which no spec wires up itself, mapped to their model. A bare
+-- {$castTime}[...] shortcircuits to "$castTime ~= nil" -- is a cast in progress at all -- matching how the
+-- Target/Focus ones below behave.
+local castbarTimerVars = {
+	["$castTime"] = "castbar", ["$castTimeRemaining"] = "castbar",
+	["$castLatency"] = "castbar", ["$castLatencyMs"] = "castbar", ["$castPushback"] = "castbar",
+	["$castSpellName"] = "castbar", ["$castSpellId"] = "castbar",
+	["$petCastTime"] = "petCastbar", ["$petCastTimeRemaining"] = "petCastbar", ["$petCastPushback"] = "petCastbar",
+	["$petCastSpellName"] = "petCastbar", ["$petCastSpellId"] = "petCastbar",
+}
+
+-- The cast bars' interruptibility booleans: their model, and whether each asks "can it be interrupted?"
+local castbarInterruptVars = {
+	["$castInterruptible"] = { modelKey = "castbar", interruptible = true },
+	["$castUninterruptible"] = { modelKey = "castbar", interruptible = false },
+	["$petCastInterruptible"] = { modelKey = "petCastbar", interruptible = true },
+	["$petCastUninterruptible"] = { modelKey = "petCastbar", interruptible = false },
 }
 
 ---Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
@@ -2333,21 +2400,20 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	if var == "$inCombat" or var == "$inCombatTime" then
 		return TRB.Data.character.inCombat == true
 	end
-	if playerCastbarVars[var] then
-		local castbar = TRB.Data.castbar
+	local timerModelKey = castbarTimerVars[var]
+	if timerModelKey ~= nil then
+		local castbar = TRB.Data[timerModelKey]
 		return castbar ~= nil and castbar:IsActive()
 	end
-	-- These two are already booleans that read false when nothing is casting, so they answer for
+	-- These are already booleans that read false when nothing is casting, so they answer for
 	-- themselves rather than gating on the cast the way the timers above do.
-	if var == "$castInterruptible" or var == "$castUninterruptible" then
-		local castbar = TRB.Data.castbar
+	local interruptVar = castbarInterruptVars[var]
+	if interruptVar ~= nil then
+		local castbar = TRB.Data[interruptVar.modelKey]
 		if castbar == nil or not castbar:IsActive() then
 			return false
 		end
-		if var == "$castInterruptible" then
-			return castbar.notInterruptible ~= true
-		end
-		return castbar.notInterruptible == true
+		return (castbar.notInterruptible ~= true) == interruptVar.interruptible
 	end
 	-- Target/Focus cast bar variables are secret in display, but in bar text LOGIC they resolve to a
 	-- plain boolean: "is that unit currently casting?" So {$targetCastTimeRemaining}[...] gates on the cast.
@@ -2357,8 +2423,6 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		castbarModelKey = "targetCastbar"
 	elseif var == "$focusCastingSpellName" or var == "$focusCastTime" or var == "$focusCastTimeRemaining" then
 		castbarModelKey = "focusCastbar"
-	elseif var == "$petCastingSpellName" or var == "$petCastTime" or var == "$petCastTimeRemaining" then
-		castbarModelKey = "petCastbar"
 	end
 	if castbarModelKey ~= nil then
 		local model = TRB.Data[castbarModelKey]
@@ -2372,7 +2436,7 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		return TRB.Functions.OtherBars:IsBarActive(otherBarKey)
 	end
 	if petVars[var] then
-		return TRB.Functions.PetBars:HasPet()
+		return (TRB.Data.snapshotData.attributes.petState or "none") ~= "none"
 	end
 	return false
 end
@@ -2387,22 +2451,20 @@ local selfDrivenBarVariables = {
 	["$castTime"] = true, ["$castTimeRemaining"] = true, ["$castLatency"] = true, ["$castLatencyMs"] = true,
 	["$castPushback"] = true, ["$castSpellName"] = true, ["$castSpellId"] = true,
 	["$castInterruptible"] = true, ["$castUninterruptible"] = true, ["#casting"] = true,
+	-- Pet cast bar (see RefreshCastbarLookupData)
+	["$petCastTime"] = true, ["$petCastTimeRemaining"] = true, ["$petCastPushback"] = true,
+	["$petCastSpellName"] = true, ["$petCastSpellId"] = true,
+	["$petCastInterruptible"] = true, ["$petCastUninterruptible"] = true, ["#petCasting"] = true,
 	-- Target / Focus cast bars (see RefreshTargetCastbarLookupData)
 	["$targetCastingSpellName"] = true, ["$targetCastTime"] = true, ["$targetCastTimeRemaining"] = true,
 	["#targetCasting"] = true,
 	["$focusCastingSpellName"] = true, ["$focusCastTime"] = true, ["$focusCastTimeRemaining"] = true,
 	["#focusCasting"] = true,
-	["$petCastingSpellName"] = true, ["$petCastTime"] = true, ["$petCastTimeRemaining"] = true,
-	["#petCasting"] = true,
 	-- Other Bars timers (see RefreshOtherBarsLookupData)
 	["$gcdDuration"] = true, ["$gcdDurationRemaining"] = true,
 	["$fatigueDuration"] = true, ["$fatigueDurationRemaining"] = true,
 	["$breathDuration"] = true, ["$breathDurationRemaining"] = true,
 	["$feignDeathDuration"] = true, ["$feignDeathDurationRemaining"] = true,
-	-- Pet bars (see RefreshPetLookupData)
-	["$petName"] = true, ["$petState"] = true,
-	["$petHealth"] = true, ["$petHealthMax"] = true, ["$petHealthPercent"] = true,
-	["$petPower"] = true, ["$petPowerMax"] = true, ["$petPowerPercent"] = true, ["$petPowerName"] = true,
 }
 
 ---Whether any running self-driven bar (the player/target/focus cast bars, or an Other Bars timer)
@@ -2421,9 +2483,8 @@ local function HasActiveSelfDrivenBarVariableInUse()
 		or (TRB.Data.focusCastbar ~= nil and TRB.Data.focusCastbar:IsActive())
 		or TRB.Functions.TargetCastbar:IsFadingOut("focusCastbar")
 		or (TRB.Data.petCastbar ~= nil and TRB.Data.petCastbar:IsActive())
-		or TRB.Functions.TargetCastbar:IsFadingOut("petCastbar")
+		or TRB.Functions.PetCastbar:IsFadingOut()
 		or TRB.Functions.OtherBars:HasActiveTimer()
-		or TRB.Functions.PetBars:IsRendering()
 	if not anyActive then
 		return false
 	end

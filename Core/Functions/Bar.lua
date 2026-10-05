@@ -768,14 +768,13 @@ local function EnsureOtherBarGroups(settings, barGroups)
 	end
 end
 
----Pet bars are all-spec-shaped but only exist on the specs that can hold a permanent pet; guarantee
----their groups exist wherever the castbar group is ensured. Only bars the spec has settings for get a
----group -- one without would join the anchor forest as a zero-size node.
----@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---Guarantees the pet bars' groups wherever the castbar group is ensured, on the active spec only when it
+---has a pet: a group it can't use would join the anchor forest as a zero-size node.
 ---@param barGroups table<string, TRB.Classes.BarGroup>
-local function EnsurePetBarGroups(settings, barGroups)
+local function EnsurePetBarGroups(barGroups)
+	local character = TRB.Data.character
 	for _, key in ipairs(TRB.Classes.BarTypeRegistry.petScopeKeys) do
-		if barGroups[key] == nil and settings.bars ~= nil and settings.bars[key] ~= nil then
+		if barGroups[key] == nil and TRB.Classes.BarTypeRegistry:IsBarInScope(key, character.classId, character.specId) then
 			local frameName = "TwintopResourceBarFrame_" .. key:gsub("^%l", string.upper)
 			barGroups[key] = TRB.Classes.BarGroup:New(UIParent, frameName, 1, false)
 		end
@@ -825,7 +824,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	EnsureCastbarBarGroup(barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
 	EnsureOtherBarGroups(settings, barGroups)
-	EnsurePetBarGroups(settings, barGroups)
+	EnsurePetBarGroups(barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
@@ -876,7 +875,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	EnsureCastbarBarGroup(barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
 	EnsureOtherBarGroups(settings, barGroups)
-	EnsurePetBarGroups(settings, barGroups)
+	EnsurePetBarGroups(barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
 
@@ -2077,6 +2076,69 @@ function TRB.Functions.Bar:UpdateHealthBar(barGroups, snapshotData, settings)
 	self:UpdateHealthBarOverlays(healthNode, snapshotData, settings)
 end
 
+-- Reused each frame for the Pet Resource fill's base colors.
+local petPowerColors = {}
+
+---Renders Pet Health and Pet Resource from the cached pet values, as UpdateHealthBar does for the player.
+---Does nothing on a spec without a pet.
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+---@param snapshotData TRB.Classes.SnapshotData
+---@param settings table # The spec cache settings (specCacheSettings)
+---@return boolean # Whether either pet bar rendered, so its bar text needs refreshing
+function TRB.Functions.Bar:UpdatePetBars(barGroups, snapshotData, settings)
+	local character = TRB.Data.character
+	if barGroups == nil or not TRB.Classes.BarTypeRegistry:SpecHasPet(character.classId, character.specId) then
+		return false
+	end
+	local Color = TRB.Functions.Color
+	local attributes = snapshotData.attributes
+	local rendered = false
+
+	local healthNode = barGroups.petHealth and barGroups.petHealth:GetNode(1)
+	if healthNode ~= nil and not settings.displayBar.petHealth.neverShow then
+		rendered = true
+		local healthColors = settings.colors.bars.petHealth
+		local indicators = Color:GetResolvedIndicators("petHealthBar")
+		healthNode:SetMinMax(0, attributes.petHealthMax or 1)
+		healthNode:SetValue(attributes.petHealth or 0)
+		if attributes.petHealthColor ~= nil then
+			healthNode:SetColorCurve(attributes.petHealthColor)
+		end
+		Color:ApplyResolvedBorderOrBackground(healthNode, "petHealthBar", "border",
+			(indicators and indicators.border) or healthColors.border.color)
+		Color:ApplyResolvedBorderOrBackground(healthNode, "petHealthBar", "background",
+			(indicators and indicators.background) or healthColors.background.color)
+		Color:ApplyResolvedEndCap(healthNode, "petHealthBar")
+		TRB.Functions.Glow:ApplyIndicatorGlow(healthNode, "petHealthBar")
+	end
+
+	local powerNode = barGroups.petPower and barGroups.petPower:GetNode(1)
+	if powerNode ~= nil and not settings.displayBar.petPower.neverShow then
+		rendered = true
+		-- A pet with no power gets an empty bar.
+		if attributes.petPowerType == nil then
+			powerNode:SetMinMax(0, 1)
+			powerNode:SetValue(0)
+		else
+			powerNode:SetMinMax(0, attributes.petPowerMax)
+			powerNode:SetValue(attributes.petPower)
+		end
+		local configured = settings.colors.bars.petPower
+		local indicators = Color:GetResolvedIndicators("petPowerBar")
+		petPowerColors.bar = (indicators and indicators.bar) or configured.bar
+		petPowerColors.border = (indicators and indicators.border) or configured.border.color
+		petPowerColors.background = (indicators and indicators.background) or configured.background.color
+		local specSettings = TRB.Data.resolvedIndicators.specSettings
+		Color:ApplyNodeGradientColors(powerNode, "petPowerBar", petPowerColors, Color:GetResolvedGradient(), TRB.Data.resource,
+			specSettings and specSettings.overcap)
+		-- ApplyNodeIndicators reads only a spec bar's flat end cap; a shared bar's lives with its other resolved colors.
+		Color:ApplyResolvedEndCap(powerNode, "petPowerBar")
+		TRB.Functions.Glow:ApplyIndicatorGlow(powerNode, "petPowerBar")
+	end
+
+	return rendered
+end
+
 ---Applies the per-node Color Indicator effects: Border Glow, and the end cap color (flat or gradient),
 ---which outranks the cap's useBorderColor follow. Call once per node each frame, after ApplyIndicatorColors.
 ---@param node TRB.Classes.BarNode
@@ -2783,12 +2845,12 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 			if not TRB.Functions.Castbar:IsEnabled(displayBar and displayBar.castbar) then
 				return false
 			end
-		elseif barKey == "targetCastbar" or barKey == "focusCastbar" or barKey == "petCastbar" then
-			if not TRB.Functions.TargetCastbar:IsEnabled(displayBar and displayBar[barKey], barKey) then
+		elseif barKey == "petCastbar" then
+			if not TRB.Functions.PetCastbar:IsEnabled(displayBar and displayBar.petCastbar) then
 				return false
 			end
-		elseif TRB.Classes.BarTypeRegistry:IsPetBar(barKey) then
-			if not TRB.Functions.PetBars:IsEnabled(displayBar and displayBar[barKey]) then
+		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
+			if not TRB.Functions.TargetCastbar:IsEnabled(displayBar and displayBar[barKey]) then
 				return false
 			end
 		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
@@ -3046,8 +3108,10 @@ end
 ---This is used by the Options UI to determine valid anchor targets for a specific spec's
 ---configuration, even when a different spec is currently active (e.g., Druid forms).
 ---@param settings table # The spec's settings table (e.g., TRB.Data.settings.druid.feral)
+---@param classId integer? # With specId, skips the bars that spec can't have; nil (the Global panel) keeps every bar
+---@param specId integer?
 ---@return string[] # List of bar keys this settings table defines
-function TRB.Functions.Bar:GetAllBarKeysFromSettings(settings)
+function TRB.Functions.Bar:GetAllBarKeysFromSettings(settings, classId, specId)
 	local keys = {}
 	if settings.bar then table.insert(keys, "primary") end
 	if settings.comboPoints then
@@ -3066,7 +3130,7 @@ function TRB.Functions.Bar:GetAllBarKeysFromSettings(settings)
 		if registry then
 			local allBarTypes = registry:GetAll()
 			for barKey, _ in pairs(allBarTypes) do
-				if settings.bars[barKey] then
+				if settings.bars[barKey] and (classId == nil or TRB.Classes.BarTypeRegistry:IsBarInScope(barKey, classId, specId)) then
 					table.insert(keys, barKey)
 				end
 			end
@@ -3232,6 +3296,18 @@ function TRB.Functions.Bar:ValidateAnchorTree(settings, barGroups, testBarKey, t
 	return true, nil
 end
 
+---Whether a bar key is one of the pet-scoped bars, the Pet Cast Bar included.
+---@param barKey string
+---@return boolean
+local function IsPetScopeKey(barKey)
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.petScopeKeys) do
+		if key == barKey then
+			return true
+		end
+	end
+	return false
+end
+
 ---Returns the list of bar keys that the specified bar can anchor to without creating a cycle.
 ---Always includes "screen" as a valid target (anchoring to screen never creates a cycle).
 ---@param thisBarKey string
@@ -3244,8 +3320,10 @@ end
 function TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, settings, barGroups, barKeys, classId, specId)
 	local valid = { "screen" }
 	local allKeys = barKeys or self:GetAllBarKeys(barGroups)
+	-- On the Global panel a bar every spec has can't hang off a pet bar, which most specs lack.
+	local skipPetTargets = classId == nil and not IsPetScopeKey(thisBarKey)
 	for _, candidate in ipairs(allKeys) do
-		if candidate ~= thisBarKey then
+		if candidate ~= thisBarKey and not (skipPetTargets and IsPetScopeKey(candidate)) then
 			local ok = self:ValidateAnchorTree(settings, barGroups, thisBarKey, candidate, allKeys)
 			if ok then
 				table.insert(valid, candidate)
@@ -4200,10 +4278,10 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 		local disabled = false
 		if barKey == "castbar" then
 			disabled = not TRB.Functions.Castbar:IsEnabled(visibility)
-		elseif barKey == "targetCastbar" or barKey == "focusCastbar" or barKey == "petCastbar" then
-			disabled = not TRB.Functions.TargetCastbar:IsEnabled(visibility, barKey)
-		elseif TRB.Classes.BarTypeRegistry:IsPetBar(barKey) then
-			disabled = not TRB.Functions.PetBars:IsEnabled(visibility)
+		elseif barKey == "petCastbar" then
+			disabled = not TRB.Functions.PetCastbar:IsEnabled(visibility)
+		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
+			disabled = not TRB.Functions.TargetCastbar:IsEnabled(visibility)
 		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
 			disabled = not TRB.Functions.OtherBars:IsEnabled(visibility)
 		end

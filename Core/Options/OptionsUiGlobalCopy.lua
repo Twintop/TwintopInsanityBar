@@ -366,9 +366,21 @@ local function GetCopyMenuNewTargetLabel(label)
 	return string.format(L["CopyMenuNewTargetFormat"], label)
 end
 
+---Whether a spec has the bar a copied section belongs to; a section with no bar suits every spec.
+---@param compositeKey string
+---@param barKey string?
+---@return boolean
+local function SpecHasCopySectionBar(compositeKey, barKey)
+	if barKey == nil then
+		return true
+	end
+	local entry = TRB.Functions.Character:GetSpecRegistryEntry(compositeKey)
+	return entry ~= nil and TRB.Classes.BarTypeRegistry:IsBarInScope(barKey, entry.classId, entry.specId)
+end
+
 -- Adds a source submenu under `parent` (a menu description). Only profiles /
--- classes / specs that currently have readable data are included.
-local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeCurrentCoreProfile)
+-- classes / specs that currently have readable data, and the section's bar, are included.
+local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeCurrentCoreProfile, barKey)
 	local profiles = TRB.Functions.Profiles
 	local profileNames = profiles:GetProfileNames()
 	local sortedClasses = GetSortedClassSpecs()
@@ -386,7 +398,7 @@ local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeC
 			for _, specDef in ipairs(classDef.specs) do
 				local specName = string.sub(specDef.compositeKey, #prefix + 1)
 				if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey)
-					and ProfileHasSpec(profileName, className, specName) then
+					and ProfileHasSpec(profileName, className, specName) and SpecHasCopySectionBar(specDef.compositeKey, barKey) then
 					hasAny = true
 					break
 				end
@@ -415,7 +427,7 @@ local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeC
 							for _, specDef in ipairs(classDef.specs) do
 								local specName = string.sub(specDef.compositeKey, #prefix + 1)
 								if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey)
-									and ProfileHasSpec(profileName, className, specName) then
+									and ProfileHasSpec(profileName, className, specName) and SpecHasCopySectionBar(specDef.compositeKey, barKey) then
 									classMenu:CreateButton(specDef.specLabel, function()
 										onPicked(profileName, className, specName)
 									end)
@@ -430,10 +442,10 @@ local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeC
 end
 
 -- Adds a destination submenu under `parent` (a menu description). All
--- profiles, classes, and specs are included so Copy To can target any
+-- profiles, classes, and specs that have the section's bar are included so Copy To can target any
 -- destination. Specs that do not yet exist in the destination profile are
 -- marked with a purple " {New}" suffix.
-local function AddDestinationProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeCurrentCoreProfile)
+local function AddDestinationProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeCurrentCoreProfile, barKey)
 	local profiles = TRB.Functions.Profiles
 	local profileNames = profiles:GetProfileNames()
 	local sortedClasses = GetSortedClassSpecs()
@@ -453,13 +465,22 @@ local function AddDestinationProfileClassSpecSubmenu(parent, onPicked, excludeKe
 			end
 			for _, classDef in ipairs(sortedClasses) do
 				local className = classDef.classKey
+				local prefix = className .. "_"
+				-- A class whose only spec with the bar is the excluded one would open onto an empty list.
+				local classHasTarget = false
+				for _, specDef in ipairs(classDef.specs) do
+					local specName = string.sub(specDef.compositeKey, #prefix + 1)
+					if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey) and SpecHasCopySectionBar(specDef.compositeKey, barKey) then
+						classHasTarget = true
+						break
+					end
+				end
 				---@diagnostic disable-next-line: redundant-parameter, missing-parameter
-				local classMenu = profileMenu:CreateButton(classDef.classLabel)
+				local classMenu = classHasTarget and profileMenu:CreateButton(classDef.classLabel) or nil
 				if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
-					local prefix = className .. "_"
 					for _, specDef in ipairs(classDef.specs) do
 						local specName = string.sub(specDef.compositeKey, #prefix + 1)
-						if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey) then
+						if not IsExcludedCopyMenuSpec(profileName, className, specName, excludeKey) and SpecHasCopySectionBar(specDef.compositeKey, barKey) then
 							local specLabel = specDef.specLabel
 							if not ProfileHasSpec(profileName, className, specName) then
 								specLabel = GetCopyMenuNewTargetLabel(specLabel)
@@ -521,7 +542,7 @@ local function ShowUseGlobalCopyMenu(owner, classId, specId, settingKey)
 				else
 					PromptCopyConfirm(MakeData("spec", nil, className, specName, "spec", profileName, dstClass, dstSpec))
 				end
-			end, excludeKey, false)
+			end, excludeKey, false, def and def.barKey)
 		end
 
 		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
@@ -541,7 +562,7 @@ local function ShowUseGlobalCopyMenu(owner, classId, specId, settingKey)
 				else
 					PromptCopyConfirm(MakeData("spec", profileName, srcClass, srcSpec, "spec", nil, className, specName))
 				end
-			end, excludeKey, true)
+			end, excludeKey, true, def and def.barKey)
 		end
 	end)
 end
@@ -622,7 +643,7 @@ local function ShowBulkGlobalCopyMenu(owner, settingKey)
 					dstClassName    = dstClass,
 					dstSpecName     = dstSpec,
 				})
-			end, nil, false)
+			end, nil, false, def and def.barKey)
 		end
 
 		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
@@ -643,7 +664,7 @@ local function ShowBulkGlobalCopyMenu(owner, settingKey)
 					dstClassName    = nil,
 					dstSpecName     = nil,
 				})
-			end, nil, true)
+			end, nil, true, def and def.barKey)
 		end
 	end)
 end

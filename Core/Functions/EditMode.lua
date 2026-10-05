@@ -1433,9 +1433,9 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		-- ProcessBars drops the self-driven bars again here, so whatever Edit Mode left on them would
 		-- stand: hand each back to the renderer that owns it live.
 		TRB.Functions.Castbar:EnsureIdleState()
+		TRB.Functions.PetCastbar:EnsureIdleState()
 		TRB.Functions.TargetCastbar:RefreshVisibility()
 		TRB.Functions.OtherBars:RefreshVisibility()
-		TRB.Functions.PetBars:RefreshVisibility()
 	end
 end
 

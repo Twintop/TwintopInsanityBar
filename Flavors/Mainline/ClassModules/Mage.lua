@@ -1610,6 +1610,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Audio cues (independent of bar visibility)
@@ -2069,6 +2070,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.shatter, sharedSettings and sharedSettings.displayBar.shatter, TRB.Data.character.specId == 3, barGroups and barGroups.shatter and barGroups.shatter.maxNodes, nil),
 			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.arcaneSalvo, sharedSettings and sharedSettings.displayBar.arcaneSalvo, TRB.Data.character.specId == 1 and TRB.Data.character.arcaneSalvoTalented == true, 1, nil),
 		}
+		TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
 			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)

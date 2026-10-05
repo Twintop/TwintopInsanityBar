@@ -4,12 +4,7 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
 TRB.Functions.OptionsUi.PetBars = TRB.Functions.OptionsUi.PetBars or {}
 
---[[
-	Pet Bars options panel. One builder, parameterized by barKey ("petPower" / "petHealth"), editing the
-	given spec's settings or core when classId/specId are nil. Dimensions come from the shared custom-bar
-	generator; colors route through the same one the Stagger bar uses, which gives Pet Health its threshold
-	curve and Pet Resource its flat fill. Per-section "Use Global" toggles mirror the cast bars.
-]]
+-- Pet Resource and Pet Health options, for one spec or, with nil classId and specId, the Global panel.
 
 ---Constructs the appearance options for one Pet bar.
 ---@param parent Frame # The tab's scroll child

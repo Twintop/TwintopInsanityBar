@@ -6,14 +6,6 @@ TRB.Functions.OptionsUi.Visibility = TRB.Functions.OptionsUi.Visibility or {}
 local oUi = TRB.Data.constants.optionsUi
 local L = TRB.Localization
 
----Returns the RGB color values used for "Use Global Settings" checkbox label text.
----@return number r # Red component (0-1)
----@return number g # Green component (0-1)
----@return number b # Blue component (0-1)
-local function GetUseGlobalSettingsColor()
-	return 100/255, 225/255, 200/255
-end
-
 -- ============================================================================
 -- Shared condition metadata
 --
@@ -27,9 +19,8 @@ local DRUID_FORM_CONDITION_KEYS = { "isDruidHumanoidForm", "isDruidTravelFormAny
 local CASTBAR_CONDITION_KEYS = { "casting", "channeling", "empowered" }
 -- Other Bars (GCD + the mirror timers) have exactly one show state: their timer is running.
 local TIMER_CONDITION_KEYS = { "whenActive" }
--- Pet bars' options, row for row in the same order in each list; a key in both lists means the same pet states in each.
-local PET_CONDITION_KEYS = { "petOut", "petMissing", "petPermanent", "petTemporary", "petDead", "petNotDead" }
-local PET_HIDE_CONDITION_KEYS = { "petOut", "petMissing", "petNotPermanent", "petNotTemporary", "petDead", "petNotDead" }
+-- Pet bars' pet states, offered in both the show and hide lists.
+local PET_CONDITION_KEYS = { "isPetAlive", "isPetDead", "isPetMissing" }
 local STANDARD_HIDE_CONDITION_KEYS ={ "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
 
 -- Every condition key the addon can store, show-side and hide-side alike.
@@ -71,14 +62,9 @@ local CONDITION_LABELS = {
 	channeling = L["ShowBarVisibilityConditionChanneling"],
 	empowered = L["ShowBarVisibilityConditionEmpowered"],
 	whenActive = L["ShowBarVisibilityWhenActive"],
-	petOut = L["ShowBarVisibilityConditionPetOut"],
-	petPermanent = L["ShowBarVisibilityConditionPetPermanent"],
-	petTemporary = L["ShowBarVisibilityConditionPetTemporary"],
-	petDead = L["ShowBarVisibilityConditionPetDead"],
-	petMissing = L["ShowBarVisibilityConditionPetMissing"],
-	petNotPermanent = L["ShowBarVisibilityConditionPetNotPermanent"],
-	petNotTemporary = L["ShowBarVisibilityConditionPetNotTemporary"],
-	petNotDead = L["ShowBarVisibilityConditionPetNotDead"],
+	isPetAlive = L["ShowBarVisibilityConditionPetAlive"],
+	isPetDead = L["ShowBarVisibilityConditionPetDead"],
+	isPetMissing = L["ShowBarVisibilityConditionPetMissing"],
 }
 
 -- Deterministic iteration order for show-side summaries: standard, then Druid forms, then cast states,
@@ -112,6 +98,21 @@ local BASE_THRESHOLD_TYPES = {
 local BASE_THRESHOLD_LABELS = {}
 for _, thresholdType in ipairs(BASE_THRESHOLD_TYPES) do
 	BASE_THRESHOLD_LABELS[thresholdType.key] = thresholdType.label
+end
+
+-- Pet bars name the player's thresholds as the player's, beside the pet's own.
+local PET_BAR_THRESHOLD_TYPES = {
+	{ key = "resourcePercent",    label = L["BarVisibilityThresholdPlayerResourcePercent"], comparisonLabel = L["BarVisibilityThresholdPlayerResourcePercentComparison"], valueLabel = L["BarVisibilityThresholdPlayerResourcePercentValue"], isPercent = true },
+	{ key = "resourceValue",      label = L["BarVisibilityThresholdPlayerResourceValue"],   comparisonLabel = L["BarVisibilityThresholdPlayerResourceValueComparison"],   valueLabel = L["BarVisibilityThresholdPlayerResourceValueValue"],   isPercent = false },
+	{ key = "healthPercent",      label = L["BarVisibilityThresholdPlayerHealthPercent"],   comparisonLabel = L["BarVisibilityThresholdPlayerHealthPercentComparison"],   valueLabel = L["BarVisibilityThresholdPlayerHealthPercentValue"],   isPercent = true },
+	{ key = "healthValue",        label = L["BarVisibilityThresholdPlayerHealthValue"],     comparisonLabel = L["BarVisibilityThresholdPlayerHealthValueComparison"],     valueLabel = L["BarVisibilityThresholdPlayerHealthValueValue"],     isPercent = false },
+	{ key = "petHealthPercent",   label = L["BarVisibilityThresholdPetHealthPercent"],      comparisonLabel = L["BarVisibilityThresholdPetHealthPercentComparison"],      valueLabel = L["BarVisibilityThresholdPetHealthPercentValue"],      isPercent = true },
+	{ key = "petResourcePercent", label = L["BarVisibilityThresholdPetResourcePercent"],    comparisonLabel = L["BarVisibilityThresholdPetResourcePercentComparison"],    valueLabel = L["BarVisibilityThresholdPetResourcePercentValue"],    isPercent = true },
+}
+
+local PET_BAR_THRESHOLD_LABELS = {}
+for _, thresholdType in ipairs(PET_BAR_THRESHOLD_TYPES) do
+	PET_BAR_THRESHOLD_LABELS[thresholdType.key] = thresholdType.label
 end
 
 ---Copies the given keys into a new array, in order.
@@ -174,8 +175,9 @@ end
 ---condition, comma separated. The header ellipsizes it to fit and keeps the full text in a tooltip,
 ---so this never abbreviates to a count the way the Visibility tab's dropdown button does.
 ---@param visSettings trbBarVisibilitySetting|nil # The bar's displayBar entry
+---@param visibilityKey string? # The bar's displayBar key, which picks the pet bars' threshold names
 ---@return string summary # Localized summary text
-function TRB.Functions.OptionsUi.Visibility:GetBarStatusSummary(visSettings)
+function TRB.Functions.OptionsUi.Visibility:GetBarStatusSummary(visSettings, visibilityKey)
 	if visSettings == nil or visSettings.neverShow then
 		return L["BarVisibilityTableShowNeverShown"]
 	end
@@ -195,7 +197,8 @@ function TRB.Functions.OptionsUi.Visibility:GetBarStatusSummary(visSettings)
 
 	local conditionType = visSettings.resourceConditionType
 	if conditionType ~= nil and conditionType ~= "none" then
-		local thresholdLabel = BASE_THRESHOLD_LABELS[conditionType]
+		local thresholdLabels = TRB.Classes.BarTypeRegistry:IsPetBar(visibilityKey) and PET_BAR_THRESHOLD_LABELS or BASE_THRESHOLD_LABELS
+		local thresholdLabel = thresholdLabels[conditionType]
 		if thresholdLabel == nil then
 			-- Spec-defined threshold types aren't in the base set, so name the group instead.
 			thresholdLabel = L["BarVisibilityThresholdHeader"]
@@ -300,12 +303,12 @@ function TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specI
 
 	-- Never Show toggles change castbar enablement + whether the Blizzard cast bar is detached.
 	TRB.Functions.Castbar:SyncEnabledState()
+	TRB.Functions.PetCastbar:SyncEnabledState()
 	-- Re-resolve the target/focus idle (Always Show) / hidden display for the new visibility settings.
 	TRB.Functions.TargetCastbar:RefreshVisibility()
 	-- Same for the Other Bars, which also re-arms the GCD events and Blizzard Duration Bar suppression.
 	TRB.Functions.OtherBars:SyncGcdEvents()
 	TRB.Functions.OtherBars:RefreshVisibility()
-	TRB.Functions.PetBars:RefreshVisibility()
 end
 
 -- ============================================================================
@@ -415,7 +418,7 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 	configureLink:SetText(L["BarTabConfigureVisibility"])
 	configureLink:SetWidth(configureLink:GetFontString():GetStringWidth() + 4)
 	configureLink:SetHeight(16)
-	configureLink:GetFontString():SetTextColor(GetUseGlobalSettingsColor())
+	configureLink:GetFontString():SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 	-- Above the checkbox so the label can never swallow clicks meant for the link.
 	configureLink:SetFrameLevel(checkbox:GetFrameLevel() + 1)
 	configureLink.tooltip = L["BarTabConfigureVisibilityTooltip"]
@@ -428,7 +431,7 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 		GameTooltip:Show()
 	end)
 	configureLink:SetScript("OnLeave", function(self)
-		self:GetFontString():SetTextColor(GetUseGlobalSettingsColor())
+		self:GetFontString():SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		SetCursor(nil)
 		GameTooltip:Hide()
 	end)
@@ -552,7 +555,7 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 			statusText = L["BarTabVisibilityNeverWarning"]
 			status:SetTextColor(1, 0.82, 0)
 		else
-			statusText = string.format(L["BarTabVisibilityShowsPrefix"], TRB.Functions.OptionsUi.Visibility:GetBarStatusSummary(visSettings))
+			statusText = string.format(L["BarTabVisibilityShowsPrefix"], TRB.Functions.OptionsUi.Visibility:GetBarStatusSummary(visSettings, visibilityKey))
 			status:SetTextColor(0.75, 0.75, 0.75)
 		end
 		status:SetText(statusText)
@@ -676,7 +679,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		f = controls.checkBoxes.useGlobalDisplayBar
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
-		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barVisibility")
 		f.tooltip = L["CheckboxUseGlobalTooltip_BarDisplay"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayBar)
@@ -800,6 +803,17 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = castbarHideKeys } },
 		supportsThresholds = false,
 	}
+	-- The Pet Cast Bar: the cast bar profile without Empowered, which no pet casts.
+	local petCastbarConditionKeys = { "casting", "channeling" }
+	local petCastbarProfile = {
+		showKeys = petCastbarConditionKeys,
+		showLabels = castbarConditionLabels,
+		showGroups = { { title = L["ShowBarVisibilityGroupCasting"], keys = petCastbarConditionKeys } },
+		hideKeys = castbarHideKeys,
+		hideLabels = castbarHideLabels,
+		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = castbarHideKeys } },
+		supportsThresholds = false,
+	}
 	-- Other Bars (GCD + the mirror timers): one show state, "When Active", meaning the bar's timer is
 	-- running. It sits alongside Always Show / Never Show exactly like the cast bars' cast states do, so
 	-- a bar can be enabled without being pinned on screen. Resource/health thresholds don't apply, but
@@ -816,9 +830,23 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideGroups = hideConditionGroups,
 		supportsThresholds = false,
 	}
-	-- Pet bars: the standard lists and thresholds, each list closed by a Pet group of states or their negations.
+	local thresholdTypeDefinitions = {}
+	for _, tt in ipairs(BASE_THRESHOLD_TYPES) do
+		thresholdTypeDefinitions[tt.key] = tt
+	end
+	for _, tt in ipairs(extraThresholdTypes) do
+		thresholdTypeDefinitions[tt.key] = tt
+	end
+	local petThresholdTypeDefinitions = {}
+	for _, tt in ipairs(PET_BAR_THRESHOLD_TYPES) do
+		petThresholdTypeDefinitions[tt.key] = tt
+	end
+	-- The selected bar's definitions, so the detail panel's labels follow its profile.
+	local activeThresholdDefinitions = thresholdTypeDefinitions
+
+	-- Pet bars: the standard lists and thresholds, each list closed by a Pet group of pet states.
 	local petShowKeys, petShowGroups = AppendGroup(conditionKeys, conditionGroups, L["ShowBarVisibilityGroupPet"], CopyKeys(PET_CONDITION_KEYS))
-	local petHideKeys, petHideGroups = AppendGroup(hideConditionKeys, hideConditionGroups, L["ShowBarVisibilityGroupPet"], CopyKeys(PET_HIDE_CONDITION_KEYS))
+	local petHideKeys, petHideGroups = AppendGroup(hideConditionKeys, hideConditionGroups, L["ShowBarVisibilityGroupPet"], CopyKeys(PET_CONDITION_KEYS))
 	local petBarProfile = {
 		showKeys = petShowKeys,
 		showLabels = LabelsFor(petShowKeys),
@@ -827,6 +855,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideLabels = LabelsFor(petHideKeys),
 		hideGroups = petHideGroups,
 		supportsThresholds = true,
+		thresholdDefinitions = petThresholdTypeDefinitions,
 	}
 	local standardProfile = {
 		showKeys = conditionKeys,
@@ -836,6 +865,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideLabels = hideConditionLabels,
 		hideGroups = hideConditionGroups,
 		supportsThresholds = true,
+		thresholdDefinitions = thresholdTypeDefinitions,
 	}
 
 	---Returns the condition profile (show/hide keys, labels, groups) for a bar entry.
@@ -849,21 +879,15 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			return timerBarProfile
 		end
 		if barEntry ~= nil and barEntry.isCastbar then
-			if barEntry.displayBarKey == "targetCastbar" or barEntry.displayBarKey == "focusCastbar"
-				or barEntry.displayBarKey == "petCastbar" then
+			if barEntry.displayBarKey == "petCastbar" then
+				return petCastbarProfile
+			end
+			if barEntry.displayBarKey == "targetCastbar" or barEntry.displayBarKey == "focusCastbar" then
 				return targetCastbarProfile
 			end
 			return castbarProfile
 		end
 		return standardProfile
-	end
-
-	local thresholdTypeDefinitions = {}
-	for _, tt in ipairs(BASE_THRESHOLD_TYPES) do
-		thresholdTypeDefinitions[tt.key] = tt
-	end
-	for _, tt in ipairs(extraThresholdTypes) do
-		thresholdTypeDefinitions[tt.key] = tt
 	end
 
 	local function GetThresholdTypesForBarEntry(barEntry)
@@ -873,7 +897,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			return {}
 		end
 		local types = {}
-		for _, tt in ipairs(BASE_THRESHOLD_TYPES) do
+		for _, tt in ipairs((barEntry ~= nil and barEntry.isPetBar) and PET_BAR_THRESHOLD_TYPES or BASE_THRESHOLD_TYPES) do
 			table.insert(types, tt)
 		end
 
@@ -930,8 +954,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 		-- Include resource/health threshold as an additional condition in the summary
 		local ct = entry.resourceConditionType
-		if profile.supportsThresholds and ct ~= nil and ct ~= "none" and thresholdTypeDefinitions[ct] ~= nil then
-			table.insert(selectedLabels, thresholdTypeDefinitions[ct].label)
+		if profile.supportsThresholds and ct ~= nil and ct ~= "none" and profile.thresholdDefinitions[ct] ~= nil then
+			table.insert(selectedLabels, profile.thresholdDefinitions[ct].label)
 		end
 		return GetConditionDisplayName(selectedLabels)
 	end
@@ -1359,8 +1383,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
-	-- Pet bars: self-driven render (Functions/PetBars.lua), only on the specs that have the settings. The Pet Cast
-	-- Bar rides along but takes the cast bars' states.
+	-- Pet bars, only on the specs that have their settings; the Pet Cast Bar takes the cast bars' states.
 	local petBarKeysForPanel = (classId == nil) and TRB.Classes.BarTypeRegistry.petScopeKeys
 		or TRB.Classes.BarTypeRegistry:GetPetScopeKeys(classId, specId)
 	for _, petBarKey in ipairs(petBarKeysForPanel) do
@@ -1574,7 +1597,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			return 1000000
 		end
 
-		local thresholdDefinition = thresholdTypeDefinitions[conditionType]
+		local thresholdDefinition = activeThresholdDefinitions[conditionType]
 		if thresholdDefinition ~= nil and type(thresholdDefinition.maxValue) == "number" then
 			return thresholdDefinition.maxValue
 		end
@@ -1598,7 +1621,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	local function UpdateThresholdControlLabels(conditionType)
-		local thresholdDefinition = thresholdTypeDefinitions[conditionType]
+		local thresholdDefinition = activeThresholdDefinitions[conditionType]
 		if thresholdDefinition ~= nil then
 			controls.dropDown.selectedThresholdComparison.label:SetText(thresholdDefinition.comparisonLabel)
 			controls.sliders.selectedThresholdValue.Title:SetText(thresholdDefinition.valueLabel)
@@ -1621,7 +1644,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			controls.sliders.selectedThresholdValue:Show()
 
 			-- Reconfigure slider range based on type
-			local thresholdDefinition = thresholdTypeDefinitions[conditionType]
+			local thresholdDefinition = activeThresholdDefinitions[conditionType]
 			local isPercent = thresholdDefinition ~= nil and thresholdDefinition.isPercent == true
 			if isPercent then
 				controls.sliders.selectedThresholdValue:SetMinMaxValues(0, 100)
@@ -1668,6 +1691,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		-- Determine if this bar needs the appearance refresh (custom bars)
 		local refreshFunc = barEntry.isCustomBar and RefreshVisibilityAndAppearance or RefreshVisibilitySettings
 		local profile = GetProfileForEntry(barEntry)
+		activeThresholdDefinitions = profile.thresholdDefinitions or thresholdTypeDefinitions
 
 		-- Visibility dropdowns
 		local function OnVisibilityChange()
@@ -1718,7 +1742,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end)
 
 		-- Smooth checkbox (hidden wherever the fill is timeline-driven rather than resource-driven)
-		if barEntry.isCastbar or barEntry.isTimerBar or barEntry.isPetBar or barEntry.hidesSmooth then
+		if barEntry.isCastbar or barEntry.isTimerBar or barEntry.hidesSmooth then
 			controls.checkBoxes.selectedSmooth:Hide()
 		else
 			controls.checkBoxes.selectedSmooth:Show()
@@ -1794,7 +1818,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		controls.sliders.selectedThresholdValue:SetScript("OnValueChanged", function(self, value)
 			-- Compute precision dynamically based on current condition type (may change after FillDetailPanel)
 			local ct = visSettings.resourceConditionType or "none"
-			local thresholdDefinition = thresholdTypeDefinitions[ct]
+			local thresholdDefinition = activeThresholdDefinitions[ct]
 			local precision = (thresholdDefinition ~= nil and thresholdDefinition.isPercent == true) and 1 or 0
 			value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, precision, nil, true)

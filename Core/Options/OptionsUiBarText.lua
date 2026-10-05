@@ -10,14 +10,6 @@ local actionCellDimAlpha = 0.65
 local actionCellBrightAlpha = 1.0
 local deleteActionTextColor = { r = 1, g = 0.12, b = 0.12, a = 1 }
 
----Returns the RGB color values used for "Use Global Settings" checkbox label text.
----@return number r # Red component (0-1)
----@return number g # Green component (0-1)
----@return number b # Blue component (0-1)
-local function GetUseGlobalSettingsColor()
-	return 100/255, 225/255, 200/255
-end
-
 -- ============================================================================
 -- Bar text editor options
 -- ============================================================================
@@ -105,7 +97,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		local f = controls.checkBoxes.useGlobalBarText
 		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobalBarText"])
-		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barText")
 		f.tooltip = L["CheckboxUseGlobalTooltip_GlobalBarText"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].globalBarText)
@@ -1096,8 +1088,11 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		local globalBarTextCount = 0
 		if globalSettings.globalBarText and core.displayText and core.displayText.barText and #core.displayText.barText > 0 then
 			mergedBarText = {}
+			local registryEntry = TRB.Functions.Character:GetSpecRegistryEntry(composite)
 			for _, entry in ipairs(core.displayText.barText) do
-				mergedBarText[#mergedBarText + 1] = entry
+				if registryEntry == nil or TRB.Functions.BarText:IsEntryInScope(entry, registryEntry.classId, registryEntry.specId) then
+					mergedBarText[#mergedBarText + 1] = entry
+				end
 			end
 			globalBarTextCount = #mergedBarText
 			for _, entry in ipairs(destSpec.displayText.barText) do

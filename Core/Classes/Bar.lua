@@ -2608,6 +2608,25 @@ function TRB.Classes.BarTypeRegistry:IsPetBar(key)
 	return false
 end
 
+---Whether a spec has a bar at all: the pet bars need a spec with a pet, a class-scoped Other Bar needs its
+---class's claim, and every other bar is everywhere. A nil classId is the global scope, which holds the pet bars.
+---@param barKey string
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsBarInScope(barKey, classId, specId)
+	for _, key in ipairs(self.petScopeKeys) do
+		if key == barKey then
+			return classId == nil or self:SpecHasPet(classId, specId)
+		end
+	end
+	local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get(barKey)
+	if definition ~= nil and definition.classScoped then
+		return ClassClaimsOtherBar(classId, barKey)
+	end
+	return true
+end
+
 ---Appends the Pet bar definitions to a customBars list if registered and not already present.
 ---Mirrors AppendOtherBars.
 ---@param list TRB.Classes.BarTypeDefinition[]
@@ -2882,7 +2901,6 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		hasThresholds = false,
 		colorCurveType = nil,
 		visibilityKey = "petPower",
-		isSelfDriven = true,
 		usesSecretValue = true,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultPetBarSettings(classic, "petPower")
@@ -2917,7 +2935,6 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		colorTypeLinearLabel = L["ColorTypeLinear"],
 		colorTypeNoneLabel = L["ColorTypeNone"],
 		visibilityKey = "petHealth",
-		isSelfDriven = true,
 		usesSecretValue = true,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultPetBarSettings(classic, "petHealth")
@@ -2930,7 +2947,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end
 	}))
 
-	-- Pet Cast Bar. Same secret-safe timer-driven render as the Target and Focus bars, on the "pet" unit,
+	-- Pet Cast Bar. The player Cast Bar's model and render on the "pet" unit, whose cast values are plain,
 	-- and only offered to the specs that can hold a pet.
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "petCastbar",
@@ -2946,10 +2963,10 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		isCastbar = true,
 		isSelfDriven = true,
 		defaultDimensionsFunc = function(classic)
-			return TRB.Functions.Settings:DefaultTargetCastbarBarSettings(classic, "petCastbar")
+			return TRB.Functions.Settings:DefaultPetCastbarBarSettings(classic)
 		end,
 		defaultColorsFunc = function()
-			return TRB.Functions.Settings:DefaultTargetCastbarBarColors()
+			return TRB.Functions.Settings:DefaultPetCastbarBarColors()
 		end,
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()
