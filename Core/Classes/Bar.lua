@@ -2036,7 +2036,7 @@ end
 ---@field public isMultiNode boolean # True if bar has multiple nodes (like combo points), false for single node
 ---@field public maxNodes integer # Maximum number of nodes (1 for single-node bars)
 ---@field public minMaxMode string # "discrete" (0-1), "stepped" (i-1,i per node), "health", "mana", "percentage", or "custom"
----@field public thresholdScaleFromLiveMax boolean? # When true, the custom-threshold value SLIDER uses thresholdMin/Max, but runtime positioning AND over/under compare against the bar's LIVE max, not thresholdMax. Unset by every bar today: it needs a plain live max, which neither a CDM-fed timer bar nor a secret-valued bar has.
+---@field public thresholdScaleFromLiveMax boolean? # When true, the custom-threshold value SLIDER uses thresholdMin/Max, but runtime positioning AND over/under compare against the bar's LIVE max, not thresholdMax. It needs a plain live max, which neither a CDM-fed timer bar nor a secret-valued bar has.
 ---@field public thresholdRuntimeMaxFunc (fun(): number?)? # Returns a plain live max for positioning custom threshold lines, for bars whose frame min/max reads secret. The value SLIDER still uses thresholdMin/Max.
 ---@field public thresholdActiveAttribute string? # Optional snapshot attribute name that must be truthy for this bar's custom threshold lines to render. nil = always render. Unset by every bar today.
 ---@field public hasSpacing boolean # True if bar supports spacing option (multi-node only)

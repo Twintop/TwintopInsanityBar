@@ -118,18 +118,20 @@ end
 ---game value and is only capped by the optional `maxResource.value` override when it is enabled.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param fallback number
----@return number
+---@return number barMax # The shown range, capped by the override
+---@return number resourceMax # The live maximum, ignoring the override
 local function GetPrimaryBarMaxValue(settings, fallback)
 	local maxResource = TRB.Data.character and TRB.Data.character.maxResourceUnmodified
 	if maxResource == nil or maxResource <= 0 then
 		maxResource = GetPositivePlainNumber(fallback, 100)
 	end
+	local resourceMax = GetPositivePlainNumber(maxResource, 100)
 
 	if settings.maxResource ~= nil and settings.maxResource.enabled == true and GetPlainNumber(settings.maxResource.value, 0) > 0 then
 		maxResource = math.min(settings.maxResource.value, maxResource)
 	end
 
-	return GetPositivePlainNumber(maxResource, 100)
+	return GetPositivePlainNumber(maxResource, 100), resourceMax
 end
 
 
@@ -1454,6 +1456,8 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	local nodes = nil
 	local nodeCount = 0
 	local nodeStartIndex = 1
+	-- The live maximum, which a max override can put above maxValue: offsets resolve from it and the curve measures against it.
+	local resourceMaxValue = nil
 	-- True only for bars whose live value is a non-secret Lua number summed from node fills
 	-- (charge/stack custom bars). Those have no secret-safe percent API, so their over/under
 	-- coloring is decided by a direct numeric comparison instead of a ColorCurve.
@@ -1538,7 +1542,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		else
 			currentValue = GetPlainNumber(currentValue, 0)
 		end
-		maxValue = GetPrimaryBarMaxValue(settings, maxValue)
+		maxValue, resourceMaxValue = GetPrimaryBarMaxValue(settings, maxValue)
 		fillDirection = settings.bar and settings.bar.fillDirection or fillDirection
 		border = settings.bar and settings.bar.border or 0
 		resourceType = TRB.Data.resource
@@ -1547,6 +1551,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		-- secret-safe Mana ColorCurve (resourceType stays a real PowerType).
 		if resourceType == Enum.PowerType.Mana then
 			maxValue = 100
+			resourceMaxValue = nil
 			currentValue = GetPlainNumber(attributes.resourcePercent, 0)
 		end
 	elseif baseKey == "secondary" then
@@ -1733,6 +1738,11 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			-- A custom bar filled by a player power compares through that power's secret-safe curve.
 			if barTypeDef.powerType ~= nil then
 				resourceType = barTypeDef.powerType
+				local liveMax = GetPlainNumber(UnitPowerMax("player", barTypeDef.powerType), 0)
+				if liveMax > 0 then
+					resourceMaxValue = liveMax
+					maxValue = TRB.Functions.Bar:GetCustomBarMaxValue(barSettings, liveMax)
+				end
 			end
 
 			-- Explicit per-definition value scale (e.g. Shield Block 0-8s) overrides the node-count max.
@@ -1806,6 +1816,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		currentValue = currentValue or 0,
 		minValue = minValue,
 		maxValue = maxValue,
+		resourceMaxValue = resourceMaxValue,
 		fillDirection = fillDirection,
 		border = border,
 		resourceType = resourceType,
@@ -2198,8 +2209,10 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 				local configuredValue = customThreshold.value
 				local minValue = targetInfo.minValue or 0
 				local maxValue = targetInfo.maxValue or 100
+				-- Above maxValue when a max override shortens the bar; lines resolved past maxValue stay hidden.
+				local resourceMax = targetInfo.resourceMaxValue or maxValue
 				-- Offset-mode lines store an offset from max; resolve to an absolute value before positioning.
-				local effectiveValue = TRB.Functions.Threshold:GetEffectiveCustomThresholdValue(customThreshold, maxValue)
+				local effectiveValue = TRB.Functions.Threshold:GetEffectiveCustomThresholdValue(customThreshold, resourceMax)
 				local thresholdValue = math.max(minValue, effectiveValue)
 				local inRange = thresholdValue <= maxValue
 				-- Compressed Maelstrom Weapon: base (1-5) and overflow (6-10) lines share the same nodes,
@@ -2280,8 +2293,9 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 				-- then build the value-based line curve (under->over) and the icon
 				-- desaturation curve (gray->white) on the same value/max range.
 				local underColor, overColor = TRB.Functions.Threshold:ResolveThresholdCurveColors(spellShim, settings)
-				local thresholdCurve = TRB.Functions.Color:BuildThresholdValueCurve(thresholdValue, maxValue, underColor, overColor)
-				local iconCurve = TRB.Functions.Color:BuildThresholdValueCurve(thresholdValue, maxValue, "FF808080", "FFFFFFFF")
+				-- UnitPowerPercent measures against the live maximum, not the shown range.
+				local thresholdCurve = TRB.Functions.Color:BuildThresholdValueCurve(thresholdValue, resourceMax, underColor, overColor)
+				local iconCurve = TRB.Functions.Color:BuildThresholdValueCurve(thresholdValue, resourceMax, "FF808080", "FFFFFFFF")
 
 				local curveApplied = TRB.Functions.Threshold:ApplyCustomThresholdCurveColor(
 					threshold, targetInfo, thresholdCurve, iconCurve, settings, thresholdOverrides

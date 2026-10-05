@@ -197,8 +197,8 @@ function TRB.Forever.Templates.Runtime:Install(className)
 
 			lookupLogic["$resource"] = normalizedResource
 			lookupLogic[variable] = normalizedResource
-			lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-			lookupLogic[variable .. "Max"] = TRB.Data.character.maxResource
+			lookupLogic["$resourceMax"] = TRB.Data.character.maxResourceUnmodified
+			lookupLogic[variable .. "Max"] = TRB.Data.character.maxResourceUnmodified
 			lookupLogic["$resourcePercent"] = resourcePercent
 			lookupLogic[variable .. "Percent"] = resourcePercent
 			lookupLogic["$casting"] = castingResource
@@ -209,8 +209,8 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				lookup[variable] = formatted
 				lookup["$resource"] = formatted
 			end
-			if lookupChanged(prevState, variable .. "Max", TRB.Data.character.maxResource, currentColor) then
-				local formatted = string.format("|c%s%s|r", currentColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResource))
+			if lookupChanged(prevState, variable .. "Max", TRB.Data.character.maxResourceUnmodified, currentColor) then
+				local formatted = string.format("|c%s%s|r", currentColor, TRB.Functions.String:ConvertToAbbreviatedNumber(TRB.Data.character.maxResourceUnmodified))
 				lookup[variable .. "Max"] = formatted
 				lookup["$resourceMax"] = formatted
 			end
@@ -325,13 +325,18 @@ function TRB.Forever.Templates.Runtime:Install(className)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
-				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, snapshotData.attributes.resourceModified)
+				-- The bar's range is raw units (maxResource); threshold costs are in displayed units.
+				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, snapshotData.attributes.resource)
 				Bar:ApplyNodeIndicators(primaryNode, "resourceBar")
 				Color:ApplyNodeGradientColors(primaryNode, "resourceBar", barColors, gradient, powerType, specSettings.overcap)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
+				local thresholdMax = TRB.Data.character.maxResourceUnmodified
 				-- A secret maximum leaves nothing to place the lines against.
-				if not issecretvalue(TRB.Data.character.maxResource) then
-					thresholdBar:Set(primaryNode, TRB.Data.character.maxResource)
+				if not issecretvalue(thresholdMax) then
+					if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
+						thresholdMax = math.min(specCacheSettings.maxResource.value, thresholdMax)
+					end
+					thresholdBar:Set(primaryNode, thresholdMax)
 					thresholdState:Refresh(specCacheSettings)
 					thresholdState.stance = runtime.stance
 					thresholdData:Refresh(runtime.talents)
@@ -523,7 +528,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 		if enabled then
 			TRB.Data.specSupported = true
 			TRB.Data.resource = spec.archetype.powerType
-			TRB.Data.resourceFactor = 1
+			TRB.Data.resourceFactor = spec.archetype.resourceFactor or 1
 			if spec.archetype.secondary ~= nil then
 				TRB.Data.resource2 = spec.archetype.secondary.powerType
 				TRB.Data.resource2Factor = 1

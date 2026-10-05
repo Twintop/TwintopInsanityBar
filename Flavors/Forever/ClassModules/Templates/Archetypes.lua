@@ -25,6 +25,7 @@ TRB.Forever.Templates = TRB.Forever.Templates or {}
 ---@field public nameKey string # localization key of the resource name
 ---@field public variable string # bar text variable stem (without "$"), e.g. "mana" -> $mana, $manaMax
 ---@field public defaultMax integer # maxResource before the client reports one
+---@field public resourceFactor integer? # raw UnitPower units per displayed unit; nil means 1
 ---@field public defaultText "resource"|"mana" # GlobalLoadDefaultBarTextSettings resource type
 ---@field public colors TRB.Forever.ArchetypeColors
 ---@field public secondary TRB.Forever.ArchetypeSecondary?
@@ -114,6 +115,7 @@ TRB.Forever.Archetypes = {
 		nameKey = "ResourceRage",
 		variable = "rage",
 		defaultMax = 100,
+		resourceFactor = 10,
 		defaultText = "resource",
 		colors = { textCurrent = "FFFF0000", textCasting = "FFFFFFFF", textPassive = "FFFF8080", barBase = "FFFF0000", barBorder = "FF990000", barBackground = "66000000" },
 		overcap = rageOvercap,

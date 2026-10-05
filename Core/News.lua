@@ -4,6 +4,14 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.0.17-release / Forever 1.60.1.5-release (2026-10-05)
+## General
+
+- Fix custom threshold lines changing color at the wrong value on a bar with a Maximum Bar Value override.
+- Custom threshold lines in Offset mode count back from the resource's maximum, not the Maximum Bar Value override.
+
+---
+
 # Live 12.1.0.15-release / Forever 1.60.1.3-release (2026-10-03)
 ## Localization
 

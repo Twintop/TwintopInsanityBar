@@ -8,6 +8,23 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.5-release (2026-10-05)
+## General
+### Core Changes
+
+- See [Core Changes](tab:core).
+
+## Druid
+
+- Add a Maximum Bar Value override to the Rage and Energy bars.
+- Fix the `$rage` overcap text color using ten times the maximum Rage.
+
+## Warrior
+
+- Fix the Rage bar's fill, threshold lines, and `$rageMax` using ten times the maximum Rage.
+
+---
+
 # 1.60.1.4-release (2026-10-03)
 ## Druid
 
