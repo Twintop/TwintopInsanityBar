@@ -8,7 +8,8 @@ local L = TRB.Localization
 
 --[[
 	Other Bars options panel. One builder, parameterized by barKey ("gcd" / "fatigue" / "breath" /
-	"feignDeath"). Edits the given spec's per-spec settings, or core when classId/specId are nil.
+	"feignDeath", plus the swing bars where the flavor has them). Edits the given spec's per-spec settings,
+	or core when classId/specId are nil.
 	Per-section "Use Global" toggles mirror the cast bars: Dimensions and Colors each copy their
 	slice from core independently.
 
@@ -31,14 +32,26 @@ local function ReapplyBars()
 		end
 	end
 	TRB.Data.lookupDirty = true
+	TRB.Functions.BarText:InvalidateOtherBarsLookup()
 	TRB.Functions.OtherBars:RefreshVisibility()
+end
+
+---@param barKey string
+---@return boolean
+local function IsSwingBar(barKey)
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+		if key == barKey then
+			return true
+		end
+	end
+	return false
 end
 
 ---Constructs the appearance options for one Other Bar within a spec.
 ---@param parent Frame # The tab's scroll child
 ---@param classId integer? # nil edits core (global) scope
 ---@param specId integer?
----@param barKey string # "gcd", "fatigue", "breath" or "feignDeath"
+---@param barKey string # "gcd", "fatigue", "breath", "feignDeath", "mainHandSwing", "offHandSwing" or "rangedSwing"
 function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specId, barKey)
 	if parent == nil then
 		return
@@ -99,10 +112,36 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(colorsCheckbox, controls[barKey .. "ColorSection"], yCoord)
 
 	-- Behaviour: one option each. The GCD picks its fill direction; a mirror timer decides whether to
-	-- take Blizzard's own bar off screen.
+	-- take Blizzard's own bar off screen. A swing bar has both.
+	local isSwing = IsSwingBar(barKey)
 	controls[barKey .. "BehaviorSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["OtherBarsBehaviorHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-	if barKey == "gcd" then
+	if isSwing then
+		TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["SwingTimerWeaponNote"], oUi.xCoord, yCoord, 700, 20, GameFontHighlight)
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_timerDirection", L["GcdBarGrowInstead"], L["SwingTimerGrowInsteadTooltip"], yCoord,
+			function() return barSettings.timerDirection == "fill" end,
+			function(v)
+				barSettings.timerDirection = v and "fill" or "deplete"
+				ReapplyBars()
+			end)
+		yCoord = yCoord - 20
+		-- One switch for all three swing bars: write every one in this scope and re-tick the other tabs.
+		cc.disableBlizzardBar = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_disableBlizzardBar", L["MirrorTimerDisableBlizzard"], L["SwingTimerDisableBlizzardTooltip"], yCoord,
+			function() return barSettings.disableBlizzardBar end,
+			function(v)
+				for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+					if spec.bars[swingKey] ~= nil then
+						spec.bars[swingKey].disableBlizzardBar = v
+					end
+					local siblingCheckbox = controls[swingKey] and controls[swingKey].disableBlizzardBar
+					if siblingCheckbox ~= nil then
+						siblingCheckbox:SetChecked(v)
+					end
+				end
+				ReapplyBars()
+			end)
+	elseif barKey == "gcd" then
 		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_timerDirection", L["GcdBarGrowInstead"], L["GcdBarGrowInsteadTooltip"], yCoord,
 			function() return barSettings.timerDirection == "fill" end,
 			function(v)
@@ -120,9 +159,9 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 	end
 	yCoord = yCoord - 40
 
-	-- Decimal places for the GCD's $gcdDuration / $gcdDurationRemaining bar text variables. The mirror
-	-- timers run for minutes and render as mm:ss, so they have no decimals to configure.
-	if barKey == "gcd" then
+	-- Decimal places for the GCD's and swing bars' duration bar text variables. The mirror timers run for
+	-- minutes and render as mm:ss, so they have no decimals to configure.
+	if barKey == "gcd" or isSwing then
 		cc.durationPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["OtherBarsDurationPrecision"], 0, 3, barSettings.durationPrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		cc.durationPrecision:SetScript("OnValueChanged", function(sliderFrame, value)

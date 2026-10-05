@@ -55,7 +55,7 @@ end
 ---@return TRB.Classes.Settings.SpecializationGlobalEnabled
 local function NewSpecGlobalDefaults()
 	-- Every toggle but the Font & Text tab's ships on: Global Options drives a fresh install until the user opts a spec out.
-    return {
+    local defaults = {
 		--specEnable = false,
 		bar = true,
 		comboPoints = true,
@@ -92,6 +92,11 @@ local function NewSpecGlobalDefaults()
 		breathDimensions = true,
 		breathColors = true
 	}
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+		defaults[key .. "Dimensions"] = true
+		defaults[key .. "Colors"] = true
+	end
+	return defaults
 end
 
 ---The pet bars' "use global" toggles, which only a spec with a pet gets.
@@ -316,7 +321,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					focusCastBarText = true,
 					otherBarsText = true,
 					hunterFeignDeathBarText = true,
-					petBarsText = true
+					petBarsText = true,
+					swingTimersText = true
 				}
 			},
 			-- Per-class/spec "use global" toggles; populated from the class/spec registry below.
@@ -1291,6 +1297,58 @@ function TRB.Functions.Settings:SeedPetBarsText(core)
 	displayText.migrations.petBarsText = true
 end
 
+---Default swing timer bar text: each bar's hand on its left and time to the next swing on its right. Empty
+---without swing bars.
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultSwingTimerBarTextSettings()
+	local handLabels = { mainHandSwing = L["SwingTimerLabelMainHand"], offHandSwing = L["SwingTimerLabelOffHand"], rangedSwing = L["SwingTimerLabelRanged"] }
+	-- The label renders through a variable, so a shared profile reads in the viewer's client language.
+	local handVariables = { mainHandSwing = "$mainHandLocale", offHandSwing = "$offHandLocale", rangedSwing = "$rangedLocale" }
+	local entries = {}
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+		local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get(key)
+		local frameKey = key:gsub("^%l", string.upper) .. "Bar"
+
+		local label = self:LoadDefaultOtherBarTextSettings(frameKey, definition.displayName, "", "CENTER", 13)
+		label.name = handLabels[key]
+		label.text = handVariables[key]
+		label.fontJustifyHorizontal = "LEFT"
+		label.fontJustifyHorizontalName = L["PositionLeft"]
+		label.position.relativeTo = "LEFT"
+		label.position.relativeToName = L["PositionLeft"]
+		label.position.xPos = 2
+		entries[#entries + 1] = label
+
+		entries[#entries + 1] = self:LoadDefaultOtherBarTextSettings(frameKey, definition.displayName, "$" .. key .. "DurationRemaining", "RIGHT", 13)
+	end
+	return entries
+end
+
+---Seeds the swing timer bars' default text into saved global bar text, from the flavor's PortForwardSettings.
+---Flagged so deleted entries stay deleted; the scan skips any swing frame that already has text.
+---@param core table? # The saved core settings
+function TRB.Functions.Settings:SeedSwingTimersText(core)
+	local displayText = core ~= nil and core.displayText or nil
+	if displayText == nil or type(displayText.barText) ~= "table" then
+		return
+	end
+	displayText.migrations = displayText.migrations or {}
+	if not displayText.migrations.swingTimersText then
+		local anchoredFrames = {}
+		for _, entry in ipairs(displayText.barText) do
+			if entry.position ~= nil and entry.position.relativeToFrame ~= nil then
+				anchoredFrames[entry.position.relativeToFrame] = true
+			end
+		end
+		for _, entry in ipairs(self:LoadDefaultSwingTimerBarTextSettings()) do
+			if not anchoredFrames[entry.position.relativeToFrame] then
+				table.insert(displayText.barText, entry)
+			end
+		end
+	end
+	displayText.migrations.swingTimersText = true
+end
+
 ---Gets the default Target/Focus Cast Bar colors. `bar` is the standard-cast fill, `channel` recolors a
 ---channel, `empower` recolors an empowered cast (differentiated by event), `uninterruptible` /
 ---`uninterruptibleBorder` recolor the fill / border when a hostile cast can't be interrupted (via the
@@ -1518,6 +1576,60 @@ function TRB.Functions.Settings:DefaultMirrorTimerBarColors(barKey)
 	}
 end
 
+-- Swing timer stack: Main Hand is the screen-anchored root, and each other bar hangs off the one before it.
+local swingTimerAnchorParent = {
+	offHandSwing = "mainHandSwing",
+	rangedSwing = "offHandSwing",
+}
+
+---Gets the default settings for one swing timer bar. It grows to full by the next swing, as Blizzard's does.
+---@param classic boolean?
+---@param barKey string # "mainHandSwing", "offHandSwing" or "rangedSwing"
+---@return TRB.Classes.Settings.OtherBar
+function TRB.Functions.Settings:DefaultSwingTimerBarSettings(classic, barKey)
+	local settings = self:DefaultOtherBarDimensions(classic) --[[@as TRB.Classes.Settings.OtherBar]]
+	settings.width = 200
+	settings.height = 20
+	settings.timerDirection = "fill"
+	settings.durationPrecision = 1
+	settings.disableBlizzardBar = true
+
+	local parentKey = swingTimerAnchorParent[barKey]
+	if parentKey == nil then
+		-- Between screen center and the main stack.
+		settings.anchor.yOffset = -100
+	else
+		settings.relativeTo = "BOTTOM"
+		settings.relativeToName = L["PositionBelowMiddle"]
+		settings.anchor.barKey = parentKey
+		settings.anchor.anchorPoint = "BOTTOM"
+		settings.anchor.attachPoint = "TOP"
+		settings.anchor.yOffset = -2
+		settings.anchor.matchWidth = true
+	end
+
+	return settings
+end
+
+---Gets the default colors for one swing timer bar: Main Hand gold, Off Hand blue, Ranged green.
+---@param barKey string # "mainHandSwing", "offHandSwing" or "rangedSwing"
+---@return table
+function TRB.Functions.Settings:DefaultSwingTimerBarColors(barKey)
+	local fill = "FFE6CC80"
+	if barKey == "offHandSwing" then
+		fill = "FFA0C8FF"
+	elseif barKey == "rangedSwing" then
+		fill = "FF9CD67A"
+	end
+
+	return {
+		bar = { color = fill, color2 = fill, gradientDirection = "disabled" },
+		border = { color = "FF000000" },
+		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
+	}
+end
+
 ---Central injector: adds the Other Bars defaults (bars/colors/displayBar/textures) to a spec's default
 ---settings table, so the standard defaults->saved Table:Merge carries them into every spec of every
 ---class. Idempotent. Mirrors InjectTargetCastbarDefaults. Feign Death only ever fires for Hunters, so
@@ -1535,10 +1647,17 @@ function TRB.Functions.Settings:InjectOtherBarsDefaults(specDefaults, classId, c
 	specDefaults.displayBar = specDefaults.displayBar or {}
 	specDefaults.textures = specDefaults.textures or {}
 
+	local isSwingKey = {}
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+		isSwingKey[key] = true
+	end
+
 	for _, key in ipairs(TRB.Classes.BarTypeRegistry:GetOtherBarKeys(classId)) do
 		if specDefaults.bars[key] == nil then
 			if key == "gcd" then
 				specDefaults.bars[key] = self:DefaultGcdBarSettings(classic)
+			elseif isSwingKey[key] then
+				specDefaults.bars[key] = self:DefaultSwingTimerBarSettings(classic, key)
 			else
 				specDefaults.bars[key] = self:DefaultMirrorTimerBarSettings(classic, key)
 			end
@@ -1546,6 +1665,8 @@ function TRB.Functions.Settings:InjectOtherBarsDefaults(specDefaults, classId, c
 		if specDefaults.colors.bars[key] == nil then
 			if key == "gcd" then
 				specDefaults.colors.bars[key] = self:DefaultGcdBarColors()
+			elseif isSwingKey[key] then
+				specDefaults.colors.bars[key] = self:DefaultSwingTimerBarColors(key)
 			else
 				specDefaults.colors.bars[key] = self:DefaultMirrorTimerBarColors(key)
 			end
@@ -2740,6 +2861,11 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("GcdBar", L["ResourceGcd"], "$gcdDurationRemaining", "RIGHT", 10, false))
 	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("FatigueBar", L["ResourceFatigue"], "$fatigueDurationRemaining", "CENTER", 12))
 	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("BreathBar", L["ResourceBreath"], "$breathDurationRemaining", "CENTER", 12))
+
+	-- Existing users get these through SeedSwingTimersText.
+	for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultSwingTimerBarTextSettings()) do
+		table.insert(textSettings, entry)
+	end
 
 	for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultPetBarTextSettings()) do
 		table.insert(textSettings, entry)

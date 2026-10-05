@@ -487,5 +487,8 @@ if locale == "enGB" then
 	L["CopyMenuSection_petPowerColors"] = "Pet Resource Bar - Colours"
 	L["CopyMenuSection_petHealthColors"] = "Pet Health Bar - Colours"
 	L["CopyMenuSection_petCastbarColors"] = "Pet Cast Bar - Colours"
+	L["CopyMenuSection_mainHandSwingColors"] = "Main Hand Swing Bar - Colours"
+	L["CopyMenuSection_offHandSwingColors"] = "Off Hand Swing Bar - Colours"
+	L["CopyMenuSection_rangedSwingColors"] = "Ranged Swing Bar - Colours"
 
 end

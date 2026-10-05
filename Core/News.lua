@@ -11,6 +11,12 @@ TRB.Details.coreNewsContent = [====[
 - Pet Resource fills with whichever resource your pet uses, and Pet Health with Low, Medium, and High health colors.
 - All three join the bar text Relative to Frame, Color Indicator, and custom threshold target lists.
 
+## Other Bars
+
+- The Global Cooldown bar's Show Bar When list adds the General, Mounted, Social, Location, and PvP conditions.
+- `$gcdDuration`, `$gcdDurationRemaining`, `$fatigueDuration`, `$fatigueDurationRemaining`, `$breathDuration`, `$breathDurationRemaining`, `$feignDeathDuration`, and `$feignDeathDurationRemaining` read 0 instead of blank while their timer is not running.
+- Bar text stays shown while an idle Other Bar is on screen.
+
 ## General
 
 - Fix custom threshold lines changing color at the wrong value on a bar with a Maximum Bar Value override.

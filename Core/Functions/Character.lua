@@ -1844,6 +1844,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	if TRB.Functions.Class:GetActiveDisplayCompositeKey() == compositeKey then
 		TRB.Functions.Castbar:SyncEnabledState()
 		TRB.Functions.PetCastbar:SyncEnabledState()
+		TRB.Functions.OtherBars:SyncEnabledState()
 	end
 end
 

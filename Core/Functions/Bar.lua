@@ -2854,8 +2854,8 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 				return false
 			end
 		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
-			-- Other Bars (GCD + mirror timers) follow the same rule as the cast bars above.
-			if not TRB.Functions.OtherBars:IsEnabled(displayBar and displayBar[barKey]) then
+			-- Other Bars follow the same rule as the cast bars above; a swing bar also needs a weapon in its slot.
+			if not TRB.Functions.OtherBars:IsEnabledForLayout(barKey, displayBar and displayBar[barKey]) then
 				return false
 			end
 		end
@@ -4283,7 +4283,7 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
 			disabled = not TRB.Functions.TargetCastbar:IsEnabled(visibility)
 		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
-			disabled = not TRB.Functions.OtherBars:IsEnabled(visibility)
+			disabled = not TRB.Functions.OtherBars:IsEnabledForLayout(barKey, visibility)
 		end
 		if disabled then
 			barGroup.containerFrame:SetHeight(0.001)

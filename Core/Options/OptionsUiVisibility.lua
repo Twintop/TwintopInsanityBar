@@ -814,7 +814,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideGroups = { { title = L["ShowBarVisibilityGroupGeneral"], keys = castbarHideKeys } },
 		supportsThresholds = false,
 	}
-	-- Other Bars (GCD + the mirror timers): one show state, "When Active", meaning the bar's timer is
+	-- Mirror timers: one show state, "When Active", meaning the bar's timer is
 	-- running. It sits alongside Always Show / Never Show exactly like the cast bars' cast states do, so
 	-- a bar can be enabled without being pinned on screen. Resource/health thresholds don't apply, but
 	-- the hard-hide list is the full standard one (Druid forms included) rather than the cast bars'
@@ -825,6 +825,24 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		showKeys = timerBarConditionKeys,
 		showLabels = LabelsFor(timerBarConditionKeys),
 		showGroups = { { title = L["ShowBarVisibilityGroupTimer"], keys = timerBarConditionKeys } },
+		hideKeys = hideConditionKeys,
+		hideLabels = hideConditionLabels,
+		hideGroups = hideConditionGroups,
+		supportsThresholds = false,
+	}
+	-- GCD and swing bars (definition `environmentShowConditions`): When Active first, then the standard groups.
+	local timerEnvironmentKeys = CopyKeys(TIMER_CONDITION_KEYS)
+	for _, key in ipairs(conditionKeys) do
+		timerEnvironmentKeys[#timerEnvironmentKeys + 1] = key
+	end
+	local timerEnvironmentGroups = { { title = L["ShowBarVisibilityGroupTimer"], keys = CopyKeys(TIMER_CONDITION_KEYS) } }
+	for _, group in ipairs(conditionGroups) do
+		timerEnvironmentGroups[#timerEnvironmentGroups + 1] = group
+	end
+	local timerEnvironmentProfile = {
+		showKeys = timerEnvironmentKeys,
+		showLabels = LabelsFor(timerEnvironmentKeys),
+		showGroups = timerEnvironmentGroups,
 		hideKeys = hideConditionKeys,
 		hideLabels = hideConditionLabels,
 		hideGroups = hideConditionGroups,
@@ -876,7 +894,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			return petBarProfile
 		end
 		if barEntry ~= nil and barEntry.isTimerBar then
-			return timerBarProfile
+			return barEntry.environmentShowConditions and timerEnvironmentProfile or timerBarProfile
 		end
 		if barEntry ~= nil and barEntry.isCastbar then
 			if barEntry.displayBarKey == "petCastbar" then
@@ -1362,8 +1380,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		})
 	end
 
-	-- Other Bars: self-driven render (Functions/OtherBars.lua). isTimerBar drops the show-condition list
-	-- entirely (their timer either runs or it doesn't) while keeping the castbar row behaviour otherwise.
+	-- Other Bars: self-driven timer bars; only those flagged environmentShowConditions offer the standard show list.
 	for _, otherBarKey in ipairs(TRB.Classes.BarTypeRegistry:GetOtherBarKeys(classId)) do
 		if spec.displayBar and spec.displayBar[otherBarKey] ~= nil then
 			local otherBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(otherBarKey)
@@ -1375,6 +1392,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				globalLabel = otherBarLabel,
 				isCustomBar = false,
 				isTimerBar = true,
+				environmentShowConditions = otherBarDef ~= nil and otherBarDef.environmentShowConditions or false,
 				-- Scope decides this, not whether core happens to hold the key: a class-scoped bar such as
 				-- Feign Death has no global screen to configure, so its row must stay spec-editable.
 				isGlobal = (classId ~= nil and coreDisplayBar[otherBarKey] ~= nil

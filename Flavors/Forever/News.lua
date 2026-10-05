@@ -18,6 +18,12 @@ TRB.Flavor.newsContent = [====[
 
 - [#551](#551) Available to Hunters and Warlocks.
 
+### Other Bars
+
+- Add new Main Hand Swing, Off Hand Swing, and Ranged Swing bars, tracking your auto attack swing timers, with `$mainHandSwingDuration`, `$mainHandSwingDurationRemaining`, `$offHandSwingDuration`, `$offHandSwingDurationRemaining`, `$rangedSwingDuration`, `$rangedSwingDurationRemaining`, `$mainHandLocale`, `$offHandLocale`, and `$rangedLocale` bar text. Set to Never Show by default; enable them under Bar Visibility.
+- Each bar only shows while a weapon is equipped in its slot, labeled with its hand on the left.
+- All three join the bar text Relative to Frame list, offer the General, Mounted, Social, Location, and PvP Show Bar When conditions, can drain instead of grow, and share one option to hide Blizzard's swing timers.
+
 ## Druid
 
 - Add a Maximum Bar Value override to the Rage and Energy bars.

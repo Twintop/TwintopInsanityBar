@@ -3441,16 +3441,8 @@ if locale == "zhCN" then
 	
 	-- Other Bars: bar text variables and the shared precision slider
 	L["OtherBarsDurationPrecision"] = "时间小数精度"
-	L["BarTextVariableGcdDuration"] = "当前公共冷却总时长。无公共冷却时为空。"
-	L["BarTextVariableGcdDurationRemaining"] = "当前公共冷却剩余时间。无公共冷却时为空。"
-	L["BarTextVariableFatigueDuration"] = "疲劳总时长。未疲劳时为空。"
-	L["BarTextVariableFatigueDurationRemaining"] = "疲劳剩余时间。未疲劳时为空。"
-	L["BarTextVariableBreathDuration"] = "水下呼吸总时长。不在水下时为空。"
-	L["BarTextVariableBreathDurationRemaining"] = "水下呼吸剩余时间。不在水下时为空。"
 	-- REMOVED: L["BarTextVariableDeathDuration"] - the Death mirror timer bar was retired
 	-- REMOVED: L["BarTextVariableDeathDurationRemaining"] - the Death mirror timer bar was retired
-	L["BarTextVariableFeignDeathDuration"] = "假死总时长。未假死时为空。"
-	L["BarTextVariableFeignDeathDurationRemaining"] = "假死剩余时间。未假死时为空。"
 	
 	-- Health Bar: flat class color transition type
 	L["HealthBarColorTypeClassColor"] = "单色（职业颜色）"

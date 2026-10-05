@@ -101,6 +101,22 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "petCastbar", "uninterruptibleShield"} } },
 }
 
+-- Swing bar sections, shaped like the GCD's plus Hide Blizzard's bar; only where the flavor has swing bars.
+local swingSectionLabels = {
+	mainHandSwingDimensions = L["CopyMenuSection_mainHandSwingDimensions"],
+	mainHandSwingColors = L["CopyMenuSection_mainHandSwingColors"],
+	offHandSwingDimensions = L["CopyMenuSection_offHandSwingDimensions"],
+	offHandSwingColors = L["CopyMenuSection_offHandSwingColors"],
+	rangedSwingDimensions = L["CopyMenuSection_rangedSwingDimensions"],
+	rangedSwingColors = L["CopyMenuSection_rangedSwingColors"],
+}
+for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+	globalSettingDefinitions[key .. "Dimensions"] = { checkboxSuffix = key .. "Dimensions", tabKey = key, categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = swingSectionLabels[key .. "Dimensions"],
+		paths = { {"bars", key, "width"}, {"bars", key, "height"}, {"bars", key, "border"}, {"bars", key, "xPos"}, {"bars", key, "yPos"}, {"bars", key, "anchor"}, {"bars", key, "fillDirection"} } }
+	globalSettingDefinitions[key .. "Colors"] = { checkboxSuffix = key .. "Colors", tabKey = key, categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = swingSectionLabels[key .. "Colors"],
+		paths = { {"colors", "bars", key, "bar"}, {"colors", "bars", key, "border"}, {"colors", "bars", key, "background"}, {"colors", "bars", key, "endCap"}, {"bars", key, "durationPrecision"}, {"bars", key, "timerDirection"}, {"bars", key, "disableBlizzardBar"} } }
+end
+
 ---Sets a checkbox to tristate visual mode
 ---@param checkbox CheckButton # The checkbox to update
 ---@param state boolean|nil # true = checked, false = unchecked, nil = mixed/desaturated

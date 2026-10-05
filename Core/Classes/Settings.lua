@@ -330,9 +330,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public uninterruptibleShield TRB.Classes.Settings.CastBarIconShield # Uninteruptible Shield settings
 
 ---@class TRB.Classes.Settings.OtherBar : TRB.Classes.Settings.SecondaryBar
----@field public durationPrecision integer? # GCD bar only: decimal places (0-3) for its duration text. The mirror timers render mm:ss instead
----@field public timerDirection string? # GCD bar only: "deplete" (drain a full bar) or "fill" (grow an empty one)
----@field public disableBlizzardBar boolean? # Mirror timers only: hide Blizzard's own frame for this timer type
+---@field public durationPrecision integer? # GCD and swing bars only: decimal places (0-3) for their duration text. The mirror timers render mm:ss instead
+---@field public timerDirection string? # GCD and swing bars only: "deplete" (drain a full bar) or "fill" (grow an empty one)
+---@field public disableBlizzardBar boolean? # Mirror timers and swing bars only: hide Blizzard's own frame for this timer type
 
 ---@class TRB.Classes.Settings.DisplayText
 ---@field public default TRB.Classes.Settings.DisplayTextDefault

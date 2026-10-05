@@ -38,6 +38,7 @@ local addonName, TRB = ...
 ---@field public savedVariablesName string # Global declared by the TOC's SavedVariables line
 ---@field public gcdSpellId integer? # Dummy spell whose cooldown is the global cooldown; defaults to retail's 61304
 ---@field public unavailableVisibilityConditions table<string, boolean>? # Bar visibility condition keys the client can never satisfy (no flying, say); dropped from the options and the defaults
+---@field public swingTimers boolean? # The client fires PLAYER_SWING, so the Main Hand, Off Hand, and Ranged Swing bars exist
 ---@field public IsClientMatch fun(): boolean
 ---@field public GetSpecializationIndex fun(): integer? # Active specialization index in specs[] order, or nil when the client reports none
 ---@field public classes TRB.Flavor.ClassEntry[]
@@ -83,6 +84,9 @@ if TRB.Flavor.gcdSpellId == nil then
 end
 if TRB.Flavor.unavailableVisibilityConditions == nil then
 	TRB.Flavor.unavailableVisibilityConditions = {}
+end
+if TRB.Flavor.swingTimers == nil then
+	TRB.Flavor.swingTimers = false
 end
 
 -- Placeholder rank resolution: a flavor with ranked spells (Forever, and any Classic lineage later) replaces it.

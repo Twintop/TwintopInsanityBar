@@ -23,6 +23,9 @@ local castbarAnchorGroupKeys = {
 	PetHealthBar = "petHealth",
 	PetPowerBar = "petPower",
 }
+for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+	castbarAnchorGroupKeys[swingKey:gsub("^%l", string.upper) .. "Bar"] = swingKey
+end
 
 -- Which of the above keys target the side icon frame rather than the bar itself.
 local castbarIconAnchors = {
@@ -704,6 +707,30 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$petResourceName", description = L["BarTextVariablePetResourceName"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.PET,
 			logicType = logicTypes.TEXT, booleanCheck = true },
 	}
+	-- Swing bars follow Breath, where the flavor has them. Plain seconds, so they can be compared.
+	if TRB.Flavor.swingTimers then
+		local swingValues = {
+			{ variable = "$mainHandSwingDuration", description = L["BarTextVariableMainHandSwingDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+			{ variable = "$mainHandSwingDurationRemaining", description = L["BarTextVariableMainHandSwingDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+			{ variable = "$offHandSwingDuration", description = L["BarTextVariableOffHandSwingDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+			{ variable = "$offHandSwingDurationRemaining", description = L["BarTextVariableOffHandSwingDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+			{ variable = "$rangedSwingDuration", description = L["BarTextVariableRangedSwingDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+			{ variable = "$rangedSwingDurationRemaining", description = L["BarTextVariableRangedSwingDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+			{ variable = "$mainHandLocale", description = L["BarTextVariableMainHandLocale"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, logicType = logicTypes.TEXT, booleanCheck = true },
+			{ variable = "$offHandLocale", description = L["BarTextVariableOffHandLocale"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, logicType = logicTypes.TEXT, booleanCheck = true },
+			{ variable = "$rangedLocale", description = L["BarTextVariableRangedLocale"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, logicType = logicTypes.TEXT, booleanCheck = true },
+		}
+		local insertAt = #values + 1
+		for index, v in ipairs(values) do
+			if v.variable == "$breathDurationRemaining" then
+				insertAt = index + 1
+				break
+			end
+		end
+		for offset, v in ipairs(swingValues) do
+			table.insert(values, insertAt + offset - 1, v)
+		end
+	end
 	-- Flavor stats follow $gcd; the first variable of each is listed in the options, the rest are aliases.
 	local statIndex = 1
 	for _, stat in ipairs(TRB.Flavor.stats) do
@@ -2257,6 +2284,18 @@ local otherBarsVars = {
 	["$breathDuration"] = "breath", ["$breathDurationRemaining"] = "breath",
 	["$feignDeathDuration"] = "feignDeath", ["$feignDeathDurationRemaining"] = "feignDeath",
 }
+for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+	otherBarsVars["$" .. swingKey .. "Duration"] = swingKey
+	otherBarsVars["$" .. swingKey .. "DurationRemaining"] = swingKey
+end
+
+-- Swing hand labels, resolved at render time so a shared profile reads in the viewer's client language.
+local swingLocaleVars = {}
+if TRB.Flavor.swingTimers then
+	swingLocaleVars["$mainHandLocale"] = L["SwingTimerLabelMainHand"]
+	swingLocaleVars["$offHandLocale"] = L["SwingTimerLabelOffHand"]
+	swingLocaleVars["$rangedLocale"] = L["SwingTimerLabelRanged"]
+end
 
 -- The GCD's seconds ride on a DurationObject and are secret in restricted content, so they are
 -- display-only. The mirror timers come back as plain numbers from GetMirrorTimerProgress, so those
@@ -2290,9 +2329,8 @@ local function GetOtherBarsVarNames(barKey)
 	return names
 end
 
----Refreshes the Other Bars timer variables ($gcdDuration, $fatigueDurationRemaining, ...). An idle bar
----renders as an empty string, so a bare {$fatigueDurationRemaining}[...] gate shows nothing while the
----timer is down. Values are formatted with string.format, which is safe on a secret.
+---Refreshes the Other Bars timer variables. An idle bar reads 0 in its own format, but a bare {$var}[...]
+---gate still hides while the timer is down. string.format is safe on a secret.
 ---
 ---The two kinds format differently. The GCD is under two seconds, so it reads as seconds to the
 ---configured decimal precision -- and it has no choice: its value is a secret, and mm:ss needs division
@@ -2301,15 +2339,21 @@ end
 ---conditionals still compare against a number rather than the display string.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
 function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
+	local lookup = TRB.Data.lookup
+	local lookupLogic = TRB.Data.lookupLogic
+	-- Static, so written ahead of the idle latch.
+	for var, label in pairs(swingLocaleVars) do
+		lookup[var] = label
+		lookupLogic[var] = label
+	end
+
 	local isActive = TRB.Functions.OtherBars:HasActiveTimer()
 	if not isActive and not otherBarsLookupWasActive then
 		return
 	end
 	otherBarsLookupWasActive = isActive
-	TRB.Data.lookup = TRB.Data.lookup or {}
-	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
-	local lookup = TRB.Data.lookup
-	local lookupLogic = TRB.Data.lookupLogic
 
 	for _, entry in ipairs(TRB.Functions.OtherBars:GetBars()) do
 		local barKey = entry.key
@@ -2318,7 +2362,7 @@ function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 		-- so it gets no lookup entries either.
 		if barSettings ~= nil then
 			local isMirror = entry.kind == "mirror"
-			-- Only the GCD carries durationPrecision; the mirror timers have no decimals to configure.
+			-- Only the GCD and swing bars carry durationPrecision; the mirror timers have no decimals to configure.
 			local fmt
 			if not isMirror then
 				fmt = GetPrecisionFormat(barSettings.durationPrecision)
@@ -2328,10 +2372,11 @@ function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 			local remVar = names.remaining
 			local isSecret = otherBarsSecretVars[totalVar] == true
 
-			-- Default to empty, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
+			-- Default to an idle 0, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
 			-- which is blocked; only nil-checks and string.format are allowed on secrets.
-			lookup[totalVar] = ""
-			lookup[remVar] = ""
+			local idleText = isMirror and FormatMinutesSeconds(0) or string.format(fmt, 0)
+			lookup[totalVar] = idleText
+			lookup[remVar] = idleText
 			if not isSecret then
 				lookupLogic[totalVar] = nil
 				lookupLogic[remVar] = nil
@@ -2354,6 +2399,11 @@ function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 	end
 end
 
+---Re-arms the idle latch so the next refresh redraws idle values, such as after a precision change.
+function TRB.Functions.BarText:InvalidateOtherBarsLookup()
+	otherBarsLookupWasActive = true
+end
+
 -- Static set of always-valid base variables (O(1) lookup instead of if/elseif chain)
 local validBaseVars = {
 	["$crit"] = true, ["$critPercent"] = true,
@@ -2370,6 +2420,9 @@ local validBaseVars = {
 	["$str"] = true, ["$strength"] = true,
 	["$stam"] = true, ["$stamina"] = true,
 }
+for var in pairs(swingLocaleVars) do
+	validBaseVars[var] = true
+end
 
 -- Player and pet cast bar variables, which no spec wires up itself, mapped to their model. A bare
 -- {$castTime}[...] shortcircuits to "$castTime ~= nil" -- is a cast in progress at all -- matching how the
@@ -2466,6 +2519,10 @@ local selfDrivenBarVariables = {
 	["$breathDuration"] = true, ["$breathDurationRemaining"] = true,
 	["$feignDeathDuration"] = true, ["$feignDeathDurationRemaining"] = true,
 }
+for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+	selfDrivenBarVariables["$" .. swingKey .. "Duration"] = true
+	selfDrivenBarVariables["$" .. swingKey .. "DurationRemaining"] = true
+end
 
 ---Whether any running self-driven bar (the player/target/focus cast bars, or an Other Bars timer)
 ---drives a variable that an enabled bar text entry actually references. This is what justifies
