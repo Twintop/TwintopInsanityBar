@@ -1,5 +1,5 @@
-﻿## Interface: 120100
-## X-TargetInterface: 120100
+﻿## Interface: 120100, 120105
+## X-TargetInterface: 120100, 120105
 ## X-VersionCheck: disabled
 ## X-Flavor: mainline
 ## X-FlavorCheck: enabled
