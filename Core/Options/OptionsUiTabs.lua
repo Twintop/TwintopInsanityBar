@@ -364,9 +364,8 @@ function TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(parent, classId,
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
 end
 
----Builds the nested Other Bars sub-tab group (GCD / Fatigue / Breath / Death / Feign Death) inside a
----spec's Other Bars tab. Feign Death is only offered to Hunters. Structured exactly like the Cast Bar
----inner group: a manual (non-scroll) container whose sub-tabs each supply their own scroll frame.
+---Builds the nested Other Bars sub-tab group inside a spec's Other Bars tab, one sub-tab per bar its class can have.
+---Structured like the Cast Bar inner group: a manual container whose sub-tabs supply their own scroll frames.
 ---@param parent Frame # The Other Bars tab's manual container frame
 ---@param classId integer?
 ---@param specId integer?

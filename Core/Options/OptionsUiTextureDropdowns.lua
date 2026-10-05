@@ -215,9 +215,7 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(contr
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendCastbar(customBars)
 	-- Target and Focus Cast Bars are likewise all-spec; include them in every texture dropdown set.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendTargetFocusCastbars(customBars)
-	-- Other Bars (GCD + mirror timers) too. This callback doesn't know which class's panel it is serving,
-	-- so it takes every key regardless of scope and the sync loop below skips the ones this panel has no
-	-- dropdown for -- otherwise texture lock would quietly pass over the Hunter-only Feign Death bar.
+	-- Other Bars too, every scope: this callback can't tell which class's panel it serves, so the sync below skips missing dropdowns.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendOtherBars(customBars, nil, true)
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendPetBars(customBars, nil, nil, true)
 

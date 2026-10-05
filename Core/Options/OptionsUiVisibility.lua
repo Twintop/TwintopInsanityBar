@@ -17,7 +17,7 @@ local L = TRB.Localization
 local STANDARD_CONDITION_KEYS = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isSteadyFlight", "isSteadyFlightFlying", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
 local DRUID_FORM_CONDITION_KEYS = { "isDruidHumanoidForm", "isDruidTravelFormAny", "isDruidStagForm", "isDruidFlightForm", "isDruidSwiftFlightForm", "isDruidAquaticForm", "isDruidCatForm", "isDruidBearForm", "isDruidMoonkinForm" }
 local CASTBAR_CONDITION_KEYS = { "casting", "channeling", "empowered" }
--- Other Bars (GCD + the mirror timers) have exactly one show state: their timer is running.
+-- Other Bars' own show state: their timer is running.
 local TIMER_CONDITION_KEYS = { "whenActive" }
 -- Pet bars' pet states, offered in both the show and hide lists.
 local PET_CONDITION_KEYS = { "isPetAlive", "isPetDead", "isPetMissing" }
@@ -65,6 +65,7 @@ local CONDITION_LABELS = {
 	isPetAlive = L["ShowBarVisibilityConditionPetAlive"],
 	isPetDead = L["ShowBarVisibilityConditionPetDead"],
 	isPetMissing = L["ShowBarVisibilityConditionPetMissing"],
+	isItemMissing = L["ShowBarVisibilityConditionItemMissing"],
 }
 
 -- Deterministic iteration order for show-side summaries: standard, then Druid forms, then cast states,
@@ -848,6 +849,27 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideGroups = hideConditionGroups,
 		supportsThresholds = false,
 	}
+	-- Main Hand Swing also offers Item not equipped, closing its General hide group.
+	local mainHandHideKeys = CopyKeys(hideConditionKeys)
+	mainHandHideKeys[#mainHandHideKeys + 1] = "isItemMissing"
+	local mainHandHideGroups = {}
+	for _, group in ipairs(hideConditionGroups) do
+		if group.title == L["ShowBarVisibilityGroupGeneral"] then
+			local keys = CopyKeys(group.keys)
+			keys[#keys + 1] = "isItemMissing"
+			group = { title = group.title, keys = keys }
+		end
+		mainHandHideGroups[#mainHandHideGroups + 1] = group
+	end
+	local mainHandSwingProfile = {
+		showKeys = timerEnvironmentKeys,
+		showLabels = timerEnvironmentProfile.showLabels,
+		showGroups = timerEnvironmentGroups,
+		hideKeys = mainHandHideKeys,
+		hideLabels = LabelsFor(mainHandHideKeys),
+		hideGroups = mainHandHideGroups,
+		supportsThresholds = false,
+	}
 	local thresholdTypeDefinitions = {}
 	for _, tt in ipairs(BASE_THRESHOLD_TYPES) do
 		thresholdTypeDefinitions[tt.key] = tt
@@ -894,6 +916,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			return petBarProfile
 		end
 		if barEntry ~= nil and barEntry.isTimerBar then
+			if barEntry.displayBarKey == "mainHandSwing" then
+				return mainHandSwingProfile
+			end
 			return barEntry.environmentShowConditions and timerEnvironmentProfile or timerBarProfile
 		end
 		if barEntry ~= nil and barEntry.isCastbar then

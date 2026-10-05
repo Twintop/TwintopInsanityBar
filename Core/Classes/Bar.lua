@@ -2898,7 +2898,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		}))
 	end
 
-	-- Swing timer bars: every class gets all three, each shown only while its slot holds a weapon.
+	-- Swing timer bars: every class gets all three; Off Hand and Ranged only show while their slot holds a weapon.
 	local swingBarNames = { mainHandSwing = L["ResourceMainHandSwing"], offHandSwing = L["ResourceOffHandSwing"], rangedSwing = L["ResourceRangedSwing"] }
 	for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 		self:Register(TRB.Classes.BarTypeDefinition:New({

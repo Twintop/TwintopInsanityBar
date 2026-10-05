@@ -332,7 +332,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.OtherBar : TRB.Classes.Settings.SecondaryBar
 ---@field public durationPrecision integer? # GCD and swing bars only: decimal places (0-3) for their duration text. The mirror timers render mm:ss instead
 ---@field public timerDirection string? # GCD and swing bars only: "deplete" (drain a full bar) or "fill" (grow an empty one)
----@field public disableBlizzardBar boolean? # Mirror timers and swing bars only: hide Blizzard's own frame for this timer type
+---@field public disableBlizzardBar boolean? # Mirror timers and Main Hand Swing only: hide Blizzard's own frame for this timer type, all three swing timers for Main Hand Swing
 
 ---@class TRB.Classes.Settings.DisplayText
 ---@field public default TRB.Classes.Settings.DisplayTextDefault
@@ -476,6 +476,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isPetAlive boolean? # Pet bars only: hide while the pet is out and alive
 ---@field public isPetDead boolean? # Pet bars only: hide while the pet is dead
 ---@field public isPetMissing boolean? # Pet bars only: hide while there is no pet
+---@field public isItemMissing boolean? # Main Hand Swing only: hide while its slot holds no weapon
 
 ---@class trbBarVisibilitySetting
 ---@field public neverShow boolean # When true, the bar is unconditionally hidden regardless of conditions

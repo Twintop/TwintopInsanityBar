@@ -35,20 +35,21 @@ local castbarIconAnchors = {
 	PetCastBarIcon = true,
 }
 
----Is this entry anchored to a cast bar that is finishing its fade? Only the cast bar keys above answer
----true; the Other Bars timers share that table but blank normally when their timer ends.
+---Is this entry anchored to a cast bar or Other Bar that is finishing its fade? Its text then holds its last value.
 ---@param relativeToFrame string?
 ---@return boolean
-local function IsAnchoredToFadingCastbar(relativeToFrame)
+local function IsAnchoredToFadingSelfDrivenBar(relativeToFrame)
 	local groupKey = relativeToFrame ~= nil and castbarAnchorGroupKeys[relativeToFrame] or nil
-	if groupKey == "castbar" then
+	if groupKey == nil then
+		return false
+	elseif groupKey == "castbar" then
 		return TRB.Functions.Castbar:IsFadingOut()
 	elseif groupKey == "petCastbar" then
 		return TRB.Functions.PetCastbar:IsFadingOut()
 	elseif groupKey == "targetCastbar" or groupKey == "focusCastbar" then
 		return TRB.Functions.TargetCastbar:IsFadingOut(groupKey)
 	end
-	return false
+	return TRB.Functions.OtherBars:IsFadingOut(groupKey)
 end
 local containerAnchorLabelByResourceType = {
 	AngelicFeather = L["AngelicFeatherContainer"],
@@ -2329,14 +2330,8 @@ local function GetOtherBarsVarNames(barKey)
 	return names
 end
 
----Refreshes the Other Bars timer variables. An idle bar reads 0 in its own format, but a bare {$var}[...]
----gate still hides while the timer is down. string.format is safe on a secret.
----
----The two kinds format differently. The GCD is under two seconds, so it reads as seconds to the
----configured decimal precision -- and it has no choice: its value is a secret, and mm:ss needs division
----and subtraction, which a secret does not permit. The mirror timers run for minutes and come back as
----plain numbers, so they read as mm:ss. `lookupLogic` always carries the raw seconds either way, so
----conditionals still compare against a number rather than the display string.
+---Refreshes the Other Bars timer variables: seconds to the bar's precision for the GCD and swing bars, mm:ss
+---for the mirror timers. An idle bar reads 0 in its own format, but a bare {$var}[...] gate still hides.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
 function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 	TRB.Data.lookup = TRB.Data.lookup or {}
@@ -2531,8 +2526,7 @@ end
 ---invalidated), returns true so the caller refreshes and rebuilds it rather than skipping a frame.
 ---@return boolean
 local function HasActiveSelfDrivenBarVariableInUse()
-	-- A fading cast bar counts as in use so the one final pass that blanks its variables lands when the
-	-- bar leaves the screen, not the tick the cast ended while it is still visible.
+	-- A fading bar counts as in use, so the final pass that blanks its variables lands when it leaves the screen.
 	local anyActive = (TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive())
 		or TRB.Functions.Castbar:IsFadingOut()
 		or (TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
@@ -2542,6 +2536,7 @@ local function HasActiveSelfDrivenBarVariableInUse()
 		or (TRB.Data.petCastbar ~= nil and TRB.Data.petCastbar:IsActive())
 		or TRB.Functions.PetCastbar:IsFadingOut()
 		or TRB.Functions.OtherBars:HasActiveTimer()
+		or TRB.Functions.OtherBars:IsAnyFadingOut()
 	if not anyActive then
 		return false
 	end
@@ -2659,10 +2654,10 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 					end
 				end
 
-				-- Screen-bound text is always processed; other text only when refreshText is true. A cast
-				-- bar mid fade-out is skipped regardless, which is what holds its finished cast on screen.
+				-- Screen-bound text is always processed; other text only when refreshText is true. Text on a
+				-- fading self-driven bar is skipped regardless, which holds its last value on screen.
 				if (refreshText or isScreenText or visibilityRefresh)
-					and not IsAnchoredToFadingCastbar(e.position.relativeToFrame) then
+					and not IsAnchoredToFadingSelfDrivenBar(e.position.relativeToFrame) then
 					-- Check if the target frame is visible before doing expensive text processing
 					-- Use per-call cache to avoid redundant GetBarTextFrame calls for entries sharing a frame
 					local frameKey = e.position.relativeToFrame

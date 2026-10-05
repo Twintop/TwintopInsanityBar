@@ -1447,10 +1447,8 @@ function TRB.Functions.Settings:DefaultOtherBarDimensions(classic)
 	return dims
 end
 
----Gets the default visibility entry for an Other Bar. These bars have one show state, `whenActive`,
----meaning their timer is running; Always Show additionally keeps the empty frame on screen while idle.
----Ships disabled: an all-spec bar nobody asked for should not appear (nor displace Blizzard's) until it
----is turned on, but it ships with whenActive already ticked so enabling it does something immediately.
+---Gets the default visibility entry for an Other Bar: Never Show, with When Active (its timer running) ticked
+---so enabling it does something immediately.
 ---@param barKey string? # The bar this entry is for; the GCD takes a shorter tail than the mirror timers
 ---@return trbBarVisibilitySetting
 function TRB.Functions.Settings:DefaultOtherBarVisibility(barKey)
@@ -1460,15 +1458,17 @@ function TRB.Functions.Settings:DefaultOtherBarVisibility(barKey)
 	if barKey == "gcd" then
 		fadeDuration = 0
 	end
+	-- The full standard hide set: these timers run in exactly the situations people suppress bars for.
+	local hideConditions = self:LoadDefaultBarVisibilityHideConditions()
+	if barKey == "mainHandSwing" then
+		hideConditions.isItemMissing = false
+	end
 
 	return {
 		neverShow = true,
 		alwaysShow = false,
 		conditions = { whenActive = true },
-		-- Full standard hide-condition set, not the cast bars' pared-back pair: these timers run in
-		-- exactly the situations people suppress bars for (mounted, flying, on a taxi), so all of them
-		-- need to be reachable. Existing saved entries get the new keys through the defaults merge.
-		hideConditions = self:LoadDefaultBarVisibilityHideConditions(),
+		hideConditions = hideConditions,
 		activeAlpha = 100,
 		inactiveAlpha = 0,
 		fadeDuration = fadeDuration,
@@ -1592,7 +1592,10 @@ function TRB.Functions.Settings:DefaultSwingTimerBarSettings(classic, barKey)
 	settings.height = 20
 	settings.timerDirection = "fill"
 	settings.durationPrecision = 1
-	settings.disableBlizzardBar = true
+	-- One Hide Blizzard switch for all three swing bars, stored on Main Hand.
+	if barKey == "mainHandSwing" then
+		settings.disableBlizzardBar = true
+	end
 
 	local parentKey = swingTimerAnchorParent[barKey]
 	if parentKey == nil then

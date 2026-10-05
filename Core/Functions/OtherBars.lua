@@ -17,7 +17,7 @@ TRB.Functions.OtherBars = {}
 	    plain numbers. Pause falls out for free: a paused timer stops advancing its progress.
 
 	  * Main Hand / Off Hand / Ranged Swing -- only on a flavor that fires PLAYER_SWING, whose plain swing
-	    length fills them by hand. Each only shows while its slot holds a weapon.
+	    length fills them by hand. Off Hand and Ranged only show while their slot holds a weapon.
 
 	Like the cast bars these are NOT in BarVisibility:ProcessBars, so the updater re-asserts
 	alpha/visibility while a bar is on screen to self-heal after render transitions.
@@ -34,12 +34,12 @@ local BARS = {
 	{ key = "breath", kind = "mirror", timerName = "BREATH" },
 	{ key = "feignDeath", kind = "mirror", timerName = "FEIGNDEATH" },
 }
--- Swing bars lead, matching the tab order; `speedIndex` picks the hand's UnitAttackSpeed return.
+-- Swing bars lead, matching the tab order; `speedIndex` picks the UnitAttackSpeed return. Unarmed swings count.
 if TRB.Flavor.swingTimers then
 	local swingEntries = {
 		{ key = "mainHandSwing", kind = "swing", swingType = Enum.PlayerSwingType.MainHand, slot = INVSLOT_MAINHAND, speedIndex = 1, blizzardFrame = "SwingTimerMainHandFrame" },
-		{ key = "offHandSwing", kind = "swing", swingType = Enum.PlayerSwingType.OffHand, slot = INVSLOT_OFFHAND, speedIndex = 2, blizzardFrame = "SwingTimerOffHandFrame" },
-		{ key = "rangedSwing", kind = "swing", swingType = Enum.PlayerSwingType.Ranged, slot = INVSLOT_RANGED, speedIndex = 3, blizzardFrame = "SwingTimerRangedFrame" },
+		{ key = "offHandSwing", kind = "swing", swingType = Enum.PlayerSwingType.OffHand, slot = INVSLOT_OFFHAND, speedIndex = 2, blizzardFrame = "SwingTimerOffHandFrame", requiresWeapon = true },
+		{ key = "rangedSwing", kind = "swing", swingType = Enum.PlayerSwingType.Ranged, slot = INVSLOT_RANGED, speedIndex = 3, blizzardFrame = "SwingTimerRangedFrame", requiresWeapon = true },
 	}
 	for index, entry in ipairs(swingEntries) do
 		table.insert(BARS, index, entry)
@@ -158,16 +158,59 @@ function TRB.Functions.OtherBars:IsEnabled(visibility)
 	return IsEnabled(visibility)
 end
 
+---Whether an inventory slot holds a weapon. Shields, held-in-off-hand items, and relics do not count.
+---@param slot integer
+---@return boolean
+local function SlotHoldsWeapon(slot)
+	local itemId = GetInventoryItemID("player", slot)
+	if itemId == nil then
+		return false
+	end
+	return select(6, C_Item.GetItemInfoInstant(itemId)) == Enum.ItemClass.Weapon
+end
+
+---Whether a swing bar's slot holds a weapon, cached until the equipment changes.
+---@param entry table # The BARS entry
+---@return boolean
+local function HasWeapon(entry)
+	if weaponEquipped[entry.key] == nil then
+		weaponEquipped[entry.key] = SlotHoldsWeapon(entry.slot)
+	end
+	return weaponEquipped[entry.key]
+end
+
+---Whether a bar can show at all: Off Hand and Ranged need a weapon in their slot, every other bar always can.
+---@param barKey string
+---@return boolean
+local function IsAvailable(barKey)
+	local entry = BAR_BY_KEY[barKey]
+	if entry == nil or not entry.requiresWeapon then
+		return true
+	end
+	return HasWeapon(entry)
+end
+
+---Whether the Item not equipped hide condition holds: ticked, and no weapon in the bar's slot.
+---@param barKey string
+---@param visibility table?
+---@return boolean
+local function IsHiddenByMissingItem(barKey, visibility)
+	local entry = BAR_BY_KEY[barKey]
+	if entry == nil or entry.kind ~= "swing" or visibility == nil or visibility.hideConditions == nil
+		or visibility.hideConditions.isItemMissing ~= true then
+		return false
+	end
+	return not HasWeapon(entry)
+end
+
 -- Environment snapshot the hide conditions are evaluated against, plus the scratch entry
 -- ShouldForceHideBar reads the settings from. Both are reused rather than rebuilt per bar.
 local hideContext = nil
 local hideContextTime = nil
 local hideEntry = {}
 
----Returns the shared environment snapshot, rebuilt at most once per frame. These bars evaluate the full
----standard hide-condition set (mounts, skyriding, taxi, pet battle, Druid forms, ...), which is far more
----than the cast bars' pair of live API reads, so the four bars share one build instead of each doing
----their own. GetTime() is constant within a frame, which makes it an exact cache key.
+---Returns the shared environment snapshot, rebuilt at most once per frame so every Other Bar shares one
+---build. GetTime() is constant within a frame, which makes it an exact cache key.
 ---@return TRB.Classes.BarVisibilityContext
 local function GetHideContext()
 	local now = GetTime()
@@ -180,11 +223,15 @@ end
 
 ---Whether a hard-hide condition currently suppresses the bar. The timer keeps running while
 ---force-hidden so the bar reappears mid-timer when the condition clears (mirrors the cast bars).
+---@param barKey string
 ---@param visibility table?
 ---@return boolean
-local function IsForceHidden(visibility)
+local function IsForceHidden(barKey, visibility)
 	if visibility == nil or visibility.hideConditions == nil then
 		return false
+	end
+	if IsHiddenByMissingItem(barKey, visibility) then
+		return true
 	end
 	hideEntry.visibilitySettings = visibility
 	return TRB.Functions.BarVisibility:ShouldForceHideBar(GetHideContext(), hideEntry)
@@ -226,35 +273,11 @@ local function GetRunningAlpha(visibility)
 end
 
 ---Whether a running timer's bar is held off screen: a hard-hide condition applies, or nothing shows it.
+---@param barKey string
 ---@param visibility table?
 ---@return boolean
-local function IsHeldHidden(visibility)
-	return IsForceHidden(visibility) or GetRunningAlpha(visibility) <= 0
-end
-
----Whether an inventory slot holds a weapon. Shields, held-in-off-hand items, and relics do not count.
----@param slot integer
----@return boolean
-local function SlotHoldsWeapon(slot)
-	local itemId = GetInventoryItemID("player", slot)
-	if itemId == nil then
-		return false
-	end
-	return select(6, C_Item.GetItemInfoInstant(itemId)) == Enum.ItemClass.Weapon
-end
-
----Whether a bar can show at all: a swing bar needs a weapon in its slot, every other bar always can.
----@param barKey string
----@return boolean
-local function IsAvailable(barKey)
-	local entry = BAR_BY_KEY[barKey]
-	if entry == nil or entry.kind ~= "swing" then
-		return true
-	end
-	if weaponEquipped[barKey] == nil then
-		weaponEquipped[barKey] = SlotHoldsWeapon(entry.slot)
-	end
-	return weaponEquipped[barKey]
+local function IsHeldHidden(barKey, visibility)
+	return IsForceHidden(barKey, visibility) or GetRunningAlpha(visibility) <= 0
 end
 
 ---Container alpha to rest at while the timer is idle, 0 while a hide condition applies or the bar is unavailable.
@@ -262,7 +285,7 @@ end
 ---@param visibility table?
 ---@return number # 0..1
 local function GetIdleAlpha(barKey, visibility)
-	if not IsAvailable(barKey) or IsForceHidden(visibility) then
+	if not IsAvailable(barKey) or IsForceHidden(barKey, visibility) then
 		return 0
 	end
 	return GetRestingAlpha(visibility)
@@ -504,7 +527,7 @@ local function BeginRender(entry)
 		SyncUpdater()
 		return
 	end
-	if IsHeldHidden(visibility) then
+	if IsHeldHidden(entry.key, visibility) then
 		forceHidden[entry.key] = true
 		ApplyHiddenState(entry.key)
 	else
@@ -522,7 +545,7 @@ local function BeginFadeOut(barKey)
 	local _, _, visibility = GetBarConfig(barKey)
 	local delay = (visibility and visibility.fadeDelay) or 0
 	local duration = (visibility and visibility.fadeDuration) or 0
-	if not IsEnabled(visibility) or IsHeldHidden(visibility) or (delay <= 0 and duration <= 0 and GetIdleAlpha(barKey, visibility) <= 0) then
+	if not IsEnabled(visibility) or IsHeldHidden(barKey, visibility) or (delay <= 0 and duration <= 0 and GetIdleAlpha(barKey, visibility) <= 0) then
 		fadeStart[barKey] = nil
 		ApplyInactiveState(barKey)
 	else
@@ -593,7 +616,7 @@ local function StartSwing(swingType, length)
 	BeginRender(entry)
 end
 
----Re-reads which slots hold a weapon. A bar that loses its weapon drops its swing, and the layout re-applies
+---Re-reads which slots hold a weapon. A bar that needs one drops its swing without it, and the layout re-applies
 ---only when a slot gains or loses one, so the stack closes up around a missing bar.
 local function RefreshWeapons()
 	local changed = false
@@ -604,7 +627,7 @@ local function RefreshWeapons()
 				changed = true
 			end
 			weaponEquipped[entry.key] = hasWeapon
-			if not hasWeapon then
+			if entry.requiresWeapon and not hasWeapon then
 				active[entry.key] = false
 				fadeStart[entry.key] = nil
 				swingStart[entry.key] = nil
@@ -657,8 +680,8 @@ local function IsBlizzardSwingFrameExternallyManaged(frame)
 	return parent:GetName() == nil and not parent:IsVisible()
 end
 
----Whether Blizzard's swing bars should be detached: one switch for all three, stored on every swing bar
----and read from Main Hand, while any swing bar is enabled.
+---Whether Blizzard's swing bars should be detached: one switch for all three, stored on Main Hand, while
+---any swing bar is enabled.
 ---@return boolean
 local function ShouldDetachBlizzardSwingBars()
 	local mainHandSettings = GetBarConfig("mainHandSwing")
@@ -958,7 +981,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 				needsUpdater = true
 				if throttleTick and not IsEnabled(visibility) then
 					ApplyInactiveState(barKey)
-				elseif throttleTick and IsHeldHidden(visibility) then
+				elseif throttleTick and IsHeldHidden(barKey, visibility) then
 					forceHidden[barKey] = true
 					ApplyHiddenState(barKey)
 				elseif forceHidden[barKey] then
@@ -1138,7 +1161,7 @@ function TRB.Functions.OtherBars:PrintDiagnostics()
 		print(string.format("  %-10s bar=%s colors=%s vis=%s enabled=%s never=%s always=%s whenActive=%s forceHidden=%s group=%s node=%s active=%s max=%s available=%s swingLength=%s",
 			entry.key, tostring(barSettings ~= nil), tostring(colors ~= nil), tostring(visibility ~= nil), tostring(IsEnabled(visibility)),
 			tostring(visibility and visibility.neverShow), tostring(visibility and visibility.alwaysShow), tostring(visibility and visibility.conditions and visibility.conditions.whenActive),
-			tostring(visibility ~= nil and IsForceHidden(visibility)), tostring(group ~= nil), tostring(node ~= nil), tostring(active[entry.key]), tostring(mirrorMax[entry.key]),
+			tostring(visibility ~= nil and IsForceHidden(entry.key, visibility)), tostring(group ~= nil), tostring(node ~= nil), tostring(active[entry.key]), tostring(mirrorMax[entry.key]),
 			tostring(IsAvailable(entry.key)), tostring(swingLength[entry.key])))
 	end
 	if TRB.Flavor.swingTimers then
@@ -1270,6 +1293,24 @@ function TRB.Functions.OtherBars:IsBarActive(barKey)
 	return active[barKey] == true
 end
 
+---Whether a bar is fading out after its timer ended.
+---@param barKey string
+---@return boolean
+function TRB.Functions.OtherBars:IsFadingOut(barKey)
+	return fadeStart[barKey] ~= nil
+end
+
+---Whether any Other Bar is fading out after its timer ended.
+---@return boolean
+function TRB.Functions.OtherBars:IsAnyFadingOut()
+	for _, entry in ipairs(BARS) do
+		if fadeStart[entry.key] ~= nil then
+			return true
+		end
+	end
+	return false
+end
+
 ---Wakes the parked updater when a bar should now rest visible: a show condition changing only marks
 ---visibility dirty, so ProcessBars calls this. Edit Mode previews these bars as ProcessBars entries.
 function TRB.Functions.OtherBars:EnsureIdleState()
@@ -1339,10 +1380,10 @@ function TRB.Functions.OtherBars:GetTimerValues(barKey)
 	return progress / 1000, mirrorMax[barKey]
 end
 
----Whether a bar holds layout space: enabled and, for a swing bar, a weapon in its slot.
+---Whether a bar holds layout space: enabled, available, and not hidden by Item not equipped.
 ---@param barKey string
 ---@param visibility table?
 ---@return boolean
 function TRB.Functions.OtherBars:IsEnabledForLayout(barKey, visibility)
-	return IsEnabled(visibility) and IsAvailable(barKey)
+	return IsEnabled(visibility) and IsAvailable(barKey) and not IsHiddenByMissingItem(barKey, visibility)
 end

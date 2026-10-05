@@ -2854,7 +2854,7 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 				return false
 			end
 		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
-			-- Other Bars follow the same rule as the cast bars above; a swing bar also needs a weapon in its slot.
+			-- Other Bars follow the same rule as the cast bars above, plus the swing bars' weapon checks.
 			if not TRB.Functions.OtherBars:IsEnabledForLayout(barKey, displayBar and displayBar[barKey]) then
 				return false
 			end

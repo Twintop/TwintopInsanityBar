@@ -13,9 +13,10 @@ TRB.Details.coreNewsContent = [====[
 
 ## Other Bars
 
-- The Global Cooldown bar's Show Bar When list adds the General, Mounted, Social, Location, and PvP conditions.
-- `$gcdDuration`, `$gcdDurationRemaining`, `$fatigueDuration`, `$fatigueDurationRemaining`, `$breathDuration`, `$breathDurationRemaining`, `$feignDeathDuration`, and `$feignDeathDurationRemaining` read 0 instead of blank while their timer is not running.
+- [#844](#844) The Global Cooldown bar's Show Bar When list adds the General, Mounted, Social, Location, and PvP conditions.
+- `$gcdDuration` and `$gcdDurationRemaining` read 0, and `$fatigueDuration`, `$fatigueDurationRemaining`, `$breathDuration`, `$breathDurationRemaining`, `$feignDeathDuration`, and `$feignDeathDurationRemaining` read 00:00, instead of blank while their timer is not running.
 - Bar text stays shown while an idle Other Bar is on screen.
+- Bar text anchored to an Other Bar holds its last value while that bar fades out.
 
 ## General
 
