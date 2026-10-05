@@ -42,13 +42,15 @@ do
 			isMultiNode = false,
 			maxNodes = 1,
 			hasSameColor = false,
-			-- The runtime ranges the node 0..UnitPowerMax and writes the (secret) live power into it.
+			-- The runtime ranges the node 0..UnitPowerMax, capped by the override, and writes the (secret) live power into it.
 			minMaxMode = "custom",
 			hasSpacing = false,
 			hasThresholds = true,
 			powerType = form.powerType,
 			colorCurveType = nil,
 			visibilityKey = form.key,
+			-- thresholdMax only sizes the slider; lines place against the live max, capped by the bar's override.
+			thresholdScaleFromLiveMax = true,
 			thresholdMax = 100,
 			thresholdDecimals = 0,
 			defaultDimensionsFunc = function(classic)

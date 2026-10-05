@@ -205,6 +205,7 @@ local function LoadDefaultSettings(includeBarText, classic)
 	local shared = settings.colors.shared
 	for _, formBar in ipairs(formBars) do
 		settings.bars[formBar.key].overcap = { mode = "relative", relative = 0, fixed = maxResources[formBar.key] }
+		settings.bars[formBar.key].maxResource = { enabled = false, value = maxResources[formBar.key] }
 		shared.gradientOrder[#shared.gradientOrder + 1] = formBar.overcapKey
 		shared.indicatorColors[formBar.overcapKey] = { color = formBar.archetype.overcap.color, enabled = true, isGradient = true, targets = { [formBar.indicator] = { bar = false, border = true, background = false } } }
 	end
@@ -257,7 +258,9 @@ local function BuildFormBarPanel(formBar)
 		local yCoord = 5
 		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, specSettings, classId, specId, yCoord, barTypeDef, L["ResourceMana"])
 		yCoord = yCoord - 90
-		TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, specSettings, classId, specId, yCoord, barTypeDef)
+		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, specSettings, classId, specId, yCoord, barTypeDef)
+		yCoord = yCoord - 60
+		TRB.Functions.OptionsUi.Colors:GenerateCustomBarMaxValueOptions(parent, controls, specSettings, classId, specId, yCoord, formBar.key, formBar.resourceName, 1, maxResources[formBar.key])
 	end)
 end
 

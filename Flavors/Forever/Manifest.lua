@@ -54,7 +54,7 @@ TRB.Flavor = {
 	-- Druid shows Mana, Rage, Energy, and Combo Points as separate bars that follow the shapeshift form.
 	classes = {
 		{ classId = 1, className = "warrior", classToken = "WARRIOR", classModuleName = "Warrior", specs = {
-			{ specId = 1, specName = "general", specGlobalId = 1491, resources = { rage = 100 } },
+			{ specId = 1, specName = "general", specGlobalId = 1491, resources = { rage = 105 } },
 		} },
 		{ classId = 2, className = "paladin", classToken = "PALADIN", classModuleName = "Paladin", specs = {
 			{ specId = 1, specName = "general", specGlobalId = 1486 },
@@ -63,7 +63,7 @@ TRB.Flavor = {
 			{ specId = 1, specName = "general", specGlobalId = 1485 },
 		} },
 		{ classId = 4, className = "rogue", classToken = "ROGUE", classModuleName = "Rogue", specs = {
-			{ specId = 1, specName = "general", specGlobalId = 1488, resources = { energy = 110 } },
+			{ specId = 1, specName = "general", specGlobalId = 1488, resources = { energy = 115 } }, -- Gnome gets +5%. Vigor at 2/2 is +10. Not sure if this ends up being 115 or 115.5 as a max
 		} },
 		{ classId = 5, className = "priest", classToken = "PRIEST", classModuleName = "Priest", specs = {
 			{ specId = 1, specName = "general", specGlobalId = 1487 },

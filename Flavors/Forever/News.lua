@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 1.60.1.5-release (2026-10-04)
+# 1.60.1.5-release (2026-10-05)
 ## General
 ### Core Changes
 
@@ -17,6 +17,15 @@ TRB.Flavor.newsContent = [====[
 ### Pet Bars
 
 - [#551](#551) Available to Hunters and Warlocks.
+
+## Druid
+
+- Add a Maximum Bar Value override to the Rage and Energy bars.
+- Fix the `$rage` overcap text color using ten times the maximum Rage.
+
+## Warrior
+
+- Fix the Rage bar's fill, threshold lines, and `$rageMax` using ten times the maximum Rage.
 
 ---
 

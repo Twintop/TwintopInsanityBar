@@ -158,7 +158,7 @@ end
 ---@param aboveColor string
 ---@return table?
 local function FormBarOvercapCurve(formBar, specSettings, belowColor, aboveColor)
-	local maxPower = UnitPowerMax("player", formBar.powerType, true)
+	local maxPower = UnitPowerMax("player", formBar.powerType)
 	if maxPower == nil or issecretvalue(maxPower) or maxPower == 0 then
 		return nil
 	end
@@ -383,12 +383,17 @@ local function UpdateResourceBar()
 				if maxPower == nil or maxPower == 0 then
 					maxPower = 100
 				end
-				-- A secret UnitPower goes straight to the StatusBar unscaled, so its range must be the real maximum.
-				if scratch.formBarMax[formBar.key] ~= maxPower then
-					scratch.formBarMax[formBar.key] = maxPower
-					node:SetMinMax(0, maxPower)
+				-- The overcap curves below measure against maxPower: UnitPowerPercent ignores the bar's override.
+				local barMax = maxPower
+				if not issecretvalue(maxPower) then
+					barMax = Bar:GetCustomBarMaxValue(specSettings.bars[formBar.key], maxPower)
 				end
-				Bar:SetBarNodeValue(specCacheSettings, formBar.key, node, UnitPower("player", formBar.powerType), maxPower)
+				-- A secret UnitPower goes straight to the StatusBar unscaled, so its range must be the bar's maximum.
+				if scratch.formBarMax[formBar.key] ~= barMax then
+					scratch.formBarMax[formBar.key] = barMax
+					node:SetMinMax(0, barMax)
+				end
+				Bar:SetBarNodeValue(specCacheSettings, formBar.key, node, UnitPower("player", formBar.powerType), barMax)
 				Bar:ApplyNodeIndicators(node, formBar.indicator)
 				-- A secret maximum leaves no threshold to step the gradient at.
 				local gradient = not issecretvalue(maxPower) and ActiveFormBarGradient(formBar, sharedColors, isStealthed) or nil
@@ -403,7 +408,7 @@ local function UpdateResourceBar()
 				end
 				if not issecretvalue(maxPower) then
 					local thresholdBar = thresholdBars[formBar.key]
-					thresholdBar:Set(node, maxPower, nil, GetBarSettings(specCacheSettings, formBar.key))
+					thresholdBar:Set(node, barMax, nil, GetBarSettings(specCacheSettings, formBar.key))
 					thresholdState:Refresh(specCacheSettings)
 					thresholdData:Refresh(talents)
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Druid.GeneralSpells.thresholdSnowflakes)
