@@ -18,9 +18,6 @@ TRB.Flavor.newsContent = [====[
 
 - [#551](#551) Available to every Hunter and Warlock specialization, Unholy Death Knight, and Frost Mage. Hidden without Unbreakable Bond on Marksmanship, or Summon Water Elemental on Frost.
 
----
-
-# 12.1.0.16-release (2026-10-04)
 ## Druid
 ### Guardian
 

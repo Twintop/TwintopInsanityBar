@@ -26,24 +26,15 @@ TRB.Flavor.newsContent = [====[
 
 ## Druid
 
+- Add a Primal Bite threshold line on the Rage bar and the `#primalBite` bar text variable.
+- Remove the Tiger's Fury threshold line and the `#tigersFury` bar text variable.
 - Add a Maximum Bar Value override to the Rage and Energy bars.
 - Fix the `$rage` overcap text color using ten times the maximum Rage.
 
 ## Warrior
 
-- Fix the Rage bar's fill, threshold lines, and `$rageMax` using ten times the maximum Rage.
-
----
-
-# 1.60.1.4-release (2026-10-03)
-## Druid
-
-- Add a Primal Bite threshold line on the Rage bar and the `#primalBite` bar text variable.
-- Remove the Tiger's Fury threshold line and the `#tigersFury` bar text variable.
-
-## Warrior
-
 - Spearing Strike's threshold line only draws in Battle Stance.
+- Fix the Rage bar's fill, threshold lines, and `$rageMax` using ten times the maximum Rage.
 
 ---
 
