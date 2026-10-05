@@ -468,6 +468,32 @@ local function Run()
 	Probe("stats", "GetCombatRating 11/20/26/29", function() return GetCombatRating(11), GetCombatRating(20), GetCombatRating(26), GetCombatRating(29) end)
 	Probe("stats", "LE_UNIT_STAT_SPIRIT", function() return LE_UNIT_STAT_SPIRIT end)
 
+	-- Swing timers: the API Blizzard_SwingTimer is built on, and the weapon reads the swing bars gate on.
+	Exists("swing", "C_SwingTimer.EnableRangeCheck")
+	Exists("swing", "C_SwingTimer.IsTargetWithinSwingRange")
+	Probe("swing", "Enum.PlayerSwingType", function() return Enum.PlayerSwingType end)
+	Probe("swing", "Enum.ItemClass.Weapon", function() return Enum.ItemClass.Weapon end)
+	Probe("swing", "IsAddOnLoaded Blizzard_SwingTimer", function() return C_AddOns.IsAddOnLoaded("Blizzard_SwingTimer") end)
+	Probe("swing", "GetCVar showSwingTimer", function() return GetCVar("showSwingTimer") end)
+	Probe("swing", "UnitAttackSpeed (main, off, ranged)", function() return UnitAttackSpeed("player") end)
+	Probe("swing", "UnitRangedDamage", function() return UnitRangedDamage("player") end)
+	Probe("swing", "INVSLOT_MAINHAND/OFFHAND/RANGED", function() return INVSLOT_MAINHAND, INVSLOT_OFFHAND, INVSLOT_RANGED end)
+	for _, slot in ipairs({ 16, 17, 18 }) do
+		Probe("swing", "slot " .. slot .. " itemID + GetItemInfoInstant", function()
+			local itemId = GetInventoryItemID("player", slot)
+			if itemId == nil then return "empty" end
+			return itemId, C_Item.GetItemInfoInstant(itemId)
+		end)
+	end
+	for _, name in ipairs({ "SwingTimerMainHandFrame", "SwingTimerOffHandFrame", "SwingTimerRangedFrame", "SwingTimerManagerFrame" }) do
+		Probe("swing", name .. " shown/visible/parent/protected", function()
+			local frame = _G[name]
+			if frame == nil then return "MISSING" end
+			local parent = frame:GetParent()
+			return frame:IsShown(), frame:IsVisible(), parent and (parent:GetName() or "<anonymous>"), frame:IsProtected()
+		end)
+	end
+
 	-- Which of the addon's globals this client lacks.
 	local missing = {}
 	for _, name in ipairs(addonGlobals) do
@@ -483,7 +509,7 @@ local function Run()
 
 	-- Everything goes to the copy window; chat only gets the client section as a sanity check.
 	local lines = { "TRB Forever Probe " .. results.probedAt .. " " .. key }
-	local sections = { "client", "character", "talents", "power", "spellranks", "secrets", "systems", "stats", "globals" }
+	local sections = { "client", "character", "talents", "power", "spellranks", "secrets", "systems", "stats", "swing", "globals" }
 	for _, section in ipairs(sections) do
 		local entries = results[section] or {}
 		local keys = {}
@@ -501,9 +527,65 @@ local function Run()
 	ShowResults(table.concat(lines, "\n"))
 end
 
+-- /trbprobe swing: logs every swing-related event with its timestamp until run again, then opens the log.
+local swingLogEvents = {
+	"PLAYER_SWING", "PLAYER_SWING_RANGE_UPDATE", "WEAPON_SLOT_CHANGED", "PLAYER_EQUIPMENT_CHANGED", "UNIT_ATTACK_SPEED",
+	"PLAYER_ENTER_COMBAT", "PLAYER_LEAVE_COMBAT", "START_AUTOREPEAT_SPELL", "STOP_AUTOREPEAT_SPELL", "UNIT_SPELLCAST_SUCCEEDED",
+}
+local swingLogFrame = CreateFrame("Frame")
+local swingLog = nil
+
+swingLogFrame:SetScript("OnEvent", function(_, event, ...)
+	local parts = {}
+	for i = 1, select("#", ...) do
+		parts[i] = Value((select(i, ...)))
+	end
+	local line = string.format("%.3f %s(%s)", GetTime(), event, table.concat(parts, ", "))
+	if event == "PLAYER_SWING" or event == "WEAPON_SLOT_CHANGED" or event == "UNIT_ATTACK_SPEED" then
+		local ok, main, off, ranged = pcall(UnitAttackSpeed, "player")
+		line = line .. (ok and (" UnitAttackSpeed=" .. Value(main) .. ", " .. Value(off) .. ", " .. Value(ranged)) or (" UnitAttackSpeed ERROR: " .. tostring(main)))
+	end
+	swingLog[#swingLog + 1] = line
+	print("|cFF00FF00TRB Probe|r " .. line)
+end)
+
+local function ToggleSwingLog()
+	if swingLog == nil then
+		swingLog = { "TRB Forever Probe swing log " .. date("%Y-%m-%d %H:%M:%S") }
+		for _, event in ipairs(swingLogEvents) do
+			local ok, err
+			if event == "UNIT_ATTACK_SPEED" or event == "UNIT_SPELLCAST_SUCCEEDED" then
+				ok, err = pcall(swingLogFrame.RegisterUnitEvent, swingLogFrame, event, "player")
+			else
+				ok, err = pcall(swingLogFrame.RegisterEvent, swingLogFrame, event)
+			end
+			if not ok then
+				swingLog[#swingLog + 1] = "RegisterEvent " .. event .. " ERROR: " .. tostring(err)
+			end
+		end
+		print("|cFF00FF00TRB Forever Probe|r swing log ON: auto attack a target (dual wield and a ranged weapon or wand if you can), use an on-next-swing ability, swap a weapon, then type /trbprobe swing again.")
+	else
+		swingLogFrame:UnregisterAllEvents()
+		local text = table.concat(swingLog, "\n")
+		swingLog = nil
+		print("|cFF00FF00TRB Forever Probe|r swing log OFF: press Ctrl+A then Ctrl+C in the window, then paste the text back.")
+		ShowResults(text)
+	end
+end
+
 SLASH_TRBFOREVERPROBE1 = "/trbprobe"
-SlashCmdList["TRBFOREVERPROBE"] = function()
-	local ok, err = pcall(Run)
+SlashCmdList["TRBFOREVERPROBE"] = function(msg)
+	local option = strtrim(msg or ""):lower()
+	local fn
+	if option == "" then
+		fn = Run
+	elseif option == "swing" then
+		fn = ToggleSwingLog
+	else
+		print("|cFFFF0000TRB Forever Probe:|r unknown option '" .. option .. "'. Valid: /trbprobe, /trbprobe swing")
+		return
+	end
+	local ok, err = pcall(fn)
 	if not ok then
 		print("|cFFFF0000TRB Forever Probe failed:|r " .. tostring(err))
 	end

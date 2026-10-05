@@ -63,9 +63,7 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "focusCastbar", "classColor"}, {"bars", "focusCastbar", "classColorPvpOnly"}, {"bars", "focusCastbar", "classColorFriendly"}, {"bars", "focusCastbar", "castTimePrecision"}, {"bars", "focusCastbar", "durationPrecision"} } },
 	focusCastbarShield      = { checkboxSuffix = "focusCastbarShield",      tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarShield"],
 		paths = { {"bars", "focusCastbar", "uninterruptibleShield"} } },
-	-- Other Bars sections live on the top-level "Other Bars" nav category. Two per bar: Dimensions
-	-- (position/size) and Colors (fill/border/background/end cap + the one behaviour flag each kind
-	-- has). Field-level paths so copies never clobber spec-only data.
+	-- Other Bars: Dimensions, and Colors with the bar's behavior options; field-level paths spare spec-only data.
 	gcdDimensions        = { checkboxSuffix = "gcdDimensions",        tabKey = "gcd",        categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_gcdDimensions"],
 		paths = { {"bars", "gcd", "width"}, {"bars", "gcd", "height"}, {"bars", "gcd", "border"}, {"bars", "gcd", "xPos"}, {"bars", "gcd", "yPos"}, {"bars", "gcd", "anchor"}, {"bars", "gcd", "fillDirection"} } },
 	gcdColors            = { checkboxSuffix = "gcdColors",            tabKey = "gcd",        categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_gcdColors"],
@@ -100,6 +98,27 @@ local globalSettingDefinitions = {
 	petCastbarShield        = { checkboxSuffix = "petCastbarShield",        tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarShield"],
 		paths = { {"bars", "petCastbar", "uninterruptibleShield"} } },
 }
+
+-- Swing bar sections, shaped like the GCD's; only where the flavor has swing bars.
+local swingSectionLabels = {
+	mainHandSwingDimensions = L["CopyMenuSection_mainHandSwingDimensions"],
+	mainHandSwingColors = L["CopyMenuSection_mainHandSwingColors"],
+	offHandSwingDimensions = L["CopyMenuSection_offHandSwingDimensions"],
+	offHandSwingColors = L["CopyMenuSection_offHandSwingColors"],
+	rangedSwingDimensions = L["CopyMenuSection_rangedSwingDimensions"],
+	rangedSwingColors = L["CopyMenuSection_rangedSwingColors"],
+}
+for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+	globalSettingDefinitions[key .. "Dimensions"] = { checkboxSuffix = key .. "Dimensions", tabKey = key, categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = swingSectionLabels[key .. "Dimensions"],
+		paths = { {"bars", key, "width"}, {"bars", key, "height"}, {"bars", key, "border"}, {"bars", key, "xPos"}, {"bars", key, "yPos"}, {"bars", key, "anchor"}, {"bars", key, "fillDirection"} } }
+	local colorPaths = { {"colors", "bars", key, "bar"}, {"colors", "bars", key, "border"}, {"colors", "bars", key, "background"}, {"colors", "bars", key, "endCap"}, {"bars", key, "durationPrecision"}, {"bars", key, "timerDirection"} }
+	-- The one Hide Blizzard switch for all three swing bars is stored on Main Hand.
+	if key == "mainHandSwing" then
+		colorPaths[#colorPaths + 1] = {"bars", key, "disableBlizzardBar"}
+	end
+	globalSettingDefinitions[key .. "Colors"] = { checkboxSuffix = key .. "Colors", tabKey = key, categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = swingSectionLabels[key .. "Colors"],
+		paths = colorPaths }
+end
 
 ---Sets a checkbox to tristate visual mode
 ---@param checkbox CheckButton # The checkbox to update
@@ -289,11 +308,12 @@ local COVER_BUTTON_GAP = 8
 
 ---Builds a cover carrying the Use Global message, an Open button for the checkbox's shortcut link, and a Customize button that unchecks it.
 ---@param checkbox CheckButton
+---@param parent Frame # The panel the covered section is on
 ---@param topY number
 ---@param bottomY number
 ---@return Frame
-local function BuildUseGlobalCover(checkbox, topY, bottomY)
-	local cover = TRB.Functions.OptionsUi.Primitives:BuildSectionCover(checkbox:GetParent(), topY, bottomY)
+local function BuildUseGlobalCover(checkbox, parent, topY, bottomY)
+	local cover = TRB.Functions.OptionsUi.Primitives:BuildSectionCover(parent, topY, bottomY)
 
 	local message = cover:CreateFontString(nil, "OVERLAY")
 	message:SetFontObject(GameFontHighlightLarge)
@@ -563,20 +583,21 @@ function TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(checkbox, h
 	if checkbox == nil then
 		return
 	end
-	LinkToCheckbox(checkbox, header, L["UseGlobalBadgeTooltip"], BuildUseGlobalCover(checkbox, GetYBelow(checkbox), bottomY))
+	LinkToCheckbox(checkbox, header, L["UseGlobalBadgeTooltip"], BuildUseGlobalCover(checkbox, checkbox:GetParent(), GetYBelow(checkbox), bottomY))
 end
 
 ---Covers a section whose settings follow another section's Use Global box, from below its own header down to bottomY.
----@param checkbox CheckButton? # The governing section's box; nil on the Global panel
----@param governingHeader Frame # The governing section's header, named in the badge tooltip
+---@param checkbox CheckButton? # The governing section's box, which may be on another tab; nil on the Global panel
+---@param governingHeader Frame|string # The governing section's header, or its name when it is on another tab, named in the badge tooltip
 ---@param header Frame # This section's header
 ---@param bottomY number # Y offset of the section's end from the panel's TOPLEFT
 function TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(checkbox, governingHeader, header, bottomY)
 	if checkbox == nil then
 		return
 	end
-	local tooltip = string.format(L["UseGlobalBadgeTooltipLinkedFormat"], governingHeader.font:GetText())
-	LinkToCheckbox(checkbox, header, tooltip, BuildUseGlobalCover(checkbox, GetYBelow(header), bottomY))
+	local governingName = type(governingHeader) == "string" and governingHeader or governingHeader.font:GetText()
+	local tooltip = string.format(L["UseGlobalBadgeTooltipLinkedFormat"], governingName)
+	LinkToCheckbox(checkbox, header, tooltip, BuildUseGlobalCover(checkbox, header:GetParent(), GetYBelow(header), bottomY))
 end
 
 ---Badges a section's header while its Use Global box is checked, for a section the global settings only partly cover.

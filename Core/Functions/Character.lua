@@ -1730,9 +1730,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.colors.bars = OverlayOn(petColorBars, { petCastbar = OverlayOn(specPetColors, colorOverrides) })
 	end
 
-	-- Other Bars (GCD + the mirror timers) get the same treatment with two sections each: Dimensions
-	-- (position/size) and Colors (fill/border/background/end cap plus the one behaviour flag each kind
-	-- carries), layered the same way.
+	-- Other Bars layer the same way: Dimensions, and Colors, which also carries each bar's behavior options.
 	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.otherBarKeys) do
 		-- Class-scoped bars (Feign Death) have no global counterpart, so they never pull from core even if
 		-- an older build left an entry and its Use Global flags behind in saved variables.
@@ -1844,6 +1842,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	if TRB.Functions.Class:GetActiveDisplayCompositeKey() == compositeKey then
 		TRB.Functions.Castbar:SyncEnabledState()
 		TRB.Functions.PetCastbar:SyncEnabledState()
+		TRB.Functions.OtherBars:SyncEnabledState()
 	end
 end
 
@@ -1908,8 +1907,7 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 			-- Target/Focus Cast Bars are all-spec standalone bars; inject their defaults the same way.
 			TRB.Functions.Settings:InjectTargetCastbarDefaults(specDefaults)
 
-			-- Other Bars (GCD + the mirror timers) are all-spec standalone bars too. classId scopes out
-			-- Feign Death, which only ever fires for Hunters.
+			-- Other Bars are all-spec standalone bars too; classId scopes out Feign Death, which only Hunters have.
 			TRB.Functions.Settings:InjectOtherBarsDefaults(specDefaults, TRB.Functions.Character:GetClassIdFromName(className))
 
 			-- Only specs declaring a pet get these, which keeps the bars off every other spec's tabs, anchors, and targets.

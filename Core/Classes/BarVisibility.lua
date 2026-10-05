@@ -895,10 +895,8 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	if not anyShowing and TRB.Functions.TargetCastbar:IsRendering() then
 		anyShowing = true
 	end
-	-- And for the Other Bars timers. This one matters most: Fatigue and Breath run out of combat, which
-	-- is exactly when every other bar is hidden and isTracking would otherwise be false -- taking their
-	-- anchored bar text down with it.
-	if not anyShowing and TRB.Functions.OtherBars:HasActiveTimer() then
+	-- Other Bars count while on screen, running or resting: they often show when nothing else does.
+	if not anyShowing and TRB.Functions.OtherBars:IsRendering() then
 		anyShowing = true
 	end
 
@@ -907,6 +905,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	-- changes, spec swaps, or reconstructions.
 	TRB.Functions.Castbar:EnsureIdleState()
 	TRB.Functions.PetCastbar:EnsureIdleState()
+	TRB.Functions.OtherBars:EnsureIdleState()
 
 	-- Detect hidden→visible transition: when the bar was not tracking but is now
 	-- showing, fully invalidate the lookup memoization cache so that every

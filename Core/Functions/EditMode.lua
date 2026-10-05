@@ -175,6 +175,9 @@ function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
 	elseif rootBarKey == "petCastbar" then
 		-- Hangs off the pet stack by default, so it is only a root once re-anchored to the screen.
 		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", -300, -180)
+	elseif rootBarKey == "mainHandSwing" then
+		-- Root of the swing stack (Main Hand -> Off Hand -> Ranged), between screen center and the main stack.
+		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -100)
 	elseif rootBarKey == "gcd" then
 		-- The GCD bar hangs off the Cast Bar by default, so it is only a root once the user re-anchors it
 		-- to the screen. Park it just under the main stack's default spot when that happens.

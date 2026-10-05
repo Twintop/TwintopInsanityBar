@@ -8,12 +8,13 @@ local L = TRB.Localization
 
 --[[
 	Other Bars options panel. One builder, parameterized by barKey ("gcd" / "fatigue" / "breath" /
-	"feignDeath"). Edits the given spec's per-spec settings, or core when classId/specId are nil.
+	"feignDeath", plus the swing bars where the flavor has them). Edits the given spec's per-spec settings,
+	or core when classId/specId are nil.
 	Per-section "Use Global" toggles mirror the cast bars: Dimensions and Colors each copy their
 	slice from core independently.
 
 	These bars have no icon, no overlays and no cast states -- a timer runs or it doesn't -- so the panel
-	is just dimensions, colors, and the one behaviour option each kind needs.
+	is just dimensions, colors, and each kind's behavior options.
 ]]
 
 ---Reapplies layout + appearance so option changes show immediately. Recomposes the active spec's cache
@@ -31,14 +32,26 @@ local function ReapplyBars()
 		end
 	end
 	TRB.Data.lookupDirty = true
+	TRB.Functions.BarText:InvalidateOtherBarsLookup()
 	TRB.Functions.OtherBars:RefreshVisibility()
+end
+
+---@param barKey string
+---@return boolean
+local function IsSwingBar(barKey)
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+		if key == barKey then
+			return true
+		end
+	end
+	return false
 end
 
 ---Constructs the appearance options for one Other Bar within a spec.
 ---@param parent Frame # The tab's scroll child
 ---@param classId integer? # nil edits core (global) scope
 ---@param specId integer?
----@param barKey string # "gcd", "fatigue", "breath" or "feignDeath"
+---@param barKey string # "gcd", "fatigue", "breath", "feignDeath", "mainHandSwing", "offHandSwing" or "rangedSwing"
 function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specId, barKey)
 	if parent == nil then
 		return
@@ -98,11 +111,21 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 	yCoord = yCoord - 40
 	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(colorsCheckbox, controls[barKey .. "ColorSection"], yCoord)
 
-	-- Behaviour: one option each. The GCD picks its fill direction; a mirror timer decides whether to
-	-- take Blizzard's own bar off screen.
+	-- Behaviour: the GCD and swing bars pick their fill direction; a mirror timer can take Blizzard's bar off screen.
+	local isSwing = IsSwingBar(barKey)
 	controls[barKey .. "BehaviorSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["OtherBarsBehaviorHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
-	if barKey == "gcd" then
+	if isSwing then
+		local note = barKey == "mainHandSwing" and L["SwingTimerMainHandNote"] or L["SwingTimerWeaponNote"]
+		TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, note, oUi.xCoord, yCoord, 700, 20, GameFontHighlight)
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_timerDirection", L["GcdBarGrowInstead"], L["SwingTimerGrowInsteadTooltip"], yCoord,
+			function() return barSettings.timerDirection == "fill" end,
+			function(v)
+				barSettings.timerDirection = v and "fill" or "deplete"
+				ReapplyBars()
+			end)
+	elseif barKey == "gcd" then
 		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_timerDirection", L["GcdBarGrowInstead"], L["GcdBarGrowInsteadTooltip"], yCoord,
 			function() return barSettings.timerDirection == "fill" end,
 			function(v)
@@ -120,9 +143,9 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 	end
 	yCoord = yCoord - 40
 
-	-- Decimal places for the GCD's $gcdDuration / $gcdDurationRemaining bar text variables. The mirror
-	-- timers run for minutes and render as mm:ss, so they have no decimals to configure.
-	if barKey == "gcd" then
+	-- Decimal places for the GCD's and swing bars' duration bar text variables. The mirror timers run for
+	-- minutes and render as mm:ss, so they have no decimals to configure.
+	if barKey == "gcd" or isSwing then
 		cc.durationPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["OtherBarsDurationPrecision"], 0, 3, barSettings.durationPrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		cc.durationPrecision:SetScript("OnValueChanged", function(sliderFrame, value)
@@ -137,6 +160,29 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 
 	-- The Colors section's box also carries this section's settings.
 	TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(colorsCheckbox, controls[barKey .. "ColorSection"], controls[barKey .. "BehaviorSection"], yCoord)
+
+	-- One Hide Blizzard switch for all three swing bars, stored on Main Hand and following Main Hand's Colors box.
+	if isSwing then
+		controls[barKey .. "BlizzardSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["SwingTimerBlizzardHeader"], oUi.xCoord, yCoord)
+		yCoord = yCoord - 30
+		cc.disableBlizzardBar = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_disableBlizzardBar", L["MirrorTimerDisableBlizzard"], L["SwingTimerDisableBlizzardTooltip"], yCoord,
+			function() return spec.bars.mainHandSwing.disableBlizzardBar end,
+			function(v)
+				spec.bars.mainHandSwing.disableBlizzardBar = v
+				for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+					local siblingCheckbox = controls[swingKey] and controls[swingKey].disableBlizzardBar
+					if siblingCheckbox ~= nil then
+						siblingCheckbox:SetChecked(v)
+					end
+				end
+				ReapplyBars()
+			end)
+		yCoord = yCoord - 40
+		-- Main Hand is the first Other Bars tab and built eagerly, so its box exists before the lazy tabs build.
+		local mainHandColorsCheckbox = controls.checkBoxes and controls.checkBoxes.useGlobalMainHandSwingColors
+		local governingHeader = barKey == "mainHandSwing" and controls[barKey .. "ColorSection"] or L["CopyMenuSection_mainHandSwingColors"]
+		TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(mainHandColorsCheckbox, governingHeader, controls[barKey .. "BlizzardSection"], yCoord)
+	end
 
 	return yCoord
 end

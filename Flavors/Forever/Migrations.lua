@@ -12,4 +12,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Pet bars: seed their default text into the global list; barText is an array the defaults merge cannot backfill.
 	TRB.Functions.Settings:SeedPetBarsText(savedSettings.core)
+
+	-- Swing timer bars: same, for their remaining-time text.
+	TRB.Functions.Settings:SeedSwingTimersText(savedSettings.core)
 end

@@ -2072,6 +2072,7 @@ end
 ---@field public cdm TRB.CdmDependency? # Declared Cooldown Manager reliance for the whole bar. Options-panel badge only; nothing branches on it at runtime.
 ---@field public isSelfDriven boolean? # True when the bar shows/hides itself from live state (cast bars, GCD, mirror timers) rather than through ProcessBars. Such bars stay in the anchor tree as scaffolds and are never torn down by InvalidateAppliedState.
 ---@field public timerDrivenFill boolean? # True when the fill is bound to a DurationObject rather than written with SetValue, which leaves the Smooth setting nothing to act on.
+---@field public environmentShowConditions boolean? # Self-driven timer bar whose Show Bar When list also offers the standard environment conditions (combat, mounts, group, location, PvP)
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -2144,6 +2145,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.timerDrivenFill = config.timerDrivenFill or false -- Fill comes from a DurationObject, so the Smooth setting has nothing to act on
 	self.endCapMode = config.endCapMode -- "all" for independent-node bars; nil/"highest" shows the cap only on the highest progressed node
 	self.classScoped = config.classScoped or false -- Other Bar offered only to classes whose spec descriptors claim it (otherBars)
+	self.environmentShowConditions = config.environmentShowConditions or false
 
 	return self
 end
@@ -2443,6 +2445,12 @@ end
 ---only ever fires for Hunters, so GetOtherBarKeys filters it out for every other class. Blizzard's fourth
 ---timer type, DEATH, is deliberately absent: it never fires in retail content.
 TRB.Classes.BarTypeRegistry.otherBarKeys = { "gcd", "fatigue", "breath", "feignDeath" }
+
+---The swing timer bars, in tab order and stacking order. Empty unless the flavor fires PLAYER_SWING.
+TRB.Classes.BarTypeRegistry.swingBarKeys = TRB.Flavor.swingTimers and { "mainHandSwing", "offHandSwing", "rangedSwing" } or {}
+for index, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+	table.insert(TRB.Classes.BarTypeRegistry.otherBarKeys, index, key)
+end
 
 ---Whether a class claims a class-scoped Other Bar (a spec descriptor lists it under `otherBars`).
 ---@param classId integer?
@@ -2843,6 +2851,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		colorCurveType = nil,
 		visibilityKey = "gcd",
 		isSelfDriven = true,
+		environmentShowConditions = true,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultGcdBarSettings(classic)
 		end,
@@ -2882,6 +2891,34 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			end,
 			defaultColorsFunc = function()
 				return TRB.Functions.Settings:DefaultMirrorTimerBarColors(mt.key)
+			end,
+			defaultTexturesFunc = function()
+				return TRB.Functions.Settings:DefaultCustomBarTextures()
+			end
+		}))
+	end
+
+	-- Swing timer bars: every class gets all three; Off Hand and Ranged only show while their slot holds a weapon.
+	local swingBarNames = { mainHandSwing = L["ResourceMainHandSwing"], offHandSwing = L["ResourceOffHandSwing"], rangedSwing = L["ResourceRangedSwing"] }
+	for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
+		self:Register(TRB.Classes.BarTypeDefinition:New({
+			key = swingKey,
+			displayName = swingBarNames[swingKey],
+			isMultiNode = false,
+			maxNodes = 1,
+			hasSameColor = false,
+			minMaxMode = "custom",
+			hasSpacing = false,
+			hasThresholds = false,
+			colorCurveType = nil,
+			visibilityKey = swingKey,
+			isSelfDriven = true,
+			environmentShowConditions = true,
+			defaultDimensionsFunc = function(classic)
+				return TRB.Functions.Settings:DefaultSwingTimerBarSettings(classic, swingKey)
+			end,
+			defaultColorsFunc = function()
+				return TRB.Functions.Settings:DefaultSwingTimerBarColors(swingKey)
 			end,
 			defaultTexturesFunc = function()
 				return TRB.Functions.Settings:DefaultCustomBarTextures()
