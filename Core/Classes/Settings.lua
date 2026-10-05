@@ -448,6 +448,12 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isDruidCatForm boolean? # Show when the Druid player is in cat form
 ---@field public isDruidBearForm boolean? # Show when the Druid player is in bear form
 ---@field public isDruidMoonkinForm boolean? # Show when the Druid player is in moonkin form
+---@field public petOut boolean? # Pet bars only: show while a pet is out, alive or dead
+---@field public petPermanent boolean? # Pet bars only: show while a permanent pet is out
+---@field public petTemporary boolean? # Pet bars only: show while a temporary pet is out
+---@field public petDead boolean? # Pet bars only: show while the pet is dead
+---@field public petNotDead boolean? # Pet bars only: show unless the pet is dead, with no pet included
+---@field public petMissing boolean? # Pet bars only: show while there is no pet
 
 ---@class trbBarVisibilityHideConditions
 ---@field public isMountedAny boolean? # Hide when the player is mounted (any mount)
@@ -470,6 +476,12 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public inPetBattle boolean? # Hide when the player is in a pet battle
 ---@field public onTaxi boolean? # Hide when the player is on a flight path
 ---@field public isDead boolean? # Hide when the player is dead or a ghost
+---@field public petOut boolean? # Pet bars only: hide while a pet is out, alive or dead
+---@field public petMissing boolean? # Pet bars only: hide while there is no pet; a dead one still counts
+---@field public petNotPermanent boolean? # Pet bars only: hide unless a permanent pet is out
+---@field public petNotTemporary boolean? # Pet bars only: hide unless a temporary pet is out
+---@field public petDead boolean? # Pet bars only: hide while the pet is dead
+---@field public petNotDead boolean? # Pet bars only: hide unless the pet is dead
 
 ---@class trbBarVisibilitySetting
 ---@field public neverShow boolean # When true, the bar is unconditionally hidden regardless of conditions

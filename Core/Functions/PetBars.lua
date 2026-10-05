@@ -85,8 +85,43 @@ local function GetBarConfig(barKey)
 	return barSettings, colors, visibility
 end
 
+-- Every pet option and the pet states it holds in; Show Bar When and Always Hide Bar When read the same table.
+local PET_CONDITION_STATES = {
+	petOut = { permanent = true, temporary = true, dead = true },
+	petPermanent = { permanent = true },
+	petTemporary = { temporary = true },
+	petNotPermanent = { temporary = true, dead = true, none = true },
+	petNotTemporary = { permanent = true, dead = true, none = true },
+	petDead = { dead = true },
+	petNotDead = { permanent = true, temporary = true, none = true },
+	petMissing = { none = true },
+}
+
+---Whether any ticked pet option holds for the live pet state.
+---@param ticked table? # A show or hide conditions table
+---@return boolean
+local function MatchesPetCondition(ticked)
+	if ticked == nil then
+		return false
+	end
+	for key, states in pairs(PET_CONDITION_STATES) do
+		if ticked[key] == true and states[petState] then
+			return true
+		end
+	end
+	return false
+end
+
+---Whether the bar shows on a resource or health threshold, which only its alpha curve can resolve.
+---@param visibility table?
+---@return boolean
+local function HasThreshold(visibility)
+	local conditionType = visibility and visibility.resourceConditionType
+	return conditionType ~= nil and conditionType ~= "none"
+end
+
 ---Whether the bar is enabled at all: not Never Show, and something could still make it appear --
----Always Show, or at least one pet state ticked.
+---Always Show, a threshold, or any ticked show condition.
 ---@param visibility table?
 ---@return boolean
 local function IsEnabled(visibility)
@@ -98,15 +133,19 @@ local function IsEnabled(visibility)
 	if visibility == nil or visibility.neverShow == true then
 		return false
 	end
-	if visibility.alwaysShow == true then
+	if visibility.alwaysShow == true or HasThreshold(visibility) then
 		return true
 	end
 	local conditions = visibility.conditions
 	if conditions == nil then
 		return true
 	end
-	return conditions.petPermanent == true or conditions.petTemporary == true
-		or conditions.petDead == true or conditions.petMissing == true
+	for _, isTicked in pairs(conditions) do
+		if isTicked == true then
+			return true
+		end
+	end
+	return false
 end
 
 ---Public wrapper over IsEnabled. Layout consults this to collapse a disabled bar's reserved space.
@@ -116,10 +155,26 @@ function TRB.Functions.PetBars:IsEnabled(visibility)
 	return IsEnabled(visibility)
 end
 
----Whether the current pet state satisfies the bar's show conditions.
+-- Environment snapshot the show and hide conditions are evaluated against, plus the scratch entry
+-- ShouldForceHideBar reads the settings from. Shared by both bars, rebuilt once per frame.
+local visibilityContext = nil
+local visibilityContextTime = nil
+local hideEntry = {}
+
+---@return TRB.Classes.BarVisibilityContext
+local function GetVisibilityContext()
+	local now = GetTime()
+	if visibilityContextTime ~= now or visibilityContext == nil then
+		visibilityContext = TRB.Classes.BarVisibilityContext:NewFromGameState(false, nil)
+		visibilityContextTime = now
+	end
+	return visibilityContext
+end
+
+---Whether Always Show, the live pet state, or a standard show condition holds. Thresholds are resolved apart.
 ---@param visibility table?
 ---@return boolean
-local function MatchesPetState(visibility)
+local function MatchesShowConditions(visibility)
 	if visibility == nil then
 		return false
 	end
@@ -130,41 +185,35 @@ local function MatchesPetState(visibility)
 	if conditions == nil then
 		return false
 	end
-	if petState == "permanent" then
-		return conditions.petPermanent == true
-	elseif petState == "temporary" then
-		return conditions.petTemporary == true
-	elseif petState == "dead" then
-		return conditions.petDead == true
+	if MatchesPetCondition(conditions) then
+		return true
 	end
-	return conditions.petMissing == true
+	return TRB.Functions.BarVisibility:MatchesShowConditions(GetVisibilityContext(), conditions)
 end
 
--- Environment snapshot the hide conditions are evaluated against, plus the scratch entry
--- ShouldForceHideBar reads the settings from. Shared by both bars, rebuilt once per frame.
-local hideContext = nil
-local hideContextTime = nil
-local hideEntry = {}
-
----@return TRB.Classes.BarVisibilityContext
-local function GetHideContext()
-	local now = GetTime()
-	if hideContextTime ~= now or hideContext == nil then
-		hideContext = TRB.Classes.BarVisibilityContext:NewFromGameState(false, nil)
-		hideContextTime = now
+---Whether the bar should be up, and whether a show condition put it there rather than only its threshold.
+---@param visibility table?
+---@return boolean shouldShow, boolean matched
+local function ResolveShow(visibility)
+	if not IsEnabled(visibility) then
+		return false, false
 	end
-	return hideContext
+	local matched = MatchesShowConditions(visibility)
+	return matched or HasThreshold(visibility), matched
 end
 
----Whether a hard-hide condition currently suppresses the bar.
+---Whether a hard-hide condition, the pet's own included, currently suppresses the bar.
 ---@param visibility table?
 ---@return boolean
 local function IsForceHidden(visibility)
 	if visibility == nil or visibility.hideConditions == nil then
 		return false
 	end
+	if MatchesPetCondition(visibility.hideConditions) then
+		return true
+	end
 	hideEntry.visibilitySettings = visibility
-	return TRB.Functions.BarVisibility:ShouldForceHideBar(GetHideContext(), hideEntry)
+	return TRB.Functions.BarVisibility:ShouldForceHideBar(GetVisibilityContext(), hideEntry)
 end
 
 ---Container alpha the bar rests at while its show condition is unmet, ignoring hide conditions.
@@ -362,8 +411,8 @@ local function ApplyChromeColors(node, barKey, colors)
 	TRB.Functions.Glow:ApplyIndicatorGlow(node, indicatorKey)
 end
 
----Writes the pet health bar's scale, value and fill color. With no pet at all -- which a bar showing on
----the "No pet" state reaches -- the unit APIs have nothing to answer, so the bar rests empty.
+---Writes the pet health bar's scale, value and fill color. With no pet out the unit APIs have nothing to
+---answer, so the bar rests empty.
 ---@param node TRB.Classes.BarNode
 ---@param colors table?
 local function UpdateHealthFill(node, colors)
@@ -452,7 +501,8 @@ end
 
 ---Applies the full visible render for a bar: fill, colors, alpha, Show.
 ---@param barKey string
-local function ApplyVisibleState(barKey)
+---@param thresholdOnly boolean? # Up only on its threshold, so the alpha curve picks the opacity
+local function ApplyVisibleState(barKey, thresholdOnly)
 	local group, node = GetGroupNode(barKey)
 	if group == nil or node == nil then
 		return
@@ -465,6 +515,14 @@ local function ApplyVisibleState(barKey)
 	end
 	ApplyChromeColors(node, barKey, colors)
 	ShowAt(group, node, ((visibility and visibility.activeAlpha) or 100) / 100)
+	if thresholdOnly and group.containerFrame then
+		-- The curve's secret alpha lands on the active or inactive opacity, exactly as ProcessBars applies it.
+		local curveResult = TRB.Functions.BarVisibility:EvaluateVisibilityCurve(visibility, GetActiveSettings())
+		if curveResult ~= nil and type(curveResult.GetRGBA) == "function" then
+			local _, _, _, secretAlpha = curveResult:GetRGBA()
+			group.containerFrame:SetAlpha(secretAlpha)
+		end
+	end
 end
 
 ---Rests a bar at its idle display: an empty frame at the inactive alpha, or fully hidden.
@@ -501,9 +559,8 @@ local function BeginFadeOut(barKey)
 	TRB.Functions.BarVisibility:MarkDirty()
 end
 
----Whether the per-frame updater is still needed. A bar whose pet state matches keeps ticking even while
----force-hidden -- mounting up would otherwise shut it down and dismounting would never bring it back.
----A bar with nothing to show costs nothing: the pet events restart the updater.
+---Whether the per-frame updater is still needed. A bar that should be up keeps ticking even while force-hidden,
+---so it reappears the moment the hide clears; one with nothing to show parks until a pet event or EnsureUpdater.
 ---@return boolean
 local function NeedsUpdater()
 	for _, barKey in ipairs(BAR_KEYS) do
@@ -511,7 +568,7 @@ local function NeedsUpdater()
 			return true
 		end
 		local _, _, visibility = GetBarConfig(barKey)
-		if IsEnabled(visibility) and (MatchesPetState(visibility) or GetRestingAlpha(visibility) > 0) then
+		if ResolveShow(visibility) or GetRestingAlpha(visibility) > 0 then
 			return true
 		end
 	end
@@ -527,11 +584,23 @@ local function SyncUpdater()
 	end
 end
 
+---Starts the parked updater once a bar needs it. ProcessBars calls this whenever a visibility input changes,
+---since a show condition such as In Combat can turn true without any pet event.
+function TRB.Functions.PetBars:EnsureUpdater()
+	if updaterFrame:IsShown() or TRB.Functions.EditMode:IsInEditMode() then
+		return
+	end
+	if NeedsUpdater() then
+		updaterSinceLastUpdate = UPDATER_THROTTLE
+		updaterFrame:Show()
+	end
+end
+
 ---Re-resolves both bars against the current pet state and settings.
 function TRB.Functions.PetBars:RefreshVisibility()
 	for _, barKey in ipairs(BAR_KEYS) do
 		local _, _, visibility = GetBarConfig(barKey)
-		local shouldShow = IsEnabled(visibility) and MatchesPetState(visibility)
+		local shouldShow, matched = ResolveShow(visibility)
 		if shouldShow and IsForceHidden(visibility) then
 			forceHidden[barKey] = true
 			fadeStart[barKey] = nil
@@ -539,7 +608,7 @@ function TRB.Functions.PetBars:RefreshVisibility()
 		elseif shouldShow then
 			forceHidden[barKey] = nil
 			fadeStart[barKey] = nil
-			ApplyVisibleState(barKey)
+			ApplyVisibleState(barKey, not matched)
 		elseif wasShowing[barKey] then
 			BeginFadeOut(barKey)
 		else
@@ -565,8 +634,8 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 	local now = GetTime()
 	local needsUpdater = false
 
-	-- Nothing announces a pet dying, reviving, or a timed summon expiring, so the state is re-read here
-	-- rather than event-driven. Bounded to 20Hz, and only while a bar could be up.
+	-- Re-read here too, so a death, revive, or expiring summon is caught even when no event reports it.
+	-- Bounded to 20Hz, and only while a bar could be up.
 	if throttleTick and RefreshPetState() then
 		TRB.Data.lookupDirty = true
 	end
@@ -581,7 +650,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 		end
 
 		if throttleTick then
-			local shouldShow = IsEnabled(visibility) and MatchesPetState(visibility)
+			local shouldShow, matched = ResolveShow(visibility)
 			if shouldShow and IsForceHidden(visibility) then
 				forceHidden[barKey] = true
 				fadeStart[barKey] = nil
@@ -589,8 +658,8 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			elseif shouldShow then
 				forceHidden[barKey] = nil
 				fadeStart[barKey] = nil
-				-- Unconditional: this is also what self-heals the bar after a render transition.
-				ApplyVisibleState(barKey)
+				-- Unconditional: this is also what self-heals the bar after a render transition, and re-reads a threshold.
+				ApplyVisibleState(barKey, not matched)
 			elseif wasShowing[barKey] then
 				BeginFadeOut(barKey)
 			elseif fadeStart[barKey] == nil then
@@ -637,7 +706,15 @@ end)
 
 local eventFrame = CreateFrame("Frame")
 eventFrame:SetScript("OnEvent", function(_, event)
-	if event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_POWER_UPDATE" or event == "UNIT_MAXPOWER" then
+	if event == "UNIT_HEALTH" then
+		-- A pet dying or reviving changes its health, and a hidden bar's parked updater would otherwise miss it.
+		TRB.Data.lookupDirty = true
+		if RefreshPetState() then
+			TRB.Functions.PetBars:RefreshVisibility()
+		end
+		return
+	end
+	if event == "UNIT_MAXHEALTH" or event == "UNIT_POWER_UPDATE" or event == "UNIT_MAXPOWER" then
 		-- The bars read the values themselves each throttle tick, so these only mark bar text stale.
 		TRB.Data.lookupDirty = true
 		return

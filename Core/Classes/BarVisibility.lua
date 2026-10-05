@@ -408,6 +408,15 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return false
 	end
 
+	-- ProcessBars handles the OR with the resource/health threshold independently.
+	return self:MatchesShowConditions(context, conditions)
+end
+
+---Whether any ticked Show Bar When condition holds in the context. Thresholds are evaluated separately.
+---@param context TRB.Classes.BarVisibilityContext # The shared environment snapshot
+---@param conditions trbBarVisibilityConditions # The bar's show conditions
+---@return boolean
+function TRB.Functions.BarVisibility:MatchesShowConditions(context, conditions)
 	-- OR-evaluate: if ANY enabled condition matches the current context, show the bar
 	if conditions.inCombat and context.inCombat then
 		return true
@@ -473,8 +482,6 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return true
 	end
 
-	-- No boolean conditions matched — return false.
-	-- ProcessBars handles the OR with resource/health threshold independently.
 	return false
 end
 
@@ -851,6 +858,8 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	-- its self-driven updater stops while idle-hidden, so this is what restarts it after settings
 	-- changes, spec swaps, or reconstructions.
 	TRB.Functions.Castbar:EnsureIdleState()
+	-- The pet bars' updater parks while hidden too, and a show condition such as In Combat wakes it only from here.
+	TRB.Functions.PetBars:EnsureUpdater()
 
 	-- Detect hidden→visible transition: when the bar was not tracking but is now
 	-- showing, fully invalidate the lookup memoization cache so that every

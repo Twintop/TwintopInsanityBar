@@ -3779,3 +3779,7 @@ L["BarTextIconPetCasting"] = "Icon of the spell your pet is currently casting. B
 L["BarTextVariablePetCastSpellName"] = "Name of the spell your pet is currently casting. Blank when your pet is not casting."
 L["BarTextVariablePetCastTime"] = "Total cast time of the spell your pet is currently casting. Blank when your pet is not casting."
 L["BarTextVariablePetCastTimeRemaining"] = "Time remaining on the spell your pet is currently casting. Blank when your pet is not casting."
+L["ShowBarVisibilityConditionPetNotPermanent"] = "No permanent pet out"
+L["ShowBarVisibilityConditionPetNotTemporary"] = "No temporary pet out"
+L["ShowBarVisibilityConditionPetNotDead"] = "Pet is not dead"
+L["ShowBarVisibilityConditionPetOut"] = "Pet is out"

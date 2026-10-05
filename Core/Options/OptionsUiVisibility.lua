@@ -27,8 +27,9 @@ local DRUID_FORM_CONDITION_KEYS = { "isDruidHumanoidForm", "isDruidTravelFormAny
 local CASTBAR_CONDITION_KEYS = { "casting", "channeling", "empowered" }
 -- Other Bars (GCD + the mirror timers) have exactly one show state: their timer is running.
 local TIMER_CONDITION_KEYS = { "whenActive" }
--- Pet bars show against the four states a pet can be in, which are mutually exclusive at any moment.
-local PET_CONDITION_KEYS = { "petPermanent", "petTemporary", "petDead", "petMissing" }
+-- Pet bars' options, row for row in the same order in each list; a key in both lists means the same pet states in each.
+local PET_CONDITION_KEYS = { "petOut", "petMissing", "petPermanent", "petTemporary", "petDead", "petNotDead" }
+local PET_HIDE_CONDITION_KEYS = { "petOut", "petMissing", "petNotPermanent", "petNotTemporary", "petDead", "petNotDead" }
 local STANDARD_HIDE_CONDITION_KEYS ={ "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
 
 -- Every condition key the addon can store, show-side and hide-side alike.
@@ -70,10 +71,14 @@ local CONDITION_LABELS = {
 	channeling = L["ShowBarVisibilityConditionChanneling"],
 	empowered = L["ShowBarVisibilityConditionEmpowered"],
 	whenActive = L["ShowBarVisibilityWhenActive"],
+	petOut = L["ShowBarVisibilityConditionPetOut"],
 	petPermanent = L["ShowBarVisibilityConditionPetPermanent"],
 	petTemporary = L["ShowBarVisibilityConditionPetTemporary"],
 	petDead = L["ShowBarVisibilityConditionPetDead"],
 	petMissing = L["ShowBarVisibilityConditionPetMissing"],
+	petNotPermanent = L["ShowBarVisibilityConditionPetNotPermanent"],
+	petNotTemporary = L["ShowBarVisibilityConditionPetNotTemporary"],
+	petNotDead = L["ShowBarVisibilityConditionPetNotDead"],
 }
 
 -- Deterministic iteration order for show-side summaries: standard, then Druid forms, then cast states,
@@ -133,6 +138,25 @@ local function AvailableGroups(groups)
 		end
 	end
 	return result
+end
+
+---Copies a key list and its groups with one more group on the end, leaving the originals untouched.
+---@param keys string[]
+---@param groups table[]
+---@param title string
+---@param extraKeys string[]
+---@return string[] keys, table[] groups
+local function AppendGroup(keys, groups, title, extraKeys)
+	local joinedKeys = CopyKeys(keys)
+	for _, key in ipairs(extraKeys) do
+		joinedKeys[#joinedKeys + 1] = key
+	end
+	local joinedGroups = {}
+	for _, group in ipairs(groups) do
+		joinedGroups[#joinedGroups + 1] = group
+	end
+	joinedGroups[#joinedGroups + 1] = { title = title, keys = extraKeys }
+	return joinedKeys, joinedGroups
 end
 
 ---Builds a label map containing only the requested keys.
@@ -792,17 +816,17 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideGroups = hideConditionGroups,
 		supportsThresholds = false,
 	}
-	-- Pet bars: the show states are the pet's, and the hard-hide list is the full standard one. Resource
-	-- and health thresholds are the player's, so they don't apply to a bar showing the pet's.
-	local petConditionKeys = CopyKeys(PET_CONDITION_KEYS)
+	-- Pet bars: the standard lists and thresholds, each list closed by a Pet group of states or their negations.
+	local petShowKeys, petShowGroups = AppendGroup(conditionKeys, conditionGroups, L["ShowBarVisibilityGroupPet"], CopyKeys(PET_CONDITION_KEYS))
+	local petHideKeys, petHideGroups = AppendGroup(hideConditionKeys, hideConditionGroups, L["ShowBarVisibilityGroupPet"], CopyKeys(PET_HIDE_CONDITION_KEYS))
 	local petBarProfile = {
-		showKeys = petConditionKeys,
-		showLabels = LabelsFor(petConditionKeys),
-		showGroups = { { title = L["ShowBarVisibilityGroupPet"], keys = petConditionKeys } },
-		hideKeys = hideConditionKeys,
-		hideLabels = hideConditionLabels,
-		hideGroups = hideConditionGroups,
-		supportsThresholds = false,
+		showKeys = petShowKeys,
+		showLabels = LabelsFor(petShowKeys),
+		showGroups = petShowGroups,
+		hideKeys = petHideKeys,
+		hideLabels = LabelsFor(petHideKeys),
+		hideGroups = petHideGroups,
+		supportsThresholds = true,
 	}
 	local standardProfile = {
 		showKeys = conditionKeys,
@@ -845,7 +869,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local function GetThresholdTypesForBarEntry(barEntry)
 		-- Self-driven bars (cast bars, GCD, mirror timers) fill from a timeline, not a resource, so a
 		-- resource/health threshold condition has nothing to compare against.
-		if barEntry ~= nil and (barEntry.isCastbar or barEntry.isTimerBar or barEntry.isPetBar) then
+		if barEntry ~= nil and (barEntry.isCastbar or barEntry.isTimerBar) then
 			return {}
 		end
 		local types = {}
@@ -1335,8 +1359,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
-	-- Pet bars: self-driven render (Functions/PetBars.lua), shown against the pet's own states, and only on
-	-- the specs that have the settings. The Pet Cast Bar rides along but takes the cast bars' states.
+	-- Pet bars: self-driven render (Functions/PetBars.lua), only on the specs that have the settings. The Pet Cast
+	-- Bar rides along but takes the cast bars' states.
 	local petBarKeysForPanel = (classId == nil) and TRB.Classes.BarTypeRegistry.petScopeKeys
 		or TRB.Classes.BarTypeRegistry:GetPetScopeKeys(classId, specId)
 	for _, petBarKey in ipairs(petBarKeysForPanel) do
