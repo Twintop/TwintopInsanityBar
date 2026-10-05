@@ -4,7 +4,7 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
-# Live 12.1.0.17-release / Forever 1.60.1.5-release (2026-10-05)
+# Live 12.1.0.16-release / Forever 1.60.1.4-release (2026-10-06)
 ## Pet Bars
 
 - [#551](#551) Add new Pet Resource and Pet Health bars on a new Pet Bars tab, and a new Pet Cast Bar under Cast Bars, tracking your pet, with `$petName`, `$petState`, `$petHealth`, `$petHealthMax`, `$petHealthPercent`, `$petResource`, `$petResourceMax`, `$petResourcePercent`, `$petResourceName`, `$petCastSpellName`, `$petCastTime`, `$petCastTimeRemaining`, `$petCastPushback`, `$petCastSpellId`, `$petCastInterruptible`, and `$petCastUninterruptible` bar text and a `#petCasting` icon. Set to Never Show by default; enable them under Bar Visibility, where the pet bars' Show Bar When and Always Hide Bar When lists add Pet is alive, Pet is dead, and No pet, and their thresholds add Pet Health % and Pet Resource %.
