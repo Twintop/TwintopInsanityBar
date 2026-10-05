@@ -94,6 +94,23 @@ local function NewSpecGlobalDefaults()
 	}
 end
 
+---The pet bars' "use global" toggles, which only a spec with a pet gets.
+---@return table<string, boolean>
+local function NewSpecPetGlobalDefaults()
+	return {
+		-- Pet Resource colors stay per spec: pets run on different powers, so one shared fill would miscolor most.
+		petPowerDimensions = true,
+		petPowerColors = false,
+		petHealthDimensions = true,
+		petHealthColors = true,
+		petCastbarDimensions = true,
+		petCastbarColors = true,
+		petCastbarOverlays = true,
+		petCastbarText = true,
+		petCastbarShield = true
+	}
+end
+
 ---Loads the default settings structure
 ---@param classic boolean?
 ---@return table
@@ -298,7 +315,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					targetCastBarText = true,
 					focusCastBarText = true,
 					otherBarsText = true,
-					hunterFeignDeathBarText = true
+					hunterFeignDeathBarText = true,
+					petBarsText = true
 				}
 			},
 			-- Per-class/spec "use global" toggles; populated from the class/spec registry below.
@@ -322,6 +340,11 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 		local globalClass, enabledClass, specClass = {}, {}, {}
 		for _, specEntry in ipairs(classEntry.specs) do
 			globalClass[specEntry.specName] = NewSpecGlobalDefaults()
+			if specEntry.descriptor ~= nil and specEntry.descriptor.pet ~= nil then
+				for key, value in pairs(NewSpecPetGlobalDefaults()) do
+					globalClass[specEntry.specName][key] = value
+				end
+			end
 			for key, value in pairs(specEntry.descriptor and specEntry.descriptor.useGlobalDefaults or {}) do
 				globalClass[specEntry.specName][key] = value
 			end
@@ -344,6 +367,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	-- Other Bars follow the same rule. Core is the global scope, which excludes the Hunter-only Feign
 	-- Death bar -- Hunter specs own that one outright.
 	self:InjectOtherBarsDefaults(settings.core, nil, classic)
+
+	-- Pet bars too. Core has no one spec, so it takes every pet bar regardless of scope: it is the source
+	-- the pet specs' "Use Global" toggles read from.
+	self:InjectPetBarsDefaults(settings.core, nil, nil, classic, true)
 
 	return settings
 end
@@ -1204,6 +1231,66 @@ function TRB.Functions.Settings:LoadDefaultOtherBarTextSettings(relativeToFrame,
 	}
 end
 
+---Default Pet bar text: the pet's name and resource on Pet Resource, its health percent on Pet Health.
+---Seeded into the global list, so one edit covers every pet spec.
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultPetBarTextSettings()
+	local entries = {}
+
+	local name = self:LoadDefaultOtherBarTextSettings("PetPowerBar", L["ResourcePetPower"], "$petName", "CENTER", 12)
+	name.name = L["ResourcePetName"]
+	name.text = "{$petName}[$petName]"
+	name.fontJustifyHorizontal = "LEFT"
+	name.fontJustifyHorizontalName = L["PositionLeft"]
+	name.position.relativeTo = "LEFT"
+	name.position.relativeToName = L["PositionLeft"]
+	name.position.xPos = 2
+	entries[#entries + 1] = name
+
+	local power = self:LoadDefaultOtherBarTextSettings("PetPowerBar", L["ResourcePetPower"], "$petResource", "RIGHT", 12)
+	power.text = "{$petResource}[$petResource]"
+	entries[#entries + 1] = power
+
+	local health = self:LoadDefaultOtherBarTextSettings("PetHealthBar", L["ResourcePetHealth"], "$petHealthPercent", "CENTER", 10)
+	health.text = "{$petHealthPercent}[$petHealthPercent%]"
+	entries[#entries + 1] = health
+
+	return entries
+end
+
+---Default Pet Cast Bar text, kept apart because cast bar text carries its own font defaults.
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultPetCastBarTextSettings()
+	return self:LoadDefaultTargetFocusCastBarTextSettings("PetCastBar", L["ResourcePetCastbar"], "$petCastSpellName", "$petCastTimeRemaining", "$petCastTime", 12, 10)
+end
+
+---Seeds the Pet bars' default text into saved global bar text, from each flavor's PortForwardSettings.
+---Flagged so deleted entries stay deleted; the scan skips any pet frame that already has text.
+---@param core table? # The saved core settings
+function TRB.Functions.Settings:SeedPetBarsText(core)
+	local displayText = core ~= nil and core.displayText or nil
+	if displayText == nil or type(displayText.barText) ~= "table" then
+		return
+	end
+	displayText.migrations = displayText.migrations or {}
+	if not displayText.migrations.petBarsText then
+		local anchoredFrames = {}
+		for _, entry in ipairs(displayText.barText) do
+			if entry.position ~= nil and entry.position.relativeToFrame ~= nil then
+				anchoredFrames[entry.position.relativeToFrame] = true
+			end
+		end
+		for _, entries in ipairs({ self:LoadDefaultPetBarTextSettings(), self:LoadDefaultPetCastBarTextSettings() }) do
+			for _, entry in ipairs(entries) do
+				if not anchoredFrames[entry.position.relativeToFrame] then
+					table.insert(displayText.barText, entry)
+				end
+			end
+		end
+	end
+	displayText.migrations.petBarsText = true
+end
+
 ---Gets the default Target/Focus Cast Bar colors. `bar` is the standard-cast fill, `channel` recolors a
 ---channel, `empower` recolors an empowered cast (differentiated by event), `uninterruptible` /
 ---`uninterruptibleBorder` recolor the fill / border when a hostile cast can't be interrupted (via the
@@ -1465,6 +1552,183 @@ function TRB.Functions.Settings:InjectOtherBarsDefaults(specDefaults, classId, c
 		end
 		if specDefaults.displayBar[key] == nil then
 			specDefaults.displayBar[key] = self:DefaultOtherBarVisibility(key)
+		end
+		local barTex = key .. "Bar"
+		if specDefaults.textures[barTex] == nil then
+			local tex = self:DefaultCustomBarTextures()
+			specDefaults.textures[barTex] = tex.bar
+			specDefaults.textures[key .. "BarName"] = tex.barName
+			specDefaults.textures[key .. "Border"] = tex.border
+			specDefaults.textures[key .. "BorderName"] = tex.borderName
+			specDefaults.textures[key .. "Background"] = tex.background
+			specDefaults.textures[key .. "BackgroundName"] = tex.backgroundName
+		end
+	end
+end
+
+---Default settings for one Pet bar. Pet Resource is a screen-anchored root left of centre; Pet Health
+---hangs off its bottom edge at the player pair's 3:2 height ratio, so moving one moves both.
+---@param classic boolean?
+---@param barKey string # "petHealth" or "petPower"
+---@return TRB.Classes.Settings.OtherBar
+function TRB.Functions.Settings:DefaultPetBarSettings(classic, barKey)
+	local settings = self:DefaultOtherBarDimensions(classic) --[[@as TRB.Classes.Settings.OtherBar]]
+	settings.width = 200
+
+	if barKey == "petHealth" then
+		settings.height = 12
+		settings.relativeTo = "BOTTOM"
+		settings.relativeToName = L["PositionBelowMiddle"]
+		settings.anchor.barKey = "petPower"
+		settings.anchor.anchorPoint = "BOTTOM"
+		settings.anchor.attachPoint = "TOP"
+		settings.anchor.yOffset = 0
+		settings.anchor.matchWidth = true
+	else
+		settings.height = 18
+		settings.anchor.xOffset = -300
+		settings.anchor.yOffset = -120
+	end
+
+	return settings
+end
+
+---Default Pet Health colors: the player health bar's border and red, yellow, and green curve, so the two read alike.
+---@return table
+function TRB.Functions.Settings:DefaultPetHealthBarColors()
+	local colors = self:DefaultCustomBarThresholdColors("FFFF0000", "FFFFFF00", "FF00FF00", 0.30, 0.70, "step")
+	colors.border = self:DefaultHealthBarColors().border
+	colors.endCap = self:DefaultEndCapColorEntry()
+	return colors
+end
+
+-- Fill and border per pet power token: Blizzard's power colors, and the addon's own mana bar for Mana.
+local petPowerColors = {
+	FOCUS = { fill = "FFFF8040", border = "FFAA5522" },
+	ENERGY = { fill = "FFFFFF00", border = "FFAAAA00" },
+	MANA = { fill = "FF0000FF", border = "FF0000AA" },
+}
+
+---Default Pet Resource colors for a spec, keyed on the power its pet uses. A scope with no one spec
+---(core) takes Focus.
+---@param classId integer?
+---@param specId integer?
+---@return table
+function TRB.Functions.Settings:DefaultPetPowerBarColors(classId, specId)
+	local petInfo = TRB.Classes.BarTypeRegistry:GetPetSpecInfo(classId, specId)
+	local palette = petPowerColors[petInfo ~= nil and petInfo.power or "FOCUS"] or petPowerColors.FOCUS
+
+	return {
+		bar = { color = palette.fill, color2 = palette.fill, gradientDirection = "disabled" },
+		border = { color = palette.border },
+		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
+	}
+end
+
+---Default visibility for a Pet bar: Never Show, with the alive and dead pet states ticked.
+---@return trbBarVisibilitySetting
+function TRB.Functions.Settings:DefaultPetBarVisibility()
+	return {
+		neverShow = true,
+		alwaysShow = false,
+		conditions = { isPetAlive = true, isPetDead = true, isPetMissing = false },
+		hideConditions = self:LoadDefaultBarVisibilityHideConditions(),
+		activeAlpha = 100,
+		inactiveAlpha = 0,
+		fadeDuration = 0.5,
+		fadeDelay = 0,
+		resourceConditionType = "none",
+		resourceConditionOperator = ">=",
+		resourceConditionValue = 0
+	}
+end
+
+---Default Pet Cast Bar settings: the player Cast Bar's, less what only the player's casts have, flush
+---under Pet Health.
+---@param classic boolean?
+---@return table
+function TRB.Functions.Settings:DefaultPetCastbarBarSettings(classic)
+	local settings = self:DefaultCastbarBarDimensions(classic)
+	settings.fullWidth = false
+	settings.width = 200
+	settings.height = 16
+	settings.anchor.barKey = "petHealth"
+	settings.anchor.xOffset = 0
+	settings.anchor.yOffset = 0
+	settings.anchor.matchWidth = true
+	settings.showPushback = true
+	settings.castTimePrecision = 1
+	settings.durationPrecision = 1
+	settings.icon = self:DefaultBarIconSettings()
+	settings.uninterruptibleShield = self:DefaultCastbarShieldSettings()
+	return settings
+end
+
+---Default Pet Cast Bar colors: the player Cast Bar's, without latency, channel ticks, or empower.
+---@return table
+function TRB.Functions.Settings:DefaultPetCastbarBarColors()
+	local colors = self:DefaultCastbarBarColors()
+	colors.latency = nil
+	colors.tick = nil
+	colors.empowerStages = nil
+	return colors
+end
+
+---Default Pet Cast Bar visibility: Never Show, with casting and channeling ticked.
+---@return trbBarVisibilitySetting
+function TRB.Functions.Settings:DefaultPetCastbarVisibility()
+	local visibility = self:DefaultCastbarVisibility()
+	visibility.neverShow = true
+	visibility.conditions.empowered = nil
+	return visibility
+end
+
+---Adds the Pet bars' defaults to a spec's default settings so Table:Merge carries them into saves.
+---Idempotent; a spec with no pet gets nothing, which keeps the bars off its tabs and target lists.
+---@param specDefaults table
+---@param classId integer?
+---@param specId integer?
+---@param classic boolean?
+---@param includeAllScopes boolean? # For the core scope, which owns every pet bar's global defaults
+function TRB.Functions.Settings:InjectPetBarsDefaults(specDefaults, classId, specId, classic, includeAllScopes)
+	if type(specDefaults) ~= "table" then
+		return
+	end
+	local keys = includeAllScopes and TRB.Classes.BarTypeRegistry.petScopeKeys
+		or TRB.Classes.BarTypeRegistry:GetPetScopeKeys(classId, specId)
+	if #keys == 0 then
+		return
+	end
+	specDefaults.bars = specDefaults.bars or {}
+	specDefaults.colors = specDefaults.colors or {}
+	specDefaults.colors.bars = specDefaults.colors.bars or {}
+	specDefaults.displayBar = specDefaults.displayBar or {}
+	specDefaults.textures = specDefaults.textures or {}
+
+	for _, key in ipairs(keys) do
+		if specDefaults.bars[key] == nil then
+			if key == "petCastbar" then
+				specDefaults.bars[key] = self:DefaultPetCastbarBarSettings(classic)
+			else
+				specDefaults.bars[key] = self:DefaultPetBarSettings(classic, key)
+			end
+		end
+		if specDefaults.colors.bars[key] == nil then
+			if key == "petHealth" then
+				specDefaults.colors.bars[key] = self:DefaultPetHealthBarColors()
+			elseif key == "petCastbar" then
+				specDefaults.colors.bars[key] = self:DefaultPetCastbarBarColors()
+			else
+				specDefaults.colors.bars[key] = self:DefaultPetPowerBarColors(classId, specId)
+			end
+		end
+		if specDefaults.displayBar[key] == nil then
+			if key == "petCastbar" then
+				specDefaults.displayBar[key] = self:DefaultPetCastbarVisibility()
+			else
+				specDefaults.displayBar[key] = self:DefaultPetBarVisibility()
+			end
 		end
 		local barTex = key .. "Bar"
 		if specDefaults.textures[barTex] == nil then
@@ -2477,6 +2741,10 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("FatigueBar", L["ResourceFatigue"], "$fatigueDurationRemaining", "CENTER", 12))
 	table.insert(textSettings, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("BreathBar", L["ResourceBreath"], "$breathDurationRemaining", "CENTER", 12))
 
+	for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultPetBarTextSettings()) do
+		table.insert(textSettings, entry)
+	end
+
 	textSettings = TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 
 	-- We don't want to apply shared font defaults to cast bar text settings because they have their own defaults that are different from the global defaults
@@ -2492,6 +2760,9 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 		table.insert(textSettings, entry)
 	end
 	for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultFocusCastBarTextSettings()) do
+		table.insert(textSettings, entry)
+	end
+	for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultPetCastBarTextSettings()) do
 		table.insert(textSettings, entry)
 	end
 	return textSettings

@@ -54,6 +54,7 @@
 	<Script file="Options\OptionsUiCastbar.lua"/>
 	<Script file="Options\OptionsUiTargetCastbar.lua"/>
 	<Script file="Options\OptionsUiOtherBars.lua"/>
+	<Script file="Options\OptionsUiPetBars.lua"/>
 	<Script file="Options\OptionsUiTabs.lua"/>
 	<Script file="Options\OptionsFrame.lua"/>
 	<Script file="Options\Options.lua"/>

@@ -492,6 +492,7 @@ do
 	})
 	SpecDescriptor:Declare("deathknight_unholy", {
 		secondary = { exportable = true },
+		pet = { power = "ENERGY" },
 		barTextAnchorFrames = {
 			secondary = {
 				{ label = L["Rune1"], frame = "ComboPoint_1" }, { label = L["Rune2"], frame = "ComboPoint_2" }, { label = L["Rune3"], frame = "ComboPoint_3" }, { label = L["Rune4"], frame = "ComboPoint_4" },

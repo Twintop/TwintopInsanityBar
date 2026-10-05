@@ -5,6 +5,12 @@ local _, TRB = ...
 TRB.Details.coreNewsContent = [====[
 
 # Live 12.1.0.17-release / Forever 1.60.1.5-release (2026-10-05)
+## Pet Bars
+
+- [#551](#551) Add new Pet Resource and Pet Health bars on a new Pet Bars tab, and a new Pet Cast Bar under Cast Bars, tracking your pet, with `$petName`, `$petState`, `$petHealth`, `$petHealthMax`, `$petHealthPercent`, `$petResource`, `$petResourceMax`, `$petResourcePercent`, `$petResourceName`, `$petCastSpellName`, `$petCastTime`, `$petCastTimeRemaining`, `$petCastPushback`, `$petCastSpellId`, `$petCastInterruptible`, and `$petCastUninterruptible` bar text and a `#petCasting` icon. Set to Never Show by default; enable them under Bar Visibility, where the pet bars' Show Bar When and Always Hide Bar When lists add Pet is alive, Pet is dead, and No pet, and their thresholds add Pet Health % and Pet Resource %.
+- Pet Resource fills with whichever resource your pet uses, and Pet Health with Low, Medium, and High health colors.
+- All three join the bar text Relative to Frame, Color Indicator, and custom threshold target lists.
+
 ## General
 
 - Fix custom threshold lines changing color at the wrong value on a bar with a Maximum Bar Value override.

@@ -564,6 +564,7 @@ end
 do
 	local L = TRB.Localization
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
+	SpecDescriptor:DeclareForClass("warlock", { pet = { power = "ENERGY" } })
 	SpecDescriptor:Declare("warlock_affliction", {
 		manaBar = true,
 		secondary = { exportable = true },

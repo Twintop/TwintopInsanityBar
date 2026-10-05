@@ -471,4 +471,21 @@ if locale == "enGB" then
 	L["UseGlobalCoverCustomize"] = "Customise for this spec"
 	L["UseGlobalBadgeTooltipTextColors"] = "Current, casting, spending, passive, over threshold, and overcap text colours use the global settings, including whether each is enabled. The Mana Bar text colour and colours unique to this spec stay per spec."
 
+	-- Pet bars
+	L["PetBarColorType"] = "Colour Transition Type"
+	L["PetBarColorLow"] = "Low Health Colour"
+	L["PetBarColorMedium"] = "Medium Health Colour"
+	L["PetBarColorHigh"] = "High Health Colour"
+	L["PetBarThresholdMediumTooltip"] = "Pet health percentage at which the bar takes the Medium Health Colour."
+	L["PetBarThresholdHighTooltip"] = "Pet health percentage at which the bar takes the High Health Colour."
+	L["OpenGlobalPetBarsSettingsTooltip"] = "Opens the global Pet Bars options screen, where these settings are configured for every pet specialisation at once."
+	L["CheckboxUseGlobalTooltip_PetPowerDimensions"] = "When checked, this bar's position and size come from the global Pet Bars screen instead of this specialisation's own settings."
+	L["CheckboxUseGlobalTooltip_PetPowerColors"] = "When checked, this bar's colours come from the global Pet Bars screen instead of this specialisation's own settings. Off by default, so each specialisation can colour the bar to match the resource its pet actually uses."
+	L["CheckboxUseGlobalTooltip_PetHealthDimensions"] = "When checked, this bar's position and size come from the global Pet Bars screen instead of this specialisation's own settings."
+	L["CheckboxUseGlobalTooltip_PetHealthColors"] = "When checked, this bar's colours come from the global Pet Bars screen instead of this specialisation's own settings."
+	L["CheckboxUseGlobalTooltip_PetCastbarColors"] = "When checked, the global Pet Cast Bar fill, border, and background colours will be used."
+	L["CopyMenuSection_petPowerColors"] = "Pet Resource Bar - Colours"
+	L["CopyMenuSection_petHealthColors"] = "Pet Health Bar - Colours"
+	L["CopyMenuSection_petCastbarColors"] = "Pet Cast Bar - Colours"
+
 end

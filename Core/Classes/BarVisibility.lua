@@ -39,6 +39,9 @@ TRB.Functions = TRB.Functions or {}
 ---@field isDruidCatForm boolean # Whether the Druid player is in cat form
 ---@field isDruidBearForm boolean # Whether the Druid player is in bear form
 ---@field isDruidMoonkinForm boolean # Whether the Druid player is in moonkin form
+---@field isPetAlive boolean # Whether the player's pet is out and alive
+---@field isPetDead boolean # Whether the player's pet is out and dead
+---@field isPetMissing boolean # Whether the player has no pet out
 TRB.Classes.BarVisibilityContext = {}
 TRB.Classes.BarVisibilityContext.__index = TRB.Classes.BarVisibilityContext
 
@@ -84,6 +87,9 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.isDruidCatForm = params.isDruidCatForm or false
 	self.isDruidBearForm = params.isDruidBearForm or false
 	self.isDruidMoonkinForm = params.isDruidMoonkinForm or false
+	self.isPetAlive = params.isPetAlive or false
+	self.isPetDead = params.isPetDead or false
+	self.isPetMissing = params.isPetMissing or false
 	return self
 end
 
@@ -116,6 +122,7 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 	end
 
 	local isDead = UnitIsDeadOrGhost("player") or false
+	local petState = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.petState or "none"
 
 	-- Shapeshift forms only exist for a class whose display follows them (descriptor `forms`); the
 	-- class module keeps currentShapeshiftForm up to date.
@@ -180,6 +187,9 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		isDruidCatForm = druidForm == "cat",
 		isDruidBearForm = druidForm == "bear",
 		isDruidMoonkinForm = druidForm == "moonkin",
+		isPetAlive = petState == "alive",
+		isPetDead = petState == "dead",
+		isPetMissing = petState == "none",
 	})
 end
 
@@ -246,12 +256,24 @@ local function HasMatchingDruidFormCondition(conditions, context)
 	return false
 end
 
+-- Only the pet bars offer these, in both their show and hide lists.
+local PET_VISIBILITY_KEYS = { "isPetAlive", "isPetDead", "isPetMissing" }
+
+local function HasMatchingPetCondition(conditions, context)
+	for _, key in ipairs(PET_VISIBILITY_KEYS) do
+		if conditions[key] == true and context[key] == true then
+			return true
+		end
+	end
+	return false
+end
+
 ---Marks visibility state as dirty, forcing the next ProcessBars call to re-evaluate.
 ---Call this whenever any input to visibility evaluation changes:
 ---  inCombat, inVehicle, inPetBattle, onTaxi, specSupported,
 ---  isMountedAny, isMountedGround, isMountedFlying, isSkyriding, isSkyridingFlying, isSteadyFlight, isSteadyFlightFlying, hasTarget, inGroup, inRaid,
 ---  inInstance, inDungeon, inRaidInstance, inBattleground, inArena, isPvpFlagged, isWarMode,
----  Druid shapeshift form,
+---  Druid shapeshift form, pet state,
 ---  per-bar visibility settings, talent gates, maxResource2.
 function TRB.Functions.BarVisibility:MarkDirty()
 	self.dirtyToken = self.dirtyToken + 1
@@ -355,6 +377,9 @@ function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
 	if HasMatchingDruidFormCondition(conditions, context) then
 		return true
 	end
+	if HasMatchingPetCondition(conditions, context) then
+		return true
+	end
 
 	return false
 end
@@ -408,6 +433,15 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return false
 	end
 
+	-- ProcessBars handles the OR with the resource/health threshold independently.
+	return self:MatchesShowConditions(context, conditions)
+end
+
+---Whether any ticked Show Bar When condition holds in the context. Thresholds are evaluated separately.
+---@param context TRB.Classes.BarVisibilityContext # The shared environment snapshot
+---@param conditions trbBarVisibilityConditions # The bar's show conditions
+---@return boolean
+function TRB.Functions.BarVisibility:MatchesShowConditions(context, conditions)
 	-- OR-evaluate: if ANY enabled condition matches the current context, show the bar
 	if conditions.inCombat and context.inCombat then
 		return true
@@ -472,9 +506,10 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 	if HasMatchingDruidFormCondition(conditions, context) then
 		return true
 	end
+	if HasMatchingPetCondition(conditions, context) then
+		return true
+	end
 
-	-- No boolean conditions matched — return false.
-	-- ProcessBars handles the OR with resource/health threshold independently.
 	return false
 end
 
@@ -556,7 +591,7 @@ end
 ---For ">=" the curve is: [0, inactive) → [threshold, active) → [2.0, active)
 ---For "<=" the curve is: [0, active) → [threshold+ε, inactive) → [2.0, inactive)
 ---
----@param conditionType string # "resourcePercent"|"resourceValue"|"healthPercent"|"healthValue" or a spec-defined threshold type
+---@param conditionType string # "resourcePercent"|"resourceValue"|"healthPercent"|"healthValue"|"petHealthPercent"|"petResourcePercent" or a spec-defined threshold type
 ---@param operator string # ">=" or "<="
 ---@param thresholdValue number # The user-configured threshold (0–100 for percent, raw for value)
 ---@param activeAlpha number # 0–100 alpha when condition is met
@@ -581,7 +616,7 @@ function TRB.Functions.BarVisibility:BuildVisibilityAlphaCurve(conditionType, op
 		local maxRes = self:GetVisibilityThresholdMaxValue(conditionType, settings)
 		if maxRes <= 0 then maxRes = 100 end
 		thresholdFraction = (thresholdValue or 0) / maxRes
-	elseif conditionType == "healthPercent" then
+	elseif conditionType == "healthPercent" or conditionType == "petHealthPercent" or conditionType == "petResourcePercent" then
 		thresholdFraction = (thresholdValue or 0) / 100
 	elseif conditionType == "healthValue" then
 		local maxHP = self:GetVisibilityThresholdMaxValue(conditionType, settings)
@@ -627,6 +662,20 @@ function TRB.Functions.BarVisibility:BuildVisibilityAlphaCurve(conditionType, op
 	return cache[fullKey]
 end
 
+-- Inactive-alpha colors keyed by alpha, standing in for a curve result when a threshold can't be measured.
+local unmetVisibilityColors = {}
+
+---@param inactiveAlpha number # 0-100
+---@return table # A ColorMixin carrying the inactive alpha
+local function GetUnmetVisibilityColor(inactiveAlpha)
+	local color = unmetVisibilityColors[inactiveAlpha]
+	if color == nil then
+		color = CreateColor(1, 1, 1, inactiveAlpha / 100)
+		unmetVisibilityColors[inactiveAlpha] = color
+	end
+	return color
+end
+
 ---Evaluates the visibility alpha curve for an entry's resource/health condition.
 ---Passes the curve to UnitPowerPercent or UnitHealthPercent, which returns a secret
 ---ColorMixin.  The alpha channel of that color encodes the visibility decision.
@@ -649,6 +698,17 @@ function TRB.Functions.BarVisibility:EvaluateVisibilityCurve(visSettings, settin
 		return UnitPowerPercent("player", TRB.Data.resource, true, curve)
 	elseif conditionType == "healthPercent" or conditionType == "healthValue" then
 		return UnitHealthPercent("player", true, curve)
+	elseif conditionType == "petHealthPercent" or conditionType == "petResourcePercent" then
+		-- No pet, or no pet power, leaves nothing to measure, so the threshold is not met.
+		local attributes = TRB.Data.snapshotData.attributes
+		if (attributes.petState or "none") == "none" then
+			return GetUnmetVisibilityColor(inactiveAlpha)
+		elseif conditionType == "petHealthPercent" then
+			return UnitHealthPercent("pet", true, curve)
+		elseif attributes.petPowerType == nil then
+			return GetUnmetVisibilityColor(inactiveAlpha)
+		end
+		return UnitPowerPercent("pet", attributes.petPowerType, true, curve)
 	end
 	return nil
 end
@@ -828,7 +888,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 
 	-- Not a ProcessBars entry, but isTracking gates the bar text its anchored entries render through, so it
 	-- counts as showing for as long as it is on screen -- IsActive() blanks that text through every fade-out.
-	if not anyShowing and TRB.Functions.Castbar:IsRendering() then
+	if not anyShowing and (TRB.Functions.Castbar:IsRendering() or TRB.Functions.PetCastbar:IsRendering()) then
 		anyShowing = true
 	end
 	-- Same for the target/focus cast bars.
@@ -846,6 +906,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	-- its self-driven updater stops while idle-hidden, so this is what restarts it after settings
 	-- changes, spec swaps, or reconstructions.
 	TRB.Functions.Castbar:EnsureIdleState()
+	TRB.Functions.PetCastbar:EnsureIdleState()
 
 	-- Detect hidden→visible transition: when the bar was not tracking but is now
 	-- showing, fully invalidate the lookup memoization cache so that every
@@ -867,6 +928,22 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 		self:MarkClean()
 	end
 	return anyShowing
+end
+
+---Appends the Pet Resource and Pet Health entries on a spec with a pet, and nothing on any other spec.
+---@param entries TRB.Classes.BarVisibilityEntry[]
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+---@param settings table? # The spec cache settings
+function TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, settings)
+	local character = TRB.Data.character
+	if not TRB.Classes.BarTypeRegistry:SpecHasPet(character.classId, character.specId) then
+		return
+	end
+	local displayBar = settings and settings.displayBar
+	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.petBarKeys) do
+		entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups[barKey], displayBar and displayBar[barKey],
+			not TRB.Functions.Bar:IsBarTalentGatedHidden(barKey), 1, nil)
+	end
 end
 
 ---Hides all bars in the entries list unconditionally. Used for fallback paths (no settings, unsupported spec).

@@ -10,14 +10,6 @@ local actionCellDimAlpha = 0.65
 local actionCellBrightAlpha = 1.0
 local deleteActionTextColor = { r = 1, g = 0.12, b = 0.12, a = 1 }
 
----Returns the RGB color values used for "Use Global Settings" checkbox label text.
----@return number r # Red component (0-1)
----@return number g # Green component (0-1)
----@return number b # Blue component (0-1)
-local function GetUseGlobalSettingsColor()
-	return 100/255, 225/255, 200/255
-end
-
 -- ============================================================================
 -- Bar text editor options
 -- ============================================================================
@@ -105,7 +97,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		local f = controls.checkBoxes.useGlobalBarText
 		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobalBarText"])
-		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barText")
 		f.tooltip = L["CheckboxUseGlobalTooltip_GlobalBarText"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].globalBarText)
@@ -448,6 +440,18 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		if otherBarDef ~= nil then
 			AddAnchorFrame(otherBarKey, otherBarDef.displayName, otherBarKey:gsub("^%l", string.upper) .. "Bar")
 		end
+	end
+
+	-- Pet bars reach the Global panel, which every spec's list merges from, and the specs with a pet.
+	if classId == nil or TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId) then
+		for _, petBarKey in ipairs(TRB.Classes.BarTypeRegistry.petBarKeys) do
+			local petBarDef = otherBarsRegistry:Get(petBarKey)
+			if petBarDef ~= nil then
+				AddAnchorFrame(petBarKey, petBarDef.displayName, petBarKey:gsub("^%l", string.upper) .. "Bar")
+			end
+		end
+		AddAnchorFrame("petCastbar", L["ResourcePetCastbar"], "PetCastBar")
+		AddAnchorFrame("petCastbar", L["ResourcePetCastbarIcon"], "PetCastBarIcon")
 	end
 
 	-- A group sorts by its first label; the labels within it keep the order they were added in.
@@ -1084,8 +1088,11 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		local globalBarTextCount = 0
 		if globalSettings.globalBarText and core.displayText and core.displayText.barText and #core.displayText.barText > 0 then
 			mergedBarText = {}
+			local registryEntry = TRB.Functions.Character:GetSpecRegistryEntry(composite)
 			for _, entry in ipairs(core.displayText.barText) do
-				mergedBarText[#mergedBarText + 1] = entry
+				if registryEntry == nil or TRB.Functions.BarText:IsEntryInScope(entry, registryEntry.classId, registryEntry.specId) then
+					mergedBarText[#mergedBarText + 1] = entry
+				end
 			end
 			globalBarTextCount = #mergedBarText
 			for _, entry in ipairs(destSpec.displayText.barText) do

@@ -168,6 +168,13 @@ function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
 		-- Root of the mirror timer stack (Fatigue -> Breath -> Feign Death); the rest anchor
 		-- below it, so this one position moves the whole group. Sits where Blizzard's Duration Bars do.
 		wrapperFrame:SetPoint("TOP", UIParent, "TOP", 0, -230)
+	elseif rootBarKey == "petPower" then
+		-- Root of the pet stack (Pet Resource -> Pet Health -> Pet Cast Bar). Parked left of centre, clear
+		-- of the main stack and of Blizzard's own pet frame.
+		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", -300, -120)
+	elseif rootBarKey == "petCastbar" then
+		-- Hangs off the pet stack by default, so it is only a root once re-anchored to the screen.
+		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", -300, -180)
 	elseif rootBarKey == "gcd" then
 		-- The GCD bar hangs off the Cast Bar by default, so it is only a root once the user re-anchors it
 		-- to the screen. Park it just under the main stack's default spot when that happens.
@@ -1426,6 +1433,7 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		-- ProcessBars drops the self-driven bars again here, so whatever Edit Mode left on them would
 		-- stand: hand each back to the renderer that owns it live.
 		TRB.Functions.Castbar:EnsureIdleState()
+		TRB.Functions.PetCastbar:EnsureIdleState()
 		TRB.Functions.TargetCastbar:RefreshVisibility()
 		TRB.Functions.OtherBars:RefreshVisibility()
 	end

@@ -1,36 +1,60 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
-TRB.Functions.Castbar = {}
 
 --[[
-	Functions.Castbar: the render + event bridge for the castbar bar type.
-	Drives TRB.Data.castbar (Classes/Castbar.lua) from UNIT_SPELLCAST_* events (fed by
+	Functions.Castbar: the render + event bridge for the player's and the pet's cast bars, one renderer each.
+	Each drives its unit's TRB.Classes.Castbar model from UNIT_SPELLCAST_* events (the player's fed by
 	Functions/SpellCast.lua), places the static overlays/threshold lines (latency, pushback,
 	channel ticks, empower stages) once per cast, and runs a dedicated per-frame updater for a
 	smooth fill and the show/hide fade. Bar text values are exposed separately by Functions/BarText.
 	Also hooks the C_TradeSkillUI craft calls to merge bulk crafting into one channel-style bar.
 ]]
 
--- Dedicated per-frame frame: drives the smooth fill + self-healing visibility while a cast is active.
--- Enabled on cast start, disabled once idle.
-local castbarFrame = CreateFrame("Frame")
-castbarFrame:Hide()
-local isRunning = false
+---@class TRB.Functions.CastbarRenderer
+local CastbarRenderer = {}
+CastbarRenderer.__index = CastbarRenderer
+
 -- Throttle for the expensive visibility work (settings/condition resolution + color re-assert): run it at
 -- the same 20Hz cadence every other bar uses (timerFrame:onUpdate), NOT every frame. The native
 -- SetTimerDuration fill animates on its own between ticks, and the cheap alpha/visibility self-heal still
 -- runs each frame, so nothing visibly lags. Events that change visibility (cast start/stop, spec/settings
 -- change, vehicle enter/exit) re-assert immediately through their own paths regardless of this accumulator.
 local VISIBILITY_THROTTLE = 0.05
-local visibilitySinceLastUpdate = VISIBILITY_THROTTLE -- force a full pass on the very first frame
--- GetTime() of the most recent cast end while a fade-out (fadeDelay/fadeDuration) is in progress.
-local fadeOutStart = nil
--- Latency makes the server fire the natural end-of-cast STOP a beat before GetTime() reaches endTime
--- (the "safe to queue" window shown as the latency zone), so the fill would otherwise freeze a few
--- percent short and fade from there. On a natural finish we keep advancing the fill to done across the
--- fade instead. { from, to, remaining }; nil when no completion is animating. See CaptureCompletion.
-local fillComplete = nil
+
+---Creates the renderer for one unit's cast bar. Its updater frame drives the fill and self-healing
+---visibility while the bar is on screen, and parks once idle.
+---@param unit string # "player" or "pet"
+---@param barKey string # The bar's group, settings, visibility, model, and indicator key
+---@return TRB.Functions.CastbarRenderer
+function CastbarRenderer:New(unit, barKey)
+	local renderer = setmetatable({}, CastbarRenderer)
+	renderer.unit = unit
+	renderer.barKey = barKey
+	renderer.isPlayer = unit == "player"
+	renderer.isRunning = false
+	-- Forces a full pass on the very first frame.
+	renderer.visibilitySinceLastUpdate = VISIBILITY_THROTTLE
+	-- GetTime() of the most recent cast end while a fade-out (fadeDelay/fadeDuration) is in progress.
+	renderer.fadeOutStart = nil
+	-- Latency makes the server fire the natural end-of-cast STOP a beat before GetTime() reaches endTime
+	-- (the "safe to queue" window shown as the latency zone), so the fill would otherwise freeze a few
+	-- percent short and fade from there. On a natural finish we keep advancing the fill to done across the
+	-- fade instead. { from, to, remaining }; nil when no completion is animating. See CaptureCompletion.
+	renderer.fillComplete = nil
+	renderer.frame = CreateFrame("Frame")
+	renderer.frame:Hide()
+	renderer.frame:SetScript("OnUpdate", function(_, sinceLastUpdate)
+		renderer:OnFrameUpdate(sinceLastUpdate)
+	end)
+	return renderer
+end
+
+---The cast model this bar renders.
+---@return TRB.Classes.Castbar?
+function CastbarRenderer:GetModel()
+	return TRB.Data[self.barKey]
+end
 -- Whether the re-assert hooks (OnShow, SetParent) have been installed on PlayerCastingBarFrame.
 local blizzardCastbarHookInstalled = false
 -- Permanently-hidden holder frame the Blizzard cast bar gets reparented under, and its original
@@ -80,24 +104,24 @@ end
 ---Returns the form-resolved display settings (on Druid the form's spec, per GetActiveDisplayCompositeKey),
 ---the castbar bar settings, and castbar colors (or nils).
 ---@return table? settings, table? barSettings, table? colors
-function TRB.Functions.Castbar:GetActiveSettings()
+function CastbarRenderer:GetActiveSettings()
 	local settings = TRB.Functions.Class:GetActiveDisplaySettings()
 	if settings == nil then
 		return nil, nil, nil
 	end
-	local barSettings = settings.bars and settings.bars.castbar
-	local colors = settings.colors and settings.colors.bars and settings.colors.bars.castbar
+	local barSettings = settings.bars and settings.bars[self.barKey]
+	local colors = settings.colors and settings.colors.bars and settings.colors.bars[self.barKey]
 	return settings, barSettings, colors
 end
 
----Returns the castbar visibility entry (displayBar.castbar) from the given (or active) composed settings.
+---Returns this bar's visibility entry (displayBar[barKey]) from the given (or active) composed settings.
 ---@param settings table?
 ---@return table?
-function TRB.Functions.Castbar:GetVisibilitySettings(settings)
+function CastbarRenderer:GetVisibilitySettings(settings)
 	if settings == nil then
 		settings = TRB.Functions.Class:GetActiveDisplaySettings()
 	end
-	return settings and settings.displayBar and settings.displayBar.castbar
+	return settings and settings.displayBar and settings.displayBar[self.barKey]
 end
 
 ---Whether the castbar is enabled at all: "Never Show" -- or no show options checked at all (not Always
@@ -105,7 +129,10 @@ end
 ---tracked, and the Blizzard cast bar is not suppressed. Exactly like the old opt-in checkbox being unchecked.
 ---@param visibility table?
 ---@return boolean
-function TRB.Functions.Castbar:IsEnabled(visibility)
+function CastbarRenderer:IsEnabled(visibility)
+	if not self:IsAvailable() then
+		return false
+	end
 	if visibility == nil or visibility.neverShow == true then
 		return false
 	end
@@ -117,6 +144,18 @@ function TRB.Functions.Castbar:IsEnabled(visibility)
 		return true
 	end
 	return conditions.casting == true or conditions.channeling == true or conditions.empowered == true
+end
+
+---Whether this bar's unit can have one on the active spec: the player always, and the pet only on a spec
+---with one whose granting talent, if any, is picked.
+---@return boolean
+function CastbarRenderer:IsAvailable()
+	if self.isPlayer then
+		return true
+	end
+	local character = TRB.Data.character
+	return TRB.Classes.BarTypeRegistry:SpecHasPet(character.classId, character.specId)
+		and not TRB.Functions.Bar:IsBarTalentGatedHidden(self.barKey)
 end
 
 ---Whether another addon already manages/hides the Blizzard cast bar: unit cleared (SetUnit(nil)),
@@ -143,14 +182,14 @@ end
 ---`bars.castbar.disableBlizzardCastbar` is set and the addon castbar is enabled (see IsEnabled).
 ---Checked on load/spec/talent changes, option toggles, and the Blizzard bar's own OnShow/SetParent.
 ---@param settings table? # Composed spec settings to evaluate; defaults to the active display settings (pass explicitly during spec activation, before the composite key is stamped)
-function TRB.Functions.Castbar:UpdateBlizzardCastbarVisibility(settings)
-	if PlayerCastingBarFrame == nil then
+function CastbarRenderer:UpdateBlizzardCastbarVisibility(settings)
+	if not self.isPlayer or PlayerCastingBarFrame == nil then
 		return
 	end
 	if settings == nil then
 		settings = TRB.Functions.Class:GetActiveDisplaySettings()
 	end
-	local barSettings = settings and settings.bars and settings.bars.castbar
+	local barSettings = settings and settings.bars and settings.bars[self.barKey]
 	local visibility = self:GetVisibilitySettings(settings)
 	local shouldDisable = barSettings ~= nil and barSettings.disableBlizzardCastbar == true and self:IsEnabled(visibility)
 	-- Blizzard re-parents the cast bar back to UIParent on spec/talent changes (Edit Mode relayout),
@@ -198,12 +237,12 @@ end
 ---Applies an enabled-state change from recomposed settings: tears down any active render when the
 ---castbar is now disabled, then re-evaluates Blizzard cast bar suppression. Idempotent.
 ---@param settings table? # Composed spec settings; defaults to the form-resolved display settings
-function TRB.Functions.Castbar:SyncEnabledState(settings)
+function CastbarRenderer:SyncEnabledState(settings)
 	if settings == nil then
 		settings = TRB.Functions.Class:GetActiveDisplaySettings()
 	end
 	if not self:IsEnabled(self:GetVisibilitySettings(settings)) then
-		local model = TRB.Data.castbar
+		local model = self:GetModel()
 		if model ~= nil and model:IsActive() then
 			model:Stop()
 		end
@@ -211,7 +250,7 @@ function TRB.Functions.Castbar:SyncEnabledState(settings)
 	else
 		-- Settings may have changed while a cast is still on screen: force the updater's next frame to be a
 		-- full throttle tick so it re-resolves the new settings/visibility instead of the cached ones.
-		visibilitySinceLastUpdate = VISIBILITY_THROTTLE
+		self.visibilitySinceLastUpdate = VISIBILITY_THROTTLE
 	end
 	self:UpdateBlizzardCastbarVisibility(settings)
 end
@@ -220,7 +259,7 @@ end
 ---@param visibility table?
 ---@param state string
 ---@return boolean
-function TRB.Functions.Castbar:IsCastTypeAllowed(visibility, state)
+function CastbarRenderer:IsCastTypeAllowed(visibility, state)
 	if visibility == nil or visibility.neverShow == true then
 		return false
 	end
@@ -243,7 +282,7 @@ end
 ---tracking while force-hidden so the bar reappears mid-cast when the condition clears.
 ---@param visibility table?
 ---@return boolean
-function TRB.Functions.Castbar:IsForceHidden(visibility)
+function CastbarRenderer:IsForceHidden(visibility)
 	local hideConditions = visibility and visibility.hideConditions
 	if hideConditions == nil then
 		return false
@@ -261,8 +300,12 @@ end
 ---0 whenever the castbar is disabled (Never Show / nothing checked).
 ---@param visibility table?
 ---@return number # 0..1
-function TRB.Functions.Castbar:GetIdleAlpha(visibility)
+function CastbarRenderer:GetIdleAlpha(visibility)
 	if visibility == nil or not self:IsEnabled(visibility) then
+		return 0
+	end
+	-- With no pet out there is nothing for the pet's bar to rest on.
+	if not self.isPlayer and not UnitExists(self.unit) then
 		return 0
 	end
 	if visibility.alwaysShow then
@@ -274,12 +317,12 @@ end
 ---Whether the castbar has anything on screen: active cast, fade-out, or idle at a visible alpha. Broader
 ---than the model's IsActive(), which drops the instant a cast stops; ProcessBars gates bar text on this.
 ---@return boolean
-function TRB.Functions.Castbar:IsRendering()
-	local model = TRB.Data.castbar
+function CastbarRenderer:IsRendering()
+	local model = self:GetModel()
 	if model ~= nil and model:IsActive() then
 		return true
 	end
-	if fadeOutStart ~= nil then
+	if self.fadeOutStart ~= nil then
 		return true
 	end
 	return self:GetIdleAlpha(self:GetVisibilitySettings(nil)) > 0
@@ -288,20 +331,20 @@ end
 ---Whether a finished cast is still on screen working through its fade. Bar text anchored to the castbar
 ---holds its last frame while this is true, rather than blanking the tick the cast ends.
 ---@return boolean
-function TRB.Functions.Castbar:IsFadingOut()
-	return fadeOutStart ~= nil
+function CastbarRenderer:IsFadingOut()
+	return self.fadeOutStart ~= nil
 end
 
 ---Returns the castbar BarGroup, or nil if not constructed.
 ---@return TRB.Classes.BarGroup?
-function TRB.Functions.Castbar:GetGroup()
+function CastbarRenderer:GetGroup()
 	local barGroups = TRB.Frames.barGroups
-	return barGroups and barGroups.castbar or nil
+	return barGroups and barGroups[self.barKey] or nil
 end
 
 ---Returns the castbar's single node, or nil.
 ---@return TRB.Classes.BarNode?
-function TRB.Functions.Castbar:GetNode()
+function CastbarRenderer:GetNode()
 	local group = self:GetGroup()
 	return group and group:GetNode(1) or nil
 end
@@ -338,7 +381,7 @@ end
 ---@param barSettings table?
 ---@param spellId integer?
 ---@return table?
-function TRB.Functions.Castbar:GetTickProfile(barSettings, spellId)
+function CastbarRenderer:GetTickProfile(barSettings, spellId)
 	if barSettings == nil or spellId == nil or issecretvalue(spellId) then
 		return nil
 	end
@@ -541,7 +584,7 @@ end
 ---@param barSettings table?
 ---@param spellId integer?
 ---@return table?
-function TRB.Functions.Castbar:ResolveTickProfile(barSettings, spellId)
+function CastbarRenderer:ResolveTickProfile(barSettings, spellId)
 	local profile = self:GetTickProfile(barSettings, spellId)
 	if profile == nil then
 		return nil
@@ -794,7 +837,7 @@ end
 ---@param colors table
 ---@param model TRB.Classes.Castbar
 ---@param barSettings table? # Castbar settings; when empowerSegmentedFill is set the empower fill is blanked
-local function ApplyStateFillColor(node, colors, model, barSettings)
+local function ApplyStateFillColor(node, colors, model, barSettings, indicatorKey)
 	local Color = TRB.Functions.Color
 	if colors == nil then return end
 
@@ -837,7 +880,7 @@ local function ApplyStateFillColor(node, colors, model, barSettings)
 	end
 
 	local isChannel = model.state == "channel"
-	local indicators = Color:GetResolvedIndicators("castbar")
+	local indicators = Color:GetResolvedIndicators(indicatorKey)
 	local entry = indicators and indicators[isChannel and "channel" or "bar"]
 	-- Target class color sits below an active indicator but above the uninterruptible/configured colors.
 	if entry == nil and classColor ~= nil then
@@ -863,10 +906,10 @@ end
 ---@param node TRB.Classes.BarNode
 ---@param colors table?
 ---@param model TRB.Classes.Castbar? # Omitted for the idle bar, which is never uninterruptible
-local function ApplyBorderAndBackgroundColor(node, colors, model)
+local function ApplyBorderAndBackgroundColor(node, colors, model, indicatorKey)
 	if colors == nil then return end
 	local Color = TRB.Functions.Color
-	local indicators = Color:GetResolvedIndicators("castbar")
+	local indicators = Color:GetResolvedIndicators(indicatorKey)
 
 	local border = indicators and indicators.border
 	if border == nil and model ~= nil and model.notInterruptible and model.state ~= "empower"
@@ -876,15 +919,15 @@ local function ApplyBorderAndBackgroundColor(node, colors, model)
 	if border == nil and colors.border then
 		border = colors.border.color
 	end
-	Color:ApplyResolvedBorderOrBackground(node, "castbar", "border", border)
+	Color:ApplyResolvedBorderOrBackground(node, indicatorKey, "border", border)
 
 	local background = indicators and indicators.background
 	if background == nil and colors.background then
 		background = colors.background.color
 	end
-	Color:ApplyResolvedBorderOrBackground(node, "castbar", "background", background)
-	Color:ApplyResolvedEndCap(node, "castbar")
-	TRB.Functions.Glow:ApplyIndicatorGlow(node, "castbar")
+	Color:ApplyResolvedBorderOrBackground(node, indicatorKey, "background", background)
+	Color:ApplyResolvedEndCap(node, indicatorKey)
+	TRB.Functions.Glow:ApplyIndicatorGlow(node, indicatorKey)
 end
 
 ---Draws the per-level empower segment fills (segmented-fill mode). The main bar fill is blanked in this
@@ -953,7 +996,7 @@ end
 
 ---Places the static overlays and threshold lines for the freshly-started cast/channel/empower.
 ---@param model TRB.Classes.Castbar
-function TRB.Functions.Castbar:SetupOverlays(model)
+function CastbarRenderer:SetupOverlays(model)
 	local node = self:GetNode()
 	if node == nil then return end
 	local _, barSettings, colors = self:GetActiveSettings()
@@ -985,7 +1028,7 @@ function TRB.Functions.Castbar:SetupOverlays(model)
 		and model.state == "channel" and model.ticks then
 		-- The empower stage lines below deliberately keep the configured tick color: the indicator target is
 		-- scoped to channel ticks, and empower lines only borrow that color for want of one of their own.
-		local indicators = TRB.Functions.Color:GetResolvedIndicators("castbar")
+		local indicators = TRB.Functions.Color:GetResolvedIndicators(self.barKey)
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString((indicators and indicators.tick) or colors.tick.color, true)
 		-- Latency-sized ticks (spell channels only): each mark spans one latency window toward the higher-time end.
 		local tickLatFrac = 0
@@ -1033,7 +1076,7 @@ end
 
 ---Repositions the pushback overlay to reflect the current accumulated pushback (called on delay events).
 ---@param model TRB.Classes.Castbar
-function TRB.Functions.Castbar:UpdatePushbackOverlay(model)
+function CastbarRenderer:UpdatePushbackOverlay(model)
 	local node = self:GetNode()
 	if node == nil then return end
 	local _, barSettings, colors = self:GetActiveSettings()
@@ -1064,8 +1107,8 @@ end
 ---@param colors table?
 ---@param model TRB.Classes.Castbar
 ---@param barSettings table?
----@param visibility table? # displayBar.castbar entry; supplies activeAlpha
-function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, barSettings, visibility)
+---@param visibility table? # The bar's displayBar entry; supplies activeAlpha
+function CastbarRenderer:ApplyVisibleState(group, node, colors, model, barSettings, visibility)
 	-- The fill color and the overlay textures are only worth rebuilding when something they depend on moves:
 	-- a new node frame, or an indicator flipping mid-cast (which the version stamp reports).
 	local indicatorVersion = TRB.Functions.Color:GetResolvedIndicatorVersion()
@@ -1076,7 +1119,7 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 		self._renderedIndicatorVersion = indicatorVersion
 		self._renderedTargetColor = targetColor
 		node:SetMinMax(0, 1)
-		ApplyStateFillColor(node, colors, model, barSettings)
+		ApplyStateFillColor(node, colors, model, barSettings, self.barKey)
 		self:SetupOverlays(model)
 		-- SetMinMax/overlay re-setup here disturbs the native SetTimerDuration binding (the fill freezes
 		-- where it was). The old code masked this by re-running SetValue every frame; now that the fill is
@@ -1087,7 +1130,7 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 		-- ApplyStateFillColor every frame from the updater, so it needs no handling here.
 		self._renderedTargetColor = targetColor
 		if model.state ~= "empower" then
-			ApplyStateFillColor(node, colors, model, barSettings)
+			ApplyStateFillColor(node, colors, model, barSettings, self.barKey)
 		end
 	end
 	-- Native fill: bind the DurationObject to the StatusBar so WoW animates the fill C-side, replacing the
@@ -1102,7 +1145,7 @@ function TRB.Functions.Castbar:ApplyVisibleState(group, node, colors, model, bar
 	end
 	-- Not version-gated: a gradient indicator is a curve over a secret resource value, so its color moves
 	-- with the resource, not with the indicator flipping on and off.
-	ApplyBorderAndBackgroundColor(node, colors, model)
+	ApplyBorderAndBackgroundColor(node, colors, model, self.barKey)
 	-- Track the casting spell's icon every frame so a chained cast swapping spells mid-render updates it.
 	-- Prefer the resolved spell's icon (plain int, memoized cheap). When the spell id was secret so it never
 	-- resolved, fall back to the cast texture from UnitCastingInfo/UnitChannelInfo (present even for secret
@@ -1168,8 +1211,8 @@ end
 ---has already gated on not-force-hidden at the last throttle tick).
 ---@param group TRB.Classes.BarGroup
 ---@param node TRB.Classes.BarNode
----@param visibility table? # displayBar.castbar entry; supplies activeAlpha
-function TRB.Functions.Castbar:ReassertVisibility(group, node, visibility)
+---@param visibility table? # The bar's displayBar entry; supplies activeAlpha
+function CastbarRenderer:ReassertVisibility(group, node, visibility)
 	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
 	group.targetAlpha = activeAlpha
 	group.currentAlpha = activeAlpha
@@ -1201,7 +1244,7 @@ end
 ---@param idleAlpha number # 0..1
 ---@param colors table?
 ---@param barSettings table? # Castbar settings; decides whether the icon strip shows its placeholder
-function TRB.Functions.Castbar:ApplyIdleState(group, node, idleAlpha, colors, barSettings)
+function CastbarRenderer:ApplyIdleState(group, node, idleAlpha, colors, barSettings)
 	if self._renderedFrame ~= nil then
 		self._renderedFrame = nil
 		self._renderedIndicatorVersion = nil
@@ -1227,7 +1270,7 @@ function TRB.Functions.Castbar:ApplyIdleState(group, node, idleAlpha, colors, ba
 	-- An idle bar is never uninterruptible, so the shield never shows.
 	node:SetShieldVisible(false)
 	-- No model: an idle bar is never uninterruptible, so only the indicator/configured colors apply.
-	ApplyBorderAndBackgroundColor(node, colors, nil)
+	ApplyBorderAndBackgroundColor(node, colors, nil, self.barKey)
 	group.targetAlpha = idleAlpha
 	group.currentAlpha = idleAlpha
 	if not group.isVisible then
@@ -1240,7 +1283,7 @@ end
 
 ---Begins showing the castbar for a freshly-started cast: sizes the node, applies color/overlays, shows
 ---it at the active alpha, and starts the per-frame updater. No-op if the castbar is disabled (Never Show).
-function TRB.Functions.Castbar:BeginRender()
+function CastbarRenderer:BeginRender()
 	local settings, barSettings, colors = self:GetActiveSettings()
 	local visibility = self:GetVisibilitySettings(settings)
 	if not self:IsEnabled(visibility) then
@@ -1251,9 +1294,9 @@ function TRB.Functions.Castbar:BeginRender()
 	if group == nil or node == nil then
 		return
 	end
-	local model = TRB.Data.castbar
-	fadeOutStart = nil
-	fillComplete = nil
+	local model = self:GetModel()
+	self.fadeOutStart = nil
+	self.fillComplete = nil
 
 	node:SetValue(0)
 	-- Force ApplyVisibleState to (re)place the colors and overlays for this fresh cast
@@ -1266,7 +1309,7 @@ function TRB.Functions.Castbar:BeginRender()
 	self._cachedBarSettings = barSettings
 	self._cachedColors = colors
 	self._cachedVisibility = visibility
-	visibilitySinceLastUpdate = VISIBILITY_THROTTLE
+	self.visibilitySinceLastUpdate = VISIBILITY_THROTTLE
 	if self:IsForceHidden(visibility) then
 		-- Hard-hide condition active (e.g. In Vehicle): keep tracking but stay hidden; the per-frame
 		-- updater reveals the bar mid-cast if the condition clears.
@@ -1283,8 +1326,8 @@ function TRB.Functions.Castbar:BeginRender()
 	-- from the per-frame updater; it flows through that single existing path (no double updates).
 	TRB.Functions.BarVisibility:MarkDirty()
 
-	isRunning = true
-	castbarFrame:Show()
+	self.isRunning = true
+	self.frame:Show()
 
 	-- Casts start mid-tick; render that path now so the text lands with the bar, not a tick later.
 	TRB.Functions.BarText:RenderNow()
@@ -1292,15 +1335,15 @@ end
 
 ---Ends the castbar render, hiding instantly and clearing overlays. Used for disable (Never Show) and
 ---other immediate teardowns; natural cast ends go through BeginFadeOut instead.
-function TRB.Functions.Castbar:EndRender()
+function CastbarRenderer:EndRender()
 	local group = self:GetGroup()
 	local node = self:GetNode()
 	self._renderedFrame = nil
 	self._renderedIndicatorVersion = nil
 	self._renderedTargetColor = nil
 	self._renderedDurationVersion = nil
-	fadeOutStart = nil
-	fillComplete = nil
+	self.fadeOutStart = nil
+	self.fillComplete = nil
 	if node then
 		---@diagnostic disable-next-line: inject-field
 		HideOverlays(node.frame._trbCastbarOverlays)
@@ -1312,8 +1355,8 @@ function TRB.Functions.Castbar:EndRender()
 	-- Re-evaluate visibility now the cast is over: isTracking / bar text can revert to whatever the
 	-- standard bars dictate (e.g. hide out of combat), and the castbar-anchored text stops updating.
 	TRB.Functions.BarVisibility:MarkDirty()
-	isRunning = false
-	castbarFrame:Hide()
+	self.isRunning = false
+	self.frame:Hide()
 end
 
 ---Captures a fill-completion animation for a natural cast/channel finish, so the fade-out advances the
@@ -1326,8 +1369,8 @@ end
 ---frozen); false when this stop isn't a natural finish, so the caller freezes the fill in place instead.
 ---@param model TRB.Classes.Castbar
 ---@return boolean # true when a completion animation was captured and the fill frozen
-function TRB.Functions.Castbar:CaptureCompletion(model)
-	fillComplete = nil
+function CastbarRenderer:CaptureCompletion(model)
+	self.fillComplete = nil
 	if model.state ~= "cast" and model.state ~= "channel" then
 		return false
 	end
@@ -1337,7 +1380,7 @@ function TRB.Functions.Castbar:CaptureCompletion(model)
 	if remaining > (model.latency or 0) + 0.2 then
 		return false
 	end
-	fillComplete = {
+	self.fillComplete = {
 		from = fill,
 		to = (model.state == "channel") and 0 or 1,
 		remaining = remaining
@@ -1358,7 +1401,7 @@ end
 ---which tracks the fill texture's leading edge. Pass the model's GetProgress fill (its clamped timeline
 ---position at the stop instant). Forces the next cast to re-bind the timer.
 ---@param fill number # 0..1 fill fraction to hold the bar at
-function TRB.Functions.Castbar:FreezeFill(fill)
+function CastbarRenderer:FreezeFill(fill)
 	local node = self:GetNode()
 	if node == nil then
 		return
@@ -1374,7 +1417,7 @@ end
 ---Begins the post-cast fade-out honoring fadeDelay/fadeDuration, resting at the idle alpha (Always Show /
 ---inactive alpha) when done. Falls back to an instant EndRender when no fade is configured and nothing
 ---rests visible.
-function TRB.Functions.Castbar:BeginFadeOut()
+function CastbarRenderer:BeginFadeOut()
 	local settings = TRB.Functions.Class:GetActiveDisplaySettings()
 	local visibility = self:GetVisibilitySettings(settings)
 	local group = self:GetGroup()
@@ -1386,9 +1429,9 @@ function TRB.Functions.Castbar:BeginFadeOut()
 		return
 	end
 	-- The per-frame updater's idle branch drives the hold, fade, and final resting state.
-	fadeOutStart = GetTime()
-	isRunning = true
-	castbarFrame:Show()
+	self.fadeOutStart = GetTime()
+	self.isRunning = true
+	self.frame:Show()
 	-- The cast is over: re-evaluate isTracking (and with it bar text) against the post-cast state.
 	TRB.Functions.BarVisibility:MarkDirty()
 end
@@ -1396,18 +1439,18 @@ end
 ---Ensures the idle Always Show / inactive-alpha display is running when no cast is active. Cheap and
 ---safe to call every tick (ProcessBars does); starts the per-frame updater when the resting alpha is
 ---non-zero so the idle bar renders and self-heals.
-function TRB.Functions.Castbar:EnsureIdleState()
-	if isRunning then
+function CastbarRenderer:EnsureIdleState()
+	if self.isRunning then
 		return
 	end
-	local model = TRB.Data.castbar
+	local model = self:GetModel()
 	if model ~= nil and model:IsActive() then
 		return
 	end
 	local visibility = self:GetVisibilitySettings(nil)
 	if self:GetIdleAlpha(visibility) > 0 then
-		isRunning = true
-		castbarFrame:Show()
+		self.isRunning = true
+		self.frame:Show()
 	end
 end
 
@@ -1415,13 +1458,14 @@ end
 -- Per-frame updater
 -- ============================================================================
 
-castbarFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
-	local self = TRB.Functions.Castbar
-	local model = TRB.Data.castbar
+---Runs one frame of the bar's updater.
+---@param sinceLastUpdate number
+function CastbarRenderer:OnFrameUpdate(sinceLastUpdate)
+	local model = self:GetModel()
 	local group = self:GetGroup()
 	if group == nil then
-		isRunning = false
-		castbarFrame:Hide()
+		self.isRunning = false
+		self.frame:Hide()
 		return
 	end
 	local node = group:GetNode(1)
@@ -1431,10 +1475,10 @@ castbarFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 	-- frame was the remaining per-frame cost. Do it at the shared 20Hz cadence instead; the native fill
 	-- animates on its own and the cheap self-heal below runs each frame, so the bar never visibly lags. The
 	-- resolved settings/visibility are cached so between-tick frames can still self-heal and redraw empower.
-	visibilitySinceLastUpdate = visibilitySinceLastUpdate + (sinceLastUpdate or 0)
-	local throttleTick = visibilitySinceLastUpdate >= VISIBILITY_THROTTLE
+	self.visibilitySinceLastUpdate = self.visibilitySinceLastUpdate + (sinceLastUpdate or 0)
+	local throttleTick = self.visibilitySinceLastUpdate >= VISIBILITY_THROTTLE
 	if throttleTick then
-		visibilitySinceLastUpdate = 0
+		self.visibilitySinceLastUpdate = 0
 		local settings, barSettings, colors = self:GetActiveSettings()
 		self._cachedBarSettings = barSettings
 		self._cachedColors = colors
@@ -1509,7 +1553,7 @@ castbarFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 				-- target class color override paints a single color and clears the segments). Only empower reads
 				-- the live fill each frame; cast/channel do not.
 				if model.state == "empower" then
-					ApplyStateFillColor(node, colors, model, barSettings)
+					ApplyStateFillColor(node, colors, model, barSettings, self.barKey)
 					if barSettings and barSettings.empowerSegmentedFill then
 						if GetTargetClassColor(barSettings) ~= nil then
 							HideEmpowerSegments(node)
@@ -1527,14 +1571,14 @@ castbarFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 		local idleAlpha = self:GetIdleAlpha(visibility)
 		if self:IsForceHidden(visibility) then
 			idleAlpha = 0
-			fadeOutStart = nil
-			fillComplete = nil
+			self.fadeOutStart = nil
+			self.fillComplete = nil
 		end
 
-		if fadeOutStart ~= nil and self:IsEnabled(visibility) then
+		if self.fadeOutStart ~= nil and self:IsEnabled(visibility) then
 			local delay = (visibility and visibility.fadeDelay) or 0
 			local duration = (visibility and visibility.fadeDuration) or 0
-			local elapsed = GetTime() - fadeOutStart
+			local elapsed = GetTime() - self.fadeOutStart
 			local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
 			local fadeAlpha
 			if elapsed < delay then
@@ -1550,12 +1594,12 @@ castbarFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 					-- Keep advancing the fill to done across the hold/fade so a latency-early STOP doesn't
 					-- leave it frozen short. Move at the cast's own pace (remaining time) when the visible
 					-- window allows; otherwise compress into that window so it still reaches the end on screen.
-					if fillComplete ~= nil then
+					if self.fillComplete ~= nil then
 						local window = delay + duration
-						local span = fillComplete.remaining
+						local span = self.fillComplete.remaining
 						if window > 0 and window < span then span = window end
 						local ct = (span > 0) and math.min(1, elapsed / span) or 1
-						node:SetValue(fillComplete.from + (fillComplete.to - fillComplete.from) * ct)
+						node:SetValue(self.fillComplete.from + (self.fillComplete.to - self.fillComplete.from) * ct)
 					end
 					group.targetAlpha = fadeAlpha
 					group.currentAlpha = fadeAlpha
@@ -1568,8 +1612,8 @@ castbarFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 				end
 				return
 			end
-			fadeOutStart = nil
-			fillComplete = nil
+			self.fadeOutStart = nil
+			self.fillComplete = nil
 		end
 
 		if idleAlpha > 0 then
@@ -1595,13 +1639,13 @@ castbarFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			self._renderedIndicatorVersion = nil
 			self._renderedDurationVersion = nil
 			ApplyHiddenState(group)
-			isRunning = false
-			castbarFrame:Hide()
+			self.isRunning = false
+			self.frame:Hide()
 			-- Off screen for good: isTracking must stop counting this bar so its anchored text hides too.
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
 	end
-end)
+end
 
 -- ============================================================================
 -- Event bridge (called from Functions/SpellCast.lua)
@@ -1620,7 +1664,7 @@ local function DescribeValue(v)
 	return '"' .. tostring(v) .. '"'
 end
 local function EchoCastName(event, spellId, model)
-	if not echoCastNames then
+	if not echoCastNames or model.unit ~= "player" then
 		return
 	end
 	local name, text, infoId
@@ -1635,7 +1679,7 @@ local function EchoCastName(event, spellId, model)
 		event, DescribeValue(spellId), DescribeValue(name), DescribeValue(text), DescribeValue(infoId), DescribeValue(record and record.name),
 		DescribeValue(model.spell and model.spell.name), DescribeValue(model.displayName)))
 end
-function TRB.Functions.Castbar:ToggleCastNameEcho()
+function CastbarRenderer:ToggleCastNameEcho()
 	echoCastNames = not echoCastNames
 	print("|cFFFF8800TRB Castbar:|r cast name echo " .. (echoCastNames and "ON: open a chest or cast something, then paste the lines it prints" or "OFF"))
 end
@@ -1643,8 +1687,8 @@ end
 ---Handles a player UNIT_SPELLCAST_* event for the castbar model + render.
 ---@param event trbSpellCastType|string
 ---@param spellId integer?
-function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
-	local model = TRB.Data.castbar
+function CastbarRenderer:OnSpellCastEvent(event, spellId)
+	local model = self:GetModel()
 	if model == nil then
 		return
 	end
@@ -1680,7 +1724,7 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 	if event == "UNIT_SPELLCAST_START" then
 		-- Bulk crafting: merge the run of individual craft casts into one channel-style bar whose total
 		-- time is queued items * single craft cast time (self-correcting as each craft starts).
-		if barSettings and barSettings.mergeTradeskill ~= false and IsTradeskillCast() then
+		if self.isPlayer and barSettings and barSettings.mergeTradeskill ~= false and IsTradeskillCast() then
 			local queued = ConsumePendingCraftCount()
 			-- Same-recipe check: a different craft started during the grace gap must not be absorbed
 			-- into the old merge (unknown/secret ids pass, favoring continuation).
@@ -1689,7 +1733,7 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 				-- Next craft of the active merge: advance the shared timeline and re-place the overlays
 				-- (boundary ticks + latency zone) for the re-extrapolated duration.
 				model:ContinueTradeskill()
-				if isRunning then self:SetupOverlays(model) end
+				if self.isRunning then self:SetupOverlays(model) end
 				return
 			end
 			if queued ~= nil and queued > 1 then
@@ -1709,10 +1753,11 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 		-- Resolve the channel spellId (event arg may be secret) before the profile lookup.
 		local channelId = spellId
 		if channelId == nil or issecretvalue(channelId) then
-			channelId = select(8, UnitChannelInfo("player"))
+			channelId = select(8, UnitChannelInfo(self.unit))
 			if issecretvalue(channelId) then channelId = nil end
 		end
-		local profile = self:ResolveTickProfile(barSettings, channelId)
+		-- Tick profiles are the player's own spells.
+		local profile = self.isPlayer and self:ResolveTickProfile(barSettings, channelId) or nil
 		model:StartChannel(channelId, profile)
 		EchoCastName(event, spellId, model)
 		self:BeginRender()
@@ -1722,10 +1767,10 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 		self:BeginRender()
 	elseif event == "UNIT_SPELLCAST_DELAYED" then
 		model:Delayed()
-		if isRunning then self:UpdatePushbackOverlay(model) end
+		if self.isRunning then self:UpdatePushbackOverlay(model) end
 	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
 		model:ChannelUpdate()
-		if isRunning then
+		if self.isRunning then
 			-- Channel end shifted (e.g. a chain): recompute ticks from the profile resolved at channel
 			-- start (buff-gated bonuses must not re-evaluate mid-channel -- the buff may have been consumed
 			-- by this very cast), then re-place overlays so the latency zone reflects the new duration.
@@ -1766,4 +1811,73 @@ function TRB.Functions.Castbar:OnSpellCastEvent(event, spellId)
 		-- A successful instant cast produces no bar; only tear down if the tracked cast finished.
 		-- START/CHANNEL_START/STOP drive the visible lifecycle, so nothing to do here.
 	end
+end
+
+TRB.Functions.Castbar = CastbarRenderer:New("player", "castbar")
+TRB.Functions.PetCastbar = CastbarRenderer:New("pet", "petCastbar")
+
+-- The pet's casts, which Functions/SpellCast.lua (the player's alone) never sees. Pets don't empower.
+local PET_CAST_EVENTS = { "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_DELAYED", "UNIT_SPELLCAST_SUCCEEDED",
+	"UNIT_SPELLCAST_CHANNEL_START", "UNIT_SPELLCAST_CHANNEL_UPDATE", "UNIT_SPELLCAST_CHANNEL_STOP", "UNIT_SPELLCAST_INTERRUPTED" }
+local petEventFrame = CreateFrame("Frame")
+
+---Picks up whatever the pet is casting right now, or ends a cast it no longer is: a new pet, or a loading
+---screen that swallowed its cast events, otherwise leaves the bar out of step.
+function TRB.Functions.PetCastbar:Resync()
+	local model = self:GetModel()
+	if model == nil then
+		return
+	end
+	if UnitCastingInfo(self.unit) ~= nil then
+		self:OnSpellCastEvent("UNIT_SPELLCAST_START", nil)
+	elseif UnitChannelInfo(self.unit) ~= nil then
+		self:OnSpellCastEvent("UNIT_SPELLCAST_CHANNEL_START", nil)
+	elseif model:IsActive() then
+		self:OnSpellCastEvent("UNIT_SPELLCAST_STOP", nil)
+	end
+	self:EnsureIdleState()
+end
+
+---Re-resolves the bar after a spec or talent change can have opened or closed its talent gate.
+function TRB.Functions.PetCastbar:RefreshAvailability()
+	self:SyncEnabledState()
+	self:EnsureIdleState()
+end
+
+petEventFrame:SetScript("OnEvent", function(_, event, _, _, spellId)
+	local renderer = TRB.Functions.PetCastbar
+	if event == "UNIT_PET" or event == "PLAYER_ENTERING_WORLD" or event == "LOADING_SCREEN_DISABLED" then
+		renderer:Resync()
+	elseif event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
+		renderer:RefreshAvailability()
+		-- The talent gate reads a talent cache rebuilt a moment after these events.
+		C_Timer.After(0.5, function()
+			renderer:RefreshAvailability()
+		end)
+	else
+		renderer:OnSpellCastEvent(event, spellId)
+	end
+end)
+
+---Registers the pet's cast events and picks up a cast already under way.
+function TRB.Functions.PetCastbar:Enable()
+	for _, e in ipairs(PET_CAST_EVENTS) do
+		petEventFrame:RegisterUnitEvent(e, self.unit)
+	end
+	petEventFrame:RegisterUnitEvent("UNIT_PET", "player")
+	petEventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	petEventFrame:RegisterEvent("LOADING_SCREEN_DISABLED")
+	petEventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	petEventFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
+	self:Resync()
+end
+
+---Unregisters the pet's events and ends any cast on screen.
+function TRB.Functions.PetCastbar:Disable()
+	petEventFrame:UnregisterAllEvents()
+	local model = self:GetModel()
+	if model ~= nil and model:IsActive() then
+		model:Stop()
+	end
+	self:EndRender()
 end

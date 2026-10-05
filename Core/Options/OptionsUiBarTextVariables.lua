@@ -126,12 +126,13 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 	-- =============================================
 	local allData = {}     -- flat array for LibScrollingTable
 	-- Fixed group order. Sorting reorders a group's contents but never the groups themselves.
-	local groupOrder = { "resources", "abilities", "stats", "castBar", "other", "icons" }
+	local groupOrder = { "resources", "abilities", "stats", "castBar", "pet", "other", "icons" }
 	local groupLabels = {
 		resources = L["BarTextVariablesSectionResources"],
 		abilities = L["BarTextVariablesSectionAbilities"],
 		stats = L["BarTextVariablesSectionStats"],
 		castBar = L["BarTextVariablesSectionCastBars"],
+		pet = L["BarTextVariablesSectionPet"],
 		other = L["BarTextVariablesSectionOther"],
 		icons = L["BarTextVariablesSectionIcons"],
 	}
@@ -386,11 +387,13 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 	---@return table<string, table[]> # Map of group key to a list of { entry, sectionKey } records
 	local function GroupVariableEntries(barTextVariables)
 		local grouped = {}
+		-- The Global panel lists the pet variables too, since pet specs merge its bar text.
+		local showPet = classId == nil or TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId)
 		for _, sectionKey in ipairs({ "values", "icons", "pipe" }) do
 			local sectionEntries = barTextVariables[sectionKey]
 			if sectionEntries then
 				for _, entry in ipairs(sectionEntries) do
-					if entry.printInSettings then
+					if entry.printInSettings and (showPet or not entry.pet) then
 						local groupKey = TRB.Functions.BarText:GetVariableCategory(entry, sectionKey)
 						-- An unrecognized category would otherwise drop the entry from the panel entirely.
 						if not validGroupKeys[groupKey] then

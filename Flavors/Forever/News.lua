@@ -14,6 +14,10 @@ TRB.Flavor.newsContent = [====[
 
 - See [Core Changes](tab:core).
 
+### Pet Bars
+
+- [#551](#551) Available to Hunters and Warlocks.
+
 ## Druid
 
 - Add a Maximum Bar Value override to the Rage and Energy bars.

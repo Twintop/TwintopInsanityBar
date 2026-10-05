@@ -6,14 +6,6 @@ TRB.Functions.OptionsUi.GlobalSettings = TRB.Functions.OptionsUi.GlobalSettings 
 local oUi = TRB.Data.constants.optionsUi
 local L = TRB.Localization
 
----Returns the RGB color values used for "Use Global Settings" checkbox label text.
----@return number r # Red component (0-1)
----@return number g # Green component (0-1)
----@return number b # Blue component (0-1)
-local function GetUseGlobalSettingsColor()
-	return 100/255, 225/255, 200/255
-end
-
 -- ============================================================================
 -- Global settings toggles and copy menus
 -- ============================================================================
@@ -86,6 +78,27 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "breath", "width"}, {"bars", "breath", "height"}, {"bars", "breath", "border"}, {"bars", "breath", "xPos"}, {"bars", "breath", "yPos"}, {"bars", "breath", "anchor"}, {"bars", "breath", "fillDirection"} } },
 	breathColors         = { checkboxSuffix = "breathColors",         tabKey = "breath",     categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_breathColors"],
 		paths = { {"colors", "bars", "breath", "bar"}, {"colors", "bars", "breath", "border"}, {"colors", "bars", "breath", "background"}, {"colors", "bars", "breath", "endCap"}, {"bars", "breath", "disableBlizzardBar"} } },
+	-- Pet bar sections live on the top-level "Pet Bars" nav category, two per bar. Whole-table paths, not
+	-- field-level: these tables carry nothing spec-only, so there is no spec data for a copy to clobber.
+	petPowerDimensions   = { checkboxSuffix = "petPowerDimensions",   tabKey = "petPower",   categoryKey = "petBars", barKey = "petPower", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petPowerDimensions"],
+		paths = { {"bars", "petPower"} } },
+	petPowerColors       = { checkboxSuffix = "petPowerColors",       tabKey = "petPower",   categoryKey = "petBars", barKey = "petPower", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petPowerColors"],
+		paths = { {"colors", "bars", "petPower"} } },
+	petHealthDimensions  = { checkboxSuffix = "petHealthDimensions",  tabKey = "petHealth",  categoryKey = "petBars", barKey = "petHealth", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petHealthDimensions"],
+		paths = { {"bars", "petHealth"} } },
+	petHealthColors      = { checkboxSuffix = "petHealthColors",      tabKey = "petHealth",  categoryKey = "petBars", barKey = "petHealth", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petHealthColors"],
+		paths = { {"colors", "bars", "petHealth"} } },
+	-- The Pet Cast Bar takes the player Cast Bar's sections, less Empower and the player-only overlays.
+	petCastbarDimensions    = { checkboxSuffix = "petCastbarDimensions",    tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarDimensions"],
+		paths = { {"bars", "petCastbar", "width"}, {"bars", "petCastbar", "height"}, {"bars", "petCastbar", "border"}, {"bars", "petCastbar", "xPos"}, {"bars", "petCastbar", "yPos"}, {"bars", "petCastbar", "anchor"}, {"bars", "petCastbar", "fillDirection"}, {"bars", "petCastbar", "icon"} } },
+	petCastbarColors        = { checkboxSuffix = "petCastbarColors",        tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarColors"],
+		paths = { {"colors", "bars", "petCastbar", "bar"}, {"colors", "bars", "petCastbar", "channel"}, {"colors", "bars", "petCastbar", "uninterruptible"}, {"colors", "bars", "petCastbar", "uninterruptibleBorder"}, {"colors", "bars", "petCastbar", "border"}, {"colors", "bars", "petCastbar", "background"}, {"colors", "bars", "petCastbar", "endCap"} } },
+	petCastbarOverlays      = { checkboxSuffix = "petCastbarOverlays",      tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarOverlays"],
+		paths = { {"colors", "bars", "petCastbar", "pushback"} } },
+	petCastbarText          = { checkboxSuffix = "petCastbarText",          tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarText"],
+		paths = { {"bars", "petCastbar", "castTimePrecision"}, {"bars", "petCastbar", "durationPrecision"} } },
+	petCastbarShield        = { checkboxSuffix = "petCastbarShield",        tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarShield"],
+		paths = { {"bars", "petCastbar", "uninterruptibleShield"} } },
 }
 
 ---Sets a checkbox to tristate visual mode
@@ -120,6 +133,57 @@ end
 ---@return table?
 function TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(settingKey)
 	return globalSettingDefinitions[settingKey]
+end
+
+---Builds one section's Use Global row: the spec panel's checkbox with its shortcut link and Copy... button,
+---or the Global panel's bulk all-specs toggle. Every section's row is built here.
+---@param parent Frame
+---@param controls table
+---@param classId integer? # nil (or a nil specId) is the Global panel
+---@param specId integer?
+---@param settingKey string
+---@param yCoord number
+---@param options { tooltip: string?, onClick: fun()? }? # tooltip replaces the section's own; onClick replaces the layout refresh after a toggle
+---@return number yCoord
+---@return CheckButton? checkbox # The spec panel's Use Global box; nil on the Global panel
+function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, settingKey, yCoord, options)
+	local settingKeyUpper = settingKey:gsub("^%l", string.upper)
+	if classId == nil or specId == nil then
+		return self:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKeyUpper, settingKey, yCoord), nil
+	end
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local lowerClassName = string.lower(className)
+	yCoord = yCoord - 30
+	controls.checkBoxes = controls.checkBoxes or {}
+	local cb = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_useGlobal_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes["useGlobal" .. settingKeyUpper] = cb
+	cb:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+	local settingDef = self:GetGlobalSettingDefinition(settingKey)
+	getglobal(cb:GetName() .. "Text"):SetText(settingDef and settingDef.useGlobalLabel or L["CheckboxUseGlobal"])
+	getglobal(cb:GetName() .. "Text"):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
+	self:BuildUseGlobalShortcutLink(cb, settingDef and settingDef.tabKey or "resourceBar", settingDef and settingDef.categoryKey or nil)
+	cb.tooltip = (options and options.tooltip) or L["CheckboxUseGlobalTooltip_" .. settingKeyUpper]
+	cb:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][settingKey])
+	cb:SetScript("OnClick", function(checkbox)
+		local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
+		TRB.Data.settings.core.global[lowerClassName][specName][settingKey] = checkbox:GetChecked()
+		TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
+		TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
+		if options and options.onClick then
+			options.onClick()
+		else
+			if TRB.Frames.barGroups ~= nil then
+				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+			end
+			TRB.Data.lookupDirty = true
+		end
+		TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(settingKey)
+	end)
+	TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(cb, classId, specId, settingKey)
+	return yCoord, cb
 end
 
 ---Returns true if the panel being edited belongs to (or affects) the currently active spec.
@@ -233,7 +297,7 @@ local function BuildUseGlobalCover(checkbox, topY, bottomY)
 
 	local message = cover:CreateFontString(nil, "OVERLAY")
 	message:SetFontObject(GameFontHighlightLarge)
-	message:SetTextColor(GetUseGlobalSettingsColor())
+	message:SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 	message:SetJustifyH("CENTER")
 	message:SetText(L["UseGlobalCoverText"])
 	-- Raised by half the button row so the message and buttons sit centered as one block.
@@ -356,7 +420,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(pa
 	f = controls.checkBoxes[controlKey]
 	f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(customLabel or L["CheckboxEnableForAllSpecs"])
-	getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+	getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 	f.tooltip = customTooltip or L["CheckboxEnableForAllSpecsTooltip"]
 
 	-- Set initial tristate based on current values
@@ -441,13 +505,17 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		linkText = L["OpenGlobalOtherBarsSettings"]
 		linkTooltip = L["OpenGlobalOtherBarsSettingsTooltip"]
 		coverButtonText = L["OpenGlobalOtherBarsSettings"]
+	elseif navKey == "petBars" then
+		linkText = L["OpenGlobalPetBarsSettings"]
+		linkTooltip = L["OpenGlobalPetBarsSettingsTooltip"]
+		coverButtonText = L["OpenGlobalPetBarsSettings"]
 	end
 
 	local link = CreateFrame("Button", nil, checkbox)
 	link:SetNormalFontObject("GameFontNormalSmall")
 	link:SetHighlightFontObject("GameFontHighlightSmall")
 	link:SetText(linkText)
-	link:GetFontString():SetTextColor(GetUseGlobalSettingsColor())
+	link:GetFontString():SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 	link:SetWidth(link:GetFontString():GetStringWidth() + 4)
 	link:SetHeight(16)
 	link:SetPoint("LEFT", textRegion, "RIGHT", 8, 0)
@@ -469,7 +537,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 	end)
 
 	link:SetScript("OnLeave", function(self)
-		self:GetFontString():SetTextColor(GetUseGlobalSettingsColor())
+		self:GetFontString():SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		SetCursor(nil)
 		GameTooltip:Hide()
 	end)

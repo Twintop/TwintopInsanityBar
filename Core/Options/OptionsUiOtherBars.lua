@@ -34,46 +34,6 @@ local function ReapplyBars()
 	TRB.Functions.OtherBars:RefreshVisibility()
 end
 
----Builds one section's global-settings row: a "Use global settings" checkbox with shortcut link and
----Copy... button on spec panels, or a bulk all-specs toggle (with Copy...) on the Global panel. Mirrors
----the cast bar panels' rows.
----@return number yCoord
----@return CheckButton? checkbox # The spec panel's Use Global box; nil on the Global panel
-local function BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, settingKey, yCoord)
-	local settingKeyUpper = settingKey:gsub("^%l", string.upper)
-	local cb = nil
-	if classId ~= nil then
-		yCoord = yCoord - 30
-		local classToken = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-		controls.checkBoxes = controls.checkBoxes or {}
-		cb = CreateFrame("CheckButton", "TwintopResourceBar_" .. classToken .. "_" .. specName .. "_useGlobal_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
-		controls.checkBoxes["useGlobal" .. settingKeyUpper] = cb
-		cb:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
-		local settingDef = TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(settingKey)
-		getglobal(cb:GetName() .. 'Text'):SetText(settingDef and settingDef.useGlobalLabel or L["CheckboxUseGlobal"])
-		getglobal(cb:GetName() .. 'Text'):SetTextColor(100/255, 225/255, 200/255)
-		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(cb, settingDef and settingDef.tabKey or "gcd", "otherBars")
-		cb.tooltip = L["CheckboxUseGlobalTooltipOtherBars"]
-		cb:SetChecked(TRB.Data.settings.core.global[classNameLower][specName][settingKey])
-		cb:SetScript("OnClick", function(self)
-			local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
-			TRB.Data.settings.core.global[classNameLower][specName][settingKey] = self:GetChecked()
-			TRB.Functions.Character:FillSpecializationCacheSettings(classNameLower, specName)
-			TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
-			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-			end
-			TRB.Data.lookupDirty = true
-			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(settingKey)
-		end)
-		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(cb, classId, specId, settingKey)
-	else
-		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKeyUpper, settingKey, yCoord)
-	end
-	return yCoord, cb
-end
-
 ---Constructs the appearance options for one Other Bar within a spec.
 ---@param parent Frame # The tab's scroll child
 ---@param classId integer? # nil edits core (global) scope
@@ -125,7 +85,7 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 	controls[barKey .. "ColorSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["OtherBarsColorsHeader"], oUi.xCoord, yCoord)
 	local colorsCheckbox = nil
 	if hasGlobalScope then
-		yCoord, colorsCheckbox = BuildUseGlobalRow(parent, controls, classId, specId, classNameLower, specName, barKey .. "Colors", yCoord)
+		yCoord, colorsCheckbox = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, barKey .. "Colors", yCoord, { tooltip = L["CheckboxUseGlobalTooltipOtherBars"] })
 	end
 	yCoord = yCoord - 30
 	-- The fill takes a gradient; border and background are single-color, as everywhere else.

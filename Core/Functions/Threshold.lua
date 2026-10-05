@@ -1198,7 +1198,7 @@ function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId,
 
 	local keys = {}
 	if TRB.Functions.Bar and TRB.Functions.Bar.GetAllBarKeysFromSettings then
-		keys = TRB.Functions.Bar:GetAllBarKeysFromSettings(settings)
+		keys = TRB.Functions.Bar:GetAllBarKeysFromSettings(settings, classId, specId)
 	else
 		keys = { "primary", "secondary", "health" }
 	end

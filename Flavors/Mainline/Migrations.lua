@@ -8653,6 +8653,9 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
+	-- Pet bars: seed their default text into the global list; barText is an array the defaults merge cannot backfill.
+	TRB.Functions.Settings:SeedPetBarsText(TwintopInsanityBarSettings.core)
+
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

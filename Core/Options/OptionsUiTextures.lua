@@ -6,14 +6,6 @@ TRB.Functions.OptionsUi.Textures = TRB.Functions.OptionsUi.Textures or {}
 local oUi = TRB.Data.constants.optionsUi
 local L = TRB.Localization
 
----Returns the RGB color values used for "Use Global Settings" checkbox label text.
----@return number r # Red component (0-1)
----@return number g # Green component (0-1)
----@return number b # Blue component (0-1)
-local function GetUseGlobalSettingsColor()
-	return 100/255, 225/255, 200/255
-end
-
 -- ============================================================================
 -- Texture dropdowns and texture option panels
 -- ============================================================================
@@ -49,6 +41,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendTargetFocusCastbars(customBars)
 	-- Other Bars (GCD + mirror timers) too, scoped so Feign Death only appears for Hunters.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendOtherBars(customBars, classId)
+	-- Pet bars, scoped so they only appear on the specs that can hold a permanent pet.
+	TRB.Classes.BarTypeRegistry:GetInstance():AppendPetBars(customBars, classId, specId)
 
 	if secondaryResourceString == nil then
 		secondaryResourceString = L["ResourceComboPoints"]
@@ -67,7 +61,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		f = controls.checkBoxes.useGlobalTextures
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
-		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barTextures")
 		f.tooltip = L["CheckboxUseGlobalTooltip_Textures"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textures)

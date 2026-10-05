@@ -219,6 +219,7 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(contr
 	-- so it takes every key regardless of scope and the sync loop below skips the ones this panel has no
 	-- dropdown for -- otherwise texture lock would quietly pass over the Hunter-only Feign Death bar.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendOtherBars(customBars, nil, true)
+	TRB.Classes.BarTypeRegistry:GetInstance():AppendPetBars(customBars, nil, nil, true)
 
 	textures[variable.."Bar"] = newValue
 	textures[variable.."BarName"] = newName

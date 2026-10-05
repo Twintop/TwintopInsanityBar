@@ -6,14 +6,6 @@ TRB.Functions.OptionsUi.Thresholds = TRB.Functions.OptionsUi.Thresholds or {}
 local oUi = TRB.Data.constants.optionsUi
 local L = TRB.Localization
 
----Returns the RGB color values used for "Use Global Settings" checkbox label text.
----@return number r # Red component (0-1)
----@return number g # Green component (0-1)
----@return number b # Blue component (0-1)
-local function GetUseGlobalSettingsColor()
-	return 100/255, 225/255, 200/255
-end
-
 -- ============================================================================
 -- Threshold option panels
 -- ============================================================================
@@ -46,7 +38,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		useGlobalCheckbox = f
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
-		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "thresholds")
 		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdIcons"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdIcons)
@@ -309,7 +301,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		useGlobalCheckbox = f
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
-		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "thresholds")
 		f.tooltip = L["CheckboxUseGlobalTooltip_ThresholdColors"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].thresholdColors)

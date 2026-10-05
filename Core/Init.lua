@@ -250,7 +250,8 @@ _, _, TRB.Data.character.raceId = UnitRace("player")
 TRB.Classes.BarTypeRegistry:GetInstance():RegisterBuiltInTypes()
 
 -- Global player cast/channel/empower state model for the castbar bar type.
-TRB.Data.castbar = TRB.Classes.Castbar:New()
+TRB.Data.castbar = TRB.Classes.Castbar:New("player")
+TRB.Data.petCastbar = TRB.Classes.Castbar:New("pet")
 
 ---@type TRB.Classes.SpellsData
 ---@diagnostic disable-next-line: missing-fields
@@ -676,7 +677,7 @@ function SlashCmdList.TWINTOP(msg)
 		if handler ~= nil then
 			handler(subcmd)
 		else
-			print("|cFFFF8800TRB:|r Unknown command '" .. cmd .. "'. Valid: reset, fill, move, news, minimap, bars, otherbars, cdm, auraengine, castname, endcap. Use /trb on its own for options.")
+			print("|cFFFF8800TRB:|r Unknown command '" .. cmd .. "'. Valid: reset, fill, move, news, minimap. Use /trb on its own for options.")
 		end
 	end
 end

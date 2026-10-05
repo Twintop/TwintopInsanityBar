@@ -131,14 +131,6 @@ local function ApplyAnchorTransitionDefaults(anchor, oldBarKey, newBarKey)
 	return false
 end
 
----Returns the RGB color values used for "Use Global Settings" checkbox label text.
----@return number r # Red component (0-1)
----@return number g # Green component (0-1)
----@return number b # Blue component (0-1)
-local function GetUseGlobalSettingsColor()
-	return 100/255, 225/255, 200/255
-end
-
 -- Rotation mapping: 90° CCW (horizontal → vertical / leftRight → bottomTop)
 local rotateAnchorCCW = {
 	LEFT = "BOTTOM", RIGHT = "TOP", TOP = "LEFT", BOTTOM = "RIGHT",
@@ -360,7 +352,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 		useGlobalCheckbox = f
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
-		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
+		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "resourceBar")
 		f.tooltip = L["CheckboxUseGlobalTooltip_BarDimensions"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].bar)
@@ -570,7 +562,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	---Sets the primary bar's anchor target to a new barKey after validating that it does not create a cycle.
 	---@param newValue string # The new barKey to anchor to (e.g., "screen", "secondary", "health")
 	local function PrimaryAnchorToSetSelected(newValue)
-		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
+		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec, classId, specId)
 		local valid, err = TRB.Functions.Bar:ValidateAnchorTree(spec, nil, "primary", newValue, specBarKeys)
 		if not valid then
 			print("|cffff0000TRB:|r " .. (err or L["AnchorCycleError"]))
@@ -611,7 +603,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	---@param dropdown DropdownButton The dropdown button being initialized
 	---@param rootDescription table The root menu description to add radio items to
 	local function PrimaryAnchorToGenerator(dropdown, rootDescription)
-		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
+		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec, classId, specId)
 		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets("primary", spec, nil, specBarKeys, classId, specId)
 		for _, barKey in ipairs(targets) do
 			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId), PrimaryAnchorToIsSelected, PrimaryAnchorToSetSelected, barKey)
@@ -905,46 +897,26 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	-- Section header
 	controls[settingKey .. "PositionSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, sectionHeader, oUi.xCoord, yCoord)
 
-	-- Global checkbox (if applicable)
+	-- Global checkbox (if applicable). These bars' layout feeds visibility, so a toggle re-resolves it too.
 	local useGlobalCheckbox = nil
-	if globalSettingKey and classId ~= nil and specId ~= nil then
-		yCoord = yCoord - 30
-		local lowerClassName = string.lower(className)
-		controls.checkBoxes["useGlobal" .. settingKey:gsub("^%l", string.upper)] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_useGlobal_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes["useGlobal" .. settingKey:gsub("^%l", string.upper)]
-		useGlobalCheckbox = f
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
-		getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-		local globalSettingDef = TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(globalSettingKey)
-		if globalSettingDef and globalSettingDef.tabKey then
-			TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, globalSettingDef.tabKey)
-		end
-		f.tooltip = globalTooltip or L["CheckboxUseGlobalTooltip_ComboPoints"]
-		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][globalSettingKey])
-		f:SetScript("OnClick", function(self, ...)
-			local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
-			TRB.Data.settings.core.global[lowerClassName][specName][globalSettingKey] = self:GetChecked()
-			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
-			TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
-			if TRB.Frames.barGroups ~= nil then
-				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-				TRB.Functions.BarVisibility:MarkDirty()
-				TRB.Functions.Bar:HideResourceBar()
-			end
-			TRB.Functions.Character:ResetCaches()
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				C_Timer.After(0, function()
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end)
-			end
-			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(globalSettingKey)
-		end)
-		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, globalSettingKey)
-	elseif globalSettingKey and classId == nil and specId == nil then
-		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKey:gsub("^%l", string.upper), globalSettingKey, yCoord)
+	if globalSettingKey then
+		yCoord, useGlobalCheckbox = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, globalSettingKey, yCoord, {
+			tooltip = globalTooltip,
+			onClick = function()
+				if TRB.Frames.barGroups ~= nil then
+					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
+					TRB.Functions.BarVisibility:MarkDirty()
+					TRB.Functions.Bar:HideResourceBar()
+				end
+				TRB.Functions.Character:ResetCaches()
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					C_Timer.After(0, function()
+						TRB.Data.lookupDirty = true
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+					end)
+				end
+			end,
+		})
 	end
 
 	-- Width and Height sliders
@@ -1159,7 +1131,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	---@param newValue string The new barKey to anchor to
 	local function AnchorToSetSelected(newValue)
 		-- Validate no cycle
-		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
+		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec, classId, specId)
 		local valid, err = TRB.Functions.Bar:ValidateAnchorTree(spec, nil, thisBarKey, newValue, specBarKeys)
 		if not valid then
 			print("|cffff0000TRB:|r " .. (err or L["AnchorCycleError"]))
@@ -1203,7 +1175,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	---@param rootDescription table The root menu description to add radio items to
 	local function AnchorToGenerator(dropdown, rootDescription)
 		-- Build list of valid targets
-		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
+		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec, classId, specId)
 		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, spec, nil, specBarKeys, classId, specId)
 		for _, barKey in ipairs(targets) do
 			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId), AnchorToIsSelected, AnchorToSetSelected, barKey)
@@ -1604,38 +1576,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	-- Optional "Use global settings" row (spec panels) / bulk all-specs toggle (Global panel)
 	local useGlobalCheckbox = nil
 	if useGlobalSettingKey ~= nil then
-		local settingKeyUpper = useGlobalSettingKey:gsub("^%l", string.upper)
-		if classId ~= nil and specId ~= nil then
-			yCoord = yCoord - 30
-			local lowerClassName = string.lower(className)
-			controls.checkBoxes = controls.checkBoxes or {}
-			controls.checkBoxes["useGlobal" .. settingKeyUpper] = CreateFrame("CheckButton", "TwintopResourceBar_" .. className .. "_" .. specName .. "_useGlobal_" .. useGlobalSettingKey, parent, "ChatConfigCheckButtonTemplate")
-			f = controls.checkBoxes["useGlobal" .. settingKeyUpper]
-			useGlobalCheckbox = f
-			f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
-			local settingDef = TRB.Functions.OptionsUi.GlobalSettings:GetGlobalSettingDefinition(useGlobalSettingKey)
-			getglobal(f:GetName() .. 'Text'):SetText(settingDef and settingDef.useGlobalLabel or L["CheckboxUseGlobal"])
-			getglobal(f:GetName() .. 'Text'):SetTextColor(GetUseGlobalSettingsColor())
-			TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, settingDef and settingDef.tabKey or "resourceBar", settingDef and settingDef.categoryKey or nil)
-			f.tooltip = L["CheckboxUseGlobalTooltip_" .. settingKeyUpper]
-			f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][useGlobalSettingKey])
-			f:SetScript("OnClick", function(self, ...)
-				local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()
-				TRB.Data.settings.core.global[lowerClassName][specName][useGlobalSettingKey] = self:GetChecked()
-				TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
-				TRB.Functions.OptionsUi.Layout:RotateFlippedOrientations(orientations)
-
-				if TRB.Frames.barGroups ~= nil then
-					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
-				end
-				TRB.Data.lookupDirty = true
-				TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(useGlobalSettingKey)
-			end)
-			TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, useGlobalSettingKey)
-		else
-			yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAll" .. settingKeyUpper, useGlobalSettingKey, yCoord)
-		end
+		yCoord, useGlobalCheckbox = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, useGlobalSettingKey, yCoord)
 	end
 
 	-- Width slider
@@ -1814,7 +1755,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	---@param newValue string The new barKey to anchor to
 	local function AnchorToSetSelected(newValue)
 		-- Validate no cycle
-		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
+		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec, classId, specId)
 		local valid, err = TRB.Functions.Bar:ValidateAnchorTree(spec, nil, thisBarKey, newValue, specBarKeys)
 		if not valid then
 			print("|cffff0000TRB:|r " .. (err or L["AnchorCycleError"]))
@@ -1860,7 +1801,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	---@param dropdown DropdownButton The dropdown button being initialized
 	---@param rootDescription table The root menu description to add radio items to
 	local function AnchorToGenerator(dropdown, rootDescription)
-		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec)
+		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec, classId, specId)
 		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, spec, nil, specBarKeys, classId, specId)
 		for _, barKey in ipairs(targets) do
 			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId), AnchorToIsSelected, AnchorToSetSelected, barKey)

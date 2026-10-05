@@ -6,6 +6,12 @@ TRB.Functions.OptionsUi.ColorPickers = TRB.Functions.OptionsUi.ColorPickers or {
 local oUi = TRB.Data.constants.optionsUi
 local L = TRB.Localization
 
+---The color of every "Use global settings" label, shortcut link, and Global badge.
+---@return number r, number g, number b
+function TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor()
+	return 100/255, 225/255, 200/255
+end
+
 -- ============================================================================
 -- Color picker primitives
 -- ============================================================================

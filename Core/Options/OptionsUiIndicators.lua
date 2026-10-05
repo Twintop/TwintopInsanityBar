@@ -141,7 +141,7 @@ local function BuildSharedBarTargetDefs(classId, specId)
 	-- Energy. Borders and backgrounds are plain node colors and can take that curve. The rest can't: the
 	-- health bar's fill is already a health curve, the cast bar's fill is driven per cast state, and the
 	-- channel ticks are drawn textures rather than a node color.
-	return {
+	local defs = {
 		{
 			key = "healthBar",
 			label = L["BarVisibilityBarNameHealth"],
@@ -178,6 +178,44 @@ local function BuildSharedBarTargetDefs(classId, specId)
 			}
 		},
 	}
+
+	-- Pet bars on specs with a pet. The Pet Cast Bar splits its fill by cast state like the player's, and
+	-- Pet Health offers no Bar element, as on the player's own.
+	if TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId) then
+		defs[#defs + 1] = {
+			key = "petCastbar",
+			label = L["ResourcePetCastbar"],
+			elements = {
+				{ key = "bar", label = L["BarElementBarHardcast"] },
+				{ key = "channel", label = L["BarElementBarChanneled"] },
+				{ key = "border", label = L["BarElementBorder"] },
+				{ key = "background", label = L["BarElementBackground"] },
+				{ key = "endCap", label = L["EndCap"] },
+			},
+			gradientExcluded = { bar = true, channel = true }
+		}
+		defs[#defs + 1] = {
+			key = "petPowerBar",
+			label = L["ResourcePetPower"],
+			elements = {
+				{ key = "bar", label = L["BarElementBar"] },
+				{ key = "border", label = L["BarElementBorder"] },
+				{ key = "background", label = L["BarElementBackground"] },
+				{ key = "endCap", label = L["EndCap"] },
+			}
+		}
+		defs[#defs + 1] = {
+			key = "petHealthBar",
+			label = L["ResourcePetHealth"],
+			elements = {
+				{ key = "border", label = L["BarElementBorder"] },
+				{ key = "background", label = L["BarElementBackground"] },
+				{ key = "endCap", label = L["EndCap"] },
+			}
+		}
+	end
+
+	return defs
 end
 
 ---Generates the complete Indicator Colors panel for a specialization.
