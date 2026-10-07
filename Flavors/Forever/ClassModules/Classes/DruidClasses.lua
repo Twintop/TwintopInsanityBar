@@ -32,6 +32,8 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public aquaticForm TRB.Classes.SpellBase
 ---@field public moonkinForm TRB.Classes.SpellBase
 ---@field public prowl TRB.Classes.SpellBase
+---@field public tranquility TRB.Classes.SpellBase
+---@field public hurricane TRB.Classes.SpellBase
 TRB.Classes.Druid.GeneralSpells = setmetatable({}, { __index = TRB.Classes.SpecializationSpellsBase })
 TRB.Classes.Druid.GeneralSpells.__index = TRB.Classes.Druid.GeneralSpells
 
@@ -223,6 +225,20 @@ function TRB.Classes.Druid.GeneralSpells:New()
 	self.prowl = TRB.Classes.SpellBase:New({
 		id = 5215,
 		rankIds = { 5215, 6783, 9913 },
+	})
+
+	-- Channels
+	self.tranquility = TRB.Classes.SpellBase:New({
+		id = 740,
+		rankIds = { 740, 8918, 9862, 9863 },
+		baseline = true,
+		tickProfile = { mode = "fixedCount", baseDuration = 10, tickCount = 5, firstTickAtStart = false },
+	})
+	self.hurricane = TRB.Classes.SpellBase:New({
+		id = 16914,
+		rankIds = { 16914, 17401, 17402 },
+		baseline = true,
+		tickProfile = { mode = "fixedCount", baseDuration = 10, tickCount = 10, firstTickAtStart = false },
 	})
 
 	return self

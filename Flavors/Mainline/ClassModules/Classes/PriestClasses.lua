@@ -230,6 +230,8 @@ function TRB.Classes.Priest.DisciplineSpells.GetCastbarTickProfiles()
 		-- Penance: 3 bolts baseline over 2s; Castigation/Harsh Discipline bolts come from tick modifiers.
 		[47757] = { mode = "fixedCount", baseDuration = 2, tickCount = 3, firstTickAtStart = true },
 		[47758] = { mode = "fixedCount", baseDuration = 2, tickCount = 3, firstTickAtStart = true },
+		-- Ultimate Penitence
+		[421434] = { mode = "fixedCount", baseDuration = 6, tickCount = 25, firstTickAtStart = true },
 	}
 end
 

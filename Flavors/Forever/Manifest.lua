@@ -49,6 +49,47 @@ TRB.Flavor = {
 		return C_SpecializationInfo.GetSpecialization()
 	end,
 
+	---Channel tick profiles any class can cast. Each bandage tier has its own spell and length; all tick once a second.
+	---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+	DefaultCastbarTickProfiles = function()
+		local function Bandage(seconds)
+			return { mode = "fixedCount", baseDuration = seconds, tickCount = seconds, firstTickAtStart = false }
+		end
+		return {
+			-- Cannibalize
+			[20578] = { mode = "fixedCount", baseDuration = 10, tickCount = 5, firstTickAtStart = false },
+			-- Rapid Regeneration
+			[1260270] = { mode = "fixedCount", baseDuration = 6, tickCount = 5, firstTickAtStart = false },
+			-- Linen and Heavy Linen Bandage
+			[746] = Bandage(6),
+			[1159] = Bandage(6),
+			-- Wool and Heavy Wool Bandage
+			[3267] = Bandage(7),
+			[3268] = Bandage(7),
+			-- Silk, Mageweave, Runecloth, and Dense Runecloth Bandage tiers
+			[7926] = Bandage(8),
+			[7927] = Bandage(8),
+			[10838] = Bandage(8),
+			[10839] = Bandage(8),
+			[18608] = Bandage(8),
+			[18610] = Bandage(8),
+			[470345] = Bandage(8),
+			-- Battleground bandages: Warsong Gulch, Alterac Valley, Arathi Basin, and Darkspear Islands
+			[23567] = Bandage(8),
+			[23568] = Bandage(8),
+			[23569] = Bandage(8),
+			[23696] = Bandage(8),
+			[24412] = Bandage(8),
+			[24413] = Bandage(8),
+			[24414] = Bandage(8),
+			[1290863] = Bandage(8),
+			[1290865] = Bandage(8),
+			[1290867] = Bandage(8),
+			-- Crystal Infused Bandage
+			[30020] = Bandage(10),
+		}
+	end,
+
 	-- Class ids follow the client's class file ids (Death Knight = 6, Monk = 10, Demon Hunter = 12, and
 	-- Evoker = 13 do not exist here, so the ids are sparse). The client gives every class exactly one
 	-- specialization, named after the class, with the specGlobalIds below; the Vanilla talent trees are one

@@ -101,22 +101,6 @@ local function CreateBorderGlowSubmenu(rootDescription, getTargets, onChanged)
 	end
 end
 
----Whether this spec registers channel tick profiles of its own, which is what makes the cast bar draw
----channel tick lines -- and so what makes a color for them worth offering. Read from the code registry, for
----the spec whose panel is being built (not the one being played, which is usually a different spec).
----@param classId integer
----@param specId integer
----@return boolean
-local function SpecHasCastbarTickProfiles(classId, specId)
-	local compositeKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
-	local registry = TRB.Data.castbarTickProfilesRegistry
-	local getter = compositeKey and registry and registry[compositeKey]
-	if type(getter) ~= "function" then
-		return false
-	end
-	return next(getter()) ~= nil
-end
-
 ---The bar targets every spec gets for free: the health bar and the cast bar. Appended to whatever bars the
 ---spec itself declares, so these don't have to be hand-wired into all 40 spec option panels.
 ---Neither offers a plain "Bar" element: the health bar's fill is a health-threshold curve, and the cast
@@ -131,10 +115,9 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		{ key = "border", label = L["BarElementBorder"] },
 		{ key = "background", label = L["BarElementBackground"] },
 		{ key = "endCap", label = L["EndCap"] },
+		-- Every spec can channel something with ticks, like a bandage or a racial.
+		{ key = "tick", label = L["BarElementChanneledTick"] },
 	}
-	if SpecHasCastbarTickProfiles(classId, specId) then
-		castbarElements[#castbarElements + 1] = { key = "tick", label = L["BarElementChanneledTick"] }
-	end
 
 	-- Gradient indicators are a step curve over the spec's own resource, painted onto whichever bar is
 	-- targeted -- the same way the overcap gradient already colors, say, the Stagger bar's border from
@@ -191,6 +174,7 @@ local function BuildSharedBarTargetDefs(classId, specId)
 				{ key = "border", label = L["BarElementBorder"] },
 				{ key = "background", label = L["BarElementBackground"] },
 				{ key = "endCap", label = L["EndCap"] },
+				{ key = "tick", label = L["BarElementChanneledTick"] },
 			},
 			gradientExcluded = { bar = true, channel = true }
 		}

@@ -50,6 +50,7 @@ local addonName, TRB = ...
 ---@field public RunManualUpdateChecks (fun(settings: table, classEntry: TRB.Data.ClassRegistryEntry): table)? # One-shot per-class manual migrations run right after the saved variables are merged
 ---@field public ShowMidnightBarTextResetMessage (fun(className: string))? # Mainline-only chat notice for its bar text reset
 ---@field public ResolveSpellRankId (fun(spell: TRB.Classes.SpellBase): integer?)? # The rank of a `rankIds` spell to hand the client API; flavors without ranked spells leave it unset and get the spell's `id`
+---@field public DefaultCastbarTickProfiles (fun(): table<integer, TRB.Classes.Settings.CastbarTickProfile>)? # Channel tick profiles for every class (racials, consumables), keyed by spell ID; a fresh table per call, which the spec's own profiles overlay
 ---@field public newsContent string? # Markdown changelog shown by the News window's flavor tab; Core\News.lua holds the Core tab's
 
 assert(type(TRB.Flavor) == "table", "TwintopInsanityBar: no flavor manifest loaded before Core. Check the TOC.")
@@ -95,6 +96,13 @@ if TRB.Flavor.ResolveSpellRankId == nil then
 	---@return integer
 	function TRB.Flavor.ResolveSpellRankId(spell)
 		return spell.id
+	end
+end
+
+if TRB.Flavor.DefaultCastbarTickProfiles == nil then
+	---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+	function TRB.Flavor.DefaultCastbarTickProfiles()
+		return {}
 	end
 end
 

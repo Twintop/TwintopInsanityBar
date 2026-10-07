@@ -1689,7 +1689,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	local corePetBar = core.bars and core.bars.petCastbar
 	local petBars = specCache.settings.bars
 	local specPetBar = petBars and petBars.petCastbar
-	if corePetBar and specPetBar and (s.petCastbarDimensions or s.petCastbarShield or s.petCastbarText) then
+	if corePetBar and specPetBar and (s.petCastbarDimensions or s.petCastbarShield or s.petCastbarText or s.petCastbarOverlays) then
 		local barOverrides = {}
 		if s.petCastbarDimensions then
 			barOverrides.width = corePetBar.width
@@ -1707,6 +1707,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		if s.petCastbarText then
 			barOverrides.castTimePrecision = corePetBar.castTimePrecision
 			barOverrides.durationPrecision = corePetBar.durationPrecision
+		end
+		if s.petCastbarOverlays then
+			barOverrides.tickWidth = corePetBar.tickWidth
 		end
 		specCache.settings.bars = OverlayOn(petBars, { petCastbar = OverlayOn(specPetBar, barOverrides) })
 	end
@@ -1726,6 +1729,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 		if s.petCastbarOverlays then
 			colorOverrides.pushback = corePetColors.pushback
+			colorOverrides.tick = corePetColors.tick
 		end
 		specCache.settings.colors.bars = OverlayOn(petColorBars, { petCastbar = OverlayOn(specPetColors, colorOverrides) })
 	end

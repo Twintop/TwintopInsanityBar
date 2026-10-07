@@ -191,11 +191,25 @@ end
 function TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickProfiles()
 	return {
 		-- Eye Beam
-		[198013] = { mode = "fixedCount", baseDuration = 2.5, tickCount = 13, firstTickAtStart = true },
+		[198013] = { mode = "fixedCount", baseDuration = 2, tickCount = 11, firstTickAtStart = true },
 		-- Abbysal Gaze
-		[452497] = { mode = "fixedCount", baseDuration = 2.5, tickCount = 13, firstTickAtStart = true },
+		[452497] = { mode = "fixedCount", baseDuration = 2, tickCount = 11, firstTickAtStart = true },
 		-- Illidan's Grasp
 		[205630] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
+	}
+end
+
+---Gets built-in castbar tick modifiers for Havoc (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickModifiers()
+	-- Blind Fury: each rank lengthens the channel 10% at the same tick rate
+	local blindFury = { talentId = 203550, bonusTicks = { 1, 2 }, bonusDuration = { 0.2, 0.4 } }
+	return {
+		-- Eye Beam
+		[198013] = { blindFury },
+		-- Abyssal Gaze
+		[452497] = { blindFury },
 	}
 end
 
@@ -381,10 +395,10 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.DemonHunter.VengeanceSpells.GetCastbarTickProfiles()
 	return {
-		-- Fel Devastation
-		[212084] = { mode = "fixedCount", baseDuration = 2, tickCount = 12, firstTickAtStart = false },
 		-- Illidan's Grasp
 		[205630] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
+		-- Fel Devastation: haste speeds the ticks but not the channel
+		[212084] = { mode = "fixedRate", baseDuration = 2, baseTickRate = 0.2, firstTickAtStart = false },
 	}
 end
 
@@ -745,6 +759,10 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["demonhunter_havoc"] = TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["demonhunter_vengeance"] = TRB.Classes.DemonHunter.VengeanceSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["demonhunter_devourer"] = TRB.Classes.DemonHunter.DevourerSpells.GetCastbarTickProfiles
+
+-- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
+TRB.Data.castbarTickModifiersRegistry["demonhunter_havoc"] = TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickModifiers
 
 -- Spec descriptors: the traits Core needs to know about these specs (see Core\Classes\SpecDescriptor.lua).
 -- Everything class-specific that shared code used to hard-code by class/spec id is declared here instead.

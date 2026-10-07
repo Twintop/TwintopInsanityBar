@@ -366,7 +366,7 @@ local function GetBuiltInTickProfiles()
 	end
 	local profiles = tickProfilesCache[key]
 	if profiles == nil then
-		profiles = TRB.Functions.Settings:DefaultGlobalCastbarTickProfiles()
+		profiles = TRB.Flavor.DefaultCastbarTickProfiles()
 		local registry = TRB.Data.castbarTickProfilesRegistry
 		local getter = registry and registry[key]
 		if type(getter) == "function" then
@@ -632,6 +632,19 @@ function CastbarRenderer:ResolveTickProfile(barSettings, spellId)
 		effective.baseDuration = math.max(profile.baseDuration + durationBonus, 0)
 	end
 	return effective
+end
+
+---Whether a pet channel's ticks can be placed exactly: a fixed count spread over the game's own channel
+---timing. Any other mode, or a rebuilt duration, would lean on the player's haste instead of the pet's.
+---@param unit string
+---@param profile table
+---@return boolean
+local function HasReadablePetChannelTiming(unit, profile)
+	if profile.mode ~= "fixedCount" then
+		return false
+	end
+	local _, _, _, startMS, endMS = UnitChannelInfo(unit)
+	return startMS ~= nil and endMS ~= nil and not issecretvalue(startMS) and not issecretvalue(endMS)
 end
 
 -- ============================================================================
@@ -1756,8 +1769,10 @@ function CastbarRenderer:OnSpellCastEvent(event, spellId)
 			channelId = select(8, UnitChannelInfo(self.unit))
 			if issecretvalue(channelId) then channelId = nil end
 		end
-		-- Tick profiles are the player's own spells.
-		local profile = self.isPlayer and self:ResolveTickProfile(barSettings, channelId) or nil
+		local profile = self:ResolveTickProfile(barSettings, channelId)
+		if profile ~= nil and not self.isPlayer and not HasReadablePetChannelTiming(self.unit, profile) then
+			profile = nil
+		end
 		model:StartChannel(channelId, profile)
 		EchoCastName(event, spellId, model)
 		self:BeginRender()

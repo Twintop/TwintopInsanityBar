@@ -872,24 +872,6 @@ function TRB.Functions.Settings:DefaultCastbarBarDimensions(classic)
 	return dims
 end
 
----Gets built-in channel tick profiles that apply to every spec/class (abilities castable regardless of
----spec, e.g. Recuperate). Returns a fresh table each call. This is static CODE data, not persisted into
----settings -- TRB.Functions.Castbar:GetTickProfile resolves it (overlaid with the active spec's registered
----set from TRB.Data.castbarTickProfilesRegistry) at render time, so edits here take effect on reload.
----Each profile drives tick placement:
----  mode "fixedCount": tick count stays constant, channel duration scales with haste (e.g. Mind Flay).
----  mode "fixedRate": channel duration is fixed, tick rate scales with haste, final partial tick (e.g. Void Torrent).
----baseDuration and baseTickRate are UNHASTED seconds; the render scales them by GCD-inferred haste.
----@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Functions.Settings:DefaultGlobalCastbarTickProfiles()
-	return {
-		-- Cannibalize
-		[20578] = { mode = "fixedCount", baseDuration = 10, tickCount = 5, firstTickAtStart = false },
-		-- Recuperate: one tick per second for 10 seconds
-		[1231418] = { mode = "fixedCount", baseDuration = 10, tickCount = 10, firstTickAtStart = false },
-	}
-end
-
 ---Gets the default Castbar visibility entry (displayBar.castbar). Uses castbar-specific show conditions
 ---(casting/channeling/empowered) instead of the standard environment conditions; alwaysShow keeps the
 ---empty bar frame on screen while idle, neverShow fully disables castbar processing.
@@ -1782,6 +1764,7 @@ function TRB.Functions.Settings:DefaultPetCastbarBarSettings(classic)
 	settings.anchor.yOffset = 0
 	settings.anchor.matchWidth = true
 	settings.showPushback = true
+	settings.tickWidth = 1
 	settings.castTimePrecision = 1
 	settings.durationPrecision = 1
 	settings.icon = self:DefaultBarIconSettings()
@@ -1789,12 +1772,11 @@ function TRB.Functions.Settings:DefaultPetCastbarBarSettings(classic)
 	return settings
 end
 
----Default Pet Cast Bar colors: the player Cast Bar's, without latency, channel ticks, or empower.
+---Default Pet Cast Bar colors: the player Cast Bar's, without latency or empower.
 ---@return table
 function TRB.Functions.Settings:DefaultPetCastbarBarColors()
 	local colors = self:DefaultCastbarBarColors()
 	colors.latency = nil
-	colors.tick = nil
 	colors.empowerStages = nil
 	return colors
 end

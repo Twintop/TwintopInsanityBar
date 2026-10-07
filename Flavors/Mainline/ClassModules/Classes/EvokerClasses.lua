@@ -94,7 +94,20 @@ end
 function TRB.Classes.Evoker.DevastationSpells.GetCastbarTickProfiles()
 	return {
 		-- Disintegrate
-		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 5, firstTickAtStart = false, chains = true },
+		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true, chains = true },
+	}
+end
+
+---Gets built-in castbar tick modifiers for Devastation (talent/buff-conditional bonus ticks), keyed by
+---channel spell id. Fresh tables each call.
+---@return table<integer, TRB.Classes.CastbarTickModifier[]>
+function TRB.Classes.Evoker.DevastationSpells.GetCastbarTickModifiers()
+	return {
+		-- Disintegrate
+		[356995] = {
+			-- Azure Celerity: ticks 25% more often over the same channel
+			{ talentId = 1219723, bonusTicks = 1 },
+		},
 	}
 end
 
@@ -169,7 +182,7 @@ end
 function TRB.Classes.Evoker.PreservationSpells.GetCastbarTickProfiles()
 	return {
 		-- Disintegrate
-		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, chains = true },
+		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true, chains = true },
 		-- Emerald Communion
 		[370960] = { mode = "fixedCount", baseDuration = 5, tickCount = 6, firstTickAtStart = true },
 	}
@@ -244,7 +257,7 @@ end
 function TRB.Classes.Evoker.AugmentationSpells.GetCastbarTickProfiles()
 	return {
 		-- Disintegrate
-		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = false, chains = true },
+		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true, chains = true },
 	}
 end
 
@@ -356,6 +369,10 @@ TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {
 TRB.Data.castbarTickProfilesRegistry["evoker_devastation"] = TRB.Classes.Evoker.DevastationSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["evoker_preservation"] = TRB.Classes.Evoker.PreservationSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["evoker_augmentation"] = TRB.Classes.Evoker.AugmentationSpells.GetCastbarTickProfiles
+
+-- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
+TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
+TRB.Data.castbarTickModifiersRegistry["evoker_devastation"] = TRB.Classes.Evoker.DevastationSpells.GetCastbarTickModifiers
 
 -- Register audio cue vocabularies
 do

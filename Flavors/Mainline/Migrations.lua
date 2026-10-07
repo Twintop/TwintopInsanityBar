@@ -7496,7 +7496,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
-	-- Castbar tick profiles are static code data now (see DefaultGlobalCastbarTickProfiles); earlier
+	-- Castbar tick profiles are static code data now (see TRB.Flavor.DefaultCastbarTickProfiles); earlier
 	-- castbar builds seeded per-spec defaults into settings. Nothing reads the persisted copies anymore,
 	-- and their sparse spellId keys break JSON export, so wipe them from live pieces and stored profiles.
 	---------------------------------------------------------------------

@@ -405,6 +405,8 @@ function TRB.Classes.Druid.BalanceSpells.GetCastbarTickModifiers()
 		[391528] = {
 			-- Cenarius' Guidance: 25% shorter Convoke -- 4s/16 ticks becomes 3s/12
 			{ talentId = 393991, bonusTicks = -4, bonusDuration = -1 },
+			-- Astral Insight: 25% longer Convoke -- 4s/16 ticks becomes 5s/20
+			{ talentId = 429536, bonusTicks = 4, bonusDuration = 1 },
 		},
 	}
 end
@@ -971,6 +973,8 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Druid.GuardianSpells.GetCastbarTickProfiles()
 	return {
+		-- Emerald Slumber: the data's 0.9s period fits 8 heals inside 8s; the tooltip shows them every second
+		[329042] = { mode = "fixedCount", baseDuration = 8, tickCount = 8 },
 		-- Convoke the Spirits: 16 spells over 4s; Cenarius' Guidance trims it to 12 over 3s (tick modifier)
 		[391528] = { mode = "fixedCount", baseDuration = 4, tickCount = 16 },
 	}
@@ -985,6 +989,8 @@ function TRB.Classes.Druid.GuardianSpells.GetCastbarTickModifiers()
 		[391528] = {
 			-- Cenarius' Guidance: 25% shorter Convoke -- 4s/16 ticks becomes 3s/12
 			{ talentId = 393414, bonusTicks = -4, bonusDuration = -1 },
+			-- Astral Insight: 25% longer Convoke -- 4s/16 ticks becomes 5s/20
+			{ talentId = 429536, bonusTicks = 4, bonusDuration = 1 },
 		},
 	}
 end
@@ -1150,7 +1156,7 @@ end
 function TRB.Classes.Druid.RestorationSpells.GetCastbarTickProfiles()
 	return {
 		-- Tranquility
-		[740] = { mode = "fixedCount", baseDuration = 6, tickCount = 6 },
+		[740] = { mode = "fixedCount", baseDuration = 6, tickCount = 7, firstTickAtStart = true },
 		-- Convoke the Spirits: 16 spells over 4s; Cenarius' Guidance trims it to 12 over 3s (tick modifier)
 		[391528] = { mode = "fixedCount", baseDuration = 4, tickCount = 16 },
     }

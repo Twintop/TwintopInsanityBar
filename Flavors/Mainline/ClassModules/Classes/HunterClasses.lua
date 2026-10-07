@@ -183,10 +183,23 @@ function TRB.Classes.Hunter.BeastMasterySpells.FillBarTextVariables(specCacheEnt
 	})
 end
 
+---Adds the exotic pets' channels, drawn on the Pet Cast Bar, to a spec's tick profiles.
+---@param profiles table<integer, TRB.Classes.Settings.CastbarTickProfile>
+---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+local function AddPetChannelTickProfiles(profiles)
+	-- Froststorm Breath (Chimaera)
+	profiles[92380] = { mode = "fixedCount", baseDuration = 8, tickCount = 4 }
+	-- Burrow Attack (Worm)
+	profiles[93433] = { mode = "fixedCount", baseDuration = 8, tickCount = 8 }
+	-- Feast (Devilsaur)
+	profiles[159954] = { mode = "fixedCount", baseDuration = 6, tickCount = 3 }
+	return profiles
+end
+
 ---Gets built-in castbar channel tick profiles for Beast Mastery, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Hunter.BeastMasterySpells.GetCastbarTickProfiles()
-	return {}
+	return AddPetChannelTickProfiles({})
 end
 
 ---@param line TRB.Classes.ThresholdLine
@@ -426,11 +439,11 @@ end
 ---Gets built-in castbar channel tick profiles for Marksmanship, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickProfiles()
-	return {
+	return AddPetChannelTickProfiles({
 		-- Rapid Fire: 7 shots baseline over 2s, one on cast then every 1/3s; Quick Draw and Double Tap
 		-- shots come from tick modifiers.
 		[257044] = { mode = "fixedCount", baseDuration = 2, tickCount = 7, firstTickAtStart = true },
-    }
+    })
 end
 
 ---Gets built-in castbar tick modifiers for Marksmanship (talent/buff-conditional bonus ticks), keyed by
@@ -633,12 +646,12 @@ end
 ---Gets built-in castbar channel tick profiles for Survival, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Hunter.SurvivalSpells.GetCastbarTickProfiles()
-	return {
-		-- Boomstick: constant tick count, duration shrinks with haste.
-		[1261193] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true },
+	return AddPetChannelTickProfiles({
         -- Mending Bandage
 		[212640] = { mode = "fixedCount", baseDuration = 6.0, tickCount = 6 },
-	}
+		-- Boomstick: constant tick count, duration shrinks with haste.
+		[1261193] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true },
+	})
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes

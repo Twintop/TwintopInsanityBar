@@ -92,7 +92,7 @@ local globalSettingDefinitions = {
 	petCastbarColors        = { checkboxSuffix = "petCastbarColors",        tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarColors"],
 		paths = { {"colors", "bars", "petCastbar", "bar"}, {"colors", "bars", "petCastbar", "channel"}, {"colors", "bars", "petCastbar", "uninterruptible"}, {"colors", "bars", "petCastbar", "uninterruptibleBorder"}, {"colors", "bars", "petCastbar", "border"}, {"colors", "bars", "petCastbar", "background"}, {"colors", "bars", "petCastbar", "endCap"} } },
 	petCastbarOverlays      = { checkboxSuffix = "petCastbarOverlays",      tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarOverlays"],
-		paths = { {"colors", "bars", "petCastbar", "pushback"} } },
+		paths = { {"colors", "bars", "petCastbar", "pushback"}, {"colors", "bars", "petCastbar", "tick"}, {"bars", "petCastbar", "tickWidth"} } },
 	petCastbarText          = { checkboxSuffix = "petCastbarText",          tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarText"],
 		paths = { {"bars", "petCastbar", "castTimePrecision"}, {"bars", "petCastbar", "durationPrecision"} } },
 	petCastbarShield        = { checkboxSuffix = "petCastbarShield",        tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarShield"],

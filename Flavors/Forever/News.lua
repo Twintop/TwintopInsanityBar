@@ -8,6 +8,35 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.5-release (2026-10-07)
+## General
+### Cast Bars
+
+- Add channel tick markers for bandages, Cannibalize, and Rapid Regeneration.
+
+## Druid
+
+- Add channel tick markers for Tranquility and Hurricane.
+
+## Hunter
+
+- Add channel tick markers for Volley and Mend Pet.
+
+## Mage
+
+- Add channel tick markers for Arcane Missiles, Blizzard, and Evocation.
+
+## Priest
+
+- Add channel tick markers for Mind Flay, Penance, and Starshards.
+
+## Warlock
+
+- Add channel tick markers for Drain Life, Drain Mana, Drain Soul, Health Funnel, Hellfire, Rain of Fire, and Wrack.
+- Add Pet Cast Bar channel tick markers for Consume Shadows.
+
+---
+
 # 1.60.1.4-release (2026-10-06)
 ## General
 ### Core Changes

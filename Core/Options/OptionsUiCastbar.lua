@@ -191,8 +191,8 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	yCoord = yCoord - 40
 	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(colorsCheckbox, controls[barKey .. "ColorSection"], yCoord)
 
-	-- Overlays (latency / pushback / tick): each has an enable checkbox + color swatch. A pet has no latency
-	-- or channel tick profiles, so its section holds pushback alone.
+	-- Overlays (latency / pushback / tick): each has an enable checkbox + color swatch. A pet has no latency,
+	-- so its section skips the latency zone and latency-sized ticks.
 	controls[barKey .. "OverlaySection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CastbarOverlaysHeader"], oUi.xCoord, yCoord)
 	local overlaysCheckbox
 	yCoord, overlaysCheckbox = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, barKey .. "Overlays", yCoord)
@@ -208,11 +208,6 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_pushbackEnable", L["CastbarPushbackEnable"], L["CastbarPushbackEnableTooltip"], yCoord,
 		function() return colors.pushback.enabled end, function(v) colors.pushback.enabled = v end)
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.overlay, colors, "pushback", L["CastbarColorPushback"], yCoord, classId, specId)
-	if not isPlayer then
-		yCoord = yCoord - 40
-		TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(overlaysCheckbox, controls[barKey .. "OverlaySection"], yCoord)
-		return self:ConstructPetTimerSection(parent, controls, classId, specId, yCoord, barKey, barSettings, isGlobalPanel)
-	end
 	yCoord = yCoord - 30
 	colors.tick = colors.tick
 	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_tickEnable", L["CastbarTickEnable"], L["CastbarTickEnableTooltip"], yCoord,
@@ -221,21 +216,27 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	yCoord = yCoord - 40
 
 	-- Tick / empower boundary line thickness (mirrors the threshold line width control).
-	controls.castbarTickWidth = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarTickWidth"], 1, 10, barSettings.tickWidth, 1, 2,
+	local tickWidthSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["CastbarTickWidth"], 1, 10, barSettings.tickWidth, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.castbarTickWidth:SetScript("OnValueChanged", function(sliderFrame, value)
+	controls[barKey .. "TickWidth"] = tickWidthSlider
+	tickWidthSlider:SetScript("OnValueChanged", function(sliderFrame, value)
 		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(sliderFrame, value)
 		barSettings.tickWidth = value
 		RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
 	end)
+	if not isPlayer then
+		yCoord = yCoord - 60
+		TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(overlaysCheckbox, controls[barKey .. "OverlaySection"], yCoord)
+		return self:ConstructPetTimerSection(parent, controls, classId, specId, yCoord, barKey, barSettings, isGlobalPanel)
+	end
 	-- Tick width is driven by latency when tickLatencyWidth is on, so gray out the manual slider then.
-	TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.castbarTickWidth, not barSettings.tickLatencyWidth)
+	TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(tickWidthSlider, not barSettings.tickLatencyWidth)
 	yCoord = yCoord - 50
 	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_tickLatencyWidth", L["CastbarTickLatencyWidth"], L["CastbarTickLatencyWidthTooltip"], yCoord,
 		function() return barSettings.tickLatencyWidth end,
 		function(v)
 			barSettings.tickLatencyWidth = v
-			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.castbarTickWidth, not v)
+			TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(tickWidthSlider, not v)
 			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
 		end)
 	yCoord = yCoord - 40

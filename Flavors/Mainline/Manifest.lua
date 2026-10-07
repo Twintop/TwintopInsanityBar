@@ -49,6 +49,75 @@ TRB.Flavor = {
 		return C_SpecializationInfo.GetSpecialization()
 	end,
 
+	---Channel tick profiles any class can cast. Each bandage tier has its own channel spell and length; all but Timerunner's tick once a second.
+	---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
+	DefaultCastbarTickProfiles = function()
+		local function Bandage(seconds)
+			return { mode = "fixedCount", baseDuration = seconds, tickCount = seconds, firstTickAtStart = false }
+		end
+		return {
+			-- Cannibalize
+			[20578] = { mode = "fixedCount", baseDuration = 10, tickCount = 5, firstTickAtStart = false },
+			-- Recuperate: one tick per second for 10 seconds
+			[1231418] = { mode = "fixedCount", baseDuration = 10, tickCount = 10, firstTickAtStart = false },
+			-- Regeneratin'
+			[291944] = { mode = "fixedCount", baseDuration = 6, tickCount = 6, firstTickAtStart = false },
+			-- Bright Linen Bandage
+			[1229383] = Bandage(4),
+			[1293412] = Bandage(4),
+			-- Weavercloth Bandage, by quality
+			[462163] = Bandage(4),
+			[462164] = Bandage(6),
+			[462165] = Bandage(8),
+			-- Wildercloth Bandage
+			[409915] = Bandage(8),
+			-- Linen, Heavy Linen, Citron-Infused, Shado-Pan, and Ethereal Bandage
+			[746] = Bandage(6),
+			[1159] = Bandage(6),
+			[120573] = Bandage(6),
+			[122829] = Bandage(6),
+			[1295239] = Bandage(6),
+			-- Wool and Heavy Wool Bandage
+			[3267] = Bandage(7),
+			[3268] = Bandage(7),
+			-- Silk through Shrouded Cloth tiers, plus Scarlet Silk, Antiseptic, and faction bandages
+			[7926] = Bandage(8),
+			[7927] = Bandage(8),
+			[10838] = Bandage(8),
+			[10839] = Bandage(8),
+			[18608] = Bandage(8),
+			[18610] = Bandage(8),
+			[27030] = Bandage(8),
+			[27031] = Bandage(8),
+			[45543] = Bandage(8),
+			[45544] = Bandage(8),
+			[74553] = Bandage(8),
+			[74554] = Bandage(8),
+			[74555] = Bandage(8),
+			[89595] = Bandage(8),
+			[102694] = Bandage(8),
+			[102695] = Bandage(8),
+			[161255] = Bandage(8),
+			[170401] = Bandage(8),
+			[202850] = Bandage(8),
+			[267198] = Bandage(8),
+			[267199] = Bandage(8),
+			[310944] = Bandage(8),
+			[310945] = Bandage(8),
+			[430836] = Bandage(8),
+			-- Battleground bandages: Warsong Gulch, Alterac Valley, and Arathi Basin
+			[23567] = Bandage(8),
+			[23568] = Bandage(8),
+			[23569] = Bandage(8),
+			[23696] = Bandage(8),
+			[24412] = Bandage(8),
+			[24413] = Bandage(8),
+			[24414] = Bandage(8),
+			-- Timerunner's Bandage: a heal every 2 seconds
+			[428448] = { mode = "fixedCount", baseDuration = 10, tickCount = 5, firstTickAtStart = false },
+		}
+	end,
+
 	classes = {
 		{ classId = 1, className = "warrior", classToken = "WARRIOR", classModuleName = "Warrior", specs = {
 			{ specId = 1, specName = "arms", specGlobalId = 71, resources = { rage = 130 } },

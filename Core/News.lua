@@ -4,6 +4,17 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.0.17-release / Forever 1.60.1.5-release (2026-10-07)
+## Pet Bars
+
+- The Pet Cast Bar shows channel ticks, with Show Channel Ticks, Channel Tick Color, and Channel Tick Width options, and Color Indicators can target its Channeled Tick Color.
+
+## General
+
+- Every specialization's Color Indicators can target the Cast Bar's Channeled Tick Color.
+
+---
+
 # Live 12.1.0.16-release / Forever 1.60.1.4-release (2026-10-06)
 ## Pet Bars
 

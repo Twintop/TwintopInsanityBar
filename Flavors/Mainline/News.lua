@@ -9,6 +9,15 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.0.17-release (2026-10-07)
+## General
+### Core Changes
+
+- See [Core Changes](tab:core).
+
+### Cast Bars
+
+- Add channel tick markers for bandages and Regeneratin'.
+
 ## Death Knight
 ### Blood
 
@@ -18,6 +27,46 @@ TRB.Flavor.newsContent = [====[
 
 - Fix `$runicCorruptionTime` not counting down out of combat while all runes are ready.
 
+## Demon Hunter
+### Havoc
+
+- Fix Eye Beam and Abyssal Gaze channel tick markers not matching Blind Fury's rank.
+
+### Vengeance
+
+- Fix Fel Devastation's channel tick markers not adding ticks with haste.
+
+## Druid
+### Balance
+
+- Fix Convoke the Spirits channel tick markers ignoring Astral Insight.
+
+### Guardian
+
+- Fix Convoke the Spirits channel tick markers ignoring Astral Insight.
+- Add channel tick markers for Emerald Slumber.
+
+### Restoration
+
+- Fix Tranquility showing 6 channel tick markers instead of 7, the first at the start of the channel.
+
+## Evoker
+### Devastation
+
+- Fix Disintegrate channel tick markers ignoring Azure Celerity and missing the tick at the start of the channel.
+
+### Preservation
+
+- Fix Disintegrate channel tick markers missing the tick at the start of the channel.
+
+### Augmentation
+
+- Fix Disintegrate channel tick markers missing the tick at the start of the channel.
+
+## Hunter
+
+- Add Pet Cast Bar channel tick markers for Froststorm Breath, Burrow Attack, and Feast.
+
 ## Mage
 ### Arcane
 
@@ -25,6 +74,37 @@ TRB.Flavor.newsContent = [====[
 - Add Prismatic Bolt tracking, with a Color Indicator, an audio cue, the `$prismaticBoltTime` bar text variable, and the `#prismaticBolt` icon. The indicator targets the Mana bar border by default.
 - Add Overpowered Missiles tracking, with a Color Indicator, an audio cue, the `$overpoweredMissilesTime` bar text variable, and the `#overpoweredMissiles` icon. The indicator targets the Mana bar border by default, above Prismatic Bolt and Clearcasting, and `$overpoweredMissilesTime` requires CDM to be enabled and Overpowered Missiles to be actively tracked.
 - Fix `$arcaneSurgeTime` not counting down out of combat.
+- Add channel tick markers for Evocation and Arcanosphere.
+- Fix Kleptomania showing 8 channel tick markers instead of 9, the first at the start of the channel.
+
+### Frost
+
+- Add Pet Cast Bar channel tick markers for Water Jet.
+
+## Monk
+
+- Fix Spinning Crane Kick channel tick markers missing the tick at the start of the channel.
+
+### Brewmaster
+
+- Fix Spinning Crane Kick not showing channel tick markers.
+
+### Mistweaver
+
+- Add channel tick markers for Celestial Conduit.
+
+### Windwalker
+
+- Add channel tick markers for Fists of Fury and Celestial Conduit.
+
+## Priest
+### Discipline
+
+- Add channel tick markers for Ultimate Penitence.
+
+## Warlock
+
+- Add channel tick markers for Health Funnel.
 
 ---
 

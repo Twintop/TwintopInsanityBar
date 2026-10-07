@@ -92,12 +92,14 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles()
 	return {
+		-- Health Funnel
+		[755] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
+        -- Drain Soul
+        [198590] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
 		-- Drain Life
 		[234153] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
         -- Dark Harvest
 		[1257052] = { mode = "fixedCount", baseDuration = 3, tickCount = 4, firstTickAtStart = true },
-        -- Drain Soul
-        [198590] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
         -- Malefic Grasp
         [1261153] = { mode = "pandemic", baseDuration = 4, tickCount = 4, chains = true },
     }
@@ -269,6 +271,8 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles()
 	return {
+		-- Health Funnel
+		[755] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
 		-- Drain Life
 		[234153] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
     }
@@ -372,10 +376,12 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles()
 	return {
-		-- Drain Life
-		[234153] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
+		-- Health Funnel
+		[755] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
         -- Channel Demonfire
 		[196447] = { mode = "fixedCount", baseDuration = 3, tickCount = 15 },
+		-- Drain Life
+		[234153] = { mode = "pandemic", baseDuration = 5, tickCount = 5, chains = true },
     }
 end
 

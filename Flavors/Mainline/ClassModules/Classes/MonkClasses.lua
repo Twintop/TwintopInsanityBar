@@ -180,12 +180,12 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Monk.BrewmasterSpells.GetCastbarTickProfiles()
 	return {
-		-- Spinning Crane Kick
-		[101546] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = false },
 		-- Soothing Mist
 		[115175] = { mode = "fixedCount", baseDuration = 8, tickCount = 8, chains = true },
 		-- Crackling Jade Lightning
 		[117952] = { mode = "fixedCount", baseDuration = 3, tickCount = 5, firstTickAtStart = true, chains = true },
+		-- Spinning Crane Kick
+		[322729] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = true },
 	}
 end
 
@@ -292,11 +292,13 @@ end
 function TRB.Classes.Monk.MistweaverSpells.GetCastbarTickProfiles()
 	return {
 		-- Spinning Crane Kick
-		[101546] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = false },
+		[101546] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = true },
 		-- Soothing Mist
 		[115175] = { mode = "fixedCount", baseDuration = 12, tickCount = 12, chains = true },
 		-- Crackling Jade Lightning
 		[117952] = { mode = "fixedCount", baseDuration = 4, tickCount = 5, firstTickAtStart = true, chains = true },
+		-- Celestial Conduit
+		[443028] = { mode = "fixedCount", baseDuration = 4, tickCount = 5, firstTickAtStart = true },
 	}
 end
 
@@ -529,11 +531,15 @@ end
 function TRB.Classes.Monk.WindwalkerSpells.GetCastbarTickProfiles()
 	return {
 		-- Spinning Crane Kick
-		[101546] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = false },
+		[101546] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = true },
 		-- Soothing Mist
 		[115175] = { mode = "fixedCount", baseDuration = 8, tickCount = 8, chains = true },
 		-- Crackling Jade Lightning
 		[117952] = { mode = "fixedCount", baseDuration = 4, tickCount = 5, firstTickAtStart = true, chains = true },
+		-- Fists of Fury
+		[113656] = { mode = "fixedCount", baseDuration = 4, tickCount = 5, firstTickAtStart = true },
+		-- Celestial Conduit
+		[443028] = { mode = "fixedCount", baseDuration = 4, tickCount = 5, firstTickAtStart = true },
 	}
 end
 

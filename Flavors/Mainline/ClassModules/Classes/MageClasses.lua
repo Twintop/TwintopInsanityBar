@@ -128,8 +128,12 @@ function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickProfiles()
 	return {
 		-- Arcane Missiles
 		[5143] = { mode = "fixedCount", baseDuration = 2, tickCount = 5, firstTickAtStart = true, chains = true },
+		-- Evocation
+		[12051] = { mode = "fixedCount", baseDuration = 3, tickCount = 7, firstTickAtStart = true },
 		-- Kleptomania
-		[198100] = { mode = "fixedCount", baseDuration = 4, tickCount = 8 },
+		[198100] = { mode = "fixedCount", baseDuration = 4, tickCount = 9, firstTickAtStart = true },
+		-- Arcanosphere
+		[353128] = { mode = "fixedCount", baseDuration = 4, tickCount = 4 },
 	}
 end
 
@@ -335,6 +339,8 @@ end
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
 function TRB.Classes.Mage.FrostSpells.GetCastbarTickProfiles()
 	return {
+		-- Water Jet, the Water Elemental's channel on the Pet Cast Bar
+		[135029] = { mode = "fixedCount", baseDuration = 4, tickCount = 5, firstTickAtStart = true },
 		-- Ray of Frost
 		[205021] = { mode = "fixedCount", baseDuration = 4, tickCount = 8 },
     }
