@@ -13,6 +13,7 @@ TRB.Details.coreNewsContent = [====[
 
 - Every specialization's Color Indicators can target the Cast Bar's Channeled Tick Color.
 - Fix predictive resource spending not updating when a hardcast's cost changes partway through the cast.
+- Widen the News window.
 
 ---
 

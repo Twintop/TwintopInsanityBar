@@ -54,7 +54,7 @@ local function BuildReader(scrollChild, name, markdown)
 	local simpleHtml = CreateFrame("SimpleHTML", name, scrollChild)
 	simpleHtml:SetPoint("TOPLEFT", scrollChild, "TOPLEFT", 5, -5)
 	simpleHtml:SetPoint("BOTTOMRIGHT", scrollChild, "BOTTOMRIGHT", 5, -35)
-	simpleHtml:SetWidth(600)
+	simpleHtml:SetWidth(700)
 
 ---@diagnostic disable-next-line: param-type-mismatch
 	simpleHtml:SetFontObject("h1", "SystemFont_Huge1")
@@ -99,7 +99,7 @@ function TRB.Functions.News:BuildNewsPopup()
 		}
 	})
 	newsFrame:SetBackdropColor(0, 0, 0, 0.95)
-	newsFrame:SetWidth(650)
+	newsFrame:SetWidth(750)
 	newsFrame:SetHeight(505)
 
 	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(newsFrame, L["NewsHeaderTwintopsResourceBarUpdates"], oUi.xCoord, 0)
@@ -141,7 +141,7 @@ function TRB.Functions.News:BuildNewsPopup()
 	-- The tab row and both readers share a container that stops short of the bottom controls.
 	local tabContainer = CreateFrame("Frame", "TRB_News_Frame_Tabs", newsFrame)
 	tabContainer:SetPoint("TOPLEFT", newsFrame, "TOPLEFT", 0, -30)
-	tabContainer:SetSize(650, 440)
+	tabContainer:SetSize(750, 440)
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(tabContainer, TAB_GROUP_PREFIX, {
 		{ TAB_FLAVOR, L[TRB.Flavor.nameKey], oUi.tabWidth.large, function(scrollChild)
 			BuildReader(scrollChild, "TRB_News_HTML_Frame", TRB.Flavor.newsContent or "")
