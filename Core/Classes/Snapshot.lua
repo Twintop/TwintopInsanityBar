@@ -1520,6 +1520,8 @@ end
 ---@field public spellKey string?
 ---@field public gcdLockRemaining number
 ---@field private gcdLockLastUpdate number?
+---@field private costSpell table? # Spell whose cost priced this hardcast, re-read by RefreshCost
+---@field private costDontReturnLastNonZero boolean?
 TRB.Classes.SnapshotCasting = {}
 TRB.Classes.SnapshotCasting.__index = TRB.Classes.SnapshotCasting
 
@@ -1547,6 +1549,34 @@ function TRB.Classes.SnapshotCasting:Reset()
 	self.spellKey = nil
 	self.gcdLockRemaining = 0
 	self.gcdLockLastUpdate = nil
+	self.costSpell = nil
+	self.costDontReturnLastNonZero = nil
+end
+
+---Reads a hardcast's cost and remembers the spell so RefreshCost can re-price it before it is spent.
+---@param spell TRB.Classes.SpellBase|table
+---@param dontReturnLastNonZero boolean?
+---@return number # Cost as a negative resource amount
+function TRB.Classes.SnapshotCasting:ReadCastCost(spell, dontReturnLastNonZero)
+	self.costSpell = spell
+	self.costDontReturnLastNonZero = dontReturnLastNonZero
+	return -TRB.Classes.SpellBase.GetPrimaryResourceCost(spell, dontReturnLastNonZero, true)
+end
+
+---Re-reads the in-flight hardcast's cost, which a buff landing mid-cast can change.
+function TRB.Classes.SnapshotCasting:RefreshCost()
+	if self.costSpell == nil then
+		return
+	end
+
+	TRB.Data.cache.values.resource[TRB.Classes.SpellBase.GetCacheKey(self.costSpell)] = nil
+	local resourceRaw = -TRB.Classes.SpellBase.GetPrimaryResourceCost(self.costSpell, self.costDontReturnLastNonZero, true)
+	if resourceRaw ~= self.resourceRaw then
+		-- Shift by the difference so a class's adjustment to the final amount survives.
+		self.resourceFinal = self.resourceFinal + (resourceRaw - self.resourceRaw)
+		self.resourceRaw = resourceRaw
+		TRB.Data.lookupDirty = true
+	end
 end
 
 ---Captures the currently casting or channeled spell's timing and icon into the casting snapshot
@@ -1572,15 +1602,24 @@ end
 ---Captures the currently casting or channeled spell's mana cost, timing, and icon into the casting snapshot
 function TRB.Classes.SnapshotCasting:SnapshotManaSpell()
 	local startTime, endTime, spellId
+	local isChannel = false
 	_, _, _, startTime, endTime, _, _, _, spellId = UnitCastingInfo("player")
 
 	if spellId == nil then
 		_, _, _, startTime, endTime, _, _, spellId, _ = UnitChannelInfo("player")
+		isChannel = true
 	end
-	
+
 	if spellId ~= nil then
 		local spellInfo = C_Spell.GetSpellInfo(spellId)
-		local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true, true)
+		local costSpell = { id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }
+		local manaCost
+		-- A channel pays up front, so only a hardcast's cost can still change.
+		if isChannel then
+			manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost(costSpell, true, true)
+		else
+			manaCost = self:ReadCastCost(costSpell, true)
+		end
 
 		self.startTime = startTime / 1000
 		self.endTime = endTime / 1000

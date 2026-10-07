@@ -23,6 +23,7 @@ function TRB.Functions.Aura:RequestPlayerBuffRefresh()
 		pendingPlayerBuffRefresh = false
 		if TRB.Data.snapshotData ~= nil then
 			TRB.Data.snapshotData:RefreshAllBuffs()
+			TRB.Data.snapshotData.casting:RefreshCost()
 			TRB.Data.lookupDirty = true
 		end
 	end)

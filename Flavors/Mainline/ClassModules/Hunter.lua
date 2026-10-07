@@ -630,7 +630,7 @@ local function FillSnapshotDataCasting(spell, mod)
 		casting.resourceRaw = spell.resource + mod
 		casting.resourceFinal = CalculateAbilityResourceValue(spell.resource + mod)
 	else
-		casting.resourceRaw = -spell:GetPrimaryResourceCost()
+		casting.resourceRaw = casting:ReadCastCost(spell)
 		casting.resourceFinal = casting.resourceRaw
 	end
 	casting.spellId = spell.id

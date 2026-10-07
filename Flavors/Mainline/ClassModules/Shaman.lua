@@ -620,7 +620,7 @@ local function FillSnapshotDataCasting(spell, resourceMod)
 		-- Costed hardcasts (Elemental Blast) predict the spend as a negative amount: Bar.lua renders it as
 		-- the inset spending overlay and the lookup colors $casting with colors.text.spending. A currently
 		-- free cast reports 0 rather than the last non-zero cost, so nothing is predicted for it.
-		snapshotData.casting.resourceRaw = -spell:GetPrimaryResourceCost(true)
+		snapshotData.casting.resourceRaw = snapshotData.casting:ReadCastCost(spell, true)
 		snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 	end
 	snapshotData.casting.startTime = currentTime

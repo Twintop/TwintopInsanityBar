@@ -665,7 +665,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			if spellId == spells.vivify.id then
 				snapshotData.casting.spellId = spells.vivify.id
 				snapshotData.casting.startTime = currentTime
-				snapshotData.casting.resourceRaw = -spells.vivify:GetPrimaryResourceCost()
+				snapshotData.casting.resourceRaw = snapshotData.casting:ReadCastCost(spells.vivify)
 				snapshotData.casting.icon = spells.vivify.icon
 				UpdateCastingResourceFinal()
 			end
@@ -716,7 +716,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			if spellId == spells.vivify.id then
 				snapshotData.casting.spellId = spells.vivify.id
 				snapshotData.casting.startTime = currentTime
-				snapshotData.casting.resourceRaw = -spells.vivify:GetPrimaryResourceCost()
+				snapshotData.casting.resourceRaw = snapshotData.casting:ReadCastCost(spells.vivify)
 				snapshotData.casting.icon = spells.vivify.icon
 				UpdateCastingResourceFinal()
 			end
