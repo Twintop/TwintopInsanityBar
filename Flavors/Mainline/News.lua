@@ -9,6 +9,15 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.0.17-release (2026-10-07)
+## Death Knight
+### Blood
+
+- [#836](#836) Add the `$boneShieldTime` bar text variable. Requires CDM to be enabled and Bone Shield to be actively tracked.
+
+### Unholy
+
+- Fix `$runicCorruptionTime` not counting down out of combat while all runes are ready.
+
 ## Mage
 ### Arcane
 

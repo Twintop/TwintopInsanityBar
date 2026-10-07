@@ -137,6 +137,7 @@ function TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCacheEntry
 
 		{ variable = "$boneShieldStacks", description = L["DeathKnightBarTextVariable_boneShieldStacks"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCE },
 		{ variable = "$boneShieldStacksMax", description = L["DeathKnightBarTextVariable_boneShieldStacksMax"], printInSettings = true, color = false, category = varCategory.RESOURCE },
+		{ variable = "$boneShieldTime", description = L["DeathKnightBarTextVariable_boneShieldTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED, category = varCategory.RESOURCE },
 
 		{ variable = "$coagulatingBloodStacks", description = L["DeathKnightBarTextVariable_coagulatingBloodStacks"], printInSettings = true, color = false, secret = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED, category = varCategory.RESOURCE },
 		{ variable = "$coagulatingBloodStacksMax", description = L["DeathKnightBarTextVariable_coagulatingBloodStacksMax"], printInSettings = true, color = false, category = varCategory.RESOURCE },

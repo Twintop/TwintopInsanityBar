@@ -482,6 +482,33 @@ local function RefreshLookupData_Blood()
 		end
 	end
 
+	-- Block E: Bone Shield time ($boneShieldTime)
+	if not activeVars or activeVars["$boneShieldTime"] then
+		local attributes = snapshotData.attributes
+		local _boneShieldActive = attributes.boneShieldActive == true
+		local _boneShieldTime = attributes.boneShieldRemaining
+		local _boneShieldTimeText = attributes.boneShieldRemainingText
+
+		lookupLogic["$boneShieldTime"] = _boneShieldActive and (_boneShieldTime ~= nil or _boneShieldTimeText ~= nil)
+
+		local timeDisplay
+		if not attributes.boneShieldTracked then
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		elseif not _boneShieldActive then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		elseif _boneShieldTime ~= nil then
+			timeDisplay = TRB.Functions.BarText:TimerPrecision(_boneShieldTime)
+		elseif _boneShieldTimeText ~= nil then
+			timeDisplay = _boneShieldTimeText
+		else
+			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		end
+
+		if lookupChanged(prevState, "$boneShieldTime", timeDisplay) then
+			lookup["$boneShieldTime"] = timeDisplay
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -766,9 +793,50 @@ local function RefreshCoagulatingBlood()
 	end
 end
 
+---Refreshes Bone Shield's time left from the Cooldown Manager. `boneShieldTracked` separates a buff
+---that is down (known zero) from one the Cooldown Manager lacks (renders "??").
+local function RefreshBoneShield()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	local attributes = snapshotData.attributes
+	local wasTracked = attributes.boneShieldTracked == true
+	local wasActive = attributes.boneShieldActive == true
+
+	attributes.boneShieldRemaining = nil
+	attributes.boneShieldRemainingText = nil
+	attributes.boneShieldTracked = false
+	attributes.boneShieldActive = false
+
+	if spells ~= nil and spells.boneShield ~= nil then
+		-- Pinned to the buff viewers: it is a self-buff, and a cooldown viewer would describe the cast.
+		local cdm = TRB.Functions.CooldownManager
+		local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.boneShield.id)
+		if trackedId ~= nil then
+			attributes.boneShieldTracked = true
+			if cdm:IsLive(trackedId, cdm.SourceGroup.BUFF) then
+				attributes.boneShieldActive = true
+				local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+				if remainingOk then
+					attributes.boneShieldRemaining = remaining
+				else
+					local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+					if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+						attributes.boneShieldRemainingText = remainingText
+					end
+				end
+			end
+		end
+	end
+
+	if wasTracked ~= attributes.boneShieldTracked or wasActive ~= attributes.boneShieldActive then
+		TRB.Data.lookupDirty = true
+	end
+end
+
 local function UpdateSnapshot_Blood()
 	UpdateSnapshot()
 	RefreshCoagulatingBlood()
+	RefreshBoneShield()
 end
 
 local function UpdateSnapshot_Frost()
@@ -1695,6 +1763,9 @@ do
 		return TRB.Data.snapshotData.attributes.coagulatingBloodTracked == true
 	end
 	blood["$coagulatingBloodStacksMax"] = true
+	blood["$boneShieldTime"] = function()
+		return TRB.Data.snapshotData.attributes.boneShieldTracked == true
+	end
 	local unholy = {}
 	for k, v in pairs(shared) do unholy[k] = v end
 	-- Goes false when the Cooldown Manager lacks it, matching the "??" the text renders.
@@ -1782,7 +1853,8 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil, true, false
 end
 
----Returns true when any rune is on cooldown, producing time-dependent $runeXTime variables.
+---Returns true when a rune is on cooldown or a timed buff is up.
+---All specs: $runeXTime; Blood: $boneShieldTime; Unholy: $runicCorruptionTime.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	local runes = TRB.Data.character.runes
@@ -1792,6 +1864,18 @@ function TRB.Functions.Class:HasActiveTimers()
 				return true
 			end
 		end
+	end
+
+	local attributes = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes
+	if attributes == nil then
+		return false
+	end
+
+	local specId = TRB.Data.character.specId
+	if specId == 1 then
+		return attributes.boneShieldActive == true
+	elseif specId == 3 then
+		return attributes.runicCorruptionActive == true
 	end
 	return false
 end

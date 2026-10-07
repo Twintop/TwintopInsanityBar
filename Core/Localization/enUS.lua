@@ -3863,3 +3863,4 @@ L["MageArcaneBarTextVariable_clearcastingStacksMax"] = "Maximum number of Clearc
 L["MageArcaneBarTextVariable_clearcastingTime"] = "Time remaining on Clearcasting. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
 L["MageArcaneBarTextVariable_prismaticBoltTime"] = "Time, in seconds, remaining on Prismatic Bolt."
 L["MageArcaneBarTextVariable_overpoweredMissilesTime"] = "Time remaining on Overpowered Missiles. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
+L["DeathKnightBarTextVariable_boneShieldTime"] = "Time remaining on Bone Shield. When used for Boolean logic, it is TRUE or FALSE due to the underlying values being secret in nature."
