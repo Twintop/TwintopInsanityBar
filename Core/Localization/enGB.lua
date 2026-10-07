@@ -495,5 +495,6 @@ if locale == "enGB" then
 	L["MageArcaneIndicatorClearcastingTooltip"] = "Changes to this colour when you have at least one Clearcasting stack."
 	L["MageArcaneIndicatorClearcasting2Tooltip"] = "Changes to this colour when you have at least two Clearcasting stacks."
 	L["MageArcaneIndicatorClearcasting3Tooltip"] = "Changes to this colour when you have three Clearcasting stacks."
+	L["WarlockDemonologyIndicatorDemonicArtTooltip"] = "Changes to this colour when Demonic Art is active."
 
 end

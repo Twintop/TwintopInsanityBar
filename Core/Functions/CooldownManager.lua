@@ -26,6 +26,8 @@ CDM.Signal = {
 	REMAINING_TEXT = "remainingText",
 	STACKS = "stacks",
 	CHARGES = "charges",
+	-- Icon file ID, which follows the aura an entry shows. Secret in combat, so display only.
+	ICON = "icon",
 	-- Straight off the item's cached aura record rather than a widget. STACKS is the display string
 	-- and is blank below two applications; APPLICATIONS is the raw number and is present whenever
 	-- the aura is. Spells that pack a payload into that count -- Ignore Pain's absorb pool -- are
@@ -480,6 +482,10 @@ local function ReadSignal(entry, signal)
 		return frame.ChargeCount.Current:GetText()
 	end
 
+	if signal == CDM.Signal.ICON then
+		return frame:GetIconTexture():GetTexture()
+	end
+
 	if signal == CDM.Signal.APPLICATIONS then
 		return frame.auraDataCached.applications
 	end
@@ -534,6 +540,10 @@ local function SupportsSignal(entry, signal)
 
 	if signal == CDM.Signal.CHARGES then
 		return frame.ChargeCount ~= nil and frame.ChargeCount.Current ~= nil
+	end
+
+	if signal == CDM.Signal.ICON then
+		return frame.GetIconTexture ~= nil
 	end
 
 	if signal == CDM.Signal.APPLICATIONS or pointSignalIndex[signal] ~= nil then
@@ -852,6 +862,7 @@ local probeOrder = {
 	CDM.Signal.REMAINING_TEXT,
 	CDM.Signal.STACKS,
 	CDM.Signal.CHARGES,
+	CDM.Signal.ICON,
 	CDM.Signal.APPLICATIONS,
 	CDM.Signal.POINT_1,
 	CDM.Signal.POINT_2,

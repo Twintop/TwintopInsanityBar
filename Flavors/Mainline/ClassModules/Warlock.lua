@@ -446,6 +446,45 @@ local function RefreshLookupData_Affliction()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
+---Writes a Diabolist buff's countdown and icon. Down is a known zero; missing from the Cooldown Manager is "??".
+---@param lookup table
+---@param lookupLogic table
+---@param prevState table
+---@param timeKey string
+---@param iconKey string
+---@param tracked boolean?
+---@param active boolean?
+---@param remaining any # Secret in combat
+---@param remainingText any # Secret in combat
+---@param icon string? # Secret in combat
+local function SetDiabolistLookup(lookup, lookupLogic, prevState, timeKey, iconKey, tracked, active, remaining, remainingText, icon)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	lookupLogic[timeKey] = active == true and (remaining ~= nil or remainingText ~= nil)
+
+	local timeDisplay
+	if not tracked then
+		timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+	elseif not active then
+		timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+	elseif remaining ~= nil then
+		timeDisplay = TRB.Functions.BarText:TimerPrecision(remaining)
+	elseif remainingText ~= nil then
+		timeDisplay = remainingText
+	else
+		timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+	end
+
+	if lookupChanged(prevState, timeKey, timeDisplay) then
+		lookup[timeKey] = timeDisplay
+	end
+	-- Matches the Cooldown Manager, which shows the talent's icon while neither buff is up.
+	if icon ~= nil then
+		lookup[iconKey] = icon
+	else
+		lookup[iconKey] = spells.diabolicRitual.icon
+	end
+end
+
 local function RefreshLookupData_Demonology()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["warlock_demonology"].settings
@@ -668,6 +707,20 @@ local function RefreshLookupData_Demonology()
 			lookup["$soulShardsPlusCasting"] = f
 			lookup["$comboPointsPlusCasting"] = f
 		end
+	end
+
+	-- Block I: Demonic Art ($demonicArtTime, #demonicArt)
+	if not activeVars or activeVars["$demonicArtTime"] or activeVars["#demonicArt"] then
+		local attributes = snapshotData.attributes
+		SetDiabolistLookup(lookup, lookupLogic, prevState, "$demonicArtTime", "#demonicArt", attributes.demonicArtTracked,
+			attributes.demonicArtActive, attributes.demonicArtRemaining, attributes.demonicArtRemainingText, attributes.demonicArtIcon)
+	end
+
+	-- Block J: Diabolic Ritual ($diabolicRitualTime, #diabolicRitual)
+	if not activeVars or activeVars["$diabolicRitualTime"] or activeVars["#diabolicRitual"] then
+		local attributes = snapshotData.attributes
+		SetDiabolistLookup(lookup, lookupLogic, prevState, "$diabolicRitualTime", "#diabolicRitual", attributes.diabolicRitualTracked,
+			attributes.diabolicRitualActive, attributes.diabolicRitualRemaining, attributes.diabolicRitualRemainingText, attributes.diabolicRitualIcon)
 	end
 
 	TRB.Data.lookup = lookup
@@ -1009,6 +1062,61 @@ local function UpdateSnapshot_Affliction()
 	end
 end
 
+---Reads one Diabolist buff from the Cooldown Manager. Which demon it is for is secret in combat, so
+---only the icon tells them apart, and only for display.
+---@param cdm table
+---@param buffIds integer[]
+---@return boolean tracked
+---@return boolean active
+---@return any remaining
+---@return any remainingText
+---@return string? icon
+local function ReadDiabolistBuff(cdm, buffIds)
+	-- Pinned to the buff viewers; every buff ID resolves to the same entry.
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, buffIds[1], buffIds[2], buffIds[3])
+	if trackedId == nil then
+		return false, false, nil, nil, nil
+	end
+	if not cdm:IsLive(trackedId, cdm.SourceGroup.BUFF) then
+		return true, false, nil, nil, nil
+	end
+
+	local remaining, remainingText
+	local remainingOk, value = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+	if remainingOk then
+		remaining = value
+	else
+		local textOk, text = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+		if textOk and text ~= nil and (issecretvalue(text) or text ~= "") then
+			remainingText = text
+		end
+	end
+
+	local icon = cdm:ReadFormatted(trackedId, cdm.Signal.ICON, "|T%d:0|t", cdm.SourceGroup.BUFF)
+	return true, true, remaining, remainingText, icon
+end
+
+---Refreshes Demonic Art and Diabolic Ritual from the Cooldown Manager.
+local function RefreshDiabolist()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	local attributes = TRB.Data.snapshotData.attributes
+	local cdm = TRB.Functions.CooldownManager
+	local wasArtTracked = attributes.demonicArtTracked
+	local wasArtActive = attributes.demonicArtActive
+	local wasRitualTracked = attributes.diabolicRitualTracked
+	local wasRitualActive = attributes.diabolicRitualActive
+
+	attributes.demonicArtTracked, attributes.demonicArtActive, attributes.demonicArtRemaining,
+		attributes.demonicArtRemainingText, attributes.demonicArtIcon = ReadDiabolistBuff(cdm, spells.demonicArt.attributes.buffIds)
+	attributes.diabolicRitualTracked, attributes.diabolicRitualActive, attributes.diabolicRitualRemaining,
+		attributes.diabolicRitualRemainingText, attributes.diabolicRitualIcon = ReadDiabolistBuff(cdm, spells.diabolicRitual.attributes.buffIds)
+
+	if wasArtTracked ~= attributes.demonicArtTracked or wasArtActive ~= attributes.demonicArtActive
+		or wasRitualTracked ~= attributes.diabolicRitualTracked or wasRitualActive ~= attributes.diabolicRitualActive then
+		TRB.Data.lookupDirty = true
+	end
+end
+
 local function UpdateSnapshot_Demonology()
 	local currentTime = GetTime()
 	UpdateSnapshot()
@@ -1017,6 +1125,7 @@ local function UpdateSnapshot_Demonology()
 	snapshotData.snapshots[spells.dominionOfArgus.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.infernalBolt.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.ruination.id].buff:GetRemainingTime(currentTime)
+	RefreshDiabolist()
 
 	local demonicCoreBuff = snapshotData.snapshots[spells.demonicCore.id].buff
 	local properties = demonicCoreBuff.customProperties
@@ -1596,6 +1705,7 @@ local function UpdateResourceBar()
 			conditionMap.demonicCore = snapshotData.snapshots[spells.demonicCore.id] ~= nil and snapshotData.snapshots[spells.demonicCore.id].buff.isActive
 			conditionMap.infernalBolt = snapshotData.snapshots[spells.infernalBolt.id] ~= nil and snapshotData.snapshots[spells.infernalBolt.id].buff.isActive
 			conditionMap.ruination = snapshotData.snapshots[spells.ruination.id] ~= nil and snapshotData.snapshots[spells.ruination.id].buff.isActive
+			conditionMap.demonicArt = snapshotData.attributes.demonicArtActive == true
 
 			local manaBarColors = scratch.manaBarColors2
 			wipe(manaBarColors)
@@ -1642,6 +1752,7 @@ local function UpdateResourceBar()
 		if TRB.Data.character.inCombat then
 			ProcessSoulShardAudioCues(specSettings)
 		end
+		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "demonicArt", snapshotData.attributes.demonicArtActive == true)
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
@@ -1787,6 +1898,8 @@ local function SwitchSpec()
 		lookup["#callDreadstalkers"] = spells.callDreadstalkers.icon
 		lookup["#demonicCore"] = spells.demonicCore.icon
 		lookup["#doa"] = spells.dominionOfArgus.icon
+		lookup["#demonicArt"] = spells.diabolicRitual.icon
+		lookup["#diabolicRitual"] = spells.diabolicRitual.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -2074,6 +2187,14 @@ do
 		local snap = TRB.Data.snapshotData.snapshots[spells.dominionOfArgus.id]
 		return snap ~= nil and snap.buff.isActive == true
 	end
+	demonology["$demonicArtTime"] = function()
+		local attributes = TRB.Data.snapshotData.attributes
+		return attributes.demonicArtActive == true and (attributes.demonicArtRemaining ~= nil or attributes.demonicArtRemainingText ~= nil)
+	end
+	demonology["$diabolicRitualTime"] = function()
+		local attributes = TRB.Data.snapshotData.attributes
+		return attributes.diabolicRitualActive == true and (attributes.diabolicRitualRemaining ~= nil or attributes.diabolicRitualRemainingText ~= nil)
+	end
 	local destruction = {}
 	for key, entry in pairs(shared) do
 		destruction[key] = entry
@@ -2156,6 +2277,38 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	end
 
 	return nil, true, false
+end
+
+---@param snapshots table<integer, TRB.Classes.Snapshot>
+---@param spell TRB.Classes.SpellBase?
+---@return boolean
+local function IsSnapshotActive(snapshots, spell)
+	local snapshot = spell ~= nil and snapshots[spell.id] or nil
+	return snapshot ~= nil and snapshot.buff.isActive == true
+end
+
+---Returns true while a timed buff is up, so its countdown keeps refreshing out of combat.
+---@return boolean
+function TRB.Functions.Class:HasActiveTimers()
+	local snapshotData = TRB.Data.snapshotData
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if snapshotData == nil or spells == nil then
+		return false
+	end
+
+	local snapshots = snapshotData.snapshots
+	local specId = TRB.Data.character.specId
+	if specId == 1 then
+		return IsSnapshotActive(snapshots, spells.shardInstability)
+	elseif specId == 2 then
+		local attributes = snapshotData.attributes
+		return attributes.demonicArtActive == true or attributes.diabolicRitualActive == true
+			or IsSnapshotActive(snapshots, spells.demonicCore) or IsSnapshotActive(snapshots, spells.dominionOfArgus)
+			or IsSnapshotActive(snapshots, spells.infernalBolt) or IsSnapshotActive(snapshots, spells.ruination)
+	elseif specId == 3 then
+		return IsSnapshotActive(snapshots, spells.infernalBolt) or IsSnapshotActive(snapshots, spells.ruination)
+	end
+	return false
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

@@ -105,6 +105,12 @@ TRB.Flavor.newsContent = [====[
 ## Warlock
 
 - Add channel tick markers for Health Funnel.
+- Fix `$shardInstabilityTime`, `$demonicCoreTime`, `$doaTime`, `$infernalBoltTime`, and `$ruinationTime` not counting down out of combat.
+
+### Demonology
+
+- [#840](#840) Add Demonic Art tracking, with a Color Indicator, an audio cue, the `$demonicArtTime` bar text variable, and the `#demonicArt` icon. The indicator targets the Soul Shard borders by default, above Demonic Core. Requires CDM to be enabled and Demonic Art (listed as Diabolic Ritual) to be actively tracked.
+- Add the `$diabolicRitualTime` bar text variable and the `#diabolicRitual` icon. Requires CDM to be enabled and Diabolic Ritual to be actively tracked.
 
 ---
 

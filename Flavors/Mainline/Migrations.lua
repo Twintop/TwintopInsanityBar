@@ -8656,6 +8656,35 @@ function TRB.Flavor.PortForwardSettings(settings)
 	-- Pet bars: seed their default text into the global list; barText is an array the defaults merge cannot backfill.
 	TRB.Functions.Settings:SeedPetBarsText(TwintopInsanityBarSettings.core)
 
+	-- Demonology: rank Demonic Art directly above Demonic Core, which would otherwise hide it; the reconcile appends new keys last.
+	do
+		local demonology = TwintopInsanityBarSettings.warlock ~= nil and TwintopInsanityBarSettings.warlock.demonology or nil
+		local shared = demonology ~= nil and demonology.colors ~= nil and demonology.colors.shared or nil
+		if shared ~= nil and type(shared.nodeOrder) == "table" then
+			local hasDemonicArt = false
+			local demonicCorePosition = nil
+			for x, v in ipairs(shared.nodeOrder) do
+				if v == "demonicArt" then
+					hasDemonicArt = true
+					break
+				elseif v == "demonicCore" and demonicCorePosition == nil then
+					demonicCorePosition = x
+				end
+			end
+
+			if not hasDemonicArt then
+				table.insert(shared.nodeOrder, demonicCorePosition or (#shared.nodeOrder + 1), "demonicArt")
+
+				-- The reconcile only seeds colors for keys it appends itself.
+				shared.indicatorColors = shared.indicatorColors or {}
+				if shared.indicatorColors.demonicArt == nil then
+					local defaults = TRB.Options.Warlock.DemonologyLoadDefaultSettings(false, false)
+					shared.indicatorColors.demonicArt = TRB.Functions.Table:DeepCopy(defaults.colors.shared.indicatorColors.demonicArt)
+				end
+			end
+		end
+	end
+
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

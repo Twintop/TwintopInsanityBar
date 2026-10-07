@@ -120,6 +120,8 @@ end
 ---@field public dominionOfArgus2 TRB.Classes.SpellBase
 ---@field public dominionOfArgus3 TRB.Classes.SpellBase
 ---@field public demonicCore TRB.Classes.SpellBase
+---@field public diabolicRitual TRB.Classes.SpellBase
+---@field public demonicArt TRB.Classes.SpellBase
 TRB.Classes.Warlock.DemonologySpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Warlock.DemonologySpells.__index = TRB.Classes.Warlock.DemonologySpells
 
@@ -209,6 +211,16 @@ function TRB.Classes.Warlock.DemonologySpells:New()
         duration = 20,
         maxStacks = 4
     })
+    -- One buff per demon (Overlord, Mother of Chaos, Pit Lord); the Cooldown Manager shows all three as one entry.
+    self.diabolicRitual = TRB.Classes.SpellBase:New({
+        id = 428514,
+        isTalent = true,
+        buffIds = { 431944, 432815, 432816 }
+    })
+    self.demonicArt = TRB.Classes.SpellBase:New({
+        id = 428524,
+        buffIds = { 428524, 432794, 432795 }
+    })
 
     return self
 end
@@ -234,6 +246,8 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 		{ variable = "#callDreadstalkers", icon = spells.callDreadstalkers.icon, description = spells.callDreadstalkers.name, printInSettings = true },
 		{ variable = "#demonicCore", icon = spells.demonicCore.icon, description = spells.demonicCore.name, printInSettings = true },
 		{ variable = "#doa", icon = spells.dominionOfArgus.icon, description = spells.dominionOfArgus.name, printInSettings = true },
+		{ variable = "#demonicArt", icon = spells.demonicArt.icon, description = L["WarlockDemonologyIconDescription_demonicArt"], printInSettings = true },
+		{ variable = "#diabolicRitual", icon = spells.diabolicRitual.icon, description = L["WarlockDemonologyIconDescription_diabolicRitual"], printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -264,6 +278,9 @@ function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntr
 
 		{ variable = "$infernalBoltTime", description = L["WarlockDemonologyBarTextVariable_infernalBoltTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 		{ variable = "$ruinationTime", description = L["WarlockDemonologyBarTextVariable_ruinationTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+
+		{ variable = "$demonicArtTime", description = L["WarlockDemonologyBarTextVariable_demonicArtTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$diabolicRitualTime", description = L["WarlockDemonologyBarTextVariable_diabolicRitualTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 	})
 end
 
@@ -552,6 +569,12 @@ do
 				label = L["WarlockAudioDemonicCore"],
 				trigger = L["WarlockAudioTriggerDemonicCore"],
 				tooltip = L["WarlockAudioCheckboxDemonicCoreTooltip"],
+			},
+			{
+				id = "demonicArt",
+				label = L["WarlockAudioDemonicArt"],
+				trigger = L["WarlockAudioTriggerDemonicArt"],
+				tooltip = L["WarlockAudioCheckboxDemonicArtTooltip"],
 			},
 			infernalBolt,
 			ruination,

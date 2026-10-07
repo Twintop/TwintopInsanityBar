@@ -334,9 +334,19 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 					}
 				},
 				shared = {
-					nodeOrder = { "dominionOfArgusEnd", "dominionOfArgus", "demonicCore", "infernalBolt", "ruination" },
+					nodeOrder = { "dominionOfArgusEnd", "dominionOfArgus", "demonicArt", "demonicCore", "infernalBolt", "ruination" },
 					gradientOrder = {},
 					indicatorColors = {
+						demonicArt = {
+							color = "FFDC97FF",
+							color2 = "FFDC97FF",
+							gradientDirection = "disabled",
+							enabled = true,
+							targets = {
+								manaBar = { bar = false, border = false, background = false },
+								soulShardsBar = { bar = false, border = true, background = false },
+							},
+						},
 						infernalBolt = {
 							color = "FFFF00FF",
 							color2 = "FFFF00FF",
@@ -411,6 +421,12 @@ local function DemonologyLoadDefaultSettings(includeBarText, classic)
 		audio = {
 			demonicCore={
 				name = L["WarlockAudioDemonicCore"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+			},
+			demonicArt={
+				name = L["WarlockAudioDemonicArt"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"],
@@ -1420,6 +1436,7 @@ local function DemonologyConstructIndicatorColorsPanel(parent)
 		indicatorDefs = {
 			{ key = "dominionOfArgusEnd", label = L["WarlockDemonologyCheckboxDominionOfArgusEnding"], tooltip = L["WarlockDemonologyIndicatorDominionOfArgusEndTooltip"], colorLabel = L["WarlockDemonologyIndicatorDominionOfArgusEndColor"] },
 			{ key = "dominionOfArgus", label = L["WarlockDemonologyCheckboxDominionOfArgus"], tooltip = L["WarlockDemonologyIndicatorDominionOfArgusTooltip"], colorLabel = L["WarlockDemonologyIndicatorDominionOfArgusColor"] },
+			{ key = "demonicArt", label = L["WarlockDemonologyCheckboxDemonicArt"], tooltip = L["WarlockDemonologyIndicatorDemonicArtTooltip"], colorLabel = L["WarlockDemonologyIndicatorDemonicArtColor"], cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 			{ key = "demonicCore", label = L["WarlockDemonologyCheckboxDemonicCore"], tooltip = L["WarlockDemonologyIndicatorDemonicCoreTooltip"], colorLabel = L["WarlockDemonologyIndicatorDemonicCoreColor"] },
 			{ key = "infernalBolt", label = L["WarlockDemonologyCheckboxInfernalBolt"], tooltip = L["WarlockDemonologyIndicatorInfernalBoltTooltip"], colorLabel = L["WarlockDemonologyIndicatorInfernalBoltColor"] },
 			{ key = "ruination", label = L["WarlockDemonologyCheckboxRuination"], tooltip = L["WarlockDemonologyIndicatorRuinationTooltip"], colorLabel = L["WarlockDemonologyIndicatorRuinationColor"] },
