@@ -8,6 +8,17 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.0.17-release (2026-10-07)
+## Mage
+### Arcane
+
+- [#838](#838) Add Clearcasting tracking, with 1, 2, and 3 stack Color Indicators and audio cues, the `$clearcastingStacks`, `$clearcastingStacksMax`, and `$clearcastingTime` bar text variables, and the `#clearcasting` icon. The indicators target the Mana bar border by default, and `$clearcastingTime` requires CDM to be enabled and Clearcasting to be actively tracked.
+- Add Prismatic Bolt tracking, with a Color Indicator, an audio cue, the `$prismaticBoltTime` bar text variable, and the `#prismaticBolt` icon. The indicator targets the Mana bar border by default.
+- Add Overpowered Missiles tracking, with a Color Indicator, an audio cue, the `$overpoweredMissilesTime` bar text variable, and the `#overpoweredMissiles` icon. The indicator targets the Mana bar border by default, above Prismatic Bolt and Clearcasting, and `$overpoweredMissilesTime` requires CDM to be enabled and Overpowered Missiles to be actively tracked.
+- Fix `$arcaneSurgeTime` not counting down out of combat.
+
+---
+
 # 12.1.0.16-release (2026-10-06)
 ## General
 ### Core Changes

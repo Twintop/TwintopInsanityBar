@@ -490,5 +490,10 @@ if locale == "enGB" then
 	L["CopyMenuSection_mainHandSwingColors"] = "Main Hand Swing Bar - Colours"
 	L["CopyMenuSection_offHandSwingColors"] = "Off Hand Swing Bar - Colours"
 	L["CopyMenuSection_rangedSwingColors"] = "Ranged Swing Bar - Colours"
+	L["MageArcaneIndicatorOverpoweredMissilesTooltip"] = "Changes to this colour while Overpowered Missiles is active."
+	L["MageArcaneIndicatorPrismaticBoltTooltip"] = "Changes to this colour while Prismatic Bolt is active."
+	L["MageArcaneIndicatorClearcastingTooltip"] = "Changes to this colour when you have at least one Clearcasting stack."
+	L["MageArcaneIndicatorClearcasting2Tooltip"] = "Changes to this colour when you have at least two Clearcasting stacks."
+	L["MageArcaneIndicatorClearcasting3Tooltip"] = "Changes to this colour when you have three Clearcasting stacks."
 
 end

@@ -177,9 +177,59 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 				arcaneSalvo = TRB.Functions.Settings:DefaultArcaneSalvoBarColors(),
 			},
 			shared = {
-				nodeOrder = { "arcaneSurgeEnd", "arcaneSurge" },
+				nodeOrder = { "arcaneSurgeEnd", "arcaneSurge", "overpoweredMissiles", "prismaticBolt", "clearcasting3", "clearcasting2", "clearcasting" },
 				gradientOrder = {},
 				indicatorColors = {
+					overpoweredMissiles = {
+						color = "FF87CEFA",
+						color2 = "FF87CEFA",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							arcaneSalvo = { bar = false, border = false, background = false },
+						},
+					},
+					prismaticBolt = {
+						color = "FFFF7AE6",
+						color2 = "FFFF7AE6",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							arcaneSalvo = { bar = false, border = false, background = false },
+						},
+					},
+					clearcasting = {
+						color = "FFCFA8FF",
+						color2 = "FFCFA8FF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							arcaneSalvo = { bar = false, border = false, background = false },
+						},
+					},
+					clearcasting2 = {
+						color = "FF9A5CE6",
+						color2 = "FF9A5CE6",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							arcaneSalvo = { bar = false, border = false, background = false },
+						},
+					},
+					clearcasting3 = {
+						color = "FF5A1F8C",
+						color2 = "FF5A1F8C",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							arcaneSalvo = { bar = false, border = false, background = false },
+						},
+					},
 					arcaneSurge = {
 						color = "FF9B4DFF",
 						color2 = "FF9B4DFF",
@@ -228,6 +278,42 @@ local function ArcaneLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			clearcasting={
+				name = L["MageArcaneAudioClearcasting"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOnDrop = false
+				}
+			},
+			clearcasting2={
+				name = L["MageArcaneAudioClearcasting2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOnDrop = false
+				}
+			},
+			clearcasting3={
+				name = L["MageArcaneAudioClearcasting3"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+			prismaticBolt={
+				name = L["MageArcaneAudioPrismaticBolt"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+			overpoweredMissiles={
+				name = L["MageArcaneAudioOverpoweredMissiles"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -990,6 +1076,11 @@ local function ArcaneConstructIndicatorColorsPanel(parent)
 		indicatorDefs = {
 			{ key = "arcaneSurgeEnd", label = L["MageArcaneIndicatorArcaneSurgeEnd"], tooltip = L["MageArcaneIndicatorArcaneSurgeEndTooltip"], colorLabel = L["MageArcaneIndicatorArcaneSurgeEndColor"] },
 			{ key = "arcaneSurge", label = L["MageArcaneIndicatorArcaneSurge"], tooltip = L["MageArcaneIndicatorArcaneSurgeTooltip"], colorLabel = L["MageArcaneIndicatorArcaneSurgeColor"] },
+			{ key = "overpoweredMissiles", label = L["MageArcaneIndicatorOverpoweredMissiles"], tooltip = L["MageArcaneIndicatorOverpoweredMissilesTooltip"], colorLabel = L["MageArcaneIndicatorOverpoweredMissilesColor"] },
+			{ key = "prismaticBolt", label = L["MageArcaneIndicatorPrismaticBolt"], tooltip = L["MageArcaneIndicatorPrismaticBoltTooltip"], colorLabel = L["MageArcaneIndicatorPrismaticBoltColor"] },
+			{ key = "clearcasting3", label = L["MageArcaneIndicatorClearcasting3"], tooltip = L["MageArcaneIndicatorClearcasting3Tooltip"], colorLabel = L["MageArcaneIndicatorClearcasting3Color"] },
+			{ key = "clearcasting2", label = L["MageArcaneIndicatorClearcasting2"], tooltip = L["MageArcaneIndicatorClearcasting2Tooltip"], colorLabel = L["MageArcaneIndicatorClearcasting2Color"] },
+			{ key = "clearcasting", label = L["MageArcaneIndicatorClearcasting"], tooltip = L["MageArcaneIndicatorClearcastingTooltip"], colorLabel = L["MageArcaneIndicatorClearcastingColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },

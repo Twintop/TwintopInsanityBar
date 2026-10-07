@@ -8,6 +8,10 @@ TRB.Classes.Mage = TRB.Classes.Mage or {}
 ---@field arcaneSurge TRB.Classes.SpellBase
 ---@field arcaneSalvo TRB.Classes.SpellBase
 ---@field spellfireSalvo TRB.Classes.SpellBase
+---@field clearcasting TRB.Classes.SpellBase
+---@field improvedClearcasting TRB.Classes.SpellBase
+---@field prismaticBolt TRB.Classes.SpellBase
+---@field overpoweredMissiles TRB.Classes.SpellBase
 TRB.Classes.Mage.ArcaneSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.ArcaneSpells.__index = TRB.Classes.Mage.ArcaneSpells
 
@@ -39,6 +43,31 @@ function TRB.Classes.Mage.ArcaneSpells:New()
         isTalent = true,
         maxStacksMod = 5
     })
+    -- Each stack count shows its own activation overlay, so the overlay id is the stack count.
+    self.clearcasting = TRB.Classes.SpellBase:New({
+        id = 1277420,
+        maxStacks = 1,
+        -- The Cooldown Manager tracks the buff under its own id, not the overlay's.
+        cdmSpellId = 79684,
+        overlayStacks = {
+            [1277420] = 1,
+            [1277421] = 2,
+            [1277422] = 3
+        }
+    })
+    self.improvedClearcasting = TRB.Classes.SpellBase:New({
+        id = 321420,
+        isTalent = true,
+        maxStacksMod = 2
+    })
+    -- Glows on the Arcane Blast button it replaces.
+    self.prismaticBolt = TRB.Classes.SpellBase:New({
+        id = 1295924,
+        duration = 60
+    })
+    self.overpoweredMissiles = TRB.Classes.SpellBase:New({
+        id = 1277009
+    })
 
     return self
 end
@@ -56,6 +85,9 @@ function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#arcaneSurge", icon = spells.arcaneSurge.icon, description = spells.arcaneSurge.name, printInSettings = true },
 		{ variable = "#arcaneSalvo", icon = spells.arcaneSalvo.icon, description = spells.arcaneSalvo.name, printInSettings = true },
+		{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
+		{ variable = "#prismaticBolt", icon = spells.prismaticBolt.icon, description = spells.prismaticBolt.name, printInSettings = true },
+		{ variable = "#overpoweredMissiles", icon = spells.overpoweredMissiles.icon, description = spells.overpoweredMissiles.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -78,6 +110,15 @@ function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 		-- Stack count comes from Arcane Barrage's cast count, which is secret in combat.
 		{ variable = "$arcaneSalvoStacks", description = L["MageArcaneBarTextVariable_arcaneSalvoStacks"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
 		{ variable = "$arcaneSalvoStacksMax", description = L["MageArcaneBarTextVariable_arcaneSalvoStacksMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+
+		-- Stacks come from the activation overlays, so they stay plain numbers; the time only exists in the Cooldown Manager.
+		{ variable = "$clearcastingStacks", description = L["MageArcaneBarTextVariable_clearcastingStacks"], printInSettings = true, color = false },
+		{ variable = "$clearcastingStacksMax", description = L["MageArcaneBarTextVariable_clearcastingStacksMax"], printInSettings = true, color = false },
+		{ variable = "$clearcastingTime", description = L["MageArcaneBarTextVariable_clearcastingTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+
+		{ variable = "$prismaticBoltTime", description = L["MageArcaneBarTextVariable_prismaticBoltTime"], printInSettings = true, color = false },
+
+		{ variable = "$overpoweredMissilesTime", description = L["MageArcaneBarTextVariable_overpoweredMissilesTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 	})
 end
 
@@ -528,6 +569,56 @@ do
 	local L = TRB.Localization
 
 	TRB.Functions.AudioCues:Register("mage_arcane", {
+		builtIns = {
+			{
+				id = "clearcasting",
+				label = L["MageArcaneAudioClearcasting"],
+				trigger = L["MageArcaneAudioTriggerClearcasting"],
+				tooltip = L["MageArcaneAudioCheckboxClearcastingTooltip"],
+				config = {
+					{
+						key = "playOnDrop",
+						control = "checkbox",
+						label = L["AudioCuePlayOnDropCheckbox"],
+						tooltip = L["MageArcaneAudioCheckboxClearcastingPlayOnDropTooltip"],
+						default = false,
+					},
+				},
+			},
+			{
+				id = "clearcasting2",
+				label = L["MageArcaneAudioClearcasting2"],
+				trigger = L["MageArcaneAudioTriggerClearcasting2"],
+				tooltip = L["MageArcaneAudioCheckboxClearcasting2Tooltip"],
+				config = {
+					{
+						key = "playOnDrop",
+						control = "checkbox",
+						label = L["AudioCuePlayOnDropCheckbox"],
+						tooltip = L["MageArcaneAudioCheckboxClearcasting2PlayOnDropTooltip"],
+						default = false,
+					},
+				},
+			},
+			{
+				id = "clearcasting3",
+				label = L["MageArcaneAudioClearcasting3"],
+				trigger = L["MageArcaneAudioTriggerClearcasting3"],
+				tooltip = L["MageArcaneAudioCheckboxClearcasting3Tooltip"],
+			},
+			{
+				id = "prismaticBolt",
+				label = L["MageArcaneAudioPrismaticBolt"],
+				trigger = L["MageArcaneAudioTriggerPrismaticBolt"],
+				tooltip = L["MageArcaneAudioCheckboxPrismaticBoltTooltip"],
+			},
+			{
+				id = "overpoweredMissiles",
+				label = L["MageArcaneAudioOverpoweredMissiles"],
+				trigger = L["MageArcaneAudioTriggerOverpoweredMissiles"],
+				tooltip = L["MageArcaneAudioCheckboxOverpoweredMissilesTooltip"],
+			},
+		},
 		counters = {
 			{
 				id = "arcaneCharges",

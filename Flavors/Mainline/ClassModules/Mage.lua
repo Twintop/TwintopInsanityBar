@@ -58,6 +58,10 @@ local function FillSpecializationCache()
 	-- Savor the Moment lengthens the buff by however many Spellfire Spheres the cast ate, and that
 	-- count is a secret, so the duration is read from the spell description and tracked manually.
 	specCache.mage_arcane.snapshotData.snapshots[spells.arcaneSurge.id] = TRB.Classes.Snapshot:New(spells.arcaneSurge)
+	-- Overlay-tracked with no endTime, so simple mode keeps RefreshAllBuffs from expiring them between events.
+	specCache.mage_arcane.snapshotData.snapshots[spells.clearcasting.id] = TRB.Classes.Snapshot:New(spells.clearcasting, nil, "always")
+	specCache.mage_arcane.snapshotData.snapshots[spells.overpoweredMissiles.id] = TRB.Classes.Snapshot:New(spells.overpoweredMissiles, nil, "always")
+	specCache.mage_arcane.snapshotData.snapshots[spells.prismaticBolt.id] = TRB.Classes.Snapshot:New(spells.prismaticBolt)
 
 	specCache.mage_arcane.barTextVariables = {
 		icons = {},
@@ -490,6 +494,31 @@ local function ConstructResourceBar(settings)
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
+---True when an overlay-tracked proc is up and the Cooldown Manager supplied its time left.
+---@param buff TRB.Classes.SnapshotBuff
+---@return boolean
+local function IsProcTimeKnown(buff)
+	local properties = buff.customProperties
+	return buff.isActive == true and (properties.remaining ~= nil or properties.remainingText ~= nil)
+end
+
+---Renders an overlay-tracked proc's Cooldown Manager time. Proc down is a known zero; proc up with
+---nothing tracking it is unknown.
+---@param buff TRB.Classes.SnapshotBuff
+---@return string
+local function GetProcTimeDisplay(buff)
+	local properties = buff.customProperties
+	if buff.isActive ~= true then
+		return TRB.Functions.BarText:TimerPrecision(0)
+	elseif properties.remaining ~= nil then
+		return TRB.Functions.BarText:TimerPrecision(properties.remaining)
+	elseif properties.remainingText ~= nil then
+		-- Already formatted, to the viewer's precision rather than ours.
+		return properties.remainingText
+	end
+	return TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+end
+
 local function RefreshLookupData_Arcane()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -583,6 +612,48 @@ local function RefreshLookupData_Arcane()
 		end
 		if lookupChanged(prevState, "$arcaneSalvoStacksMax", _arcaneSalvoStacksMax) then
 			lookup["$arcaneSalvoStacksMax"] = tostring(_arcaneSalvoStacksMax)
+		end
+	end
+
+	-- Block E: Clearcasting ($clearcastingStacks, $clearcastingStacksMax, $clearcastingTime)
+	if not activeVars or activeVars["$clearcastingStacks"] or activeVars["$clearcastingStacksMax"]
+		or activeVars["$clearcastingTime"] then
+		local buff = snapshots[spells.clearcasting.id].buff
+		local _clearcastingStacks = buff.isActive and (buff.applications or 0) or 0
+		local _clearcastingStacksMax = TRB.Data.character.clearcastingMaxStacks or spells.clearcasting.maxStacks
+
+		lookupLogic["$clearcastingStacks"] = _clearcastingStacks
+		lookupLogic["$clearcastingStacksMax"] = _clearcastingStacksMax
+		lookupLogic["$clearcastingTime"] = IsProcTimeKnown(buff)
+
+		lookup["$clearcastingStacks"] = _clearcastingStacks
+		lookup["$clearcastingStacksMax"] = _clearcastingStacksMax
+
+		-- Memoized on the rendered string, since both unknown and zero are nil underneath.
+		local timeDisplay = GetProcTimeDisplay(buff)
+		if lookupChanged(prevState, "$clearcastingTime", timeDisplay) then
+			lookup["$clearcastingTime"] = timeDisplay
+		end
+	end
+
+	-- Block F: Prismatic Bolt ($prismaticBoltTime)
+	if not activeVars or activeVars["$prismaticBoltTime"] then
+		local buff = snapshots[spells.prismaticBolt.id].buff
+		local _prismaticBoltTime = buff.isActive and buff.remaining or 0
+
+		lookupLogic["$prismaticBoltTime"] = _prismaticBoltTime
+		lookup["$prismaticBoltTime"] = TRB.Functions.BarText:TimerPrecision(_prismaticBoltTime)
+	end
+
+	-- Block G: Overpowered Missiles ($overpoweredMissilesTime)
+	if not activeVars or activeVars["$overpoweredMissilesTime"] then
+		local buff = snapshots[spells.overpoweredMissiles.id].buff
+
+		lookupLogic["$overpoweredMissilesTime"] = IsProcTimeKnown(buff)
+
+		local timeDisplay = GetProcTimeDisplay(buff)
+		if lookupChanged(prevState, "$overpoweredMissilesTime", timeDisplay) then
+			lookup["$overpoweredMissilesTime"] = timeDisplay
 		end
 	end
 
@@ -798,29 +869,13 @@ local function RefreshLookupData_Frost()
 	-- Block E: Brain Freeze ($brainFreezeTime)
 	if not activeVars or activeVars["$brainFreezeTime"] then
 		local buff = snapshots[spells.brainFreeze.id].buff
-		local _brainFreezeActive = buff.isActive == true
-		local properties = buff.customProperties
-		local _brainFreezeTime = properties.remaining
-		local _brainFreezeTimeText = properties.remainingText
 
 		-- Secret when the Cooldown Manager has it, missing when it does not, so logic only learns whether
 		-- there is a value at all.
-		lookupLogic["$brainFreezeTime"] = _brainFreezeActive and (_brainFreezeTime ~= nil or _brainFreezeTimeText ~= nil)
+		lookupLogic["$brainFreezeTime"] = IsProcTimeKnown(buff)
 
-		-- Proc down is a known zero; proc up with nothing tracking it is unknown. Memoized on the rendered
-		-- string, since both are nil underneath.
-		local timeDisplay
-		if not _brainFreezeActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
-		elseif _brainFreezeTime ~= nil then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(_brainFreezeTime)
-		elseif _brainFreezeTimeText ~= nil then
-			-- Already formatted, to the viewer's precision rather than ours.
-			timeDisplay = _brainFreezeTimeText
-		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
-		end
-
+		-- Memoized on the rendered string, since both unknown and zero are nil underneath.
+		local timeDisplay = GetProcTimeDisplay(buff)
 		if lookupChanged(prevState, "$brainFreezeTime", timeDisplay) then
 			lookup["$brainFreezeTime"] = timeDisplay
 		end
@@ -848,6 +903,11 @@ end
 local arcaneSurgeCasting = false
 local arcaneSurgeCastDuration = nil
 local arcaneSurgeParseWarned = false
+
+-- Clearcasting overlays currently up, by spell id. A stack change swaps one count's overlay for the
+-- next within a frame, in either order, so the count is the highest overlay still up.
+---@type table<integer, boolean>
+local clearcastingVisibleOverlays = {}
 
 ---Reads Arcane Surge's advertised duration off its spell description, which carries the Savor the
 ---Moment extension the secret Spellfire Sphere count cannot be read for.
@@ -957,14 +1017,60 @@ local function RefreshArcaneSalvoStacks()
 	snapshotData.attributes.arcaneSalvoStacks = C_Spell.GetSpellCastCount(spells.arcaneSalvo.id) or 0
 end
 
+---Refreshes an overlay-tracked proc's time left from the Cooldown Manager. The activation overlay owns
+---whether the proc is up, so this only ever supplies the number the overlay cannot carry.
+---@param snapshot TRB.Classes.Snapshot?
+---@param spellId integer
+local function RefreshProcTimeFromCdm(snapshot, spellId)
+	if snapshot == nil then
+		return
+	end
+
+	local properties = snapshot.buff.customProperties
+	properties.remaining = nil
+	properties.remainingText = nil
+
+	if not snapshot.buff.isActive then
+		return
+	end
+
+	-- Pinned to the buff viewers, which describe the aura -- a cooldown viewer would describe the cast.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spellId)
+	if trackedId == nil then
+		return
+	end
+
+	-- Only the bar viewer leaves a subtracted remaining value; elsewhere take Blizzard's own countdown
+	-- text, which is empty when that viewer's timers are off -- a settings answer, not a value.
+	local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+	if remainingOk then
+		properties.remaining = remaining
+	else
+		local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+		if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+			properties.remainingText = remainingText
+		end
+	end
+end
+
 local function UpdateSnapshot_Arcane()
+	local currentTime = GetTime()
 	UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local arcaneSurge = snapshotData.snapshots[spells.arcaneSurge.id]
+	local snapshots = snapshotData.snapshots
+	local arcaneSurge = snapshots[spells.arcaneSurge.id]
 	if arcaneSurge ~= nil then
-		arcaneSurge.buff:GetRemainingTime(GetTime())
+		arcaneSurge.buff:GetRemainingTime(currentTime)
 	end
+	local prismaticBolt = snapshots[spells.prismaticBolt.id]
+	if prismaticBolt ~= nil then
+		prismaticBolt.buff:GetRemainingTime(currentTime)
+	end
+
+	RefreshProcTimeFromCdm(snapshots[spells.clearcasting.id], spells.clearcasting.attributes.cdmSpellId)
+	RefreshProcTimeFromCdm(snapshots[spells.overpoweredMissiles.id], spells.overpoweredMissiles.id)
 end
 
 local function UpdateSnapshot_Fire()
@@ -1009,48 +1115,6 @@ local function RefreshShatterStacks()
 	end
 end
 
----Refreshes the time left on Brain Freeze from the Cooldown Manager. The activation overlay owns
----whether the proc is up, so this only ever supplies the number the overlay cannot carry.
-local function RefreshBrainFreeze()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
-	if spells == nil or spells.brainFreeze == nil then
-		return
-	end
-
-	local snapshot = snapshotData.snapshots[spells.brainFreeze.id]
-	if snapshot == nil then
-		return
-	end
-
-	local properties = snapshot.buff.customProperties
-	properties.remaining = nil
-	properties.remainingText = nil
-
-	if not snapshot.buff.isActive then
-		return
-	end
-
-	-- Pinned to the buff viewers, which describe the aura -- a cooldown viewer would describe the cast.
-	local cdm = TRB.Functions.CooldownManager
-	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.brainFreeze.id)
-	if trackedId == nil then
-		return
-	end
-
-	-- Only the bar viewer leaves a subtracted remaining value; elsewhere take Blizzard's own countdown
-	-- text, which is empty when that viewer's timers are off -- a settings answer, not a value.
-	local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
-	if remainingOk then
-		properties.remaining = remaining
-	else
-		local textOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
-		if textOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
-			properties.remainingText = remainingText
-		end
-	end
-end
-
 local function UpdateSnapshot_Frost()
 	local currentTime = GetTime()
 	UpdateSnapshot()
@@ -1059,7 +1123,7 @@ local function UpdateSnapshot_Frost()
 	local snapshots = snapshotData.snapshots
 
 	RefreshShatterStacks()
-	RefreshBrainFreeze()
+	RefreshProcTimeFromCdm(snapshots[spells.brainFreeze.id], spells.brainFreeze.id)
 
 	local fingersOfFrost = snapshots[spells.fingersOfFrost.id]
 	if fingersOfFrost ~= nil then
@@ -1311,10 +1375,18 @@ local function UpdateResourceBar()
 				arcaneSurgeEndMet = arcaneSurgeBuff.remaining <= timeThreshold
 			end
 
+			local clearcastingBuff = snapshots[spells.clearcasting.id].buff
+			local clearcastingStacks = clearcastingBuff.isActive and (clearcastingBuff.applications or 0) or 0
+
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
 			conditionMap.arcaneSurge = arcaneSurgeActive
 			conditionMap.arcaneSurgeEnd = arcaneSurgeActive and arcaneSurgeEndMet
+			conditionMap.overpoweredMissiles = snapshots[spells.overpoweredMissiles.id].buff.isActive
+			conditionMap.prismaticBolt = snapshots[spells.prismaticBolt.id].buff.isActive
+			conditionMap.clearcasting = clearcastingStacks >= 1
+			conditionMap.clearcasting2 = clearcastingStacks >= 2
+			conditionMap.clearcasting3 = clearcastingStacks >= 3
 
 			local manaBarColors = scratch.manaBarColors1
 			wipe(manaBarColors)
@@ -1414,7 +1486,27 @@ local function UpdateResourceBar()
 			end
 		end
 
-		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "arcaneCharges", snapshotData.attributes.resource2)
+		-- Audio cues (independent of bar visibility)
+		do
+			local arcaneSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+			local arcaneSnapshots = snapshotData.snapshots
+			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "arcaneCharges", snapshotData.attributes.resource2)
+
+			-- The highest stack crossed wins, and the lower two can also play when a spend drops onto them.
+			local clearcasting = arcaneSnapshots[arcaneSpells.clearcasting.id].buff
+			local clearcastingStacks = clearcasting.isActive and (clearcasting.applications or 0) or 0
+			TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, "clearcastingStacks",
+				clearcastingStacks, {
+					{ id = "clearcasting", threshold = 1 },
+					{ id = "clearcasting2", threshold = 2 },
+					{ id = "clearcasting3", threshold = 3 },
+				})
+
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "prismaticBolt",
+				arcaneSnapshots[arcaneSpells.prismaticBolt.id].buff.isActive == true)
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "overpoweredMissiles",
+				arcaneSnapshots[arcaneSpells.overpoweredMissiles.id].buff.isActive == true)
+		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.fire
@@ -1674,11 +1766,18 @@ local function SwitchSpec()
 		local lookup = TRB.Data.lookup or {}
 		lookup["#arcaneSurge"] = spells.arcaneSurge.icon
 		lookup["#arcaneSalvo"] = spells.arcaneSalvo.icon
+		lookup["#clearcasting"] = spells.clearcasting.icon
+		lookup["#prismaticBolt"] = spells.prismaticBolt.icon
+		lookup["#overpoweredMissiles"] = spells.overpoweredMissiles.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
 		-- Manual tracking only runs while Arcane is played, so anything banked is stale by now.
 		snapshotData.snapshots[spells.arcaneSurge.id].buff:Reset()
+		snapshotData.snapshots[spells.clearcasting.id].buff:Reset()
+		wipe(clearcastingVisibleOverlays)
+		snapshotData.snapshots[spells.prismaticBolt.id].buff:Reset()
+		snapshotData.snapshots[spells.overpoweredMissiles.id].buff:Reset()
 		arcaneSurgeCasting = false
 		arcaneSurgeCastDuration = nil
 
@@ -1854,6 +1953,98 @@ local function HandleFingersOfFrostEvent(spellId)
 	end
 end
 
+---Clears Clearcasting once a frame has passed with none of its overlays re-shown.
+local function ConfirmClearcastingLoss()
+	if TRB.Data.character.specId ~= 1 or next(clearcastingVisibleOverlays) ~= nil then return end
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local snapshot = TRB.Data.snapshotData.snapshots[spells.clearcasting.id]
+	if snapshot == nil or not snapshot.buff.isActive then return end
+
+	snapshot.buff:Reset()
+	TRB.Data.lookupDirty = true
+	TRB.Functions.Class:TriggerResourceBarUpdates()
+end
+
+---Tracks Clearcasting and Overpowered Missiles from their activation overlays.
+---@param spellId integer?
+---@param isShow boolean
+local function HandleArcaneOverlayEvent(spellId, isShow)
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	if not (spells and spells.clearcasting and spells.overpoweredMissiles) then return end
+
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData and snapshotData.snapshots
+	if snapshots == nil then return end
+
+	local overlayStacks = spells.clearcasting.attributes.overlayStacks
+	if (spellId == nil and not isShow) or overlayStacks[spellId] ~= nil then
+		local snapshot = snapshots[spells.clearcasting.id]
+		if snapshot == nil then return end
+
+		if spellId == nil then
+			-- A hide-all re-shows whatever is still up within the same frame.
+			if next(clearcastingVisibleOverlays) == nil then return end
+			wipe(clearcastingVisibleOverlays)
+		else
+			clearcastingVisibleOverlays[spellId] = isShow or nil
+		end
+
+		local stacks = 0
+		for overlayId in pairs(clearcastingVisibleOverlays) do
+			stacks = math.max(stacks, overlayStacks[overlayId])
+		end
+
+		if stacks == 0 then
+			-- A spend hides the old count before showing the new one, so the loss waits a frame for that show.
+			C_Timer.After(0, ConfirmClearcastingLoss)
+			return
+		end
+
+		-- Never GetRemainingTime this buff: there is no endTime behind it to expire against.
+		snapshot.buff:InitializeCustomSimple(true)
+		snapshot.buff.applications = stacks
+	elseif spellId == nil then
+		-- A hide-all re-shows Overpowered Missiles if it is still up, so the hide itself means nothing.
+		return
+	elseif spellId == spells.overpoweredMissiles.id then
+		local snapshot = snapshots[spells.overpoweredMissiles.id]
+		if snapshot == nil then return end
+		if isShow then
+			snapshot.buff:InitializeCustomSimple(false)
+		else
+			snapshot.buff:Reset()
+		end
+	else
+		return
+	end
+
+	TRB.Data.lookupDirty = true
+	TRB.Functions.Class:TriggerResourceBarUpdates()
+end
+
+---Tracks Prismatic Bolt from its action button glow, timed from the spell's duration.
+---@param spellId integer
+---@param isShow boolean
+local function HandlePrismaticBoltGlowEvent(spellId, isShow)
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	if not (spells and spells.prismaticBolt) then return end
+	if spellId ~= spells.prismaticBolt.id then return end
+
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshot = snapshotData and snapshotData.snapshots and snapshotData.snapshots[spells.prismaticBolt.id]
+	if snapshot == nil then return end
+
+	if isShow then
+		snapshot.buff:InitializeCustom(spells.prismaticBolt.duration)
+	else
+		snapshot.buff:Reset()
+	end
+
+	TRB.Data.lookupDirty = true
+	TRB.Functions.Class:TriggerResourceBarUpdates()
+end
+
 ---Updates data based on spell events
 local function HandleSpellEvents(self, event, ...)
 	if event == "SPELL_UPDATE_CHARGES" then
@@ -1868,7 +2059,14 @@ local function HandleSpellEvents(self, event, ...)
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
 		local spellId = ...
-		if TRB.Data.character.specId ~= 3 then return end
+		local isShow = event == "SPELL_ACTIVATION_OVERLAY_SHOW"
+		if TRB.Data.character.specId == 1 then
+			HandleArcaneOverlayEvent(spellId, isShow)
+			return
+		elseif TRB.Data.character.specId ~= 3 then
+			return
+		end
+
 		-- A hide-all carries no spell id and is always followed by a re-show of whatever is still up,
 		-- so only an explicit id match counts.
 		if spellId == nil then return end
@@ -1879,8 +2077,6 @@ local function HandleSpellEvents(self, event, ...)
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData and snapshotData.snapshots
 		if snapshots == nil then return end
-
-		local isShow = event == "SPELL_ACTIVATION_OVERLAY_SHOW"
 
 		if spellId == spells.brainFreeze.id then -- Brain Freeze
 			local snapshot = snapshots[spells.brainFreeze.id]
@@ -1906,6 +2102,11 @@ local function HandleSpellEvents(self, event, ...)
 		TRB.Data.lookupDirty = true
 		if TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
+		local spellId = ...
+		if TRB.Data.character.specId == 1 then
+			HandlePrismaticBoltGlowEvent(spellId, event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 		end
 	end
 end
@@ -1939,6 +2140,12 @@ function TRB.Functions.Class:CheckCharacter()
 			arcaneSalvoMaxStacks = arcaneSalvoMaxStacks + (spells.spellfireSalvo.attributes.maxStacksMod or 5)
 		end
 		TRB.Data.character.arcaneSalvoMaxStacks = arcaneSalvoMaxStacks
+
+		local clearcastingMaxStacks = spells.clearcasting.maxStacks
+		if arcaneTalents ~= nil and arcaneTalents:IsTalentActive(spells.improvedClearcasting) then
+			clearcastingMaxStacks = clearcastingMaxStacks + spells.improvedClearcasting.attributes.maxStacksMod
+		end
+		TRB.Data.character.clearcastingMaxStacks = clearcastingMaxStacks
 
 		if sharedSettings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
@@ -1994,6 +2201,10 @@ end
 function TRB.Functions.Class:EnableEvents()
 	if TRB.Data.character.specId == 1 then
 		spellEventFrame:RegisterEvent("SPELL_UPDATE_USES")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 	elseif TRB.Data.character.specId == 2 then
 		spellEventFrame:RegisterEvent("SPELL_UPDATE_CHARGES")
 	elseif TRB.Data.character.specId == 3 then
@@ -2010,6 +2221,8 @@ function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 end
 
 function TRB.Functions.Class:EventRegistration()
@@ -2115,6 +2328,28 @@ do
 	end
 	arcane["$arcaneSalvoStacks"] = arcaneSalvoTalentedFn
 	arcane["$arcaneSalvoStacksMax"] = arcaneSalvoTalentedFn
+	arcane["$clearcastingStacks"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local snapshot = spells and spells.clearcasting and TRB.Data.snapshotData.snapshots[spells.clearcasting.id]
+		return snapshot ~= nil and snapshot.buff.isActive == true
+	end
+	arcane["$clearcastingStacksMax"] = true
+	-- Both go false the moment the time is unknown, matching the "??" the text renders.
+	arcane["$clearcastingTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local snapshot = spells and spells.clearcasting and TRB.Data.snapshotData.snapshots[spells.clearcasting.id]
+		return snapshot ~= nil and IsProcTimeKnown(snapshot.buff)
+	end
+	arcane["$overpoweredMissilesTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local snapshot = spells and spells.overpoweredMissiles and TRB.Data.snapshotData.snapshots[spells.overpoweredMissiles.id]
+		return snapshot ~= nil and IsProcTimeKnown(snapshot.buff)
+	end
+	arcane["$prismaticBoltTime"] = function()
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local snapshot = spells and spells.prismaticBolt and TRB.Data.snapshotData.snapshots[spells.prismaticBolt.id]
+		return snapshot ~= nil and snapshot.buff.isActive == true
+	end
 	-- Frost
 	local frost = {}
 	for k, v in pairs(common) do frost[k] = v end
@@ -2138,14 +2373,8 @@ do
 	-- Goes false the moment the time is unknown, matching the "??" the text renders.
 	frost["$brainFreezeTime"] = function()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
-		if spells == nil or spells.brainFreeze == nil then
-			return false
-		end
-		local snap = TRB.Data.snapshotData.snapshots[spells.brainFreeze.id]
-		if snap == nil or snap.buff.isActive ~= true then
-			return false
-		end
-		return snap.buff.customProperties.remaining ~= nil or snap.buff.customProperties.remainingText ~= nil
+		local snapshot = spells and spells.brainFreeze and TRB.Data.snapshotData.snapshots[spells.brainFreeze.id]
+		return snapshot ~= nil and IsProcTimeKnown(snapshot.buff)
 	end
 	-- Fire
 	local fireBlastChargesMaxFn = function()
@@ -2284,8 +2513,33 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil, true, false
 end
 
+-- Arcane timer variables, keyed to the spell whose buff drives each one.
+local arcaneTimerSpells = {
+	["$arcaneSurgeTime"] = "arcaneSurge",
+	["$clearcastingTime"] = "clearcasting",
+	["$prismaticBoltTime"] = "prismaticBolt",
+	["$overpoweredMissilesTime"] = "overpoweredMissiles",
+}
+
 function TRB.Functions.Class:HasActiveTimers()
-	if TRB.Data.character.specId == 2 then
+	if TRB.Data.character.specId == 1 then
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		if spells == nil then
+			return false
+		end
+
+		local activeVars = TRB.Data.activeVariables
+		local snapshots = TRB.Data.snapshotData.snapshots
+		for variable, spellKey in pairs(arcaneTimerSpells) do
+			if activeVars == nil or activeVars[variable] then
+				local snapshot = spells[spellKey] and snapshots[spells[spellKey].id]
+				if snapshot ~= nil and snapshot.buff.isActive == true then
+					return true
+				end
+			end
+		end
+		return false
+	elseif TRB.Data.character.specId == 2 then
 		local activeVars = TRB.Data.activeVariables
 		if activeVars ~= nil and not activeVars["$fireBlastTime"] and not activeVars["$fbTime"] then
 			return false
