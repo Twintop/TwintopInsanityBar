@@ -40,11 +40,17 @@ TRB.Flavor.newsContent = [====[
 ### Balance
 
 - Fix Convoke the Spirits channel tick markers ignoring Astral Insight.
+- Fix `$starfallTime` and `$starfallNextStackTime` not counting down out of combat.
+
+### Feral
+
+- Fix `$halazzisFuryTime` not counting down out of combat.
 
 ### Guardian
 
 - Fix Convoke the Spirits channel tick markers ignoring Astral Insight.
 - Add channel tick markers for Emerald Slumber.
+- Fix `$ironfurTime` and `$ironfurNextStackTime` not counting down out of combat.
 
 ### Restoration
 
@@ -67,6 +73,10 @@ TRB.Flavor.newsContent = [====[
 
 - Add Pet Cast Bar channel tick markers for Froststorm Breath, Burrow Attack, and Feast.
 
+### Marksmanship
+
+- Fix `$doubleTapTime` not counting down out of combat.
+
 ## Mage
 ### Arcane
 
@@ -80,6 +90,7 @@ TRB.Flavor.newsContent = [====[
 ### Frost
 
 - Add Pet Cast Bar channel tick markers for Water Jet.
+- Fix `$brainFreezeTime` not counting down out of combat.
 
 ## Monk
 
@@ -101,6 +112,7 @@ TRB.Flavor.newsContent = [====[
 ### Discipline
 
 - Add channel tick markers for Ultimate Penitence.
+- Fix `$voidShieldTime` and `$harshDisciplineTime` not counting down out of combat.
 
 ## Warlock
 
@@ -111,6 +123,11 @@ TRB.Flavor.newsContent = [====[
 
 - [#840](#840) Add Demonic Art tracking, with a Color Indicator, an audio cue, the `$demonicArtTime` bar text variable, and the `#demonicArt` icon. The indicator targets the Soul Shard borders by default, above Demonic Core. Requires CDM to be enabled and Demonic Art (listed as Diabolic Ritual) to be actively tracked.
 - Add the `$diabolicRitualTime` bar text variable and the `#diabolicRitual` icon. Requires CDM to be enabled and Diabolic Ritual to be actively tracked.
+
+## Warrior
+### Protection
+
+- Fix `$voTime` not counting down out of combat.
 
 ---
 

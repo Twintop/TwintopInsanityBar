@@ -2521,24 +2521,37 @@ local arcaneTimerSpells = {
 	["$overpoweredMissilesTime"] = "overpoweredMissiles",
 }
 
-function TRB.Functions.Class:HasActiveTimers()
-	if TRB.Data.character.specId == 1 then
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
-		if spells == nil then
-			return false
-		end
+-- Frost timer variables, keyed the same way.
+local frostTimerSpells = {
+	["$fingersOfFrostTime"] = "fingersOfFrost",
+	["$brainFreezeTime"] = "brainFreeze",
+}
 
-		local activeVars = TRB.Data.activeVariables
-		local snapshots = TRB.Data.snapshotData.snapshots
-		for variable, spellKey in pairs(arcaneTimerSpells) do
-			if activeVars == nil or activeVars[variable] then
-				local snapshot = spells[spellKey] and snapshots[spells[spellKey].id]
-				if snapshot ~= nil and snapshot.buff.isActive == true then
-					return true
-				end
+---True while the buff behind any timer variable the bar text uses is up.
+---@param timerSpells table<string, string>
+---@return boolean
+local function IsTimerBuffActive(timerSpells)
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if spells == nil then
+		return false
+	end
+
+	local activeVars = TRB.Data.activeVariables
+	local snapshots = TRB.Data.snapshotData.snapshots
+	for variable, spellKey in pairs(timerSpells) do
+		if activeVars == nil or activeVars[variable] then
+			local snapshot = spells[spellKey] and snapshots[spells[spellKey].id]
+			if snapshot ~= nil and snapshot.buff.isActive == true then
+				return true
 			end
 		end
-		return false
+	end
+	return false
+end
+
+function TRB.Functions.Class:HasActiveTimers()
+	if TRB.Data.character.specId == 1 then
+		return IsTimerBuffActive(arcaneTimerSpells)
 	elseif TRB.Data.character.specId == 2 then
 		local activeVars = TRB.Data.activeVariables
 		if activeVars ~= nil and not activeVars["$fireBlastTime"] and not activeVars["$fbTime"] then
@@ -2549,14 +2562,7 @@ function TRB.Functions.Class:HasActiveTimers()
 		local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells, true)
 		return fireBlastCooldown ~= nil and fireBlastCooldown.isActive == true
 	elseif TRB.Data.character.specId == 3 then
-		local activeVars = TRB.Data.activeVariables
-		if activeVars ~= nil and not activeVars["$fingersOfFrostTime"] then
-			return false
-		end
-
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
-		local snapshot = spells and spells.fingersOfFrost and TRB.Data.snapshotData.snapshots[spells.fingersOfFrost.id]
-		return snapshot ~= nil and snapshot.buff.isActive == true
+		return IsTimerBuffActive(frostTimerSpells)
 	end
 
 	return false

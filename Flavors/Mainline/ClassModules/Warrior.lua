@@ -2244,7 +2244,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 ---Returns true when spec-specific buff timers are counting down.
----Arms: no timers; Fury: Whirlwind buff, Enrage; Protection: Ignore Pain, Shield Block.
+---Arms: no timers; Fury: Whirlwind buff, Enrage; Protection: Ignore Pain, Shield Block, and Violent Outburst.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	local snapshotData = TRB.Data.snapshotData
@@ -2264,7 +2264,8 @@ function TRB.Functions.Class:HasActiveTimers()
 		end
 	elseif specId == 3 then -- Protection
 		if (spells.ignorePain and snapshots[spells.ignorePain.id] and snapshots[spells.ignorePain.id].buff and snapshots[spells.ignorePain.id].buff.isActive)
-			or (spells.shieldBlock and snapshots[spells.shieldBlock.id] and snapshots[spells.shieldBlock.id].buff and snapshots[spells.shieldBlock.id].buff.isActive) then
+			or (spells.shieldBlock and snapshots[spells.shieldBlock.id] and snapshots[spells.shieldBlock.id].buff and snapshots[spells.shieldBlock.id].buff.isActive)
+			or (spells.violentOutburst and snapshots[spells.violentOutburst.id] and snapshots[spells.violentOutburst.id].buff and snapshots[spells.violentOutburst.id].buff.isActive) then
 			return true
 		end
 	end

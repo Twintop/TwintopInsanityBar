@@ -3695,17 +3695,20 @@ function TRB.Functions.Class:HasActiveTimers()
 		if (spells.celestialAlignment and snapshots[spells.celestialAlignment.id] and snapshots[spells.celestialAlignment.id].buff and snapshots[spells.celestialAlignment.id].buff.isActive)
 			or (spells.incarnationChosenOfElune and snapshots[spells.incarnationChosenOfElune.id] and snapshots[spells.incarnationChosenOfElune.id].buff and snapshots[spells.incarnationChosenOfElune.id].buff.isActive)
 			or (spells.eclipseSolar and snapshots[spells.eclipseSolar.id] and snapshots[spells.eclipseSolar.id].buff and snapshots[spells.eclipseSolar.id].buff.isActive)
-			or (spells.eclipseLunar and snapshots[spells.eclipseLunar.id] and snapshots[spells.eclipseLunar.id].buff and snapshots[spells.eclipseLunar.id].buff.isActive) then
+			or (spells.eclipseLunar and snapshots[spells.eclipseLunar.id] and snapshots[spells.eclipseLunar.id].buff and snapshots[spells.eclipseLunar.id].buff.isActive)
+			or (spells.starfall and snapshots[spells.starfall.id] and snapshots[spells.starfall.id].buff and snapshots[spells.starfall.id].buff.isActive) then
 			return true
 		end
 	elseif specId == 2 then -- Feral
 		if (spells.berserk and snapshots[spells.berserk.id] and snapshots[spells.berserk.id].buff and snapshots[spells.berserk.id].buff.isActive)
-			or (spells.incarnationAvatarOfAshamane and snapshots[spells.incarnationAvatarOfAshamane.id] and snapshots[spells.incarnationAvatarOfAshamane.id].buff and snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive) then
+			or (spells.incarnationAvatarOfAshamane and snapshots[spells.incarnationAvatarOfAshamane.id] and snapshots[spells.incarnationAvatarOfAshamane.id].buff and snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive)
+			or (spells.halazzisFury and snapshots[spells.halazzisFury.id] and snapshots[spells.halazzisFury.id].buff and snapshots[spells.halazzisFury.id].buff.isActive) then
 			return true
 		end
 	elseif specId == 3 then -- Guardian
 		if (spells.berserk and snapshots[spells.berserk.id] and snapshots[spells.berserk.id].buff and snapshots[spells.berserk.id].buff.isActive)
-			or (spells.incarnationGuardianOfUrsoc and snapshots[spells.incarnationGuardianOfUrsoc.id] and snapshots[spells.incarnationGuardianOfUrsoc.id].buff and snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive) then
+			or (spells.incarnationGuardianOfUrsoc and snapshots[spells.incarnationGuardianOfUrsoc.id] and snapshots[spells.incarnationGuardianOfUrsoc.id].buff and snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive)
+			or (spells.ironfur and snapshots[spells.ironfur.id] and snapshots[spells.ironfur.id].buff and snapshots[spells.ironfur.id].buff.isActive) then
 			return true
 		end
 	elseif specId == 4 then -- Restoration

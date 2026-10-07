@@ -1725,7 +1725,8 @@ function TRB.Functions.Class:HasActiveTimers()
 			return true
 		end
 	elseif specId == 2 then -- Marksmanship
-		if spells.trueshot and snapshots[spells.trueshot.id] and snapshots[spells.trueshot.id].buff and snapshots[spells.trueshot.id].buff.isActive then
+		if (spells.trueshot and snapshots[spells.trueshot.id] and snapshots[spells.trueshot.id].buff and snapshots[spells.trueshot.id].buff.isActive)
+			or (spells.doubleTap and snapshots[spells.doubleTap.id] and snapshots[spells.doubleTap.id].buff and snapshots[spells.doubleTap.id].buff.isActive) then
 			return true
 		end
 	elseif specId == 3 then -- Survival

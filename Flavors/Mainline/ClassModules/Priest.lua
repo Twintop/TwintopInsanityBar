@@ -4006,7 +4006,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 ---Returns true when any spec-specific cooldown or buff timer is counting down.
----Disc: PW:Radiance CD, Angelic Feather CD; Holy: Holy Words CDs, Apotheosis, Lightweaver, AF CD;
+---Disc: PW:Radiance CD, Angelic Feather CD, Void Shield, and Harsh Discipline; Holy: Holy Words CDs, Apotheosis, Lightweaver, AF CD;
 ---Shadow: Voidform, MFI, SotV, Entropic Rift, Resonant Energy, Void Volley, AF CD.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
@@ -4020,6 +4020,8 @@ function TRB.Functions.Class:HasActiveTimers()
 	if specId == 1 then -- Discipline
 		if (spells.powerWordRadiance and snapshots[spells.powerWordRadiance.id] and snapshots[spells.powerWordRadiance.id].cooldown and snapshots[spells.powerWordRadiance.id].cooldown.remaining > 0)
 			or (spells.angelicFeather and snapshots[spells.angelicFeather.id] and snapshots[spells.angelicFeather.id].cooldown and snapshots[spells.angelicFeather.id].cooldown.remaining > 0)
+			or (spells.masterTheDarkness and snapshots[spells.masterTheDarkness.id] and snapshots[spells.masterTheDarkness.id].buff and snapshots[spells.masterTheDarkness.id].buff.isActive)
+			or (spells.harshDiscipline and snapshots[spells.harshDiscipline.id] and snapshots[spells.harshDiscipline.id].buff and snapshots[spells.harshDiscipline.id].buff.isActive)
 			or surgeOfLightActive then
 			return true
 		end
