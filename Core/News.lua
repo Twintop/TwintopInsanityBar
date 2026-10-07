@@ -15,6 +15,10 @@ TRB.Details.coreNewsContent = [====[
 - Fix predictive resource spending not updating when a hardcast's cost changes partway through the cast.
 - Widen the News window.
 
+## Localization
+
+- [#845 - @MOSS099](#845) Updated translations for Simplified Chinese (zhCN).
+
 ---
 
 # Live 12.1.0.16-release / Forever 1.60.1.4-release (2026-10-06)
