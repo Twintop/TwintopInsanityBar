@@ -8,6 +8,7 @@ TRB.Details.coreNewsContent = [====[
 ## General
 
 - Fix `$castSpellName` and `$petCastSpellName` showing a generic channeling label instead of the spell's name for some channels.
+- Fix the primary resource bar keeping its old maximum after your maximum resource changes.
 
 ## Localization
 

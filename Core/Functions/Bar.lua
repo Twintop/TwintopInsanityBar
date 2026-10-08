@@ -4588,12 +4588,19 @@ end
 ---@param node TRB.Classes.BarNode
 ---@param value number
 function TRB.Functions.Bar:SetBarNodePrimaryValue(settings, key, node, value)
-	if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
+	local maxResource = TRB.Data.character.maxResource
+	if maxResource ~= nil and maxResource > 0 then
 		if settings.maxResource ~= nil and settings.maxResource.enabled == true and settings.maxResource.value > 0 then
-			TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, math.min(settings.maxResource.value * TRB.Data.resourceFactor, TRB.Data.character.maxResource))
-		else
-			TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, TRB.Data.character.maxResource)
+			maxResource = math.min(settings.maxResource.value * TRB.Data.resourceFactor, maxResource)
 		end
+		-- Layout ranges the node once, so a max that changes afterward must re-range it here.
+		if node ~= nil then
+			local _, nodeMax = node:GetMinMax()
+			if not issecretvalue(nodeMax) and nodeMax ~= maxResource then
+				node:SetMinMax(0, maxResource)
+			end
+		end
+		TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResource)
 	end
 end
 

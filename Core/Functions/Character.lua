@@ -417,6 +417,12 @@ local function CharacterChange(self, event, ...)
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" or event == "UNIT_MAXPOWER" then
 		local unitTarget, powerType = ...
 		if unitTarget == "player" and (powerType == TRB.Data.resourceToken or powerType == TRB.Data.resource2Token) then
+			-- A spec swap's new max can land after every CheckCharacter of the switch has already run.
+			if event == "UNIT_MAXPOWER" and powerType == TRB.Data.resourceToken then
+				local oldMax = TRB.Data.character.maxResource -- TEMP diagnostic
+				TRB.Functions.Class:CheckCharacter()
+				print(string.format("|cFFFF8800TRB MaxPower:|r %s %s -> %s at %.2f", powerType, tostring(oldMax), tostring(TRB.Data.character.maxResource), GetTime())) -- TEMP diagnostic
+			end
 			TRB.Functions.Character:UpdateResourceValues()
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "player" and TRB.Data.additionalPowerTokens and TRB.Data.additionalPowerTokens[powerType] then
