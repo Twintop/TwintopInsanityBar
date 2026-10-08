@@ -4,6 +4,13 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.0.18-release / Forever 1.60.1.6-release (2026-10-08)
+## General
+
+- Fix `$castSpellName` and `$petCastSpellName` showing a generic channeling label instead of the spell's name for some channels.
+
+---
+
 # Live 12.1.0.17-release / Forever 1.60.1.5-release (2026-10-07)
 ## Pet Bars
 

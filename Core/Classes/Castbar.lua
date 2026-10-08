@@ -37,7 +37,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public state trbCastbarState
 ---@field public spellId integer?
 ---@field public spell TRB.Classes.CastbarSpell?
----@field public displayName string? # UnitCastingInfo/UnitChannelInfo's display text, which Blizzard's cast bar shows; the spell record's name (minus a " - No Text" tag) when that is empty, absent, or secret
+---@field public displayName string? # The spell record's name; for a " - No Text" tagged record, UnitCastingInfo/UnitChannelInfo's display text, or the untagged name when that is unreadable
 ---@field public castTexture any # Cast icon texture from UnitCastingInfo/UnitChannelInfo arg 3 (may be secret); the icon source that survives a secret spell id, applied raw without comparison
 ---@field public startTime number? # GetTime() seconds when the cast began
 ---@field public endTime number? # GetTime() seconds when the cast completes
@@ -277,17 +277,21 @@ local function ReadableDisplayName(text)
 	return nil
 end
 
----The name to show when the unit info has no display text: the spell record's name without Blizzard's
----internal " - No Text" tag. Every locale keeps the " - " separator ("Ouverture - pas de texte"), and
----only such tagged spells reach here, so the tail after the first one is dropped.
+---The spell record's name, unless Blizzard tagged it internal (" - No Text", same separator in every locale);
+---then the unit info's display text, or the untagged name when that text is unreadable.
 ---@param spell table?
+---@param text string? # Readable display text from the unit info
 ---@return string?
-local function FallbackDisplayName(spell)
+local function ResolveDisplayName(spell, text)
 	local name = spell and spell.name
-	if type(name) ~= "string" then
-		return nil
+	if type(name) ~= "string" or name == "" then
+		return text
 	end
-	return name:match("^(.-) %- ") or name
+	local untagged = name:match("^(.-) %- ")
+	if untagged == nil then
+		return name
+	end
+	return text or untagged
 end
 
 ---Reads a unit's cast timing from UnitCastingInfo, returning seconds. Values may be secret.
@@ -336,7 +340,7 @@ function TRB.Classes.Castbar:StartCast(spellId)
 	self.state = "cast"
 	self.spellId = (not issecretvalue(resolvedId)) and resolvedId or nil
 	self.spell = self:GetSpellData(self.spellId)
-	self.displayName = displayName or FallbackDisplayName(self.spell)
+	self.displayName = ResolveDisplayName(self.spell, displayName)
 	self.castTexture = texture
 	self.notInterruptible = notInterruptible
 	self.latency = self:GetStartLatency()
@@ -375,7 +379,7 @@ function TRB.Classes.Castbar:StartChannel(spellId, profile)
 	self.state = "channel"
 	self.spellId = (resolvedId and not issecretvalue(resolvedId)) and resolvedId or nil
 	self.spell = self:GetSpellData(self.spellId)
-	self.displayName = displayName or FallbackDisplayName(self.spell)
+	self.displayName = ResolveDisplayName(self.spell, displayName)
 	self.castTexture = texture
 	self.notInterruptible = notInterruptible
 	self.latency = self:GetStartLatency()

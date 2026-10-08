@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.6-release (2026-10-08)
+## General
+### Core Changes
+
+- See [Core Changes](tab:core).
+
+---
+
 # 1.60.1.5-release (2026-10-07)
 ## General
 ### Cast Bars
