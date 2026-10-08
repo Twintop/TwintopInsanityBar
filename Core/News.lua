@@ -9,6 +9,10 @@ TRB.Details.coreNewsContent = [====[
 
 - Fix `$castSpellName` and `$petCastSpellName` showing a generic channeling label instead of the spell's name for some channels.
 
+## Localization
+
+- [#845 - @MOSS099](#846) Updated translations for Simplified Chinese (zhCN).
+
 ---
 
 # Live 12.1.0.17-release / Forever 1.60.1.5-release (2026-10-07)
