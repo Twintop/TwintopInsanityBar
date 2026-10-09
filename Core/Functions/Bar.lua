@@ -3005,10 +3005,8 @@ function TRB.Functions.Bar:ResolveFormIndependentBarSettings(settings)
 				for k, v in pairs(settings) do
 					effective[k] = v
 				end
-				effective.bars = {}
-				for k, v in pairs(settings.bars or {}) do
-					effective.bars[k] = v
-				end
+				-- Layer, don't copy: spec-cache bars are OverlayOn proxies, and pairs() misses every layered bar.
+				effective.bars = setmetatable({}, { __index = settings.bars })
 				effective.displayBar = {}
 				for k, v in pairs(settings.displayBar or {}) do
 					effective.displayBar[k] = v

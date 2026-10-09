@@ -14,6 +14,11 @@ TRB.Flavor.newsContent = [====[
 
 - See [Core Changes](tab:core).
 
+## Druid
+### Guardian
+
+- Fix the Cast Bar and other bars moving out of place outside Bear Form.
+
 ---
 
 # 12.1.0.17-release (2026-10-07)
