@@ -4,7 +4,7 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
-# Live 12.1.0.18-release / Forever 1.60.1.6-release (2026-10-08)
+# Live 12.1.0.18-release / Forever 1.60.1.6-release (2026-10-09)
 ## General
 
 - Fix `$castSpellName` and `$petCastSpellName` showing a generic channeling label instead of the spell's name for some channels.
@@ -12,7 +12,7 @@ TRB.Details.coreNewsContent = [====[
 
 ## Localization
 
-- [#845 - @MOSS099](#846) Updated translations for Simplified Chinese (zhCN).
+- [#846 - @MOSS099](#846) Updated translations for Simplified Chinese (zhCN).
 
 ---
 
