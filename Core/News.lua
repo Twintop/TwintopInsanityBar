@@ -4,6 +4,13 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.0.19-release / Forever 1.60.1.7-release (2026-10-10)
+## General
+
+- Remove a debug message that printed to chat whenever your maximum resource changed.
+
+---
+
 # Live 12.1.0.18-release / Forever 1.60.1.6-release (2026-10-09)
 ## General
 
