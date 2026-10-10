@@ -1558,7 +1558,8 @@ end
 ---@param dontReturnLastNonZero boolean?
 ---@return number # Cost as a negative resource amount
 function TRB.Classes.SnapshotCasting:ReadCastCost(spell, dontReturnLastNonZero)
-	self.costSpell = spell
+	-- Only API-read costs can change mid-cast, and only they have a cache key to clear.
+	self.costSpell = (spell.primaryResourceType ~= nil and spell.primaryResourceTypeProperty ~= "custom") and spell or nil
 	self.costDontReturnLastNonZero = dontReturnLastNonZero
 	return -TRB.Classes.SpellBase.GetPrimaryResourceCost(spell, dontReturnLastNonZero, true)
 end
