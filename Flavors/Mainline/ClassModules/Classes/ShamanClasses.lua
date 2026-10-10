@@ -41,6 +41,10 @@ end
 ---@field public echoesOfGreatSundering TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
 ---@field public preeminence TRB.Classes.SpellBase
+---@field public tempest TRB.Classes.SpellBase
+---@field public arcDischarge TRB.Classes.SpellBase
+---@field public midnightSeason1SetBonus TRB.Classes.SpellBase
+---@field public midnightSeason1SetKey string # Key the set's pieces are registered under in TRB.Data.itemSetRegistry
 ---@field public lightningBolt TRB.Classes.Shaman.OverloadSpell
 ---@field public lavaBurst TRB.Classes.Shaman.OverloadSpell
 ---@field public chainLightning TRB.Classes.Shaman.OverloadSpell
@@ -136,12 +140,28 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     self.stormkeeper = TRB.Classes.SpellBase:New({
         id = 191634,
         stacks = 2,
+        maxStacks = 4,
         duration = 15
     })
     self.stormwell = TRB.Classes.SpellBase:New({
         id = 1264762,
         isTalent = true,
         resource = 10
+    })
+    self.tempest = TRB.Classes.SpellBase:New({
+        id = 452201,
+        spellId = 452201,
+        castId = 452201,
+        talentId = 454009,
+        isTalent = true,
+        maxStacks = 2,
+        duration = 30,
+        cdmSpellId = 454015
+    })
+    self.arcDischarge = TRB.Classes.SpellBase:New({
+        id = 455096,
+        isTalent = true,
+        stormkeeperStacks = 1
     })
     self.powerOfTheMaelstrom = TRB.Classes.SpellBase:New({
         id = 191877,
@@ -178,6 +198,11 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         isTalent = true,
         duration = 3
     })
+    -- Midnight Season 1 4pc: Stormkeeper grants one more charge and holds one more.
+    self.midnightSeason1SetBonus = TRB.Classes.SpellBase:New({
+        fourPieceStacks = 1,
+        fourPieceMaxStacks = 1
+    })
 
     return self
 end
@@ -204,6 +229,7 @@ function TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#lavaBurst", icon = spells.lavaBurst.icon, description = spells.lavaBurst.name, printInSettings = true },
 		{ variable = "#lightningBolt", icon = spells.lightningBolt.icon, description = spells.lightningBolt.name, printInSettings = true },
 		{ variable = "#stormkeeper", icon = spells.stormkeeper.icon, description = spells.stormkeeper.name, printInSettings = true },
+		{ variable = "#tempest", icon = spells.tempest.icon, description = spells.tempest.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -218,6 +244,15 @@ function TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$manaMax", description = L["ShamanElementalBarTextVariable_manaMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$ascendanceTime", description = L["ShamanElementalBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
+
+		{ variable = "$stormkeeperStacks", description = L["ShamanElementalBarTextVariable_stormkeeperStacks"], printInSettings = true, color = false },
+		{ variable = "$stormkeeperStacksMax", description = L["ShamanElementalBarTextVariable_stormkeeperStacksMax"], printInSettings = true, color = false },
+		{ variable = "$stormkeeperTime", description = L["ShamanElementalBarTextVariable_stormkeeperTime"], printInSettings = true, color = false },
+
+		-- Stacks are plain: the override says it is up and CDM's stack text only says whether it is at two.
+		{ variable = "$tempestStacks", description = L["ShamanBarTextVariable_tempestStacks"], printInSettings = true, color = false, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$tempestStacksMax", description = L["ShamanBarTextVariable_tempestStacksMax"], printInSettings = true, color = false },
+		{ variable = "$tempestTime", description = L["ShamanBarTextVariable_tempestTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 
 		{ variable = "$ebCritTime", description = L["ShamanElementalBarTextVariable_ebCritTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 		{ variable = "$ebHasteTime", description = L["ShamanElementalBarTextVariable_ebHasteTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
@@ -251,7 +286,9 @@ TRB.Classes.Shaman.ElementalSpells.thresholdSnowflakes = {
 ---@field public maelstromWeapon TRB.Classes.SpellBase
 ---@field public doomWinds TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
-TRB.Classes.Shaman.EnhancementSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+---@field public tempest TRB.Classes.SpellBase
+---@field public lightningBolt TRB.Classes.SpellBase
+TRB.Classes.Shaman.EnhancementSpells =setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Shaman.EnhancementSpells.__index = TRB.Classes.Shaman.EnhancementSpells
 
 function TRB.Classes.Shaman.EnhancementSpells:New()
@@ -276,6 +313,21 @@ function TRB.Classes.Shaman.EnhancementSpells:New()
         isTalent = true,
         duration = 15
     })
+    self.tempest = TRB.Classes.SpellBase:New({
+        id = 452201,
+        spellId = 452201,
+        castId = 452201,
+        talentId = 454009,
+        isTalent = true,
+        maxStacks = 2,
+        duration = 30,
+        cdmSpellId = 454015
+    })
+    -- Tempest's override is announced against Lightning Bolt.
+    self.lightningBolt = TRB.Classes.SpellBase:New({
+        id = 188196,
+        baseline = true
+    })
 
     return self
 end
@@ -292,6 +344,7 @@ function TRB.Classes.Shaman.EnhancementSpells.FillBarTextVariables(specCacheEntr
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
+		{ variable = "#tempest", icon = spells.tempest.icon, description = spells.tempest.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -308,6 +361,10 @@ function TRB.Classes.Shaman.EnhancementSpells.FillBarTextVariables(specCacheEntr
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 
 		{ variable = "$ascendanceTime", description = L["ShamanEnhancementBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
+
+		{ variable = "$tempestStacks", description = L["ShamanBarTextVariable_tempestStacks"], printInSettings = true, color = false, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+		{ variable = "$tempestStacksMax", description = L["ShamanBarTextVariable_tempestStacksMax"], printInSettings = true, color = false },
+		{ variable = "$tempestTime", description = L["ShamanBarTextVariable_tempestTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 	})
 end
 
@@ -553,6 +610,19 @@ TRB.Data.castbarTickProfilesRegistry["shaman_elemental"] = TRB.Classes.Shaman.El
 TRB.Data.castbarTickProfilesRegistry["shaman_enhancement"] = TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles
 TRB.Data.castbarTickProfilesRegistry["shaman_restoration"] = TRB.Classes.Shaman.RestorationSpells.GetCastbarTickProfiles
 
+-- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
+-- every registered set once per gear change and caches it.
+TRB.Classes.Shaman.ElementalSpells.midnightSeason1SetKey = "shaman_elemental_midnightSeason1"
+TRB.Data.itemSetRegistry = TRB.Data.itemSetRegistry or {}
+---@type TRB.Classes.ItemSetDefinition
+TRB.Data.itemSetRegistry[TRB.Classes.Shaman.ElementalSpells.midnightSeason1SetKey] = {
+	headId = 249979,
+	shoulderId = 249977,
+	chestId = 249982,
+	handId = 249980,
+	legId = 249978,
+}
+
 -- Register audio cue vocabularies
 do
 	local L = TRB.Localization
@@ -565,10 +635,56 @@ do
 				trigger = L["ShamanElementalAudioTriggerEarthShockReady"],
 				tooltip = L["ShamanElementalAudioCheckboxEarthShockTooltip"],
 			},
+			{
+				id = "tempest",
+				label = L["ShamanAudioTempest"],
+				trigger = L["ShamanAudioTriggerTempest"],
+				tooltip = L["ShamanAudioCheckboxTempestTooltip"],
+				config = {
+					{
+						key = "playOnDrop",
+						control = "checkbox",
+						label = L["AudioCuePlayOnDropCheckbox"],
+						tooltip = L["ShamanAudioCheckboxTempestPlayOnDropTooltip"],
+						default = false,
+					},
+				},
+			},
+			{
+				id = "tempest2",
+				label = L["ShamanAudioTempest2"],
+				trigger = L["ShamanAudioTriggerTempest2"],
+				tooltip = L["ShamanAudioCheckboxTempest2Tooltip"],
+				cdm = TRB.Data.constants.cdmDependency.REQUIRED,
+			},
 		},
 	})
 
 	TRB.Functions.AudioCues:Register("shaman_enhancement", {
+		builtIns = {
+			{
+				id = "tempest",
+				label = L["ShamanAudioTempest"],
+				trigger = L["ShamanAudioTriggerTempest"],
+				tooltip = L["ShamanAudioCheckboxTempestTooltip"],
+				config = {
+					{
+						key = "playOnDrop",
+						control = "checkbox",
+						label = L["AudioCuePlayOnDropCheckbox"],
+						tooltip = L["ShamanAudioCheckboxTempestPlayOnDropTooltip"],
+						default = false,
+					},
+				},
+			},
+			{
+				id = "tempest2",
+				label = L["ShamanAudioTempest2"],
+				trigger = L["ShamanAudioTriggerTempest2"],
+				tooltip = L["ShamanAudioCheckboxTempest2Tooltip"],
+				cdm = TRB.Data.constants.cdmDependency.REQUIRED,
+			},
+		},
 		counters = {
 			{
 				id = "maelstromWeapon",

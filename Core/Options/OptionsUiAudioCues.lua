@@ -220,9 +220,17 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		GameTooltip:Show()
 	end
 
+	---Badge-colored CDM label, for text where the badge frame cannot go.
+	---@param format string # Wraps the label, e.g. "[%s]"
+	---@return string
+	local function GetCdmLabelMarkup(format)
+		local r, g, b = TRB.Functions.OptionsUi.Primitives:GetCdmBadgeColor()
+		return string.format("|c%s%s|r", TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, 1), string.format(format, L["CdmBadgeLabel"]))
+	end
+
 	---Shows a cue's name, firing condition and description on row hover.
 	---@param cellFrame Frame?
-	---@param tooltip table? # { title, trigger, description }
+	---@param tooltip table? # { title, trigger, description, cdm }
 	local function ShowRowTooltip(cellFrame, tooltip)
 		if cellFrame == nil or tooltip == nil then
 			return
@@ -231,7 +239,11 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		GameTooltip:SetOwner(cellFrame, "ANCHOR_RIGHT")
 		GameTooltip:SetText(tooltip.title, 1, 1, 1, 1, true)
 		if tooltip.trigger ~= nil then
-			GameTooltip:AddLine(tooltip.trigger, 1, 0.82, 0, true)
+			local trigger = tooltip.trigger
+			if tooltip.cdm == TRB.Data.constants.cdmDependency.REQUIRED then
+				trigger = string.format("%s  %s", trigger, GetCdmLabelMarkup("%s"))
+			end
+			GameTooltip:AddLine(trigger, 1, 0.82, 0, true)
 		end
 		if tooltip.description ~= nil then
 			GameTooltip:AddLine(" ")
@@ -345,11 +357,19 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 			local soundName = (cue.soundName ~= nil and cue.soundName ~= "") and cue.soundName or L["AudioCueSoundNone"]
 			local enabledText = cue.enabled and ("|cFF00FF00" .. L["BarTextVariablesStatusYes"] .. "|r") or ("|cFFFF0000" .. L["BarTextVariablesStatusNo"] .. "|r")
 
+			local cdm = not isCounter and entry.builtIn.cdm or nil
 			rowTooltips[entry.id] = {
 				title = displayName,
 				trigger = trigger,
 				description = isCounter and entry.source.description or entry.builtIn.tooltip,
+				cdm = cdm,
 			}
+
+			-- A table cell cannot hold the badge frame, so the column gets a text prefix instead.
+			local triggerCell = trigger
+			if cdm == TRB.Data.constants.cdmDependency.REQUIRED then
+				triggerCell = string.format("%s %s", GetCdmLabelMarkup("[%s]"), trigger)
+			end
 
 			table.insert(dataTable, {
 				cols = {
@@ -357,7 +377,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 					{ value = cue.enabled and speakerIconMarkup or "" },
 					{ value = displayName },
 					{ value = typeLabel },
-					{ value = trigger },
+					{ value = triggerCell },
 					{ value = soundName },
 					{ value = enabledText },
 					{ value = isCounter and "X" or "", color = isCounter and deleteActionTextColor or nil, DoCellUpdate = isCounter and UpdateActionCell or nil },
@@ -491,6 +511,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		HideThresholdSliders()
 		triggerHeader:Hide()
 		triggerText:Hide()
+		TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(triggerText, nil)
 
 		-- The two columns grow independently; the description sits below whichever runs longer.
 		local editorY = -55
@@ -540,6 +561,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 			triggerText:SetText(builtIn.trigger)
 			triggerHeader:Show()
 			triggerText:Show()
+			TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(triggerText, builtIn.cdm)
 			rightBottom = editorY - math.max(oUi.sliderHeight, triggerText:GetStringHeight()) - 10
 
 			for _, descriptor in ipairs(builtIn.config or {}) do

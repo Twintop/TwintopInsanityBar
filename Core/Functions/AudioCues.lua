@@ -18,6 +18,7 @@ TRB.Data = TRB.Data or {}
 ---@field public trigger string # Localized one-line firing condition, shown in the table and detail pane
 ---@field public tooltip string # Localized description, shown on row hover and in the detail pane
 ---@field public config TRB.Classes.AudioCueConfigControl[]? # Extra controls rendered in the detail pane
+---@field public cdm TRB.CdmDependency? # Badges the trigger when the cue can only fire with Cooldown Manager data
 
 ---An extra control rendered in a built-in cue's detail pane, bound to cue.configuration[key].
 ---@class TRB.Classes.AudioCueConfigControl

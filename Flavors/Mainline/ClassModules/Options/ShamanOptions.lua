@@ -178,7 +178,9 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 					"ascendanceEnd",
 					"earthShock",
 					"earthquake",
-					"ascendance"
+					"ascendance",
+					"tempest2",
+					"tempest"
 				},
 				gradientOrder = {
 					"borderOvercap"
@@ -227,6 +229,24 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							maelstromBar = { bar = false, border = true, background = false }
 						}
+					},
+					tempest = {
+						color = "FF4F7CFF",
+						color2 = "FF4F7CFF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							maelstromBar = { bar = false, border = true, background = false }
+						}
+					},
+					tempest2 = {
+						color = "FFC040FF",
+						color2 = "FFC040FF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							maelstromBar = { bar = false, border = true, background = false }
+						}
 					}
 				}
 			},
@@ -253,6 +273,21 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 		audio = {
 			esReady={
 				name = L["ShamanElementalAudioEarthShockReady"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+			tempest={
+				name = L["ShamanAudioTempest"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOnDrop = false
+				}
+			},
+			tempest2={
+				name = L["ShamanAudioTempest2"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
@@ -408,7 +443,9 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 			shared = {
 				nodeOrder = {
 					"ascendanceEnd",
-					"ascendance"
+					"ascendance",
+					"tempest2",
+					"tempest"
 				},
 				gradientOrder = {},
 				indicatorColors = {
@@ -428,6 +465,24 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = {
 							manaBar = { bar = true, border = false, background = false }
+						}
+					},
+					tempest = {
+						color = "FF4F7CFF",
+						color2 = "FF4F7CFF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							maelstromWeaponBar = { bar = false, border = true, background = false }
+						}
+					},
+					tempest2 = {
+						color = "FFC040FF",
+						color2 = "FFC040FF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							maelstromWeaponBar = { bar = false, border = true, background = false }
 						}
 					}
 				}
@@ -452,6 +507,21 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			tempest={
+				name = L["ShamanAudioTempest"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOnDrop = false
+				}
+			},
+			tempest2={
+				name = L["ShamanAudioTempest2"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -842,6 +912,8 @@ local function ElementalConstructIndicatorColorsPanel(parent)
 			{ key = "ascendance", label = L["ShamanElementalCheckboxAscendance"], tooltip = L["ShamanElementalIndicatorAscendanceTooltip"], colorLabel = L["ShamanElementalIndicatorAscendanceColor"] },
 			{ key = "earthquake", label = L["ShamanElementalCheckboxEarthquakeBarColor"], tooltip = L["ShamanElementalIndicatorEarthquakeTooltip"], colorLabel = L["ShamanElementalIndicatorEarthquakeColor"] },
 			{ key = "earthShock", label = L["ShamanElementalCheckboxEarthShock"], tooltip = L["ShamanElementalIndicatorEarthShockTooltip"], colorLabel = L["ShamanElementalIndicatorEarthShockColor"] },
+			{ key = "tempest", label = L["ShamanIndicatorTempest"], tooltip = L["ShamanIndicatorTempestTooltip"], colorLabel = L["ShamanIndicatorTempestColor"] },
+			{ key = "tempest2", label = L["ShamanIndicatorTempest2"], tooltip = L["ShamanIndicatorTempest2Tooltip"], colorLabel = L["ShamanIndicatorTempest2Color"], cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 		},
 		gradientDefs = {
 			{ key = "borderOvercap", label = L["ShamanElementalIndicatorBorderOvercap"], tooltip = L["ShamanElementalIndicatorOvercapTooltip"], colorLabel = L["ShamanElementalIndicatorOvercapColor"] },
@@ -1269,6 +1341,8 @@ local function EnhancementConstructIndicatorColorsPanel(parent)
 		indicatorDefs = {
 			{ key = "ascendanceEnd", label = L["ShamanManaCheckboxAscendanceEnd"], tooltip = L["ShamanElementalIndicatorAscendanceEndTooltip"], colorLabel = L["ShamanElementalIndicatorAscendanceEndColor"] },
 			{ key = "ascendance", label = L["ShamanManaCheckboxAscendance"], tooltip = L["ShamanElementalIndicatorAscendanceTooltip"], colorLabel = L["ShamanElementalIndicatorAscendanceColor"] },
+			{ key = "tempest", label = L["ShamanIndicatorTempest"], tooltip = L["ShamanIndicatorTempestTooltip"], colorLabel = L["ShamanIndicatorTempestColor"] },
+			{ key = "tempest2", label = L["ShamanIndicatorTempest2"], tooltip = L["ShamanIndicatorTempest2Tooltip"], colorLabel = L["ShamanIndicatorTempest2Color"], cdm = TRB.Data.constants.cdmDependency.REQUIRED },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },

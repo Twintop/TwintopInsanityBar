@@ -8,6 +8,21 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.0.21-release (2026-10-11)
+## Shaman
+### Elemental
+
+- [#841](#841) Add Tempest tracking, with 1 and 2 charge Color Indicators and audio cues, the `$tempestStacks`, `$tempestStacksMax`, and `$tempestTime` bar text variables, and the `#tempest` icon. The indicators target the Maelstrom bar border by default. The 2 charge indicator and cue, `$tempestStacks`, and `$tempestTime` require CDM to be enabled and Tempest to be actively tracked.
+- [#841](#841) Add the `$stormkeeperStacks`, `$stormkeeperStacksMax`, and `$stormkeeperTime` bar text variables.
+- [#841](#841) Predict the Maelstrom a Tempest cast generates when Stormwell and Arc Discharge are talented and Stormkeeper is down.
+- [#841](#841) Midnight Season One 4-Piece: Account for the extra Stormkeeper charge and the higher charge cap.
+
+### Enhancement
+
+- [#841](#841) Add Tempest tracking, with 1 and 2 charge Color Indicators and audio cues, the `$tempestStacks`, `$tempestStacksMax`, and `$tempestTime` bar text variables, and the `#tempest` icon. The indicators target the Maelstrom Weapon bar border by default. The 2 charge indicator and cue, `$tempestStacks`, and `$tempestTime` require CDM to be enabled and Tempest to be actively tracked.
+
+---
+
 # 12.1.0.20-release (2026-10-10)
 ## General
 ### Core Changes

@@ -315,6 +315,140 @@ local function ConstructResourceBar(settings)
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
+---Stormkeeper's charge cap, raised by the Midnight Season 1 4pc.
+---@return integer
+local function GetStormkeeperMaxStacks()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	local maxStacks = spells.stormkeeper.maxStacks
+	if TRB.Functions.Item:HasSetBonus(TRB.Classes.Shaman.ElementalSpells.midnightSeason1SetKey, 4) then
+		maxStacks = maxStacks + spells.midnightSeason1SetBonus.attributes.fourPieceMaxStacks
+	end
+	return maxStacks
+end
+
+---Refreshes Tempest's charges and time left. The override event says it is up; CDM's stack text, blank
+---below two, separates one charge from two.
+---@param spells TRB.Classes.Shaman.ElementalSpells|TRB.Classes.Shaman.EnhancementSpells
+---@param attributes table
+---@param currentTime number
+local function UpdateTempest(spells, attributes, currentTime)
+	-- A spend or new charge drops and re-applies the override in one frame, so a loss only counts once that frame ends.
+	if attributes.tempestLossTime ~= nil and currentTime > attributes.tempestLossTime then
+		attributes.tempestActive = false
+		attributes.tempestLossTime = nil
+	end
+
+	local previousStacks = attributes.tempestStacks
+	attributes.tempestStacks = 0
+	attributes.tempestRemaining = nil
+	attributes.tempestRemainingText = nil
+
+	if attributes.tempestActive then
+		-- Pinned to the buff viewers, which describe the aura.
+		local cdm = TRB.Functions.CooldownManager
+		local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.tempest.attributes.cdmSpellId)
+		if trackedId == nil then
+			attributes.tempestStacks = nil
+		else
+			-- A filled stack text is secret in combat, but still reads as present.
+			local textOk, stacksText, isSecret = cdm:Read(trackedId, cdm.Signal.STACKS, cdm.SourceGroup.BUFF)
+			if textOk and stacksText ~= nil and (isSecret or stacksText ~= "") then
+				attributes.tempestStacks = spells.tempest.maxStacks
+			else
+				attributes.tempestStacks = 1
+			end
+
+			-- Only the bar viewer leaves a subtracted remaining value; elsewhere take Blizzard's countdown text.
+			local remainingOk, remaining = cdm:Read(trackedId, cdm.Signal.REMAINING, cdm.SourceKind.BUFF_BAR)
+			if remainingOk then
+				attributes.tempestRemaining = remaining
+			else
+				local timeOk, remainingText = cdm:Read(trackedId, cdm.Signal.REMAINING_TEXT, cdm.SourceGroup.BUFF)
+				if timeOk and remainingText ~= nil and (issecretvalue(remainingText) or remainingText ~= "") then
+					attributes.tempestRemainingText = remainingText
+				end
+			end
+		end
+	end
+
+	if attributes.tempestStacks ~= previousStacks then
+		TRB.Data.lookupDirty = true
+	end
+end
+
+---Writes Tempest's bar text. Down is a known zero; up with nothing in CDM tracking it is unknown.
+---@param spells TRB.Classes.Shaman.ElementalSpells|TRB.Classes.Shaman.EnhancementSpells
+---@param attributes table
+---@param lookup table
+---@param lookupLogic table
+---@param prevState table
+local function RefreshTempestLookup(spells, attributes, lookup, lookupLogic, prevState)
+	local isActive = attributes.tempestActive == true
+	local stacks = attributes.tempestStacks
+	local stacksMax = spells.tempest.maxStacks
+	local remaining = attributes.tempestRemaining
+	local remainingText = attributes.tempestRemainingText
+
+	lookupLogic["$tempestStacks"] = stacks or 0
+	lookupLogic["$tempestStacksMax"] = stacksMax
+	-- Secret when CDM has it, so logic only learns whether a value exists.
+	lookupLogic["$tempestTime"] = isActive and (remaining ~= nil or remainingText ~= nil)
+
+	local stacksDisplay
+	if stacks ~= nil then
+		stacksDisplay = string.format("%.0f", stacks)
+	else
+		stacksDisplay = TRB.Functions.BarText:UnknownValue()
+	end
+	if lookupChanged(prevState, "$tempestStacks", stacksDisplay) then
+		lookup["$tempestStacks"] = stacksDisplay
+	end
+	if lookupChanged(prevState, "$tempestStacksMax", stacksMax) then
+		lookup["$tempestStacksMax"] = string.format("%.0f", stacksMax)
+	end
+
+	local timeDisplay
+	if not isActive then
+		timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+	elseif remaining ~= nil then
+		timeDisplay = TRB.Functions.BarText:TimerPrecision(remaining)
+	elseif remainingText ~= nil then
+		-- Already formatted, to the viewer's precision rather than ours.
+		timeDisplay = remainingText
+	else
+		timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+	end
+	if lookupChanged(prevState, "$tempestTime", timeDisplay) then
+		lookup["$tempestTime"] = timeDisplay
+	end
+end
+
+---Fires the Tempest charge cues. Without CDM a charge still counts as one, so only the one charge cue can play.
+---@param specSettings table
+---@param snapshotData TRB.Classes.SnapshotData
+---@param spells TRB.Classes.Shaman.ElementalSpells|TRB.Classes.Shaman.EnhancementSpells
+local function FireTempestCues(specSettings, snapshotData, spells)
+	local attributes = snapshotData.attributes
+	local stacks = attributes.tempestStacks or (attributes.tempestActive and 1 or 0)
+	TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, "tempestStacks", stacks, {
+		{ id = "tempest", threshold = 1 },
+		{ id = "tempest2", threshold = spells.tempest.maxStacks },
+	})
+end
+
+---Drops Tempest's tracked state and re-arms its cues.
+---@param snapshotData TRB.Classes.SnapshotData
+local function ResetTempestTracking(snapshotData)
+	local attributes = snapshotData.attributes
+	attributes.tempestActive = false
+	attributes.tempestLossTime = nil
+	attributes.tempestStacks = 0
+	attributes.tempestRemaining = nil
+	attributes.tempestRemainingText = nil
+	TRB.Functions.AudioCues:ResetLatch(snapshotData, "tempest")
+	TRB.Functions.AudioCues:ResetLatch(snapshotData, "tempest2")
+end
+
 local function RefreshLookupData_Elemental()
 	local specSettings = TRB.Data.settings.shaman.elemental
 	local sharedSettings = TRB.Data.specCache["shaman_elemental"].settings
@@ -455,6 +589,32 @@ local function RefreshLookupData_Elemental()
 		end
 	end
 
+	-- Block E: Stormkeeper ($stormkeeperStacks, $stormkeeperStacksMax, $stormkeeperTime)
+	if not activeVars or activeVars["$stormkeeperStacks"] or activeVars["$stormkeeperStacksMax"]
+		or activeVars["$stormkeeperTime"] then
+		local stormkeeperBuff = snapshots[spells.stormkeeper.id].buff
+		local _stormkeeperTime = stormkeeperBuff:GetRemainingTime(currentTime)
+		local _stormkeeperStacks = (stormkeeperBuff.isActive and (stormkeeperBuff.applications or 0)) or 0
+		local _stormkeeperStacksMax = GetStormkeeperMaxStacks()
+		lookupLogic["$stormkeeperStacks"] = _stormkeeperStacks
+		lookupLogic["$stormkeeperStacksMax"] = _stormkeeperStacksMax
+		lookupLogic["$stormkeeperTime"] = _stormkeeperTime
+		if lookupChanged(prevState, "$stormkeeperStacks", _stormkeeperStacks) then
+			lookup["$stormkeeperStacks"] = string.format("%.0f", _stormkeeperStacks)
+		end
+		if lookupChanged(prevState, "$stormkeeperStacksMax", _stormkeeperStacksMax) then
+			lookup["$stormkeeperStacksMax"] = string.format("%.0f", _stormkeeperStacksMax)
+		end
+		if lookupChanged(prevState, "$stormkeeperTime", _stormkeeperTime) then
+			lookup["$stormkeeperTime"] = TRB.Functions.BarText:TimerPrecision(_stormkeeperTime)
+		end
+	end
+
+	-- Block F: Tempest ($tempestStacks, $tempestStacksMax, $tempestTime)
+	if not activeVars or activeVars["$tempestStacks"] or activeVars["$tempestStacksMax"] or activeVars["$tempestTime"] then
+		RefreshTempestLookup(spells, snapshotData.attributes, lookup, lookupLogic, prevState)
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -531,6 +691,11 @@ local function RefreshLookupData_Enhancement()
 		if lookupChanged(prevState, "$ascendanceTime", _ascendanceTime) then
 			lookup["$ascendanceTime"] = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
 		end
+	end
+
+	-- Block D: Tempest ($tempestStacks, $tempestStacksMax, $tempestTime)
+	if not activeVars or activeVars["$tempestStacks"] or activeVars["$tempestStacksMax"] or activeVars["$tempestTime"] then
+		RefreshTempestLookup(spells, snapshotData.attributes, lookup, lookupLogic, prevState)
 	end
 
 	TRB.Data.lookup = lookup
@@ -628,6 +793,19 @@ local function FillSnapshotDataCasting(spell, resourceMod)
 	snapshotData.casting.icon = spell.icon
 end
 
+---Adds Stormkeeper charges from a cast, since its aura is unreadable in combat.
+---@param stacks integer
+---@param currentTime number
+local function AddStormkeeperStacks(stacks, currentTime)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	local buff = TRB.Data.snapshotData.snapshots[spells.stormkeeper.id].buff
+
+	buff:GetRemainingTime(currentTime)
+	local current = buff.isActive and buff.applications or 0
+	-- InitializeCustom, not AddStack, so the snapshot stays isCustom and aura refreshes leave it alone.
+	buff:InitializeCustom(spells.stormkeeper.duration, currentTime, true, math.min(current + stacks, GetStormkeeperMaxStacks()))
+end
+
 local function UpdateCastingResourceFinal_Enhancement()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
@@ -689,6 +867,17 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 				snapshotData.casting.resourceRaw = spells.stormwell.resource
 				snapshotData.casting.resourceFinal = spells.stormwell.resource
+			elseif spellId == spells.tempest.castId then
+				local stormkeeperBuff = snapshots[spells.stormkeeper.id].buff
+				stormkeeperBuff:GetRemainingTime(currentTime)
+
+				-- SimC-modeled bug: Arc Discharge granting a fresh Stormkeeper charge triggers Stormwell's gain.
+				if talents:IsTalentActive(spells.stormwell) and talents:IsTalentActive(spells.arcDischarge) and not stormkeeperBuff.isActive then
+					FillSnapshotDataCasting(spells.tempest)
+
+					snapshotData.casting.resourceRaw = spells.stormwell.resource
+					snapshotData.casting.resourceFinal = spells.stormwell.resource
+				end
 			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.ascendance.castId then
@@ -697,6 +886,20 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					duration = duration + spells.preeminence.duration
 				end
 				snapshotData.snapshots[spells.ascendance.id].buff:InitializeCustom(duration, currentTime)
+			elseif spellId == spells.stormkeeper.id then
+				local stacks = spells.stormkeeper.attributes.stacks
+				if TRB.Functions.Item:HasSetBonus(TRB.Classes.Shaman.ElementalSpells.midnightSeason1SetKey, 4) then
+					stacks = stacks + spells.midnightSeason1SetBonus.attributes.fourPieceStacks
+				end
+				AddStormkeeperStacks(stacks, currentTime)
+			elseif spellId == spells.tempest.castId and talents:IsTalentActive(spells.arcDischarge) then
+				AddStormkeeperStacks(spells.arcDischarge.attributes.stormkeeperStacks, currentTime)
+			elseif spellId == spells.lightningBolt.id or spellId == spells.chainLightning.id then
+				local stormkeeperBuff = snapshots[spells.stormkeeper.id].buff
+				stormkeeperBuff:GetRemainingTime(currentTime)
+				if stormkeeperBuff.isActive then
+					stormkeeperBuff:RemoveStack()
+				end
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -781,6 +984,8 @@ local function UpdateSnapshot_Elemental()
 			TRB.Data.lookupDirty = true
 		end
 	end
+
+	UpdateTempest(spells, TRB.Data.snapshotData.attributes, GetTime())
 end
 
 local function UpdateSnapshot_Enhancement()
@@ -794,6 +999,8 @@ local function UpdateSnapshot_Enhancement()
 
 	-- Plain (non-secret) stack count for the compressed Maelstrom Weapon custom-threshold overlap gate.
 	snapshotData.attributes.maelstromWeaponStacks = snapshots[spells.maelstromWeapon.id].buff.applications or 0
+
+	UpdateTempest(spells, snapshotData.attributes, currentTime)
 end
 
 local function UpdateSnapshot_Restoration()
@@ -950,6 +1157,8 @@ local function UpdateResourceBar()
 			conditionMap.earthquake = earthquakeUsable
 			conditionMap.ascendance = ascendanceActive
 			conditionMap.borderOvercap = affectingCombat
+			conditionMap.tempest = snapshotData.attributes.tempestActive == true
+			conditionMap.tempest2 = snapshotData.attributes.tempestStacks == spells.tempest.maxStacks
 			local maelstromBarColors = scratch.maelstromBarColors1
 			wipe(maelstromBarColors)
 			maelstromBarColors.bar = barColor
@@ -1100,6 +1309,8 @@ local function UpdateResourceBar()
 					conditionMap.earthquake = earthquakeUsable
 					conditionMap.ascendance = ascendanceActive
 					conditionMap.borderOvercap = affectingCombat
+					conditionMap.tempest = snapshotData.attributes.tempestActive == true
+					conditionMap.tempest2 = snapshotData.attributes.tempestStacks == spells.tempest.maxStacks
 					local manaBarColors = scratch.manaBarColors1
 					wipe(manaBarColors)
 					manaBarColors.bar = specSettings.colors.bars.mana.bar.color
@@ -1173,6 +1384,7 @@ local function UpdateResourceBar()
 				UpdateElementalBlastBuffs(specSettings)
 			end
 		end
+		FireTempestCues(specSettings, snapshotData, TRB.Data.spellsData.spells)
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
@@ -1207,6 +1419,8 @@ local function UpdateResourceBar()
 			wipe(conditionMap)
 			conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
 			conditionMap.ascendance = ascendanceActive
+			conditionMap.tempest = snapshotData.attributes.tempestActive == true
+			conditionMap.tempest2 = snapshotData.attributes.tempestStacks == spells.tempest.maxStacks
 			local manaBarColors = scratch.manaBarColors2
 			wipe(manaBarColors)
 			manaBarColors.bar = barColor
@@ -1269,6 +1483,8 @@ local function UpdateResourceBar()
 					wipe(conditionMap)
 					conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
 					conditionMap.ascendance = ascendanceActive
+					conditionMap.tempest = snapshotData.attributes.tempestActive == true
+					conditionMap.tempest2 = snapshotData.attributes.tempestStacks == spells.tempest.maxStacks
 					local mwBarOverride = nil
 					local mwBorderOverride = nil
 					local mwBackgroundOverride = nil
@@ -1422,6 +1638,7 @@ local function UpdateResourceBar()
 		end
 
 		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "maelstromWeapon", snapshots[spells.maelstromWeapon.id].buff.applications or 0)
+		FireTempestCues(specSettings, snapshotData, spells)
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
@@ -1537,8 +1754,10 @@ local function SwitchSpec()
 		lookup["#lavaBurst"] = spells.lavaBurst.icon
 		lookup["#lightningBolt"] = spells.lightningBolt.icon
 		lookup["#stormkeeper"] = spells.stormkeeper.icon
+		lookup["#tempest"] = spells.tempest.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
+		ResetTempestTracking(TRB.Data.snapshotData)
 
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar.
 		TRB.Functions.Class:EventRegistration()
@@ -1564,8 +1783,10 @@ local function SwitchSpec()
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#ascendance"] = spells.ascendance.icon
+		lookup["#tempest"] = spells.tempest.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
+		ResetTempestTracking(TRB.Data.snapshotData)
 
 		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar.
 		TRB.Functions.Class:EventRegistration()
@@ -1678,8 +1899,44 @@ function TRB.Functions.Class:CheckCharacter()
 	end
 end
 
+---Tracks Tempest from its override of Lightning Bolt: set on gain, cleared on loss, and both in one frame on a spend or new charge.
+local function HandleSpellEvents(_, event, ...)
+	if event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
+		if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 then
+			return
+		end
+
+		local spellId, overrideSpellId = ...
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells|TRB.Classes.Shaman.EnhancementSpells]]
+		if spellId ~= spells.lightningBolt.id then
+			return
+		end
+
+		local attributes = TRB.Data.snapshotData.attributes
+		if overrideSpellId == spells.tempest.id then
+			attributes.tempestActive = true
+			attributes.tempestLossTime = nil
+		else
+			attributes.tempestLossTime = GetTime()
+		end
+		TRB.Data.lookupDirty = true
+	end
+end
+
+local spellEventFrame = CreateFrame("Frame")
+spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
+
+function TRB.Functions.Class:EnableEvents()
+	spellEventFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
+end
+
+function TRB.Functions.Class:DisableEvents()
+	spellEventFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
+end
+
 function TRB.Functions.Class:EventRegistration()
 	if TRB.Data.character.specId == 1 and TRB.Data.settings.core.enabled.shaman.elemental then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Maelstrom
 		TRB.Data.resourceFactor = 1
@@ -1687,6 +1944,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Id = nil
 		TRB.Data.additionalPowerTokens = { ["MANA"] = true }
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.shaman.enhancement then
+		TRB.Functions.Class:EnableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1		
@@ -1695,6 +1953,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = 1
 		TRB.Data.additionalPowerTokens = nil
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
+		TRB.Functions.Class:DisableEvents()
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
@@ -1702,6 +1961,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Id = nil
 		TRB.Data.additionalPowerTokens = nil
 	else
+		TRB.Functions.Class:DisableEvents()
 		TRB.Data.specSupported = false
 		TRB.Data.additionalPowerTokens = nil
 	end
@@ -1783,6 +2043,19 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
 	end
+	local stormkeeperFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.stormkeeper.id].buff.isActive
+	end
+	-- Tempest (Elemental and Enhancement). False the moment the value is unknown, matching the text.
+	local tempestStacksFn = function()
+		local stacks = TRB.Data.snapshotData.attributes.tempestStacks
+		return stacks ~= nil and stacks > 0
+	end
+	local tempestTimeFn = function()
+		local attributes = TRB.Data.snapshotData.attributes
+		return attributes.tempestActive == true and (attributes.tempestRemaining ~= nil or attributes.tempestRemainingText ~= nil)
+	end
 	local elemental = {
 		["$resource"] = false, ["$maelstrom"] = false,
 		["$resourceMax"] = true, ["$maelstromMax"] = true,
@@ -1792,6 +2065,12 @@ do
 			return sd.casting.resourceRaw ~= nil and (sd.casting.resourceRaw > 0 or sd.casting.spellId == spells.chainLightning.id)
 		end,
 		["$ascendanceTime"] = ascendanceFn,
+		["$stormkeeperStacks"] = stormkeeperFn,
+		["$stormkeeperStacksMax"] = true,
+		["$stormkeeperTime"] = stormkeeperFn,
+		["$tempestStacks"] = tempestStacksFn,
+		["$tempestStacksMax"] = true,
+		["$tempestTime"] = tempestTimeFn,
 		["$earthShockUsable"] = earthShockFn,
 		["$elementalBlastUsable"] = earthShockFn,
 		["$earthquakeUsable"] = function()
@@ -1825,6 +2104,9 @@ do
 		["$comboPoints"] = true, ["$maelstromWeapon"] = true,
 		["$comboPointsMax"] = true, ["$maelstromWeaponMax"] = true,
 		["$ascendanceTime"] = ascendanceFn,
+		["$tempestStacks"] = tempestStacksFn,
+		["$tempestStacksMax"] = true,
+		["$tempestTime"] = tempestTimeFn,
 	}
 	for k, v in pairs(healthVars) do enhancement[k] = v end
 	-- Restoration
@@ -1933,14 +2215,24 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil, true, false
 end
 
----Returns true when Ascendance buff is active (all 3 specs), or an Elemental Blast buff (Elemental).
+---Returns true when Ascendance buff is active (all 3 specs), Tempest (Elemental and Enhancement), or an Elemental
+---Blast buff or Stormkeeper (Elemental).
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	local snapshotData = TRB.Data.snapshotData
 	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+	if snapshotData and snapshotData.attributes and snapshotData.attributes.tempestActive then
+		return true
+	end
 	if snapshotData and spells and spells.ascendance then
 		local snapshot = snapshotData.snapshots[spells.ascendance.id]
 		if snapshot and snapshot.buff and snapshot.buff.isActive then
+			return true
+		end
+	end
+	if snapshotData and spells and spells.stormkeeper then
+		local snapshot = snapshotData.snapshots[spells.stormkeeper.id]
+		if snapshot and snapshot.buff.isActive then
 			return true
 		end
 	end
@@ -1953,6 +2245,12 @@ function TRB.Functions.Class:HasActiveTimers()
 		end
 	end
 	return false
+end
+
+function TRB.Functions.Class:ResetProcsOnDeath()
+	if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
+		ResetTempestTracking(TRB.Data.snapshotData)
+	end
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

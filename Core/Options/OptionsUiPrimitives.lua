@@ -476,6 +476,14 @@ end
 
 local CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B = 1.0, 0.24, 0.24
 
+---Returns the Cooldown Manager badge color, for text that stands in where a badge frame cannot go.
+---@return number r
+---@return number g
+---@return number b
+function TRB.Functions.OptionsUi.Primitives:GetCdmBadgeColor()
+	return CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B
+end
+
 ---Builds a short coloured badge that explains itself on hover.
 ---@param parent Frame
 ---@param label string
