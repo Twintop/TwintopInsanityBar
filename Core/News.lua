@@ -4,6 +4,13 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.0.20-release / Forever 1.60.1.8-release (2026-10-10)
+## General
+
+- Fix the end cap drawing over channel ticks and empower stage lines on the Cast Bar, Pet Cast Bar, and Target Cast Bar.
+
+---
+
 # Live 12.1.0.19-release / Forever 1.60.1.7-release (2026-10-10)
 ## General
 

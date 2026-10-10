@@ -244,7 +244,7 @@ end
 ---Returns a pooled stage-line texture at index i, creating it on demand.
 local function GetStageLine(pool, node, i)
 	if pool.lines[i] == nil then
-		local t = node.frame:CreateTexture(nil, "OVERLAY")
+		local t = node:GetMarkerFrame():CreateTexture(nil, "OVERLAY")
 		t:SetDrawLayer("OVERLAY", 3)
 		pool.lines[i] = t
 	end

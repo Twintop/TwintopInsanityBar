@@ -1488,8 +1488,7 @@ function TRB.Classes.OverlaySlot:CreateEndCap()
 	-- Create clip container off-screen so any initial flash is invisible to the user.
 	-- It will be reanchored to the correct position after one frame.
 	local clip = CreateFrame("Frame", clipName, parent.frame)
-	-- +8 keeps the cap above the casting/spending overlays (parent level +1) and the range
-	-- overlays above them, while staying inside the bar's frame level stride.
+	-- Above the casting/spending and range overlays; the band shares this level so +9 stays free for markers.
 	clip:SetFrameLevel(parent.frame:GetFrameLevel() + 8)
 	clip:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, 10000)
 	clip:SetSize(1, 1)
@@ -1497,7 +1496,7 @@ function TRB.Classes.OverlaySlot:CreateEndCap()
 
 	local bandName = parent.name .. "_" .. self.slotName .. "_EndCap"
 	local band = CreateFrame("Frame", bandName, clip)
-	band:SetFrameLevel(clip:GetFrameLevel() + 1)
+	band:SetFrameLevel(clip:GetFrameLevel())
 ---@diagnostic disable-next-line: inject-field
 	band.texture = band:CreateTexture(nil, "ARTWORK")
 	band.texture:SetAllPoints(band)

@@ -750,7 +750,7 @@ end
 ---Returns a pooled tick line texture at index i, creating it on demand.
 local function GetTickTexture(pool, node, i)
 	if pool.ticks[i] == nil then
-		local t = node.frame:CreateTexture(nil, "OVERLAY")
+		local t = node:GetMarkerFrame():CreateTexture(nil, "OVERLAY")
 		t:SetDrawLayer("OVERLAY", 2)
 		pool.ticks[i] = t
 	end
@@ -760,7 +760,7 @@ end
 ---Returns a pooled empower stage line texture at index i, creating it on demand.
 local function GetEmpowerTexture(pool, node, i)
 	if pool.empower[i] == nil then
-		local t = node.frame:CreateTexture(nil, "OVERLAY")
+		local t = node:GetMarkerFrame():CreateTexture(nil, "OVERLAY")
 		t:SetDrawLayer("OVERLAY", 3)
 		pool.empower[i] = t
 	end

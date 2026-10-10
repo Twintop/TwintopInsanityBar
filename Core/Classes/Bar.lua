@@ -52,6 +52,7 @@ local barNodeCounter = 0
 ---@field public _iconTexture string|integer? # Last texture applied to the icon, so repeat sets are skipped
 ---@field public _iconBorder integer? # Border thickness the icon's backdrop was laid out with, so it can be rebuilt
 ---@field public shield TRB.Classes.BarNode.Shield? # Uninterruptible shield (lazily created by EnsureShield); its own frame so its level can order above the icon or below the bar
+---@field public markerFrame Frame? # Topmost overlay frame for tick and stage lines (lazily created by GetMarkerFrame)
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
@@ -596,6 +597,19 @@ end
 ---@param level integer
 function TRB.Classes.BarNode:SetFrameLevel(level)
 	self.frame:SetFrameLevel(level)
+end
+
+---Returns the frame that tick and stage lines draw on, creating it on first use.
+---@return Frame
+function TRB.Classes.BarNode:GetMarkerFrame()
+	if self.markerFrame == nil then
+		local marker = CreateFrame("Frame", nil, self.frame)
+		marker:SetAllPoints(self.frame)
+		-- Top of the node's level stride, above the end cap at +8.
+		marker:SetFrameLevel(self.frame:GetFrameLevel() + 9)
+		self.markerFrame = marker
+	end
+	return self.markerFrame
 end
 
 ---Sets the frame strata for the node
