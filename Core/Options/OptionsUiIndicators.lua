@@ -73,6 +73,21 @@ local function CreateBorderGlowSubmenu(rootDescription, getTargets, onChanged)
 	end
 
 	local glows = TRB.Functions.Glow:GetOrdered()
+
+	-- Blizzard bakes the label in at creation; a glow toggle's Refresh re-runs this, keeping the count live.
+	submenu:AddInitializer(function(button)
+		local targets = getTargets()
+		local count = 0
+		if targets ~= nil and targets.glows ~= nil then
+			for _, glow in ipairs(glows) do
+				if targets.glows[glow.guid] then
+					count = count + 1
+				end
+			end
+		end
+		button.fontString:SetTextToFit(L["BarElementBorderGlow"] .. " (" .. count .. ")")
+	end)
+
 	if #glows == 0 then
 		submenu:CreateTitle(L["GlowIndicatorNoneDefined"])
 		return
