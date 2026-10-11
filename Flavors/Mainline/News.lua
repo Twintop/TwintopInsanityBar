@@ -14,6 +14,13 @@ TRB.Flavor.newsContent = [====[
 
 - Add a Touch the Cosmos Color Indicator, for when Starsurge or Starfall is free to cast. It targets the Astral Power bar border by default.
 
+## Paladin
+### Retribution
+
+- [#822](#822) Add Execution Sentence tracking, with a Color Indicator, the `$esTime` bar text variable, and the `#es` icon. The indicator targets the Holy Power border by default.
+- [#822](#822) Add Judge, Jury and Executioner tracking, with the `$jjeTime` bar text variable and the `#jje` icon.
+- [#822](#822) Add a Refunded Holy Power color, marking the 3 Holy Power your next spender refunds while Judge, Jury and Executioner is active at 3 or more Holy Power.
+
 ## Shaman
 ### Elemental
 

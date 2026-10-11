@@ -143,6 +143,8 @@ end
 
 ---@class TRB.Classes.Paladin.RetributionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field divinePurpose TRB.Classes.SpellBase
+---@field executionSentence TRB.Classes.SpellBase
+---@field judgeJuryAndExecutioner TRB.Classes.SpellBase
 TRB.Classes.Paladin.RetributionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Paladin.RetributionSpells.__index = TRB.Classes.Paladin.RetributionSpells
 
@@ -158,6 +160,20 @@ function TRB.Classes.Paladin.RetributionSpells:New()
         duration = 12
     })
 
+    self.executionSentence = TRB.Classes.SpellBase:New({
+        id = 343527,
+        isTalent = true,
+        duration = 10
+    })
+
+    self.judgeJuryAndExecutioner = TRB.Classes.SpellBase:New({
+        id = 1253174,
+        talentId = 406157,
+        isTalent = true,
+        duration = 15,
+        spenderCost = 3 -- Every Retribution Holy Power spender costs 3
+    })
+
     return self
 end
 
@@ -171,7 +187,12 @@ function TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCacheEnt
 	specCacheEntry.spellsData:FillSpellData()
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 
-	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#es", icon = spells.executionSentence.icon, description = spells.executionSentence.name, printInSettings = true },
+		{ variable = "#executionSentence", icon = spells.executionSentence.icon, description = spells.executionSentence.name, printInSettings = false },
+		{ variable = "#jje", icon = spells.judgeJuryAndExecutioner.icon, description = spells.judgeJuryAndExecutioner.name, printInSettings = true },
+		{ variable = "#judgeJuryAndExecutioner", icon = spells.judgeJuryAndExecutioner.icon, description = spells.judgeJuryAndExecutioner.name, printInSettings = false },
+	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
@@ -187,6 +208,8 @@ function TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		{ variable = "$divinePurposeTime", description = L["PaladinBarTextVariable_divinePurposeTime"], printInSettings = true, color = false },
+		{ variable = "$esTime", description = L["PaladinRetributionBarTextVariable_esTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+		{ variable = "$jjeTime", description = L["PaladinRetributionBarTextVariable_jjeTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 	})
 end
 

@@ -117,8 +117,13 @@ local function FillSpecializationCache()
 	spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 
 	specCache.paladin_retribution.snapshotData.attributes.manaRegen = 0
+	specCache.paladin_retribution.snapshotData.attributes.holyPowerAtLastUpdate = 0
 	---@type TRB.Classes.Snapshot
 	specCache.paladin_retribution.snapshotData.snapshots[spells.divinePurpose.id] = TRB.Classes.Snapshot:New(spells.divinePurpose)
+	---@type TRB.Classes.Snapshot
+	specCache.paladin_retribution.snapshotData.snapshots[spells.executionSentence.id] = TRB.Classes.Snapshot:New(spells.executionSentence)
+	---@type TRB.Classes.Snapshot
+	specCache.paladin_retribution.snapshotData.snapshots[spells.judgeJuryAndExecutioner.id] = TRB.Classes.Snapshot:New(spells.judgeJuryAndExecutioner)
 
 	specCache.paladin_retribution.barTextVariables = {
 		icons = {},
@@ -569,6 +574,28 @@ local function RefreshLookupData_Retribution()
 		end
 	end
 
+	-- Block D: Execution Sentence ($esTime)
+	if not activeVars or activeVars["$esTime"] then
+		local currentTime = GetTime()
+		local executionSentence = snapshotData.snapshots[spells.executionSentence.id]
+		local _esTime = (executionSentence ~= nil and executionSentence.buff:GetRemainingTime(currentTime)) or 0
+		lookupLogic["$esTime"] = _esTime
+		if lookupChanged(prevState, "$esTime", _esTime) then
+			lookup["$esTime"] = TRB.Functions.BarText:TimerPrecision(_esTime)
+		end
+	end
+
+	-- Block E: Judge, Jury and Executioner ($jjeTime)
+	if not activeVars or activeVars["$jjeTime"] then
+		local currentTime = GetTime()
+		local judgeJuryAndExecutioner = snapshotData.snapshots[spells.judgeJuryAndExecutioner.id]
+		local _jjeTime = (judgeJuryAndExecutioner ~= nil and judgeJuryAndExecutioner.buff:GetRemainingTime(currentTime)) or 0
+		lookupLogic["$jjeTime"] = _jjeTime
+		if lookupChanged(prevState, "$jjeTime", _jjeTime) then
+			lookup["$jjeTime"] = TRB.Functions.BarText:TimerPrecision(_jjeTime)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -595,6 +622,27 @@ local function UpdateCastingResourceFinal_Holy()
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 end
 
+---Starts the Execution Sentence and Judge, Jury and Executioner timers, and spends the refund.
+---@param spellId integer
+local function RetributionSpellCastSucceeded(spellId)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+	local judgeJuryAndExecutioner = snapshotData.snapshots[spells.judgeJuryAndExecutioner.id]
+
+	if spellId == spells.executionSentence.id then
+		local currentTime = GetTime()
+		snapshotData.snapshots[spells.executionSentence.id].buff:InitializeCustom(spells.executionSentence.duration, currentTime)
+		if talents:IsTalentActive(spells.judgeJuryAndExecutioner) then
+			judgeJuryAndExecutioner.buff:InitializeCustom(spells.judgeJuryAndExecutioner.duration, currentTime)
+		end
+		TRB.Functions.BarText:MarkLookupDirty()
+	-- The spend lands before the cast event, so a Holy Power drop means this cast paid and used the refund.
+	elseif judgeJuryAndExecutioner.buff.isActive and UnitPower("player", Enum.PowerType.HolyPower) < snapshotData.attributes.holyPowerAtLastUpdate then
+		judgeJuryAndExecutioner.buff:Reset()
+		TRB.Functions.BarText:MarkLookupDirty()
+	end
+end
+
 ---Handles UNIT_SPELLCAST_ events for the class
 ---@param event trbSpellCastType
 ---@param spellId integer
@@ -611,6 +659,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Holy()
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" and TRB.Data.character.specId == 3 then
+			RetributionSpellCastSucceeded(spellId)
 		end
 	end
 end
@@ -658,12 +708,27 @@ local function UpdateSnapshot_Protection()
 	UpdateDivinePurpose(spells, currentTime)
 end
 
+---Ages a timer that no event ends, refreshing the bar text when it runs out.
+---@param snapshot TRB.Classes.Snapshot
+---@param currentTime number
+local function UpdateCustomTimer(snapshot, currentTime)
+	local wasActive = snapshot.buff.isActive
+	snapshot.buff:GetRemainingTime(currentTime)
+	if wasActive and not snapshot.buff.isActive then
+		TRB.Functions.BarText:MarkLookupDirty()
+	end
+end
+
 local function UpdateSnapshot_Retribution()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 	UpdateDivinePurpose(spells, currentTime)
+	UpdateCustomTimer(snapshotData.snapshots[spells.executionSentence.id], currentTime)
+	UpdateCustomTimer(snapshotData.snapshots[spells.judgeJuryAndExecutioner.id], currentTime)
+	snapshotData.attributes.holyPowerAtLastUpdate = snapshotData.attributes.resource2
 end
 
 ---Processes holy power threshold audio cues for any Paladin spec
@@ -768,13 +833,15 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local function UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors, castingHolyPower)
+	local function UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors, castingHolyPower, refundingHolyPower)
 		local currentHolyPower = snapshotData.attributes.resource2 or 0
 		local backgroundColor = holyPowerColors and holyPowerColors.background or specSettings.colors.comboPoints.background.color
 		local barOverrideActive = holyPowerColors and holyPowerColors.barOverridden == true
 		local castingSettings = specCacheSettings.colors.comboPoints.casting
+		local refundingSettings = specCacheSettings.colors.comboPoints.refunding
 		local castingTexture = specCacheSettings.textures.comboPointsCastingBar
 		local incomingHolyPower = castingHolyPower or 0
+		local firstRefundedNode = currentHolyPower - (refundingHolyPower or 0) + 1
 		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundColor, true)
 		for x = 1, TRB.Data.character.maxResource2 do
 			local cpBorderColor = holyPowerColors and holyPowerColors.border or specSettings.colors.comboPoints.border.color
@@ -804,6 +871,12 @@ local function UpdateResourceBar()
 				end
 			end
 
+			local nodeRefundingSettings = nil
+			if filled and x >= firstRefundedNode then
+				overlayAmount = -1
+				nodeRefundingSettings = refundingSettings
+			end
+
 			if barGroups and barGroups.secondary then
 				local holyPowerNode = barGroups.secondary:GetNode(x)
 				if holyPowerNode then
@@ -813,8 +886,9 @@ local function UpdateResourceBar()
 					holyPowerNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 					Bar:ApplyNodeIndicators(holyPowerNode, "holyPowerBar")
 
-					if castingSettings ~= nil and (overlayAmount ~= 0 or holyPowerNode:GetOverlaySlot("casting") ~= nil) then
-						Bar:UpdateCastingResourceOverlay(holyPowerNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nil, castingTexture)
+					-- No casting gate: Retribution has no casting colors, but its refund overlay still has to clear.
+					if overlayAmount ~= 0 or holyPowerNode:GetOverlaySlot("casting") ~= nil then
+						Bar:UpdateCastingResourceOverlay(holyPowerNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nodeRefundingSettings, castingTexture)
 					end
 				end
 			end
@@ -965,6 +1039,12 @@ local function UpdateResourceBar()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
 		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
+		local executionSentenceActive = snapshotData.snapshots[spells.executionSentence.id].buff.isActive
+		local refundingHolyPower = 0
+		local spenderCost = spells.judgeJuryAndExecutioner.attributes.spenderCost
+		if snapshotData.snapshots[spells.judgeJuryAndExecutioner.id].buff.isActive and snapshotData.attributes.resource2 >= spenderCost then
+			refundingHolyPower = spenderCost
+		end
 		local manaBarColors = scratch.manaBarColors3
 		wipe(manaBarColors)
 		manaBarColors.bar = specSettings.colors.bar.base
@@ -975,7 +1055,7 @@ local function UpdateResourceBar()
 		holyPowerColors.bar = specSettings.colors.comboPoints.base
 		holyPowerColors.border = specSettings.colors.comboPoints.border.color
 		holyPowerColors.background = specSettings.colors.comboPoints.background.color
-		ApplyFlatIndicatorColors(specSettings.colors.shared, { divinePurpose = divinePurposeActive }, {
+		ApplyFlatIndicatorColors(specSettings.colors.shared, { divinePurpose = divinePurposeActive, executionSentence = executionSentenceActive }, {
 			manaBar = manaBarColors,
 			holyPowerBar = holyPowerColors,
 		})
@@ -994,7 +1074,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors)
+				UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors, nil, refundingHolyPower)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1097,6 +1177,10 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.paladin_retribution.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#es"] = spells.executionSentence.icon
+		lookup["#executionSentence"] = spells.executionSentence.icon
+		lookup["#jje"] = spells.judgeJuryAndExecutioner.icon
+		lookup["#judgeJuryAndExecutioner"] = spells.judgeJuryAndExecutioner.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1244,10 +1328,12 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData and snapshotData.snapshots then
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
-		if spells and spells.divinePurpose then
-			local divinePurposeSnapshot = snapshotData.snapshots[spells.divinePurpose.id]
-			if divinePurposeSnapshot ~= nil then
-				divinePurposeSnapshot.buff:Reset()
+		if spells then
+			for _, key in ipairs({ "divinePurpose", "judgeJuryAndExecutioner" }) do
+				local snapshot = spells[key] and snapshotData.snapshots[spells[key].id]
+				if snapshot ~= nil then
+					snapshot.buff:Reset()
+				end
 			end
 		end
 	end
@@ -1255,6 +1341,19 @@ end
 
 local specValidVars
 do
+	---@param spellKey string
+	---@return fun(): boolean
+	local function IsSnapshotActive(spellKey)
+		return function()
+			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+			if spells == nil or spells[spellKey] == nil then
+				return false
+			end
+			local snap = TRB.Data.snapshotData.snapshots[spells[spellKey].id]
+			return snap ~= nil and snap.buff.isActive == true
+		end
+	end
+
 	local shared = {
 		["$casting"] = function()
 			local c = TRB.Data.snapshotData.casting
@@ -1267,14 +1366,7 @@ do
 		["$comboPointsMax"] = true, ["$holyPowerMax"] = true,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
-		["$divinePurposeTime"] = function()
-			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
-			if spells == nil or spells.divinePurpose == nil then
-				return false
-			end
-			local snap = TRB.Data.snapshotData.snapshots[spells.divinePurpose.id]
-			return snap ~= nil and snap.buff.isActive == true
-		end,
+		["$divinePurposeTime"] = IsSnapshotActive("divinePurpose"),
 	}
 	local holy = {}
 	for key, entry in pairs(shared) do
@@ -1286,7 +1378,13 @@ do
 	end
 	holy["$holyPowerPlusCasting"] = true
 	holy["$comboPointsPlusCasting"] = true
-	specValidVars = { [1] = holy, [2] = shared, [3] = shared }
+	local retribution = {}
+	for key, entry in pairs(shared) do
+		retribution[key] = entry
+	end
+	retribution["$esTime"] = IsSnapshotActive("executionSentence")
+	retribution["$jjeTime"] = IsSnapshotActive("judgeJuryAndExecutioner")
+	specValidVars = { [1] = holy, [2] = shared, [3] = retribution }
 end
 
 function TRB.Functions.Class:IsValidVariableForSpec(var)
@@ -1350,8 +1448,8 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	return nil, true, false
 end
 
----Returns true while $divinePurposeTime is counting down, which is driven by elapsed time rather
----than by any event. All 3 specs share it.
+---Returns true while a timer variable is counting down: $divinePurposeTime on all 3 specs, plus
+---$esTime and $jjeTime on Retribution.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	local snapshotData = TRB.Data.snapshotData
@@ -1361,6 +1459,11 @@ function TRB.Functions.Class:HasActiveTimers()
 	local specId = TRB.Data.character.specId
 	if specId == 1 or specId == 2 or specId == 3 then
 		if spells.divinePurpose and snapshots[spells.divinePurpose.id] and snapshots[spells.divinePurpose.id].buff and snapshots[spells.divinePurpose.id].buff.isActive then
+			return true
+		end
+	end
+	if specId == 3 and spells.executionSentence and spells.judgeJuryAndExecutioner then
+		if snapshots[spells.executionSentence.id].buff.isActive or snapshots[spells.judgeJuryAndExecutioner.id].buff.isActive then
 			return true
 		end
 	end

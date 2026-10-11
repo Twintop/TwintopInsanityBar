@@ -496,6 +496,13 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 					gradientDirection = "disabled"
 				},
 				regenerating = TRB.Functions.Settings:DefaultSecondaryPartialFillColor(false),
+				refunding = {
+					color = "FF33CC33",
+					color2 = "FF33CC33",
+					gradientDirection = "disabled",
+					enabled = true,
+					fullHeight = false
+				},
 				second = {
 					color = "FFFCE58E",
 					color2 = "FFFCE58E",
@@ -540,7 +547,7 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			shared = {
-				nodeOrder = { "divinePurpose" },
+				nodeOrder = { "divinePurpose", "executionSentence" },
 				gradientOrder = {},
 				indicatorColors = {
 					divinePurpose = {
@@ -551,6 +558,16 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 						targets = {
 							manaBar = { bar = false, border = false, background = false },
 							holyPowerBar = { bar = false, border = true, background = true },
+						},
+					},
+					executionSentence = {
+						color = "FFFFFFFF",
+						color2 = "FFFFFFFF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = false, background = false },
+							holyPowerBar = { bar = false, border = true, background = false },
 						},
 					},
 				},
@@ -1641,6 +1658,26 @@ local function RetributionConstructHolyPowerBarPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
+	controls.colors.comboPoints.refunding = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, L["PaladinRetributionHolyPowerColorPickerRefunding"], spec.colors.comboPoints.refunding, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
+	f = controls.colors.comboPoints.refunding
+	f.Swatch1:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "refunding")
+	end)
+	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.refunding, self)
+	end)
+
+	controls.checkBoxes.refundingOverlayEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Retribution_Checkbox_RefundingOverlay", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.refundingOverlayEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["PaladinRetributionHolyPowerRefundingOverlayCheckbox"])
+	f.tooltip = L["PaladinRetributionHolyPowerRefundingOverlayCheckboxTooltip"]
+	f:SetChecked(spec.colors.comboPoints.refunding.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.comboPoints.refunding.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
 	--yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryPartialFillColorOptions(parent, controls, spec, 2, 3, yCoord, L["ResourceHolyPower"])
 
 	controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["PaladinColorPickerHolyPowerBorderHeader"], spec.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
@@ -1786,6 +1823,7 @@ local function RetributionConstructIndicatorColorsPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 2, 3, yCoord, {
 		indicatorDefs = {
 			{ key = "divinePurpose", label = L["PaladinIndicatorDivinePurpose"], tooltip = L["PaladinIndicatorDivinePurposeTooltip"], colorLabel = L["PaladinIndicatorDivinePurposeColor"] },
+			{ key = "executionSentence", label = L["PaladinRetributionIndicatorExecutionSentence"], tooltip = L["PaladinRetributionIndicatorExecutionSentenceTooltip"], colorLabel = L["PaladinRetributionIndicatorExecutionSentenceColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },

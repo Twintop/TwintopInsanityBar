@@ -499,5 +499,8 @@ if locale == "enGB" then
 	L["ShamanIndicatorTempestTooltip"] = "Changes to this colour when you have at least one Tempest charge."
 	L["ShamanIndicatorTempest2Tooltip"] = "Changes to this colour when you have two Tempest charges."
 	L["DruidBalanceIndicatorTouchTheCosmosTooltip"] = "Changes to this colour when Starsurge or Starfall is usable and costs no Astral Power, such as from a Touch the Cosmos proc."
+	L["PaladinRetributionIndicatorExecutionSentenceTooltip"] = "Changes to this colour while your Execution Sentence is active."
+	L["PaladinRetributionHolyPowerRefundingOverlayCheckbox"] = "Use the Refunded Holy Power colour?"
+	L["PaladinRetributionHolyPowerRefundingOverlayCheckboxTooltip"] = "When checked, while Judge, Jury and Executioner is active and you have at least 3 Holy Power, the 3 Holy Power your next spender will refund use this colour."
 
 end
