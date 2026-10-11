@@ -417,6 +417,9 @@ local function RetributionLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
+	-- Centered in both layouts: the mana text sits on this bar's sides either way.
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("awTime", "aw", classic, "CENTER", "CENTER"))
+
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)

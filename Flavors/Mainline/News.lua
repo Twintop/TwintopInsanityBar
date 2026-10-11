@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.0.20-release (2026-10-10)
+# 12.1.5.0-release (2026-10-12)
 ## Druid
 ### Balance
 
