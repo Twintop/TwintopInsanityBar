@@ -147,14 +147,34 @@ jobs:
           FLAVOR="${{ needs.stage.outputs.flavor }}"
           FLAVOR_DIR="$(find Flavors -mindepth 1 -maxdepth 1 -type d -iname "$FLAVOR" | head -n 1)"
           if [ -z "$FLAVOR_DIR" ]; then echo "Unknown flavor '$FLAVOR'"; exit 1; fi
-          # The newest flavor "# <version>" title, then the newest Core section retitled, then the rest of that flavor section.
+          # The newest flavor "# <version>" title, then Core's newest section as "## Core Changes" when its title names that
+          # version, then the rest of that flavor section.
           # In-addon "(#NNN)" links become GitHub issue links and "(tab:...)" links become plain text,
           # since neither resolves outside the News window.
           # Blank lines are only printed ahead of content, so each section's trailing blanks drop and sections join with one.
           newest() { tr -d '\r' < "$1" | awk '/^# /{n++} n==2||/^\]====\]/{exit} n==1 && !/^---$/{ if ($0 ~ /^[[:space:]]*$/) { blank++ } else { for (; blank > 0; blank--) print ""; print } }'; }
           FLAVOR_NEWS="$(newest "$FLAVOR_DIR/News.lua")"
           if [ -z "$FLAVOR_NEWS" ]; then echo "No release section found in $FLAVOR_DIR/News.lua"; exit 1; fi
-          { echo "$FLAVOR_NEWS" | head -n 1; echo; newest Core/News.lua | sed -E '1s/^# .*/## Core Changes/'; echo; echo "$FLAVOR_NEWS" | tail -n +2 | sed '/./,$!d'; } \
+          # Core titles name both releases, e.g. "# Live 12.1.0.18-release / Forever 1.60.1.6-release (2026-10-09)".
+          if [ "$FLAVOR" = "mainline" ]; then CORE_LABEL="Live"; else CORE_LABEL="$(basename "$FLAVOR_DIR")"; fi
+          RELEASE="$(echo "$FLAVOR_NEWS" | head -n 1 | awk '{print $2}')"
+          CORE_NEWS="$(newest Core/News.lua)"
+          case "$(echo "$CORE_NEWS" | head -n 1)" in
+            *"$CORE_LABEL $RELEASE "*)
+              # Core's "## General" bullets sit directly under "## Core Changes", ahead of every other Core heading moved one level deeper.
+              CORE_NEWS="$(echo "$CORE_NEWS" | awk 'BEGIN { general = 1 } NR == 1 { next } /^## / { general = ($0 == "## General"); if (general) next } /^#/ { $0 = "#" $0 } general { top[++nt] = $0; next } { rest[++nr] = $0 } END {
+                while (nt && top[nt] !~ /[^[:space:]]/) nt--; while (nr && rest[nr] !~ /[^[:space:]]/) nr--
+                print "## Core Changes"; for (i = 1; i <= nt; i++) print top[i]; if (nt && nr) print ""; for (i = 1; i <= nr; i++) print rest[i]
+              }')" ;;
+            *) echo "Core's newest section does not name $CORE_LABEL $RELEASE, so Core Changes is left out."; CORE_NEWS="" ;;
+          esac
+          # The flavor's "### Core Changes" pointer drops, along with any "##" heading it leaves empty.
+          FLAVOR_REST="$(echo "$FLAVOR_NEWS" | tail -n +2 | awk '{ line[NR] = $0 } END {
+            for (i = 1; i <= NR; i++) if (line[i] == "### Core Changes") for (j = i; j <= NR && (j == i || line[j] !~ /^#/); j++) drop[j] = 1
+            for (i = 1; i <= NR; i++) if (line[i] ~ /^## /) { keep = 0; for (j = i + 1; j <= NR && line[j] !~ /^## /; j++) if (!drop[j] && line[j] ~ /[^[:space:]]/) keep = 1; if (!keep) drop[i] = 1 }
+            for (i = 1; i <= NR; i++) if (!drop[i]) print line[i]
+          }' | sed '/./,$!d')"
+          { echo "$FLAVOR_NEWS" | head -n 1; for part in "$CORE_NEWS" "$FLAVOR_REST"; do if [ -n "$part" ]; then echo; echo "$part"; fi; done; } \
             | sed -E 's#\]\(\#([0-9]+)\)#](https://github.com/Twintop/TwintopInsanityBar/issues/\1)#g' \
             | sed -E 's#\[([^]]+)\]\(tab:[A-Za-z]+\)#\1#g' > CHANGELOG.md
           echo "flavorDir=$FLAVOR_DIR" >> "$GITHUB_OUTPUT"
