@@ -452,6 +452,9 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		endOf = {
+			avengingWrath = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0, { indicatorSource = "both" })
+		},
 		colors={
 			text = {
 				current = {
@@ -547,9 +550,19 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			shared = {
-				nodeOrder = { "divinePurpose", "executionSentence" },
+				nodeOrder = { "avengingWrathEnd", "divinePurpose", "executionSentence", "avengingWrath" },
 				gradientOrder = {},
 				indicatorColors = {
+					avengingWrathEnd = {
+						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = false, background = false },
+							holyPowerBar = { bar = false, border = true, background = false },
+						},
+					},
 					divinePurpose = {
 						color = "FF44FF44",
 						color2 = "FF44FF44",
@@ -563,6 +576,16 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 					executionSentence = {
 						color = "FFFFFFFF",
 						color2 = "FFFFFFFF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = false, background = false },
+							holyPowerBar = { bar = false, border = true, background = false },
+						},
+					},
+					avengingWrath = {
+						color = "FFFFD700",
+						color2 = "FFFFD700",
 						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
@@ -598,6 +621,12 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
+			avengingWrath={
+				name = L["PaladinRetributionAudioAvengingWrath"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -608,6 +637,7 @@ local function RetributionLoadDefaultSettings(includeBarText, classic)
 
 	return settings
 end
+TRB.Options.Paladin.RetributionLoadDefaultSettings = RetributionLoadDefaultSettings
 
 ---Loads default settings for Paladin
 ---@param includeBarText boolean?
@@ -1822,17 +1852,39 @@ local function RetributionConstructIndicatorColorsPanel(parent)
 
 	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 2, 3, yCoord, {
 		indicatorDefs = {
+			{ key = "avengingWrathEnd", label = L["PaladinRetributionIndicatorAvengingWrathEnd"], tooltip = L["PaladinRetributionIndicatorAvengingWrathEndTooltip"], colorLabel = L["PaladinRetributionIndicatorAvengingWrathEndColor"] },
 			{ key = "divinePurpose", label = L["PaladinIndicatorDivinePurpose"], tooltip = L["PaladinIndicatorDivinePurposeTooltip"], colorLabel = L["PaladinIndicatorDivinePurposeColor"] },
 			{ key = "executionSentence", label = L["PaladinRetributionIndicatorExecutionSentence"], tooltip = L["PaladinRetributionIndicatorExecutionSentenceTooltip"], colorLabel = L["PaladinRetributionIndicatorExecutionSentenceColor"] },
+			{ key = "avengingWrath", label = L["PaladinRetributionIndicatorAvengingWrath"], tooltip = L["PaladinRetributionIndicatorAvengingWrathTooltip"], colorLabel = L["PaladinRetributionIndicatorAvengingWrathColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },
 			{ key = "holyPowerBar", label = L["ResourceHolyPower"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Paladin_Retribution",
+		endOfConfigs = {
+			{
+				endOfKey = "avengingWrath",
+				sectionHeader = L["PaladinRetributionHeaderEndOfAvengingWrathConfiguration"],
+				gcdRadioLabel = L["PaladinRetributionCheckboxAvengingWrathGcds"],
+				gcdSliderLabel = L["PaladinRetributionAvengingWrathGcds"],
+				timeRadioLabel = L["PaladinRetributionCheckboxAvengingWrathTime"],
+				timeSliderLabel = L["PaladinRetributionAvengingWrathTime"],
+			},
+		},
 	})
 
 	yCoord = yCoord - 40
+	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["PaladinRetributionAvengingWrathSource"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.dropDown.avengingWrathIndicatorSource = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent,
+		"TwintopResourceBar_Paladin_Retribution_AvengingWrathIndicatorSource", nil, TRB.Classes.Paladin.AvengingWrathSourceOptions,
+		function() return spec.endOf.avengingWrath.indicatorSource end,
+		function(value) spec.endOf.avengingWrath.indicatorSource = value end,
+		oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
 end
 
 local function RetributionConstructThresholdSettingsPanel(parent)

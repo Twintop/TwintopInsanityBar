@@ -145,6 +145,10 @@ end
 ---@field divinePurpose TRB.Classes.SpellBase
 ---@field executionSentence TRB.Classes.SpellBase
 ---@field judgeJuryAndExecutioner TRB.Classes.SpellBase
+---@field avengingWrath TRB.Classes.SpellBase
+---@field radiantGlory TRB.Classes.SpellBase
+---@field divineWrath TRB.Classes.SpellBase
+---@field wakeOfAshes TRB.Classes.SpellBase
 TRB.Classes.Paladin.RetributionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Paladin.RetributionSpells.__index = TRB.Classes.Paladin.RetributionSpells
 
@@ -174,6 +178,29 @@ function TRB.Classes.Paladin.RetributionSpells:New()
         spenderCost = 3 -- Every Retribution Holy Power spender costs 3
     })
 
+    self.avengingWrath = TRB.Classes.SpellBase:New({
+        id = 31884,
+        isTalent = true,
+        duration = 20
+    })
+
+    self.radiantGlory = TRB.Classes.SpellBase:New({
+        id = 458359,
+        isTalent = true,
+        duration = 8 -- The Avenging Wrath Wake of Ashes grants
+    })
+
+    self.divineWrath = TRB.Classes.SpellBase:New({
+        id = 406872,
+        isTalent = true,
+        durationPerRank = { 3, 4 } -- Seconds added to either Avenging Wrath, by talent rank
+    })
+
+    self.wakeOfAshes = TRB.Classes.SpellBase:New({
+        id = 255937,
+        isTalent = true
+    })
+
     return self
 end
 
@@ -192,6 +219,8 @@ function TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "#executionSentence", icon = spells.executionSentence.icon, description = spells.executionSentence.name, printInSettings = false },
 		{ variable = "#jje", icon = spells.judgeJuryAndExecutioner.icon, description = spells.judgeJuryAndExecutioner.name, printInSettings = true },
 		{ variable = "#judgeJuryAndExecutioner", icon = spells.judgeJuryAndExecutioner.icon, description = spells.judgeJuryAndExecutioner.name, printInSettings = false },
+		{ variable = "#aw", icon = spells.avengingWrath.icon, description = spells.avengingWrath.name, printInSettings = true },
+		{ variable = "#avengingWrath", icon = spells.avengingWrath.icon, description = spells.avengingWrath.name, printInSettings = false },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -210,6 +239,7 @@ function TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCacheEnt
 		{ variable = "$divinePurposeTime", description = L["PaladinBarTextVariable_divinePurposeTime"], printInSettings = true, color = false },
 		{ variable = "$esTime", description = L["PaladinRetributionBarTextVariable_esTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 		{ variable = "$jjeTime", description = L["PaladinRetributionBarTextVariable_jjeTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+		{ variable = "$awTime", description = L["PaladinRetributionBarTextVariable_awTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 	})
 end
 
@@ -375,8 +405,32 @@ do
 		counters = { HolyPowerSource() },
 	})
 
+	-- Shared by the Avenging Wrath Source dropdowns on the Indicators and Audio tabs.
+	TRB.Classes.Paladin.AvengingWrathSourceOptions = {
+		{ value = "cast", label = L["PaladinRetributionAvengingWrathSourceCast"] },
+		{ value = "radiantGlory", label = L["PaladinRetributionAvengingWrathSourceRadiantGlory"] },
+		{ value = "both", label = L["PaladinRetributionAvengingWrathSourceBoth"] },
+	}
+
 	TRB.Functions.AudioCues:Register("paladin_retribution", {
-		builtIns = { divinePurpose },
+		builtIns = {
+			divinePurpose,
+			{
+				id = "avengingWrath",
+				label = L["PaladinRetributionAudioAvengingWrath"],
+				trigger = L["PaladinRetributionAudioTriggerAvengingWrath"],
+				tooltip = L["PaladinRetributionAudioCheckboxAvengingWrathTooltip"],
+				config = {
+					{
+						key = "source",
+						control = "dropdown",
+						label = L["PaladinRetributionAvengingWrathSource"],
+						options = TRB.Classes.Paladin.AvengingWrathSourceOptions,
+						default = "both",
+					},
+				},
+			},
+		},
 		counters = { HolyPowerSource() },
 	})
 end

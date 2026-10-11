@@ -430,6 +430,11 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		if descriptor.control == "checkbox" then
 			control = BuildCheckButton(editorContent, "TwintopResourceBar_" .. namePrefix .. "_Config_" .. key, descriptor.label, oUi.xCoord2, 0)
 			control.tooltip = descriptor.tooltip
+		elseif descriptor.control == "dropdown" then
+			control = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Config_" .. key, editorContent, "WowStyle1DropdownTemplate")
+			control:SetWidth(oUi.sliderWidth)
+			control.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, descriptor.label, oUi.xCoord2, 0)
+			control.label.font:SetFontObject(GameFontNormal)
 		else
 			control = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, descriptor.label,
 				descriptor.min or 0, descriptor.max or 10, descriptor.min or 0,
@@ -438,14 +443,15 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		end
 
 		---@diagnostic disable-next-line: inject-field
-		control.isSlider = descriptor.control ~= "checkbox"
+		control.isSlider = descriptor.control ~= "checkbox" and descriptor.control ~= "dropdown"
+		---@diagnostic disable-next-line: inject-field
+		control.isDropdown = descriptor.control == "dropdown"
 		configControls[key] = control
 		return control
 	end
 
 	---Re-anchors a config control below the right column's running cursor and returns the new cursor.
-	---BuildSlider offsets its own x by 18 and hangs its title above the bar, so sliders need both a
-	---horizontal correction and leading room that checkboxes do not.
+	---Sliders and dropdowns hang a title above themselves, so they need leading room checkboxes do not.
 	---@param control Frame
 	---@param cursor number
 	---@return number
@@ -454,6 +460,12 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		if control.isSlider then
 			control:SetPoint("TOPLEFT", editorContent, "TOPLEFT", oUi.xCoord2 + 18, cursor - 25)
 			return cursor - 80
+		elseif control.isDropdown then
+			-- The label is a separate frame, so it moves with the dropdown.
+			control.label:ClearAllPoints()
+			control.label:SetPoint("TOPLEFT", editorContent, "TOPLEFT", oUi.xCoord2, cursor - 5)
+			control:SetPoint("TOPLEFT", editorContent, "TOPLEFT", oUi.xCoord2, cursor - 30)
+			return cursor - 60
 		end
 		control:SetPoint("TOPLEFT", editorContent, "TOPLEFT", oUi.xCoord2, cursor - 5)
 		return cursor - 20
@@ -573,6 +585,30 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 					control:SetChecked(cue.configuration[descriptor.key] == true)
 					control:SetScript("OnClick", function(self)
 						cue.configuration[descriptor.key] = self:GetChecked()
+					end)
+				elseif descriptor.control == "dropdown" then
+					local function LabelFor(value)
+						for _, option in ipairs(descriptor.options) do
+							if option.value == value then
+								return option.label
+							end
+						end
+						return descriptor.options[1].label
+					end
+
+					control:SetDefaultText(LabelFor(cue.configuration[descriptor.key]))
+					control:SetupMenu(function(_, rootDescription)
+						for _, option in ipairs(descriptor.options) do
+							rootDescription:CreateRadio(option.label, function(value)
+								return cue.configuration[descriptor.key] == value
+							end, function(value)
+								cue.configuration[descriptor.key] = value
+								-- Deferred: SetDefaultText during menu teardown does not stick.
+								C_Timer.After(0, function()
+									control:SetDefaultText(LabelFor(value))
+								end)
+							end, option.value)
+						end
 					end)
 				else
 					local value = cue.configuration[descriptor.key] or descriptor.min or 0

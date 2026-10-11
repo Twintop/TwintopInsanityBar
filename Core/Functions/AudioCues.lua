@@ -23,7 +23,7 @@ TRB.Data = TRB.Data or {}
 ---An extra control rendered in a built-in cue's detail pane, bound to cue.configuration[key].
 ---@class TRB.Classes.AudioCueConfigControl
 ---@field public key string # Field name under cue.configuration
----@field public control string # "slider" or "checkbox"
+---@field public control string # "slider", "checkbox", or "dropdown"
 ---@field public label string # Localized label
 ---@field public tooltip string? # Localized tooltip (checkboxes)
 ---@field public default any # Value seeded onto cue.configuration when absent
@@ -31,6 +31,7 @@ TRB.Data = TRB.Data or {}
 ---@field public max number? # Slider only
 ---@field public step number? # Slider only
 ---@field public decimals number? # Slider only
+---@field public options { value: any, label: string }[]? # Dropdown only, in display order
 
 ---A countable value the user can hang threshold cues off. The class module feeds the current value
 ---in via AudioCues:UpdateCounter().

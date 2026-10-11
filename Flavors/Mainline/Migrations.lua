@@ -8685,6 +8685,32 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
+	-- Retribution: rank Avenging Wrath Ending first, as the defaults do; the reconcile appends new keys last.
+	do
+		local retribution = TwintopInsanityBarSettings.paladin ~= nil and TwintopInsanityBarSettings.paladin.retribution or nil
+		local shared = retribution ~= nil and retribution.colors ~= nil and retribution.colors.shared or nil
+		if shared ~= nil and type(shared.nodeOrder) == "table" then
+			local hasAvengingWrathEnd = false
+			for _, v in ipairs(shared.nodeOrder) do
+				if v == "avengingWrathEnd" then
+					hasAvengingWrathEnd = true
+					break
+				end
+			end
+
+			if not hasAvengingWrathEnd then
+				table.insert(shared.nodeOrder, 1, "avengingWrathEnd")
+
+				-- The reconcile only seeds colors for keys it appends itself.
+				shared.indicatorColors = shared.indicatorColors or {}
+				if shared.indicatorColors.avengingWrathEnd == nil then
+					local defaults = TRB.Options.Paladin.RetributionLoadDefaultSettings(false, false)
+					shared.indicatorColors.avengingWrathEnd = TRB.Functions.Table:DeepCopy(defaults.colors.shared.indicatorColors.avengingWrathEnd)
+				end
+			end
+		end
+	end
+
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

@@ -20,6 +20,8 @@ TRB.Flavor.newsContent = [====[
 - [#822](#822) Add Execution Sentence tracking, with a Color Indicator, the `$esTime` bar text variable, and the `#es` icon. The indicator targets the Holy Power border by default.
 - [#822](#822) Add Judge, Jury and Executioner tracking, with the `$jjeTime` bar text variable and the `#jje` icon.
 - [#822](#822) Add a Refunded Holy Power color, marking the 3 Holy Power your next spender refunds while Judge, Jury and Executioner is active at 3 or more Holy Power.
+- Add Avenging Wrath tracking, with active and ending Color Indicators, an audio cue, the `$awTime` bar text variable, and the `#aw` icon. The indicators target the Holy Power border by default.
+- Add Avenging Wrath Source dropdowns for the Color Indicators and the audio cue, choosing between Avenging Wrath casts, Radiant Glory, or both.
 
 ## Shaman
 ### Elemental

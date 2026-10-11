@@ -124,6 +124,9 @@ local function FillSpecializationCache()
 	specCache.paladin_retribution.snapshotData.snapshots[spells.executionSentence.id] = TRB.Classes.Snapshot:New(spells.executionSentence)
 	---@type TRB.Classes.Snapshot
 	specCache.paladin_retribution.snapshotData.snapshots[spells.judgeJuryAndExecutioner.id] = TRB.Classes.Snapshot:New(spells.judgeJuryAndExecutioner)
+	---@type TRB.Classes.Snapshot
+	specCache.paladin_retribution.snapshotData.snapshots[spells.avengingWrath.id] = TRB.Classes.Snapshot:New(spells.avengingWrath)
+	specCache.paladin_retribution.snapshotData.attributes.avengingWrathSource = "cast"
 
 	specCache.paladin_retribution.barTextVariables = {
 		icons = {},
@@ -596,6 +599,17 @@ local function RefreshLookupData_Retribution()
 		end
 	end
 
+	-- Block F: Avenging Wrath ($awTime)
+	if not activeVars or activeVars["$awTime"] then
+		local currentTime = GetTime()
+		local avengingWrath = snapshotData.snapshots[spells.avengingWrath.id]
+		local _awTime = (avengingWrath ~= nil and avengingWrath.buff:GetRemainingTime(currentTime)) or 0
+		lookupLogic["$awTime"] = _awTime
+		if lookupChanged(prevState, "$awTime", _awTime) then
+			lookup["$awTime"] = TRB.Functions.BarText:TimerPrecision(_awTime)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -622,7 +636,24 @@ local function UpdateCastingResourceFinal_Holy()
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 end
 
----Starts the Execution Sentence and Judge, Jury and Executioner timers, and spends the refund.
+---Starts the Avenging Wrath timer, recording which source granted it.
+---@param spells TRB.Classes.Paladin.RetributionSpells
+---@param source string # "cast" or "radiantGlory"
+local function StartAvengingWrath(spells, source)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local duration = source == "radiantGlory" and spells.radiantGlory.duration or spells.avengingWrath.duration
+	local divineWrath = talents.talents[spells.divineWrath.id]
+	if divineWrath ~= nil and divineWrath:IsActive() then
+		local durationPerRank = spells.divineWrath.attributes.durationPerRank
+		duration = duration + durationPerRank[math.min(divineWrath.currentRank, #durationPerRank)]
+	end
+
+	snapshotData.attributes.avengingWrathSource = source
+	snapshotData.snapshots[spells.avengingWrath.id].buff:InitializeCustom(duration, GetTime())
+	TRB.Functions.BarText:MarkLookupDirty()
+end
+
+---Starts the Avenging Wrath, Execution Sentence, and Judge, Jury and Executioner timers, and spends the refund.
 ---@param spellId integer
 local function RetributionSpellCastSucceeded(spellId)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -636,6 +667,10 @@ local function RetributionSpellCastSucceeded(spellId)
 			judgeJuryAndExecutioner.buff:InitializeCustom(spells.judgeJuryAndExecutioner.duration, currentTime)
 		end
 		TRB.Functions.BarText:MarkLookupDirty()
+	elseif spellId == spells.avengingWrath.id then
+		StartAvengingWrath(spells, "cast")
+	elseif spellId == spells.wakeOfAshes.id and talents:IsTalentActive(spells.radiantGlory) then
+		StartAvengingWrath(spells, "radiantGlory")
 	-- The spend lands before the cast event, so a Holy Power drop means this cast paid and used the refund.
 	elseif judgeJuryAndExecutioner.buff.isActive and UnitPower("player", Enum.PowerType.HolyPower) < snapshotData.attributes.holyPowerAtLastUpdate then
 		judgeJuryAndExecutioner.buff:Reset()
@@ -728,6 +763,7 @@ local function UpdateSnapshot_Retribution()
 	UpdateDivinePurpose(spells, currentTime)
 	UpdateCustomTimer(snapshotData.snapshots[spells.executionSentence.id], currentTime)
 	UpdateCustomTimer(snapshotData.snapshots[spells.judgeJuryAndExecutioner.id], currentTime)
+	UpdateCustomTimer(snapshotData.snapshots[spells.avengingWrath.id], currentTime)
 	snapshotData.attributes.holyPowerAtLastUpdate = snapshotData.attributes.resource2
 end
 
@@ -1040,6 +1076,18 @@ local function UpdateResourceBar()
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
 		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
 		local executionSentenceActive = snapshotData.snapshots[spells.executionSentence.id].buff.isActive
+		local avengingWrathBuff = snapshotData.snapshots[spells.avengingWrath.id].buff
+		local avengingWrathSource = snapshotData.attributes.avengingWrathSource
+		local endOf = specSettings.endOf.avengingWrath
+		local avengingWrathActive = avengingWrathBuff.isActive and (endOf.indicatorSource == "both" or endOf.indicatorSource == avengingWrathSource)
+		local avengingWrathEnding = false
+		if avengingWrathActive and endOf.enabled then
+			local timeThreshold = endOf.mode == "gcd" and Character:GetCurrentGCDTime() * endOf.gcdsMax or endOf.timeMax
+			avengingWrathEnding = avengingWrathBuff.remaining <= timeThreshold
+		end
+		local cueSource = specSettings.audio.avengingWrath.configuration.source
+		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "avengingWrath", avengingWrathBuff.isActive,
+			cueSource == "both" or cueSource == avengingWrathSource)
 		local refundingHolyPower = 0
 		local spenderCost = spells.judgeJuryAndExecutioner.attributes.spenderCost
 		if snapshotData.snapshots[spells.judgeJuryAndExecutioner.id].buff.isActive and snapshotData.attributes.resource2 >= spenderCost then
@@ -1055,7 +1103,7 @@ local function UpdateResourceBar()
 		holyPowerColors.bar = specSettings.colors.comboPoints.base
 		holyPowerColors.border = specSettings.colors.comboPoints.border.color
 		holyPowerColors.background = specSettings.colors.comboPoints.background.color
-		ApplyFlatIndicatorColors(specSettings.colors.shared, { divinePurpose = divinePurposeActive, executionSentence = executionSentenceActive }, {
+		ApplyFlatIndicatorColors(specSettings.colors.shared, { divinePurpose = divinePurposeActive, executionSentence = executionSentenceActive, avengingWrath = avengingWrathActive, avengingWrathEnd = avengingWrathEnding }, {
 			manaBar = manaBarColors,
 			holyPowerBar = holyPowerColors,
 		})
@@ -1181,6 +1229,8 @@ local function SwitchSpec()
 		lookup["#executionSentence"] = spells.executionSentence.icon
 		lookup["#jje"] = spells.judgeJuryAndExecutioner.icon
 		lookup["#judgeJuryAndExecutioner"] = spells.judgeJuryAndExecutioner.icon
+		lookup["#aw"] = spells.avengingWrath.icon
+		lookup["#avengingWrath"] = spells.avengingWrath.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1329,7 +1379,7 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 	if snapshotData and snapshotData.snapshots then
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if spells then
-			for _, key in ipairs({ "divinePurpose", "judgeJuryAndExecutioner" }) do
+			for _, key in ipairs({ "divinePurpose", "judgeJuryAndExecutioner", "avengingWrath" }) do
 				local snapshot = spells[key] and snapshotData.snapshots[spells[key].id]
 				if snapshot ~= nil then
 					snapshot.buff:Reset()
@@ -1384,6 +1434,7 @@ do
 	end
 	retribution["$esTime"] = IsSnapshotActive("executionSentence")
 	retribution["$jjeTime"] = IsSnapshotActive("judgeJuryAndExecutioner")
+	retribution["$awTime"] = IsSnapshotActive("avengingWrath")
 	specValidVars = { [1] = holy, [2] = shared, [3] = retribution }
 end
 
@@ -1449,7 +1500,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 ---Returns true while a timer variable is counting down: $divinePurposeTime on all 3 specs, plus
----$esTime and $jjeTime on Retribution.
+---$esTime, $jjeTime, and $awTime on Retribution.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	local snapshotData = TRB.Data.snapshotData
@@ -1462,8 +1513,9 @@ function TRB.Functions.Class:HasActiveTimers()
 			return true
 		end
 	end
-	if specId == 3 and spells.executionSentence and spells.judgeJuryAndExecutioner then
-		if snapshots[spells.executionSentence.id].buff.isActive or snapshots[spells.judgeJuryAndExecutioner.id].buff.isActive then
+	if specId == 3 and spells.executionSentence and spells.judgeJuryAndExecutioner and spells.avengingWrath then
+		if snapshots[spells.executionSentence.id].buff.isActive or snapshots[spells.judgeJuryAndExecutioner.id].buff.isActive
+			or snapshots[spells.avengingWrath.id].buff.isActive then
 			return true
 		end
 	end

@@ -502,5 +502,7 @@ if locale == "enGB" then
 	L["PaladinRetributionIndicatorExecutionSentenceTooltip"] = "Changes to this colour while your Execution Sentence is active."
 	L["PaladinRetributionHolyPowerRefundingOverlayCheckbox"] = "Use the Refunded Holy Power colour?"
 	L["PaladinRetributionHolyPowerRefundingOverlayCheckboxTooltip"] = "When checked, while Judge, Jury and Executioner is active and you have at least 3 Holy Power, the 3 Holy Power your next spender will refund use this colour."
+	L["PaladinRetributionIndicatorAvengingWrathTooltip"] = "Changes to this colour while Avenging Wrath is active, from the sources picked under Avenging Wrath Source."
+	L["PaladinRetributionIndicatorAvengingWrathEndTooltip"] = "Changes to this colour when Avenging Wrath is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 
 end
