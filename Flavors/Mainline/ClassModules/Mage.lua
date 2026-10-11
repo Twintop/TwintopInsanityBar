@@ -88,8 +88,15 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Mage.FireSpells
 	specCache.mage_fire.spellsData.spells = TRB.Classes.Mage.FireSpells:New()
+	local fireSpells = specCache.mage_fire.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
 
 	specCache.mage_fire.snapshotData.attributes.manaRegen = 0
+
+	specCache.mage_fire.snapshotData.snapshots[fireSpells.combustion.id] = TRB.Classes.Snapshot:New(fireSpells.combustion)
+	-- Overlay-tracked, so simple mode keeps RefreshAllBuffs off them and their manual end lives in attributes.
+	specCache.mage_fire.snapshotData.snapshots[fireSpells.heatingUp.id] = TRB.Classes.Snapshot:New(fireSpells.heatingUp, nil, "always")
+	specCache.mage_fire.snapshotData.snapshots[fireSpells.hotStreak.id] = TRB.Classes.Snapshot:New(fireSpells.hotStreak, nil, "always")
+	specCache.mage_fire.snapshotData.snapshots[fireSpells.frostfireEmpowerment.id] = TRB.Classes.Snapshot:New(fireSpells.frostfireEmpowerment, nil, "always")
 
 	specCache.mage_fire.barTextVariables = {
 		icons = {},
@@ -128,6 +135,7 @@ local function FillSpecializationCache()
 	-- Simple mode, or the UNIT_AURA-driven RefreshAllBuffs would run GetRemainingTime against the nil
 	-- endTime an overlay-tracked proc has and clear isActive between procs.
 	specCache.mage_frost.snapshotData.snapshots[frostSpells.brainFreeze.id] = TRB.Classes.Snapshot:New(frostSpells.brainFreeze, nil, "always")
+	specCache.mage_frost.snapshotData.snapshots[frostSpells.frostfireEmpowerment.id] = TRB.Classes.Snapshot:New(frostSpells.frostfireEmpowerment, nil, "always")
 
 	specCache.mage_frost.barTextVariables = {
 		icons = {},
@@ -519,6 +527,32 @@ local function GetProcTimeDisplay(buff)
 	return TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
 end
 
+---Starts an overlay-tracked proc's manual timer. The overlay alone decides when the proc ends, so a
+---re-show of a proc already up keeps its timer.
+---@param snapshot TRB.Classes.Snapshot?
+---@param duration number
+local function StartProcTimer(snapshot, duration)
+	if snapshot == nil or snapshot.buff.isActive then
+		return
+	end
+
+	-- Never GetRemainingTime this buff: there is no endTime behind it to expire against.
+	snapshot.buff:InitializeCustomSimple(false)
+	snapshot.buff.attributes.endTime = GetTime() + duration
+end
+
+---Time left on an overlay-tracked proc's manual timer, held at zero if the overlay outlasts it.
+---@param buff TRB.Classes.SnapshotBuff
+---@param currentTime number
+---@return number
+local function GetProcTimerRemaining(buff, currentTime)
+	local endTime = buff.attributes.endTime
+	if buff.isActive ~= true or endTime == nil then
+		return 0
+	end
+	return math.max(0, endTime - currentTime)
+end
+
 local function RefreshLookupData_Arcane()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -664,6 +698,7 @@ end
 local function RefreshLookupData_Fire()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.fire
 	local sharedSettings = TRB.Data.specCache["mage_fire"].settings
 
@@ -744,6 +779,32 @@ local function RefreshLookupData_Fire()
 		lookup["$fbChargesMax"] = TRB.Functions.Number:RoundTo(_fbChargesMax, 0)
 		lookup["$fireBlastTime"] = TRB.Functions.BarText:TimerPrecision(_fbTime)
 		lookup["$fbTime"] = TRB.Functions.BarText:TimerPrecision(_fbTime)
+	end
+
+	-- Block C: Combustion ($combustionTime)
+	if not activeVars or activeVars["$combustionTime"] then
+		local buff = snapshots[spells.combustion.id].buff
+		local _combustionTime = buff.isActive and buff.remaining or 0
+
+		lookupLogic["$combustionTime"] = _combustionTime
+		lookup["$combustionTime"] = TRB.Functions.BarText:TimerPrecision(_combustionTime)
+	end
+
+	-- Block D: Overlay procs ($heatingUpTime, $hotStreakTime, $frostfireEmpowermentTime)
+	if not activeVars or activeVars["$heatingUpTime"] or activeVars["$hotStreakTime"]
+		or activeVars["$frostfireEmpowermentTime"] then
+		local currentTime = GetTime()
+		local _heatingUpTime = GetProcTimerRemaining(snapshots[spells.heatingUp.id].buff, currentTime)
+		local _hotStreakTime = GetProcTimerRemaining(snapshots[spells.hotStreak.id].buff, currentTime)
+		local _frostfireEmpowermentTime = GetProcTimerRemaining(snapshots[spells.frostfireEmpowerment.id].buff, currentTime)
+
+		lookupLogic["$heatingUpTime"] = _heatingUpTime
+		lookupLogic["$hotStreakTime"] = _hotStreakTime
+		lookupLogic["$frostfireEmpowermentTime"] = _frostfireEmpowermentTime
+
+		lookup["$heatingUpTime"] = TRB.Functions.BarText:TimerPrecision(_heatingUpTime)
+		lookup["$hotStreakTime"] = TRB.Functions.BarText:TimerPrecision(_hotStreakTime)
+		lookup["$frostfireEmpowermentTime"] = TRB.Functions.BarText:TimerPrecision(_frostfireEmpowermentTime)
 	end
 
 	TRB.Data.lookup = lookup
@@ -881,6 +942,14 @@ local function RefreshLookupData_Frost()
 		end
 	end
 
+	-- Block F: Frostfire Empowerment ($frostfireEmpowermentTime)
+	if not activeVars or activeVars["$frostfireEmpowermentTime"] then
+		local _frostfireEmpowermentTime = GetProcTimerRemaining(snapshots[spells.frostfireEmpowerment.id].buff, GetTime())
+
+		lookupLogic["$frostfireEmpowermentTime"] = _frostfireEmpowermentTime
+		lookup["$frostfireEmpowermentTime"] = TRB.Functions.BarText:TimerPrecision(_frostfireEmpowermentTime)
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -902,31 +971,46 @@ end
 -- spends them and can gain one, so every sample across a cast is kept and the longest one wins.
 local arcaneSurgeCasting = false
 local arcaneSurgeCastDuration = nil
-local arcaneSurgeParseWarned = false
+
+-- Spell ids whose unreadable description has already been reported this session.
+---@type table<integer, boolean>
+local descriptionParseWarned = {}
 
 -- Clearcasting overlays currently up, by spell id. A stack change swaps one count's overlay for the
 -- next within a frame, in either order, so the count is the highest overlay still up.
 ---@type table<integer, boolean>
 local clearcastingVisibleOverlays = {}
 
----Reads Arcane Surge's advertised duration off its spell description, which carries the Savor the
----Moment extension the secret Spellfire Sphere count cannot be read for.
+---Reads a spell's advertised duration off its spell description, which carries the Savor the Moment
+---extension the secret Spellfire Sphere count cannot be read for. Nil when the description has none.
+---@param spell TRB.Classes.SpellBase
+---@param warningFormat string # Printed once per session, given the baseline duration, when a readable description has none
+---@return number?
+local function ReadDescriptionDuration(spell, warningFormat)
+	local description = C_Spell.GetSpellDescription(spell.id)
+	local duration = TRB.Functions.String:ParseDurationSeconds(description)
+	-- No baseline floor: it would reject every real value if the baseline is ever tuned down.
+	if duration == nil or duration <= 0 then
+		-- A readable description with no duration in it means the template or locale moved, which the
+		-- silent fallback to baseline would otherwise never surface.
+		if not descriptionParseWarned[spell.id] and description ~= nil and description ~= "" and not issecretvalue(description) then
+			descriptionParseWarned[spell.id] = true
+			print(string.format(warningFormat, spell.duration))
+		end
+		return nil
+	end
+	return duration
+end
+
+---Samples Arcane Surge's description duration into the running longest sample for the cast.
 local function SampleArcaneSurgeDuration()
 	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
 	if spells == nil or spells.arcaneSurge == nil then
 		return
 	end
 
-	local description = C_Spell.GetSpellDescription(spells.arcaneSurge.id)
-	local duration = TRB.Functions.String:ParseDurationSeconds(description)
-	-- No baseline floor: it would reject every real value if the baseline is ever tuned down.
-	if duration == nil or duration <= 0 then
-		-- A readable description with no duration in it means the template or locale moved, which the
-		-- silent fallback to baseline would otherwise never surface.
-		if not arcaneSurgeParseWarned and description ~= nil and description ~= "" and not issecretvalue(description) then
-			arcaneSurgeParseWarned = true
-			print(string.format("|cFFFF8800TRB:|r Could not read Arcane Surge's duration from its spell description; using %d sec. Please run /trb arcanesurge and report the output.", spells.arcaneSurge.duration))
-		end
+	local duration = ReadDescriptionDuration(spells.arcaneSurge, "|cFFFF8800TRB:|r Could not read Arcane Surge's duration from its spell description; using %d sec. Please run /trb arcanesurge and report the output.")
+	if duration == nil then
 		return
 	end
 
@@ -976,6 +1060,13 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
 		if spells ~= nil and spells.fireBlast ~= nil and spellId == spells.fireBlast.id then
 			fireBlastSpendSmoothUntil = GetTime() + fireBlastSpendSmoothWindow
+		elseif spells ~= nil and spells.combustion ~= nil and spellId == spells.combustion.id then
+			local snapshot = snapshotData.snapshots[spells.combustion.id]
+			if snapshot ~= nil then
+				local duration = ReadDescriptionDuration(spells.combustion, "|cFFFF8800TRB:|r Could not read Combustion's duration from its spell description; using %d sec.")
+				snapshot.buff:InitializeCustom(duration or spells.combustion.duration)
+			end
+			TRB.Data.lookupDirty = true
 		end
 	end
 
@@ -1074,12 +1165,17 @@ local function UpdateSnapshot_Arcane()
 end
 
 local function UpdateSnapshot_Fire()
+	local currentTime = GetTime()
 	UpdateSnapshot()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	if spells and spells.fireBlast and snapshots[spells.fireBlast.id] then
 		snapshots[spells.fireBlast.id].cooldown:Refresh(true)
+	end
+	local combustion = snapshots[spells.combustion.id]
+	if combustion ~= nil then
+		combustion.buff:GetRemainingTime(currentTime)
 	end
 end
 
@@ -1311,11 +1407,13 @@ local scratch = {
 	shatterBarColors1 = {},
 	arcaneChargesBarColors1 = {},
 	arcaneSalvoBarColors1 = {},
+	fireBlastBarColors1 = {},
 	manaBarTargets1 = {},
 	iciclesBarTargets1 = {},
 	shatterBarTargets1 = {},
 	arcaneChargesBarTargets1 = {},
 	arcaneSalvoBarTargets1 = {},
+	fireBlastBarTargets1 = {},
 	indicatorTargets1 = {},
 	barColorMap1 = {},
 }
@@ -1513,16 +1611,74 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.mage_fire.settings
 		UpdateSnapshot_Fire()
 		if snapshotData.attributes.isTracking then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+			local snapshots = snapshotData.snapshots
+
+			-- Indicators resolve ahead of the bars' visibility guards: the health bar and cast bar have
+			-- their own visibility, so they still need coloring when a resource bar is set to Never Show.
+			local sharedColors = specSettings.colors.shared
+			local combustionBuff = snapshots[spells.combustion.id].buff
+			local combustionActive = combustionBuff.isActive == true
+			local combustionEndMet = false
+			if combustionActive then
+				local timeThreshold = 0
+				if specSettings.endOf.combustion.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.combustion.gcdsMax
+				elseif specSettings.endOf.combustion.mode == "time" then
+					timeThreshold = specSettings.endOf.combustion.timeMax
+				end
+				combustionEndMet = combustionBuff.remaining <= timeThreshold
+			end
+
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.combustion = combustionActive
+			conditionMap.combustionEnd = combustionActive and combustionEndMet
+			conditionMap.hotStreak = snapshots[spells.hotStreak.id].buff.isActive
+			conditionMap.heatingUp = snapshots[spells.heatingUp.id].buff.isActive
+			conditionMap.frostfireEmpowerment = snapshots[spells.frostfireEmpowerment.id].buff.isActive
+
+			local manaBarColors = scratch.manaBarColors1
+			wipe(manaBarColors)
+			manaBarColors.bar = specSettings.colors.bar.base
+			manaBarColors.border = specSettings.colors.bar.border.color
+			manaBarColors.background = specSettings.colors.bar.background.color
+			-- The fill stays unseeded: each charge has its own color unless an indicator claims it.
+			local fireBlastColors = specCacheSettings.colors.bars and specCacheSettings.colors.bars.fireBlastCharges
+			local fireBlastBarColors = scratch.fireBlastBarColors1
+			wipe(fireBlastBarColors)
+			if fireBlastColors ~= nil then
+				fireBlastBarColors.border = fireBlastColors.border.color
+				fireBlastBarColors.background = fireBlastColors.background.color
+			end
+
+			-- Wiped rather than reset to false: ApplyIndicatorColors only ever writes true, and every
+			-- reader tests truthiness.
+			local manaBarTargets = scratch.manaBarTargets1
+			wipe(manaBarTargets)
+			local fireBlastBarTargets = scratch.fireBlastBarTargets1
+			wipe(fireBlastBarTargets)
+			local indicatorTargets = scratch.indicatorTargets1
+			wipe(indicatorTargets)
+			indicatorTargets.manaBar = manaBarTargets
+			indicatorTargets.fireBlastChargesBar = fireBlastBarTargets
+
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.fireBlastChargesBar = fireBlastBarColors
+
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
+
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
-				primaryNode:SetBorderColor(barBorderColor)
-				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
-				primaryNode:SetBackgroundColorFromString(specSettings.colors.bar.background.color)
+				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
+				primaryNode:SetBorderColor(manaBarColors.border)
+				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
+				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
@@ -1534,7 +1690,6 @@ local function UpdateResourceBar()
 
 			-- Fire Blast Charges secondary bar
 			if not specSettings.displayBar.secondary.neverShow then
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
 				if spells and spells.fireBlast and barGroups and barGroups.secondary then
 					local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells)
 					local maxCharges = GetFireBlastMaxCharges(fireBlastCooldown)
@@ -1544,7 +1699,6 @@ local function UpdateResourceBar()
 					if fireBlastCooldown ~= nil and isRecharging then
 						rechargeDurationObject = fireBlastCooldown:GetDurationObject()
 					end
-					local fireBlastColors = specCacheSettings.colors.bars and specCacheSettings.colors.bars.fireBlastCharges
 					local fireBlastNodeCount = SyncFireBlastChargeNodes(maxCharges, specCacheSettings) or 0
 
 					-- The recharging node is charges+1, which a secret count cannot name. The tracker's
@@ -1570,18 +1724,32 @@ local function UpdateResourceBar()
 							TRB.Data.cache.values.bar[cpKey] = nil
 							chargeNode:SetValue(charges, smoothCharges and chargeNode.smooth == true)
 							if fireBlastColors then
-								local chargeKey = "charge" .. x
-								local fillColor = fireBlastColors.nodeColors and fireBlastColors.nodeColors[chargeKey]
+								-- An indicator on the fill wins over each charge's own color.
+								local fillColor = fireBlastBarTargets.bar and fireBlastBarColors.bar
+									or (fireBlastColors.nodeColors and fireBlastColors.nodeColors["charge" .. x])
 								if fillColor then
 									TRB.Functions.Color:ApplyFillColor(chargeNode, fillColor)
 								end
-								chargeNode:SetBorderColor(fireBlastColors.border.color)
-								chargeNode:SetBackgroundColorFromString(fireBlastColors.background.color)
+								chargeNode:SetBorderColor(fireBlastBarColors.border)
+								chargeNode:SetBackgroundColorFromString(fireBlastBarColors.background)
 							end
+							Bar:ApplyNodeIndicators(chargeNode, "fireBlastChargesBar")
 						end
 					end
 				end
 			end
+		end
+
+		-- Audio cues (independent of bar visibility)
+		do
+			local fireSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+			local fireSnapshots = snapshotData.snapshots
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "hotStreak",
+				fireSnapshots[fireSpells.hotStreak.id].buff.isActive == true)
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "heatingUp",
+				fireSnapshots[fireSpells.heatingUp.id].buff.isActive == true)
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "frostfireEmpowerment",
+				fireSnapshots[fireSpells.frostfireEmpowerment.id].buff.isActive == true)
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
@@ -1602,6 +1770,7 @@ local function UpdateResourceBar()
 			conditionMap.fingersOfFrost = fingersOfFrostCharges >= 1
 			conditionMap.fingersOfFrost2 = fingersOfFrostCharges >= 2
 			conditionMap.brainFreeze = snapshots[spells.brainFreeze.id].buff.isActive
+			conditionMap.frostfireEmpowerment = snapshots[spells.frostfireEmpowerment.id].buff.isActive
 
 			local manaBarColors = scratch.manaBarColors1
 			wipe(manaBarColors)
@@ -1724,6 +1893,8 @@ local function UpdateResourceBar()
 
 			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "brainFreeze",
 				frostSnapshots[frostSpells.brainFreeze.id].buff.isActive == true)
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "frostfireEmpowerment",
+				frostSnapshots[frostSpells.frostfireEmpowerment.id].buff.isActive == true)
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
@@ -1799,6 +1970,7 @@ local function SwitchSpec()
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1806,8 +1978,18 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.mage_fire.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#combustion"] = spells.combustion.icon
+		lookup["#heatingUp"] = spells.heatingUp.icon
+		lookup["#hotStreak"] = spells.hotStreak.icon
+		lookup["#frostfireEmpowerment"] = spells.frostfireEmpowerment.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
+
+		-- Manual tracking only runs while Fire is played, so anything banked is stale by now.
+		snapshotData.snapshots[spells.combustion.id].buff:Reset()
+		snapshotData.snapshots[spells.heatingUp.id].buff:Reset()
+		snapshotData.snapshots[spells.hotStreak.id].buff:Reset()
+		snapshotData.snapshots[spells.frostfireEmpowerment.id].buff:Reset()
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
@@ -1843,6 +2025,7 @@ local function SwitchSpec()
 		lookup["#shatter"] = spells.shatter.icon
 		lookup["#fingersOfFrost"] = spells.fingersOfFrost.icon
 		lookup["#brainFreeze"] = spells.brainFreeze.icon
+		lookup["#frostfireEmpowerment"] = spells.frostfireEmpowerment.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1850,6 +2033,7 @@ local function SwitchSpec()
 		snapshotData.snapshots[spells.fingersOfFrost.id].buff:Reset()
 		snapshotData.snapshots[spells.fingersOfFrost.id].buff:ResetProcCharges()
 		snapshotData.snapshots[spells.brainFreeze.id].buff:Reset()
+		snapshotData.snapshots[spells.frostfireEmpowerment.id].buff:Reset()
 
 		-- Ensure resource snapshots are initialized before bar construction.
 		TRB.Functions.Class:EventRegistration()
@@ -1915,6 +2099,27 @@ local function HandleFireBlastChargesEvent(spellId)
 	if TRB.Functions.Class.TriggerResourceBarUpdates then
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
+end
+
+-- Fired Up has no overlay, but each gain fires SPELL_UPDATE_COOLDOWN on its buff's id.
+local function HandleFiredUpEvent(spellId)
+	if TRB.Data.character.specId ~= 2 then return end
+
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	if not (spells and spells.firedUp and spells.combustion) then return end
+	if spellId ~= spells.firedUp.buffId then return end
+	if not talents:IsTalentActive(spells.firedUp) then return end
+
+	local snapshot = TRB.Data.snapshotData.snapshots[spells.combustion.id]
+	if snapshot == nil then return end
+
+	-- Only an active Combustion extends; AddTimeOrInitializeCustom would otherwise start one.
+	snapshot.buff:GetRemainingTime()
+	if not snapshot.buff.isActive then return end
+	snapshot.buff:AddTimeOrInitializeCustom(spells.firedUp.attributes.combustionExtension)
+
+	TRB.Data.lookupDirty = true
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 -- Arcane Salvo stack changes fire SPELL_UPDATE_USES on Arcane Barrage, whose cast count carries them.
@@ -2045,11 +2250,71 @@ local function HandlePrismaticBoltGlowEvent(spellId, isShow)
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
+---Tracks Heating Up and Hot Streak from their activation overlays. Neither refreshes while up, and a
+---Heating Up hide that is really the step up to Hot Streak arrives with Hot Streak's own show.
+---@param spellId integer?
+---@param isShow boolean
+local function HandleFireOverlayEvent(spellId, isShow)
+	-- A hide-all carries no spell id and is always followed by a re-show of whatever is still up.
+	if spellId == nil then return end
+
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	if not (spells and spells.heatingUp and spells.hotStreak) then return end
+
+	local duration
+	if spellId == spells.heatingUp.id then
+		local heatingUp = spells.heatingUp
+		duration = heatingUp.duration * Character:GetCurrentGCDTime() / heatingUp.attributes.baseGcd
+	elseif spellId == spells.hotStreak.id then
+		duration = spells.hotStreak.duration
+	else
+		return
+	end
+
+	local snapshots = TRB.Data.snapshotData and TRB.Data.snapshotData.snapshots
+	local snapshot = snapshots and snapshots[spellId]
+	if snapshot == nil then return end
+
+	if isShow then
+		StartProcTimer(snapshot, duration)
+	else
+		snapshot.buff:Reset()
+	end
+
+	TRB.Data.lookupDirty = true
+	TRB.Functions.Class:TriggerResourceBarUpdates()
+end
+
+---Tracks Frostfire Empowerment, on Fire or Frost, from the glow on the Frostfire Bolt button.
+---@param spellId integer?
+---@param isShow boolean
+local function HandleFrostfireEmpowermentGlowEvent(spellId, isShow)
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	if not (spells and spells.frostfireBolt and spells.frostfireEmpowerment) then return end
+	if spellId ~= spells.frostfireBolt.id then return end
+
+	local snapshots = TRB.Data.snapshotData and TRB.Data.snapshotData.snapshots
+	local snapshot = snapshots and snapshots[spells.frostfireEmpowerment.id]
+	if snapshot == nil then return end
+
+	if isShow then
+		StartProcTimer(snapshot, spells.frostfireEmpowerment.duration)
+	else
+		snapshot.buff:Reset()
+	end
+
+	TRB.Data.lookupDirty = true
+	TRB.Functions.Class:TriggerResourceBarUpdates()
+end
+
 ---Updates data based on spell events
 local function HandleSpellEvents(self, event, ...)
 	if event == "SPELL_UPDATE_CHARGES" then
 		local spellId = ...
 		HandleFireBlastChargesEvent(spellId)
+	elseif event == "SPELL_UPDATE_COOLDOWN" then
+		local spellId = ...
+		HandleFiredUpEvent(spellId)
 	elseif event == "SPELL_UPDATE_USES" then
 		local spellId = ...
 		if TRB.Data.character.specId == 1 then
@@ -2062,6 +2327,9 @@ local function HandleSpellEvents(self, event, ...)
 		local isShow = event == "SPELL_ACTIVATION_OVERLAY_SHOW"
 		if TRB.Data.character.specId == 1 then
 			HandleArcaneOverlayEvent(spellId, isShow)
+			return
+		elseif TRB.Data.character.specId == 2 then
+			HandleFireOverlayEvent(spellId, isShow)
 			return
 		elseif TRB.Data.character.specId ~= 3 then
 			return
@@ -2105,8 +2373,11 @@ local function HandleSpellEvents(self, event, ...)
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
 		local spellId = ...
+		local isShow = event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW"
 		if TRB.Data.character.specId == 1 then
-			HandlePrismaticBoltGlowEvent(spellId, event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+			HandlePrismaticBoltGlowEvent(spellId, isShow)
+		elseif TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
+			HandleFrostfireEmpowermentGlowEvent(spellId, isShow)
 		end
 	end
 end
@@ -2207,10 +2478,17 @@ function TRB.Functions.Class:EnableEvents()
 		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 	elseif TRB.Data.character.specId == 2 then
 		spellEventFrame:RegisterEvent("SPELL_UPDATE_CHARGES")
+		spellEventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 	elseif TRB.Data.character.specId == 3 then
 		spellEventFrame:RegisterEvent("SPELL_UPDATE_USES")
 		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 	end
 end
 
@@ -2218,6 +2496,7 @@ end
 -- here would strand the outgoing spec's events.
 function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_CHARGES")
+	spellEventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
@@ -2310,6 +2589,15 @@ do
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
+	---@param spellKey string
+	---@return fun(): boolean
+	local function IsSnapshotActive(spellKey)
+		return function()
+			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+			local snapshot = spells and spells[spellKey] and TRB.Data.snapshotData.snapshots[spells[spellKey].id]
+			return snapshot ~= nil and snapshot.buff.isActive == true
+		end
+	end
 	-- Arcane
 	local arcane = {}
 	for k, v in pairs(common) do arcane[k] = v end
@@ -2376,6 +2664,7 @@ do
 		local snapshot = spells and spells.brainFreeze and TRB.Data.snapshotData.snapshots[spells.brainFreeze.id]
 		return snapshot ~= nil and IsProcTimeKnown(snapshot.buff)
 	end
+	frost["$frostfireEmpowermentTime"] = IsSnapshotActive("frostfireEmpowerment")
 	-- Fire
 	local fireBlastChargesMaxFn = function()
 		local maxCharges = TRB.Data.character.maxResource2 or 0
@@ -2394,6 +2683,10 @@ do
 	fire["$fbChargesMax"] = fireBlastChargesMaxFn
 	fire["$fireBlastTime"] = fireBlastTimeFn
 	fire["$fbTime"] = fireBlastTimeFn
+	fire["$combustionTime"] = IsSnapshotActive("combustion")
+	fire["$heatingUpTime"] = IsSnapshotActive("heatingUp")
+	fire["$hotStreakTime"] = IsSnapshotActive("hotStreak")
+	fire["$frostfireEmpowermentTime"] = IsSnapshotActive("frostfireEmpowerment")
 
 	specValidVars = { [1] = arcane, [2] = fire, [3] = frost }
 end
@@ -2521,10 +2814,19 @@ local arcaneTimerSpells = {
 	["$overpoweredMissilesTime"] = "overpoweredMissiles",
 }
 
+-- Fire timer variables, keyed the same way. Fire Blast's recharge is checked on its own.
+local fireTimerSpells = {
+	["$combustionTime"] = "combustion",
+	["$heatingUpTime"] = "heatingUp",
+	["$hotStreakTime"] = "hotStreak",
+	["$frostfireEmpowermentTime"] = "frostfireEmpowerment",
+}
+
 -- Frost timer variables, keyed the same way.
 local frostTimerSpells = {
 	["$fingersOfFrostTime"] = "fingersOfFrost",
 	["$brainFreezeTime"] = "brainFreeze",
+	["$frostfireEmpowermentTime"] = "frostfireEmpowerment",
 }
 
 ---True while the buff behind any timer variable the bar text uses is up.
@@ -2553,6 +2855,10 @@ function TRB.Functions.Class:HasActiveTimers()
 	if TRB.Data.character.specId == 1 then
 		return IsTimerBuffActive(arcaneTimerSpells)
 	elseif TRB.Data.character.specId == 2 then
+		if IsTimerBuffActive(fireTimerSpells) then
+			return true
+		end
+
 		local activeVars = TRB.Data.activeVariables
 		if activeVars ~= nil and not activeVars["$fireBlastTime"] and not activeVars["$fbTime"] then
 			return false

@@ -342,6 +342,9 @@ local function FireLoadDefaultBarTextSettings(classic)
 	local textSettings = {
 	}
 
+	-- Centered in both layouts: the mana text sits on this bar's sides either way.
+	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("combustionTime", "combustion", classic, "CENTER", "CENTER"))
+
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("mana", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
 	local fireBlastChargeTextSettings = TRB.Functions.Settings:LoadDefaultFireBlastChargeBarTextSettings()
@@ -435,10 +438,64 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 				fireBlastCharges = TRB.Functions.Settings:DefaultFireBlastChargesBarColors(),
 			},
 			shared = {
-				nodeOrder = {},
+				nodeOrder = { "combustionEnd", "hotStreak", "frostfireEmpowerment", "heatingUp", "combustion" },
 				gradientOrder = {},
-				indicatorColors = {},
+				indicatorColors = {
+					combustionEnd = {
+						color = "FFFF0000",
+						color2 = "FFFF0000",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+							fireBlastChargesBar = { bar = false, border = false, background = false },
+						},
+					},
+					hotStreak = {
+						color = "FFFF4500",
+						color2 = "FFFF4500",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							fireBlastChargesBar = { bar = false, border = false, background = false },
+						},
+					},
+					heatingUp = {
+						color = "FFFFA500",
+						color2 = "FFFFA500",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							fireBlastChargesBar = { bar = false, border = false, background = false },
+						},
+					},
+					frostfireEmpowerment = {
+						color = "FF33FF99",
+						color2 = "FF33FF99",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+							fireBlastChargesBar = { bar = false, border = false, background = false },
+						},
+					},
+					combustion = {
+						color = "FFFF7F00",
+						color2 = "FFFF7F00",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = true, border = false, background = false },
+							fireBlastChargesBar = { bar = false, border = false, background = false },
+						},
+					},
+				},
 			},
+		},
+		endOf = {
+			combustion = TRB.Functions.Settings:DefaultEndOfSettings("gcd", 2, 3.0)
 		},
 		displayText={
 			default = {
@@ -461,6 +518,24 @@ local function FireLoadDefaultSettings(includeBarText, classic)
 			barText = {}
 		},
 		audio = {
+			hotStreak={
+				name = L["MageFireAudioHotStreak"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+			heatingUp={
+				name = L["MageFireAudioHeatingUp"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+			frostfireEmpowerment={
+				name = L["MageAudioFrostfireEmpowerment"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(true),
 	}
@@ -629,7 +704,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			shared = {
-				nodeOrder = { "brainFreeze", "fingersOfFrost2", "fingersOfFrost" },
+				nodeOrder = { "brainFreeze", "fingersOfFrost2", "fingersOfFrost", "frostfireEmpowerment" },
 				gradientOrder = {},
 				indicatorColors = {
 					brainFreeze = {
@@ -653,6 +728,15 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					fingersOfFrost2 = {
 						color = "FF296373",
 						color2 = "FF296373",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							manaBar = { bar = false, border = true, background = false },
+						},
+					},
+					frostfireEmpowerment = {
+						color = "FF33FF99",
+						color2 = "FF33FF99",
 						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
@@ -701,6 +785,12 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 			},
 			brainFreeze={
 				name = L["MageFrostAudioBrainFreeze"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+			frostfireEmpowerment={
+				name = L["MageAudioFrostfireEmpowerment"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
@@ -1402,8 +1492,46 @@ local function FireConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, spec, 8, 2, yCoord, cache)
 end
 
---local function FireConstructIndicatorColorsPanel(parent)
---end
+local function FireConstructIndicatorColorsPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.mage.fire
+
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.mage_fire
+	local yCoord = 5
+
+	yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, spec, 8, 2, yCoord, TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New({
+		indicatorDefs = {
+			{ key = "combustionEnd", label = L["MageFireIndicatorCombustionEnd"], tooltip = L["MageFireIndicatorCombustionEndTooltip"], colorLabel = L["MageFireIndicatorCombustionEndColor"] },
+			{ key = "hotStreak", label = L["MageFireIndicatorHotStreak"], tooltip = L["MageFireIndicatorHotStreakTooltip"], colorLabel = L["MageFireIndicatorHotStreakColor"] },
+			{ key = "frostfireEmpowerment", label = L["MageIndicatorFrostfireEmpowerment"], tooltip = L["MageIndicatorFrostfireEmpowermentTooltip"], colorLabel = L["MageIndicatorFrostfireEmpowermentColor"] },
+			{ key = "heatingUp", label = L["MageFireIndicatorHeatingUp"], tooltip = L["MageFireIndicatorHeatingUpTooltip"], colorLabel = L["MageFireIndicatorHeatingUpColor"] },
+			{ key = "combustion", label = L["MageFireIndicatorCombustion"], tooltip = L["MageFireIndicatorCombustionTooltip"], colorLabel = L["MageFireIndicatorCombustionColor"] },
+		},
+		barTargetDefs = {
+			{ key = "manaBar", label = L["BarNameManaBar"] },
+			{ key = "fireBlastChargesBar", label = L["MageFireBlastCharges"] },
+		},
+		endOfConfigs = {
+			{
+				endOfKey = "combustion",
+				sectionHeader = L["MageFireHeaderEndOfCombustionConfiguration"],
+				gcdRadioLabel = L["MageFireCheckboxCombustionGcds"],
+				gcdSliderLabel = L["MageFireCombustionGcds"],
+				timeRadioLabel = L["MageFireCheckboxCombustionTime"],
+				timeSliderLabel = L["MageFireCombustionTime"],
+			},
+		},
+		ddNamePrefix = "TwintopResourceBar_Mage_Fire",
+	}))
+
+	yCoord = yCoord - 40
+
+	TRB.Frames.interfaceSettingsFrameContainer.controls.mage_fire = controls
+end
 
 local function FireConstructThresholdSettingsPanel(parent)
 	if parent == nil then
@@ -1460,9 +1588,10 @@ local function FireConstructOptionsPanel(cache)
 		{ key = "healthBar", label = L["TabHealth"], width = oUi.tabWidth.small, constructor = FireConstructHealthBarPanel, visibilityKey = "health" },
 		{ key = "thresholdSettings", label = L["TabThresholdSettings"], width = oUi.tabWidth.large, constructor = FireConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("mage", "fire", controls),
-		--{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FireConstructIndicatorColorsPanel },
+		{ key = "indicatorColors", label = L["TabIndicatorColors"], width = oUi.tabWidth.large, constructor = FireConstructIndicatorColorsPanel },
 		{ key = "barTextures", label = L["TabTextures"], width = oUi.tabWidth.small, constructor = FireConstructBarTexturesPanel },
 		{ key = "barVisibility", label = L["TabVisibility"], width = oUi.tabWidth.small, constructor = FireConstructBarVisibilityPanel },
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("mage", "fire", controls),
 		{ key = "fontText", label = L["TabFontText"], width = oUi.tabWidth.medium, constructor = FireConstructFontAndTextPanel },
 		{ key = "barText", label = L["TabBarText"], width = oUi.tabWidth.small, constructor = function(scrollChild) FireConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ key = "resetDefaults", label = L["TabResetDefaults"], width = oUi.tabWidth.medium, constructor = FireConstructResetDefaultsPanel },
@@ -1921,6 +2050,7 @@ local function FrostConstructIndicatorColorsPanel(parent)
 			{ key = "brainFreeze", label = L["MageFrostIndicatorBrainFreeze"], tooltip = L["MageFrostIndicatorBrainFreezeTooltip"], colorLabel = L["MageFrostIndicatorBrainFreezeColor"] },
 			{ key = "fingersOfFrost", label = L["MageFrostIndicatorFingersOfFrost"], tooltip = L["MageFrostIndicatorFingersOfFrostTooltip"], colorLabel = L["MageFrostIndicatorFingersOfFrostColor"] },
 			{ key = "fingersOfFrost2", label = L["MageFrostIndicatorFingersOfFrost2"], tooltip = L["MageFrostIndicatorFingersOfFrost2Tooltip"], colorLabel = L["MageFrostIndicatorFingersOfFrost2Color"] },
+			{ key = "frostfireEmpowerment", label = L["MageIndicatorFrostfireEmpowerment"], tooltip = L["MageIndicatorFrostfireEmpowermentTooltip"], colorLabel = L["MageIndicatorFrostfireEmpowermentColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },

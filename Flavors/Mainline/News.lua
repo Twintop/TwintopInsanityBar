@@ -14,6 +14,19 @@ TRB.Flavor.newsContent = [====[
 
 - Add a Touch the Cosmos Color Indicator, for when Starsurge or Starfall is free to cast. It targets the Astral Power bar border by default.
 
+## Mage
+### Fire
+
+- [#763](#763) Add Combustion tracking, with active and ending Color Indicators, the `$combustionTime` bar text variable, and the `#combustion` icon. The indicators target the Mana bar fill by default.
+- [#763](#763) Add a default `$combustionTime` bar text entry for new and reset bar text.
+- [#763](#763) Add Hot Streak tracking, with a Color Indicator, an audio cue, the `$hotStreakTime` bar text variable, and the `#hotStreak` icon. The indicator targets the Mana bar border by default.
+- [#763](#763) Add Heating Up tracking, with a Color Indicator, an audio cue, the `$heatingUpTime` bar text variable, and the `#heatingUp` icon. The indicator targets the Mana bar border by default.
+- [#763](#763) Add Frostfire Empowerment tracking, with a Color Indicator, an audio cue, the `$frostfireEmpowermentTime` bar text variable, and the `#frostfireEmpowerment` icon. The indicator targets the Mana bar border by default.
+
+### Frost
+
+- [#763](#763) Add Frostfire Empowerment tracking, with a Color Indicator, an audio cue, the `$frostfireEmpowermentTime` bar text variable, and the `#frostfireEmpowerment` icon. The indicator targets the Mana bar border by default.
+
 ## Paladin
 ### Retribution
 

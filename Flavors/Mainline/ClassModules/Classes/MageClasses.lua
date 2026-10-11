@@ -160,6 +160,12 @@ end
 ---@field fireBlast TRB.Classes.SpellBase
 ---@field flameOn TRB.Classes.SpellBase
 ---@field ferventFlickering TRB.Classes.SpellBase
+---@field combustion TRB.Classes.SpellBase
+---@field firedUp TRB.Classes.SpellBase
+---@field heatingUp TRB.Classes.SpellBase
+---@field hotStreak TRB.Classes.SpellBase
+---@field frostfireBolt TRB.Classes.SpellBase
+---@field frostfireEmpowerment TRB.Classes.SpellBase
 TRB.Classes.Mage.FireSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.FireSpells.__index = TRB.Classes.Mage.FireSpells
 
@@ -189,6 +195,41 @@ function TRB.Classes.Mage.FireSpells:New()
         isTalent = true,
     })
 
+    -- Savor the Moment's per-sphere extension is read off the spell description at cast.
+    self.combustion = TRB.Classes.SpellBase:New({
+        id = 190319,
+        isTalent = true,
+        duration = 10
+    })
+    -- The last rank of the Fired Up node: every Fired Up during Combustion extends it. Each gain fires
+    -- SPELL_UPDATE_COOLDOWN on the buff's id.
+    self.firedUp = TRB.Classes.SpellBase:New({
+        id = 1257348,
+        buffId = 1257350,
+        isTalent = true,
+        combustionExtension = 1
+    })
+    -- Haste is secret, so the GCD's share of its unhasted base stands in for it.
+    self.heatingUp = TRB.Classes.SpellBase:New({
+        id = 48107,
+        duration = 10,
+        isHasted = true,
+        baseGcd = 1.5
+    })
+    self.hotStreak = TRB.Classes.SpellBase:New({
+        id = 48108,
+        duration = 15
+    })
+    -- Frostfire Empowerment glows on the Frostfire Bolt button.
+    self.frostfireBolt = TRB.Classes.SpellBase:New({
+        id = 431044,
+        isTalent = true
+    })
+    self.frostfireEmpowerment = TRB.Classes.SpellBase:New({
+        id = 431177,
+        duration = 20
+    })
+
     return self
 end
 
@@ -202,7 +243,12 @@ function TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
 	specCacheEntry.spellsData:FillSpellData()
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
 
-	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
+	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#combustion", icon = spells.combustion.icon, description = spells.combustion.name, printInSettings = true },
+		{ variable = "#heatingUp", icon = spells.heatingUp.icon, description = spells.heatingUp.name, printInSettings = true },
+		{ variable = "#hotStreak", icon = spells.hotStreak.icon, description = spells.hotStreak.name, printInSettings = true },
+		{ variable = "#frostfireEmpowerment", icon = spells.frostfireEmpowerment.icon, description = spells.frostfireEmpowerment.name, printInSettings = true },
+	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$mana", description = L["MageBarTextVariable_mana"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
@@ -219,6 +265,12 @@ function TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
         { variable = "$fbChargesMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCE },
 		{ variable = "$fireBlastTime", description = L["MageFireBarTextVariable_fireBlastTime"], printInSettings = true, color = false, secret = true },
 		{ variable = "$fbTime", description = "", printInSettings = false, color = false, secret = true },
+
+		-- Timed in Lua from the cast and the activation overlays, so these stay plain numbers.
+		{ variable = "$combustionTime", description = L["MageFireBarTextVariable_combustionTime"], printInSettings = true, color = false },
+		{ variable = "$heatingUpTime", description = L["MageFireBarTextVariable_heatingUpTime"], printInSettings = true, color = false },
+		{ variable = "$hotStreakTime", description = L["MageFireBarTextVariable_hotStreakTime"], printInSettings = true, color = false },
+		{ variable = "$frostfireEmpowermentTime", description = L["MageBarTextVariable_frostfireEmpowermentTime"], printInSettings = true, color = false },
 	})
 end
 
@@ -239,6 +291,7 @@ end
 ---@field summonWaterElemental TRB.Classes.SpellBase
 ---@field splinteringSorcery TRB.Classes.SpellBase
 ---@field frostfireBolt TRB.Classes.SpellBase
+---@field frostfireEmpowerment TRB.Classes.SpellBase
 TRB.Classes.Mage.FrostSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mage.FrostSpells.__index = TRB.Classes.Mage.FrostSpells
 
@@ -288,6 +341,11 @@ function TRB.Classes.Mage.FrostSpells:New()
         id = 431044,
         isTalent = true
     })
+    -- Frostfire Empowerment glows on the Frostfire Bolt button.
+    self.frostfireEmpowerment = TRB.Classes.SpellBase:New({
+        id = 431177,
+        duration = 20
+    })
 
     return self
 end
@@ -306,6 +364,7 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#shatter", icon = spells.shatter.icon, description = spells.shatter.name, printInSettings = true },
 		{ variable = "#fingersOfFrost", icon = spells.fingersOfFrost.icon, description = spells.fingersOfFrost.name, printInSettings = true },
 		{ variable = "#brainFreeze", icon = spells.brainFreeze.icon, description = spells.brainFreeze.name, printInSettings = true },
+		{ variable = "#frostfireEmpowerment", icon = spells.frostfireEmpowerment.icon, description = spells.frostfireEmpowerment.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -332,6 +391,9 @@ function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$fingersOfFrostTime", description = L["MageFrostBarTextVariable_fingersOfFrostTime"], printInSettings = true, color = false },
 
 		{ variable = "$brainFreezeTime", description = L["MageFrostBarTextVariable_brainFreezeTime"], printInSettings = true, color = false, secret = true, logicType = "number", booleanCheck = true, cdm = TRB.Data.constants.cdmDependency.REQUIRED },
+
+		-- Timed in Lua from the glow, so it stays a plain number.
+		{ variable = "$frostfireEmpowermentTime", description = L["MageBarTextVariable_frostfireEmpowermentTime"], printInSettings = true, color = false },
 	})
 end
 
@@ -661,6 +723,29 @@ do
 		},
 	})
 
+	TRB.Functions.AudioCues:Register("mage_fire", {
+		builtIns = {
+			{
+				id = "hotStreak",
+				label = L["MageFireAudioHotStreak"],
+				trigger = L["MageFireAudioTriggerHotStreak"],
+				tooltip = L["MageFireAudioCheckboxHotStreakTooltip"],
+			},
+			{
+				id = "heatingUp",
+				label = L["MageFireAudioHeatingUp"],
+				trigger = L["MageFireAudioTriggerHeatingUp"],
+				tooltip = L["MageFireAudioCheckboxHeatingUpTooltip"],
+			},
+			{
+				id = "frostfireEmpowerment",
+				label = L["MageAudioFrostfireEmpowerment"],
+				trigger = L["MageAudioTriggerFrostfireEmpowerment"],
+				tooltip = L["MageAudioCheckboxFrostfireEmpowermentTooltip"],
+			},
+		},
+	})
+
 	TRB.Functions.AudioCues:Register("mage_frost", {
 		builtIns = {
 			{
@@ -689,6 +774,12 @@ do
 				label = L["MageFrostAudioBrainFreeze"],
 				trigger = L["MageFrostAudioTriggerBrainFreeze"],
 				tooltip = L["MageFrostAudioCheckboxBrainFreezeTooltip"],
+			},
+			{
+				id = "frostfireEmpowerment",
+				label = L["MageAudioFrostfireEmpowerment"],
+				trigger = L["MageAudioTriggerFrostfireEmpowerment"],
+				tooltip = L["MageAudioCheckboxFrostfireEmpowermentTooltip"],
 			},
 		},
 		counters = {

@@ -504,5 +504,10 @@ if locale == "enGB" then
 	L["PaladinRetributionHolyPowerRefundingOverlayCheckboxTooltip"] = "When checked, while Judge, Jury and Executioner is active and you have at least 3 Holy Power, the 3 Holy Power your next spender will refund use this colour."
 	L["PaladinRetributionIndicatorAvengingWrathTooltip"] = "Changes to this colour while Avenging Wrath is active, from the sources picked under Avenging Wrath Source."
 	L["PaladinRetributionIndicatorAvengingWrathEndTooltip"] = "Changes to this colour when Avenging Wrath is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+	L["MageFireIndicatorCombustionEndTooltip"] = "Changes to this colour when Combustion is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+	L["MageFireIndicatorHotStreakTooltip"] = "Changes to this colour when Hot Streak is active."
+	L["MageFireIndicatorHeatingUpTooltip"] = "Changes to this colour when Heating Up is active."
+	L["MageIndicatorFrostfireEmpowermentTooltip"] = "Changes to this colour when Frostfire Empowerment is active."
+	L["MageFireIndicatorCombustionTooltip"] = "Changes to this colour while Combustion is active."
 
 end
