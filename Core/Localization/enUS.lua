@@ -3893,3 +3893,6 @@ L["ShamanAudioCheckboxTempestPlayOnDropTooltip"] = "By default this cue only pla
 L["ShamanAudioTempest2"] = "Tempest (2 Charges)"
 L["ShamanAudioTriggerTempest2"] = "Tempest reaches 2 charges"
 L["ShamanAudioCheckboxTempest2Tooltip"] = "Play an audio cue when you reach two Tempest charges. It will not play again until you are back under two charges. Requires CDM to be enabled and Tempest to be actively tracked."
+L["DruidBalanceIndicatorTouchTheCosmos"] = "Touch the Cosmos"
+L["DruidBalanceIndicatorTouchTheCosmosTooltip"] = "Changes to this color when Starsurge or Starfall is usable and costs no Astral Power, such as from a Touch the Cosmos proc."
+L["DruidBalanceIndicatorTouchTheCosmosColor"] = "Starsurge or Starfall is free"

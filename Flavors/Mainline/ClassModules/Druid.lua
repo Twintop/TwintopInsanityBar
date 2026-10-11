@@ -2189,12 +2189,17 @@ local function UpdateResourceBar()
 
 				local celestialActive = snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive or (snapshots[spells.eclipseSolar.id].buff.isActive and snapshots[spells.eclipseLunar.id].buff.isActive)
 
+				-- IsFree only updates on a cost read, which the threshold lines skip when off or in Cat or Bear form.
+				spells.starsurge:GetPrimaryResourceCost()
+				spells.starfall:GetPrimaryResourceCost()
+
 				local conditionMap = scratch.conditionMap1
 				wipe(conditionMap)
 				conditionMap.eclipseEnd = eclipseActive and eclipseEndMet
 				conditionMap.celestial = celestialActive
 				conditionMap.solar = snapshots[spells.eclipseSolar.id].buff.isActive and not celestialActive
 				conditionMap.lunar = snapshots[spells.eclipseLunar.id].buff.isActive and not celestialActive and not snapshots[spells.eclipseSolar.id].buff.isActive
+				conditionMap.touchTheCosmos = (spells.starsurge:IsUsable() and spells.starsurge:IsFree()) or (spells.starfall:IsUsable() and spells.starfall:IsFree())
 				conditionMap.borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId
 
 				local astralPowerBarColors = scratch.astralPowerBarColors1

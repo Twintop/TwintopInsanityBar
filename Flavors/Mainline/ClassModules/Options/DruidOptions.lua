@@ -449,6 +449,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 					"celestial",
 					"solar",
 					"lunar",
+					"touchTheCosmos",
 				},
 				gradientOrder = {
 					"borderOvercap",
@@ -488,6 +489,15 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 						enabled = true,
 						targets = {
 							astralPowerBar = { bar = true, border = false, background = false },
+						},
+					},
+					touchTheCosmos = {
+						color = "FFD65CFF",
+						color2 = "FFD65CFF",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							astralPowerBar = { bar = false, border = true, background = false },
 						},
 					},
 					borderOvercap = {
@@ -1653,6 +1663,7 @@ local function BalanceConstructIndicatorColorsPanel(parent)
 			{ key = "celestial",   label = L["DruidBalanceCheckboxCelestial"],       tooltip = L["DruidBalanceIndicatorCelestialTooltip"],   colorLabel = L["DruidBalanceColorPickerCelestialAlignment"] },
 			{ key = "solar",       label = L["DruidBalanceCheckboxSolar"],           tooltip = L["DruidBalanceIndicatorSolarTooltip"],       colorLabel = L["DruidBalanceColorPickerEclipseSolar"] },
 			{ key = "lunar",       label = L["DruidBalanceCheckboxLunar"],           tooltip = L["DruidBalanceIndicatorLunarTooltip"],       colorLabel = L["DruidBalanceColorPickerEclipseLunar"] },
+			{ key = "touchTheCosmos", label = L["DruidBalanceIndicatorTouchTheCosmos"], tooltip = L["DruidBalanceIndicatorTouchTheCosmosTooltip"], colorLabel = L["DruidBalanceIndicatorTouchTheCosmosColor"] },
 		},
 		gradientDefs = {
 			{ key = "borderOvercap", label = L["DruidIndicatorOvercap"], tooltip = L["DruidBalanceIndicatorBorderOvercapTooltip"], colorLabel = L["DruidBalanceIndicatorBorderOvercapColor"] },

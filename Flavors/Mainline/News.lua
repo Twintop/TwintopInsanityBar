@@ -9,6 +9,11 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.0.20-release (2026-10-10)
+## Druid
+### Balance
+
+- Add a Touch the Cosmos Color Indicator, for when Starsurge or Starfall is free to cast. It targets the Astral Power bar border by default.
+
 ## Shaman
 ### Elemental
 

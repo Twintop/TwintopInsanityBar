@@ -498,5 +498,6 @@ if locale == "enGB" then
 	L["WarlockDemonologyIndicatorDemonicArtTooltip"] = "Changes to this colour when Demonic Art is active."
 	L["ShamanIndicatorTempestTooltip"] = "Changes to this colour when you have at least one Tempest charge."
 	L["ShamanIndicatorTempest2Tooltip"] = "Changes to this colour when you have two Tempest charges."
+	L["DruidBalanceIndicatorTouchTheCosmosTooltip"] = "Changes to this colour when Starsurge or Starfall is usable and costs no Astral Power, such as from a Touch the Cosmos proc."
 
 end
