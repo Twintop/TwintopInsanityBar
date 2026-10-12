@@ -158,6 +158,7 @@ do
 		isMultiNode = true,
 		isAmalgamation = true, -- Distinct Holy Word types per node; custom thresholds expose per-type sub-targets
 		maxNodes = 5, -- Serenity x2 + Sanctify x2 + Chastise x1
+		endCapMode = "segments", -- One End Cap per Holy Word; Priest.lua sets the runs
 		hasSameColor = false,
 		minMaxMode = "discrete", -- 0-1 per node (cooldown progress)
 		hasSpacing = true,

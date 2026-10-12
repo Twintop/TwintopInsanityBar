@@ -2122,7 +2122,14 @@ local function HolyConstructIndicatorColorsPanel(parent)
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },
-			{ key = "holyWordsBar", label = L["BarNameHolyWordsBar"] },
+			{ key = "holyWordsBar", label = L["BarNameHolyWordsBar"], elements = {
+				{ key = "bar", label = L["BarElementBar"] },
+				{ key = "border", label = L["BarElementBorder"] },
+				{ key = "background", label = L["BarElementBackground"] },
+				{ key = "endCapSerenity", label = L["PriestHolyEndCapSerenity"] },
+				{ key = "endCapSanctify", label = L["PriestHolyEndCapSanctify"] },
+				{ key = "endCapChastise", label = L["PriestHolyEndCapChastise"] },
+			} },
 			{ key = "lightweaverBar", label = L["BarNameLightweaverBar"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Priest_Holy",

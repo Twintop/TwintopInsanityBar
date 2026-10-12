@@ -1150,15 +1150,20 @@ function CDM:ResolveCondition(condition)
 	return entry
 end
 
----Re-links the active spec's custom indicators, so a renumbered entry keeps working without its options
----tab being opened. Skipped while TRB still holds the previous spec, since the layout is the new one's.
+---Re-links the played spec's custom indicators, so a renumbered entry keeps working without its options
+---tab being opened. Finds the spec live, since TRB's cached spec names lag a switch or skip a disabled spec.
 function CDM:RelinkActiveConditions()
 	local character = TRB.Data.character
-	if character == nil or character.specId ~= TRB.Flavor.GetSpecializationIndex() then
+	local specIndex = TRB.Flavor.GetSpecializationIndex()
+	if character == nil or specIndex == nil or TRB.Data.settings == nil then
 		return
 	end
-	local classSettings = TRB.Data.settings ~= nil and TRB.Data.settings[character.className] or nil
-	local spec = classSettings ~= nil and classSettings[character.specName] or nil
+	local entry = TRB.Functions.Character:GetSpecRegistryEntryFromIds(character.classId, specIndex)
+	if entry == nil then
+		return
+	end
+	local classSettings = TRB.Data.settings[entry.className]
+	local spec = classSettings ~= nil and classSettings[entry.specName] or nil
 	local indicatorColors = spec ~= nil and spec.colors ~= nil and spec.colors.shared ~= nil and spec.colors.shared.indicatorColors or nil
 	if indicatorColors == nil or self:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
 		return

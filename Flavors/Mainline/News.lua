@@ -18,6 +18,8 @@ TRB.Flavor.newsContent = [====[
 ### Holy
 
 - Fix Color Indicators not coloring the Mana, Holy Words, and Lightweaver bars' End Caps.
+- The Holy Words bar shows an End Cap for each Holy Word instead of one for the whole bar.
+- Replace the Holy Words bar's End Cap Color Indicator target with End Cap (Serenity), End Cap (Sanctify), and End Cap (Chastise), and move existing End Cap targets to all three.
 
 ## Shaman
 ### Enhancement
