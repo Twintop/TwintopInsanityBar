@@ -445,8 +445,10 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	---@return TRB.CdmLayoutStatus? status
 	local function GetPickerBlock()
 		local character = TRB.Data.character
-		if character == nil or character.classId ~= classId or character.specId ~= specId then
-			return L[TRB.Flavor.singleSpecClasses and "CustomIndicatorOtherClassTooltip" or "CustomIndicatorOtherSpecTooltip"], nil
+		if character == nil or character.classId ~= classId then
+			return L["CustomIndicatorOtherClassTooltip"], nil
+		elseif character.specId ~= specId then
+			return L["CustomIndicatorOtherSpecTooltip"], nil
 		end
 		local status, reason = cdm:GetLayoutStatus()
 		if status == cdm.LayoutStatus.UNAVAILABLE then
@@ -737,8 +739,10 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		for i, k in ipairs(orderedKeys) do
 			sharedSettings.nodeOrder[i] = k
 		end
-		RefreshRow(indexA)
-		RefreshRow(indexB)
+		UpdatePickerBlock()
+		RefreshRow(indexA, true)
+		RefreshRow(indexB, true)
+		RefreshAddButton()
 	end
 
 	-- Everything from the Add button down moves when a row is added or removed.
@@ -791,6 +795,10 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			end)
 		end)
 		row.editBtn:SetScript("OnEnter", function(self)
+			-- A block can clear without any event, which would leave the button greyed with no reason.
+			if not self:IsEnabled() and GetPickerBlock() == nil then
+				RefreshAllRows()
+			end
 			ShowRowButtonTooltip(self, L["CustomIndicatorEditTooltip"])
 		end)
 		row.editBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1016,10 +1024,12 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			PositionRow(rows[rowIndex], rowIndex)
 			SetRowShown(rows[rowIndex], true)
 		end
-		RefreshRow(rowIndex)
+		UpdatePickerBlock()
+		RefreshRow(rowIndex, true)
 		if rowIndex > 1 then
-			RefreshRow(rowIndex - 1)
+			RefreshRow(rowIndex - 1, true)
 		end
+		RefreshAddButton()
 		RefreshRuntime()
 	end
 
@@ -1052,9 +1062,11 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		Primitives:ShiftControlsBelow(parent, belowTopY, 30)
 		belowTopY = belowTopY + 30
 
+		UpdatePickerBlock()
 		for i = math.max(removeIndex - 1, 1), #orderedKeys do
-			RefreshRow(i)
+			RefreshRow(i, true)
 		end
+		RefreshAddButton()
 		RefreshRuntime()
 	end
 
@@ -1073,6 +1085,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 			GameTooltip:SetText(reason, 1, 1, 1, 1, true)
 			GameTooltip:Show()
+		elseif not self:IsEnabled() then
+			RefreshAllRows()
 		end
 	end)
 	addButton:SetScript("OnClick", function(self)

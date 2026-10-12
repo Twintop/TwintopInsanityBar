@@ -2584,21 +2584,8 @@ function TRB.Functions.Settings:ClearCustomIndicatorsForMerge(spec, incoming)
 	end
 end
 
----Brings a spec's `colors.shared` order lists in line with the indicators the spec defines today.
----
----`Table:Merge(defaults, saved)` and the profile overlays merge `nodeOrder`/`gradientOrder` by array
----index, so a saved list only ever picks up a new default by accident: a key appended at index N
----survives when the save has fewer than N entries and is overwritten otherwise. A key removed from the
----code but still in saves (Shadow's `shadowWordMadnessUsableCasting`) holds a slot, which is exactly
----how Resonant Energy went missing from lists that predate it.
----
----Every saved key lands in whichever list the defaults put it in (a gradient key stranded in `nodeOrder`
----moves over), duplicates collapse, and any default key the save lacks is appended -- lowest priority,
----with its default `indicatorColors` entry when the save has none. Keys the defaults no longer define
----stay where they are: the options panel hides them, the runtime has no condition for them, and a
----feature that comes back picks its saved priority and colors up again. Surviving keys keep their
----relative order, both lists keep their table identity, and nothing else in `indicatorColors` is touched.
----Custom indicators, which no defaults define, are appended when the lists lost them and dropped once gone.
+---Repairs a spec's `colors.shared` order lists after merges that overlay them by index: keys move to their
+---default list, duplicates collapse, missing defaults and lost custom indicators append, and dead customs drop.
 ---@param spec table? # A single spec's settings table
 ---@param defaultShared table? # That spec's default `colors.shared` (nodeOrder, gradientOrder, indicatorColors)
 function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)

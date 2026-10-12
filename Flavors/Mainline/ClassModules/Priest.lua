@@ -2551,7 +2551,6 @@ local function UpdateResourceBar()
 			-- its indicators apply to one node of a bar rather than the whole bar. The shared health/cast bar
 			-- have no such nuance, so they still resolve the standard way.
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
-			TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			if nodeOrder and indicatorColors then
@@ -2668,6 +2667,9 @@ local function UpdateResourceBar()
 										cpNode:SetBorderColor(nodeBorderColor)
 										cpNode:SetBackgroundColor(nodeBgR, nodeBgG, nodeBgB, nodeBgA)
 										Bar:ApplyNodeIndicators(cpNode, "holyWordsBar")
+										if hwIndTargets and hwIndTargets.endCap and chargeIndex == charges + 1 then
+											cpNode:ApplyEndCapIndicator(hwIndicator.color, nil)
+										end
 									end
 								end
 								currentCp = currentCp + 1

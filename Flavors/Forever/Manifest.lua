@@ -31,7 +31,6 @@ TRB.Flavor = {
 	},
 	-- Blizzard_SwingTimer's PLAYER_SWING event; no other client has it.
 	swingTimers = true,
-	singleSpecClasses = true,
 
 	---True when the running client is WoW Forever: the mainline project with a 1.x interface number
 	---(the same rule AceDB uses). An unreadable project ID or interface number is not evidence of a mismatch.

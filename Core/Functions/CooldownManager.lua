@@ -1151,10 +1151,13 @@ function CDM:ResolveCondition(condition)
 end
 
 ---Re-links the active spec's custom indicators, so a renumbered entry keeps working without its options
----tab being opened.
+---tab being opened. Skipped while TRB still holds the previous spec, since the layout is the new one's.
 function CDM:RelinkActiveConditions()
 	local character = TRB.Data.character
-	local classSettings = TRB.Data.settings ~= nil and character ~= nil and TRB.Data.settings[character.className] or nil
+	if character == nil or character.specId ~= TRB.Flavor.GetSpecializationIndex() then
+		return
+	end
+	local classSettings = TRB.Data.settings ~= nil and TRB.Data.settings[character.className] or nil
 	local spec = classSettings ~= nil and classSettings[character.specName] or nil
 	local indicatorColors = spec ~= nil and spec.colors ~= nil and spec.colors.shared ~= nil and spec.colors.shared.indicatorColors or nil
 	if indicatorColors == nil or self:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
@@ -1173,11 +1176,21 @@ function CDM:RelinkActiveConditions()
 end
 
 local cdmFrame = CreateFrame("Frame")
-local relinkQueued = false
 local function InvalidateIndex()
 	CDM:MarkIndexDirty()
 	TRB.Data.lookupDirty = true
-	-- A frame late, so Blizzard's own listeners rebuild the layout first.
+end
+
+-- Only Blizzard's own layout data changing can renumber an entry; spec changes relink after SwitchSpec.
+local relinkEvents = {
+	COOLDOWN_VIEWER_DATA_LOADED = true,
+	COOLDOWN_VIEWER_TABLE_HOTFIXED = true,
+}
+local relinkQueued = false
+
+---Invalidates the index and re-links custom indicators a frame later, once Blizzard has rebuilt the layout.
+local function InvalidateLayout()
+	InvalidateIndex()
 	if not relinkQueued then
 		relinkQueued = true
 		C_Timer.After(0, function()
@@ -1186,7 +1199,14 @@ local function InvalidateIndex()
 		end)
 	end
 end
-cdmFrame:SetScript("OnEvent", InvalidateIndex)
+
+cdmFrame:SetScript("OnEvent", function(_, event)
+	if relinkEvents[event] then
+		InvalidateLayout()
+	else
+		InvalidateIndex()
+	end
+end)
 
 -- Fires whenever the player edits what the Cooldown Manager tracks: a spell added or removed, a
 -- viewer reconfigured, a saved layout applied. Nothing in the ordinary event stream reports that,
@@ -1207,7 +1227,7 @@ function CDM:Enable()
 	-- the Cooldown Manager loading. Callbacks are dispatched through securecallfunction, so our
 	-- taint cannot follow the return path back into Blizzard's layout code.
 	if EventRegistry ~= nil then
-		EventRegistry:RegisterCallback(dataChangedEvent, InvalidateIndex, cdmFrame)
+		EventRegistry:RegisterCallback(dataChangedEvent, InvalidateLayout, cdmFrame)
 	end
 
 	self:MarkIndexDirty()
