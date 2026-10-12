@@ -1123,7 +1123,7 @@ end
 ---each time -- the last call decides what the health bar and cast bar see. Deriving conditionMap from live
 ---state, as every spec does, satisfies that on its own.
 ---@param sharedColors table? # spec.colors.shared -- indicatorColors + nodeOrder
----@param conditionMap table<string, boolean> # Indicator key -> whether its condition is met right now
+---@param conditionMap table<string, boolean> # Indicator key -> whether its condition is met right now; custom indicator keys are written into it
 ---@param barColorMap table<string, table>? # barKey -> { bar =, border =, background = }, seeded with the spec's unindicated colors
 ---@param overrides table<string, table<string, boolean>>? # Optional: for each barKey the caller seeds here, records which elements an indicator claimed (specs that render an element differently once an indicator owns it)
 function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)

@@ -1202,6 +1202,7 @@ local function UpdateResourceBar()
 							wipe(stConditionMap)
 							stConditionMap.invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet
 							stConditionMap.invokeNiuzao = invokeNiuzaoActive
+							TRB.Functions.Color:ApplyCustomIndicatorConditions(stSharedColors, stConditionMap)
 
 							for i = #stNodeOrder, 1, -1 do
 								local key = stNodeOrder[i]

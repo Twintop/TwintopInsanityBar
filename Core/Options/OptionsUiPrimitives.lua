@@ -594,9 +594,9 @@ local function LayoutBadges(fontString)
 		end
 	end
 
-	-- Re-measured every call: the text changes when rows are reordered or relabelled.
-	local x = fontString:GetUnboundedStringWidth()
+	-- Re-measured each call since rows relabel; only a boxed label is measured unbounded, to decide its wrap.
 	local box = fontString.trbBadgeBox
+	local x = box ~= nil and fontString:GetUnboundedStringWidth() or fontString:GetStringWidth()
 	if box ~= nil then
 		if badgesWidth > 0 and x + badgesWidth > box.width then
 			local _, fontHeight = fontString:GetFont()

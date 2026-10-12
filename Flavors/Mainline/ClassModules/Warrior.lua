@@ -1370,7 +1370,7 @@ local function UpdateResourceBar()
 			rageColors.bar = barColor
 			rageColors.border = barBorderColor
 			rageColors.background = barBackgroundColor
-			local barColorMap = scratch.barColorMap2
+			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.rageBar = rageColors
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1499,7 +1499,7 @@ local function UpdateResourceBar()
 			wipe(whirlwindColors)
 			whirlwindColors.border = whirlwindBarColors.border.color
 			whirlwindColors.background = whirlwindBarColors.background.color
-			local barColorMap = scratch.barColorMap1
+			local barColorMap = scratch.barColorMap2
 			wipe(barColorMap)
 			barColorMap.enrageBar = enrageColors
 			barColorMap.rageBar = rageColors

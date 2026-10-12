@@ -525,6 +525,7 @@ function TRB.Functions.Profiles:ApplyToRuntime()
 			for _, specName in ipairs(self:GetSpecsForClass(className)) do
 				local specPiece = self:GetResolvedSpecPiece(className, specName)
 				if type(specPiece) == "table" then
+					TRB.Functions.Settings:ClearCustomIndicatorsForMerge(classPiece[specName], specPiece)
 					if className == currentClassName and type(classPiece[specName]) == "table" then
 						TRB.Functions.Table:DeepMergeInto(classPiece[specName], specPiece)
 					elseif type(classPiece[specName]) == "table" then

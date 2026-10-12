@@ -14,6 +14,11 @@ TRB.Flavor.newsContent = [====[
 
 - Fix Color Indicators not coloring the Soul Fragments bar's End Cap.
 
+## Priest
+### Holy
+
+- Fix Color Indicators not coloring the Mana, Holy Words, and Lightweaver bars' End Caps.
+
 ## Shaman
 ### Enhancement
 

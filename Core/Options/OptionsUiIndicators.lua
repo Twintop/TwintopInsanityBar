@@ -31,8 +31,7 @@ local defaultElementDefs = {
 local maxMenuRowsBeforeScroll = 15
 local menuRowHeight = 20
 
--- Every row leaves room on the left for a custom indicator's Remove and Edit buttons, so the arrows line
--- up down the list; the targets dropdown narrows by the same amount to keep clear of the color picker.
+-- Every flat and gradient row leaves room for custom Remove and Edit buttons, so all the arrows line up.
 local customColumnWidth = 46
 local targetsDropdownWidth = 254
 
@@ -437,28 +436,33 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	---Repaints live bars after a custom indicator is added, re-pointed, or removed.
 	local function RefreshRuntime()
 		TRB.Data.lookupDirty = true
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 
-	---Why Add and Edit can't be used right now, or nil when they can. The Cooldown Manager only holds the
-	---layout of the spec being played, so a panel for any other spec can't pick from it.
-	---@return string?
-	local function GetPickerBlockReason()
+	---Why Add and Edit can't be used right now (nil when they can), and the layout status behind it (nil on
+	---another spec's panel, since the Cooldown Manager only holds the played spec's layout).
+	---@return string? reason
+	---@return TRB.CdmLayoutStatus? status
+	local function GetPickerBlock()
 		local character = TRB.Data.character
 		if character == nil or character.classId ~= classId or character.specId ~= specId then
-			return L["CustomIndicatorOtherSpecTooltip"]
+			return L[TRB.Flavor.singleSpecClasses and "CustomIndicatorOtherClassTooltip" or "CustomIndicatorOtherSpecTooltip"], nil
 		end
 		local status, reason = cdm:GetLayoutStatus()
 		if status == cdm.LayoutStatus.UNAVAILABLE then
-			return string.format(L["CustomIndicatorCdmUnavailableTooltip"], reason or "")
+			return string.format(L["CustomIndicatorCdmUnavailableTooltip"], reason or ""), status
 		elseif status == cdm.LayoutStatus.DISABLED then
-			return L["CustomIndicatorCdmDisabledTooltip"]
+			return L["CustomIndicatorCdmDisabledTooltip"], status
 		elseif status == cdm.LayoutStatus.NOT_READY then
-			return L["CustomIndicatorCdmNotReadyTooltip"]
+			return L["CustomIndicatorCdmNotReadyTooltip"], status
 		end
-		return nil
+		return nil, status
+	end
+
+	-- Read once per refresh pass rather than once per row.
+	local blockReason, blockStatus = nil, nil
+	local function UpdatePickerBlock()
+		blockReason, blockStatus = GetPickerBlock()
 	end
 
 	local inactiveTooltipByState = {
@@ -489,17 +493,6 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return #notes > 0 and table.concat(notes, "\n\n") or nil
 	end
 
-	---Copies a layout entry's identity and display caches onto a custom indicator's condition.
-	---@param condition TRB.CustomIndicatorCondition
-	---@param entry TRB.CdmLayoutEntry
-	local function PointConditionAt(condition, entry)
-		condition.cooldownID = entry.cooldownID
-		condition.spellID = entry.spellID
-		if entry.name ~= nil then
-			condition.name = entry.name
-		end
-	end
-
 	---Resolves a custom row's label and tracked state, refreshing its cached name and following a
 	---renumbered entry, but only while its own spec's layout can be read.
 	---@param key string
@@ -512,17 +505,12 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		local notTracked = false
 		local badgeTooltip = L["CustomIndicatorBadgeTooltip"]
 
-		if condition ~= nil and GetPickerBlockReason() == nil then
-			local entry = cdm:GetLayoutEntry(condition.cooldownID)
-			if entry == nil and condition.spellID ~= nil then
-				entry = cdm:FindLayoutEntryBySpellId(condition.spellID)
-			end
-
+		if condition ~= nil and blockReason == nil then
+			local entry = cdm:ResolveCondition(condition)
 			if entry == nil then
 				notTracked = true
 				badgeTooltip = L["CustomIndicatorMissingTooltip"]
 			else
-				PointConditionAt(condition, entry)
 				notTracked = entry.state ~= cdm.EntryState.TRACKED
 				local status = GetEntryStatusText(entry)
 				if notTracked then
@@ -531,6 +519,9 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 					badgeTooltip = badgeTooltip .. "\n\n" .. status
 				end
 			end
+		elseif condition ~= nil and (blockStatus == cdm.LayoutStatus.DISABLED or blockStatus == cdm.LayoutStatus.UNAVAILABLE) then
+			notTracked = true
+			badgeTooltip = blockReason or badgeTooltip
 		end
 
 		local name = (condition ~= nil and condition.name) or L["CustomIndicatorUnknownEntry"]
@@ -617,7 +608,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	---@param text string
 	local function ShowRowButtonTooltip(button, text)
 		GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
-		GameTooltip:SetText(button:IsEnabled() and text or (GetPickerBlockReason() or text), 1, 1, 1, 1, true)
+		GameTooltip:SetText(button:IsEnabled() and text or (GetPickerBlock() or text), 1, 1, 1, 1, true)
 		GameTooltip:Show()
 	end
 
@@ -659,15 +650,19 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 	local function RefreshAddButton()
 		if addButton ~= nil then
-			addButton:SetEnabled(GetPickerBlockReason() == nil)
+			addButton:SetEnabled(blockReason == nil)
 		end
 	end
 
 	---Refreshes a single row's visual state from the current orderedKeys
 	---@param rowIndex number
-	local function RefreshRow(rowIndex)
+	---@param blockKnown boolean? # The caller just ran UpdatePickerBlock for a pass over every row
+	local function RefreshRow(rowIndex, blockKnown)
 		local row = rows[rowIndex]
 		if not row then return end
+		if not blockKnown then
+			UpdatePickerBlock()
+		end
 		local key = orderedKeys[rowIndex]
 		local def = indicatorDefByKey[key]
 		local indicator = indicatorColors[key]
@@ -717,15 +712,16 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		end
 		row.removeBtn:SetShown(isCustom)
 		row.editBtn:SetShown(isCustom)
-		row.editBtn:SetEnabled(GetPickerBlockReason() == nil)
+		row.editBtn:SetEnabled(blockReason == nil)
 		-- Arrow enabled state
 		if row.upBtn then row.upBtn:SetEnabled(rowIndex > 1) end
 		if row.downBtn then row.downBtn:SetEnabled(rowIndex < #orderedKeys) end
 	end
 
 	local function RefreshAllRows()
+		UpdatePickerBlock()
 		for rowIndex = 1, #orderedKeys do
-			RefreshRow(rowIndex)
+			RefreshRow(rowIndex, true)
 		end
 		RefreshAddButton()
 	end
@@ -781,9 +777,15 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			local currentIndicator = indicatorColors[currentKey]
 			local conditions = currentIndicator and currentIndicator.custom and currentIndicator.custom.conditions
 			local condition = conditions and conditions[1]
-			if condition == nil or GetPickerBlockReason() ~= nil then return end
+			if condition == nil then return end
+			-- The Cooldown Manager or spec can change under an open panel; say why instead of doing nothing.
+			if GetPickerBlock() ~= nil then
+				RefreshAllRows()
+				ShowRowButtonTooltip(self, L["CustomIndicatorEditTooltip"])
+				return
+			end
 			OpenPicker(self, condition.cooldownID, function(entry)
-				PointConditionAt(condition, entry)
+				cdm:PointConditionAt(condition, entry, true)
 				RefreshRow(capturedRowIdx)
 				RefreshRuntime()
 			end)
@@ -991,7 +993,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		local key = NextCustomKey()
 		---@type TRB.CustomIndicatorCondition
 		local condition = { source = cdm.CONDITION_SOURCE, state = cdm.ConditionState.ACTIVE, cooldownID = entry.cooldownID }
-		PointConditionAt(condition, entry)
+		cdm:PointConditionAt(condition, entry, true)
 		indicatorColors[key] = {
 			color = "FFFFFFFF",
 			color2 = "FFFFFFFF",
@@ -1062,28 +1064,32 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		yCoord = yCoord - 30
 	end
 
-	addButton = Primitives:BuildButton(parent, L["CustomIndicatorAddButton"], oUi.xCoord2, yCoord - 5, 250, 25)
+	addButton = Primitives:BuildButton(parent, L["CustomIndicatorAddButton"], oUi.xCoord2, yCoord, 250, 25)
 	addButton:SetDisabledFontObject(GameFontDisable)
 	addButton:SetMotionScriptsWhileDisabled(true)
-	addButton:SetScript("OnClick", function(self)
-		OpenPicker(self, nil, AddCustomIndicator)
-	end)
 	addButton:SetScript("OnEnter", function(self)
-		local reason = GetPickerBlockReason()
+		local reason = GetPickerBlock()
 		if reason ~= nil then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 			GameTooltip:SetText(reason, 1, 1, 1, 1, true)
 			GameTooltip:Show()
 		end
 	end)
+	addButton:SetScript("OnClick", function(self)
+		if GetPickerBlock() ~= nil then
+			RefreshAllRows()
+			self:GetScript("OnEnter")(self)
+			return
+		end
+		OpenPicker(self, nil, AddCustomIndicator)
+	end)
 	addButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-	belowTopY = yCoord - 5
-	yCoord = yCoord - 35
+	belowTopY = yCoord
+	yCoord = yCoord - 30
 
 	RefreshAllRows()
 
-	-- The layout behind each custom row changes with talents, gear, and Cooldown Manager edits. Read a frame
-	-- late, so Blizzard's own listeners for the same callback rebuild it first.
+	-- Read a frame late, so Blizzard's own listeners for the same callback rebuild the layout first.
 	parent:HookScript("OnShow", RefreshAllRows)
 	if EventRegistry ~= nil then
 		local refreshQueued = false
@@ -1161,7 +1167,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				local gradRow = {}
 				gradientRows[gradIdx] = gradRow
 
-				local xOffset = oUi.xCoord
+				local xOffset = oUi.xCoord + customColumnWidth
 
 				-- Up arrow
 				local upBtn = CreateFrame("Button", nil, parent)
@@ -1208,7 +1214,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				-- Targets dropdown
 				local ddName = ddNamePrefix .. "_Gradient_" .. gradKey .. "_Targets"
 				local dd = CreateFrame("DropdownButton", ddName, parent, "WowStyle1DropdownTemplate")
-				dd:SetWidth(280)
+				dd:SetWidth(targetsDropdownWidth)
 				dd:SetPoint("TOPLEFT", xOffset, yCoord)
 				dd:SetScript("OnEnter", function(self)
 					if gradDef.tooltip then

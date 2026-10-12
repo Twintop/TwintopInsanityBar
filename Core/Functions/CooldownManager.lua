@@ -121,8 +121,7 @@ local indexBuiltAt = nil
 -- those, so without this a rebuild landing mid-combat loses the frame until the next one.
 local frameSpellIds = {}
 
--- cooldownID -> buff viewer entry. Custom indicators key on this because it stays plain in combat, where
--- a potion's or trinket's spell ID goes secret or follows the gear.
+-- cooldownID -> buff viewer entry; custom indicators key on it because it stays plain in combat.
 local cooldownSources = {}
 
 -- Usable state per viewerDefinitions index, as of the last rebuild. An unusable viewer is skipped by
@@ -910,8 +909,7 @@ CDM.EntryState = {
 local trinketNumberBySlot = { [13] = 1, [14] = 2 }
 local COMBAT_POTION_SPELL_CATEGORY = 4
 
--- Category -> whether its entries are displayed, for the categories the buff viewers draw from. Built on
--- first use: Blizzard's own Lua adds the Hidden pseudo-categories, and Forever lacks the item categories.
+-- Passive category -> displayed; built lazily since Blizzard's Lua adds the Hidden pseudo-categories.
 local passiveCategoryDisplayed = nil
 
 ---@return table<integer, boolean>?
@@ -1008,10 +1006,22 @@ local function DescribeEntry(cooldownID, info)
 
 	if trinketNumber ~= nil then
 		local itemId = GetInventoryItemID("player", slot)
-		local itemName = itemId ~= nil and C_Item.GetItemNameByID(itemId) or nil
-		entry.name = string.format(L["CustomIndicatorTrinketFormat"], trinketNumber, itemName or L["CustomIndicatorEmptySlot"])
-		if not issecretvalue(info.buffSlot) and info.buffSlot == 2 then
-			entry.name = entry.name .. L["CustomIndicatorSecondBuffSuffix"]
+		local itemName = nil
+		if itemId == nil then
+			itemName = L["CustomIndicatorEmptySlot"]
+		else
+			-- An uncached item has no name yet, but its inventory link already carries one.
+			itemName = C_Item.GetItemNameByID(itemId)
+			if itemName == nil then
+				local link = GetInventoryItemLink("player", slot)
+				itemName = link ~= nil and link:match("%[(.-)%]") or nil
+			end
+		end
+		if itemName ~= nil then
+			entry.name = string.format(L["CustomIndicatorTrinketFormat"], trinketNumber, itemName)
+			if not issecretvalue(info.buffSlot) and info.buffSlot == 2 then
+				entry.name = entry.name .. L["CustomIndicatorSecondBuffSuffix"]
+			end
 		end
 		entry.icon = GetInventoryItemTexture("player", slot)
 		entry.equipSlot = slot
@@ -1110,10 +1120,71 @@ function CDM:FindLayoutEntryBySpellId(spellId)
 	return match
 end
 
+---Points a custom indicator condition at a layout entry. Only a pick clears the cached name or spell: a
+---refresh that reads them secret keeps them, since re-linking depends on the spell.
+---@param condition TRB.CustomIndicatorCondition
+---@param entry TRB.CdmLayoutEntry
+---@param picked boolean # The user chose this entry, rather than a refresh or re-link
+function CDM:PointConditionAt(condition, entry, picked)
+	condition.cooldownID = entry.cooldownID
+	if picked or entry.spellID ~= nil then
+		condition.spellID = entry.spellID
+	end
+	if picked or entry.name ~= nil then
+		condition.name = entry.name
+	end
+end
+
+---The entry a condition follows, re-linked by its cached spell when Blizzard renumbered it, or nil when
+---it has left the layout. Callers check that GetLayoutStatus is READY first.
+---@param condition TRB.CustomIndicatorCondition
+---@return TRB.CdmLayoutEntry?
+function CDM:ResolveCondition(condition)
+	local entry = self:GetLayoutEntry(condition.cooldownID)
+	if entry == nil and condition.spellID ~= nil then
+		entry = self:FindLayoutEntryBySpellId(condition.spellID)
+	end
+	if entry ~= nil then
+		self:PointConditionAt(condition, entry, false)
+	end
+	return entry
+end
+
+---Re-links the active spec's custom indicators, so a renumbered entry keeps working without its options
+---tab being opened.
+function CDM:RelinkActiveConditions()
+	local character = TRB.Data.character
+	local classSettings = TRB.Data.settings ~= nil and character ~= nil and TRB.Data.settings[character.className] or nil
+	local spec = classSettings ~= nil and classSettings[character.specName] or nil
+	local indicatorColors = spec ~= nil and spec.colors ~= nil and spec.colors.shared ~= nil and spec.colors.shared.indicatorColors or nil
+	if indicatorColors == nil or self:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
+		return
+	end
+	for _, indicator in pairs(indicatorColors) do
+		local conditions = type(indicator) == "table" and indicator.custom ~= nil and indicator.custom.conditions or nil
+		if conditions ~= nil then
+			for _, condition in ipairs(conditions) do
+				if condition.source == CDM.CONDITION_SOURCE then
+					self:ResolveCondition(condition)
+				end
+			end
+		end
+	end
+end
+
 local cdmFrame = CreateFrame("Frame")
+local relinkQueued = false
 local function InvalidateIndex()
 	CDM:MarkIndexDirty()
 	TRB.Data.lookupDirty = true
+	-- A frame late, so Blizzard's own listeners rebuild the layout first.
+	if not relinkQueued then
+		relinkQueued = true
+		C_Timer.After(0, function()
+			relinkQueued = false
+			CDM:RelinkActiveConditions()
+		end)
+	end
 end
 cdmFrame:SetScript("OnEvent", InvalidateIndex)
 
