@@ -4,10 +4,10 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
-# Live 12.1.5.1-release / Forever 1.60.1.9-release (2026-10-12)
+# Live 12.1.5.1-release / Forever 1.60.1.9-release (2026-10-13)
 ## General
 
-- Long color option labels wrap to a second line instead of pushing their CDM or Custom badge out of view.
+- [#847](#847) Long color option labels wrap to a second line instead of pushing their CDM or Custom badge out of view.
 
 ## Color Indicators
 
