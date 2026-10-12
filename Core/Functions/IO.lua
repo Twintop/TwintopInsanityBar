@@ -505,6 +505,7 @@ local function HandleImport(input)
 						newBarText[className.."_"..specName] = spec.displayText.barText
 						spec.displayText.barText = {}
 					end
+					TRB.Functions.Settings:ClearCustomIndicatorsForMerge(existing[className] and existing[className][specName], spec)
 				end
 			end
 		end

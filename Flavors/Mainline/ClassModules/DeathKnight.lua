@@ -1163,6 +1163,7 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 
 	if nodeOrder and indicatorColors then
 		local _, _, _, conditionMap = GetDeathKnightIndicatorState(specSettings)
+		TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
 
 		-- Apply flat indicators to bone shield targets (reverse iteration, last writer wins)
 		for i = #nodeOrder, 1, -1 do

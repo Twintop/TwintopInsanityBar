@@ -413,28 +413,30 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 			TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, specSettings, classId, specId, yCoord)
 		end)
 
-		local indicatorColorsPanel = archetype.overcap ~= nil and withSpec(function(parent, specSettings, controls)
+		-- Every archetype gets the tab for custom indicators; only a resource that can overcap adds its gradient.
+		local indicatorColorsPanel = withSpec(function(parent, specSettings, controls)
 			local indicatorDefs = {}
 			if spec.stealth then
 				indicatorDefs[1] = { key = "borderStealth", label = L["RogueCheckboxStealth"], tooltip = L["RogueIndicatorStealthTooltip"], colorLabel = L["RogueIndicatorStealthColor"] }
 			end
-			local barTargetDefs = { { key = "resourceBar", label = L[archetype.overcap.barNameKey] } }
+			local overcap = archetype.overcap
+			local barTargetDefs = { { key = "resourceBar", label = overcap ~= nil and L[overcap.barNameKey] or resourceName } }
 			if hasSecondary then
 				barTargetDefs[2] = { key = "comboPointsBar", label = L[archetype.secondary.nameKey] }
 			end
 			TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, specSettings, classId, specId, 5, {
 				indicatorDefs = indicatorDefs,
-				gradientDefs = {
-					{ key = "borderOvercap", label = L[archetype.overcap.indicatorKey], tooltip = L[archetype.overcap.indicatorTooltipKey], colorLabel = L[archetype.overcap.indicatorColorKey] },
-				},
+				gradientDefs = overcap ~= nil and {
+					{ key = "borderOvercap", label = L[overcap.indicatorKey], tooltip = L[overcap.indicatorTooltipKey], colorLabel = L[overcap.indicatorColorKey] },
+				} or nil,
 				barTargetDefs = barTargetDefs,
 				ddNamePrefix = "TwintopResourceBar_" .. namePrefix,
-				overcapConfig = {
+				overcapConfig = overcap ~= nil and {
 					primaryResourceString = resourceName,
 					primaryResourceMax = maxResource,
-				},
+				} or nil,
 			})
-		end) or nil
+		end)
 
 		local barTextPanel = function(parent, cache)
 			if parent == nil then
@@ -475,9 +477,7 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 				tabDefinitions[#tabDefinitions + 1] = { "comboPoints", L[archetype.secondary.nameKey], oUi.tabWidth.medium, comboPointsPanel, visibilityKey = "secondary" }
 			end
 			tabDefinitions[#tabDefinitions + 1] = { "healthBar", L["TabHealth"], oUi.tabWidth.small, healthBarPanel, visibilityKey = "health" }
-			if indicatorColorsPanel ~= nil then
-				tabDefinitions[#tabDefinitions + 1] = { "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, indicatorColorsPanel }
-			end
+			tabDefinitions[#tabDefinitions + 1] = { "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, indicatorColorsPanel }
 			tabDefinitions[#tabDefinitions + 1] = { "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, thresholdSettingsPanel }
 			if thresholdListPanel ~= nil then
 				tabDefinitions[#tabDefinitions + 1] = { "thresholds", L["TabThresholds"], oUi.tabWidth.large, thresholdListPanel, true }

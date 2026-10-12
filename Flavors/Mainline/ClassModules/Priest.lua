@@ -35,6 +35,18 @@ local holyWordKeyToDef = {
 	holyWordChastise = holyWordDefsCache[3],
 }
 
+-- Holy Word -> the Holy Words bar target element for its End Cap.
+local holyWordEndCapElements = {
+	holyWordSerenity = "endCapSerenity",
+	holyWordSanctify = "endCapSanctify",
+	holyWordChastise = "endCapChastise",
+}
+local isHolyWordEndCapElement = {
+	endCapSerenity = true,
+	endCapSanctify = true,
+	endCapChastise = true,
+}
+
 --- Builds (or refreshes) the Holy Word node mapping that maps e.g. "holyWordSerenity1" → physical node index.
 --- This is used by GetBarTextFrame to anchor bar text to the correct Holy Word node.
 --- Safe to call any time after SwitchSpec has populated talents/spells; the mapping is also
@@ -70,6 +82,16 @@ local function BuildHolyWordNodeMapping()
 		nodeMapping[k] = nil
 	end
 
+	local holyWordsGroup = TRB.Frames.barGroups and TRB.Frames.barGroups.holyWords
+	local segmentEnds = holyWordsGroup ~= nil and holyWordsGroup.endCapSegmentEnds or nil
+	if holyWordsGroup ~= nil and segmentEnds == nil then
+		segmentEnds = {}
+		holyWordsGroup.endCapSegmentEnds = segmentEnds
+	end
+	if segmentEnds ~= nil then
+		wipe(segmentEnds)
+	end
+
 	local currentNode = 1
 	for _, nodeKey in ipairs(orderedKeys) do
 		local nodeColorEntry = hwColors.nodeColors[nodeKey]
@@ -84,6 +106,9 @@ local function BuildHolyWordNodeMapping()
 					for chargeIndex = 1, maxCharges do
 						nodeMapping[nodeKey .. chargeIndex] = currentNode
 						currentNode = currentNode + 1
+					end
+					if segmentEnds ~= nil then
+						segmentEnds[#segmentEnds + 1] = currentNode - 1
 					end
 				end
 			end
@@ -2564,10 +2589,10 @@ local function UpdateResourceBar()
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										-- Benediction on lightweaverBar.background is node-specific (next empty node only)
-										-- Per-HW indicators on holyWordsBar are node-specific (recharging node only)
+										-- Per-HW indicators' fill, border, and background on holyWordsBar are node-specific (recharging node only)
 										if isTargeted
 											and not (key == "benediction" and barKey == "lightweaverBar" and elemKey == "background")
-											and not ((key == "holyWordSerenity" or key == "holyWordSanctify" or key == "holyWordChastise") and barKey == "holyWordsBar") then
+											and not ((key == "holyWordSerenity" or key == "holyWordSanctify" or key == "holyWordChastise") and barKey == "holyWordsBar" and not isHolyWordEndCapElement[elemKey]) then
 											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
 										end
 									end
@@ -2577,6 +2602,8 @@ local function UpdateResourceBar()
 					end
 				end
 			end
+			Color:SetResolvedEndCap("manaBar", manaBarColors.endCap)
+			Color:SetResolvedEndCap("lightweaverBar", lightweaverBarColors.endCap)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -2663,7 +2690,8 @@ local function UpdateResourceBar()
 										TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 										cpNode:SetBorderColor(nodeBorderColor)
 										cpNode:SetBackgroundColor(nodeBgR, nodeBgG, nodeBgB, nodeBgA)
-										Bar:ApplyNodeIndicators(cpNode, "holyWordsBar")
+										local endCapElement = holyWordEndCapElements[nodeKey]
+										Bar:ApplyNodeIndicators(cpNode, "holyWordsBar", endCapElement, holyWordsBarColors[endCapElement])
 									end
 								end
 								currentCp = currentCp + 1

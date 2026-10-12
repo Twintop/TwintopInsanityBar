@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.9-release (2026-10-12)
+## General
+### Color Indicators
+
+- [#773](#773) Add a Color Indicators tab for Hunter, Mage, Paladin, Priest, Shaman, and Warlock.
+
+---
+
 # 1.60.1.8-release (2026-10-12)
 ## General
 ### Core Changes

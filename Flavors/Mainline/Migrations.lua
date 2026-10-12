@@ -8711,6 +8711,25 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
+	-- Holy: the Holy Words bar's one End Cap target split into one per Holy Word; keep it on all three.
+	do
+		local holy = TwintopInsanityBarSettings.priest ~= nil and TwintopInsanityBarSettings.priest.holy or nil
+		local indicatorColors = holy ~= nil and holy.colors ~= nil and holy.colors.shared ~= nil and holy.colors.shared.indicatorColors or nil
+		if type(indicatorColors) == "table" then
+			for _, indicator in pairs(indicatorColors) do
+				local targets = type(indicator) == "table" and type(indicator.targets) == "table" and indicator.targets.holyWordsBar or nil
+				if type(targets) == "table" and targets.endCap ~= nil then
+					if targets.endCap == true then
+						targets.endCapSerenity = true
+						targets.endCapSanctify = true
+						targets.endCapChastise = true
+					end
+					targets.endCap = nil
+				end
+			end
+		end
+	end
+
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

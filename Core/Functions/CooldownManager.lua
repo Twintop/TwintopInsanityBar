@@ -4,6 +4,7 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.CooldownManager = {}
 
 local CDM = TRB.Functions.CooldownManager
+local L = TRB.Localization
 
 ---Signals that can be read for a tracked spell.
 ---@enum TRB.CdmSignal
@@ -119,6 +120,9 @@ local indexBuiltAt = nil
 -- frame -> plain spell IDs it last indexed under. Spell IDs go secret in combat and AddSource drops
 -- those, so without this a rebuild landing mid-combat loses the frame until the next one.
 local frameSpellIds = {}
+
+-- cooldownID -> buff viewer entry; custom indicators key on it because it stays plain in combat.
+local cooldownSources = {}
 
 -- Usable state per viewerDefinitions index, as of the last rebuild. An unusable viewer is skipped by
 -- RebuildIndex outright, so one appearing or disappearing changes what the index holds without any
@@ -289,6 +293,14 @@ local function IndexItemFrame(frame, kind, viewer)
 	local entry = { frame = frame, kind = kind, viewer = viewer }
 	local recorded = {}
 
+	if groupKinds[CDM.SourceGroup.BUFF][kind] and frame.GetCooldownID ~= nil then
+		local okCooldown, cooldownID = pcall(frame.GetCooldownID, frame)
+		-- Spare pooled frames carry no cooldownID.
+		if okCooldown and TRB.Functions.Number:IsPlainNumber(cooldownID) and cooldownSources[cooldownID] == nil then
+			cooldownSources[cooldownID] = entry
+		end
+	end
+
 	local okLive, liveSpellId = pcall(frame.GetSpellID, frame)
 	if okLive then
 		AddSource(liveSpellId, entry, recorded)
@@ -325,6 +337,7 @@ end
 ---setter or a refresh method, which would run Blizzard's code under our taint and error.
 function CDM:RebuildIndex()
 	wipe(sources)
+	wipe(cooldownSources)
 	wipe(viewerShown)
 	-- A rebuild means frame->spell assignments may have changed, so every memoized read and
 	-- quarantine verdict from the old mapping is void.
@@ -807,12 +820,398 @@ function CDM:ApplyToBarNode(node, spellId)
 	return (pcall(ApplyBarValues, node:GetFrame(), duration, remaining))
 end
 
+---True while the aura a buff viewer entry tracks is up, false while it's down, nil when no usable buff
+---viewer holds the entry. Only the cached aura record's presence is read, so the answer is always plain.
+---@param cooldownID integer
+---@return boolean?
+function CDM:IsCooldownActive(cooldownID)
+	if not TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		return nil
+	end
+	if indexDirty or ShownStateChanged() then
+		self:RebuildIndex()
+	end
+
+	local entry = cooldownSources[cooldownID]
+	if entry == nil or quarantined[entry.frame] then
+		return nil
+	end
+	return entry.frame.auraDataCached ~= nil
+end
+
+---A custom Color Indicator's condition: which source it reads and what must hold.
+---@class TRB.CustomIndicatorCondition
+---@field source string # CDM.CONDITION_SOURCE
+---@field cooldownID integer
+---@field state string # A CDM.ConditionState value
+---@field name string? # Display name, cached for panels shown while on another spec
+---@field spellID integer? # The entry's spell, cached so a renumbered entry can be found again
+
+CDM.CONDITION_SOURCE = "cdm"
+
+---@enum TRB.CdmConditionState
+CDM.ConditionState = {
+	ACTIVE = "active",
+}
+
+---Whether one custom indicator condition holds right now. Unknown answers count as not met.
+---@param condition TRB.CustomIndicatorCondition
+---@return boolean
+function CDM:IsConditionMet(condition)
+	if condition.source ~= CDM.CONDITION_SOURCE or condition.state ~= CDM.ConditionState.ACTIVE then
+		return false
+	end
+	return self:IsCooldownActive(condition.cooldownID) == true
+end
+
+---Whether the user's Cooldown Manager layout can be read and judged right now.
+---@enum TRB.CdmLayoutStatus
+CDM.LayoutStatus = {
+	READY = "ready",
+	UNAVAILABLE = "unavailable",
+	DISABLED = "disabled",
+	NOT_READY = "notReady",
+}
+
+---Picker heading for a passive layout entry: whether the character has it, and whether it's displayed.
+---@enum TRB.CdmLayoutGroup
+CDM.LayoutGroup = {
+	DISPLAYED = "displayed",
+	INACTIVE = "inactive",
+	NOT_DISPLAYED = "notDisplayed",
+	INACTIVE_NOT_DISPLAYED = "inactiveNotDisplayed",
+}
+
+---Whether a passive layout entry can drive an indicator, and why not.
+---@enum TRB.CdmEntryState
+CDM.EntryState = {
+	TRACKED = "tracked",
+	NOT_DISPLAYED = "notDisplayed",
+	NOT_LEARNED = "notLearned",
+	NO_TRINKET_BUFF = "noTrinketBuff",
+	UNAVAILABLE = "unavailable",
+}
+
+---One entry of the passive half of the user's layout.
+---@class TRB.CdmLayoutEntry
+---@field cooldownID integer
+---@field group TRB.CdmLayoutGroup
+---@field state TRB.CdmEntryState # Not learned (or the like) takes precedence over not displayed
+---@field displayed boolean # In Tracked Buffs or Tracked Bars
+---@field name string? # nil when the entry's spell ID is secret
+---@field icon any
+---@field spellID integer? # The entry's own spell, for re-linking; nil for trinkets and consumables
+---@field tooltipSpellID integer? # The spell its tooltip shows: the override when there is one
+---@field equipSlot integer? # Trinket slot, for an item tooltip
+---@field isPotion boolean
+
+-- Trinket slot -> the number players know it by.
+local trinketNumberBySlot = { [13] = 1, [14] = 2 }
+local COMBAT_POTION_SPELL_CATEGORY = 4
+
+-- Passive category -> displayed; built lazily since Blizzard's Lua adds the Hidden pseudo-categories.
+local passiveCategoryDisplayed = nil
+
+---@return table<integer, boolean>?
+local function GetPassiveCategories()
+	if passiveCategoryDisplayed ~= nil then
+		return passiveCategoryDisplayed
+	end
+	local categories = Enum.CooldownViewerCategory
+	if categories == nil or categories.HiddenPassive == nil then
+		return nil
+	end
+
+	passiveCategoryDisplayed = {
+		[categories.TrackedBuff] = true,
+		[categories.TrackedBar] = true,
+		[categories.HiddenPassive] = false,
+	}
+	if categories.SpecAgnosticTracked ~= nil then
+		passiveCategoryDisplayed[categories.SpecAgnosticTracked] = false
+	end
+	if categories.EquipSlotTracked ~= nil then
+		passiveCategoryDisplayed[categories.EquipSlotTracked] = false
+	end
+	return passiveCategoryDisplayed
+end
+
+---Blizzard's built layout and its provider. Read in place: the provider's other getters rebuild the
+---table, which from our tainted code would taint it.
+---@return table? displayData
+---@return table? provider
+local function GetDisplayData()
+	local settings = _G["CooldownViewerSettings"]
+	local provider = settings ~= nil and settings.GetDataProvider ~= nil and settings:GetDataProvider() or nil
+	if provider == nil or provider.GetDisplayData == nil then
+		return nil, nil
+	end
+	local displayData = provider:GetDisplayData()
+	if displayData == nil or type(displayData.orderedCooldownIDs) ~= "table" or type(displayData.cooldownInfoByID) ~= "table" then
+		return nil, provider
+	end
+	return displayData, provider
+end
+
+---@return TRB.CdmLayoutStatus
+---@return string? # Blizzard's own reason when unavailable
+function CDM:GetLayoutStatus()
+	local availableApi = C_CooldownViewer ~= nil and C_CooldownViewer.IsCooldownViewerAvailable or nil
+	if availableApi == nil then
+		return CDM.LayoutStatus.UNAVAILABLE, nil
+	end
+	local isAvailable, failureReason = availableApi()
+	if not isAvailable then
+		return CDM.LayoutStatus.UNAVAILABLE, failureReason
+	end
+	if not C_CVar.GetCVarBool("cooldownViewerEnabled") then
+		return CDM.LayoutStatus.DISABLED, nil
+	end
+
+	local displayData, provider = GetDisplayData()
+	if displayData == nil or provider == nil or provider.displayDataDirty or GetPassiveCategories() == nil then
+		return CDM.LayoutStatus.NOT_READY, nil
+	end
+	return CDM.LayoutStatus.READY, nil
+end
+
+---@param spellId any
+---@return string?
+---@return any
+local function DescribeSpell(spellId)
+	if not TRB.Functions.Number:IsPlainNumber(spellId) then
+		return nil, nil
+	end
+	local icon = C_Spell.GetSpellTexture(spellId)
+	return C_Spell.GetSpellName(spellId), icon
+end
+
+---Builds the entry for a layout record, or nil when it isn't a passive one.
+---@param cooldownID integer
+---@param info table
+---@return TRB.CdmLayoutEntry?
+local function DescribeEntry(cooldownID, info)
+	local categories = GetPassiveCategories()
+	local category = info.category
+	if categories == nil or issecretvalue(category) or categories[category] == nil or issecretvalue(info.isKnown) then
+		return nil
+	end
+
+	local known = info.isKnown == true
+	local displayed = categories[category]
+	---@type TRB.CdmLayoutEntry
+	local entry = { cooldownID = cooldownID, group = CDM.LayoutGroup.DISPLAYED, state = CDM.EntryState.TRACKED, displayed = displayed, isPotion = false }
+	local slot = info.equipSlot
+	local trinketNumber = not issecretvalue(slot) and trinketNumberBySlot[slot] or nil
+
+	if trinketNumber ~= nil then
+		local itemId = GetInventoryItemID("player", slot)
+		local itemName = nil
+		if itemId == nil then
+			itemName = L["CustomIndicatorEmptySlot"]
+		else
+			-- An uncached item has no name yet, but its inventory link already carries one.
+			itemName = C_Item.GetItemNameByID(itemId)
+			if itemName == nil then
+				local link = GetInventoryItemLink("player", slot)
+				itemName = link ~= nil and link:match("%[(.-)%]") or nil
+			end
+		end
+		if itemName ~= nil then
+			entry.name = string.format(L["CustomIndicatorTrinketFormat"], trinketNumber, itemName)
+			if not issecretvalue(info.buffSlot) and info.buffSlot == 2 then
+				entry.name = entry.name .. L["CustomIndicatorSecondBuffSuffix"]
+			end
+		end
+		entry.icon = GetInventoryItemTexture("player", slot)
+		entry.equipSlot = slot
+	elseif info.spellCategoryID ~= nil then
+		-- A consumable's spell follows the potion last used, so it is never cached for re-linking.
+		entry.isPotion = not issecretvalue(info.spellCategoryID) and info.spellCategoryID == COMBAT_POTION_SPELL_CATEGORY
+		local spellName, icon = DescribeSpell(info.spellID)
+		entry.name = entry.isPotion and L["CustomIndicatorCombatPotion"] or spellName
+		entry.icon = icon
+		if spellName ~= nil then
+			entry.tooltipSpellID = info.spellID
+		end
+	else
+		local overrideId = info.overrideSpellID
+		local displayId = overrideId
+		if displayId == nil then
+			displayId = info.spellID
+		end
+		entry.name, entry.icon = DescribeSpell(displayId)
+		if entry.name ~= nil then
+			entry.tooltipSpellID = displayId
+		end
+		if TRB.Functions.Number:IsPlainNumber(info.spellID) and not issecretvalue(overrideId) then
+			entry.spellID = info.spellID
+		end
+	end
+
+	if known then
+		entry.group = displayed and CDM.LayoutGroup.DISPLAYED or CDM.LayoutGroup.NOT_DISPLAYED
+		if not displayed then
+			entry.state = CDM.EntryState.NOT_DISPLAYED
+		end
+	else
+		entry.group = displayed and CDM.LayoutGroup.INACTIVE or CDM.LayoutGroup.INACTIVE_NOT_DISPLAYED
+		if trinketNumber ~= nil then
+			entry.state = CDM.EntryState.NO_TRINKET_BUFF
+		elseif info.spellCategoryID == nil then
+			entry.state = CDM.EntryState.NOT_LEARNED
+		else
+			entry.state = CDM.EntryState.UNAVAILABLE
+		end
+	end
+
+	return entry
+end
+
+---Every passive entry in the user's layout, in layout order, or nil unless the layout is READY.
+---@return TRB.CdmLayoutEntry[]?
+function CDM:GetLayoutEntries()
+	local displayData = GetDisplayData()
+	if displayData == nil or self:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
+		return nil
+	end
+	local entries = {}
+	for _, cooldownID in ipairs(displayData.orderedCooldownIDs) do
+		local info = displayData.cooldownInfoByID[cooldownID]
+		local entry = type(info) == "table" and DescribeEntry(cooldownID, info) or nil
+		if entry ~= nil then
+			entries[#entries + 1] = entry
+		end
+	end
+	return entries
+end
+
+---One passive entry by cooldownID; nil when it isn't in the layout. Callers check GetLayoutStatus first,
+---since a layout that isn't READY makes every entry look missing.
+---@param cooldownID integer
+---@return TRB.CdmLayoutEntry?
+function CDM:GetLayoutEntry(cooldownID)
+	local displayData = GetDisplayData()
+	if displayData == nil or not TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		return nil
+	end
+	local info = displayData.cooldownInfoByID[cooldownID]
+	return type(info) == "table" and DescribeEntry(cooldownID, info) or nil
+end
+
+---The one passive entry for a spell, so an indicator can follow an entry Blizzard renumbered. Nil when no
+---entry or more than one matches.
+---@param spellId integer
+---@return TRB.CdmLayoutEntry?
+function CDM:FindLayoutEntryBySpellId(spellId)
+	local entries = TRB.Functions.Number:IsPlainNumber(spellId) and self:GetLayoutEntries() or nil
+	if entries == nil then
+		return nil
+	end
+	local match = nil
+	for _, entry in ipairs(entries) do
+		if entry.spellID == spellId then
+			if match ~= nil then
+				return nil
+			end
+			match = entry
+		end
+	end
+	return match
+end
+
+---Points a custom indicator condition at a layout entry. Only a pick clears the cached name or spell: a
+---refresh that reads them secret keeps them, since re-linking depends on the spell.
+---@param condition TRB.CustomIndicatorCondition
+---@param entry TRB.CdmLayoutEntry
+---@param picked boolean # The user chose this entry, rather than a refresh or re-link
+function CDM:PointConditionAt(condition, entry, picked)
+	condition.cooldownID = entry.cooldownID
+	if picked or entry.spellID ~= nil then
+		condition.spellID = entry.spellID
+	end
+	if picked or entry.name ~= nil then
+		condition.name = entry.name
+	end
+end
+
+---The entry a condition follows, re-linked by its cached spell when Blizzard renumbered it, or nil when
+---it has left the layout. Callers check that GetLayoutStatus is READY first.
+---@param condition TRB.CustomIndicatorCondition
+---@return TRB.CdmLayoutEntry?
+function CDM:ResolveCondition(condition)
+	local entry = self:GetLayoutEntry(condition.cooldownID)
+	if entry == nil and condition.spellID ~= nil then
+		entry = self:FindLayoutEntryBySpellId(condition.spellID)
+	end
+	if entry ~= nil then
+		self:PointConditionAt(condition, entry, false)
+	end
+	return entry
+end
+
+---Re-links the played spec's custom indicators, so a renumbered entry keeps working without its options
+---tab being opened. Finds the spec live, since TRB's cached spec names lag a switch or skip a disabled spec.
+function CDM:RelinkActiveConditions()
+	local character = TRB.Data.character
+	local specIndex = TRB.Flavor.GetSpecializationIndex()
+	if character == nil or specIndex == nil or TRB.Data.settings == nil then
+		return
+	end
+	local entry = TRB.Functions.Character:GetSpecRegistryEntryFromIds(character.classId, specIndex)
+	if entry == nil then
+		return
+	end
+	local classSettings = TRB.Data.settings[entry.className]
+	local spec = classSettings ~= nil and classSettings[entry.specName] or nil
+	local indicatorColors = spec ~= nil and spec.colors ~= nil and spec.colors.shared ~= nil and spec.colors.shared.indicatorColors or nil
+	if indicatorColors == nil or self:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
+		return
+	end
+	for _, indicator in pairs(indicatorColors) do
+		local conditions = type(indicator) == "table" and indicator.custom ~= nil and indicator.custom.conditions or nil
+		if conditions ~= nil then
+			for _, condition in ipairs(conditions) do
+				if condition.source == CDM.CONDITION_SOURCE then
+					self:ResolveCondition(condition)
+				end
+			end
+		end
+	end
+end
+
 local cdmFrame = CreateFrame("Frame")
 local function InvalidateIndex()
 	CDM:MarkIndexDirty()
 	TRB.Data.lookupDirty = true
 end
-cdmFrame:SetScript("OnEvent", InvalidateIndex)
+
+-- Only Blizzard's own layout data changing can renumber an entry; spec changes relink after SwitchSpec.
+local relinkEvents = {
+	COOLDOWN_VIEWER_DATA_LOADED = true,
+	COOLDOWN_VIEWER_TABLE_HOTFIXED = true,
+}
+local relinkQueued = false
+
+---Invalidates the index and re-links custom indicators a frame later, once Blizzard has rebuilt the layout.
+local function InvalidateLayout()
+	InvalidateIndex()
+	if not relinkQueued then
+		relinkQueued = true
+		C_Timer.After(0, function()
+			relinkQueued = false
+			CDM:RelinkActiveConditions()
+		end)
+	end
+end
+
+cdmFrame:SetScript("OnEvent", function(_, event)
+	if relinkEvents[event] then
+		InvalidateLayout()
+	else
+		InvalidateIndex()
+	end
+end)
 
 -- Fires whenever the player edits what the Cooldown Manager tracks: a spell added or removed, a
 -- viewer reconfigured, a saved layout applied. Nothing in the ordinary event stream reports that,
@@ -833,7 +1232,7 @@ function CDM:Enable()
 	-- the Cooldown Manager loading. Callbacks are dispatched through securecallfunction, so our
 	-- taint cannot follow the return path back into Blizzard's layout code.
 	if EventRegistry ~= nil then
-		EventRegistry:RegisterCallback(dataChangedEvent, InvalidateIndex, cdmFrame)
+		EventRegistry:RegisterCallback(dataChangedEvent, InvalidateLayout, cdmFrame)
 	end
 
 	self:MarkIndexDirty()
@@ -846,6 +1245,7 @@ function CDM:Disable()
 		EventRegistry:UnregisterCallback(dataChangedEvent, cdmFrame)
 	end
 	wipe(sources)
+	wipe(cooldownSources)
 	wipe(viewerShown)
 	wipe(viewerLastShown)
 	wipe(frameSpellIds)

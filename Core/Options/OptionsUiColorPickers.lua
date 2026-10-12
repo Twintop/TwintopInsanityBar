@@ -213,7 +213,11 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, descripti
 	---@diagnostic disable-next-line: redundant-parameter
 	f.Font:SetWordWrap(true)
 	f.Font:SetJustifyH("LEFT")
-	f.Font:SetSize(sizeTotal - sizeFrame - 25, sizeFrame)
+	local labelWidth = sizeTotal - sizeFrame - 25
+	f.Font:SetSize(labelWidth, sizeFrame)
+	-- Lets a badge on this label wrap the text instead of running off the panel.
+	---@diagnostic disable-next-line: inject-field
+	f.Font.trbBadgeBox = { width = labelWidth, height = sizeFrame }
 	return f
 end
 
@@ -480,6 +484,9 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 	container.Font:SetJustifyH("LEFT")
 	local labelWidth = sizeTotal - (swatchSize * 2 + gap + btnGap + btnWidth + 35)
 	container.Font:SetSize(labelWidth, sizeFrame)
+	-- Lets a badge on this label wrap the text instead of running off the panel.
+	---@diagnostic disable-next-line: inject-field
+	container.Font.trbBadgeBox = { width = labelWidth, height = sizeFrame }
 
 	-- Apply initial disabled state to swatch 2
 	local function UpdateSwatch2State()

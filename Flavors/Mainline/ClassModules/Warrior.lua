@@ -1050,18 +1050,20 @@ local function UpdateSnapshot_Protection()
 	]]
 end
 
+-- Defensive node color key -> its Color Indicator target key.
+local defensiveBarTargetKeys = {
+	ignorePain = "defensivesIgnorePainTimeBar",
+	ignorePainAbsorb = "defensivesIgnorePainAbsorbBar",
+	shieldBlock = "defensivesShieldBlockBar",
+}
+
 ---Updates the defensive buff secondary bar nodes for Protection
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
-local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
+---@param barColorMap table<string, table> # Resolved flat indicator colors, keyed by defensive target key
+local function UpdateDefensiveBuffs(specSettings, specCacheSettings, barColorMap)
 	local currentTime = GetTime()
 	local affectingCombat = TRB.Data.character.inCombat
-	-- Handle both raw string and { color = "..." } object formats
-	local bgColor = specSettings.colors.bars.defensives.background
-	if type(bgColor) == "table" then bgColor = bgColor.color end
-	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(bgColor, true)
-	local cpBorderColor = specSettings.colors.bars.defensives.border
-	if type(cpBorderColor) == "table" then cpBorderColor = cpBorderColor.color end
 
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -1107,15 +1109,11 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 			local defensiveBarEnabled = specSettings.colors.bars.defensives.nodeColors[colorKey] and specSettings.colors.bars.defensives.nodeColors[colorKey].enabled
 			
 			if talents:IsTalentActive(spell) and defensiveBarEnabled then
-				local cpColor = specSettings.colors.bars.defensives.nodeColors[colorKey]
-				local defensiveBarTargetKey = nil
-				if colorKey == "ignorePain" then
-					defensiveBarTargetKey = "defensivesIgnorePainTimeBar"
-				elseif colorKey == "ignorePainAbsorb" then
-					defensiveBarTargetKey = "defensivesIgnorePainAbsorbBar"
-				elseif colorKey == "shieldBlock" then
-					defensiveBarTargetKey = "defensivesShieldBlockBar"
-				end
+				local defensiveBarTargetKey = defensiveBarTargetKeys[colorKey]
+				local nodeColors = barColorMap[defensiveBarTargetKey]
+				local cpColor = nodeColors.bar
+				local nodeBorderColor = nodeColors.border
+				local nodeBackgroundColor = nodeColors.background
 				local buff = snapshots[spell.id].buff
 				
 				-- Refresh isActive before reading it (GetRemainingTime updates isActive as a side-effect)
@@ -1154,11 +1152,11 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 						defensiveNode:SetMinMax(0, cpDuration)
 						defensiveNode:SetValue(cpTime)
 						if overcapIndicator and defensiveBarTargetKey and overcapIndicator.targets and overcapIndicator.targets[defensiveBarTargetKey] and overcapIndicator.targets[defensiveBarTargetKey].border then
-							local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, cpBorderColor, overcapIndicator.color)
+							local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, nodeBorderColor, overcapIndicator.color)
 							local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
 							defensiveNode:SetBorderColorCurve(borderColorResult, Color:EvaluateEndCapCurve(defensiveNode, overcapBorderCurve))
 						else
-							defensiveNode:SetBorderColor(cpBorderColor)
+							defensiveNode:SetBorderColor(nodeBorderColor)
 						end
 
 						if overcapIndicator and defensiveBarTargetKey and overcapIndicator.targets and overcapIndicator.targets[defensiveBarTargetKey] and overcapIndicator.targets[defensiveBarTargetKey].bar then
@@ -1170,11 +1168,11 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings)
 						end
 
 						if overcapIndicator and defensiveBarTargetKey and overcapIndicator.targets and overcapIndicator.targets[defensiveBarTargetKey] and overcapIndicator.targets[defensiveBarTargetKey].background then
-							local overcapBackgroundCurve = Color:BuildResourceThresholdCurve(specSettings, bgColor, overcapIndicator.color)
+							local overcapBackgroundCurve = Color:BuildResourceThresholdCurve(specSettings, nodeBackgroundColor, overcapIndicator.color)
 							local backgroundColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBackgroundCurve)
 							defensiveNode:SetBackgroundColorCurve(backgroundColorResult)
 						else
-							defensiveNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+							defensiveNode:SetBackgroundColorFromString(nodeBackgroundColor)
 						end
 						Bar:ApplyNodeIndicators(defensiveNode, defensiveBarTargetKey)
 					end
@@ -1196,7 +1194,8 @@ end
 ---Updates the Whirlwind stacks bar for Fury
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
-local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
+---@param flatColors table # Resolved flat indicator colors; `bar` is set only when an indicator claims the fill
+local function UpdateWhirlwindCharges(specSettings, specCacheSettings, flatColors)
 	local currentTime = GetTime()
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if not (barGroups and barGroups.secondary) then
@@ -1213,17 +1212,11 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 	if stacks > 4 then stacks = 4 end
 
 	local whirlwindColors = specSettings.colors.bars.whirlwind
-	local cpBackgroundColor = whirlwindColors.background.color
-	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(whirlwindColors.background.color, true)
 
 	-- Read Fury indicator colors system
 	local sharedColors = specSettings.colors.shared
 	local indicatorColors = sharedColors and sharedColors.indicatorColors
 	local gradientOrder = sharedColors and sharedColors.gradientOrder
-	local zeroStackInd = indicatorColors and indicatorColors.zeroStackBackground
-	local zeroStackTargets = zeroStackInd and zeroStackInd.enabled and stacks == 0 and TRB.Data.character.inCombat
-		and zeroStackInd.targets and zeroStackInd.targets.whirlwindBar or nil
-	local useZeroStackBg = zeroStackTargets and zeroStackTargets.background
 	local overcapIndicator = nil
 	if gradientOrder and indicatorColors and TRB.Data.character.inCombat then
 		for i = #gradientOrder, 1, -1 do
@@ -1235,18 +1228,14 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 			end
 		end
 	end
-	local zsBgR, zsBgG, zsBgB, zsBgA
-	if useZeroStackBg then
-		zsBgR, zsBgG, zsBgB, zsBgA = Color:GetRGBAFromString(zeroStackInd.color, true)
-	end
 	local whirlwindTargets = overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.whirlwindBar or nil
 	local overcapColor = overcapIndicator and overcapIndicator.color or nil
 	local overcapBorderColorResult = nil
 	local overcapBorderCurve = nil
 	local overcapBackgroundColorResult = nil
 	local overcapBarColorResults = {}
-	local borderBaseColor = zeroStackTargets and zeroStackTargets.border and zeroStackInd.color or whirlwindColors.border.color
-	local backgroundBaseColor = zeroStackTargets and zeroStackTargets.background and zeroStackInd.color or cpBackgroundColor
+	local borderBaseColor = flatColors.border
+	local backgroundBaseColor = flatColors.background
 	if whirlwindTargets and whirlwindTargets.border and overcapColor then
 		overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, borderBaseColor, overcapColor)
 		overcapBorderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
@@ -1257,12 +1246,12 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 	end
 
 	for x = 1, 4 do
-		local cpBorderColor = whirlwindColors.border.color
 		local cpColor = whirlwindColors.nodeColors.charge1
-		local currentBackgroundColor = cpBackgroundColor
 		local filled = stacks >= x
 
-		if filled then
+		if flatColors.bar ~= nil then
+			cpColor = flatColors.bar
+		elseif filled then
 			if (whirlwindColors.sameColor and stacks == 2) or (not whirlwindColors.sameColor and x == 2) then
 				cpColor = whirlwindColors.nodeColors.charge2
 			elseif (whirlwindColors.sameColor and stacks == 3) or (not whirlwindColors.sameColor and x == 3) then
@@ -1272,25 +1261,13 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 			end
 		end
 
-		if zeroStackTargets then
-			if zeroStackTargets.border then
-				cpBorderColor = zeroStackInd.color
-			end
-			if zeroStackTargets.bar then
-				cpColor = zeroStackInd.color
-			end
-			if zeroStackTargets.background then
-				currentBackgroundColor = zeroStackInd.color
-			end
-		end
-
 		local node = barGroups.secondary:GetNode(x)
 		if node then
 			Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, filled and 1 or 0, 1)
 			if overcapBorderColorResult then
 				node:SetBorderColorCurve(overcapBorderColorResult, Color:EvaluateEndCapCurve(node, overcapBorderCurve))
 			else
-				node:SetBorderColor(cpBorderColor)
+				node:SetBorderColor(borderBaseColor)
 			end
 
 			if whirlwindTargets and whirlwindTargets.bar and overcapColor then
@@ -1308,10 +1285,8 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings)
 
 			if overcapBackgroundColorResult then
 				node:SetBackgroundColorCurve(overcapBackgroundColorResult)
-			elseif useZeroStackBg then
-				node:SetBackgroundColor(zsBgR, zsBgG, zsBgB, zsBgA)
 			else
-				node:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)
+				node:SetBackgroundColorFromString(backgroundBaseColor)
 			end
 			Bar:ApplyNodeIndicators(node, "whirlwindBar")
 		end
@@ -1327,6 +1302,17 @@ local scratch = {
 	conditionMap3 = {},
 	enrageColors1 = {},
 	barColorMap1 = {},
+	barColorMap2 = {},
+	barColorMap3 = {},
+	rageColors1 = {},
+	rageColors2 = {},
+	rageColors3 = {},
+	whirlwindColors2 = {},
+	defensiveColors3 = {
+		defensivesIgnorePainTimeBar = {},
+		defensivesIgnorePainAbsorbBar = {},
+		defensivesShieldBlockBar = {},
+	},
 }
 
 local function UpdateResourceBar()
@@ -1379,8 +1365,19 @@ local function UpdateResourceBar()
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
 			conditionMap.borderOvercap = affectingCombat
-			-- The rage bar is colored bespoke below; the resolver is here for the shared health/cast bar.
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
+			local rageColors = scratch.rageColors1
+			wipe(rageColors)
+			rageColors.bar = barColor
+			rageColors.border = barBorderColor
+			rageColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.rageBar = rageColors
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			-- Flat indicators settle the base colors; the overcap gradient below curves from them.
+			barColor = rageColors.bar
+			barBorderColor = rageColors.border
+			barBackgroundColor = rageColors.background
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1411,7 +1408,6 @@ local function UpdateResourceBar()
 						end
 					end
 				end
-
 
 				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
@@ -1466,49 +1462,18 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
-			local zeroStackTargets
 			local zeroStackActive = false
 			do
-				local zeroStackInd = indicatorColors and indicatorColors.zeroStackBackground
 				local wwBuff = snapshots[spells.improvedWhirlwind.id] and snapshots[spells.improvedWhirlwind.id].buff
 				wwBuff:GetRemainingTime(currentTime)
 				local whirlwindStacks = (wwBuff and wwBuff.isActive and wwBuff.applications) or 0
 				if whirlwindStacks < 0 then whirlwindStacks = 0 end
 				if whirlwindStacks > 4 then whirlwindStacks = 4 end
 				zeroStackActive = whirlwindStacks == 0 and affectingCombat == true
-				zeroStackTargets = zeroStackInd and zeroStackInd.enabled and zeroStackActive
-					and zeroStackInd.targets and zeroStackInd.targets.rageBar or nil
-				if zeroStackTargets then
-					if zeroStackTargets.bar then
-						barColor = zeroStackInd.color
-					end
-					if zeroStackTargets.border then
-						barBorderColor = zeroStackInd.color
-					end
-					if zeroStackTargets.background then
-						barBackgroundColor = zeroStackInd.color
-					end
-				end
 			end
 			-- Enrage is fed from the Cooldown Manager, so it is false whenever nothing tracks the buff.
 			local cdm = TRB.Functions.CooldownManager
 			local enrageActive = snapshotData.attributes.enrageActive == true
-			do
-				local enrageInd = indicatorColors and indicatorColors.enrage
-				local enrageTargets = enrageInd and enrageInd.enabled and enrageActive
-					and enrageInd.targets and enrageInd.targets.rageBar or nil
-				if enrageTargets then
-					if enrageTargets.bar then
-						barColor = enrageInd.color
-					end
-					if enrageTargets.border then
-						barBorderColor = enrageInd.color
-					end
-					if enrageTargets.background then
-						barBackgroundColor = enrageInd.color
-					end
-				end
-			end
 			local conditionMap = scratch.conditionMap2
 			wipe(conditionMap)
 			conditionMap.borderOvercap = affectingCombat
@@ -1523,12 +1488,27 @@ local function UpdateResourceBar()
 			enrageColors.bar = enrageBarColors and enrageBarColors.bar
 			enrageColors.border = enrageBarColors and enrageBarColors.border.color
 			enrageColors.background = enrageBarColors and enrageBarColors.background.color
-			-- The rage and Whirlwind bars are colored bespoke above; the resolver covers the Enrage bar
-			-- along with the shared health/cast bar.
-			local barColorMap = scratch.barColorMap1
+			local rageColors = scratch.rageColors2
+			wipe(rageColors)
+			rageColors.bar = barColor
+			rageColors.border = barBorderColor
+			rageColors.background = barBackgroundColor
+			-- No fill seed: each Whirlwind node takes its own charge color unless an indicator claims the fill.
+			local whirlwindBarColors = specSettings.colors.bars.whirlwind
+			local whirlwindColors = scratch.whirlwindColors2
+			wipe(whirlwindColors)
+			whirlwindColors.border = whirlwindBarColors.border.color
+			whirlwindColors.background = whirlwindBarColors.background.color
+			local barColorMap = scratch.barColorMap2
 			wipe(barColorMap)
 			barColorMap.enrageBar = enrageColors
+			barColorMap.rageBar = rageColors
+			barColorMap.whirlwindBar = whirlwindColors
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			-- Flat indicators settle the base colors; the overcap gradient below curves from them.
+			barColor = rageColors.bar
+			barBorderColor = rageColors.border
+			barBackgroundColor = rageColors.background
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1592,7 +1572,7 @@ local function UpdateResourceBar()
 			-- Whirlwind stacks bar (only when Improved Whirlwind is talented, i.e. maxResource2 > 0)
 			if not specSettings.displayBar.secondary.neverShow and (TRB.Data.character.maxResource2 or 0) > 0 then
 				refreshText = true
-				UpdateWhirlwindCharges(specSettings, specCacheSettings)
+				UpdateWhirlwindCharges(specSettings, specCacheSettings, whirlwindColors)
 			end
 
 			-- Enrage bar
@@ -1647,8 +1627,31 @@ local function UpdateResourceBar()
 			wipe(conditionMap)
 			conditionMap.borderOvercap = affectingCombat
 			conditionMap.violentOutburst = snapshotData.snapshots[spells.violentOutburst.id] ~= nil and snapshotData.snapshots[spells.violentOutburst.id].buff.isActive
-			-- The rage bar is colored bespoke below; the resolver is here for the shared health/cast bar.
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
+			local rageColors = scratch.rageColors3
+			wipe(rageColors)
+			rageColors.bar = barColor
+			rageColors.border = barBorderColor
+			rageColors.background = barBackgroundColor
+			local barColorMap = scratch.barColorMap3
+			wipe(barColorMap)
+			barColorMap.rageBar = rageColors
+			-- Handle both raw string and { color = "..." } object formats
+			local defensivesColors = specSettings.colors.bars.defensives
+			local defensivesBorder = type(defensivesColors.border) == "table" and defensivesColors.border.color or defensivesColors.border
+			local defensivesBackground = type(defensivesColors.background) == "table" and defensivesColors.background.color or defensivesColors.background
+			for colorKey, targetKey in pairs(defensiveBarTargetKeys) do
+				local nodeColors = scratch.defensiveColors3[targetKey]
+				wipe(nodeColors)
+				nodeColors.bar = defensivesColors.nodeColors[colorKey]
+				nodeColors.border = defensivesBorder
+				nodeColors.background = defensivesBackground
+				barColorMap[targetKey] = nodeColors
+			end
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			-- Flat indicators settle the base colors; the overcap gradient below curves from them.
+			barColor = rageColors.bar
+			barBorderColor = rageColors.border
+			barBackgroundColor = rageColors.background
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1676,22 +1679,6 @@ local function UpdateResourceBar()
 						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
 							overcapIndicator = indicator
 							break
-						end
-					end
-				end
-
-				-- Boolean (non-gradient) indicators recolor the rage bar; last-writer-wins over
-				-- nodeOrder (index 1 = highest priority). An active override becomes the base color
-				-- any gradient overcap curve is then built from below.
-				if sharedColors and sharedColors.nodeOrder and indicatorColors then
-					for i = #sharedColors.nodeOrder, 1, -1 do
-						local key = sharedColors.nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and not indicator.isGradient and conditionMap[key]
-							and indicator.targets and indicator.targets.rageBar then
-							if indicator.targets.rageBar.border then barBorderColor = indicator.color end
-							if indicator.targets.rageBar.bar then barColor = indicator.color end
-							if indicator.targets.rageBar.background then barBackgroundColor = indicator.color end
 						end
 					end
 				end
@@ -1728,7 +1715,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.defensives.neverShow then
 			refreshText = true
-				UpdateDefensiveBuffs(specSettings, specCacheSettings)
+				UpdateDefensiveBuffs(specSettings, specCacheSettings, barColorMap)
 			end
 
 			if not specSettings.displayBar.health.neverShow then

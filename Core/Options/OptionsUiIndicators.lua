@@ -31,6 +31,29 @@ local defaultElementDefs = {
 local maxMenuRowsBeforeScroll = 15
 local menuRowHeight = 20
 
+-- Every flat and gradient row leaves room for custom Remove and Edit buttons, so all the arrows line up.
+local customColumnWidth = 46
+local targetsDropdownWidth = 254
+
+-- Marks TRB's own notes under a spell's tooltip in the custom indicator picker, so they read as ours.
+local pickerNotePrefix = "|cFFA335EETRB:|r "
+local pickerNoteR, pickerNoteG, pickerNoteB = 0.85, 0.75, 1.0
+
+StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteCustomIndicator"] = {
+	text = "%s",
+	button1 = L["CustomIndicatorDelete"],
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		if data ~= nil and data.remove ~= nil then
+			data.remove()
+		end
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
 ---Turns a target menu scrollable when the rows it is about to draw would overflow the screen.
 ---@param rootDescription table The root menu description being populated
 ---@param barTargetDefs TRB.Classes.OptionsUi.BarTargetDef[] The bars the menu offers
@@ -276,6 +299,14 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	local sharedSettings = spec.colors.shared
 	local indicatorColors = sharedSettings.indicatorColors
 
+	-- Custom indicators have no def in spec code; give each one so it lists and reorders with the rest.
+	for _, k in ipairs(sharedSettings.nodeOrder) do
+		local indicator = indicatorColors[k]
+		if indicator ~= nil and indicator.custom ~= nil then
+			indicatorDefByKey[k] = { key = k, custom = true, colorLabel = "" }
+		end
+	end
+
 	---Whether an element is off-limits to a flat indicator row, because the panel excludes it outright.
 	---@param barDef table
 	---@param elemKey string
@@ -398,15 +429,253 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		end
 	end
 
+	local cdm = TRB.Functions.CooldownManager
+	local Primitives = TRB.Functions.OptionsUi.Primitives
+	local rowsTopY = yCoord
+
+	---Repaints live bars after a custom indicator is added, re-pointed, or removed.
+	local function RefreshRuntime()
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
+
+	---Why Add and Edit can't be used right now (nil when they can), and the layout status behind it (nil on
+	---another spec's panel, since the Cooldown Manager only holds the played spec's layout).
+	---@return string? reason
+	---@return TRB.CdmLayoutStatus? status
+	local function GetPickerBlock()
+		local character = TRB.Data.character
+		if character == nil or character.classId ~= classId then
+			return L["CustomIndicatorOtherClassTooltip"], nil
+		elseif character.specId ~= specId then
+			return L["CustomIndicatorOtherSpecTooltip"], nil
+		end
+		local status, reason = cdm:GetLayoutStatus()
+		if status == cdm.LayoutStatus.UNAVAILABLE then
+			return string.format(L["CustomIndicatorCdmUnavailableTooltip"], reason or ""), status
+		elseif status == cdm.LayoutStatus.DISABLED then
+			return L["CustomIndicatorCdmDisabledTooltip"], status
+		elseif status == cdm.LayoutStatus.NOT_READY then
+			return L["CustomIndicatorCdmNotReadyTooltip"], status
+		end
+		return nil, status
+	end
+
+	-- Read once per refresh pass rather than once per row.
+	local blockReason, blockStatus = nil, nil
+	local function UpdatePickerBlock()
+		blockReason, blockStatus = GetPickerBlock()
+	end
+
+	local inactiveTooltipByState = {
+		[cdm.EntryState.NOT_LEARNED] = L["CustomIndicatorNotLearnedTooltip"],
+		[cdm.EntryState.NO_TRINKET_BUFF] = L["CustomIndicatorNoTrinketBuffTooltip"],
+		[cdm.EntryState.UNAVAILABLE] = L["CustomIndicatorUnavailableTooltip"],
+	}
+
+	---Everything keeping an entry from driving an indicator, plus the potion caveat.
+	---@param entry TRB.CdmLayoutEntry
+	---@return string[]
+	local function GetEntryNotes(entry)
+		local notes = {}
+		notes[#notes + 1] = inactiveTooltipByState[entry.state]
+		if not entry.displayed then
+			notes[#notes + 1] = L["CustomIndicatorNotDisplayedTooltip"]
+		end
+		if entry.isPotion then
+			notes[#notes + 1] = L["CustomIndicatorPotionCaveat"]
+		end
+		return notes
+	end
+
+	---@param entry TRB.CdmLayoutEntry
+	---@return string?
+	local function GetEntryStatusText(entry)
+		local notes = GetEntryNotes(entry)
+		return #notes > 0 and table.concat(notes, "\n\n") or nil
+	end
+
+	---Resolves a custom row's label and tracked state, refreshing its cached name and following a
+	---renumbered entry, but only while its own spec's layout can be read.
+	---@param key string
+	---@return string label
+	---@return boolean notTracked
+	---@return string badgeTooltip
+	local function ResolveCustomRow(key)
+		local conditions = indicatorColors[key].custom.conditions
+		local condition = conditions ~= nil and conditions[1] or nil
+		local notTracked = false
+		local badgeTooltip = L["CustomIndicatorBadgeTooltip"]
+
+		if condition ~= nil and blockReason == nil then
+			local entry = cdm:ResolveCondition(condition)
+			if entry == nil then
+				notTracked = true
+				badgeTooltip = L["CustomIndicatorMissingTooltip"]
+			else
+				notTracked = entry.state ~= cdm.EntryState.TRACKED
+				local status = GetEntryStatusText(entry)
+				if notTracked then
+					badgeTooltip = status or badgeTooltip
+				elseif status ~= nil then
+					badgeTooltip = badgeTooltip .. "\n\n" .. status
+				end
+			end
+		elseif condition ~= nil and (blockStatus == cdm.LayoutStatus.DISABLED or blockStatus == cdm.LayoutStatus.UNAVAILABLE) then
+			notTracked = true
+			badgeTooltip = blockReason or badgeTooltip
+		end
+
+		local name = (condition ~= nil and condition.name) or L["CustomIndicatorUnknownEntry"]
+		return string.format(L["CustomIndicatorActiveFormat"], name), notTracked, badgeTooltip
+	end
+
+	local pickerHeadings = {
+		{ group = cdm.LayoutGroup.DISPLAYED, label = L["CustomIndicatorPickerDisplayed"] },
+		{ group = cdm.LayoutGroup.INACTIVE, label = L["CustomIndicatorPickerInactive"] },
+		{ group = cdm.LayoutGroup.NOT_DISPLAYED, label = L["CustomIndicatorPickerNotDisplayed"] },
+		{ group = cdm.LayoutGroup.INACTIVE_NOT_DISPLAYED, label = L["CustomIndicatorPickerInactiveNotDisplayed"] },
+	}
+
+	---Opens the menu of the current spec's passive Cooldown Manager entries under their headings. Empty
+	---headings are left out, and nothing is greyed: a not-tracked entry is still a valid pick.
+	---@param owner Frame
+	---@param currentCooldownID integer?
+	---@param onPick fun(entry: TRB.CdmLayoutEntry)
+	local function OpenPicker(owner, currentCooldownID, onPick)
+		local entries = cdm:GetLayoutEntries()
+		if entries == nil then
+			return
+		end
+
+		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
+			local rowCount = 0
+			for _, heading in ipairs(pickerHeadings) do
+				local first = true
+				for _, entry in ipairs(entries) do
+					if entry.group == heading.group then
+						if first then
+							if rowCount > 0 then
+								rootDescription:CreateDivider()
+								rowCount = rowCount + 1
+							end
+							rootDescription:CreateTitle(heading.label)
+							rowCount = rowCount + 1
+							first = false
+						end
+
+						local text = entry.name or L["CustomIndicatorUnknownEntry"]
+						if entry.icon ~= nil then
+							text = "|T" .. entry.icon .. ":16:16:0:0|t " .. text
+						end
+						local radio = rootDescription:CreateRadio(text, function()
+							return entry.cooldownID == currentCooldownID
+						end, function()
+							onPick(entry)
+							return MenuResponse.Close
+						end)
+						rowCount = rowCount + 1
+
+						radio:SetTooltip(function(tooltipFrame)
+							if entry.equipSlot ~= nil and GetInventoryItemID("player", entry.equipSlot) ~= nil then
+								tooltipFrame:SetInventoryItem("player", entry.equipSlot)
+							elseif entry.tooltipSpellID ~= nil then
+								tooltipFrame:SetSpellByID(entry.tooltipSpellID)
+							else
+								tooltipFrame:SetText(entry.name or L["CustomIndicatorUnknownEntry"], 1, 1, 1)
+							end
+							local notes = GetEntryNotes(entry)
+							if #notes > 0 then
+								tooltipFrame:AddLine(" ")
+								for _, note in ipairs(notes) do
+									tooltipFrame:AddLine(pickerNotePrefix .. note, pickerNoteR, pickerNoteG, pickerNoteB, true)
+								end
+							end
+							tooltipFrame:Show()
+						end)
+					end
+				end
+			end
+
+			if rowCount == 0 then
+				rootDescription:CreateTitle(L["CustomIndicatorPickerEmpty"])
+			elseif rowCount > maxMenuRowsBeforeScroll and rootDescription.SetScrollMode then
+				rootDescription:SetScrollMode(maxMenuRowsBeforeScroll * menuRowHeight)
+			end
+		end)
+	end
+
+	---Shows a tooltip on a row button: the reason it's blocked, else what it does.
+	---@param button Button
+	---@param text string
+	local function ShowRowButtonTooltip(button, text)
+		GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
+		GameTooltip:SetText(button:IsEnabled() and text or (GetPickerBlock() or text), 1, 1, 1, 1, true)
+		GameTooltip:Show()
+	end
+
+	---Re-anchors a row's widgets to its slot, so a pooled row can be reused at any index.
+	---@param row table
+	---@param rowIndex number
+	local function PositionRow(row, rowIndex)
+		local rowY = rowsTopY - ((rowIndex - 1) * 30)
+		local xOffset = oUi.xCoord
+		row.removeBtn:ClearAllPoints()
+		row.removeBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset, rowY)
+		row.editBtn:ClearAllPoints()
+		row.editBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset + 22, rowY)
+		xOffset = xOffset + customColumnWidth
+		row.upBtn:ClearAllPoints()
+		row.upBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset, rowY)
+		row.downBtn:ClearAllPoints()
+		row.downBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset + 22, rowY)
+		row.dropdown:ClearAllPoints()
+		row.dropdown:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset + 46, rowY)
+		row.colorPicker:ClearAllPoints()
+		row.colorPicker:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord2, rowY)
+	end
+
+	---@param row table
+	---@param shown boolean
+	local function SetRowShown(row, shown)
+		row.upBtn:SetShown(shown)
+		row.downBtn:SetShown(shown)
+		row.dropdown:SetShown(shown)
+		row.colorPicker:SetShown(shown)
+		if not shown then
+			row.removeBtn:Hide()
+			row.editBtn:Hide()
+		end
+	end
+
+	local addButton = nil
+
+	local function RefreshAddButton()
+		if addButton ~= nil then
+			addButton:SetEnabled(blockReason == nil)
+		end
+	end
+
 	---Refreshes a single row's visual state from the current orderedKeys
 	---@param rowIndex number
-	local function RefreshRow(rowIndex)
+	---@param blockKnown boolean? # The caller just ran UpdatePickerBlock for a pass over every row
+	local function RefreshRow(rowIndex, blockKnown)
 		local row = rows[rowIndex]
 		if not row then return end
+		if not blockKnown then
+			UpdatePickerBlock()
+		end
 		local key = orderedKeys[rowIndex]
 		local def = indicatorDefByKey[key]
 		local indicator = indicatorColors[key]
 		if not def or not indicator then return end
+
+		local isCustom = def.custom == true
+		local notTracked = false
+		local badgeTooltip = nil
+		if isCustom then
+			def.colorLabel, notTracked, badgeTooltip = ResolveCustomRow(key)
+		end
 
 		-- Update color picker
 		if row.colorPicker then
@@ -430,17 +699,33 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			if row.colorPicker.Font then
 				row.colorPicker.Font:SetText(def.colorLabel)
 				-- After the relabel: the badge is placed past the measured end of the new text.
-				TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(row.colorPicker.Font, def.cdm)
+				Primitives:AttachCdmBadgeToText(row.colorPicker.Font, def.cdm)
+				Primitives:AttachCustomBadgeToText(row.colorPicker.Font, isCustom, notTracked, badgeTooltip or "")
 			end
-			TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
+			Primitives:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
+			-- Colors and targets stay editable for when the entry is tracked again; only the name says it isn't.
+			if notTracked and row.colorPicker.Font then
+				row.colorPicker.Font:SetFontObject(GameFontDisable)
+			end
 		end
 		-- Update dropdown text
 		if row.dropdown then
 			row.dropdown:SetText(GetSummaryText(key))
 		end
+		row.removeBtn:SetShown(isCustom)
+		row.editBtn:SetShown(isCustom)
+		row.editBtn:SetEnabled(blockReason == nil)
 		-- Arrow enabled state
 		if row.upBtn then row.upBtn:SetEnabled(rowIndex > 1) end
 		if row.downBtn then row.downBtn:SetEnabled(rowIndex < #orderedKeys) end
+	end
+
+	local function RefreshAllRows()
+		UpdatePickerBlock()
+		for rowIndex = 1, #orderedKeys do
+			RefreshRow(rowIndex, true)
+		end
+		RefreshAddButton()
 	end
 
 	---Swaps two adjacent entries and persists to settings
@@ -454,215 +739,384 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		for i, k in ipairs(orderedKeys) do
 			sharedSettings.nodeOrder[i] = k
 		end
-		RefreshRow(indexA)
-		RefreshRow(indexB)
+		UpdatePickerBlock()
+		RefreshRow(indexA, true)
+		RefreshRow(indexB, true)
+		RefreshAddButton()
 	end
 
-	-- Build flat indicator rows
-	for rowIndex, nodeKey in ipairs(orderedKeys) do
-		local def = indicatorDefByKey[nodeKey]
-		local indicator = indicatorColors[nodeKey]
-		if def and indicator then
-			local capturedRowIdx = rowIndex
-			local row = {}
-			rows[rowIndex] = row
+	-- Everything from the Add button down moves when a row is added or removed.
+	local belowTopY = nil
 
-			local xOffset = oUi.xCoord
+	local RemoveCustomIndicator
 
-			-- Up arrow
-			local upBtn = CreateFrame("Button", nil, parent)
-			upBtn:SetSize(20, 20)
-			upBtn:SetPoint("TOPLEFT", xOffset, yCoord)
-			upBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
-			upBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
-			upBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled")
-			upBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-			upBtn:SetEnabled(rowIndex > 1)
-			upBtn:SetScript("OnClick", function()
-				SwapNodes(capturedRowIdx - 1, capturedRowIdx)
-			end)
-			upBtn:SetScript("OnEnter", function(self)
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText(L["NodeOrderMoveUp"], 1, 1, 1)
-				GameTooltip:Show()
-			end)
-			upBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-			row.upBtn = upBtn
+	---Builds the widgets for one row slot. They read whichever key sits at that index when used, so the
+	---slot survives reordering, adding, and removing.
+	---@param rowIndex number
+	local function BuildRow(rowIndex)
+		local capturedRowIdx = rowIndex
+		local row = {}
+		rows[rowIndex] = row
 
-			-- Down arrow
-			local downBtn = CreateFrame("Button", nil, parent)
-			downBtn:SetSize(20, 20)
-			downBtn:SetPoint("TOPLEFT", xOffset + 22, yCoord)
-			downBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
-			downBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
-			downBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled")
-			downBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-			downBtn:SetEnabled(rowIndex < #orderedKeys)
-			downBtn:SetScript("OnClick", function()
-				SwapNodes(capturedRowIdx, capturedRowIdx + 1)
-			end)
-			downBtn:SetScript("OnEnter", function(self)
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText(L["NodeOrderMoveDown"], 1, 1, 1)
-				GameTooltip:Show()
-			end)
-			downBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-			row.downBtn = downBtn
+		row.removeBtn = Primitives:BuildDeleteIconButton(parent, 0, 0)
+		row.removeBtn:SetScript("OnClick", function()
+			local currentKey = orderedKeys[capturedRowIdx]
+			local currentDef = indicatorDefByKey[currentKey]
+			if currentDef == nil or not currentDef.custom then return end
+			StaticPopup_Show("TwintopResourceBar_ConfirmDeleteCustomIndicator",
+				string.format(L["CustomIndicatorDeleteConfirmation"], currentDef.colorLabel or currentKey), nil, {
+					remove = function()
+						RemoveCustomIndicator(currentKey)
+					end,
+				})
+		end)
+		row.removeBtn:SetScript("OnEnter", function(self)
+			ShowRowButtonTooltip(self, L["CustomIndicatorRemoveTooltip"])
+		end)
+		row.removeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-			xOffset = xOffset + 46
-
-			-- Targets dropdown
-			local ddName = ddNamePrefix .. "_Indicator_" .. nodeKey .. "_Targets"
-			local dd = CreateFrame("DropdownButton", ddName, parent, "WowStyle1DropdownTemplate")
-			dd:SetWidth(280)
-			dd:SetPoint("TOPLEFT", xOffset, yCoord)
-			dd:SetScript("OnEnter", function(self)
-				local currentKey = orderedKeys[capturedRowIdx]
-				local currentDef = indicatorDefByKey[currentKey]
-				if currentDef and currentDef.tooltip then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-					GameTooltip:SetText(currentDef.tooltip, 1, 1, 1, 1, true)
-					GameTooltip:Show()
-				end
-			end)
-			dd:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-			-- Hook SetText to always show our summary
-			local originalSetText = dd.SetText
-			dd.SetText = function(self, text)
-				local currentKey = orderedKeys[capturedRowIdx]
-				originalSetText(self, GetSummaryText(currentKey))
+		row.editBtn = Primitives:BuildEditIconButton(parent, 0, 0)
+		row.editBtn:SetScript("OnClick", function(self)
+			local currentKey = orderedKeys[capturedRowIdx]
+			local currentIndicator = indicatorColors[currentKey]
+			local conditions = currentIndicator and currentIndicator.custom and currentIndicator.custom.conditions
+			local condition = conditions and conditions[1]
+			if condition == nil then return end
+			-- The Cooldown Manager or spec can change under an open panel; say why instead of doing nothing.
+			if GetPickerBlock() ~= nil then
+				RefreshAllRows()
+				ShowRowButtonTooltip(self, L["CustomIndicatorEditTooltip"])
+				return
 			end
+			OpenPicker(self, condition.cooldownID, function(entry)
+				cdm:PointConditionAt(condition, entry, true)
+				RefreshRow(capturedRowIdx)
+				RefreshRuntime()
+			end)
+		end)
+		row.editBtn:SetScript("OnEnter", function(self)
+			-- A block can clear without any event, which would leave the button greyed with no reason.
+			if not self:IsEnabled() and GetPickerBlock() == nil then
+				RefreshAllRows()
+			end
+			ShowRowButtonTooltip(self, L["CustomIndicatorEditTooltip"])
+		end)
+		row.editBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-			dd:SetupMenu(function(dropdown, rootDescription)
-				local currentKey = orderedKeys[capturedRowIdx]
-				local currentIndicator = indicatorColors[currentKey]
-				if not currentIndicator then return end
-				currentIndicator.targets = currentIndicator.targets or {}
+		-- Up arrow
+		local upBtn = CreateFrame("Button", nil, parent)
+		upBtn:SetSize(20, 20)
+		upBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
+		upBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
+		upBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled")
+		upBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+		upBtn:SetScript("OnClick", function()
+			SwapNodes(capturedRowIdx - 1, capturedRowIdx)
+		end)
+		upBtn:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(L["NodeOrderMoveUp"], 1, 1, 1)
+			GameTooltip:Show()
+		end)
+		upBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+		row.upBtn = upBtn
 
-				local rowBarTargetDefs = GetBarTargetDefsFor(indicatorDefByKey[currentKey])
-				ApplyTargetMenuScrollMode(rootDescription, rowBarTargetDefs, IsExcluded, true)
+		-- Down arrow
+		local downBtn = CreateFrame("Button", nil, parent)
+		downBtn:SetSize(20, 20)
+		downBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+		downBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+		downBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled")
+		downBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+		downBtn:SetScript("OnClick", function()
+			SwapNodes(capturedRowIdx, capturedRowIdx + 1)
+		end)
+		downBtn:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(L["NodeOrderMoveDown"], 1, 1, 1)
+			GameTooltip:Show()
+		end)
+		downBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+		row.downBtn = downBtn
 
-				-- Every bar offers a Border Glow, so no bar section can be excluded outright here.
-				local firstBar = true
-				for _, barDef in ipairs(rowBarTargetDefs) do
-					local barElementDefs = barDef.elements or defaultElementDefs
-					if not firstBar then
-						rootDescription:CreateDivider()
-					end
-					firstBar = false
-					rootDescription:CreateTitle(barDef.label)
-					currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
+		-- Targets dropdown
+		local ddName = ddNamePrefix .. "_Indicator_Row" .. rowIndex .. "_Targets"
+		local dd = CreateFrame("DropdownButton", ddName, parent, "WowStyle1DropdownTemplate")
+		dd:SetWidth(targetsDropdownWidth)
+		dd:SetScript("OnEnter", function(self)
+			local currentKey = orderedKeys[capturedRowIdx]
+			local currentDef = indicatorDefByKey[currentKey]
+			if currentDef and currentDef.tooltip then
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText(currentDef.tooltip, 1, 1, 1, 1, true)
+				GameTooltip:Show()
+			end
+		end)
+		dd:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-					for _, elemDef in ipairs(barElementDefs) do
-						if not IsExcluded(barDef, elemDef.key) then
-							rootDescription:CreateCheckbox(
-								elemDef.label,
-								function()
-									local ck = orderedKeys[capturedRowIdx]
-									local ci = indicatorColors[ck]
-									return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
-								end,
-								function()
-									local ck = orderedKeys[capturedRowIdx]
-									local ci = indicatorColors[ck]
-									if not ci then return end
-									ci.targets = ci.targets or {}
-									ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-									ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
-									local targetRow = rows[capturedRowIdx]
-									SyncEnabled(ci, targetRow and targetRow.colorPicker)
-								end
-							)
-						end
-					end
+		-- Hook SetText to always show our summary
+		local originalSetText = dd.SetText
+		dd.SetText = function(self, text)
+			local currentKey = orderedKeys[capturedRowIdx]
+			originalSetText(self, GetSummaryText(currentKey))
+		end
 
-					CreateBorderGlowSubmenu(rootDescription, function()
-						local ck = orderedKeys[capturedRowIdx]
-						local ci = indicatorColors[ck]
-						if not ci then return nil end
-						ci.targets = ci.targets or {}
-						ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-						return ci.targets[barDef.key]
-					end, function()
-						local ci = indicatorColors[orderedKeys[capturedRowIdx]]
-						local targetRow = rows[capturedRowIdx]
-						SyncEnabled(ci, targetRow and targetRow.colorPicker)
-						if targetRow and targetRow.dropdown then
-							targetRow.dropdown:SetText(nil)
-						end
-					end)
+		dd:SetupMenu(function(dropdown, rootDescription)
+			local currentKey = orderedKeys[capturedRowIdx]
+			local currentIndicator = indicatorColors[currentKey]
+			if not currentIndicator then return end
+			currentIndicator.targets = currentIndicator.targets or {}
+
+			local rowBarTargetDefs = GetBarTargetDefsFor(indicatorDefByKey[currentKey])
+			ApplyTargetMenuScrollMode(rootDescription, rowBarTargetDefs, IsExcluded, true)
+
+			-- Every bar offers a Border Glow, so no bar section can be excluded outright here.
+			local firstBar = true
+			for _, barDef in ipairs(rowBarTargetDefs) do
+				local barElementDefs = barDef.elements or defaultElementDefs
+				if not firstBar then
+					rootDescription:CreateDivider()
 				end
-			end)
+				firstBar = false
+				rootDescription:CreateTitle(barDef.label)
+				currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
 
-			dd:SetText(GetSummaryText(nodeKey))
-			row.dropdown = dd
-
-			-- Color picker
-			local cp = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, def.colorLabel, indicator, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord, L["GradientBarFillOnlyTooltip"])
-			---@cast cp Button
-			-- Past the swatch label; the gap after the targets dropdown is only a few pixels wide.
-			TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(cp.Font, def.cdm)
-			cp.Swatch1:SetScript("OnMouseDown", function(self, button)
-				local currentKey = orderedKeys[capturedRowIdx]
-				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicatorColors, { [currentKey] = rows[capturedRowIdx].colorPicker }, currentKey, "indicatorColor_" .. currentKey)
-			end)
-			cp.Swatch2:SetScript("OnMouseDown", function(self, button)
-				local currentKey = orderedKeys[capturedRowIdx]
-				TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, indicatorColors[currentKey], cp.Swatch2, classId, specId)
-			end)
-			cp.DirectionButton:SetScript("OnMouseDown", function(self, mouseButton)
-				if mouseButton == "LeftButton" then
-					local currentKey = orderedKeys[capturedRowIdx]
-					local currentEntry = indicatorColors[currentKey]
-					if not currentEntry then return end
-					currentEntry.gradientDirection = currentEntry.gradientDirection or "disabled"
-					local ci = 1
-					for idx, dir in ipairs(gradientDirectionCycle) do
-						if dir == currentEntry.gradientDirection then ci = idx; break end
-					end
-					currentEntry.gradientDirection = gradientDirectionCycle[(ci % #gradientDirectionCycle) + 1]
-					local gradDir = currentEntry.gradientDirection
-					if gradDir == "disabled" then
-						cp.Swatch2:SetAlpha(0.35); cp.Swatch2:EnableMouse(false)
-					else
-						cp.Swatch2:SetAlpha(1.0); cp.Swatch2:EnableMouse(true)
-					end
-					self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
-					TRB.Data.cache.colors.gradient = {}
-					TRB.Data.cache.colors.bar = {}
-					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-						TRB.Data.lookupDirty = true
-						TRB.Functions.Class:TriggerResourceBarUpdates()
+				for _, elemDef in ipairs(barElementDefs) do
+					if not IsExcluded(barDef, elemDef.key) then
+						rootDescription:CreateCheckbox(
+							elemDef.label,
+							function()
+								local ck = orderedKeys[capturedRowIdx]
+								local ci = indicatorColors[ck]
+								return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
+							end,
+							function()
+								local ck = orderedKeys[capturedRowIdx]
+								local ci = indicatorColors[ck]
+								if not ci then return end
+								ci.targets = ci.targets or {}
+								ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+								ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
+								local targetRow = rows[capturedRowIdx]
+								SyncEnabled(ci, targetRow and targetRow.colorPicker)
+								-- Re-applies a not-tracked custom row's faded name, which SyncEnabled just reset.
+								RefreshRow(capturedRowIdx)
+							end
+						)
 					end
 				end
-			end)
-			---@diagnostic disable-next-line: inject-field
-			cp.UpdateSwatch2State = function()
+
+				CreateBorderGlowSubmenu(rootDescription, function()
+					local ck = orderedKeys[capturedRowIdx]
+					local ci = indicatorColors[ck]
+					if not ci then return nil end
+					ci.targets = ci.targets or {}
+					ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+					return ci.targets[barDef.key]
+				end, function()
+					local ci = indicatorColors[orderedKeys[capturedRowIdx]]
+					local targetRow = rows[capturedRowIdx]
+					SyncEnabled(ci, targetRow and targetRow.colorPicker)
+					RefreshRow(capturedRowIdx)
+				end)
+			end
+		end)
+		row.dropdown = dd
+
+		-- Color picker
+		local cp = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, "", indicatorColors[orderedKeys[rowIndex]], oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, 0, L["GradientBarFillOnlyTooltip"])
+		---@cast cp Button
+		cp.Swatch1:SetScript("OnMouseDown", function(self, button)
+			local currentKey = orderedKeys[capturedRowIdx]
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicatorColors, { [currentKey] = rows[capturedRowIdx].colorPicker }, currentKey, "indicatorColor_" .. currentKey)
+		end)
+		cp.Swatch2:SetScript("OnMouseDown", function(self, button)
+			local currentKey = orderedKeys[capturedRowIdx]
+			TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, indicatorColors[currentKey], cp.Swatch2, classId, specId)
+		end)
+		cp.DirectionButton:SetScript("OnMouseDown", function(self, mouseButton)
+			if mouseButton == "LeftButton" then
 				local currentKey = orderedKeys[capturedRowIdx]
 				local currentEntry = indicatorColors[currentKey]
 				if not currentEntry then return end
-				currentEntry.color2 = currentEntry.color2 or currentEntry.color
 				currentEntry.gradientDirection = currentEntry.gradientDirection or "disabled"
-				cp.Swatch2.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(currentEntry.color2, true))
-				if currentEntry.gradientDirection == "disabled" then
-					cp.Swatch2:SetAlpha(0.35)
-					cp.Swatch2:EnableMouse(false)
-				else
-					cp.Swatch2:SetAlpha(1.0)
-					cp.Swatch2:EnableMouse(true)
+				local ci = 1
+				for idx, dir in ipairs(gradientDirectionCycle) do
+					if dir == currentEntry.gradientDirection then ci = idx; break end
 				end
-				cp.DirectionButton.Font:SetText(gradientDirectionAbbrevLabels[currentEntry.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
+				currentEntry.gradientDirection = gradientDirectionCycle[(ci % #gradientDirectionCycle) + 1]
+				local gradDir = currentEntry.gradientDirection
+				if gradDir == "disabled" then
+					cp.Swatch2:SetAlpha(0.35); cp.Swatch2:EnableMouse(false)
+				else
+					cp.Swatch2:SetAlpha(1.0); cp.Swatch2:EnableMouse(true)
+				end
+				self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
+				TRB.Data.cache.colors.gradient = {}
+				TRB.Data.cache.colors.bar = {}
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Data.lookupDirty = true
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
 			end
-			---@cast cp Button
-			TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(cp, indicator.enabled)
-			row.colorPicker = cp
-
-			-- Store row controls for the color picker callback
-			controls.indicatorColors.rows[rowIndex] = row
-
-			yCoord = yCoord - 30
+		end)
+		---@diagnostic disable-next-line: inject-field
+		cp.UpdateSwatch2State = function()
+			local currentKey = orderedKeys[capturedRowIdx]
+			local currentEntry = indicatorColors[currentKey]
+			if not currentEntry then return end
+			currentEntry.color2 = currentEntry.color2 or currentEntry.color
+			currentEntry.gradientDirection = currentEntry.gradientDirection or "disabled"
+			cp.Swatch2.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(currentEntry.color2, true))
+			if currentEntry.gradientDirection == "disabled" then
+				cp.Swatch2:SetAlpha(0.35)
+				cp.Swatch2:EnableMouse(false)
+			else
+				cp.Swatch2:SetAlpha(1.0)
+				cp.Swatch2:EnableMouse(true)
+			end
+			cp.DirectionButton.Font:SetText(gradientDirectionAbbrevLabels[currentEntry.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
 		end
+		row.colorPicker = cp
+
+		-- Store row controls for the color picker callback
+		controls.indicatorColors.rows[rowIndex] = row
+
+		PositionRow(row, rowIndex)
+	end
+
+	---@return string
+	local function NextCustomKey()
+		local n = 1
+		while indicatorColors["custom_" .. n] ~= nil do
+			n = n + 1
+		end
+		return "custom_" .. n
+	end
+
+	---Adds a custom indicator for an entry at the lowest priority, white and untargeted, and grows the
+	---list by one row.
+	---@param entry TRB.CdmLayoutEntry
+	local function AddCustomIndicator(entry)
+		local key = NextCustomKey()
+		---@type TRB.CustomIndicatorCondition
+		local condition = { source = cdm.CONDITION_SOURCE, state = cdm.ConditionState.ACTIVE, cooldownID = entry.cooldownID }
+		cdm:PointConditionAt(condition, entry, true)
+		indicatorColors[key] = {
+			color = "FFFFFFFF",
+			color2 = "FFFFFFFF",
+			gradientDirection = "disabled",
+			enabled = false,
+			targets = {},
+			custom = { conditions = { condition } },
+		}
+		table.insert(sharedSettings.nodeOrder, key)
+		indicatorDefByKey[key] = { key = key, custom = true, colorLabel = "" }
+		orderedKeys[#orderedKeys + 1] = key
+
+		Primitives:ShiftControlsBelow(parent, belowTopY, -30)
+		belowTopY = belowTopY - 30
+
+		local rowIndex = #orderedKeys
+		if rows[rowIndex] == nil then
+			BuildRow(rowIndex)
+		else
+			PositionRow(rows[rowIndex], rowIndex)
+			SetRowShown(rows[rowIndex], true)
+		end
+		UpdatePickerBlock()
+		RefreshRow(rowIndex, true)
+		if rowIndex > 1 then
+			RefreshRow(rowIndex - 1, true)
+		end
+		RefreshAddButton()
+		RefreshRuntime()
+	end
+
+	---Deletes a custom indicator and shrinks the list by one row.
+	---@param key string
+	RemoveCustomIndicator = function(key)
+		local removeIndex = nil
+		for i, k in ipairs(orderedKeys) do
+			if k == key then
+				removeIndex = i
+				break
+			end
+		end
+		if removeIndex == nil then return end
+
+		table.remove(orderedKeys, removeIndex)
+		for i, k in ipairs(sharedSettings.nodeOrder) do
+			if k == key then
+				table.remove(sharedSettings.nodeOrder, i)
+				break
+			end
+		end
+		indicatorColors[key] = nil
+		indicatorDefByKey[key] = nil
+
+		local lastRow = rows[#orderedKeys + 1]
+		if lastRow ~= nil then
+			SetRowShown(lastRow, false)
+		end
+		Primitives:ShiftControlsBelow(parent, belowTopY, 30)
+		belowTopY = belowTopY + 30
+
+		UpdatePickerBlock()
+		for i = math.max(removeIndex - 1, 1), #orderedKeys do
+			RefreshRow(i, true)
+		end
+		RefreshAddButton()
+		RefreshRuntime()
+	end
+
+	-- Build flat indicator rows
+	for rowIndex = 1, #orderedKeys do
+		BuildRow(rowIndex)
+		yCoord = yCoord - 30
+	end
+
+	addButton = Primitives:BuildButton(parent, L["CustomIndicatorAddButton"], oUi.xCoord2, yCoord, 250, 25)
+	addButton:SetDisabledFontObject(GameFontDisable)
+	addButton:SetMotionScriptsWhileDisabled(true)
+	addButton:SetScript("OnEnter", function(self)
+		local reason = GetPickerBlock()
+		if reason ~= nil then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetText(reason, 1, 1, 1, 1, true)
+			GameTooltip:Show()
+		elseif not self:IsEnabled() then
+			RefreshAllRows()
+		end
+	end)
+	addButton:SetScript("OnClick", function(self)
+		if GetPickerBlock() ~= nil then
+			RefreshAllRows()
+			self:GetScript("OnEnter")(self)
+			return
+		end
+		OpenPicker(self, nil, AddCustomIndicator)
+	end)
+	addButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	belowTopY = yCoord
+	yCoord = yCoord - 30
+
+	RefreshAllRows()
+
+	-- Read a frame late, so Blizzard's own listeners for the same callback rebuild the layout first.
+	parent:HookScript("OnShow", RefreshAllRows)
+	if EventRegistry ~= nil then
+		local refreshQueued = false
+		EventRegistry:RegisterCallback("CooldownViewerSettings.OnDataChanged", function()
+			if refreshQueued or not parent:IsVisible() then return end
+			refreshQueued = true
+			C_Timer.After(0, function()
+				refreshQueued = false
+				if parent:IsVisible() then
+					RefreshAllRows()
+				end
+			end)
+		end, parent)
 	end
 
 	-- Gradient Color Overrides section
@@ -727,7 +1181,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				local gradRow = {}
 				gradientRows[gradIdx] = gradRow
 
-				local xOffset = oUi.xCoord
+				local xOffset = oUi.xCoord + customColumnWidth
 
 				-- Up arrow
 				local upBtn = CreateFrame("Button", nil, parent)
@@ -774,7 +1228,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				-- Targets dropdown
 				local ddName = ddNamePrefix .. "_Gradient_" .. gradKey .. "_Targets"
 				local dd = CreateFrame("DropdownButton", ddName, parent, "WowStyle1DropdownTemplate")
-				dd:SetWidth(280)
+				dd:SetWidth(targetsDropdownWidth)
 				dd:SetPoint("TOPLEFT", xOffset, yCoord)
 				dd:SetScript("OnEnter", function(self)
 					if gradDef.tooltip then

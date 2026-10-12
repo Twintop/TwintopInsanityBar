@@ -1152,7 +1152,8 @@ end
 ---@field public fadeStartAlpha number # Alpha at the moment a fade began (used for normalized progress)
 ---@field public fadeDelayUntil number # GetTime() timestamp when the fade delay expires (0 = no delay active)
 ---@field public chargeTracker table? # Fill-edge tracker for a secret count; see EnableChargeTracker
----@field public endCapMode string? # Multi-node end cap policy: "highest" (default; only the highest progressed node) or "all" (independent nodes, e.g. DK runes)
+---@field public endCapMode string? # Multi-node end cap policy: "highest" (default; only the highest progressed node), "segments" (the highest per run of endCapSegmentEnds), or "all" (independent nodes, e.g. DK runes)
+---@field public endCapSegmentEnds integer[]? # "segments" mode: the last node index of each run, in order
 ---@field public iconReserved boolean? # Whether a side ability icon currently reserves space, so GetAnchorFrame returns the container
 TRB.Classes.BarGroup = {}
 TRB.Classes.BarGroup.__index = TRB.Classes.BarGroup
@@ -2082,7 +2083,7 @@ end
 ---@field public rangeSlots integer? # Number of gated whole-fill recolor slots in `colors.<key>.ranges`. Slot 1 is the base `bar` color at 0; slots 2..N carry a start value, color and enable flag. Set only on bars whose fill recolors by value range.
 ---@field public usesSecretValue boolean? # True if this bar's live value is a SECRET cast-count (e.g. Bone Shield via GetSpellCastCount, Fire Blast charges via GetSpellCharges). Such bars cannot compare/curve the count in Lua, so custom thresholds on them are forced to the static color mode (and the icon is always full color). Multi-node secret bars also get no end cap (which node is highest is unknowable); single-node ones keep it.
 ---@field public hasCustomThresholds boolean? # False to drop this bar from the custom threshold system entirely. For bars whose max is secret (e.g. Ebon Might), a line cannot be positioned at all. Defaults to true.
----@field public endCapMode string? # Multi-node end cap policy: "highest" (default) or "all" (independent nodes, e.g. Warrior defensives)
+---@field public endCapMode string? # Multi-node end cap policy: "highest" (default), "segments" (one cap per run; the bar sets the runs), or "all" (independent nodes, e.g. Warrior defensives)
 ---@field public cdm TRB.CdmDependency? # Declared Cooldown Manager reliance for the whole bar. Options-panel badge only; nothing branches on it at runtime.
 ---@field public isSelfDriven boolean? # True when the bar shows/hides itself from live state (cast bars, GCD, mirror timers) rather than through ProcessBars. Such bars stay in the anchor tree as scaffolds and are never torn down by InvalidateAppliedState.
 ---@field public timerDrivenFill boolean? # True when the fill is bound to a DurationObject rather than written with SetValue, which leaves the Smooth setting nothing to act on.

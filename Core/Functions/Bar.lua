@@ -2143,7 +2143,9 @@ end
 ---which outranks the cap's useBorderColor follow. Call once per node each frame, after ApplyIndicatorColors.
 ---@param node TRB.Classes.BarNode
 ---@param barKey string # The indicator target key for this bar (e.g. "insanityBar", "runesBar")
-function TRB.Functions.Bar:ApplyNodeIndicators(node, barKey)
+---@param endCapElement string? # A bar with an End Cap per segment: this node's End Cap target element
+---@param endCapColor string? # With endCapElement: the flat color the bar resolved for that element
+function TRB.Functions.Bar:ApplyNodeIndicators(node, barKey, endCapElement, endCapColor)
 	TRB.Functions.Glow:ApplyIndicatorGlow(node, barKey)
 
 	if node == nil or node.endCapConfig == nil then
@@ -2154,7 +2156,7 @@ function TRB.Functions.Bar:ApplyNodeIndicators(node, barKey)
 	local gradient = Color:GetResolvedGradient()
 	if gradient ~= nil and TRB.Data.resource ~= nil then
 		local targets = gradient.targets and gradient.targets[barKey]
-		if targets and targets.endCap then
+		if targets and targets[endCapElement or "endCap"] then
 			local curve = Color:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, node.endCapConfig.color, gradient.color)
 			if curve ~= nil then
 				node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", TRB.Data.resource, true, curve))
@@ -2163,6 +2165,10 @@ function TRB.Functions.Bar:ApplyNodeIndicators(node, barKey)
 		end
 	end
 
+	if endCapElement ~= nil then
+		node:ApplyEndCapIndicator(endCapColor, nil)
+		return
+	end
 	local barEndCaps = TRB.Data.resolvedIndicators.barEndCaps
 	node:ApplyEndCapIndicator(barEndCaps and barEndCaps[barKey] or nil, nil)
 end
@@ -4440,16 +4446,59 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 	end
 end
 
----Updates end cap visibility across a multi-node group after a node value change.
----"highest" mode shows the cap only on the highest node with any fill; "all" leaves every cap shown
----(empty nodes self-hide via the clip anchor). Single-node groups need no sweep.
+---Shows the end cap on the highest node with any fill in first..last and hides the rest of that run's caps.
+---A secret value makes the answer unknowable, so the run shows no cap.
+---@param group TRB.Classes.BarGroup
+---@param first integer
+---@param last integer
+local function ShowHighestEndCapInRun(group, first, last)
+	local highest = 0
+	for i = last, first, -1 do
+		local groupNode = group.nodes[i]
+		if groupNode then
+			local value = groupNode.frame:GetValue()
+			if issecretvalue(value) then
+				highest = 0
+				break
+			end
+			if value ~= nil and value > 0 then
+				highest = i
+				break
+			end
+		end
+	end
+
+	for i = first, last do
+		local groupNode = group.nodes[i]
+		local slot = groupNode and groupNode.overlaySlots and groupNode.overlaySlots.endCap
+		if slot then
+			slot:SetEndCapShown(i == highest)
+		end
+	end
+end
+
+---Updates a multi-node group's end caps after a value change: "highest" caps the highest node with fill,
+---"segments" does so within each of endCapSegmentEnds' runs, and "all" leaves empty nodes to self-hide.
 ---@param node TRB.Classes.BarNode
 local function UpdateGroupEndCapVisibility(node)
 	local group = node.group
 	if group == nil or group.maxNodes <= 1 or node.endCapConfig == nil then
 		return
 	end
-	if (group.endCapMode or "highest") ~= "highest" then
+	local mode = group.endCapMode or "highest"
+	if mode == "segments" then
+		local first = 1
+		if group.endCapSegmentEnds ~= nil then
+			for _, last in ipairs(group.endCapSegmentEnds) do
+				ShowHighestEndCapInRun(group, first, math.min(last, group.maxNodes))
+				first = last + 1
+			end
+		end
+		if first <= group.maxNodes then
+			ShowHighestEndCapInRun(group, first, group.maxNodes)
+		end
+		return
+	elseif mode ~= "highest" then
 		return
 	end
 

@@ -2552,20 +2552,40 @@ function TRB.Functions.Settings:NormalizeAllAudioCues(settings)
 	end
 end
 
----Brings a spec's `colors.shared` order lists in line with the indicators the spec defines today.
----
----`Table:Merge(defaults, saved)` and the profile overlays merge `nodeOrder`/`gradientOrder` by array
----index, so a saved list only ever picks up a new default by accident: a key appended at index N
----survives when the save has fewer than N entries and is overwritten otherwise. A key removed from the
----code but still in saves (Shadow's `shadowWordMadnessUsableCasting`) holds a slot, which is exactly
----how Resonant Energy went missing from lists that predate it.
----
----Every saved key lands in whichever list the defaults put it in (a gradient key stranded in `nodeOrder`
----moves over), duplicates collapse, and any default key the save lacks is appended -- lowest priority,
----with its default `indicatorColors` entry when the save has none. Keys the defaults no longer define
----stay where they are: the options panel hides them, the runtime has no condition for them, and a
----feature that comes back picks its saved priority and colors up again. Surviving keys keep their
----relative order, both lists keep their table identity, and nothing else in `indicatorColors` is touched.
+---Whether an indicator key names one the user added, as the options panel numbers them.
+---@param key any
+---@return boolean
+local function IsCustomIndicatorKey(key)
+	return type(key) == "string" and key:match("^custom_%d+$") ~= nil
+end
+
+---Drops a spec's custom indicators before a piece carrying its own indicators merges over it, since the
+---same `custom_<n>` key names a different indicator in each.
+---@param spec table? # The spec settings being merged into
+---@param incoming table? # The spec piece merging over it
+function TRB.Functions.Settings:ClearCustomIndicatorsForMerge(spec, incoming)
+	local incomingShared = type(incoming) == "table" and type(incoming.colors) == "table" and incoming.colors.shared or nil
+	local shared = type(spec) == "table" and type(spec.colors) == "table" and spec.colors.shared or nil
+	if type(incomingShared) ~= "table" or type(incomingShared.indicatorColors) ~= "table" or type(shared) ~= "table" or type(shared.indicatorColors) ~= "table" then
+		return
+	end
+
+	for key, indicator in pairs(shared.indicatorColors) do
+		if type(indicator) == "table" and indicator.custom ~= nil then
+			shared.indicatorColors[key] = nil
+		end
+	end
+	if type(shared.nodeOrder) == "table" then
+		for i = #shared.nodeOrder, 1, -1 do
+			if IsCustomIndicatorKey(shared.nodeOrder[i]) then
+				table.remove(shared.nodeOrder, i)
+			end
+		end
+	end
+end
+
+---Repairs a spec's `colors.shared` order lists after merges that overlay them by index: keys move to their
+---default list, duplicates collapse, missing defaults and lost custom indicators append, and dead customs drop.
 ---@param spec table? # A single spec's settings table
 ---@param defaultShared table? # That spec's default `colors.shared` (nodeOrder, gradientOrder, indicatorColors)
 function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
@@ -2591,6 +2611,8 @@ function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
 
 	local seen = {} ---@type table<string, boolean>
 	local result = { nodeOrder = {}, gradientOrder = {} } ---@type table<string, string[]>
+	shared.indicatorColors = shared.indicatorColors or {}
+	local indicatorColors = shared.indicatorColors
 
 	---Copies a saved list's not-yet-seen keys into the list the defaults assign them to; a key the
 	---defaults don't know stays in the list it was saved in.
@@ -2600,7 +2622,7 @@ function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
 			return
 		end
 		for _, key in ipairs(shared[listName]) do
-			if not seen[key] then
+			if not seen[key] and not (indicatorColors[key] == nil and IsCustomIndicatorKey(key)) then
 				seen[key] = true
 				table.insert(result[listFor[key] or listName], key)
 			end
@@ -2609,8 +2631,6 @@ function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
 
 	Take("nodeOrder")
 	Take("gradientOrder")
-
-	shared.indicatorColors = shared.indicatorColors or {}
 
 	---Appends the default keys the save never had, seeding their colors from the defaults.
 	---@param defaultList string[]
@@ -2629,6 +2649,17 @@ function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
 
 	Append(defaultShared.nodeOrder, "nodeOrder")
 	Append(defaultGradientOrder, "gradientOrder")
+
+	local orphans = {}
+	for key, indicator in pairs(indicatorColors) do
+		if not seen[key] and type(indicator) == "table" and indicator.custom ~= nil and IsCustomIndicatorKey(key) then
+			orphans[#orphans + 1] = key
+		end
+	end
+	table.sort(orphans, function(a, b) return tonumber(a:match("%d+$")) < tonumber(b:match("%d+$")) end)
+	for _, key in ipairs(orphans) do
+		table.insert(result.nodeOrder, key)
+	end
 
 	-- Refill in place: the options panel and spec caches hold on to these tables.
 	for listName, keys in pairs(result) do

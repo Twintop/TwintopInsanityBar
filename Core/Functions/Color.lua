@@ -1084,6 +1084,35 @@ local castbarElements = { "bar", "channel", "border", "background", "tick", "end
 local previousCastbar = {}
 local previousPetCastbar = {}
 
+---Writes each custom indicator's condition into a condition map. ApplyIndicatorColors does this itself;
+---a spec walking nodeOrder against a condition map of its own calls it first.
+---@param sharedColors table? # spec.colors.shared
+---@param conditionMap table<string, boolean>
+function TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
+	local indicatorColors = sharedColors and sharedColors.indicatorColors
+	local nodeOrder = sharedColors and sharedColors.nodeOrder
+	if indicatorColors == nil or nodeOrder == nil then
+		return
+	end
+
+	local cdm = TRB.Functions.CooldownManager
+	for i = 1, #nodeOrder do
+		local key = nodeOrder[i]
+		local indicator = indicatorColors[key]
+		local conditions = indicator and indicator.custom and indicator.custom.conditions
+		if conditions ~= nil then
+			local met = #conditions > 0
+			for c = 1, #conditions do
+				if not cdm:IsConditionMet(conditions[c]) then
+					met = false
+					break
+				end
+			end
+			conditionMap[key] = met
+		end
+	end
+end
+
 ---Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
 ---nodeOrder back to front so earlier (higher-priority) entries overwrite later ones. The spec's bars are
 ---written back into barColorMap in place; the shared bars are parked in TRB.Data.resolvedIndicators.
@@ -1094,7 +1123,7 @@ local previousPetCastbar = {}
 ---each time -- the last call decides what the health bar and cast bar see. Deriving conditionMap from live
 ---state, as every spec does, satisfies that on its own.
 ---@param sharedColors table? # spec.colors.shared -- indicatorColors + nodeOrder
----@param conditionMap table<string, boolean> # Indicator key -> whether its condition is met right now
+---@param conditionMap table<string, boolean> # Indicator key -> whether its condition is met right now; custom indicator keys are written into it
 ---@param barColorMap table<string, table>? # barKey -> { bar =, border =, background = }, seeded with the spec's unindicated colors
 ---@param overrides table<string, table<string, boolean>>? # Optional: for each barKey the caller seeds here, records which elements an indicator claimed (specs that render an element differently once an indicator owns it)
 function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
@@ -1122,6 +1151,8 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 	local indicatorColors = sharedColors and sharedColors.indicatorColors
 	local nodeOrder = sharedColors and sharedColors.nodeOrder
 	local gradientOrder = sharedColors and sharedColors.gradientOrder
+
+	self:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
 
 	-- Same selection every spec makes for its own bars (walk back, first match wins), so the shared bars can
 	-- never end up showing a different gradient indicator than the resource bar beside them.
@@ -1225,6 +1256,16 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 	if changed then
 		resolved.version = resolved.version + 1
 	end
+end
+
+---Publishes the flat End Cap color for a bar a spec colors with its own nodeOrder walk, which
+---ApplyIndicatorColors never sees. nil clears it.
+---@param barKey string
+---@param color string?
+function TRB.Functions.Color:SetResolvedEndCap(barKey, color)
+	local resolved = TRB.Data.resolvedIndicators
+	resolved.barEndCaps = resolved.barEndCaps or {}
+	resolved.barEndCaps[barKey] = color
 end
 
 ---Returns the resolved indicator colors for a shared bar ("healthBar" or "castbar"), or nil when the

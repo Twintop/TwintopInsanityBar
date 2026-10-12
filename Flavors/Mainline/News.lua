@@ -8,6 +8,40 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.1-release (2026-10-12)
+## Demon Hunter
+### Devourer
+
+- Fix Color Indicators not coloring the Soul Fragments bar's End Cap.
+
+## Priest
+### Holy
+
+- Fix Color Indicators not coloring the Mana, Holy Words, and Lightweaver bars' End Caps.
+- The Holy Words bar shows an End Cap for each Holy Word instead of one for the whole bar.
+- Replace the Holy Words bar's End Cap Color Indicator target with End Cap (Serenity), End Cap (Sanctify), and End Cap (Chastise), and move existing End Cap targets to all three.
+
+## Shaman
+### Enhancement
+
+- Fix Color Indicators not coloring the Maelstrom Weapon bar's End Cap.
+
+## Warrior
+### Fury
+
+- Fix Color Indicators not coloring the Rage bar's End Cap.
+- Fix the Enrage Color Indicator not coloring the Whirlwind bar.
+- The Rage bar follows the Color Indicator priority order between Enrage and Zero Stacks.
+- Remove the Rage and Whirlwind bars' separate Enrage and Zero Stacks color handling.
+
+### Protection
+
+- Fix Color Indicators not coloring the Rage bar's End Cap.
+- Fix the Violent Outburst Color Indicator not coloring the Ignore Pain and Shield Block bars.
+- Remove the Rage bar's separate Color Indicator handling.
+
+---
+
 # 12.1.5.0-release (2026-10-12)
 ## Druid
 ### Balance

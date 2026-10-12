@@ -4,6 +4,20 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.1-release / Forever 1.60.1.9-release (2026-10-12)
+## General
+
+- Long color option labels wrap to a second line instead of pushing their CDM or Custom badge out of view.
+
+## Color Indicators
+
+- [#773](#773) Add custom Color Indicators, with Add New Custom Color Indicator, Edit, and Remove buttons on every Color Indicators tab.
+- [#773](#773) Custom Color Indicators can follow buffs, debuffs on your target, trinket buffs, and the combat potion buff from your Cooldown Manager layout, and can target any bar other Color Indicators can.
+- [#773](#773) A custom Color Indicator whose entry isn't displayed in the Cooldown Manager, or whose talent or trinket buff you don't have, shows a Custom - Not Tracked badge and stays off.
+- [#773](#773) Custom Color Indicators can only be added or changed while playing the class and specialization they belong to.
+
+---
+
 # Live 12.1.5.0-release / Forever 1.60.1.8-release (2026-10-12)
 ## General
 
