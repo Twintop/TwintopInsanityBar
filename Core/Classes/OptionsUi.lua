@@ -19,6 +19,7 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public colorLabel string Localized color picker label (bar-agnostic)
 ---@field public cdm TRB.CdmDependency? Declared Cooldown Manager reliance, shown as a badge on the row. Options-panel only; nothing branches on it at runtime.
 ---@field public barKeys string[]? The only bars its target menu offers; every bar when nil
+---@field public custom boolean? A user-defined indicator, built from colors.shared rather than spec code
 
 ---An element of a bar that an indicator can recolor.
 ---@class TRB.Classes.OptionsUi.BarElementDef

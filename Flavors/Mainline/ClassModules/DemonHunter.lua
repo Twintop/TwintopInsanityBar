@@ -1330,6 +1330,7 @@ local function UpdateResourceBar()
 					wipe(conditionMap)
 					conditionMap.metamorphosisEnd = metamorphosisActive and metamorphosisEndMet
 					conditionMap.metamorphosis = metamorphosisActive
+					TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
 
 					-- Apply flat indicators to soul fragment targets (reverse iteration, last writer wins)
 					for i = #nodeOrder, 1, -1 do
@@ -1580,7 +1581,7 @@ local function UpdateResourceBar()
 				end
 
 				-- Compute indicator overrides for soul fragment elements
-				local sfBarOverride, sfBorderOverride, sfBackgroundOverride = nil, nil, nil
+				local sfBarOverride, sfBorderOverride, sfBackgroundOverride, sfEndCapOverride = nil, nil, nil, nil
 				local sfSharedColors = specSettings.colors.shared
 				local sfIndicatorColors = sfSharedColors and sfSharedColors.indicatorColors
 				local sfNodeOrder = sfSharedColors and sfSharedColors.nodeOrder
@@ -1592,6 +1593,7 @@ local function UpdateResourceBar()
 					sfConditionMap.collapsingStarReady = collapsingStarUsable
 					sfConditionMap.voidMetamorphosis = metaActive
 					sfConditionMap.voidRayReady = (not metaActive) and spells.voidRay:IsUsable()
+					TRB.Functions.Color:ApplyCustomIndicatorConditions(sfSharedColors, sfConditionMap)
 
 					for i = #sfNodeOrder, 1, -1 do
 						local key = sfNodeOrder[i]
@@ -1602,10 +1604,12 @@ local function UpdateResourceBar()
 								if sfTargets.bar then sfBarOverride = indicator end
 								if sfTargets.border then sfBorderOverride = indicator.color end
 								if sfTargets.background then sfBackgroundOverride = indicator.color end
+								if sfTargets.endCap then sfEndCapOverride = indicator.color end
 							end
 						end
 					end
 				end
+				Color:SetResolvedEndCap("soulFragmentsBar", sfEndCapOverride)
 
 				-- Build gradient curves for soul fragment targets (border/background only, uses fury scale)
 				local sfOvercapCurves = scratch.sfOvercapCurves2

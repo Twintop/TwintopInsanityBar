@@ -1485,9 +1485,11 @@ local function UpdateResourceBar()
 					conditionMap.ascendance = ascendanceActive
 					conditionMap.tempest = snapshotData.attributes.tempestActive == true
 					conditionMap.tempest2 = snapshotData.attributes.tempestStacks == spells.tempest.maxStacks
+					TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
 					local mwBarOverride = nil
 					local mwBorderOverride = nil
 					local mwBackgroundOverride = nil
+					local mwEndCapOverride = nil
 
 					if nodeOrder and indicatorColors then
 						for i = #nodeOrder, 1, -1 do
@@ -1499,10 +1501,12 @@ local function UpdateResourceBar()
 									if mwTargets.bar then mwBarOverride = indicator end
 									if mwTargets.border then mwBorderOverride = indicator.color end
 									if mwTargets.background then mwBackgroundOverride = indicator.color end
+									if mwTargets.endCap then mwEndCapOverride = indicator.color end
 								end
 							end
 						end
 					end
+					Color:SetResolvedEndCap("maelstromWeaponBar", mwEndCapOverride)
 
 					local cpBackgroundColor = mwBackgroundOverride or specSettings.colors.comboPoints.background.color
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)

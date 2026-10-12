@@ -8,6 +8,33 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.1-release (2026-10-12)
+## Demon Hunter
+### Devourer
+
+- Fix Color Indicators not coloring the Soul Fragments bar's End Cap.
+
+## Shaman
+### Enhancement
+
+- Fix Color Indicators not coloring the Maelstrom Weapon bar's End Cap.
+
+## Warrior
+### Fury
+
+- Fix Color Indicators not coloring the Rage bar's End Cap.
+- Fix the Enrage Color Indicator not coloring the Whirlwind bar.
+- The Rage bar follows the Color Indicator priority order between Enrage and Zero Stacks.
+- Remove the Rage and Whirlwind bars' separate Enrage and Zero Stacks color handling.
+
+### Protection
+
+- Fix Color Indicators not coloring the Rage bar's End Cap.
+- Fix the Violent Outburst Color Indicator not coloring the Ignore Pain and Shield Block bars.
+- Remove the Rage bar's separate Color Indicator handling.
+
+---
+
 # 12.1.5.0-release (2026-10-12)
 ## Druid
 ### Balance

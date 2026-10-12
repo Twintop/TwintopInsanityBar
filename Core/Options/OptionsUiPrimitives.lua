@@ -474,6 +474,45 @@ function TRB.Functions.OptionsUi.Primitives:BuildSectionCover(parent, topY, bott
 	return f
 end
 
+---Moves every control anchored to the top of parent at or below topY by deltaY, so a list can grow or
+---shrink in place. Panels lay out with fixed offsets, so nothing below re-flows on its own.
+---@param parent Frame # The panel's scroll child
+---@param topY number # Anchors with a y offset at or below this move
+---@param deltaY number # Negative moves down
+function TRB.Functions.OptionsUi.Primitives:ShiftControlsBelow(parent, topY, deltaY)
+	local function Shift(object)
+		local numPoints = object:GetNumPoints()
+		local points = {}
+		local moved = false
+		for i = 1, numPoints do
+			local point, relativeTo, relativePoint, x, y = object:GetPoint(i)
+			if (relativeTo == nil or relativeTo == parent) and relativePoint ~= nil and relativePoint:sub(1, 3) == "TOP" and y <= topY then
+				y = y + deltaY
+				moved = true
+			end
+			points[i] = { point, relativeTo or parent, relativePoint, x, y }
+		end
+		if moved then
+			object:ClearAllPoints()
+			for _, p in ipairs(points) do
+				object:SetPoint(p[1], p[2], p[3], p[4], p[5])
+			end
+		end
+	end
+
+	for _, child in ipairs({ parent:GetChildren() }) do
+		Shift(child)
+	end
+	for _, region in ipairs({ parent:GetRegions() }) do
+		Shift(region)
+	end
+
+	local scrollFrame = parent:GetParent()
+	if scrollFrame ~= nil and scrollFrame.UpdateScrollChildRect ~= nil then
+		scrollFrame:UpdateScrollChildRect()
+	end
+end
+
 local CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B = 1.0, 0.24, 0.24
 
 ---Returns the Cooldown Manager badge color, for text that stands in where a badge frame cannot go.
@@ -482,6 +521,23 @@ local CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B = 1.0, 0.24, 0.24
 ---@return number b
 function TRB.Functions.OptionsUi.Primitives:GetCdmBadgeColor()
 	return CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B
+end
+
+---Points a badge at new text, colour, and tooltip, resizing it to the new label.
+---@param badge Frame
+---@param label string
+---@param header string
+---@param tooltip string
+---@param r number
+---@param g number
+---@param b number
+local function SetBadgeContent(badge, label, header, tooltip, r, g, b)
+	badge.font:SetText(label)
+	badge.font:SetTextColor(r, g, b, 1)
+	-- Sized to the glyph so the hitbox cannot reach over a neighbouring control.
+	badge:SetSize(math.max(badge.font:GetStringWidth(), 1), 16)
+	---@diagnostic disable-next-line: inject-field
+	badge.trbTooltip = { header = header, text = tooltip, r = r, g = g, b = b }
 end
 
 ---Builds a short coloured badge that explains itself on hover.
@@ -506,15 +562,13 @@ local function BuildBadge(parent, label, header, tooltip, r, g, b, posX, posY)
 	f.font:SetFontObject(GameFontNormalSmall)
 	f.font:SetPoint("LEFT", f, "LEFT")
 	f.font:SetJustifyH("LEFT")
-	f.font:SetText(label)
-	f.font:SetTextColor(r, g, b, 1)
-	-- Sized to the glyph so the hitbox cannot reach over a neighbouring control.
-	f:SetSize(math.max(f.font:GetStringWidth(), 1), 16)
+	SetBadgeContent(f, label, header, tooltip, r, g, b)
 
 	f:SetScript("OnEnter", function(self)
+		local content = self.trbTooltip
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText(header, 1, 1, 1)
-		GameTooltip:AddLine(tooltip, r, g, b, true)
+		GameTooltip:SetText(content.header, 1, 1, 1)
+		GameTooltip:AddLine(content.text, content.r, content.g, content.b, true)
 		GameTooltip:Show()
 	end)
 	f:SetScript("OnLeave", function()
@@ -524,14 +578,52 @@ local function BuildBadge(parent, label, header, tooltip, r, g, b, posX, posY)
 	return f
 end
 
----Places a badge just past the rendered end of a font string, creating it on first need and toggling
+local BADGE_GAP = 6
+local badgeOrder = { "cdm", "global", "custom" }
+
+---Lines up a font string's shown badges after its text. A label with a fixed `trbBadgeBox` wraps onto a
+---second line when they wouldn't fit beside it, rather than pushing them off the panel's edge.
+---@param fontString FontString
+local function LayoutBadges(fontString)
+	local badges = fontString.trbBadges
+	local badgesWidth = 0
+	for _, kind in ipairs(badgeOrder) do
+		local badge = badges[kind]
+		if badge ~= nil and badge:IsShown() then
+			badgesWidth = badgesWidth + BADGE_GAP + badge:GetWidth()
+		end
+	end
+
+	-- Re-measured every call: the text changes when rows are reordered or relabelled.
+	local x = fontString:GetUnboundedStringWidth()
+	local box = fontString.trbBadgeBox
+	if box ~= nil then
+		if badgesWidth > 0 and x + badgesWidth > box.width then
+			local _, fontHeight = fontString:GetFont()
+			x = box.width - badgesWidth
+			fontString:SetSize(x, math.max(box.height, math.ceil(fontHeight * 2 + 6)))
+		else
+			fontString:SetSize(box.width, box.height)
+		end
+	end
+
+	for _, kind in ipairs(badgeOrder) do
+		local badge = badges[kind]
+		if badge ~= nil and badge:IsShown() then
+			badge:ClearAllPoints()
+			badge:SetPoint("LEFT", fontString, "LEFT", x + BADGE_GAP, 0)
+			x = x + BADGE_GAP + badge:GetWidth()
+		end
+	end
+end
+
+---Shows a badge just past the rendered end of a font string, creating it on first need and toggling
 ---it thereafter. Reorderable rows re-label in place, so a build-once badge would stay on the wrong row.
 ---@param fontString FontString
----@param kind string # One badge of each kind per font string
+---@param kind string # One badge of each kind per font string; see badgeOrder
 ---@param shown boolean # False hides an existing badge and never builds one
----@param padding number?
 ---@return Frame?
-local function AttachBadge(fontString, kind, shown, label, header, tooltip, r, g, b, padding)
+local function AttachBadge(fontString, kind, shown, label, header, tooltip, r, g, b)
 	---@diagnostic disable-next-line: inject-field
 	local badges = fontString.trbBadges
 	local badge = badges and badges[kind]
@@ -539,6 +631,7 @@ local function AttachBadge(fontString, kind, shown, label, header, tooltip, r, g
 	if not shown then
 		if badge ~= nil then
 			badge:Hide()
+			LayoutBadges(fontString)
 		end
 		return nil
 	end
@@ -551,13 +644,12 @@ local function AttachBadge(fontString, kind, shown, label, header, tooltip, r, g
 			fontString.trbBadges = badges
 		end
 		badges[kind] = badge
+	else
+		SetBadgeContent(badge, label, header, tooltip, r, g, b)
 	end
 
-	-- Re-measured every call: these labels size their font string wider than the text they hold, and
-	-- the text itself changes when rows are reordered.
-	badge:ClearAllPoints()
-	badge:SetPoint("LEFT", fontString, "LEFT", fontString:GetStringWidth() + (padding or 6), 0)
 	badge:Show()
+	LayoutBadges(fontString)
 	return badge
 end
 
@@ -580,33 +672,49 @@ end
 ---again whenever the label is re-pointed at another feature, which shows, hides and re-places it.
 ---@param fontString FontString # The label to sit beside
 ---@param dependency TRB.CdmDependency? # Absent or unrecognized produces no badge
----@param padding number? # Gap between the text and the badge (default 6)
 ---@return Frame? # nil when the feature declares no reliance
-function TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(fontString, dependency, padding)
+function TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(fontString, dependency)
 	if fontString == nil then
 		return nil
 	end
 	return AttachBadge(fontString, "cdm", dependency == TRB.Data.constants.cdmDependency.REQUIRED,
 		L["CdmBadgeLabel"], L["CdmBadgeHeader"], L["CdmBadgeRequiredTooltip"],
-		CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B, padding)
+		CDM_BADGE_R, CDM_BADGE_G, CDM_BADGE_B)
 end
 
 ---Shows or hides a "Global" badge just past a section header's text, after its CDM badge when it has one.
 ---@param fontString FontString # The header's label
 ---@param shown boolean
----@param tooltip string # Fixed on first build
+---@param tooltip string
 ---@return Frame?
 function TRB.Functions.OptionsUi.Primitives:AttachGlobalBadgeToText(fontString, shown, tooltip)
 	if fontString == nil then
 		return nil
 	end
-	local padding = 6
-	local cdmBadge = fontString.trbBadges and fontString.trbBadges.cdm
-	if cdmBadge ~= nil and cdmBadge:IsShown() then
-		padding = padding + cdmBadge:GetWidth() + 6
-	end
 	local r, g, b = TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor()
-	return AttachBadge(fontString, "global", shown, L["UseGlobalBadgeLabel"], L["UseGlobalBadgeHeader"], tooltip, r, g, b, padding)
+	return AttachBadge(fontString, "global", shown, L["UseGlobalBadgeLabel"], L["UseGlobalBadgeHeader"], tooltip, r, g, b)
+end
+
+local CUSTOM_BADGE_R, CUSTOM_BADGE_G, CUSTOM_BADGE_B = 1.0, 0.82, 0.0
+local NOT_TRACKED_BADGE_R, NOT_TRACKED_BADGE_G, NOT_TRACKED_BADGE_B = 1.0, 0.5, 0.25
+
+---Shows or hides the badge marking a custom Color Indicator. A not-tracked one gets its own label and
+---colour; the tooltip says why.
+---@param fontString FontString # The indicator's label
+---@param shown boolean
+---@param notTracked boolean
+---@param tooltip string
+---@return Frame?
+function TRB.Functions.OptionsUi.Primitives:AttachCustomBadgeToText(fontString, shown, notTracked, tooltip)
+	if fontString == nil then
+		return nil
+	end
+	if notTracked then
+		return AttachBadge(fontString, "custom", shown, L["CustomIndicatorBadgeNotTrackedLabel"], L["CustomIndicatorBadgeNotTrackedHeader"],
+			tooltip, NOT_TRACKED_BADGE_R, NOT_TRACKED_BADGE_G, NOT_TRACKED_BADGE_B)
+	end
+	return AttachBadge(fontString, "custom", shown, L["CustomIndicatorBadgeLabel"], L["CustomIndicatorBadgeHeader"],
+		tooltip, CUSTOM_BADGE_R, CUSTOM_BADGE_G, CUSTOM_BADGE_B)
 end
 
 ---Creates a two-part help entry: a right-aligned variable name and a left-aligned description below it.
@@ -709,6 +817,47 @@ function TRB.Functions.OptionsUi.Primitives:BuildButton(parent, text, posX, posY
 	f:SetPushedTexture(f.ptex)
 
 	return f
+end
+
+---Builds an 18px red cross button for deleting a row. Shows its tooltip even while disabled.
+---@param parent Frame
+---@param posX number # X offset from parent's TOPLEFT
+---@param posY number # Y offset from parent's TOPLEFT
+---@return Button
+function TRB.Functions.OptionsUi.Primitives:BuildDeleteIconButton(parent, posX, posY)
+	local btn = CreateFrame("Button", nil, parent)
+	btn:SetPoint("TOPLEFT", parent, "TOPLEFT", posX, posY)
+	btn:SetSize(18, 18)
+	btn:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+	btn:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+	btn:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
+	btn:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+	btn:GetNormalTexture():SetVertexColor(1, 0.3, 0.3)
+	btn:GetDisabledTexture():SetDesaturated(true)
+	btn:SetMotionScriptsWhileDisabled(true)
+	return btn
+end
+
+---Builds an 18px note button for editing a row. Shows its tooltip even while disabled.
+---@param parent Frame
+---@param posX number # X offset from parent's TOPLEFT
+---@param posY number # Y offset from parent's TOPLEFT
+---@return Button
+function TRB.Functions.OptionsUi.Primitives:BuildEditIconButton(parent, posX, posY)
+	local btn = CreateFrame("Button", nil, parent)
+	btn:SetPoint("TOPLEFT", parent, "TOPLEFT", posX, posY)
+	btn:SetSize(18, 18)
+	btn:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+	btn:SetPushedTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+	btn:SetHighlightTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+	btn:SetDisabledTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+	btn:GetPushedTexture():SetVertexColor(0.7, 0.7, 0.7)
+	btn:GetHighlightTexture():SetBlendMode("ADD")
+	btn:GetHighlightTexture():SetAlpha(0.4)
+	btn:GetDisabledTexture():SetDesaturated(true)
+	btn:GetDisabledTexture():SetAlpha(0.5)
+	btn:SetMotionScriptsWhileDisabled(true)
+	return btn
 end
 
 ---Builds an export button anchored to the top-right corner of its parent panel.
