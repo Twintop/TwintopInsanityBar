@@ -537,8 +537,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		{ group = cdm.LayoutGroup.INACTIVE_NOT_DISPLAYED, label = L["CustomIndicatorPickerInactiveNotDisplayed"] },
 	}
 
-	---Opens the menu of the current spec's passive Cooldown Manager entries under their headings. Empty
-	---headings are left out, and nothing is greyed: a not-tracked entry is still a valid pick.
+	---Opens the menu of the current spec's passive Cooldown Manager entries under their headings, alphabetically.
+	---Empty headings are left out, and nothing is greyed: a not-tracked entry is still a valid pick.
 	---@param owner Frame
 	---@param currentCooldownID integer?
 	---@param onPick fun(entry: TRB.CdmLayoutEntry)
@@ -547,6 +547,14 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		if entries == nil then
 			return
 		end
+		table.sort(entries, function(a, b)
+			local aName = (a.name or L["CustomIndicatorUnknownEntry"]):lower()
+			local bName = (b.name or L["CustomIndicatorUnknownEntry"]):lower()
+			if aName == bName then
+				return a.cooldownID < b.cooldownID
+			end
+			return aName < bName
+		end)
 
 		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
 			local rowCount = 0
