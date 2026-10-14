@@ -1,3 +1,4 @@
+---@diagnostic disable: inject-field, undefined-global, redundant-parameter, redundant-return-value
 -- WoW API stubs for the smoke-load harness. Permissive by design: the goal is to catch
 -- load-order/nil-index errors in addon code, not to emulate the client.
 local M = {}

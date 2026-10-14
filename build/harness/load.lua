@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 -- Smoke-load harness: loads a WoW addon's TOC file list in order under stubbed APIs.
 -- Usage: lua5.1 load.lua <addonDir> <tocRelPath> [classId] [fireEvents]
 local addonDir, tocRel, classIdArg, fireEvents = ...
