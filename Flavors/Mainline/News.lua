@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.5.1-release (2026-10-13)
+# 12.1.5.1-release (2026-10-14)
 ## Demon Hunter
 ### Devourer
 

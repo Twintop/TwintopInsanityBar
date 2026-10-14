@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 1.60.1.9-release (2026-10-13)
+# 1.60.1.9-release (2026-10-14)
 ## General
 ### Color Indicators
 

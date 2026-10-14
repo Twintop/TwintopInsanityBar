@@ -1,5 +1,5 @@
-﻿## Interface: 120100, 120105
-## X-TargetInterface: 120100, 120105
+﻿## Interface: 120105
+## X-TargetInterface: 120105
 ## X-VersionCheck: disabled
 ## X-Flavor: mainline
 ## X-FlavorCheck: enabled
@@ -20,7 +20,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 12.1.5.1
 ## X-ReleaseType: release
-## X-ReleaseDate: 2026-10-13
+## X-ReleaseDate: 2026-10-14
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
