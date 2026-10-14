@@ -308,7 +308,8 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 				targetData:Remove(guid)
 			end
 		end
-		
+
+		TRB.Functions.AudioCues:UpdateBuffCues(TRB.Data.snapshotData)
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 		self.sinceLastUpdate = 0
 	end

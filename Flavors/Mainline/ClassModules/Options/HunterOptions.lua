@@ -1512,6 +1512,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, MarksmanshipConstructThresholdSettingsPanel },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, MarksmanshipConstructThresholdListPanel, true },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("hunter", "marksmanship", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("hunter", "marksmanship", controls),
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, MarksmanshipConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, function(scrollChild) MarksmanshipConstructBarTextDisplayPanel(scrollChild, cache) end },
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, MarksmanshipConstructResetDefaultsPanel },

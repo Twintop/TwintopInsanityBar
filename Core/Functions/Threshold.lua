@@ -2969,7 +2969,9 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 					if line.isUsable then
 						if not cues[spell.settingKey] then
 							cues[spell.settingKey] = true
-							PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+							if dictEntry.audio.playOutOfCombat ~= false or TRB.Data.character.inCombat then
+								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
 						end
 					else
 						cues[spell.settingKey] = false

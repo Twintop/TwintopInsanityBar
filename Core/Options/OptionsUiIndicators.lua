@@ -35,9 +35,14 @@ local menuRowHeight = 20
 local customColumnWidth = 46
 local targetsDropdownWidth = 254
 
--- Marks TRB's own notes under a spell's tooltip in the custom indicator picker, so they read as ours.
-local pickerNotePrefix = "|cFFA335EETRB:|r "
-local pickerNoteR, pickerNoteG, pickerNoteB = 0.85, 0.75, 1.0
+---@type TRB.Classes.OptionsUi.CdmPickerWording
+local pickerWording = {
+	otherClass = L["CustomIndicatorOtherClassTooltip"],
+	otherSpec = L["CustomIndicatorOtherSpecTooltip"],
+	disabled = L["CustomIndicatorCdmDisabledTooltip"],
+	notLearned = L["CustomIndicatorNotLearnedTooltip"],
+	notDisplayed = L["CustomIndicatorNotDisplayedTooltip"],
+}
 
 StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteCustomIndicator"] = {
 	text = "%s",
@@ -439,26 +444,11 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 
-	---Why Add and Edit can't be used right now (nil when they can), and the layout status behind it (nil on
-	---another spec's panel, since the Cooldown Manager only holds the played spec's layout).
+	---Why Add and Edit can't be used right now (nil when they can), and the layout status behind it.
 	---@return string? reason
 	---@return TRB.CdmLayoutStatus? status
 	local function GetPickerBlock()
-		local character = TRB.Data.character
-		if character == nil or character.classId ~= classId then
-			return L["CustomIndicatorOtherClassTooltip"], nil
-		elseif character.specId ~= specId then
-			return L["CustomIndicatorOtherSpecTooltip"], nil
-		end
-		local status, reason = cdm:GetLayoutStatus()
-		if status == cdm.LayoutStatus.UNAVAILABLE then
-			return string.format(L["CustomIndicatorCdmUnavailableTooltip"], reason or ""), status
-		elseif status == cdm.LayoutStatus.DISABLED then
-			return L["CustomIndicatorCdmDisabledTooltip"], status
-		elseif status == cdm.LayoutStatus.NOT_READY then
-			return L["CustomIndicatorCdmNotReadyTooltip"], status
-		end
-		return nil, status
+		return Primitives:GetCdmPickerBlock(classId, specId, pickerWording)
 	end
 
 	-- Read once per refresh pass rather than once per row.
@@ -467,31 +457,10 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		blockReason, blockStatus = GetPickerBlock()
 	end
 
-	local inactiveTooltipByState = {
-		[cdm.EntryState.NOT_LEARNED] = L["CustomIndicatorNotLearnedTooltip"],
-		[cdm.EntryState.NO_TRINKET_BUFF] = L["CustomIndicatorNoTrinketBuffTooltip"],
-		[cdm.EntryState.UNAVAILABLE] = L["CustomIndicatorUnavailableTooltip"],
-	}
-
-	---Everything keeping an entry from driving an indicator, plus the potion caveat.
-	---@param entry TRB.CdmLayoutEntry
-	---@return string[]
-	local function GetEntryNotes(entry)
-		local notes = {}
-		notes[#notes + 1] = inactiveTooltipByState[entry.state]
-		if not entry.displayed then
-			notes[#notes + 1] = L["CustomIndicatorNotDisplayedTooltip"]
-		end
-		if entry.isPotion then
-			notes[#notes + 1] = L["CustomIndicatorPotionCaveat"]
-		end
-		return notes
-	end
-
 	---@param entry TRB.CdmLayoutEntry
 	---@return string?
 	local function GetEntryStatusText(entry)
-		local notes = GetEntryNotes(entry)
+		local notes = Primitives:GetCdmEntryNotes(entry, pickerWording)
 		return #notes > 0 and table.concat(notes, "\n\n") or nil
 	end
 
@@ -530,86 +499,13 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return string.format(L["CustomIndicatorActiveFormat"], name), notTracked, badgeTooltip
 	end
 
-	local pickerHeadings = {
-		{ group = cdm.LayoutGroup.DISPLAYED, label = L["CustomIndicatorPickerDisplayed"] },
-		{ group = cdm.LayoutGroup.INACTIVE, label = L["CustomIndicatorPickerInactive"] },
-		{ group = cdm.LayoutGroup.NOT_DISPLAYED, label = L["CustomIndicatorPickerNotDisplayed"] },
-		{ group = cdm.LayoutGroup.INACTIVE_NOT_DISPLAYED, label = L["CustomIndicatorPickerInactiveNotDisplayed"] },
-	}
-
-	---Opens the menu of the current spec's passive Cooldown Manager entries under their headings, alphabetically.
-	---Empty headings are left out, and nothing is greyed: a not-tracked entry is still a valid pick.
+	---Opens the menu of the played spec's passive Cooldown Manager entries.
 	---@param owner Frame
 	---@param currentCooldownID integer?
 	---@param onPick fun(entry: TRB.CdmLayoutEntry)
 	local function OpenPicker(owner, currentCooldownID, onPick)
-		local entries = cdm:GetLayoutEntries()
-		if entries == nil then
-			return
-		end
-		table.sort(entries, function(a, b)
-			local aName = (a.name or L["CustomIndicatorUnknownEntry"]):lower()
-			local bName = (b.name or L["CustomIndicatorUnknownEntry"]):lower()
-			if aName == bName then
-				return a.cooldownID < b.cooldownID
-			end
-			return aName < bName
-		end)
-
 		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
-			local rowCount = 0
-			for _, heading in ipairs(pickerHeadings) do
-				local first = true
-				for _, entry in ipairs(entries) do
-					if entry.group == heading.group then
-						if first then
-							if rowCount > 0 then
-								rootDescription:CreateDivider()
-								rowCount = rowCount + 1
-							end
-							rootDescription:CreateTitle(heading.label)
-							rowCount = rowCount + 1
-							first = false
-						end
-
-						local text = entry.name or L["CustomIndicatorUnknownEntry"]
-						if entry.icon ~= nil then
-							text = "|T" .. entry.icon .. ":16:16:0:0|t " .. text
-						end
-						local radio = rootDescription:CreateRadio(text, function()
-							return entry.cooldownID == currentCooldownID
-						end, function()
-							onPick(entry)
-							return MenuResponse.Close
-						end)
-						rowCount = rowCount + 1
-
-						radio:SetTooltip(function(tooltipFrame)
-							if entry.equipSlot ~= nil and GetInventoryItemID("player", entry.equipSlot) ~= nil then
-								tooltipFrame:SetInventoryItem("player", entry.equipSlot)
-							elseif entry.tooltipSpellID ~= nil then
-								tooltipFrame:SetSpellByID(entry.tooltipSpellID)
-							else
-								tooltipFrame:SetText(entry.name or L["CustomIndicatorUnknownEntry"], 1, 1, 1)
-							end
-							local notes = GetEntryNotes(entry)
-							if #notes > 0 then
-								tooltipFrame:AddLine(" ")
-								for _, note in ipairs(notes) do
-									tooltipFrame:AddLine(pickerNotePrefix .. note, pickerNoteR, pickerNoteG, pickerNoteB, true)
-								end
-							end
-							tooltipFrame:Show()
-						end)
-					end
-				end
-			end
-
-			if rowCount == 0 then
-				rootDescription:CreateTitle(L["CustomIndicatorPickerEmpty"])
-			elseif rowCount > maxMenuRowsBeforeScroll and rootDescription.SetScrollMode then
-				rootDescription:SetScrollMode(maxMenuRowsBeforeScroll * menuRowHeight)
-			end
+			Primitives:PopulateCdmPicker(rootDescription, currentCooldownID, pickerWording, onPick)
 		end)
 	end
 

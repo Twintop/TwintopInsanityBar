@@ -3311,7 +3311,6 @@ if locale == "zhCN" then
 	L["AudioCueSoundNone"] = "无"
 	L["AudioCueEnabledCheckbox"] = "启用该音频提示"
 	L["AudioCueEnabledCheckboxTooltip"] = "启用后，每当触发条件满足就播放选定音效。"
-	L["AudioCueAddSourceTitle"] = "触发依据"
 	L["AudioCueTriggerAtLeast"] = "%s大于等于%s"
 	L["AudioCueTriggerExact"] = "%s恰好等于%s"
 	

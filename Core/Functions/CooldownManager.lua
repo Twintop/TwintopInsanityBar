@@ -839,7 +839,7 @@ function CDM:IsCooldownActive(cooldownID)
 	return entry.frame.auraDataCached ~= nil
 end
 
----A custom Color Indicator's condition: which source it reads and what must hold.
+---A custom Color Indicator's or Buff Alert's condition: which source it reads and what must hold.
 ---@class TRB.CustomIndicatorCondition
 ---@field source string # CDM.CONDITION_SOURCE
 ---@field cooldownID integer
@@ -1150,8 +1150,20 @@ function CDM:ResolveCondition(condition)
 	return entry
 end
 
----Re-links the played spec's custom indicators, so a renumbered entry keeps working without its options
----tab being opened. Finds the spec live, since TRB's cached spec names lag a switch or skip a disabled spec.
+---@param conditions TRB.CustomIndicatorCondition[]?
+local function RelinkConditions(conditions)
+	if conditions == nil then
+		return
+	end
+	for _, condition in ipairs(conditions) do
+		if condition.source == CDM.CONDITION_SOURCE then
+			CDM:ResolveCondition(condition)
+		end
+	end
+end
+
+---Re-links the played spec's custom indicators and Buff Alerts, so a renumbered entry keeps working without
+---its options tab being opened. Finds the spec live, since TRB's cached spec names lag a switch or skip a disabled spec.
 function CDM:RelinkActiveConditions()
 	local character = TRB.Data.character
 	local specIndex = TRB.Flavor.GetSpecializationIndex()
@@ -1164,18 +1176,18 @@ function CDM:RelinkActiveConditions()
 	end
 	local classSettings = TRB.Data.settings[entry.className]
 	local spec = classSettings ~= nil and classSettings[entry.specName] or nil
-	local indicatorColors = spec ~= nil and spec.colors ~= nil and spec.colors.shared ~= nil and spec.colors.shared.indicatorColors or nil
-	if indicatorColors == nil or self:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
+	if spec == nil or self:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
 		return
 	end
-	for _, indicator in pairs(indicatorColors) do
-		local conditions = type(indicator) == "table" and indicator.custom ~= nil and indicator.custom.conditions or nil
-		if conditions ~= nil then
-			for _, condition in ipairs(conditions) do
-				if condition.source == CDM.CONDITION_SOURCE then
-					self:ResolveCondition(condition)
-				end
-			end
+	local indicatorColors = spec.colors ~= nil and spec.colors.shared ~= nil and spec.colors.shared.indicatorColors or nil
+	if indicatorColors ~= nil then
+		for _, indicator in pairs(indicatorColors) do
+			RelinkConditions(type(indicator) == "table" and indicator.custom ~= nil and indicator.custom.conditions or nil)
+		end
+	end
+	if spec.audio ~= nil then
+		for _, cue in pairs(spec.audio) do
+			RelinkConditions(type(cue) == "table" and cue.kind == "buff" and cue.configuration ~= nil and cue.configuration.conditions or nil)
 		end
 	end
 end

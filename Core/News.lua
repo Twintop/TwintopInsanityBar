@@ -9,6 +9,11 @@ TRB.Details.coreNewsContent = [====[
 
 - Fix the primary resource bar still sometimes keeping its old maximum after your maximum resource changes.
 
+## Audio Cues
+
+- Add New Audio Cue can add Buff Alerts, which play when a buff tracked by your Cooldown Manager becomes active.
+- Add a Play out of combat option to every audio cue, including the audio cues on the Thresholds tab. Cues that only played in combat start with it off.
+
 ---
 
 # Live 12.1.5.1-release / Forever 1.60.1.9-release (2026-10-14)

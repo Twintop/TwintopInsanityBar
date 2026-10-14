@@ -2242,6 +2242,7 @@ function TRB.Functions.Settings:DefaultThresholdDictionaryEntry(isEnabled)
 			enabled = false,
 			sound = "",
 			soundName = "",
+			playOutOfCombat = true,
 		},
 		colors = {
 			under = {
@@ -2495,7 +2496,7 @@ function TRB.Functions.Settings:NormalizeAudioCues(spec, compositeKey)
 			cue.id = id
 			cue.kind = "counter"
 			cue.source = legacyCounterSources[id].id
-		elseif cue.kind == "counter" and knownSources[cue.source] then
+		elseif (cue.kind == "counter" and knownSources[cue.source]) or cue.kind == "buff" then
 			-- User-added cue from a current-shape save or import.
 			cue.id = cue.id or id
 		else
@@ -2506,6 +2507,8 @@ function TRB.Functions.Settings:NormalizeAudioCues(spec, compositeKey)
 
 	-- Counter cues need a threshold to compare against; built-ins get whatever config their registry
 	-- entry declares, so consuming code can read cue.configuration.<key> without nil guards.
+	-- A built-in's Play out of combat default comes from its spec defaults, never from here: profile pieces are
+	-- normalized without them, and a value filled in would overlay the default on load.
 	for _, cue in pairs(spec.audio) do
 		if cue.kind == "counter" then
 			cue.configuration = cue.configuration or {}
@@ -2520,7 +2523,19 @@ function TRB.Functions.Settings:NormalizeAudioCues(spec, compositeKey)
 			else
 				cue.configuration.playOnDrop = nil
 			end
+			if cue.configuration.playOutOfCombat == nil then
+				cue.configuration.playOutOfCombat = source == nil or not source.requiresCombat
+			end
 			cue.name = cue.name or (source and source.defaultName)
+		elseif cue.kind == "buff" then
+			cue.configuration = cue.configuration or {}
+			if type(cue.configuration.conditions) ~= "table" then
+				cue.configuration.conditions = {}
+			end
+			if cue.configuration.playOutOfCombat == nil then
+				cue.configuration.playOutOfCombat = true
+			end
+			cue.name = cue.name or L["AudioCueBuffAlertDefaultName"]
 		else
 			local builtIn = TRB.Functions.AudioCues:GetBuiltIn(compositeKey, cue.id)
 			if builtIn ~= nil and builtIn.config ~= nil then

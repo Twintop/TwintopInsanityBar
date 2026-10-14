@@ -4,9 +4,8 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.AudioCues = TRB.Functions.AudioCues or {}
 TRB.Data = TRB.Data or {}
 
----A spec's complete audio cue vocabulary. `builtIns` are fixed cues whose firing conditions live in
----the class module; `counters` are threshold sources the user can add and delete cues against. A
----spec with no `counters` entries gets no "Add New Audio Cue" button.
+---A spec's built-in cues (fired by the class module) and the counter sources users add threshold cues
+---against. Buff Alerts need no declaration, so every spec can add them.
 ---@class TRB.Classes.AudioCueDefinition
 ---@field public builtIns TRB.Classes.AudioCueBuiltIn[]
 ---@field public counters TRB.Classes.AudioCueCounterSource[]
@@ -46,7 +45,7 @@ TRB.Data = TRB.Data or {}
 ---@field public step number
 ---@field public decimals number
 ---@field public compare string # "atLeast" (>=), "atMost" (<=), or "exact" (==)
----@field public requiresCombat boolean # Whether cues only fire while in combat
+---@field public requiresCombat boolean # Default for its cues' Play out of combat setting: true means combat only
 ---@field public legacyIds string[]? # Pre-refactor settings keys that migrate onto this source
 ---@field public defaultCues TRB.Classes.AudioCueSeed[]? # Cues seeded once, the first time this source is seen
 
@@ -69,6 +68,12 @@ TRB.Data.audioCueRegistry = TRB.Data.audioCueRegistry or {}
 -- profile swap or spec settings rebuild drops the entry with the table it belonged to.
 local counterCache = setmetatable({}, { __mode = "k" })
 
+-- Each spec's enabled Buff Alerts with a buff chosen, rebuilt by InvalidateCache. Weak-keyed on its audio table.
+local buffCueCache = setmetatable({}, { __mode = "k" })
+
+-- What a spec that registers nothing gets, so it can still hold Buff Alerts. Never mutated.
+local emptyDefinition = { builtIns = {}, counters = {} }
+
 ---Registers a spec's audio cue definition.
 ---@param compositeKey string # "className_specName", e.g. "monk_windwalker"
 ---@param definition TRB.Classes.AudioCueDefinition
@@ -82,14 +87,14 @@ function TRB.Functions.AudioCues:Register(compositeKey, definition)
 	TRB.Data.audioCueRegistry[compositeKey] = definition
 end
 
----Gets the cue definition for a spec.
+---Gets the cue definition for a spec; one with no built-ins or counters when it registered none.
 ---@param compositeKey string?
 ---@return TRB.Classes.AudioCueDefinition?
 function TRB.Functions.AudioCues:GetDefinition(compositeKey)
 	if compositeKey == nil then
 		return nil
 	end
-	return TRB.Data.audioCueRegistry[compositeKey]
+	return TRB.Data.audioCueRegistry[compositeKey] or emptyDefinition
 end
 
 ---Gets a spec's built-in cue descriptor by id.
@@ -174,10 +179,17 @@ function TRB.Functions.AudioCues:SourceSupportsPlayOnDrop(source)
 	return source ~= nil and source.compare ~= "atMost" and source.compare ~= "exact"
 end
 
----Plays a cue's sound on the configured channel.
+---Whether a cue may play while out of combat. Absent means yes: combat-only built-ins say so in their spec defaults.
+---@param cue TRB.Classes.Settings.AudioCue
+---@return boolean
+local function PlaysOutOfCombat(cue)
+	return cue.configuration == nil or cue.configuration.playOutOfCombat ~= false
+end
+
+---Plays a cue's sound on the configured channel, unless it is combat only and the player isn't in combat.
 ---@param cue TRB.Classes.Settings.AudioCue
 local function PlayCue(cue)
-	if cue.sound ~= nil and cue.sound ~= "" then
+	if cue.sound ~= nil and cue.sound ~= "" and (TRB.Data.character.inCombat or PlaysOutOfCombat(cue)) then
 		PlaySoundFile(cue.sound, TRB.Data.settings.core.audio.channel.channel)
 	end
 end
@@ -195,6 +207,9 @@ local function BuildSortedCounterCues(specSettings, source)
 		if type(cue) == "table" and cue.kind == "counter" and cue.source == source.id then
 			cue.id = cue.id or id
 			table.insert(cues, cue)
+			if PlaysOutOfCombat(cue) then
+				cues.anyOutOfCombat = true
+			end
 		end
 	end
 
@@ -230,23 +245,62 @@ local function GetSortedCounterCues(specSettings, source)
 	return bySource[source.id]
 end
 
----Drops the cached cue ordering for a spec. Call after adding, deleting, or re-thresholding a cue.
+---Enabled Buff Alerts with a buff chosen, the only ones worth evaluating.
+---@param audio table<string, TRB.Classes.Settings.AudioCue>
+---@return TRB.Classes.Settings.AudioCue[]
+local function BuildBuffCues(audio)
+	local cues = {}
+	for id, cue in pairs(audio) do
+		if type(cue) == "table" and cue.kind == "buff" and cue.enabled and cue.configuration ~= nil
+			and type(cue.configuration.conditions) == "table" and #cue.configuration.conditions > 0 then
+			cue.id = cue.id or id
+			cues[#cues + 1] = cue
+		end
+	end
+	return cues
+end
+
+---Drops the cached cue ordering for a spec and rebuilds its Buff Alert list. Call after adding, deleting,
+---or editing a cue.
 ---@param specSettings table? # Spec settings table, or nil to clear every spec
 function TRB.Functions.AudioCues:InvalidateCache(specSettings)
 	if specSettings == nil then
 		counterCache = setmetatable({}, { __mode = "k" })
+		buffCueCache = setmetatable({}, { __mode = "k" })
 	else
 		counterCache[specSettings] = nil
+		if type(specSettings.audio) == "table" then
+			buffCueCache[specSettings.audio] = BuildBuffCues(specSettings.audio)
+		end
 	end
+end
+
+---Plays a cue once when `condition` becomes true and re-arms it when it goes false again.
+---@param latches table<string, boolean>
+---@param cueId string
+---@param cue TRB.Classes.Settings.AudioCue
+---@param condition boolean
+---@param canPlay boolean?
+---@return boolean # Whether the cue crossed on this evaluation
+local function LatchCue(latches, cueId, cue, condition, canPlay)
+	if condition then
+		if cue.enabled and not latches[cueId] then
+			latches[cueId] = true
+			if canPlay ~= false then
+				PlayCue(cue)
+			end
+			return true
+		end
+	else
+		latches[cueId] = false
+	end
+	return false
 end
 
 ---Evaluates a single built-in cue. Plays once when `condition` becomes true and re-arms when it
 ---goes false again.
 ---
----`canPlay` suppresses the sound without freezing the latch, for cues that should track state
----continuously but only be audible under some extra condition (typically being in combat). Passing
----the extra condition through `condition` instead would re-arm the cue whenever it went false, so
----the cue would fire on re-entering combat with its trigger already satisfied.
+---`canPlay` mutes the sound but keeps the latch tracking, like the cue's own combat-only setting does.
 ---@param specSettings table
 ---@param snapshotData TRB.Classes.SnapshotData
 ---@param cueId string
@@ -263,19 +317,7 @@ function TRB.Functions.AudioCues:Fire(specSettings, snapshotData, cueId, conditi
 		return false
 	end
 
-	local latches = EnsureLatches(snapshotData)
-	if condition then
-		if cue.enabled and not latches[cueId] then
-			latches[cueId] = true
-			if canPlay ~= false then
-				PlayCue(cue)
-			end
-			return true
-		end
-	else
-		latches[cueId] = false
-	end
-	return false
+	return LatchCue(EnsureLatches(snapshotData), cueId, cue, condition, canPlay)
 end
 
 ---Evaluates a mutually-exclusive group of built-in cues. Each latches independently, but when more
@@ -394,8 +436,10 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 	end
 
 	local counterValues = EnsureCounterValues(snapshotData)
+	local cues = GetSortedCounterCues(specSettings, source)
+	local inCombat = TRB.Data.character.inCombat
 
-	if source.requiresCombat and not TRB.Data.character.inCombat then
+	if not inCombat and not cues.anyOutOfCombat then
 		-- Latches stay frozen out of combat, but drop the remembered value: resources decay while
 		-- idle, and re-entering combat should not read as a spend.
 		counterValues[sourceId] = nil
@@ -406,7 +450,6 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 	counterValues[sourceId] = value
 	local isDrop = previous ~= nil and value < previous
 
-	local cues = GetSortedCounterCues(specSettings, source)
 	local latches = EnsureLatches(snapshotData)
 	local winner = nil
 	local dropWinner = nil
@@ -414,7 +457,8 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 	for x = 1, #cues do
 		local cue = cues[x]
 		local threshold = cue.configuration and cue.configuration.thresholdValue
-		if threshold ~= nil then
+		-- Out of combat, a combat-only cue's latch stays frozen like the whole source's does above.
+		if threshold ~= nil and (inCombat or PlaysOutOfCombat(cue)) then
 			local matches
 			if source.compare == "exact" then
 				matches = value == threshold
@@ -447,5 +491,30 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 		PlayCue(winner)
 	elseif dropWinner ~= nil then
 		PlayCue(dropWinner)
+	end
+end
+
+---Evaluates the played spec's Buff Alerts against the Cooldown Manager, on the shared update tick.
+---@param snapshotData TRB.Classes.SnapshotData
+function TRB.Functions.AudioCues:UpdateBuffCues(snapshotData)
+	local spec = TRB.Functions.Character:GetActiveRawSpecSettings()
+	local cues = spec ~= nil and spec.audio ~= nil and buffCueCache[spec.audio] or nil
+	if cues == nil or #cues == 0 then
+		return
+	end
+
+	local cdm = TRB.Functions.CooldownManager
+	local latches = EnsureLatches(snapshotData)
+	for i = 1, #cues do
+		local cue = cues[i]
+		local conditions = cue.configuration.conditions
+		local met = true
+		for c = 1, #conditions do
+			if not cdm:IsConditionMet(conditions[c]) then
+				met = false
+				break
+			end
+		end
+		LatchCue(latches, cue.id, cue, met)
 	end
 end
