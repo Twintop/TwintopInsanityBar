@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.2-release (2026-10-15)
+## General
+### Core Changes
+
+- See [Core Changes](tab:core).
+
+---
+
 # 12.1.5.1-release (2026-10-14)
 ## Demon Hunter
 ### Devourer

@@ -8,6 +8,13 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.10-release (2026-10-15)
+## General
+
+- Fix changing gear not updating the primary resource bar's maximum.
+
+---
+
 # 1.60.1.9-release (2026-10-14)
 ## General
 ### Color Indicators

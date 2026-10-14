@@ -4,6 +4,13 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.2-release / Forever 1.60.1.10-release (2026-10-15)
+## General
+
+- Fix the primary resource bar still sometimes keeping its old maximum after your maximum resource changes.
+
+---
+
 # Live 12.1.5.1-release / Forever 1.60.1.9-release (2026-10-14)
 ## General
 

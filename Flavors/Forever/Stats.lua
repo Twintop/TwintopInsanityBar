@@ -73,7 +73,8 @@ end
 TRB.Flavor.statEvents = {
 	primary = { "UNIT_STATS" },
 	-- The events the client's character sheet refreshes on; attack power and crit follow UNIT_STATS too.
-	secondary = { "UNIT_STATS", "COMBAT_RATING_UPDATE", "UNIT_RESISTANCES", "UNIT_ATTACK", "UNIT_RANGED_ATTACK_POWER", "UNIT_SPELL_HASTE", "SPELL_POWER_CHANGED", "PLAYER_DAMAGE_DONE_MODS", "SKILL_LINES_CHANGED", "PLAYER_EQUIPMENT_CHANGED" },
+	-- PLAYER_EQUIPMENT_CHANGED stays out: Core's fallback refreshes every stat and the saved max resource on it.
+	secondary = { "UNIT_STATS", "COMBAT_RATING_UPDATE", "UNIT_RESISTANCES", "UNIT_ATTACK", "UNIT_RANGED_ATTACK_POWER", "UNIT_SPELL_HASTE", "SPELL_POWER_CHANGED", "PLAYER_DAMAGE_DONE_MODS", "SKILL_LINES_CHANGED" },
 }
 
 ---@type TRB.Flavor.StatDefinition[]

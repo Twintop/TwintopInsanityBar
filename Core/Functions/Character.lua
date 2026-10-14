@@ -396,6 +396,9 @@ end
 -- Incremented on PLAYER_DEAD; deferred buff re-arms compare against it to skip firing after a death.
 local deathCount = 0
 
+-- The primary max last read on a power update; a change means the class module's saved max is stale.
+local lastPrimaryMax = nil
+
 ---Handles some change with the character's status
 ---@param self any
 ---@param event string
@@ -420,6 +423,13 @@ local function CharacterChange(self, event, ...)
 			-- A spec swap's new max can land after every CheckCharacter of the switch has already run.
 			if event == "UNIT_MAXPOWER" and powerType == TRB.Data.resourceToken then
 				TRB.Functions.Class:CheckCharacter()
+			elseif event == "UNIT_POWER_UPDATE" and powerType == TRB.Data.resourceToken then
+				-- UNIT_MAXPOWER alone has let the saved max fall behind on Forever; Blizzard's mana bar re-reads it here too.
+				local maxPower = UnitPowerMax("player", TRB.Data.resource, true)
+				if not issecretvalue(maxPower) and maxPower ~= lastPrimaryMax then
+					lastPrimaryMax = maxPower
+					TRB.Functions.Class:CheckCharacter()
+				end
 			end
 			TRB.Functions.Character:UpdateResourceValues()
 			TRB.Data.lookupDirty = true
