@@ -1,10 +1,11 @@
 # Twintop's Resource Bar
 
-A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
+A fully customizable resource bar for every class in World of Warcraft and World of Warcraft: Forever. Track your resources, ability costs, casts, health, and cooldowns in one place, with colors, text, and sounds that react to what is happening in combat.
+
+TRB started life as Twintop's  Insanity Bar WeakAura set for Shadow Priests during the Legion expansion.
 
 [![GitHub release](https://img.shields.io/github/release/Twintop/TwintopInsanityBar.svg?maxAge=3600)](https://github.com/Twintop/TwintopInsanityBar/releases)
-[![MIT License](https://img.shields.io/github/license/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/blob/shadowlands/LICENSE)
-
+[![MIT License](https://img.shields.io/github/license/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/blob/main/LICENSE)
 [![Issues](https://img.shields.io/github/issues-raw/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/issues)
 [![Issues](https://img.shields.io/github/issues-closed-raw/Twintop/TwintopInsanityBar?color=00CC00)](https://github.com/Twintop/TwintopInsanityBar/issues?q=is%3Aissue+is%3Aclosed)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Core?color=000000&label=Core)](https://github.com/Twintop/TwintopInsanityBar/labels/Core)
@@ -12,6 +13,8 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X71U2S88)
 
 ## Issues by Class
+
+### World of Warcraft (Midnight)
 
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Death%20Knight?color=C41E3A&label=Death%20Knight)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Death%20Knight)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Demon%20Hunter?color=A330C9&label=Demon%20Hunter)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Demon%20Hunter)
@@ -27,371 +30,120 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Warlock?color=8788EE&label=Warlock)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Warlock)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Live-Warrior?color=C69B6D&label=Warrior)](https://github.com/Twintop/TwintopInsanityBar/labels/Live-Warrior)
 
----
+### World of Warcraft: Forever
 
-## Overview
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Druid?color=FF7C0A&label=Druid)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Druid)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Hunter?color=AAD372&label=Hunter)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Hunter)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Mage?color=3FC7EB&label=Mage)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Mage)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Paladin?color=F48CBA&label=Paladin)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Paladin)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Priest?color=FFFFFF&label=Priest)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Priest)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Rogue?color=FFF468&label=Rogue)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Rogue)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Shaman?color=0070DD&label=Shaman)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Shaman)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Warlock?color=8788EE&label=Warlock)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Warlock)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Warrior?color=C69B6D&label=Warrior)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Warrior)
 
-Twintop's Resource Bar (TRB) is a fully customizable resource bar addon that supports all 13 classes and 40 specializations in World of Warcraft. Whether you're tracking Rage, Mana, Energy, Insanity, or any other resource, TRB provides a unified interface with threshold markers, secondary resource tracking, health monitoring, and major cooldown timers.
+## Supported Game Versions
 
-The addon is designed to give you the information you need at a glance, with visual and audio cues to help you make split-second decisions during combat.
+| Game | Classes | Status |
+| --- | --- | --- |
+| World of Warcraft (Midnight) | All 13 classes and 40 specializations | Full support |
+| World of Warcraft: Forever | All 9 classes | Early development |
 
----
-
-## Customization
-
-TRB is built with customization at its core. Nearly every aspect of the addon can be tailored to fit your UI and playstyle.
-
-### Bar Visibility
-
-Every bar can be shown or hidden independently with granular, mix-and-match visibility conditions:
-
-- Combat state: In Combat, In Vehicle
-- Mount state: Is Mounted (Any), Ground Mount, Skyriding, Steady Flight, and Actively In Flight (Skyriding or Steady Flight)
-- Target state: Friendly Target, Hostile Target
-- Group state: In Group, In Raid Group
-- Instance state: In Instance, In Dungeon, In Raid Instance, In Delve, In Battleground, In Arena
-- PvP state: PvP Flagged
-- Resource and health thresholds (percentage or raw value), including the secondary Mana bar for Shadow Priest, Balance Druid, and Elemental Shaman
-- Per-bar opacity and fade-out configuration
-- Always-hide overrides that take precedence over other visibility settings when specific conditions are met
-- Hidden bars maintain their layout height so other bars don't shift position
-
-### Size and Position
-
-- Adjustable width and height for primary and secondary resource bars
-- Pixel-precise positioning with horizontal and vertical offsets
-- Anchor bars to other bars for automatic relative positioning, or position each bar independently
-- Position bars via Edit Mode or classic X/Y offset settings
-- Per-bar Fill Direction: Left to Right, Right to Left, Top to Bottom, or Bottom to Top, allowing any bar or bar group to be oriented horizontally or vertically
-- Independent Growth Direction for multi-node bars so groups like Warrior Defensives can place each bar on its own row regardless of fill direction
-- Optionally match an anchor bar's (or Edit Mode frame's) height in addition to its width for a cohesive layout
-
-### Colors
-
-- Separate color settings for bar fill, border, and background
-- Indicator Color System: state-based color changes that can target any combination of bars and elements (fill, border, background) -- including the Health Bar and Cast Bar -- with configurable priority ordering
-- Optional gradient color transitions for bar fills and casting overlays
-- Per-threshold colors: under resource threshold, over resource threshold, unusable, out of range -- each overridable per-threshold with static or per-state colors
-- Per-threshold visibility overrides (e.g., hide when unusable)
-- Individual node coloring for secondary resources, with per-stack distinct color options for bars like Holy Power (1-5), Soul Shards (1-5), Whirlwind Charges (1 vs. 2 charges, plus an optional 0-charge background), the 5th Maelstrom Weapon stack, and the 5th Combo Point (Rogue), which can optionally override the penultimate/final color
-- Dedicated color option for the partial-fill portion of bars with time-based or fragment-based generation (Evoker Essence, Feral Druid Combo Points, Destruction Warlock Soul Shards)
-- Node border overlap option for multi-node bars (Combo Points, Runes, etc.)
-- Optional full-bar-height overlays (casting, spending, absorb, incoming heal) that extend across the border for a flush appearance
-- Bar End Caps: a configurable width and color overlay at the leading edge of a bar's fill, available on nearly every bar and selectable as a Color Indicator target
-- Border Glow: animated glows defined on the Global Options **Glows** tab (Pixel Glow, Autocast Shine, Action Button Glow, Proc Glow), each with a live preview, and selectable as a Color Indicator target on every bar, several at a time -- a glow either uses its own fixed color or takes the color of the indicator that turns it on
-- Global color settings that apply across all specializations (e.g., Health Bar colors)
-
-### Textures and Fonts
-
-- Full LibSharedMedia integration for custom textures and fonts
-- Independent texture settings for primary bar, secondary nodes, and custom bars (Stagger, Mana, Defensives)
-- Configurable font face, size, color, outline, and shadow for all text elements
-- Combinable font outline styles: pick Outline or Thick Outline, either of which can be paired with Monochrome and Slug
-
-### Audio Notifications
-
-The **Audio Cues** tab lists every cue for the specialization in a single sortable table showing its type, what triggers it, and the sound it plays, with a detail editor below for the selected row. Each cue describes exactly what triggers it, both in the table and in its detail pane.
-
-- Specializations with a countable resource support as many threshold cues as you want, each with its own value and sound -- available for Combo Points (Feral, all Rogue specs), Chi, Holy Power, Soul Shards, Arcane Charges, Icicles, Essence, Maelstrom Weapon stacks, Tip of the Spear stacks, and Lightweaver stacks
-- Threshold cues have an "Also play when dropping to this value" option, so a cue can fire on the way back down as well as on the way up
-- Secondary resource cues fire independently of bar visibility, triggering only during combat
-- Per-threshold audio cues on the primary bar that play when a threshold line becomes usable
-- Proc and cooldown audio cues for key abilities and buffs, including Benediction procs (Holy Priest), Lightweaver stacks (configurable trigger threshold plus an optional drop-off warning), Holy Word: Chastise/Serenity/Sanctify coming off cooldown per charge, Surge of Light (with optional Spiritwell-only restriction), Dance of Chi-Ji, Earthquake/Elemental Blast usability, Divine Purpose, and more
-- LibSharedMedia support for custom sounds
-- Configurable audio output channel
-
-### Bar Text
-
-TRB features a powerful bar text system that lets you display exactly the information you want, where you want it. Create multiple text entries with independent positioning, fonts, and colors. Bar text entries use shared font settings by default; per-entry overrides are available for full control.
-
-Global Bar Text entries can be configured in the Global Options "Bar Text" tab and shared across all specializations. Each specialization has an opt-in toggle to prepend global entries before its own.
-
-Use variables like `$resource`, `$comboPoints`, `$haste`, `$gcd`, and `$inCombatTime` to display live data, or `#casting` to show spell icons. Bar text also supports conditional logic with Boolean operators for dynamic displays.
-
-For multi-node bars (Combo Points, Runes, Soul Shards, etc.), bar text can be anchored to the bar group as a whole or to individual nodes.
-
-The bar text editor includes a searchable variable browser with descriptions and icons, allowing you to find and insert variables directly at the cursor position. Variables are grouped into Stats, Resources, Abilities, Other, and Cast Bars sections, hovering a row shows its name and full description, and a CDM column marks variables whose value comes from Blizzard's Cooldown Manager. Variables that hold `secret` values are labeled as such, since a secret value can't be used with comparison operators in bar text logic. Full undo/redo support is available via standard Ctrl+Z and Ctrl+Shift+Z (or Ctrl+Y) keyboard shortcuts.
-
-Bar text can optionally be clamped to its bound bar's width with a Prevent Text Overflow toggle, truncating with an ellipsis and a configurable Maximum Text Width (a percentage of the bound bar's width) instead of spilling over. This has no effect when bound to the Screen.
-
-For complete documentation on available variables and advanced formatting, check out the [Bar Text Customization Wiki](https://github.com/Twintop/TwintopInsanityBar/wiki/Bar-Text-Customization).
-
-### Import and Export
-
-Share your configuration with others or back up your settings:
-
-- Export individual sections (colors, thresholds, fonts, audio) or entire spec configurations
-- Import configurations from other players
-- Compressed export strings using Blizzard's `C_EncodingUtil` with Deflate compression for smaller sizes, with older import strings still accepted
-- "Copy..." buttons on supported settings sections let you copy shared settings between profiles, specializations, and Global Options without exporting and re-importing
-- Native Wago Profile Import/Export API support for one-click sharing through the Wago Companion app
-
-### Profiles
-
-- Per-specialization profiles, groupable into named profile sets for easy sharing across characters and specs
-- Configurable on a per-specialization and per-character basis with a default fallback profile
-- Dedicated profiles for Global Options, with one active at a time that applies to every specialization using global settings
-
-### Options Window
-
-- Dedicated movable options window accessible via `/trb` or the minimap button
-- Toggle the minimap button with `/trb minimap show` and `/trb minimap hide`
-- Access and modify any class specialization's settings regardless of your current class
-- Lazy-loaded settings panels to reduce memory usage
-- Options organized across multiple focused tabs for easier navigation
-- Every bar's settings tab has a pinned header with an **Enabled** checkbox as a shortcut for setting that bar's visibility to Never Show, a summary of when the bar currently shows, and a link straight to the Visibility tab
-- Disabled bars show their tab label in red, so it's obvious from the tab strip without opening the tab; bars whose visibility is driven by Global Options say so in the header
-
-### Global Settings
-
-- Apply common settings across all classes and specializations from the "Global Options" screen
-- Changes are immediately reflected across all specializations
-- Includes Health Bar colors, and more
-- Per-bar smooth animation settings
-- Optional abbreviated number formatting (e.g., 10.0K, 1.5M) for large numbers across all bars, with an alternate myriad-based grouping (10,000-step scale) for CJK locales (zhCN/zhTW/koKR)
-- A "Cooldown Manager value when unavailable" option controlling what a CDM-fed bar text variable shows when the Cooldown Manager has no value for it: Nothing (the default), `??`, or zero
-- Global configuration for the Global Cooldown, Fatigue, and Breath bars, applied to every specialization at once
-
----
+Both versions are built on the same core, so everything under Features is available in each. What differs is listed under Differences Between Versions.
 
 ## Features
 
-### Cooldown Manager Integration
+### Bars
 
-TRB reads from Blizzard's Cooldown Manager (CDM) as a supplemental source of data for abilities, buffs, and debuffs. Anything fed this way needs the ability it tracks to be added to one of the Cooldown Manager's viewers before it can show a value.
-
-- Settings and bar text variables fed by the Cooldown Manager carry a **CDM** badge, with a tooltip explaining the requirement
-- Choose what a CDM-fed bar text variable displays while no value is available under Global Options -> Miscellaneous -> Bar Settings
-- Tracking that uses the CDM includes Ignore Pain (Protection Warrior), Enrage (Fury Warrior), Demonic Core (Demonology Warlock), Shard Instability (Affliction Warlock), Essence Burst (Evoker), Divine Purpose (Paladin), Surge of Light (Discipline and Holy Priest), Shatter (Frost Mage), and Coagulating Blood (Blood Death Knight)
-
-### Edit Mode Integration
-
-Full integration with WoW's native Edit Mode system, allowing you to position and manage the resource bar alongside other UI elements:
-
-- **Per-Layout Settings** - Edit Mode configuration is saved separately for each HUD layout, so you can have different positions and settings for each
-- **Free Position Mode** - Place the bar anywhere on screen with drag-and-drop positioning while in Edit Mode
-- **Per-Bar Edit Mode Control** - Any bar anchored to the screen can be independently controlled by Edit Mode, including anchoring to the Cooldown Manager
-- **Bar-to-Bar Anchoring** - Anchor bars to other bars for automatic relative positioning instead of using manual X/Y offsets from the Primary Resource Bar
-- **Anchor to Cooldown Manager** - Optionally anchor any screen-anchored bar above or below Blizzard's Cooldown Manager Essential Abilities frame
-- **Anchor to Any Frame** - Anchor bars to any named frame in addition to the Cooldown Manager
-- **Match Cooldown Manager Width** - When anchored to the Cooldown Manager, optionally match its width for a cohesive look
-- **Vertical Offset** - Fine-tune vertical spacing when anchored to the Cooldown Manager
-- **Reset Edit Mode Data** - Clear all stored Edit Mode layout data from the "Reset Defaults" tab in Global Options
-
-### Primary Resource Bar
-
-Every spec gets a primary resource bar that tracks your main resource (Mana, Rage, Energy, Focus, Runic Power, Fury, Insanity, Astral Power, or Maelstrom). The bar includes:
-
-- **Threshold lines** showing the cost of your abilities, color-coded by availability. See the Threshold Lines section below for full details.
-- **Predictive cast resource overlay** for some specs, showing expected resource changes during your current cast as an overlay on the bar or via bar text
-- **Maximum display customization** allows the bar to fill to a lower value than your maximum resource; useful for specs like Assassination Rogue with threshold lines and very high maximum resource pools
-- **Overcapping resource alert** change the bar border and resource text color when almost full on resources for specs with fast auto-regennerating resources (i.e. Rogues) and those with builder/spender playstyles (i.e. Shadow)
+- **Primary resource**: Mana, Rage, Energy, Focus, Runic Power, Fury, Insanity, Astral Power, or Maelstrom, with an optional lower maximum and an overcap warning.
+- **Secondary resources**: Combo Points, Holy Power, Runes, Soul Shards, Essence, and other node-based resources, with per-node colors and recharge progress.
+- **Druid forms**: Mana, Rage, Energy, Astral Power, and Combo Points bars follow your shapeshift form.
+- **Health**: absorb, healing absorb, and incoming heal overlays.
+- **Cast bars**: player, target, focus, and pet cast bars with channel ticks, empower stages, latency, and an uninterruptible shield. Target and focus cast bars work on enemy casts.
+- **Pet bars**: your pet's health and resource.
+- **Other bars**: Global Cooldown, Fatigue, and Breath timers.
 
 ### Threshold Lines
 
-Threshold lines mark the resource cost of your abilities on the primary bar, color-coded by whether the ability is currently usable. Every threshold for a specialization is managed from a single sortable, searchable table with columns for icon, name, category, bar target, audio cue, and enabled status. Selecting a row opens a detail panel below the table for editing without navigating away.
+Mark the cost of your abilities on the resource bar, colored by whether each one is usable, with optional icons and a sound when an ability becomes usable. You can also add your own lines to any bar, at a fixed value or as an offset from the maximum.
 
-Per-threshold options include:
+### Color Indicators
 
-- **Color overrides** -- use a static color, or independently override the default Under, Over, Unusable, and Out of Range colors for that specific threshold
-- **Visibility overrides** -- hide a threshold line entirely under specific states (for example, hide when unusable) instead of relying on color alone
-- **Icon display** -- toggle the icon, position it relative to the line, and adjust its size and border width
-- **Audio cues** -- choose a sound to play when the threshold becomes usable (thresholds tied to `secret` resource values, such as Execute at max Rage, don't support audio cues)
-- **Enable/disable** -- turn individual thresholds on or off without removing them
+Change a bar's fill, border, background, or end cap color, or add an animated border glow, while a buff, proc, or resource state is active. Indicators follow a priority order you set, and custom indicators can follow any buff, target debuff, trinket buff, or combat potion in your Cooldown Manager layout.
 
-A dedicated **Threshold Shared Settings** tab sets the default threshold colors, line dimensions, and icon defaults that apply to every threshold for the specialization, giving you a single place to restyle them all at once while still allowing per-threshold overrides.
+### Bar Text
 
-Beyond the built-in ability-cost thresholds, you can add your own **custom threshold lines** on any bar -- including multi-node bars like Combo Points, Maelstrom Weapon, and Angelic Feather. Custom thresholds can be set to a fixed absolute value or as an offset from the bar's maximum (like the overcapping alert), so a line can automatically track "X below max" as your maximum resource changes.
+Add as many text entries as you like to any bar, built from live variables (`$resource`, `$haste`, `$castTimeRemaining`, and many more), spell icons, and conditional logic. The editor has a searchable variable browser that inserts at the cursor. See the [Bar Text Customization wiki](https://github.com/Twintop/TwintopInsanityBar/wiki/Bar-Text-Customization) for the full reference.
 
-### Secondary Resource Nodes
+### Audio Cues
 
-Many specs have a secondary resource displayed as individual nodes above or below the primary bar:
+Play a sound on procs, cooldowns, usable thresholds, and resource counts, using any LibSharedMedia sound and your choice of output channel.
 
-- **Arcane Charges** (Arcane Mage)
-- **Bone Shield** (Blood Death Knight) - up to 12 nodes, disabled by default
-- **Chi** (Windwalker Monk)
-- **Combo Points** (Feral Druid, Assassination/Outlaw/Subtlety Rogue)
-- **Ebon Might** (Augmentation Evoker) - separate bar tracking remaining duration
-- **Essence** (Devastation/Preservation/Augmentation Evoker) - displayed with timer-based regeneration progress
-- **Fire Blast Charges** (Fire Mage) - per-node recharge timers with bar text and color options for each node and the partial recharge fill
-- **Holy Power** (Holy/Protection/Retribution Paladin)
-- **Icicles** (Frost Mage) - up to 5 stacks
-- **Holy Words** (Holy Priest) - individually toggleable and reorderable cooldown nodes for Holy Word: Serenity, Sanctify, and Chastise with real-time cooldown progress and CDR tracking
-- **Lightweaver** (Holy Priest) - per-stack nodes with duration timer, disabled by default. Includes an optional background indicator on the next unfilled node while Benediction is active.
-- **Maelstrom Weapon** (Enhancement Shaman) - 5 or 10 stacks with a dedicated color for the 5th stack
-- **Power Words** (Discipline Priest) - cooldown nodes for Power Word: Radiance with real-time cooldown progress
-- **Runes** (Blood/Frost/Unholy Death Knight) - 6 individual runes with cooldown timers
-- **Shatter** (Frost Mage) - up to 20 stacks of Shatter on your current target. Requires the Cooldown Manager to be enabled and Shatter to be actively tracked.
-- **Soul Fragments** (Vengeance/Devourer Demon Hunter)
-- **Soul Shards** (Affliction/Demonology/Destruction Warlock) - Destruction displays partial fragments
-- **Tip of the Spear** (Survival Hunter) - up to 3 stacks with duration timer
-- **Whirlwind Charges** (Fury Warrior) - up to 4 charges with separate colors for 1-charge and 2-charge states, optional 0-charge background color, and cooldown remaining
+### Visibility
 
-### Utility Resource Bars
+Show or hide each bar by combat, group, instance, mount, target, PvP, and resource or health level. Always-hide rules take priority over everything else, and hidden bars can fade out and keep their space in the layout.
 
-Some specs have utility bars that track non-combat or situational abilities as their own bar group, independent of the primary and secondary resource bars. These are disabled by default.
+### Layout and Appearance
 
-- **Angelic Feather** (Priest) - charges and cooldown
+- Size, fill direction, and growth direction per bar.
+- Anchor bars to each other, the Cooldown Manager, or any named frame, or place them in Edit Mode with separate positions for each layout.
+- LibSharedMedia textures and fonts, gradients, end caps, and border glows.
 
-More utility resource bars are coming soon!
+### Profiles and Sharing
 
-### Health Bar
+- Per-specialization profiles, grouped into named sets you can use across characters.
+- Global Options apply shared settings to every specialization at once.
+- Export and import single sections or whole specializations, copy settings between specializations, or share through the Wago Companion app.
 
-A dedicated health bar is available for all specs, providing an at-a-glance view of your current health with customizable color thresholds. An optional absorb shield overlay displays your current absorb amount on the health bar with four display modes:
+### Cooldown Manager
 
-- **Overlay (from left)** - renders the absorb amount as a semi-transparent overlay on top of the health bar, filling from the left edge
-- **Appended** - extends the absorb shield visually past the end of your current health fill, clipped to the bar's right edge
-- **Appended (Overflow)** - same as Appended, but allows the overlay to extend past the bar's right edge when the absorb amount exceeds maximum health
-- **Overlay (from right / inset)** - fills leftward from the end of your current health, overlapping the health bar from right to left
+Some tracking reads from Blizzard's Cooldown Manager. Options and bar text variables that depend on it carry a **CDM** badge, and need the tracked ability added to one of your Cooldown Manager viewers.
 
-The absorb overlay has its own configurable texture and color, and the current absorb amount is available as a bar text variable (`$absorb`).
+## Differences Between Versions
 
-An optional incoming heals overlay displays predicted incoming healing on the health bar, with the value available as a bar text variable (`$incomingHeal`).
+### World of Warcraft (Midnight)
 
-An optional healing absorb overlay displays debuffs that consume incoming healing (such as Necrotic Wounds) as a separate overlay, distinct from the damage-absorbing shield overlay above. Its value is available as the bar text variable `$healAbsorb`.
+Most specializations track their major cooldowns and procs, and many get dedicated bars for their own mechanics, including:
 
-### Cast Bar
+- **Death Knight**: Bone Shield and Coagulating Blood (Blood)
+- **Demon Hunter**: Void Metamorphosis and Collapsing Star (Devourer)
+- **Druid**: Ironfur (Guardian)
+- **Evoker**: Dragonrage (Devastation) and Ebon Might (Augmentation)
+- **Hunter**: Tip of the Spear (Survival) and Feign Death
+- **Mage**: Arcane Salvo (Arcane), Fire Blast charges (Fire), and Shatter (Frost)
+- **Monk**: Stagger (Brewmaster)
+- **Priest**: Power Word: Radiance (Discipline), Holy Words and Lightweaver (Holy), and Angelic Feather
+- **Shaman**: Elemental Blast buffs (Elemental)
+- **Warrior**: Whirlwind charges and Enrage (Fury), and Defensives (Protection)
 
-Every specialization gets a dedicated Cast Bar that tracks standard, channeled, and empowered casts, with the same size, anchor, texture, color, and bar text options as every other bar.
+Shadow Priest, Balance Druid, and Elemental Shaman can also show a secondary Mana bar.
 
-- **Visibility conditions** - show while Casting, Channeling, or Empowering, or set to Always/Never, with an In Vehicle hide, independent active/inactive alpha, and fade-out
-- **Ability icon** - an icon beside the bar with configurable side (left/right/top/bottom), spacing, zoom to crop the stock border, and a collapse border width option to share a single border with the bar
-- **Latency and pushback overlays** - visualize spell-queue latency and pushback, with a configurable Channel Tick Width and an optional Size Channel Ticks to Latency
-- **Channel tick markers** - drawn from a user-editable per-spell tick rate list, handling fixed-count, fixed-duration, and chained channels, and accounting for set bonuses that modify tick counts
-- **Empower stages** - stage lines and per-level fill colors, with an optional Fill Each Empower Level Separately mode (Windwalker Monk, Evoker, Blood Death Knight)
-- **Uninterruptible border and shield** - a distinct border color while a cast can't be interrupted, plus a shield icon (on by default) that is fully customizable in size, position (icon/bar, behind/in front, anchored to a 9-point grid), and color, or hidden entirely
-- **Class coloring** - color the bar by an enemy player target's class color across all cast types, with sub-options to limit it to while PvP is enabled or extend it to friendly players; active Color Indicators still take priority
-- **Bulk crafting** - profession crafts like Create All are merged into a single channel-style bar with per-craft ticks and `$castSpellName` progress; toggle with Merge Bulk Crafting
-- **Bar text** - `$castTime`, `$castTimeRemaining`, `$castLatency`, `$castLatencyMs`, `$castPushback`, `$castSpellName`, `$castSpellId`, `$castInterruptible`, `$castUninterruptible`, and the `#casting` spell icon
-- **Global options** - top-level Cast Bar options with global versions of every section, a Global Profile selector, per-spec follow-global, and Copy... between scopes
+### World of Warcraft: Forever
 
-#### Target and Focus Cast Bars
+Forever support is in early development, and class-specific tracking is still being added. Forever also has a few things of its own:
 
-Standalone Target and Focus Cast Bars track a unit's casts, channels, and empowers. They are secret-safe, so they work on enemy casts where the timing is hidden, and they carry the same size, anchor, texture, color, icon, uninterruptible shield, and bar text options as the player Cast Bar.
-
-- Bar text variables including `$targetCastingSpellName`, `$targetCastTimeRemaining`, and the `$focus` equivalents
-- The Cast Bar, Target Cast Bar, and Focus Cast Bar ability icons are bar text anchor targets, so text can be positioned relative to the icon frame like any other bar
-
-### Other Bars
-
-An **Other Bars** screen provides optional timer bars available to every specialization -- **Global Cooldown**, **Fatigue**, and **Breath** -- plus a **Feign Death** bar for Hunters. Each has its own dimensions, anchoring, colors, textures, visibility rules, and bar text.
-
-- The Global Cooldown, Fatigue, and Breath bars can be configured globally for every specialization at once, or per specialization. Feign Death is configured per Hunter specialization, as no other class can use it.
-- The Global Cooldown bar can either drain a full bar down or grow an empty one up as the global cooldown elapses
-- The Fatigue, Breath, and Feign Death bars can each hide Blizzard's own version of that timer while they are shown
-- A Duration Decimal Precision option for the Global Cooldown bar's timer text (the mirror timers read as mm:ss and have no decimals to configure)
-- Bar text variables: `$gcdDuration`, `$gcdDurationRemaining`, `$fatigueDuration`, `$fatigueDurationRemaining`, `$breathDuration`, and `$breathDurationRemaining`, plus `$feignDeathDuration` and `$feignDeathDurationRemaining` for Hunters
-- Each bar ships with a bar text entry for its remaining time already set up. The Global Cooldown's starts disabled, since its bar is thin and recycles constantly.
-
-### Druid Shapeshifting
-
-Switch between Astral Power, Energy + Combo Points, Rage, and Mana bars to match your current Druid shapeshift form -- including unique bar text and threshold lines. Combo Points can be displayed in all shapeshift forms with per-specialization visibility control.
-
-### Void Metamorphosis and Collapsing Star Bar
-
-Devourer Demon Hunter have a bar that tracks both Void Metamorphosis and Collapsing Star, based on current buffs, in addition to a Fury bar.
-
-### Secondary Mana Bar
-
-Some DPS specs that may need to off-heal in a pinch have a secondary mana bar available (disabled by default):
-
-- Balance Druid
-- Elemental Shaman
-- Shadow Priest
-
-### Stagger Bar (Brewmaster Monk)
-
-Brewmaster Monks get a dedicated Stagger bar that displays current stagger damage as a percentage of maximum health. The bar includes configurable thresholds for Medium, Heavy, and Extremely Heavy stagger levels, with color transitions as stagger severity increases. The maximum stagger percentage displayed by the bar can be set above 100% of maximum health. Stagger levels and colors are set to Blizzard's defaults but can be freely customized to suit your preferences and needs.
-
-### Coagulating Blood Bar (Blood Death Knight)
-
-Blood Death Knights get a dedicated Coagulating Blood bar tracking current stacks, where each stack is 1% damage reduction. An optional maximum value override lets the bar and its threshold lines scale to the cap you actually reach rather than the theoretical maximum. The `$coagulatingBloodStacks` and `$coagulatingBloodStacksMax` bar text variables expose the value. Requires the Cooldown Manager to be enabled and Coagulating Blood to be actively tracked.
-
-### Defensives Bar (Protection Warrior)
-
-Protection Warriors have a specialized Defensives bar that tracks the remaining duration of key defensive abilities. Each Defensive bar can be enabled or disabled independently and reordered.
-
-- **Ignore Pain (Time)** -- duration remaining
-- **Ignore Pain (Absorb)** -- absorb stack count (0–100)
-- **Shield Block** -- duration remaining and available charges
-
-### Major Cooldown Tracking
-
-Many specs can track important buff status and timers via color changes and directly in bar text variables:
-
-| Spec | Tracked Cooldowns |
-| ------ | ------------------- |
-| Havoc Demon Hunter | Metamorphosis |
-| Vengeance Demon Hunter | Metamorphosis |
-| Devourer Demon Hunter | Void Metamorphosis, Rolling Torment Fury prediction |
-| Balance Druid | Eclipse/Incarnation |
-| Feral Druid | Berserk/Incarnation (including incoming combo point generation timing), Clearcasting, Ravage, Halazzi's Fury |
-| Guardian Druid | Berserk/Incarnation |
-| Restoration Druid | Efflorescence, Incarnation, Clearcasting |
-| Augmentation Evoker | Ebon Might |
-| Devastation Evoker | Dragonrage |
-| Beast Mastery Hunter | Beast Cleave, Bestial Wrath |
-| Marksmanship Hunter | Trueshot |
-| Survival Hunter | Takedown |
-| Brewmaster Monk | Invoke Niuzao, the Black Ox |
-| Mistweaver Monk | Instant Vivify (Sheilun's Gift, Serene Surge) |
-| Windwalker Monk | Heart of the Jade Serpent, Dance of Chi-Ji |
-| Holy/Protection/Retribution Paladin | Divine Purpose |
-| Discipline Priest | Power Word: Radiance, Void Shield, Surge of Light, Harsh Discipline |
-| Holy Priest | Apotheosis, Benediction, Lightweaver, Surge of Light, Holy Word cooldown reduction tracking |
-| Shadow Priest | Voidform, Entropic Rift (including extensions remaining), Shadowy Insight (Instant Mind Blast) |
-| Elemental Shaman | Ascendance, Earthquake/Elemental Blast usability |
-| Enhancement Shaman | Ascendance |
-| Restoration Shaman | Ascendance |
-| Affliction Warlock | Shard Instability |
-| Demonology Warlock | Demonic Core, Dominion of Argus, Infernal Bolt, Ruination |
-| Destruction Warlock | Infernal Bolt, Ruination |
-| Fury Warrior | Enrage |
-| Protection Warrior | Violent Outburst, Ignore Pain |
-
----
+- Main hand, off hand, and ranged swing timer bars.
+- Abilities use your highest known spell rank.
+- Bar text stat variables match the Forever character sheet, such as Spirit, spell power, defense, and resistances.
 
 ## Localization
 
-TRB is being actively translated into multiple languages. Current progress:
-
-- **Simplified Chinese (zhCN)** - 93%
-- **German (deDE)** - 46%
-- **French (frFR)** - 6%
-
-If you're interested in helping translate TRB into other languages, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know!
-
----
-
-## Game Flavors and Repository Layout
-
-TRB supports more than one World of Warcraft game lineage that shares the modern addon API. Each lineage is a *flavor*; the same Core serves all of them and each flavor brings its own class modules.
-
-- `mainline` -- modern World of Warcraft (Midnight). Its TOC is `TwintopInsanityBar.toc` at the repository root, so a checkout works in place as a `_retail_` install.
-- `forever` -- World of Warcraft: Forever. Its TOC is `Flavors/Forever/TwintopInsanityBar.toc`; the packaged zip puts it at the addon root.
-
-```
-Core/                     Class-agnostic engine: Init.lua, Classes/, Functions/, Options/, Localization/.
-                          Nothing here may name a class, spec or class bar; build/lint-core.ps1 enforces it.
-Flavors/<Flavor>/         One folder per game lineage:
-  Manifest.lua              identity (id, saved-variables global, client detection) + the class/spec registry
-  Migrations.lua            saved-variable migrations (frozen history; Forever has none yet)
-  News.lua                  the changelog shown by /trb news
-  Classes.xml / Runtime.xml / Options.xml   load lists that interleave with Core/Stage1-3.xml
-  ClassModules/             Classes/ (spell sets, bar types, spec descriptors), <Class>.lua (runtime), Options/
-Libs/  Images/  Sounds/  StatusBars/   shared libraries and media
-build/                    stage.ps1 (package one flavor), dev-link.ps1 (junction a client to this checkout),
-                          lint-core.ps1, smoke.ps1 + harness/ (load every flavor under a stubbed API), forever-probe/
-```
-
-Everything shared code needs to know about a spec comes from its **spec descriptor** (declared in the flavor's `*Classes.lua`, see `Core/Classes/SpecDescriptor.lua`) or from the manifest's registry, never from a class id in Core.
-
-**Developing against a client:** keep the checkout inside `_retail_\Interface\AddOns` (mainline works in place with no setup) and link the Forever client to it with `build\dev-link.ps1 -Flavor forever -AddOnsPath "<Forever>\Interface\AddOns"` -- that creates a real addon folder of junctions plus a copy of the flavor's TOC, so one checkout serves both clients live. Step-by-step per-machine setup, the optional Lua smoke tests and the release tagging scheme are in [build/README.md](build/README.md).
-
-**Releases:** pushing a tag builds the matching flavor and attaches the zip to a GitHub release: `12.1.0.11-release` (mainline), `12.1.0.11-beta01`, `forever-1.0.0.0-release`. `build\stage.ps1 -Flavor <name>` produces the same zip locally under `dist\`.
-
----
+TRB is being translated into Simplified Chinese (nearly complete), German (partial), and French (started). If you would like to help translate, [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know.
 
 ## Support
 
-Found an issue? Report it on [GitHub](https://github.com/Twintop/TwintopInsanityBar/issues/) or join the discussion on [Discord](https://discord.gg/eThqxM78xm).
+Report issues on [GitHub](https://github.com/Twintop/TwintopInsanityBar/issues) or join the discussion on [Discord](https://discord.gg/eThqxM78xm).
+
+## Development
+
+One Core serves both game versions, and each version (a *flavor*) brings its own class modules. Mainline's TOC is `TwintopInsanityBar.toc` at the repository root, so a checkout works in place as a `_retail_` install. Forever's TOC is `Flavors/Forever/TwintopInsanityBar.toc`, and the packaged zip puts it at the addon root.
+
+```
+Core/              Class-agnostic engine. Nothing here may name a class, spec, or class bar (build/lint-core.ps1).
+Flavors/<Flavor>/  Manifest.lua (identity and class/spec registry), Migrations.lua, News.lua, load lists,
+                   and ClassModules/ (spell sets, bar types, spec descriptors, runtime, and options).
+Libs/ Images/ Sounds/ StatusBars/   Shared libraries and media.
+build/             Packaging, client linking, lint, and smoke tests.
+```
+
+Shared code learns about a spec only from its spec descriptor (`Core/Classes/SpecDescriptor.lua`) or the manifest's registry, never from a class id in Core. Client setup, smoke tests, and the release tagging scheme are in [build/README.md](build/README.md).
