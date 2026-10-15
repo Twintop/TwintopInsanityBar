@@ -2975,7 +2975,7 @@ function TRB.Functions.Threshold:RefreshThresholdAudio()
 	wipe(thresholdAudioSpells)
 	for _, specCache in pairs(TRB.Data.specCache) do
 		local settings = specCache.settings
-		-- A Druid form's spec can lack thresholds; ConstructPrimaryGeneric skips those too.
+		-- An unfilled spec cache has no thresholds yet.
 		local dictionary = settings ~= nil and settings.thresholds ~= nil and settings.thresholds.thresholdDictionary or nil
 		if dictionary ~= nil then
 			local spells = nil
@@ -3026,7 +3026,8 @@ function TRB.Functions.Threshold:UpdateSpellThresholdAudio(settings, snapshotDat
 	for _, spell in ipairs(spells) do
 		local dictEntry = dictionary[spell.settingKey]
 		local audio = dictEntry and dictEntry.audio
-		if audio ~= nil and (barTarget == nil or spell.barTarget == barTarget)
+		-- Re-checked live so a missed refresh can only silence a sound, never play one turned off.
+		if audio ~= nil and audio.enabled and audio.sound and (barTarget == nil or spell.barTarget == barTarget)
 			and (resourceType == nil or spell.primaryResourceType == resourceType) then
 			self:LatchThresholdCue(snapshotData, spell.settingKey, audio, spell:IsUsable())
 		end
