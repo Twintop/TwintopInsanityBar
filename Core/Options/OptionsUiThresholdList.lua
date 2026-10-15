@@ -1495,6 +1495,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled or false, true)
 			audioCheckbox:SetScript("OnClick", function(self, ...)
 				dictEntry.audio.enabled = self:GetChecked()
+				TRB.Functions.Threshold:RefreshThresholdAudio()
 				TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled, true)
 				if dictEntry.audio.enabled and dictEntry.audio.sound and dictEntry.audio.sound ~= "" then
 					PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1514,6 +1515,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			local function AudioSetSelected(newValue)
 				dictEntry.audio.sound = newValue
 				dictEntry.audio.soundName = soundPairsByName[newValue]
+				TRB.Functions.Threshold:RefreshThresholdAudio()
 				local newSoundName = dictEntry.audio.soundName
 				audioDropdown:SetDefaultText((newSoundName and newSoundName ~= "") and newSoundName or L["ThresholdDetailAudioNone"])
 				PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)

@@ -2297,7 +2297,8 @@ local function UpdateResourceBar()
 			end
 		end
 
-		-- Threshold line sounds and the Starsurge and Starfall cues (independent of bar visibility)
+		-- Threshold line sounds and the Starsurge and Starfall cues (independent of bar visibility). Line sounds
+		-- belong to the displayed form's Thresholds tab; the spec's own cues play in every form.
 		Threshold:UpdateSpellThresholdAudio(formSpecCacheSettings, snapshotData, displayResourceType)
 		local balanceSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
 		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "ssReady", balanceSpells.starsurge:IsUsable())

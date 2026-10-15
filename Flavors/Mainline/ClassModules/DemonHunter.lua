@@ -1773,17 +1773,8 @@ local function UpdateResourceBar()
 			local csDictEntry = specCacheSettings.thresholds.thresholdDictionary[csKey]
 			local csAudio = csDictEntry and csDictEntry.audio
 			if csAudio and csAudio.enabled and csAudio.sound then
-				local cues = snapshotData.audio.thresholdCues
-				if metaActive and talents:IsTalentActive(spells.collapsingStar) and collapsingStarUsable then
-					if not cues[csKey] then
-						cues[csKey] = true
-						if csAudio.playOutOfCombat ~= false or TRB.Data.character.inCombat then
-							PlaySoundFile(csAudio.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					end
-				else
-					cues[csKey] = false
-				end
+				Threshold:LatchThresholdCue(snapshotData, csKey, csAudio,
+					metaActive and talents:IsTalentActive(spells.collapsingStar) and collapsingStarUsable)
 			end
 		end
 

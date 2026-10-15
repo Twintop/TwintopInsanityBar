@@ -1228,7 +1228,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				-- Flash and audio cue are tied to Earth Shock / Elemental Blast only
+				-- Flash is tied to Earth Shock / Elemental Blast only
 				if earthShockUsable then
 					if specSettings.colors.bar.flashEnabled then
 						Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod, barGroups.primary.currentAlpha)

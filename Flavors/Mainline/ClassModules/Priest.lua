@@ -2837,6 +2837,8 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.priest_shadow.settings
 		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
 		UpdateSnapshot_Shadow()
+		-- IsFree only updates on a cost read, which the threshold line skips when hidden or turned off.
+		spells.shadowWordMadness:GetPrimaryResourceCost()
 
 		-- Mana bar colors and overcap curves hoisted above isTracking for mana bar block access
 		local manaBarColor = specSettings.colors.bars.mana.bar.color
