@@ -16,6 +16,7 @@ TRB.Flavor.newsContent = [====[
 ### Audio Cues
 
 - [#849](#849) Add an Audio Cues tab for Hunter, Mage, Paladin, Priest, Shaman, Warlock, and Warrior.
+- [#850](#850) Thresholds tab audio cues play while their bar is hidden.
 
 ---
 

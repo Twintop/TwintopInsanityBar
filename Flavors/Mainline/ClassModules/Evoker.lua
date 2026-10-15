@@ -1132,8 +1132,6 @@ local function UpdateResourceBar()
 			UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 		end
 
-		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "essence", snapshotData.attributes.resource2)
-
 		return refreshTextEssence
 	end
 
@@ -1251,6 +1249,10 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Essence threshold audio cues (independent of bar visibility)
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "essence", snapshotData.attributes.resource2)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.preservation
@@ -1312,6 +1314,10 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Essence threshold audio cues (independent of bar visibility)
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "essence", snapshotData.attributes.resource2)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.augmentation
@@ -1420,6 +1426,10 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Essence threshold audio cues (independent of bar visibility)
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "essence", snapshotData.attributes.resource2)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end

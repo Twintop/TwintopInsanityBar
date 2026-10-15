@@ -2961,23 +2961,75 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 
 				local isDrawn = self:AdjustThresholdDisplay(spell, spell.settingKey, frame, line.show, line.frameLevel, line.pairOffset, line.color, line.snapshot, settings, dictEntry, bar.barSettings)
 				self:RepositionThreshold(settings, spell.settingKey, frame, line.show and isDrawn, nodeFrame, line.resourceAmount, bar.maxResource, nil, bar.barSettings)
+			end
+		end
+	end
+end
 
-				-- The audio cue follows usability, not whether the line is drawn.
-				if spell.canHaveAudioCue == true and dictEntry ~= nil and dictEntry.audio ~= nil and dictEntry.audio.enabled and dictEntry.audio.sound then
-					local cues = snapshotData.audio.thresholdCues or {}
-					snapshotData.audio.thresholdCues = cues
-					if line.isUsable then
-						if not cues[spell.settingKey] then
-							cues[spell.settingKey] = true
-							if dictEntry.audio.playOutOfCombat ~= false or TRB.Data.character.inCombat then
-								PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
-							end
-						end
-					else
-						cues[spell.settingKey] = false
-					end
+-- Threshold spells whose line has a sound, by spec cache settings table. Rebuilt by RefreshThresholdAudio.
+local thresholdAudioSpells = {}
+
+---Rebuilds the threshold spells with a line sound for every cached spec. Call after the threshold spell
+---list or any line's sound setting changes.
+function TRB.Functions.Threshold:RefreshThresholdAudio()
+	wipe(thresholdAudioSpells)
+	for _, specCache in pairs(TRB.Data.specCache) do
+		local settings = specCache.settings
+		-- An unfilled spec cache has no thresholds yet.
+		local dictionary = settings ~= nil and settings.thresholds ~= nil and settings.thresholds.thresholdDictionary or nil
+		if dictionary ~= nil then
+			local spells = nil
+			for _, spell in ipairs(TRB.Data.cache.thresholdSpells) do
+				local dictEntry = dictionary[spell.settingKey]
+				local audio = dictEntry and dictEntry.audio
+				if spell.canHaveAudioCue == true and audio ~= nil and audio.enabled and audio.sound then
+					spells = spells or {}
+					spells[#spells + 1] = spell
 				end
 			end
+			thresholdAudioSpells[settings] = spells
+		end
+	end
+end
+
+---Plays a threshold line's sound once when `condition` turns true, and re-arms when it turns false.
+---@param snapshotData TRB.Classes.SnapshotData
+---@param settingKey string
+---@param audio table # The line's `thresholdDictionary` audio entry
+---@param condition boolean
+function TRB.Functions.Threshold:LatchThresholdCue(snapshotData, settingKey, audio, condition)
+	local cues = snapshotData.audio.thresholdCues or {}
+	snapshotData.audio.thresholdCues = cues
+	if condition then
+		if not cues[settingKey] then
+			cues[settingKey] = true
+			if audio.playOutOfCombat ~= false or TRB.Data.character.inCombat then
+				PlaySoundFile(audio.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end
+	else
+		cues[settingKey] = false
+	end
+end
+
+---Plays the Thresholds tab line sounds. Runs apart from drawing, so a sound plays while its bar is hidden.
+---@param settings table # The spec cache settings, or the displayed form's
+---@param snapshotData TRB.Classes.SnapshotData
+---@param resourceType Enum.PowerType? # When set, spells costing another resource stay silent (Druid forms)
+---@param barTarget string? # When set, only spells drawn on this bar; nil covers every bar
+function TRB.Functions.Threshold:UpdateSpellThresholdAudio(settings, snapshotData, resourceType, barTarget)
+	local spells = thresholdAudioSpells[settings]
+	if spells == nil then
+		return
+	end
+	local dictionary = settings.thresholds.thresholdDictionary
+	for _, spell in ipairs(spells) do
+		local dictEntry = dictionary[spell.settingKey]
+		local audio = dictEntry and dictEntry.audio
+		-- Re-checked live so a missed refresh can only silence a sound, never play one turned off.
+		if audio ~= nil and audio.enabled and audio.sound and (barTarget == nil or spell.barTarget == barTarget)
+			and (resourceType == nil or spell.primaryResourceType == resourceType) then
+			self:LatchThresholdCue(snapshotData, spell.settingKey, audio, spell:IsUsable())
 		end
 	end
 end

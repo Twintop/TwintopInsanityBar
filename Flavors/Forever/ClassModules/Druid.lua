@@ -454,6 +454,9 @@ local function UpdateResourceBar()
 		end
 	end
 
+	-- Threshold line sounds for both form bars (independent of bar visibility)
+	Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 	TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
 
 	TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)

@@ -15,6 +15,7 @@ TRB.Details.coreNewsContent = [====[
 - [#849](#849) Add a Play out of combat option to every audio cue, including those on the Thresholds tab, unchecked for cues that only played in combat.
 - [#849](#849) A combat-only threshold alert no longer plays when combat starts for a threshold reached out of combat.
 - [#849](#849) Remove the Trigger On title from the Add New Audio Cue menu.
+- [#850](#850) Thresholds tab audio cues play while their bar is hidden.
 
 ---
 

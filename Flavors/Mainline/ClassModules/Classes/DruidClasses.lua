@@ -427,21 +427,14 @@ end
 
 ---@type TRB.Classes.ThresholdSnowflakes
 TRB.Classes.Druid.BalanceSpells.thresholdSnowflakes = {
-	-- The Starsurge and Starfall audio cues fire from usability even while their lines are turned off.
-	before = function(line)
-		line.isUsable = line.spell:IsUsable()
-		return false
-	end,
 	spells = {
 		starsurge = function(line)
 			line:ColorByUsable()
-			TRB.Functions.AudioCues:Fire(TRB.Data.settings.druid.balance, line.state.snapshotData, "ssReady", line.isUsable)
 		end,
 		starsurge2 = StarsurgeMulticast,
 		starsurge3 = StarsurgeMulticast,
 		starfall = function(line)
 			line:ColorByUsable()
-			TRB.Functions.AudioCues:Fire(TRB.Data.settings.druid.balance, line.state.snapshotData, "sfReady", line.isUsable)
 		end,
 	},
 }

@@ -981,9 +981,8 @@ local function UpdateResourceBar()
 			manaBar = manaBarColors,
 			holyPowerBar = holyPowerColors,
 		})
+		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "infusionOfLight", infusionOfLightActive)
 		if snapshotData.attributes.isTracking then
-			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "infusionOfLight", infusionOfLightActive)
-
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resourceModified

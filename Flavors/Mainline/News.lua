@@ -14,18 +14,49 @@ TRB.Flavor.newsContent = [====[
 
 - [#849](#849) Add an Audio Cues tab for every Death Knight specialization, every Demon Hunter specialization, Guardian and Restoration Druid, Marksmanship Hunter, Brewmaster and Mistweaver Monk, Restoration Shaman, and Arms and Fury Warrior.
 
+## Demon Hunter
+### Devourer
+
+- [#850](#850) The Collapsing Star threshold audio cue plays while the Soul Fragments bar or its threshold line is hidden.
+
+## Druid
+### Balance
+
+- [#850](#850) The Starsurge Ready and Starfall Ready audio cues play while the Astral Power bar is hidden, and in every form.
+
+### Feral
+
+- [#850](#850) The Apex Predator's Craving Proc audio cue plays while the Energy bar is hidden, and in every form.
+
+## Evoker
+
+- [#850](#850) The Essence threshold audio cues play while every bar is hidden.
+
 ## Paladin
 
 - [#849](#849) Remove the Holy Power threshold alerts' separate in-combat check.
+
+### Holy
+
+- [#850](#850) The Infusion of Light audio cue plays while every bar is hidden.
 
 ## Priest
 ### Holy
 
 - [#849](#849) Remove the Holy Word audio cues' separate in-combat check.
 
+### Shadow
+
+- [#850](#850) The Shadow Word: Madness Ready and Mind Devourer Proc audio cues play while the Insanity bar is hidden.
+
 ## Rogue
 
 - [#849](#849) Remove the Combo Point threshold alerts' separate in-combat check.
+
+## Shaman
+### Elemental
+
+- [#850](#850) The Earth Shock Ready audio cue plays while the Maelstrom bar is hidden.
 
 ## Warlock
 

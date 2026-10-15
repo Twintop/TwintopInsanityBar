@@ -2837,6 +2837,8 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.priest_shadow.settings
 		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
 		UpdateSnapshot_Shadow()
+		-- IsFree only updates on a cost read, which the threshold line skips when hidden or turned off.
+		spells.shadowWordMadness:GetPrimaryResourceCost()
 
 		-- Mana bar colors and overcap curves hoisted above isTracking for mana bar block access
 		local manaBarColor = specSettings.colors.bars.mana.bar.color
@@ -2983,17 +2985,8 @@ local function UpdateResourceBar()
 					else
 						barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					end
-
-					-- A free cast outranks a merely usable one, so the Mind Devourer cue wins when both
-					-- become true together.
-					TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, {
-						{ id = "dpReady", condition = true },
-						{ id = "mdProc", condition = spells.shadowWordMadness:IsFree() },
-					})
 				else
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-					TRB.Functions.AudioCues:ResetLatch(snapshotData, "dpReady")
-					TRB.Functions.AudioCues:ResetLatch(snapshotData, "mdProc")
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
@@ -3020,6 +3013,16 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
+		-- Devouring Plague cues (independent of bar visibility); a free cast outranks a merely usable one.
+		local dpFree = spells.shadowWordMadness:IsFree()
+		TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, {
+			{ id = "dpReady", condition = dpFree or spells.shadowWordMadness:IsUsable() },
+			{ id = "mdProc", condition = dpFree },
+		})
 
 		-- Update health bar
 		if not specSettings.displayBar.health.neverShow then

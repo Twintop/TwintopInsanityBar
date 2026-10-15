@@ -983,6 +983,9 @@ local function UpdateResourceBar()
 			end
 		end
 
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		-- Update health bar
 		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
@@ -1094,6 +1097,9 @@ local function UpdateResourceBar()
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
 
 		-- Update health bar
 		if not specSettings.displayBar.health.neverShow then
@@ -1302,6 +1308,9 @@ local function UpdateResourceBar()
 				end
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
 
 		-- Tip of the Spear threshold audio cues (independent of bar visibility)
 		do

@@ -2066,6 +2066,7 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 		end
 	end
 	TRB.Data.cache.thresholdSpells = thresholdSpells
+	TRB.Functions.Threshold:RefreshThresholdAudio()
 end
 
 ---Default implementation of RecreateThresholds. Class modules can override this
