@@ -193,10 +193,17 @@ function TRB.Functions.AudioCues:PlaysOutOfCombat(cue)
 	return PlaysOutOfCombat(cue)
 end
 
+---Whether a cue can play right now: always in combat, and out of it unless it is combat only.
+---@param cue TRB.Classes.Settings.AudioCue
+---@return boolean
+local function IsAudible(cue)
+	return TRB.Data.character.inCombat or PlaysOutOfCombat(cue)
+end
+
 ---Plays a cue's sound on the configured channel, unless it is combat only and the player isn't in combat.
 ---@param cue TRB.Classes.Settings.AudioCue
 local function PlayCue(cue)
-	if cue.sound ~= nil and cue.sound ~= "" and (TRB.Data.character.inCombat or PlaysOutOfCombat(cue)) then
+	if cue.sound ~= nil and cue.sound ~= "" and IsAudible(cue) then
 		PlaySoundFile(cue.sound, TRB.Data.settings.core.audio.channel.channel)
 	end
 end
@@ -339,8 +346,9 @@ function TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, entries, 
 
 	local winner = nil
 	for _, entry in ipairs(entries) do
-		-- Latch every member, but withhold playback until we know which one ranks highest.
-		if self:Fire(specSettings, snapshotData, entry.id, entry.condition, false) then
+		-- Latch every member, but withhold playback until we know which one ranks highest. A cue muted
+		-- out of combat still latches, but can't take the win from an audible one.
+		if self:Fire(specSettings, snapshotData, entry.id, entry.condition, false) and IsAudible(specSettings.audio[entry.id]) then
 			winner = entry.id
 		end
 	end
@@ -377,20 +385,22 @@ function TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, key,
 		local entry = entries[x]
 		local cue = specSettings.audio[entry.id]
 		if cue ~= nil then
-			-- Latch every member, but withhold playback until we know which one ranks highest.
+			-- Latch every member, but withhold playback until we know which one ranks highest. A cue muted
+			-- out of combat still latches, but can't take the win from an audible one.
+			local audible = IsAudible(cue)
 			if self:Fire(specSettings, snapshotData, entry.id, value >= entry.threshold, false) then
-				if winner == nil then
+				if winner == nil and audible then
 					winner = entry
 				end
-			elseif isDrop and dropWinner == nil and cue.enabled and cue.configuration
+			elseif audible and isDrop and dropWinner == nil and cue.enabled and cue.configuration
 				and cue.configuration.playOnDrop and value == entry.threshold then
 				dropWinner = entry
 			end
 		end
 	end
 
-	-- A muted winner still outranks the entry below it, so the group stays silent rather than
-	-- falling through to a cue the user did not cross.
+	-- A winner its entry's canPlay mutes still outranks the entry below it, so the group stays silent
+	-- rather than falling through to a cue the user did not cross.
 	local played = winner or dropWinner
 	if canPlay ~= false and played ~= nil and played.canPlay ~= false then
 		PlayCue(specSettings.audio[played.id])
@@ -448,7 +458,6 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 
 	local cues = GetSortedCounterCues(specSettings, source)
 	local latches = EnsureLatches(snapshotData)
-	local inCombat = TRB.Data.character.inCombat
 	local winner = nil
 	local dropWinner = nil
 
@@ -467,7 +476,7 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 
 			if matches then
 				-- A cue muted out of combat still latches, but can't take the win from an audible one.
-				local audible = inCombat or PlaysOutOfCombat(cue)
+				local audible = IsAudible(cue)
 				if cue.enabled and not latches[cue.id] then
 					latches[cue.id] = true
 					-- The sort puts the most urgent cue first, so the first audible crossing wins.
