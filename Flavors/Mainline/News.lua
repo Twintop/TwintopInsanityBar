@@ -12,24 +12,24 @@ TRB.Flavor.newsContent = [====[
 ## General
 ### Audio Cues
 
-- Add an Audio Cues tab for every Death Knight specialization, every Demon Hunter specialization, Guardian and Restoration Druid, Marksmanship Hunter, Brewmaster and Mistweaver Monk, Restoration Shaman, and Arms and Fury Warrior.
+- [#849](#849) Add an Audio Cues tab for every Death Knight specialization, every Demon Hunter specialization, Guardian and Restoration Druid, Marksmanship Hunter, Brewmaster and Mistweaver Monk, Restoration Shaman, and Arms and Fury Warrior.
 
 ## Paladin
 
-- Remove the Holy Power threshold alerts' separate in-combat check.
+- [#849](#849) Remove the Holy Power threshold alerts' separate in-combat check.
 
 ## Priest
 ### Holy
 
-- Remove the Holy Word audio cues' separate in-combat check.
+- [#849](#849) Remove the Holy Word audio cues' separate in-combat check.
 
 ## Rogue
 
-- Remove the Combo Point threshold alerts' separate in-combat check.
+- [#849](#849) Remove the Combo Point threshold alerts' separate in-combat check.
 
 ## Warlock
 
-- Remove the Soul Shard threshold alerts' separate in-combat check.
+- [#849](#849) Remove the Soul Shard threshold alerts' separate in-combat check.
 
 ---
 

@@ -15,7 +15,7 @@ TRB.Flavor.newsContent = [====[
 
 ### Audio Cues
 
-- Add an Audio Cues tab for Hunter, Mage, Paladin, Priest, Shaman, Warlock, and Warrior.
+- [#849](#849) Add an Audio Cues tab for Hunter, Mage, Paladin, Priest, Shaman, Warlock, and Warrior.
 
 ---
 

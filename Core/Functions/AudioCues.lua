@@ -448,6 +448,7 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 
 	local cues = GetSortedCounterCues(specSettings, source)
 	local latches = EnsureLatches(snapshotData)
+	local inCombat = TRB.Data.character.inCombat
 	local winner = nil
 	local dropWinner = nil
 
@@ -465,13 +466,15 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 			end
 
 			if matches then
+				-- A cue muted out of combat still latches, but can't take the win from an audible one.
+				local audible = inCombat or PlaysOutOfCombat(cue)
 				if cue.enabled and not latches[cue.id] then
 					latches[cue.id] = true
-					-- The sort puts the most urgent cue first, so the first crossing wins.
-					if winner == nil then
+					-- The sort puts the most urgent cue first, so the first audible crossing wins.
+					if winner == nil and audible then
 						winner = cue
 					end
-				elseif isDrop and dropWinner == nil and cue.enabled
+				elseif audible and isDrop and dropWinner == nil and cue.enabled
 					and cue.configuration.playOnDrop and value == threshold then
 					dropWinner = cue
 				end
