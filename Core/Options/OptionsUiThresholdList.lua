@@ -910,6 +910,13 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	audioDropdown:SetPoint("TOPLEFT", oUi.xPadding2, detailYCoord - 20)
 	audioDropdown:Hide()
 
+	controls.checkBoxes.thresholdAudioPlayOutOfCombat = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdAudioPlayOutOfCombat", detailScrollChild, "ChatConfigCheckButtonTemplate")
+	local audioPlayOutOfCombatCheckbox = controls.checkBoxes.thresholdAudioPlayOutOfCombat
+	audioPlayOutOfCombatCheckbox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord - 60)
+	getglobal(audioPlayOutOfCombatCheckbox:GetName() .. 'Text'):SetText(L["AudioCuePlayOutOfCombatCheckbox"])
+	audioPlayOutOfCombatCheckbox.tooltip = L["AudioCuePlayOutOfCombatCheckboxTooltip"]
+	audioPlayOutOfCombatCheckbox:Hide()
+
 	---Dynamically repositions all detail panel controls based on which sections
 	---are currently visible, eliminating empty gaps from hidden controls.
 	local function RepositionDetailControls()
@@ -977,11 +984,14 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			audioCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
 			audioDropdown:ClearAllPoints()
 			audioDropdown:SetPoint("TOPLEFT", oUi.xPadding2, y - 20)
-			y = y - 60
+			audioPlayOutOfCombatCheckbox:ClearAllPoints()
+			audioPlayOutOfCombatCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y - 60)
+			y = y - 90
 		else
 			audioHeader:Hide()
 			audioCheckbox:Hide()
 			audioDropdown:Hide()
+			audioPlayOutOfCombatCheckbox:Hide()
 		end
 
 		detailScrollChild:SetHeight(math.abs(y) + 20)
@@ -1516,10 +1526,17 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 				rootDescription:SetScrollMode(400)
 			end)
 			audioDropdown:Show()
+
+			audioPlayOutOfCombatCheckbox:SetChecked(dictEntry.audio.playOutOfCombat ~= false)
+			audioPlayOutOfCombatCheckbox:SetScript("OnClick", function(self)
+				dictEntry.audio.playOutOfCombat = self:GetChecked()
+			end)
+			audioPlayOutOfCombatCheckbox:Show()
 		else
 			audioHeader:Hide()
 			audioCheckbox:Hide()
 			audioDropdown:Hide()
+			audioPlayOutOfCombatCheckbox:Hide()
 		end
 
 		RepositionDetailControls()

@@ -2809,28 +2809,25 @@ local function UpdateResourceBar()
 				lightweaverStacks > 0 and lightweaverTime > 0 and lightweaverTime < expiringThreshold)
 		end
 
-		-- Holy Word charge-ready audio cues (independent of bar visibility, combat-only). Latches
-		-- track charge state out of combat too, so re-entering combat with a Holy Word already up
-		-- does not replay its cue.
+		-- Holy Word charge-ready audio cues (independent of bar visibility)
 		do
-			local inCombat = TRB.Data.character.inCombat
 			local chastiseCharges = snapshots[spells.holyWordChastise.id].cooldown.charges or 0
 			local serenityCharges = snapshots[spells.holyWordSerenity.id].cooldown.charges or 0
 			local sanctifyCharges = snapshots[spells.holyWordSanctify.id].cooldown.charges or 0
 
-			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "holyWordChastiseReady", chastiseCharges >= 1, inCombat)
+			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "holyWordChastiseReady", chastiseCharges >= 1)
 
 			-- Serenity and Sanctify go up to 2 charges with Miracle Worker; the second-charge cue
 			-- wins when both thresholds are crossed on the same update.
 			TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, {
 				{ id = "holyWordSerenityCharge1", condition = serenityCharges >= 1 },
 				{ id = "holyWordSerenityCharge2", condition = serenityCharges >= 2 },
-			}, inCombat)
+			})
 
 			TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, {
 				{ id = "holyWordSanctifyCharge1", condition = sanctifyCharges >= 1 },
 				{ id = "holyWordSanctifyCharge2", condition = sanctifyCharges >= 2 },
-			}, inCombat)
+			})
 		end
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)

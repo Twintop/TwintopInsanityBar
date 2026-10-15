@@ -83,6 +83,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public enabled boolean
 ---@field public sound string
 ---@field public soundName string
+---@field public playOutOfCombat boolean
 
 ---@class TRB.Classes.Settings.ThresholdDictionaryColors
 ---@field public colorMode string?
@@ -380,13 +381,13 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class TRB.Classes.Settings.AudioCue
 ---@field public id string # Stable identifier: a built-in key ("surgeOfLight") or a generated guid
----@field public kind string # "builtin" (spec-specific firing logic) or "counter" (generic threshold engine)
+---@field public kind string # "builtin" (spec-specific firing logic), "counter" (generic threshold engine), or "buff" (Cooldown Manager buff)
 ---@field public source string? # Counter cues only: which counter source feeds it, e.g. "chi"
 ---@field public name string? # User-editable display name. nil on built-ins, which resolve from the registry
 ---@field public enabled boolean
 ---@field public sound string
 ---@field public soundName string
----@field public configuration table? # thresholdValue for counters; arbitrary declared fields for built-ins
+---@field public configuration table? # playOutOfCombat for all; thresholdValue for counters; conditions for buffs; declared fields for built-ins
 
 ---Defines how a bar is anchored to another bar in the anchor tree.
 ---@class TRB.Classes.Settings.BarAnchor

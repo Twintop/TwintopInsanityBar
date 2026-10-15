@@ -483,9 +483,7 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 				tabDefinitions[#tabDefinitions + 1] = { "thresholds", L["TabThresholds"], oUi.tabWidth.large, thresholdListPanel, true }
 			end
 			tabDefinitions[#tabDefinitions + 1] = TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition(className, specName, controls)
-			if hasSecondary then
-				tabDefinitions[#tabDefinitions + 1] = TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition(className, specName, controls)
-			end
+			tabDefinitions[#tabDefinitions + 1] = TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition(className, specName, controls)
 			tabDefinitions[#tabDefinitions + 1] = { "barTextures", L["TabTextures"], oUi.tabWidth.small, texturesPanel }
 			tabDefinitions[#tabDefinitions + 1] = { "barVisibility", L["TabVisibility"], oUi.tabWidth.small, visibilityPanel }
 			tabDefinitions[#tabDefinitions + 1] = { "fontText", L["TabFontText"], oUi.tabWidth.medium, fontTextPanel }

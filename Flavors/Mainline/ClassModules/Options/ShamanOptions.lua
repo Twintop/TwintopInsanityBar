@@ -1958,6 +1958,7 @@ local function RestorationConstructOptionsPanel(cache)
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, RestorationConstructHealthBarPanel, visibilityKey = "health" },
 		{ "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, RestorationConstructThresholdSettingsPanel },
 		TRB.Functions.OptionsUi.CustomThresholds:BuildTabDefinition("shaman", "restoration", controls),
+		TRB.Functions.OptionsUi.AudioCues:BuildTabDefinition("shaman", "restoration", controls),
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, RestorationConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, RestorationConstructBarTexturesPanel },
 		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, RestorationConstructBarVisibilityPanel },

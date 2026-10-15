@@ -510,5 +510,6 @@ if locale == "enGB" then
 	L["MageIndicatorFrostfireEmpowermentTooltip"] = "Changes to this colour when Frostfire Empowerment is active."
 	L["MageFireIndicatorCombustionTooltip"] = "Changes to this colour while Combustion is active."
 	L["CustomIndicatorOtherSpecTooltip"] = "The Cooldown Manager only lists entries for your current specialisation. Switch to this one to add or change custom indicators."
+	L["AudioCueOtherSpecTooltip"] = "The Cooldown Manager only lists entries for your current specialisation. Switch to this one to add or change Buff Alerts."
 
 end

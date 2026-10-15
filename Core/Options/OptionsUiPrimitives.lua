@@ -717,6 +717,174 @@ function TRB.Functions.OptionsUi.Primitives:AttachCustomBadgeToText(fontString, 
 		tooltip, CUSTOM_BADGE_R, CUSTOM_BADGE_G, CUSTOM_BADGE_B)
 end
 
+---The color a not-tracked custom feature is marked in.
+---@return number r
+---@return number g
+---@return number b
+function TRB.Functions.OptionsUi.Primitives:GetNotTrackedColor()
+	return NOT_TRACKED_BADGE_R, NOT_TRACKED_BADGE_G, NOT_TRACKED_BADGE_B
+end
+
+local cdm = TRB.Functions.CooldownManager
+
+-- Marks TRB's own notes under a spell's tooltip in a Cooldown Manager picker, so they read as ours.
+local cdmPickerNotePrefix = "|cFFA335EETRB:|r "
+local CDM_PICKER_NOTE_R, CDM_PICKER_NOTE_G, CDM_PICKER_NOTE_B = 0.85, 0.75, 1.0
+
+-- Past this many rows a long menu scrolls instead of growing off the screen.
+local menuMaxRowsBeforeScroll = 15
+local menuRowHeight = 20
+
+---Makes a menu scroll once it holds more rows than fit comfortably on screen.
+---@param rootDescription table
+---@param rowCount integer # Rows the menu draws, counting titles and dividers
+function TRB.Functions.OptionsUi.Primitives:LimitMenuRows(rootDescription, rowCount)
+	if rowCount > menuMaxRowsBeforeScroll and rootDescription.SetScrollMode then
+		rootDescription:SetScrollMode(menuMaxRowsBeforeScroll * menuRowHeight)
+	end
+end
+
+local cdmPickerHeadings = {
+	{ group = cdm.LayoutGroup.DISPLAYED, label = L["CustomIndicatorPickerDisplayed"] },
+	{ group = cdm.LayoutGroup.INACTIVE, label = L["CustomIndicatorPickerInactive"] },
+	{ group = cdm.LayoutGroup.NOT_DISPLAYED, label = L["CustomIndicatorPickerNotDisplayed"] },
+	{ group = cdm.LayoutGroup.INACTIVE_NOT_DISPLAYED, label = L["CustomIndicatorPickerInactiveNotDisplayed"] },
+}
+
+---What a Cooldown Manager picker says that names the feature it picks for.
+---@class TRB.Classes.OptionsUi.CdmPickerWording
+---@field otherClass string # Why another class's panel can't pick
+---@field otherSpec string # Why another spec's panel can't pick
+---@field disabled string # Why nothing can be picked while the Cooldown Manager is turned off
+---@field notLearned string # Entry note: its talent isn't taken
+---@field notDisplayed string # Entry note: it isn't in Tracked Buffs or Tracked Bars
+
+---Why a panel's Cooldown Manager picker can't be used right now (nil when it can), and the layout status behind
+---it (nil on another spec's panel, since the Cooldown Manager only holds the played spec's layout).
+---@param classId integer
+---@param specId integer
+---@param wording TRB.Classes.OptionsUi.CdmPickerWording
+---@return string? reason
+---@return TRB.CdmLayoutStatus? status
+function TRB.Functions.OptionsUi.Primitives:GetCdmPickerBlock(classId, specId, wording)
+	local character = TRB.Data.character
+	if character == nil or character.classId ~= classId then
+		return wording.otherClass, nil
+	elseif character.specId ~= specId then
+		return wording.otherSpec, nil
+	end
+	local status, reason = cdm:GetLayoutStatus()
+	if status == cdm.LayoutStatus.UNAVAILABLE then
+		return string.format(L["CustomIndicatorCdmUnavailableTooltip"], reason or ""), status
+	elseif status == cdm.LayoutStatus.DISABLED then
+		return wording.disabled, status
+	elseif status == cdm.LayoutStatus.NOT_READY then
+		return L["CustomIndicatorCdmNotReadyTooltip"], status
+	end
+	return nil, status
+end
+
+---Everything keeping a layout entry from driving a feature, plus the potion caveat.
+---@param entry TRB.CdmLayoutEntry
+---@param wording TRB.Classes.OptionsUi.CdmPickerWording
+---@return string[]
+function TRB.Functions.OptionsUi.Primitives:GetCdmEntryNotes(entry, wording)
+	local notes = {}
+	if entry.state == cdm.EntryState.NOT_LEARNED then
+		notes[#notes + 1] = wording.notLearned
+	elseif entry.state == cdm.EntryState.NO_TRINKET_BUFF then
+		notes[#notes + 1] = L["CustomIndicatorNoTrinketBuffTooltip"]
+	elseif entry.state == cdm.EntryState.UNAVAILABLE then
+		notes[#notes + 1] = L["CustomIndicatorUnavailableTooltip"]
+	end
+	if not entry.displayed then
+		notes[#notes + 1] = wording.notDisplayed
+	end
+	if entry.isPotion then
+		notes[#notes + 1] = L["CustomIndicatorPotionCaveat"]
+	end
+	return notes
+end
+
+---A layout entry's menu label: its icon, then its name.
+---@param entry TRB.CdmLayoutEntry
+---@return string
+function TRB.Functions.OptionsUi.Primitives:FormatCdmEntryLabel(entry)
+	local text = entry.name or L["CustomIndicatorUnknownEntry"]
+	if entry.icon ~= nil then
+		text = "|T" .. entry.icon .. ":16:16:0:0|t " .. text
+	end
+	return text
+end
+
+---Fills a menu with the played spec's passive Cooldown Manager entries under their headings, alphabetically.
+---Empty headings are left out, and nothing is greyed: a not-tracked entry is still a valid pick.
+---@param rootDescription table
+---@param currentCooldownID integer?
+---@param wording TRB.Classes.OptionsUi.CdmPickerWording
+---@param onPick fun(entry: TRB.CdmLayoutEntry)
+function TRB.Functions.OptionsUi.Primitives:PopulateCdmPicker(rootDescription, currentCooldownID, wording, onPick)
+	local entries = cdm:GetLayoutEntries() or {}
+	table.sort(entries, function(a, b)
+		local aName = (a.name or L["CustomIndicatorUnknownEntry"]):lower()
+		local bName = (b.name or L["CustomIndicatorUnknownEntry"]):lower()
+		if aName == bName then
+			return a.cooldownID < b.cooldownID
+		end
+		return aName < bName
+	end)
+
+	local rowCount = 0
+	for _, heading in ipairs(cdmPickerHeadings) do
+		local first = true
+		for _, entry in ipairs(entries) do
+			if entry.group == heading.group then
+				if first then
+					if rowCount > 0 then
+						rootDescription:CreateDivider()
+						rowCount = rowCount + 1
+					end
+					rootDescription:CreateTitle(heading.label)
+					rowCount = rowCount + 1
+					first = false
+				end
+
+				local radio = rootDescription:CreateRadio(self:FormatCdmEntryLabel(entry), function()
+					return entry.cooldownID == currentCooldownID
+				end, function()
+					onPick(entry)
+					return MenuResponse.Close
+				end)
+				rowCount = rowCount + 1
+
+				radio:SetTooltip(function(tooltipFrame)
+					if entry.equipSlot ~= nil and GetInventoryItemID("player", entry.equipSlot) ~= nil then
+						tooltipFrame:SetInventoryItem("player", entry.equipSlot)
+					elseif entry.tooltipSpellID ~= nil then
+						tooltipFrame:SetSpellByID(entry.tooltipSpellID)
+					else
+						tooltipFrame:SetText(entry.name or L["CustomIndicatorUnknownEntry"], 1, 1, 1)
+					end
+					local notes = self:GetCdmEntryNotes(entry, wording)
+					if #notes > 0 then
+						tooltipFrame:AddLine(" ")
+						for _, note in ipairs(notes) do
+							tooltipFrame:AddLine(cdmPickerNotePrefix .. note, CDM_PICKER_NOTE_R, CDM_PICKER_NOTE_G, CDM_PICKER_NOTE_B, true)
+						end
+					end
+					tooltipFrame:Show()
+				end)
+			end
+		end
+	end
+
+	if rowCount == 0 then
+		rootDescription:CreateTitle(L["CustomIndicatorPickerEmpty"])
+	else
+		self:LimitMenuRows(rootDescription, rowCount)
+	end
+end
+
 ---Creates a two-part help entry: a right-aligned variable name and a left-aligned description below it.
 ---@param parent Frame # The parent frame
 ---@param var string # The variable name or label (displayed right-aligned)

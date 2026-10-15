@@ -13,6 +13,10 @@ TRB.Flavor.newsContent = [====[
 
 - Fix changing gear not updating the primary resource bar's maximum.
 
+### Audio Cues
+
+- [#849](#849) Add an Audio Cues tab for Hunter, Mage, Paladin, Priest, Shaman, Warlock, and Warrior.
+
 ---
 
 # 1.60.1.9-release (2026-10-14)

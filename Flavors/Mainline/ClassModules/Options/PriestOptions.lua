@@ -953,31 +953,46 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				name = L["PriestHolyAudioHolyWordChastiseReady"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOutOfCombat = false
+				}
 			},
 			holyWordSerenityCharge1={
 				name = L["PriestHolyAudioHolyWordSerenityCharge1"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOutOfCombat = false
+				}
 			},
 			holyWordSerenityCharge2={
 				name = L["PriestHolyAudioHolyWordSerenityCharge2"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOutOfCombat = false
+				}
 			},
 			holyWordSanctifyCharge1={
 				name = L["PriestHolyAudioHolyWordSanctifyCharge1"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOutOfCombat = false
+				}
 			},
 			holyWordSanctifyCharge2={
 				name = L["PriestHolyAudioHolyWordSanctifyCharge2"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
+				soundName = L["LSMSoundBoxingArenaGong"],
+				configuration = {
+					playOutOfCombat = false
+				}
 			}
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(false, nil, {

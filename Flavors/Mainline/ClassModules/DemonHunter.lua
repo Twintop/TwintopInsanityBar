@@ -1750,7 +1750,9 @@ local function UpdateResourceBar()
 										if collapsingStarSnapshot.buff.applications >= resourceAmount then
 											if not snapshotData.audio.thresholdCues[spell.settingKey] then
 												snapshotData.audio.thresholdCues[spell.settingKey] = true
-												PlaySoundFile(csDictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+												if csDictEntry.audio.playOutOfCombat ~= false or TRB.Data.character.inCombat then
+													PlaySoundFile(csDictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+												end
 											end
 										else
 											snapshotData.audio.thresholdCues[spell.settingKey] = false
