@@ -1444,6 +1444,10 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.fury
@@ -1605,6 +1609,10 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.protection
@@ -1723,6 +1731,10 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end

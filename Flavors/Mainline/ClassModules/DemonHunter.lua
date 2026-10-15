@@ -1155,6 +1155,10 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.vengeance
@@ -1428,6 +1432,10 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.devourer
@@ -1743,21 +1751,6 @@ local function UpdateResourceBar()
 									Color:SetThresholdColor(thresholds[1], thresholdColor, true)
 									
 									Threshold:RepositionThreshold(specCacheSettings, spell.settingKey, thresholds[1], showThreshold, sfResourceFrame, resourceAmount, max)
-
-									-- Per-threshold audio cue
-									if csDictEntry.audio and csDictEntry.audio.enabled and csDictEntry.audio.sound then
-										snapshotData.audio.thresholdCues = snapshotData.audio.thresholdCues or {}
-										if collapsingStarSnapshot.buff.applications >= resourceAmount then
-											if not snapshotData.audio.thresholdCues[spell.settingKey] then
-												snapshotData.audio.thresholdCues[spell.settingKey] = true
-												if csDictEntry.audio.playOutOfCombat ~= false or TRB.Data.character.inCombat then
-													PlaySoundFile(csDictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
-												end
-											end
-										else
-											snapshotData.audio.thresholdCues[spell.settingKey] = false
-										end
-									end
 								end
 							else
 								thresholds[1]:Hide()
@@ -1772,6 +1765,28 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility); Collapsing Star latches on stacks, not usability.
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData, nil, "primary")
+		do
+			local csKey = spells.collapsingStarThreshold.settingKey
+			local csDictEntry = specCacheSettings.thresholds.thresholdDictionary[csKey]
+			local csAudio = csDictEntry and csDictEntry.audio
+			if csAudio and csAudio.enabled and csAudio.sound then
+				local cues = snapshotData.audio.thresholdCues
+				if metaActive and talents:IsTalentActive(spells.collapsingStar) and collapsingStarUsable then
+					if not cues[csKey] then
+						cues[csKey] = true
+						if csAudio.playOutOfCombat ~= false or TRB.Data.character.inCombat then
+							PlaySoundFile(csAudio.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					end
+				else
+					cues[csKey] = false
+				end
+			end
+		end
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end

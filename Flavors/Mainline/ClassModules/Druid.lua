@@ -2296,12 +2296,20 @@ local function UpdateResourceBar()
 				barGroups.mana:Hide()
 			end
 		end
+
+		-- Threshold line sounds and the Starsurge and Starfall cues (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(formSpecCacheSettings, snapshotData, displayResourceType)
+		local balanceSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "ssReady", balanceSpells.starsurge:IsUsable())
+		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "sfReady", balanceSpells.starfall:IsUsable())
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
 		local specSettings = classSettings.feral
 		local specCacheSettings = TRB.Data.specCache["druid_feral"].settings
 		UpdateSnapshot_Feral()
+		local apcActive = IsApexPredatorsCravingActive()
 
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
@@ -2319,7 +2327,6 @@ local function UpdateResourceBar()
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
 
-				local apcActive = IsApexPredatorsCravingActive()
 				local barColorCurveResult = nil
 
 				-- Use simple colors when in non-native form
@@ -2501,9 +2508,6 @@ local function UpdateResourceBar()
 						end
 					end
 
-					-- APC audio cues (independent of indicator system)
-					TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "apexPredatorsCraving", apcActive)
-
 					-- Read final colors from the color map
 					barColor = energyBarColors.bar
 					barBorderColor = energyBarColors.border
@@ -2619,6 +2623,11 @@ local function UpdateResourceBar()
 
 			UpdateHealthBarGeneric()
 		end
+
+		-- Threshold line sounds and the Apex Predator's Craving cue (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(formSpecCacheSettings, snapshotData, displayResourceType)
+		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "apexPredatorsCraving", apcActive)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
@@ -2765,6 +2774,10 @@ local function UpdateResourceBar()
 			UpdateHealthBarGeneric()
 			UpdateIronfurBar(specSettings, ironfurColors)
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(formSpecCacheSettings, snapshotData, displayResourceType)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 4 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
@@ -2864,6 +2877,10 @@ local function UpdateResourceBar()
 
 			UpdateHealthBarGeneric()
 		end
+
+		-- Threshold line sounds in other forms (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(formSpecCacheSettings, snapshotData, displayResourceType)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 

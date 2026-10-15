@@ -1404,6 +1404,10 @@ local function UpdateResourceBar()
 				UpdateCoagulatingBlood(specSettings, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local specSettings = classSettings.frost
@@ -1441,6 +1445,10 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
 		local specSettings = classSettings.unholy
@@ -1479,6 +1487,10 @@ local function UpdateResourceBar()
 			end
 			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
 end

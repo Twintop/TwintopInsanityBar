@@ -407,6 +407,9 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		if spec.archetype.secondary ~= nil then
 			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
 		end

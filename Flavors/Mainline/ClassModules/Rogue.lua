@@ -1077,6 +1077,9 @@ local function UpdateResourceBar()
 			end
 		end
 
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+
 		-- Combo Point threshold audio cues (independent of bar visibility)
 		ProcessComboPointAudioCues(specSettings)
 
@@ -1268,6 +1271,9 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
 
 		-- Combo Point threshold audio cues (independent of bar visibility)
 		ProcessComboPointAudioCues(specSettings)
@@ -1472,6 +1478,9 @@ local function UpdateResourceBar()
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 		end
+
+		-- Threshold line sounds (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
 
 		-- Combo Point threshold audio cues (independent of bar visibility)
 		ProcessComboPointAudioCues(specSettings)

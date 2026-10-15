@@ -1116,10 +1116,12 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.elemental
 		local specCacheSettings = TRB.Data.specCache.shaman_elemental.settings
 		UpdateSnapshot_Elemental()
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+		local earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and spells.earthShock:IsUsable())
+			or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
 			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
@@ -1127,9 +1129,6 @@ local function UpdateResourceBar()
 			local barColor = specSettings.colors.bar.base
 			local barBackgroundColor = specSettings.colors.bar.background.color
 
-			-- Determine usability for Earth Shock/Elemental Blast and Earthquake independently
-			local earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and spells.earthShock:IsUsable())
-				or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
 			local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
 				or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
 			local sharedColors = specSettings.colors.shared
@@ -1236,11 +1235,8 @@ local function UpdateResourceBar()
 					else
 						barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
 					end
-
-					TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "esReady", true)
 				else
 					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-					TRB.Functions.AudioCues:ResetLatch(snapshotData, "esReady")
 				end
 
 				if overcapCurves.border then
@@ -1279,9 +1275,6 @@ local function UpdateResourceBar()
 					local currentMana = snapshotData.attributes.mana or UnitPower("player", Enum.PowerType.Mana) or 0
 					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 					local affectingCombat = TRB.Data.character.inCombat
-					local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
-					local earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and spells.earthShock:IsUsable())
-						or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
 					local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
 						or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
 					local sharedColors = specSettings.colors.shared
@@ -1384,7 +1377,11 @@ local function UpdateResourceBar()
 				UpdateElementalBlastBuffs(specSettings)
 			end
 		end
-		FireTempestCues(specSettings, snapshotData, TRB.Data.spellsData.spells)
+
+		-- Threshold line sounds and the Earth Shock cue (independent of bar visibility)
+		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
+		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "esReady", earthShockUsable)
+		FireTempestCues(specSettings, snapshotData, spells)
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
