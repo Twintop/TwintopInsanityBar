@@ -17,6 +17,11 @@ TRB.Details.coreNewsContent = [====[
 - [#849](#849) Remove the Trigger On title from the Add New Audio Cue menu.
 - [#850](#850) Thresholds tab audio cues play while their bar is hidden.
 
+## Localization
+
+- [#848 - @MOSS099](#848) Updated translations for Simplified Chinese (zhCN).
+- [#851 - @MOSS099](#851) Updated translations for Simplified Chinese (zhCN).
+
 ---
 
 # Live 12.1.5.1-release / Forever 1.60.1.9-release (2026-10-14)
