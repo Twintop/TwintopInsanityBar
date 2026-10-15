@@ -643,7 +643,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 			rootDescription:SetScrollMode(400)
 		end)
 
-		playOutOfCombatCheckbox:SetChecked(cue.configuration == nil or cue.configuration.playOutOfCombat ~= false)
+		playOutOfCombatCheckbox:SetChecked(TRB.Functions.AudioCues:PlaysOutOfCombat(cue))
 
 		HideConfigControls()
 		HideThresholdSliders()
@@ -979,13 +979,13 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		end
 	end
 
-	-- Read a frame late, so Blizzard's own listeners for the same callback rebuild the layout first.
 	parent:HookScript("OnShow", RefreshCdmState)
 	if EventRegistry ~= nil then
 		local refreshQueued = false
 		EventRegistry:RegisterCallback("CooldownViewerSettings.OnDataChanged", function()
 			if refreshQueued or not parent:IsVisible() then return end
 			refreshQueued = true
+			-- Read a frame late, so Blizzard's own listeners for the same callback rebuild the layout first.
 			C_Timer.After(0, function()
 				refreshQueued = false
 				if parent:IsVisible() then

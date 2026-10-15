@@ -1010,9 +1010,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Holy Power threshold audio cues (independent of bar visibility)
-		if TRB.Data.character.inCombat then
-			ProcessHolyPowerAudioCues(specSettings)
-		end
+		ProcessHolyPowerAudioCues(specSettings)
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
@@ -1063,9 +1061,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Holy Power threshold audio cues (independent of bar visibility)
-		if TRB.Data.character.inCombat then
-			ProcessHolyPowerAudioCues(specSettings)
-		end
+		ProcessHolyPowerAudioCues(specSettings)
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
@@ -1133,9 +1129,7 @@ local function UpdateResourceBar()
 		end
 
 		-- Holy Power threshold audio cues (independent of bar visibility)
-		if TRB.Data.character.inCombat then
-			ProcessHolyPowerAudioCues(specSettings)
-		end
+		ProcessHolyPowerAudioCues(specSettings)
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end

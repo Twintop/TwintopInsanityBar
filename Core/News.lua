@@ -12,7 +12,9 @@ TRB.Details.coreNewsContent = [====[
 ## Audio Cues
 
 - Add New Audio Cue can add Buff Alerts, which play when a buff tracked by your Cooldown Manager becomes active.
-- Add a Play out of combat option to every audio cue, including the audio cues on the Thresholds tab. Cues that only played in combat start with it off.
+- Add a Play out of combat option to every audio cue, including those on the Thresholds tab, unchecked for cues that only played in combat.
+- A combat-only threshold alert no longer plays when combat starts for a threshold reached out of combat.
+- Remove the Trigger On title from the Add New Audio Cue menu.
 
 ---
 

@@ -854,14 +854,21 @@ CDM.ConditionState = {
 	ACTIVE = "active",
 }
 
+---Whether one custom indicator condition holds right now, or nil when the Cooldown Manager can't answer.
+---@param condition TRB.CustomIndicatorCondition
+---@return boolean?
+function CDM:ReadCondition(condition)
+	if condition.source ~= CDM.CONDITION_SOURCE or condition.state ~= CDM.ConditionState.ACTIVE then
+		return false
+	end
+	return self:IsCooldownActive(condition.cooldownID)
+end
+
 ---Whether one custom indicator condition holds right now. Unknown answers count as not met.
 ---@param condition TRB.CustomIndicatorCondition
 ---@return boolean
 function CDM:IsConditionMet(condition)
-	if condition.source ~= CDM.CONDITION_SOURCE or condition.state ~= CDM.ConditionState.ACTIVE then
-		return false
-	end
-	return self:IsCooldownActive(condition.cooldownID) == true
+	return self:ReadCondition(condition) == true
 end
 
 ---Whether the user's Cooldown Manager layout can be read and judged right now.

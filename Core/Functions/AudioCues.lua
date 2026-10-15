@@ -186,6 +186,13 @@ local function PlaysOutOfCombat(cue)
 	return cue.configuration == nil or cue.configuration.playOutOfCombat ~= false
 end
 
+---Whether a cue may play while out of combat.
+---@param cue TRB.Classes.Settings.AudioCue
+---@return boolean
+function TRB.Functions.AudioCues:PlaysOutOfCombat(cue)
+	return PlaysOutOfCombat(cue)
+end
+
 ---Plays a cue's sound on the configured channel, unless it is combat only and the player isn't in combat.
 ---@param cue TRB.Classes.Settings.AudioCue
 local function PlayCue(cue)
@@ -207,9 +214,6 @@ local function BuildSortedCounterCues(specSettings, source)
 		if type(cue) == "table" and cue.kind == "counter" and cue.source == source.id then
 			cue.id = cue.id or id
 			table.insert(cues, cue)
-			if PlaysOutOfCombat(cue) then
-				cues.anyOutOfCombat = true
-			end
 		end
 	end
 
@@ -262,11 +266,13 @@ end
 
 ---Drops the cached cue ordering for a spec and rebuilds its Buff Alert list. Call after adding, deleting,
 ---or editing a cue.
----@param specSettings table? # Spec settings table, or nil to clear every spec
+---@param specSettings table? # Spec settings table, or nil for every spec
 function TRB.Functions.AudioCues:InvalidateCache(specSettings)
 	if specSettings == nil then
 		counterCache = setmetatable({}, { __mode = "k" })
-		buffCueCache = setmetatable({}, { __mode = "k" })
+		for audio in pairs(buffCueCache) do
+			buffCueCache[audio] = BuildBuffCues(audio)
+		end
 	else
 		counterCache[specSettings] = nil
 		if type(specSettings.audio) == "table" then
@@ -436,20 +442,11 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 	end
 
 	local counterValues = EnsureCounterValues(snapshotData)
-	local cues = GetSortedCounterCues(specSettings, source)
-	local inCombat = TRB.Data.character.inCombat
-
-	if not inCombat and not cues.anyOutOfCombat then
-		-- Latches stay frozen out of combat, but drop the remembered value: resources decay while
-		-- idle, and re-entering combat should not read as a spend.
-		counterValues[sourceId] = nil
-		return
-	end
-
 	local previous = counterValues[sourceId]
 	counterValues[sourceId] = value
 	local isDrop = previous ~= nil and value < previous
 
+	local cues = GetSortedCounterCues(specSettings, source)
 	local latches = EnsureLatches(snapshotData)
 	local winner = nil
 	local dropWinner = nil
@@ -457,8 +454,7 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 	for x = 1, #cues do
 		local cue = cues[x]
 		local threshold = cue.configuration and cue.configuration.thresholdValue
-		-- Out of combat, a combat-only cue's latch stays frozen like the whole source's does above.
-		if threshold ~= nil and (inCombat or PlaysOutOfCombat(cue)) then
+		if threshold ~= nil then
 			local matches
 			if source.compare == "exact" then
 				matches = value == threshold
@@ -508,13 +504,20 @@ function TRB.Functions.AudioCues:UpdateBuffCues(snapshotData)
 	for i = 1, #cues do
 		local cue = cues[i]
 		local conditions = cue.configuration.conditions
+		---@type boolean?
 		local met = true
 		for c = 1, #conditions do
-			if not cdm:IsConditionMet(conditions[c]) then
+			local state = cdm:ReadCondition(conditions[c])
+			if state == false then
 				met = false
 				break
+			elseif state == nil then
+				met = nil
 			end
 		end
-		LatchCue(latches, cue.id, cue, met)
+		-- An unknown read keeps the latch, so a viewer that hides mid-buff doesn't replay it when it returns.
+		if met ~= nil then
+			LatchCue(latches, cue.id, cue, met)
+		end
 	end
 end

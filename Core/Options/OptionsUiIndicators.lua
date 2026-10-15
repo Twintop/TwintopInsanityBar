@@ -25,12 +25,6 @@ local defaultElementDefs = {
 	{ key = "endCap", label = L["EndCap"] },
 }
 
--- A target menu draws a title and a divider per bar plus a checkbox per element, so specs with several
--- extra bars (Blood DK, Holy Priest) run well past a screen's worth now that the cast bars are
--- targetable. Past this many rows the menu scrolls instead of growing.
-local maxMenuRowsBeforeScroll = 15
-local menuRowHeight = 20
-
 -- Every flat and gradient row leaves room for custom Remove and Edit buttons, so all the arrows line up.
 local customColumnWidth = 46
 local targetsDropdownWidth = 254
@@ -83,9 +77,7 @@ local function ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, isExclu
 		end
 	end
 
-	if rows > maxMenuRowsBeforeScroll then
-		rootDescription:SetScrollMode(maxMenuRowsBeforeScroll * menuRowHeight)
-	end
+	TRB.Functions.OptionsUi.Primitives:LimitMenuRows(rootDescription, rows)
 end
 
 ---Builds the Border Glow submenu for one bar in a flat indicator's target menu. Any number of glows can be
@@ -1007,13 +999,13 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 	RefreshAllRows()
 
-	-- Read a frame late, so Blizzard's own listeners for the same callback rebuild the layout first.
 	parent:HookScript("OnShow", RefreshAllRows)
 	if EventRegistry ~= nil then
 		local refreshQueued = false
 		EventRegistry:RegisterCallback("CooldownViewerSettings.OnDataChanged", function()
 			if refreshQueued or not parent:IsVisible() then return end
 			refreshQueued = true
+			-- Read a frame late, so Blizzard's own listeners for the same callback rebuild the layout first.
 			C_Timer.After(0, function()
 				refreshQueued = false
 				if parent:IsVisible() then

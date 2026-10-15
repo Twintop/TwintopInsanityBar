@@ -730,8 +730,19 @@ local cdm = TRB.Functions.CooldownManager
 -- Marks TRB's own notes under a spell's tooltip in a Cooldown Manager picker, so they read as ours.
 local cdmPickerNotePrefix = "|cFFA335EETRB:|r "
 local CDM_PICKER_NOTE_R, CDM_PICKER_NOTE_G, CDM_PICKER_NOTE_B = 0.85, 0.75, 1.0
-local cdmPickerMaxRowsBeforeScroll = 15
-local cdmPickerRowHeight = 20
+
+-- Past this many rows a long menu scrolls instead of growing off the screen.
+local menuMaxRowsBeforeScroll = 15
+local menuRowHeight = 20
+
+---Makes a menu scroll once it holds more rows than fit comfortably on screen.
+---@param rootDescription table
+---@param rowCount integer # Rows the menu draws, counting titles and dividers
+function TRB.Functions.OptionsUi.Primitives:LimitMenuRows(rootDescription, rowCount)
+	if rowCount > menuMaxRowsBeforeScroll and rootDescription.SetScrollMode then
+		rootDescription:SetScrollMode(menuMaxRowsBeforeScroll * menuRowHeight)
+	end
+end
 
 local cdmPickerHeadings = {
 	{ group = cdm.LayoutGroup.DISPLAYED, label = L["CustomIndicatorPickerDisplayed"] },
@@ -869,8 +880,8 @@ function TRB.Functions.OptionsUi.Primitives:PopulateCdmPicker(rootDescription, c
 
 	if rowCount == 0 then
 		rootDescription:CreateTitle(L["CustomIndicatorPickerEmpty"])
-	elseif rowCount > cdmPickerMaxRowsBeforeScroll and rootDescription.SetScrollMode then
-		rootDescription:SetScrollMode(cdmPickerMaxRowsBeforeScroll * cdmPickerRowHeight)
+	else
+		self:LimitMenuRows(rootDescription, rowCount)
 	end
 end
 
