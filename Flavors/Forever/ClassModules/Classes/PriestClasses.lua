@@ -50,3 +50,5 @@ TRB.Forever.Templates.Classes:DefineClass("priest", {
 		spells = FillSpells,
 	},
 })
+
+TRB.Classes.SpecDescriptor:DeclareForClass("priest", { rangedAttack = true })

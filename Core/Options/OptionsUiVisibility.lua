@@ -19,6 +19,8 @@ local DRUID_FORM_CONDITION_KEYS = { "isDruidHumanoidForm", "isDruidTravelFormAny
 local CASTBAR_CONDITION_KEYS = { "casting", "channeling", "empowered" }
 -- Other Bars' own show state: their timer is running.
 local TIMER_CONDITION_KEYS = { "whenActive" }
+-- Ranged Swing's extra timer state: movement is delaying the shot.
+local RANGED_TIMER_CONDITION_KEYS = { "heldByMovement" }
 -- Pet bars' pet states, offered in both the show and hide lists.
 local PET_CONDITION_KEYS = { "isPetAlive", "isPetDead", "isPetMissing" }
 local STANDARD_HIDE_CONDITION_KEYS ={ "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
@@ -62,6 +64,7 @@ local CONDITION_LABELS = {
 	channeling = L["ShowBarVisibilityConditionChanneling"],
 	empowered = L["ShowBarVisibilityConditionEmpowered"],
 	whenActive = L["ShowBarVisibilityWhenActive"],
+	heldByMovement = L["ShowBarVisibilityConditionHeldByMovement"],
 	isPetAlive = L["ShowBarVisibilityConditionPetAlive"],
 	isPetDead = L["ShowBarVisibilityConditionPetDead"],
 	isPetMissing = L["ShowBarVisibilityConditionPetMissing"],
@@ -81,6 +84,9 @@ for _, key in ipairs(CASTBAR_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
 for _, key in ipairs(TIMER_CONDITION_KEYS) do
+	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
+end
+for _, key in ipairs(RANGED_TIMER_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
 for _, key in ipairs(PET_CONDITION_KEYS) do
@@ -849,6 +855,32 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		hideGroups = hideConditionGroups,
 		supportsThresholds = false,
 	}
+	-- Ranged Swing adds Held by Movement to its Timer group, for classes that auto-shoot and the global scope.
+	local rangedSwingProfile = nil
+	local descriptor = TRB.Classes.SpecDescriptor:Get(classId, specId)
+	if classId == nil or (descriptor ~= nil and descriptor.rangedAttack == true) then
+		local rangedTimerKeys = CopyKeys(TIMER_CONDITION_KEYS)
+		for _, key in ipairs(CopyKeys(RANGED_TIMER_CONDITION_KEYS)) do
+			rangedTimerKeys[#rangedTimerKeys + 1] = key
+		end
+		local rangedShowKeys = CopyKeys(rangedTimerKeys)
+		for _, key in ipairs(conditionKeys) do
+			rangedShowKeys[#rangedShowKeys + 1] = key
+		end
+		local rangedShowGroups = { { title = L["ShowBarVisibilityGroupTimer"], keys = rangedTimerKeys } }
+		for _, group in ipairs(conditionGroups) do
+			rangedShowGroups[#rangedShowGroups + 1] = group
+		end
+		rangedSwingProfile = {
+			showKeys = rangedShowKeys,
+			showLabels = LabelsFor(rangedShowKeys),
+			showGroups = rangedShowGroups,
+			hideKeys = hideConditionKeys,
+			hideLabels = hideConditionLabels,
+			hideGroups = hideConditionGroups,
+			supportsThresholds = false,
+		}
+	end
 	-- Main Hand Swing also offers Item not equipped, closing its General hide group.
 	local mainHandHideKeys = CopyKeys(hideConditionKeys)
 	mainHandHideKeys[#mainHandHideKeys + 1] = "isItemMissing"
@@ -918,6 +950,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		if barEntry ~= nil and barEntry.isTimerBar then
 			if barEntry.displayBarKey == "mainHandSwing" then
 				return mainHandSwingProfile
+			end
+			if barEntry.displayBarKey == "rangedSwing" and rangedSwingProfile ~= nil then
+				return rangedSwingProfile
 			end
 			return barEntry.environmentShowConditions and timerEnvironmentProfile or timerBarProfile
 		end

@@ -39,7 +39,7 @@ if TRB.Flavor.swingTimers then
 	local swingEntries = {
 		{ key = "mainHandSwing", kind = "swing", swingType = Enum.PlayerSwingType.MainHand, slot = INVSLOT_MAINHAND, speedIndex = 1, blizzardFrame = "SwingTimerMainHandFrame" },
 		{ key = "offHandSwing", kind = "swing", swingType = Enum.PlayerSwingType.OffHand, slot = INVSLOT_OFFHAND, speedIndex = 2, blizzardFrame = "SwingTimerOffHandFrame", requiresWeapon = true },
-		{ key = "rangedSwing", kind = "swing", swingType = Enum.PlayerSwingType.Ranged, slot = INVSLOT_RANGED, speedIndex = 3, blizzardFrame = "SwingTimerRangedFrame", requiresWeapon = true },
+		{ key = "rangedSwing", kind = "swing", swingType = Enum.PlayerSwingType.Ranged, slot = INVSLOT_RANGED, speedIndex = 3, blizzardFrame = "SwingTimerRangedFrame", requiresWeapon = true, heldByMovement = true },
 	}
 	for index, entry in ipairs(swingEntries) do
 		table.insert(BARS, index, entry)
@@ -89,6 +89,17 @@ local swingStart = {}
 local swingLength = {}
 -- Swing bars: whether the bar's slot holds a weapon, or nil until first asked.
 local weaponEquipped = {}
+-- Ranged shots only fire after standing still this long.
+local RANGED_SETTLE_TIME = 0.5
+-- Movement state, tracked only while the Ranged Swing bar is enabled.
+local isMoving = false
+local stoppedMovingAt = nil
+-- When the latest ranged swing ends; kept past the swing while movement still holds the shot.
+local rangedSwingEnd = nil
+-- Whether a late ranged shot keeps its bar up (held colors or the Held by Movement condition), cached when settings change.
+local rangedHoldsPastEnd = false
+-- Swing bars kept up, emptied, after their swing ended because movement still holds the shot.
+local swingHeldPastEnd = {}
 -- TEMPORARY DIAGNOSTIC (/trb otherbars): echo every GCD start/stop decision to chat.
 local echoGcd = false
 local function GcdEcho(fmt, ...)
@@ -262,11 +273,46 @@ local function GetRestingAlpha(visibility)
 	return ((visibility.inactiveAlpha) or 0) / 100
 end
 
----Container alpha while the timer runs: activeAlpha when When Active is ticked, else the resting alpha.
+---Seconds until the ranged shot can fire: the swing's remaining time or the stand-still time, whichever is longer.
+---@param now number
+---@return number
+local function GetRangedReadyRemaining(now)
+	if rangedSwingEnd == nil then
+		return 0
+	end
+	local settle = 0
+	if isMoving then
+		settle = RANGED_SETTLE_TIME
+	elseif stoppedMovingAt ~= nil then
+		settle = stoppedMovingAt + RANGED_SETTLE_TIME - now
+	end
+	return math.max(rangedSwingEnd - now, settle, 0)
+end
+
+---Whether movement is pushing a running ranged swing's shot past the swing's end.
+---@param entry table # The BARS entry
+---@return boolean
+local function IsHeldByMovement(entry)
+	local start = swingStart[entry.key]
+	if not entry.heldByMovement or start == nil then
+		return false
+	end
+	local swingEnd = start + swingLength[entry.key]
+	if isMoving then
+		return GetTime() + RANGED_SETTLE_TIME > swingEnd
+	end
+	return stoppedMovingAt ~= nil and stoppedMovingAt + RANGED_SETTLE_TIME > swingEnd
+end
+
+---Container alpha while the timer runs: activeAlpha when When Active is ticked, or Held by Movement while
+---movement delays the shot, else the resting alpha.
+---@param barKey string
 ---@param visibility table?
 ---@return number # 0..1
-local function GetRunningAlpha(visibility)
-	if visibility ~= nil and visibility.conditions ~= nil and visibility.conditions.whenActive == true then
+local function GetRunningAlpha(barKey, visibility)
+	local conditions = visibility ~= nil and visibility.conditions or nil
+	if conditions ~= nil and (conditions.whenActive == true
+		or (conditions.heldByMovement == true and IsHeldByMovement(BAR_BY_KEY[barKey]))) then
 		return ((visibility.activeAlpha) or 100) / 100
 	end
 	return GetRestingAlpha(visibility)
@@ -277,7 +323,7 @@ end
 ---@param visibility table?
 ---@return boolean
 local function IsHeldHidden(barKey, visibility)
-	return IsForceHidden(barKey, visibility) or GetRunningAlpha(visibility) <= 0
+	return IsForceHidden(barKey, visibility) or GetRunningAlpha(barKey, visibility) <= 0
 end
 
 ---Container alpha to rest at while the timer is idle, 0 while a hide condition applies or the bar is unavailable.
@@ -306,12 +352,16 @@ end
 ---the whole story.
 ---@param node TRB.Classes.BarNode
 ---@param colors table?
-local function ApplyColors(node, colors)
+---@param held boolean? # Movement is delaying the ranged shot, so the held colors apply when shading is on
+local function ApplyColors(node, colors, held)
 	if colors == nil then
 		return
 	end
+	local shade = held and colors.moving ~= nil and colors.moving.enabled == true
 	local fill = colors.bar
-	if fill ~= nil then
+	if shade then
+		node:SetColor(colors.moving.color)
+	elseif fill ~= nil then
 		if fill.gradientDirection ~= nil and fill.gradientDirection ~= "disabled" and fill.color2 ~= nil then
 			node:SetColorGradient(fill.color, fill.color2, fill.gradientDirection)
 		else
@@ -321,8 +371,9 @@ local function ApplyColors(node, colors)
 	if colors.border ~= nil then
 		node:SetBorderColor(colors.border.color)
 	end
-	if colors.background ~= nil then
-		node:SetBackgroundColorFromString(colors.background.color)
+	local background = shade and colors.movingBackground or colors.background
+	if background ~= nil then
+		node:SetBackgroundColorFromString(background.color)
 	end
 	node:ApplyEndCap(colors.endCap, colors.border and colors.border.color)
 end
@@ -390,8 +441,12 @@ local function UpdateSwingFill(node, entry, barSettings)
 	if length == nil then
 		return
 	end
-	local elapsed = math.min(GetTime() - swingStart[entry.key], length)
 	node:SetMinMax(0, length)
+	if swingHeldPastEnd[entry.key] then
+		node:SetValue(0)
+		return
+	end
+	local elapsed = math.min(GetTime() - swingStart[entry.key], length)
 	if barSettings ~= nil and barSettings.timerDirection == "deplete" then
 		node:SetValue(length - elapsed)
 	else
@@ -425,9 +480,9 @@ local function ApplyVisibleState(entry)
 	else
 		UpdateManualFill(node, entry, barSettings)
 	end
-	ApplyColors(node, colors)
+	ApplyColors(node, colors, IsHeldByMovement(entry))
 
-	ShowAt(group, node, GetRunningAlpha(visibility))
+	ShowAt(group, node, GetRunningAlpha(entry.key, visibility))
 end
 
 ---Re-asserts colors and alpha WITHOUT re-binding the GCD's native timer (re-calling SetTimerDuration
@@ -442,8 +497,8 @@ local function ReassertVisibility(entry)
 	if entry.kind ~= "gcd" then
 		UpdateManualFill(node, entry, barSettings)
 	end
-	ApplyColors(node, colors)
-	ShowAt(group, node, GetRunningAlpha(visibility))
+	ApplyColors(node, colors, IsHeldByMovement(entry))
+	ShowAt(group, node, GetRunningAlpha(entry.key, visibility))
 end
 
 ---Applies the fully-hidden state for a bar.
@@ -579,6 +634,7 @@ local function StopTimer(entry)
 		end
 		swingStart[entry.key] = nil
 		swingLength[entry.key] = nil
+		swingHeldPastEnd[entry.key] = nil
 	else
 		mirrorMax[entry.key] = nil
 	end
@@ -594,7 +650,19 @@ end
 ---@return boolean
 local function IsSwingStillRunning(barKey)
 	local start = swingStart[barKey]
-	return start ~= nil and GetTime() < start + swingLength[barKey]
+	if start == nil then
+		return false
+	end
+	local now = GetTime()
+	if now < start + swingLength[barKey] then
+		return true
+	end
+	-- A late ranged shot keeps its bar up, emptied, until it can fire.
+	if rangedHoldsPastEnd and BAR_BY_KEY[barKey].heldByMovement and GetRangedReadyRemaining(now) > 0 then
+		swingHeldPastEnd[barKey] = true
+		return true
+	end
+	return false
 end
 
 ---Starts or restarts a swing bar from PLAYER_SWING.
@@ -612,6 +680,10 @@ local function StartSwing(swingType, length)
 	end
 	swingStart[entry.key] = GetTime()
 	swingLength[entry.key] = length
+	swingHeldPastEnd[entry.key] = nil
+	if entry.heldByMovement then
+		rangedSwingEnd = swingStart[entry.key] + length
+	end
 	active[entry.key] = true
 	BeginRender(entry)
 end
@@ -632,6 +704,10 @@ local function RefreshWeapons()
 				fadeStart[entry.key] = nil
 				swingStart[entry.key] = nil
 				swingLength[entry.key] = nil
+				swingHeldPastEnd[entry.key] = nil
+				if entry.heldByMovement then
+					rangedSwingEnd = nil
+				end
 			end
 		end
 	end
@@ -1003,7 +1079,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			end
 		elseif fadeStart[barKey] ~= nil then
 			needsUpdater = true
-			local activeAlpha = GetRunningAlpha(visibility)
+			local activeAlpha = GetRunningAlpha(barKey, visibility)
 			local idleAlpha = GetIdleAlpha(barKey, visibility)
 			local delay = (visibility and visibility.fadeDelay) or 0
 			local duration = (visibility and visibility.fadeDuration) or 0
@@ -1075,6 +1151,17 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
 	elseif event == "PLAYER_SWING" then
 		local length, swingType = ...
 		StartSwing(swingType, length)
+	elseif event == "PLAYER_STARTED_MOVING" then
+		-- A shot that was clear to fire and didn't means auto-shooting stopped, so nothing is held.
+		if rangedSwingEnd ~= nil and GetRangedReadyRemaining(GetTime()) <= 0 then
+			rangedSwingEnd = nil
+		end
+		isMoving = true
+		ForceThrottleTick()
+	elseif event == "PLAYER_STOPPED_MOVING" then
+		isMoving = false
+		stoppedMovingAt = GetTime()
+		ForceThrottleTick()
 	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
 		if SWING_SLOTS[(...)] then
 			RefreshWeapons()
@@ -1114,16 +1201,47 @@ function TRB.Functions.OtherBars:RefreshVisibility()
 	SyncUpdater()
 end
 
----Registers PLAYER_SWING only while a swing bar is enabled, so nobody else pays for it.
+---Registers or drops the movement events, resetting the movement state either way.
+---@param enable boolean
+local function SyncMovementEvents(enable)
+	if enable == eventFrame:IsEventRegistered("PLAYER_STARTED_MOVING") then
+		return
+	end
+	isMoving = false
+	stoppedMovingAt = nil
+	rangedSwingEnd = nil
+	if enable then
+		eventFrame:RegisterEvent("PLAYER_STARTED_MOVING")
+		eventFrame:RegisterEvent("PLAYER_STOPPED_MOVING")
+		-- Secret while unit stats are restricted; the next movement event corrects it.
+		local speed = GetUnitSpeed("player")
+		isMoving = speed ~= nil and not issecretvalue(speed) and speed > 0
+	else
+		eventFrame:UnregisterEvent("PLAYER_STARTED_MOVING")
+		eventFrame:UnregisterEvent("PLAYER_STOPPED_MOVING")
+	end
+end
+
+---Registers PLAYER_SWING only while a swing bar is enabled, and the movement events only while the Ranged
+---Swing bar is, so nobody else pays for either.
 function TRB.Functions.OtherBars:SyncSwingEvents()
 	if not TRB.Flavor.swingTimers then
 		return
 	end
 	local anyEnabled = false
+	local tracksMovement = false
+	rangedHoldsPastEnd = false
 	for _, entry in ipairs(BARS) do
-		if entry.kind == "swing" and IsEnabled((select(3, GetBarConfig(entry.key)))) then
-			anyEnabled = true
-			break
+		if entry.kind == "swing" then
+			local _, colors, visibility = GetBarConfig(entry.key)
+			if IsEnabled(visibility) then
+				anyEnabled = true
+				if entry.heldByMovement then
+					tracksMovement = true
+					rangedHoldsPastEnd = (colors ~= nil and colors.moving ~= nil and colors.moving.enabled == true)
+						or (visibility.conditions ~= nil and visibility.conditions.heldByMovement == true)
+				end
+			end
 		end
 	end
 	if anyEnabled then
@@ -1131,6 +1249,7 @@ function TRB.Functions.OtherBars:SyncSwingEvents()
 	else
 		eventFrame:UnregisterEvent("PLAYER_SWING")
 	end
+	SyncMovementEvents(tracksMovement)
 end
 
 ---Applies an enabled-state change from recomposed settings: the swing event and Blizzard swing bar suppression.
@@ -1344,7 +1463,19 @@ function TRB.Functions.OtherBars:HasActiveTimer()
 			return true
 		end
 	end
-	return false
+	return self:IsRangedShotPending()
+end
+
+---Seconds until the next ranged shot can fire, counting the stand-still time movement adds. 0 when nothing is pending.
+---@return number
+function TRB.Functions.OtherBars:GetRangedSwingReadyRemaining()
+	return GetRangedReadyRemaining(GetTime())
+end
+
+---Whether a ranged shot is still counting down, including one movement holds past its swing's end.
+---@return boolean
+function TRB.Functions.OtherBars:IsRangedShotPending()
+	return rangedSwingEnd ~= nil and GetRangedReadyRemaining(GetTime()) > 0
 end
 
 ---Returns the live remaining and total seconds for a bar's timer, or nils when it isn't running.

@@ -330,3 +330,5 @@ TRB.Forever.Templates.Classes:DefineClass("warrior", {
 		spells = FillSpells,
 	},
 })
+
+TRB.Classes.SpecDescriptor:DeclareForClass("warrior", { rangedAttack = true })

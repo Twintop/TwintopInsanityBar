@@ -717,6 +717,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 			{ variable = "$offHandSwingDurationRemaining", description = L["BarTextVariableOffHandSwingDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
 			{ variable = "$rangedSwingDuration", description = L["BarTextVariableRangedSwingDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
 			{ variable = "$rangedSwingDurationRemaining", description = L["BarTextVariableRangedSwingDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
+			{ variable = "$rangedSwingReadyRemaining", description = L["BarTextVariableRangedSwingReadyRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
 			{ variable = "$mainHandLocale", description = L["BarTextVariableMainHandLocale"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, logicType = logicTypes.TEXT, booleanCheck = true },
 			{ variable = "$offHandLocale", description = L["BarTextVariableOffHandLocale"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, logicType = logicTypes.TEXT, booleanCheck = true },
 			{ variable = "$rangedLocale", description = L["BarTextVariableRangedLocale"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, logicType = logicTypes.TEXT, booleanCheck = true },
@@ -2290,6 +2291,9 @@ for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 	otherBarsVars["$" .. swingKey .. "DurationRemaining"] = swingKey
 end
 
+-- Seconds until the ranged shot can fire, movement included; it outlives the swing, so it has its own gate.
+local RANGED_READY_VAR = "$rangedSwingReadyRemaining"
+
 -- Swing hand labels, resolved at render time so a shared profile reads in the viewer's client language.
 local swingLocaleVars = {}
 if TRB.Flavor.swingTimers then
@@ -2390,6 +2394,12 @@ function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 					lookupLogic[totalVar] = total
 				end
 			end
+
+			if entry.heldByMovement then
+				local ready = TRB.Functions.OtherBars:GetRangedSwingReadyRemaining()
+				lookup[RANGED_READY_VAR] = string.format(fmt, ready)
+				lookupLogic[RANGED_READY_VAR] = ready > 0 and ready or nil
+			end
 		end
 	end
 end
@@ -2479,6 +2489,9 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	-- Other Bars timers resolve, in bar text LOGIC, to "is that bar's timer running", so a bare
 	-- {$breathDurationRemaining}[...] gates on the timer the same way a cast variable gates on a cast.
 	-- The mirror timers additionally reach lookupLogic, so they can be compared as well.
+	if var == RANGED_READY_VAR then
+		return TRB.Functions.OtherBars:IsRangedShotPending()
+	end
 	local otherBarKey = otherBarsVars[var]
 	if otherBarKey ~= nil then
 		return TRB.Functions.OtherBars:IsBarActive(otherBarKey)
@@ -2517,6 +2530,9 @@ local selfDrivenBarVariables = {
 for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 	selfDrivenBarVariables["$" .. swingKey .. "Duration"] = true
 	selfDrivenBarVariables["$" .. swingKey .. "DurationRemaining"] = true
+end
+if TRB.Flavor.swingTimers then
+	selfDrivenBarVariables[RANGED_READY_VAR] = true
 end
 
 ---Whether any running self-driven bar (the player/target/focus cast bars, or an Other Bars timer)

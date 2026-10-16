@@ -115,6 +115,9 @@ for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 	-- The one Hide Blizzard switch for all three swing bars is stored on Main Hand.
 	if key == "mainHandSwing" then
 		colorPaths[#colorPaths + 1] = {"bars", key, "disableBlizzardBar"}
+	elseif key == "rangedSwing" then
+		colorPaths[#colorPaths + 1] = {"colors", "bars", key, "moving"}
+		colorPaths[#colorPaths + 1] = {"colors", "bars", key, "movingBackground"}
 	end
 	globalSettingDefinitions[key .. "Colors"] = { checkboxSuffix = key .. "Colors", tabKey = key, categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = swingSectionLabels[key .. "Colors"],
 		paths = colorPaths }
@@ -311,8 +314,9 @@ local COVER_BUTTON_GAP = 8
 ---@param parent Frame # The panel the covered section is on
 ---@param topY number
 ---@param bottomY number
+---@param globalTabKey string? # Tab the Open button goes to instead of the checkbox's own
 ---@return Frame
-local function BuildUseGlobalCover(checkbox, parent, topY, bottomY)
+local function BuildUseGlobalCover(checkbox, parent, topY, bottomY, globalTabKey)
 	local cover = TRB.Functions.OptionsUi.Primitives:BuildSectionCover(parent, topY, bottomY)
 
 	local message = cover:CreateFontString(nil, "OVERLAY")
@@ -339,7 +343,7 @@ local function BuildUseGlobalCover(checkbox, parent, topY, bottomY)
 		open:SetSize(open:GetTextWidth() + 30, COVER_BUTTON_HEIGHT)
 		open:SetPoint("TOPRIGHT", message, "BOTTOM", -5, -COVER_BUTTON_GAP)
 		open:SetScript("OnClick", function()
-			link:Click()
+			link.OpenGlobalTab(globalTabKey)
 		end)
 		customize:SetPoint("TOPLEFT", message, "BOTTOM", 5, -COVER_BUTTON_GAP)
 	else
@@ -563,13 +567,19 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 	end)
 
 	local tabNamePrefix = navKey:gsub("^%l", string.upper)
-	link:SetScript("OnClick", function()
+	---Opens the link's global category on a tab, its own unless one is given.
+	---@param tabKey string?
+	---@diagnostic disable-next-line: inject-field
+	link.OpenGlobalTab = function(tabKey)
 		if TRB.Options.OptionsFrame then
 			TRB.Options.OptionsFrame:SelectCategory(navKey)
 			C_Timer.After(0, function()
-				TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(tabNamePrefix, globalTabKey)
+				TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(tabNamePrefix, tabKey or globalTabKey)
 			end)
 		end
+	end
+	link:SetScript("OnClick", function()
+		link.OpenGlobalTab()
 	end)
 
 	return link
@@ -591,13 +601,14 @@ end
 ---@param governingHeader Frame|string # The governing section's header, or its name when it is on another tab, named in the badge tooltip
 ---@param header Frame # This section's header
 ---@param bottomY number # Y offset of the section's end from the panel's TOPLEFT
-function TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(checkbox, governingHeader, header, bottomY)
+---@param globalTabKey string? # Tab the cover's Open button goes to, for a section that sits on a different tab than its box
+function TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(checkbox, governingHeader, header, bottomY, globalTabKey)
 	if checkbox == nil then
 		return
 	end
 	local governingName = type(governingHeader) == "string" and governingHeader or governingHeader.font:GetText()
 	local tooltip = string.format(L["UseGlobalBadgeTooltipLinkedFormat"], governingName)
-	LinkToCheckbox(checkbox, header, tooltip, BuildUseGlobalCover(checkbox, header:GetParent(), GetYBelow(header), bottomY))
+	LinkToCheckbox(checkbox, header, tooltip, BuildUseGlobalCover(checkbox, header:GetParent(), GetYBelow(header), bottomY, globalTabKey))
 end
 
 ---Badges a section's header while its Use Global box is checked, for a section the global settings only partly cover.

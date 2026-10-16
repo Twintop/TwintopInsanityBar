@@ -1446,10 +1446,15 @@ function TRB.Functions.Settings:DefaultOtherBarVisibility(barKey)
 		hideConditions.isItemMissing = false
 	end
 
+	local conditions = { whenActive = true }
+	if barKey == "rangedSwing" then
+		conditions.heldByMovement = true
+	end
+
 	return {
 		neverShow = true,
 		alwaysShow = false,
-		conditions = { whenActive = true },
+		conditions = conditions,
 		hideConditions = hideConditions,
 		activeAlpha = 100,
 		inactiveAlpha = 0,
@@ -1607,12 +1612,17 @@ function TRB.Functions.Settings:DefaultSwingTimerBarColors(barKey)
 		fill = "FF9CD67A"
 	end
 
-	return {
+	local colors = {
 		bar = { color = fill, color2 = fill, gradientDirection = "disabled" },
 		border = { color = "FF000000" },
 		background = { color = "66000000" },
 		endCap = self:DefaultEndCapColorEntry()
 	}
+	if barKey == "rangedSwing" then
+		colors.moving = { color = "FFD05050", enabled = true }
+		colors.movingBackground = { color = "CC701010" }
+	end
+	return colors
 end
 
 ---Central injector: adds the Other Bars defaults (bars/colors/displayBar/textures) to a spec's default

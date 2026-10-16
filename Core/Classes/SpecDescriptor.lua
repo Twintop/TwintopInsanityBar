@@ -42,6 +42,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field useGlobalDefaults table<string, boolean>? # "Use global settings" toggles seeded differently from the shipped defaults (key -> value), for a spec whose layout the global options cannot describe
 ---@field formIndependentBars string[]? # Custom bar keys that keep this spec's own layout and visibility while a shapeshift form lays out with another spec's settings
 ---@field pet TRB.Classes.SpecDescriptor.Pet? # The spec can hold a permanent pet, so it gets the Pet bars
+---@field rangedAttack boolean? # The class auto-shoots a ranged weapon or wand, so the Ranged Swing bar offers its movement shading
 
 TRB.Classes.SpecDescriptor = {}
 

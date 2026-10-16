@@ -31,4 +31,4 @@ TRB.Forever.Templates.Classes:DefineClass("hunter", {
 })
 
 -- The pet's power awaits in-game confirmation; it only picks the Pet Resource bar's default colors.
-TRB.Classes.SpecDescriptor:DeclareForClass("hunter", { pet = { power = "FOCUS" } })
+TRB.Classes.SpecDescriptor:DeclareForClass("hunter", { pet = { power = "FOCUS" }, rangedAttack = true })

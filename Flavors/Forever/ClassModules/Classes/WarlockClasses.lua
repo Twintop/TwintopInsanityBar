@@ -72,4 +72,4 @@ TRB.Forever.Templates.Classes:DefineClass("warlock", {
 })
 
 -- The pet's power awaits in-game confirmation; it only picks the Pet Resource bar's default colors.
-TRB.Classes.SpecDescriptor:DeclareForClass("warlock", { pet = { power = "MANA" } })
+TRB.Classes.SpecDescriptor:DeclareForClass("warlock", { pet = { power = "MANA" }, rangedAttack = true })

@@ -249,3 +249,5 @@ TRB.Forever.Templates.Classes:DefineClass("rogue", {
 		spells = FillSpells,
 	},
 })
+
+TRB.Classes.SpecDescriptor:DeclareForClass("rogue", { rangedAttack = true })

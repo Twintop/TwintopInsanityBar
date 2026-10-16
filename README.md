@@ -2,7 +2,7 @@
 
 A fully customizable resource bar for every class in World of Warcraft and World of Warcraft: Forever. Track your resources, ability costs, casts, health, and cooldowns in one place, with colors, text, and sounds that react to what is happening in combat.
 
-TRB started life as Twintop's  Insanity Bar WeakAura set for Shadow Priests during the Legion expansion.
+TRB started life as Twintop's Insanity Bar WeakAura set for Shadow Priests during the Legion expansion.
 
 [![GitHub release](https://img.shields.io/github/release/Twintop/TwintopInsanityBar.svg?maxAge=3600)](https://github.com/Twintop/TwintopInsanityBar/releases)
 [![MIT License](https://img.shields.io/github/license/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/blob/main/LICENSE)

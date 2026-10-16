@@ -8,6 +8,17 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.11-release (2026-10-16)
+## General
+### Other Bars
+
+- Ranged Swing switches to new Held by Movement fill and background colors while moving delays your next shot, and stays up empty past the end of its swing until the shot can fire. On by default for Hunter, Mage, Priest, Rogue, Warlock, and Warrior.
+- Ranged Swing's Show Bar When list adds Held by Movement, on by default.
+- Add `$rangedSwingReadyRemaining` bar text, the time until your next ranged attack can fire, including the time standing still it needs after you move.
+- Fix Open Global Other Bars Settings in the Blizzard Swing Timers section of Off Hand Swing and Ranged Swing opening the Main Hand Swing tab.
+
+---
+
 # 1.60.1.10-release (2026-10-15)
 ## General
 

@@ -41,3 +41,5 @@ TRB.Forever.Templates.Classes:DefineClass("mage", {
 		spells = FillSpells,
 	},
 })
+
+TRB.Classes.SpecDescriptor:DeclareForClass("mage", { rangedAttack = true })

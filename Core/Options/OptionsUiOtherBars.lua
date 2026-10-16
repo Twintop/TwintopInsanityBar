@@ -88,6 +88,9 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 	-- A class-scoped bar (Feign Death) has no global counterpart, so it gets no Use Global rows -- its
 	-- specs own it outright. Every other Other Bar has the usual Dimensions / Colors global sections.
 	local hasGlobalScope = TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(barKey)
+	-- Movement shading is for classes that auto-shoot; the global scope serves every class.
+	local descriptor = TRB.Classes.SpecDescriptor:Get(classId, specId)
+	local showsMovementShading = barKey == "rangedSwing" and (classId == nil or (descriptor ~= nil and descriptor.rangedAttack == true))
 
 	-- Dimensions / anchoring. Fatigue is a screen-anchored root by default and the other mirror timers
 	-- chain below it, but every one of them is freely re-anchorable here.
@@ -107,6 +110,18 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "border", L["ColorPickerBorder"], yCoord, classId, specId)
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "background", L["ColorPickerUnfilledBarBackground"], yCoord, classId, specId)
+	if showsMovementShading then
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_movingEnable", L["SwingTimerShadeWhileMoving"], L["SwingTimerShadeWhileMovingTooltip"], yCoord,
+			function() return colors.moving.enabled end,
+			function(v)
+				colors.moving.enabled = v
+				ReapplyBars()
+			end)
+		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "moving", L["SwingTimerHeldByMovementColor"], yCoord, classId, specId)
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "movingBackground", L["SwingTimerHeldByMovementBackgroundColor"], yCoord, classId, specId)
+	end
 	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colors, controlsKey .. "_" .. barKey, "endCap_" .. barKey, L["EndCap"], classId, specId)
 	yCoord = yCoord - 40
 	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(colorsCheckbox, controls[barKey .. "ColorSection"], yCoord)
@@ -181,7 +196,7 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 		-- Main Hand is the first Other Bars tab and built eagerly, so its box exists before the lazy tabs build.
 		local mainHandColorsCheckbox = controls.checkBoxes and controls.checkBoxes.useGlobalMainHandSwingColors
 		local governingHeader = barKey == "mainHandSwing" and controls[barKey .. "ColorSection"] or L["CopyMenuSection_mainHandSwingColors"]
-		TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(mainHandColorsCheckbox, governingHeader, controls[barKey .. "BlizzardSection"], yCoord)
+		TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(mainHandColorsCheckbox, governingHeader, controls[barKey .. "BlizzardSection"], yCoord, barKey)
 	end
 
 	return yCoord

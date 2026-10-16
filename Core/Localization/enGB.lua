@@ -511,5 +511,8 @@ if locale == "enGB" then
 	L["MageFireIndicatorCombustionTooltip"] = "Changes to this colour while Combustion is active."
 	L["CustomIndicatorOtherSpecTooltip"] = "The Cooldown Manager only lists entries for your current specialisation. Switch to this one to add or change custom indicators."
 	L["AudioCueOtherSpecTooltip"] = "The Cooldown Manager only lists entries for your current specialisation. Switch to this one to add or change Buff Alerts."
+	L["SwingTimerHeldByMovementColor"] = "Held by Movement Fill Colour"
+	L["SwingTimerShadeWhileMovingTooltip"] = "Switches the bar to the Held by Movement fill and background colours while moving would make your next ranged shot late. Ranged shots only fire after you stand still for 0.5 seconds."
+	L["SwingTimerHeldByMovementBackgroundColor"] = "Held by Movement Background Colour"
 
 end

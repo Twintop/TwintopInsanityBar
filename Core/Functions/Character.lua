@@ -1788,7 +1788,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				bar = coreColors.bar,
 				border = coreColors.border,
 				background = coreColors.background,
-				endCap = coreColors.endCap
+				endCap = coreColors.endCap,
+				moving = coreColors.moving,
+				movingBackground = coreColors.movingBackground
 			}
 			specCache.settings.colors.bars = OverlayOn(currentColorBars, { [barKey] = OverlayOn(specColors, colorOverrides) })
 		end
