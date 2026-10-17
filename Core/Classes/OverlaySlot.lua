@@ -16,6 +16,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public color string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied color entry (for RefreshAppearance)
 ---@field public spendingColor string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied spending color entry (for inset overlay on spend)
 ---@field public fullHeight boolean? # When true, the overlay extends through the bar's border area vertically
+---@field public _healthInputs table? # Inputs of the last health overlay update (Bar.lua HealthOverlayUnchanged)
 ---@field public overlayFrame StatusBar? # Full-bar overlay StatusBar
 ---@field public appendedClipFrame Frame? # Clip container for the appended overlay
 ---@field public appendedOverlayFrame StatusBar? # StatusBar inside clip, anchored to fill's RIGHT edge

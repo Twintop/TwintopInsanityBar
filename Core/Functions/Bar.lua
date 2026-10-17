@@ -1709,6 +1709,41 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- triggering updates after all setup is complete.
 end
 
+---Whether a health overlay's inputs all match its last update, recording them when they don't. Health
+---values can be secret, so they compare by healthValuesVersion; every setting the overlay reads compares directly.
+---@param slot TRB.Classes.OverlaySlot
+---@param colorEntry table?
+---@param texture string?
+---@param healthNode TRB.Classes.BarNode
+---@return boolean
+local function HealthOverlayUnchanged(slot, colorEntry, texture, healthNode)
+	local version = TRB.Functions.Character.healthValuesVersion
+	local enabled = colorEntry ~= nil and colorEntry.enabled == true
+	local mode = colorEntry and colorEntry.mode
+	local fullHeight = colorEntry and colorEntry.fullHeight == true
+	local color = colorEntry and colorEntry.color
+	local record = slot._healthInputs
+	if record == nil then
+		record = {}
+		slot._healthInputs = record
+	elseif record.version == version and record.hasEntry == (colorEntry ~= nil) and record.enabled == enabled
+		and record.mode == mode and record.fullHeight == fullHeight and record.color == color and record.texture == texture
+		and record.width == healthNode.width and record.height == healthNode.height and record.fillDirection == healthNode.fillDirection then
+		return true
+	end
+	record.version = version
+	record.hasEntry = colorEntry ~= nil
+	record.enabled = enabled
+	record.mode = mode
+	record.fullHeight = fullHeight
+	record.color = color
+	record.texture = texture
+	record.width = healthNode.width
+	record.height = healthNode.height
+	record.fillDirection = healthNode.fillDirection
+	return false
+end
+
 ---Updates the absorb shield overlay on the health bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
 ---Supports four display modes:
@@ -1727,6 +1762,9 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 	local absorbSlot = healthNode:GetOrCreateOverlaySlot("absorb")
 
 	local absorbColorEntry = settings.colors.healthBar and settings.colors.healthBar.absorb
+	if HealthOverlayUnchanged(absorbSlot, absorbColorEntry, settings.textures.absorbBar, healthNode) then
+		return
+	end
 	if absorbColorEntry then
 		absorbSlot:SetFullHeight(absorbColorEntry.fullHeight == true)
 	end
@@ -1846,6 +1884,9 @@ function TRB.Functions.Bar:UpdateHealthBarIncomingHealOverlay(healthNode, snapsh
 	local incomingHealSlot = healthNode:GetOrCreateOverlaySlot("incomingHeal")
 
 	local incomingHealColorEntry = settings.colors.healthBar and settings.colors.healthBar.incomingHeal
+	if HealthOverlayUnchanged(incomingHealSlot, incomingHealColorEntry, settings.textures.incomingHealBar, healthNode) then
+		return
+	end
 	if incomingHealColorEntry then
 		incomingHealSlot:SetFullHeight(incomingHealColorEntry.fullHeight == true)
 	end
@@ -1965,6 +2006,9 @@ function TRB.Functions.Bar:UpdateHealthBarHealAbsorbOverlay(healthNode, snapshot
 	local healAbsorbSlot = healthNode:GetOrCreateOverlaySlot("healAbsorb")
 
 	local healAbsorbColorEntry = settings.colors.healthBar and settings.colors.healthBar.healAbsorb
+	if HealthOverlayUnchanged(healAbsorbSlot, healAbsorbColorEntry, settings.textures.healAbsorbBar, healthNode) then
+		return
+	end
 	if healAbsorbColorEntry then
 		healAbsorbSlot:SetFullHeight(healAbsorbColorEntry.fullHeight == true)
 	end
@@ -4565,7 +4609,12 @@ end
 ---@param value number
 ---@param maxResource number?
 function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResource)
-	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
+	local barCache = TRB.Data.cache.values.bar
+	local cache = barCache[key]
+	if cache == nil then
+		cache = {}
+		barCache[key] = cache
+	end
 	local valueIsSecret = issecretvalue(value)
 	local maxResourceIsSecret = maxResource and issecretvalue(maxResource) or false
 	local frameIsSynced = false
@@ -4591,9 +4640,9 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 		end
 	end
 
-	if not valueIsSecret and not maxResourceIsSecret and
-	   not issecretvalue(TRB.Data.cache.values.bar[key].value) and TRB.Data.cache.values.bar[key].value == value and
-	   TRB.Data.cache.values.bar[key].maxResource == maxResource and frameIsSynced then
+	-- frameIsSynced is only true for plain values, so it leads and spares a mismatch the secret checks.
+	if frameIsSynced and not valueIsSecret and not maxResourceIsSecret and
+	   not issecretvalue(cache.value) and cache.value == value and cache.maxResource == maxResource then
 		return
 	end
 
@@ -4619,8 +4668,8 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 			end
 		end
 
-		TRB.Data.cache.values.bar[key].value = value
-		TRB.Data.cache.values.bar[key].maxResource = maxResource
+		cache.value = value
+		cache.maxResource = maxResource
 
 		UpdateGroupEndCapVisibility(node)
 	end

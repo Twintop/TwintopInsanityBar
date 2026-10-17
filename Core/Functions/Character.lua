@@ -222,8 +222,12 @@ function TRB.Functions.Character:InvalidateAdditionalPowerValues()
 	end
 end
 
+-- Bumped on every health read; the values can be secret, so health overlays compare this instead.
+TRB.Functions.Character.healthValuesVersion = 0
+
 ---Reads the player's current health, max health, absorbs, and incoming heals from the WoW API, updates snapshotData.attributes, pre-formats display strings, and recalculates the health color curve.
 function TRB.Functions.Character:UpdateHealthValues()
+	TRB.Functions.Character.healthValuesVersion = TRB.Functions.Character.healthValuesVersion + 1
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.attributes.health = UnitHealth("player", true)
 	snapshotData.attributes.healthMax = UnitHealthMax("player")
@@ -1271,6 +1275,8 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
 	TRB.Data.snapshotData = cache.snapshotData
 	TRB.Data.snapshotData.attributes.isTracking = false
+	-- A different snapshot means different health values, so health overlays must redraw.
+	TRB.Functions.Character.healthValuesVersion = TRB.Functions.Character.healthValuesVersion + 1
 	TRB.Functions.Character:ResetCaches()
 	TRB.Functions.BarVisibility:MarkDirty()
 	-- The single point where a spec's composed settings become active (login, spec switch, talent

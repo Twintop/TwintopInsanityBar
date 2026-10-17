@@ -1238,6 +1238,12 @@ function TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, condit
 	end
 end
 
+-- Shared bars whose resolved colors live in TRB.Data.resolvedIndicators under their own bar key.
+local sharedIndicatorBars = {
+	healthBar = true, castbar = true, targetCastbar = true, focusCastbar = true,
+	petCastbar = true, petHealthBar = true, petPowerBar = true,
+}
+
 ---Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
 ---nodeOrder back to front so earlier (higher-priority) entries overwrite later ones. The spec's bars are
 ---written back into barColorMap in place; the shared bars are parked in TRB.Data.resolvedIndicators.
@@ -1315,20 +1321,8 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 					end
 
 					local targetColors
-					if barKey == "healthBar" then
-						targetColors = healthBar
-					elseif barKey == "castbar" then
-						targetColors = castbar
-					elseif barKey == "targetCastbar" then
-						targetColors = targetCastbar
-					elseif barKey == "focusCastbar" then
-						targetColors = focusCastbar
-					elseif barKey == "petCastbar" then
-						targetColors = petCastbar
-					elseif barKey == "petHealthBar" then
-						targetColors = petHealthBar
-					elseif barKey == "petPowerBar" then
-						targetColors = petPowerBar
+					if sharedIndicatorBars[barKey] then
+						targetColors = resolved[barKey]
 					else
 						targetColors = barColorMap and barColorMap[barKey]
 					end

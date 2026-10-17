@@ -89,6 +89,19 @@ local function SetLevelIfChanged(frame, level)
 	end
 end
 
+---Returns a threshold key's display cache, creating it on first use.
+---@param key string
+---@return table
+local function GetThresholdCache(key)
+	local thresholdCache = TRB.Data.cache.values.threshold
+	local cache = thresholdCache[key]
+	if cache == nil then
+		cache = {}
+		thresholdCache[key] = cache
+	end
+	return cache
+end
+
 ---Starts an icon cooldown swipe unless it already shows this start and duration.
 ---@param cooldown table
 ---@param startTime number
@@ -299,8 +312,7 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 		fillDirection = growRight and "leftRight" or "rightLeft"
 	end
 
-	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	local cache = TRB.Data.cache.values.threshold[key]
+	local cache = GetThresholdCache(key)
 
 	-- Derive effective dimensions from the parent frame's actual rendered size.
 	local effectiveWidth = parentFrame:GetWidth()
@@ -349,8 +361,7 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 	end
 	local fillDirection = (barSettings or settings.bar).fillDirection
 
-	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	local cache = TRB.Data.cache.values.threshold[key]
+	local cache = GetThresholdCache(key)
 
 	if cache.texture ~= spell.texture then
 		threshold.icon.texture:SetTexture(spell.texture)
@@ -745,21 +756,21 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, settings.thresholds.properties.width, 0)
 	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
 
-	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveSize ~= effectiveSize or TRB.Data.cache.values.threshold[key].fillDirection ~= fillDirection then
+	local cache = GetThresholdCache(key)
+	if cache.value ~= value or cache.maxResource ~= maxResource or cache.effectiveSize ~= effectiveSize or cache.fillDirection ~= fillDirection then
 		local anchorPoint, parentAnchor, xOffset, yOffset = GetThresholdAnchorInfo(fillDirection, effectiveWidth, effectiveHeight, value, maxResource)
 
 		thresholdLine:ClearAllPoints()
 		thresholdLine:SetPoint(anchorPoint, renderFrame, parentAnchor, xOffset, yOffset)
-		TRB.Data.cache.values.threshold[key].value = value
-		TRB.Data.cache.values.threshold[key].maxResource = maxResource
-		TRB.Data.cache.values.threshold[key].effectiveSize = effectiveSize
-		TRB.Data.cache.values.threshold[key].fillDirection = fillDirection
+		cache.value = value
+		cache.maxResource = maxResource
+		cache.effectiveSize = effectiveSize
+		cache.fillDirection = fillDirection
 	end
 
-	if TRB.Data.cache.values.threshold[key].icon ~= thresholdLine.icon then
+	if cache.icon ~= thresholdLine.icon then
 		SetThresholdIconSizeAndPosition(settings, thresholdLine, fillDirection)
-		TRB.Data.cache.values.threshold[key].icon = thresholdLine.icon
+		cache.icon = thresholdLine.icon
 	end
 end
 
@@ -836,16 +847,16 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
 	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
 
-	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	if TRB.Data.cache.values.threshold[key].value ~= value or TRB.Data.cache.values.threshold[key].maxResource ~= maxResource or TRB.Data.cache.values.threshold[key].effectiveSize ~= effectiveSize or TRB.Data.cache.values.threshold[key].fillDirection ~= fillDirection then
+	local cache = GetThresholdCache(key)
+	if cache.value ~= value or cache.maxResource ~= maxResource or cache.effectiveSize ~= effectiveSize or cache.fillDirection ~= fillDirection then
 		local anchorPoint, parentAnchor, xOffset, yOffset = GetThresholdAnchorInfo(fillDirection, effectiveWidth, effectiveHeight, value, maxResource)
 
 		thresholdLine:ClearAllPoints()
 		thresholdLine:SetPoint(anchorPoint, renderFrame, parentAnchor, xOffset, yOffset)
-		TRB.Data.cache.values.threshold[key].value = value
-		TRB.Data.cache.values.threshold[key].maxResource = maxResource
-		TRB.Data.cache.values.threshold[key].effectiveSize = effectiveSize
-		TRB.Data.cache.values.threshold[key].fillDirection = fillDirection
+		cache.value = value
+		cache.maxResource = maxResource
+		cache.effectiveSize = effectiveSize
+		cache.fillDirection = fillDirection
 	end
 end
 
@@ -2778,8 +2789,7 @@ end
 ---@param barSettings table? # Dimension block of the bar hosting the line (a custom bar's `bars.<key>`); defaults to `settings.bar`
 ---@return boolean
 function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings, thresholdOverrides, barSettings)
-	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	local cache = TRB.Data.cache.values.threshold[key]
+	local cache = GetThresholdCache(key)
 
 	-- When thresholdColor is nil, a ColorCurve is managing the visual color externally
 	-- (e.g., Shadow Word: Madness x2/x3, Druid form thresholds). The override colors are
@@ -2791,7 +2801,8 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		cache.color = nil
 	end
 
-	if spell.settingKey and settings.thresholds.thresholdDictionary[spell.settingKey] and settings.thresholds.thresholdDictionary[spell.settingKey].enabled and showThreshold then
+	local dictEntry = spell.settingKey and settings.thresholds.thresholdDictionary[spell.settingKey]
+	if dictEntry and dictEntry.enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
 		local outOfRange = not spell:GetIsSpellInRange()
