@@ -1508,7 +1508,7 @@ function TRB.Classes.OverlaySlot:CreateEndCap()
 	-- Reset memoized state so the freshly-created frame re-applies anchor/color.
 	self._endCapAnchorSig = nil
 	self._endCapOvershoot = nil
-	self._endCapColorSig = nil
+	self._endCapColorFlat = false
 
 	-- After one frame, reanchor the clip to the correct position on the bar.
 	-- Any flash from initial geometry happens off-screen during this frame.
@@ -1535,9 +1535,10 @@ end
 ---@param colorString string
 function TRB.Classes.OverlaySlot:SetEndCapColor(colorString)
 	if not self.endCapFrame then return end
-	local sig = "flat:" .. tostring(colorString)
-	if self._endCapColorSig == sig then return end
-	self._endCapColorSig = sig
+	-- A flag beside the string, so a nil color still counts as applied without building a signature.
+	if self._endCapColorFlat and self._endCapColor == colorString then return end
+	self._endCapColorFlat = true
+	self._endCapColor = colorString
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	self.endCapFrame.texture:SetVertexColor(r, g, b, a)
 end
@@ -1550,7 +1551,7 @@ function TRB.Classes.OverlaySlot:SetEndCapColorResult(colorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
-	self._endCapColorSig = nil
+	self._endCapColorFlat = false
 	self.endCapFrame.texture:SetVertexColor(colorResult:GetRGBA())
 end
 

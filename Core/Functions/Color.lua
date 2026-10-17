@@ -2,11 +2,10 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Color = {}
 
--- Memoization cache for GetRGBAFromString in the common case (no color/alpha adjustment).
--- Keyed by hexString .. (normalize and "T" or "F"), storing {r, g, b, a}.
--- Never needs explicit invalidation — a given hex string always maps to the same RGBA.
--- Optionally cleared in ResetColorCaches() to bound memory.
-local rgbaCache = {}
+-- GetRGBAFromString memos for the unadjusted case, {r, g, b, a} by hex string, one per normalize flag so a
+-- lookup builds no key. A hex string always maps to the same RGBA; ResetColorCaches() clears them to bound memory.
+local rgbaCacheNormalized = {}
+local rgbaCacheRaw = {}
 
 -- The player's class never changes, so its color is resolved once and reused.
 local playerClassColorHex = nil
@@ -21,8 +20,8 @@ function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust,
 	-- Fast path: when no color/alpha adjustment, use memoized result
 	local canCache = (percentColorAdjust == nil or percentColorAdjust == 1) and (percentAlphaAdjust == nil or percentAlphaAdjust == 1)
 	if canCache and s ~= nil and #s == 8 then
-		local cacheKey = normalize and (s .. "T") or (s .. "F")
-		local cached = rgbaCache[cacheKey]
+		local rgbaCache = normalize and rgbaCacheNormalized or rgbaCacheRaw
+		local cached = rgbaCache[s]
 		if cached then
 			return cached[1], cached[2], cached[3], cached[4]
 		end
@@ -34,7 +33,7 @@ function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust,
 		if normalize then
 			_r, _g, _b, _a = _r/255, _g/255, _b/255, _a/255
 		end
-		rgbaCache[cacheKey] = { _r, _g, _b, _a }
+		rgbaCache[s] = { _r, _g, _b, _a }
 		return _r, _g, _b, _a
 	end
 
@@ -74,7 +73,8 @@ end
 
 ---Clears the RGBA parse memoization cache. Call from ResetColorCaches() to bound memory.
 function TRB.Functions.Color:ClearRGBACache()
-	wipe(rgbaCache)
+	wipe(rgbaCacheNormalized)
+	wipe(rgbaCacheRaw)
 end
 
 ---Converts normalized decimal RGBA values (0.0-1.0) to an AARRGGBB hexadecimal string
@@ -257,6 +257,7 @@ function TRB.Functions.Color:SetBackdropColor(frame, key, r, g, b, a)
 			TRB.Data.cache.colors.backdrop[key].a = a
 			changed = true
 		end
+		TRB.Data.cache.colors.backdrop[key].source = nil
 	end
 
 	if changed then
@@ -292,6 +293,7 @@ function TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
 			TRB.Data.cache.colors.border[key].a = a
 			changed = true
 		end
+		TRB.Data.cache.colors.border[key].source = nil
 	end
 
 	if changed then
@@ -305,8 +307,15 @@ end
 ---@param rgbaString string # AARRGGBB hexadecimal color string
 ---@param normalize boolean? # Whether to normalize values to 0.0-1.0 (defaults to true)
 function TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, key, rgbaString, normalize)
+	local cached = key ~= nil and TRB.Data.cache.colors.border[key] or nil
+	if cached ~= nil and rgbaString ~= nil and cached.source == rgbaString then
+		return
+	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
 	TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
+	if key ~= nil then
+		TRB.Data.cache.colors.border[key].source = rgbaString
+	end
 end
 
 -- Shield color sources -> the castbar colors-table key they pull from. Only the uninterruptible colors are
@@ -365,8 +374,12 @@ function TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 			TRB.Data.cache.colors.bar[key].a = a
 			changed = true
 		end
+		TRB.Data.cache.colors.bar[key].source = nil
 	else
 		changed = true
+		if TRB.Data.cache.colors.bar[key] ~= nil then
+			TRB.Data.cache.colors.bar[key].source = nil
+		end
 	end
 	
 	if changed then
@@ -402,6 +415,7 @@ function TRB.Functions.Color:SetStatusBarVertexColor(frame, key, r, g, b, a)
 			TRB.Data.cache.colors.bar[key].a = a
 			changed = true
 		end
+		TRB.Data.cache.colors.bar[key].source = nil
 	end
 	
 	if changed then
@@ -415,8 +429,15 @@ end
 ---@param rgbaString string # AARRGGBB hexadecimal color string
 ---@param normalize boolean? # Whether to normalize values to 0.0-1.0 (defaults to true)
 function TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, key, rgbaString, normalize)
+	local cached = key ~= nil and TRB.Data.cache.colors.bar[key] or nil
+	if cached ~= nil and rgbaString ~= nil and cached.source == rgbaString then
+		return
+	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
 	TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
+	if key ~= nil then
+		TRB.Data.cache.colors.bar[key].source = rgbaString
+	end
 end
 
 ---Sets a threshold frame's texture and optional icon border color from an AARRGGBB hex string, filtered by class/spec

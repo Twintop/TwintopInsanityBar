@@ -72,6 +72,11 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	if index and index > 0 then
 		self.name = self.name .. "_" .. index
 	end
+	-- Color cache keys, built once: the name never changes after construction.
+	self.resourceKey = self.name .. "_resource"
+	self.borderKey = self.name .. "_border"
+	self.backgroundKey = self.name .. "_background"
+	self.gradientKey = self.name .. "_gradient"
 
 	-- Append a monotonic counter to guarantee a globally unique frame name.
 	-- Without this, CreateFrame can return a stale frame object from _G when
@@ -101,6 +106,26 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.frame.thresholds = self.thresholds
 
 	return self
+end
+
+---Writes the side icon's border color unless it already holds it.
+---@param node TRB.Classes.BarNode
+local function SetIconBorderColor(node, r, g, b, a)
+	if node._iconBorderR == r and node._iconBorderG == g and node._iconBorderB == b and node._iconBorderA == a then
+		return
+	end
+	node._iconBorderR, node._iconBorderG, node._iconBorderB, node._iconBorderA = r, g, b, a
+	node.icon:SetBackdropBorderColor(r, g, b, a)
+end
+
+---Writes the side icon's background color unless it already holds it.
+---@param node TRB.Classes.BarNode
+local function SetIconBackgroundColor(node, r, g, b, a)
+	if node._iconBackgroundR == r and node._iconBackgroundG == g and node._iconBackgroundB == b and node._iconBackgroundA == a then
+		return
+	end
+	node._iconBackgroundR, node._iconBackgroundG, node._iconBackgroundB, node._iconBackgroundA = r, g, b, a
+	node.icon:SetBackdropColor(r, g, b, a)
 end
 
 ---Sets the value of the StatusBar
@@ -197,7 +222,7 @@ end
 ---@param colorString string # ARGB hex color string (e.g., "FFFF0000" for red)
 function TRB.Classes.BarNode:SetColor(colorString)
 	self:ClearGradient()
-	TRB.Functions.Color:SetStatusBarColorFromRGBAString(self.frame, self.name .. "_resource", colorString)
+	TRB.Functions.Color:SetStatusBarColorFromRGBAString(self.frame, self.resourceKey, colorString)
 end
 
 ---Sets the color of the resource bar from a ColorCurve result. Clears any active gradient.
@@ -208,7 +233,7 @@ function TRB.Classes.BarNode:SetColorCurve(colorResult)
 		return
 	end
 	self:ClearGradient()
-	TRB.Data.cache.colors.bar[self.name .. "_resource"] = nil
+	TRB.Data.cache.colors.bar[self.resourceKey] = nil
 	local texture = self.frame:GetStatusBarTexture()
 	if texture then
 		texture:SetVertexColor(colorResult:GetRGBA())
@@ -221,7 +246,7 @@ end
 ---@param color2String string # ARGB hex color string for the end color
 ---@param direction string # "horizontal" or "vertical"
 function TRB.Classes.BarNode:SetColorGradient(color1String, color2String, direction)
-	local cacheKey = self.name .. "_gradient"
+	local cacheKey = self.gradientKey
 	local cache = TRB.Data.cache.colors.gradient
 	local cached = cache[cacheKey]
 	if cached and cached.color1 == color1String and cached.color2 == color2String and cached.direction == direction then
@@ -233,7 +258,7 @@ function TRB.Classes.BarNode:SetColorGradient(color1String, color2String, direct
 	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
 
 	-- Set vertex color to white so gradient colors are not tinted
-	TRB.Data.cache.colors.bar[self.name .. "_resource"] = nil
+	TRB.Data.cache.colors.bar[self.resourceKey] = nil
 	self.frame:SetStatusBarColor(1, 1, 1, 1)
 
 	local texture = self.frame:GetStatusBarTexture()
@@ -261,13 +286,13 @@ function TRB.Classes.BarNode:ClearGradient()
 		texture:SetGradient("HORIZONTAL", white, white)
 	end
 	self._gradientActive = false
-	TRB.Data.cache.colors.gradient[self.name .. "_gradient"] = nil
+	TRB.Data.cache.colors.gradient[self.gradientKey] = nil
 end
 
 ---Sets the border color
 ---@param colorString string # ARGB hex color string
 function TRB.Classes.BarNode:SetBorderColor(colorString)
-	TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.frame, self.name .. "_border", colorString)
+	TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.frame, self.borderKey, colorString)
 
 	-- The side ability icon's border is part of the same bar, so it tracks every border recolor
 	self:ApplyIconBorderColor()
@@ -296,11 +321,12 @@ function TRB.Classes.BarNode:SetBorderColorCurve(colorResult, endCapColorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
-	TRB.Data.cache.colors.border[self.name .. "_border"] = nil
+	TRB.Data.cache.colors.border[self.borderKey] = nil
 	self.frame:SetBackdropBorderColor(colorResult:GetRGBA())
 	-- Curve results are secret-safe to pass straight through; the icon border follows the same curve
 	if self.icon ~= nil then
 		self.icon:SetBackdropBorderColor(colorResult:GetRGBA())
+		self._iconBorderR = nil
 	end
 
 	-- Curve-driven borders are built with the DEFAULT border color as their base, and the secret
@@ -331,7 +357,7 @@ end
 ---@param b number # Blue (0-1)
 ---@param a number # Alpha (0-1)
 function TRB.Classes.BarNode:SetBackgroundColor(r, g, b, a)
-	TRB.Functions.Color:SetBackdropColor(self.frame, self.name .. "_background", r, g, b, a)
+	TRB.Functions.Color:SetBackdropColor(self.frame, self.backgroundKey, r, g, b, a)
 
 	-- The side ability icon's background is part of the same bar, so it tracks every background recolor
 	self:ApplyIconBackgroundColor()
@@ -344,19 +370,26 @@ function TRB.Classes.BarNode:SetBackgroundColorCurve(colorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
-	TRB.Data.cache.colors.backdrop[self.name .. "_background"] = nil
+	TRB.Data.cache.colors.backdrop[self.backgroundKey] = nil
 	self.frame:SetBackdropColor(colorResult:GetRGBA())
 	-- Curve results are secret-safe to pass straight through; the icon background follows the same curve
 	if self.icon ~= nil then
 		self.icon:SetBackdropColor(colorResult:GetRGBA())
+		self._iconBackgroundR = nil
 	end
 end
 
 ---Sets the background color from a color string
 ---@param colorString string # ARGB hex color string
 function TRB.Classes.BarNode:SetBackgroundColorFromString(colorString)
+	local cached = TRB.Data.cache.colors.backdrop[self.backgroundKey]
+	if cached ~= nil and colorString ~= nil and cached.source == colorString then
+		self:ApplyIconBackgroundColor()
+		return
+	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	self:SetBackgroundColor(r, g, b, a)
+	TRB.Data.cache.colors.backdrop[self.backgroundKey].source = colorString
 end
 
 ---Sets the dimensions of the node
@@ -394,13 +427,13 @@ function TRB.Classes.BarNode:SetDimensions(width, height, border)
 		self.frame.backdropInfo.insets = { left = self.border, right = self.border, top = self.border, bottom = self.border }
 		self.frame:ApplyBackdrop()
 		-- Restore cached border color after ApplyBackdrop resets it
-		local borderCacheKey = self.name .. "_border"
+		local borderCacheKey = self.borderKey
 		local cachedColor = TRB.Data.cache.colors.border[borderCacheKey]
 		if cachedColor then
 			self.frame:SetBackdropBorderColor(cachedColor.r, cachedColor.g, cachedColor.b, cachedColor.a)
 		end
 		-- Restore cached background color after ApplyBackdrop resets it
-		local bgCacheKey = self.name .. "_background"
+		local bgCacheKey = self.backgroundKey
 		local cachedBgColor = TRB.Data.cache.colors.backdrop[bgCacheKey]
 		if cachedBgColor then
 			self.frame:SetBackdropColor(cachedBgColor.r, cachedBgColor.g, cachedBgColor.b, cachedBgColor.a)
@@ -483,10 +516,10 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 	-- ApplyBackdrop resets border/background colors to white, and SetStatusBarTexture may
 	-- reset the fill vertex color. Invalidate color caches so the next SetColor/SetBorderColor/
 	-- SetBackgroundColor calls aren't skipped as no-ops.
-	TRB.Data.cache.colors.bar[self.name .. "_resource"] = nil
-	TRB.Data.cache.colors.border[self.name .. "_border"] = nil
-	TRB.Data.cache.colors.backdrop[self.name .. "_background"] = nil
-	TRB.Data.cache.colors.gradient[self.name .. "_gradient"] = nil
+	TRB.Data.cache.colors.bar[self.resourceKey] = nil
+	TRB.Data.cache.colors.border[self.borderKey] = nil
+	TRB.Data.cache.colors.backdrop[self.backgroundKey] = nil
+	TRB.Data.cache.colors.gradient[self.gradientKey] = nil
 	self._gradientActive = false
 
 	-- The icon's backdrop is built from these same textures, and layout may have run before them
@@ -688,6 +721,8 @@ function TRB.Classes.BarNode:EnsureIcon()
 		icon.texture:SetAllPoints(icon)
 		icon:Hide()
 		self.icon = icon
+		self._iconBorderR = nil
+		self._iconBackgroundR = nil
 	end
 	return self.icon
 end
@@ -887,6 +922,8 @@ function TRB.Classes.BarNode:ApplyIconBackdrop()
 		backdrop.edgeSize = border
 	end
 	icon:SetBackdrop(backdrop)
+	self._iconBorderR = nil
+	self._iconBackgroundR = nil
 	-- SetBackdrop resets both colors to white; restore whatever the bar is currently at so the icon keeps
 	-- tracking it (including uninterruptible / indicator recolors)
 	self:ApplyIconBorderColor()
@@ -899,9 +936,9 @@ function TRB.Classes.BarNode:ApplyIconBorderColor()
 	if self.icon == nil then
 		return
 	end
-	local cached = TRB.Data.cache.colors.border[self.name .. "_border"]
+	local cached = TRB.Data.cache.colors.border[self.borderKey]
 	if cached then
-		self.icon:SetBackdropBorderColor(cached.r, cached.g, cached.b, cached.a)
+		SetIconBorderColor(self, cached.r, cached.g, cached.b, cached.a)
 	end
 end
 
@@ -914,7 +951,7 @@ function TRB.Classes.BarNode:SetIconBorderColorString(colorString)
 		return
 	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
-	self.icon:SetBackdropBorderColor(r, g, b, a)
+	SetIconBorderColor(self, r, g, b, a)
 end
 
 ---Applies the node's current background color to the side ability icon, so an empty icon matches the bar
@@ -923,9 +960,9 @@ function TRB.Classes.BarNode:ApplyIconBackgroundColor()
 	if self.icon == nil then
 		return
 	end
-	local cached = TRB.Data.cache.colors.backdrop[self.name .. "_background"]
+	local cached = TRB.Data.cache.colors.backdrop[self.backgroundKey]
 	if cached then
-		self.icon:SetBackdropColor(cached.r, cached.g, cached.b, cached.a)
+		SetIconBackgroundColor(self, cached.r, cached.g, cached.b, cached.a)
 	end
 end
 
@@ -937,7 +974,7 @@ function TRB.Classes.BarNode:SetIconBackgroundColorString(colorString)
 		return
 	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
-	self.icon:SetBackdropColor(r, g, b, a)
+	SetIconBackgroundColor(self, r, g, b, a)
 end
 
 ---Sets the side ability icon's texture. Passing nil hides the icon.
