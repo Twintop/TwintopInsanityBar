@@ -450,6 +450,65 @@ end
 TRB.Data.cache = TRB.Data.cache or {}
 TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
 
+-- A raw-input lookup in front of a string-keyed curve cache, stored inside that cache so every clear
+-- or replacement of it drops this too. A miss falls back to the string key, so equal keys share a curve.
+local FAST_CURVE_ROOT = {}
+local FAST_CURVE_NIL = {}
+
+---Walks the fast lookup for the raw keys; nil when a key can't index a table (NaN). Each call site
+---leads with its own tag and always passes the same number of keys, so paths never collide.
+---@return table? node, any lastKey
+local function FastCurveNode(cache, create, ...)
+	local node = cache[FAST_CURVE_ROOT]
+	if node == nil then
+		if not create then
+			return nil, nil
+		end
+		node = {}
+		cache[FAST_CURVE_ROOT] = node
+	end
+	local count = select("#", ...)
+	for i = 1, count do
+		local key = (select(i, ...))
+		if key == nil then
+			key = FAST_CURVE_NIL
+		elseif key ~= key then
+			return nil, nil
+		end
+		if i == count then
+			return node, key
+		end
+		local child = node[key]
+		if child == nil then
+			if not create then
+				return nil, nil
+			end
+			child = {}
+			node[key] = child
+		end
+		node = child
+	end
+	return nil, nil
+end
+
+---Returns the curve a cache holds for these raw inputs, or nil on a miss.
+---@param cache table # The string-keyed curve cache this lookup fronts
+---@return any?
+function TRB.Functions.Color:GetFastCurve(cache, ...)
+	local node, key = FastCurveNode(cache, false, ...)
+	return node ~= nil and node[key] or nil
+end
+
+---Records a curve under these raw inputs in front of its string-keyed cache entry.
+---@param cache table # The string-keyed curve cache this lookup fronts
+---@param curve any
+function TRB.Functions.Color:SetFastCurve(cache, curve, ...)
+	local node, key = FastCurveNode(cache, true, ...)
+	if node ~= nil then
+		node[key] = curve
+	end
+end
+
 -- Threshold metadata for built ColorCurves, keyed weakly by the curve object. Lets an end cap
 -- following "only non-default border colors" rebuild the same step curve based at its own color
 -- (the curve's base IS the default border color, and evaluated results are secret).
@@ -503,8 +562,12 @@ function TRB.Functions.Color:EvaluateEndCapCurve(node, borderCurve, powerType)
 	end
 
 	local cache = TRB.Data.cache.stepColorCurves
+	local curve = self:GetFastCurve(cache, "endCap", meta, capBaseColor)
+	if curve ~= nil then
+		return UnitPowerPercent("player", resource, true, curve)
+	end
 	local fullKey = "endCap_" .. tostring(capBaseColor) .. meta.key
-	local curve = cache[fullKey]
+	curve = cache[fullKey]
 	if curve == nil then
 		curve = C_CurveUtil.CreateColorCurve()
 		curve:SetType(Enum.LuaCurveType.Step)
@@ -516,6 +579,7 @@ function TRB.Functions.Color:EvaluateEndCapCurve(node, borderCurve, powerType)
 		end
 		cache[fullKey] = curve
 	end
+	self:SetFastCurve(cache, curve, "endCap", meta, capBaseColor)
 
 	return UnitPowerPercent("player", resource, true, curve)
 end
@@ -647,9 +711,14 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 
 	-- Check cache first
 	local cache = TRB.Data.cache.stepColorCurves
+	local fastCurve = self:GetFastCurve(cache, "resource", belowColor, aboveColor, thresholdPercent)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
 	local cacheKey = belowColor .. "_" .. aboveColor .. "_" .. tostring(thresholdPercent)
-	
+
 	if cache[cacheKey] then
+		self:SetFastCurve(cache, cache[cacheKey], "resource", belowColor, aboveColor, thresholdPercent)
 		return cache[cacheKey]
 	end
 
@@ -666,6 +735,7 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 
 	self:SetCurveThresholdMeta(colorCurve, belowColor, { { x = thresholdPercent, color = aboveColor } })
 	cache[cacheKey] = colorCurve
+	self:SetFastCurve(cache, colorCurve, "resource", belowColor, aboveColor, thresholdPercent)
 	return colorCurve
 end
 
@@ -738,8 +808,13 @@ function TRB.Functions.Color:BuildThresholdValueCurve(value, maxResource, underC
 		thresholdPercent = 1
 	end
 
+	local fastCurve = self:GetFastCurve(cache, "value", value, maxResource, underColor, overColor)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
 	local cacheKey = tostring(value) .. "_" .. tostring(maxResource) .. "_" .. underColor .. "_" .. overColor
 	if cache[cacheKey] then
+		self:SetFastCurve(cache, cache[cacheKey], "value", value, maxResource, underColor, overColor)
 		return cache[cacheKey]
 	end
 
@@ -763,6 +838,7 @@ function TRB.Functions.Color:BuildThresholdValueCurve(value, maxResource, underC
 	end
 
 	cache[cacheKey] = colorCurve
+	self:SetFastCurve(cache, colorCurve, "value", value, maxResource, underColor, overColor)
 	return colorCurve
 end
 

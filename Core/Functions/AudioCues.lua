@@ -298,7 +298,12 @@ end
 local function LatchCue(latches, cueId, cue, condition, canPlay)
 	if condition then
 		if cue.enabled and not latches[cueId] then
+			-- A cue's first evaluation (login, spec change) only records its state: already true is not a crossing.
+			local isBaseline = latches[cueId] == nil
 			latches[cueId] = true
+			if isBaseline then
+				return false
+			end
 			if canPlay ~= false then
 				PlayCue(cue)
 			end
@@ -417,14 +422,27 @@ function TRB.Functions.AudioCues:ResetLatch(snapshotData, cueId)
 	EnsureLatches(snapshotData)[cueId] = false
 end
 
----Re-arms every cue. Used on spec switch and when leaving combat.
----@param snapshotData TRB.Classes.SnapshotData
-function TRB.Functions.AudioCues:ResetAllLatches(snapshotData)
-	if snapshotData == nil then
+---Sets every recorded latch in a table back to armed. Armed (false) rather than cleared (nil), because a
+---cleared latch is a first evaluation and stays silent.
+---@param latches table<string, boolean>?
+local function RearmLatches(latches)
+	if latches == nil then
 		return
 	end
-	snapshotData.audio = snapshotData.audio or {}
-	snapshotData.audio.latches = {}
+	for cueId in pairs(latches) do
+		latches[cueId] = false
+	end
+end
+
+---Re-arms every cue, built-in and threshold line alike, so one whose condition still holds plays again.
+---Used on death.
+---@param snapshotData TRB.Classes.SnapshotData
+function TRB.Functions.AudioCues:ResetAllLatches(snapshotData)
+	if snapshotData == nil or snapshotData.audio == nil then
+		return
+	end
+	RearmLatches(snapshotData.audio.latches)
+	RearmLatches(snapshotData.audio.thresholdCues)
 	-- Forget the last-seen counters too, so the next update cannot read as a drop.
 	snapshotData.audio.counterValues = {}
 end
@@ -478,9 +496,11 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 				-- A cue muted out of combat still latches, but can't take the win from an audible one.
 				local audible = IsAudible(cue)
 				if cue.enabled and not latches[cue.id] then
+					-- First evaluation only records the state, as in LatchCue.
+					local isBaseline = latches[cue.id] == nil
 					latches[cue.id] = true
 					-- The sort puts the most urgent cue first, so the first audible crossing wins.
-					if winner == nil and audible then
+					if winner == nil and audible and not isBaseline then
 						winner = cue
 					end
 				elseif audible and isDrop and dropWinner == nil and cue.enabled

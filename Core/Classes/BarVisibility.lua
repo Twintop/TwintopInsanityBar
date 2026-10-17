@@ -93,11 +93,11 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	return self
 end
 
----Convenience constructor that reads current game state into a context.
+---Reads current game state into an existing context, overwriting every field exactly as New would set it.
+---@param target TRB.Classes.BarVisibilityContext # The context to fill
 ---@param force boolean # Force-hide flag from the caller
----@param settings table|nil # The spec's settings table (unused in new system, kept for API compat)
 ---@return TRB.Classes.BarVisibilityContext
-function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
+function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 	local hasTarget = UnitExists("target") == true
 	local targetIsFriendly = false
 	local targetIsEnemy = false
@@ -150,47 +150,54 @@ function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
 		end
 	end
 
-	return TRB.Classes.BarVisibilityContext:New({
-		force = force or false,
-		specSupported = TRB.Data.specSupported or false,
-		inCombat = TRB.Data.character.inCombat or false,
-		inVehicle = TRB.Data.character.inVehicle or false,
-		inPetBattle = TRB.Data.character.inPetBattle or false,
-		onTaxi = onTaxi or false,
-		isDead = isDead or false,
-		hasTarget = hasTarget,
-		targetIsFriendly = targetIsFriendly,
-		targetIsEnemy = targetIsEnemy,
-		isMountedAny = isMountedAny,
-		isMountedGround = isMountedGround,
-		isMountedFlying = isMountedFlying,
-		isSkyriding = isSkyriding,
-		isSkyridingFlying = isSkyridingFlying,
-		isSteadyFlight = isSteadyFlight,
-		isSteadyFlightFlying = isSteadyFlightFlying,
-		inGroup = IsInGroup() or false,
-		inRaid = IsInRaid() or false,
-		inInstance = inInstance,
-		inDungeon = inDungeon,
-		inRaidInstance = inRaidInstance,
-		inBattleground = inBattleground,
-		inArena = inArena,
-		inDelve = inDelve,
-		isPvpFlagged = UnitIsPVP("player") or false,
-		isWarMode = C_PvP.IsWarModeDesired() or false,
-		isDruidHumanoidForm = druidForm == "humanoid",
-		isDruidTravelFormAny = isDruidTravelFormAny,
-		isDruidStagForm = druidForm == "travel",
-		isDruidFlightForm = druidForm == "flight",
-		isDruidSwiftFlightForm = druidForm == "swiftFlight",
-		isDruidAquaticForm = druidForm == "aquatic",
-		isDruidCatForm = druidForm == "cat",
-		isDruidBearForm = druidForm == "bear",
-		isDruidMoonkinForm = druidForm == "moonkin",
-		isPetAlive = petState == "alive",
-		isPetDead = petState == "dead",
-		isPetMissing = petState == "none",
-	})
+	target.force = force or false
+	target.specSupported = TRB.Data.specSupported or false
+	target.inCombat = TRB.Data.character.inCombat or false
+	target.inVehicle = TRB.Data.character.inVehicle or false
+	target.inPetBattle = TRB.Data.character.inPetBattle or false
+	target.onTaxi = onTaxi or false
+	target.isDead = isDead or false
+	target.hasTarget = hasTarget
+	target.targetIsFriendly = targetIsFriendly
+	target.targetIsEnemy = targetIsEnemy
+	target.isMountedAny = isMountedAny or false
+	target.isMountedGround = isMountedGround or false
+	target.isMountedFlying = isMountedFlying or false
+	target.isSkyriding = isSkyriding or false
+	target.isSkyridingFlying = isSkyridingFlying or false
+	target.isSteadyFlight = isSteadyFlight or false
+	target.isSteadyFlightFlying = isSteadyFlightFlying or false
+	target.inGroup = IsInGroup() or false
+	target.inRaid = IsInRaid() or false
+	target.inInstance = inInstance
+	target.inDungeon = inDungeon
+	target.inRaidInstance = inRaidInstance
+	target.inBattleground = inBattleground
+	target.inArena = inArena
+	target.inDelve = inDelve
+	target.isPvpFlagged = UnitIsPVP("player") or false
+	target.isWarMode = C_PvP.IsWarModeDesired() or false
+	target.isDruidHumanoidForm = druidForm == "humanoid"
+	target.isDruidTravelFormAny = isDruidTravelFormAny
+	target.isDruidStagForm = druidForm == "travel"
+	target.isDruidFlightForm = druidForm == "flight"
+	target.isDruidSwiftFlightForm = druidForm == "swiftFlight"
+	target.isDruidAquaticForm = druidForm == "aquatic"
+	target.isDruidCatForm = druidForm == "cat"
+	target.isDruidBearForm = druidForm == "bear"
+	target.isDruidMoonkinForm = druidForm == "moonkin"
+	target.isPetAlive = petState == "alive"
+	target.isPetDead = petState == "dead"
+	target.isPetMissing = petState == "none"
+	return target
+end
+
+---Convenience constructor that reads current game state into a new context.
+---@param force boolean # Force-hide flag from the caller
+---@param settings table|nil # The spec's settings table (unused in new system, kept for API compat)
+---@return TRB.Classes.BarVisibilityContext
+function TRB.Classes.BarVisibilityContext:NewFromGameState(force, settings)
+	return self:FillFromGameState(setmetatable({}, TRB.Classes.BarVisibilityContext), force)
 end
 
 ---@class TRB.Classes.BarVisibilityEntry
@@ -232,8 +239,86 @@ TRB.Functions.BarVisibility.lastAppliedToken = -1
 -- When true, at least one bar is mid-fade and needs per-tick interpolation.
 TRB.Functions.BarVisibility.fading = false
 -- When true, at least one bar has a resource/health threshold curve active.
--- Character.lua checks this to MarkDirty on resource/health changes.
+-- Character.lua checks this to MarkCurveDirty on resource/health changes.
 TRB.Functions.BarVisibility.hasResourceCurve = false
+-- When true, a resource/health value moved since the last pass; NeedsFullPass decides whether re-applying
+-- the recorded curve alphas covers it.
+TRB.Functions.BarVisibility.curveDirty = false
+-- The entries the last full pass handed to the curve, so a value change can re-apply just their alphas.
+-- valid is false until a full pass records it, and after any pass that doesn't.
+TRB.Functions.BarVisibility.curveReplay = { count = 0, valid = false, settings = nil, barGroups = nil }
+-- Inputs NewFromGameState reads live that no event marks dirty, as the last full pass saw them.
+TRB.Functions.BarVisibility.curveRecheck = {}
+
+-- Reused by every HideResourceBar pass so building entries and the context allocates nothing.
+local pooledEntries = {}
+local entryPool = {}
+local pooledContext = setmetatable({}, TRB.Classes.BarVisibilityContext)
+local recheckScratch = {}
+
+---Returns the shared entry list, emptied, for one HideResourceBar pass. Its entries are only valid until the next call.
+---@return TRB.Classes.BarVisibilityEntry[]
+function TRB.Functions.BarVisibility:BeginEntries()
+	for i = #pooledEntries, 1, -1 do
+		pooledEntries[i] = nil
+	end
+	return pooledEntries
+end
+
+---Appends a pooled entry, reset to exactly what BarVisibilityEntry:New builds. Same parameters as New.
+---@param entries TRB.Classes.BarVisibilityEntry[] # The list from BeginEntries
+---@param barGroup TRB.Classes.BarGroup|nil
+---@param visibilitySettings trbBarVisibilitySetting|nil
+---@param enabled boolean
+---@param showNodesCount number|nil
+---@param setMaxNodes number|nil
+function TRB.Functions.BarVisibility:AddEntry(entries, barGroup, visibilitySettings, enabled, showNodesCount, setMaxNodes)
+	local index = #entries + 1
+	local entry = entryPool[index]
+	if entry == nil then
+		entry = setmetatable({}, TRB.Classes.BarVisibilityEntry)
+		entryPool[index] = entry
+	end
+	entry.barGroup = barGroup
+	entry.visibilitySettings = visibilitySettings
+	entry.enabled = enabled
+	entry.showNodesCount = showNodesCount
+	entry.setMaxNodes = setMaxNodes
+	entry.boolShowCached = nil
+	entry.forceHideCached = nil
+	entry.thresholdEligibleCached = nil
+	entries[index] = entry
+end
+
+---Returns the shared context filled from current game state. Only valid until the next call.
+---@param force boolean # Force-hide flag from the caller
+---@return TRB.Classes.BarVisibilityContext
+function TRB.Functions.BarVisibility:GetGameStateContext(force)
+	return TRB.Classes.BarVisibilityContext:FillFromGameState(pooledContext, force)
+end
+
+---Reads the visibility inputs that change without an event.
+---@param into table
+local function ReadUneventedInputs(into)
+	local hasTarget = UnitExists("target") == true
+	into.hasTarget = hasTarget
+	into.targetIsFriendly = hasTarget and UnitIsFriend("player", "target") == true
+	into.targetIsEnemy = hasTarget and UnitCanAttack("player", "target") == true
+	into.isFlying = IsFlying() == true
+	into.isGliding = (C_PlayerInfo.GetGlidingInfo()) == true
+	into.isWarMode = C_PvP.IsWarModeDesired() == true
+end
+
+---@return boolean # Whether every unevented input still reads as the last full pass saw it
+local function UneventedInputsUnchanged(recorded)
+	ReadUneventedInputs(recheckScratch)
+	for key, value in pairs(recheckScratch) do
+		if recorded[key] ~= value then
+			return false
+		end
+	end
+	return true
+end
 
 local DRUID_FORM_VISIBILITY_KEYS = {
 	"isDruidHumanoidForm",
@@ -295,6 +380,86 @@ end
 ---Marks the cache as up-to-date after a successful ProcessBars evaluation.
 function TRB.Functions.BarVisibility:MarkClean()
 	self.lastAppliedToken = self.dirtyToken
+	self.curveDirty = false
+end
+
+---Marks that a resource or health value a threshold curve may read has changed. Unlike MarkDirty, the
+---next pass only re-applies the curve alphas when nothing else changed (see NeedsFullPass).
+function TRB.Functions.BarVisibility:MarkCurveDirty()
+	-- Edit Mode runs ProcessBars itself and never reaches NeedsFullPass.
+	if TRB.Functions.EditMode:IsInEditMode() then
+		self:MarkDirty()
+		return
+	end
+	self.curveDirty = true
+end
+
+---The HideResourceBar gate: true when a full ProcessBars pass is needed. A value change alone re-applies
+---the recorded curve alphas instead; anything else gets the full pass a curve change always forced.
+---@param force boolean|nil # If true, always returns true
+---@return boolean
+function TRB.Functions.BarVisibility:NeedsFullPass(force)
+	if self.curveDirty then
+		self.curveDirty = false
+		if not force and not self.fading and self.dirtyToken == self.lastAppliedToken
+			and UneventedInputsUnchanged(self.curveRecheck) and self:ReplayCurves() then
+			-- TEMPORARY DIAGNOSTIC (/trb tickcost), remove with the probe in Init.lua.
+			if TRB.Frames.timerFrame.costProbe ~= nil then
+				TRB.Frames.timerFrame:ProbeCount("visibility curve")
+			end
+			return false
+		end
+		self:MarkDirty()
+		return true
+	end
+	return self:IsDirty(force)
+end
+
+---Applies an entry's threshold curve alpha to its container, or its fade alpha when the curve can't be read.
+---@param barGroup TRB.Classes.BarGroup
+---@param visSettings trbBarVisibilitySetting
+---@param settings table|nil
+---@param currentAlpha number
+local function ApplyCurveAlpha(barGroup, visSettings, settings, currentAlpha)
+	local curveResult = TRB.Functions.BarVisibility:EvaluateVisibilityCurve(visSettings, settings)
+	if curveResult ~= nil and type(curveResult.GetRGBA) == "function" then
+		local _, _, _, secretAlpha = curveResult:GetRGBA()
+		barGroup.containerFrame:SetAlpha(secretAlpha)
+	else
+		barGroup.containerFrame:SetAlpha(currentAlpha)
+	end
+end
+
+---Whether the last full pass recorded this bar as curve-driven.
+---@return boolean
+local function IsCurveRecorded(replay, barGroup, visSettings)
+	for i = 1, replay.count do
+		local item = replay[i]
+		if item.barGroup == barGroup and item.visibilitySettings == visSettings then
+			return true
+		end
+	end
+	return false
+end
+
+---Re-applies the curve alphas the last full pass recorded, as its Phase 3 did.
+---@return boolean # false, having applied nothing, when the record no longer matches the bars on screen
+function TRB.Functions.BarVisibility:ReplayCurves()
+	local replay = self.curveReplay
+	if not replay.valid or replay.barGroups ~= TRB.Frames.barGroups then
+		return false
+	end
+	for i = 1, replay.count do
+		local barGroup = replay[i].barGroup
+		if not barGroup.isVisible or barGroup.currentAlpha <= 0 then
+			return false
+		end
+	end
+	for i = 1, replay.count do
+		local item = replay[i]
+		ApplyCurveAlpha(item.barGroup, item.visibilitySettings, replay.settings, item.barGroup.currentAlpha)
+	end
+	return true
 end
 
 ---Discards the applied show/alpha state of every bar group so the next ProcessBars pass
@@ -633,6 +798,11 @@ function TRB.Functions.BarVisibility:BuildVisibilityAlphaCurve(conditionType, op
 	local activeA = (activeAlpha or 100) / 100
 	local inactiveA = (inactiveAlpha or 0) / 100
 
+	local fastCurve = TRB.Functions.Color:GetFastCurve(cache, "visibility", conditionType, operator, thresholdFraction, activeA, inactiveA)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
+
 	-- Build a cache key from all inputs
 	local fullKey = "vis_" .. conditionType .. "_" .. operator .. "_" .. tostring(thresholdFraction) .. "_" .. tostring(activeA) .. "_" .. tostring(inactiveA)
 
@@ -658,6 +828,7 @@ function TRB.Functions.BarVisibility:BuildVisibilityAlphaCurve(conditionType, op
 
 		cache[fullKey] = curve
 	end
+	TRB.Functions.Color:SetFastCurve(cache, cache[fullKey], "visibility", conditionType, operator, thresholdFraction, activeA, inactiveA)
 
 	return cache[fullKey]
 end
@@ -729,6 +900,23 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	local anyEntryHasCurve = false
 	local conditionsChanged = (self.dirtyToken ~= self.lastAppliedToken) or context.force
 	local isRenderTransition = TRB.Functions.Bar:IsRenderTransitionActive()
+
+	-- TEMPORARY DIAGNOSTIC (/trb tickcost), remove with the probe in Init.lua.
+	if TRB.Frames.timerFrame.costProbe ~= nil then
+		TRB.Frames.timerFrame:ProbeCount(conditionsChanged and "visibility full" or "visibility fade")
+	end
+
+	-- A forced, render transition, or Edit Mode pass leaves no record, so the next value change still gets a full pass.
+	local curveReplay = self.curveReplay
+	local recordCurves = conditionsChanged and not context.force and not isRenderTransition
+		and not TRB.Functions.EditMode:IsInEditMode()
+	-- A fade-only pass has no Phase 1 results, so the last full pass's record says which bars the curve drives.
+	local useCurveRecord = not conditionsChanged and not isRenderTransition and curveReplay.valid
+		and curveReplay.barGroups == TRB.Frames.barGroups
+	if conditionsChanged then
+		curveReplay.count = 0
+		curveReplay.valid = false
+	end
 
 	for _, entry in ipairs(entries) do
 		if entry.barGroup ~= nil then
@@ -824,13 +1012,24 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 				-- the OR, AND the entry is eligible (not force-hidden/neverShow/
 				-- unsupported), evaluate the curve and apply the secret alpha.
 				-- Otherwise fall through to the normal fade alpha.
-				if hasCurve and not entry.boolShowCached and entry.thresholdEligibleCached then
-					local curveResult = self:EvaluateVisibilityCurve(visSettings, settings)
-					if curveResult ~= nil and type(curveResult.GetRGBA) == "function" then
-						local _, _, _, secretAlpha = curveResult:GetRGBA()
-						entry.barGroup.containerFrame:SetAlpha(secretAlpha)
-					else
-						entry.barGroup.containerFrame:SetAlpha(currentAlpha)
+				local curveDriven
+				if useCurveRecord then
+					curveDriven = IsCurveRecorded(curveReplay, entry.barGroup, visSettings)
+				else
+					curveDriven = hasCurve and not entry.boolShowCached and entry.thresholdEligibleCached
+				end
+				if curveDriven then
+					ApplyCurveAlpha(entry.barGroup, visSettings, settings, currentAlpha)
+					if recordCurves then
+						local index = curveReplay.count + 1
+						local item = curveReplay[index]
+						if item == nil then
+							item = {}
+							curveReplay[index] = item
+						end
+						item.barGroup = entry.barGroup
+						item.visibilitySettings = visSettings
+						curveReplay.count = index
 					end
 				else
 					entry.barGroup.containerFrame:SetAlpha(currentAlpha)
@@ -923,6 +1122,13 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 		TRB.Functions.BarText:Hide(settings)
 	end
 
+	if recordCurves then
+		curveReplay.settings = settings
+		curveReplay.barGroups = TRB.Frames.barGroups
+		curveReplay.valid = true
+		ReadUneventedInputs(self.curveRecheck)
+	end
+
 	if conditionsChanged then
 		self:MarkClean()
 	end
@@ -940,7 +1146,7 @@ function TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, settin
 	end
 	local displayBar = settings and settings.displayBar
 	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.petBarKeys) do
-		entries[#entries + 1] = TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups[barKey], displayBar and displayBar[barKey],
+		self:AddEntry(entries, barGroups and barGroups[barKey], displayBar and displayBar[barKey],
 			not TRB.Functions.Bar:IsBarTalentGatedHidden(barKey), 1, nil)
 	end
 end
@@ -966,6 +1172,7 @@ function TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, setti
 	end
 
 	self.fading = false
+	self.curveReplay.valid = false
 	snapshotData.attributes.isTracking = false
 	if settings ~= nil then
 		TRB.Functions.BarText:Hide(settings)
@@ -988,6 +1195,7 @@ function TRB.Functions.BarVisibility:HideAllBarGroups(snapshotData)
 		end
 	end
 	self.fading = false
+	self.curveReplay.valid = false
 	snapshotData.attributes.isTracking = false
 
 	self:MarkClean()

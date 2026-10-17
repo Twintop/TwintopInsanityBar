@@ -70,12 +70,51 @@ local containerAnchorLabelByResourceType = {
 	WhirlwindCharges = L["WhirlwindChargesContainer"],
 }
 
+-- Anchor names come from a small set of settings strings, so the per-tick lookups memoize their
+-- normalized form and pattern captures (false records a pattern that did not match).
+local normalizedAnchorKeys = {}
+local anchorKeyMatches = {}
+
+---An anchor name with its underscores removed, as string.gsub(key, "_", "") returns it.
+---@param key string
+---@return string
+function TRB.Functions.BarText:NormalizeAnchorKey(key)
+	local normalized = normalizedAnchorKeys[key]
+	if normalized == nil then
+		normalized = (string.gsub(key, "_", ""))
+		normalizedAnchorKeys[key] = normalized
+	end
+	return normalized
+end
+
+---string.match(key, pattern) for an anchor name, up to two captures.
+---@param key string
+---@param pattern string
+---@return string?, string?
+function TRB.Functions.BarText:MatchAnchorKey(key, pattern)
+	local byKey = anchorKeyMatches[pattern]
+	if byKey == nil then
+		byKey = {}
+		anchorKeyMatches[pattern] = byKey
+	end
+	local result = byKey[key]
+	if result == nil then
+		local first, second = string.match(key, pattern)
+		result = first ~= nil and { first, second } or false
+		byKey[key] = result
+	end
+	if result then
+		return result[1], result[2]
+	end
+	return nil, nil
+end
+
 local function GetContainerAnchorBarGroupKey(relativeToFrame)
 	if type(relativeToFrame) ~= "string" then
 		return nil
 	end
 
-	return string.match(relativeToFrame, "^Container::(.+)$")
+	return (TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, "^Container::(.+)$"))
 end
 
 -- Anchor names every class module resolves to the same bar group, so an inactive spec's text can be matched without live frames.
@@ -94,12 +133,12 @@ local function GetSharedAnchorBarGroupKey(relativeToFrame)
 	if groupKey ~= nil then
 		return groupKey
 	end
-	local normalized = (string.gsub(relativeToFrame, "_", ""))
+	local normalized = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame)
 	groupKey = sharedAnchorGroupKeys[normalized]
 	if groupKey ~= nil then
 		return groupKey
 	end
-	if string.match(normalized, "^ComboPoint%d+$") then
+	if TRB.Functions.BarText:MatchAnchorKey(normalized, "^ComboPoint%d+$") then
 		return "secondary"
 	end
 	return nil
@@ -3056,7 +3095,7 @@ function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
 		-- per the Secret Values rules and produces a secret string that still flows
 		-- through `FontString:SetText` for display. Skip the sign and threshold
 		-- checks (which would crash) and always render with low precision.
-		return string.format("%."..TRB.Data.settings.core.timers.precisionLow.."f", value)
+		return string.format(GetPrecisionFormat(TRB.Data.settings.core.timers.precisionLow), value)
 	end
 
 	if positiveOnly and value < 0 then
@@ -3064,9 +3103,9 @@ function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
 	end
 
 	if value >= TRB.Data.settings.core.timers.precisionThreshold then
-		return string.format("%."..TRB.Data.settings.core.timers.precisionHigh.."f", value)
+		return string.format(GetPrecisionFormat(TRB.Data.settings.core.timers.precisionHigh), value)
 	else
-		return string.format("%."..TRB.Data.settings.core.timers.precisionLow.."f", value)
+		return string.format(GetPrecisionFormat(TRB.Data.settings.core.timers.precisionLow), value)
 	end
 end
 

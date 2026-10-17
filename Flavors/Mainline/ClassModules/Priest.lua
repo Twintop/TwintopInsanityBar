@@ -629,6 +629,26 @@ local function CalculateHolyWordDuration(holyWordSpell)
 	return duration
 end
 
+---A Holy Word's custom threshold position: the recharging node's index within its run (nil with every charge
+---up, which means the last node), seconds into the recharge, and the talent-adjusted cooldown.
+---@param spellKey string # The Holy Word's spell key, which is also its node key
+---@return integer?, number?, number?
+local function GetHolyWordRechargeState(spellKey)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spell = spells[spellKey]
+	local snapshot = spell and TRB.Data.snapshotData.snapshots[spell.id]
+	if snapshot == nil or talents == nil then
+		return nil, nil, nil
+	end
+	local duration = CalculateHolyWordDuration(spell)
+	local cooldown = snapshot.cooldown
+	if cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
+		local remaining = cooldown.manualCooldownExpires - GetTime()
+		return (cooldown.manualCharges or 0) + 1, math.max(0, math.min(duration, duration - remaining)), duration
+	end
+	return nil, duration, duration
+end
+
 ---Calculates the amount of CDR based on modifiers
 ---@param base number
 ---@return number
@@ -1934,6 +1954,12 @@ local function GetSurgeOfLightStacks(snapshotData, spells)
 	return snapshot.buff.applications or 0
 end
 
+-- Reused per tick by FireSurgeOfLightCues; canPlay is refreshed on every call.
+local surgeOfLightCues = {
+	{ id = "surgeOfLight", threshold = 1, canPlay = true },
+	{ id = "surgeOfLight2", threshold = 2, canPlay = true },
+}
+
 ---Fires the Surge of Light stack cues. Stacks are Lua-tracked, so the two-stack cue wins when a proc
 ---takes you straight to two, and the one-stack cue can offer a play-on-drop for spending back to one.
 ---@param specSettings table
@@ -1955,11 +1981,10 @@ local function FireSurgeOfLightCues(specSettings, snapshotData, spells)
 		return true
 	end
 
+	surgeOfLightCues[1].canPlay = CanPlay("surgeOfLight")
+	surgeOfLightCues[2].canPlay = CanPlay("surgeOfLight2")
 	TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, "surgeOfLightStacks",
-		GetSurgeOfLightStacks(snapshotData, spells), {
-			{ id = "surgeOfLight", threshold = 1, canPlay = CanPlay("surgeOfLight") },
-			{ id = "surgeOfLight2", threshold = 2, canPlay = CanPlay("surgeOfLight2") },
-		})
+		GetSurgeOfLightStacks(snapshotData, spells), surgeOfLightCues)
 end
 
 ---Keeps Surge of Light readable as active for the rest of the frame batch that dropped it.
@@ -2303,6 +2328,18 @@ local scratch = {
 	barColorMap3 = {},
 	overcapCurvesInsanity1 = {},
 	overcapCurvesMana1 = {},
+	serenityCues = {
+		{ id = "holyWordSerenityCharge1", condition = false },
+		{ id = "holyWordSerenityCharge2", condition = false },
+	},
+	sanctifyCues = {
+		{ id = "holyWordSanctifyCharge1", condition = false },
+		{ id = "holyWordSanctifyCharge2", condition = false },
+	},
+	devouringPlagueCues = {
+		{ id = "dpReady", condition = false },
+		{ id = "mdProc", condition = false },
+	},
 }
 
 local function UpdateResourceBar()
@@ -2380,7 +2417,7 @@ local function UpdateResourceBar()
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -2617,7 +2654,7 @@ local function UpdateResourceBar()
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				primaryNode:SetBorderColor(barBorderColor)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				primaryNode:SetBackgroundColorFromString(barBackgroundColor)
@@ -2819,15 +2856,15 @@ local function UpdateResourceBar()
 
 			-- Serenity and Sanctify go up to 2 charges with Miracle Worker; the second-charge cue
 			-- wins when both thresholds are crossed on the same update.
-			TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, {
-				{ id = "holyWordSerenityCharge1", condition = serenityCharges >= 1 },
-				{ id = "holyWordSerenityCharge2", condition = serenityCharges >= 2 },
-			})
+			local serenityCues = scratch.serenityCues
+			serenityCues[1].condition = serenityCharges >= 1
+			serenityCues[2].condition = serenityCharges >= 2
+			TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, serenityCues)
 
-			TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, {
-				{ id = "holyWordSanctifyCharge1", condition = sanctifyCharges >= 1 },
-				{ id = "holyWordSanctifyCharge2", condition = sanctifyCharges >= 2 },
-			})
+			local sanctifyCues = scratch.sanctifyCues
+			sanctifyCues[1].condition = sanctifyCharges >= 1
+			sanctifyCues[2].condition = sanctifyCharges >= 2
+			TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, sanctifyCues)
 		end
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -2981,12 +3018,12 @@ local function UpdateResourceBar()
 
 				if spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
 					if specSettings.colors.bar.flashEnabled then
-						Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod, barGroups.primary.currentAlpha)
+						Bar:PulsePrimaryBar(barGroups, specSettings.colors.bar)
 					else
-						barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+						Bar:ClearPrimaryPulse(barGroups)
 					end
 				else
-					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+					Bar:ClearPrimaryPulse(barGroups)
 				end
 				
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
@@ -3019,10 +3056,10 @@ local function UpdateResourceBar()
 
 		-- Devouring Plague cues (independent of bar visibility); a free cast outranks a merely usable one.
 		local dpFree = spells.shadowWordMadness:IsFree()
-		TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, {
-			{ id = "dpReady", condition = dpFree or spells.shadowWordMadness:IsUsable() },
-			{ id = "mdProc", condition = dpFree },
-		})
+		local devouringPlagueCues = scratch.devouringPlagueCues
+		devouringPlagueCues[1].condition = dpFree or spells.shadowWordMadness:IsUsable()
+		devouringPlagueCues[2].condition = dpFree
+		TRB.Functions.AudioCues:FireGroup(specSettings, snapshotData, devouringPlagueCues)
 
 		-- Update health bar
 		if not specSettings.displayBar.health.neverShow then
@@ -3266,6 +3303,14 @@ local function SwitchSpec()
 					return 2
 				end
 				return 1
+			end
+
+			-- Custom threshold lines measure seconds into the recharging Holy Word.
+			for _, nodeConfig in ipairs(holyWordsBarTypeDef.nodeColors) do
+				local spellKey = nodeConfig.key
+				nodeConfig.thresholdRechargeFunc = function()
+					return GetHolyWordRechargeState(spellKey)
+				end
 			end
 		end
 
@@ -3571,7 +3616,7 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	if not TRB.Functions.BarVisibility:IsDirty(force) then
+	if not TRB.Functions.BarVisibility:NeedsFullPass(force) then
 		return
 	end
 
@@ -3626,18 +3671,17 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 		local lightweaverVisSettings = (sharedSettings and sharedSettings.displayBar.lightweaver) or nil
 
-		local entries = {
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasSecondary, TRB.Data.character.maxResource2 or 0, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.holyWords, holyWordsVisSettings, hasHolyWords, TRB.Data.character.maxResource2 or 0, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.lightweaver, lightweaverVisSettings, hasLightweaver, 4, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.utility, utilityVisSettings, hasUtility, utilityNodes, nil),
-		}
+		local entries = TRB.Functions.BarVisibility:BeginEntries()
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, secondaryVisSettings, hasSecondary, TRB.Data.character.maxResource2 or 0, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.holyWords, holyWordsVisSettings, hasHolyWords, TRB.Data.character.maxResource2 or 0, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.lightweaver, lightweaverVisSettings, hasLightweaver, 4, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.utility, utilityVisSettings, hasUtility, utilityNodes, nil)
 
 		if sharedSettings ~= nil then
-			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
 			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
 			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
@@ -3893,7 +3937,7 @@ end
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if relativeToFrame ~= nil then
-		relativeToFrame = string.gsub(relativeToFrame, "_", "")
+		relativeToFrame = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame)
 	end
 	if relativeToFrame == "ResourceBar" or relativeToFrame == "Resource" then
 		if barGroups and barGroups.primary then
@@ -3924,7 +3968,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	elseif relativeToFrame ~= nil then
 		-- Handle secondary resources (ComboPoint1, ComboPoint2, etc.)
-		local comboPointIndex = string.match(relativeToFrame, "^ComboPoint(%d+)$")
+		local comboPointIndex = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, "^ComboPoint(%d+)$")
 		if comboPointIndex ~= nil then
 			local index = tonumber(comboPointIndex)
 			if index ~= nil and barGroups and barGroups.secondary then
@@ -3939,7 +3983,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 
 		-- Handle Power Word: Radiance frames (PowerWordRadiance1, PowerWordRadiance2)
 		if TRB.Data.character.specId == 1 then
-			local pwrMatch = string.match(relativeToFrame, "^PowerWordRadiance(%d+)$")
+			local pwrMatch = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, "^PowerWordRadiance(%d+)$")
 			if pwrMatch ~= nil then
 				local chargeIndex = tonumber(pwrMatch)
 				if chargeIndex ~= nil then
@@ -3966,7 +4010,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 
 		-- Handle Holy Word frames (HolyWordSerenity1, HolyWordSanctify1, HolyWordChastise1, etc.)
 		if TRB.Data.character.specId == 2 then
-			if string.match(relativeToFrame, "^HolyWord") then
+			if TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, "^HolyWord") then
 				-- Use the runtime node mapping built by UpdateResourceBar / ConstructResourceBar.
 				-- Lazily rebuild if not yet populated (bar text frames are created before first tick).
 				if not TRB.Data.holyWordNodeMapping or not next(TRB.Data.holyWordNodeMapping) then
@@ -3976,7 +4020,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				if nodeMapping then
 					-- Extract the key and charge index from the frame name
 					-- "HolyWordSerenity1" → key="holyWordSerenity", chargeIndex=1
-					local hwName, chargeStr = string.match(relativeToFrame, "^(HolyWord%a+)(%d+)$")
+					local hwName, chargeStr = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, "^(HolyWord%a+)(%d+)$")
 					if hwName and chargeStr then
 						-- Convert PascalCase frame name to camelCase key: "HolyWordSerenity" → "holyWordSerenity"
 						local mappingKey = hwName:sub(1, 1):lower() .. hwName:sub(2) .. chargeStr
@@ -3996,7 +4040,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 
 		-- Handle Lightweaver Charge frames (LightweaverCharge1, LightweaverCharge2, LightweaverCharge3, LightweaverCharge4)
 		if TRB.Data.character.specId == 2 then
-			local lwMatch = string.match(relativeToFrame, "^LightweaverCharge(%d+)$")
+			local lwMatch = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, "^LightweaverCharge(%d+)$")
 			if lwMatch ~= nil then
 				local chargeIndex = tonumber(lwMatch)
 				if chargeIndex ~= nil and chargeIndex >= 1 and chargeIndex <= 4 then
@@ -4013,7 +4057,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		end
 
 		-- Handle Angelic Feather Charge frames (AngelicFeatherCharge1, AngelicFeatherCharge2, AngelicFeatherCharge3)
-		local afMatch = string.match(relativeToFrame, "^AngelicFeatherCharge(%d+)$")
+		local afMatch = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, "^AngelicFeatherCharge(%d+)$")
 		if afMatch ~= nil then
 			local chargeIndex = tonumber(afMatch)
 			if chargeIndex ~= nil and chargeIndex >= 1 and chargeIndex <= 3 then

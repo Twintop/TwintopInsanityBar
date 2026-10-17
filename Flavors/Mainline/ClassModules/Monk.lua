@@ -1112,7 +1112,7 @@ local function UpdateResourceBar()
 						end
 					end
 
-					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+					Bar:ClearPrimaryPulse(barGroups)
 
 					if energyOvercapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.border)
@@ -1355,7 +1355,7 @@ local function UpdateResourceBar()
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 					Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 
-					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+					Bar:ClearPrimaryPulse(barGroups)
 					primaryNode:SetBorderColor(manaBarColors.border)
 					TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 					primaryNode:SetBackgroundColorFromString(manaBarColors.background)
@@ -1477,7 +1477,7 @@ local function UpdateResourceBar()
 					thresholdData:Refresh(talents)
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Monk.WindwalkerSpells.thresholdSnowflakes)
 
-					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+					Bar:ClearPrimaryPulse(barGroups)
 
 					if energyOvercapCurves.border then
 						local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, energyOvercapCurves.border)
@@ -1838,7 +1838,7 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	if not TRB.Functions.BarVisibility:IsDirty(force) then
+	if not TRB.Functions.BarVisibility:NeedsFullPass(force) then
 		return
 	end
 
@@ -1856,15 +1856,14 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local hasStagger = TRB.Data.character.specId == 1
 		local hasChi = TRB.Data.character.specId == 3
 
-		local entries = {
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.stagger, sharedSettings and sharedSettings.displayBar.stagger, hasStagger, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasChi, TRB.Data.character.maxResource2, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
-		}
+		local entries = TRB.Functions.BarVisibility:BeginEntries()
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.stagger, sharedSettings and sharedSettings.displayBar.stagger, hasStagger, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasChi, TRB.Data.character.maxResource2, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil)
 
 		if sharedSettings ~= nil then
-			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
 			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
 			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
@@ -1955,7 +1954,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 
-	local normalizedRelativeFrame = string.gsub(relativeToFrame or "", "_", "")
+	local normalizedRelativeFrame = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame or "")
 	if normalizedRelativeFrame == "Resource" or normalizedRelativeFrame == "ResourceBar" then
 		local primaryNode = barGroups.primary:GetNode(1)
 		if primaryNode then

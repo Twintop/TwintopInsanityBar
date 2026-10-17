@@ -923,6 +923,22 @@ local function GetNodeCountForKey(barTypeDef, nodeConfig, colorSettings)
 	return 1
 end
 
+---The nodeColors entry an amalgamation sub-target names, or nil.
+---@param barTypeDef TRB.Classes.BarTypeDefinition
+---@param nodeKey string
+---@return TRB.Classes.BarTypeDefinition.NodeColorEntry?
+local function GetAmalgamationNodeConfig(barTypeDef, nodeKey)
+	if barTypeDef.nodeColors == nil then
+		return nil
+	end
+	for _, nodeConfig in ipairs(barTypeDef.nodeColors) do
+		if nodeConfig.key == nodeKey then
+			return nodeConfig
+		end
+	end
+	return nil
+end
+
 ---Computes the contiguous node run (1-based start index and node count) that a given
 ---amalgamation sub-type occupies within its bar group, respecting node ordering and the
 ---enabled state of preceding types.
@@ -977,10 +993,9 @@ local function GetCustomThresholdScaleConfig(barTarget)
 		return nil, nil, nil
 	end
 	if barTypeDef.isAmalgamation and nodeKey ~= nil and barTypeDef.nodeColors ~= nil then
-		for _, nodeConfig in ipairs(barTypeDef.nodeColors) do
-			if nodeConfig.key == nodeKey then
-				return nodeConfig.thresholdMin, nodeConfig.thresholdMax, nodeConfig.thresholdDecimals
-			end
+		local nodeConfig = GetAmalgamationNodeConfig(barTypeDef, nodeKey)
+		if nodeConfig ~= nil then
+			return nodeConfig.thresholdMin, nodeConfig.thresholdMax, nodeConfig.thresholdDecimals
 		end
 		return nil, nil, nil
 	end
@@ -1469,6 +1484,8 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	local compressedOverlap = false
 	local compressedSplit = 0
 	local compressedActive = false
+	-- An amalgamation sub-target measured in seconds into its recharging node (thresholdRechargeFunc).
+	local rechargeScaled = false
 
 	if baseKey == "primary" and FindContextSubTarget(classId, specId, "primary", nodeKey, settings) ~= nil then
 		-- Druid form sub-target (e.g. "primary:energy"): the primary bar shows a different
@@ -1682,20 +1699,38 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				end
 				nodeStartIndex = startIndex
 				nodeCount = runCount
-				maxValue = runCount
-				-- This type's live count is the sum of its node fill values (non-secret), in the
-				-- same node-count units as maxValue, used for the over/under comparison.
-				local nodeSum, sawSecret, sawPlain = SumNodeValues(group, startIndex, runCount)
-				-- No power-type curve here, so a timer-driven (secret) recharging node must not disable
-				-- the comparison: it is always < 1, so the plain completed count decides over/under.
-				if not sawSecret or sawPlain then
-					currentValue = nodeSum
+				local nodeConfig = GetAmalgamationNodeConfig(barTypeDef, nodeKey)
+				local rechargeFunc = nodeConfig and nodeConfig.thresholdRechargeFunc
+				if rechargeFunc ~= nil then
+					-- Charge recharge timer (e.g. a Holy Word): the value is seconds into the recharge, so the
+					-- line sits on the recharging node alone and compares against its elapsed time.
+					local offset, elapsed, duration = rechargeFunc()
+					offset = math.max(1, math.min(runCount, GetPlainNumber(offset, runCount)))
+					local nodeFrame = GetNodeFrame(group, startIndex + offset - 1)
+					if nodeFrame == nil then
+						return nil
+					end
+					parentFrame = nodeFrame
+					maxValue = GetPositivePlainNumber(duration, GetPositivePlainNumber(nodeConfig and nodeConfig.thresholdMax, 1))
+					currentValue = GetPlainNumber(elapsed, maxValue)
 					supportsValueComparison = true
-				end
-				isNodeMapped = true
-				nodes = {}
-				for i = 1, runCount do
-					nodes[i] = GetNodeFrame(group, startIndex + i - 1)
+					rechargeScaled = true
+				else
+					maxValue = runCount
+					-- This type's live count is the sum of its node fill values (non-secret), in the
+					-- same node-count units as maxValue, used for the over/under comparison.
+					local nodeSum, sawSecret, sawPlain = SumNodeValues(group, startIndex, runCount)
+					-- No power-type curve here, so a timer-driven (secret) recharging node must not disable
+					-- the comparison: it is always < 1, so the plain completed count decides over/under.
+					if not sawSecret or sawPlain then
+						currentValue = nodeSum
+						supportsValueComparison = true
+					end
+					isNodeMapped = true
+					nodes = {}
+					for i = 1, runCount do
+						nodes[i] = GetNodeFrame(group, startIndex + i - 1)
+					end
 				end
 			elseif barTypeDef.isMultiNode then
 				nodeCount = GetGroupNodeCount(group)
@@ -1747,7 +1782,8 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 
 			-- Explicit per-definition value scale (e.g. Shield Block 0-8s) overrides the node-count max.
 			local minOverride, maxOverride = GetCustomThresholdScaleConfig(barTarget)
-			if maxOverride ~= nil then
+			-- A recharge-scaled line already measures in the live recharge length; thresholdMax only sizes its slider.
+			if maxOverride ~= nil and not rechargeScaled then
 				minValue = minOverride or 0
 				-- thresholdScaleFromLiveMax bars (e.g. Ebon Might) keep the live frame max for
 				-- positioning/over-under so the line tracks the bar's current scaling (the last-known
@@ -2094,6 +2130,9 @@ function TRB.Functions.Threshold:ApplyCustomThresholdCurveColor(threshold, targe
 	return true
 end
 
+local customThresholdSpellShims = {}
+local function CustomThresholdAlwaysInRange() return true end
+
 ---Builds a lightweight spell-like shim so custom threshold lines can be rendered
 ---through the SAME canonical threshold functions (`AdjustThresholdDisplay` /
 ---`SetThresholdIcon` / `ResolveThresholdCurveColors`) that spell thresholds use. This
@@ -2103,13 +2142,19 @@ end
 ---@param settingKey string Dictionary key (e.g. "custom:<guid>") used for override lookup
 ---@return table
 local function BuildCustomThresholdSpellShim(customThreshold, settingKey)
-	return {
-		settingKey = settingKey,
-		texture = TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold),
-		hasCooldown = false,
-		isSnowflake = false,
-		GetIsSpellInRange = function() return true end,
-	}
+	-- One shim per key, reused every tick; only the texture can change between calls.
+	local shim = customThresholdSpellShims[settingKey]
+	if shim == nil then
+		shim = {
+			settingKey = settingKey,
+			hasCooldown = false,
+			isSnowflake = false,
+			GetIsSpellInRange = CustomThresholdAlwaysInRange,
+		}
+		customThresholdSpellShims[settingKey] = shim
+	end
+	shim.texture = TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold)
+	return shim
 end
 
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
@@ -2180,6 +2225,12 @@ end
 -- namespaced dictionary key memo (guids are stable strings).
 local activeFrameKeysScratch = {}
 local customThresholdKeyByGuid = {}
+-- Target key -> dictionary key -> frame key, so the concatenation runs once per pair.
+local customThresholdFrameKeys = {}
+-- hasCooldown=false short-circuits all snapshot.cooldown access in AdjustThresholdDisplay, so one
+-- shared empty snapshot is safe; it is only ever read.
+---@diagnostic disable-next-line: missing-fields
+local emptyCustomThresholdSnapshot = {} --[[@as TRB.Classes.Snapshot]]
 
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>?
@@ -2205,7 +2256,16 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 			-- right now (e.g. Soul Fragments threshold while Collapsing Star is active). Skip it so
 			-- HideInactiveCustomThresholdFrames hides the line until its context returns.
 			if targetInfo ~= nil and targetInfo.parentFrame ~= nil and targetInfo.contextActive ~= false then
-				local frameKey = targetInfo.key .. "_" .. customThresholdKey
+				local frameKeysForTarget = customThresholdFrameKeys[targetInfo.key]
+				if frameKeysForTarget == nil then
+					frameKeysForTarget = {}
+					customThresholdFrameKeys[targetInfo.key] = frameKeysForTarget
+				end
+				local frameKey = frameKeysForTarget[customThresholdKey]
+				if frameKey == nil then
+					frameKey = targetInfo.key .. "_" .. customThresholdKey
+					frameKeysForTarget[customThresholdKey] = frameKey
+				end
 				local configuredValue = customThreshold.value
 				local minValue = targetInfo.minValue or 0
 				local maxValue = targetInfo.maxValue or 100
@@ -2331,10 +2391,6 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					end
 				end
 
-				-- hasCooldown=false short-circuits all snapshot.cooldown access in
-				-- AdjustThresholdDisplay, so an empty snapshot is safe here.
----@diagnostic disable-next-line: missing-fields
-				local emptySnapshot = {} --[[@as TRB.Classes.Snapshot]]
 				local showThreshold = TRB.Functions.Threshold:AdjustThresholdDisplay(
 					spellShim,
 					frameKey,
@@ -2343,7 +2399,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					frameLevel,
 					0,
 					thresholdColor,
-					emptySnapshot,
+					emptyCustomThresholdSnapshot,
 					settings,
 					thresholdOverrides
 				)
@@ -3002,8 +3058,10 @@ function TRB.Functions.Threshold:LatchThresholdCue(snapshotData, settingKey, aud
 	snapshotData.audio.thresholdCues = cues
 	if condition then
 		if not cues[settingKey] then
+			-- First evaluation (login, spec change) only records the state, as AudioCues does.
+			local isBaseline = cues[settingKey] == nil
 			cues[settingKey] = true
-			if audio.playOutOfCombat ~= false or TRB.Data.character.inCombat then
+			if not isBaseline and (audio.playOutOfCombat ~= false or TRB.Data.character.inCombat) then
 				PlaySoundFile(audio.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end

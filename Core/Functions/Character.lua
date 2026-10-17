@@ -158,10 +158,9 @@ function TRB.Functions.Character:UpdateResourceValues()
 		end
 	end
 
-	-- If any bar has a resource/health threshold curve, mark visibility dirty so
-	-- ProcessBars re-evaluates on the next tick.
+	-- A bar with a resource/health threshold curve re-applies its alpha on the next tick.
 	if TRB.Functions.BarVisibility.hasResourceCurve then
-		TRB.Functions.BarVisibility:MarkDirty()
+		TRB.Functions.BarVisibility:MarkCurveDirty()
 	end
 end
 
@@ -268,10 +267,9 @@ function TRB.Functions.Character:UpdateHealthValues()
 	-- Evaluate the cached curve — the result is a secret ColorMixin
 	snapshotData.attributes.healthColor = UnitHealthPercent("player", true, TRB.Functions.Color:GetHealthColorCurve(healthBarSettings))
 
-	-- If any bar has a resource/health threshold curve, mark visibility dirty so
-	-- ProcessBars re-evaluates on the next tick.
+	-- A bar with a resource/health threshold curve re-applies its alpha on the next tick.
 	if TRB.Functions.BarVisibility.hasResourceCurve then
-		TRB.Functions.BarVisibility:MarkDirty()
+		TRB.Functions.BarVisibility:MarkCurveDirty()
 	end
 end
 
@@ -324,8 +322,10 @@ function TRB.Functions.Character:UpdatePetValues()
 		end
 	end
 
-	if state ~= previousState or TRB.Functions.BarVisibility.hasResourceCurve then
+	if state ~= previousState then
 		TRB.Functions.BarVisibility:MarkDirty()
+	elseif TRB.Functions.BarVisibility.hasResourceCurve then
+		TRB.Functions.BarVisibility:MarkCurveDirty()
 	end
 end
 
@@ -441,7 +441,7 @@ local function CharacterChange(self, event, ...)
 				powerEntry.dirty = true
 			end
 			if TRB.Functions.BarVisibility.hasResourceCurve then
-				TRB.Functions.BarVisibility:MarkDirty()
+				TRB.Functions.BarVisibility:MarkCurveDirty()
 			end
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "pet" then
@@ -529,6 +529,18 @@ local function CharacterChange(self, event, ...)
 		TRB.Functions.Character:UpdatePetValues()
 		TRB.Functions.BarVisibility:MarkDirty()
 		TRB.Data.lookupDirty = true
+	elseif event == "PLAYER_MAP_CHANGED" then
+		-- GetInstanceInfo still reports the map being left when this fires, so read it once the change settles.
+		C_Timer.After(0, function()
+			C_Timer.After(0.05, function()
+				local _, instanceType = GetInstanceInfo()
+				TRB.Data.character.instanceType = instanceType or "none"
+				TRB.Functions.Character:CheckCharacter()
+				TRB.Functions.Character:UpdatePetValues()
+				TRB.Functions.BarVisibility:MarkDirty()
+				TRB.Data.lookupDirty = true
+			end)
+		end)
 	elseif event == "GROUP_ROSTER_UPDATE" then
 		TRB.Functions.BarVisibility:MarkDirty()
 	elseif event == "UNIT_FLAGS" then
@@ -548,10 +560,8 @@ local function CharacterChange(self, event, ...)
 				end
 			end
 		end
-		-- Reset audio "played" flags so cues can fire again after respawn.
-		if snapshotData and snapshotData.audio then
-			wipe(snapshotData.audio)
-		end
+		-- Re-arm audio cues so they can fire again after respawn.
+		TRB.Functions.AudioCues:ResetAllLatches(snapshotData)
 		-- Let class modules clear their spec-specific proc attributes.
 		TRB.Functions.Class:ResetProcsOnDeath()
 		TRB.Data.lookupDirty = true
@@ -567,6 +577,9 @@ local function CharacterChange(self, event, ...)
 end
 
 local characterChangeFrame = CreateFrame("Frame")
+-- Registering an event the client doesn't know errors, and Forever may not have this one.
+local mapChangedEventValid = C_EventUtils ~= nil and C_EventUtils.IsEventValid ~= nil
+	and C_EventUtils.IsEventValid("PLAYER_MAP_CHANGED") == true
 characterChangeFrame:SetScript("OnEvent", CharacterChange)
 
 ---Returns the session count of player deaths. Deferred buff re-arms capture this at schedule time to detect an intervening death.
@@ -615,6 +628,10 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 	characterChangeFrame:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED")
 	characterChangeFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	-- Seamless map changes (leaving a garrison) skip both zone events, leaving the cached instance type stale.
+	if mapChangedEventValid then
+		characterChangeFrame:RegisterEvent("PLAYER_MAP_CHANGED")
+	end
 	characterChangeFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
 	characterChangeFrame:RegisterUnitEvent("UNIT_FLAGS", "player")
 	characterChangeFrame:RegisterEvent("PLAYER_DEAD")
@@ -652,6 +669,9 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 	characterChangeFrame:UnregisterEvent("PLAYER_CAN_GLIDE_CHANGED")
 	characterChangeFrame:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+	if mapChangedEventValid then
+		characterChangeFrame:UnregisterEvent("PLAYER_MAP_CHANGED")
+	end
 	characterChangeFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_FLAGS")
 	characterChangeFrame:UnregisterEvent("PLAYER_DEAD")

@@ -363,7 +363,7 @@ local function DruidPowerEvent(self, event, ...)
 			unifiedManaDirty = true
 		end
 		if TRB.Functions.BarVisibility.hasResourceCurve then
-			TRB.Functions.BarVisibility:MarkDirty()
+			TRB.Functions.BarVisibility:MarkCurveDirty()
 		end
 		TRB.Data.lookupDirty = true
 	elseif event == "UNIT_MAXPOWER" then
@@ -2253,8 +2253,6 @@ local function UpdateResourceBar()
 				barBorderColor = astralPowerBarColors.border
 				barBackgroundColor = astralPowerBarColors.background
 
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
-
 				-- Apply colors (nil means gradient already applied)
 				if barBorderColor then
 					primaryNode:SetBorderColor(barBorderColor)
@@ -2267,7 +2265,9 @@ local function UpdateResourceBar()
 				end
 
 				if flashBar then
-					Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod, barGroups.primary.currentAlpha)
+					Bar:PulsePrimaryBar(barGroups, specSettings.colors.bar)
+				else
+					Bar:ClearPrimaryPulse(barGroups)
 				end
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				comboPointOverrides = comboPointColors
@@ -2515,7 +2515,7 @@ local function UpdateResourceBar()
 					barBackgroundColor = energyBarColors.background
 					comboPointOverrides = comboPointColors
 
-					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+					Bar:ClearPrimaryPulse(barGroups)
 
 					-- Apply colors (nil means gradient already applied)
 					if barBorderColor then
@@ -2754,7 +2754,7 @@ local function UpdateResourceBar()
 				barBackgroundColor = rageBarColors.background
 				comboPointOverrides = comboPointColors
 
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 
 				-- Apply colors (nil means gradient already applied)
 				if barBorderColor then
@@ -2862,7 +2862,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 
 				if barBorderColor then
 					primaryNode:SetBorderColor(barBorderColor)
@@ -3343,7 +3343,7 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	if not TRB.Functions.BarVisibility:IsDirty(force) then
+	if not TRB.Functions.BarVisibility:NeedsFullPass(force) then
 		return
 	end
 
@@ -3407,16 +3407,15 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local hasIronfur = TRB.Data.character.specId == 3
 		local ironfurVisSettings = hasIronfur and TRB.Data.settings.druid.guardian.displayBar.ironfur or nil
 
-		local entries = {
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedDisplayBar and sharedDisplayBar.primary, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasSecondary, TRB.Data.character.maxResource2, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedDisplayBar and sharedDisplayBar.health, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.ironfur, ironfurVisSettings, hasIronfur, 1, nil),
-		}
+		local entries = TRB.Functions.BarVisibility:BeginEntries()
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedDisplayBar and sharedDisplayBar.primary, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, secondaryVisSettings, hasSecondary, TRB.Data.character.maxResource2, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedDisplayBar and sharedDisplayBar.health, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.ironfur, ironfurVisSettings, hasIronfur, 1, nil)
 
 		if sharedSettings ~= nil and sharedDisplayBar ~= nil then
-			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
 			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
 			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
@@ -3594,7 +3593,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 
-	local normalizedRelativeFrame = string.gsub(relativeToFrame or "", "_", "")
+	local normalizedRelativeFrame = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame or "")
 	local currentForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
 	local displaySpecId = GetFormSpecForSettings(TRB.Data.character.specId, currentForm)
 	

@@ -525,7 +525,7 @@ function TRB.Functions.Bar:HideResourceBar(force)
 end
 
 ---Applies a sinusoidal pulsing alpha animation to a frame, used for overcap or threshold warning effects
----@param frame frame The UI frame to animate
+---@param frame Frame The UI frame to animate
 ---@param alphaOffset number Minimum alpha floor (0-1); higher values reduce pulse intensity
 ---@param flashPeriod number Duration in seconds of one full pulse cycle; clamped to minimum 0.5 if <= 0
 ---@param maxAlpha number? Maximum alpha ceiling (defaults to 1.0)
@@ -542,6 +542,34 @@ function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod, maxAlpha)
 	end
 	
 	frame:SetAlpha(maxAlpha * (((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime() / flashPeriod)))) + alphaOffset))
+end
+
+---Pulses the primary bar's node. Its container's alpha belongs to visibility (fade or threshold curve), so the
+---pulse sits one frame down and the two multiply, matching the old container pulse capped at the fade alpha.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@param barColors table # The spec's colors.bar (flashAlpha, flashPeriod)
+function TRB.Functions.Bar:PulsePrimaryBar(barGroups, barColors)
+	local group = barGroups and barGroups.primary
+	local node = group and group:GetNode(1)
+	if node == nil then
+		return
+	end
+	self:PulseFrame(node:GetFrame(), barColors.flashAlpha, barColors.flashPeriod)
+	group.isPulsing = true
+end
+
+---Ends a primary bar pulse, returning its node to full alpha. Writes only when a pulse moved it.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Bar:ClearPrimaryPulse(barGroups)
+	local group = barGroups and barGroups.primary
+	if group == nil or not group.isPulsing then
+		return
+	end
+	group.isPulsing = false
+	local node = group:GetNode(1)
+	if node ~= nil then
+		node:SetAlpha(1)
+	end
 end
 
 ---Dumps every bar group's live render state and the anchor forest to chat (/trb bars).

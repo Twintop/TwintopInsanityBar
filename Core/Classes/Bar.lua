@@ -1135,6 +1135,7 @@ end
 
 ---@class TRB.Classes.BarGroup
 ---@field public containerFrame Frame
+---@field public isPulsing boolean? # Whether the flash pulse last moved the first node's alpha (primary bar only)
 ---@field public nodes TRB.Classes.BarNode[]
 ---@field public nodeCount integer
 ---@field public maxNodes integer
@@ -2040,6 +2041,7 @@ end
 ---@field public thresholdMax number? # Optional custom-threshold slider max for this sub-target (and runtime value scale, e.g. Shield Block 8.0s). Defaults to the node-run count.
 ---@field public thresholdMin number? # Optional custom-threshold slider min for this sub-target. Defaults to 0.
 ---@field public thresholdDecimals integer? # Optional decimal precision for this sub-target's value slider. Defaults to 0.
+---@field public thresholdRechargeFunc (fun(): integer?, number?, number?)? # For a charge recharge run: returns the recharging node's index within the run, seconds elapsed, and the recharge length. Custom thresholds then sit on that node in seconds; a nil index (every charge up) means the run's last node.
 ---@field public cdm TRB.CdmDependency? # Declared Cooldown Manager reliance for this node alone (e.g. Ignore Pain's absorb pool but not its timer). Options-panel badge only.
 
 ---@class TRB.Classes.BarTypeDefinition

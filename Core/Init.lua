@@ -281,12 +281,106 @@ TRB.Frames.timerFrame = CreateFrame("Frame")
 TRB.Frames.timerFrame.sinceLastUpdate = 0
 TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
+-- TEMPORARY DIAGNOSTIC (/trb tickcost), remove once the 20Hz split lands: times each tick, and lets other
+-- modules time or count their own work into the same run while costProbe is non-nil.
+TRB.Frames.timerFrame.costProbe = nil
+
+---Adds one timed sample to a probe bucket. Callers check costProbe first so an idle probe costs nothing.
+---@param key string
+---@param elapsed number # Milliseconds
+function TRB.Frames.timerFrame:ProbeTime(key, elapsed)
+	local probe = self.costProbe
+	if probe == nil then
+		return
+	end
+	local bucket = probe.times[key]
+	if bucket == nil then
+		bucket = { count = 0, total = 0, max = 0, samples = {} }
+		probe.times[key] = bucket
+		probe.timeOrder[#probe.timeOrder + 1] = key
+	end
+	bucket.count = bucket.count + 1
+	bucket.total = bucket.total + elapsed
+	bucket.samples[bucket.count] = elapsed
+	if elapsed > bucket.max then
+		bucket.max = elapsed
+	end
+end
+
+---Adds one to a probe counter.
+---@param key string
+function TRB.Frames.timerFrame:ProbeCount(key)
+	local probe = self.costProbe
+	if probe == nil then
+		return
+	end
+	if probe.counts[key] == nil then
+		probe.counts[key] = 0
+		probe.countOrder[#probe.countOrder + 1] = key
+	end
+	probe.counts[key] = probe.counts[key] + 1
+end
+
+---Prints the run's one-line summary and stops the probe.
+---@param reason string
+function TRB.Frames.timerFrame:FinishCostProbe(reason)
+	local probe = self.costProbe
+	if probe == nil then
+		return
+	end
+	self.costProbe = nil
+
+	local parts = {}
+	for _, key in ipairs(probe.timeOrder) do
+		local bucket = probe.times[key]
+		table.sort(bucket.samples)
+		local p95 = bucket.samples[math.ceil(bucket.count * 0.95)]
+		parts[#parts + 1] = string.format("%s %d x avg %.3fms p95 %.3fms max %.3fms", key, bucket.count, bucket.total / bucket.count, p95, bucket.max)
+	end
+	if #parts == 0 then
+		parts[1] = "tick 0"
+	end
+	for _, key in ipairs(probe.countOrder) do
+		parts[#parts + 1] = string.format("%s %d", key, probe.counts[key])
+	end
+	print(string.format("|cFF00FF00TRB TickCost:|r %.1fs (%s), %d/%d ticks in combat | %s",
+		GetTime() - probe.started, reason, probe.combatTicks, probe.times.tick and probe.times.tick.count or 0,
+		table.concat(parts, " | ")))
+end
+
+---Starts a run that reports after the given number of seconds, replacing any run in progress.
+---@param seconds number
+function TRB.Frames.timerFrame:StartCostProbe(seconds)
+	if self.costProbe ~= nil then
+		self:FinishCostProbe("replaced")
+	end
+	local probe = {
+		started = GetTime(),
+		combatTicks = 0,
+		times = {},
+		timeOrder = {},
+		counts = {},
+		countOrder = {},
+	}
+	self.costProbe = probe
+	print(string.format("|cFF00FF00TRB TickCost:|r Measuring for %ds.", seconds))
+	C_Timer.After(seconds, function()
+		-- A stop or a newer run already replaced this one.
+		if self.costProbe == probe then
+			self:FinishCostProbe("done")
+		end
+	end)
+end
+
 function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
 
 	if self.sinceLastUpdate >= 0.05 then -- in seconds
+		local costProbe = self.costProbe
+		local costProbeStart = costProbe ~= nil and debugprofilestop() or 0
+
 		---@type TRB.Classes.TargetData
 		local targetData = TRB.Data.snapshotData.targetData
 
@@ -312,6 +406,14 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		TRB.Functions.AudioCues:UpdateBuffCues(TRB.Data.snapshotData)
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 		self.sinceLastUpdate = 0
+
+		-- The tick can stop or replace the run itself, so only record into the run it started under.
+		if costProbe ~= nil and self.costProbe == costProbe then
+			self:ProbeTime("tick", debugprofilestop() - costProbeStart)
+			if TRB.Data.character.inCombat then
+				costProbe.combatTicks = costProbe.combatTicks + 1
+			end
+		end
 	end
 end
 
@@ -640,6 +742,22 @@ function SlashCmdList.TWINTOP(msg)
 		TRB.Functions.Bar:PrintDiagnostics()
 	elseif cmd == "castname" then
 		TRB.Functions.Castbar:ToggleCastNameEcho()
+	elseif cmd == "tickcost" then
+		local probeArg = ParseCmdString(subcmd)
+		local seconds = tonumber(probeArg)
+		if probeArg == "stop" then
+			if TRB.Frames.timerFrame.costProbe == nil then
+				print("|cFFFF8800TRB TickCost:|r Not running.")
+			else
+				TRB.Frames.timerFrame:FinishCostProbe("stopped")
+			end
+		elseif probeArg == nil or probeArg == "" then
+			TRB.Frames.timerFrame:StartCostProbe(130)
+		elseif seconds ~= nil and seconds >= 1 and seconds <= 600 then
+			TRB.Frames.timerFrame:StartCostProbe(seconds)
+		else
+			print("|cFFFF8800TRB TickCost:|r Unknown argument '" .. probeArg .. "'. Usage: /trb tickcost [seconds 1-600|stop]")
+		end
 	elseif cmd == "endcap" then
 		local barArg = ParseCmdString(subcmd)
 		if barArg == nil or barArg == "" then

@@ -1409,7 +1409,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
 					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
@@ -1543,7 +1543,7 @@ local function UpdateResourceBar()
 						end
 					end
 				end
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
 					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
@@ -1691,7 +1691,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				if overcapIndicator and overcapIndicator.targets and overcapIndicator.targets.rageBar and overcapIndicator.targets.rageBar.border then
 					local overcapBorderCurve = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
 					local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapBorderCurve)
@@ -2003,7 +2003,7 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	if not TRB.Functions.BarVisibility:IsDirty(force) then
+	if not TRB.Functions.BarVisibility:NeedsFullPass(force) then
 		return
 	end
 
@@ -2024,16 +2024,15 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local secondaryVisSettings = (sharedSettings and sharedSettings.displayBar.secondary) or nil
 		local hasEnrage = TRB.Data.character.specId == 2
 
-		local entries = {
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.defensives, sharedSettings and sharedSettings.displayBar.defensives, hasDefensives and enabledDefensiveCount > 0, enabledDefensiveCount, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, secondaryVisSettings, hasWhirlwind, TRB.Data.character.maxResource2 or 0, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.enrage, sharedSettings and sharedSettings.displayBar.enrage, hasEnrage, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, nil, nil),
-		}
+		local entries = TRB.Functions.BarVisibility:BeginEntries()
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.defensives, sharedSettings and sharedSettings.displayBar.defensives, hasDefensives and enabledDefensiveCount > 0, enabledDefensiveCount, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, secondaryVisSettings, hasWhirlwind, TRB.Data.character.maxResource2 or 0, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.enrage, sharedSettings and sharedSettings.displayBar.enrage, hasEnrage, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, nil, nil)
 
 		if sharedSettings ~= nil then
-			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
 			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
 			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
@@ -2142,7 +2141,7 @@ end
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if relativeToFrame ~= nil then
-		relativeToFrame = string.gsub(relativeToFrame, "_", "")
+		relativeToFrame = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame)
 	end
 	if relativeToFrame == "ResourceBar" or relativeToFrame == "Resource" then
 		if barGroups and barGroups.primary then
@@ -2166,7 +2165,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				end
 				return nil, true, false
 			end
-			local whirlwindChargeIndex = string.match(relativeToFrame, "^WhirlwindCharge(%d+)$")
+			local whirlwindChargeIndex = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, "^WhirlwindCharge(%d+)$")
 			if whirlwindChargeIndex ~= nil then
 				local index = tonumber(whirlwindChargeIndex)
 				if index ~= nil and barGroups and barGroups.secondary then
@@ -2215,7 +2214,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			end
 		end
 		-- Handle generic combo point index pattern
-		local comboPointIndex = string.match(relativeToFrame, "^ComboPoint(%d+)$")
+		local comboPointIndex = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, "^ComboPoint(%d+)$")
 		if comboPointIndex ~= nil then
 			local index = tonumber(comboPointIndex)
 			if index ~= nil and barGroups and barGroups.defensives then
