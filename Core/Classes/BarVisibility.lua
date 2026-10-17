@@ -462,44 +462,6 @@ function TRB.Functions.BarVisibility:ReplayCurves()
 	return true
 end
 
--- Condition types a health or pet value drives; every other curve condition reads a power value.
-local CURVE_CONDITION_CHANNELS = {
-	healthPercent = "health",
-	healthValue = "health",
-	petHealthPercent = "pet",
-	petResourcePercent = "pet",
-}
-
----Re-applies just one channel's recorded curve alphas, for ValueReplay's flush. Unlike NeedsFullPass it never
----forces a full pass and leaves curveDirty alone: anything it can't settle waits for the tick, as before.
----@param channel string # "health", "power", or "pet"
-function TRB.Functions.BarVisibility:ReplayCurveChannel(channel)
-	local replay = self.curveReplay
-	if replay.count == 0 or not replay.valid or replay.barGroups ~= TRB.Frames.barGroups
-		or self.fading or self.dirtyToken ~= self.lastAppliedToken then
-		return
-	end
-	local found = false
-	for i = 1, replay.count do
-		local item = replay[i]
-		if item.channel == channel then
-			if not item.barGroup.isVisible or item.barGroup.currentAlpha <= 0 then
-				return
-			end
-			found = true
-		end
-	end
-	if not found or not UneventedInputsUnchanged(self.curveRecheck) then
-		return
-	end
-	for i = 1, replay.count do
-		local item = replay[i]
-		if item.channel == channel then
-			ApplyCurveAlpha(item.barGroup, item.visibilitySettings, replay.settings, item.barGroup.currentAlpha)
-		end
-	end
-end
-
 ---Discards the applied show/alpha state of every bar group so the next ProcessBars pass
 ---rebuilds it from scratch, then marks visibility dirty.
 ---
@@ -1057,7 +1019,6 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 					curveDriven = hasCurve and not entry.boolShowCached and entry.thresholdEligibleCached
 				end
 				if curveDriven then
-					---@cast visSettings trbBarVisibilitySetting
 					ApplyCurveAlpha(entry.barGroup, visSettings, settings, currentAlpha)
 					if recordCurves then
 						local index = curveReplay.count + 1
@@ -1068,7 +1029,6 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 						end
 						item.barGroup = entry.barGroup
 						item.visibilitySettings = visSettings
-						item.channel = CURVE_CONDITION_CHANNELS[visSettings.resourceConditionType] or "power"
 						curveReplay.count = index
 					end
 				else

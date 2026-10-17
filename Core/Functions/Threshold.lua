@@ -2058,25 +2058,6 @@ function TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold)
 	return texture
 end
 
----Evaluates a curve against the value a recorded custom threshold reads.
----@param slot table
----@param curve table
-local function EvaluateRecordedCurve(slot, curve)
-	if slot.isHealth then
-		return UnitHealthPercent("player", true, curve)
-	end
-	return UnitPowerPercent("player", slot.resourceType, true, curve)
-end
-
----Replays a recorded custom threshold: re-evaluates its line curve, and its icon curve when one applied.
----@param slot table
-local function ReplayCustomThresholdCurveColor(slot)
-	TRB.Functions.Color:SetThresholdColorFromCurve(slot.threshold, EvaluateRecordedCurve(slot, slot.thresholdCurve))
-	if slot.iconCurve ~= nil then
-		TRB.Functions.Color:SetIconVertexColorFromCurve(slot.threshold, EvaluateRecordedCurve(slot, slot.iconCurve))
-	end
-end
-
 ---Evaluates a custom threshold's value-based ColorCurve against the SECRET resource
 ---for its target bar and applies the result to the line color and the icon
 ---desaturation vertex color, using the SAME canonical curve setters that spell
@@ -2124,15 +2105,6 @@ function TRB.Functions.Threshold:ApplyCustomThresholdCurveColor(threshold, targe
 
 	TRB.Functions.Color:SetThresholdColorFromCurve(threshold, colorResult)
 
-	local slot = TRB.Functions.ValueReplay:Record(targetInfo.key == "health" and "health" or "power", ReplayCustomThresholdCurveColor)
-	if slot then
-		slot.threshold = threshold
-		slot.isHealth = targetInfo.key == "health"
-		slot.resourceType = targetInfo.resourceType
-		slot.thresholdCurve = thresholdCurve
-		slot.iconCurve = nil
-	end
-
 	-- Icon desaturation mimic: the icon vertex color follows a gray->white curve so the
 	-- icon "lights up" at exactly the same point the line flips to the over color.
 	if threshold.icon ~= nil and threshold.icon.texture ~= nil then
@@ -2147,9 +2119,6 @@ function TRB.Functions.Threshold:ApplyCustomThresholdCurveColor(threshold, targe
 			local iconColorResult = EvaluateCurve(iconCurve)
 			if iconColorResult ~= nil then
 				TRB.Functions.Color:SetIconVertexColorFromCurve(threshold, iconColorResult)
-				if slot then
-					slot.iconCurve = iconCurve
-				end
 			else
 				threshold.icon.texture:SetVertexColor(1, 1, 1, 1)
 			end
