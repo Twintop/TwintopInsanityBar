@@ -3993,4 +3993,11 @@ if locale == "zhCN" then
 	L["AudioCueNotDisplayedTooltip"] = "该增益未在冷却管理器中显示。将其添加至追踪增益或追踪条，才能使用此提醒。"
 	L["AudioCuePlayOutOfCombatCheckbox"] = "脱离战斗时也播放"
 	L["AudioCuePlayOutOfCombatCheckboxTooltip"] = "勾选后，脱离战斗状态也能触发此提示音。取消勾选则仅在战斗内播放。"
+	L["SwingTimerHeldByMovementColor"] = "移动延迟填充色"
+	L["SwingTimerShadeWhileMoving"] = "移动导致射击延迟时变暗"
+	L["SwingTimerShadeWhileMovingTooltip"] = "当移动会造成下一次远程射击延迟时，计时条切换为【移动延迟】填充与背景色。远程自动射击需要原地站立0.5秒后才能射出。"
+	L["SwingTimerHeldByMovementBackgroundColor"] = "移动延迟背景色"
+	L["BarTextVariableRangedSwingReadyRemaining"] = "下次远程攻击就绪剩余时间，包含移动后需要原地站立的0.5秒。无待触发远程攻击时显示0。"
+	L["ShowBarVisibilityConditionHeldByMovement"] = "移动延迟"
+
 end
