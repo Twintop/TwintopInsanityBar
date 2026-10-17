@@ -735,7 +735,9 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		Bar:HideResourceBar(true)
 		return
 	end
+	TRB.Functions.ValueReplay:BeginTick()
 	UpdateResourceBar()
+	TRB.Functions.ValueReplay:EndTick()
 end
 
 TRB.Functions.Bootstrap:RegisterClassModule({

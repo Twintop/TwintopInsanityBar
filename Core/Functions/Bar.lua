@@ -400,7 +400,8 @@ function TRB.Functions.Bar:QueueRenderTransition(reason, delaySeconds)
 	renderTransitionState.reason = reason
 	renderTransitionState.token = renderTransitionState.token + 1
 	local token = renderTransitionState.token
-	
+	TRB.Functions.ValueReplay:Clear()
+
 	-- Force immediate hide
 	HideAllBarGroupsAndBarText()
 	SetBarGroupsAlpha(0)
@@ -426,7 +427,8 @@ function TRB.Functions.Bar:TouchRenderTransition(delaySeconds)
 
 	renderTransitionState.token = renderTransitionState.token + 1
 	local token = renderTransitionState.token
-	
+	TRB.Functions.ValueReplay:Clear()
+
 	-- Re-enforce hide
 	HideAllBarGroupsAndBarText()
 	SetBarGroupsAlpha(0)
@@ -812,6 +814,8 @@ end
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
+	TRB.Functions.ValueReplay:Clear()
+
 	-- Clear the Edit Mode registered frame reference since the frame is being destroyed
 	if TRB.Functions.EditMode and TRB.Functions.EditMode.ClearRegisteredFrame then
 		TRB.Functions.EditMode:ClearRegisteredFrame()
@@ -2075,6 +2079,26 @@ function TRB.Functions.Bar:UpdateHealthBarOverlays(healthNode, snapshotData, set
 	self:UpdateHealthBarHealAbsorbOverlay(healthNode, snapshotData, settings)
 end
 
+---Writes the health fill: range, value, and the health-threshold color curve.
+---@param healthNode TRB.Classes.BarNode
+---@param snapshotData TRB.Classes.SnapshotData
+function TRB.Functions.Bar:ApplyHealthFill(healthNode, snapshotData)
+	healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+	healthNode:SetValue(snapshotData.attributes.health or 0)
+	healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+end
+
+---Replays a recorded health bar: the fill and the overlays, which are all that read the health values.
+---A hidden bar is left to the tick, which writes it before any pass can show it.
+---@param slot table
+local function ReplayHealthBar(slot)
+	if not slot.group.isVisible then
+		return
+	end
+	TRB.Functions.Bar:ApplyHealthFill(slot.healthNode, slot.snapshotData)
+	TRB.Functions.Bar:UpdateHealthBarOverlays(slot.healthNode, slot.snapshotData, slot.settings)
+end
+
 ---Renders the health bar for this frame: value, fill curve, border/background, and the overlays. The
 ---border and background honor any indicator targeting them (resolved by Color:ApplyIndicatorColors earlier
 ---in the same spec update): a flat indicator settles the color, and a gradient indicator can then turn it
@@ -2084,15 +2108,14 @@ end
 ---@param snapshotData TRB.Classes.SnapshotData
 ---@param settings table # The spec cache settings (specCacheSettings)
 function TRB.Functions.Bar:UpdateHealthBar(barGroups, snapshotData, settings)
-	local healthNode = barGroups and barGroups.health and barGroups.health:GetNode(1)
+	local healthGroup = barGroups and barGroups.health
+	local healthNode = healthGroup and healthGroup:GetNode(1)
 
 	if healthNode then
 		local Color = TRB.Functions.Color
 		local healthColors = settings.colors.healthBar
 		local indicators = Color:GetResolvedIndicators("healthBar")
-		healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-		healthNode:SetValue(snapshotData.attributes.health or 0)
-		healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+		self:ApplyHealthFill(healthNode, snapshotData)
 		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "border",
 			(indicators and indicators.border) or healthColors.border.color)
 		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "background",
@@ -2102,6 +2125,16 @@ function TRB.Functions.Bar:UpdateHealthBar(barGroups, snapshotData, settings)
 	end
 
 	self:UpdateHealthBarOverlays(healthNode, snapshotData, settings)
+
+	if healthNode then
+		local slot = TRB.Functions.ValueReplay:Record("health", ReplayHealthBar)
+		if slot then
+			slot.group = healthGroup
+			slot.healthNode = healthNode
+			slot.snapshotData = snapshotData
+			slot.settings = settings
+		end
+	end
 end
 
 -- Reused each frame for the Pet Resource fill's base colors.

@@ -2318,5 +2318,7 @@ function TRB.Functions.Class:TriggerResourceBarUpdates()
 		return
 	end
 
+	TRB.Functions.ValueReplay:BeginTick()
 	UpdateResourceBar()
+	TRB.Functions.ValueReplay:EndTick()
 end

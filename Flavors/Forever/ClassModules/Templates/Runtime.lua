@@ -693,7 +693,9 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			Bar:HideResourceBar(true)
 			return
 		end
+		TRB.Functions.ValueReplay:BeginTick()
 		UpdateResourceBar()
+		TRB.Functions.ValueReplay:EndTick()
 	end
 
 	local fillSpellData = {}

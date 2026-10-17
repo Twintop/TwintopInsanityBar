@@ -456,6 +456,7 @@ local function CharacterChange(self, event, ...)
 		if unitTarget == "player" then
 			TRB.Functions.Character:UpdateHealthValues()
 			TRB.Data.lookupDirty = true
+			TRB.Functions.ValueReplay:Request("health")
 		elseif unitTarget == "pet" then
 			TRB.Functions.Character:UpdatePetValues()
 			TRB.Data.lookupDirty = true
