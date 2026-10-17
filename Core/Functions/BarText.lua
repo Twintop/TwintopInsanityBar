@@ -2618,6 +2618,9 @@ local showFrameVisible = {}
 -- Reusable table for passing to GetReturnText (avoids per-entry table allocation)
 local barTextBuffer = { text = "", color = "" }
 
+-- "|c" .. color by color string, so a visible entry builds no string per tick.
+local colorCodes = {}
+
 -- Pre-computed "textFrames"..i key strings (populated on demand, avoids per-frame string concat)
 local textFrameKeys = {}
 ---Returns the cached "textFrames"..i key string for a given bar text entry index, creating it on first access to avoid per-frame string concatenation
@@ -2692,10 +2695,15 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 			TRB.Functions.BarText:CreateBarTextFrames()
 			textFrames = TRB.Frames.textFrames
 		end
+		-- Read once per call; nothing in the loop replaces these tables.
+		local barTextList = displayText.barText
+		local frameCaches = TRB.Data.cache.values.frame
+		local strataLevel = TRB.Data.settings.core.strata.level
 		for i = 1, entries do
-			if displayText.barText[i].enabled then
-				local e = displayText.barText[i]
-				local isScreenText = e.position.relativeToFrame == "UIParent"
+			local e = barTextList[i]
+			if e.enabled then
+				local relativeToFrame = e.position.relativeToFrame
+				local isScreenText = relativeToFrame == "UIParent"
 
 				-- Re-apply the width constraint against the bound bar's live width so the clamp
 				-- tracks bar resizes (the font's parent is the bound bar). Runs independent of the
@@ -2711,11 +2719,12 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 
 				-- Screen-bound text is always processed; other text only when refreshText is true. Text on a
 				-- fading self-driven bar is skipped regardless, which holds its last value on screen.
+				-- Only cast bar and Other Bars anchors can be fading, so other entries skip the call.
 				if (refreshText or isScreenText or visibilityRefresh)
-					and not IsAnchoredToFadingSelfDrivenBar(e.position.relativeToFrame) then
+					and not (castbarAnchorGroupKeys[relativeToFrame] ~= nil and IsAnchoredToFadingSelfDrivenBar(relativeToFrame)) then
 					-- Check if the target frame is visible before doing expensive text processing
 					-- Use per-call cache to avoid redundant GetBarTextFrame calls for entries sharing a frame
-					local frameKey = e.position.relativeToFrame
+					local frameKey = relativeToFrame
 					local isEnabled, isVisible
 					if showFrameEnabled[frameKey] ~= nil then
 						isEnabled = showFrameEnabled[frameKey]
@@ -2729,11 +2738,11 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 						showFrameVisible[frameKey] = isVisible == true
 					end
 
-					local tfKey = GetTextFrameKey(i)
-					local frameCache = TRB.Data.cache.values.frame[tfKey]
+					local tfKey = textFrameKeys[i] or GetTextFrameKey(i)
+					local frameCache = frameCaches[tfKey]
 					if frameCache == nil then
 						frameCache = {}
-						TRB.Data.cache.values.frame[tfKey] = frameCache
+						frameCaches[tfKey] = frameCache
 					end
 
 					-- Skip expensive text processing if the target bar is not visible
@@ -2754,7 +2763,11 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 
 						color = color or "FFFFFFFF"
 
-						local colorCode = "|c" .. color
+						local colorCode = colorCodes[color]
+						if colorCode == nil then
+							colorCode = "|c" .. color
+							colorCodes[color] = colorCode
+						end
 						local entryState = barTextEntryStates[i]
 						if entryState == nil then
 							entryState = {}
@@ -2801,12 +2814,12 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 						end
 					end
 					
-					if frameCache.level ~= TRB.Data.settings.core.strata.level then
+					if frameCache.level ~= strataLevel then
 						if textFrames ~= nil and textFrames[i] ~= nil then
 							textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-							textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+							textFrames[i]:SetFrameStrata(strataLevel)
 						end
-						frameCache.level = TRB.Data.settings.core.strata.level
+						frameCache.level = strataLevel
 					end
 				end
 			end
