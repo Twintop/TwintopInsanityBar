@@ -38,6 +38,88 @@ local function IsVerticalFillDirection(fillDirection)
 	return fillDirection == "bottomTop" or fillDirection == "topBottom"
 end
 
+-- Widget writes skip a repeat: recorded values for writes only this file makes, live reads for levels and desaturation.
+
+---@param frame table
+---@param width number
+---@param height number
+local function SetThresholdLineSize(frame, width, height)
+	if frame._trbWidth ~= width or frame._trbHeight ~= height then
+		frame:SetWidth(width)
+		frame:SetHeight(height)
+		frame._trbWidth = width
+		frame._trbHeight = height
+	end
+end
+
+---@param texture table
+---@param alpha number
+local function SetThresholdLineAlpha(texture, alpha)
+	if texture._trbAlpha ~= alpha then
+		texture:SetAlpha(alpha)
+		texture._trbAlpha = alpha
+	end
+end
+
+---Resets an icon texture's vertex color to white unless that was its last write.
+---@param texture table
+local function SetIconVertexWhite(texture)
+	if texture._trbVertexWhite ~= true then
+		texture:SetVertexColor(1, 1, 1, 1)
+		texture._trbVertexWhite = true
+	end
+end
+
+---@param texture Texture
+---@param desaturated boolean
+local function SetIconDesaturated(texture, desaturated)
+	if texture:IsDesaturated() ~= desaturated then
+		texture:SetDesaturated(desaturated)
+	end
+end
+
+---@param frame Frame
+---@param level integer
+local function SetLevelIfChanged(frame, level)
+	if frame:GetFrameLevel() ~= level then
+		frame:SetFrameLevel(level)
+	end
+end
+
+---Starts an icon cooldown swipe unless it already shows this start and duration.
+---@param cooldown table
+---@param startTime number
+---@param duration number
+local function SetIconCooldown(cooldown, startTime, duration)
+	if issecretvalue(startTime) or issecretvalue(duration)
+		or cooldown._trbStart ~= startTime or cooldown._trbDuration ~= duration then
+		cooldown:SetCooldown(startTime, duration)
+		cooldown._trbStart = startTime
+		cooldown._trbDuration = duration
+	end
+end
+
+---Resolves a per-threshold color entry to "shared", "override", or "hidden".
+---@param colorEntry table?
+---@return string
+local function GetMode(colorEntry)
+	if colorEntry == nil then return "shared" end
+	if colorEntry.mode ~= nil then return colorEntry.mode end
+	if colorEntry.enabled then return "override" end
+	return "shared"
+end
+
+---Like GetMode, but an out-of-range entry with show == false also resolves to "hidden".
+---@param colorEntry table?
+---@return string
+local function GetOorMode(colorEntry)
+	if colorEntry == nil then return "shared" end
+	if colorEntry.mode ~= nil then return colorEntry.mode end
+	if colorEntry.show == false then return "hidden" end
+	if colorEntry.enabled then return "override" end
+	return "shared"
+end
+
 ---@param thresholdLine Frame
 ---@param fillDirection trbFillDirection?
 ---@param effectiveWidth number
@@ -57,20 +139,18 @@ local function SetThresholdLineDimensions(thresholdLine, fillDirection, effectiv
 	if invisible then
 		lineThickness = 0.001
 		if thresholdLine.texture ~= nil then
-			thresholdLine.texture:SetAlpha(0)
+			SetThresholdLineAlpha(thresholdLine.texture, 0)
 		end
 	else
 		if thresholdLine.texture ~= nil then
-			thresholdLine.texture:SetAlpha(1)
+			SetThresholdLineAlpha(thresholdLine.texture, 1)
 		end
 	end
 
 	if IsVerticalFillDirection(fillDirection) then
-		thresholdLine:SetWidth(crossSection)
-		thresholdLine:SetHeight(lineThickness)
+		SetThresholdLineSize(thresholdLine, crossSection, lineThickness)
 	else
-		thresholdLine:SetWidth(lineThickness)
-		thresholdLine:SetHeight(crossSection)
+		SetThresholdLineSize(thresholdLine, lineThickness, crossSection)
 	end
 end
 
@@ -269,6 +349,7 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 
 	if cache.texture ~= spell.texture then
 		threshold.icon.texture:SetTexture(spell.texture)
+		threshold.icon.texture._trbVertexWhite = nil
 		cache.texture = spell.texture
 	end
 
@@ -535,11 +616,9 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 	-- For vertical growth, the threshold is a horizontal stripe (swap width/height)
 	local isVertical = IsVerticalFillDirection(settings.comboPoints.fillDirection)
 	if isVertical then
-		threshold:SetWidth(settings.comboPoints.width)
-		threshold:SetHeight(settings.thresholds.properties.width)
+		SetThresholdLineSize(threshold, settings.comboPoints.width, settings.thresholds.properties.width)
 	else
-		threshold:SetWidth(settings.thresholds.properties.width)
-		threshold:SetHeight(settings.comboPoints.height)
+		SetThresholdLineSize(threshold, settings.thresholds.properties.width, settings.comboPoints.height)
 	end
 ---@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
@@ -603,8 +682,7 @@ end
 ---@param borderColor string # The RGBA hex color string for the threshold
 ---@param lineThickness? number # The configured threshold line thickness
 function TRB.Functions.Threshold:ResetThresholdLineCustomBar(threshold, width, height, borderColor, lineThickness)
-	threshold:SetWidth(width)
-	threshold:SetHeight(height)
+	SetThresholdLineSize(threshold, width, height)
 ---@diagnostic disable-next-line: inject-field
 	threshold.lineThickness = lineThickness or math.min(width or 1, height or 1)
 ---@diagnostic disable-next-line: inject-field
@@ -2008,7 +2086,7 @@ function TRB.Functions.Threshold:ResetCustomThresholdLine(threshold, settings, t
 	threshold.icon.cooldown:SetAllPoints(threshold.icon)
 	threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase - TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 	threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
-	threshold.icon.cooldown:SetCooldown(0, 0)
+	SetIconCooldown(threshold.icon.cooldown, 0, 0)
 
 	SetThresholdIconSizeAndPosition(settings, threshold, targetInfo.fillDirection)
 	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.threshold.over.color, true)
@@ -2114,16 +2192,16 @@ function TRB.Functions.Threshold:ApplyCustomThresholdCurveColor(threshold, targe
 		end
 
 		-- Never use SetDesaturated for curve-driven thresholds; it can't read secret values.
-		threshold.icon.texture:SetDesaturated(false)
+		SetIconDesaturated(threshold.icon.texture, false)
 		if effectiveDesaturated == true and iconCurve ~= nil then
 			local iconColorResult = EvaluateCurve(iconCurve)
 			if iconColorResult ~= nil then
 				TRB.Functions.Color:SetIconVertexColorFromCurve(threshold, iconColorResult)
 			else
-				threshold.icon.texture:SetVertexColor(1, 1, 1, 1)
+				SetIconVertexWhite(threshold.icon.texture)
 			end
 		else
-			threshold.icon.texture:SetVertexColor(1, 1, 1, 1)
+			SetIconVertexWhite(threshold.icon.texture)
 		end
 	end
 
@@ -2531,13 +2609,6 @@ function TRB.Functions.Threshold:ResolveThresholdCurveColors(spell, settings)
 			return dictEntry.colors.staticColor.color, dictEntry.colors.staticColor.color
 		end
 
-		local function GetMode(colorEntry)
-			if colorEntry == nil then return "shared" end
-			if colorEntry.mode ~= nil then return colorEntry.mode end
-			if colorEntry.enabled then return "override" end
-			return "shared"
-		end
-
 		local underMode = GetMode(dictEntry.colors.under)
 		if underMode == "hidden" then
 			underColor = "00000000"
@@ -2601,11 +2672,11 @@ function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thre
 	local thresholdIconLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetIcon
 	local thresholdIconCooldownLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetCooldown
 
-	threshold:SetFrameLevel(thresholdFrameLevel)
+	SetLevelIfChanged(threshold, thresholdFrameLevel)
 	if threshold.icon then
-		threshold.icon:SetFrameLevel(thresholdIconLevel)
+		SetLevelIfChanged(threshold.icon, thresholdIconLevel)
 		if threshold.icon.cooldown then
-			threshold.icon.cooldown:SetFrameLevel(thresholdIconCooldownLevel)
+			SetLevelIfChanged(threshold.icon.cooldown, thresholdIconCooldownLevel)
 		end
 	end
 
@@ -2616,12 +2687,12 @@ function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thre
 		if not isUsable or outOfRange then
 			-- Not usable or out of range - use standard desaturation if enabled, reset vertex color
 			if settings.thresholds.icons.desaturated == true then
-				threshold.icon.texture:SetDesaturated(true)
+				SetIconDesaturated(threshold.icon.texture, true)
 			end
-			threshold.icon.texture:SetVertexColor(1, 1, 1, 1) -- Reset to white
+			SetIconVertexWhite(threshold.icon.texture)
 		else
 			-- Usable and in range - DON'T desaturate, use iconCurve for vertex color
-			threshold.icon.texture:SetDesaturated(false)
+			SetIconDesaturated(threshold.icon.texture, false)
 			-- Apply icon vertex color curve if provided (for desaturation mimicry)
 			if iconCurve and settings.thresholds.icons.desaturated then
 				local iconColorResult = TRB.Functions.Color:EvaluateThresholdCurve(iconCurve, resourceType)
@@ -2629,7 +2700,7 @@ function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thre
 					TRB.Functions.Color:SetIconVertexColorFromCurve(threshold, iconColorResult)
 				end
 			else
-				threshold.icon.texture:SetVertexColor(1, 1, 1, 1) -- Reset to white if no curve
+				SetIconVertexWhite(threshold.icon.texture)
 			end
 		end
 	end
@@ -2695,13 +2766,6 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				thresholdColor = staticColor.color
 			end
 		elseif colorOverrides ~= nil and not curveManagesColor then
-			local function GetMode(colorEntry)
-				if colorEntry == nil then return "shared" end
-				if colorEntry.mode ~= nil then return colorEntry.mode end
-				if colorEntry.enabled then return "override" end
-				return "shared"
-			end
-
 			local hideThreshold = false
 
 			if frameLevel == TRB.Data.constants.frameLevels.thresholdUnusable then
@@ -2738,14 +2802,6 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 
 		-- Check if we're out of range
 		-- Per-threshold out-of-range overrides take precedence over global settings
-		local function GetOorMode(colorEntry)
-			if colorEntry == nil then return "shared" end
-			if colorEntry.mode ~= nil then return colorEntry.mode end
-			if colorEntry.show == false then return "hidden" end
-			if colorEntry.enabled then return "override" end
-			return "shared"
-		end
-
 		local oorMode = "shared"
 		local outOfRangeOverride = colorOverrides and colorOverrides.outOfRange
 		if outOfRangeOverride ~= nil then
@@ -2872,10 +2928,10 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			end
 			
 			if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.cooldown:GetRemainingTime(currentTime) > 0 and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
-				threshold.icon.cooldown:SetCooldown(snapshot.cooldown.startTime, snapshot.cooldown.duration)
+				SetIconCooldown(threshold.icon.cooldown, snapshot.cooldown.startTime, snapshot.cooldown.duration)
 				cache.cooldown = true
 			elseif cache.cooldown then
-				threshold.icon.cooldown:SetCooldown(0, 0)
+				SetIconCooldown(threshold.icon.cooldown, 0, 0)
 				cache.cooldown = false
 			end
 		end

@@ -785,9 +785,14 @@ function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, under
 		return nil
 	end
 	
+	local fastCurve = self:GetFastCurve(cache, "threshold", costMultiplier, baseCost, maxResource, underColor, overColor)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
 	local cacheKey = tostring(costMultiplier) .. "_" .. tostring(baseCost) .. "_" .. tostring(maxResource) .. "_" .. underColor .. "_" .. overColor
 	
 	if cache[cacheKey] then
+		self:SetFastCurve(cache, cache[cacheKey], "threshold", costMultiplier, baseCost, maxResource, underColor, overColor)
 		return cache[cacheKey]
 	end
 	
@@ -803,6 +808,7 @@ function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, under
 	colorCurve:AddPoint(thresholdPercent, overColorObj)
 	
 	cache[cacheKey] = colorCurve
+	self:SetFastCurve(cache, colorCurve, "threshold", costMultiplier, baseCost, maxResource, underColor, overColor)
 	return colorCurve
 end
 
@@ -937,9 +943,14 @@ function TRB.Functions.Color:BuildIconVertexColorCurve(costMultiplier, baseCost)
 		return nil
 	end
 	
+	local fastCurve = self:GetFastCurve(cache, "vertex", costMultiplier, baseCost, maxResource)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
 	local cacheKey = tostring(costMultiplier) .. "_" .. tostring(baseCost) .. "_" .. tostring(maxResource) .. "_vertex"
 	
 	if cache[cacheKey] then
+		self:SetFastCurve(cache, cache[cacheKey], "vertex", costMultiplier, baseCost, maxResource)
 		return cache[cacheKey]
 	end
 	
@@ -954,6 +965,7 @@ function TRB.Functions.Color:BuildIconVertexColorCurve(costMultiplier, baseCost)
 	colorCurve:AddPoint(thresholdPercent, whiteColor)
 	
 	cache[cacheKey] = colorCurve
+	self:SetFastCurve(cache, colorCurve, "vertex", costMultiplier, baseCost, maxResource)
 	return colorCurve
 end
 
@@ -970,6 +982,8 @@ function TRB.Functions.Color:SetIconVertexColorFromCurve(frame, colorResult)
 	end
 	local r, g, b, a = colorResult:GetRGBA()
 	frame.icon.texture:SetVertexColor(r, g, b, a)
+	-- Threshold.lua skips a white reset only while its record says the last write was white.
+	frame.icon.texture._trbVertexWhite = false
 end
 
 ---Applies a fill color to a BarNode, handling gradient entries automatically.
