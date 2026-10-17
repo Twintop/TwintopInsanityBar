@@ -10,6 +10,8 @@ local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Bar = TRB.Functions.Bar
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
+-- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 local Threshold = TRB.Functions.Threshold
 
 local className, specName, compositeKey, specId, classId = "druid", "general", "druid_general", 1, 11

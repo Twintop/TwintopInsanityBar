@@ -403,8 +403,10 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 			end
 		end
 
+		TRB.Functions.CurveMemo:SetActive(true)
 		TRB.Functions.AudioCues:UpdateBuffCues(TRB.Data.snapshotData)
 		TRB.Functions.Class:TriggerResourceBarUpdates()
+		TRB.Functions.CurveMemo:SetActive(false)
 		self.sinceLastUpdate = 0
 
 		-- The tick can stop or replace the run itself, so only record into the run it started under.

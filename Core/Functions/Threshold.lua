@@ -1,5 +1,8 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+-- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
+local UnitHealthPercent = TRB.Functions.CurveMemo.UnitHealthPercent
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Threshold = {}
 
