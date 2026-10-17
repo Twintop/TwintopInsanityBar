@@ -478,58 +478,70 @@ TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
 local FAST_CURVE_ROOT = {}
 local FAST_CURVE_NIL = {}
 
----Walks the fast lookup for the raw keys; nil when a key can't index a table (NaN). Each call site
----leads with its own tag and always passes the same number of keys, so paths never collide.
----@return table? node, any lastKey
-local function FastCurveNode(cache, create, ...)
-	local node = cache[FAST_CURVE_ROOT]
-	if node == nil then
-		if not create then
-			return nil, nil
-		end
-		node = {}
-		cache[FAST_CURVE_ROOT] = node
+---Returns the child under a raw key, creating it; a nil key uses its sentinel.
+---@param node table
+---@param key any
+---@return table
+local function FastCurveChild(node, key)
+	if key == nil then
+		key = FAST_CURVE_NIL
 	end
-	local count = select("#", ...)
-	for i = 1, count do
-		local key = (select(i, ...))
-		if key == nil then
-			key = FAST_CURVE_NIL
-		elseif key ~= key then
-			return nil, nil
-		end
-		if i == count then
-			return node, key
-		end
-		local child = node[key]
-		if child == nil then
-			if not create then
-				return nil, nil
-			end
-			child = {}
-			node[key] = child
-		end
-		node = child
+	local child = node[key]
+	if child == nil then
+		child = {}
+		node[key] = child
 	end
-	return nil, nil
+	return child
 end
 
----Returns the curve a cache holds for these raw inputs, or nil on a miss.
+---Returns the curve a cache holds for these raw inputs, or nil on a miss. Each call site leads with its own
+---tag and always passes the same keys; unused trailing keys read as the nil sentinel, so paths never collide.
 ---@param cache table # The string-keyed curve cache this lookup fronts
 ---@return any?
-function TRB.Functions.Color:GetFastCurve(cache, ...)
-	local node, key = FastCurveNode(cache, false, ...)
-	return node ~= nil and node[key] or nil
+function TRB.Functions.Color:GetFastCurve(cache, k1, k2, k3, k4, k5, k6)
+	-- Reading a NaN key is a plain miss, so lookups need no NaN check.
+	local node = cache[FAST_CURVE_ROOT]
+	if node == nil then
+		return nil
+	end
+	node = node[k1 == nil and FAST_CURVE_NIL or k1]
+	if node == nil then
+		return nil
+	end
+	node = node[k2 == nil and FAST_CURVE_NIL or k2]
+	if node == nil then
+		return nil
+	end
+	node = node[k3 == nil and FAST_CURVE_NIL or k3]
+	if node == nil then
+		return nil
+	end
+	node = node[k4 == nil and FAST_CURVE_NIL or k4]
+	if node == nil then
+		return nil
+	end
+	node = node[k5 == nil and FAST_CURVE_NIL or k5]
+	if node == nil then
+		return nil
+	end
+	return node[k6 == nil and FAST_CURVE_NIL or k6]
 end
 
 ---Records a curve under these raw inputs in front of its string-keyed cache entry.
 ---@param cache table # The string-keyed curve cache this lookup fronts
 ---@param curve any
-function TRB.Functions.Color:SetFastCurve(cache, curve, ...)
-	local node, key = FastCurveNode(cache, true, ...)
-	if node ~= nil then
-		node[key] = curve
+function TRB.Functions.Color:SetFastCurve(cache, curve, k1, k2, k3, k4, k5, k6)
+	-- A NaN key can't index a table; that input set just keeps using the string key.
+	if k1 ~= k1 or k2 ~= k2 or k3 ~= k3 or k4 ~= k4 or k5 ~= k5 or k6 ~= k6 then
+		return
 	end
+	local node = cache[FAST_CURVE_ROOT]
+	if node == nil then
+		node = {}
+		cache[FAST_CURVE_ROOT] = node
+	end
+	node = FastCurveChild(FastCurveChild(FastCurveChild(FastCurveChild(FastCurveChild(node, k1), k2), k3), k4), k5)
+	node[k6 == nil and FAST_CURVE_NIL or k6] = curve
 end
 
 -- Threshold metadata for built ColorCurves, keyed weakly by the curve object. Lets an end cap

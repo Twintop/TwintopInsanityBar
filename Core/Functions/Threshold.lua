@@ -157,10 +157,12 @@ local function SetThresholdLineDimensions(thresholdLine, fillDirection, effectiv
 	end
 end
 
+local hasSecretCheck = type(issecretvalue) == "function"
+
 ---@param value any
 ---@return boolean
 local function IsSecretValue(value)
-	if value == nil or type(issecretvalue) ~= "function" then
+	if value == nil or not hasSecretCheck then
 		return false
 	end
 
@@ -1184,15 +1186,26 @@ end
 ---@param barTarget string?
 ---@return string baseKey
 ---@return string? nodeKey
+-- Parsed bar targets by stored string; false records a target with no sub-type key.
+local parsedBaseKeys = {}
+local parsedNodeKeys = {}
+
 local function ParseBarTarget(barTarget)
 	if type(barTarget) ~= "string" then
 		return "primary", nil
 	end
-	local baseKey, nodeKey = string.match(barTarget, "^([^:]+):(.+)$")
+	local baseKey = parsedBaseKeys[barTarget]
 	if baseKey ~= nil then
-		return baseKey, nodeKey
+		return baseKey, parsedNodeKeys[barTarget] or nil
 	end
-	return barTarget, nil
+	local nodeKey
+	baseKey, nodeKey = string.match(barTarget, "^([^:]+):(.+)$")
+	if baseKey == nil then
+		baseKey = barTarget
+	end
+	parsedBaseKeys[barTarget] = baseKey
+	parsedNodeKeys[barTarget] = nodeKey or false
+	return baseKey, nodeKey
 end
 
 ---Returns true when a bar target's live value is a SECRET cast/charge count (Vengeance DH Soul
@@ -1451,10 +1464,11 @@ end
 ---@param group TRB.Classes.BarGroup?
 ---@param fromIndex integer
 ---@param count integer
+---@param stopOnSecret boolean? # The caller ignores the total once any node is secret, so the walk ends there
 ---@return number total
 ---@return boolean sawSecret
 ---@return boolean sawPlain
-local function SumNodeValues(group, fromIndex, count)
+local function SumNodeValues(group, fromIndex, count, stopOnSecret)
 	local total = 0
 	local sawSecret = false
 	local sawPlain = false
@@ -1464,6 +1478,9 @@ local function SumNodeValues(group, fromIndex, count)
 			local v = nodeFrame:GetValue()
 			if IsSecretValue(v) or type(v) ~= "number" then
 				sawSecret = true
+				if stopOnSecret then
+					return total, true, sawPlain
+				end
 			else
 				-- Normalize the raw value into this node's own 0..1 fill fraction.
 				local nodeMin, nodeMax = 0, 1
@@ -1492,6 +1509,30 @@ local function SumNodeValues(group, fromIndex, count)
 		end
 	end
 	return total, sawSecret, sawPlain
+end
+
+-- Per bar target, so two targets resolved in one tick never share a list or result.
+local nodeListsByTarget = {}
+local targetInfoByTarget = {}
+
+---Returns this target's reused node list, filled with the node frames of a contiguous run.
+---@param barTarget string
+---@param group TRB.Classes.BarGroup
+---@param fromIndex integer
+---@param count integer
+---@return Frame[]
+local function FillNodeList(barTarget, group, fromIndex, count)
+	local nodes = nodeListsByTarget[barTarget]
+	if nodes == nil then
+		nodes = {}
+		nodeListsByTarget[barTarget] = nodes
+	else
+		wipe(nodes)
+	end
+	for i = 1, count do
+		nodes[i] = GetNodeFrame(group, fromIndex + i - 1)
+	end
+	return nodes
 end
 
 ---@param group TRB.Classes.BarGroup?
@@ -1724,8 +1765,8 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				-- nil), so the ColorCurve path can't decide over/under. Derive it from the node sum like
 				-- the registered multi-node bars. Power-type secondary bars (combo points, soul shards)
 				-- report secret node values, so they keep using the ColorCurve path instead.
-				local nodeSum, sawSecret, sawPlain = SumNodeValues(group, 1, nodeCount)
 				local hasPowerCurve = type(TRB.Data.resource2) == "number"
+				local nodeSum, sawSecret, sawPlain = SumNodeValues(group, 1, nodeCount, hasPowerCurve)
 				if not sawSecret then
 					currentValue = nodeSum
 					supportsValueComparison = true
@@ -1747,10 +1788,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			end
 			if nodeCount > 1 then
 				isNodeMapped = true
-				nodes = {}
-				for i = 1, nodeCount do
-					nodes[i] = GetNodeFrame(group, i)
-				end
+				nodes = FillNodeList(barTarget, group, 1, nodeCount)
 			end
 		end
 	elseif baseKey == "health" then
@@ -1808,10 +1846,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 						supportsValueComparison = true
 					end
 					isNodeMapped = true
-					nodes = {}
-					for i = 1, runCount do
-						nodes[i] = GetNodeFrame(group, startIndex + i - 1)
-					end
+					nodes = FillNodeList(barTarget, group, startIndex, runCount)
 				end
 			elseif barTypeDef.isMultiNode then
 				nodeCount = GetGroupNodeCount(group)
@@ -1828,10 +1863,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				end
 				if nodeCount > 1 then
 					isNodeMapped = true
-					nodes = {}
-					for i = 1, nodeCount do
-						nodes[i] = GetNodeFrame(group, i)
-					end
+					nodes = FillNodeList(barTarget, group, 1, nodeCount)
 				end
 			elseif barTypeDef.minMaxMode == "percentage" then
 				maxValue = GetPositivePlainNumber(barTypeDef.maxThresholdPercent, 100)
@@ -1923,31 +1955,35 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		end
 	end
 
-	return {
-		key = barTarget,
-		baseKey = baseKey,
-		nodeKey = nodeKey,
-		group = group,
-		parentFrame = parentFrame,
-		valueFrame = valueFrame,
-		currentValue = currentValue or 0,
-		minValue = minValue,
-		maxValue = maxValue,
-		resourceMaxValue = resourceMaxValue,
-		fillDirection = fillDirection,
-		border = border,
-		resourceType = resourceType,
-		isNodeMapped = isNodeMapped,
-		nodes = nodes,
-		nodeCount = nodeCount,
-		nodeStartIndex = nodeStartIndex,
-		supportsValueComparison = supportsValueComparison,
-		usesSecretValue = TRB.Functions.Threshold:BarTargetUsesSecretValue(barTarget, classId, specId),
-		contextActive = contextActive,
-		compressedOverlap = compressedOverlap,
-		compressedSplit = compressedSplit,
-		compressedActive = compressedActive,
-	}
+	local info = targetInfoByTarget[barTarget]
+	if info == nil then
+		info = {}
+		targetInfoByTarget[barTarget] = info
+	end
+	info.key = barTarget
+	info.baseKey = baseKey
+	info.nodeKey = nodeKey
+	info.group = group
+	info.parentFrame = parentFrame
+	info.valueFrame = valueFrame
+	info.currentValue = currentValue or 0
+	info.minValue = minValue
+	info.maxValue = maxValue
+	info.resourceMaxValue = resourceMaxValue
+	info.fillDirection = fillDirection
+	info.border = border
+	info.resourceType = resourceType
+	info.isNodeMapped = isNodeMapped
+	info.nodes = nodes
+	info.nodeCount = nodeCount
+	info.nodeStartIndex = nodeStartIndex
+	info.supportsValueComparison = supportsValueComparison
+	info.usesSecretValue = TRB.Functions.Threshold:BarTargetUsesSecretValue(barTarget, classId, specId)
+	info.contextActive = contextActive
+	info.compressedOverlap = compressedOverlap
+	info.compressedSplit = compressedSplit
+	info.compressedActive = compressedActive
+	return info
 end
 
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
@@ -2241,10 +2277,11 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param targetInfo table
 ---@param guid string
+---@param frameKey string? # targetInfo.key .. "_" .. guid, when the caller already has it
 ---@return Frame
-function TRB.Functions.Threshold:GetOrCreateCustomThresholdFrame(settings, targetInfo, guid)
+function TRB.Functions.Threshold:GetOrCreateCustomThresholdFrame(settings, targetInfo, guid, frameKey)
 	TRB.Frames.customThresholds = TRB.Frames.customThresholds or {}
-	local frameKey = targetInfo.key .. "_" .. guid
+	frameKey = frameKey or (targetInfo.key .. "_" .. guid)
 	local threshold = TRB.Frames.customThresholds[frameKey]
 	-- Only reset the line when the frame is first created or re-parented (target bar
 	-- changed). Resetting every frame is wrong: ResetCustomThresholdLine forces the icon
@@ -2410,7 +2447,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 				if inRange then
 					activeFrameKeys[frameKey] = true
 				end
-				local threshold = TRB.Functions.Threshold:GetOrCreateCustomThresholdFrame(settings, targetInfo, customThresholdKey)
+				local threshold = TRB.Functions.Threshold:GetOrCreateCustomThresholdFrame(settings, targetInfo, customThresholdKey, frameKey)
 
 				local lineThickness = settings.thresholds.properties.width
 				local overlapBorder = settings.thresholds.properties.overlapBorder
@@ -3020,25 +3057,24 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 				thresholds = node:GetThresholds()
 			end
 
+			local dictEntry = dictionary[spell.settingKey]
+			-- Cost and usability can reach the WoW API, so only a line that draws or has an audio cue reads them.
+			local isActive = dictEntry == nil or dictEntry.enabled == true
+				or (dictEntry.audio ~= nil and dictEntry.audio.enabled == true and dictEntry.audio.sound ~= nil)
 			if bar.resourceType ~= nil and spell.primaryResourceType ~= bar.resourceType then
 				-- Hidden in place rather than skipped, so a form swap never hands this frame to another spell.
 				frame:Hide()
+			elseif not isActive then
+				-- A disabled line with no sound always ends hidden, and its rules touch only the line and its frame.
+				self:Hide(spell.settingKey, frame)
 			else
-				local dictEntry = dictionary[spell.settingKey]
-				-- Cost and usability can reach the WoW API, so only a line that draws or has an audio cue reads them.
-				local isActive = dictEntry == nil or dictEntry.enabled == true
-					or (dictEntry.audio ~= nil and dictEntry.audio.enabled == true and dictEntry.audio.sound ~= nil)
 				line.spell = spell
 				line.frame = frame
 				line.pairOffset = (index - 1) * 3
 				line.dictEntry = dictEntry
 				line.snapshot = snapshots[spell.id]
-				line.resourceAmount = 0
-				line.isUsable = false
-				if isActive then
-					line.resourceAmount = spell:GetPrimaryResourceCost()
-					line.isUsable = spell:IsUsable()
-				end
+				line.resourceAmount = spell:GetPrimaryResourceCost()
+				line.isUsable = spell:IsUsable()
 				line.show = true
 				line.color = overColor
 				line.frameLevel = frameLevels.thresholdOver
