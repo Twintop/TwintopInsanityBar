@@ -1,5 +1,8 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+-- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
+local UnitHealthPercent = TRB.Functions.CurveMemo.UnitHealthPercent
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Character = {}
 
@@ -158,10 +161,9 @@ function TRB.Functions.Character:UpdateResourceValues()
 		end
 	end
 
-	-- If any bar has a resource/health threshold curve, mark visibility dirty so
-	-- ProcessBars re-evaluates on the next tick.
+	-- A bar with a resource/health threshold curve re-applies its alpha on the next tick.
 	if TRB.Functions.BarVisibility.hasResourceCurve then
-		TRB.Functions.BarVisibility:MarkDirty()
+		TRB.Functions.BarVisibility:MarkCurveDirty()
 	end
 end
 
@@ -220,37 +222,83 @@ function TRB.Functions.Character:InvalidateAdditionalPowerValues()
 	end
 end
 
----Reads the player's current health, max health, absorbs, and incoming heals from the WoW API, updates snapshotData.attributes, pre-formats display strings, and recalculates the health color curve.
-function TRB.Functions.Character:UpdateHealthValues()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	snapshotData.attributes.health = UnitHealth("player", true)
-	snapshotData.attributes.healthMax = UnitHealthMax("player")
-	snapshotData.attributes.healthPercent = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
-	snapshotData.attributes.absorb = UnitGetTotalAbsorbs("player")
-	snapshotData.attributes.incomingHeal = UnitGetIncomingHeals("player") or 0
-	snapshotData.attributes.healAbsorb = UnitGetTotalHealAbsorbs("player")
+-- Bumped on every health read; the values can be secret, so health overlays compare this instead.
+TRB.Functions.Character.healthValuesVersion = 0
 
-	-- Pre-format health display strings at event time, consuming secret values once.
+-- Health pieces changed by an event and not yet read back. Every reader runs in the tick or in
+-- BarText:RenderNow, which flush first, so a burst of events between renders costs one read per piece.
+local healthDirty, absorbDirty, incomingHealDirty, healAbsorbDirty = false, false, false, false
+
+-- The piece each player health event changes. A health change re-reads every piece, as Blizzard's
+-- unit frames refresh heal prediction on it; the others only move their own value.
+local healthPieceByEvent = {
+	UNIT_HEALTH = "all",
+	UNIT_MAXHEALTH = "all",
+	UNIT_ABSORB_AMOUNT_CHANGED = "absorb",
+	UNIT_HEAL_PREDICTION = "incomingHeal",
+	UNIT_HEAL_ABSORB_AMOUNT_CHANGED = "healAbsorb",
+}
+
+---Reads the chosen health pieces into snapshotData.attributes and their display strings. With health, also
+---re-evaluates the health color curve. Then marks threshold-curve visibility for the next tick.
+---@param health boolean # health, healthMax, healthPercent, and healthColor
+---@param absorb boolean
+---@param incomingHeal boolean
+---@param healAbsorb boolean
+local function ReadHealthValues(health, absorb, incomingHeal, healAbsorb)
+	healthDirty = healthDirty and not health
+	absorbDirty = absorbDirty and not absorb
+	incomingHealDirty = incomingHealDirty and not incomingHeal
+	healAbsorbDirty = healAbsorbDirty and not healAbsorb
+	TRB.Functions.Character.healthValuesVersion = TRB.Functions.Character.healthValuesVersion + 1
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local attributes = snapshotData.attributes
+	if health then
+		attributes.health = UnitHealth("player", true)
+		attributes.healthMax = UnitHealthMax("player")
+		attributes.healthPercent = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
+	end
+	if absorb then
+		attributes.absorb = UnitGetTotalAbsorbs("player")
+	end
+	if incomingHeal then
+		attributes.incomingHeal = UnitGetIncomingHeals("player") or 0
+	end
+	if healAbsorb then
+		attributes.healAbsorb = UnitGetTotalHealAbsorbs("player")
+	end
+
+	-- Pre-format health display strings once per read, consuming secret values once.
 	-- The render tick copies these normal strings into lookup[] without reformatting.
 	local formatted = snapshotData.formatted
-	formatted.health = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.health)
-	formatted.healthMax = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.healthMax)
-	formatted.absorb = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.absorb)
-	formatted.incomingHeal = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.incomingHeal)
-	formatted.healAbsorb = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.healAbsorb)
-	-- healthPercent requires precision from settings
-	local healthPrecision = 1
-	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey then
-		local entry = TRB.Data.specCache[TRB.Data.character.compositeKey]
-		if entry and entry.settings and entry.settings.precision then
-			healthPrecision = entry.settings.precision.health or 1
+	if health then
+		formatted.health = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.health)
+		formatted.healthMax = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.healthMax)
+	end
+	if absorb then
+		formatted.absorb = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.absorb)
+	end
+	if incomingHeal then
+		formatted.incomingHeal = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.incomingHeal)
+	end
+	if healAbsorb then
+		formatted.healAbsorb = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.healAbsorb)
+	end
+	if health then
+		-- healthPercent requires precision from settings
+		local healthPrecision = 1
+		if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey then
+			local entry = TRB.Data.specCache[TRB.Data.character.compositeKey]
+			if entry and entry.settings and entry.settings.precision then
+				healthPrecision = entry.settings.precision.health or 1
+			end
 		end
+		if healthPrecision ~= cachedHealthPercentPrecision then
+			cachedHealthPercentPrecision = healthPrecision
+			cachedHealthPercentFmt = "%." .. healthPrecision .. "f"
+		end
+		formatted.healthPercent = string.format(cachedHealthPercentFmt, attributes.healthPercent)
 	end
-	if healthPrecision ~= cachedHealthPercentPrecision then
-		cachedHealthPercentPrecision = healthPrecision
-		cachedHealthPercentFmt = "%." .. healthPrecision .. "f"
-	end
-	formatted.healthPercent = string.format(cachedHealthPercentFmt, snapshotData.attributes.healthPercent)
 
 	-- Get configurable color curve settings from spec settings
 	local healthBarSettings = nil
@@ -266,12 +314,40 @@ function TRB.Functions.Character:UpdateHealthValues()
 	end
 
 	-- Evaluate the cached curve — the result is a secret ColorMixin
-	snapshotData.attributes.healthColor = UnitHealthPercent("player", true, TRB.Functions.Color:GetHealthColorCurve(healthBarSettings))
+	if health then
+		attributes.healthColor = UnitHealthPercent("player", true, TRB.Functions.Color:GetHealthColorCurve(healthBarSettings))
+	end
 
-	-- If any bar has a resource/health threshold curve, mark visibility dirty so
-	-- ProcessBars re-evaluates on the next tick.
+	-- A bar with a resource/health threshold curve re-applies its alpha on the next tick.
 	if TRB.Functions.BarVisibility.hasResourceCurve then
-		TRB.Functions.BarVisibility:MarkDirty()
+		TRB.Functions.BarVisibility:MarkCurveDirty()
+	end
+end
+
+---Reads every health piece now. For loads, spec swaps, and settings changes; events go through MarkHealthDirty.
+function TRB.Functions.Character:UpdateHealthValues()
+	ReadHealthValues(true, true, true, true)
+end
+
+---Records that a player health event changed its piece; the next FlushHealthValues reads it.
+---@param event string
+function TRB.Functions.Character:MarkHealthDirty(event)
+	local piece = healthPieceByEvent[event]
+	if piece == "all" then
+		healthDirty, absorbDirty, incomingHealDirty, healAbsorbDirty = true, true, true, true
+	elseif piece == "absorb" then
+		absorbDirty = true
+	elseif piece == "incomingHeal" then
+		incomingHealDirty = true
+	elseif piece == "healAbsorb" then
+		healAbsorbDirty = true
+	end
+end
+
+---Reads the health pieces events have changed since the last read. Called before anything renders them.
+function TRB.Functions.Character:FlushHealthValues()
+	if healthDirty or absorbDirty or incomingHealDirty or healAbsorbDirty then
+		ReadHealthValues(healthDirty, absorbDirty, incomingHealDirty, healAbsorbDirty)
 	end
 end
 
@@ -324,8 +400,10 @@ function TRB.Functions.Character:UpdatePetValues()
 		end
 	end
 
-	if state ~= previousState or TRB.Functions.BarVisibility.hasResourceCurve then
+	if state ~= previousState then
 		TRB.Functions.BarVisibility:MarkDirty()
+	elseif TRB.Functions.BarVisibility.hasResourceCurve then
+		TRB.Functions.BarVisibility:MarkCurveDirty()
 	end
 end
 
@@ -399,6 +477,14 @@ local deathCount = 0
 -- The primary max last read on a power update; a change means the class module's saved max is stale.
 local lastPrimaryMax = nil
 
+---Re-reads the zone-dependent character state (instance type, mount, pet) for the visibility conditions.
+local function RefreshZoneState()
+	TRB.Functions.Character:CheckCharacter()
+	TRB.Functions.Character:UpdatePetValues()
+	TRB.Functions.BarVisibility:MarkDirty()
+	TRB.Data.lookupDirty = true
+end
+
 ---Handles some change with the character's status
 ---@param self any
 ---@param event string
@@ -441,7 +527,7 @@ local function CharacterChange(self, event, ...)
 				powerEntry.dirty = true
 			end
 			if TRB.Functions.BarVisibility.hasResourceCurve then
-				TRB.Functions.BarVisibility:MarkDirty()
+				TRB.Functions.BarVisibility:MarkCurveDirty()
 			end
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "pet" then
@@ -454,7 +540,7 @@ local function CharacterChange(self, event, ...)
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" then
 		local unitTarget = ...
 		if unitTarget == "player" then
-			TRB.Functions.Character:UpdateHealthValues()
+			TRB.Functions.Character:MarkHealthDirty(event)
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "pet" then
 			TRB.Functions.Character:UpdatePetValues()
@@ -523,12 +609,17 @@ local function CharacterChange(self, event, ...)
 
 		TRB.Functions.BarVisibility:MarkDirty()
 	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_ENTERING_WORLD" then
-		local _, instanceType = GetInstanceInfo()
-		TRB.Data.character.instanceType = instanceType or "none"
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Functions.Character:UpdatePetValues()
-		TRB.Functions.BarVisibility:MarkDirty()
-		TRB.Data.lookupDirty = true
+		RefreshZoneState()
+	elseif event == "PLAYER_MAP_CHANGED" then
+		-- GetInstanceInfo still reports the map being left when this fires, so read it once the change settles.
+		local frame = self
+		C_Timer.After(0, function()
+			C_Timer.After(0.05, function()
+				if frame:IsEventRegistered("PLAYER_MAP_CHANGED") then
+					RefreshZoneState()
+				end
+			end)
+		end)
 	elseif event == "GROUP_ROSTER_UPDATE" then
 		TRB.Functions.BarVisibility:MarkDirty()
 	elseif event == "UNIT_FLAGS" then
@@ -548,10 +639,8 @@ local function CharacterChange(self, event, ...)
 				end
 			end
 		end
-		-- Reset audio "played" flags so cues can fire again after respawn.
-		if snapshotData and snapshotData.audio then
-			wipe(snapshotData.audio)
-		end
+		-- Re-arm audio cues so they can fire again after respawn.
+		TRB.Functions.AudioCues:ResetAllLatches(snapshotData)
 		-- Let class modules clear their spec-specific proc attributes.
 		TRB.Functions.Class:ResetProcsOnDeath()
 		TRB.Data.lookupDirty = true
@@ -567,6 +656,9 @@ local function CharacterChange(self, event, ...)
 end
 
 local characterChangeFrame = CreateFrame("Frame")
+-- Registering an event the client doesn't know errors, and Forever may not have this one.
+local mapChangedEventValid = C_EventUtils ~= nil and C_EventUtils.IsEventValid ~= nil
+	and C_EventUtils.IsEventValid("PLAYER_MAP_CHANGED") == true
 characterChangeFrame:SetScript("OnEvent", CharacterChange)
 
 ---Returns the session count of player deaths. Deferred buff re-arms capture this at schedule time to detect an intervening death.
@@ -615,6 +707,10 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 	characterChangeFrame:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED")
 	characterChangeFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	-- Seamless map changes (leaving a garrison) skip both zone events, leaving the cached instance type stale.
+	if mapChangedEventValid then
+		characterChangeFrame:RegisterEvent("PLAYER_MAP_CHANGED")
+	end
 	characterChangeFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
 	characterChangeFrame:RegisterUnitEvent("UNIT_FLAGS", "player")
 	characterChangeFrame:RegisterEvent("PLAYER_DEAD")
@@ -652,6 +748,9 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 	characterChangeFrame:UnregisterEvent("PLAYER_CAN_GLIDE_CHANGED")
 	characterChangeFrame:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+	if mapChangedEventValid then
+		characterChangeFrame:UnregisterEvent("PLAYER_MAP_CHANGED")
+	end
 	characterChangeFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_FLAGS")
 	characterChangeFrame:UnregisterEvent("PLAYER_DEAD")
@@ -1246,8 +1345,19 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
+	-- Only a spec change re-baselines: a same-spec loading screen or talent change must keep a death's re-arm.
+	local specChanged = TRB.Data.snapshotData ~= cache.snapshotData
+	if specChanged then
+		TRB.Functions.AudioCues:BaselineAllLatches(cache.snapshotData)
+	end
 	TRB.Data.snapshotData = cache.snapshotData
 	TRB.Data.snapshotData.attributes.isTracking = false
+	if specChanged then
+		-- A returning spec missed its procs' end events while inactive, so they read as ended, as after a death.
+		TRB.Functions.Class:ResetProcsOnDeath()
+	end
+	-- A different snapshot means different health values, so health overlays must redraw.
+	TRB.Functions.Character.healthValuesVersion = TRB.Functions.Character.healthValuesVersion + 1
 	TRB.Functions.Character:ResetCaches()
 	TRB.Functions.BarVisibility:MarkDirty()
 	-- The single point where a spec's composed settings become active (login, spec switch, talent

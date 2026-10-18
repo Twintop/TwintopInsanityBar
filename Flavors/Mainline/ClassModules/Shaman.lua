@@ -10,6 +10,8 @@ local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
+-- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
@@ -423,6 +425,12 @@ local function RefreshTempestLookup(spells, attributes, lookup, lookupLogic, pre
 	end
 end
 
+-- Reused per tick by FireTempestCues; the top threshold follows the spec's max stacks on every call.
+local tempestCues = {
+	{ id = "tempest", threshold = 1 },
+	{ id = "tempest2", threshold = 2 },
+}
+
 ---Fires the Tempest charge cues. Without CDM a charge still counts as one, so only the one charge cue can play.
 ---@param specSettings table
 ---@param snapshotData TRB.Classes.SnapshotData
@@ -430,10 +438,8 @@ end
 local function FireTempestCues(specSettings, snapshotData, spells)
 	local attributes = snapshotData.attributes
 	local stacks = attributes.tempestStacks or (attributes.tempestActive and 1 or 0)
-	TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, "tempestStacks", stacks, {
-		{ id = "tempest", threshold = 1 },
-		{ id = "tempest2", threshold = spells.tempest.maxStacks },
-	})
+	tempestCues[2].threshold = spells.tempest.maxStacks
+	TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, "tempestStacks", stacks, tempestCues)
 end
 
 ---Drops Tempest's tracked state and re-arms its cues.
@@ -1231,12 +1237,12 @@ local function UpdateResourceBar()
 				-- Flash is tied to Earth Shock / Elemental Blast only
 				if earthShockUsable then
 					if specSettings.colors.bar.flashEnabled then
-						Bar:PulseFrame(barGroups.primary:GetContainerFrame(), specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod, barGroups.primary.currentAlpha)
+						Bar:PulsePrimaryBar(barGroups, specSettings.colors.bar)
 					else
-						barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+						Bar:ClearPrimaryPulse(barGroups)
 					end
 				else
-					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+					Bar:ClearPrimaryPulse(barGroups)
 				end
 
 				if overcapCurves.border then
@@ -1442,7 +1448,7 @@ local function UpdateResourceBar()
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
@@ -1971,7 +1977,7 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	if not TRB.Functions.BarVisibility:IsDirty(force) then
+	if not TRB.Functions.BarVisibility:NeedsFullPass(force) then
 		return
 	end
 
@@ -2010,16 +2016,15 @@ function TRB.Functions.Class:HideResourceBar(force)
 		end
 		local elementalBlastBuffsVisSettings = (sharedSettings and sharedSettings.displayBar.elementalBlastBuffs) or nil
 
-		local entries = {
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, healthVisSettings, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.elementalBlastBuffs, elementalBlastBuffsVisSettings, elementalBlastBuffNodeCount > 0, elementalBlastBuffNodeCount, nil),
-		}
+		local entries = TRB.Functions.BarVisibility:BeginEntries()
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, healthVisSettings, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.elementalBlastBuffs, elementalBlastBuffsVisSettings, elementalBlastBuffNodeCount > 0, elementalBlastBuffNodeCount, nil)
 
 		if sharedSettings ~= nil then
-			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
 			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
 			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
@@ -2150,7 +2155,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 
-	local normalizedRelativeFrame = string.gsub(relativeToFrame or "", "_", "")
+	local normalizedRelativeFrame = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame or "")
 	if normalizedRelativeFrame == "Resource" or normalizedRelativeFrame == "ResourceBar" then
 		local primaryNode = barGroups.primary:GetNode(1)
 		if primaryNode then

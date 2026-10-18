@@ -1,5 +1,7 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+-- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Bar = {}
 
@@ -525,7 +527,7 @@ function TRB.Functions.Bar:HideResourceBar(force)
 end
 
 ---Applies a sinusoidal pulsing alpha animation to a frame, used for overcap or threshold warning effects
----@param frame frame The UI frame to animate
+---@param frame Frame The UI frame to animate
 ---@param alphaOffset number Minimum alpha floor (0-1); higher values reduce pulse intensity
 ---@param flashPeriod number Duration in seconds of one full pulse cycle; clamped to minimum 0.5 if <= 0
 ---@param maxAlpha number? Maximum alpha ceiling (defaults to 1.0)
@@ -542,6 +544,34 @@ function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod, maxAlpha)
 	end
 	
 	frame:SetAlpha(maxAlpha * (((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime() / flashPeriod)))) + alphaOffset))
+end
+
+---Pulses the primary bar's node. Its container's alpha belongs to visibility (fade or threshold curve), so the
+---pulse sits one frame down and the two multiply, matching the old container pulse capped at the fade alpha.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+---@param barColors table # The spec's colors.bar (flashAlpha, flashPeriod)
+function TRB.Functions.Bar:PulsePrimaryBar(barGroups, barColors)
+	local group = barGroups and barGroups.primary
+	local node = group and group:GetNode(1)
+	if node == nil then
+		return
+	end
+	self:PulseFrame(node:GetFrame(), barColors.flashAlpha, barColors.flashPeriod)
+	group.isPulsing = true
+end
+
+---Ends a primary bar pulse, returning its node to full alpha. Writes only when a pulse moved it.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Bar:ClearPrimaryPulse(barGroups)
+	local group = barGroups and barGroups.primary
+	if group == nil or not group.isPulsing then
+		return
+	end
+	group.isPulsing = false
+	local node = group:GetNode(1)
+	if node ~= nil then
+		node:SetAlpha(1)
+	end
 end
 
 ---Dumps every bar group's live render state and the anchor forest to chat (/trb bars).
@@ -1679,6 +1709,41 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	-- triggering updates after all setup is complete.
 end
 
+---Whether a health overlay's inputs all match its last update, recording them when they don't. Health
+---values can be secret, so they compare by healthValuesVersion; every setting the overlay reads compares directly.
+---@param slot TRB.Classes.OverlaySlot
+---@param colorEntry table?
+---@param texture string?
+---@param healthNode TRB.Classes.BarNode
+---@return boolean
+local function HealthOverlayUnchanged(slot, colorEntry, texture, healthNode)
+	local version = TRB.Functions.Character.healthValuesVersion
+	local enabled = colorEntry ~= nil and colorEntry.enabled == true
+	local mode = colorEntry and colorEntry.mode
+	local fullHeight = colorEntry and colorEntry.fullHeight == true
+	local color = colorEntry and colorEntry.color
+	local record = slot._healthInputs
+	if record == nil then
+		record = {}
+		slot._healthInputs = record
+	elseif record.version == version and record.hasEntry == (colorEntry ~= nil) and record.enabled == enabled
+		and record.mode == mode and record.fullHeight == fullHeight and record.color == color and record.texture == texture
+		and record.width == healthNode.width and record.height == healthNode.height and record.fillDirection == healthNode.fillDirection then
+		return true
+	end
+	record.version = version
+	record.hasEntry = colorEntry ~= nil
+	record.enabled = enabled
+	record.mode = mode
+	record.fullHeight = fullHeight
+	record.color = color
+	record.texture = texture
+	record.width = healthNode.width
+	record.height = healthNode.height
+	record.fillDirection = healthNode.fillDirection
+	return false
+end
+
 ---Updates the absorb shield overlay on the health bar node.
 ---Lazily creates the overlay, sets min/max/value, applies texture and color, and shows/hides.
 ---Supports four display modes:
@@ -1697,6 +1762,9 @@ function TRB.Functions.Bar:UpdateHealthBarAbsorbOverlay(healthNode, snapshotData
 	local absorbSlot = healthNode:GetOrCreateOverlaySlot("absorb")
 
 	local absorbColorEntry = settings.colors.healthBar and settings.colors.healthBar.absorb
+	if HealthOverlayUnchanged(absorbSlot, absorbColorEntry, settings.textures.absorbBar, healthNode) then
+		return
+	end
 	if absorbColorEntry then
 		absorbSlot:SetFullHeight(absorbColorEntry.fullHeight == true)
 	end
@@ -1816,6 +1884,9 @@ function TRB.Functions.Bar:UpdateHealthBarIncomingHealOverlay(healthNode, snapsh
 	local incomingHealSlot = healthNode:GetOrCreateOverlaySlot("incomingHeal")
 
 	local incomingHealColorEntry = settings.colors.healthBar and settings.colors.healthBar.incomingHeal
+	if HealthOverlayUnchanged(incomingHealSlot, incomingHealColorEntry, settings.textures.incomingHealBar, healthNode) then
+		return
+	end
 	if incomingHealColorEntry then
 		incomingHealSlot:SetFullHeight(incomingHealColorEntry.fullHeight == true)
 	end
@@ -1935,6 +2006,9 @@ function TRB.Functions.Bar:UpdateHealthBarHealAbsorbOverlay(healthNode, snapshot
 	local healAbsorbSlot = healthNode:GetOrCreateOverlaySlot("healAbsorb")
 
 	local healAbsorbColorEntry = settings.colors.healthBar and settings.colors.healthBar.healAbsorb
+	if HealthOverlayUnchanged(healAbsorbSlot, healAbsorbColorEntry, settings.textures.healAbsorbBar, healthNode) then
+		return
+	end
 	if healAbsorbColorEntry then
 		healAbsorbSlot:SetFullHeight(healAbsorbColorEntry.fullHeight == true)
 	end
@@ -3989,10 +4063,8 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					-- SetTextures() calls ApplyBackdrop() which resets border color to white.
 					-- Without clearing the cache, SetBorderColor() may skip the update
 					-- if it thinks the cached color matches the desired color.
-					local borderCacheKey = node.name .. "_border"
-					local backdropCacheKey = node.name .. "_background"
-					TRB.Data.cache.colors.border[borderCacheKey] = nil
-					TRB.Data.cache.colors.backdrop[backdropCacheKey] = nil
+					TRB.Data.cache.colors.border[node.borderKey] = nil
+					TRB.Data.cache.colors.backdrop[node.backgroundKey] = nil
 
 					node:SetTextures(
 						settings.textures[config.textures.bar],
@@ -4535,7 +4607,12 @@ end
 ---@param value number
 ---@param maxResource number?
 function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResource)
-	TRB.Data.cache.values.bar[key] = TRB.Data.cache.values.bar[key] or {}
+	local barCache = TRB.Data.cache.values.bar
+	local cache = barCache[key]
+	if cache == nil then
+		cache = {}
+		barCache[key] = cache
+	end
 	local valueIsSecret = issecretvalue(value)
 	local maxResourceIsSecret = maxResource and issecretvalue(maxResource) or false
 	local frameIsSynced = false
@@ -4561,9 +4638,9 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 		end
 	end
 
-	if not valueIsSecret and not maxResourceIsSecret and
-	   not issecretvalue(TRB.Data.cache.values.bar[key].value) and TRB.Data.cache.values.bar[key].value == value and
-	   TRB.Data.cache.values.bar[key].maxResource == maxResource and frameIsSynced then
+	-- frameIsSynced is only true for plain values, so it leads and spares a mismatch the secret checks.
+	if frameIsSynced and not valueIsSecret and not maxResourceIsSecret and
+	   not issecretvalue(cache.value) and cache.value == value and cache.maxResource == maxResource then
 		return
 	end
 
@@ -4589,8 +4666,8 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 			end
 		end
 
-		TRB.Data.cache.values.bar[key].value = value
-		TRB.Data.cache.values.bar[key].maxResource = maxResource
+		cache.value = value
+		cache.maxResource = maxResource
 
 		UpdateGroupEndCapVisibility(node)
 	end

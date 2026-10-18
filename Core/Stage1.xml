@@ -19,6 +19,7 @@
 	<Script file="Localization\zhTW.lua"/>
 	<Script file="Localization\LocalizationPost.lua"/>
 	<Script file="Functions\VersionGate.lua"/>
+	<Script file="Functions\CurveMemo.lua"/>
 	<Script file="Classes\CombatLog.lua"/>
 	<Script file="Classes\Snapshot.lua"/>
 	<Script file="Classes\Target.lua"/>

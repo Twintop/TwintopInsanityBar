@@ -4,6 +4,19 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.3-release / Forever 1.60.1.11-release (2026-10-18)
+## General
+
+- [#853](#853) Improve bar update performance, primarily around bar visibility, threshold lines, bar text, the Health bar, and the cast bars.
+- [#853](#853) Fix bars with a Resource / Health Threshold visibility condition showing or hiding incorrectly while the bar flashes or fades.
+- [#853](#853) Fix the Location / Instances visibility conditions staying wrong after leaving a garrison.
+- [#853](#853) Fix audio cues and threshold line sounds playing for conditions already met after a login or specialization change.
+- [#853](#853) Fix a proc's audio cue staying silent the first time it procs after you return to a specialization you left with it active.
+- [#853](#853) Fix the Target Cast Bar and Focus Cast Bar sometimes keeping the uninterruptible fill color on a friendly unit's cast.
+- [#853](#853) Remove the unused LibSmoothMove library.
+
+---
+
 # Live 12.1.5.2-release / Forever 1.60.1.10-release (2026-10-15)
 ## General
 

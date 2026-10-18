@@ -216,17 +216,17 @@ end
 
 -- Environment snapshot the hide conditions are evaluated against, plus the scratch entry
 -- ShouldForceHideBar reads the settings from. Both are reused rather than rebuilt per bar.
-local hideContext = nil
+local hideContext = setmetatable({}, TRB.Classes.BarVisibilityContext)
 local hideContextTime = nil
 local hideEntry = {}
 
----Returns the shared environment snapshot, rebuilt at most once per frame so every Other Bar shares one
+---Returns the shared environment snapshot, refilled at most once per frame so every Other Bar shares one
 ---build. GetTime() is constant within a frame, which makes it an exact cache key.
 ---@return TRB.Classes.BarVisibilityContext
 local function GetHideContext()
 	local now = GetTime()
-	if hideContextTime ~= now or hideContext == nil then
-		hideContext = TRB.Classes.BarVisibilityContext:NewFromGameState(false, nil)
+	if hideContextTime ~= now then
+		TRB.Classes.BarVisibilityContext:FillFromGameState(hideContext, false)
 		hideContextTime = now
 	end
 	return hideContext
@@ -395,6 +395,7 @@ local function ShowAt(group, node, alpha)
 	if group.containerFrame then
 		group.containerFrame:SetAlpha(alpha)
 	end
+	group.healedHideVersion = group.hideVersion
 end
 
 ---Binds the GCD node's fill to the live DurationObject. "deplete" (the default) drains a full bar as
@@ -1114,7 +1115,8 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			-- Between ticks with an idle bar resting visible: cheap alpha/visibility self-heal only.
 			needsUpdater = true
 			local group, node = GetGroupNode(barKey)
-			if group ~= nil then
+			-- Only after something hid the group or a node, or set its alpha, since the last assert.
+			if group ~= nil and group.healedHideVersion ~= group.hideVersion then
 				ShowAt(group, node, cachedIdleAlpha[barKey])
 			end
 		end

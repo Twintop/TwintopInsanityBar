@@ -10,6 +10,8 @@ local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
+-- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 local frameLevels = TRB.Data.constants.frameLevels
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
@@ -1102,7 +1104,7 @@ local function UpdateResourceBar()
 					barBorderColor = furyBarColors.border
 					barBackgroundColor = furyBarColors.background
 
-					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+					Bar:ClearPrimaryPulse(barGroups)
 
 					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
 					local overcapCurves = scratch.overcapCurves1
@@ -1249,7 +1251,7 @@ local function UpdateResourceBar()
 					barBorderColor = furyBarColors.border
 					barBackgroundColor = furyBarColors.background
 
-					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+					Bar:ClearPrimaryPulse(barGroups)
 
 					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
 					local overcapCurves = scratch.overcapCurves2
@@ -1520,7 +1522,7 @@ local function UpdateResourceBar()
 					barBorderColor = furyBarColors.border
 					barBackgroundColor = furyBarColors.background
 
-					barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+					Bar:ClearPrimaryPulse(barGroups)
 
 					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
 					local overcapCurves = scratch.overcapCurves3
@@ -1743,6 +1745,8 @@ local function UpdateResourceBar()
 									else
 										thresholds[1]:SetWidth(specCacheSettings.thresholds.properties.width)
 									end
+									-- Drops the size record so RepositionThreshold still rewrites the size this tick, as before.
+									thresholds[1]._trbWidth = nil
 									
 									thresholds[1]:SetFrameLevel(frameLevel)
 									thresholds[1]:Show()
@@ -2057,7 +2061,7 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	if not TRB.Functions.BarVisibility:IsDirty(force) then
+	if not TRB.Functions.BarVisibility:NeedsFullPass(force) then
 		return
 	end
 
@@ -2078,14 +2082,13 @@ function TRB.Functions.Class:HideResourceBar(force)
 			secondaryNodes = TRB.Data.character.specId == 2 and 6 or 1
 		end
 
-		local entries = {
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
-		}
+		local entries = TRB.Functions.BarVisibility:BeginEntries()
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil)
 
 		if sharedSettings ~= nil then
-			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
 			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
 			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
@@ -2197,7 +2200,7 @@ end
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	if relativeToFrame ~= nil then
-		relativeToFrame = string.gsub(relativeToFrame, "_", "")
+		relativeToFrame = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame)
 	end
 	if relativeToFrame == "ResourceBar" or relativeToFrame == "Resource" then
 		if barGroups and barGroups.primary then
@@ -2210,7 +2213,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	elseif relativeToFrame ~= nil then
 		-- Handle secondary resources (ComboPoint1, ComboPoint2, etc.)
-		local comboPointIndex = string.match(relativeToFrame, "^ComboPoint(%d+)$")
+		local comboPointIndex = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, "^ComboPoint(%d+)$")
 		if comboPointIndex ~= nil then
 			local index = tonumber(comboPointIndex)
 			if index ~= nil and barGroups and barGroups.secondary then

@@ -10,6 +10,8 @@ local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
+-- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 local frameLevels = TRB.Data.constants.frameLevels
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
@@ -1216,7 +1218,7 @@ local function HandleSpellEvents(self, event, ...)
 				if demonicCoreSnapshot ~= nil then
 					-- Gated on the sound flag alone rather than on isActive, which the Cooldown Manager
 					-- may already have set from the same proc a tick earlier.
-					TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "demonicCore", true)
+					TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warlock.demonology, snapshotData, "demonicCore")
 
 					-- No stacks or duration knowable from a glow; active until GLOW_HIDE
 					demonicCoreSnapshot.buff:InitializeCustomSimple(true)
@@ -1227,7 +1229,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = infernalBoltSnapshot.buff.isActive
 
 					if not wasActive then
-						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "infernalBolt", true)
+						TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warlock.demonology, snapshotData, "infernalBolt")
 					end
 
 					-- Infernal Bolt proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1239,7 +1241,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = ruinationSnapshot.buff.isActive
 
 					if not wasActive then
-						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "ruination", true)
+						TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warlock.demonology, snapshotData, "ruination")
 					end
 
 					-- Ruination proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1254,7 +1256,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = infernalBoltSnapshot.buff.isActive
 
 					if not wasActive then
-						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.destruction, snapshotData, "infernalBolt", true)
+						TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warlock.destruction, snapshotData, "infernalBolt")
 					end
 
 					-- Infernal Bolt proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1266,7 +1268,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = ruinationSnapshot.buff.isActive
 
 					if not wasActive then
-						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.destruction, snapshotData, "ruination", true)
+						TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warlock.destruction, snapshotData, "ruination")
 					end
 
 					-- Ruination proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1647,7 +1649,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -1729,7 +1731,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -1793,7 +1795,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -2044,7 +2046,7 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	if not TRB.Functions.BarVisibility:IsDirty(force) then
+	if not TRB.Functions.BarVisibility:NeedsFullPass(force) then
 		return
 	end
 
@@ -2058,15 +2060,14 @@ function TRB.Functions.Class:HideResourceBar(force)
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
-		local entries = {
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, true, TRB.Data.character.maxResource2, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
-		}
+		local entries = TRB.Functions.BarVisibility:BeginEntries()
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, true, TRB.Data.character.maxResource2, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil)
 		TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
-			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
 			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
 			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
@@ -2236,7 +2237,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 
-	local normalizedRelativeFrame = string.gsub(relativeToFrame or "", "_", "")
+	local normalizedRelativeFrame = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame or "")
 	if normalizedRelativeFrame == "Resource" or normalizedRelativeFrame == "ResourceBar" then
 		local primaryNode = barGroups.primary:GetNode(1)
 		if primaryNode then

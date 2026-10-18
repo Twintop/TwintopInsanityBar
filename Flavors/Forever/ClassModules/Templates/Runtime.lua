@@ -18,6 +18,8 @@ local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Bar = TRB.Functions.Bar
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
+-- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 local Threshold = TRB.Functions.Threshold
 
 ---@class TRB.Forever.Runtime
@@ -550,7 +552,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 	end
 
 	function TRB.Functions.Class:HideResourceBar(force)
-		if not TRB.Functions.BarVisibility:IsDirty(force) then
+		if not TRB.Functions.BarVisibility:NeedsFullPass(force) then
 			return
 		end
 
@@ -566,14 +568,13 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			end
 			local hasSecondary = spec.archetype.secondary ~= nil
 			local secondaryNodes = hasSecondary and (TRB.Data.character.maxResource2 or spec.archetype.secondary.maxNodes) or nil
-			local entries = {
-				TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
-				TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil),
-				TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
-			}
+			local entries = TRB.Functions.BarVisibility:BeginEntries()
+			TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
+			TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil)
+			TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil)
 			TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
 			if sharedSettings ~= nil then
-				local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+				local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
 				TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 			else
 				TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
@@ -647,7 +648,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 		if not (barGroups and barGroups.primary) then
 			return nil, true, false
 		end
-		local normalized = string.gsub(relativeToFrame or "", "_", "")
+		local normalized = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame or "")
 		if normalized == "Resource" or normalized == "ResourceBar" then
 			local node = barGroups.primary:GetNode(1)
 			if node then

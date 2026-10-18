@@ -385,20 +385,21 @@ end
 ---@param model TRB.Classes.TargetCastbar
 ---@param colors table
 ---@param barSettings table?
-local function ApplyFillColor(node, model, colors, barSettings)
+---@param classHex string? # GetUnitClassColor(model.unit, barSettings)
+---@param hostile boolean # The unit exists and the player can attack it
+---@return boolean drewCurve # The fill came from the interruptible evaluation, which is fixed for the cast
+local function ApplyFillColor(node, model, colors, barSettings, classHex, hostile)
 	-- Class color overrides everything on the fill (mirrors the player cast bar's target-class option).
-	local classHex = GetUnitClassColor(model.unit, barSettings)
 	if classHex ~= nil then
 		node:ClearGradient()
 		node:SetColor(classHex)
-		return
+		return false
 	end
 	local baseHex = (model.state == "empower" and colors.empower and colors.empower.color)
 		or (model.state == "channel" and colors.channel and colors.channel.color)
 		or (colors.bar and colors.bar.color)
 	-- Interruptible recolor: opt-in, hostile targets only, and only when we have both colors + a flag.
 	local wantInterrupt = barSettings == nil or barSettings.interruptColor ~= false
-	local hostile = UnitExists(model.unit) and UnitCanAttack("player", model.unit)
 	if wantInterrupt and hostile and colors.uninterruptible and colors.uninterruptible.color
 		and model.notInterruptible ~= nil and C_CurveUtil ~= nil and C_CurveUtil.EvaluateColorFromBoolean ~= nil then
 		local locked = GetColorObject(colors.uninterruptible.color)
@@ -409,13 +410,16 @@ local function ApplyFillColor(node, model, colors, barSettings)
 			if colorResult ~= nil then
 				node:ClearGradient()
 				node.frame:SetStatusBarColor(colorResult:GetRGBA())
-				return
+				-- Not drawn through the cache, so a later SetColor must not skip on its stale entry.
+				TRB.Data.cache.colors.bar[node.resourceKey] = nil
+				return true
 			end
 		end
 	end
 	if baseHex ~= nil then
 		node:SetColor(baseHex)
 	end
+	return false
 end
 
 ---Applies the border color, in priority order: an active Color Indicator targeting the border wins
@@ -429,9 +433,11 @@ end
 ---@param colors table?
 ---@param barSettings table?
 ---@param barKey string # "targetCastbar" / "focusCastbar" -- the Color Indicator target key
-local function ApplyBorderColor(node, model, colors, barSettings, barKey)
+---@param hostile boolean # The cast's unit exists and the player can attack it; false for the idle bar
+---@return boolean drewCurve # The border came from the interruptible evaluation, which is fixed for the cast
+local function ApplyBorderColor(node, model, colors, barSettings, barKey, hostile)
 	if colors == nil or colors.border == nil or colors.border.color == nil then
-		return
+		return false
 	end
 	local Color = TRB.Functions.Color
 	local indicators = Color:GetResolvedIndicators(barKey)
@@ -439,11 +445,10 @@ local function ApplyBorderColor(node, model, colors, barSettings, barKey)
 	-- path also layers a gradient indicator on top when one targets the border.
 	if indicators ~= nil and indicators.border ~= nil then
 		Color:ApplyResolvedBorderOrBackground(node, barKey, "border", indicators.border)
-		return
+		return false
 	end
 	local normalHex = colors.border.color
 	local wantInterrupt = barSettings == nil or barSettings.interruptColor ~= false
-	local hostile = model ~= nil and UnitExists(model.unit) and UnitCanAttack("player", model.unit)
 	if wantInterrupt and hostile and colors.uninterruptibleBorder and colors.uninterruptibleBorder.color
 		and model ~= nil and model.notInterruptible ~= nil and C_CurveUtil ~= nil and C_CurveUtil.EvaluateColorFromBoolean ~= nil then
 		local locked = GetColorObject(colors.uninterruptibleBorder.color)
@@ -454,12 +459,66 @@ local function ApplyBorderColor(node, model, colors, barSettings, barKey)
 			local colorResult = C_CurveUtil.EvaluateColorFromBoolean(model.notInterruptible, locked, normal)
 			if colorResult ~= nil then
 				node:SetBorderColorCurve(colorResult)
-				return
+				return true
 			end
 		end
 	end
 	-- No indicator, no uninterruptible override: configured color, plus a gradient indicator if present.
 	Color:ApplyResolvedBorderOrBackground(node, barKey, "border", normalHex)
+	return false
+end
+
+-- Per bar, the inputs and node write counts its curve-drawn fill and border were last drawn at. The 20Hz re-assert
+-- skips re-evaluating while both hold and no flat write has refilled the color cache entry.
+local drawnCastColors = {}
+
+---Returns the bar's drawn-input record, and whether the inputs it holds still match.
+---@param groupKey string
+---@param node TRB.Classes.BarNode
+---@param model TRB.Classes.TargetCastbar
+---@param colors table
+---@param barSettings table?
+---@param classHex string?
+---@param hostile boolean
+---@return table drawn
+---@return boolean unchanged
+local function GetDrawnCastColors(groupKey, node, model, colors, barSettings, classHex, hostile)
+	local drawn = drawnCastColors[groupKey]
+	if drawn == nil then
+		drawn = {}
+		drawnCastColors[groupKey] = drawn
+	end
+	local fillLocked = colors.uninterruptible and colors.uninterruptible.color
+	local borderNormal = colors.border and colors.border.color
+	local borderLocked = colors.uninterruptibleBorder and colors.uninterruptibleBorder.color
+	local empowerBase = (colors.empower and colors.empower.color) or nil
+	local channelBase = (colors.channel and colors.channel.color) or nil
+	local barBase = (colors.bar and colors.bar.color) or nil
+	local interruptColor = barSettings and barSettings.interruptColor
+	local indicatorVersion = TRB.Functions.Color:GetResolvedIndicatorVersion()
+	local unchanged = drawn.frame == node.frame and drawn.generation == model.castGeneration and drawn.state == model.state
+		and drawn.classHex == classHex and drawn.hostile == hostile and drawn.indicatorVersion == indicatorVersion
+		and drawn.interruptColor == interruptColor and drawn.fillLocked == fillLocked and drawn.borderNormal == borderNormal
+		and drawn.borderLocked == borderLocked and drawn.empowerBase == empowerBase and drawn.channelBase == channelBase
+		and drawn.barBase == barBase
+	if not unchanged then
+		drawn.frame = node.frame
+		drawn.generation = model.castGeneration
+		drawn.state = model.state
+		drawn.classHex = classHex
+		drawn.hostile = hostile
+		drawn.indicatorVersion = indicatorVersion
+		drawn.interruptColor = interruptColor
+		drawn.fillLocked = fillLocked
+		drawn.borderNormal = borderNormal
+		drawn.borderLocked = borderLocked
+		drawn.empowerBase = empowerBase
+		drawn.channelBase = channelBase
+		drawn.barBase = barBase
+		drawn.fillCurve = false
+		drawn.borderCurve = false
+	end
+	return drawn, unchanged
 end
 
 ---Applies the background color: an active Color Indicator targeting the background wins, else the
@@ -501,8 +560,13 @@ local function ApplyVisibleState(groupKey, model)
 		node:SetValue(model.state == "channel" and 1 or 0)
 	end
 
+	local classHex = GetUnitClassColor(model.unit, barSettings)
+	local hostile = UnitExists(model.unit) and UnitCanAttack("player", model.unit) or false
+	local drawn
 	if colors ~= nil then
-		ApplyFillColor(node, model, colors, barSettings)
+		drawn = GetDrawnCastColors(groupKey, node, model, colors, barSettings, classHex, hostile)
+		drawn.fillCurve = ApplyFillColor(node, model, colors, barSettings, classHex, hostile)
+		drawn.fillWrites = node.fillWrites
 	end
 
 	-- Side icon (secret-safe). Its border tracks the bar's border via ApplyBorderColor below.
@@ -543,8 +607,9 @@ local function ApplyVisibleState(groupKey, model)
 
 	-- Border / background / end cap: Color Indicator (border/background/endCap targets) over the secret-safe
 	-- uninterruptible recolor over the configured colors. Border also colors the icon border + end-cap follow.
-	if colors ~= nil then
-		ApplyBorderColor(node, model, colors, barSettings, groupKey)
+	if colors ~= nil and drawn ~= nil then
+		drawn.borderCurve = ApplyBorderColor(node, model, colors, barSettings, groupKey, hostile)
+		drawn.borderWrites = node.borderWrites
 		ApplyBackgroundColor(node, colors, groupKey)
 	end
 
@@ -560,6 +625,7 @@ local function ApplyVisibleState(groupKey, model)
 	end
 	node:Show()
 	group.containerFrame:SetAlpha(activeAlpha)
+	group.healedHideVersion = group.hideVersion
 end
 
 -- Per-groupKey cache of the last throttle tick's resolved activeAlpha, so between-tick frames can do the
@@ -584,8 +650,18 @@ local function ReassertVisibility(groupKey, model)
 	end
 	local _, barSettings, colors, visibility = GetBarConfig(groupKey)
 	if colors ~= nil then
-		ApplyFillColor(node, model, colors, barSettings)
-		ApplyBorderColor(node, model, colors, barSettings, groupKey)
+		local classHex = GetUnitClassColor(model.unit, barSettings)
+		local hostile = UnitExists(model.unit) and UnitCanAttack("player", model.unit) or false
+		local drawn, unchanged = GetDrawnCastColors(groupKey, node, model, colors, barSettings, classHex, hostile)
+		local colorCache = TRB.Data.cache.colors
+		if not (unchanged and drawn.fillCurve and drawn.fillWrites == node.fillWrites and colorCache.bar[node.resourceKey] == nil) then
+			drawn.fillCurve = ApplyFillColor(node, model, colors, barSettings, classHex, hostile)
+			drawn.fillWrites = node.fillWrites
+		end
+		if not (unchanged and drawn.borderCurve and drawn.borderWrites == node.borderWrites and colorCache.border[node.borderKey] == nil) then
+			drawn.borderCurve = ApplyBorderColor(node, model, colors, barSettings, groupKey, hostile)
+			drawn.borderWrites = node.borderWrites
+		end
 		ApplyBackgroundColor(node, colors, groupKey)
 	end
 	-- Re-assert the icon every tick, not just at cast start: a render transition hides all bar groups
@@ -610,6 +686,7 @@ local function ReassertVisibility(groupKey, model)
 	end
 	node:Show()
 	group.containerFrame:SetAlpha(activeAlpha)
+	group.healedHideVersion = group.hideVersion
 end
 
 ---Cheap between-tick self-heal: re-asserts only alpha/visibility from the cached activeAlpha, no settings
@@ -618,7 +695,8 @@ end
 ---@param groupKey string
 local function ReassertVisibilityCheap(groupKey)
 	local group, node = GetGroupNode(groupKey)
-	if group == nil or node == nil then
+	-- Also skipped when nothing has hidden the group or a node, or set its alpha, since the last assert.
+	if group == nil or node == nil or group.healedHideVersion == group.hideVersion then
 		return
 	end
 	local activeAlpha = cachedActiveAlpha[groupKey] or 1
@@ -630,6 +708,7 @@ local function ReassertVisibilityCheap(groupKey)
 	end
 	node:Show()
 	group.containerFrame:SetAlpha(activeAlpha)
+	group.healedHideVersion = group.hideVersion
 end
 
 ---Applies the fully-hidden state for a unit's bar.
@@ -718,7 +797,7 @@ local function ApplyIdleState(groupKey, idleAlpha)
 	-- No cast means no interruptibility, but the empty bar is on screen, so a Color Indicator targeting
 	-- its border/background/end cap should still show (else the configured colors).
 	if colors ~= nil then
-		ApplyBorderColor(node, nil, colors, nil, groupKey)
+		ApplyBorderColor(node, nil, colors, nil, groupKey, false)
 		ApplyBackgroundColor(node, colors, groupKey)
 	end
 	group.targetAlpha = idleAlpha
@@ -729,6 +808,7 @@ local function ApplyIdleState(groupKey, idleAlpha)
 	end
 	node:Show()
 	group.containerFrame:SetAlpha(idleAlpha)
+	group.healedHideVersion = group.hideVersion
 end
 
 ---Resolves a unit's no-active-cast display: an idle empty bar at the resting alpha when one should show
@@ -980,7 +1060,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			needsUpdater = true
 			local group, node = GetGroupNode(u.groupKey)
 			local idleAlpha = cachedIdleAlpha[u.groupKey]
-			if group ~= nil and not inTransition then
+			if group ~= nil and not inTransition and group.healedHideVersion ~= group.hideVersion then
 				group.targetAlpha = idleAlpha
 				group.currentAlpha = idleAlpha
 				if not group.isVisible then
@@ -993,6 +1073,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 				if group.containerFrame then
 					group.containerFrame:SetAlpha(idleAlpha)
 				end
+				group.healedHideVersion = group.hideVersion
 			end
 		end
 	end

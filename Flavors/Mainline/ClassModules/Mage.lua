@@ -10,6 +10,8 @@ local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
+-- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 local frameLevels = TRB.Data.constants.frameLevels
 
 local targetsTimerFrame = TRB.Frames.targetsTimerFrame
@@ -1416,6 +1418,15 @@ local scratch = {
 	fireBlastBarTargets1 = {},
 	indicatorTargets1 = {},
 	barColorMap1 = {},
+	clearcastingCues = {
+		{ id = "clearcasting", threshold = 1 },
+		{ id = "clearcasting2", threshold = 2 },
+		{ id = "clearcasting3", threshold = 3 },
+	},
+	fingersOfFrostCues = {
+		{ id = "fingersOfFrostCharge1", threshold = 1 },
+		{ id = "fingersOfFrostCharge2", threshold = 2 },
+	},
 }
 
 local function UpdateResourceBar()
@@ -1535,7 +1546,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -1594,11 +1605,7 @@ local function UpdateResourceBar()
 			local clearcasting = arcaneSnapshots[arcaneSpells.clearcasting.id].buff
 			local clearcastingStacks = clearcasting.isActive and (clearcasting.applications or 0) or 0
 			TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, "clearcastingStacks",
-				clearcastingStacks, {
-					{ id = "clearcasting", threshold = 1 },
-					{ id = "clearcasting2", threshold = 2 },
-					{ id = "clearcasting3", threshold = 3 },
-				})
+				clearcastingStacks, scratch.clearcastingCues)
 
 			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "prismaticBolt",
 				arcaneSnapshots[arcaneSpells.prismaticBolt.id].buff.isActive == true)
@@ -1679,7 +1686,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -1821,7 +1828,7 @@ local function UpdateResourceBar()
 				primaryNode:SetBorderColor(manaBarColors.border)
 				TRB.Functions.Color:ApplyFillColor(primaryNode, manaBarColors.bar)
 				primaryNode:SetBackgroundColorFromString(manaBarColors.background)
-				barGroups.primary:GetContainerFrame():SetAlpha(barGroups.primary.currentAlpha or 1.0)
+				Bar:ClearPrimaryPulse(barGroups)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 			end
 
@@ -1886,10 +1893,7 @@ local function UpdateResourceBar()
 			local fingersOfFrost = frostSnapshots[frostSpells.fingersOfFrost.id].buff
 			local fingersOfFrostStacks = fingersOfFrost.isActive and (fingersOfFrost.applications or 0) or 0
 			TRB.Functions.AudioCues:FireValueGroup(specSettings, snapshotData, "fingersOfFrostCharges",
-				fingersOfFrostStacks, {
-					{ id = "fingersOfFrostCharge1", threshold = 1 },
-					{ id = "fingersOfFrostCharge2", threshold = 2 },
-				})
+				fingersOfFrostStacks, scratch.fingersOfFrostCues)
 
 			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "brainFreeze",
 				frostSnapshots[frostSpells.brainFreeze.id].buff.isActive == true)
@@ -2538,7 +2542,7 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	if not TRB.Functions.BarVisibility:IsDirty(force) then
+	if not TRB.Functions.BarVisibility:NeedsFullPass(force) then
 		return
 	end
 
@@ -2555,17 +2559,16 @@ function TRB.Functions.Class:HideResourceBar(force)
 		-- Arcane (1) always has Arcane Charges; Frost (3) has Icicles only if talented (maxResource2 > 0)
 		local hasSecondary = TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or (TRB.Data.character.specId == 3 and (TRB.Data.character.maxResource2 or 0) > 0)
 
-		local entries = {
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, TRB.Data.character.maxResource2, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.shatter, sharedSettings and sharedSettings.displayBar.shatter, TRB.Data.character.specId == 3, barGroups and barGroups.shatter and barGroups.shatter.maxNodes, nil),
-			TRB.Classes.BarVisibilityEntry:New(barGroups and barGroups.arcaneSalvo, sharedSettings and sharedSettings.displayBar.arcaneSalvo, TRB.Data.character.specId == 1 and TRB.Data.character.arcaneSalvoTalented == true, 1, nil),
-		}
+		local entries = TRB.Functions.BarVisibility:BeginEntries()
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, TRB.Data.character.maxResource2, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.shatter, sharedSettings and sharedSettings.displayBar.shatter, TRB.Data.character.specId == 3, barGroups and barGroups.shatter and barGroups.shatter.maxNodes, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.arcaneSalvo, sharedSettings and sharedSettings.displayBar.arcaneSalvo, TRB.Data.character.specId == 1 and TRB.Data.character.arcaneSalvoTalented == true, 1, nil)
 		TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
-			local context = TRB.Classes.BarVisibilityContext:NewFromGameState(force, sharedSettings)
+			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
 			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
 		else
 			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
@@ -2715,7 +2718,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 
-	local normalizedRelativeFrame = string.gsub(relativeToFrame or "", "_", "")
+	local normalizedRelativeFrame = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame or "")
 	if normalizedRelativeFrame == "Resource" or normalizedRelativeFrame == "ResourceBar" then
 		local primaryNode = barGroups.primary:GetNode(1)
 		if primaryNode then
@@ -2752,7 +2755,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 
-	local shatterIndex = string.match(normalizedRelativeFrame, "^Shatter(%d+)$")
+	local shatterIndex = TRB.Functions.BarText:MatchAnchorKey(normalizedRelativeFrame, "^Shatter(%d+)$")
 	if shatterIndex ~= nil then
 		local index = tonumber(shatterIndex)
 		if index and barGroups.shatter then
@@ -2777,7 +2780,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		return nil, true, false
 	end
 
-	local fireBlastChargeIndex = string.match(normalizedRelativeFrame, "^FireBlastCharge(%d+)$")
+	local fireBlastChargeIndex = TRB.Functions.BarText:MatchAnchorKey(normalizedRelativeFrame, "^FireBlastCharge(%d+)$")
 	if fireBlastChargeIndex ~= nil then
 		local chargeIndex = tonumber(fireBlastChargeIndex)
 		if chargeIndex and barGroups.secondary then

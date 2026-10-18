@@ -1,12 +1,13 @@
 local _, TRB = ...
+-- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Color = {}
 
--- Memoization cache for GetRGBAFromString in the common case (no color/alpha adjustment).
--- Keyed by hexString .. (normalize and "T" or "F"), storing {r, g, b, a}.
--- Never needs explicit invalidation — a given hex string always maps to the same RGBA.
--- Optionally cleared in ResetColorCaches() to bound memory.
-local rgbaCache = {}
+-- GetRGBAFromString memos for the unadjusted case, {r, g, b, a} by hex string, one per normalize flag so a
+-- lookup builds no key. A hex string always maps to the same RGBA; ResetColorCaches() clears them to bound memory.
+local rgbaCacheNormalized = {}
+local rgbaCacheRaw = {}
 
 -- The player's class never changes, so its color is resolved once and reused.
 local playerClassColorHex = nil
@@ -21,8 +22,8 @@ function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust,
 	-- Fast path: when no color/alpha adjustment, use memoized result
 	local canCache = (percentColorAdjust == nil or percentColorAdjust == 1) and (percentAlphaAdjust == nil or percentAlphaAdjust == 1)
 	if canCache and s ~= nil and #s == 8 then
-		local cacheKey = normalize and (s .. "T") or (s .. "F")
-		local cached = rgbaCache[cacheKey]
+		local rgbaCache = normalize and rgbaCacheNormalized or rgbaCacheRaw
+		local cached = rgbaCache[s]
 		if cached then
 			return cached[1], cached[2], cached[3], cached[4]
 		end
@@ -34,7 +35,7 @@ function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust,
 		if normalize then
 			_r, _g, _b, _a = _r/255, _g/255, _b/255, _a/255
 		end
-		rgbaCache[cacheKey] = { _r, _g, _b, _a }
+		rgbaCache[s] = { _r, _g, _b, _a }
 		return _r, _g, _b, _a
 	end
 
@@ -74,7 +75,8 @@ end
 
 ---Clears the RGBA parse memoization cache. Call from ResetColorCaches() to bound memory.
 function TRB.Functions.Color:ClearRGBACache()
-	wipe(rgbaCache)
+	wipe(rgbaCacheNormalized)
+	wipe(rgbaCacheRaw)
 end
 
 ---Converts normalized decimal RGBA values (0.0-1.0) to an AARRGGBB hexadecimal string
@@ -257,6 +259,7 @@ function TRB.Functions.Color:SetBackdropColor(frame, key, r, g, b, a)
 			TRB.Data.cache.colors.backdrop[key].a = a
 			changed = true
 		end
+		TRB.Data.cache.colors.backdrop[key].source = nil
 	end
 
 	if changed then
@@ -292,6 +295,7 @@ function TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
 			TRB.Data.cache.colors.border[key].a = a
 			changed = true
 		end
+		TRB.Data.cache.colors.border[key].source = nil
 	end
 
 	if changed then
@@ -305,8 +309,15 @@ end
 ---@param rgbaString string # AARRGGBB hexadecimal color string
 ---@param normalize boolean? # Whether to normalize values to 0.0-1.0 (defaults to true)
 function TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, key, rgbaString, normalize)
+	local cached = key ~= nil and TRB.Data.cache.colors.border[key] or nil
+	if cached ~= nil and rgbaString ~= nil and cached.source == rgbaString then
+		return
+	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
 	TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
+	if key ~= nil then
+		TRB.Data.cache.colors.border[key].source = rgbaString
+	end
 end
 
 -- Shield color sources -> the castbar colors-table key they pull from. Only the uninterruptible colors are
@@ -365,8 +376,12 @@ function TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 			TRB.Data.cache.colors.bar[key].a = a
 			changed = true
 		end
+		TRB.Data.cache.colors.bar[key].source = nil
 	else
 		changed = true
+		if TRB.Data.cache.colors.bar[key] ~= nil then
+			TRB.Data.cache.colors.bar[key].source = nil
+		end
 	end
 	
 	if changed then
@@ -402,6 +417,7 @@ function TRB.Functions.Color:SetStatusBarVertexColor(frame, key, r, g, b, a)
 			TRB.Data.cache.colors.bar[key].a = a
 			changed = true
 		end
+		TRB.Data.cache.colors.bar[key].source = nil
 	end
 	
 	if changed then
@@ -415,8 +431,15 @@ end
 ---@param rgbaString string # AARRGGBB hexadecimal color string
 ---@param normalize boolean? # Whether to normalize values to 0.0-1.0 (defaults to true)
 function TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, key, rgbaString, normalize)
+	local cached = key ~= nil and TRB.Data.cache.colors.bar[key] or nil
+	if cached ~= nil and rgbaString ~= nil and cached.source == rgbaString then
+		return
+	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
 	TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
+	if key ~= nil then
+		TRB.Data.cache.colors.bar[key].source = rgbaString
+	end
 end
 
 ---Sets a threshold frame's texture and optional icon border color from an AARRGGBB hex string, filtered by class/spec
@@ -449,6 +472,77 @@ end
 -- Step ColorCurve cache (used for resource threshold color transitions)
 TRB.Data.cache = TRB.Data.cache or {}
 TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
+
+-- A raw-input lookup in front of a string-keyed curve cache, stored inside that cache so every clear
+-- or replacement of it drops this too. A miss falls back to the string key, so equal keys share a curve.
+local FAST_CURVE_ROOT = {}
+local FAST_CURVE_NIL = {}
+
+---Returns the child under a raw key, creating it; a nil key uses its sentinel.
+---@param node table
+---@param key any
+---@return table
+local function FastCurveChild(node, key)
+	if key == nil then
+		key = FAST_CURVE_NIL
+	end
+	local child = node[key]
+	if child == nil then
+		child = {}
+		node[key] = child
+	end
+	return child
+end
+
+---Returns the curve a cache holds for these raw inputs, or nil on a miss. Each call site leads with its own
+---tag and always passes the same keys; unused trailing keys read as the nil sentinel, so paths never collide.
+---@param cache table # The string-keyed curve cache this lookup fronts
+---@return any?
+function TRB.Functions.Color:GetFastCurve(cache, k1, k2, k3, k4, k5, k6)
+	-- Reading a NaN key is a plain miss, so lookups need no NaN check.
+	local node = cache[FAST_CURVE_ROOT]
+	if node == nil then
+		return nil
+	end
+	node = node[k1 == nil and FAST_CURVE_NIL or k1]
+	if node == nil then
+		return nil
+	end
+	node = node[k2 == nil and FAST_CURVE_NIL or k2]
+	if node == nil then
+		return nil
+	end
+	node = node[k3 == nil and FAST_CURVE_NIL or k3]
+	if node == nil then
+		return nil
+	end
+	node = node[k4 == nil and FAST_CURVE_NIL or k4]
+	if node == nil then
+		return nil
+	end
+	node = node[k5 == nil and FAST_CURVE_NIL or k5]
+	if node == nil then
+		return nil
+	end
+	return node[k6 == nil and FAST_CURVE_NIL or k6]
+end
+
+---Records a curve under these raw inputs in front of its string-keyed cache entry.
+---@param cache table # The string-keyed curve cache this lookup fronts
+---@param curve any
+function TRB.Functions.Color:SetFastCurve(cache, curve, k1, k2, k3, k4, k5, k6)
+	-- A NaN key can't index a table; that input set just keeps using the string key.
+	if k1 ~= k1 or k2 ~= k2 or k3 ~= k3 or k4 ~= k4 or k5 ~= k5 or k6 ~= k6 then
+		return
+	end
+	local node = cache[FAST_CURVE_ROOT]
+	if node == nil then
+		node = {}
+		cache[FAST_CURVE_ROOT] = node
+	end
+	node = FastCurveChild(FastCurveChild(FastCurveChild(FastCurveChild(FastCurveChild(node, k1), k2), k3), k4), k5)
+	node[k6 == nil and FAST_CURVE_NIL or k6] = curve
+end
 
 -- Threshold metadata for built ColorCurves, keyed weakly by the curve object. Lets an end cap
 -- following "only non-default border colors" rebuild the same step curve based at its own color
@@ -503,8 +597,12 @@ function TRB.Functions.Color:EvaluateEndCapCurve(node, borderCurve, powerType)
 	end
 
 	local cache = TRB.Data.cache.stepColorCurves
+	local curve = self:GetFastCurve(cache, "endCap", meta, capBaseColor)
+	if curve ~= nil then
+		return UnitPowerPercent("player", resource, true, curve)
+	end
 	local fullKey = "endCap_" .. tostring(capBaseColor) .. meta.key
-	local curve = cache[fullKey]
+	curve = cache[fullKey]
 	if curve == nil then
 		curve = C_CurveUtil.CreateColorCurve()
 		curve:SetType(Enum.LuaCurveType.Step)
@@ -516,6 +614,7 @@ function TRB.Functions.Color:EvaluateEndCapCurve(node, borderCurve, powerType)
 		end
 		cache[fullKey] = curve
 	end
+	self:SetFastCurve(cache, curve, "endCap", meta, capBaseColor)
 
 	return UnitPowerPercent("player", resource, true, curve)
 end
@@ -647,9 +746,14 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 
 	-- Check cache first
 	local cache = TRB.Data.cache.stepColorCurves
+	local fastCurve = self:GetFastCurve(cache, "resource", belowColor, aboveColor, thresholdPercent)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
 	local cacheKey = belowColor .. "_" .. aboveColor .. "_" .. tostring(thresholdPercent)
-	
+
 	if cache[cacheKey] then
+		self:SetFastCurve(cache, cache[cacheKey], "resource", belowColor, aboveColor, thresholdPercent)
 		return cache[cacheKey]
 	end
 
@@ -666,6 +770,7 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 
 	self:SetCurveThresholdMeta(colorCurve, belowColor, { { x = thresholdPercent, color = aboveColor } })
 	cache[cacheKey] = colorCurve
+	self:SetFastCurve(cache, colorCurve, "resource", belowColor, aboveColor, thresholdPercent)
 	return colorCurve
 end
 
@@ -694,9 +799,14 @@ function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, under
 		return nil
 	end
 	
+	local fastCurve = self:GetFastCurve(cache, "threshold", costMultiplier, baseCost, maxResource, underColor, overColor)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
 	local cacheKey = tostring(costMultiplier) .. "_" .. tostring(baseCost) .. "_" .. tostring(maxResource) .. "_" .. underColor .. "_" .. overColor
 	
 	if cache[cacheKey] then
+		self:SetFastCurve(cache, cache[cacheKey], "threshold", costMultiplier, baseCost, maxResource, underColor, overColor)
 		return cache[cacheKey]
 	end
 	
@@ -712,6 +822,7 @@ function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, under
 	colorCurve:AddPoint(thresholdPercent, overColorObj)
 	
 	cache[cacheKey] = colorCurve
+	self:SetFastCurve(cache, colorCurve, "threshold", costMultiplier, baseCost, maxResource, underColor, overColor)
 	return colorCurve
 end
 
@@ -738,8 +849,13 @@ function TRB.Functions.Color:BuildThresholdValueCurve(value, maxResource, underC
 		thresholdPercent = 1
 	end
 
+	local fastCurve = self:GetFastCurve(cache, "value", value, maxResource, underColor, overColor)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
 	local cacheKey = tostring(value) .. "_" .. tostring(maxResource) .. "_" .. underColor .. "_" .. overColor
 	if cache[cacheKey] then
+		self:SetFastCurve(cache, cache[cacheKey], "value", value, maxResource, underColor, overColor)
 		return cache[cacheKey]
 	end
 
@@ -763,6 +879,7 @@ function TRB.Functions.Color:BuildThresholdValueCurve(value, maxResource, underC
 	end
 
 	cache[cacheKey] = colorCurve
+	self:SetFastCurve(cache, colorCurve, "value", value, maxResource, underColor, overColor)
 	return colorCurve
 end
 
@@ -840,9 +957,14 @@ function TRB.Functions.Color:BuildIconVertexColorCurve(costMultiplier, baseCost)
 		return nil
 	end
 	
+	local fastCurve = self:GetFastCurve(cache, "vertex", costMultiplier, baseCost, maxResource)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
 	local cacheKey = tostring(costMultiplier) .. "_" .. tostring(baseCost) .. "_" .. tostring(maxResource) .. "_vertex"
 	
 	if cache[cacheKey] then
+		self:SetFastCurve(cache, cache[cacheKey], "vertex", costMultiplier, baseCost, maxResource)
 		return cache[cacheKey]
 	end
 	
@@ -857,6 +979,7 @@ function TRB.Functions.Color:BuildIconVertexColorCurve(costMultiplier, baseCost)
 	colorCurve:AddPoint(thresholdPercent, whiteColor)
 	
 	cache[cacheKey] = colorCurve
+	self:SetFastCurve(cache, colorCurve, "vertex", costMultiplier, baseCost, maxResource)
 	return colorCurve
 end
 
@@ -873,6 +996,8 @@ function TRB.Functions.Color:SetIconVertexColorFromCurve(frame, colorResult)
 	end
 	local r, g, b, a = colorResult:GetRGBA()
 	frame.icon.texture:SetVertexColor(r, g, b, a)
+	-- Threshold.lua skips a white reset only while its record says the last write was white.
+	frame.icon.texture._trbVertexWhite = false
 end
 
 ---Applies a fill color to a BarNode, handling gradient entries automatically.
@@ -1113,6 +1238,12 @@ function TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, condit
 	end
 end
 
+-- Shared bars whose resolved colors live in TRB.Data.resolvedIndicators under their own bar key.
+local sharedIndicatorBars = {
+	healthBar = true, castbar = true, targetCastbar = true, focusCastbar = true,
+	petCastbar = true, petHealthBar = true, petPowerBar = true,
+}
+
 ---Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
 ---nodeOrder back to front so earlier (higher-priority) entries overwrite later ones. The spec's bars are
 ---written back into barColorMap in place; the shared bars are parked in TRB.Data.resolvedIndicators.
@@ -1190,20 +1321,8 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 					end
 
 					local targetColors
-					if barKey == "healthBar" then
-						targetColors = healthBar
-					elseif barKey == "castbar" then
-						targetColors = castbar
-					elseif barKey == "targetCastbar" then
-						targetColors = targetCastbar
-					elseif barKey == "focusCastbar" then
-						targetColors = focusCastbar
-					elseif barKey == "petCastbar" then
-						targetColors = petCastbar
-					elseif barKey == "petHealthBar" then
-						targetColors = petHealthBar
-					elseif barKey == "petPowerBar" then
-						targetColors = petPowerBar
+					if sharedIndicatorBars[barKey] then
+						targetColors = resolved[barKey]
 					else
 						targetColors = barColorMap and barColorMap[barKey]
 					end

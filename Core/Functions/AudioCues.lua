@@ -10,7 +10,7 @@ TRB.Data = TRB.Data or {}
 ---@field public builtIns TRB.Classes.AudioCueBuiltIn[]
 ---@field public counters TRB.Classes.AudioCueCounterSource[]
 
----A fixed cue. Its condition is evaluated by the class module via AudioCues:Fire().
+---A fixed cue. The class module evaluates it each tick via AudioCues:Fire(), or from its proc's event via FireOnEvent().
 ---@class TRB.Classes.AudioCueBuiltIn
 ---@field public id string # Settings key, e.g. "surgeOfLight"
 ---@field public label string # Localized display name shown in the cue table
@@ -298,7 +298,12 @@ end
 local function LatchCue(latches, cueId, cue, condition, canPlay)
 	if condition then
 		if cue.enabled and not latches[cueId] then
+			-- A cue's first evaluation (login, spec change) only records its state: already true is not a crossing.
+			local isBaseline = latches[cueId] == nil
 			latches[cueId] = true
+			if isBaseline then
+				return false
+			end
 			if canPlay ~= false then
 				PlayCue(cue)
 			end
@@ -331,6 +336,34 @@ function TRB.Functions.AudioCues:Fire(specSettings, snapshotData, cueId, conditi
 	end
 
 	return LatchCue(EnsureLatches(snapshotData), cueId, cue, condition, canPlay)
+end
+
+---Evaluates a built-in cue from the event that starts its proc: a crossing even on its first evaluation, except
+---during a render transition (login, loading screen, spec or talent change), when the proc may predate it.
+---@param specSettings table
+---@param snapshotData TRB.Classes.SnapshotData
+---@param cueId string
+---@param canPlay boolean? # Defaults to true
+---@return boolean # Whether the cue crossed on this evaluation
+function TRB.Functions.AudioCues:FireOnEvent(specSettings, snapshotData, cueId, canPlay)
+	if specSettings == nil or specSettings.audio == nil or snapshotData == nil then
+		return false
+	end
+
+	local cue = specSettings.audio[cueId]
+	if cue == nil then
+		return false
+	end
+
+	local latches = EnsureLatches(snapshotData)
+	if TRB.Functions.Bar:IsRenderTransitionActive() then
+		if latches[cueId] == false then
+			latches[cueId] = nil
+		end
+	elseif latches[cueId] == nil then
+		latches[cueId] = false
+	end
+	return LatchCue(latches, cueId, cue, true, canPlay)
 end
 
 ---Evaluates a mutually-exclusive group of built-in cues. Each latches independently, but when more
@@ -417,15 +450,40 @@ function TRB.Functions.AudioCues:ResetLatch(snapshotData, cueId)
 	EnsureLatches(snapshotData)[cueId] = false
 end
 
----Re-arms every cue. Used on spec switch and when leaving combat.
----@param snapshotData TRB.Classes.SnapshotData
-function TRB.Functions.AudioCues:ResetAllLatches(snapshotData)
-	if snapshotData == nil then
+---Sets every recorded latch in a table back to armed. Armed (false) rather than cleared (nil), because a
+---cleared latch is a first evaluation and stays silent.
+---@param latches table<string, boolean>?
+local function RearmLatches(latches)
+	if latches == nil then
 		return
 	end
-	snapshotData.audio = snapshotData.audio or {}
-	snapshotData.audio.latches = {}
+	for cueId in pairs(latches) do
+		latches[cueId] = false
+	end
+end
+
+---Re-arms every cue, built-in and threshold line alike, so one whose condition still holds plays again.
+---Used on death.
+---@param snapshotData TRB.Classes.SnapshotData
+function TRB.Functions.AudioCues:ResetAllLatches(snapshotData)
+	if snapshotData == nil or snapshotData.audio == nil then
+		return
+	end
+	RearmLatches(snapshotData.audio.latches)
+	RearmLatches(snapshotData.audio.thresholdCues)
 	-- Forget the last-seen counters too, so the next update cannot read as a drop.
+	snapshotData.audio.counterValues = {}
+end
+
+---Forgets every latch, so each cue's next evaluation is a baseline: a condition met while the spec was inactive
+---stays silent, and a proc that ended out of sight plays its next time. Used when a different spec becomes active.
+---@param snapshotData TRB.Classes.SnapshotData
+function TRB.Functions.AudioCues:BaselineAllLatches(snapshotData)
+	if snapshotData == nil or snapshotData.audio == nil then
+		return
+	end
+	snapshotData.audio.latches = {}
+	snapshotData.audio.thresholdCues = {}
 	snapshotData.audio.counterValues = {}
 end
 
@@ -478,9 +536,11 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 				-- A cue muted out of combat still latches, but can't take the win from an audible one.
 				local audible = IsAudible(cue)
 				if cue.enabled and not latches[cue.id] then
+					-- First evaluation only records the state, as in LatchCue.
+					local isBaseline = latches[cue.id] == nil
 					latches[cue.id] = true
 					-- The sort puts the most urgent cue first, so the first audible crossing wins.
-					if winner == nil and audible then
+					if winner == nil and audible and not isBaseline then
 						winner = cue
 					end
 				elseif audible and isDrop and dropWinner == nil and cue.enabled

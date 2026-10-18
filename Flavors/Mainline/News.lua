@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.3-release (2026-10-18)
+## Priest
+### Holy
+
+- [#853](#853) Fix Holy Word custom threshold lines sitting at the wrong position while a Holy Word recharges.
+
+---
+
 # 12.1.5.2-release (2026-10-15)
 ## General
 ### Audio Cues

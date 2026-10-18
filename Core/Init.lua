@@ -54,8 +54,6 @@ end
 
 addonData.libs.ScrollingTable = LibStub:GetLibrary("ScrollingTable")
 
-addonData.libs.LibSmoothMove = LibStub:GetLibrary("LibSmoothMove-1.0")
-
 addonData.libs.LibEditMode = TRB.LibEditMode or LibStub:GetLibrary("LibEditMode-1.0")
 
 addonData.libs.CustomGlow = LibStub:GetLibrary("LibCustomGlow-1.0")
@@ -309,8 +307,11 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 			end
 		end
 
+		TRB.Functions.CurveMemo:SetActive(true)
+		TRB.Functions.Character:FlushHealthValues()
 		TRB.Functions.AudioCues:UpdateBuffCues(TRB.Data.snapshotData)
 		TRB.Functions.Class:TriggerResourceBarUpdates()
+		TRB.Functions.CurveMemo:SetActive(false)
 		self.sinceLastUpdate = 0
 	end
 end
@@ -501,7 +502,10 @@ local function EndCapProbeFinish(reason)
 			EndCapProbeFmt(node.width), EndCapProbeFmt(node.border), tostring(node.fillDirection),
 			EndCapProbeFmt(slot and slot.endCapWidth or nil), tostring(slot and slot.endCapReady),
 			tostring(node.endCapConfig ~= nil)))
-		print("  sig=" .. tostring(slot and slot._endCapAnchorSig))
+		local sig = slot and slot._endCapAnchorSig
+		print(sig == nil and "  sig=nil" or string.format("  sig=%s|%s|%s|%s|%s|%s|%s|%s", tostring(sig.border), tostring(sig.width),
+			tostring(sig.height), tostring(sig.fillDirection), tostring(sig.fullHeight), tostring(sig.fillTexture),
+			tostring(sig.endCapWidth), tostring(sig.overshoot)))
 	end
 	if #endCapProbeSamples == 0 then
 		print("  No frames captured at all -- the bar group had no node or no end cap band.")
