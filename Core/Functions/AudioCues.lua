@@ -475,29 +475,15 @@ function TRB.Functions.AudioCues:ResetAllLatches(snapshotData)
 	snapshotData.audio.counterValues = {}
 end
 
----Sets every armed latch in a table back to unevaluated. A played (true) latch already stays silent while its
----condition holds.
----@param latches table<string, boolean>?
-local function UnarmLatches(latches)
-	if latches == nil then
-		return
-	end
-	for cueId, latched in pairs(latches) do
-		if latched == false then
-			latches[cueId] = nil
-		end
-	end
-end
-
----Makes every cue's next evaluation a baseline again, so a condition met while the spec was inactive stays silent.
----Used when a different spec's snapshot becomes active.
+---Forgets every latch, so each cue's next evaluation is a baseline: a condition met while the spec was inactive
+---stays silent, and a proc that ended out of sight plays its next time. Used when a different spec becomes active.
 ---@param snapshotData TRB.Classes.SnapshotData
 function TRB.Functions.AudioCues:BaselineAllLatches(snapshotData)
 	if snapshotData == nil or snapshotData.audio == nil then
 		return
 	end
-	UnarmLatches(snapshotData.audio.latches)
-	UnarmLatches(snapshotData.audio.thresholdCues)
+	snapshotData.audio.latches = {}
+	snapshotData.audio.thresholdCues = {}
 	snapshotData.audio.counterValues = {}
 end
 

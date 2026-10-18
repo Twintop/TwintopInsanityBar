@@ -11,6 +11,7 @@ TRB.Details.coreNewsContent = [====[
 - [#853](#853) Fix bars with a Resource / Health Threshold visibility condition showing or hiding incorrectly while the bar flashes or fades.
 - [#853](#853) Fix the Location / Instances visibility conditions staying wrong after leaving a garrison.
 - [#853](#853) Fix audio cues and threshold line sounds playing for conditions already met after a login or specialization change.
+- [#853](#853) Fix a proc's audio cue staying silent the first time it procs after you return to a specialization you left with it active.
 - [#853](#853) Fix the Target Cast Bar and Focus Cast Bar sometimes keeping the uninterruptible fill color on a friendly unit's cast.
 - [#853](#853) Remove the unused LibSmoothMove library.
 
