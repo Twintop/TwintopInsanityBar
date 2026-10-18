@@ -298,7 +298,7 @@ end
 local function LatchCue(latches, cueId, cue, condition, canPlay)
 	if condition then
 		if cue.enabled and not latches[cueId] then
-			-- A cue's first evaluation (login, loading screen, spec change) only records its state: already true is not a crossing.
+			-- A cue's first evaluation (login, spec change) only records its state: already true is not a crossing.
 			local isBaseline = latches[cueId] == nil
 			latches[cueId] = true
 			if isBaseline then
@@ -489,8 +489,8 @@ local function UnarmLatches(latches)
 	end
 end
 
----Makes every cue's next evaluation a baseline again, so a condition met while the spec was inactive or loading
----stays silent. Used when a spec's snapshot becomes active.
+---Makes every cue's next evaluation a baseline again, so a condition met while the spec was inactive stays silent.
+---Used when a different spec's snapshot becomes active.
 ---@param snapshotData TRB.Classes.SnapshotData
 function TRB.Functions.AudioCues:BaselineAllLatches(snapshotData)
 	if snapshotData == nil or snapshotData.audio == nil then

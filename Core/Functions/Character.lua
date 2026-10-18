@@ -1345,9 +1345,12 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
+	-- Only a spec change re-baselines: a same-spec loading screen or talent change must keep a death's re-arm.
+	if TRB.Data.snapshotData ~= cache.snapshotData then
+		TRB.Functions.AudioCues:BaselineAllLatches(cache.snapshotData)
+	end
 	TRB.Data.snapshotData = cache.snapshotData
 	TRB.Data.snapshotData.attributes.isTracking = false
-	TRB.Functions.AudioCues:BaselineAllLatches(TRB.Data.snapshotData)
 	-- A different snapshot means different health values, so health overlays must redraw.
 	TRB.Functions.Character.healthValuesVersion = TRB.Functions.Character.healthValuesVersion + 1
 	TRB.Functions.Character:ResetCaches()
