@@ -406,10 +406,6 @@ function TRB.Functions.BarVisibility:NeedsFullPass(force)
 		self.curveDirty = false
 		if not force and not self.fading and self.dirtyToken == self.lastAppliedToken
 			and UneventedInputsUnchanged(self.curveRecheck) and self:ReplayCurves() then
-			-- TEMPORARY DIAGNOSTIC (/trb tickcost), remove with the probe in Init.lua.
-			if TRB.Frames.timerFrame.costProbe ~= nil then
-				TRB.Frames.timerFrame:ProbeCount("visibility curve")
-			end
 			return false
 		end
 		self:MarkDirty()
@@ -904,11 +900,6 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	local anyEntryHasCurve = false
 	local conditionsChanged = (self.dirtyToken ~= self.lastAppliedToken) or context.force
 	local isRenderTransition = TRB.Functions.Bar:IsRenderTransitionActive()
-
-	-- TEMPORARY DIAGNOSTIC (/trb tickcost), remove with the probe in Init.lua.
-	if TRB.Frames.timerFrame.costProbe ~= nil then
-		TRB.Frames.timerFrame:ProbeCount(conditionsChanged and "visibility full" or "visibility fade")
-	end
 
 	-- A forced, render transition, or Edit Mode pass leaves no record, so the next value change still gets a full pass.
 	local curveReplay = self.curveReplay

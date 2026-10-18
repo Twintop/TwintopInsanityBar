@@ -13,9 +13,6 @@ local powerResults = { player = {}, pet = {} }
 local healthResults = { player = {}, pet = {} }
 local active = false
 
-TRB.Functions.CurveMemo.hits = 0
-TRB.Functions.CurveMemo.misses = 0
-
 -- Power event tokens by Enum.PowerType value, e.g. RunicPower -> "RUNIC_POWER". An unknown token drops the unit's power results.
 local powerTypeByToken = {}
 for key, value in pairs(Enum.PowerType) do
@@ -56,13 +53,11 @@ function TRB.Functions.CurveMemo.UnitPowerPercent(unit, powerType, unmodified, c
 	local slot = GetSlot(byUnit, powerType == nil and NIL or powerType, unmodified == true)
 	local curveKey = curve == nil and NIL or curve
 	if slot.present[curveKey] then
-		TRB.Functions.CurveMemo.hits = TRB.Functions.CurveMemo.hits + 1
 		return slot.results[curveKey]
 	end
 	local result = UnitPowerPercent(unit, powerType, unmodified, curve)
 	slot.results[curveKey] = result
 	slot.present[curveKey] = true
-	TRB.Functions.CurveMemo.misses = TRB.Functions.CurveMemo.misses + 1
 	return result
 end
 
@@ -80,13 +75,11 @@ function TRB.Functions.CurveMemo.UnitHealthPercent(unit, usePredicted, curve)
 	local slot = GetSlot(byUnit, NIL, usePredicted ~= false)
 	local curveKey = curve == nil and NIL or curve
 	if slot.present[curveKey] then
-		TRB.Functions.CurveMemo.hits = TRB.Functions.CurveMemo.hits + 1
 		return slot.results[curveKey]
 	end
 	local result = UnitHealthPercent(unit, usePredicted, curve)
 	slot.results[curveKey] = result
 	slot.present[curveKey] = true
-	TRB.Functions.CurveMemo.misses = TRB.Functions.CurveMemo.misses + 1
 	return result
 end
 
