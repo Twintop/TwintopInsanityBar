@@ -54,8 +54,6 @@ end
 
 addonData.libs.ScrollingTable = LibStub:GetLibrary("ScrollingTable")
 
-addonData.libs.LibSmoothMove = LibStub:GetLibrary("LibSmoothMove-1.0")
-
 addonData.libs.LibEditMode = TRB.LibEditMode or LibStub:GetLibrary("LibEditMode-1.0")
 
 addonData.libs.CustomGlow = LibStub:GetLibrary("LibCustomGlow-1.0")
@@ -361,6 +359,7 @@ local probeSectionTargets = {
 	{ "pulse", "Bar", "PulsePrimaryBar" },
 	{ "pulse", "Bar", "ClearPrimaryPulse" },
 	{ "health bar", "Bar", "UpdateHealthBar" },
+	{ "health read", "Character", "FlushHealthValues" },
 	{ "pet bars", "Bar", "UpdatePetBars" },
 }
 
@@ -475,6 +474,156 @@ local function PrintProbeSections(state, ticks)
 		parts[#parts + 1] = string.format("%s avg %.3fms (%d%%) p95 %.3fms%s", row.section, row.avg, sum > 0 and math.floor(row.avg / sum * 100 + 0.5) or 0, p95, callsText)
 	end
 	print(string.format("|cFF00FF00TRB TickCost sections:|r %.1f wrapped calls per tick | %s", state.calls / ticks, table.concat(parts, " | ")))
+end
+
+-- Script timing: a run finds this addon's frames by creation site and times their OnEvent (per event) and
+-- OnUpdate handlers, beside the profiler's per-frame total for the whole addon.
+local probeScriptTypes = { "OnEvent", "OnUpdate" }
+local probeSampler = nil
+
+---Returns "File.lua:line" for a region created by this addon, or nil.
+---@param region table
+---@return string?
+local function ProbeSourceLabel(region)
+	if type(region.GetSourceLocation) ~= "function" then
+		return nil
+	end
+	local ok, location = pcall(region.GetSourceLocation, region)
+	if not ok or type(location) ~= "string" or issecretvalue(location) then
+		return nil
+	end
+	local path = string.match(location, addonName .. "[/\\](.+)$")
+	if path == nil then
+		return nil
+	end
+	return string.match(path, "([^/\\]+)$") or path
+end
+
+---Wraps one frame script so each call charges its time to a bucket keyed by creation site and event.
+---@param state table
+---@param frame table
+---@param scriptType string
+---@param label string
+local function WrapProbeScript(state, frame, scriptType, label)
+	local original = frame:GetScript(scriptType)
+	if original == nil then
+		return
+	end
+	local isEvent = scriptType == "OnEvent"
+	local byKey = {}
+	local function Record(key, started, ...)
+		local elapsed = debugprofilestop() - started
+		local bucket = byKey[key]
+		if bucket == nil then
+			bucket = { label = isEvent and (label .. " " .. key) or (label .. " OnUpdate"), count = 0, total = 0, max = 0, samples = {} }
+			byKey[key] = bucket
+			state.buckets[#state.buckets + 1] = bucket
+		end
+		bucket.count = bucket.count + 1
+		bucket.total = bucket.total + elapsed
+		bucket.samples[bucket.count] = elapsed
+		if elapsed > bucket.max then
+			bucket.max = elapsed
+		end
+		return ...
+	end
+	local wrapper = function(self, eventOrElapsed, ...)
+		return Record(isEvent and eventOrElapsed or 1, debugprofilestop(), original(self, eventOrElapsed, ...))
+	end
+	frame:SetScript(scriptType, wrapper)
+	if frame == TRB.Frames.timerFrame and not isEvent then
+		state.timerBuckets = byKey
+	end
+	state.installed[#state.installed + 1] = { frame = frame, scriptType = scriptType, original = original, wrapper = wrapper }
+end
+
+---Wraps every script on this addon's frames and starts the per-frame addon total.
+---@return table state
+local function InstallProbeScripts()
+	local state = { buckets = {}, installed = {}, frames = 0, addonTotal = 0, renderFrames = 0, profiler = false }
+	local frame = EnumerateFrames()
+	while frame ~= nil do
+		local label = not frame:IsForbidden() and ProbeSourceLabel(frame) or nil
+		if label ~= nil then
+			state.frames = state.frames + 1
+			for _, scriptType in ipairs(probeScriptTypes) do
+				if frame:HasScript(scriptType) then
+					WrapProbeScript(state, frame, scriptType, label)
+				end
+			end
+		end
+		frame = EnumerateFrames(frame)
+	end
+
+	local profiler = C_AddOnProfiler
+	if profiler ~= nil and profiler.IsEnabled() then
+		state.profiler = true
+		local lastTime = Enum.AddOnProfilerMetric.LastTime
+		-- Each frame reads the previous frame's finished total; this sampler's own cost lands in it too.
+		probeSampler = probeSampler or CreateFrame("Frame")
+		probeSampler:SetScript("OnUpdate", function()
+			state.renderFrames = state.renderFrames + 1
+			state.addonTotal = state.addonTotal + profiler.GetAddOnMetric(addonName, lastTime)
+		end)
+		probeSampler:Show()
+	end
+	return state
+end
+
+---Restores every script still holding its wrapper and stops the sampler.
+---@param state table
+local function UninstallProbeScripts(state)
+	if state.profiler and probeSampler ~= nil then
+		probeSampler:SetScript("OnUpdate", nil)
+		probeSampler:Hide()
+	end
+	for _, entry in ipairs(state.installed) do
+		if entry.frame:GetScript(entry.scriptType) == entry.wrapper then
+			entry.frame:SetScript(entry.scriptType, entry.original)
+		end
+	end
+end
+
+---Prints the addon's per-second cost split into the tick, timed scripts, and the rest, then the top scripts.
+---@param state table
+---@param seconds number
+---@param tickTotal number # Milliseconds spent in ticks during the run
+local function PrintProbeScripts(state, seconds, tickTotal)
+	if seconds <= 0 then
+		return
+	end
+	local scriptTotal = 0
+	local calls = 0
+	for _, bucket in ipairs(state.buckets) do
+		scriptTotal = scriptTotal + bucket.total
+		calls = calls + bucket.count
+	end
+	-- The tick runs inside the timer frame's OnUpdate, so only the tick time that script saw leaves its total.
+	local timerBucket = state.timerBuckets ~= nil and state.timerBuckets[1] or nil
+	local tickInScripts = timerBucket ~= nil and math.min(timerBucket.total, tickTotal) or 0
+	local outsideTick = scriptTotal - tickInScripts
+	local head
+	if state.profiler then
+		head = string.format("addon %.2fms/s (%.0f fps, %.3fms/frame) | tick %.2fms/s | scripts outside tick %.2fms/s | untimed %.2fms/s",
+			state.addonTotal / seconds, state.renderFrames / seconds, state.renderFrames > 0 and state.addonTotal / state.renderFrames or 0,
+			tickTotal / seconds, outsideTick / seconds, (state.addonTotal - outsideTick - tickTotal) / seconds)
+	else
+		head = string.format("profiler off | tick %.2fms/s | scripts outside tick %.2fms/s", tickTotal / seconds, outsideTick / seconds)
+	end
+	table.sort(state.buckets, function(a, b) return a.total > b.total end)
+	local parts = {}
+	for i = 1, math.min(14, #state.buckets) do
+		local bucket = state.buckets[i]
+		-- A throttled updater's p50 is its between-tick frame and its p90 the throttle frame.
+		table.sort(bucket.samples)
+		local p50 = bucket.samples[math.ceil(bucket.count * 0.5)] or 0
+		local p90 = bucket.samples[math.ceil(bucket.count * 0.9)] or 0
+		parts[#parts + 1] = string.format("%s %.3fms/s %.1f/s avg %.1fus p50 %.1fus p90 %.1fus max %.2fms", bucket.label, bucket.total / seconds,
+			bucket.count / seconds, bucket.total / bucket.count * 1000, p50 * 1000, p90 * 1000, bucket.max)
+	end
+	print(string.format("|cFF00FF00TRB TickCost scripts:|r %d frames, %d scripts%s, %.0f calls/s | %s",
+		state.frames, #state.installed, state.timerBuckets ~= nil and "" or " (timer frame not found)", calls / seconds, head))
+	print("|cFF00FF00TRB TickCost top scripts:|r " .. table.concat(parts, " | "))
 end
 
 ---Times common operations in this client, so a change can be judged by the calls it removes. Prints ns per call.
@@ -657,6 +806,7 @@ function TRB.Frames.timerFrame:FinishCostProbe(reason)
 	end
 	self.costProbe = nil
 	UninstallProbeSections(probe.sections)
+	UninstallProbeScripts(probe.scripts)
 
 	local parts = {}
 	for _, key in ipairs(probe.timeOrder) do
@@ -680,6 +830,7 @@ function TRB.Frames.timerFrame:FinishCostProbe(reason)
 		GetTime() - probe.started, reason, probe.combatTicks, probe.times.tick and probe.times.tick.count or 0,
 		table.concat(parts, " | ")))
 	PrintProbeSections(probe.sections, probe.times.tick and probe.times.tick.count or 0)
+	PrintProbeScripts(probe.scripts, GetTime() - probe.started, probe.times.tick and probe.times.tick.total or 0)
 end
 
 ---Starts a run that reports after the given number of seconds, replacing any run in progress.
@@ -696,6 +847,7 @@ function TRB.Frames.timerFrame:StartCostProbe(seconds)
 		counts = {},
 		countOrder = {},
 		sections = InstallProbeSections(),
+		scripts = InstallProbeScripts(),
 		curveHits = TRB.Functions.CurveMemo.hits,
 		curveMisses = TRB.Functions.CurveMemo.misses,
 	}
@@ -750,6 +902,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		end
 
 		TRB.Functions.CurveMemo:SetActive(true)
+		TRB.Functions.Character:FlushHealthValues()
 		TRB.Functions.AudioCues:UpdateBuffCues(TRB.Data.snapshotData)
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 		TRB.Functions.CurveMemo:SetActive(false)
@@ -966,7 +1119,10 @@ local function EndCapProbeFinish(reason)
 			EndCapProbeFmt(node.width), EndCapProbeFmt(node.border), tostring(node.fillDirection),
 			EndCapProbeFmt(slot and slot.endCapWidth or nil), tostring(slot and slot.endCapReady),
 			tostring(node.endCapConfig ~= nil)))
-		print("  sig=" .. tostring(slot and slot._endCapAnchorSig))
+		local sig = slot and slot._endCapAnchorSig
+		print(sig == nil and "  sig=nil" or string.format("  sig=%s|%s|%s|%s|%s|%s|%s|%s", tostring(sig.border), tostring(sig.width),
+			tostring(sig.height), tostring(sig.fillDirection), tostring(sig.fullHeight), tostring(sig.fillTexture),
+			tostring(sig.endCapWidth), tostring(sig.overshoot)))
 	end
 	if #endCapProbeSamples == 0 then
 		print("  No frames captured at all -- the bar group had no node or no end cap band.")

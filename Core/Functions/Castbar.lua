@@ -1214,6 +1214,7 @@ function CastbarRenderer:ApplyVisibleState(group, node, colors, model, barSettin
 	end
 	node:Show()
 	group.containerFrame:SetAlpha(activeAlpha)
+	group.healedHideVersion = group.hideVersion
 end
 
 ---Cheap per-frame self-heal for an active cast: re-asserts only the group's alpha/visibility so the bar
@@ -1226,6 +1227,10 @@ end
 ---@param node TRB.Classes.BarNode
 ---@param visibility table? # The bar's displayBar entry; supplies activeAlpha
 function CastbarRenderer:ReassertVisibility(group, node, visibility)
+	-- Nothing has hidden the group or a node, or set its alpha, since the last assert.
+	if group.healedHideVersion == group.hideVersion then
+		return
+	end
 	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
 	group.targetAlpha = activeAlpha
 	group.currentAlpha = activeAlpha
@@ -1235,6 +1240,7 @@ function CastbarRenderer:ReassertVisibility(group, node, visibility)
 	end
 	node:Show()
 	group.containerFrame:SetAlpha(activeAlpha)
+	group.healedHideVersion = group.hideVersion
 end
 
 ---Applies the fully-hidden state (alpha 0 + Hide) without touching the model.
@@ -1292,6 +1298,7 @@ function CastbarRenderer:ApplyIdleState(group, node, idleAlpha, colors, barSetti
 	end
 	node:Show()
 	group.containerFrame:SetAlpha(idleAlpha)
+	group.healedHideVersion = group.hideVersion
 end
 
 ---Begins showing the castbar for a freshly-started cast: sizes the node, applies color/overlays, shows
@@ -1622,6 +1629,8 @@ function CastbarRenderer:OnFrameUpdate(sinceLastUpdate)
 					end
 					node:Show()
 					group.containerFrame:SetAlpha(fadeAlpha)
+					-- The fade's alpha isn't the resting one, so the idle heal must run once the fade ends.
+					group.healedHideVersion = nil
 				end
 				return
 			end
@@ -1636,7 +1645,7 @@ function CastbarRenderer:OnFrameUpdate(sinceLastUpdate)
 			if not TRB.Functions.Bar:IsRenderTransitionActive() then
 				if throttleTick then
 					self:ApplyIdleState(group, node, idleAlpha, colors, barSettings)
-				else
+				elseif group.healedHideVersion ~= group.hideVersion then
 					group.targetAlpha = idleAlpha
 					group.currentAlpha = idleAlpha
 					if not group.isVisible then
@@ -1645,6 +1654,7 @@ function CastbarRenderer:OnFrameUpdate(sinceLastUpdate)
 					end
 					node:Show()
 					group.containerFrame:SetAlpha(idleAlpha)
+					group.healedHideVersion = group.hideVersion
 				end
 			end
 		else

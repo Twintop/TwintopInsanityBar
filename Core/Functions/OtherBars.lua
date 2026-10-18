@@ -395,6 +395,7 @@ local function ShowAt(group, node, alpha)
 	if group.containerFrame then
 		group.containerFrame:SetAlpha(alpha)
 	end
+	group.healedHideVersion = group.hideVersion
 end
 
 ---Binds the GCD node's fill to the live DurationObject. "deplete" (the default) drains a full bar as
@@ -1114,7 +1115,8 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			-- Between ticks with an idle bar resting visible: cheap alpha/visibility self-heal only.
 			needsUpdater = true
 			local group, node = GetGroupNode(barKey)
-			if group ~= nil then
+			-- Only after something hid the group or a node, or set its alpha, since the last assert.
+			if group ~= nil and group.healedHideVersion ~= group.hideVersion then
 				ShowAt(group, node, cachedIdleAlpha[barKey])
 			end
 		end

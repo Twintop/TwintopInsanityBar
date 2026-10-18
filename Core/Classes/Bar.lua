@@ -667,6 +667,9 @@ end
 function TRB.Classes.BarNode:Hide()
 	self.frame:Hide()
 	self.isVisible = false
+	if self.group ~= nil then
+		self.group.hideVersion = self.group.hideVersion + 1
+	end
 end
 
 ---Destroys the node by hiding all frames and clearing references
@@ -1186,6 +1189,8 @@ end
 ---@field public targetAlpha number # Target alpha from visibility system (0.0–1.0)
 ---@field public currentAlpha number # Current interpolated alpha (0.0–1.0)
 ---@field public lastAlphaTime number # GetTime() of last fade interpolation step
+---@field public hideVersion integer # Bumped by every write that can hide the group or a node or change its alpha
+---@field public healedHideVersion integer? # hideVersion when a self-driven bar last asserted its own display
 ---@field public fadeDuration number # Seconds for fade transition (0 = instant)
 ---@field public fadeStartAlpha number # Alpha at the moment a fade began (used for normalized progress)
 ---@field public fadeDelayUntil number # GetTime() timestamp when the fade delay expires (0 = no delay active)
@@ -1219,6 +1224,7 @@ function TRB.Classes.BarGroup:New(parent, name, maxNodes, isPrimary)
 	self.smooth = nil
 	self.targetAlpha = 0
 	self.currentAlpha = 0
+	self.hideVersion = 0
 	self.lastAlphaTime = GetTime()
 	self.fadeDuration = 0
 	self.fadeStartAlpha = 0
@@ -1341,6 +1347,7 @@ end
 ---Sets the alpha of the group container and all nodes
 ---@param alpha number
 function TRB.Classes.BarGroup:SetAlpha(alpha)
+	self.hideVersion = self.hideVersion + 1
 	self.containerFrame:SetAlpha(alpha)
 	for i = 1, self.maxNodes do
 		if self.nodes[i] then
@@ -1535,6 +1542,7 @@ end
 function TRB.Classes.BarGroup:Hide()
 	self.containerFrame:Hide()
 	self.isVisible = false
+	self.hideVersion = self.hideVersion + 1
 end
 
 ---Sets the target alpha and fade duration for the visibility fade system.

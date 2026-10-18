@@ -225,38 +225,80 @@ end
 -- Bumped on every health read; the values can be secret, so health overlays compare this instead.
 TRB.Functions.Character.healthValuesVersion = 0
 
----Reads the player's current health, max health, absorbs, and incoming heals from the WoW API, updates snapshotData.attributes, pre-formats display strings, and recalculates the health color curve.
-function TRB.Functions.Character:UpdateHealthValues()
+-- Health pieces changed by an event and not yet read back. Every reader runs in the tick or in
+-- BarText:RenderNow, which flush first, so a burst of events between renders costs one read per piece.
+local healthDirty, absorbDirty, incomingHealDirty, healAbsorbDirty = false, false, false, false
+
+-- The piece each player health event changes. A health change re-reads every piece, as Blizzard's
+-- unit frames refresh heal prediction on it; the others only move their own value.
+local healthPieceByEvent = {
+	UNIT_HEALTH = "all",
+	UNIT_MAXHEALTH = "all",
+	UNIT_ABSORB_AMOUNT_CHANGED = "absorb",
+	UNIT_HEAL_PREDICTION = "incomingHeal",
+	UNIT_HEAL_ABSORB_AMOUNT_CHANGED = "healAbsorb",
+}
+
+---Reads the chosen health pieces into snapshotData.attributes and their display strings. With health, also
+---re-evaluates the health color curve. Then marks threshold-curve visibility for the next tick.
+---@param health boolean # health, healthMax, healthPercent, and healthColor
+---@param absorb boolean
+---@param incomingHeal boolean
+---@param healAbsorb boolean
+local function ReadHealthValues(health, absorb, incomingHeal, healAbsorb)
+	healthDirty = healthDirty and not health
+	absorbDirty = absorbDirty and not absorb
+	incomingHealDirty = incomingHealDirty and not incomingHeal
+	healAbsorbDirty = healAbsorbDirty and not healAbsorb
 	TRB.Functions.Character.healthValuesVersion = TRB.Functions.Character.healthValuesVersion + 1
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	snapshotData.attributes.health = UnitHealth("player", true)
-	snapshotData.attributes.healthMax = UnitHealthMax("player")
-	snapshotData.attributes.healthPercent = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
-	snapshotData.attributes.absorb = UnitGetTotalAbsorbs("player")
-	snapshotData.attributes.incomingHeal = UnitGetIncomingHeals("player") or 0
-	snapshotData.attributes.healAbsorb = UnitGetTotalHealAbsorbs("player")
+	local attributes = snapshotData.attributes
+	if health then
+		attributes.health = UnitHealth("player", true)
+		attributes.healthMax = UnitHealthMax("player")
+		attributes.healthPercent = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
+	end
+	if absorb then
+		attributes.absorb = UnitGetTotalAbsorbs("player")
+	end
+	if incomingHeal then
+		attributes.incomingHeal = UnitGetIncomingHeals("player") or 0
+	end
+	if healAbsorb then
+		attributes.healAbsorb = UnitGetTotalHealAbsorbs("player")
+	end
 
-	-- Pre-format health display strings at event time, consuming secret values once.
+	-- Pre-format health display strings once per read, consuming secret values once.
 	-- The render tick copies these normal strings into lookup[] without reformatting.
 	local formatted = snapshotData.formatted
-	formatted.health = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.health)
-	formatted.healthMax = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.healthMax)
-	formatted.absorb = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.absorb)
-	formatted.incomingHeal = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.incomingHeal)
-	formatted.healAbsorb = TRB.Functions.String:ConvertToAbbreviatedNumber(snapshotData.attributes.healAbsorb)
-	-- healthPercent requires precision from settings
-	local healthPrecision = 1
-	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey then
-		local entry = TRB.Data.specCache[TRB.Data.character.compositeKey]
-		if entry and entry.settings and entry.settings.precision then
-			healthPrecision = entry.settings.precision.health or 1
+	if health then
+		formatted.health = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.health)
+		formatted.healthMax = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.healthMax)
+	end
+	if absorb then
+		formatted.absorb = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.absorb)
+	end
+	if incomingHeal then
+		formatted.incomingHeal = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.incomingHeal)
+	end
+	if healAbsorb then
+		formatted.healAbsorb = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.healAbsorb)
+	end
+	if health then
+		-- healthPercent requires precision from settings
+		local healthPrecision = 1
+		if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey then
+			local entry = TRB.Data.specCache[TRB.Data.character.compositeKey]
+			if entry and entry.settings and entry.settings.precision then
+				healthPrecision = entry.settings.precision.health or 1
+			end
 		end
+		if healthPrecision ~= cachedHealthPercentPrecision then
+			cachedHealthPercentPrecision = healthPrecision
+			cachedHealthPercentFmt = "%." .. healthPrecision .. "f"
+		end
+		formatted.healthPercent = string.format(cachedHealthPercentFmt, attributes.healthPercent)
 	end
-	if healthPrecision ~= cachedHealthPercentPrecision then
-		cachedHealthPercentPrecision = healthPrecision
-		cachedHealthPercentFmt = "%." .. healthPrecision .. "f"
-	end
-	formatted.healthPercent = string.format(cachedHealthPercentFmt, snapshotData.attributes.healthPercent)
 
 	-- Get configurable color curve settings from spec settings
 	local healthBarSettings = nil
@@ -272,11 +314,40 @@ function TRB.Functions.Character:UpdateHealthValues()
 	end
 
 	-- Evaluate the cached curve — the result is a secret ColorMixin
-	snapshotData.attributes.healthColor = UnitHealthPercent("player", true, TRB.Functions.Color:GetHealthColorCurve(healthBarSettings))
+	if health then
+		attributes.healthColor = UnitHealthPercent("player", true, TRB.Functions.Color:GetHealthColorCurve(healthBarSettings))
+	end
 
 	-- A bar with a resource/health threshold curve re-applies its alpha on the next tick.
 	if TRB.Functions.BarVisibility.hasResourceCurve then
 		TRB.Functions.BarVisibility:MarkCurveDirty()
+	end
+end
+
+---Reads every health piece now. For loads, spec swaps, and settings changes; events go through MarkHealthDirty.
+function TRB.Functions.Character:UpdateHealthValues()
+	ReadHealthValues(true, true, true, true)
+end
+
+---Records that a player health event changed its piece; the next FlushHealthValues reads it.
+---@param event string
+function TRB.Functions.Character:MarkHealthDirty(event)
+	local piece = healthPieceByEvent[event]
+	if piece == "all" then
+		healthDirty, absorbDirty, incomingHealDirty, healAbsorbDirty = true, true, true, true
+	elseif piece == "absorb" then
+		absorbDirty = true
+	elseif piece == "incomingHeal" then
+		incomingHealDirty = true
+	elseif piece == "healAbsorb" then
+		healAbsorbDirty = true
+	end
+end
+
+---Reads the health pieces events have changed since the last read. Called before anything renders them.
+function TRB.Functions.Character:FlushHealthValues()
+	if healthDirty or absorbDirty or incomingHealDirty or healAbsorbDirty then
+		ReadHealthValues(healthDirty, absorbDirty, incomingHealDirty, healAbsorbDirty)
 	end
 end
 
@@ -461,7 +532,7 @@ local function CharacterChange(self, event, ...)
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" then
 		local unitTarget = ...
 		if unitTarget == "player" then
-			TRB.Functions.Character:UpdateHealthValues()
+			TRB.Functions.Character:MarkHealthDirty(event)
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "pet" then
 			TRB.Functions.Character:UpdatePetValues()

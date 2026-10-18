@@ -425,6 +425,7 @@ end
 ---@param currentAlpha number
 local function ApplyCurveAlpha(barGroup, visSettings, settings, currentAlpha)
 	local curveResult = TRB.Functions.BarVisibility:EvaluateVisibilityCurve(visSettings, settings)
+	barGroup.hideVersion = barGroup.hideVersion + 1
 	if curveResult ~= nil and type(curveResult.GetRGBA) == "function" then
 		local _, _, _, secretAlpha = curveResult:GetRGBA()
 		barGroup.containerFrame:SetAlpha(secretAlpha)
@@ -1035,6 +1036,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 						curveReplay.count = index
 					end
 				else
+					entry.barGroup.hideVersion = entry.barGroup.hideVersion + 1
 					entry.barGroup.containerFrame:SetAlpha(currentAlpha)
 				end
 			else

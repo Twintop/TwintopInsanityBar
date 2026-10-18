@@ -2842,6 +2842,7 @@ function TRB.Functions.BarText:RenderNow()
 	if settings == nil then
 		return
 	end
+	TRB.Functions.Character:FlushHealthValues()
 	TRB.Functions.Bar:HideResourceBar()
 	self:MarkLookupDirty()
 	self:UpdateResourceBarText(settings, true)

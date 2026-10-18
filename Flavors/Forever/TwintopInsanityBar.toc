@@ -47,7 +47,6 @@ Libs\CallbackHandler-1.0.lua
 Libs\LibDBIcon-1.0\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua
 Libs\LibSharedMedia-3.0.lua
-Libs\LibSmoothMove-1.0.lua
 Libs\LibMarkdown\LibMarkdown.xml
 Libs\LibScrollingTable\lib-st.xml
 Libs\LibEditMode\namespaced.lua
