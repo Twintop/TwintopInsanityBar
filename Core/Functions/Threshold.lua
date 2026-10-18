@@ -1193,14 +1193,14 @@ local function GetCustomThresholdTargetDecimals(classId, specId, barKey)
 	return decimals or 0
 end
 
----Splits a stored barTarget into its base bar key and optional amalgamation sub-type key.
----@param barTarget string?
----@return string baseKey
----@return string? nodeKey
 -- Parsed bar targets by stored string; false records a target with no sub-type key.
 local parsedBaseKeys = {}
 local parsedNodeKeys = {}
 
+---Splits a stored barTarget into its base bar key and optional amalgamation sub-type key.
+---@param barTarget string?
+---@return string baseKey
+---@return string? nodeKey
 local function ParseBarTarget(barTarget)
 	if type(barTarget) ~= "string" then
 		return "primary", nil

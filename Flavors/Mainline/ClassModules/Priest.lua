@@ -2097,7 +2097,7 @@ local function HandleSpellEvents(self, event, ...)
 					TRB.Functions.AudioCues:ResetLatch(snapshotData, "benediction")
 				else
 					benedictionBuff:AddTimeOrInitializeCustom(spells.benediction.duration, GetTime())
-					TRB.Functions.AudioCues:Fire(TRB.Data.settings.priest.holy, snapshotData, "benediction", true)
+					TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.priest.holy, snapshotData, "benediction")
 				end
 			end
 		end

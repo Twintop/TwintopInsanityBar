@@ -468,9 +468,8 @@ local function ApplyBorderColor(node, model, colors, barSettings, barKey, hostil
 	return false
 end
 
--- Per bar, the inputs its fill and border were last drawn from during a cast. A fill or border drawn from the
--- interruptible evaluation only changes with these, so the 20Hz re-assert skips re-evaluating it while they
--- hold and its color cache entry is still clear (any other write fills that entry back in).
+-- Per bar, the inputs and node write counts its curve-drawn fill and border were last drawn at. The 20Hz re-assert
+-- skips re-evaluating while both hold and no flat write has refilled the color cache entry.
 local drawnCastColors = {}
 
 ---Returns the bar's drawn-input record, and whether the inputs it holds still match.
@@ -567,6 +566,7 @@ local function ApplyVisibleState(groupKey, model)
 	if colors ~= nil then
 		drawn = GetDrawnCastColors(groupKey, node, model, colors, barSettings, classHex, hostile)
 		drawn.fillCurve = ApplyFillColor(node, model, colors, barSettings, classHex, hostile)
+		drawn.fillWrites = node.fillWrites
 	end
 
 	-- Side icon (secret-safe). Its border tracks the bar's border via ApplyBorderColor below.
@@ -609,6 +609,7 @@ local function ApplyVisibleState(groupKey, model)
 	-- uninterruptible recolor over the configured colors. Border also colors the icon border + end-cap follow.
 	if colors ~= nil and drawn ~= nil then
 		drawn.borderCurve = ApplyBorderColor(node, model, colors, barSettings, groupKey, hostile)
+		drawn.borderWrites = node.borderWrites
 		ApplyBackgroundColor(node, colors, groupKey)
 	end
 
@@ -653,11 +654,13 @@ local function ReassertVisibility(groupKey, model)
 		local hostile = UnitExists(model.unit) and UnitCanAttack("player", model.unit) or false
 		local drawn, unchanged = GetDrawnCastColors(groupKey, node, model, colors, barSettings, classHex, hostile)
 		local colorCache = TRB.Data.cache.colors
-		if not (unchanged and drawn.fillCurve and colorCache.bar[node.resourceKey] == nil) then
+		if not (unchanged and drawn.fillCurve and drawn.fillWrites == node.fillWrites and colorCache.bar[node.resourceKey] == nil) then
 			drawn.fillCurve = ApplyFillColor(node, model, colors, barSettings, classHex, hostile)
+			drawn.fillWrites = node.fillWrites
 		end
-		if not (unchanged and drawn.borderCurve and colorCache.border[node.borderKey] == nil) then
+		if not (unchanged and drawn.borderCurve and drawn.borderWrites == node.borderWrites and colorCache.border[node.borderKey] == nil) then
 			drawn.borderCurve = ApplyBorderColor(node, model, colors, barSettings, groupKey, hostile)
+			drawn.borderWrites = node.borderWrites
 		end
 		ApplyBackgroundColor(node, colors, groupKey)
 	end

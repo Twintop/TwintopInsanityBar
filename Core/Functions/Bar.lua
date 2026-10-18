@@ -4063,10 +4063,8 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					-- SetTextures() calls ApplyBackdrop() which resets border color to white.
 					-- Without clearing the cache, SetBorderColor() may skip the update
 					-- if it thinks the cached color matches the desired color.
-					local borderCacheKey = node.name .. "_border"
-					local backdropCacheKey = node.name .. "_background"
-					TRB.Data.cache.colors.border[borderCacheKey] = nil
-					TRB.Data.cache.colors.backdrop[backdropCacheKey] = nil
+					TRB.Data.cache.colors.border[node.borderKey] = nil
+					TRB.Data.cache.colors.backdrop[node.backgroundKey] = nil
 
 					node:SetTextures(
 						settings.textures[config.textures.bar],

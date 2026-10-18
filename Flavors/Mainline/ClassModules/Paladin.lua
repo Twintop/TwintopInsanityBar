@@ -789,7 +789,7 @@ local function HandleSpellEvents(self, event, ...)
 
 				if not wasActive then
 					local specSettings = TRB.Data.settings.paladin[TRB.Data.character.specName]
-					TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "divinePurpose", true)
+					TRB.Functions.AudioCues:FireOnEvent(specSettings, snapshotData, "divinePurpose")
 				end
 
 				-- Timed from the spell definition: the aura is secret, and a proc is always a full

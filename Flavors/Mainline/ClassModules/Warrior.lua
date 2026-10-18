@@ -881,7 +881,7 @@ local function DetectViolentOutburst()
 			snap.buff:InitializeCustom(spells.violentOutburst.duration, GetTime())
 			TRB.Data.lookupDirty = true
 
-			TRB.Functions.AudioCues:Fire(TRB.Data.settings.warrior.protection, snapshotData, "violentOutburst", true)
+			TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warrior.protection, snapshotData, "violentOutburst")
 		end
 	end
 end

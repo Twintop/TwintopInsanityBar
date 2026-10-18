@@ -12,7 +12,7 @@ TRB.Flavor.newsContent = [====[
 ## Priest
 ### Holy
 
-- Fix Holy Word custom threshold lines sitting at the wrong position while a Holy Word recharges.
+- [#853](#853) Fix Holy Word custom threshold lines sitting at the wrong position while a Holy Word recharges.
 
 ---
 

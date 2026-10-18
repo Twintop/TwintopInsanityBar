@@ -1218,7 +1218,7 @@ local function HandleSpellEvents(self, event, ...)
 				if demonicCoreSnapshot ~= nil then
 					-- Gated on the sound flag alone rather than on isActive, which the Cooldown Manager
 					-- may already have set from the same proc a tick earlier.
-					TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "demonicCore", true)
+					TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warlock.demonology, snapshotData, "demonicCore")
 
 					-- No stacks or duration knowable from a glow; active until GLOW_HIDE
 					demonicCoreSnapshot.buff:InitializeCustomSimple(true)
@@ -1229,7 +1229,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = infernalBoltSnapshot.buff.isActive
 
 					if not wasActive then
-						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "infernalBolt", true)
+						TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warlock.demonology, snapshotData, "infernalBolt")
 					end
 
 					-- Infernal Bolt proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1241,7 +1241,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = ruinationSnapshot.buff.isActive
 
 					if not wasActive then
-						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.demonology, snapshotData, "ruination", true)
+						TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warlock.demonology, snapshotData, "ruination")
 					end
 
 					-- Ruination proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1256,7 +1256,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = infernalBoltSnapshot.buff.isActive
 
 					if not wasActive then
-						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.destruction, snapshotData, "infernalBolt", true)
+						TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warlock.destruction, snapshotData, "infernalBolt")
 					end
 
 					-- Infernal Bolt proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).
@@ -1268,7 +1268,7 @@ local function HandleSpellEvents(self, event, ...)
 					local wasActive = ruinationSnapshot.buff.isActive
 
 					if not wasActive then
-						TRB.Functions.AudioCues:Fire(TRB.Data.settings.warlock.destruction, snapshotData, "ruination", true)
+						TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warlock.destruction, snapshotData, "ruination")
 					end
 
 					-- Ruination proc has no real aura; start a 20s custom timer (early consume handled by GLOW_HIDE).

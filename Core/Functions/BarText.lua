@@ -35,14 +35,11 @@ local castbarIconAnchors = {
 	PetCastBarIcon = true,
 }
 
----Is this entry anchored to a cast bar or Other Bar that is finishing its fade? Its text then holds its last value.
----@param relativeToFrame string?
+---Is this cast bar or Other Bar finishing its fade? Text anchored to it then holds its last value.
+---@param groupKey string # A castbarAnchorGroupKeys value
 ---@return boolean
-local function IsAnchoredToFadingSelfDrivenBar(relativeToFrame)
-	local groupKey = relativeToFrame ~= nil and castbarAnchorGroupKeys[relativeToFrame] or nil
-	if groupKey == nil then
-		return false
-	elseif groupKey == "castbar" then
+local function IsSelfDrivenBarFading(groupKey)
+	if groupKey == "castbar" then
 		return TRB.Functions.Castbar:IsFadingOut()
 	elseif groupKey == "petCastbar" then
 		return TRB.Functions.PetCastbar:IsFadingOut()
@@ -2720,8 +2717,9 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 				-- Screen-bound text is always processed; other text only when refreshText is true. Text on a
 				-- fading self-driven bar is skipped regardless, which holds its last value on screen.
 				-- Only cast bar and Other Bars anchors can be fading, so other entries skip the call.
+				local selfDrivenKey = castbarAnchorGroupKeys[relativeToFrame]
 				if (refreshText or isScreenText or visibilityRefresh)
-					and not (castbarAnchorGroupKeys[relativeToFrame] ~= nil and IsAnchoredToFadingSelfDrivenBar(relativeToFrame)) then
+					and not (selfDrivenKey ~= nil and IsSelfDrivenBarFading(selfDrivenKey)) then
 					-- Check if the target frame is visible before doing expensive text processing
 					-- Use per-call cache to avoid redundant GetBarTextFrame calls for entries sharing a frame
 					local frameKey = relativeToFrame

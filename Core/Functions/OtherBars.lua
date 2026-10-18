@@ -216,17 +216,17 @@ end
 
 -- Environment snapshot the hide conditions are evaluated against, plus the scratch entry
 -- ShouldForceHideBar reads the settings from. Both are reused rather than rebuilt per bar.
-local hideContext = nil
+local hideContext = setmetatable({}, TRB.Classes.BarVisibilityContext)
 local hideContextTime = nil
 local hideEntry = {}
 
----Returns the shared environment snapshot, rebuilt at most once per frame so every Other Bar shares one
+---Returns the shared environment snapshot, refilled at most once per frame so every Other Bar shares one
 ---build. GetTime() is constant within a frame, which makes it an exact cache key.
 ---@return TRB.Classes.BarVisibilityContext
 local function GetHideContext()
 	local now = GetTime()
-	if hideContextTime ~= now or hideContext == nil then
-		hideContext = TRB.Classes.BarVisibilityContext:NewFromGameState(false, nil)
+	if hideContextTime ~= now then
+		TRB.Classes.BarVisibilityContext:FillFromGameState(hideContext, false)
 		hideContextTime = now
 	end
 	return hideContext

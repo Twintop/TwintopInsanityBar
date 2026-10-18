@@ -860,7 +860,7 @@ local function HandleSpellEvents(self, event, ...)
 				-- Gated on the sound flag alone rather than on isActive, which the Cooldown Manager
 				-- may already have set from the same proc a tick earlier.
 				local specSettings = TRB.Data.settings.evoker[TRB.Data.character.specName]
-				TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "essenceBurst", true)
+				TRB.Functions.AudioCues:FireOnEvent(specSettings, snapshotData, "essenceBurst")
 
 				-- No stacks or duration knowable from an overlay; active until HIDE.
 				essenceBurstSnapshot.buff:InitializeCustomSimple(true)

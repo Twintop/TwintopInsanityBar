@@ -477,6 +477,14 @@ local deathCount = 0
 -- The primary max last read on a power update; a change means the class module's saved max is stale.
 local lastPrimaryMax = nil
 
+---Re-reads the zone-dependent character state (instance type, mount, pet) for the visibility conditions.
+local function RefreshZoneState()
+	TRB.Functions.Character:CheckCharacter()
+	TRB.Functions.Character:UpdatePetValues()
+	TRB.Functions.BarVisibility:MarkDirty()
+	TRB.Data.lookupDirty = true
+end
+
 ---Handles some change with the character's status
 ---@param self any
 ---@param event string
@@ -601,22 +609,15 @@ local function CharacterChange(self, event, ...)
 
 		TRB.Functions.BarVisibility:MarkDirty()
 	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_ENTERING_WORLD" then
-		local _, instanceType = GetInstanceInfo()
-		TRB.Data.character.instanceType = instanceType or "none"
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Functions.Character:UpdatePetValues()
-		TRB.Functions.BarVisibility:MarkDirty()
-		TRB.Data.lookupDirty = true
+		RefreshZoneState()
 	elseif event == "PLAYER_MAP_CHANGED" then
 		-- GetInstanceInfo still reports the map being left when this fires, so read it once the change settles.
+		local frame = self
 		C_Timer.After(0, function()
 			C_Timer.After(0.05, function()
-				local _, instanceType = GetInstanceInfo()
-				TRB.Data.character.instanceType = instanceType or "none"
-				TRB.Functions.Character:CheckCharacter()
-				TRB.Functions.Character:UpdatePetValues()
-				TRB.Functions.BarVisibility:MarkDirty()
-				TRB.Data.lookupDirty = true
+				if frame:IsEventRegistered("PLAYER_MAP_CHANGED") then
+					RefreshZoneState()
+				end
 			end)
 		end)
 	elseif event == "GROUP_ROSTER_UPDATE" then
@@ -1346,6 +1347,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
 	TRB.Data.snapshotData = cache.snapshotData
 	TRB.Data.snapshotData.attributes.isTracking = false
+	TRB.Functions.AudioCues:BaselineAllLatches(TRB.Data.snapshotData)
 	-- A different snapshot means different health values, so health overlays must redraw.
 	TRB.Functions.Character.healthValuesVersion = TRB.Functions.Character.healthValuesVersion + 1
 	TRB.Functions.Character:ResetCaches()

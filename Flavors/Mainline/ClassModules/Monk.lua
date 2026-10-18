@@ -764,7 +764,7 @@ local function HandleSpellEvents(self, event, ...)
 			if spellId == spells.danceOfChiJi.id then
 				if snapshotData.attributes.danceOfChiJiActive ~= true then
 					local specSettings = TRB.Data.settings.monk[TRB.Data.character.specName]
-					TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "danceOfChiJi", true)
+					TRB.Functions.AudioCues:FireOnEvent(specSettings, snapshotData, "danceOfChiJi")
 				end
 				snapshotData.attributes.danceOfChiJiActive = true
 			end

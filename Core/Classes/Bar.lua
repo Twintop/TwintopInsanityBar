@@ -53,6 +53,8 @@ local barNodeCounter = 0
 ---@field public _iconBorder integer? # Border thickness the icon's backdrop was laid out with, so it can be rebuilt
 ---@field public shield TRB.Classes.BarNode.Shield? # Uninterruptible shield (lazily created by EnsureShield); its own frame so its level can order above the icon or below the bar
 ---@field public markerFrame Frame? # Topmost overlay frame for tick and stage lines (lazily created by GetMarkerFrame)
+---@field public fillWrites integer # Bumped by fill writes that leave no color cache entry (curve, gradient, texture)
+---@field public borderWrites integer # Bumped by border writes that leave no color cache entry (curve, texture, border size)
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
 
@@ -77,6 +79,8 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.borderKey = self.name .. "_border"
 	self.backgroundKey = self.name .. "_background"
 	self.gradientKey = self.name .. "_gradient"
+	self.fillWrites = 0
+	self.borderWrites = 0
 
 	-- Append a monotonic counter to guarantee a globally unique frame name.
 	-- Without this, CreateFrame can return a stale frame object from _G when
@@ -234,6 +238,7 @@ function TRB.Classes.BarNode:SetColorCurve(colorResult)
 	end
 	self:ClearGradient()
 	TRB.Data.cache.colors.bar[self.resourceKey] = nil
+	self.fillWrites = self.fillWrites + 1
 	local texture = self.frame:GetStatusBarTexture()
 	if texture then
 		texture:SetVertexColor(colorResult:GetRGBA())
@@ -259,6 +264,7 @@ function TRB.Classes.BarNode:SetColorGradient(color1String, color2String, direct
 
 	-- Set vertex color to white so gradient colors are not tinted
 	TRB.Data.cache.colors.bar[self.resourceKey] = nil
+	self.fillWrites = self.fillWrites + 1
 	self.frame:SetStatusBarColor(1, 1, 1, 1)
 
 	local texture = self.frame:GetStatusBarTexture()
@@ -322,6 +328,7 @@ function TRB.Classes.BarNode:SetBorderColorCurve(colorResult, endCapColorResult)
 		return
 	end
 	TRB.Data.cache.colors.border[self.borderKey] = nil
+	self.borderWrites = self.borderWrites + 1
 	self.frame:SetBackdropBorderColor(colorResult:GetRGBA())
 	-- Curve results are secret-safe to pass straight through; the icon border follows the same curve
 	if self.icon ~= nil then
@@ -426,6 +433,7 @@ function TRB.Classes.BarNode:SetDimensions(width, height, border)
 		end
 		self.frame.backdropInfo.insets = { left = self.border, right = self.border, top = self.border, bottom = self.border }
 		self.frame:ApplyBackdrop()
+		self.borderWrites = self.borderWrites + 1
 		-- Restore cached border color after ApplyBackdrop resets it
 		local borderCacheKey = self.borderKey
 		local cachedColor = TRB.Data.cache.colors.border[borderCacheKey]
@@ -487,6 +495,8 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 
 	-- Set resource bar (StatusBar fill) texture
 	self.frame:SetStatusBarTexture(resourceTexture)
+	self.fillWrites = self.fillWrites + 1
+	self.borderWrites = self.borderWrites + 1
 	-- Lower the fill texture to BORDER,-1 so it draws above the backdrop background
 	-- (BACKGROUND,0) but below the backdrop edge/border (BORDER,0).
 	local fillTexture = self.frame:GetStatusBarTexture()
@@ -925,6 +935,7 @@ function TRB.Classes.BarNode:ApplyIconBackdrop()
 		backdrop.edgeSize = border
 	end
 	icon:SetBackdrop(backdrop)
+	self.borderWrites = self.borderWrites + 1
 	self._iconBorderR = nil
 	self._iconBackgroundR = nil
 	-- SetBackdrop resets both colors to white; restore whatever the bar is currently at so the icon keeps
