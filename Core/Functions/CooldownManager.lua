@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.CooldownManager = {}
@@ -924,7 +923,8 @@ local function GetPassiveCategories()
 	if passiveCategoryDisplayed ~= nil then
 		return passiveCategoryDisplayed
 	end
-	local categories = Enum.CooldownViewerCategory
+	-- Probed by name: the passive categories differ between client builds.
+	local categories = Enum.CooldownViewerCategory --[[@as table<string, integer?>]]
 	if categories == nil or categories.HiddenPassive == nil then
 		return nil
 	end

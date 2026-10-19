@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -1009,7 +1008,6 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 				end
 			end)
 
-			---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 			local copyTo = rootDescription:CreateButton(L["CopyMenuCopyTo"])
 			if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
 				copyTo:CreateTitle(L["CopyMenuCopyTo"])
@@ -1020,7 +1018,6 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 				end
 				table.sort(sortedClasses, function(a, b) return a.classLabel < b.classLabel end)
 				for _, classDef in ipairs(sortedClasses) do
-					---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 					local classMenu = copyTo:CreateButton(classDef.classLabel)
 					if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
 						local prefix = classDef.classKey .. "_"

@@ -1076,7 +1076,7 @@ end
 
 ---Applies a fill color to an OverlaySlot's main overlay, handling gradient entries.
 ---@param slot TRB.Classes.OverlaySlot # The OverlaySlot to color
----@param colorEntry string|TRB.Classes.Settings.ColorGradientEntry # Color string or gradient entry table
+---@param colorEntry string|TRB.Classes.Settings.ColorEntry|TRB.Classes.Settings.ColorGradientEntry # Color string, or an entry whose gradient fields are optional
 ---@param overlayType string? # "appended", "inset", or nil for main overlay
 function TRB.Functions.Color:ApplyOverlayFillColor(slot, colorEntry, overlayType)
 	local colorString, color2String, direction

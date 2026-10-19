@@ -145,8 +145,7 @@ local function AnyThresholdUsable(specCacheSettings, barKey)
 	for _, spell in ipairs(TRB.Data.cache.thresholdSpells--[=[@as TRB.Classes.SpellThreshold[]]=]) do
 		local dictEntry = dictionary[spell.settingKey]
 		if spell.barTarget == barKey and (dictEntry == nil or dictEntry.enabled == true) and spell:IsKnown()
-			---@diagnostic disable-next-line: need-check-nil
-			and (not spell.isTalent or talents:IsTalentActive(spell)) and spell:IsUsable() then
+			and (not spell.isTalent or (talents ~= nil and talents:IsTalentActive(spell))) and spell:IsUsable() then
 			return true
 		end
 	end

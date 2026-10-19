@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -618,7 +617,6 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	f = controls.checkBoxes.primaryMatchWidth
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorWidth"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorWidthTooltip"]
 	f:SetChecked(primaryAnchor.matchWidth)
 	f:SetEnabled(primaryAnchor.barKey ~= "screen")
@@ -635,7 +633,6 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	f = controls.checkBoxes.primaryMatchHeight
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorHeight"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorHeightTooltip"]
 	f:SetChecked(primaryAnchor.matchHeight or false)
 	f:SetEnabled(primaryAnchor.barKey ~= "screen")
@@ -1075,7 +1072,6 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 		local cbCollapse = controls.checkBoxes.collapseBorderWidth
 		cbCollapse:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 40)
 		getglobal(cbCollapse:GetName() .. 'Text'):SetText(L["CollapseBorderWidth"])
-		---@diagnostic disable-next-line: inject-field
 		cbCollapse.tooltip = L["CollapseBorderWidthTooltip"]
 		cbCollapse:SetChecked(spec.comboPoints.collapseBorderWidth)
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.comboPointSpacing, not spec.comboPoints.collapseBorderWidth)
@@ -1190,7 +1186,6 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	f = controls.checkBoxes[settingKey .. "MatchWidth"]
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorWidth"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorWidthTooltip"]
 	f:SetChecked(anchor.matchWidth)
 	f:SetEnabled(anchor.barKey ~= "screen")
@@ -1224,7 +1219,6 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	f = controls.checkBoxes[settingKey .. "MatchHeight"]
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorHeight"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorHeightTooltip"]
 	f:SetChecked(anchor.matchHeight or false)
 	f:SetEnabled(anchor.barKey ~= "screen")
@@ -1714,7 +1708,6 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 		local cbCollapse = controls[barTypeDef.key .. "CollapseBorderWidth"]
 		cbCollapse:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 40)
 		getglobal(cbCollapse:GetName() .. 'Text'):SetText(L["CollapseBorderWidth"])
-		---@diagnostic disable-next-line: inject-field
 		cbCollapse.tooltip = L["CollapseBorderWidthTooltip"]
 		cbCollapse:SetChecked(barSettings.collapseBorderWidth)
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls[barTypeDef.key .. "Spacing"], not barSettings.collapseBorderWidth)
@@ -1816,7 +1809,6 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	f = controls[barTypeDef.key .. "MatchWidth"]
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 20)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorWidth"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorWidthTooltip"]
 	f:SetChecked(anchor.matchWidth)
 	f:SetEnabled(anchor.barKey ~= "screen")
@@ -1845,7 +1837,6 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	f = controls[barTypeDef.key .. "MatchHeight"]
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord - 40)
 	getglobal(f:GetName() .. 'Text'):SetText(L["MatchAnchorHeight"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["MatchAnchorHeightTooltip"]
 	f:SetChecked(anchor.matchHeight or false)
 	f:SetEnabled(anchor.barKey ~= "screen")

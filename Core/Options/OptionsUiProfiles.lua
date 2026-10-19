@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -259,7 +258,6 @@ function TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, yCoord, s
 					submenu:CreateButton(L["ProfileActionRename"], function() OnRenameClicked(profileName) end)
 					submenu:CreateButton(L["ProfileActionDelete"], function() OnDeleteClicked(profileName) end)
 				end
-				---@diagnostic disable-next-line: redundant-parameter
 				submenu:CreateButton(L["ProfileActionExport"], function() OnExportClicked(profileName) end)
 			end
 		end

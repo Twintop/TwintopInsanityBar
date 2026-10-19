@@ -58,11 +58,11 @@ OptionsFrame.__index = OptionsFrame
 ---@class TRB.Options.OptionsFrame.NavEntry
 ---@field public key string
 ---@field public label string
----@field public panel Frame|nil
+---@field public panel Frame|TRB.Classes.OptionsUi.TabbedPanel|nil # Spec panels are tabbed; category panels may be plain frames
 ---@field public parentKey string|nil
 ---@field public children string[]|nil
 ---@field public collapsed boolean
----@field public button Frame|nil
+---@field public button TRB.Classes.OptionsUi.NavButton|nil
 ---@field public builder function|nil
 
 -- ─────────────────────────────────────────────────────────────────────
@@ -118,9 +118,9 @@ end
 ---@param indent number Pixel indent from the left edge (used for child/spec entries)
 ---@param isHeader boolean Whether this button represents a collapsible class header (adds an arrow indicator)
 ---@param iconInfo table|nil {atlas=string} or {texture=number} for an optional icon displayed left of the label
----@return Frame button The created navigation button frame
+---@return TRB.Classes.OptionsUi.NavButton button The created navigation button frame
 local function CreateNavButton(parent, label, indent, isHeader, iconInfo)
-	local btn = CreateFrame("Button", nil, parent)
+	local btn = CreateFrame("Button", nil, parent) --[[@as TRB.Classes.OptionsUi.NavButton]]
 	btn:SetHeight(NAV_BUTTON_HEIGHT)
 	btn:SetWidth(NAV_WIDTH - 16 - indent)
 
@@ -134,7 +134,6 @@ local function CreateNavButton(parent, label, indent, isHeader, iconInfo)
 	selected:SetAllPoints()
 	selected:SetColorTexture(0.3, 0.5, 0.8, 0.3)
 	selected:Hide()
-	---@diagnostic disable-next-line: inject-field
 	btn.selectedTexture = selected
 
 	-- Icon (optional)
@@ -148,7 +147,6 @@ local function CreateNavButton(parent, label, indent, isHeader, iconInfo)
 		elseif iconInfo.texture then
 			icon:SetTexture(iconInfo.texture)
 		end
-		---@diagnostic disable-next-line: inject-field
 		btn.icon = icon
 		textLeftOffset = 2 + NAV_ICON_SIZE + 3
 	end
@@ -160,7 +158,6 @@ local function CreateNavButton(parent, label, indent, isHeader, iconInfo)
 	text:SetPoint("LEFT", textLeftOffset, 0)
 	text:SetPoint("RIGHT", -4, 0)
 	text:SetText(label)
-	---@diagnostic disable-next-line: inject-field
 	btn.label = text
 
 	-- Arrow for headers (texture rotated to indicate expand/collapse)
@@ -170,7 +167,6 @@ local function CreateNavButton(parent, label, indent, isHeader, iconInfo)
 		arrow:SetPoint("RIGHT", -2, 0)
 		arrow:SetTexture("Interface\\ChatFrame\\ChatFrameExpandArrow")
 		arrow:SetRotation(0) -- right-pointing = collapsed
-		---@diagnostic disable-next-line: inject-field
 		btn.arrow = arrow
 	end
 
@@ -684,7 +680,6 @@ function OptionsFrame:SelectCategory(key)
 	TRB.Frames.activeBarTextEditBox = nil
 	TRB.Frames.activeBarTextCursorPosition = nil
 	if self.selectedKey and self.navEntries[self.selectedKey] and self.navEntries[self.selectedKey].button then
----@diagnostic disable-next-line: undefined-field
 		self.navEntries[self.selectedKey].button.selectedTexture:Hide()
 	end
 
@@ -701,10 +696,8 @@ function OptionsFrame:SelectCategory(key)
 	self.selectedKey = key
 
 	-- Show/hide the Bar Text Variables flyout based on the new panel's active tab
----@diagnostic disable-next-line: undefined-field
 	if entry.panel and entry.panel.lastTabId == "barText" then
 		-- Swap to the new spec's variables panel
----@diagnostic disable-next-line: undefined-field
 		local barTextSheet = entry.panel.tabsheets and entry.panel.tabsheets["barText"]
 		local scrollChild = barTextSheet and barTextSheet.scrollFrame and barTextSheet.scrollFrame.scrollChild
 		TRB.Functions.OptionsUi.Tabs:ActivateBarTextVariablesPanel(scrollChild)
@@ -714,7 +707,6 @@ function OptionsFrame:SelectCategory(key)
 
 	-- Highlight the button
 	if entry.button then
----@diagnostic disable-next-line: undefined-field
 		entry.button.selectedTexture:Show()
 	end
 
@@ -755,17 +747,13 @@ function OptionsFrame:RenderNavSection(keys, yOffset)
 
 			-- Update selected highlight
 			if self.selectedKey == topKey then
----@diagnostic disable-next-line: undefined-field
 				entry.button.selectedTexture:Show()
 			else
----@diagnostic disable-next-line: undefined-field
 				entry.button.selectedTexture:Hide()
 			end
 
 			-- Update arrow rotation: 0 = right-pointing (collapsed), -π/2 = down-pointing (expanded)
----@diagnostic disable-next-line: undefined-field
 			if entry.button.arrow then
----@diagnostic disable-next-line: undefined-field
 				entry.button.arrow:SetRotation(entry.collapsed and 0 or (-math.pi / 2))
 			end
 
@@ -791,15 +779,12 @@ function OptionsFrame:RenderNavSection(keys, yOffset)
 						childEntry.button:Show()
 
 						if self.selectedKey == childKey then
----@diagnostic disable-next-line: undefined-field
 							childEntry.button.selectedTexture:Show()
 						else
----@diagnostic disable-next-line: undefined-field
 							childEntry.button.selectedTexture:Hide()
 						end
 
 						-- Color spec text red when disabled, white when enabled
----@diagnostic disable-next-line: undefined-field
 						if childEntry.button.label and childEntry.parentKey then
 							local specName = string.sub(childEntry.key, #childEntry.parentKey + 2)
 							local enabled = TRB.Data.settings
@@ -808,10 +793,8 @@ function OptionsFrame:RenderNavSection(keys, yOffset)
 								and TRB.Data.settings.core.enabled[childEntry.parentKey]
 								and TRB.Data.settings.core.enabled[childEntry.parentKey][specName]
 							if enabled == false then
----@diagnostic disable-next-line: undefined-field
 								childEntry.button.label:SetTextColor(1, 0.3, 0.3)
 							else
----@diagnostic disable-next-line: undefined-field
 								childEntry.button.label:SetTextColor(1, 1, 1)
 							end
 						end

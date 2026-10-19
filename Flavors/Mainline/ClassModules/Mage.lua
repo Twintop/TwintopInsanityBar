@@ -1870,7 +1870,6 @@ local function UpdateResourceBar()
 
 			if specSettings.displayBar.shatter and not specSettings.displayBar.shatter.neverShow then
 				refreshText = true
-				---@diagnostic disable-next-line: param-type-mismatch
 				UpdateShatter(specSettings, specCacheSettings, shatterBarColors, indicatorTargets.shatterBar.bar)
 			end
 

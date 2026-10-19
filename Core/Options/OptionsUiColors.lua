@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -58,7 +57,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 		f = controls.checkBoxes.castingOverlayEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["BarColorCastingOverlayCheckbox"])
-		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorCastingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.casting.enabled)
 		controls.checkBoxes.castingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
@@ -100,7 +98,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 		f = controls.checkBoxes.spendingOverlayEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["BarColorSpendingOverlayCheckbox"])
-		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorSpendingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.spending.enabled)
 		controls.checkBoxes.spendingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
@@ -195,7 +192,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 	f = controls.checkBoxes.castingOverlayEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["BarColorCastingOverlayCheckbox"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["BarColorCastingOverlayCheckboxTooltip"]
 	f:SetChecked(spec.colors.bar.casting.enabled)
 	controls.checkBoxes.castingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
@@ -233,7 +229,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 		f = controls.checkBoxes.spendingOverlayEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["BarColorSpendingOverlayCheckbox"])
-		---@diagnostic disable-next-line: inject-field
 		f.tooltip = L["BarColorSpendingOverlayCheckboxTooltip"]
 		f:SetChecked(spec.colors.bar.spending.enabled)
 		controls.checkBoxes.spendingOverlayFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
@@ -297,7 +292,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarBorderColorOptions(parent, co
 		f = controls.checkBoxes.overcapEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["BorderColorOvercapToggle"])
-		---@diagnostic disable-next-line: inject-field
 		f.tooltip = string.format(L["BorderColorOvercapToggleTooltip"], primaryResourceString)
 		f:SetChecked(spec.colors.bar.borderOvercap.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -411,7 +405,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	controls.dropDown.absorbMode:SetWidth(oUi.sliderWidth)
 	controls.dropDown.absorbMode.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HealthBarAbsorbMode"], oUi.xCoord, yCoord)
 	controls.dropDown.absorbMode.label.font:SetFontObject(GameFontNormal)
-	---@diagnostic disable-next-line: inject-field
 	controls.dropDown.absorbMode.label.font.tooltip = L["HealthBarAbsorbModeTooltip"]
 
 	local function AbsorbModeIsSelected(value)
@@ -465,7 +458,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	f = controls.checkBoxes.showAbsorb
 	f:SetPoint("TOPLEFT", oUi.xCoord2, absorbCheckboxY)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowAbsorb"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["HealthBarShowAbsorbTooltip"]
 	f:SetChecked(spec.colors.healthBar.absorb.enabled)
 	controls.checkBoxes.showAbsorbFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
@@ -496,7 +488,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	controls.dropDown.incomingHealMode:SetWidth(oUi.sliderWidth)
 	controls.dropDown.incomingHealMode.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HealthBarIncomingHealMode"], oUi.xCoord, yCoord)
 	controls.dropDown.incomingHealMode.label.font:SetFontObject(GameFontNormal)
-	---@diagnostic disable-next-line: inject-field
 	controls.dropDown.incomingHealMode.label.font.tooltip = L["HealthBarIncomingHealModeTooltip"]
 
 	local function IncomingHealModeIsSelected(value)
@@ -549,7 +540,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	f = controls.checkBoxes.showIncomingHeal
 	f:SetPoint("TOPLEFT", oUi.xCoord2, incomingHealCheckboxY)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowIncomingHeal"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["HealthBarShowIncomingHealTooltip"]
 	f:SetChecked(spec.colors.healthBar.incomingHeal.enabled)
 	controls.checkBoxes.showIncomingHealFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(
@@ -580,7 +570,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	controls.dropDown.healAbsorbMode:SetWidth(oUi.sliderWidth)
 	controls.dropDown.healAbsorbMode.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["HealthBarHealAbsorbMode"], oUi.xCoord, yCoord)
 	controls.dropDown.healAbsorbMode.label.font:SetFontObject(GameFontNormal)
-	---@diagnostic disable-next-line: inject-field
 	controls.dropDown.healAbsorbMode.label.font.tooltip = L["HealthBarHealAbsorbModeTooltip"]
 
 	local function HealAbsorbModeIsSelected(value)
@@ -633,7 +622,6 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 	f = controls.checkBoxes.showHealAbsorb
 	f:SetPoint("TOPLEFT", oUi.xCoord2, healAbsorbCheckboxY)
 	getglobal(f:GetName() .. 'Text'):SetText(L["HealthBarShowHealAbsorb"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["HealthBarShowHealAbsorbTooltip"]
 	f:SetChecked(spec.colors.healthBar.healAbsorb.enabled)
 	controls.checkBoxes.showHealAbsorbFullHeight, yCoord = TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(

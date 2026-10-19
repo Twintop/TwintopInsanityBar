@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
 local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
@@ -882,7 +881,7 @@ end
 ---Applies size/position/layout updates to existing bar groups (OOP system only).
 ---This is safe to call from Options UI sliders for live updates.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param barGroups table<string, TRB.Classes.BarGroup>
+---@param barGroups TRB.Classes.BarGroups
 function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	if settings == nil or settings.bar == nil or barGroups == nil then
 		return
@@ -934,7 +933,6 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local effectiveParentOf = BuildEffectiveParentMap(forest)
 	-- Anchor depth drives frame level, so recompute it here: this is the one place the anchor
 	-- topology changes. GetBarFrameLevel reads the cached map for every bar's level.
----@diagnostic disable-next-line: inject-field, assign-type-mismatch
 	barGroups.barDepths = BuildBarDepthMap(forest)
 
 	-- Per-root data: wrappers, anchor settings, effectiveWidth/effectiveHeight
@@ -1015,14 +1013,11 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local primaryRootKey = barKeyToRoot["primary"] or "primary"
 	local primaryRootMeta = rootMetadata[primaryRootKey]
 	local effectiveWidth = primaryRootMeta and primaryRootMeta.effectiveWidth or settings.bar.width
----@diagnostic disable-next-line: inject-field, assign-type-mismatch
 	barGroups.effectiveWidth = effectiveWidth
 
 	-- Store per-root effective widths for ResolveBarWidth
----@diagnostic disable-next-line: missing-fields
 	barGroups.rootEffectiveWidths = {}
 	-- Store per-root effective heights for height matching
----@diagnostic disable-next-line: missing-fields
 	barGroups.rootEffectiveHeights = {}
 	for rootBarKey, meta in pairs(rootMetadata) do
 		barGroups.rootEffectiveWidths[rootBarKey] = meta.effectiveWidth
@@ -3026,11 +3021,7 @@ function TRB.Functions.Bar:ResolveSharedSecondarySettings(settings, layoutOnly, 
 		return settings, false, nil
 	end
 
-	---@diagnostic disable-next-line: missing-fields
-	local effective = {}
-	for k, v in pairs(settings) do
-		effective[k] = v
-	end
+	local effective = TRB.Functions.Table:ShallowCopy(settings)
 	effective.comboPoints = sharedSettings.comboPoints
 	if not layoutOnly then
 		-- New nested tables, not shared references, so the active spec's own textures/colors stay untouched.
@@ -3695,6 +3686,8 @@ end
 ---@field public textures { bar: string, border: string, background: string } # Texture setting keys
 ---@field public colors { border: string, background: string, bar: string } # Color setting keys within the colorsKey table
 ---@field public minMaxMode string # "discrete" (0-1), "stepped" (i-1,i), "health" (0-maxHealth), or "custom"
+---@field public rootEffectiveWidth number? # Effective width of the bar's root, from the layout pass
+---@field public rootEffectiveHeight number? # Effective height of the bar's root, from the layout pass
 ---@field public cdmWidthMatched boolean? # If true, CDM width matching is active and multi-node bars should force fullWidth
 ---@field public cdmHeightMatched boolean? # If true, Edit Mode anchor-frame height matching is active and vertical multi-node bars should force fullWidth
 ---@field public shouldInitiallyShow boolean? # If false, construction keeps the bar hidden and avoids calling Show() before runtime visibility logic runs
@@ -3799,7 +3792,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		-- ApplyBarGroupsLayout parents root bar containers to their wrapper frame.
 		-- If the container has been parented to a wrapper, position relative to the wrapper,
 		-- NOT UIParent. The wrapper handles CDM/EditMode positioning.
-		local currentParent = targetGroup.containerFrame:GetParent()
+		local currentParent = targetGroup.containerFrame:GetParent() --[[@as TRB.Classes.EditModeWrapper?]]
 		if currentParent and currentParent ~= UIParent and currentParent.trbRootBarKey then
 			-- Container is parented to a TRB wrapper frame — position inside it
 			anchorContainer = currentParent
@@ -3816,7 +3809,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		-- Check if the container is already parented to a TRB wrapper frame; if so,
 		-- treat it as a screen root so it positions inside its wrapper rather than
 		-- being placed off-screen via the original anchor points against UIParent.
-		local currentParent = targetGroup.containerFrame:GetParent()
+		local currentParent = targetGroup.containerFrame:GetParent() --[[@as TRB.Classes.EditModeWrapper?]]
 		if currentParent and currentParent ~= UIParent and currentParent.trbRootBarKey then
 			anchorContainer = currentParent
 			isScreenRoot = true

@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -82,7 +81,7 @@ end
 ---@param label string
 ---@param x number
 ---@param y number
----@return CheckButton
+---@return ChatConfigCheckButtonTemplate
 local function BuildCheckButton(parent, name, label, x, y)
 	local checkbox = CreateFrame("CheckButton", name, parent, "ChatConfigCheckButtonTemplate")
 	checkbox:SetPoint("TOPLEFT", x, y)
@@ -160,6 +159,7 @@ function TRB.Functions.OptionsUi.Glows:GenerateGlowsPanel(parent, controls, yCoo
 	-- Sits in the gap between the name field and the Add button, with the rest of the row left empty: the
 	-- wider styles draw well outside the bar they are attached to and would otherwise overlap the table.
 	local previewLabel = TRB.Functions.OptionsUi.Primitives:BuildLabel(editorHeaderRow, L["GlowPreviewLabel"], 300, 0, 160, 16)
+	---@class TRB.Classes.GlowPreviewBar : StatusBar, BackdropTemplate, TRB.Classes.GlowTarget
 	local previewBar = CreateFrame("StatusBar", namePrefix .. "_Preview", editorHeaderRow, "BackdropTemplate")
 	previewBar:SetSize(160, 22)
 	previewBar:SetPoint("TOPLEFT", 300, -22)
@@ -226,11 +226,9 @@ function TRB.Functions.OptionsUi.Glows:GenerateGlowsPanel(parent, controls, yCoo
 		oUi.xCoord, 0)
 
 	local useCustomColorCheckbox = BuildCheckButton(editorContent, namePrefix .. "_UseCustomColor", L["GlowUseCustomColor"], oUi.xCoord2, -20)
-	---@diagnostic disable-next-line: inject-field
 	useCustomColorCheckbox.tooltip = L["GlowUseCustomColorTooltip"]
 
 	local colorPicker = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(editorContent, L["GlowColor"], "FFF2F252", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, -48)
-	---@cast colorPicker Button
 
 	-- Full-width row of its own: the style's fields start below it, so it can't collide with a slider.
 	local colorNote = TRB.Functions.OptionsUi.Primitives:BuildLabel(editorContent, L["GlowUseCustomColorNote"], oUi.xCoord, -82, oUi.maxOptionsWidth, 28)
@@ -259,7 +257,6 @@ function TRB.Functions.OptionsUi.Glows:GenerateGlowsPanel(parent, controls, yCoo
 			fieldWidgets[fieldKey] = slider
 		else
 			local checkbox = BuildCheckButton(editorContent, namePrefix .. "_" .. fieldKey, fieldDef.label, oUi.xCoord, 0)
-			---@diagnostic disable-next-line: inject-field
 			checkbox.tooltip = fieldDef.tooltip
 			checkbox:SetScript("OnClick", function(self)
 				local glow = GetSelectedGlow()

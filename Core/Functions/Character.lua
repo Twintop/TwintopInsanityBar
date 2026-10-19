@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
 local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
@@ -1282,7 +1281,6 @@ function TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	local gcd = snapshotData.attributes.gcdDuration or 1.5
 	if gcd > 1.5 then gcd = 1.5 elseif gcd < 0.75 then gcd = 0.75 end
 	snapshotData.formatted.gcd = string.format("%.2f", gcd)
----@diagnostic disable-next-line: assign-type-mismatch
 	snapshotData.formatted.gcdRaw = gcd
 end
 
@@ -1314,7 +1312,7 @@ function TRB.Functions.Character:UpdateSnapshot()
 	end
 	
 	if target ~= nil then
-		target:UpdateAllSpellTracking(currentTime)
+		target:UpdateAllSpellTracking()
 	end
 end
 
@@ -1461,7 +1459,6 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	local specCache = TRB.Data.specCache[compositeKey] --[[@as TRB.Classes.SpecCache]]
 	local core = TRB.Data.settings.core --[[@as TRB.Classes.Settings.Core]]
 	local s = core.global[className][specName] --[[@as TRB.Classes.Settings.SpecializationGlobalEnabled]]
-	local enabled = (core.global.globalEnable or s.specEnable) and specCache.settings ~= nil
 	local spec = TRB.Data.settings[className][specName] --[[@as TRB.Classes.Settings.SpecializationSettingsBase]]
 
 	if s.bar then
@@ -1506,61 +1503,36 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		mergedBarText = spec.displayText.barText
 	end
 
----@diagnostic disable-next-line: missing-fields
+	local displayTextSource = s.displayText and core.displayText or spec.displayText
 	specCache.settings.displayText = {
+		default = displayTextSource.default,
 		barText = mergedBarText,
 		globalBarTextCount = globalBarTextCount
 	}
 
-	if s.displayText then
-		specCache.settings.displayText.default = core.displayText.default
-	else
-		specCache.settings.displayText.default = spec.displayText.default
-	end
-
+	local textSource = s.textColors and core.colors.text or spec.colors.text
 	specCache.settings.colors = {
----@diagnostic disable-next-line: missing-fields
-		text = {},
+		text = {
+			current = textSource.current,
+			casting = textSource.casting,
+			spending = textSource.spending,
+			passive = textSource.passive,
+			overThreshold = textSource.overThreshold,
+			overcap = textSource.overcap,
+			-- manaBar is spec-specific (only for Shadow Priest, Balance Druid, Elemental Shaman), so always use spec colors
+			manaBar = spec.colors.text.manaBar
+		},
 		bar = spec.colors.bar,
----@diagnostic disable-next-line: missing-fields
-		threshold = {},
+		threshold = TRB.Functions.Table:ShallowCopy(spec.colors.threshold),
 		comboPoints = spec.colors.comboPoints,
 		bars = spec.colors.bars,
----@diagnostic disable-next-line: missing-fields
-		healthBar = {},
+		healthBar = spec.colors.healthBar,
 		manaBar = spec.colors.manaBar
 	}
-
-	if s.textColors then
-		specCache.settings.colors.text.current = core.colors.text.current
-		specCache.settings.colors.text.casting = core.colors.text.casting
-		specCache.settings.colors.text.spending = core.colors.text.spending
-		specCache.settings.colors.text.passive = core.colors.text.passive
-		specCache.settings.colors.text.overThreshold = core.colors.text.overThreshold
-		specCache.settings.colors.text.overcap = core.colors.text.overcap
-		-- manaBar is spec-specific (only for Shadow Priest, Balance Druid, Elemental Shaman), so always use spec colors
-		specCache.settings.colors.text.manaBar = spec.colors.text.manaBar
-	else
-		specCache.settings.colors.text.current = spec.colors.text.current
-		specCache.settings.colors.text.casting = spec.colors.text.casting
-		specCache.settings.colors.text.spending = spec.colors.text.spending
-		specCache.settings.colors.text.passive = spec.colors.text.passive
-		specCache.settings.colors.text.overThreshold = spec.colors.text.overThreshold
-		specCache.settings.colors.text.overcap = spec.colors.text.overcap
-		specCache.settings.colors.text.manaBar = spec.colors.text.manaBar
-	end
 	-- Spec-only text colors (a form's resource, say) have no global counterpart.
 	for key, value in pairs(spec.colors.text) do
 		if specCache.settings.colors.text[key] == nil then
 			specCache.settings.colors.text[key] = value
-		end
-	end
-
----@diagnostic disable-next-line: missing-fields
-	specCache.settings.colors.threshold = {}
-	if spec.colors.threshold ~= nil then
-		for key, _ in pairs(spec.colors.threshold) do
-			specCache.settings.colors.threshold[key] = spec.colors.threshold[key]
 		end
 	end
 
@@ -1574,24 +1546,21 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	-- fields such as `type` stay in sync with live edits, not just the sub-tables.
 	if s.healthBarColors then
 		specCache.settings.colors.healthBar = core.colors.healthBar
-	else
-		specCache.settings.colors.healthBar = spec.colors.healthBar
 	end
 
-	if spec.thresholds ~= nil then
-	---@diagnostic disable-next-line: missing-fields
+	local specThresholds = spec.thresholds
+	if specThresholds ~= nil then
+		local thresholdIconSource = specThresholds
+		if s.thresholdIcons then
+			thresholdIconSource = core.thresholds
+		end
 		specCache.settings.thresholds = {
 			specProperties = spec.thresholds.specProperties,
+			properties = thresholdIconSource.properties,
+			icons = thresholdIconSource.icons,
 			thresholdDictionary = {},
 			customThresholds = {}
 		}
-		if s.thresholdIcons then
-			specCache.settings.thresholds.properties = core.thresholds.properties
-			specCache.settings.thresholds.icons = core.thresholds.icons
-		else
-			specCache.settings.thresholds.properties = spec.thresholds.properties
-			specCache.settings.thresholds.icons = spec.thresholds.icons
-		end
 
 		if spec.thresholds ~= nil and spec.thresholds.thresholdDictionary ~= nil then
 			for key, _ in pairs(spec.thresholds.thresholdDictionary) do
@@ -1676,7 +1645,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	-- them, so a field no enabled section owns still reads live and a spec-side edit needs no re-fill.
 	local anyCastbarGlobal = s.castbarDimensions or s.castbarColors or s.castbarOverlays or s.castbarEmpower or s.castbarText or s.castbarShield
 	if anyCastbarGlobal and core.bars and core.bars.castbar and spec.bars and spec.bars.castbar then
-		local coreBar = core.bars.castbar
+		local coreBar = core.bars.castbar --[[@as TRB.Classes.Settings.CastbarBar]]
 		local barOverrides = {}
 		if s.castbarDimensions then
 			barOverrides.width = coreBar.width
@@ -1739,8 +1708,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	-- (position/size/icon), Colors (fill/interrupt/border/background), and Empower (empower fill color +
 	-- stage lines). Layers onto the current cache tables so it composes with the castbar merge above.
 	for _, unitKey in ipairs({ "targetCastbar", "focusCastbar" }) do
+		---@type TRB.Classes.Settings.TargetCastbarBar?
 		local coreBar = core.bars and core.bars[unitKey]
 		local currentBars = specCache.settings.bars
+		---@type TRB.Classes.Settings.TargetCastbarBar?
 		local specBar = currentBars and currentBars[unitKey]
 		local useDims = s[unitKey .. "Dimensions"]
 		local useColors = s[unitKey .. "Colors"]
@@ -1856,8 +1827,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		-- Class-scoped bars (Feign Death) have no global counterpart, so they never pull from core even if
 		-- an older build left an entry and its Use Global flags behind in saved variables.
 		local isGlobalScope = TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(barKey)
+		---@type TRB.Classes.Settings.OtherBar?
 		local coreBar = isGlobalScope and core.bars and core.bars[barKey] or nil
 		local currentBars = specCache.settings.bars
+		---@type TRB.Classes.Settings.OtherBar?
 		local specBar = currentBars and currentBars[barKey]
 		local useDims = isGlobalScope and s[barKey .. "Dimensions"]
 		local useColors = isGlobalScope and s[barKey .. "Colors"]

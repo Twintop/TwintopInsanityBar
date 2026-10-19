@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -86,7 +85,6 @@ end
 ---@param getTargets fun(): table? Resolves the indicator's target table for this bar, live
 ---@param onChanged fun() Runs after a pick, to resync the row's summary and enabled state
 local function CreateBorderGlowSubmenu(rootDescription, getTargets, onChanged)
-	---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 	local submenu = rootDescription:CreateButton(L["BarElementBorderGlow"])
 	if type(submenu) ~= "table" or type(submenu.CreateCheckbox) ~= "function" then
 		return
@@ -821,7 +819,6 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 		-- Color picker
 		local cp = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, "", indicatorColors[orderedKeys[rowIndex]], oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, 0, L["GradientBarFillOnlyTooltip"])
-		---@cast cp Button
 		cp.Swatch1:SetScript("OnMouseDown", function(self, button)
 			local currentKey = orderedKeys[capturedRowIdx]
 			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicatorColors, { [currentKey] = rows[capturedRowIdx].colorPicker }, currentKey, "indicatorColor_" .. currentKey)
@@ -856,7 +853,6 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				end
 			end
 		end)
-		---@diagnostic disable-next-line: inject-field
 		cp.UpdateSwatch2State = function()
 			local currentKey = orderedKeys[capturedRowIdx]
 			local currentEntry = indicatorColors[currentKey]
@@ -1197,7 +1193,6 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 				-- Color picker
 				local cp = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, gradDef.colorLabel, gradIndicator.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-				---@cast cp Button
 				cp:SetScript("OnMouseDown", function(self, button)
 					local gk = orderedGradientKeys[capturedGradIdx]
 					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicatorColors, { [gk] = gradRow.colorPicker }, gk, "indicatorColor_" .. gk)
@@ -1250,7 +1245,6 @@ function TRB.Functions.OptionsUi.Indicators:BuildOverlayFullHeightCheckbox(paren
 	local checkbox = CreateFrame("CheckButton", frameName, parent, "ChatConfigCheckButtonTemplate")
 	checkbox:SetPoint("TOPLEFT", parentX + (oUi.xPadding * 2), yCoord - 18)
 	getglobal(checkbox:GetName() .. 'Text'):SetText(L["OverlayFullHeightCheckbox"])
-	---@diagnostic disable-next-line: inject-field
 	checkbox.tooltip = L["OverlayFullHeightCheckboxTooltip"]
 	checkbox:SetChecked(isChecked == true)
 	checkbox:SetScript("OnClick", onClick)

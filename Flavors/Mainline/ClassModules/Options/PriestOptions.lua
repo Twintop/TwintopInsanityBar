@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field
 local _, TRB = ...
 
 local L = TRB.Localization

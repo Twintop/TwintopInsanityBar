@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -31,7 +30,7 @@ local barTabs = {}
 
 ---Applies a tab's label font, swapping in the red variant when the tab's bar is disabled.
 ---The font object is what carries the label colour, so this must run after every font swap.
----@param tab Button # The tab button
+---@param tab TRB.Classes.OptionsUi.Tab # The tab button
 ---@param isActive boolean # True when this is the tab group's currently selected tab
 function TRB.Functions.OptionsUi.Tabs:ApplyTabLabelFont(tab, isActive)
 	local fonts = TRB.Options.fonts.options
@@ -47,9 +46,8 @@ end
 function TRB.Functions.OptionsUi.Tabs:RefreshBarTabStates()
 	for _, entry in ipairs(barTabs) do
 		local visSettings = TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(entry.classId, entry.specId, entry.visibilityKey)
-		---@diagnostic disable-next-line: inject-field
 		entry.tab.isBarDisabled = visSettings ~= nil and visSettings.neverShow == true
-		local parent = entry.tab:GetParent()
+		local parent = entry.tab:GetParent() --[[@as TRB.Classes.OptionsUi.TabbedPanel?]]
 		self:ApplyTabLabelFont(entry.tab, parent ~= nil and parent.lastTabId == entry.tab.id)
 	end
 end
@@ -59,20 +57,18 @@ end
 ---@param parent Frame # The parent frame
 ---@param width number? # Width of the scroll frame (default 560)
 ---@param height number? # Height of the scroll frame (default 540)
----@param scrollChild Frame? # Optional pre-existing child frame; a new one is created if nil
----@return ScrollFrame
+---@param scrollChild TRB.Classes.OptionsUi.ScrollChild? # Optional pre-existing child frame; a new one is created if nil
+---@return TRB.Classes.OptionsUi.ScrollContainer
 function TRB.Functions.OptionsUi.Tabs:CreateScrollFrameContainer(name, parent, width, height, scrollChild)
 	width = width or 560
 	height = height or 540
-	local sf = CreateFrame("ScrollFrame", name, parent, "UIPanelScrollFrameTemplate")
+	local sf = CreateFrame("ScrollFrame", name, parent, "UIPanelScrollFrameTemplate") --[[@as TRB.Classes.OptionsUi.ScrollContainer]]
 	sf:SetWidth(width)
 	sf:SetHeight(height)
 	if scrollChild then
-		---@diagnostic disable-next-line: inject-field
 		sf.scrollChild = scrollChild
 		sf.scrollChild:SetParent(sf)
 	else
-		---@diagnostic disable-next-line: inject-field
 		sf.scrollChild = CreateFrame("Frame", nil, sf)
 	end
 	sf.scrollChild:SetWidth(width)
@@ -88,12 +84,12 @@ end
 ---@param height number? # Height of the container (nil to fill parent height)
 ---@param isManualScrollFrame boolean? # If true, skips creating the embedded scroll frame
 ---@param headerBuilder fun(container: Frame): Frame|nil # Optional builder for a pinned header above the scroll frame
----@return Frame|BackdropTemplate
+---@return TRB.Classes.OptionsUi.TabSheet
 function TRB.Functions.OptionsUi.Tabs:CreateTabFrameContainer(name, parent, width, height, isManualScrollFrame, headerBuilder)
 	local fillParent = (width == nil and height == nil)
 	width = width or 652
 	height = height or 523
-	local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
+	local cf = CreateFrame("Frame", name, parent, "BackdropTemplate") --[[@as TRB.Classes.OptionsUi.TabSheet]]
 	cf:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile =  "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -121,13 +117,11 @@ function TRB.Functions.OptionsUi.Tabs:CreateTabFrameContainer(name, parent, widt
 	-- A pinned header sits above the scroll frame so it stays put while the tab's content scrolls.
 	local headerReservedHeight = 0
 	if headerBuilder then
-		---@diagnostic disable-next-line: inject-field
 		cf.visibilityHeader = headerBuilder(cf)
 		headerReservedHeight = TRB.Functions.OptionsUi.Visibility.barTabHeaderReservedHeight
 	end
 
 	if not isManualScrollFrame then
-		---@diagnostic disable-next-line: inject-field
 		cf.scrollFrame = TRB.Functions.OptionsUi.Tabs:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8 - headerReservedHeight)
 		cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5 - headerReservedHeight)
 		if fillParent then
@@ -162,7 +156,7 @@ function TRB.Functions.OptionsUi.Tabs:HideAllBarTextVariablesPanels()
 end
 
 ---Shows the Bar Text Variables panel associated with the given scroll child.
----@param scrollChild Frame|nil
+---@param scrollChild TRB.Classes.OptionsUi.ScrollChild|nil
 function TRB.Functions.OptionsUi.Tabs:ActivateBarTextVariablesPanel(scrollChild)
 	self:HideAllBarTextVariablesPanels()
 
@@ -221,14 +215,13 @@ end
 ---@param name string # Global frame name for the tab button
 ---@param displayText string # Label text shown on the tab
 ---@param id string # Unique tab identifier key
----@param parent Frame # The parent frame that owns the tab set
+---@param parent Frame|TRB.Classes.OptionsUi.TabbedPanel # The parent frame that owns the tab set
 ---@param width number? # Tab width in pixels (default 100)
----@return Button|BackdropTemplate
+---@return TRB.Classes.OptionsUi.Tab
 function TRB.Functions.OptionsUi.Tabs:CreateTab(name, displayText, id, parent, width)
 	width = width or 100
 	local tabHeight = 20
-	local tab = CreateFrame("Button", name, parent, "BackdropTemplate")
-	---@diagnostic disable-next-line: inject-field
+	local tab = CreateFrame("Button", name, parent, "BackdropTemplate") --[[@as TRB.Classes.OptionsUi.Tab]]
 	tab.id = id
 	tab:SetSize(width, tabHeight)
 
@@ -250,7 +243,6 @@ function TRB.Functions.OptionsUi.Tabs:CreateTab(name, displayText, id, parent, w
 	bottomCover:SetPoint("BOTTOMLEFT", 1, -1)
 	bottomCover:SetPoint("BOTTOMRIGHT", -1, -1)
 	bottomCover:SetColorTexture(0.1, 0.1, 0.1, 0.8)
-	---@diagnostic disable-next-line: inject-field
 	tab.bottomCover = bottomCover
 
 	-- Label
@@ -258,7 +250,6 @@ function TRB.Functions.OptionsUi.Tabs:CreateTab(name, displayText, id, parent, w
 	label:SetFontObject(TRB.Options.fonts.options.tabNormalSmall)
 	label:SetPoint("CENTER", 0, 1)
 	label:SetText(displayText)
-	---@diagnostic disable-next-line: inject-field
 	tab.Text = label
 
 	-- Hover highlight
@@ -434,7 +425,7 @@ end
 
 ---Builds a dynamic set of tabs and tabsheets for an options panel.
 ---Tabs automatically wrap to multiple rows when they would exceed the parent frame's width.
----@param parent Frame The parent frame to attach tabs to (e.g., the spec display panel)
+---@param parent Frame|TRB.Classes.OptionsUi.TabbedPanel The parent frame to attach tabs to (e.g., the spec display panel)
 ---@param namePrefix string The naming prefix (e.g., "Priest_Shadow")
 ---@param tabDefinitions table[] Ordered list of tab definitions: { [1]=key:string, [2]=label:string, [3]=width:number, [4]=constructor:function(scrollChild) }. A named `visibilityKey` field marks a bar tab and gives it a pinned enable/disable header.
 ---@param yCoord number The starting y coordinate for the tabs row. Will be adjusted internally.
@@ -632,7 +623,6 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 		tabsheets[key] = optionsUiFuncs:CreateTabFrameContainer("TwintopResourceBar_" .. namePrefix .. "_LayoutPanel_" .. key, parent, nil, nil, isManual, headerBuilder)
 		tabsheets[key]:Hide()
 		tabsheets[key]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		---@diagnostic disable-next-line: inject-field
 		tabsheets[key].constructorFrame = (not isManual and tabsheets[key].scrollFrame) and tabsheets[key].scrollFrame.scrollChild or tabsheets[key]
 
 		-- Resync the header whenever the tab becomes visible, so visibility changes made on the
@@ -649,19 +639,13 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 	-- Show the first tab by default
 	local firstKey = tabOrder[1]
 	tabsheets[firstKey]:Show()
-	---@diagnostic disable-next-line: inject-field
 	tabsheets[firstKey].selected = true
 	tabs[firstKey]:SetBackdropColor(0.3, 0.3, 0.3, 0.9)
 	tabs[firstKey].bottomCover:SetColorTexture(0.5, 0.5, 0.5, 1.0)
----@diagnostic disable-next-line: inject-field
 	parent.tabs = tabs
----@diagnostic disable-next-line: inject-field
 	parent.tabsheets = tabsheets
----@diagnostic disable-next-line: inject-field
 	parent.lastTab = tabsheets[firstKey]
----@diagnostic disable-next-line: inject-field
 	parent.lastTabId = firstKey
----@diagnostic disable-next-line: inject-field
 	parent.tabOrder = tabOrder
 
 	-- Deferred until lastTabId exists, since both calls resolve the active tab from it.
@@ -676,7 +660,6 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 
 	-- Store constructors for lazy tab construction.
 	-- Only the first (visible) tab is built eagerly; the rest are deferred until first shown.
-	---@diagnostic disable-next-line: inject-field
 	parent.tabConstructors = {}
 	for _, def in ipairs(tabDefinitions) do
 		local key = def[1]

@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -409,7 +408,6 @@ local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeC
 			end
 		end
 		if profileHasAnything then
-			---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 			local profileMenu = parent:CreateButton(profileName)
 			if type(profileMenu) == "table" and type(profileMenu.CreateButton) == "function" then
 				if hasCore then
@@ -420,7 +418,6 @@ local function AddProfileClassSpecSubmenu(parent, onPicked, excludeKey, excludeC
 				for _, classDef in ipairs(sortedClasses) do
 					local className = classDef.classKey
 					if classesWithSpecs[className] then
-						---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 						local classMenu = profileMenu:CreateButton(classDef.classLabel)
 						if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
 							local prefix = className .. "_"
@@ -451,7 +448,6 @@ local function AddDestinationProfileClassSpecSubmenu(parent, onPicked, excludeKe
 	local sortedClasses = GetSortedClassSpecs()
 	local activeCoreName = excludeCurrentCoreProfile and profiles:ResolveCoreProfileName() or nil
 	for _, profileName in ipairs(profileNames) do
-		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 		local profileMenu = parent:CreateButton(profileName)
 		if type(profileMenu) == "table" and type(profileMenu.CreateButton) == "function" then
 			if profileName ~= activeCoreName then
@@ -475,7 +471,6 @@ local function AddDestinationProfileClassSpecSubmenu(parent, onPicked, excludeKe
 						break
 					end
 				end
-				---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 				local classMenu = classHasTarget and profileMenu:CreateButton(classDef.classLabel) or nil
 				if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
 					for _, specDef in ipairs(classDef.specs) do
@@ -526,7 +521,6 @@ local function ShowUseGlobalCopyMenu(owner, classId, specId, settingKey)
 	MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
 		rootDescription:CreateTitle(string.format(L["CopyMenuTitleFormat"], sectionLabel))
 
-		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 		local copyTo = rootDescription:CreateButton(L["CopyMenuCopyTo"])
 		if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
 			copyTo:CreateTitle(L["CopyMenuCopyTo"])
@@ -545,7 +539,6 @@ local function ShowUseGlobalCopyMenu(owner, classId, specId, settingKey)
 			end, excludeKey, false, def and def.barKey)
 		end
 
-		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 		local copyFrom = rootDescription:CreateButton(L["CopyMenuCopyFrom"])
 		if type(copyFrom) == "table" and type(copyFrom.CreateButton) == "function" then
 			copyFrom:CreateTitle(L["CopyMenuCopyFrom"])
@@ -603,7 +596,6 @@ function TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(checkbox, c
 	button:SetScript("OnEnter", function(self)
 		if self.tooltip then
 			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
----@diagnostic disable-next-line: param-type-mismatch
 			GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true)
 			GameTooltip:Show()
 		end
@@ -625,7 +617,6 @@ local function ShowBulkGlobalCopyMenu(owner, settingKey)
 	MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
 		rootDescription:CreateTitle(string.format(L["CopyMenuTitleFormat"], sectionLabel))
 
-		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 		local copyTo = rootDescription:CreateButton(L["CopyMenuCopyTo"])
 		if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
 			copyTo:CreateTitle(L["CopyMenuCopyTo"])
@@ -646,7 +637,6 @@ local function ShowBulkGlobalCopyMenu(owner, settingKey)
 			end, nil, false, def and def.barKey)
 		end
 
-		---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 		local copyFrom = rootDescription:CreateButton(L["CopyMenuCopyFrom"])
 		if type(copyFrom) == "table" and type(copyFrom.CreateButton) == "function" then
 			copyFrom:CreateTitle(L["CopyMenuCopyFrom"])
@@ -688,7 +678,6 @@ function TRB.Functions.OptionsUi.GlobalCopy:BuildGlobalBulkCopyButton(bulkCheckb
 	button:SetScript("OnEnter", function(self)
 		if self.tooltip then
 			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
----@diagnostic disable-next-line: param-type-mismatch
 			GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true)
 			GameTooltip:Show()
 		end

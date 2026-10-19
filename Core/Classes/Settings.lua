@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Settings = TRB.Classes.Settings or {}
@@ -22,6 +21,32 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public castbarEmpower boolean
 ---@field public castbarText boolean
 ---@field public castbarShield boolean
+---@field public targetCastbarDimensions boolean
+---@field public targetCastbarColors boolean
+---@field public targetCastbarEmpower boolean
+---@field public targetCastbarText boolean
+---@field public targetCastbarShield boolean
+---@field public focusCastbarDimensions boolean
+---@field public focusCastbarColors boolean
+---@field public focusCastbarEmpower boolean
+---@field public focusCastbarText boolean
+---@field public focusCastbarShield boolean
+---@field public gcdDimensions boolean
+---@field public gcdColors boolean
+---@field public fatigueDimensions boolean
+---@field public fatigueColors boolean
+---@field public breathDimensions boolean
+---@field public breathColors boolean
+---@field public petPowerDimensions boolean? # Pet keys exist only on specs with a pet
+---@field public petPowerColors boolean?
+---@field public petHealthDimensions boolean?
+---@field public petHealthColors boolean?
+---@field public petCastbarDimensions boolean?
+---@field public petCastbarColors boolean?
+---@field public petCastbarOverlays boolean?
+---@field public petCastbarText boolean?
+---@field public petCastbarShield boolean?
+---@field [string] boolean # Swing bars add <barKey>Dimensions and <barKey>Colors
 
 ---@class TRB.Classes.Settings.SpecializationSettingsBase
 ---@field public bar TRB.Classes.Settings.PrimaryBar
@@ -29,7 +54,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public colors TRB.Classes.Settings.Colors
 ---@field public comboPoints TRB.Classes.Settings.SecondaryBar
 ---@field public healthBar TRB.Classes.Settings.SecondaryBar
----@field public bars TRB.Classes.Settings.SecondaryBar[]?
+---@field public bars TRB.Classes.Settings.Bars?
 ---@field public displayBar table?
 ---@field public displayText TRB.Classes.Settings.DisplayText
 ---@field public textures table?
@@ -154,6 +179,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public fullHeight boolean? # When true, overlay-capable entries extend through the bar border area vertically
 
 ---@class TRB.Classes.Settings.ColorShowEntry : TRB.Classes.Settings.ColorEnabledEntry
+---@field public show boolean
 
 ---@class TRB.Classes.Settings.EndCapColorEntry : TRB.Classes.Settings.ColorEnabledEntry
 ---@field public width integer # Fill-axis width of the end cap band in pixels
@@ -194,6 +220,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public background TRB.Classes.Settings.ColorEntry
 ---@field public absorb TRB.Classes.Settings.HealthBarOverlayColorEntry
 ---@field public incomingHeal TRB.Classes.Settings.HealthBarOverlayColorEntry
+---@field public healAbsorb TRB.Classes.Settings.HealthBarOverlayColorEntry?
+---@field public bar string? # Not set by the defaults; the fill colors by low, medium, and high
 ---@field public endCap TRB.Classes.Settings.EndCapColorEntry?
 ---@field public type trbBarColorType
 ---@field public low TRB.Classes.Settings.ColorThresholdEntry
@@ -206,6 +234,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public comboPoints table
 ---@field public bars table
 ---@field public healthBar TRB.Classes.Settings.HealthBarColors
+---@field public manaBar table? # Specs with a mana bar only
 ---@field public threshold TRB.Classes.Settings.ThresholdColors|{ [string]: TRB.Classes.Settings.ColorEnabledEntry }
 
 ---@class TRB.Classes.Settings.ColorsCore : TRB.Classes.Settings.Colors
@@ -280,6 +309,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public growthDirection trbFillDirection? # Growth direction for multi-node bars (independent from fill)
 ---@field public anchor TRB.Classes.Settings.BarAnchor? # New anchor system
 ---@field public maxResource table? # Opt-in maximum value override `{ enabled, value }`; only on bars that support one (e.g. Coagulating Blood)
+---@field public maxScale number? # Stagger only: the bar's max as a fraction of max health
 ---@field public xPos number # @deprecated Use anchor.xOffset instead
 ---@field public yPos number # @deprecated Use anchor.yOffset instead
 ---@field public relativeTo string # @deprecated Use anchor.anchorPoint/attachPoint instead
@@ -329,6 +359,27 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public targetClassColorFriendly boolean # Extend targetClassColor to friendly player targets as well
 ---@field public tickProfiles table<integer, TRB.Classes.Settings.CastbarTickProfile> # Channel tick profiles keyed by spellId
 ---@field public uninterruptibleShield TRB.Classes.Settings.CastBarIconShield # Uninteruptible Shield settings
+
+---Target and Focus cast bar settings. The secret-safe render has no tick, latency, or pushback overlays.
+---@class TRB.Classes.Settings.TargetCastbarBar : TRB.Classes.Settings.SecondaryBar
+---@field public castTimePrecision integer
+---@field public durationPrecision integer
+---@field public interruptColor boolean
+---@field public interruptHostileOnly boolean
+---@field public showEmpowerStages boolean
+---@field public empowerStageLineWidth number
+---@field public classColor boolean
+---@field public classColorPvpOnly boolean
+---@field public classColorFriendly boolean
+---@field public uninterruptibleShield TRB.Classes.Settings.CastBarIconShield
+
+---Bar settings keyed by bar key. Keys without their own field use the SecondaryBar shape.
+---@class TRB.Classes.Settings.Bars
+---@field public castbar TRB.Classes.Settings.CastbarBar?
+---@field public petCastbar TRB.Classes.Settings.CastbarBar?
+---@field public targetCastbar TRB.Classes.Settings.TargetCastbarBar?
+---@field public focusCastbar TRB.Classes.Settings.TargetCastbarBar?
+---@field [string] TRB.Classes.Settings.SecondaryBar
 
 ---@class TRB.Classes.Settings.OtherBar : TRB.Classes.Settings.SecondaryBar
 ---@field public durationPrecision integer? # GCD and swing bars only: decimal places (0-3) for their duration text. The mirror timers render mm:ss instead

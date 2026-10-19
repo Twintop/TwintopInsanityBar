@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -259,7 +258,7 @@ local function GetAllSpecsGlobalState(settingKey)
 end
 
 ---Updates a bulk toggle's count of the specs using that section's global settings.
----@param checkbox CheckButton # A bulk toggle from BuildBulkGlobalToggleCheckbox
+---@param checkbox TRB.Classes.OptionsUi.BulkGlobalToggle # A bulk toggle from BuildBulkGlobalToggleCheckbox
 local function RefreshSpecCount(checkbox)
 	local used, total = CountSpecsUsingGlobal(checkbox.settingKey)
 	checkbox.specCount:SetText(string.format(L["UseGlobalSpecCountFormat"], used, total))
@@ -277,7 +276,7 @@ local function GetYBelow(frame)
 end
 
 ---Shows each cover and Global badge tied to a Use Global checkbox while it is checked.
----@param checkbox CheckButton
+---@param checkbox CheckButton|TRB.Classes.OptionsUi.UseGlobalCheckbox
 local function RefreshUseGlobalLinked(checkbox)
 	if checkbox.useGlobalLinked == nil then
 		return
@@ -292,13 +291,12 @@ local function RefreshUseGlobalLinked(checkbox)
 end
 
 ---Ties a cover and header badge to a Use Global checkbox so both follow its clicks.
----@param checkbox CheckButton
----@param header Frame # Section header from BuildSectionHeader
+---@param checkbox CheckButton|TRB.Classes.OptionsUi.UseGlobalCheckbox
+---@param header TRB.Classes.OptionsUi.SectionHeader
 ---@param tooltip string
 ---@param cover Frame?
 local function LinkToCheckbox(checkbox, header, tooltip, cover)
 	if checkbox.useGlobalLinked == nil then
-		---@diagnostic disable-next-line: inject-field
 		checkbox.useGlobalLinked = {}
 		checkbox:HookScript("OnClick", RefreshUseGlobalLinked)
 	end
@@ -310,7 +308,7 @@ local COVER_BUTTON_HEIGHT = 22
 local COVER_BUTTON_GAP = 8
 
 ---Builds a cover carrying the Use Global message, an Open button for the checkbox's shortcut link, and a Customize button that unchecks it.
----@param checkbox CheckButton
+---@param checkbox CheckButton|TRB.Classes.OptionsUi.UseGlobalCheckbox
 ---@param parent Frame # The panel the covered section is on
 ---@param topY number
 ---@param bottomY number
@@ -440,7 +438,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(pa
 
 	yCoord = yCoord - 30
 	controls.checkBoxes = controls.checkBoxes or {}
-	controls.checkBoxes[controlKey] = CreateFrame("CheckButton", "TwintopResourceBar_Global_enableAll_" .. settingKey, parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes[controlKey] = CreateFrame("CheckButton", "TwintopResourceBar_Global_enableAll_" .. settingKey, parent, "ChatConfigCheckButtonTemplate") --[[@as TRB.Classes.OptionsUi.BulkGlobalToggle]]
 	f = controls.checkBoxes[controlKey]
 	f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(customLabel or L["CheckboxEnableForAllSpecs"])
@@ -454,7 +452,6 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(pa
 	-- Store the setting key for the click handler
 	f.settingKey = settingKey
 
-	---@diagnostic disable-next-line: inject-field
 	f.specCount = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	f.specCount:SetTextColor(0.75, 0.75, 0.75)
 	-- The template's label keeps its own width, so sit past the rendered text rather than its right edge.
@@ -505,10 +502,10 @@ end
 ---Creates a teal hyperlink-style text button anchored to the right of a "Use global settings" checkbox.
 ---Clicking the link navigates to the Global Options panel (or another top-level category, e.g. the
 ---Castbar screen) and selects the corresponding tab.
----@param checkbox CheckButton The "Use global settings" checkbox to attach the link to
+---@param checkbox CheckButton|TRB.Classes.OptionsUi.UseGlobalCheckbox The "Use global settings" checkbox to attach the link to
 ---@param globalTabKey string The tab key to navigate to (e.g., "resourceBar", "barTextures", "castbar")
 ---@param categoryKey string? The top-level nav category holding the tab (defaults to "global")
----@return Button|nil link The created link button, or nil when the checkbox has no text region
+---@return TRB.Classes.OptionsUi.UseGlobalLink|nil link The created link button, or nil when the checkbox has no text region
 function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, globalTabKey, categoryKey)
 	local textRegion = _G[checkbox:GetName() .. "Text"]
 	if not textRegion then
@@ -535,7 +532,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		coverButtonText = L["OpenGlobalPetBarsSettings"]
 	end
 
-	local link = CreateFrame("Button", nil, checkbox)
+	local link = CreateFrame("Button", nil, checkbox) --[[@as TRB.Classes.OptionsUi.UseGlobalLink]]
 	link:SetNormalFontObject("GameFontNormalSmall")
 	link:SetHighlightFontObject("GameFontHighlightSmall")
 	link:SetText(linkText)
@@ -544,9 +541,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 	link:SetHeight(16)
 	link:SetPoint("LEFT", textRegion, "RIGHT", 8, 0)
 	link.tooltip = linkTooltip
-	---@diagnostic disable-next-line: inject-field
 	link.coverButtonText = coverButtonText
-	---@diagnostic disable-next-line: inject-field
 	checkbox.useGlobalLink = link
 
 	link:SetScript("OnEnter", function(self)
@@ -554,7 +549,6 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		SetCursor("Interface\\CURSOR\\vehichleCursor.PNG")
 		if self.tooltip then
 			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
----@diagnostic disable-next-line: param-type-mismatch
 			GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true)
 			GameTooltip:Show()
 		end
@@ -569,7 +563,6 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 	local tabNamePrefix = navKey:gsub("^%l", string.upper)
 	---Opens the link's global category on a tab, its own unless one is given.
 	---@param tabKey string?
-	---@diagnostic disable-next-line: inject-field
 	link.OpenGlobalTab = function(tabKey)
 		if TRB.Options.OptionsFrame then
 			TRB.Options.OptionsFrame:SelectCategory(navKey)
@@ -586,8 +579,8 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 end
 
 ---Covers a section's controls from below its Use Global row down to bottomY, and badges its header, while the box is checked.
----@param checkbox CheckButton? # nil on the Global panel, which gets no cover
----@param header Frame # The section's header from BuildSectionHeader
+---@param checkbox (CheckButton|TRB.Classes.OptionsUi.UseGlobalCheckbox)? # nil on the Global panel, which gets no cover
+---@param header TRB.Classes.OptionsUi.SectionHeader # The section's header from BuildSectionHeader
 ---@param bottomY number # Y offset of the section's end from the panel's TOPLEFT
 function TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(checkbox, header, bottomY)
 	if checkbox == nil then
@@ -597,9 +590,9 @@ function TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(checkbox, h
 end
 
 ---Covers a section whose settings follow another section's Use Global box, from below its own header down to bottomY.
----@param checkbox CheckButton? # The governing section's box, which may be on another tab; nil on the Global panel
----@param governingHeader Frame|string # The governing section's header, or its name when it is on another tab, named in the badge tooltip
----@param header Frame # This section's header
+---@param checkbox (CheckButton|TRB.Classes.OptionsUi.UseGlobalCheckbox)? # The governing section's box, which may be on another tab; nil on the Global panel
+---@param governingHeader TRB.Classes.OptionsUi.SectionHeader|string # The governing section's header, or its name when it is on another tab, named in the badge tooltip
+---@param header TRB.Classes.OptionsUi.SectionHeader # This section's header
 ---@param bottomY number # Y offset of the section's end from the panel's TOPLEFT
 ---@param globalTabKey string? # Tab the cover's Open button goes to, for a section that sits on a different tab than its box
 function TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(checkbox, governingHeader, header, bottomY, globalTabKey)
@@ -612,8 +605,8 @@ function TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(check
 end
 
 ---Badges a section's header while its Use Global box is checked, for a section the global settings only partly cover.
----@param checkbox CheckButton? # nil on the Global panel
----@param header Frame # The section's header from BuildSectionHeader
+---@param checkbox (CheckButton|TRB.Classes.OptionsUi.UseGlobalCheckbox)? # nil on the Global panel
+---@param header TRB.Classes.OptionsUi.SectionHeader # The section's header from BuildSectionHeader
 ---@param tooltip string # Which parts of the section follow the global settings
 function TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalBadge(checkbox, header, tooltip)
 	if checkbox == nil then

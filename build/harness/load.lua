@@ -1,7 +1,9 @@
----@diagnostic disable: undefined-global
 -- Smoke-load harness: loads a WoW addon's TOC file list in order under stubbed APIs.
 -- Usage: lua5.1 load.lua <addonDir> <tocRelPath> [classId] [fireEvents]
 local addonDir, tocRel, classIdArg, fireEvents = ...
+-- Desktop Lua 5.1 libraries, which the workspace's WoW runtime config leaves undefined.
+local desktop = _G --[[@as table<string, any>]]
+local os, io, debug, package, require, loadfile = desktop.os, desktop.io, desktop.debug, desktop.package, desktop.require, desktop.loadfile
 assert(addonDir and tocRel, "usage: load.lua <addonDir> <tocRelPath> [classId] [fireEvents]")
 local classId = tonumber(classIdArg) or 5
 local harnessDir = arg[0]:match("^(.*)[/\\]") or "."

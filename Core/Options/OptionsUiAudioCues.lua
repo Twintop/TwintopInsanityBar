@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global, inject-field
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -50,7 +49,7 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteAudioCue"] = {
 ---@param label string
 ---@param x number
 ---@param y number
----@return CheckButton
+---@return ChatConfigCheckButtonTemplate
 local function BuildCheckButton(parent, name, label, x, y)
 	local checkbox = CreateFrame("CheckButton", name, parent, "ChatConfigCheckButtonTemplate")
 	checkbox:SetPoint("TOPLEFT", x, y)
@@ -66,7 +65,6 @@ local function BuildWrappedText(parent, width)
 	local fontString = parent:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 	fontString:SetJustifyH("LEFT")
 	fontString:SetJustifyV("TOP")
-	---@diagnostic disable-next-line: redundant-parameter
 	fontString:SetWordWrap(true)
 	if width ~= nil then
 		fontString:SetWidth(width)
@@ -549,10 +547,10 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 
 		local control
 		if descriptor.control == "checkbox" then
-			control = BuildCheckButton(editorContent, "TwintopResourceBar_" .. namePrefix .. "_Config_" .. key, descriptor.label, oUi.xCoord2, 0)
+			control = BuildCheckButton(editorContent, "TwintopResourceBar_" .. namePrefix .. "_Config_" .. key, descriptor.label, oUi.xCoord2, 0) --[[@as TRB.Classes.OptionsUi.CueConfigControl]]
 			control.tooltip = descriptor.tooltip
 		elseif descriptor.control == "dropdown" then
-			control = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Config_" .. key, editorContent, "WowStyle1DropdownTemplate")
+			control = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Config_" .. key, editorContent, "WowStyle1DropdownTemplate") --[[@as TRB.Classes.OptionsUi.CueConfigControl]]
 			control:SetWidth(oUi.sliderWidth)
 			control.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(editorContent, descriptor.label, oUi.xCoord2, 0)
 			control.label.font:SetFontObject(GameFontNormal)
@@ -560,12 +558,10 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 			control = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, descriptor.label,
 				descriptor.min or 0, descriptor.max or 10, descriptor.min or 0,
 				descriptor.step or 1, descriptor.decimals or 0,
-				oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, 0)
+				oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, 0) --[[@as TRB.Classes.OptionsUi.CueConfigControl]]
 		end
 
-		---@diagnostic disable-next-line: inject-field
 		control.isSlider = descriptor.control ~= "checkbox" and descriptor.control ~= "dropdown"
-		---@diagnostic disable-next-line: inject-field
 		control.isDropdown = descriptor.control == "dropdown"
 		configControls[key] = control
 		return control
@@ -573,7 +569,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 
 	---Re-anchors a config control below the right column's running cursor and returns the new cursor.
 	---Sliders and dropdowns hang a title above themselves, so they need leading room checkboxes do not.
-	---@param control Frame
+	---@param control TRB.Classes.OptionsUi.CueConfigControl
 	---@param cursor number
 	---@return number
 	local function PlaceConfigControl(control, cursor)

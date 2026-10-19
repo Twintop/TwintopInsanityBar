@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
@@ -12,6 +11,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public attributes table
 ---@field public formatted TRB.Classes.SnapshotFormatted Pre-formatted display strings, populated at event time
 TRB.Classes.SnapshotData = {}
+TRB.Classes.SnapshotData.__index = TRB.Classes.SnapshotData
 
 ---An additional power's values and display strings, written by Character:UpdateAdditionalPowerValues.
 ---@class TRB.Classes.AdditionalPowerValues
@@ -27,7 +27,6 @@ TRB.Classes.SnapshotData = {}
 ---@class TRB.Classes.SnapshotFormatted
 ---@field public additionalPower table<string, TRB.Classes.AdditionalPowerValues> # Keyed by power token, e.g. "MANA"
 ---@field [string] string|number|boolean
-TRB.Classes.SnapshotData.__index = TRB.Classes.SnapshotData
 
 ---Creates a new SnapshotData object
 ---@param attributes table? # Custom attributes to be tracked
@@ -846,7 +845,6 @@ end
 local function ParseBuffData(buff, aura)
 	if aura ~= nil then
 		-- Secret aura payload: leave existing event-driven state untouched
----@diagnostic disable-next-line: param-type-mismatch
 		if issecrettable(aura) or issecretvalue(aura.expirationTime) or issecretvalue(aura.duration) or issecretvalue(aura.applications) or issecretvalue(aura.auraInstanceID) then
 			return nil, true
 		end
@@ -971,7 +969,7 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
 				self:UpdateTicks()
 			end
 		elseif eventType == nil or eventType == "" then
-			local currentTime = currentTime or GetTime()
+			local currentTime = GetTime()
 			local foundId = nil
 			local isSecret = false
 
@@ -1137,7 +1135,6 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 	if remainingTime <= 0 then
 		remainingTime = 0
 		self.onCooldown = false
----@diagnostic disable-next-line: param-type-mismatch
 	elseif not issecretvalue(self.charges) and self.charges > 0 then
 		self.onCooldown = false
 	else
@@ -1146,10 +1143,8 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 
 	self.remaining = remainingTime
 	
----@diagnostic disable-next-line: param-type-mismatch
 	if not issecretvalue(self.maxCharges) and not issecretvalue(self.charges) and self.maxCharges > 1 and self.charges < self.maxCharges then
 		self.remainingTotal = self.remaining +  ((self.maxCharges - self.charges - 1) * self.duration)
----@diagnostic disable-next-line: param-type-mismatch
 	elseif not issecretvalue(self.maxCharges) and not issecretvalue(self.charges) and self.maxCharges > 1 and self.maxCharges == self.charges then
 		self.startTime = nil
 		self.duration = 0
@@ -1258,7 +1253,6 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 				startTime = 0
 				duration = 0
 			end
----@diagnostic disable-next-line: param-type-mismatch
 			if not issecretvalue(self.charges) and not issecretvalue(self.maxCharges) and self.charges == self.maxCharges then
 				startTime = 0
 				duration = 0
@@ -1275,7 +1269,6 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 			self.castCount = C_Spell.GetSpellCastCount(self.parent.spell:GetRankedId())
 		end
 
----@diagnostic disable-next-line: param-type-mismatch
 		if not issecretvalue(startTime) then
 			---@type TRB.Classes.SnapshotCasting
 			local casting = TRB.Data.snapshotData.casting
@@ -1285,7 +1278,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 			local remainingTime = startTime + duration - currentTime
 
 			if ((startTime ~= nil and startTime > 0 and not self.onCooldown and remainingTime > gcd + TRB.Data.character.latency) or
-				(self.onCooldown and remainingTime > gcd + TRB.Data.character.latency)) and (self.parent.spell.hasChanges ~= true or (self.parent.spell.hasChanges and self.charges < self.maxCharges))
+				(self.onCooldown and remainingTime > gcd + TRB.Data.character.latency))
 				then
 				self.startTime = startTime
 				self.duration = duration
@@ -1313,7 +1306,6 @@ end
 ---@return boolean
 function TRB.Classes.SnapshotCooldown:IsUnusable()
 	-- Lie and say it is not unusable if we have secret values for charges or cooldown state
----@diagnostic disable-next-line: param-type-mismatch
 	if issecretvalue(self.charges) or issecretvalue(self.onCooldown) then
 		return false
 	end
@@ -1363,7 +1355,6 @@ function TRB.Classes.SnapshotCooldown:InitializeManualCharges(maxCharges, curren
 		if spellCharges ~= nil then
 			local startTime = spellCharges.cooldownStartTime
 			local duration = spellCharges.cooldownDuration
----@diagnostic disable-next-line: param-type-mismatch
 			if startTime ~= nil and duration ~= nil and not issecretvalue(startTime) and not issecretvalue(duration) and duration > 0 then
 				local now = GetTime()
 				local expires = startTime + duration
@@ -1608,7 +1599,7 @@ function TRB.Classes.SnapshotCasting:SnapshotSpell()
 
 		self.startTime = startTime / 1000
 		self.endTime = endTime / 1000
-		self.resourceRaw = manaCost
+		self.resourceRaw = nil
 		self.spellId = spellInfo.spellID
 		self.icon = string.format("|T%s:0|t", spellInfo.iconID)
 	end

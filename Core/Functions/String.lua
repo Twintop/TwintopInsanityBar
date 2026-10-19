@@ -188,7 +188,6 @@ function TRB.Functions.String:ConvertToAbbreviatedNumber(num)
 	if TRB.Data.settings ~= nil and TRB.Data.settings.core ~= nil and TRB.Data.settings.core.numberAbbreviation == false then
 		return BreakUpLargeNumbers(num)
 	end
----@diagnostic disable-next-line: redundant-parameter
 	return AbbreviateNumbers(num, abbrevData)
 end
 
@@ -204,7 +203,6 @@ function TRB.Functions.String:ConvertToShortNumberNotation(num, numDecimalPlaces
 		if TRB.Data.settings ~= nil and TRB.Data.settings.core ~= nil and TRB.Data.settings.core.numberAbbreviation == false then
 			return BreakUpLargeNumbers(num)
 		end
----@diagnostic disable-next-line: redundant-parameter
 		return AbbreviateNumbers(num, abbrevData)
 	end
 
@@ -330,7 +328,6 @@ end
 
 -- Built from the game's own "%s sec" template so the unit matched is the client's, not a hardcoded one.
 local function BuildSecondsPattern()
----@diagnostic disable-next-line: undefined-global
 	local template = SPELL_DURATION_SEC
 	if type(template) ~= "string" then
 		return nil
@@ -425,9 +422,8 @@ end
 ---@return string guid A randomly generated UUID v4 string
 function TRB.Functions.String:Guid()
     local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
----@diagnostic disable-next-line: redundant-return-value
-    return string.gsub(template, '[xy]', function (c)
+    return (string.gsub(template, '[xy]', function (c)
         local v = (c == 'x') and math.random(0, 0xf) or math.random(8, 0xb)
         return string.format('%x', v)
-    end)
+    end))
 end

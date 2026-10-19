@@ -51,7 +51,6 @@ end
 ---Applies every historical settings migration to a saved-variables shaped table.
 ---@param settings table? # Defaults to the live saved variables
 function TRB.Flavor.PortForwardSettings(settings)
-	---@diagnostic disable-next-line: unused-local
 	local TwintopInsanityBarSettings = settings or TRB.Flavor.GetSavedVariables()
 	if TwintopInsanityBarSettings == nil then
 		return
@@ -521,7 +520,6 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 									---@type TRB.Classes.Settings.DisplayTextEntry[]
 									local extraTextSettings = {
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											useDefaultFontColor = false,
@@ -544,10 +542,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "CENTER",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontSize = 14,
 											color = { color = "FFFFFFFF" },
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											useDefaultFontColor = false,
@@ -570,10 +571,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "CENTER",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontSize = 14,
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											useDefaultFontColor = false,
@@ -596,10 +600,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "CENTER",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontSize = 14,
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											useDefaultFontColor = false,
@@ -622,10 +629,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "CENTER",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontSize = 14,
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											useDefaultFontColor = false,
@@ -648,6 +658,10 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "CENTER",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontSize = 14,
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 										}
@@ -661,7 +675,6 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 									---@type TRB.Classes.Settings.DisplayTextEntry[]
 									local extraTextSettings = {
----@diagnostic disable-next-line: missing-fields
 										{
 											useDefaultFontColor = false,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -684,10 +697,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											color = { color = "FFFFFFFF" },
 											enabled = enabled,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -710,10 +726,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -736,10 +755,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -762,10 +784,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -788,6 +813,10 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										}
@@ -801,7 +830,6 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 									---@type TRB.Classes.Settings.DisplayTextEntry[]
 									local extraTextSettings = {
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -824,10 +852,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -850,10 +881,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -876,10 +910,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -902,10 +939,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -928,10 +968,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										},
----@diagnostic disable-next-line: missing-fields
 										{
 											enabled = enabled,
 											fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -954,6 +997,10 @@ function TRB.Flavor.PortForwardSettings(settings)
 											},
 											fontJustifyHorizontal = "LEFT",
 											useDefaultFontSize = false,
+											useDefaultFontOutline = false,
+											useDefaultFontShadow = false,
+											fontOutline = "OUTLINE",
+											fontShadow = { enabled = false, color = "FF000000", xOffset = 1, yOffset = -1 },
 											fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 											useDefaultFontColor = false,
 										}
@@ -8272,8 +8319,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Evoker Augmentation: the Ebon Might bar dropped custom threshold support, so lines already saved
 	-- against it are unreachable and can never be positioned against its now-secret max.
----@diagnostic disable-next-line: need-check-nil
-	local augmentationThresholds = TwintopInsanityBarSettings.evoker and TwintopInsanityBarSettings.evoker.augmentation	and TwintopInsanityBarSettings.evoker.augmentation.thresholds
+	local augmentationThresholds = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.evoker and TwintopInsanityBarSettings.evoker.augmentation	and TwintopInsanityBarSettings.evoker.augmentation.thresholds or nil
 	if augmentationThresholds ~= nil and augmentationThresholds.customThresholds ~= nil then
 		local orphanedGuids = {}
 		for guid, customThreshold in pairs(augmentationThresholds.customThresholds) do
@@ -8301,8 +8347,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Warrior Fury: seed the Enrage bar's default bar text. Everything else the bar needs merges from
 	-- defaults, but barText is an array, so an existing save would never gain the entry.
----@diagnostic disable-next-line: need-check-nil
-	local fury = TwintopInsanityBarSettings.warrior and TwintopInsanityBarSettings.warrior.fury
+	local fury = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.warrior and TwintopInsanityBarSettings.warrior.fury or nil
 	if fury ~= nil and fury.displayText ~= nil and fury.displayText.barText ~= nil then
 		-- Flagged so a deleted entry stays deleted; the scan covers saves seeded before the flag.
 		fury.displayText.migrations = fury.displayText.migrations or {}
@@ -8491,8 +8536,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 	end
 
 	-- Arcane Salvo bar text: barText is an array, so the defaults merge cannot backfill it.
----@diagnostic disable-next-line: need-check-nil
-	local arcaneSettings = TwintopInsanityBarSettings.mage and TwintopInsanityBarSettings.mage.arcane
+	local arcaneSettings = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.mage and TwintopInsanityBarSettings.mage.arcane or nil
 	if arcaneSettings ~= nil and arcaneSettings.displayText ~= nil and arcaneSettings.displayText.barText ~= nil then
 		-- Flagged so a deleted entry stays deleted; the scan covers saves seeded before the flag.
 		arcaneSettings.displayText.migrations = arcaneSettings.displayText.migrations or {}

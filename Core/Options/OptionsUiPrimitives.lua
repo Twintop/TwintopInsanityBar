@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -20,10 +19,9 @@ local L = TRB.Localization
 ---@param sizeY number
 ---@param posX number
 ---@param posY number
----@return table|BackdropTemplate|Slider
+---@return TRB.Classes.OptionsUi.Slider
 function TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
-	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
----@diagnostic disable-next-line: inject-field
+	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate") --[[@as TRB.Classes.OptionsUi.Slider]]
 	f.EditBox = CreateFrame("EditBox", nil, f, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", posX+18, posY)
 	f:SetMinMaxValues(minValue, maxValue)
@@ -32,7 +30,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, minValue,
 	f:EnableMouseWheel(true)
 	f:SetObeyStepOnDrag(true)
 	f:SetOrientation("HORIZONTAL")
-	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 	   bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
 	   edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
@@ -51,33 +48,24 @@ function TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, minValue,
 	f:SetScript("OnValueChanged", function(self, value)
 		self.EditBox:SetText(value)
 	end)
-	---@diagnostic disable-next-line: inject-field
 	f.MinLabel = f:CreateFontString(nil, "OVERLAY")
 	f.MinLabel:SetFontObject(GameFontHighlightSmall)
 	f.MinLabel:SetSize(0, 14)
-	---@diagnostic disable-next-line: redundant-parameter
 	f.MinLabel:SetWordWrap(false)
 	f.MinLabel:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 0, -1)
----@diagnostic disable-next-line: param-type-mismatch
-	f.MinLabel:SetText(minValue)
-	---@diagnostic disable-next-line: inject-field
+	f.MinLabel:SetText(tostring(minValue))
 	f.MaxLabel = f:CreateFontString(nil, "OVERLAY")
 	f.MaxLabel:SetFontObject(GameFontHighlightSmall)
 	f.MaxLabel:SetSize(0, 14)
-	---@diagnostic disable-next-line: redundant-parameter
 	f.MaxLabel:SetWordWrap(false)
 	f.MaxLabel:SetPoint("TOPRIGHT", f, "BOTTOMRIGHT", 0, -1)
----@diagnostic disable-next-line: param-type-mismatch
-	f.MaxLabel:SetText(maxValue)
-	---@diagnostic disable-next-line: inject-field
+	f.MaxLabel:SetText(tostring(maxValue))
 	f.Title = f:CreateFontString(nil, "OVERLAY")
 	f.Title:SetFontObject(GameFontNormal)
 	f.Title:SetSize(0, 14)
-	---@diagnostic disable-next-line: redundant-parameter
 	f.Title:SetWordWrap(false)
 	f.Title:SetPoint("BOTTOM", f, "TOP")
 	f.Title:SetText(title)
-	---@diagnostic disable-next-line: inject-field
 	f.Thumb = f:CreateTexture(nil, "ARTWORK")
 	f.Thumb:SetSize(32, 32)
 	f.Thumb:SetTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
@@ -90,10 +78,8 @@ function TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, minValue,
 	eb:SetJustifyH("CENTER")
 	eb:SetFontObject(GameFontHighlightSmall)
 	eb:SetSize(50, 14)
----@diagnostic disable-next-line: param-type-mismatch
-	eb:SetPoint("Top", f, "Bottom", 0, -1)
+	eb:SetPoint("TOP", f, "BOTTOM", 0, -1)
 	eb:SetTextInsets(4, 4, 0, 0)
-	---@diagnostic disable-next-line: missing-fields
 	eb:SetBackdrop({
 		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 		edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
@@ -143,7 +129,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, minValue,
 	eb:SetScript("OnEditFocusGained", function(self)
 		self:HighlightText(0, -1)
 	end)
-	---@diagnostic disable-next-line: inject-field
 	f.Plus = CreateFrame("Button", nil, f)
 	f.Plus:SetSize(18, 18)
 	f.Plus:RegisterForClicks("AnyUp")
@@ -154,7 +139,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, minValue,
 	f.Plus:SetScript("OnClick", function(self)
 		f:SetValue(f:GetValue() + f:GetValueStep())
 	end)
-	---@diagnostic disable-next-line: inject-field
 	f.Minus = CreateFrame("Button", nil, f)
 	f.Minus:SetSize(18, 18)
 	f.Minus:RegisterForClicks("AnyUp")
@@ -167,8 +151,7 @@ function TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, minValue,
 	end)
 
 	f:SetValue(defaultValue)
----@diagnostic disable-next-line: param-type-mismatch
-	eb:SetText(defaultValue)
+	eb:SetText(tostring(defaultValue))
 	eb:SetCursorPosition(0)
 
 	return f
@@ -187,10 +170,9 @@ end
 ---@param sizeY number
 ---@param posX number
 ---@param posY number
----@return table|BackdropTemplate|Slider
+---@return TRB.Classes.OptionsUi.Slider
 function TRB.Functions.OptionsUi.Primitives:BuildPercentageSlider(parent, title, minPercent, maxPercent, defaultDecimalValue, stepPercent, numDecimalPlaces, sizeX, sizeY, posX, posY)
-	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
----@diagnostic disable-next-line: inject-field
+	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate") --[[@as TRB.Classes.OptionsUi.Slider]]
 	f.EditBox = CreateFrame("EditBox", nil, f, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", posX+18, posY)
 	f:SetMinMaxValues(minPercent, maxPercent)
@@ -199,7 +181,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildPercentageSlider(parent, title,
 	f:EnableMouseWheel(true)
 	f:SetObeyStepOnDrag(true)
 	f:SetOrientation("HORIZONTAL")
-	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 	   bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
 	   edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
@@ -220,33 +201,24 @@ function TRB.Functions.OptionsUi.Primitives:BuildPercentageSlider(parent, title,
 		local displayValue = TRB.Functions.Number:RoundTo(value, numDecimalPlaces)
 		self.EditBox:SetText(displayValue .. "%")
 	end)
-	---@diagnostic disable-next-line: inject-field
 	f.MinLabel = f:CreateFontString(nil, "OVERLAY")
 	f.MinLabel:SetFontObject(GameFontHighlightSmall)
 	f.MinLabel:SetSize(0, 14)
-	---@diagnostic disable-next-line: redundant-parameter
 	f.MinLabel:SetWordWrap(false)
 	f.MinLabel:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 0, -1)
----@diagnostic disable-next-line: param-type-mismatch
 	f.MinLabel:SetText(minPercent .. "%")
-	---@diagnostic disable-next-line: inject-field
 	f.MaxLabel = f:CreateFontString(nil, "OVERLAY")
 	f.MaxLabel:SetFontObject(GameFontHighlightSmall)
 	f.MaxLabel:SetSize(0, 14)
-	---@diagnostic disable-next-line: redundant-parameter
 	f.MaxLabel:SetWordWrap(false)
 	f.MaxLabel:SetPoint("TOPRIGHT", f, "BOTTOMRIGHT", 0, -1)
----@diagnostic disable-next-line: param-type-mismatch
 	f.MaxLabel:SetText(maxPercent .. "%")
-	---@diagnostic disable-next-line: inject-field
 	f.Title = f:CreateFontString(nil, "OVERLAY")
 	f.Title:SetFontObject(GameFontNormal)
 	f.Title:SetSize(0, 14)
-	---@diagnostic disable-next-line: redundant-parameter
 	f.Title:SetWordWrap(false)
 	f.Title:SetPoint("BOTTOM", f, "TOP")
 	f.Title:SetText(title)
-	---@diagnostic disable-next-line: inject-field
 	f.Thumb = f:CreateTexture(nil, "ARTWORK")
 	f.Thumb:SetSize(32, 32)
 	f.Thumb:SetTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
@@ -259,10 +231,8 @@ function TRB.Functions.OptionsUi.Primitives:BuildPercentageSlider(parent, title,
 	eb:SetJustifyH("CENTER")
 	eb:SetFontObject(GameFontHighlightSmall)
 	eb:SetSize(50, 14)
----@diagnostic disable-next-line: param-type-mismatch
-	eb:SetPoint("Top", f, "Bottom", 0, -1)
+	eb:SetPoint("TOP", f, "BOTTOM", 0, -1)
 	eb:SetTextInsets(4, 4, 0, 0)
-	---@diagnostic disable-next-line: missing-fields
 	eb:SetBackdrop({
 		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 		edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
@@ -317,7 +287,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildPercentageSlider(parent, title,
 	eb:SetScript("OnEditFocusGained", function(self)
 		self:HighlightText(0, -1)
 	end)
-	---@diagnostic disable-next-line: inject-field
 	f.Plus = CreateFrame("Button", nil, f)
 	f.Plus:SetSize(18, 18)
 	f.Plus:RegisterForClicks("AnyUp")
@@ -328,7 +297,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildPercentageSlider(parent, title,
 	f.Plus:SetScript("OnClick", function(self)
 		f:SetValue(f:GetValue() + f:GetValueStep())
 	end)
-	---@diagnostic disable-next-line: inject-field
 	f.Minus = CreateFrame("Button", nil, f)
 	f.Minus:SetSize(18, 18)
 	f.Minus:RegisterForClicks("AnyUp")
@@ -343,7 +311,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildPercentageSlider(parent, title,
 	-- Set initial value (convert decimal to percentage for display)
 	local initialPercent = defaultDecimalValue * 100
 	f:SetValue(initialPercent)
----@diagnostic disable-next-line: param-type-mismatch
 	eb:SetText(TRB.Functions.Number:RoundTo(initialPercent, numDecimalPlaces) .. "%")
 	eb:SetCursorPosition(0)
 
@@ -368,7 +335,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildTextBox(parent, text, maxLetter
 	f:SetFontObject(GameFontHighlight)
 	f:SetSize(width, height)
 	f:SetTextInsets(4, 4, 0, 0)
-	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 		edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
@@ -397,7 +363,7 @@ function TRB.Functions.OptionsUi.Primitives:BuildTextBox(parent, text, maxLetter
 end
 
 ---Clamps a numeric value to a slider's min/max range and updates its EditBox text display.
----@param box Slider # The slider frame (with an EditBox child) returned by BuildSlider
+---@param box TRB.Classes.OptionsUi.Slider # The slider frame (with an EditBox child) returned by BuildSlider
 ---@param value number # The value to set
 ---@return number # The clamped value
 function TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(box, value)
@@ -407,7 +373,7 @@ function TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(box, value)
 	elseif value < min then
 		value = min
 	end
-	box.EditBox:SetText(value)
+	box.EditBox:SetText(tostring(value))
 	return value
 end
 
@@ -416,15 +382,14 @@ end
 ---@param title string # Header text to display
 ---@param posX number # X offset from parent's TOPLEFT
 ---@param posY number # Y offset from parent's TOPLEFT
----@return Frame
+---@return TRB.Classes.OptionsUi.SectionHeader
 function TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, title, posX, posY)
-	local f = CreateFrame("Frame", nil, parent)
+	local f = CreateFrame("Frame", nil, parent) --[[@as TRB.Classes.OptionsUi.SectionHeader]]
 	f:ClearAllPoints()
 	f:SetPoint("TOPLEFT", parent)
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetWidth(500)
 	f:SetHeight(30)
-	---@diagnostic disable-next-line: inject-field
 	f.font = f:CreateFontString(nil)
 	f.font:SetFontObject(GameFontNormalLarge)
 	f.font:SetPoint("LEFT", f, "LEFT")
@@ -461,7 +426,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildSectionCover(parent, topY, bott
 		end
 	end)
 
-	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 		bgFile = "Interface\\Buttons\\WHITE8X8",
 		edgeFile = "Interface\\Buttons\\WHITE8X8",
@@ -507,7 +471,7 @@ function TRB.Functions.OptionsUi.Primitives:ShiftControlsBelow(parent, topY, del
 		Shift(region)
 	end
 
-	local scrollFrame = parent:GetParent()
+	local scrollFrame = parent:GetParent() --[[@as ScrollFrame?]]
 	if scrollFrame ~= nil and scrollFrame.UpdateScrollChildRect ~= nil then
 		scrollFrame:UpdateScrollChildRect()
 	end
@@ -524,7 +488,7 @@ function TRB.Functions.OptionsUi.Primitives:GetCdmBadgeColor()
 end
 
 ---Points a badge at new text, colour, and tooltip, resizing it to the new label.
----@param badge Frame
+---@param badge TRB.Classes.OptionsUi.Badge
 ---@param label string
 ---@param header string
 ---@param tooltip string
@@ -536,7 +500,6 @@ local function SetBadgeContent(badge, label, header, tooltip, r, g, b)
 	badge.font:SetTextColor(r, g, b, 1)
 	-- Sized to the glyph so the hitbox cannot reach over a neighbouring control.
 	badge:SetSize(math.max(badge.font:GetStringWidth(), 1), 16)
-	---@diagnostic disable-next-line: inject-field
 	badge.trbTooltip = { header = header, text = tooltip, r = r, g = g, b = b }
 end
 
@@ -550,14 +513,13 @@ end
 ---@param b number
 ---@param posX number # X offset from parent's TOPLEFT
 ---@param posY number # Y offset from parent's TOPLEFT
----@return Frame
+---@return TRB.Classes.OptionsUi.Badge
 local function BuildBadge(parent, label, header, tooltip, r, g, b, posX, posY)
-	local f = CreateFrame("Frame", nil, parent)
+	local f = CreateFrame("Frame", nil, parent) --[[@as TRB.Classes.OptionsUi.Badge]]
 	f:SetPoint("TOPLEFT", parent, "TOPLEFT", posX, posY)
 	f:EnableMouse(true)
 	-- Above the parent so the control it annotates cannot swallow the hover.
 	f:SetFrameLevel(parent:GetFrameLevel() + 1)
----@diagnostic disable-next-line: inject-field
 	f.font = f:CreateFontString(nil, "OVERLAY")
 	f.font:SetFontObject(GameFontNormalSmall)
 	f.font:SetPoint("LEFT", f, "LEFT")
@@ -583,9 +545,12 @@ local badgeOrder = { "cdm", "global", "custom" }
 
 ---Lines up a font string's shown badges after its text. A label with a fixed `trbBadgeBox` wraps onto a
 ---second line when they wouldn't fit beside it, rather than pushing them off the panel's edge.
----@param fontString FontString
+---@param fontString FontString|TRB.Classes.OptionsUi.BadgedText
 local function LayoutBadges(fontString)
 	local badges = fontString.trbBadges
+	if badges == nil then
+		return
+	end
 	local badgesWidth = 0
 	for _, kind in ipairs(badgeOrder) do
 		local badge = badges[kind]
@@ -619,12 +584,11 @@ end
 
 ---Shows a badge just past the rendered end of a font string, creating it on first need and toggling
 ---it thereafter. Reorderable rows re-label in place, so a build-once badge would stay on the wrong row.
----@param fontString FontString
+---@param fontString FontString|TRB.Classes.OptionsUi.BadgedText # Any label; it carries its badges from the first one on
 ---@param kind string # One badge of each kind per font string; see badgeOrder
 ---@param shown boolean # False hides an existing badge and never builds one
 ---@return Frame?
 local function AttachBadge(fontString, kind, shown, label, header, tooltip, r, g, b)
-	---@diagnostic disable-next-line: inject-field
 	local badges = fontString.trbBadges
 	local badge = badges and badges[kind]
 
@@ -640,7 +604,6 @@ local function AttachBadge(fontString, kind, shown, label, header, tooltip, r, g
 		badge = BuildBadge(fontString:GetParent(), label, header, tooltip, r, g, b, 0, 0)
 		if badges == nil then
 			badges = {}
-			---@diagnostic disable-next-line: inject-field
 			fontString.trbBadges = badges
 		end
 		badges[kind] = badge
@@ -908,7 +871,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, va
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetWidth(width)
 	f:SetHeight(height)
-	---@diagnostic disable-next-line: inject-field
 	f.font = f:CreateFontString(nil)
 	f.font:SetFontObject(GameFontNormal)
 	f.font:SetPoint("LEFT", f, "LEFT")
@@ -918,7 +880,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, va
 	f.font:SetSize(offset, height)
 	f.font:SetText(var)
 
----@diagnostic disable-next-line: inject-field
 	f.description = CreateFrame("Frame", nil, parent)
 	local fd = f.description
 	fd:ClearAllPoints()
@@ -926,7 +887,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, va
 	fd:SetPoint("TOPLEFT", posX+10, posY-height)
 	fd:SetWidth(width-5)
 	fd:SetHeight(height2)
-	---@diagnostic disable-next-line: inject-field
 	fd.font = fd:CreateFontString(nil)
 	fd.font:SetFontObject(GameFontHighlight)
 
@@ -940,7 +900,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, va
 	fd.font:SetJustifyV("TOP")
 	fd.font:SetSize(width, height2)
 	fd.font:SetText(desc)
----@diagnostic disable-next-line: redundant-parameter
 	fd.font:SetWordWrap(true)
 
 	return f
@@ -960,27 +919,20 @@ function TRB.Functions.OptionsUi.Primitives:BuildButton(parent, text, posX, posY
 	f:SetWidth(width)
 	f:SetHeight(height)
 	f:SetText(text)
----@diagnostic disable-next-line: param-type-mismatch
 	f:SetNormalFontObject("GameFontNormal")
-	---@diagnostic disable-next-line: inject-field
 	f.ntex = f:CreateTexture()
 	f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 	f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-	---@diagnostic disable-next-line: missing-parameter
 	f.ntex:SetAllPoints()
 	f:SetNormalTexture(f.ntex)
-	---@diagnostic disable-next-line: inject-field
 	f.htex = f:CreateTexture()
 	f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 	f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
-	---@diagnostic disable-next-line: missing-parameter
 	f.htex:SetAllPoints()
 	f:SetHighlightTexture(f.htex)
-	---@diagnostic disable-next-line: inject-field
 	f.ptex = f:CreateTexture()
 	f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 	f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-	---@diagnostic disable-next-line: missing-parameter
 	f.ptex:SetAllPoints()
 	f:SetPushedTexture(f.ptex)
 
@@ -1069,7 +1021,6 @@ function TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, text, posX, posY,
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetWidth(width)
 	f:SetHeight(height)
-	---@diagnostic disable-next-line: inject-field
 	f.font = f:CreateFontString(nil, "BACKGROUND")
 	f.font:SetFontObject(fontObject)
 	f.font:SetPoint("LEFT", f, "LEFT")
@@ -1131,9 +1082,9 @@ end
 ---@param setFn fun(value:any) # Applies a newly selected value
 ---@param posX number
 ---@param posY number
----@return DropdownButton
+---@return TRB.Classes.OptionsUi.Dropdown
 function TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, name, label, options, getFn, setFn, posX, posY)
-	local dropdown = CreateFrame("DropdownButton", name, parent, "WowStyle1DropdownTemplate")
+	local dropdown = CreateFrame("DropdownButton", name, parent, "WowStyle1DropdownTemplate") --[[@as TRB.Classes.OptionsUi.Dropdown]]
 	dropdown:SetWidth(oUi.sliderWidth)
 	if label ~= nil then
 		dropdown.label = self:BuildSectionHeader(parent, label, posX, posY)
@@ -1232,10 +1183,10 @@ end
 ---@param setFn fun(value:string) # Applies a newly built SetFont flag string
 ---@param posX number
 ---@param posY number
----@return DropdownButton dropdown
+---@return TRB.Classes.OptionsUi.Dropdown dropdown
 ---@return fun() refresh # Resyncs the button text after the bound value changes outside the menu
 function TRB.Functions.OptionsUi.Primitives:BuildFontOutlineDropdown(parent, name, label, getFn, setFn, posX, posY)
-	local dropdown = CreateFrame("DropdownButton", name, parent, "WowStyle1DropdownTemplate")
+	local dropdown = CreateFrame("DropdownButton", name, parent, "WowStyle1DropdownTemplate") --[[@as TRB.Classes.OptionsUi.Dropdown]]
 	dropdown:SetWidth(oUi.sliderWidth)
 	dropdown.label = self:BuildSectionHeader(parent, label, posX, posY)
 	dropdown.label.font:SetFontObject(GameFontNormal)
@@ -1309,7 +1260,7 @@ function TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(checkbox, enab
 end
 
 ---Enables or disables a slider built with BuildSlider, including its EditBox and labels.
----@param slider Slider # The slider frame returned by BuildSlider
+---@param slider TRB.Classes.OptionsUi.Slider # The slider frame returned by BuildSlider
 ---@param enable boolean # Whether to enable or disable the slider
 function TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(slider, enable)
 	if enable then
@@ -1362,7 +1313,7 @@ function TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(slider, enable)
 end
 
 ---Enables or disables a dropdown button and grays out its section label when disabled.
----@param dropdown Button # The dropdown button frame to toggle
+---@param dropdown TRB.Classes.OptionsUi.Dropdown # The dropdown button frame to toggle
 ---@param enable boolean # Whether to enable or disable the dropdown
 function TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(dropdown, enable)
 	if enable then
@@ -1381,7 +1332,7 @@ function TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(dropdown, enab
 end
 
 ---Enables or disables a color picker button and grays out its label when disabled.
----@param colorPicker Button # The color picker button returned by BuildColorPicker
+---@param colorPicker TRB.Classes.OptionsUi.ColorPicker|TRB.Classes.OptionsUi.GradientColorPicker # A picker from BuildColorPicker or BuildGradientColorPicker
 ---@param enable boolean # Whether to enable or disable the control
 function TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(colorPicker, enable)
 	if enable then

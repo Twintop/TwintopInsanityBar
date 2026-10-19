@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -17,37 +16,27 @@ local UNDO_MAX_HISTORY = 50
 local UNDO_DEBOUNCE_SEC = 0.4
 
 ---Attaches undo/redo keyboard support (Ctrl+Z / Ctrl+Y) to an EditBox with debounced history snapshots.
----@param editBox EditBox # The EditBox frame to attach undo/redo behavior to
+---@param editBox TRB.Classes.OptionsUi.UndoEditBox # The EditBox frame to attach undo/redo behavior to
 local function AttachUndoRedo(editBox)
 	-- Private state stored directly on the frame
----@diagnostic disable-next-line: undefined-field, inject-field
 	editBox.undoHistory  = { editBox:GetText() or "" }
----@diagnostic disable-next-line: undefined-field, inject-field
 	editBox.undoCursors  = { 0 }
----@diagnostic disable-next-line: undefined-field, inject-field
 	editBox.undoIndex    = 1
----@diagnostic disable-next-line: undefined-field, inject-field
 	editBox.undoSuppress = false  -- flag: true while we are programmatically setting text
----@diagnostic disable-next-line: undefined-field, inject-field
 	editBox.undoTimer    = nil
 
 	--- Reset the undo stack (call when loading a different entry).
 	---@param initialText? string  If given, seeds the stack with this text.
----@diagnostic disable-next-line: undefined-field, inject-field
 	function editBox:ResetUndoHistory(initialText)
----@diagnostic disable-next-line: undefined-field, inject-field
 		if self.undoTimer then self.undoTimer:Cancel(); self.undoTimer = nil end
 		local t = initialText or self:GetText() or ""
----@diagnostic disable-next-line: undefined-field, inject-field
 		self.undoHistory  = { t }
----@diagnostic disable-next-line: undefined-field, inject-field
 		self.undoCursors  = { self:GetCursorPosition() or 0 }
----@diagnostic disable-next-line: undefined-field, inject-field
 		self.undoIndex    = 1
 	end
 
 	---Pushes the current text and cursor position onto the undo stack, trimming any redo entries beyond the current index.
-	---@param self EditBox # The EditBox whose state is being recorded
+	---@param self TRB.Classes.OptionsUi.UndoEditBox # The EditBox whose state is being recorded
 	local function PushState(self)
 		local text   = self:GetText()
 		local cursor = self:GetCursorPosition() or 0
@@ -66,7 +55,6 @@ local function AttachUndoRedo(editBox)
 			table.remove(self.undoHistory, 1)
 			table.remove(self.undoCursors, 1)
 		end
----@diagnostic disable-next-line: undefined-field, inject-field
 		self.undoIndex = #self.undoHistory
 	end
 
@@ -117,8 +105,9 @@ local function AttachUndoRedo(editBox)
 	end)
 end
 
+---@param editBox EditBox # Gains the undo history fields and ResetUndoHistory
 function TRB.Functions.OptionsUi.BarTextInput:AttachUndoRedo(editBox)
-	AttachUndoRedo(editBox)
+	AttachUndoRedo(editBox --[[@as TRB.Classes.OptionsUi.UndoEditBox]])
 end
 
 ---Creates a multi-line bar text input panel inside a scroll frame with undo/redo, cursor tracking, and focus management.
@@ -131,11 +120,12 @@ end
 ---@param yPos number # Y offset from parent's TOPLEFT
 ---@return EditBox # The inner EditBox (scroll child)
 function TRB.Functions.OptionsUi.BarTextInput:CreateBarTextInputPanel(parent, name, text, width, height, xPos, yPos)
+	---@class TRB.Classes.OptionsUi.BarTextScrollFrame : ScrollFrame, BackdropTemplate
+	---@field public ScrollFrame EditBox # The input box this frame scrolls
 	local s = CreateFrame("ScrollFrame", "TRB_" .. name .. "_BarTextBox", parent, "UIPanelScrollFrameTemplate,BackdropTemplate") -- or your actual parent instead
 	s:SetSize(width, height)
 	s:SetPoint("TOPLEFT", parent, "TOPLEFT", xPos, yPos)
 
----@diagnostic disable-next-line: inject-field
 	s.ScrollFrame = CreateFrame("EditBox", nil, s, "BackdropTemplate")
 	local e = s.ScrollFrame
 	e:SetTextInsets(4, 4, 0, 0)

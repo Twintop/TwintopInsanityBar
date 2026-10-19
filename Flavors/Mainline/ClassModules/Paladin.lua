@@ -83,8 +83,7 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Paladin.ProtectionSpells
 	specCache.paladin_protection.spellsData.spells = TRB.Classes.Paladin.ProtectionSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.paladin_protection.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+	local spells = specCache.paladin_protection.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
 
 	specCache.paladin_protection.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -115,8 +114,7 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Paladin.RetributionSpells
 	specCache.paladin_retribution.spellsData.spells = TRB.Classes.Paladin.RetributionSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+	local spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
 
 	specCache.paladin_retribution.snapshotData.attributes.manaRegen = 0
 	specCache.paladin_retribution.snapshotData.attributes.holyPowerAtLastUpdate = 0

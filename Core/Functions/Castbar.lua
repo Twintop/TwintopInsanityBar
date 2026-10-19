@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 
@@ -673,7 +672,6 @@ end
 ---@return table
 local function GetOverlayPool(node)
 	local frame = node.frame
-	---@diagnostic disable-next-line: inject-field
 	local pool = frame.trbCastbarOverlays
 	if pool and pool.frame == frame then
 		return pool
@@ -685,7 +683,6 @@ local function GetOverlayPool(node)
 	pool.pushback = frame:CreateTexture(nil, "OVERLAY")
 	pool.pushback:SetColorTexture(1, 0, 1, 0.5)
 	pool.pushback:Hide()
-	---@diagnostic disable-next-line: inject-field
 	frame.trbCastbarOverlays = pool
 	return pool
 end
@@ -1039,10 +1036,10 @@ function CastbarRenderer:SetupOverlays(model)
 	-- cast/empower grows L->R and ends at fraction 1, so its zone is [1-latFrac, 1]; a channel depletes
 	-- toward fraction 0, so its ending-side zone is [0, latFrac].
 	local latFrac = GetShownLatencyFraction(model, barSettings, colors)
-	if latFrac > 0 then
-		-- latFrac > 0 implies colors.latency exists (see GetShownLatencyFraction).
-		---@diagnostic disable-next-line: need-check-nil
-		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colors.latency.color, true)
+	-- latFrac > 0 already implies colors.latency exists (see GetShownLatencyFraction).
+	local latencyColor = colors ~= nil and colors.latency or nil
+	if latFrac > 0 and latencyColor ~= nil then
+		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(latencyColor.color, true)
 		pool.latency:SetColorTexture(r, g, b, a)
 		if model.state == "channel" then
 			PlaceRegion(pool.latency, node, 0, latFrac, isVertical)
@@ -1285,7 +1282,6 @@ function CastbarRenderer:ApplyIdleState(group, node, idleAlpha, colors, barSetti
 		self._renderedIndicatorVersion = nil
 		self._renderedTargetColor = nil
 		self._renderedDurationVersion = nil
-		---@diagnostic disable-next-line: inject-field
 		HideOverlays(node.frame.trbCastbarOverlays)
 	end
 	node:SetMinMax(0, 1)
@@ -1381,7 +1377,6 @@ function CastbarRenderer:EndRender()
 	self.fadeOutStart = nil
 	self.fillComplete = nil
 	if node then
-		---@diagnostic disable-next-line: inject-field
 		HideOverlays(node.frame.trbCastbarOverlays)
 		node:SetIconTexture(nil)
 	end

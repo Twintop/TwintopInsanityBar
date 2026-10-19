@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Table = {}
@@ -100,6 +99,20 @@ function TRB.Functions.Table:DeepCopy(t)
 		end
 	end
 	return out
+end
+
+---Copies a table's top-level keys into a new table; nil copies to an empty one.
+---@generic T : table
+---@param source T?
+---@return T
+function TRB.Functions.Table:ShallowCopy(source)
+	local copy = {}
+	if source ~= nil then
+		for key, value in pairs(source) do
+			copy[key] = value
+		end
+	end
+	return copy
 end
 
 ---Deep-merges `overlay` on top of `base` into a fresh table. Unlike `Merge`,

@@ -1,7 +1,144 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
+
+---A label that hover badges can sit beside (Primitives' Attach*BadgeToText).
+---@class TRB.Classes.OptionsUi.BadgedText : FontString
+---@field public trbBadges table<string, TRB.Classes.OptionsUi.Badge>? # Badges by kind
+---@field public trbBadgeBox { width: number, height: number }? # Fixed label box, so badges wrap the text instead of running off the panel
+
+---A short colored badge that explains itself on hover.
+---@class TRB.Classes.OptionsUi.Badge : Frame
+---@field public font FontString
+---@field public trbTooltip { header: string, text: string, r: number, g: number, b: number }
+
+---A section header from Primitives:BuildSectionHeader.
+---@class TRB.Classes.OptionsUi.SectionHeader : Frame
+---@field public font FontString
+
+---@class TRB.Classes.OptionsUi.BackdropEditBox : EditBox, BackdropTemplate
+
+---A slider from Primitives:BuildSlider or BuildPercentageSlider, with its value box, step buttons, and labels.
+---@class TRB.Classes.OptionsUi.Slider : Slider, BackdropTemplate
+---@field public EditBox TRB.Classes.OptionsUi.BackdropEditBox
+---@field public MinLabel FontString
+---@field public MaxLabel FontString
+---@field public Title FontString
+---@field public Thumb Texture
+---@field public Plus Button
+---@field public Minus Button
+
+---The Bar Text tab's variables flyout, from BarTextVariables:CreateVariablesSidePanel.
+---@class TRB.Classes.OptionsUi.BarTextVariablesPanel : Frame, BackdropTemplate
+---@field public variablesTable table # LibScrollingTable instance
+---@field public allData table[] # Flat row list the table displays
+---@field public BuildDataTable fun(barTextVariables: table)
+---@field public descLabel FontString
+---@field public descText FontString
+---@field public searchBox EditBox
+
+---A panel's scrollable content frame; the Bar Text tab's also carries its variables flyout.
+---@class TRB.Classes.OptionsUi.ScrollChild : Frame
+---@field public barTextVariablesPanel TRB.Classes.OptionsUi.BarTextVariablesPanel?
+
+---A scroll frame from Tabs:CreateScrollFrameContainer.
+---@class TRB.Classes.OptionsUi.ScrollContainer : ScrollFrame
+---@field public scrollChild TRB.Classes.OptionsUi.ScrollChild
+
+---A tab's content frame from Tabs:CreateTabFrameContainer.
+---@class TRB.Classes.OptionsUi.TabSheet : Frame, BackdropTemplate
+---@field public visibilityHeader Frame? # Pinned header above the scroll frame
+---@field public scrollFrame TRB.Classes.OptionsUi.ScrollContainer? # Absent on tabs that scroll themselves
+---@field public constructorFrame Frame # Where the tab's lazy constructor builds its controls
+---@field public selected boolean?
+
+---A tab button from Tabs:CreateTab.
+---@class TRB.Classes.OptionsUi.Tab : Button, BackdropTemplate
+---@field public id string
+---@field public bottomCover Texture # Hides the bottom border so the selected tab joins its sheet
+---@field public Text FontString
+---@field public isBarDisabled boolean? # The tab's bar is set to Never Show
+
+---A frame holding a tab strip and its sheets, from Tabs:BuildTabGroup.
+---@class TRB.Classes.OptionsUi.TabbedPanel : Frame
+---@field public tabs table<string, TRB.Classes.OptionsUi.Tab>
+---@field public tabsheets table<string, TRB.Classes.OptionsUi.TabSheet>
+---@field public lastTab TRB.Classes.OptionsUi.TabSheet
+---@field public lastTabId string
+---@field public tabOrder string[]
+---@field public tabConstructors table<string, function> # Built on first show
+
+---An audio cue editor config control: a checkbox, a labeled dropdown, or a slider.
+---@class TRB.Classes.OptionsUi.CueConfigControl : Frame
+---@field public isSlider boolean
+---@field public isDropdown boolean
+---@field public label TRB.Classes.OptionsUi.SectionHeader? # Dropdowns only
+---@field public tooltip string? # Checkboxes only, shown by their template's OnEnter
+
+---A section's "Use Global" checkbox, with what follows its clicks.
+---@class TRB.Classes.OptionsUi.UseGlobalCheckbox : ChatConfigCheckButtonTemplate
+---@field public useGlobalLinked { header: TRB.Classes.OptionsUi.SectionHeader, tooltip: string, cover: Frame? }[]? # Covers and header badges shown while it is checked
+---@field public useGlobalLink TRB.Classes.OptionsUi.UseGlobalLink? # Shortcut beside it to the global settings
+
+---The shortcut beside a Use Global checkbox that opens the global settings.
+---@class TRB.Classes.OptionsUi.UseGlobalLink : Button
+---@field public tooltip string?
+---@field public coverButtonText string # Label of the Open button on the section's cover
+---@field public OpenGlobalTab fun(tabKey: string?) # Opens the global category on its own tab, or on tabKey
+
+---A Global panel toggle that sets one section's Use Global flag on every spec.
+---@class TRB.Classes.OptionsUi.BulkGlobalToggle : ChatConfigCheckButtonTemplate
+---@field public settingKey string
+---@field public specCount FontString # How many specs use the section's global settings
+
+---An options navigation button.
+---@class TRB.Classes.OptionsUi.NavButton : Button
+---@field public selectedTexture Texture
+---@field public icon Texture?
+---@field public label FontString
+---@field public arrow Texture? # Class headers only
+
+---An EditBox with Ctrl+Z / Ctrl+Y history, from BarTextInput:AttachUndoRedo.
+---@class TRB.Classes.OptionsUi.UndoEditBox : EditBox
+---@field public undoHistory string[] # Text snapshots, oldest first
+---@field public undoCursors integer[] # Cursor position for each snapshot
+---@field public undoIndex integer # The snapshot currently shown
+---@field public undoSuppress boolean # True while the text is being set programmatically
+---@field public undoTimer FunctionContainer? # The pending debounced snapshot
+---@field public ResetUndoHistory fun(self: TRB.Classes.OptionsUi.UndoEditBox, initialText: string?)
+
+---A dropdown that keeps its menu generator, so the menu can be rebuilt after its choices change.
+---@class TRB.Classes.OptionsUi.RegeneratingDropdown : WowStyle1DropdownTemplate
+---@field public GeneratorFunction fun(owner: any, rootDescription: table)
+
+---The profile picker, which relabels itself with the active profile.
+---@class TRB.Classes.OptionsUi.ProfileDropdown : TRB.Classes.OptionsUi.RegeneratingDropdown
+---@field public UpdateButtonText fun(self: TRB.Classes.OptionsUi.ProfileDropdown?)
+
+---A dropdown from Primitives:BuildDropdown, with its optional section label.
+---@class TRB.Classes.OptionsUi.Dropdown : WowStyle1DropdownTemplate
+---@field public label TRB.Classes.OptionsUi.SectionHeader?
+
+---A color swatch button.
+---@class TRB.Classes.OptionsUi.ColorSwatch : Button, BackdropTemplate
+---@field public Texture Texture # The swatch fill
+
+---A labeled color swatch from ColorPickers:BuildColorPicker.
+---@class TRB.Classes.OptionsUi.ColorPicker : TRB.Classes.OptionsUi.ColorSwatch
+---@field public Font TRB.Classes.OptionsUi.BadgedText
+
+---The gradient direction cycle button beside a gradient picker's swatches.
+---@class TRB.Classes.OptionsUi.GradientDirectionButton : Button, BackdropTemplate
+---@field public Font FontString
+
+---A two-swatch gradient picker from ColorPickers:BuildGradientColorPicker.
+---@class TRB.Classes.OptionsUi.GradientColorPicker : Frame
+---@field public Swatch1 TRB.Classes.OptionsUi.ColorSwatch
+---@field public Swatch2 TRB.Classes.OptionsUi.ColorSwatch
+---@field public DirectionButton TRB.Classes.OptionsUi.GradientDirectionButton
+---@field public Font TRB.Classes.OptionsUi.BadgedText
+---@field public Texture Texture # Swatch1's fill, for callers that treat both picker kinds alike
+---@field public UpdateSwatch2State fun() # Dims the second swatch while the gradient is disabled
 
 ---@class TRB.Classes.OptionsUi.Color
 ---@field public name string

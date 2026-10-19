@@ -144,8 +144,7 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.Shaman.EnhancementSpells
 	specCache.shaman_enhancement.spellsData.spells = TRB.Classes.Shaman.EnhancementSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.shaman_enhancement.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+	local spells = specCache.shaman_enhancement.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
 
 	specCache.shaman_enhancement.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -181,8 +180,7 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.Shaman.RestorationSpells
 	specCache.shaman_restoration.spellsData.spells = TRB.Classes.Shaman.RestorationSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.shaman_restoration.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+	local spells = specCache.shaman_restoration.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 
 	specCache.shaman_restoration.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -1876,7 +1874,6 @@ function TRB.Functions.Class:CheckCharacter()
 	if TRB.Data.character.specId == 1 then
 		TRB.Data.character.specName = "elemental"
 		TRB.Data.character.compositeKey = "shaman_elemental"
----@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Maelstrom, false)
 	elseif TRB.Data.character.specId == 2 then
@@ -1899,7 +1896,6 @@ function TRB.Functions.Class:CheckCharacter()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
 		TRB.Data.character.specName = "restoration"
 		TRB.Data.character.compositeKey = "shaman_restoration"
----@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 	end

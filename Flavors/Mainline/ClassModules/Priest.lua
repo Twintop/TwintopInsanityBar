@@ -260,9 +260,7 @@ local function FillSpecializationCache()
 	}
 	
 	specCache.priest_discipline.spellsData.spells = TRB.Classes.Priest.DisciplineSpells:New()
-	---@type TRB.Classes.Priest.DisciplineSpells
-	---@diagnostic disable-next-line: assign-type-mismatch
-	local spells = specCache.priest_discipline.spellsData.spells
+	local spells = specCache.priest_discipline.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 
 	specCache.priest_discipline.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -315,8 +313,7 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.Priest.HolySpells
 	specCache.priest_holy.spellsData.spells = TRB.Classes.Priest.HolySpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 
 	specCache.priest_holy.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -367,8 +364,7 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.Priest.ShadowSpells
 	specCache.priest_shadow.spellsData.spells = TRB.Classes.Priest.ShadowSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.priest_shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = specCache.priest_shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.voidform.id] = TRB.Classes.Snapshot:New(spells.voidform, nil, "sometimes")
@@ -2683,7 +2679,6 @@ local function UpdateResourceBar()
 					if hwDef and hwDef.spell and nodeEnabled and talents:IsTalentActive(hwDef.spell) then
 						-- Sanctify is removed by Ultimate Serenity
 						if nodeKey ~= "holyWordSanctify" or not talents:IsTalentActive(spells.ultimateSerenity) then
----@diagnostic disable-next-line: undefined-field
 							local cooldown = snapshots[hwDef.spell.id].cooldown
 							local charges = cooldown.manualCharges or 0
 							local maxCharges = cooldown.manualMaxCharges or 1
@@ -3520,7 +3515,6 @@ function TRB.Functions.Class:CheckCharacter()
 		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		TRB.Data.character.specName = "discipline"
 		TRB.Data.character.compositeKey = "priest_discipline"
----@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Mana, false)
 		local settings = TRB.Data.settings.priest.discipline

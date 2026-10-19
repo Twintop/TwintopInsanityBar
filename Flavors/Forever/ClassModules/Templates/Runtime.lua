@@ -40,8 +40,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 	assert(classDef ~= nil, "TwintopInsanityBar: Forever runtime install for undefined class '" .. tostring(className) .. "'")
 	TRB.Functions.Class = TRB.Functions.Class or {}
 
-	---@type TRB.Forever.Runtime
-	---@diagnostic disable-next-line: missing-fields
+	---@class TRB.Forever.Runtime
 	local runtime = { classDef = classDef, specCache = {}, talents = nil, FillSpellData = {} }
 	local specCache = runtime.specCache
 	for _, spec in ipairs(classDef.specOrder) do

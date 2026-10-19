@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -112,7 +111,6 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	f = controls.checkBoxes.thresholdIconEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdIconShow"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["ThresholdIconShowTooltip"]
 	f:SetChecked(spec.thresholds.icons.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -130,7 +128,6 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	f = controls.checkBoxes.thresholdIconDesaturated
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding*2, yCoord-50)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdIconDesaturate"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["ThresholdIconDesaturateTooltip"]
 	f:SetChecked(spec.thresholds.icons.desaturated)
 	f:SetScript("OnClick", function(self, ...)

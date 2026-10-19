@@ -53,7 +53,6 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Hunter.BeastMasterySpells
 	specCache.hunter_beastMastery.spellsData.spells = TRB.Classes.Hunter.BeastMasterySpells:New()
-	---@diagnostic disable-next-line: cast-local-type
 	local spells = specCache.hunter_beastMastery.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 
 	specCache.hunter_beastMastery.snapshotData.attributes.resourceRegen = 0
@@ -98,8 +97,7 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Hunter.MarksmanshipSpells
 	specCache.hunter_marksmanship.spellsData.spells = TRB.Classes.Hunter.MarksmanshipSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.hunter_marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+	local spells = specCache.hunter_marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 
 	specCache.hunter_marksmanship.snapshotData.attributes.resourceRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -141,8 +139,7 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Hunter.SurvivalSpells
 	specCache.hunter_survival.spellsData.spells = TRB.Classes.Hunter.SurvivalSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.hunter_survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	local spells = specCache.hunter_survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 
 	specCache.hunter_survival.snapshotData.attributes.resourceRegen = 0
 	---@type TRB.Classes.Snapshot

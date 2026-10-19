@@ -13,7 +13,6 @@ local icon = LibStub("LibDBIcon-1.0")
 local dataObject = ldb:NewDataObject(ADDON_NAME, {
 	type = "launcher",
 	text = "Twintop's Resource Bar",
----@diagnostic disable-next-line: assign-type-mismatch
 	icon = ICON_TEXTURE,
 	OnClick = function(_, button)
 		if button == "LeftButton" then

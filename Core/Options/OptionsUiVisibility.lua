@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -433,7 +432,6 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 		self:GetFontString():SetTextColor(1, 1, 1)
 		SetCursor("Interface\\CURSOR\\vehichleCursor.PNG")
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
----@diagnostic disable-next-line: param-type-mismatch
 		GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true)
 		GameTooltip:Show()
 	end)
@@ -487,7 +485,6 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 	statusHitbox:EnableMouse(true)
 	statusHitbox:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
----@diagnostic disable-next-line: param-type-mismatch
 		GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true)
 		GameTooltip:Show()
 	end)
@@ -568,7 +565,6 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 		status:SetText(statusText)
 
 		-- Tooltip carries the full list, since a long one is ellipsized on the band.
-		---@diagnostic disable-next-line: inject-field
 		statusHitbox.tooltip = statusText
 		ApplyStatusWidth()
 	end
@@ -604,7 +600,6 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 		end
 	end)
 
----@diagnostic disable-next-line: inject-field
 	header.Refresh = Refresh
 	Refresh()
 

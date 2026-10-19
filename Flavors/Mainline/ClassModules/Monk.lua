@@ -57,9 +57,7 @@ local function FillSpecializationCache()
 	}
 	
 	specCache.monk_brewmaster.spellsData.spells = TRB.Classes.Monk.BrewmasterSpells:New()
-	---@type TRB.Classes.Monk.BrewmasterSpells
-	---@diagnostic disable-next-line: assign-type-mismatch
-	local spells = specCache.monk_brewmaster.spellsData.spells
+	local spells = specCache.monk_brewmaster.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.monk_brewmaster.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
@@ -102,9 +100,7 @@ local function FillSpecializationCache()
 	}
 	
 	specCache.monk_mistweaver.spellsData.spells = TRB.Classes.Monk.MistweaverSpells:New()
-	---@type TRB.Classes.Monk.MistweaverSpells
-	---@diagnostic disable-next-line: assign-type-mismatch
-	local spells = specCache.monk_mistweaver.spellsData.spells
+	local spells = specCache.monk_mistweaver.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 
 	specCache.monk_mistweaver.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -141,9 +137,7 @@ local function FillSpecializationCache()
 	}
 	
 	specCache.monk_windwalker.spellsData.spells = TRB.Classes.Monk.WindwalkerSpells:New()
-	---@type TRB.Classes.Monk.WindwalkerSpells
-	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
-	spells = specCache.monk_windwalker.spellsData.spells
+	local spells = specCache.monk_windwalker.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 
 	specCache.monk_windwalker.snapshotData.attributes.resourceRegen = 0
 	---@type TRB.Classes.Snapshot

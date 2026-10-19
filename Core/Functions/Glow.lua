@@ -1,8 +1,12 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Glow = TRB.Functions.Glow or {}
 local L = TRB.Localization
+
+---A frame this addon glows, with a record of the glows it started there.
+---@class TRB.Classes.GlowTarget : Frame
+---@field public trbGlows table<string, table>? # Running glows by glow id: { type, signature }
+---@field public trbButtonGlowOwner string? # Id of the glow holding the frame's single Action Button Glow
 
 -- Reused for the {r,g,b,a} the library wants: it reads the table without keeping it.
 local colorScratch = { 1, 1, 1, 1 }
@@ -152,7 +156,7 @@ end
 
 ---Stops one running glow. Each style parks its frame on the target under its own field name, so the
 ---style it was started as is what decides which Stop to call.
----@param frame Frame?
+---@param frame TRB.Classes.GlowTarget?
 ---@param appliedType string?
 ---@param key string # The glow's id, which is the library key it was started with
 local function StopApplied(frame, appliedType, key)
@@ -174,7 +178,7 @@ end
 
 ---Starts, restarts, or leaves alone one glow on a frame, recording what is running under its id. Does
 ---nothing when that id is already showing this exact appearance; a style change stops the old one first.
----@param frame Frame
+---@param frame TRB.Classes.GlowTarget
 ---@param glow table
 ---@param colorString string
 ---@param applied table<string, table> # The frame's id -> { type, signature } record
@@ -235,7 +239,7 @@ end
 
 ---Runs exactly the given set of glows on a frame, starting what is newly selected, stopping what is no
 ---longer, and leaving unchanged ones alone.
----@param frame Frame? # The frame to glow, normally a bar node's StatusBar
+---@param frame TRB.Classes.GlowTarget? # The frame to glow, normally a bar node's StatusBar
 ---@param glowIds table<string, boolean>? # Set of glow ids; nil or empty stops every glow on the frame
 ---@param indicatorColor string? # The Color Indicator's color, used by each glow that doesn't pin its own
 function TRB.Functions.Glow:ApplySet(frame, glowIds, indicatorColor)
@@ -250,7 +254,6 @@ function TRB.Functions.Glow:ApplySet(frame, glowIds, indicatorColor)
 			return
 		end
 		applied = {}
-		---@diagnostic disable-next-line: inject-field
 		frame.trbGlows = applied
 	end
 
@@ -261,7 +264,6 @@ function TRB.Functions.Glow:ApplySet(frame, glowIds, indicatorColor)
 			StopApplied(frame, entry.type, guid)
 			applied[guid] = nil
 			if frame.trbButtonGlowOwner == guid then
-				---@diagnostic disable-next-line: inject-field
 				frame.trbButtonGlowOwner = nil
 			end
 		end
@@ -279,7 +281,6 @@ function TRB.Functions.Glow:ApplySet(frame, glowIds, indicatorColor)
 			local canStart = true
 			if glow.type == "button" then
 				if frame.trbButtonGlowOwner == nil then
-					---@diagnostic disable-next-line: inject-field
 					frame.trbButtonGlowOwner = guid
 				elseif frame.trbButtonGlowOwner ~= guid then
 					canStart = false
@@ -293,7 +294,7 @@ function TRB.Functions.Glow:ApplySet(frame, glowIds, indicatorColor)
 end
 
 ---Runs a single glow on a frame, stopping anything else it was showing. Used by the options preview.
----@param frame Frame? # The frame to glow
+---@param frame TRB.Classes.GlowTarget? # The frame to glow
 ---@param glow table? # A glow definition; nil stops any glow on the frame
 ---@param indicatorColor string? # Stands in for the Color Indicator's color when the glow doesn't pin one
 function TRB.Functions.Glow:Apply(frame, glow, indicatorColor)
@@ -310,7 +311,7 @@ function TRB.Functions.Glow:Apply(frame, glow, indicatorColor)
 end
 
 ---Stops every glow this addon started on a frame.
----@param frame Frame?
+---@param frame TRB.Classes.GlowTarget?
 function TRB.Functions.Glow:Clear(frame)
 	if frame == nil or frame.trbGlows == nil then
 		return
@@ -318,9 +319,7 @@ function TRB.Functions.Glow:Clear(frame)
 	for guid, entry in pairs(frame.trbGlows) do
 		StopApplied(frame, entry.type, guid)
 	end
-	---@diagnostic disable-next-line: inject-field
 	frame.trbGlows = nil
-	---@diagnostic disable-next-line: inject-field
 	frame.trbButtonGlowOwner = nil
 end
 

@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -187,9 +186,9 @@ end
 ---@param sizeFrame number # Width and height of the color swatch square
 ---@param posX number # X offset from parent's TOPLEFT
 ---@param posY number # Y offset from parent's TOPLEFT
----@return Button|BackdropTemplate
+---@return TRB.Classes.OptionsUi.ColorPicker
 function TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
-	local f = CreateFrame("Button", nil, parent, "BackdropTemplate")
+	local f = CreateFrame("Button", nil, parent, "BackdropTemplate") --[[@as TRB.Classes.OptionsUi.ColorPicker]]
 	f:SetSize(sizeFrame, sizeFrame)
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetBackdrop({
@@ -198,25 +197,21 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, descripti
 		tileSize=4,
 		edgeSize=12
 	})
-	---@diagnostic disable-next-line: inject-field
 	f.Texture = f:CreateTexture(nil)
 	f.Texture:ClearAllPoints()
 	f.Texture:SetPoint("TOPLEFT", 4, -4)
 	f.Texture:SetPoint("BOTTOMRIGHT", -4, 4)
 	f.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settingsEntry, true))
 	f:EnableMouse(true)
-	---@diagnostic disable-next-line: inject-field
-	f.Font = f:CreateFontString(nil)
+	f.Font = f:CreateFontString(nil) --[[@as TRB.Classes.OptionsUi.BadgedText]]
 	f.Font:SetPoint("LEFT", f, "RIGHT", 10, 0)
 	f.Font:SetFontObject(GameFontHighlight)
 	f.Font:SetText(description)
-	---@diagnostic disable-next-line: redundant-parameter
 	f.Font:SetWordWrap(true)
 	f.Font:SetJustifyH("LEFT")
 	local labelWidth = sizeTotal - sizeFrame - 25
 	f.Font:SetSize(labelWidth, sizeFrame)
 	-- Lets a badge on this label wrap the text instead of running off the panel.
-	---@diagnostic disable-next-line: inject-field
 	f.Font.trbBadgeBox = { width = labelWidth, height = sizeFrame }
 	return f
 end
@@ -279,7 +274,6 @@ function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, cont
 	controls.checkBoxes[controlKey .. "Enabled"] = fCheckbox
 	fCheckbox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(fCheckbox:GetName() .. 'Text'):SetText(L["CheckboxEndCapEnabled"])
----@diagnostic disable-next-line: inject-field
 	fCheckbox.tooltip = L["CheckboxEndCapEnabledTooltip"]
 	fCheckbox:SetChecked(endCapSettings.enabled == true)
 	fCheckbox:SetScript("OnClick", function(self, ...)
@@ -304,7 +298,6 @@ function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, cont
 	controls.checkBoxes[controlKey .. "UseBorderColor"] = fCheckbox
 	fCheckbox:SetPoint("TOPLEFT", oUi.xCoord + 20, yCoord)
 	getglobal(fCheckbox:GetName() .. 'Text'):SetText(L["CheckboxEndCapUseBorderColor"])
----@diagnostic disable-next-line: inject-field
 	fCheckbox.tooltip = L["CheckboxEndCapUseBorderColorTooltip"]
 	fCheckbox:SetChecked(endCapSettings.useBorderColor == true)
 	fCheckbox:SetScript("OnClick", function(self, ...)
@@ -318,7 +311,6 @@ function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, cont
 	controls.checkBoxes[controlKey .. "UseBorderColorExceptDefault"] = fCheckbox
 	fCheckbox:SetPoint("TOPLEFT", oUi.xCoord + 40, yCoord)
 	getglobal(fCheckbox:GetName() .. 'Text'):SetText(L["CheckboxEndCapUseBorderColorExceptDefault"])
----@diagnostic disable-next-line: inject-field
 	fCheckbox.tooltip = L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"]
 	fCheckbox:SetChecked(endCapSettings.useBorderColorExceptDefault == true)
 	fCheckbox:SetScript("OnClick", function(self, ...)
@@ -397,7 +389,7 @@ end
 ---@param tooltipNote string? # Optional tooltip text shown on the direction button
 ---@param onChanged function? # Optional callback run after the direction is cycled, for bars whose repaint
 ---                             is not driven by TriggerResourceBarUpdates
----@return Frame # Container frame with .Swatch1, .Swatch2, .DirectionButton, .Font children
+---@return TRB.Classes.OptionsUi.GradientColorPicker # Container frame with .Swatch1, .Swatch2, .DirectionButton, .Font children
 function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, description, colorEntry, sizeTotal, sizeFrame, posX, posY, tooltipNote, onChanged)
 	NormalizeGradientColorEntry(colorEntry)
 
@@ -406,19 +398,18 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 	local btnWidth = 22
 	local btnGap = 4
 
-	local container = CreateFrame("Frame", nil, parent)
+	local container = CreateFrame("Frame", nil, parent) --[[@as TRB.Classes.OptionsUi.GradientColorPicker]]
 	container:SetSize(sizeTotal, sizeFrame)
 	container:SetPoint("TOPLEFT", posX, posY)
 
 	-- Swatch 1 (primary color)
-	local s1 = CreateFrame("Button", nil, container, "BackdropTemplate")
+	local s1 = CreateFrame("Button", nil, container, "BackdropTemplate") --[[@as TRB.Classes.OptionsUi.ColorSwatch]]
 	s1:SetSize(swatchSize, swatchSize)
 	s1:SetPoint("TOPLEFT", 0, -math.floor((sizeFrame - swatchSize) / 2))
 	s1:SetBackdrop({
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 		tile = true, tileSize = 4, edgeSize = 10
 	})
-	---@diagnostic disable-next-line: inject-field
 	s1.Texture = s1:CreateTexture(nil)
 	s1.Texture:ClearAllPoints()
 	s1.Texture:SetPoint("TOPLEFT", 3, -3)
@@ -427,14 +418,13 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 	s1:EnableMouse(true)
 
 	-- Swatch 2 (secondary color)
-	local s2 = CreateFrame("Button", nil, container, "BackdropTemplate")
+	local s2 = CreateFrame("Button", nil, container, "BackdropTemplate") --[[@as TRB.Classes.OptionsUi.ColorSwatch]]
 	s2:SetSize(swatchSize, swatchSize)
 	s2:SetPoint("LEFT", s1, "RIGHT", gap, 0)
 	s2:SetBackdrop({
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 		tile = true, tileSize = 4, edgeSize = 10
 	})
-	---@diagnostic disable-next-line: inject-field
 	s2.Texture = s2:CreateTexture(nil)
 	s2.Texture:ClearAllPoints()
 	s2.Texture:SetPoint("TOPLEFT", 3, -3)
@@ -443,7 +433,7 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 	s2:EnableMouse(true)
 
 	-- Direction cycle button
-	local btn = CreateFrame("Button", nil, container, "BackdropTemplate")
+	local btn = CreateFrame("Button", nil, container, "BackdropTemplate") --[[@as TRB.Classes.OptionsUi.GradientDirectionButton]]
 	btn:SetSize(btnWidth, swatchSize)
 	btn:SetPoint("LEFT", s2, "RIGHT", btnGap, 0)
 	btn:SetBackdrop({
@@ -453,7 +443,6 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 		insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
 	btn:SetBackdropColor(0.15, 0.15, 0.15, 0.9)
-	---@diagnostic disable-next-line: inject-field
 	btn.Font = btn:CreateFontString(nil)
 	btn.Font:SetPoint("CENTER", 0, 0)
 	btn.Font:SetFontObject(GameFontHighlightSmall)
@@ -474,18 +463,15 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 	end)
 
 	-- Label
-	---@diagnostic disable-next-line: inject-field
-	container.Font = container:CreateFontString(nil)
+	container.Font = container:CreateFontString(nil) --[[@as TRB.Classes.OptionsUi.BadgedText]]
 	container.Font:SetPoint("LEFT", btn, "RIGHT", 10, 0)
 	container.Font:SetFontObject(GameFontHighlight)
 	container.Font:SetText(description)
-	---@diagnostic disable-next-line: redundant-parameter
 	container.Font:SetWordWrap(true)
 	container.Font:SetJustifyH("LEFT")
 	local labelWidth = sizeTotal - (swatchSize * 2 + gap + btnGap + btnWidth + 35)
 	container.Font:SetSize(labelWidth, sizeFrame)
 	-- Lets a badge on this label wrap the text instead of running off the panel.
-	---@diagnostic disable-next-line: inject-field
 	container.Font.trbBadgeBox = { width = labelWidth, height = sizeFrame }
 
 	-- Apply initial disabled state to swatch 2
@@ -502,16 +488,11 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 	UpdateSwatch2State()
 
 	-- Expose child references for external use
-	---@diagnostic disable-next-line: inject-field
 	container.Swatch1 = s1
-	---@diagnostic disable-next-line: inject-field
 	container.Swatch2 = s2
-	---@diagnostic disable-next-line: inject-field
 	container.DirectionButton = btn
 	-- Alias for compatibility: callers that read .Texture (like ToggleColorPickerEnabled) will find it on Swatch1
-	---@diagnostic disable-next-line: inject-field
 	container.Texture = s1.Texture
-	---@diagnostic disable-next-line: inject-field
 	container.UpdateSwatch2State = UpdateSwatch2State
 
 	-- Direction cycle click handler
@@ -545,7 +526,7 @@ end
 ---Handles mouse-down on a gradient color picker's secondary swatch: opens the color picker for `color2`.
 ---@param button string # The mouse button pressed
 ---@param colorEntry table # The settings entry with `color`, `color2`, `gradientDirection`
----@param swatch2 Button|BackdropTemplate # The second swatch frame (to update its texture)
+---@param swatch2 TRB.Classes.OptionsUi.ColorSwatch # The second swatch frame (to update its texture)
 ---@param classId integer? # Class ID for the panel being edited
 ---@param specId integer? # Spec ID for the panel being edited
 ---@param onColorChanged function? # Optional callback run after the color is applied (e.g. UpdateHealthValues)
@@ -586,7 +567,7 @@ end
 ---@param classId integer?
 ---@param specId integer?
 ---@param onChanged function? # Optional callback run after any of the three controls changes a value
----@return Frame # The gradient picker container
+---@return TRB.Classes.OptionsUi.GradientColorPicker # The gradient picker container
 function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorRow(parent, controlsTbl, colorTable, key, label, yCoord, classId, specId, onChanged)
 	local colorEntry = colorTable[key]
 	local f = self:BuildGradientColorPicker(parent, label, colorEntry, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord, L["GradientBarFillOnlyTooltip"], onChanged)

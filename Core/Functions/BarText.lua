@@ -3,6 +3,15 @@ local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
+---A bar text entry's font string, with the width constraint last applied so repeat writes are skipped.
+---@class TRB.Classes.BarTextFont : FontString
+---@field public trbConstrainWidth number?
+---@field public trbConstrainWrap boolean?
+
+---A bar text entry's frame (TRB.Frames.textFrames) and the font string it holds.
+---@class TRB.Classes.BarTextFrame : Frame
+---@field public font TRB.Classes.BarTextFont # Created right after the frame
+
 local containerAnchorPrefix = "Container::"
 
 -- Self-driven bar anchor keys → their bar group key. For the cast bars both the bar and its side icon
@@ -795,10 +804,9 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 end
 
 ---Sets the text on a bar text frame's font string via a protected call wrapper
----@param frame Frame The bar text frame containing a .font FontString
+---@param frame TRB.Classes.BarTextFrame The bar text frame containing a .font FontString
 ---@param text string The text to display
 local function TryUpdateText(frame, text)
----@diagnostic disable-next-line: undefined-field
 	frame.font:SetText(text)
 end
 
@@ -807,7 +815,7 @@ end
 ---of the bound frame's width and truncated with an ellipsis; otherwise it auto-sizes.
 ---Memoized on the font so it can be called every refresh (to track live bound-bar resizes)
 ---without redundant SetWidth calls, which would force text relayout each tick.
----@param font FontString The bar text font string
+---@param font TRB.Classes.BarTextFont The bar text font string
 ---@param entry table The bar text entry (DisplayTextEntry)
 ---@param relativeToFrame Frame? The frame the entry is bound to
 local function ApplyBarTextWidthConstraint(font, entry, relativeToFrame)
@@ -822,11 +830,8 @@ local function ApplyBarTextWidthConstraint(font, entry, relativeToFrame)
 		end
 	end
 
----@diagnostic disable-next-line: inject-field
 	if font.trbConstrainWidth ~= targetWidth or font.trbConstrainWrap ~= wrap then
----@diagnostic disable-next-line: inject-field
 		font.trbConstrainWidth = targetWidth
----@diagnostic disable-next-line: inject-field
 		font.trbConstrainWrap = wrap
 		font:SetWordWrap(wrap)
 		font:SetWidth(targetWidth)
@@ -1108,7 +1113,6 @@ local function CreateBarTextTree(input)
 		barText = {}
 	}
 
-    ---@diagnostic disable-next-line: undefined-field
     if inputLength == 0 then
         return returnText
     end
@@ -2682,7 +2686,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 		wipe(showFrameEnabled)
 		wipe(showFrameVisible)
 
-		---@type Frame[]
+		---@type TRB.Classes.BarTextFrame[]
 		local textFrames = TRB.Frames.textFrames
 		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 		local entries = #displayText.barText
@@ -2707,7 +2711,6 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 				-- refreshText gate below so it still updates when only the bar width changed; memoized,
 				-- so it's a no-op unless the width actually changed.
 				if e.constrainToParent and textFrames[i] ~= nil then
----@diagnostic disable-next-line: undefined-field
 					local entryFont = textFrames[i].font
 					if entryFont ~= nil then
 						ApplyBarTextWidthConstraint(entryFont, e, textFrames[i]:GetParent())
@@ -2870,7 +2873,6 @@ function TRB.Functions.BarText:RepositionBarTextEntry(entryIndex, classId, specI
 		return false
 	end
 
-	---@diagnostic disable-next-line: undefined-field
 	local font = textFrames[entryIndex].font
 	if font == nil then
 		return false
@@ -2932,7 +2934,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
 	local settings = TRB.Data.specCache[compositeKey].settings
 
-	---@type Frame[]
+	---@type TRB.Classes.BarTextFrame[]
 	local textFrames = TRB.Frames.textFrames
 	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
 	
@@ -3005,12 +3007,9 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			textFrames[frameCount]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 			textFrames[frameCount]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 
----@diagnostic disable-next-line: undefined-field
 			if textFrames[frameCount].font == nil then
-				---@diagnostic disable-next-line: inject-field
 				textFrames[frameCount].font = TRB.Frames.textFrames[frameCount]:CreateFontString(nil, "BACKGROUND")
 			end
----@diagnostic disable-next-line: undefined-field
 			local font = textFrames[frameCount].font
 
 			if relativeToFrame ~= nil and e.enabled and isEnabled then
@@ -3062,7 +3061,6 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	if textFramesEntries >= frameCount then
 		for i = frameCount, textFramesEntries do
 			textFrames[i]:Hide()
-			---@diagnostic disable-next-line: undefined-field
 			local extraFont = textFrames[i].font
 			if extraFont and extraFont.GetFont and extraFont:GetFont() then
 				extraFont:SetText("")
@@ -3136,20 +3134,17 @@ function TRB.Functions.BarText:Hide(settings)
 				and barText[i].position.relativeToFrame == "UIParent"
 				and not TRB.Functions.Bar:IsRenderTransitionActive() then
 				textFrames[i]:Show()
-				---@diagnostic disable-next-line: undefined-field
 				textFrames[i].font:Show()
 				-- Screen-bound text is independent of the bar; always fully opaque
 				textFrames[i]:SetAlpha(1.0)
 			else
 				textFrames[i]:Hide()
-				---@diagnostic disable-next-line: undefined-field
 				textFrames[i].font:Hide()
 			end
 		end
 	else
 		for i = 1, #textFrames do
 			textFrames[i]:Hide()
-			---@diagnostic disable-next-line: undefined-field
 			textFrames[i].font:Hide()
 		end
 	end
@@ -3159,7 +3154,7 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:Show(settings)
 	local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
-	---@type Frame[]
+	---@type TRB.Classes.BarTextFrame[]
 	local textFrames = TRB.Frames.textFrames
 	local entries = #displayText.barText
 	if entries > 0 then
@@ -3188,7 +3183,6 @@ function TRB.Functions.BarText:Show(settings)
 			if e.enabled and isEnabled and isVisible and textFrames[i] ~= nil then
 				if isTransition then
 					textFrames[i]:Hide()
-					---@diagnostic disable-next-line: undefined-field
 					textFrames[i].font:Hide()
 				else
 					-- Detect bar text frame transitioning from hidden to shown.
@@ -3202,7 +3196,6 @@ function TRB.Functions.BarText:Show(settings)
 						anyBecameVisible = true
 					end
 					textFrames[i]:Show()
-					---@diagnostic disable-next-line: undefined-field
 					textFrames[i].font:Show()
 					-- Screen-bound text is independent of the bar; always fully opaque
 					if key == "UIParent" then
@@ -3211,7 +3204,6 @@ function TRB.Functions.BarText:Show(settings)
 				end
 			elseif textFrames[i] ~= nil then
 				textFrames[i]:Hide()
-				---@diagnostic disable-next-line: undefined-field
 				textFrames[i].font:Hide()
 			end
 		end

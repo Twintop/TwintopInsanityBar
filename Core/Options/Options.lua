@@ -7,27 +7,19 @@ local oUi = TRB.Data.constants.optionsUi
 
 
 local f1 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Highlight_Small_Color")
----@diagnostic disable-next-line: need-check-nil
 f1:SetFontObject(GameFontHighlightSmall)
 local f2 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Green_Small_Color")
----@diagnostic disable-next-line: need-check-nil
 f2:SetFontObject(GameFontGreenSmall)
 local f3 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Normal_Small_Color")
----@diagnostic disable-next-line: need-check-nil
 f3:SetFontObject(GameFontNormalSmall)
 local f4 = CreateFont("TwintopResourceBar_OptionsMenu_Export_Spec_Color")
----@diagnostic disable-next-line: need-check-nil
 f4:SetFontObject(GameFontWhite)
 -- Red variants of the tab label fonts, used when a bar tab's bar is disabled (Visibility = Never).
 local f5 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Red_Small_Color")
----@diagnostic disable-next-line: need-check-nil
 f5:SetFontObject(GameFontNormalSmall)
----@diagnostic disable-next-line: need-check-nil
 f5:SetTextColor(1, 0, 0)
 local f6 = CreateFont("TwintopResourceBar_OptionsMenu_Tab_Red_Highlight_Small_Color")
----@diagnostic disable-next-line: need-check-nil
 f6:SetFontObject(GameFontHighlightSmall)
----@diagnostic disable-next-line: need-check-nil
 f6:SetTextColor(1, 0.35, 0.35)
 
 TRB.Options.fonts = {}
@@ -261,9 +253,7 @@ local function ConstructMiscellaneousPanel(parent)
 	controls.checkBoxes.minimapIcon = CreateFrame("CheckButton", "TwintopResourceBar_CB_Minimap_Icon", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.minimapIcon
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText(L["GlobalOptionsCheckboxMinimapIcon"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["GlobalOptionsCheckboxMinimapIconTooltip"]
 	if TRB.Data.settings.core.minimap then
 		f:SetChecked(not TRB.Data.settings.core.minimap.hide)
@@ -282,9 +272,7 @@ local function ConstructMiscellaneousPanel(parent)
 	controls.checkBoxes.numberAbbreviation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Number_Abbreviation", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.numberAbbreviation
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText(L["GlobalOptionsCheckboxNumberAbbreviation"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["GlobalOptionsCheckboxNumberAbbreviationTooltip"]
 	f:SetChecked(TRB.Data.settings.core.numberAbbreviation)
 	f:SetScript("OnClick", function(self, ...)
@@ -1846,7 +1834,7 @@ local function BuildProfileDefaultRow(parent, yCoord, rowLabel, scope, className
 		namePrefix = namePrefix .. tostring(className) .. "_" .. tostring(specName)
 	end
 
-	local dropdown = CreateFrame("DropdownButton", namePrefix, parent, "WowStyle1DropdownTemplate")
+	local dropdown = CreateFrame("DropdownButton", namePrefix, parent, "WowStyle1DropdownTemplate") --[[@as TRB.Classes.OptionsUi.ProfileDropdown]]
 	dropdown:SetPoint("TOPLEFT", labelFrame, "TOPRIGHT", 0, 4)
 	dropdown:SetWidth(240)
 
@@ -2047,7 +2035,6 @@ function TRB.Options:ConstructOptionsPanel()
 	controls.dropDown = {}
 
 	interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopResourceBarPanel")
-	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.panel.name = L["TwintopsResourceBar"]
 	interfaceSettingsFrame.panel:HookScript("OnShow", function(self)
 	end)
@@ -2132,7 +2119,6 @@ function TRB.Options:ConstructOptionsPanel()
 
 	yCoord = yCoord - 140
 
-	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.panel.yCoord = yCoord
 	TRB.Details.addonCategory = TRB.Details.addonCategory or {}
 	TRB.Details.addonCategory.specs = TRB.Details.addonCategory.specs or {}

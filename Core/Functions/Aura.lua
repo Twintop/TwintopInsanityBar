@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Aura = {}
@@ -58,7 +57,6 @@ local function AuraUpdateEvent(self, event, unit, info)
 		return
 	end
 	
----@diagnostic disable-next-line: param-type-mismatch
 	if not issecretvalue(info.isFullUpdate) and info.isFullUpdate then
 		-- A spec whose secondary resource resets on a full aura update stamps the moment (descriptor
 		-- `secondaryTransitionOnFullAuraUpdate` names the attribute).
@@ -79,11 +77,9 @@ local function AuraUpdateEvent(self, event, unit, info)
 	local unitGuid = nil
 	local isUnitFriend = nil
 
----@diagnostic disable-next-line: param-type-mismatch
 	if info.addedAuras and not issecrettable(info.addedAuras) then
 		if unit == "player" then
 			for _, v in pairs(info.addedAuras) do
----@diagnostic disable-next-line: param-type-mismatch
 				if not issecretvalue(v.spellId) then
 					local snapshot = snapshotData.snapshots[v.spellId]
 
@@ -121,7 +117,6 @@ local function AuraUpdateEvent(self, event, unit, info)
 		end
 	end
 
----@diagnostic disable-next-line: param-type-mismatch
 	if info.updatedAuraInstanceIDs and not issecrettable(info.updatedAuraInstanceIDs) then
 		if unit == "player" then
 			for _, v in pairs(info.updatedAuraInstanceIDs) do
@@ -158,7 +153,6 @@ local function AuraUpdateEvent(self, event, unit, info)
 		end
 	end
 
----@diagnostic disable-next-line: param-type-mismatch
 	if info.removedAuraInstanceIDs and not issecrettable(info.removedAuraInstanceIDs) then
 		if unit == "player" then
 			for _, v in pairs(info.removedAuraInstanceIDs) do
@@ -262,11 +256,9 @@ function TRB.Functions.Aura:FindBuffById(spellId, onWhom, byWhom)
 	local buffData
 
 	for i = 1, 1000 do
----@diagnostic disable-next-line: param-type-mismatch
 		buffData = C_UnitAuras.GetBuffDataByIndex(onWhom, i)
 		if not buffData then
 			return
----@diagnostic disable-next-line: param-type-mismatch
 		elseif issecretvalue(buffData.spellId) then
 			-- do nothing
 		elseif spellId == buffData.spellId and (byWhom == nil or byWhom == buffData.sourceUnit) then
@@ -288,11 +280,9 @@ function TRB.Functions.Aura:FindDebuffById(spellId, onWhom, byWhom)
 	local debuffData
 
 	for i = 1, 1000 do
----@diagnostic disable-next-line: param-type-mismatch
 		debuffData = C_UnitAuras.GetDebuffDataByIndex(onWhom, i)
 		if not debuffData then
 			return
----@diagnostic disable-next-line: param-type-mismatch
 		elseif issecretvalue(debuffData.spellId) then
 			-- do nothing
 		elseif spellId == debuffData.spellId and (byWhom == nil or byWhom == debuffData.sourceUnit) then

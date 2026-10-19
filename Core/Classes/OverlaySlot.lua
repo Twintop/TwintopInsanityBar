@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
@@ -13,7 +12,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public slotName string # Unique name for this slot (e.g., "casting", "absorb")
 ---@field public parentNode TRB.Classes.BarNode # Back-reference to the owning BarNode
 ---@field public texture string? # Last-applied texture path (for RefreshAppearance)
----@field public color string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied color entry (for RefreshAppearance)
+---@field public color string|TRB.Classes.Settings.ColorEntry|TRB.Classes.Settings.ColorGradientEntry? # Last-applied color entry (for RefreshAppearance)
 ---@field public spendingColor string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied spending color entry (for inset overlay on spend)
 ---@field public fullHeight boolean? # When true, the overlay extends through the bar's border area vertically
 ---@field public healthInputs table? # Inputs of the last health overlay update (Bar.lua HealthOverlayUnchanged)
@@ -49,7 +48,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field private _rangeColorSigs table<integer, string> # Last color signature per range gate
 ---@field private _rangeGradientActive table<integer, boolean>
 ---@field public endCapClipFrame Frame? # Clip container for the end cap band
----@field public endCapFrame Frame? # Fixed-width band anchored to the fill's leading edge
+---@field public endCapFrame TRB.Classes.OverlaySlot.EndCapBand? # Fixed-width band anchored to the fill's leading edge
 ---@field public endCapReady boolean? # One-frame readiness guard for the end cap
 ---@field public endCapWidth number? # Configured fill-axis width of the end cap in pixels
 ---@field private _endCapColor string? # Last end cap color applied
@@ -58,6 +57,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public endCapAnchorSig TRB.Classes.OverlaySlot.EndCapAnchorSig? # Inputs the current anchor was placed with; nil forces the next re-anchor
 ---@field public endCapTrackTicks integer? # TEMPORARY: tick counter for /trb endcap
 TRB.Classes.OverlaySlot = {}
+TRB.Classes.OverlaySlot.__index = TRB.Classes.OverlaySlot
 
 ---@class TRB.Classes.OverlaySlot.EndCapAnchorSig
 ---@field public border number
@@ -68,7 +68,6 @@ TRB.Classes.OverlaySlot = {}
 ---@field public fillTexture Texture
 ---@field public endCapWidth number?
 ---@field public overshoot number # Rounded to whole pixels
-TRB.Classes.OverlaySlot.__index = TRB.Classes.OverlaySlot
 
 ---Creates a new OverlaySlot. No frames are created until explicitly requested.
 ---@param parentNode TRB.Classes.BarNode # The BarNode this slot belongs to
@@ -1070,7 +1069,6 @@ function TRB.Classes.OverlaySlot:_CreateRangeGate(index, fillDirection)
 		probe:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
 		probe:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
 		probe:SetMinMaxValues(0, 1)
----@diagnostic disable-next-line: redundant-parameter
 		probe:SetValue(0, Enum.StatusBarInterpolation.Immediate)
 		probe:SetAlpha(0)
 		probe:Show()
@@ -1087,7 +1085,6 @@ function TRB.Classes.OverlaySlot:_CreateRangeGate(index, fillDirection)
 	gate:SetRotatesTexture(Bar:IsVerticalFill(fillDirection))
 	-- The baseline has no threshold: it is always full, and only its shutter decides whether it shows.
 	gate:SetMinMaxValues(0, 1)
----@diagnostic disable-next-line: redundant-parameter
 	gate:SetValue(isBaseline and 1 or 0, Enum.StatusBarInterpolation.Immediate)
 	gate:Hide()
 	self.rangeOverlayFrames[index] = gate
@@ -1181,11 +1178,9 @@ function TRB.Classes.OverlaySlot:SetRangeOverlayValue(index, value)
 	if not gate then return end
 	-- A gate is a threshold test, not a fill: easing it would slide the shutter boundary across the
 	-- bar, which reads as the fill growing from the 0 end.
----@diagnostic disable-next-line: redundant-parameter
 	gate:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 	local probe = self.rangeProbeFrames and self.rangeProbeFrames[index]
 	if probe then
----@diagnostic disable-next-line: redundant-parameter
 		probe:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 	end
 end
@@ -1550,9 +1545,9 @@ function TRB.Classes.OverlaySlot:CreateEndCap()
 	clip:SetClipsChildren(true)
 
 	local bandName = parent.name .. "_" .. self.slotName .. "_EndCap"
+	---@class TRB.Classes.OverlaySlot.EndCapBand : Frame
 	local band = CreateFrame("Frame", bandName, clip)
 	band:SetFrameLevel(clip:GetFrameLevel())
----@diagnostic disable-next-line: inject-field
 	band.texture = band:CreateTexture(nil, "ARTWORK")
 	band.texture:SetAllPoints(band)
 	band.texture:SetTexture("Interface\\Buttons\\WHITE8X8")
@@ -1599,7 +1594,6 @@ function TRB.Classes.OverlaySlot:SetEndCapColor(colorString)
 end
 
 ---Sets the end cap band color from a ColorCurve result (secret-safe; bypasses the color cache).
----@diagnostic disable-next-line: undefined-doc-name
 ---@param colorResult LuaCurveEvaluatedResult
 function TRB.Classes.OverlaySlot:SetEndCapColorResult(colorResult)
 	if not self.endCapFrame then return end

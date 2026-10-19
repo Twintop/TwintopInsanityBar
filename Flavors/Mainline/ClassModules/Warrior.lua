@@ -123,8 +123,7 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.Warrior.FurySpells
 	specCache.warrior_fury.spellsData.spells = TRB.Classes.Warrior.FurySpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.warrior_fury.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+	local spells = specCache.warrior_fury.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_fury.snapshotData.snapshots[spells.shieldBlock.id] = TRB.Classes.Snapshot:New(spells.shieldBlock)
@@ -164,8 +163,7 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.Warrior.ProtectionSpells
 	specCache.warrior_protection.spellsData.spells = TRB.Classes.Warrior.ProtectionSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.warrior_protection.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local spells = specCache.warrior_protection.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_protection.snapshotData.snapshots[spells.impendingVictory.id] = TRB.Classes.Snapshot:New(spells.impendingVictory)

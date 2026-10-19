@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global, redundant-parameter
 local _, TRB = ...
 local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
@@ -56,26 +55,21 @@ local function BuildReader(scrollChild, name, markdown)
 	simpleHtml:SetPoint("BOTTOMRIGHT", scrollChild, "BOTTOMRIGHT", 5, -35)
 	simpleHtml:SetWidth(700)
 
----@diagnostic disable-next-line: param-type-mismatch
 	simpleHtml:SetFontObject("h1", "SystemFont_Huge1")
 	simpleHtml:SetTextColor("h1", 1.0, 0.82, 0.0, 1)
 
----@diagnostic disable-next-line: param-type-mismatch
 	simpleHtml:SetFontObject("h2", "SystemFont_Large")
 	simpleHtml:SetTextColor("h2", 0.45, 0.75, 1.0, 1)
 
----@diagnostic disable-next-line: param-type-mismatch
 	simpleHtml:SetFontObject("h3", "SystemFont_Med3")
 	simpleHtml:SetTextColor("h3", 0.9, 0.9, 0.9, 1)
 
----@diagnostic disable-next-line: param-type-mismatch
 	simpleHtml:SetFontObject("p", "GameFontHighlight")
 	simpleHtml:SetTextColor("p", 0.78, 0.78, 0.78, 1)
 
 	simpleHtml:SetHyperlinkFormat("[|cff4da6ff|H%s|h%s|h|r]")
 	simpleHtml:SetScript("OnHyperlinkClick", OnHyperlinkClick)
 	simpleHtml:SetScript("OnHyperlinkEnter", function() SetCursor("Interface\\CURSOR\\vehichleCursor.PNG") end)
----@diagnostic disable-next-line: param-type-mismatch
 	simpleHtml:SetScript("OnHyperlinkLeave", function() SetCursor(nil) end)
 
 	simpleHtml:SetText(LMD:ToHTML(markdown))
@@ -84,7 +78,6 @@ end
 function TRB.Functions.News:BuildNewsPopup()
 	isConstructed = true
 	TRB.Functions.News:Hide()
-	---@diagnostic disable-next-line: missing-fields
 	newsFrame:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile =  "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -117,11 +110,9 @@ function TRB.Functions.News:BuildNewsPopup()
 		TRB.Functions.News:Hide()
 	end)
 
-	---@type CheckButton
 	local f = CreateFrame("CheckButton", "TwintopResourceBar_News_ShowAgain", newsFrame, "ChatConfigCheckButtonTemplate")
 	f:SetPoint("BOTTOMLEFT", 5, 5)
 	getglobal(f:GetName() .. 'Text'):SetText(L["NewsCheckboxShowOnNewVersion"])
----@diagnostic disable-next-line: inject-field
 	f.tooltip = L["NewsCheckboxShowOnNewVersionTooltip"]
 	f:SetChecked(TRB.Data.settings.core.news.enabled)
 	f:SetScript("OnClick", function(self, ...)

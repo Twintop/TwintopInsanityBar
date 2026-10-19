@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -72,7 +71,7 @@ local function FillStatusbarCache()
 end
 
 ---Refreshes a WowStyle1DropdownTemplate control by re-invoking its stored GeneratorFunction.
----@param control DropdownButton # The dropdown control with a GeneratorFunction field
+---@param control TRB.Classes.OptionsUi.RegeneratingDropdown # The dropdown control with a GeneratorFunction field
 local function DropdownSetupMenuWrapper(control)
 	if control == nil then
 		return
@@ -141,7 +140,7 @@ function TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, drop
 		lsmPairsByName = borderPairsByName
 	end
 
-	dropDowns[varName] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. varName .. "_" .. lsmType, parent, "WowStyle1DropdownTemplate")
+	dropDowns[varName] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. varName .. "_" .. lsmType, parent, "WowStyle1DropdownTemplate") --[[@as TRB.Classes.OptionsUi.RegeneratingDropdown]]
 	dropDowns[varName]:SetWidth(oUi.sliderWidth)
 	dropDowns[varName].label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
 	dropDowns[varName].label.font:SetFontObject(GameFontNormal)

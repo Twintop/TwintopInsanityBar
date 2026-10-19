@@ -1,7 +1,10 @@
----@diagnostic disable: inject-field, undefined-global, redundant-parameter, redundant-return-value
 -- WoW API stubs for the smoke-load harness. Permissive by design: the goal is to catch
 -- load-order/nil-index errors in addon code, not to emulate the client.
 local M = {}
+
+-- Desktop Lua 5.1 libraries, which the workspace's WoW runtime config leaves undefined.
+local desktop = _G --[[@as table<string, any>]]
+local os, debug = desktop.os, desktop.debug
 
 local unknownGlobals = {}
 local timerQueue = {}
@@ -204,7 +207,8 @@ function M.install(opts)
 	local classId = opts.classId
 	local metadata = opts.metadata
 	local addonName = opts.addonName
-	local G = _G
+	-- The stubs replace WoW API globals with permissive stand-ins, so the client's annotated types don't apply.
+	local G = _G --[[@as table<string, any>]]
 
 	G.__harness = { unknownGlobals = unknownGlobals, timerQueue = timerQueue, frames = frames }
 

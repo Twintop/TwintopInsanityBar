@@ -71,7 +71,6 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Rogue.AssassinationSpells
 	specCache.rogue_assassination.spellsData.spells = TRB.Classes.Rogue.AssassinationSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
 	local spells = specCache.rogue_assassination.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 
 	specCache.rogue_assassination.snapshotData.attributes.resourceRegen = 0
@@ -138,8 +137,7 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Rogue.OutlawSpells
 	specCache.rogue_outlaw.spellsData.spells = TRB.Classes.Rogue.OutlawSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+	local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 
 	specCache.rogue_outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_outlaw.snapshotData.attributes.comboPoints = 0
@@ -231,8 +229,7 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Rogue.SubtletySpells
 	specCache.rogue_subtlety.spellsData.spells = TRB.Classes.Rogue.SubtletySpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.rogue_subtlety.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+	local spells = specCache.rogue_subtlety.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 
 	specCache.rogue_subtlety.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_subtlety.snapshotData.attributes.comboPoints = 0

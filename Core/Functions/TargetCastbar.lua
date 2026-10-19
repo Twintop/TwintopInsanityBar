@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.TargetCastbar = {}
@@ -230,13 +229,11 @@ end
 -- skipped defensively since a secret offset can't position a texture.
 local function GetStageLinePool(node)
 	local frame = node.frame
-	---@diagnostic disable-next-line: inject-field
 	local pool = frame.trbTargetStageLines
 	if pool ~= nil and pool.frame == frame then
 		return pool
 	end
 	pool = { frame = frame, lines = {} }
-	---@diagnostic disable-next-line: inject-field
 	frame.trbTargetStageLines = pool
 	return pool
 end

@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
 local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
@@ -43,7 +42,7 @@ end
 
 -- Widget writes skip a repeat: recorded values for writes only this file makes, live reads for levels and desaturation.
 
----@param frame table
+---@param frame TRB.Classes.ThresholdFrame
 ---@param width number
 ---@param height number
 local function SetThresholdLineSize(frame, width, height)
@@ -55,7 +54,7 @@ local function SetThresholdLineSize(frame, width, height)
 	end
 end
 
----@param texture table
+---@param texture TRB.Classes.ThresholdFrame.LineTexture
 ---@param alpha number
 local function SetThresholdLineAlpha(texture, alpha)
 	if texture.trbAlpha ~= alpha then
@@ -65,7 +64,7 @@ local function SetThresholdLineAlpha(texture, alpha)
 end
 
 ---Resets an icon texture's vertex color to white unless that was its last write.
----@param texture table
+---@param texture TRB.Classes.ThresholdFrame.IconTexture
 local function SetIconVertexWhite(texture)
 	if texture.trbVertexWhite ~= true then
 		texture:SetVertexColor(1, 1, 1, 1)
@@ -103,7 +102,7 @@ local function GetThresholdCache(key)
 end
 
 ---Starts an icon cooldown swipe unless it already shows this start and duration.
----@param cooldown table
+---@param cooldown TRB.Classes.ThresholdFrame.Cooldown
 ---@param startTime number
 ---@param duration number
 local function SetIconCooldown(cooldown, startTime, duration)
@@ -136,7 +135,7 @@ local function GetOorMode(colorEntry)
 	return "shared"
 end
 
----@param thresholdLine Frame
+---@param thresholdLine TRB.Classes.ThresholdFrame
 ---@param fillDirection trbFillDirection?
 ---@param effectiveWidth number
 ---@param effectiveHeight number
@@ -236,7 +235,7 @@ end
 ---Configures a threshold icon's anchor point, position, and size based on the spec's threshold icon settings.
 ---For vertical bars, "Above" (TOP) remaps to LEFT, "Below" (BOTTOM) remaps to RIGHT.
 ---@param settings table # The spec settings containing thresholds.icons configuration
----@param thresholdLine table # The threshold frame whose .icon child will be repositioned and resized
+---@param thresholdLine TRB.Classes.ThresholdFrame # The threshold frame whose .icon child will be repositioned and resized
 ---@param fillDirection trbFillDirection? # The fill direction of the parent bar (nil defaults to horizontal)
 local function SetThresholdIconSizeAndPosition(settings, thresholdLine, fillDirection)
 	if thresholdLine.icon ~= nil then
@@ -280,7 +279,7 @@ end
 ---Supports both horizontal and vertical bar orientations via settings.bar.fillDirection.
 ---@param settings table # The spec settings containing bar and threshold configuration
 ---@param key string # Cache key identifying this threshold for deduplication
----@param thresholdLine Frame # The threshold frame to reposition
+---@param thresholdLine TRB.Classes.ThresholdFrame # The threshold frame to reposition
 ---@param showThreshold boolean # Whether the threshold should be visible; returns early if false
 ---@param parentFrame Frame # The parent bar frame used for width calculation and anchoring
 ---@param value number # The resource value at which to position the threshold
@@ -351,7 +350,7 @@ end
 ---Sets the icon for a threshold
 ---@param spell TRB.Classes.SpellThreshold
 ---@param key string
----@param threshold frame
+---@param threshold TRB.Classes.ThresholdFrame
 ---@param settings table
 ---@param thresholdOverrides table? Per-threshold overrides from thresholdDictionary (optional)
 ---@param barSettings table? # Dimension block of the bar hosting the line; defaults to `settings.bar`
@@ -475,20 +474,16 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 
 		if cache.iconBorder ~= effectiveBorder then
 			if effectiveBorder < 1 then
----@diagnostic disable-next-line: missing-fields
 				threshold.icon:SetBackdrop({
----@diagnostic disable-next-line: missing-fields
-					insets = {0, 0, 0, 0}
+					insets = { left = 0, right = 0, top = 0, bottom = 0 }
 				})
 			else
----@diagnostic disable-next-line: missing-fields
 				threshold.icon:SetBackdrop({
 					edgeFile = "Interface\\Buttons\\WHITE8X8",
 					tile = true,
 					tileSize = 4,
 					edgeSize = effectiveBorder,
----@diagnostic disable-next-line: missing-fields
-					insets = {0, 0, 0, 0}
+					insets = { left = 0, right = 0, top = 0, bottom = 0 }
 				})
 			end
 			threshold.icon:SetBackdropColor(0, 0, 0, 0)
@@ -520,7 +515,7 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 end
 
 ---Resets a primary bar threshold line to its default size, texture, frame level, and icon configuration, hiding it until repositioned.
----@param threshold Frame # The threshold frame to reset
+---@param threshold TRB.Classes.ThresholdFrame # The threshold frame to reset
 ---@param settings table # The spec settings containing bar dimensions, threshold properties, icon configuration, and color defaults
 ---@param hasIcon boolean? # Whether this threshold should have an icon sub-frame created and configured
 ---@param barSettings table? # Dimension block of the bar hosting the line (a custom bar's `bars.<key>`); defaults to `settings.bar`
@@ -549,23 +544,18 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 
 	-- For vertical bars, the threshold is a horizontal stripe (swap width/height)
 	SetThresholdLineDimensions(threshold, bar.fillDirection, bar.width, bar.height, settings.thresholds.properties.width, borderSubtraction)
----@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Hide()
----@diagnostic disable-next-line: inject-field
 	threshold.hasIcon = hasIcon
 
 	if hasIcon == true then
----@diagnostic disable-next-line: inject-field
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
 		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
 		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
----@diagnostic disable-next-line: inject-field
 		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, "BACKGROUND")
 		threshold.icon.texture:SetAllPoints(threshold.icon)
----@diagnostic disable-next-line: inject-field
 		threshold.icon.cooldown = threshold.icon.cooldown or CreateFrame("Cooldown", nil, threshold.icon, "CooldownFrameTemplate")
 		threshold.icon.cooldown:SetAllPoints(threshold.icon)
 		threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
@@ -581,20 +571,16 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		-- Apply backdrop AFTER ClearAllPoints/SetSize: BackdropTemplate rendering is
 		-- invalidated by those layout operations, so SetBackdrop must come last.
 		if settings.thresholds.icons.border < 1 then
----@diagnostic disable-next-line: missing-fields
 			threshold.icon:SetBackdrop({
----@diagnostic disable-next-line: missing-fields
-				insets = {0, 0, 0, 0}
+				insets = { left = 0, right = 0, top = 0, bottom = 0 }
 			})
 		else
----@diagnostic disable-next-line: missing-fields
 			threshold.icon:SetBackdrop({
 				edgeFile = "Interface\\Buttons\\WHITE8X8",
 				tile = true,
 				tileSize = 4,
 				edgeSize = settings.thresholds.icons.border,
----@diagnostic disable-next-line: missing-fields
-				insets = {0, 0, 0, 0}
+				insets = { left = 0, right = 0, top = 0, bottom = 0 }
 			})
 		end
 		threshold.icon:SetBackdropColor(0, 0, 0, 0)
@@ -606,7 +592,7 @@ end
 
 
 ---Resets a combo point (secondary resource) bar threshold line to its default size, texture, frame level, and icon configuration.
----@param threshold Frame # The threshold frame to reset
+---@param threshold TRB.Classes.ThresholdFrame # The threshold frame to reset
 ---@param settings table # The spec settings containing comboPoints dimensions, threshold properties, icon configuration, and color defaults
 ---@param hasIcon? boolean # Whether this threshold should have an icon sub-frame created and configured
 function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, settings, hasIcon)
@@ -636,23 +622,18 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 	else
 		SetThresholdLineSize(threshold, settings.thresholds.properties.width, settings.comboPoints.height)
 	end
----@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Show()
----@diagnostic disable-next-line: inject-field
 	threshold.hasIcon = hasIcon
 
 	if hasIcon == true then
----@diagnostic disable-next-line: inject-field
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
 		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
 		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
----@diagnostic disable-next-line: inject-field
 		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, "BACKGROUND")
 		threshold.icon.texture:SetAllPoints(threshold.icon)
----@diagnostic disable-next-line: inject-field
 		threshold.icon.cooldown = threshold.icon.cooldown or CreateFrame("Cooldown", nil, threshold.icon, "CooldownFrameTemplate")
 		threshold.icon.cooldown:SetAllPoints(threshold.icon)
 		threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
@@ -668,20 +649,16 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 		-- Apply backdrop AFTER ClearAllPoints/SetSize: BackdropTemplate rendering is
 		-- invalidated by those layout operations, so SetBackdrop must come last.
 		if settings.thresholds.icons.border < 1 then
----@diagnostic disable-next-line: missing-fields
 			threshold.icon:SetBackdrop({
----@diagnostic disable-next-line: missing-fields
-				insets = {0, 0, 0, 0}
+				insets = { left = 0, right = 0, top = 0, bottom = 0 }
 			})
 		else
----@diagnostic disable-next-line: missing-fields
 			threshold.icon:SetBackdrop({
 				edgeFile = "Interface\\Buttons\\WHITE8X8",
 				tile = true,
 				tileSize = 4,
 				edgeSize = settings.thresholds.icons.border,
----@diagnostic disable-next-line: missing-fields
-				insets = {0, 0, 0, 0}
+				insets = { left = 0, right = 0, top = 0, bottom = 0 }
 			})
 		end
 		threshold.icon:SetBackdropColor(0, 0, 0, 0)
@@ -692,21 +669,18 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 end
 
 ---Resets a threshold line for custom bar groups (stagger, defensives, etc.)
----@param threshold Frame # The threshold frame to reset
+---@param threshold TRB.Classes.ThresholdFrame # The threshold frame to reset
 ---@param width number # The width of the threshold line
 ---@param height number # The height of the threshold line
 ---@param borderColor string # The RGBA hex color string for the threshold
 ---@param lineThickness? number # The configured threshold line thickness
 function TRB.Functions.Threshold:ResetThresholdLineCustomBar(threshold, width, height, borderColor, lineThickness)
 	SetThresholdLineSize(threshold, width, height)
----@diagnostic disable-next-line: inject-field
 	threshold.lineThickness = lineThickness or math.min(width or 1, height or 1)
----@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Show()
----@diagnostic disable-next-line: inject-field
 	threshold.hasIcon = false
 	
 	TRB.Functions.Color:SetThresholdColor(threshold, borderColor, true)
@@ -716,7 +690,7 @@ end
 ---Supports both horizontal and vertical bar orientations via settings.comboPoints.fillDirection.
 ---@param settings table # The spec settings containing comboPoints configuration
 ---@param key string # Cache key identifying this threshold for deduplication
----@param thresholdLine Frame # The threshold frame to reposition
+---@param thresholdLine TRB.Classes.ThresholdFrame # The threshold frame to reposition
 ---@param showThreshold boolean # Whether the threshold should be visible; hides and returns early if false
 ---@param parentFrame Frame # The parent combo point frame used for anchoring
 ---@param value number # The resource value at which to position the threshold
@@ -777,7 +751,7 @@ end
 ---Repositions a threshold line for custom bar groups (stagger, defensives, etc.)
 ---Supports both horizontal and vertical bar orientations via fillDirection parameter.
 ---@param key string # Cache key for the threshold
----@param thresholdLine Frame # The threshold frame to reposition
+---@param thresholdLine TRB.Classes.ThresholdFrame # The threshold frame to reposition
 ---@param showThreshold boolean # Whether to show the threshold
 ---@param parentFrame Frame # The parent frame to anchor to
 ---@param value number # The value at which to position the threshold
@@ -838,7 +812,6 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 			lineThickness = 1
 		end
 	end
----@diagnostic disable-next-line: inject-field
 	thresholdLine.lineThickness = lineThickness
 	local borderSubtraction = 0
 	if overlapBorder == false then
@@ -887,7 +860,7 @@ end
 ---Anchors a threshold line to the fill texture's leading edge, set back by a fixed distance, so it
 ---rides the fill's native interpolation every frame instead of stepping on the 20Hz tick.
 ---@param node TRB.Classes.BarNode # Bar node whose fill the line rides
----@param thresholdLine Frame # The threshold frame to anchor
+---@param thresholdLine TRB.Classes.ThresholdFrame # The threshold frame to anchor
 ---@param gapValue number # How far behind the fill's leading edge the line sits, in bar value units
 ---@param maxResource number # The bar's current maximum
 ---@param overshoot number # Near-full correction, in pixels, from GetFillEdgeOvershoot
@@ -921,7 +894,6 @@ function TRB.Functions.Threshold:AnchorThresholdToFillEdge(node, thresholdLine, 
 	if lineThickness == nil or lineThickness < 0 then
 		lineThickness = tonumber(thresholdLine.lineThickness) or 1
 	end
----@diagnostic disable-next-line: inject-field
 	thresholdLine.lineThickness = lineThickness
 
 	-- edgeNudge closes the sub-pixel seam between the fill's leading edge and this frame, the same
@@ -1442,7 +1414,7 @@ end
 
 ---@param group TRB.Classes.BarGroup?
 ---@param index integer
----@return Frame?
+---@return TRB.Classes.BarNode.Frame?
 local function GetNodeFrame(group, index)
 	if group == nil or type(group.GetNode) ~= "function" then
 		return nil
@@ -1531,7 +1503,7 @@ local targetInfoByTarget = {}
 ---@param group TRB.Classes.BarGroup
 ---@param fromIndex integer
 ---@param count integer
----@return Frame[]
+---@return TRB.Classes.BarNode.Frame[]
 local function FillNodeList(barTarget, group, fromIndex, count)
 	local nodes = nodeListsByTarget[barTarget]
 	if nodes == nil then
@@ -2097,7 +2069,7 @@ function TRB.Functions.Threshold:GetEffectiveCustomThresholdValue(customThreshol
 	return v
 end
 
----@param threshold Frame
+---@param threshold TRB.Classes.ThresholdFrame
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param targetInfo table
 function TRB.Functions.Threshold:ResetCustomThresholdLine(threshold, settings, targetInfo)
@@ -2113,25 +2085,19 @@ function TRB.Functions.Threshold:ResetCustomThresholdLine(threshold, settings, t
 	end
 
 	SetThresholdLineDimensions(threshold, targetInfo.fillDirection, effectiveWidth, effectiveHeight, settings.thresholds.properties.width, borderSubtraction)
----@diagnostic disable-next-line: inject-field
 	threshold.lineThickness = settings.thresholds.properties.width
----@diagnostic disable-next-line: inject-field
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase - TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:SetFrameStrata(TRB.Data.settings.core.strata.level)
 	threshold:Hide()
----@diagnostic disable-next-line: inject-field
 	threshold.hasIcon = true
 
----@diagnostic disable-next-line: inject-field
 	threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
 	threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase - TRB.Data.constants.frameLevels.thresholdOffsetIcon)
 	threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
----@diagnostic disable-next-line: inject-field
 	threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, "BACKGROUND")
 	threshold.icon.texture:SetAllPoints(threshold.icon)
----@diagnostic disable-next-line: inject-field
 	threshold.icon.cooldown = threshold.icon.cooldown or CreateFrame("Cooldown", nil, threshold.icon, "CooldownFrameTemplate")
 	threshold.icon.cooldown:SetAllPoints(threshold.icon)
 	threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase - TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
@@ -2196,7 +2162,7 @@ end
 ---INSIDE WoW's percent API (`UnitPowerPercent` / `UnitHealthPercent`) against the secret
 ---resource and baked into the returned color object — Lua never compares the secret, so
 ---the line color and the icon saturation always agree.
----@param threshold table # The custom threshold frame
+---@param threshold TRB.Classes.ThresholdFrame # The custom threshold frame
 ---@param targetInfo table # Target info (resourceType / key drive which percent API to use)
 ---@param thresholdCurve table # The line ColorCurve from BuildThresholdValueCurve (under->over)
 ---@param iconCurve table? # The icon ColorCurve from BuildThresholdValueCurve (gray->white)
@@ -2289,7 +2255,7 @@ end
 ---@param targetInfo table
 ---@param guid string
 ---@param frameKey string? # targetInfo.key .. "_" .. guid, when the caller already has it
----@return Frame
+---@return TRB.Classes.ThresholdFrame
 function TRB.Functions.Threshold:GetOrCreateCustomThresholdFrame(settings, targetInfo, guid, frameKey)
 	TRB.Frames.customThresholds = TRB.Frames.customThresholds or {}
 	frameKey = frameKey or (targetInfo.key .. "_" .. guid)
@@ -2303,7 +2269,7 @@ function TRB.Functions.Threshold:GetOrCreateCustomThresholdFrame(settings, targe
 	-- during RedrawThresholdLines, never on per-frame updates.
 	local needsReset = false
 	if threshold == nil then
-		threshold = CreateFrame("Frame", nil, targetInfo.parentFrame, "BackdropTemplate")
+		threshold = CreateFrame("Frame", nil, targetInfo.parentFrame, "BackdropTemplate") --[[@as TRB.Classes.ThresholdFrame]]
 		TRB.Frames.customThresholds[frameKey] = threshold
 		needsReset = true
 	elseif threshold:GetParent() ~= targetInfo.parentFrame then
@@ -2356,10 +2322,6 @@ local activeFrameKeysScratch = {}
 local customThresholdKeyByGuid = {}
 -- Target key -> dictionary key -> frame key, so the concatenation runs once per pair.
 local customThresholdFrameKeys = {}
--- hasCooldown=false short-circuits all snapshot.cooldown access in AdjustThresholdDisplay, so one
--- shared empty snapshot is safe; it is only ever read.
----@diagnostic disable-next-line: missing-fields
-local emptyCustomThresholdSnapshot = {} --[[@as TRB.Classes.Snapshot]]
 
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>?
@@ -2528,7 +2490,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					frameLevel,
 					0,
 					thresholdColor,
-					emptyCustomThresholdSnapshot,
+					nil,
 					settings,
 					thresholdOverrides
 				)
@@ -2682,7 +2644,7 @@ end
 ---This method checks for valid target and range before applying the curve color.
 ---If no valid target or out of range, it returns false so the caller can fall back to normal color handling.
 ---@param spell TRB.Classes.SpellThreshold # The spell threshold being processed
----@param threshold table # The threshold frame
+---@param threshold TRB.Classes.ThresholdFrame # The threshold frame
 ---@param thresholdCurve table # The ColorCurve created by BuildThresholdCurve
 ---@param resourceType number # The resource type (e.g., TRB.Data.resource or Enum.PowerType.*)
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase # The spec settings
@@ -2778,12 +2740,12 @@ end
 ---Adjusts the display level, color, and cooldown status of a threshold and its icon.
 ---@param spell TRB.Classes.SpellThreshold
 ---@param key string
----@param threshold table
+---@param threshold TRB.Classes.ThresholdFrame
 ---@param showThreshold boolean
 ---@param currentFrameLevel integer
 ---@param pairOffset integer
 ---@param thresholdColor string
----@param snapshot TRB.Classes.Snapshot
+---@param snapshot TRB.Classes.Snapshot? # nil for custom thresholds, which have no cooldown
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param thresholdOverrides table? Per-threshold overrides from thresholdDictionary (optional)
 ---@param barSettings table? # Dimension block of the bar hosting the line (a custom bar's `bars.<key>`); defaults to `settings.bar`
@@ -2978,7 +2940,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				end
 			end
 			
-			if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.cooldown:GetRemainingTime(currentTime) > 0 and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
+			if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot ~= nil and snapshot.cooldown:GetRemainingTime(currentTime) > 0 then
 				SetIconCooldown(threshold.icon.cooldown, snapshot.cooldown.startTime, snapshot.cooldown.duration)
 				cache.cooldown = true
 			elseif cache.cooldown then
@@ -2995,7 +2957,7 @@ end
 
 ---Hides a threshold frame if it is currently visible.
 ---@param key string # Cache key for the threshold (reserved for future cache invalidation)
----@param threshold Frame? # The threshold frame to hide; safely ignored if nil
+---@param threshold TRB.Classes.ThresholdFrame? # The threshold frame to hide; safely ignored if nil
 function TRB.Functions.Threshold:Hide(key, threshold)
 	--[[
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
@@ -3013,7 +2975,7 @@ end
 
 ---Shows a threshold frame if it is not currently visible.
 ---@param key string # Cache key for the threshold (reserved for future cache invalidation)
----@param threshold Frame # The threshold frame to show
+---@param threshold TRB.Classes.ThresholdFrame # The threshold frame to show
 function TRB.Functions.Threshold:Show(key, threshold)
 	--[[
 	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
@@ -3062,7 +3024,7 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 			index = index + 1
 			local frame = thresholds[index]
 			if frame == nil then
-				frame = CreateFrame("Frame", nil, nodeFrame)
+				frame = CreateFrame("Frame", nil, nodeFrame) --[[@as TRB.Classes.ThresholdFrame]]
 				self:ResetThresholdLine(frame, settings, true, bar.barSettings)
 				node:RegisterThreshold(frame)
 				thresholds = node:GetThresholds()

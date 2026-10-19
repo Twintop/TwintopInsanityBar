@@ -65,7 +65,6 @@ end
 ---@param damageClassKey string # Enum.Damageclass key
 ---@return fun(): number?
 local function Resistance(damageClassKey)
-	---@diagnostic disable-next-line: undefined-global
 	return function() return (select(3, UnitResistance("player", Enum.Damageclass[damageClassKey]))) end
 end
 
@@ -93,14 +92,12 @@ TRB.Flavor.stats = {
 	{ key = "rangedCrit", variables = { "$rangedCrit" }, descriptionKey = "BarTextVariableRangedCrit", refresh = "secondary", format = "percent", read = function() return (GetRangedCritChance()) end },
 	{ key = "spellCrit", variables = { "$spellCrit" }, descriptionKey = "BarTextVariableSpellCrit", refresh = "secondary", format = "percent", read = function() return (GetSpellCritChance()) end },
 	{ key = "hit", variables = { "$hit", "$meleeHit" }, descriptionKey = "BarTextVariableMeleeHit", refresh = "secondary", format = "percent", read = function() return (GetHitModifier()) end },
-	---@diagnostic disable-next-line: undefined-global
 	{ key = "rangedHit", variables = { "$rangedHit" }, descriptionKey = "BarTextVariableRangedHit", refresh = "secondary", format = "percent", read = function() return (GetRangedHitModifier()) end },
 	{ key = "spellHit", variables = { "$spellHit" }, descriptionKey = "BarTextVariableSpellHit", refresh = "secondary", format = "percent", read = function() return (GetSpellHitModifier()) end },
 	{ key = "haste", variables = { "$haste", "$spellHaste", "$hastePercent" }, descriptionKey = "BarTextVariableSpellHaste", refresh = "secondary", format = "percent", read = function() return (UnitSpellHaste("player")) end },
 	{ key = "meleeHaste", variables = { "$meleeHaste" }, descriptionKey = "BarTextVariableMeleeHaste", refresh = "secondary", format = "percent", read = function() return (GetMeleeHaste()) end },
 	{ key = "rangedHaste", variables = { "$rangedHaste" }, descriptionKey = "BarTextVariableRangedHaste", refresh = "secondary", format = "percent", read = function() return Sum(GetRangedHaste()) end },
 	{ key = "expertise", variables = { "$expertise" }, descriptionKey = "BarTextVariableExpertise", refresh = "secondary", format = "number", integer = true, read = function() return (GetExpertise()) end },
-	---@diagnostic disable-next-line: undefined-global
 	{ key = "armorPenetration", variables = { "$armorPen", "$armorPenetration" }, descriptionKey = "BarTextVariableArmorPenetration", refresh = "secondary", format = "number", integer = true, read = function() return (GetArmorPenetration()) end },
 
 	-- Spell
@@ -117,7 +114,6 @@ TRB.Flavor.stats = {
 	{ key = "mp5NotCasting", variables = { "$mp5NotCasting", "$manaRegenNotCasting" }, descriptionKey = "BarTextVariableMp5NotCasting", refresh = "secondary", format = "number", integer = true, read = function() return PerFiveSeconds((GetManaRegen())) end },
 
 	-- Defense
-	---@diagnostic disable-next-line: undefined-global
 	{ key = "defense", variables = { "$defense" }, descriptionKey = "BarTextVariableDefense", refresh = "secondary", format = "number", integer = true, read = function() return Sum(UnitDefenseSkill("player")) end },
 	{ key = "dodge", variables = { "$dodge" }, descriptionKey = "BarTextVariableDodge", refresh = "secondary", format = "percent", read = function() return (GetDodgeChance()) end },
 	{ key = "parry", variables = { "$parry" }, descriptionKey = "BarTextVariableParry", refresh = "secondary", format = "percent", read = function() return (GetParryChance()) end },

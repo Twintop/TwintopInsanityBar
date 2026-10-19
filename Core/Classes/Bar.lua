@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
@@ -14,7 +13,7 @@ local barNodeCounter = 0
 ]]
 
 ---A bar's side ability icon: a bordered backdrop frame wrapping a single texture.
----@class TRB.Classes.BarNode.Icon : Frame
+---@class TRB.Classes.BarNode.Icon : Frame, BackdropTemplate
 ---@field public texture Texture
 ---@field public tooltipProvider fun():any, integer?|nil # Supplies the hovered spell id and its invalidation token; nil disables the tooltip
 ---@field public tooltipToken integer? # Token the currently-shown tooltip was built from
@@ -30,20 +29,42 @@ local barNodeCounter = 0
 
 ---A threshold line's spell icon with its cooldown swipe.
 ---@class TRB.Classes.ThresholdFrame.Icon : Frame, BackdropTemplate
----@field public texture Texture
----@field public cooldown Cooldown
+---@field public texture TRB.Classes.ThresholdFrame.IconTexture
+---@field public cooldown TRB.Classes.ThresholdFrame.Cooldown
+---@field public borderColorCache number[]? # Last border color written, as { r, g, b, a }
+
+---@class TRB.Classes.ThresholdFrame.IconTexture : Texture
+---@field public trbVertexWhite boolean? # Whether the last vertex color written was white, so repeat writes are skipped
+
+---@class TRB.Classes.ThresholdFrame.Cooldown : Cooldown
+---@field public trbStart number? # Swipe last written, so repeat writes are skipped
+---@field public trbDuration number?
+
+---@class TRB.Classes.ThresholdFrame.LineTexture : Texture
+---@field public trbAlpha number? # Alpha last written, so repeat writes are skipped
 
 ---A threshold line registered on a node. Functions/Threshold.lua's Reset functions create its pieces.
 ---@class TRB.Classes.ThresholdFrame : Frame
----@field public texture Texture
+---@field public texture TRB.Classes.ThresholdFrame.LineTexture
 ---@field public hasIcon boolean
 ---@field public icon TRB.Classes.ThresholdFrame.Icon? # Only on thresholds that show an icon
 ---@field public lineThickness number?
 ---@field public trbWidth number? # Size last written, so repeat writes are skipped
 ---@field public trbHeight number?
 
+---The node's StatusBar, plus what other modules hang on it.
+---@class TRB.Classes.BarNode.Frame : StatusBar, BackdropTemplate, TRB.Classes.GlowTarget
+---@field public backdropInfo backdropInfo?
+---@field public thresholds TRB.Classes.ThresholdFrame[] # Mirror of the node's thresholds
+---@field public trbCastbarOverlays table? # Castbar overlay texture pool, rebuilt when the frame changes
+---@field public trbTargetStageLines table? # Target cast bar empower stage line pool
+
 ---@class TRB.Classes.BarNode
----@field public frame StatusBar # The single consolidated StatusBar frame
+---@field public frame TRB.Classes.BarNode.Frame # The single consolidated StatusBar frame
+---@field public resourceKey string # Color cache keys for this node's fill, border, background, and gradient
+---@field public borderKey string
+---@field public backgroundKey string
+---@field public gradientKey string
 ---@field public overlaySlots table<string, TRB.Classes.OverlaySlot> # Named overlay slots keyed by slot name
 ---@field public thresholds TRB.Classes.ThresholdFrame[]
 ---@field public index integer
@@ -134,7 +155,6 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.frame:Hide()
 
 	-- Initialize the frame's thresholds array for compatibility
----@diagnostic disable-next-line: inject-field
 	self.frame.thresholds = self.thresholds
 
 	return self
@@ -169,10 +189,8 @@ function TRB.Classes.BarNode:SetValue(value, smooth)
 	end
 
 	if smooth then
----@diagnostic disable-next-line: redundant-parameter
 		self.frame:SetValue(value, Enum.StatusBarInterpolation.ExponentialEaseOut)
 	else
----@diagnostic disable-next-line: redundant-parameter
 		self.frame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 	end
 
@@ -258,7 +276,6 @@ function TRB.Classes.BarNode:SetColor(colorString)
 end
 
 ---Sets the color of the resource bar from a ColorCurve result. Clears any active gradient.
----@diagnostic disable-next-line: undefined-doc-name
 ---@param colorResult LuaCurveEvaluatedResult
 function TRB.Classes.BarNode:SetColorCurve(colorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
@@ -348,7 +365,6 @@ function TRB.Classes.BarNode:SetBorderColor(colorString)
 end
 
 ---Sets the border color from a curve result
----@diagnostic disable-next-line: undefined-doc-name
 ---@param colorResult LuaCurveEvaluatedResult
 ---@param endCapColorResult any? # Companion result from TRB.Functions.Color:EvaluateEndCapCurve, for useBorderColorExceptDefault
 function TRB.Classes.BarNode:SetBorderColorCurve(colorResult, endCapColorResult)
@@ -399,7 +415,6 @@ function TRB.Classes.BarNode:SetBackgroundColor(r, g, b, a)
 end
 
 ---Sets the background color from a curve result (bypasses cache comparison for tainted secret values)
----@diagnostic disable-next-line: undefined-doc-name
 ---@param colorResult LuaCurveEvaluatedResult
 function TRB.Classes.BarNode:SetBackgroundColorCurve(colorResult)
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
@@ -540,7 +555,6 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 		edgeSize = self.border
 	end
 
----@diagnostic disable-next-line: inject-field
 	self.frame.backdropInfo = {
 		bgFile = backgroundTexture,
 		edgeFile = edgeFile,
@@ -741,7 +755,7 @@ function TRB.Classes.BarNode:Destroy()
 end
 
 ---Returns the frame (resource, container, and border are all the same frame now)
----@return StatusBar
+---@return TRB.Classes.BarNode.Frame
 function TRB.Classes.BarNode:GetFrame()
 	return self.frame
 end
@@ -924,7 +938,6 @@ end
 ---curve (uninterruptible -> visible color, interruptible -> transparent) and passes the result here, which
 ---feeds straight into SetVertexColor so no secret is ever compared. The shield stays Show()n; the curve's
 ---alpha alone hides it when interruptible.
----@diagnostic disable-next-line: undefined-doc-name
 ---@param colorResult LuaCurveEvaluatedResult?
 function TRB.Classes.BarNode:SetShieldCurve(colorResult)
 	if self.shield == nil then
@@ -949,15 +962,14 @@ function TRB.Classes.BarNode:ApplyIconBackdrop()
 		return
 	end
 	local border = self._iconBorder or 0
-	---@diagnostic disable-next-line: missing-fields
+	---@type backdropInfo
 	local backdrop = {
 		bgFile = self.backgroundTexture,
 		tile = true,
 		-- Tile at the icon's own side length, as the bar tiles at its width, so a patterned background
 		-- lands at the same scale on both.
 		tileSize = math.max(icon:GetWidth() or 0, 1),
-		---@diagnostic disable-next-line: assign-type-mismatch
-		insets = {0, 0, 0, 0}
+		insets = { left = 0, right = 0, top = 0, bottom = 0 }
 	}
 	if border >= 1 then
 		backdrop.edgeFile = "Interface\\Buttons\\WHITE8X8"
@@ -1182,7 +1194,6 @@ function TRB.Classes.BarNode:RegisterThreshold(thresholdFrameOrIndex)
 
 	self.thresholds[index] = thresholdFrame
 	-- Keep frame.thresholds in sync for compatibility
----@diagnostic disable-next-line: inject-field
 	self.frame.thresholds = self.thresholds
 	return thresholdFrame
 end
@@ -1195,7 +1206,6 @@ function TRB.Classes.BarNode:ClearThresholds()
 		end
 	end
 	self.thresholds = {}
----@diagnostic disable-next-line: inject-field
 	self.frame.thresholds = self.thresholds
 end
 
@@ -1212,6 +1222,14 @@ end
 	For a primary resource bar, this would contain 1 node.
 	For combo points/arcane charges, this would contain N nodes (e.g., 4 for Arcane Charges).
 ]]
+
+---Every bar group by bar key (TRB.Frames.barGroups), plus the effective root sizes the layout pass stores.
+---@class TRB.Classes.BarGroups
+---@field public effectiveWidth number? # The primary root's effective width
+---@field public rootEffectiveWidths table<string, number>? # Effective width per root bar key
+---@field public rootEffectiveHeights table<string, number>? # Effective height per root bar key
+---@field public barDepths table<string, integer>? # Anchor tree depth per bar key, which sets frame levels
+---@field [string] TRB.Classes.BarGroup
 
 ---@class TRB.Classes.BarGroup
 ---@field public containerFrame Frame
@@ -1991,7 +2009,6 @@ function TRB.Classes.BarGroup:SetChargeTrackerValue(value)
 	if tracker == nil then
 		return
 	end
----@diagnostic disable-next-line: redundant-parameter
 	tracker.frame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 end
 
@@ -2025,7 +2042,6 @@ function TRB.Classes.BarGroup:SetChargeRechargeDuration(durationObject)
 	local shouldShow = durationObject ~= nil
 	if shouldShow then
 		for _, fill in ipairs(tracker.fills) do
----@diagnostic disable-next-line: redundant-parameter
 			fill:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
 		end
 		tracker.recharge:Show()
@@ -2175,6 +2191,12 @@ end
 ---@field public isSelfDriven boolean? # True when the bar shows/hides itself from live state (cast bars, GCD, mirror timers) rather than through ProcessBars. Such bars stay in the anchor tree as scaffolds and are never torn down by InvalidateAppliedState.
 ---@field public timerDrivenFill boolean? # True when the fill is bound to a DurationObject rather than written with SetValue, which leaves the Smooth setting nothing to act on.
 ---@field public environmentShowConditions boolean? # Self-driven timer bar whose Show Bar When list also offers the standard environment conditions (combat, mounts, group, location, PvP)
+---@field public maxThresholdPercent number? # Max percentage for threshold sliders; nil means 100
+---@field public thresholdMax number? # Custom-threshold value slider overrides; amalgamation bars set these per node instead
+---@field public thresholdMin number?
+---@field public thresholdDecimals integer?
+---@field public isCastbar boolean # Player, target, or focus cast bar, whose name already ends in "Cast Bar"
+---@field public classScoped boolean # Other Bar offered only to classes whose spec descriptors claim it
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 

@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -72,7 +71,7 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 }
 
 ---Generates the bar text editor panel, including the scrolling table of bar text entries, add/delete controls, and per-entry editing fields for font, position, and text content.
----@param parent frame The parent frame to attach controls to
+---@param parent Frame|TRB.Classes.OptionsUi.ScrollChild The parent frame to attach controls to
 ---@param controls table The controls table to store created UI elements
 ---@param spec table The spec settings table containing displayText configuration
 ---@param classId integer? The class ID, or nil for global bar text settings
@@ -184,8 +183,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		}
 	}
 
-	---@type TRB.Classes.Settings.DisplayTextEntry
-	---@diagnostic disable-next-line: missing-fields
+	-- Empty until an entry is selected, then the selected DisplayTextEntry.
 	local workingBarText = {}
 	local RefreshBarTextTable
 
@@ -320,14 +318,12 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	yCoord = 0
 
 	local barTextName = TRB.Functions.OptionsUi.Primitives:BuildTextBox(barTextOptionsFrame, "", 200, 300, 20, oUi.xCoord, yCoord)
----@diagnostic disable-next-line: inject-field
 	barTextName.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(barTextOptionsFrame, L["Name"], oUi.xCoord, yCoord+25)
 	barTextName.label.font:SetFontObject(GameFontNormal)
 
 	local barTextEntryEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_TextEnabled", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	barTextEntryEnabled:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(barTextEntryEnabled:GetName() .. 'Text'):SetText(L["Enabled"])
----@diagnostic disable-next-line: inject-field
 	barTextEntryEnabled.tooltip = L["BarTextEntryEnabledTooltip"]
 
 	yCoord = yCoord - 30
@@ -618,7 +614,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontFace:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
 	getglobal(useDefaultFontFace:GetName() .. 'Text'):SetText(L["UseDefaultFontFace"])
-	---@diagnostic disable-next-line: inject-field
 	useDefaultFontFace.tooltip = L["UseDefaultFontFaceTooltip"]
 	useDefaultFontFace:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontFace = self:GetChecked()
@@ -686,7 +681,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	local useDefaultFontSize = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontSize", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontSize:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-40)
 	getglobal(useDefaultFontSize:GetName() .. 'Text'):SetText(L["UseDefaultFontSize"])
-	---@diagnostic disable-next-line: inject-field
 	useDefaultFontSize.tooltip = L["UseDefaultFontSizeTooltip"]
 	useDefaultFontSize:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontSize = self:GetChecked()
@@ -708,7 +702,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	local useDefaultFontColor = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontColor", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontColor:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	getglobal(useDefaultFontColor:GetName() .. 'Text'):SetText(L["UseDefaultFontColor"])
-	---@diagnostic disable-next-line: inject-field
 	useDefaultFontColor.tooltip = L["UseDefaultFontColorTooltip"]
 	useDefaultFontColor:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontColor = self:GetChecked()
@@ -734,7 +727,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	local useDefaultFontOutline = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontOutline", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontOutline:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
 	getglobal(useDefaultFontOutline:GetName() .. 'Text'):SetText(L["UseDefaultFontOutline"])
-	---@diagnostic disable-next-line: inject-field
 	useDefaultFontOutline.tooltip = L["UseDefaultFontOutlineTooltip"]
 	useDefaultFontOutline:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontOutline = self:GetChecked()
@@ -764,7 +756,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	local fontShadowEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_fontShadowEnabled", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	fontShadowEnabled:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-40)
 	getglobal(fontShadowEnabled:GetName() .. 'Text'):SetText(L["FontShadowEnable"])
-	---@diagnostic disable-next-line: inject-field
 	fontShadowEnabled.tooltip = L["FontShadowEnableTooltip"]
 	fontShadowEnabled:SetScript("OnClick", function(self, ...)
 		if workingBarText.fontShadow == nil then
@@ -777,7 +768,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	local useDefaultFontShadow = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontShadow", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontShadow:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-60)
 	getglobal(useDefaultFontShadow:GetName() .. 'Text'):SetText(L["UseDefaultFontShadow"])
-	---@diagnostic disable-next-line: inject-field
 	useDefaultFontShadow.tooltip = L["UseDefaultFontShadowTooltip"]
 	useDefaultFontShadow:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontShadow = self:GetChecked()
@@ -814,7 +804,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	local constrainTextWidth = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_constrainTextWidth", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	constrainTextWidth:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-8)
 	getglobal(constrainTextWidth:GetName() .. 'Text'):SetText(L["ConstrainBarTextWidth"])
-	---@diagnostic disable-next-line: inject-field
 	constrainTextWidth.tooltip = L["ConstrainBarTextWidthTooltip"]
 	constrainTextWidth:SetScript("OnClick", function(self, ...)
 		workingBarText.constrainToParent = self:GetChecked()
@@ -1301,7 +1290,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		local sortedClasses = GetSortedClassSpecs()
 
 		for _, profileName in ipairs(profileNames) do
-			---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 			local profileMenu = parent:CreateButton(profileName)
 			if type(profileMenu) == "table" and type(profileMenu.CreateButton) == "function" then
 				local globalLabel = L["ProfileScopeLabelGlobal"]
@@ -1314,7 +1302,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 
 				for _, classDef in ipairs(sortedClasses) do
 					local targetClassName = classDef.classKey
-					---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 					local classMenu = profileMenu:CreateButton(classDef.classLabel)
 					if type(classMenu) == "table" and type(classMenu.CreateButton) == "function" then
 						local prefix = targetClassName .. "_"
@@ -1349,7 +1336,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 				end
 			end)
 
-			---@diagnostic disable-next-line: redundant-parameter, missing-parameter
 			local copyTo = rootDescription:CreateButton(L["CopyMenuCopyTo"])
 			if type(copyTo) == "table" and type(copyTo.CreateButton) == "function" then
 				copyTo:CreateTitle(L["CopyMenuCopyTo"])
@@ -1557,7 +1543,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	yCoord = oldYCoord
 	local variablesPanel = TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(parent, namePrefix, cache, classId, specId)
 	-- Tag the scroll child's ancestor (the tabsheet parent) so SwitchTab/SelectCategory can find the right panel
-	---@diagnostic disable-next-line: inject-field
 	parent.barTextVariablesPanel = variablesPanel
 	TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 end

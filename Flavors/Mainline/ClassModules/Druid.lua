@@ -601,7 +601,6 @@ local function GetCurrentMoonSpell()
 	local moon = snapshotData.snapshots[spells.newMoon.id]
 	local currentTime = GetTime()
 	if talents:IsTalentActive(spells.newMoon) and (moon.attributes.checkAfter == nil or currentTime >= moon.attributes.checkAfter) then
-		---@diagnostic disable-next-line: redundant-parameter
 		local spellInfo = C_Spell.GetSpellInfo(spells.newMoon.name) --[[@as SpellInfo]]
 		moon.attributes.currentSpellId = spellInfo.spellID
 
@@ -1176,7 +1175,6 @@ local function RefreshLookupData_Restoration()
 	local sharedSettings = TRB.Data.specCache["druid_restoration"].settings
 
 	-- Side-effect: must remain ungated
----@diagnostic disable-next-line: cast-local-type
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
 	local lookup = TRB.Data.lookup or {}

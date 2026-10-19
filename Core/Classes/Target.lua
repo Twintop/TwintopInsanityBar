@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 local L = TRB.Localization
 TRB.Classes = TRB.Classes or {}
@@ -51,7 +50,6 @@ function TRB.Classes.TargetData:AddSpellTracking(spell, isDot, hasCounter, hasSn
     local id = spell.debuffId or spell.buffId or spell.spellId or spell.id or nil
 
     if id ~= nil and self.trackedSpells[id] == nil then
----@diagnostic disable-next-line: param-type-mismatch
         self.trackedSpells[id] = TRB.Classes.TargetSpell:New(spell, nil, isDot, hasCounter, hasSnapshot, autoUpdate)
         self.count[id] = 0
     end
@@ -391,7 +389,7 @@ TRB.Classes.TargetSpell.__index = TRB.Classes.TargetSpell
 
 ---Adds a new spell to be tracked against a target
 ---@param spell TRB.Classes.SpellBase # Spell we are tracking
----@param target TRB.Classes.Target # Target this spell is tracked against
+---@param target TRB.Classes.Target? # Target this spell is tracked against; nil for the TargetData registry's template
 ---@param isDot boolean? # Is this a DoT?
 ---@param hasCounter boolean? # Does this have a counter component to it?
 ---@param hasSnapshot boolean? # Is there any snapshotting required?
@@ -455,7 +453,6 @@ local function SetAuraData(self, unitToken, isBuff)
     end
     
     -- Secret aura payload: leave existing state untouched
----@diagnostic disable-next-line: param-type-mismatch
     if aura ~= nil and not issecrettable(aura) and not issecretvalue(aura.expirationTime) and not issecretvalue(aura.applications) and not issecretvalue(aura.auraInstanceID) then
         self.active = true
         self.remainingTime = aura.expirationTime - currentTime

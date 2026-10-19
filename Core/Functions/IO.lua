@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.IO = {}
@@ -610,7 +609,7 @@ function TRB.Functions.IO:ExportGlobalBarTextPopup(exportMessage)
 	StaticPopup_Show("TwintopResourceBar_Export", nil, nil, { message = exportMessage, exportString = output})
 end
 
-Twintop_API = TwintopAPI or {}
+Twintop_API = Twintop_API or {}
 Twintop_API.ExportConfiguration = HandleExport
 Twintop_API.ImportConfiguration = HandleImport
 

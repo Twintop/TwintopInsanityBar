@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
@@ -107,6 +106,8 @@ end
 ---@field public cooldown number? # How many seconds the cooldown lasts as an unhasted value.
 ---@field public isHasted boolean? # Does this spell's cooldown, tick rate, etc. benefit from haste?
 ---@field public isBuff boolean? # Is this spell a buff?
+---@field public isDebuff boolean? # With isBuff: a buff on friendly targets and a debuff on enemies
+---@field public settingKey string? # Lookup key, set by the threshold subclasses
 ---@field public isFriend boolean? # Is this an effect that happens to friendly targets?
 ---@field public isSelfInitializeAllowed boolean? # Can this effect be initialized on the player? Almost always false unless we're tracking a friendly buff (like Atonement)
 ---@field public isPvp boolean? # Is this a PvP only spell?
@@ -137,10 +138,8 @@ TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
 ---@param spellAttributes { [string]: any } # Attributes associated with the spell
 ---@return TRB.Classes.SpellBase
 function TRB.Classes.SpellBase:New(spellAttributes)
-	---@diagnostic disable-next-line: missing-fields
-	local self = {} --[[@as TRB.Classes.SpellBase]]
-	setmetatable(self, TRB.Classes.SpellBase)
-	
+	local self = setmetatable({}, TRB.Classes.SpellBase)
+
 	self.classTypes = {
 		"TRB.Classes.SpellBase"
 	}
@@ -183,6 +182,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
 			(key == "maxStacks" 						and type(value) == "number" and tonumber(value, 10) ~= nil) or
 			(key == "isHasted"							and type(value) == "boolean") or
 			(key == "isBuff"							and type(value) == "boolean") or
+			(key == "isDebuff"							and type(value) == "boolean") or
 			(key == "isFriend"							and type(value) == "boolean") or
 			(key == "isSelfInitializeAllowed"			and type(value) == "boolean") or
 			(key == "isPvp"								and type(value) == "boolean") or
@@ -597,7 +597,6 @@ function TRB.Classes.SpellThreshold:New(spellAttributes)
 	---@type TRB.Classes.SpellBase
 	local spellBase = TRB.Classes.SpellBase
 	---@type TRB.Classes.SpellThreshold
-	---@diagnostic disable-next-line: assign-type-mismatch
 	local self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.SpellThreshold})
 	self.isSnowflake = false
 
@@ -664,7 +663,6 @@ function TRB.Classes.SpellComboPoint:New(spellAttributes)
 	---@type TRB.Classes.SpellBase
 	local spellBase = TRB.Classes.SpellBase
 	---@type TRB.Classes.SpellComboPoint
-	---@diagnostic disable-next-line: assign-type-mismatch
 	local self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.SpellComboPoint})
 	
 	self.comboPoints = false
@@ -704,7 +702,6 @@ function TRB.Classes.SpellComboPointThreshold:New(spellAttributes)
 	---@type TRB.Classes.SpellComboPoint
 	local base = TRB.Classes.SpellComboPoint
 	---@type TRB.Classes.SpellComboPointThreshold
-	---@diagnostic disable-next-line: assign-type-mismatch
 	local self = setmetatable(base:New(spellAttributes), {__index = TRB.Classes.SpellComboPointThreshold})
 	self.isSnowflake = false
 

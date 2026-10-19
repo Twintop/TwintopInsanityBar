@@ -92,8 +92,7 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Evoker.PreservationSpells
 	specCache.evoker_preservation.spellsData.spells = TRB.Classes.Evoker.PreservationSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.evoker_preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	local spells = specCache.evoker_preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 
 	specCache.evoker_preservation.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -128,8 +127,7 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Evoker.AugmentationSpells
 	specCache.evoker_augmentation.spellsData.spells = TRB.Classes.Evoker.AugmentationSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.evoker_augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+	local spells = specCache.evoker_augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
 	specCache.evoker_augmentation.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot

@@ -380,12 +380,11 @@ function TRB.Forever.Templates.Classes:DefineClass(className, specDeclarations)
 		local archetype = declaration ~= nil and TRB.Forever.Archetypes[declaration.archetype] or nil
 		assert(archetype ~= nil, "TwintopInsanityBar: Forever DefineClass '" .. className .. "' has no archetype for spec '" .. entry.specName .. "'")
 
-		---@type TRB.Forever.SpecDefinition
+		---@class TRB.Forever.SpecDefinition
 		local spec = {
 			entry = entry,
 			archetype = archetype,
 			specPascal = entry.specLocaleKey:sub(#classEntry.classModuleName + 1),
-			spellsClass = nil,
 			fillSpells = declaration.spells,
 			icons = declaration.icons,
 			stealth = declaration.stealth,

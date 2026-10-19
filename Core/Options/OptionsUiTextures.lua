@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -136,7 +135,6 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	end
 
 	-- ===== BAR TEXTURES SUBSECTION =====
----@diagnostic disable-next-line: param-type-mismatch
 	controls.barTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["BarTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
@@ -182,7 +180,6 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	yCoord = yCoord - 70
 
 	-- ===== OVERLAY TEXTURES SUBSECTION =====
----@diagnostic disable-next-line: param-type-mismatch
 	controls.overlayTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["OverlayTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
@@ -209,7 +206,6 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	yCoord = yCoord - 70
 
 	-- ===== BORDER TEXTURES SUBSECTION =====
----@diagnostic disable-next-line: param-type-mismatch
 	controls.borderTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["BorderTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
@@ -398,7 +394,6 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	yCoord = yCoord - 70
 
 	-- ===== BACKGROUND TEXTURES SUBSECTION =====
----@diagnostic disable-next-line: param-type-mismatch
 	controls.backgroundTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["BackgroundTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
 
 	yCoord = yCoord - 20
@@ -592,7 +587,6 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	f:SetChecked(spec.textures.textureLock)
 	getglobal(f:GetName() .. 'Text'):SetText(L["TextureLock"])
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = L["TextureLockTooltip"]
 
 	f:SetScript("OnClick", function(self, ...)
@@ -726,7 +720,6 @@ function TRB.Functions.OptionsUi.Textures:GenerateFlashOptions(parent, controls,
 	f = controls.checkBoxes.flashEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["FlashBar"], flashAlphaNameShort))
-	---@diagnostic disable-next-line: inject-field
 	f.tooltip = string.format(L["FlashBarTooltip"], flashAlphaName)
 	f:SetChecked(spec.colors.bar.flashEnabled)
 	f:SetScript("OnClick", function(self, ...)

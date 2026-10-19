@@ -14,6 +14,7 @@ TRB.Details.coreNewsContent = [====[
 - [#853](#853) Fix a proc's audio cue staying silent the first time it procs after you return to a specialization you left with it active.
 - [#853](#853) Fix the Target Cast Bar and Focus Cast Bar sometimes keeping the uninterruptible fill color on a friendly unit's cast.
 - [#853](#853) Remove the unused LibSmoothMove library.
+- Remove the unused CombatLogEntry class.
 
 ---
 

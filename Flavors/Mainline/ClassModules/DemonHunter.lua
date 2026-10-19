@@ -115,8 +115,7 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.DemonHunter.VengeanceSpells
 	specCache.demonhunter_vengeance.spellsData.spells = TRB.Classes.DemonHunter.VengeanceSpells:New()
-	---@diagnostic disable-next-line: cast-local-type
-	spells = specCache.demonhunter_vengeance.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	local spells = specCache.demonhunter_vengeance.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.chaosNova.id] = TRB.Classes.Snapshot:New(spells.chaosNova)

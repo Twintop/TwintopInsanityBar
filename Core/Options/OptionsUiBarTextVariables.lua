@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
@@ -16,14 +15,14 @@ local L = TRB.Localization
 ---@param cache table # The spec cache entry containing barTextVariables
 ---@param classId integer # The WoW class ID
 ---@param specId integer # The WoW specialization ID
----@return Frame # The outer container frame for the side panel
+---@return TRB.Classes.OptionsUi.BarTextVariablesPanel # The outer container frame for the side panel
 function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(parent, name, cache, classId, specId)
 	local mainFrame = TRB.Frames.optionsFrame
 	-- Kept as narrow as the columns allow; the options frame plus this flyout has to fit on screen.
 	local panelWidth = 365
 
 	-- Outer container frame anchored to the right of the main options frame
-	local cf = CreateFrame("Frame", "TRB_" .. name .. "_BarTextVariables_Frame", mainFrame, "BackdropTemplate")
+	local cf = CreateFrame("Frame", "TRB_" .. name .. "_BarTextVariables_Frame", mainFrame, "BackdropTemplate") --[[@as TRB.Classes.OptionsUi.BarTextVariablesPanel]]
 	cf:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -110,7 +109,6 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 	descText:SetPoint("BOTTOMRIGHT", descFrame, "BOTTOMRIGHT", -8, 6)
 	descText:SetJustifyH("LEFT")
 	descText:SetJustifyV("TOP")
-	---@diagnostic disable-next-line: redundant-parameter
 	descText:SetWordWrap(true)
 	descText:SetText(L["BarTextVariablesPanelDescriptionDefault"])
 
@@ -778,17 +776,11 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		end
 	end)
 
-	---@diagnostic disable-next-line: inject-field
 	cf.variablesTable = variablesTable
-	---@diagnostic disable-next-line: inject-field
 	cf.allData = allData
-	---@diagnostic disable-next-line: inject-field
 	cf.BuildDataTable = BuildDataTable
-	---@diagnostic disable-next-line: inject-field
 	cf.descLabel = descLabel
-	---@diagnostic disable-next-line: inject-field
 	cf.descText = descText
-	---@diagnostic disable-next-line: inject-field
 	cf.searchBox = searchBox
 
 	return cf

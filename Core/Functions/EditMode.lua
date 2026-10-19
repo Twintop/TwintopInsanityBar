@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 local L = TRB.Localization
 
@@ -140,10 +139,14 @@ function TRB.Functions.EditMode:ClearRegisteredFrame()
 	registeredFrame = nil
 end
 
+---A frame that may be an Edit Mode root wrapper; only wrappers carry their root bar key.
+---@class TRB.Classes.EditModeWrapper : Frame
+---@field public trbRootBarKey string?
+
 ---Gets or creates the Edit Mode wrapper frame for a specific tree root.
 ---Each tree root gets its own wrapper. When LibEditMode drags a wrapper, all bars in that tree move with it.
 ---@param rootBarKey string? # The root bar key (defaults to "primary")
----@return Frame
+---@return TRB.Classes.EditModeWrapper
 function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
 	rootBarKey = rootBarKey or "primary"
 
@@ -153,7 +156,7 @@ function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
 
 	-- Create a wrapper frame parented to UIParent
 	local frameName = "TRB_EditModeWrapper_" .. rootBarKey
-	local wrapperFrame = CreateFrame("Frame", frameName, UIParent)
+	local wrapperFrame = CreateFrame("Frame", frameName, UIParent) --[[@as TRB.Classes.EditModeWrapper]]
 	wrapperFrame:SetFrameStrata("BACKGROUND")
 	wrapperFrame:SetFrameLevel(1)
 	-- Start with a default size - will be updated to encompass all bars in this tree
@@ -1271,7 +1274,7 @@ function TRB.Functions.EditMode:GetDefaultPosition(rootBarKey)
 end
 
 ---Callback when a bar position is changed in Edit Mode
----@param frame Frame # The wrapper frame that was moved
+---@param frame TRB.Classes.EditModeWrapper? # The wrapper frame that was moved
 ---@param layoutName string # The current layout name
 ---@param point string # The anchor point
 ---@param x number # X offset
@@ -2475,18 +2478,16 @@ function TRB.Functions.EditMode:GetTRBBounds(includeHidden)
 			return
 		end
 
-		if left == nil then
+		-- All four are set together, so checking each only tells the type checker what is already true.
+		if left == nil or right == nil or top == nil or bottom == nil then
 			left = frameLeft
 			right = frameRight
 			top = frameTop
 			bottom = frameBottom
 		else
 			left = math.min(left, frameLeft)
----@diagnostic disable-next-line: param-type-mismatch
 			right = math.max(right, frameRight)
----@diagnostic disable-next-line: param-type-mismatch
 			top = math.max(top, frameTop)
----@diagnostic disable-next-line: param-type-mismatch
 			bottom = math.min(bottom, frameBottom)
 		end
 	end

@@ -251,8 +251,7 @@ TRB.Classes.BarTypeRegistry:GetInstance():RegisterBuiltInTypes()
 TRB.Data.castbar = TRB.Classes.Castbar:New("player")
 TRB.Data.petCastbar = TRB.Classes.Castbar:New("pet")
 
----@type TRB.Classes.SpellsData
----@diagnostic disable-next-line: missing-fields
+-- Replaced by the active spec cache's SpellsData on spec load.
 TRB.Data.spellsData = {}
 
 TRB.Data.lookup = {}
@@ -271,11 +270,16 @@ TRB.Frames = {}
 
 TRB.Frames.textFrames = {}
 
-TRB.Frames.targetsTimerFrame = CreateFrame("Frame")
+---A frame whose OnUpdate accumulates elapsed time into a throttled onUpdate; class modules supply targetsTimerFrame's.
+---@class TRB.Classes.TimerFrame : Frame
+---@field public sinceLastUpdate number
+---@field public characterCheckSinceLastUpdate number?
+---@field public onUpdate fun(self: TRB.Classes.TimerFrame, sinceLastUpdate: number)
+
+TRB.Frames.targetsTimerFrame = CreateFrame("Frame") --[[@as TRB.Classes.TimerFrame]]
 TRB.Frames.targetsTimerFrame.sinceLastUpdate = 0
 
----@class Frame
-TRB.Frames.timerFrame = CreateFrame("Frame")
+TRB.Frames.timerFrame = CreateFrame("Frame") --[[@as TRB.Classes.TimerFrame]]
 TRB.Frames.timerFrame.sinceLastUpdate = 0
 TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
