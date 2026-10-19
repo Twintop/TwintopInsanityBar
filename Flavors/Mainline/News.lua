@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.5.3-release (2026-10-18)
+# 12.1.5.3-beta01 (2026-10-20)
 ## Priest
 ### Holy
 
