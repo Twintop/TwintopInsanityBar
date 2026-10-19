@@ -6,8 +6,9 @@ name: Release
 #   forever-1.60.1.0-release    -> WoW Forever build
 # The stage job lints, smoke-loads, and builds the flavor with build/stage.ps1 as a workflow artifact.
 # The publish job runs the BigWigs packager, which creates the GitHub release, attaches its zip, and
-# uploads to CurseForge / Wago / WoWInterface for every site whose token secret exists. Its changelog
-# is the newest section of the flavor's News.lua. A workflow_dispatch run only builds the zip.
+# uploads to CurseForge / Wago / WoWInterface for every site whose token secret exists (WoWInterface
+# only for -release tags). Its changelog is the newest section of the flavor's News.lua. A
+# workflow_dispatch run only builds the zip.
 
 on:
   push:
@@ -133,7 +134,8 @@ jobs:
     env:
       CF_API_KEY: ${{ secrets.CF_API_KEY }}
       WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
-      WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+      # WoWInterface has no pre-release channel, so only full releases go there.
+      WOWI_API_TOKEN: ${{ needs.stage.outputs.releaseType == 'release' && secrets.WOWI_API_TOKEN || '' }}
       GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4

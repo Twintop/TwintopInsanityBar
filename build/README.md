@@ -95,9 +95,9 @@ exists (`CF_API_KEY`, `WAGO_API_TOKEN`, `WOWI_API_TOKEN`):
 - `12.1.0.11-release`, `12.1.0.11-beta01`, `12.1.0.11-alpha03` — mainline
 - `forever-1.60.1.0-release` — World of Warcraft: Forever
 
-Both tags may point at the same commit. A tag containing `alpha` or `beta` is a pre-release on every
-site. The changelog everywhere (GitHub release body, CurseForge, Wago, WoWInterface) is the newest
-`# <version>` section of that flavor's `News.lua`, extracted into `CHANGELOG.md` by the workflow with
+Both tags may point at the same commit. A tag containing `alpha` or `beta` is a pre-release on GitHub,
+CurseForge, and Wago, and skips WoWInterface, which has no pre-release channel. The changelog
+everywhere (GitHub release body, CurseForge, Wago, WoWInterface) is the newest `# <version>` section of that flavor's `News.lua`, extracted into `CHANGELOG.md` by the workflow with
 `(#NNN)` links pointed at GitHub issues and `(tab:...)` links flattened to text; touch up the site copy
 by hand if it reads oddly.
 
