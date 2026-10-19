@@ -12,6 +12,22 @@ TRB.Functions = TRB.Functions or {}
 ]]
 
 ---@class TRB.Functions.CastbarRenderer
+---@field public unit string # "player" or "pet"
+---@field public barKey string # The bar's group, settings, visibility, model, and indicator key
+---@field public isPlayer boolean
+---@field public isRunning boolean # Whether the updater frame is shown and ticking
+---@field public visibilitySinceLastUpdate number # Seconds since the last throttled visibility pass
+---@field public fadeOutStart number? # GetTime() of the cast end a fade-out is running from
+---@field public fillComplete { from: number, to: number, remaining: number }? # Natural-finish fill animation; nil when none is running
+---@field public frame Frame # Updater frame whose OnUpdate drives the fill
+---@field private _cachedBarSettings TRB.Classes.Settings.CastbarBar? # Settings resolved by the last visibility pass
+---@field private _cachedColors table?
+---@field private _cachedVisibility trbBarVisibilitySetting?
+---@field private _castForceHidden boolean? # Whether the last visibility pass hid the bar
+---@field private _renderedFrame StatusBar? # Node frame the current cast was drawn on, so a rebuilt group redraws
+---@field private _renderedIndicatorVersion integer?
+---@field private _renderedTargetColor string?
+---@field private _renderedDurationVersion integer?
 local CastbarRenderer = {}
 CastbarRenderer.__index = CastbarRenderer
 
@@ -658,7 +674,7 @@ end
 local function GetOverlayPool(node)
 	local frame = node.frame
 	---@diagnostic disable-next-line: inject-field
-	local pool = frame._trbCastbarOverlays
+	local pool = frame.trbCastbarOverlays
 	if pool and pool.frame == frame then
 		return pool
 	end
@@ -670,7 +686,7 @@ local function GetOverlayPool(node)
 	pool.pushback:SetColorTexture(1, 0, 1, 0.5)
 	pool.pushback:Hide()
 	---@diagnostic disable-next-line: inject-field
-	frame._trbCastbarOverlays = pool
+	frame.trbCastbarOverlays = pool
 	return pool
 end
 
@@ -1270,7 +1286,7 @@ function CastbarRenderer:ApplyIdleState(group, node, idleAlpha, colors, barSetti
 		self._renderedTargetColor = nil
 		self._renderedDurationVersion = nil
 		---@diagnostic disable-next-line: inject-field
-		HideOverlays(node.frame._trbCastbarOverlays)
+		HideOverlays(node.frame.trbCastbarOverlays)
 	end
 	node:SetMinMax(0, 1)
 	-- Release any native cast timer still bound (e.g. an interrupt that never ran CaptureCompletion) so the
@@ -1366,7 +1382,7 @@ function CastbarRenderer:EndRender()
 	self.fillComplete = nil
 	if node then
 		---@diagnostic disable-next-line: inject-field
-		HideOverlays(node.frame._trbCastbarOverlays)
+		HideOverlays(node.frame.trbCastbarOverlays)
 		node:SetIconTexture(nil)
 	end
 	if group then
@@ -1839,6 +1855,8 @@ function CastbarRenderer:OnSpellCastEvent(event, spellId)
 end
 
 TRB.Functions.Castbar = CastbarRenderer:New("player", "castbar")
+---The pet's renderer, plus the event plumbing the player's gets from Functions/SpellCast.lua.
+---@class TRB.Functions.PetCastbarRenderer : TRB.Functions.CastbarRenderer
 TRB.Functions.PetCastbar = CastbarRenderer:New("pet", "petCastbar")
 
 -- The pet's casts, which Functions/SpellCast.lua (the player's alone) never sees. Pets don't empower.

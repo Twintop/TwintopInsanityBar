@@ -8654,11 +8654,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 	end
 
 	-- Pet bars: seed their default text into the global list; barText is an array the defaults merge cannot backfill.
-	TRB.Functions.Settings:SeedPetBarsText(TwintopInsanityBarSettings.core)
+	if TwintopInsanityBarSettings ~= nil then
+		TRB.Functions.Settings:SeedPetBarsText(TwintopInsanityBarSettings.core)
+	end
 
 	-- Demonology: rank Demonic Art directly above Demonic Core, which would otherwise hide it; the reconcile appends new keys last.
 	do
-		local demonology = TwintopInsanityBarSettings.warlock ~= nil and TwintopInsanityBarSettings.warlock.demonology or nil
+		local demonology = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.warlock ~= nil and TwintopInsanityBarSettings.warlock.demonology or nil
 		local shared = demonology ~= nil and demonology.colors ~= nil and demonology.colors.shared or nil
 		if shared ~= nil and type(shared.nodeOrder) == "table" then
 			local hasDemonicArt = false
@@ -8687,7 +8689,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Retribution: rank Avenging Wrath Ending first, as the defaults do; the reconcile appends new keys last.
 	do
-		local retribution = TwintopInsanityBarSettings.paladin ~= nil and TwintopInsanityBarSettings.paladin.retribution or nil
+		local retribution = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.paladin ~= nil and TwintopInsanityBarSettings.paladin.retribution or nil
 		local shared = retribution ~= nil and retribution.colors ~= nil and retribution.colors.shared or nil
 		if shared ~= nil and type(shared.nodeOrder) == "table" then
 			local hasAvengingWrathEnd = false
@@ -8713,7 +8715,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Holy: the Holy Words bar's one End Cap target split into one per Holy Word; keep it on all three.
 	do
-		local holy = TwintopInsanityBarSettings.priest ~= nil and TwintopInsanityBarSettings.priest.holy or nil
+		local holy = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.priest ~= nil and TwintopInsanityBarSettings.priest.holy or nil
 		local indicatorColors = holy ~= nil and holy.colors ~= nil and holy.colors.shared ~= nil and holy.colors.shared.indicatorColors or nil
 		if type(indicatorColors) == "table" then
 			for _, indicator in pairs(indicatorColors) do

@@ -1330,8 +1330,7 @@ local function RefreshLookupData_Shadow()
 		local manaPrecision = sharedSettings.precision.mana or 1
 		-- Power events only mark dirty; re-derive here at most once per tick, plus first read and
 		-- precision changes.
-		local additionalPower = snapshotData.formatted.additionalPower
-		local mana = additionalPower and additionalPower["MANA"]
+		local mana = snapshotData.formatted.additionalPower["MANA"]
 		if mana == nil or mana.dirty or mana.precision ~= manaPrecision then
 			TRB.Functions.Character:UpdateAdditionalPowerValues("MANA", manaPrecision)
 			mana = snapshotData.formatted.additionalPower["MANA"]

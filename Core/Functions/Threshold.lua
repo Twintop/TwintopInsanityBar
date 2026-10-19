@@ -47,29 +47,29 @@ end
 ---@param width number
 ---@param height number
 local function SetThresholdLineSize(frame, width, height)
-	if frame._trbWidth ~= width or frame._trbHeight ~= height then
+	if frame.trbWidth ~= width or frame.trbHeight ~= height then
 		frame:SetWidth(width)
 		frame:SetHeight(height)
-		frame._trbWidth = width
-		frame._trbHeight = height
+		frame.trbWidth = width
+		frame.trbHeight = height
 	end
 end
 
 ---@param texture table
 ---@param alpha number
 local function SetThresholdLineAlpha(texture, alpha)
-	if texture._trbAlpha ~= alpha then
+	if texture.trbAlpha ~= alpha then
 		texture:SetAlpha(alpha)
-		texture._trbAlpha = alpha
+		texture.trbAlpha = alpha
 	end
 end
 
 ---Resets an icon texture's vertex color to white unless that was its last write.
 ---@param texture table
 local function SetIconVertexWhite(texture)
-	if texture._trbVertexWhite ~= true then
+	if texture.trbVertexWhite ~= true then
 		texture:SetVertexColor(1, 1, 1, 1)
-		texture._trbVertexWhite = true
+		texture.trbVertexWhite = true
 	end
 end
 
@@ -108,10 +108,10 @@ end
 ---@param duration number
 local function SetIconCooldown(cooldown, startTime, duration)
 	if issecretvalue(startTime) or issecretvalue(duration)
-		or cooldown._trbStart ~= startTime or cooldown._trbDuration ~= duration then
+		or cooldown.trbStart ~= startTime or cooldown.trbDuration ~= duration then
 		cooldown:SetCooldown(startTime, duration)
-		cooldown._trbStart = startTime
-		cooldown._trbDuration = duration
+		cooldown.trbStart = startTime
+		cooldown.trbDuration = duration
 	end
 end
 
@@ -365,7 +365,7 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 
 	if cache.texture ~= spell.texture then
 		threshold.icon.texture:SetTexture(spell.texture)
-		threshold.icon.texture._trbVertexWhite = nil
+		threshold.icon.texture.trbVertexWhite = nil
 		cache.texture = spell.texture
 	end
 

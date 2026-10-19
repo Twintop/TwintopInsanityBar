@@ -240,11 +240,10 @@ local function RefreshLookupData()
 				end
 			end
 			-- Power events only mark the entry dirty; the value is re-read here at most once per tick.
-			local additionalPower = snapshotData.formatted.additionalPower --[[@as table<string, table>?]]
-			local power = additionalPower and additionalPower[token]
+			local power = snapshotData.formatted.additionalPower[token]
 			if power == nil or power.dirty then
 				Character:UpdateAdditionalPowerValues(token, 0)
-				power = snapshotData.formatted.additionalPower[token] --[[@as table]]
+				power = snapshotData.formatted.additionalPower[token]
 			end
 			lookupLogic[variable] = power.current
 			lookupLogic[variable .. "Max"] = power.max

@@ -530,8 +530,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 
 	function TRB.Functions.Class:EventRegistration()
 		local spec = ActiveSpec()
-		local enabled = spec ~= nil and TRB.Data.settings.core.enabled[className][spec.entry.specName] == true
-		if enabled then
+		if spec ~= nil and TRB.Data.settings.core.enabled[className][spec.entry.specName] == true then
 			TRB.Data.specSupported = true
 			TRB.Data.resource = spec.archetype.powerType
 			TRB.Data.resourceFactor = spec.archetype.resourceFactor or 1

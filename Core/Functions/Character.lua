@@ -179,19 +179,14 @@ function TRB.Functions.Character:UpdateAdditionalPowerValues(powerToken, precisi
 	if powerType == nil then
 		return
 	end
-	local formatted = TRB.Data.snapshotData.formatted
-	local store = formatted.additionalPower
-	if store == nil then
-		store = {}
-		formatted.additionalPower = store
-	end
+	local store = TRB.Data.snapshotData.formatted.additionalPower
+	precision = precision or 1
 	local entry = store[powerToken]
 	if entry == nil then
-		entry = {}
+		entry = { current = 0, max = 0, percent = 0, currentFormatted = "", maxFormatted = "", percentFormatted = "", precision = precision, dirty = true }
 		store[powerToken] = entry
 	end
 
-	precision = precision or 1
 	local percentFormat = precisionFormatCache[precision]
 	if percentFormat == nil then
 		percentFormat = "%." .. precision .. "f"
@@ -212,12 +207,10 @@ end
 ---Marks every cached additional power entry stale. Spec changes stop the events that would
 ---otherwise mark them, so the next refresher pull must re-read rather than serve pre-swap values.
 function TRB.Functions.Character:InvalidateAdditionalPowerValues()
-	local store = TRB.Data.snapshotData and TRB.Data.snapshotData.formatted and TRB.Data.snapshotData.formatted.additionalPower
-	if store == nil then
+	if TRB.Data.snapshotData == nil then
 		return
 	end
-	---@diagnostic disable-next-line: param-type-mismatch
-	for _, entry in pairs(store) do
+	for _, entry in pairs(TRB.Data.snapshotData.formatted.additionalPower) do
 		entry.dirty = true
 	end
 end
@@ -521,8 +514,7 @@ local function CharacterChange(self, event, ...)
 			TRB.Data.lookupDirty = true
 		elseif unitTarget == "player" and TRB.Data.additionalPowerTokens and TRB.Data.additionalPowerTokens[powerType] then
 			-- Mark only; the 20Hz refresher pulls the reformat, coalescing bursts and UPDATE/FREQUENT pairs.
-			local additionalPower = TRB.Data.snapshotData.formatted.additionalPower
-			local powerEntry = additionalPower and additionalPower[powerType]
+			local powerEntry = TRB.Data.snapshotData.formatted.additionalPower[powerType]
 			if powerEntry ~= nil then
 				powerEntry.dirty = true
 			end

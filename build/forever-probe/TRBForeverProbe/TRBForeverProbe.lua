@@ -277,10 +277,12 @@ local function Run()
 	Probe("talents", "IsSpecSelectionEnabled()", function() return IsSpecSelectionEnabled() end)
 	Probe("talents", "C_SpecializationInfo.IsSpecSelectionEnabled()", function() return C_SpecializationInfo.IsSpecSelectionEnabled() end)
 	Probe("talents", "C_ClassTalents.GetCombatConfigIDForSpecGroup(1)", function() return C_ClassTalents.GetCombatConfigIDForSpecGroup(1) end)
+	---@diagnostic disable-next-line: undefined-field -- Forever-only enum member
 	Probe("talents", "C_Traits.GetConfigsByType(CamelotCombat)", function() return C_Traits.GetConfigsByType(Enum.TraitConfigType.CamelotCombat) end)
 	Probe("talents", "GetMaxTalentTier()", function() return GetMaxTalentTier() end)
 	Probe("talents", "HasPlayerEarnedATalentPoint()", function() return HasPlayerEarnedATalentPoint() end)
 	Probe("talents", "GetNumUnspentTalents()", function() return GetNumUnspentTalents() end)
+	---@diagnostic disable-next-line: missing-parameter -- probes the Vanilla two-argument form
 	Probe("talents", "GetTalentInfo(1, 1)", function() return GetTalentInfo(1, 1) end)
 	Probe("talents", "GetTalentTierInfo(1, 1)", function() return GetTalentTierInfo(1, 1) end)
 	Probe("talents", "C_SpecializationInfo.GetTalentInfo({tier=1,column=1})", function() return C_SpecializationInfo.GetTalentInfo({ tier = 1, column = 1 }) end)
@@ -314,6 +316,7 @@ local function Run()
 	Probe("talents", "config summary: active", function() return SummarizeConfig(C_ClassTalents.GetActiveConfigID()) end)
 	Probe("talents", "config summary: combat group 1", function() return SummarizeConfig(C_ClassTalents.GetCombatConfigIDForSpecGroup(1)) end)
 	Probe("talents", "config summary: first CamelotCombat", function()
+		---@diagnostic disable-next-line: undefined-field -- Forever-only enum member
 		local ids = C_Traits.GetConfigsByType(Enum.TraitConfigType.CamelotCombat)
 		return SummarizeConfig(ids and ids[1])
 	end)
@@ -449,6 +452,7 @@ local function Run()
 	Probe("stats", "GetCritChance/Ranged/Spell", function() return GetCritChance(), GetRangedCritChance(), GetSpellCritChance() end)
 	Probe("stats", "GetSpellCritChance(school 2..7)", function()
 		local out = {}
+		---@diagnostic disable-next-line: redundant-parameter -- probes whether a school argument is honored
 		for i = 2, 7 do out[#out + 1] = Value(GetSpellCritChance(i)) end
 		return table.concat(out, " ")
 	end)

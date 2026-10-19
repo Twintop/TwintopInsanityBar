@@ -16,14 +16,25 @@ TRB.Classes = TRB.Classes or {}
 ---@field public color string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied color entry (for RefreshAppearance)
 ---@field public spendingColor string|TRB.Classes.Settings.ColorGradientEntry? # Last-applied spending color entry (for inset overlay on spend)
 ---@field public fullHeight boolean? # When true, the overlay extends through the bar's border area vertically
----@field public _healthInputs table? # Inputs of the last health overlay update (Bar.lua HealthOverlayUnchanged)
+---@field public healthInputs table? # Inputs of the last health overlay update (Bar.lua HealthOverlayUnchanged)
 ---@field public overlayFrame StatusBar? # Full-bar overlay StatusBar
+---@field private _overlayTexturePath string? # Last overlay texture applied, so repeat writes are skipped
+---@field private _overlayColorSig string? # Last overlay color applied, flat or gradient, so repeat writes are skipped
+---@field private _overlayGradientActive boolean?
 ---@field public appendedClipFrame Frame? # Clip container for the appended overlay
 ---@field public appendedOverlayFrame StatusBar? # StatusBar inside clip, anchored to fill's RIGHT edge
 ---@field public appendedOverlayReady boolean? # One-frame readiness guard for appended overlay
+---@field private _appendedAnchorSig string? # Geometry the appended clip was anchored with
+---@field private _appendedTexturePath string?
+---@field private _appendedColorSig string?
+---@field private _appendedGradientActive boolean?
 ---@field public insetClipFrame Frame? # Clip container for the inset overlay
 ---@field public insetOverlayFrame StatusBar? # Reverse-fill StatusBar inside clip
 ---@field public insetOverlayReady boolean? # One-frame readiness guard for inset overlay
+---@field private _insetAnchorSig string? # Geometry the inset clip was anchored with
+---@field private _insetTexturePath string?
+---@field private _insetColorSig string?
+---@field private _insetGradientActive boolean?
 ---@field public rangeBoundsClipFrame Frame? # Outer clip trimming the range overlays to the inner bar
 ---@field public rangeClipFrame Frame? # Clip container tracking the fill edge for the range overlays
 ---@field public rangeShutterFrames Frame[]? # Clip container per range, holding that range's gate open only while the next range's gate is shut
@@ -33,13 +44,30 @@ TRB.Classes = TRB.Classes or {}
 ---@field public rangeOverlayReady boolean? # One-frame readiness guard for range overlays
 ---@field public rangeTexture string? # Last-applied range gate texture path (for RefreshAppearance)
 ---@field public rangeColors table<integer, string|TRB.Classes.Settings.ColorGradientEntry> # Last-applied color entry per range gate
+---@field private _rangeAnchorSig string? # Geometry the range clip was anchored with
+---@field private _rangeTexturePaths table<integer, string> # Last texture per range gate
+---@field private _rangeColorSigs table<integer, string> # Last color signature per range gate
+---@field private _rangeGradientActive table<integer, boolean>
 ---@field public endCapClipFrame Frame? # Clip container for the end cap band
 ---@field public endCapFrame Frame? # Fixed-width band anchored to the fill's leading edge
 ---@field public endCapReady boolean? # One-frame readiness guard for the end cap
 ---@field public endCapWidth number? # Configured fill-axis width of the end cap in pixels
----@field public _endCapOvershoot number? # Overshoot correction baked into the current anchor, for staleness checks
----@field public _endCapAnchorSig table? # Inputs the current anchor was placed with; nil forces the next re-anchor
+---@field private _endCapColor string? # Last end cap color applied
+---@field private _endCapColorFlat boolean? # Whether _endCapColor is current, since nil is a valid color
+---@field public endCapOvershoot number? # Overshoot correction baked into the current anchor, for staleness checks
+---@field public endCapAnchorSig TRB.Classes.OverlaySlot.EndCapAnchorSig? # Inputs the current anchor was placed with; nil forces the next re-anchor
+---@field public endCapTrackTicks integer? # TEMPORARY: tick counter for /trb endcap
 TRB.Classes.OverlaySlot = {}
+
+---@class TRB.Classes.OverlaySlot.EndCapAnchorSig
+---@field public border number
+---@field public width number
+---@field public height number
+---@field public fillDirection trbFillDirection
+---@field public fullHeight boolean?
+---@field public fillTexture Texture
+---@field public endCapWidth number?
+---@field public overshoot number # Rounded to whole pixels
 TRB.Classes.OverlaySlot.__index = TRB.Classes.OverlaySlot
 
 ---Creates a new OverlaySlot. No frames are created until explicitly requested.
@@ -1018,26 +1046,26 @@ function TRB.Classes.OverlaySlot:ReanchorRangeOverlays(force)
 end
 
 ---Creates one shutter/gate pair inside an existing range clip.
----@param slot TRB.Classes.OverlaySlot
+---@private
 ---@param index integer # Range index, or RANGE_BASELINE_INDEX for the baseline gate
 ---@param fillDirection string
-local function CreateRangeGate(slot, index, fillDirection)
+function TRB.Classes.OverlaySlot:_CreateRangeGate(index, fillDirection)
 	local Bar = TRB.Functions.Bar
 	local isBaseline = index == RANGE_BASELINE_INDEX
-	local prefix = slot.parentNode.name .. "_" .. slot.slotName .. "_Range"
+	local prefix = self.parentNode.name .. "_" .. self.slotName .. "_Range"
 	local suffix = isBaseline and "Baseline" or tostring(index)
 
-	local shutter = CreateFrame("Frame", prefix .. "Shutter" .. suffix, slot.rangeClipFrame)
-	shutter:SetFrameLevel(slot.rangeClipFrame:GetFrameLevel())
+	local shutter = CreateFrame("Frame", prefix .. "Shutter" .. suffix, self.rangeClipFrame)
+	shutter:SetFrameLevel(self.rangeClipFrame:GetFrameLevel())
 	shutter:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, 10000)
 	shutter:SetSize(1, 1)
 	shutter:SetClipsChildren(true)
-	slot.rangeShutterFrames[index] = shutter
+	self.rangeShutterFrames[index] = shutter
 
 	-- The baseline is never the anchor for a shutter below it, so it needs no probe.
 	if not isBaseline then
-		local probe = CreateFrame("StatusBar", prefix .. "Probe" .. suffix, slot.rangeBoundsClipFrame)
-		probe:SetFrameLevel(slot.rangeClipFrame:GetFrameLevel())
+		local probe = CreateFrame("StatusBar", prefix .. "Probe" .. suffix, self.rangeBoundsClipFrame)
+		probe:SetFrameLevel(self.rangeClipFrame:GetFrameLevel())
 		probe:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
 		probe:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
 		probe:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
@@ -1046,13 +1074,13 @@ local function CreateRangeGate(slot, index, fillDirection)
 		probe:SetValue(0, Enum.StatusBarInterpolation.Immediate)
 		probe:SetAlpha(0)
 		probe:Show()
-		slot.rangeProbeFrames[index] = probe
+		self.rangeProbeFrames[index] = probe
 	end
 
 	local gate = CreateFrame("StatusBar", prefix .. suffix, shutter)
 	-- Capped so five ranges still clear the end cap. The shutters make only one gate paint, so the
 	-- ascending order only decides ties.
-	gate:SetFrameLevel(slot.rangeClipFrame:GetFrameLevel() + math.min(index, RANGE_MAX_LEVEL_SPREAD))
+	gate:SetFrameLevel(self.rangeClipFrame:GetFrameLevel() + math.min(index, RANGE_MAX_LEVEL_SPREAD))
 	gate:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8")
 	gate:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
 	gate:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
@@ -1062,10 +1090,10 @@ local function CreateRangeGate(slot, index, fillDirection)
 ---@diagnostic disable-next-line: redundant-parameter
 	gate:SetValue(isBaseline and 1 or 0, Enum.StatusBarInterpolation.Immediate)
 	gate:Hide()
-	slot.rangeOverlayFrames[index] = gate
-	slot._rangeTexturePaths[index] = nil
-	slot._rangeColorSigs[index] = nil
-	slot._rangeGradientActive[index] = false
+	self.rangeOverlayFrames[index] = gate
+	self._rangeTexturePaths[index] = nil
+	self._rangeColorSigs[index] = nil
+	self._rangeGradientActive[index] = false
 end
 
 ---Creates the range overlay system: one clip container, the baseline gate, plus `count` gate
@@ -1109,11 +1137,11 @@ function TRB.Classes.OverlaySlot:CreateRangeOverlays(count)
 	local fillDirection = parent.fillDirection or "leftRight"
 	local created = false
 	if self.rangeOverlayFrames[RANGE_BASELINE_INDEX] == nil then
-		CreateRangeGate(self, RANGE_BASELINE_INDEX, fillDirection)
+		self:_CreateRangeGate(RANGE_BASELINE_INDEX, fillDirection)
 		created = true
 	end
 	for index = #self.rangeOverlayFrames + 1, count do
-		CreateRangeGate(self, index, fillDirection)
+		self:_CreateRangeGate(index, fillDirection)
 		created = true
 	end
 
@@ -1346,8 +1374,7 @@ end
 ---@return boolean
 local function EndCapTrackSlot(slot, state)
 	-- TEMPORARY: tick counter for /trb endcap. Remove with the probe.
----@diagnostic disable-next-line: inject-field
-	slot._endCapTrackTicks = (slot._endCapTrackTicks or 0) + 1
+	slot.endCapTrackTicks = (slot.endCapTrackTicks or 0) + 1
 	if slot.endCapClipFrame == nil or slot.parentNode == nil or slot.parentNode:IsEngineDriven() then
 		return false
 	end
@@ -1356,7 +1383,7 @@ local function EndCapTrackSlot(slot, state)
 	if ratio == nil then
 		-- A secret fill stays unmeasurable for its whole life, so drop any correction left over from when
 		-- the bar was last readable rather than leaving it riding along behind the fill.
-		if slot._endCapOvershoot ~= 0 then
+		if slot.endCapOvershoot ~= 0 then
 			slot:ReanchorEndCap()
 		end
 		return false
@@ -1417,8 +1444,8 @@ function TRB.Classes.OverlaySlot:ReanchorEndCap(force, overshoot)
 	if parent:IsEngineDriven() then
 		self.endCapClipFrame:Hide()
 		self.endCapReady = false
-		self._endCapAnchorSig = nil
-		self._endCapOvershoot = nil
+		self.endCapAnchorSig = nil
+		self.endCapOvershoot = nil
 		self:StopEndCapTracking()
 		return
 	end
@@ -1435,25 +1462,28 @@ function TRB.Classes.OverlaySlot:ReanchorEndCap(force, overshoot)
 	-- (which depends on the fill ratio) actually changes. Fields, not a string: the tracker asks every frame.
 	local fillTexture = parent.frame:GetStatusBarTexture()
 	local roundedOvershoot = math.floor(overshoot + 0.5)
-	local sig = self._endCapAnchorSig
+	local sig = self.endCapAnchorSig
 	if force ~= true and self.endCapReady and sig ~= nil and sig.border == parent.border and sig.width == parent.width
 		and sig.height == parent.height and sig.fillDirection == fillDirection and sig.fullHeight == self.fullHeight
 		and sig.fillTexture == fillTexture and sig.endCapWidth == self.endCapWidth and sig.overshoot == roundedOvershoot then
 		return
 	end
 	if sig == nil then
-		sig = {}
-		self._endCapAnchorSig = sig
+		self.endCapAnchorSig = {
+			border = parent.border, width = parent.width, height = parent.height, fillDirection = fillDirection,
+			fullHeight = self.fullHeight, fillTexture = fillTexture, endCapWidth = self.endCapWidth, overshoot = roundedOvershoot,
+		}
+	else
+		sig.border = parent.border
+		sig.width = parent.width
+		sig.height = parent.height
+		sig.fillDirection = fillDirection
+		sig.fullHeight = self.fullHeight
+		sig.fillTexture = fillTexture
+		sig.endCapWidth = self.endCapWidth
+		sig.overshoot = roundedOvershoot
 	end
-	sig.border = parent.border
-	sig.width = parent.width
-	sig.height = parent.height
-	sig.fillDirection = fillDirection
-	sig.fullHeight = self.fullHeight
-	sig.fillTexture = fillTexture
-	sig.endCapWidth = self.endCapWidth
-	sig.overshoot = roundedOvershoot
-	self._endCapOvershoot = overshoot
+	self.endCapOvershoot = overshoot
 
 	-- Both axes trim to the inner bar: the cap draws above the backdrop edge, so its sub-pixel spill
 	-- would otherwise land on the border and read as a taller cap.
@@ -1531,8 +1561,8 @@ function TRB.Classes.OverlaySlot:CreateEndCap()
 	self.endCapFrame = band
 	self.endCapReady = false
 	-- Reset memoized state so the freshly-created frame re-applies anchor/color.
-	self._endCapAnchorSig = nil
-	self._endCapOvershoot = nil
+	self.endCapAnchorSig = nil
+	self.endCapOvershoot = nil
 	self._endCapColorFlat = false
 
 	-- After one frame, reanchor the clip to the correct position on the bar.

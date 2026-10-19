@@ -16,22 +16,36 @@ local barNodeCounter = 0
 ---A bar's side ability icon: a bordered backdrop frame wrapping a single texture.
 ---@class TRB.Classes.BarNode.Icon : Frame
 ---@field public texture Texture
----@field public _tooltipProvider fun():any, integer?|nil # Supplies the hovered spell id and its invalidation token; nil disables the tooltip
----@field public _tooltipToken integer? # Token the currently-shown tooltip was built from
----@field public _tooltipElapsed number? # Throttle accumulator for the hover refresh
+---@field public tooltipProvider fun():any, integer?|nil # Supplies the hovered spell id and its invalidation token; nil disables the tooltip
+---@field public tooltipToken integer? # Token the currently-shown tooltip was built from
+---@field public tooltipElapsed number? # Throttle accumulator for the hover refresh
 
 ---The uninterruptible shield: a dedicated frame wrapping a single texture. It gets its own frame (not just
 ---a texture) so its frame level can be set per-mode -- above the icon frame to draw over it, below the bar
 ---to peek out behind. Draw layers alone can't order across separate frames.
 ---@class TRB.Classes.BarNode.Shield : Frame
 ---@field public texture Texture
----@field public _mode trbCastBarIconShieldMode? # Last mode applied by ApplyShieldLayout, so the setters can re-assert the frame level each show
----@field public _levelAnchor Frame? # Frame the shield's level is derived from ("over" -> the icon), so a re-leveled icon doesn't leave the shield stranded below it
+---@field public mode trbCastBarIconShieldMode? # Last mode applied by ApplyShieldLayout, so the setters can re-assert the frame level each show
+---@field public levelAnchor Frame? # Frame the shield's level is derived from ("over" -> the icon), so a re-leveled icon doesn't leave the shield stranded below it
+
+---A threshold line's spell icon with its cooldown swipe.
+---@class TRB.Classes.ThresholdFrame.Icon : Frame, BackdropTemplate
+---@field public texture Texture
+---@field public cooldown Cooldown
+
+---A threshold line registered on a node. Functions/Threshold.lua's Reset functions create its pieces.
+---@class TRB.Classes.ThresholdFrame : Frame
+---@field public texture Texture
+---@field public hasIcon boolean
+---@field public icon TRB.Classes.ThresholdFrame.Icon? # Only on thresholds that show an icon
+---@field public lineThickness number?
+---@field public trbWidth number? # Size last written, so repeat writes are skipped
+---@field public trbHeight number?
 
 ---@class TRB.Classes.BarNode
 ---@field public frame StatusBar # The single consolidated StatusBar frame
 ---@field public overlaySlots table<string, TRB.Classes.OverlaySlot> # Named overlay slots keyed by slot name
----@field public thresholds Frame[]
+---@field public thresholds TRB.Classes.ThresholdFrame[]
 ---@field public index integer
 ---@field public name string
 ---@field public width number
@@ -41,7 +55,7 @@ local barNodeCounter = 0
 ---@field public smooth boolean?
 ---@field public borderTexture string? # Stored border texture path for toggling edge visibility
 ---@field public backgroundTexture string? # Stored background texture path, reused for the side ability icon's backdrop
----@field public _gradientActive boolean? # Whether a gradient is currently applied to the fill texture
+---@field public gradientActive boolean? # Whether a gradient is currently applied to the fill texture
 ---@field public fillDirection trbFillDirection? # Current fill direction for this node
 ---@field public group TRB.Classes.BarGroup? # Back-reference to the owning BarGroup
 ---@field public engineDriven boolean? # True while the aura engine owns this node's fill; nil when the node fills itself
@@ -49,8 +63,22 @@ local barNodeCounter = 0
 ---@field public endCapConfig table? # Active end cap config: { color, width, useBorderColor, useBorderColorExceptDefault, defaultBorderColor }; nil when disabled
 ---@field public endCapIndicatorActive boolean? # Whether a Color Indicator owned the end cap color last frame (so it reverts cleanly when the indicator drops)
 ---@field public icon TRB.Classes.BarNode.Icon? # Side ability icon frame (lazily created by EnsureIcon); nil when the bar has no icon
----@field public _iconTexture string|integer? # Last texture applied to the icon, so repeat sets are skipped
----@field public _iconBorder integer? # Border thickness the icon's backdrop was laid out with, so it can be rebuilt
+---@field public iconTexture string|integer? # Last texture applied to the icon, so repeat sets are skipped
+---@field private _iconBorder integer? # Border thickness the icon's backdrop was laid out with, so it can be rebuilt
+---@field private _iconBorderR number? # Last icon border color written, so repeat writes are skipped
+---@field private _iconBorderG number?
+---@field private _iconBorderB number?
+---@field private _iconBorderA number?
+---@field private _iconBackgroundR number? # Last icon background color written, so repeat writes are skipped
+---@field private _iconBackgroundG number?
+---@field private _iconBackgroundB number?
+---@field private _iconBackgroundA number?
+---@field private _ecEnabled boolean? # End cap inputs last applied, so ApplyEndCap skips unchanged calls
+---@field private _ecColor string?
+---@field private _ecWidth number?
+---@field private _ecUseBC boolean?
+---@field private _ecUseBCED boolean?
+---@field private _ecDefaultBorder string?
 ---@field public shield TRB.Classes.BarNode.Shield? # Uninterruptible shield (lazily created by EnsureShield); its own frame so its level can order above the icon or below the bar
 ---@field public markerFrame Frame? # Topmost overlay frame for tick and stage lines (lazily created by GetMarkerFrame)
 ---@field public fillWrites integer # Bumped by fill writes that leave no color cache entry (curve, gradient, texture)
@@ -113,23 +141,23 @@ function TRB.Classes.BarNode:New(parent, name, index)
 end
 
 ---Writes the side icon's border color unless it already holds it.
----@param node TRB.Classes.BarNode
-local function SetIconBorderColor(node, r, g, b, a)
-	if node._iconBorderR == r and node._iconBorderG == g and node._iconBorderB == b and node._iconBorderA == a then
+---@private
+function TRB.Classes.BarNode:_SetIconBorderColor(r, g, b, a)
+	if self._iconBorderR == r and self._iconBorderG == g and self._iconBorderB == b and self._iconBorderA == a then
 		return
 	end
-	node._iconBorderR, node._iconBorderG, node._iconBorderB, node._iconBorderA = r, g, b, a
-	node.icon:SetBackdropBorderColor(r, g, b, a)
+	self._iconBorderR, self._iconBorderG, self._iconBorderB, self._iconBorderA = r, g, b, a
+	self.icon:SetBackdropBorderColor(r, g, b, a)
 end
 
 ---Writes the side icon's background color unless it already holds it.
----@param node TRB.Classes.BarNode
-local function SetIconBackgroundColor(node, r, g, b, a)
-	if node._iconBackgroundR == r and node._iconBackgroundG == g and node._iconBackgroundB == b and node._iconBackgroundA == a then
+---@private
+function TRB.Classes.BarNode:_SetIconBackgroundColor(r, g, b, a)
+	if self._iconBackgroundR == r and self._iconBackgroundG == g and self._iconBackgroundB == b and self._iconBackgroundA == a then
 		return
 	end
-	node._iconBackgroundR, node._iconBackgroundG, node._iconBackgroundB, node._iconBackgroundA = r, g, b, a
-	node.icon:SetBackdropColor(r, g, b, a)
+	self._iconBackgroundR, self._iconBackgroundG, self._iconBackgroundB, self._iconBackgroundA = r, g, b, a
+	self.icon:SetBackdropColor(r, g, b, a)
 end
 
 ---Sets the value of the StatusBar
@@ -279,19 +307,19 @@ function TRB.Classes.BarNode:SetColorGradient(color1String, color2String, direct
 		texture:SetGradient(apiDirection, minColor, maxColor)
 	end
 
-	self._gradientActive = true
+	self.gradientActive = true
 	cache[cacheKey] = { color1 = color1String, color2 = color2String, direction = direction }
 end
 
 ---Clears any active gradient on the bar fill texture, resetting it to a neutral white-to-white gradient.
 function TRB.Classes.BarNode:ClearGradient()
-	if not self._gradientActive then return end
+	if not self.gradientActive then return end
 	local texture = self.frame:GetStatusBarTexture()
 	if texture then
 		local white = CreateColor(1, 1, 1, 1)
 		texture:SetGradient("HORIZONTAL", white, white)
 	end
-	self._gradientActive = false
+	self.gradientActive = false
 	TRB.Data.cache.colors.gradient[self.gradientKey] = nil
 end
 
@@ -530,7 +558,7 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 	TRB.Data.cache.colors.border[self.borderKey] = nil
 	TRB.Data.cache.colors.backdrop[self.backgroundKey] = nil
 	TRB.Data.cache.colors.gradient[self.gradientKey] = nil
-	self._gradientActive = false
+	self.gradientActive = false
 
 	-- The icon's backdrop is built from these same textures, and layout may have run before them
 	self:ApplyIconBackdrop()
@@ -696,12 +724,12 @@ function TRB.Classes.BarNode:Destroy()
 		if GameTooltip:IsOwned(self.icon) then
 			GameTooltip:Hide()
 		end
-		self.icon._tooltipProvider = nil
+		self.icon.tooltipProvider = nil
 		self.icon:Hide()
 		self.icon:SetParent(nil)
 		self.icon:ClearAllPoints()
 		self.icon = nil
-		self._iconTexture = nil
+		self.iconTexture = nil
 	end
 	-- Clear the global name reference so CreateFrame won't return this stale frame
 	local frameName = self.frame:GetName()
@@ -849,23 +877,24 @@ function TRB.Classes.BarNode:ApplyShieldLayout(mode, target, sizePercent, anchor
 	-- re-assert it every show: the bar/icon can be re-leveled after this one-time layout (group reconstruct,
 	-- show/hide cycle), which would otherwise strand a snapshotted "over" shield below the raised icon.
 	shield:SetFrameStrata(self.frame:GetFrameStrata())
-	shield._mode = mode
+	shield.mode = mode
 	-- "over" derives from the icon when present (draw above it); everything else keys off the bar.
-	shield._levelAnchor = (mode == "over" and self.icon ~= nil) and self.icon or self.frame
+	shield.levelAnchor = (mode == "over" and self.icon ~= nil) and self.icon or self.frame
 	self:_ReassertShieldLevel()
 end
 
 ---Recomputes the shield's frame level from its level-anchor's CURRENT level. "over" sits one above its
 ---anchor (the icon, else the bar); "behind" drops below the bar so it peeks out around everything. Called
 ---at layout and again on every show, so a re-leveled bar/icon never leaves the shield stranded.
+---@private
 function TRB.Classes.BarNode:_ReassertShieldLevel()
 	local shield = self.shield
-	if shield == nil or shield._levelAnchor == nil then
+	if shield == nil or shield.levelAnchor == nil then
 		return
 	end
 	shield:SetFrameStrata(self.frame:GetFrameStrata())
-	local anchorLevel = shield._levelAnchor:GetFrameLevel()
-	shield:SetFrameLevel(shield._mode == "over" and (anchorLevel + 1) or math.max(anchorLevel - 1, 0))
+	local anchorLevel = shield.levelAnchor:GetFrameLevel()
+	shield:SetFrameLevel(shield.mode == "over" and (anchorLevel + 1) or math.max(anchorLevel - 1, 0))
 end
 
 ---Shows or hides the uninterruptible shield, tinting it to the given RGB and alpha. Used by the player cast
@@ -952,7 +981,7 @@ function TRB.Classes.BarNode:ApplyIconBorderColor()
 	end
 	local cached = TRB.Data.cache.colors.border[self.borderKey]
 	if cached then
-		SetIconBorderColor(self, cached.r, cached.g, cached.b, cached.a)
+		self:_SetIconBorderColor(cached.r, cached.g, cached.b, cached.a)
 	end
 end
 
@@ -965,7 +994,7 @@ function TRB.Classes.BarNode:SetIconBorderColorString(colorString)
 		return
 	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
-	SetIconBorderColor(self, r, g, b, a)
+	self:_SetIconBorderColor(r, g, b, a)
 end
 
 ---Applies the node's current background color to the side ability icon, so an empty icon matches the bar
@@ -976,7 +1005,7 @@ function TRB.Classes.BarNode:ApplyIconBackgroundColor()
 	end
 	local cached = TRB.Data.cache.colors.backdrop[self.backgroundKey]
 	if cached then
-		SetIconBackgroundColor(self, cached.r, cached.g, cached.b, cached.a)
+		self:_SetIconBackgroundColor(cached.r, cached.g, cached.b, cached.a)
 	end
 end
 
@@ -988,21 +1017,21 @@ function TRB.Classes.BarNode:SetIconBackgroundColorString(colorString)
 		return
 	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
-	SetIconBackgroundColor(self, r, g, b, a)
+	self:_SetIconBackgroundColor(r, g, b, a)
 end
 
 ---Sets the side ability icon's texture. Passing nil hides the icon.
 ---@param texture string|integer? # Texture path or fileID
 function TRB.Classes.BarNode:SetIconTexture(texture)
 	if texture == nil then
-		self._iconTexture = nil
+		self.iconTexture = nil
 		self:SetIconVisible(false)
 		return
 	end
 	local icon = self:EnsureIcon()
-	if self._iconTexture ~= texture then
+	if self.iconTexture ~= texture then
 		icon.texture:SetTexture(texture)
-		self._iconTexture = texture
+		self.iconTexture = texture
 	end
 end
 
@@ -1012,15 +1041,15 @@ end
 ---@param texture any # Texture path/fileID (may be secret); nil hides the icon
 function TRB.Classes.BarNode:SetIconTextureRaw(texture)
 	if texture == nil then
-		self._iconTexture = nil
+		self.iconTexture = nil
 		self:SetIconVisible(false)
 		return
 	end
 	local icon = self:EnsureIcon()
 	icon.texture:SetTexture(texture)
-	-- Leave _iconTexture unset: a secret can't be stored for comparison, and the next plain SetIconTexture
+	-- Leave iconTexture unset: a secret can't be stored for comparison, and the next plain SetIconTexture
 	-- must not short-circuit against a stale value.
-	self._iconTexture = nil
+	self.iconTexture = nil
 end
 
 ---Shows the side ability icon as an empty placeholder: art cleared, backdrop (border + bar background) still
@@ -1031,7 +1060,7 @@ function TRB.Classes.BarNode:ShowIconPlaceholder()
 		return
 	end
 	icon.texture:SetTexture(nil)
-	self._iconTexture = nil
+	self.iconTexture = nil
 	icon:Show()
 end
 
@@ -1055,7 +1084,7 @@ local ICON_TOOLTIP_REFRESH_INTERVAL = 0.1
 ---Rebuilds, keeps, or hides the icon's tooltip against what its provider currently reports.
 ---@param icon TRB.Classes.BarNode.Icon
 local function RefreshIconTooltip(icon)
-	local provider = icon._tooltipProvider
+	local provider = icon.tooltipProvider
 	local spellId, token
 	if provider ~= nil then
 		spellId, token = provider()
@@ -1064,17 +1093,17 @@ local function RefreshIconTooltip(icon)
 		if GameTooltip:IsOwned(icon) then
 			GameTooltip:Hide()
 		end
-		icon._tooltipToken = nil
+		icon.tooltipToken = nil
 		return
 	end
 	-- No token means the id is secret and so uncomparable; rebuild every refresh rather than go stale.
-	if token ~= nil and token == icon._tooltipToken and GameTooltip:IsOwned(icon) then
+	if token ~= nil and token == icon.tooltipToken and GameTooltip:IsOwned(icon) then
 		return
 	end
 	GameTooltip:SetOwner(icon, "ANCHOR_RIGHT")
 	-- The id may be secret. SetSpellByID is a terminal display sink, so it renders one all the same.
 	GameTooltip:SetSpellByID(spellId)
-	icon._tooltipToken = token
+	icon.tooltipToken = token
 end
 
 ---Clears any tooltip the icon currently owns.
@@ -1083,18 +1112,18 @@ local function HideIconTooltip(icon)
 	if GameTooltip:IsOwned(icon) then
 		GameTooltip:Hide()
 	end
-	icon._tooltipToken = nil
+	icon.tooltipToken = nil
 end
 
 ---Throttled hover poll, installed only while the cursor is on the icon.
 ---@param icon TRB.Classes.BarNode.Icon
 ---@param elapsed number
 local function IconTooltipOnUpdate(icon, elapsed)
-	icon._tooltipElapsed = (icon._tooltipElapsed or 0) + elapsed
-	if icon._tooltipElapsed < ICON_TOOLTIP_REFRESH_INTERVAL then
+	icon.tooltipElapsed = (icon.tooltipElapsed or 0) + elapsed
+	if icon.tooltipElapsed < ICON_TOOLTIP_REFRESH_INTERVAL then
 		return
 	end
-	icon._tooltipElapsed = 0
+	icon.tooltipElapsed = 0
 	RefreshIconTooltip(icon)
 end
 
@@ -1107,7 +1136,7 @@ function TRB.Classes.BarNode:SetIconTooltipProvider(provider)
 		return
 	end
 
-	icon._tooltipProvider = provider
+	icon.tooltipProvider = provider
 	if provider == nil then
 		HideIconTooltip(icon)
 		icon:SetScript("OnEnter", nil)
@@ -1120,7 +1149,7 @@ function TRB.Classes.BarNode:SetIconTooltipProvider(provider)
 	icon:SetMouseClickEnabled(false)
 	icon:SetMouseMotionEnabled(true)
 	icon:SetScript("OnEnter", function(frame)
-		frame._tooltipElapsed = 0
+		frame.tooltipElapsed = 0
 		RefreshIconTooltip(frame)
 		-- Poll only while hovered: a cast can start, swap spell, or end under a stationary cursor.
 		frame:SetScript("OnUpdate", IconTooltipOnUpdate)
@@ -1132,8 +1161,8 @@ function TRB.Classes.BarNode:SetIconTooltipProvider(provider)
 end
 
 ---Registers a threshold frame with this node, or creates one at the specified index
----@param thresholdFrameOrIndex Frame|integer # Either a Frame to register, or an index to create a new threshold at
----@return Frame # The registered or created threshold frame
+---@param thresholdFrameOrIndex TRB.Classes.ThresholdFrame|integer # Either a Frame to register, or an index to create a new threshold at
+---@return TRB.Classes.ThresholdFrame # The registered or created threshold frame
 function TRB.Classes.BarNode:RegisterThreshold(thresholdFrameOrIndex)
 	local thresholdFrame
 	local index
@@ -1171,7 +1200,7 @@ function TRB.Classes.BarNode:ClearThresholds()
 end
 
 ---Gets all registered thresholds
----@return Frame[]
+---@return TRB.Classes.ThresholdFrame[]
 function TRB.Classes.BarNode:GetThresholds()
 	return self.thresholds
 end

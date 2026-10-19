@@ -2014,7 +2014,7 @@ local function RefreshCastbarUnitLookupData(unit, settings)
 	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
 	local lookup = TRB.Data.lookup
 	local lookupLogic = TRB.Data.lookupLogic
-	---@diagnostic disable-next-line: undefined-field
+	---@type TRB.Classes.Settings.CastbarBar?
 	local castbarSettings = settings and settings.bars and settings.bars[unit.modelKey]
 	local castTimeFormat = GetPrecisionFormat((castbarSettings and castbarSettings.castTimePrecision) or 1)
 	local durationFormat = GetPrecisionFormat((castbarSettings and castbarSettings.durationPrecision) or 1)

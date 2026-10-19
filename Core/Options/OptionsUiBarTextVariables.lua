@@ -533,18 +533,18 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 
 				local rowData = data[realrow]
 				if rowData and rowData.isHeader then
-					if cellFrame._addIcon then cellFrame._addIcon:Hide() end
+					if cellFrame.addIcon then cellFrame.addIcon:Hide() end
 				else
 					-- Create the icon texture once per cell, reuse thereafter
-					if not cellFrame._addIcon then
+					if not cellFrame.addIcon then
 						local icon = cellFrame:CreateTexture(nil, "ARTWORK")
 						icon:SetSize(10, 10)
 						icon:SetPoint("CENTER", cellFrame, "CENTER", 0, 0)
 						-- Use a white base texture so SetVertexColor has full range
 						icon:SetAtlas("communities-chat-icon-plus")
-						cellFrame._addIcon = icon
+						cellFrame.addIcon = icon
 					end
-					local icon = cellFrame._addIcon
+					local icon = cellFrame.addIcon
 					icon:Show()
 					local hasActiveEditBox = TRB.Frames.activeBarTextEditBox ~= nil
 					if hasActiveEditBox then

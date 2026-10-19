@@ -311,7 +311,7 @@ end
 ---@return number # 0..1
 local function GetRunningAlpha(barKey, visibility)
 	local conditions = visibility ~= nil and visibility.conditions or nil
-	if conditions ~= nil and (conditions.whenActive == true
+	if visibility ~= nil and conditions ~= nil and (conditions.whenActive == true
 		or (conditions.heldByMovement == true and IsHeldByMovement(BAR_BY_KEY[barKey]))) then
 		return ((visibility.activeAlpha) or 100) / 100
 	end
@@ -1236,7 +1236,7 @@ function TRB.Functions.OtherBars:SyncSwingEvents()
 	for _, entry in ipairs(BARS) do
 		if entry.kind == "swing" then
 			local _, colors, visibility = GetBarConfig(entry.key)
-			if IsEnabled(visibility) then
+			if visibility ~= nil and IsEnabled(visibility) then
 				anyEnabled = true
 				if entry.heldByMovement then
 					tracksMovement = true

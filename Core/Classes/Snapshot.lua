@@ -10,8 +10,23 @@ TRB.Classes = TRB.Classes or {}
 ---@field public casting TRB.Classes.SnapshotCasting
 ---@field public audio table
 ---@field public attributes table
----@field public formatted table<string, string|number|boolean> Pre-formatted display strings, populated at event time
+---@field public formatted TRB.Classes.SnapshotFormatted Pre-formatted display strings, populated at event time
 TRB.Classes.SnapshotData = {}
+
+---An additional power's values and display strings, written by Character:UpdateAdditionalPowerValues.
+---@class TRB.Classes.AdditionalPowerValues
+---@field public current number
+---@field public max number
+---@field public percent number # Raw fraction for bar text conditionals
+---@field public currentFormatted string
+---@field public maxFormatted string
+---@field public percentFormatted string # Scaled to 100 at `precision` decimals
+---@field public precision integer
+---@field public dirty boolean # A power event changed the value since the last read
+
+---@class TRB.Classes.SnapshotFormatted
+---@field public additionalPower table<string, TRB.Classes.AdditionalPowerValues> # Keyed by power token, e.g. "MANA"
+---@field [string] string|number|boolean
 TRB.Classes.SnapshotData.__index = TRB.Classes.SnapshotData
 
 ---Creates a new SnapshotData object
@@ -32,8 +47,7 @@ function TRB.Classes.SnapshotData:New(attributes)
 	---Pre-formatted display strings, populated at event time so the render tick
 	---can copy them into lookup[] without redoing expensive string.format / number
 	---abbreviation work.  Keys mirror the lookup variable names minus the "$" prefix.
-	---@type table<string, string|number|boolean>
-	self.formatted = {}
+	self.formatted = { additionalPower = {} }
 
 	return self
 end

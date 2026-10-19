@@ -1763,9 +1763,9 @@ end
 ---Default Pet Cast Bar settings: the player Cast Bar's, less what only the player's casts have, flush
 ---under Pet Health.
 ---@param classic boolean?
----@return table
+---@return TRB.Classes.Settings.CastbarBar
 function TRB.Functions.Settings:DefaultPetCastbarBarSettings(classic)
-	local settings = self:DefaultCastbarBarDimensions(classic)
+	local settings = self:DefaultCastbarBarDimensions(classic) --[[@as TRB.Classes.Settings.CastbarBar]]
 	settings.fullWidth = false
 	settings.width = 200
 	settings.height = 16

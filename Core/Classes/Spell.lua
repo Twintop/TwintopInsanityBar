@@ -128,8 +128,8 @@ end
 ---@field private _lastCastTimeValue number # Current cast time of the spell in seconds
 ---@field private _baseCastTime number? # Base (first non-zero) cast time seen, used to detect procs
 ---@field private _isInstantCurrently boolean # Is this ability instant cast currently when it usually has a cast time?
----@field private _rankedId integer? # Rank resolved by the flavor's ResolveSpellRankId, cached by the flavor
----@field private _rankGeneration integer? # Spellbook generation the cached rank was resolved at
+---@field public rankedId integer? # Rank resolved by the flavor's ResolveSpellRankId, cached by the flavor
+---@field public rankGeneration integer? # Spellbook generation the cached rank was resolved at
 TRB.Classes.SpellBase = {}
 TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
 

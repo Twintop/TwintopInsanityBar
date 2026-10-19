@@ -2026,14 +2026,16 @@ local function ConstructProfileDefaultsPanel()
 end
 
 
+local globalPanelConstructed = false
+
 ---Constructs the top-level addon options panel, registers it with Blizzard's settings UI, and builds the global options, import/export, and class/spec navigation entries. Idempotent: only executes once.
 function TRB.Options:ConstructOptionsPanel()
 	-- Idempotency guard: this function is called by every class module's ConstructOptionsPanel.
 	-- Only execute once; subsequent calls are no-ops.
-	if TRB.Options._globalPanelConstructed then
+	if globalPanelConstructed then
 		return
 	end
-	TRB.Options._globalPanelConstructed = true
+	globalPanelConstructed = true
 
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	interfaceSettingsFrame.controls = {}

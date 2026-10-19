@@ -231,13 +231,13 @@ end
 local function GetStageLinePool(node)
 	local frame = node.frame
 	---@diagnostic disable-next-line: inject-field
-	local pool = frame._trbTargetStageLines
+	local pool = frame.trbTargetStageLines
 	if pool ~= nil and pool.frame == frame then
 		return pool
 	end
 	pool = { frame = frame, lines = {} }
 	---@diagnostic disable-next-line: inject-field
-	frame._trbTargetStageLines = pool
+	frame.trbTargetStageLines = pool
 	return pool
 end
 

@@ -480,6 +480,11 @@ local function EndCapProbeSpan(edge, origin, fillDirection)
 end
 
 ---Resolves the probed bar node, frame, end cap slot, cap band, and fill texture.
+---@return TRB.Classes.BarNode? node
+---@return StatusBar? frame
+---@return TRB.Classes.OverlaySlot? slot
+---@return Frame? band
+---@return Texture? tex
 local function EndCapProbeParts()
 	local group = TRB.Frames.barGroups and TRB.Frames.barGroups[endCapProbeGroupKey] or nil
 	local node = group and group:GetNode(1) or nil
@@ -502,10 +507,14 @@ local function EndCapProbeFinish(reason)
 			EndCapProbeFmt(node.width), EndCapProbeFmt(node.border), tostring(node.fillDirection),
 			EndCapProbeFmt(slot and slot.endCapWidth or nil), tostring(slot and slot.endCapReady),
 			tostring(node.endCapConfig ~= nil)))
-		local sig = slot and slot._endCapAnchorSig
-		print(sig == nil and "  sig=nil" or string.format("  sig=%s|%s|%s|%s|%s|%s|%s|%s", tostring(sig.border), tostring(sig.width),
-			tostring(sig.height), tostring(sig.fillDirection), tostring(sig.fullHeight), tostring(sig.fillTexture),
-			tostring(sig.endCapWidth), tostring(sig.overshoot)))
+		local sig = slot and slot.endCapAnchorSig
+		if sig == nil then
+			print("  sig=nil")
+		else
+			print(string.format("  sig=%s|%s|%s|%s|%s|%s|%s|%s", tostring(sig.border), tostring(sig.width),
+				tostring(sig.height), tostring(sig.fillDirection), tostring(sig.fullHeight), tostring(sig.fillTexture),
+				tostring(sig.endCapWidth), tostring(sig.overshoot)))
+		end
 	end
 	if #endCapProbeSamples == 0 then
 		print("  No frames captured at all -- the bar group had no node or no end cap band.")
@@ -548,11 +557,11 @@ endCapProbeFrame:SetScript("OnUpdate", function()
 	end
 
 	local node, frame, slot, band, tex = EndCapProbeParts()
-	if node == nil then
+	if node == nil or frame == nil then
 		EndCapProbeFinish("bar group has no node")
 		return
 	end
-	if band == nil or tex == nil then
+	if slot == nil or band == nil or tex == nil then
 		EndCapProbeFinish("no end cap band on this bar -- is End Cap enabled for it?")
 		return
 	end
@@ -579,8 +588,8 @@ endCapProbeFrame:SetScript("OnUpdate", function()
 		capEdge = capSpan ~= nil and string.format("%.2f", capSpan) or "?",
 		delta = (texSpan ~= nil and capSpan ~= nil) and (texSpan - capSpan) or nil,
 		oNow = EndCapProbeFmt(slot:GetEndCapOvershoot()),
-		oApp = EndCapProbeFmt(slot._endCapOvershoot),
-		ticks = tostring(slot._endCapTrackTicks or 0),
+		oApp = EndCapProbeFmt(slot.endCapOvershoot),
+		ticks = tostring(slot.endCapTrackTicks or 0),
 		value = EndCapProbeFmt(frame:GetValue()),
 	}
 

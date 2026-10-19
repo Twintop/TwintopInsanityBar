@@ -74,7 +74,7 @@ end
 ---@param node TRB.Classes.BarNode
 ---@return table?
 local function SourceGradient(node)
-	if not node._gradientActive then
+	if not node.gradientActive then
 		return nil
 	end
 	return TRB.Data.cache.colors.gradient[node.name .. "_gradient"]

@@ -19,7 +19,8 @@ local addonName, TRB = ...
 --   specs[].specGlobalId  global specialization ID (GetSpecializationInfoByID); informational, names come from GetSpecializationInfoForClassID
 --   specs[].resources     per-resource maximums shared by options panels and custom thresholds
 
----@type TRB.Flavor
+-- Stats.lua adds stats and statEvents.
+---@class TRB.Flavor
 TRB.Flavor = {
 	id = "mainline",
 	-- Localization key for the flavor's display name; resolved once localization has loaded.

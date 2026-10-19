@@ -1722,10 +1722,10 @@ local function HealthOverlayUnchanged(slot, colorEntry, texture, healthNode)
 	local mode = colorEntry and colorEntry.mode
 	local fullHeight = colorEntry and colorEntry.fullHeight == true
 	local color = colorEntry and colorEntry.color
-	local record = slot._healthInputs
+	local record = slot.healthInputs
 	if record == nil then
 		record = {}
-		slot._healthInputs = record
+		slot.healthInputs = record
 	elseif record.version == version and record.hasEntry == (colorEntry ~= nil) and record.enabled == enabled
 		and record.mode == mode and record.fullHeight == fullHeight and record.color == color and record.texture == texture
 		and record.width == healthNode.width and record.height == healthNode.height and record.fillDirection == healthNode.fillDirection then
@@ -4008,7 +4008,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					end
 					-- The strip is reserved either way, so show the frame: with art when something has assigned
 					-- it, else empty, which the render path then keeps asserting between casts.
-					if singleNode._iconTexture ~= nil then
+					if singleNode.iconTexture ~= nil then
 						singleNode:SetIconVisible(true)
 					else
 						singleNode:ShowIconPlaceholder()

@@ -997,7 +997,7 @@ function TRB.Functions.Color:SetIconVertexColorFromCurve(frame, colorResult)
 	local r, g, b, a = colorResult:GetRGBA()
 	frame.icon.texture:SetVertexColor(r, g, b, a)
 	-- Threshold.lua skips a white reset only while its record says the last write was white.
-	frame.icon.texture._trbVertexWhite = false
+	frame.icon.texture.trbVertexWhite = false
 end
 
 ---Applies a fill color to a BarNode, handling gradient entries automatically.

@@ -1746,7 +1746,7 @@ local function UpdateResourceBar()
 										thresholds[1]:SetWidth(specCacheSettings.thresholds.properties.width)
 									end
 									-- Drops the size record so RepositionThreshold still rewrites the size this tick, as before.
-									thresholds[1]._trbWidth = nil
+									thresholds[1].trbWidth = nil
 									
 									thresholds[1]:SetFrameLevel(frameLevel)
 									thresholds[1]:Show()

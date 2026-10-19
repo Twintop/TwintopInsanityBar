@@ -21,29 +21,29 @@ local UNDO_DEBOUNCE_SEC = 0.4
 local function AttachUndoRedo(editBox)
 	-- Private state stored directly on the frame
 ---@diagnostic disable-next-line: undefined-field, inject-field
-	editBox._undoHistory  = { editBox:GetText() or "" }
+	editBox.undoHistory  = { editBox:GetText() or "" }
 ---@diagnostic disable-next-line: undefined-field, inject-field
-	editBox._undoCursors  = { 0 }
+	editBox.undoCursors  = { 0 }
 ---@diagnostic disable-next-line: undefined-field, inject-field
-	editBox._undoIndex    = 1
+	editBox.undoIndex    = 1
 ---@diagnostic disable-next-line: undefined-field, inject-field
-	editBox._undoSuppress = false  -- flag: true while we are programmatically setting text
+	editBox.undoSuppress = false  -- flag: true while we are programmatically setting text
 ---@diagnostic disable-next-line: undefined-field, inject-field
-	editBox._undoTimer    = nil
+	editBox.undoTimer    = nil
 
 	--- Reset the undo stack (call when loading a different entry).
 	---@param initialText? string  If given, seeds the stack with this text.
 ---@diagnostic disable-next-line: undefined-field, inject-field
 	function editBox:ResetUndoHistory(initialText)
 ---@diagnostic disable-next-line: undefined-field, inject-field
-		if self._undoTimer then self._undoTimer:Cancel(); self._undoTimer = nil end
+		if self.undoTimer then self.undoTimer:Cancel(); self.undoTimer = nil end
 		local t = initialText or self:GetText() or ""
 ---@diagnostic disable-next-line: undefined-field, inject-field
-		self._undoHistory  = { t }
+		self.undoHistory  = { t }
 ---@diagnostic disable-next-line: undefined-field, inject-field
-		self._undoCursors  = { self:GetCursorPosition() or 0 }
+		self.undoCursors  = { self:GetCursorPosition() or 0 }
 ---@diagnostic disable-next-line: undefined-field, inject-field
-		self._undoIndex    = 1
+		self.undoIndex    = 1
 	end
 
 	---Pushes the current text and cursor position onto the undo stack, trimming any redo entries beyond the current index.
@@ -52,30 +52,30 @@ local function AttachUndoRedo(editBox)
 		local text   = self:GetText()
 		local cursor = self:GetCursorPosition() or 0
 		-- Don't push if identical to the current entry
-		if self._undoHistory[self._undoIndex] == text then return end
+		if self.undoHistory[self.undoIndex] == text then return end
 		-- Trim any redo entries beyond the current index
-		for i = #self._undoHistory, self._undoIndex + 1, -1 do
-			table.remove(self._undoHistory, i)
-			table.remove(self._undoCursors, i)
+		for i = #self.undoHistory, self.undoIndex + 1, -1 do
+			table.remove(self.undoHistory, i)
+			table.remove(self.undoCursors, i)
 		end
 		-- Push
-		table.insert(self._undoHistory, text)
-		table.insert(self._undoCursors, cursor)
+		table.insert(self.undoHistory, text)
+		table.insert(self.undoCursors, cursor)
 		-- Cap size
-		if #self._undoHistory > UNDO_MAX_HISTORY then
-			table.remove(self._undoHistory, 1)
-			table.remove(self._undoCursors, 1)
+		if #self.undoHistory > UNDO_MAX_HISTORY then
+			table.remove(self.undoHistory, 1)
+			table.remove(self.undoCursors, 1)
 		end
 ---@diagnostic disable-next-line: undefined-field, inject-field
-		self._undoIndex = #self._undoHistory
+		self.undoIndex = #self.undoHistory
 	end
 
 	-- Record text changes (debounced, user-input only)
 	editBox:HookScript("OnTextChanged", function(self, userInput)
-		if self._undoSuppress or not userInput then return end
-		if self._undoTimer then self._undoTimer:Cancel() end
-		self._undoTimer = C_Timer.NewTimer(UNDO_DEBOUNCE_SEC, function()
-			self._undoTimer = nil
+		if self.undoSuppress or not userInput then return end
+		if self.undoTimer then self.undoTimer:Cancel() end
+		self.undoTimer = C_Timer.NewTimer(UNDO_DEBOUNCE_SEC, function()
+			self.undoTimer = nil
 			PushState(self)
 		end)
 	end)
@@ -88,26 +88,26 @@ local function AttachUndoRedo(editBox)
 			if key == "Z" and not IsShiftKeyDown() then
 				handled = true
 				-- Flush any pending debounce so the current state is saved first
-				if self._undoTimer then
-					self._undoTimer:Cancel()
-					self._undoTimer = nil
+				if self.undoTimer then
+					self.undoTimer:Cancel()
+					self.undoTimer = nil
 					PushState(self)
 				end
-				if self._undoIndex > 1 then
-					self._undoIndex = self._undoIndex - 1
-					self._undoSuppress = true
-					self:SetText(self._undoHistory[self._undoIndex])
-					self:SetCursorPosition(self._undoCursors[self._undoIndex] or 0)
-					self._undoSuppress = false
+				if self.undoIndex > 1 then
+					self.undoIndex = self.undoIndex - 1
+					self.undoSuppress = true
+					self:SetText(self.undoHistory[self.undoIndex])
+					self:SetCursorPosition(self.undoCursors[self.undoIndex] or 0)
+					self.undoSuppress = false
 				end
 			elseif isRedo then
 				handled = true
-				if self._undoIndex < #self._undoHistory then
-					self._undoIndex = self._undoIndex + 1
-					self._undoSuppress = true
-					self:SetText(self._undoHistory[self._undoIndex])
-					self:SetCursorPosition(self._undoCursors[self._undoIndex] or 0)
-					self._undoSuppress = false
+				if self.undoIndex < #self.undoHistory then
+					self.undoIndex = self.undoIndex + 1
+					self.undoSuppress = true
+					self:SetText(self.undoHistory[self.undoIndex])
+					self:SetCursorPosition(self.undoCursors[self.undoIndex] or 0)
+					self.undoSuppress = false
 				end
 			end
 		end

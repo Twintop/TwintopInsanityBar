@@ -339,9 +339,6 @@ end
 do
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
 
-	---Rage shows in Bear Form, Energy and Combo Points in Cat Form, and Mana in every other form.
-	---@param barKey string
-	---@return boolean?
 	-- Forms drive the per-bar hide conditions only; every bar's visibility is its own settings.
 	SpecDescriptor:Declare("druid_general", {
 		manaBar = true,

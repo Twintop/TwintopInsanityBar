@@ -15,7 +15,8 @@ local addonName, TRB = ...
 --
 -- Field reference: see Flavors\Mainline\Manifest.lua and Core\FlavorRegistry.lua.
 
----@type TRB.Flavor
+-- Stats.lua adds stats and statEvents.
+---@class TRB.Flavor
 TRB.Flavor = {
 	id = "forever",
 	nameKey = "FlavorForever",
@@ -139,8 +140,8 @@ do
 	---@param spell TRB.Classes.SpellBase
 	---@return integer
 	function TRB.Flavor.ResolveSpellRankId(spell)
-		if spell._rankGeneration == generation and spell._rankedId ~= nil then
-			return spell._rankedId
+		if spell.rankGeneration == generation and spell.rankedId ~= nil then
+			return spell.rankedId
 		end
 		local rankedId = spell.id
 		for i = #spell.rankIds, 1, -1 do
@@ -150,8 +151,8 @@ do
 				break
 			end
 		end
-		spell._rankedId = rankedId
-		spell._rankGeneration = generation
+		spell.rankedId = rankedId
+		spell.rankGeneration = generation
 		return rankedId
 	end
 end

@@ -452,6 +452,11 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isPetAlive boolean? # Pet bars only: show while the pet is out and alive
 ---@field public isPetDead boolean? # Pet bars only: show while the pet is dead
 ---@field public isPetMissing boolean? # Pet bars only: show while there is no pet
+---@field public casting boolean? # Cast bars only: show while casting
+---@field public channeling boolean? # Cast bars only: show while channeling
+---@field public empowered boolean? # Cast bars only: show while empowering
+---@field public whenActive boolean? # Other Bars only: show while the timer runs
+---@field public heldByMovement boolean? # Ranged Swing only: show while movement delays the shot
 
 ---@class trbBarVisibilityHideConditions
 ---@field public isMountedAny boolean? # Hide when the player is mounted (any mount)
