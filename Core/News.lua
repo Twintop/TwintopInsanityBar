@@ -4,9 +4,9 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
-# Live 12.1.5.3-release / Forever 1.60.1.11-release (2026-10-20)
+# Live 12.1.5.3-beta01 / Forever 1.60.1.11-beta01 (2026-10-20)
 ## General
-    
+
 - [#853](#853) Improve bar update performance, primarily around bar visibility, threshold lines, bar text, the Health bar, and the cast bars.
 - [#853](#853) Fix bars with a Resource / Health Threshold visibility condition showing or hiding incorrectly while the bar flashes or fades.
 - [#853](#853) Fix the Location / Instances visibility conditions staying wrong after leaving a garrison.
