@@ -1258,11 +1258,17 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 				duration = 0
 			end
 		else
-			local spellCooldown = C_Spell.GetSpellCooldown(self.parent.spell:GetRankedId()) --[[@as SpellCooldownInfo]]
+			local spellCooldown = C_Spell.GetSpellCooldown(self.parent.spell:GetRankedId())
 			self.isActive = false
 			self.durationObject = nil
-			startTime = spellCooldown.startTime
-			duration = spellCooldown.duration
+			-- Nil for a spell the client doesn't know, like the charge path's GetSpellCharges.
+			if spellCooldown ~= nil then
+				startTime = spellCooldown.startTime
+				duration = spellCooldown.duration
+			else
+				startTime = 0
+				duration = 0
+			end
 		end
 
 		if self.parent.spell.hasCastCount == true then

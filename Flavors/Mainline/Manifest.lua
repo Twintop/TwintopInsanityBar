@@ -32,15 +32,16 @@ TRB.Flavor = {
 	skyriding = {
 		-- Surge Forward. Skyward Ascent spends the same charges.
 		chargeSpellId = 372608,
-		-- Whirling Surge, then Lightning Rush, which its choice node swaps in.
-		cooldownSpellIds = { 361584, 418592 },
+		-- Whirling Surge, and Lightning Rush, which its choice node swaps in for it.
+		whirlingSurgeSpellId = 361584,
+		lightningRushSpellId = 418592,
 		secondWindSpellId = 425782,
-		thrillOfTheSkiesBuffIds = { 377234, 1227961 },
-		groundSkimmingBuffIds = { 404184 },
+		thrillOfTheSkiesBuffId = 377234,
+		-- The copy that the second Skyriding aura (1227904) swaps in.
+		thrillOfTheSkiesAltBuffId = 1227961,
+		groundSkimmingBuffId = 404184,
 		-- Static Charge, which Lightning Rush needs ten stacks of.
 		staticChargeBuffId = 418590,
-		-- A cooldown this short is the abilities locking each other, not Whirling Surge's own.
-		abilityLockDuration = 1.5,
 		-- Top and passive (no abilities) speeds in percent of run speed, measured with /trb skyriding. Outside
 		-- the Dragon Isles both are 85% of the Dragon Isles values.
 		speedCaps = {

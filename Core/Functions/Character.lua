@@ -1354,6 +1354,8 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	-- change). Pass them directly: compositeKey isn't stamped yet on first login.
 	TRB.Functions.Castbar:SyncEnabledState(cache.settings)
 	TRB.Functions.PetCastbar:SyncEnabledState(cache.settings)
+	-- The Skyriding buffs are the player's, not the spec's, so they follow the snapshot data that is active.
+	TRB.Functions.Skyriding:SyncSnapshots()
 end
 
 ---Clears all cached color data (border, bar, backdrop, health curve, absorb border curve) and resets the RGBA parse memoization.
