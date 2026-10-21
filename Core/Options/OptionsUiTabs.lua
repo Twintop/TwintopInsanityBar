@@ -423,6 +423,39 @@ function TRB.Functions.OptionsUi.Tabs:BuildPetBarsInnerTabGroup(parent, classId,
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
 end
 
+---Builds the nested Skyriding sub-tab group inside a spec's Skyriding tab, one sub-tab per Skyriding bar.
+---@param parent Frame # The Skyriding tab's manual container frame
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.OptionsUi.Tabs:BuildSkyridingInnerTabGroup(parent, classId, specId)
+	if parent == nil then
+		return
+	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = "SkyridingInner_" .. tostring(className) .. "_" .. tostring(specName)
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local innerTabs = {}
+	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+		local barDef = registry:Get(barKey)
+		if barDef ~= nil then
+			local capturedKey = barKey
+			innerTabs[#innerTabs + 1] = {
+				capturedKey,
+				barDef.displayName,
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.Skyriding:ConstructPanel(scrollChild, classId, specId, capturedKey)
+				end,
+				visibilityKey = capturedKey,
+			}
+		end
+	end
+	if #innerTabs == 0 then
+		return
+	end
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
+end
+
 ---Builds a dynamic set of tabs and tabsheets for an options panel.
 ---Tabs automatically wrap to multiple rows when they would exceed the parent frame's width.
 ---@param parent Frame|TRB.Classes.OptionsUi.TabbedPanel The parent frame to attach tabs to (e.g., the spec display panel)
@@ -528,6 +561,33 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 				oUi.tabWidth.small,
 				function(scrollChild)
 					TRB.Functions.OptionsUi.Tabs:BuildPetBarsInnerTabGroup(scrollChild, cId, sId)
+				end,
+				true -- manual container: the inner sub-tabs provide their own scroll frames
+			})
+		end
+
+		-- Skyriding follows Pet, or Other Bars on a spec without one, where the flavor has skyriding.
+		local hasSkyridingTab = false
+		for _, def in ipairs(tabDefinitions) do
+			if def[1] == "skyriding" then
+				hasSkyridingTab = true
+				break
+			end
+		end
+		if not hasSkyridingTab and #TRB.Classes.BarTypeRegistry.skyridingBarKeys > 0 then
+			local cId, sId = castbarSpec.classId, castbarSpec.specId
+			local insertIndex = #tabDefinitions + 1
+			for i, def in ipairs(tabDefinitions) do
+				if def[1] == "petBars" or def[1] == "otherBars" then
+					insertIndex = i + 1
+				end
+			end
+			table.insert(tabDefinitions, insertIndex, {
+				"skyriding",
+				TRB.Localization["TabSkyriding"],
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.Tabs:BuildSkyridingInnerTabGroup(scrollChild, cId, sId)
 				end,
 				true -- manual container: the inner sub-tabs provide their own scroll frames
 			})

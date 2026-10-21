@@ -807,6 +807,50 @@ local function ConstructPetBarsOptionsPanel()
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "PetBars", tabDefinitions, -37)
 end
 
+---Constructs the top-level Skyriding panel: global settings for the Skyriding bars, tabbed like Other Bars. Only
+---a flavor with skyriding gets it.
+local function ConstructSkyridingOptionsPanel()
+	if #TRB.Classes.BarTypeRegistry.skyridingBarKeys == 0 then
+		return
+	end
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.core or {}
+	interfaceSettingsFrame.controls.core = controls
+	controls.colors = controls.colors or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.skyridingPanel = CreateFrame("Frame", "TwintopResourceBar_Options_SkyridingPanel")
+	TRB.Options.OptionsFrame:RegisterCategory("skyriding", L["TabSkyriding"], interfaceSettingsFrame.skyridingPanel)
+
+	local parent = interfaceSettingsFrame.skyridingPanel
+
+	controls.skyridingSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["SkyridingGlobalOptionsHeader"], oUi.xCoord, -5)
+
+	-- Core-scope profile dropdown, same position as on Global Options.
+	controls.skyridingProfileDropdown = TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, -10, "core", nil, nil, L["GlobalOptions"], "_Skyriding")
+
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	local tabDefinitions = {}
+	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+		local barDef = registry:Get(barKey)
+		if barDef ~= nil then
+			local capturedKey = barKey
+			tabDefinitions[#tabDefinitions + 1] = {
+				capturedKey,
+				barDef.displayName,
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.Skyriding:ConstructPanel(scrollChild, nil, nil, capturedKey)
+				end,
+				visibilityKey = capturedKey,
+			}
+		end
+	end
+
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Skyriding", tabDefinitions, -37)
+end
+
 -- Class/spec catalog for the profile/nav lists: identity from the registry, labels from the localized
 -- class and spec names the registry keys map to (L[classModuleName], L[specLocaleKey]).
 local function BuildProfileClassCatalog()
@@ -2148,6 +2192,7 @@ function TRB.Options:ConstructOptionsPanel()
 	ConstructCastbarOptionsPanel()
 	ConstructOtherBarsOptionsPanel()
 	ConstructPetBarsOptionsPanel()
+	ConstructSkyridingOptionsPanel()
 	ConstructImportExportPanel()
 	ConstructProfileDefaultsPanel()
 

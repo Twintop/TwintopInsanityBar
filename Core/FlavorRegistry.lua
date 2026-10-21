@@ -32,6 +32,21 @@ local addonName, TRB = ...
 ---@field public primary string[] # Events that invalidate the primary bucket; UNIT_ events register for the player
 ---@field public secondary string[]
 
+---@class TRB.Flavor.Skyriding
+---@field public chargeSpellId integer # Spell whose charges the Charges bar shows
+---@field public cooldownSpellIds integer[] # Spells whose own cooldown the Whirling Surge bar follows, first match wins
+---@field public secondWindSpellId integer
+---@field public thrillOfTheSkiesBuffIds integer[]
+---@field public groundSkimmingBuffIds integer[]
+---@field public staticChargeBuffId integer # The stacking buff Lightning Rush needs, from walls
+---@field public abilityLockDuration number # Seconds; a cooldown no longer than this is the abilities' shared lock
+---@field public speedCaps { default: TRB.Flavor.SkyridingSpeedCap, dragonIsles: TRB.Flavor.SkyridingSpeedCap }
+---@field public dragonIslesMapIds integer[] # UiMap ids whose maps and child maps use the Dragon Isles speed caps
+
+---@class TRB.Flavor.SkyridingSpeedCap
+---@field public max number # The Speed bar's maximum, in percent of run speed
+---@field public passive number # The fastest speed without abilities, where the Speed bar draws its line
+
 ---@class TRB.Flavor
 ---@field public id string # Flavor identifier; must equal the TOC's X-Flavor field
 ---@field public nameKey string # Localization key of the flavor's display name
@@ -39,6 +54,7 @@ local addonName, TRB = ...
 ---@field public gcdSpellId integer? # Dummy spell whose cooldown is the global cooldown; defaults to retail's 61304
 ---@field public unavailableVisibilityConditions table<string, boolean>? # Bar visibility condition keys the client can never satisfy (no flying, say); dropped from the options and the defaults
 ---@field public swingTimers boolean? # The client fires PLAYER_SWING, so the Main Hand, Off Hand, and Ranged Swing bars exist
+---@field public skyriding TRB.Flavor.Skyriding? # The client has skyriding, so the Skyriding bars exist
 ---@field public IsClientMatch fun(): boolean
 ---@field public GetSpecializationIndex fun(): integer? # Active specialization index in specs[] order, or nil when the client reports none
 ---@field public classes TRB.Flavor.ClassEntry[]

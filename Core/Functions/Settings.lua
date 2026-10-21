@@ -96,6 +96,10 @@ local function NewSpecGlobalDefaults()
 		defaults[key .. "Dimensions"] = true
 		defaults[key .. "Colors"] = true
 	end
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+		defaults[key .. "Dimensions"] = true
+		defaults[key .. "Colors"] = true
+	end
 	return defaults
 end
 
@@ -322,7 +326,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					otherBarsText = true,
 					hunterFeignDeathBarText = true,
 					petBarsText = true,
-					swingTimersText = true
+					swingTimersText = true,
+					skyridingBarText = true
 				}
 			},
 			-- Per-class/spec "use global" toggles; populated from the class/spec registry below.
@@ -377,6 +382,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	-- Pet bars too. Core has no one spec, so it takes every pet bar regardless of scope: it is the source
 	-- the pet specs' "Use Global" toggles read from.
 	self:InjectPetBarsDefaults(settings.core, nil, nil, classic, true)
+
+	self:InjectSkyridingDefaults(settings.core, classic)
 
 	return settings
 end
@@ -1331,6 +1338,56 @@ function TRB.Functions.Settings:SeedSwingTimersText(core)
 	displayText.migrations.swingTimersText = true
 end
 
+---Default Skyriding bar text: the speed on the Speed bar, each charge bar's refill time on its refilling charge,
+---and Whirling Surge's cooldown. Empty without Skyriding bars.
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:LoadDefaultSkyridingBarTextSettings()
+	local entries = {}
+	if TRB.Flavor.skyriding == nil then
+		return entries
+	end
+
+	local speed = self:LoadDefaultOtherBarTextSettings("SkyridingSpeedBar", L["ResourceSkyridingSpeed"], "$skyridingSpeed", "CENTER", 13)
+	speed.text = "{$skyridingSpeed}[$skyridingSpeed%]"
+	entries[#entries + 1] = speed
+
+	local chargesRecharge = self:LoadDefaultOtherBarTextSettings("SkyridingChargesRecharging", L["SkyridingChargesRecharging"], "$skyridingChargeTime", "CENTER", 11)
+	chargesRecharge.name = L["ResourceSkyridingCharges"]
+	entries[#entries + 1] = chargesRecharge
+
+	entries[#entries + 1] = self:LoadDefaultOtherBarTextSettings("WhirlingSurgeBar", L["ResourceWhirlingSurge"], "$whirlingSurgeTime", "CENTER", 10)
+
+	local secondWindRecharge = self:LoadDefaultOtherBarTextSettings("SecondWindRecharging", L["SecondWindRecharging"], "$secondWindTime", "CENTER", 10)
+	secondWindRecharge.name = L["ResourceSecondWind"]
+	entries[#entries + 1] = secondWindRecharge
+	return entries
+end
+
+---Seeds the Skyriding bars' default text into saved global bar text, from the flavor's PortForwardSettings.
+---Flagged so deleted entries stay deleted; the scan skips any Skyriding frame that already has text.
+---@param core table? # The saved core settings
+function TRB.Functions.Settings:SeedSkyridingBarsText(core)
+	local displayText = core ~= nil and core.displayText or nil
+	if displayText == nil or type(displayText.barText) ~= "table" then
+		return
+	end
+	displayText.migrations = displayText.migrations or {}
+	if not displayText.migrations.skyridingBarText then
+		local anchoredFrames = {}
+		for _, entry in ipairs(displayText.barText) do
+			if entry.position ~= nil and entry.position.relativeToFrame ~= nil then
+				anchoredFrames[entry.position.relativeToFrame] = true
+			end
+		end
+		for _, entry in ipairs(self:LoadDefaultSkyridingBarTextSettings()) do
+			if not anchoredFrames[entry.position.relativeToFrame] then
+				table.insert(displayText.barText, entry)
+			end
+		end
+	end
+	displayText.migrations.skyridingBarText = true
+end
+
 ---Gets the default Target/Focus Cast Bar colors. `bar` is the standard-cast fill, `channel` recolors a
 ---channel, `empower` recolors an empowered cast (differentiated by event), `uninterruptible` /
 ---`uninterruptibleBorder` recolor the fill / border when a hostile cast can't be interrupted (via the
@@ -1668,6 +1725,158 @@ function TRB.Functions.Settings:InjectOtherBarsDefaults(specDefaults, classId, c
 		end
 		if specDefaults.displayBar[key] == nil then
 			specDefaults.displayBar[key] = self:DefaultOtherBarVisibility(key)
+		end
+		local barTex = key .. "Bar"
+		if specDefaults.textures[barTex] == nil then
+			local tex = self:DefaultCustomBarTextures()
+			specDefaults.textures[barTex] = tex.bar
+			specDefaults.textures[key .. "BarName"] = tex.barName
+			specDefaults.textures[key .. "Border"] = tex.border
+			specDefaults.textures[key .. "BorderName"] = tex.borderName
+			specDefaults.textures[key .. "Background"] = tex.background
+			specDefaults.textures[key .. "BackgroundName"] = tex.backgroundName
+		end
+	end
+end
+
+-- Skyriding stack: Speed is the screen-anchored root, Charges and then Second Wind sit on top of it, and
+-- Whirling Surge hangs below. Maps bar key -> the key it anchors to and whether it sits above that bar.
+local skyridingAnchorParent = {
+	skyridingCharges = { barKey = "skyridingSpeed", above = true },
+	secondWind = { barKey = "skyridingCharges", above = true },
+	whirlingSurge = { barKey = "skyridingSpeed", above = false },
+}
+
+-- Bar heights in the stack.
+local skyridingBarHeights = {
+	skyridingSpeed = 20,
+	skyridingCharges = 14,
+	whirlingSurge = 10,
+	secondWind = 10,
+}
+
+-- A charge bar's width is per node, which only applies once it stops matching the Speed bar's width.
+local skyridingNodeWidths = {
+	skyridingCharges = 50,
+	secondWind = 100,
+}
+
+---Gets the default settings for one Skyriding bar.
+---@param classic boolean?
+---@param barKey string # "skyridingSpeed", "skyridingCharges", "whirlingSurge" or "secondWind"
+---@return TRB.Classes.Settings.SecondaryBar
+function TRB.Functions.Settings:DefaultSkyridingBarSettings(classic, barKey)
+	local settings = self:DefaultOtherBarDimensions(classic)
+	settings.height = skyridingBarHeights[barKey]
+
+	local parent = skyridingAnchorParent[barKey]
+	if parent == nil then
+		settings.anchor.yOffset = 250
+		return settings
+	end
+
+	if skyridingNodeWidths[barKey] ~= nil then
+		settings.width = skyridingNodeWidths[barKey]
+	end
+	settings.anchor.barKey = parent.barKey
+	settings.anchor.matchWidth = true
+	-- Each bar overlaps the one it sits on by a border width, so the stack shares one border between bars.
+	if parent.above then
+		settings.relativeTo = "TOP"
+		settings.relativeToName = L["PositionAboveMiddle"]
+		settings.anchor.anchorPoint = "TOP"
+		settings.anchor.attachPoint = "BOTTOM"
+		settings.anchor.yOffset = -settings.border
+	else
+		settings.relativeTo = "BOTTOM"
+		settings.relativeToName = L["PositionBelowMiddle"]
+		settings.anchor.anchorPoint = "BOTTOM"
+		settings.anchor.attachPoint = "TOP"
+		settings.anchor.yOffset = settings.border
+	end
+	return settings
+end
+
+---Gets the default colors for one Skyriding bar.
+---@param barKey string # "skyridingSpeed", "skyridingCharges", "whirlingSurge" or "secondWind"
+---@return TRB.Classes.Settings.SkyridingBarColors
+function TRB.Functions.Settings:DefaultSkyridingBarColors(barKey)
+	local function Fill(color, enabled)
+		return { color = color, color2 = color, gradientDirection = "disabled", enabled = enabled }
+	end
+
+	local colors = {
+		border = { color = "FF000000" },
+		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
+	}
+	if barKey == "skyridingSpeed" then
+		colors.bar = Fill("FF5599FF")
+		colors.thrillOfTheSkies = Fill("FFFFAA00", true)
+		colors.groundSkimming = Fill("FF33DD77", true)
+		-- Shaped like an end cap so it shares the end cap options; its width is the line's.
+		colors.passiveSpeedCap = { color = "FFFFFFFF", enabled = true, width = 2, useBorderColor = false, useBorderColorExceptDefault = false }
+	elseif barKey == "whirlingSurge" then
+		colors.bar = Fill("FF7755AA")
+		colors.ready = Fill("FFCC88FF")
+		colors.unusable = Fill("FF6E6878", true)
+	elseif barKey == "secondWind" then
+		colors.bar = Fill("FF66DDAA")
+		colors.recharging = Fill("FF337755")
+	else
+		colors.bar = Fill("FF33AAFF")
+		colors.recharging = Fill("FF336699")
+	end
+	return colors
+end
+
+---Gets the default visibility entry for a Skyriding bar: shown while skyriding, hidden otherwise. Second Wind
+---starts disabled.
+---@param barKey string
+---@return trbBarVisibilitySetting
+function TRB.Functions.Settings:DefaultSkyridingBarVisibility(barKey)
+	local hideConditions = self:LoadDefaultBarVisibilityHideConditions()
+	hideConditions.isNotSkyriding = true
+
+	return {
+		neverShow = barKey == "secondWind",
+		alwaysShow = false,
+		conditions = { isSkyriding = true },
+		hideConditions = hideConditions,
+		smooth = barKey == "skyridingSpeed",
+		activeAlpha = 100,
+		inactiveAlpha = 0,
+		fadeDuration = 0.5,
+		fadeDelay = 0,
+		resourceConditionType = "none",
+		resourceConditionOperator = ">=",
+		resourceConditionValue = 0
+	}
+end
+
+---Central injector: adds the Skyriding bars' defaults (bars/colors/displayBar/textures) to a spec's default
+---settings table, so the standard defaults->saved Table:Merge carries them into every spec. Idempotent.
+---@param specDefaults table
+---@param classic boolean?
+function TRB.Functions.Settings:InjectSkyridingDefaults(specDefaults, classic)
+	if type(specDefaults) ~= "table" then
+		return
+	end
+	specDefaults.bars = specDefaults.bars or {}
+	specDefaults.colors = specDefaults.colors or {}
+	specDefaults.colors.bars = specDefaults.colors.bars or {}
+	specDefaults.displayBar = specDefaults.displayBar or {}
+	specDefaults.textures = specDefaults.textures or {}
+
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+		if specDefaults.bars[key] == nil then
+			specDefaults.bars[key] = self:DefaultSkyridingBarSettings(classic, key)
+		end
+		if specDefaults.colors.bars[key] == nil then
+			specDefaults.colors.bars[key] = self:DefaultSkyridingBarColors(key)
+		end
+		if specDefaults.displayBar[key] == nil then
+			specDefaults.displayBar[key] = self:DefaultSkyridingBarVisibility(key)
 		end
 		local barTex = key .. "Bar"
 		if specDefaults.textures[barTex] == nil then
@@ -2909,6 +3118,11 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 	end
 
 	for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultPetBarTextSettings()) do
+		table.insert(textSettings, entry)
+	end
+
+	-- Existing users get these through SeedSkyridingBarsText.
+	for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultSkyridingBarTextSettings()) do
 		table.insert(textSettings, entry)
 	end
 

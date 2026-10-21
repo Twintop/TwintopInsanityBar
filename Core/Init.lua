@@ -653,6 +653,12 @@ function SlashCmdList.TWINTOP(msg)
 		TRB.Functions.AuraEngine:PrintDiagnostics()
 	elseif cmd == "otherbars" then
 		TRB.Functions.OtherBars:PrintDiagnostics()
+	elseif cmd == "skyriding" then
+		if subcmd ~= nil and subcmd ~= "" then
+			print("|cFFFF8800TRB Skyriding:|r Unknown argument '" .. subcmd .. "'. Usage: /trb skyriding")
+		else
+			TRB.Functions.Skyriding:ToggleProbe()
+		end
 	elseif cmd == "bars" then
 		TRB.Functions.Bar:PrintDiagnostics()
 	elseif cmd == "castname" then

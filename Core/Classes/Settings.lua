@@ -386,6 +386,19 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public timerDirection string? # GCD and swing bars only: "deplete" (drain a full bar) or "fill" (grow an empty one)
 ---@field public disableBlizzardBar boolean? # Mirror timers and Main Hand Swing only: hide Blizzard's own frame for this timer type, all three swing timers for Main Hand Swing
 
+---Skyriding bar colors. `bar` is the Speed bar's fill, a charge bar's full charges, and Whirling Surge while it recharges.
+---@class TRB.Classes.Settings.SkyridingBarColors
+---@field public bar TRB.Classes.Settings.ColorGradientEntry
+---@field public thrillOfTheSkies TRB.Classes.Settings.ColorGradientEnabledEntry? # Speed only: fill while Thrill of the Skies is up
+---@field public groundSkimming TRB.Classes.Settings.ColorGradientEnabledEntry? # Speed only: fill while Ground Skimming is up and Thrill of the Skies is not
+---@field public passiveSpeedCap TRB.Classes.Settings.EndCapColorEntry? # Speed only: the line at the fastest speed without abilities; width is its thickness
+---@field public recharging TRB.Classes.Settings.ColorGradientEntry? # Charges and Second Wind only: the refilling charge
+---@field public ready TRB.Classes.Settings.ColorGradientEntry? # Whirling Surge only: fill while off cooldown
+---@field public unusable TRB.Classes.Settings.ColorGradientEnabledEntry? # Whirling Surge only: fill while off cooldown but Lightning Rush lacks its Static Charge
+---@field public border TRB.Classes.Settings.ColorEntry
+---@field public background TRB.Classes.Settings.ColorEntry
+---@field public endCap TRB.Classes.Settings.EndCapColorEntry
+
 ---@class TRB.Classes.Settings.DisplayText
 ---@field public default TRB.Classes.Settings.DisplayTextDefault
 ---@field public barText TRB.Classes.Settings.DisplayTextEntry[]
@@ -477,8 +490,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public hasUnfriendlyTarget boolean? # Show when the player has an unfriendly target
 ---@field public isMountedAny boolean? # Show when the player is mounted (any mount)
 ---@field public isMountedGround boolean? # Show when the player is on a ground mount (mounted + not flying)
----@field public isSkyriding boolean? # Show when mounted on a skyriding-capable mount in a skyriding-enabled area
----@field public isSkyridingFlying boolean? # Show when actively skyriding (mounted, skyriding-capable, and flying)
+---@field public isSkyriding boolean? # Show when able to glide on a skyriding-capable mount or in a Druid flight form
+---@field public isSkyridingFlying boolean? # Show when actively skyriding (skyriding and flying)
+---@field public isNotSkyriding boolean? # Skyriding bars only: show while not skyriding
 ---@field public isSteadyFlight boolean? # Show when mounted and in real (non-gliding) flight (false while skyriding-gliding)
 ---@field public isSteadyFlightFlying boolean? # Show when mounted and in real (non-gliding) flight (same as isSteadyFlight; steady flight only exists while airborne)
 ---@field public inGroup boolean? # Show when the player is in a group (party or raid)
@@ -515,8 +529,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isMountedFlying boolean? # Hide when mounted and in real (non-gliding) flight
 ---@field public isSteadyFlight boolean? # DEPRECATED: migrated to isMountedFlying
 ---@field public isSteadyFlightFlying boolean? # Hide when mounted and in real (non-gliding) flight (same as isMountedFlying; steady flight only exists while airborne)
----@field public isSkyriding boolean? # Hide when mounted on a skyriding-capable mount in a skyriding-enabled area
----@field public isSkyridingFlying boolean? # Hide when actively skyriding (mounted, skyriding-capable, and flying)
+---@field public isSkyriding boolean? # Hide when able to glide on a skyriding-capable mount or in a Druid flight form
+---@field public isSkyridingFlying boolean? # Hide when actively skyriding (skyriding and flying)
+---@field public isNotSkyriding boolean? # Skyriding bars only: hide while not skyriding
 ---@field public isDruidHumanoidForm boolean? # Hide when the Druid player is in humanoid form
 ---@field public isDruidTravelFormAny boolean? # Hide when the Druid player is in any travel form variant
 ---@field public isDruidStagForm boolean? # Hide when the Druid player is in stag/ground travel form

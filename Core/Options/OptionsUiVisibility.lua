@@ -22,6 +22,8 @@ local TIMER_CONDITION_KEYS = { "whenActive" }
 local RANGED_TIMER_CONDITION_KEYS = { "heldByMovement" }
 -- Pet bars' pet states, offered in both the show and hide lists.
 local PET_CONDITION_KEYS = { "isPetAlive", "isPetDead", "isPetMissing" }
+-- Skyriding bars' own condition beside the standard Skyriding pair, offered in both lists.
+local SKYRIDING_CONDITION_KEYS = { "isNotSkyriding" }
 local STANDARD_HIDE_CONDITION_KEYS ={ "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
 
 -- Every condition key the addon can store, show-side and hide-side alike.
@@ -35,6 +37,7 @@ local CONDITION_LABELS = {
 	isMountedFlying = L["ShowBarVisibilityConditionIsSteadyFlight"],
 	isSkyriding = L["ShowBarVisibilityConditionIsSkyriding"],
 	isSkyridingFlying = L["ShowBarVisibilityConditionIsSkyridingFlying"],
+	isNotSkyriding = L["ShowBarVisibilityConditionIsNotSkyriding"],
 	isSteadyFlight = L["ShowBarVisibilityConditionIsSteadyFlight"],
 	isSteadyFlightFlying = L["ShowBarVisibilityConditionIsSteadyFlightFlying"],
 	inGroup = L["ShowBarVisibilityConditionInGroup"],
@@ -89,6 +92,9 @@ for _, key in ipairs(RANGED_TIMER_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
 for _, key in ipairs(PET_CONDITION_KEYS) do
+	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
+end
+for _, key in ipairs(SKYRIDING_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
 
@@ -934,6 +940,21 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		supportsThresholds = true,
 		thresholdDefinitions = thresholdTypeDefinitions,
 	}
+	-- Skyriding bars: whether you're skyriding decides them, so both lists stay short.
+	local skyridingShowKeys = { "isSkyriding", "isSkyridingFlying", "isNotSkyriding" }
+	local skyridingHideKeys = { "inVehicle", "isDead", "isNotSkyriding" }
+	local skyridingProfile = {
+		showKeys = skyridingShowKeys,
+		showLabels = LabelsFor(skyridingShowKeys),
+		showGroups = { { title = L["ShowBarVisibilityGroupMounting"], keys = skyridingShowKeys } },
+		hideKeys = skyridingHideKeys,
+		hideLabels = LabelsFor(skyridingHideKeys),
+		hideGroups = {
+			{ title = L["ShowBarVisibilityGroupGeneral"], keys = { "inVehicle", "isDead" } },
+			{ title = L["ShowBarVisibilityGroupMounting"], keys = { "isNotSkyriding" } },
+		},
+		supportsThresholds = false,
+	}
 
 	---Returns the condition profile (show/hide keys, labels, groups) for a bar entry.
 	---@param barEntry table?
@@ -941,6 +962,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local function GetProfileForEntry(barEntry)
 		if barEntry ~= nil and barEntry.isPetBar then
 			return petBarProfile
+		end
+		if barEntry ~= nil and barEntry.isSkyridingBar then
+			return skyridingProfile
 		end
 		if barEntry ~= nil and barEntry.isTimerBar then
 			if barEntry.displayBarKey == "mainHandSwing" then
@@ -966,7 +990,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local function GetThresholdTypesForBarEntry(barEntry)
 		-- Self-driven bars (cast bars, GCD, mirror timers) fill from a timeline, not a resource, so a
 		-- resource/health threshold condition has nothing to compare against.
-		if barEntry ~= nil and (barEntry.isCastbar or barEntry.isTimerBar) then
+		if barEntry ~= nil and (barEntry.isCastbar or barEntry.isTimerBar or barEntry.isSkyridingBar) then
 			return {}
 		end
 		local types = {}
@@ -1473,6 +1497,24 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				isCastbar = isCastbar,
 				isPetBar = not isCastbar,
 				isGlobal = (classId ~= nil and coreDisplayBar[petBarKey] ~= nil),
+			})
+		end
+	end
+
+	-- Skyriding bars, every spec. Only Speed fills from a value, so it alone keeps Smooth.
+	for _, skyridingKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+		if spec.displayBar and spec.displayBar[skyridingKey] ~= nil then
+			local skyridingDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(skyridingKey)
+			local skyridingLabel = skyridingDef and skyridingDef.displayName or skyridingKey
+			table.insert(barEntries, {
+				key = skyridingKey,
+				displayBarKey = skyridingKey,
+				label = skyridingLabel,
+				globalLabel = skyridingLabel,
+				isCustomBar = false,
+				isSkyridingBar = true,
+				hidesSmooth = skyridingDef ~= nil and skyridingDef.timerDrivenFill == true,
+				isGlobal = (classId ~= nil and coreDisplayBar[skyridingKey] ~= nil),
 			})
 		end
 	end

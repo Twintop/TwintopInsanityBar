@@ -217,6 +217,7 @@ function TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(contr
 	-- Other Bars too, every scope: this callback can't tell which class's panel it serves, so the sync below skips missing dropdowns.
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendOtherBars(customBars, nil, true)
 	TRB.Classes.BarTypeRegistry:GetInstance():AppendPetBars(customBars, nil, nil, true)
+	TRB.Classes.BarTypeRegistry:GetInstance():AppendSkyridingBars(customBars)
 
 	textures[variable.."Bar"] = newValue
 	textures[variable.."BarName"] = newName

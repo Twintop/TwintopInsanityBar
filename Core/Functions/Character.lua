@@ -1604,6 +1604,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		registry:AppendCastbar(globalTextureBars)
 		registry:AppendTargetFocusCastbars(globalTextureBars)
 		registry:AppendOtherBars(globalTextureBars, nil)
+		registry:AppendSkyridingBars(globalTextureBars)
 		local isGlobalTextureBar = {}
 		for _, barTypeDef in ipairs(globalTextureBars) do
 			isGlobalTextureBar[barTypeDef.key] = true
@@ -1871,6 +1872,21 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
+	-- Skyriding tables hold nothing spec-only either, so they swap whole the way the pet bars' do.
+	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+		local coreBar = core.bars and core.bars[barKey]
+		local currentBars = specCache.settings.bars
+		if coreBar and currentBars and currentBars[barKey] and s[barKey .. "Dimensions"] then
+			specCache.settings.bars = OverlayOn(currentBars, { [barKey] = coreBar })
+		end
+
+		local coreColors = core.colors and core.colors.bars and core.colors.bars[barKey]
+		local currentColorBars = specCache.settings.colors.bars
+		if coreColors and currentColorBars and currentColorBars[barKey] and s[barKey .. "Colors"] then
+			specCache.settings.colors.bars = OverlayOn(currentColorBars, { [barKey] = coreColors })
+		end
+	end
+
 	-- Pet tables hold nothing spec-only, so each section swaps the whole table; a spec without its own entry has no pet.
 	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.petBarKeys) do
 		local coreBar = core.bars and core.bars[barKey]
@@ -1939,6 +1955,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		TRB.Functions.Castbar:SyncEnabledState()
 		TRB.Functions.PetCastbar:SyncEnabledState()
 		TRB.Functions.OtherBars:SyncEnabledState()
+		TRB.Functions.Skyriding:SyncEnabledState()
 	end
 end
 
@@ -2009,6 +2026,8 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 			-- Only specs declaring a pet get these, which keeps the bars off every other spec's tabs, anchors, and targets.
 			local specEntry = TRB.Functions.Character:GetSpecRegistryEntry(className .. "_" .. specName)
 			TRB.Functions.Settings:InjectPetBarsDefaults(specDefaults, specEntry and specEntry.classId, specEntry and specEntry.specId)
+
+			TRB.Functions.Settings:InjectSkyridingDefaults(specDefaults)
 
 			-- End caps are a universal per-bar setting; inject their defaults the same way
 			TRB.Functions.Settings:InjectEndCapDefaults(specDefaults)
@@ -2222,6 +2241,7 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.TargetCastbar:Enable()
 		TRB.Functions.PetCastbar:Enable()
 		TRB.Functions.OtherBars:Enable()
+		TRB.Functions.Skyriding:Enable()
 		TRB.Functions.Character:EnableCharacterChange()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)

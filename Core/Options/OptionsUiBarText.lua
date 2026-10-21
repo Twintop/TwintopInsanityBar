@@ -450,6 +450,17 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		AddAnchorFrame("petCastbar", L["ResourcePetCastbarIcon"], "PetCastBarIcon")
 	end
 
+	for _, skyridingKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+		local skyridingDef = otherBarsRegistry:Get(skyridingKey)
+		if skyridingDef ~= nil then
+			AddAnchorFrame(skyridingKey, skyridingDef.displayName, skyridingKey:gsub("^%l", string.upper) .. "Bar")
+		end
+	end
+	if #TRB.Classes.BarTypeRegistry.skyridingBarKeys > 0 then
+		AddAnchorFrame("skyridingCharges", L["SkyridingChargesRecharging"], "SkyridingChargesRecharging")
+		AddAnchorFrame("secondWind", L["SecondWindRecharging"], "SecondWindRecharging")
+	end
+
 	-- A group sorts by its first label; the labels within it keep the order they were added in.
 	local sortedAnchorGroups = {}
 	for _, group in pairs(anchorGroups) do

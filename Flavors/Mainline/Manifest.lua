@@ -28,6 +28,28 @@ TRB.Flavor = {
 	-- The global the TOC's SavedVariables line declares. Per-flavor so two flavors can never share a
 	-- settings table, even if a future client ends up sharing an AddOns/WTF folder between lineages.
 	savedVariablesName = "TwintopInsanityBarSettings",
+	-- Skyriding spells and the Speed bar's scale; only a flavor with this block gets the Skyriding bars.
+	skyriding = {
+		-- Surge Forward. Skyward Ascent spends the same charges.
+		chargeSpellId = 372608,
+		-- Whirling Surge, then Lightning Rush, which its choice node swaps in.
+		cooldownSpellIds = { 361584, 418592 },
+		secondWindSpellId = 425782,
+		thrillOfTheSkiesBuffIds = { 377234, 1227961 },
+		groundSkimmingBuffIds = { 404184 },
+		-- Static Charge, which Lightning Rush needs ten stacks of.
+		staticChargeBuffId = 418590,
+		-- A cooldown this short is the abilities locking each other, not Whirling Surge's own.
+		abilityLockDuration = 1.5,
+		-- Top and passive (no abilities) speeds in percent of run speed, measured with /trb skyriding. Outside
+		-- the Dragon Isles both are 85% of the Dragon Isles values.
+		speedCaps = {
+			default = { max = 1214, passive = 789 },
+			dragonIsles = { max = 1428, passive = 929 },
+		},
+		-- Dragon Isles UiMap ids, matched against the player's map and its parents.
+		dragonIslesMapIds = { 1978, 2057, 2107, 2131, 2241 },
+	},
 
 	---True when the running client is this flavor's game. Checked by the version gate when the TOC
 	---sets X-FlavorCheck to enabled. An unreadable project ID or interface number is not evidence of a

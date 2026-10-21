@@ -8776,6 +8776,11 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
+	-- Skyriding bars: seed their default text into the global list; barText is an array the defaults merge cannot backfill.
+	if TwintopInsanityBarSettings ~= nil then
+		TRB.Functions.Settings:SeedSkyridingBarsText(TwintopInsanityBarSettings.core)
+	end
+
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

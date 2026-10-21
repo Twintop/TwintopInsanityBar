@@ -57,3 +57,9 @@ function GameTooltip:SetText(text, colorR, colorG, colorB, alpha, wrap) end
 
 ---@class ChatConfigCheckButtonTemplate : CheckButton, ChatConfigBaseCheckButtonTemplate
 ---@field Text FontString
+
+---The 12.1.5 docs add ignoreGCD, which the bundled annotation lacks.
+---@param spellIdentifier SpellIdentifier
+---@param ignoreGCD boolean?
+---@return LuaDurationObject duration
+function C_Spell.GetSpellCooldownDuration(spellIdentifier, ignoreGCD) end

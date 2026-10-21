@@ -19,8 +19,9 @@ TRB.Functions = TRB.Functions or {}
 ---@field isMountedAny boolean # Whether the player is currently mounted (any mount)
 ---@field isMountedGround boolean # Whether the player is mounted and on the ground (not flying, any mount type)
 ---@field isMountedFlying boolean # Whether the player is mounted and in real (non-gliding) flight (Hide-list alias of isSteadyFlight)
----@field isSkyriding boolean # Whether the player is mounted on a skyriding-capable mount in a skyriding-enabled area
----@field isSkyridingFlying boolean # Whether the player is actively skyriding (mounted, canGlide, and flying)
+---@field isSkyriding boolean # Whether the player can glide on a skyriding-capable mount or in a Druid flight form
+---@field isSkyridingFlying boolean # Whether the player is actively skyriding (isSkyriding and flying)
+---@field isNotSkyriding boolean # Whether isSkyriding is false
 ---@field isSteadyFlight boolean # Whether the player is mounted and in real (non-gliding) flight; IsFlying() is false while skyriding-gliding
 ---@field isSteadyFlightFlying boolean # Whether the player is mounted and in real (non-gliding) flight (same as isSteadyFlight; steady flight only exists while airborne)
 ---@field inGroup boolean # Whether the player is in a group (party or raid)
@@ -69,6 +70,7 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.isMountedFlying = params.isMountedFlying or false
 	self.isSkyriding = params.isSkyriding or false
 	self.isSkyridingFlying = params.isSkyridingFlying or false
+	self.isNotSkyriding = params.isNotSkyriding or false
 	self.isSteadyFlight = params.isSteadyFlight or false
 	self.isSteadyFlightFlying = params.isSteadyFlightFlying or false
 	self.inGroup = params.inGroup or false
@@ -109,13 +111,23 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 		targetIsEnemy = UnitCanAttack("player", "target") == true
 	end
 
+	-- Shapeshift forms only exist for a class whose display follows them (descriptor `forms`); the
+	-- class module keeps currentShapeshiftForm up to date.
+	local activeDescriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
+	local druidForm = nil
+	if activeDescriptor ~= nil and activeDescriptor.forms ~= nil then
+		druidForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+	end
+	local isDruidTravelFormAny = druidForm == "travel" or druidForm == "aquatic" or druidForm == "flight" or druidForm == "swiftFlight"
+
 	local isFlying = IsFlying()
 	local isGliding = C_PlayerInfo.GetGlidingInfo() or false
 	local isMountedAny = TRB.Data.character.isMounted or false
 	local canSkyriding = TRB.Data.character.isSkyriding or false
 	local isMountedGround = isMountedAny and not isFlying and not isGliding
-	local isSkyriding = isMountedAny and canSkyriding
-	local isSkyridingFlying = isMountedAny and canSkyriding and isFlying
+	-- A Druid flight form skyrides the way a mount does.
+	local isSkyriding = canSkyriding and (isMountedAny or druidForm == "flight" or druidForm == "swiftFlight")
+	local isSkyridingFlying = isSkyriding and isFlying
 	local isSteadyFlight = isMountedAny and isFlying
 	local isSteadyFlightFlying = isMountedAny and isFlying
 	local isMountedFlying = isSteadyFlight
@@ -126,15 +138,6 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 
 	local isDead = UnitIsDeadOrGhost("player") or false
 	local petState = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.petState or "none"
-
-	-- Shapeshift forms only exist for a class whose display follows them (descriptor `forms`); the
-	-- class module keeps currentShapeshiftForm up to date.
-	local activeDescriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
-	local druidForm = nil
-	if activeDescriptor ~= nil and activeDescriptor.forms ~= nil then
-		druidForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
-	end
-	local isDruidTravelFormAny = druidForm == "travel" or druidForm == "aquatic" or druidForm == "flight" or druidForm == "swiftFlight"
 
 	-- Instance type: cached on ZONE_CHANGED_NEW_AREA
 	local instanceType = TRB.Data.character.instanceType or "none"
@@ -168,6 +171,7 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 	target.isMountedFlying = isMountedFlying or false
 	target.isSkyriding = isSkyriding or false
 	target.isSkyridingFlying = isSkyridingFlying or false
+	target.isNotSkyriding = not isSkyriding
 	target.isSteadyFlight = isSteadyFlight or false
 	target.isSteadyFlightFlying = isSteadyFlightFlying or false
 	target.inGroup = IsInGroup() or false
@@ -524,6 +528,9 @@ function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
 	if conditions.isSkyridingFlying == true and context.isSkyridingFlying then
 		return true
 	end
+	if conditions.isNotSkyriding == true and context.isNotSkyriding then
+		return true
+	end
 	if conditions.isSteadyFlightFlying == true and context.isSteadyFlightFlying then
 		return true
 	end
@@ -630,6 +637,9 @@ function TRB.Functions.BarVisibility:MatchesShowConditions(context, conditions)
 		return true
 	end
 	if conditions.isSkyridingFlying and context.isSkyridingFlying then
+		return true
+	end
+	if conditions.isNotSkyriding and context.isNotSkyriding then
 		return true
 	end
 	if conditions.isSteadyFlight and context.isSteadyFlight then
@@ -1094,6 +1104,10 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	if not anyShowing and TRB.Functions.OtherBars:IsRendering() then
 		anyShowing = true
 	end
+	-- Skyriding bars too, which mostly show while every other bar is hidden by a mounted condition.
+	if not anyShowing and TRB.Functions.Skyriding:IsRendering() then
+		anyShowing = true
+	end
 
 	-- Kick the castbar's idle display (Always Show / non-zero inactive alpha) when no cast is active:
 	-- its self-driven updater stops while idle-hidden, so this is what restarts it after settings
@@ -1101,6 +1115,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	TRB.Functions.Castbar:EnsureIdleState()
 	TRB.Functions.PetCastbar:EnsureIdleState()
 	TRB.Functions.OtherBars:EnsureIdleState()
+	TRB.Functions.Skyriding:EnsureIdleState()
 
 	-- Detect hidden→visible transition: when the bar was not tracking but is now
 	-- showing, fully invalidate the lookup memoization cache so that every
