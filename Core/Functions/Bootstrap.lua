@@ -37,6 +37,7 @@ local function LoadSettings(module, classEntry)
 	local checks = {}
 
 	if saved and TRB.Functions.Table:Length(saved) > 0 then
+		TRB.Functions.Profiles:ReplaceSavedWithResolvedPieces(saved)
 		TRB.Functions.Settings:PortForwardSettings()
 
 		local settings = options.LoadDefaultSettings(false)

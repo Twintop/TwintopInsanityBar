@@ -4,6 +4,14 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.4-release / Forever 1.60.1.12-release (2026-10-21)
+## General
+
+- Fix switching profiles, or logging in on another character with a different profile, carrying settings such as custom threshold lines over from the previous profile.
+- Fix deleting the active profile from a profile dropdown copying its settings into the profile that replaces it, or undoing a reset of the Default profile.
+
+---
+
 # Live 12.1.5.3-release / Forever 1.60.1.11-release (2026-10-21)
 ## General
 

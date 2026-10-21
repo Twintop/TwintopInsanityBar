@@ -333,6 +333,7 @@ local function EnsureProfilePopupsRegistered()
 			end
 			if data.refresh then data.refresh() end
 			if data.isActive then
+				TRB.Functions.Profiles:SuppressLogoutFlush()
 				C_UI.Reload()
 			end
 		end,

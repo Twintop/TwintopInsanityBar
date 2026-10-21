@@ -142,6 +142,34 @@ function TRB.Functions.Profiles:EnsureStructure()
 	p.character = p.character or {}
 end
 
+---@param p table # A settings table's `profiles` subtree
+---@param key string? # The character key
+---@return string?
+local function ResolveCoreName(p, key)
+	if key ~= nil and p.character and p.character[key] and p.character[key].core then
+		return p.character[key].core
+	end
+	if p.default and p.default.core then
+		return p.default.core
+	end
+	return nil
+end
+
+---@param p table # A settings table's `profiles` subtree
+---@param key string? # The character key
+---@param className string
+---@param specName string
+---@return string?
+local function ResolveSpecName(p, key, className, specName)
+	if key ~= nil and p.character and p.character[key] and p.character[key][specName] then
+		return p.character[key][specName]
+	end
+	if p.default and p.default[className] and p.default[className][specName] then
+		return p.default[className][specName]
+	end
+	return nil
+end
+
 ---Resolves the profile name in use for the `core` scope on the current character,
 ---falling back to the default-profile entry, then to nil if nothing is configured.
 ---@return string?
@@ -150,15 +178,7 @@ function TRB.Functions.Profiles:ResolveCoreProfileName()
 	if p == nil then
 		return nil
 	end
-
-	local key = self:GetCharacterKey()
-	if key ~= nil and p.character and p.character[key] and p.character[key].core then
-		return p.character[key].core
-	end
-	if p.default and p.default.core then
-		return p.default.core
-	end
-	return nil
+	return ResolveCoreName(p, self:GetCharacterKey())
 end
 
 ---Resolves the profile name in use for a (className, specName) on the current
@@ -174,15 +194,7 @@ function TRB.Functions.Profiles:ResolveSpecProfileName(className, specName)
 	if p == nil then
 		return nil
 	end
-
-	local key = self:GetCharacterKey()
-	if key ~= nil and p.character and p.character[key] and p.character[key][specName] then
-		return p.character[key][specName]
-	end
-	if p.default and p.default[className] and p.default[className][specName] then
-		return p.default[className][specName]
-	end
-	return nil
+	return ResolveSpecName(p, self:GetCharacterKey(), className, specName)
 end
 
 ---Returns the profile name stored as the default for the `core` scope, or nil
@@ -485,16 +497,48 @@ function TRB.Functions.Profiles:PortForwardAll()
 	end)
 end
 
+---Swaps the saved live tables (account-wide, holding the last logout's profile) for this character's
+---resolved pieces, since `ApplyToRuntime` only adds keys and would leak the old profile's into the new one.
+---@param saved table # The raw saved variables, before the defaults merge
+function TRB.Functions.Profiles:ReplaceSavedWithResolvedPieces(saved)
+	local p = saved.profiles
+	local key = self:GetCharacterKey()
+	if type(p) ~= "table" or type(p.list) ~= "table" or key == nil then
+		return
+	end
+
+	local coreName = ResolveCoreName(p, key)
+	local coreProfile = coreName and p.list[coreName]
+	if type(coreProfile) == "table" and type(coreProfile.core) == "table" then
+		saved.core = TRB.Functions.Table:DeepCopy(coreProfile.core)
+	end
+
+	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+		local className = classEntry.className
+		if type(saved[className]) == "table" then
+			for _, specEntry in ipairs(classEntry.specs) do
+				local specName = specEntry.specName
+				local profileName = ResolveSpecName(p, key, className, specName)
+				local profile = profileName and p.list[profileName]
+				local piece = type(profile) == "table" and type(profile[className]) == "table" and profile[className][specName] or nil
+				if type(piece) == "table" then
+					saved[className][specName] = TRB.Functions.Table:DeepCopy(piece)
+				end
+			end
+		end
+	end
+end
+
 ---Drops the resolved profile pieces in place over `TRB.Data.settings.core` and
 ---all resolved class/spec tables. The current class is still merged in place,
 ---preserving the identity of those tables (and every nested sub-table that
----already exists). Other code may have
----captured references into these tables before this point — most notably
----`FillSpecializationCacheSettings` does `specCache.settings.bars = spec.bars`
----and `colors = { bar = spec.colors.bar, bars = spec.colors.bars, ... }`, and
+---already exists). Other code may have captured references into these tables 
+---before this point — most notably `FillSpecializationCacheSettings` does
+---`specCache.settings.bars = spec.bars` and 
+---`colors = { bar = spec.colors.bar, bars = spec.colors.bars, ... }`, and
 ---various bar-construction paths cache references to leaf tables. Replacing
----the top-level reference would orphan all of those, which is exactly how the
----Holy Priest Lightweaver bar broke.
+---the top-level reference would orphan all of those (which is exactly how the
+---Holy Priest Lightweaver bar broke once before).
 ---
 ---Non-current classes are first defaulted via `Character:EnsureSpecSettings`
 ---so runtime tables still receive newly-added default fields before the
