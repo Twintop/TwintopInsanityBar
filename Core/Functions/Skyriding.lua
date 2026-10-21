@@ -61,14 +61,39 @@ local buffSnapshots = {}
 local COOLDOWN_SPELL_IDS = {}
 
 if TRB.Flavor.skyriding ~= nil then
-	spells.surgeForward = TRB.Classes.SpellBase:New({ id = SKYRIDING.chargeSpellId, hasCharges = true })
-	spells.secondWind = TRB.Classes.SpellBase:New({ id = SKYRIDING.secondWindSpellId, hasCharges = true })
-	spells.whirlingSurge = TRB.Classes.SpellBase:New({ id = SKYRIDING.whirlingSurgeSpellId, hasCooldown = true })
-	spells.lightningRush = TRB.Classes.SpellBase:New({ id = SKYRIDING.lightningRushSpellId, hasCooldown = true })
-	spells.thrillOfTheSkies = TRB.Classes.SpellBase:New({ id = SKYRIDING.thrillOfTheSkiesBuffId, isBuff = true })
-	spells.thrillOfTheSkiesAlt = TRB.Classes.SpellBase:New({ id = SKYRIDING.thrillOfTheSkiesAltBuffId, isBuff = true })
-	spells.groundSkimming = TRB.Classes.SpellBase:New({ id = SKYRIDING.groundSkimmingBuffId, isBuff = true })
-	spells.staticCharge = TRB.Classes.SpellBase:New({ id = SKYRIDING.staticChargeBuffId, isBuff = true, maxStacks = 10 })
+	spells.surgeForward = TRB.Classes.SpellBase:New({
+		id = SKYRIDING.chargeSpellId,
+		hasCharges = true
+	})
+	spells.secondWind = TRB.Classes.SpellBase:New({
+		id = SKYRIDING.secondWindSpellId,
+		hasCharges = true
+	})
+	spells.whirlingSurge = TRB.Classes.SpellBase:New({
+		id = SKYRIDING.whirlingSurgeSpellId,
+		hasCooldown = true
+	})
+	spells.lightningRush = TRB.Classes.SpellBase:New({
+		id = SKYRIDING.lightningRushSpellId,
+		hasCooldown = true
+	})
+	spells.thrillOfTheSkies = TRB.Classes.SpellBase:New({
+		id = SKYRIDING.thrillOfTheSkiesBuffId,
+		isBuff = true
+	})
+	spells.thrillOfTheSkiesAlt = TRB.Classes.SpellBase:New({
+		id = SKYRIDING.thrillOfTheSkiesAltBuffId,
+		isBuff = true
+	})
+	spells.groundSkimming = TRB.Classes.SpellBase:New({
+		id = SKYRIDING.groundSkimmingBuffId,
+		isBuff = true
+	})
+	spells.staticCharge = TRB.Classes.SpellBase:New({
+		id = SKYRIDING.staticChargeBuffId,
+		isBuff = true,
+		maxStacks = 10
+	})
 
 	chargeSnapshots.skyridingCharges = TRB.Classes.Snapshot:New(spells.surgeForward)
 	chargeSnapshots.secondWind = TRB.Classes.Snapshot:New(spells.secondWind)
