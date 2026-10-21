@@ -19,11 +19,20 @@ local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 local function CoupDeGraceEvent(self, event, ...)
 	if event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
 		local baseSpellID, overrideSpellID = ...
-		-- Dispatch (Outlaw, ID 2098) or Eviscerate (Subtlety, ID 196819) can be replaced by Coup de Grace (ID 441776)
-		if baseSpellID == 2098 or baseSpellID == 196819 then
+		-- Coup de Grace replaces Outlaw's Dispatch or Subtlety's Eviscerate; only those specs register this event.
+		local finisher
+		local coupDeGrace
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+			finisher, coupDeGrace = spells.dispatch, spells.coupDeGrace
+		elseif TRB.Data.character.specId == 3 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+			finisher, coupDeGrace = spells.eviscerate, spells.coupDeGrace
+		end
+		if finisher ~= nil and coupDeGrace ~= nil and baseSpellID == finisher.id then
 			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 			if snapshotData and snapshotData.attributes then
-				snapshotData.attributes.coupDeGraceActive = (overrideSpellID == 441776)
+				snapshotData.attributes.coupDeGraceActive = (overrideSpellID == coupDeGrace.id)
 			end
 		end
 	end

@@ -2163,7 +2163,7 @@ local function UpdateSnapshot_Healers()
 		end
 
 		-- 2. Parse the healing value from Prayer of Mending's spell description.
-		local desc = C_Spell.GetSpellDescription(33076)
+		local desc = C_Spell.GetSpellDescription(spells.prayerOfMending.id)
 		local currentHealing = TRB.Functions.String:ParseFirstNumber(desc)
 
 		if currentHealing and previousDescriptionHealing
