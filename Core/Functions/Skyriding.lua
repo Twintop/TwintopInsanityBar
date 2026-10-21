@@ -61,36 +61,40 @@ local buffSnapshots = {}
 local COOLDOWN_SPELL_IDS = {}
 
 if TRB.Flavor.skyriding ~= nil then
+	-- Skyward Ascent spends the same charges.
 	spells.surgeForward = TRB.Classes.SpellBase:New({
-		id = SKYRIDING.chargeSpellId,
+		id = 372608,
 		hasCharges = true
 	})
 	spells.secondWind = TRB.Classes.SpellBase:New({
-		id = SKYRIDING.secondWindSpellId,
+		id = 425782,
 		hasCharges = true
 	})
 	spells.whirlingSurge = TRB.Classes.SpellBase:New({
-		id = SKYRIDING.whirlingSurgeSpellId,
+		id = 361584,
 		hasCooldown = true
 	})
+	-- Its choice node swaps it in for Whirling Surge.
 	spells.lightningRush = TRB.Classes.SpellBase:New({
-		id = SKYRIDING.lightningRushSpellId,
+		id = 418592,
 		hasCooldown = true
 	})
 	spells.thrillOfTheSkies = TRB.Classes.SpellBase:New({
-		id = SKYRIDING.thrillOfTheSkiesBuffId,
+		id = 377234,
 		isBuff = true
 	})
+	-- The copy that the second Skyriding aura (1227904) swaps in.
 	spells.thrillOfTheSkiesAlt = TRB.Classes.SpellBase:New({
-		id = SKYRIDING.thrillOfTheSkiesAltBuffId,
+		id = 1227961,
 		isBuff = true
 	})
 	spells.groundSkimming = TRB.Classes.SpellBase:New({
-		id = SKYRIDING.groundSkimmingBuffId,
+		id = 404184,
 		isBuff = true
 	})
+	-- Lightning Rush needs a full stack of Static Charge.
 	spells.staticCharge = TRB.Classes.SpellBase:New({
-		id = SKYRIDING.staticChargeBuffId,
+		id = 418590,
 		isBuff = true,
 		maxStacks = 10
 	})

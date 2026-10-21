@@ -33,14 +33,6 @@ local addonName, TRB = ...
 ---@field public secondary string[]
 
 ---@class TRB.Flavor.Skyriding
----@field public chargeSpellId integer # Spell whose charges the Charges bar shows
----@field public whirlingSurgeSpellId integer
----@field public lightningRushSpellId integer # Replaces Whirling Surge when its choice node is picked
----@field public secondWindSpellId integer
----@field public thrillOfTheSkiesBuffId integer
----@field public thrillOfTheSkiesAltBuffId integer # The second Skyriding aura's own Thrill of the Skies
----@field public groundSkimmingBuffId integer
----@field public staticChargeBuffId integer # The stacking buff Lightning Rush needs, from walls
 ---@field public speedCaps { default: TRB.Flavor.SkyridingSpeedCap, dragonIsles: TRB.Flavor.SkyridingSpeedCap }
 ---@field public dragonIslesMapIds integer[] # UiMap ids whose maps and child maps use the Dragon Isles speed caps
 
