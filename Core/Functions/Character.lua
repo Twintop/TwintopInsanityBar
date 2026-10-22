@@ -659,17 +659,58 @@ function TRB.Functions.Character:GetDeathCount()
 end
 
 -- The player's speed as last read, and the GetTime() it was read at; speed has no event, so it's read on demand.
-local movementSpeed = { readAt = nil, speed = nil, percent = nil, isGliding = false }
+local movementSpeed = { readAt = nil, speed = nil, percent = nil, isGliding = false, stopped = false }
 -- Bar text updates at 20Hz at most, so a read newer than this is reused. Slightly under 0.05 so a 20Hz caller's frame jitter still re-reads.
 local MOVEMENT_SPEED_INTERVAL = 0.045
+-- A stopped player who read 0 is re-read this often, in case something moved them without a movement event.
+local IDLE_SPEED_INTERVAL = 0.25
+local movementFrame = CreateFrame("Frame")
+local movementEventsRegistered = false
+
+movementFrame:SetScript("OnEvent", function(_, event)
+	if event == "PLAYER_STOPPED_MOVING" then
+		movementSpeed.stopped = true
+	else
+		-- Moving, gliding, or shoved: read again right away.
+		movementSpeed.stopped = false
+		movementSpeed.readAt = nil
+	end
+end)
+
+---Listens for the events that tell a stopped player from a moving one, on first use. Without the start and stop events speed is always read.
+local function RegisterMovementEvents()
+	movementEventsRegistered = true
+	local isValid = C_EventUtils ~= nil and C_EventUtils.IsEventValid or nil
+	if isValid == nil or not (isValid("PLAYER_STARTED_MOVING") and isValid("PLAYER_STOPPED_MOVING")) then
+		return
+	end
+	movementFrame:RegisterEvent("PLAYER_STARTED_MOVING")
+	movementFrame:RegisterEvent("PLAYER_STOPPED_MOVING")
+	for _, event in ipairs({ "PLAYER_IS_GLIDING_CHANGED", "PLAYER_IMPULSE_APPLIED" }) do
+		if isValid(event) then
+			movementFrame:RegisterEvent(event)
+		end
+	end
+	-- No event fires for a player who is already standing still.
+	local speed = GetUnitSpeed("player")
+	movementSpeed.stopped = not issecretvalue(speed) and speed == 0
+end
 
 ---The player's speed in yards per second (secret while unit stats are restricted), its percent of run speed when
----plain, and whether it is a skyriding glide's forward speed, which movement speed doesn't report. Reads at 20Hz at most.
+---plain, and whether it is a skyriding glide's forward speed, which movement speed doesn't report. Reads at 20Hz at most, and
+---at 4Hz while the player is standing still.
 ---@return number? speed, number? percent, boolean isGliding
 function TRB.Functions.Character:GetMovementSpeed()
+	if not movementEventsRegistered then
+		RegisterMovementEvents()
+	end
 	local now = GetTime()
 	local state = movementSpeed
-	if state.readAt == nil or now - state.readAt >= MOVEMENT_SPEED_INTERVAL then
+	local interval = MOVEMENT_SPEED_INTERVAL
+	if state.stopped and state.percent == 0 then
+		interval = IDLE_SPEED_INTERVAL
+	end
+	if state.readAt == nil or now - state.readAt >= interval then
 		state.readAt = now
 		local isGliding, forwardSpeed = false, nil
 		if TRB.Flavor.skyriding ~= nil then
