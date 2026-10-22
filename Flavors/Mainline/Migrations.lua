@@ -27,7 +27,10 @@ function TRB.Flavor.DefaultManualUpdateChecks()
 			warrior = false
 		},
 		-- Fresh installs keep the default Skyriding bars; PortForwardSettings marks existing saves to be asked.
-		skyridingBarsPrompt = true
+		-- A table because an early migration step indexes every value here as a spec table.
+		skyridingBarsPrompt = {
+			answered = true
+		}
 	}
 end
 
@@ -8788,7 +8791,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings == TRB.Flavor.GetSavedVariables() then
 		TwintopInsanityBarSettings.manualUpdateChecks = TwintopInsanityBarSettings.manualUpdateChecks or {}
 		if TwintopInsanityBarSettings.manualUpdateChecks.skyridingBarsPrompt == nil then
-			TwintopInsanityBarSettings.manualUpdateChecks.skyridingBarsPrompt = false
+			TwintopInsanityBarSettings.manualUpdateChecks.skyridingBarsPrompt = { answered = false }
 			TRB.Functions.Skyriding:SetBarsHidden(TwintopInsanityBarSettings, true)
 		end
 	end

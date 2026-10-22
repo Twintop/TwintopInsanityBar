@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.5.4-release (2026-10-23)
+# 12.1.5.5-release (2026-10-23)
 ## General
 ### Skyriding
 
@@ -16,6 +16,12 @@ TRB.Flavor.newsContent = [====[
 - [#854](#854) Skyriding Speed fills toward your zone's top speed, Skyriding Charges and Second Wind fill one segment per charge, and Whirling Surge fills as its cooldown, or Lightning Rush's, runs out.
 - [#854](#854) They join the bar text Relative to Frame list, with each recharging charge as a target of its own, but not the Color Indicator or custom threshold line lists.
 - [#854](#854) Existing users are asked once whether to enable the Skyriding bars.
+
+---
+
+# 12.1.5.5-release (2026-10-23)
+
+Removed.
 
 ---
 

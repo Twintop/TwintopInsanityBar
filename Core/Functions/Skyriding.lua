@@ -1217,12 +1217,13 @@ end
 ---Asks an existing user once whether to keep the new Skyriding bars, then says where to change it later.
 function TRB.Functions.Skyriding:ShowEnablePrompt()
 	local checks = TRB.Data.settings.manualUpdateChecks
-	if TRB.Flavor.skyriding == nil or checks == nil or checks.skyridingBarsPrompt ~= false then
+	local prompt = checks ~= nil and checks.skyridingBarsPrompt or nil
+	if TRB.Flavor.skyriding == nil or type(prompt) ~= "table" or prompt.answered ~= false then
 		return
 	end
 
 	local function Answer()
-		checks.skyridingBarsPrompt = true
+		prompt.answered = true
 		StaticPopup_Show("TwintopResourceBar_SkyridingBarsFollowUp")
 	end
 
