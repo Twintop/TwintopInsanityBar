@@ -270,6 +270,11 @@ local function GetContext()
 	local now = GetTime()
 	if contextTime ~= now then
 		TRB.Classes.BarVisibilityContext:FillFromGameState(context, false)
+		-- On these bars Skyriding is whether the game lets you glide, whatever the mount or form.
+		local canSkyride = TRB.Data.character.isSkyriding == true
+		context.isSkyriding = canSkyride
+		context.isSkyridingFlying = canSkyride and IsFlying()
+		context.isNotSkyriding = not canSkyride
 		contextTime = now
 	end
 	return context

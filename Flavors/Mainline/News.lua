@@ -16,10 +16,6 @@ TRB.Flavor.newsContent = [====[
 - [#854](#854) Skyriding Speed fills toward your zone's top speed, Skyriding Charges and Second Wind fill one segment per charge, and Whirling Surge fills as its cooldown, or Lightning Rush's, runs out.
 - [#854](#854) They join the bar text Relative to Frame list, with each recharging charge as a target of its own, but not the Color Indicator or custom threshold line lists.
 
-## Druid
-
-- [#854](#854) The Skyriding and Skyriding (Flying Only) visibility conditions count Flight Form while it can skyride.
-
 ---
 
 # 12.1.5.3-release (2026-10-21)

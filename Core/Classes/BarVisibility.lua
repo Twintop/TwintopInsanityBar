@@ -19,9 +19,9 @@ TRB.Functions = TRB.Functions or {}
 ---@field isMountedAny boolean # Whether the player is currently mounted (any mount)
 ---@field isMountedGround boolean # Whether the player is mounted and on the ground (not flying, any mount type)
 ---@field isMountedFlying boolean # Whether the player is mounted and in real (non-gliding) flight (Hide-list alias of isSteadyFlight)
----@field isSkyriding boolean # Whether the player can glide on a skyriding-capable mount or in a Druid flight form
----@field isSkyridingFlying boolean # Whether the player is actively skyriding (isSkyriding and flying)
----@field isNotSkyriding boolean # Whether isSkyriding is false
+---@field isSkyriding boolean # Whether the player is mounted on a skyriding-capable mount in a skyriding-enabled area
+---@field isSkyridingFlying boolean # Whether the player is actively skyriding (mounted, canGlide, and flying)
+---@field isNotSkyriding boolean # Whether isSkyriding is false; the Skyriding bars read their own, from canGlide alone
 ---@field isSteadyFlight boolean # Whether the player is mounted and in real (non-gliding) flight; IsFlying() is false while skyriding-gliding
 ---@field isSteadyFlightFlying boolean # Whether the player is mounted and in real (non-gliding) flight (same as isSteadyFlight; steady flight only exists while airborne)
 ---@field inGroup boolean # Whether the player is in a group (party or raid)
@@ -111,23 +111,13 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 		targetIsEnemy = UnitCanAttack("player", "target") == true
 	end
 
-	-- Shapeshift forms only exist for a class whose display follows them (descriptor `forms`); the
-	-- class module keeps currentShapeshiftForm up to date.
-	local activeDescriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
-	local druidForm = nil
-	if activeDescriptor ~= nil and activeDescriptor.forms ~= nil then
-		druidForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
-	end
-	local isDruidTravelFormAny = druidForm == "travel" or druidForm == "aquatic" or druidForm == "flight" or druidForm == "swiftFlight"
-
 	local isFlying = IsFlying()
 	local isGliding = C_PlayerInfo.GetGlidingInfo() or false
 	local isMountedAny = TRB.Data.character.isMounted or false
 	local canSkyriding = TRB.Data.character.isSkyriding or false
 	local isMountedGround = isMountedAny and not isFlying and not isGliding
-	-- A Druid flight form skyrides the way a mount does.
-	local isSkyriding = canSkyriding and (isMountedAny or druidForm == "flight" or druidForm == "swiftFlight")
-	local isSkyridingFlying = isSkyriding and isFlying
+	local isSkyriding = isMountedAny and canSkyriding
+	local isSkyridingFlying = isMountedAny and canSkyriding and isFlying
 	local isSteadyFlight = isMountedAny and isFlying
 	local isSteadyFlightFlying = isMountedAny and isFlying
 	local isMountedFlying = isSteadyFlight
@@ -138,6 +128,15 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 
 	local isDead = UnitIsDeadOrGhost("player") or false
 	local petState = TRB.Data.snapshotData and TRB.Data.snapshotData.attributes.petState or "none"
+
+	-- Shapeshift forms only exist for a class whose display follows them (descriptor `forms`); the
+	-- class module keeps currentShapeshiftForm up to date.
+	local activeDescriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
+	local druidForm = nil
+	if activeDescriptor ~= nil and activeDescriptor.forms ~= nil then
+		druidForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+	end
+	local isDruidTravelFormAny = druidForm == "travel" or druidForm == "aquatic" or druidForm == "flight" or druidForm == "swiftFlight"
 
 	-- Instance type: cached on ZONE_CHANGED_NEW_AREA
 	local instanceType = TRB.Data.character.instanceType or "none"
