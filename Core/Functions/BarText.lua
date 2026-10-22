@@ -749,7 +749,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
 			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT },
 		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false, category = self.VariableCategory.OTHER },
-		{ variable = "$movementSpeed", description = L["BarTextVariableMovementSpeed"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
+		{ variable = "$movementSpeed", description = L["BarTextVariableMovementSpeed"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER,
 			logicType = logicTypes.INTEGER, booleanCheck = true },
 
 		-- Player cast bar. A bare check gates on the cast being in progress (see castbarTimerVars).
@@ -845,7 +845,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 	-- Skyriding bars, where the flavor has them. A bare check on a time asks whether it is running.
 	if TRB.Flavor.skyriding ~= nil then
 		for _, v in ipairs({
-			{ variable = "$skyridingSpeed", description = L["BarTextVariableSkyridingSpeed"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
+			{ variable = "$skyridingSpeed", description = L["BarTextVariableSkyridingSpeed"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER,
 				logicType = logicTypes.INTEGER, booleanCheck = true },
 			{ variable = "$skyridingCharges", description = L["BarTextVariableSkyridingCharges"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
 				logicType = logicTypes.INTEGER, booleanCheck = true },
@@ -2304,13 +2304,11 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	lookupLogic["$healAbsorb"] = snapshotData.attributes.healAbsorb
 	lookup["$healAbsorb"] = formatted.healAbsorb or ""
 
-	-- Speed has no event, so it is read on every refresh.
-	local _, speedPercent = TRB.Functions.Character:GetMovementSpeed()
-	local speedText = speedPercent ~= nil and string.format("%.0f", speedPercent) or ""
-	local speedLogic = speedPercent ~= nil and math.floor(speedPercent + 0.5) or nil
+	-- Speed has no event, so it is read on every refresh. It is secret while unit stats are restricted, so it is only ever formatted.
+	local speed = TRB.Functions.Character:GetMovementSpeed()
+	local speedText = speed ~= nil and string.format("%.1f", speed) or ""
 	for var in pairs(speedVariables) do
 		lookup[var] = speedText
-		lookupLogic[var] = speedLogic
 	end
 
 	lookup["$gcd"] = formatted.gcd or ""
@@ -2727,7 +2725,7 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		return true
 	end
 	if speedVariables[var] then
-		return select(2, TRB.Functions.Character:GetMovementSpeed()) ~= nil
+		return TRB.Functions.Character:GetMovementSpeed() ~= nil
 	end
 	if var == "$inCombat" or var == "$inCombatTime" then
 		return TRB.Data.character.inCombat == true

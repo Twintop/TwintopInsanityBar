@@ -12,7 +12,7 @@ TRB.Details.coreNewsContent = [====[
 
 ## Bar Text
 
-- Add `$movementSpeed` bar text, your current speed as a percentage of normal running speed.
+- Add `$movementSpeed` bar text, your current speed in yards per second.
 
 ---
 
