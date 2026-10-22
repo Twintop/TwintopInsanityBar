@@ -37,8 +37,8 @@ local addonName, TRB = ...
 ---@field public dragonIslesMapIds integer[] # UiMap ids whose maps and child maps use the Dragon Isles speed caps
 
 ---@class TRB.Flavor.SkyridingSpeedCap
----@field public max number # The Speed bar's maximum, in percent of run speed
----@field public passive number # The fastest speed without abilities, where the Speed bar draws its line
+---@field public max number # The Speed bar's maximum, in yards per second
+---@field public passive number # The fastest speed without abilities, in yards per second, where the Speed bar draws its line
 
 ---@class TRB.Flavor
 ---@field public id string # Flavor identifier; must equal the TOC's X-Flavor field

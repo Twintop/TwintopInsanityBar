@@ -30,11 +30,11 @@ TRB.Flavor = {
 	savedVariablesName = "TwintopInsanityBarSettings",
 	-- The Speed bar's scale; only a flavor with this block gets the Skyriding bars.
 	skyriding = {
-		-- Top and passive (no abilities) speeds in percent of run speed, measured with /trb skyriding. Outside
+		-- Top and passive (no abilities) speeds in yards per second, measured with /trb skyriding. Outside
 		-- the Dragon Isles both are 85% of the Dragon Isles values.
 		speedCaps = {
-			default = { max = 1214, passive = 789 },
-			dragonIsles = { max = 1428, passive = 929 },
+			default = { max = 85, passive = 55.25 },
+			dragonIsles = { max = 100, passive = 65 },
 		},
 		-- Dragon Isles UiMap ids, matched against the player's map and its parents.
 		dragonIslesMapIds = { 1978, 2057, 2107, 2131, 2241 },

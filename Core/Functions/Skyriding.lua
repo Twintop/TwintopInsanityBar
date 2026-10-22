@@ -581,7 +581,7 @@ local function RefreshZone()
 		speedCaps = caps
 		InvalidateRender()
 		if probeEnabled then
-			ProbePrint("Speed caps now %d%% top, %d%% passive.", caps.max, caps.passive)
+			ProbePrint("Speed caps now %g yd/s top, %g yd/s passive.", caps.max, caps.passive)
 		end
 	end
 end
@@ -635,7 +635,7 @@ local function RenderSpeed(group, colors, settings, visibility, full)
 	local thrillUp, skimmingUp = GetBuffStates()
 	full = full or thrillUp ~= speedBuffsDrawn.thrill or skimmingUp ~= speedBuffsDrawn.skimming
 	if full then
-		node:SetMinMax(0, speedCaps.max * RUN_SPEED / 100)
+		node:SetMinMax(0, speedCaps.max)
 	end
 	if speedValue ~= nil then
 		node:SetValue(speedValue, visibility ~= nil and visibility.smooth == true)
