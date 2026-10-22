@@ -4,13 +4,17 @@ A fully customizable resource bar for every class in World of Warcraft and World
 
 TRB started life as Twintop's Insanity Bar WeakAura set for Shadow Priests during the Legion expansion.
 
-[![GitHub release](https://img.shields.io/github/release/Twintop/TwintopInsanityBar.svg?maxAge=3600)](https://github.com/Twintop/TwintopInsanityBar/releases)
-[![MIT License](https://img.shields.io/github/license/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/blob/main/LICENSE)
+[![Mainline release](https://img.shields.io/github/v/release/Twintop/TwintopInsanityBar?filter=!forever-*&label=Mainline&color=F8B700)](https://github.com/Twintop/TwintopInsanityBar/releases)
+[![Forever release](https://img.shields.io/github/v/release/Twintop/TwintopInsanityBar?filter=forever-*&label=Forever&color=1D8DCD)](https://github.com/Twintop/TwintopInsanityBar/releases?q=forever-)
+
 [![Issues](https://img.shields.io/github/issues-raw/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/issues)
 [![Issues](https://img.shields.io/github/issues-closed-raw/Twintop/TwintopInsanityBar?color=00CC00)](https://github.com/Twintop/TwintopInsanityBar/issues?q=is%3Aissue+is%3Aclosed)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Core?color=000000&label=Core)](https://github.com/Twintop/TwintopInsanityBar/labels/Core)
+[![MIT License](https://img.shields.io/github/license/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/blob/main/LICENSE)
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X71U2S88)
+[![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?&logo=discord&logoColor=white)](https://discord.gg/eThqxM78xm)
+[![GitHub](https://img.shields.io/badge/GitHub-%23121011.svg?logo=github&logoColor=white)](https://github.com/Twintop/TwintopInsanityBar/)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/X8X71U2S88)
 
 ## Issues by Class
 
@@ -79,7 +83,7 @@ Add as many text entries as you like to any bar, built from live variables (`$re
 
 ### Audio Cues
 
-Play a sound on procs, cooldowns, usable thresholds, and resource counts, using any LibSharedMedia sound and your choice of output channel.
+Play a sound on procs, cooldowns, buffs tracked by your Cooldown Manager, usable thresholds, and resource counts, using any LibSharedMedia sound and your choice of output channel.
 
 ### Visibility
 
@@ -120,11 +124,13 @@ Most specializations track their major cooldowns and procs, and many get dedicat
 
 Shadow Priest, Balance Druid, and Elemental Shaman can also show a secondary Mana bar.
 
+Every class also gets Skyriding bars on their own tab: Speed, Charges, Whirling Surge, and Second Wind, shown while you Skyride.
+
 ### World of Warcraft: Forever
 
 Forever support is in early development, and class-specific tracking is still being added. Forever also has a few things of its own:
 
-- Main hand, off hand, and ranged swing timer bars.
+- Main hand, off hand, and ranged swing timer bars, with the ranged bar showing when movement delays your shot.
 - Abilities use your highest known spell rank.
 - Bar text stat variables match the Forever character sheet, such as Spirit, spell power, defense, and resistances.
 
