@@ -1116,7 +1116,8 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 	end
 
 	if issecretvalue(self.startTime) or issecretvalue(self.duration) then
-		local dObj = C_Spell.GetSpellChargeDuration(self.parent.spell:GetRankedId())
+		-- The cached object from the last refresh, matched to charges or cooldown, rather than a new one per call.
+		local dObj = self:GetDurationObject()
 		if dObj ~= nil then
 			local remaining = dObj:GetRemainingDuration()
 			if not issecretvalue(remaining) then

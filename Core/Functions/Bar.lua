@@ -797,11 +797,12 @@ local function EnsureOtherBarGroups(settings, barGroups)
 	end
 end
 
----Guarantees the Skyriding bars' groups wherever the castbar group is ensured. A charge bar's tracker is
----enabled up front, since the layout pass is what positions it.
+---Guarantees the Skyriding bars' groups wherever the castbar group is ensured, and has them redraw in full after the
+---pass. A charge bar's tracker is enabled up front, since the layout pass is what positions it.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>
 local function EnsureSkyridingBarGroups(settings, barGroups)
+	TRB.Functions.Skyriding:InvalidateRender()
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	for _, key in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
 		if barGroups[key] == nil and settings.bars ~= nil and settings.bars[key] ~= nil then
@@ -4544,6 +4545,8 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 			end
 		end
 	end
+	-- The Skyriding bars draw their own colors, which the pass above just replaced.
+	TRB.Functions.Skyriding:InvalidateRender()
 end
 
 ---Shows the end cap on the highest node with any fill in first..last and hides the rest of that run's caps.

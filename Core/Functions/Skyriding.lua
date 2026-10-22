@@ -8,6 +8,11 @@ TRB.Functions.Skyriding = {}
 -- test TRB.Flavor.skyriding instead, since a top-level nil test makes the language server treat it as nilable.
 local SKYRIDING = TRB.Flavor.skyriding --[[@as TRB.Flavor.Skyriding]]
 local BAR_KEYS = TRB.Classes.BarTypeRegistry.skyridingBarKeys
+-- Bar key -> its texture setting's key.
+local BAR_TEXTURE_KEYS = {}
+for _, barKey in ipairs(BAR_KEYS) do
+	BAR_TEXTURE_KEYS[barKey] = barKey .. "Bar"
+end
 
 -- Yards per second at 100% speed.
 local RUN_SPEED = 7
@@ -123,8 +128,17 @@ for barKey in pairs(chargeSnapshots) do
 	rechargeColors[barKey] = {}
 end
 
--- The duration object bound to the Whirling Surge node.
+-- Bumped by every event, layout, or settings change a bar draws from; a bar whose renderedVersion lags redraws in
+-- full on the next tick.
+local renderVersion = 0
+local renderedVersion = {}
+-- Bumped when the charge counts or icons change, which is all the bar text rewrites them on.
+local valuesVersion = 0
+-- The duration object bound to the Whirling Surge node, and the fill it was last drawn in.
 local boundCooldown = nil
+local cooldownFillDrawn = nil
+-- The buff states the Speed bar's fill was last drawn for.
+local speedBuffsDrawn = { thrill = nil, skimming = nil }
 -- Whether Lightning Rush's choice node swaps it in for Whirling Surge.
 local lightningRushSelected = false
 -- Whether the player can glide, which is all the buffs need tracking for.
@@ -168,6 +182,12 @@ local function ForceThrottleTick()
 	updaterSinceLastUpdate = UPDATER_THROTTLE
 end
 
+---Redraws every bar in full on the next tick.
+local function InvalidateRender()
+	renderVersion = renderVersion + 1
+	ForceThrottleTick()
+end
+
 ---@param fmt string
 ---@param ... any
 local function ProbePrint(fmt, ...)
@@ -195,18 +215,19 @@ local function GetActiveSettings()
 	return TRB.Functions.Class:GetActiveDisplaySettings()
 end
 
----Returns a bar's settings, colors, and visibility from the composed settings, plus those settings.
+---Returns a bar's settings, colors, and visibility from the composed settings, read here unless passed in.
 ---@param barKey string
----@return table? barSettings, table? colors, table? visibility, table? settings
-local function GetBarConfig(barKey)
-	local settings = GetActiveSettings()
+---@param settings table?
+---@return table? barSettings, table? colors, table? visibility
+local function GetBarConfig(barKey, settings)
+	settings = settings or GetActiveSettings()
 	if settings == nil then
-		return nil, nil, nil, nil
+		return nil, nil, nil
 	end
 	local barSettings = settings.bars and settings.bars[barKey]
 	local colors = settings.colors and settings.colors.bars and settings.colors.bars[barKey]
 	local visibility = settings.displayBar and settings.displayBar[barKey]
-	return barSettings, colors, visibility, settings
+	return barSettings, colors, visibility
 end
 
 ---Whether the bar is enabled at all: not Never Show, and Always Show or some show condition is ticked.
@@ -351,7 +372,7 @@ local function GetBarTexture(settings, barKey)
 	if textures.textureLock then
 		return textures.resourceBar
 	end
-	return textures[barKey .. "Bar"]
+	return textures[BAR_TEXTURE_KEYS[barKey]]
 end
 
 ---Whether any of these buffs is up.
@@ -460,6 +481,8 @@ local function RefreshCharges(barKey, duringLayout)
 	local cooldown = chargeSnapshots[barKey].cooldown
 	cooldown:Refresh(true)
 	local maxCharges = cooldown.maxCharges
+	valuesVersion = valuesVersion + 1
+	InvalidateRender()
 
 	local barGroups = TRB.Frames.barGroups
 	local group = barGroups and barGroups[barKey]
@@ -480,6 +503,7 @@ local function RefreshCooldown()
 	end
 	local cooldown = GetActiveCooldown()
 	cooldown:Refresh(true)
+	InvalidateRender()
 
 	if probeEnabled then
 		cooldown:GetRemainingTime()
@@ -534,6 +558,7 @@ local function BuildIcons()
 	icons["#thrillOfTheSkies"] = spells.thrillOfTheSkies.icon
 	icons["#groundSkimming"] = spells.groundSkimming.icon
 	icons["#staticCharge"] = spells.staticCharge.icon
+	valuesVersion = valuesVersion + 1
 end
 
 local function RefreshAll()
@@ -564,7 +589,7 @@ local function RefreshZone()
 	end
 	if caps ~= speedCaps then
 		speedCaps = caps
-		ForceThrottleTick()
+		InvalidateRender()
 		if probeEnabled then
 			ProbePrint("Speed caps now %d%% top, %d%% passive.", caps.max, caps.passive)
 		end
@@ -606,22 +631,31 @@ local function RenderPassiveLine(node, colors, settings)
 		frame:GetWidth(), barSettings and barSettings.border, nil, fillDirection, thickness, false)
 end
 
+---Sets the speed each tick; the rest redraws only in full or when the buffs coloring the fill change.
 ---@param group TRB.Classes.BarGroup
 ---@param colors table
 ---@param settings table?
 ---@param visibility table?
-local function RenderSpeed(group, colors, settings, visibility)
+---@param full boolean
+local function RenderSpeed(group, colors, settings, visibility, full)
 	local node = group:GetNode(1)
 	if node == nil then
 		return
 	end
-	node:SetMinMax(0, speedCaps.max * RUN_SPEED / 100)
+	local thrillUp, skimmingUp = GetBuffStates()
+	full = full or thrillUp ~= speedBuffsDrawn.thrill or skimmingUp ~= speedBuffsDrawn.skimming
+	if full then
+		node:SetMinMax(0, speedCaps.max * RUN_SPEED / 100)
+	end
 	if speedValue ~= nil then
 		node:SetValue(speedValue, visibility ~= nil and visibility.smooth == true)
 	end
+	if not full then
+		return
+	end
+	speedBuffsDrawn.thrill, speedBuffsDrawn.skimming = thrillUp, skimmingUp
 	local fill = colors.bar
 	local thrill, skimming = colors.thrillOfTheSkies, colors.groundSkimming
-	local thrillUp, skimmingUp = GetBuffStates()
 	if thrillUp and thrill ~= nil and thrill.enabled then
 		fill = thrill
 	elseif skimmingUp and skimming ~= nil and skimming.enabled then
@@ -632,11 +666,16 @@ local function RenderSpeed(group, colors, settings, visibility)
 	RenderPassiveLine(node, colors, settings)
 end
 
+---Charges only change on their own event, and the bound duration object animates the refill, so this draws only in full.
 ---@param barKey string
 ---@param group TRB.Classes.BarGroup
 ---@param colors table
 ---@param settings table?
-local function RenderCharges(barKey, group, colors, settings)
+---@param full boolean
+local function RenderCharges(barKey, group, colors, settings, full)
+	if not full then
+		return
+	end
 	local cooldown = chargeSnapshots[barKey].cooldown
 	local count = cooldown.charges
 	local recharge = cooldown.isActive and cooldown:GetDurationObject() or nil
@@ -668,10 +707,12 @@ local function RenderCharges(barKey, group, colors, settings)
 	group:SetChargeRechargeDuration(recharge)
 end
 
+---The cooldown's end and Lightning Rush's usability have no event here, so only they are checked outside a full draw.
 ---@param group TRB.Classes.BarGroup
 ---@param colors table
 ---@param now number
-local function RenderCooldown(group, colors, now)
+---@param full boolean
+local function RenderCooldown(group, colors, now, full)
 	local node = group:GetNode(1)
 	if node == nil then
 		return
@@ -679,6 +720,19 @@ local function RenderCooldown(group, colors, now)
 	local cooldown = GetActiveCooldown()
 	cooldown:GetRemainingTime(now)
 	local duration = cooldown.onCooldown and cooldown:GetDurationObject() or nil
+	local fill = colors.bar
+	if duration == nil then
+		-- Off cooldown, a Lightning Rush still short of ten Static Charge stacks can't be cast.
+		local unusable = colors.unusable
+		if lightningRushSelected and unusable ~= nil and unusable.enabled and not spells.lightningRush:IsUsable() then
+			fill = unusable
+		else
+			fill = colors.ready
+		end
+	end
+	if not full and duration == boundCooldown and fill == cooldownFillDrawn then
+		return
+	end
 	if duration == nil then
 		if node.hasTimerDuration then
 			node:ClearTimerDuration()
@@ -691,16 +745,7 @@ local function RenderCooldown(group, colors, now)
 		node:SetTimerDuration(duration, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
 		boundCooldown = duration
 	end
-	local fill = colors.bar
-	if duration == nil then
-		-- Off cooldown, a Lightning Rush still short of ten Static Charge stacks can't be cast.
-		local unusable = colors.unusable
-		if lightningRushSelected and not spells.lightningRush:IsUsable() and unusable ~= nil and unusable.enabled then
-			fill = unusable
-		else
-			fill = colors.ready
-		end
-	end
+	cooldownFillDrawn = fill
 	ApplyColors(node, colors, fill)
 	node:ApplyEndCap(colors.endCap, colors.border and colors.border.color)
 end
@@ -715,13 +760,15 @@ local function RenderBar(barKey, group, colors, settings, visibility, now)
 	if colors == nil then
 		return
 	end
+	local full = renderedVersion[barKey] ~= renderVersion
 	if barKey == "skyridingSpeed" then
-		RenderSpeed(group, colors, settings, visibility)
+		RenderSpeed(group, colors, settings, visibility, full)
 	elseif barKey == "whirlingSurge" then
-		RenderCooldown(group, colors, now)
+		RenderCooldown(group, colors, now, full)
 	else
-		RenderCharges(barKey, group, colors, settings)
+		RenderCharges(barKey, group, colors, settings, full)
 	end
+	renderedVersion[barKey] = renderVersion
 end
 
 ---Whether any Skyriding bar should be on screen, or still is. Edit Mode previews them through ProcessBars instead.
@@ -748,7 +795,7 @@ end
 
 local function SyncUpdater()
 	if NeedsUpdater() then
-		ForceThrottleTick()
+		InvalidateRender()
 		updaterFrame:Show()
 	end
 end
@@ -766,10 +813,16 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 	local now = GetTime()
 	-- A render transition hides every group for a moment, so showing through it would flicker.
 	local inTransition = TRB.Functions.Bar:IsRenderTransitionActive()
+	if inTransition then
+		-- The rebuild behind it may have rewritten the bars' frames.
+		renderVersion = renderVersion + 1
+	end
 
+	local settings = nil
 	if throttleTick then
 		ReadSpeed(now)
 		ProbeState()
+		settings = GetActiveSettings()
 	end
 
 	local needsUpdater = inTransition
@@ -777,9 +830,9 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 	for _, barKey in ipairs(BAR_KEYS) do
 		local group = barGroups and barGroups[barKey]
 		if group ~= nil then
-			local colors, settings, visibility
+			local colors, visibility
 			if throttleTick then
-				_, colors, visibility, settings = GetBarConfig(barKey)
+				_, colors, visibility = GetBarConfig(barKey, settings)
 				cachedVisibility[barKey] = visibility
 				targetAlpha[barKey] = GetTargetAlpha(visibility)
 			else
@@ -793,6 +846,10 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 
 			if not inTransition then
 				if alpha > 0 then
+					-- Coming back on screen redraws in full.
+					if (appliedAlpha[barKey] or 0) == 0 then
+						renderedVersion[barKey] = nil
+					end
 					if throttleTick then
 						RenderBar(barKey, group, colors, settings, visibility, now)
 					end
@@ -931,8 +988,13 @@ function TRB.Functions.Skyriding:RefreshVisibility()
 	if SKYRIDING == nil or TRB.Functions.EditMode:IsInEditMode() then
 		return
 	end
-	ForceThrottleTick()
+	InvalidateRender()
 	updaterFrame:Show()
+end
+
+---Redraws every bar in full on the next tick, after a layout or appearance pass rewrote their frames.
+function TRB.Functions.Skyriding:InvalidateRender()
+	InvalidateRender()
 end
 
 ---Wakes the parked updater when a bar should now show: a show condition changing only marks visibility dirty,
@@ -1045,6 +1107,12 @@ end
 ---@return table<string, string>
 function TRB.Functions.Skyriding:GetIcons()
 	return icons
+end
+
+---Changes whenever the charge counts or icons do, so bar text rewrites them only then.
+---@return integer
+function TRB.Functions.Skyriding:GetValuesVersion()
+	return valuesVersion
 end
 
 ---A charge bar's live node count, read on the spot when it isn't known yet. Called from inside layout passes.

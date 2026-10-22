@@ -1915,7 +1915,7 @@ local function ApplyChargeRechargeFillAppearance(barGroup, index)
 		return
 	end
 
-	local key = barGroup.name .. "_chargeRecharge" .. index
+	local key = fill.colorKey
 	if tracker.texturePath ~= nil and fill.texturePath ~= tracker.texturePath then
 		fill.texturePath = tracker.texturePath
 		fill:SetStatusBarTexture(tracker.texturePath)
@@ -1926,6 +1926,8 @@ local function ApplyChargeRechargeFillAppearance(barGroup, index)
 		end
 		-- A texture swap resets the fill's vertex color, so force the color back on.
 		TRB.Data.cache.colors.bar[key] = nil
+		-- Rebind the timer after a swap rather than rely on the swap keeping it.
+		fill.boundDuration = nil
 		ApplyChargeRechargeEndCap(barGroup, index)
 	end
 
@@ -1992,6 +1994,7 @@ function TRB.Classes.BarGroup:LayoutChargeTracker(nodeExtent, nodeCross, nodeSpa
 		if node ~= nil and i <= self.nodeCount then
 			if fill == nil then
 				fill = CreateFrame("StatusBar", self.name .. "_ChargeRecharge" .. i, tracker.clip)
+				fill.colorKey = self.name .. "_chargeRecharge" .. i
 				tracker.fills[i] = fill
 				tracker.frameLevel = nil
 				ApplyChargeRechargeFillAppearance(self, i)
@@ -2130,8 +2133,12 @@ function TRB.Classes.BarGroup:SetChargeRechargeDuration(durationObject)
 
 	local shouldShow = durationObject ~= nil
 	if shouldShow then
+		-- A bound object keeps animating its fill, so only a new one needs binding.
 		for _, fill in ipairs(tracker.fills) do
-			fill:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
+			if fill.boundDuration ~= durationObject then
+				fill:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
+				fill.boundDuration = durationObject
+			end
 		end
 		tracker.recharge:Show()
 	else
@@ -2142,6 +2149,11 @@ function TRB.Classes.BarGroup:SetChargeRechargeDuration(durationObject)
 	-- else marks it when this frame appears, so the text would stay hidden until an unrelated event did.
 	if tracker.shown ~= shouldShow then
 		tracker.shown = shouldShow
+		if not shouldShow then
+			for _, fill in ipairs(tracker.fills) do
+				fill.boundDuration = nil
+			end
+		end
 		TRB.Functions.BarVisibility:MarkDirty()
 	end
 end
@@ -2762,20 +2774,17 @@ end
 
 ---The Skyriding bars, in tab order. Empty unless the flavor has skyriding. Speed roots their stack.
 TRB.Classes.BarTypeRegistry.skyridingBarKeys = TRB.Flavor.skyriding ~= nil and { "skyridingSpeed", "skyridingCharges", "whirlingSurge", "secondWind" } or {}
+-- The same keys as a set, since the bar text loop asks per entry.
+local skyridingBarKeySet = {}
+for _, skyridingKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+	skyridingBarKeySet[skyridingKey] = true
+end
 
 ---Whether a bar key is one of the Skyriding bars.
 ---@param key string?
 ---@return boolean
 function TRB.Classes.BarTypeRegistry:IsSkyridingBar(key)
-	if key == nil then
-		return false
-	end
-	for _, skyridingKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
-		if skyridingKey == key then
-			return true
-		end
-	end
-	return false
+	return key ~= nil and skyridingBarKeySet[key] == true
 end
 
 ---Appends the Skyriding bar definitions to a customBars list if registered and not already present.
