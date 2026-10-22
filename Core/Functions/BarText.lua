@@ -450,6 +450,8 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	local activeVars = {}
 	local offBar = false
 	local speedOffBar = false
+	-- Per Skyriding variable, the Skyriding bars its entries ride, or "" for anywhere else.
+	local skyridingAnchors = {}
 	if settings ~= nil and settings.displayText ~= nil then
 		local displayText = settings.displayText
 		local entries = #displayText.barText
@@ -467,6 +469,11 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 							offBar = offBar or skyridingVariables[var] == true
 							speedOffBar = speedOffBar or speedVariables[var] == true
 						end
+						if skyridingVariables[var] then
+							local anchors = skyridingAnchors[var] or {}
+							anchors[onSkyridingBar and anchorGroupKey or ""] = true
+							skyridingAnchors[var] = anchors
+						end
 					end
 					-- Extract #icon references (e.g., #casting, #eclipse)
 					for icon in string.gmatch(text, "#[%a_][%w_]*") do
@@ -479,7 +486,7 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	TRB.Data.activeVariables = activeVars
 	skyridingTextOffBar = offBar
 	speedTextOffBar = speedOffBar
-	TRB.Functions.Skyriding:SetBarTextUse(offBar)
+	TRB.Functions.Skyriding:SetBarTextUse(offBar, skyridingAnchors)
 end
 
 ---Creates and returns the common bar text icons shared by all specializations, with any additional spec-specific icons appended.

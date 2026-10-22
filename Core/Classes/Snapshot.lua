@@ -1029,6 +1029,7 @@ end
 ---@field public manualCooldownExpires number? # GetTime() when the running recharge timer completes
 ---@field private durationObject any? # Cached DurationObject from C_Spell.GetSpellChargeDuration()
 ---@field private secretOnCooldown boolean? # From the never-secret cooldown flags while the times are secret; nil otherwise
+---@field private startRetries integer # Next-frame re-reads in a row of a running cooldown with no start time yet
 ---@field public hastedCooldown boolean # When true, cooldown remaining is dynamically adjusted when haste changes
 ---@field public lastKnownGcd number? # The GCD duration used when the cooldown was last initialized or recalculated
 TRB.Classes.SnapshotCooldown = {}
@@ -1068,6 +1069,7 @@ function TRB.Classes.SnapshotCooldown:Reset()
 	self.manualCooldownExpires = nil
 	self.durationObject = nil
 	self.secretOnCooldown = nil
+	self.startRetries = 0
 	self.hastedCooldown = false
 	self.lastKnownGcd = nil
 end
@@ -1224,6 +1226,9 @@ function TRB.Classes.SnapshotCooldown:Initialize()
 	self:Refresh(true, true)
 end
 
+-- How many frames in a row a running cooldown with no start time yet is re-read before it waits for the next event.
+local START_RETRY_LIMIT = 5
+
 ---Refreshes the cooldown information for the snapshot
 ---@param force boolean? # Force refresh of the value even if other interal logic would prevent it from doing so
 ---@param retryForce boolean? # Allow the cooldown to retry a force on the next call to Refresh()
@@ -1298,11 +1303,18 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 				self.startTime = startTime
 				self.duration = duration
 				self.retryForceTime = nil
+				self.startRetries = 0
 			else
 				self.startTime = nil
 				self.duration = 0
+				if not running then
+					self.startRetries = 0
+				end
 				-- Running with no start time yet: read again next frame rather than wait for the next event.
-				if running or retryForce then
+				if running and self.startRetries < START_RETRY_LIMIT then
+					self.startRetries = self.startRetries + 1
+					self.retryForceTime = GetTime()
+				elseif retryForce then
 					self.retryForceTime = GetTime()
 				end
 			end
@@ -1334,7 +1346,10 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 		else
 			self.startTime = startTime
 			self.duration = duration
-			self.secretOnCooldown = ownCooldown
+			-- isOnGCD is only trusted inside SPELL_UPDATE_COOLDOWN, so only the spells that refresh there read it.
+			if ignoreGcdLock then
+				self.secretOnCooldown = ownCooldown
+			end
 		end
 	end
 	self:GetRemainingTime()

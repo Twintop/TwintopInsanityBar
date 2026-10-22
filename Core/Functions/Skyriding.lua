@@ -164,8 +164,10 @@ local moduleEnabled = false
 local eventsEnabled = false
 -- Whether the charge and cooldown events are registered, which they are only while they can change what is shown.
 local spellEventsRegistered = false
--- Whether bar text shows a Skyriding value somewhere other than a Skyriding bar.
+-- Whether bar text shows a Skyriding value somewhere other than a Skyriding bar, and per variable the Skyriding bars
+-- its entries ride ("" for anywhere else), as of the last bar text rebuild.
 local textOffBar = false
+local textAnchors = nil
 -- Per charge bar: whether it is enabled or bar text shows its values, which is what keeps its snapshot current.
 local chargeBarsWanted = { skyridingCharges = false, secondWind = false }
 -- The bar text variables that keep a charge bar's snapshot current while the bar itself is off.
@@ -541,17 +543,19 @@ local function RefreshAll()
 	SyncSnapshots()
 end
 
----Keeps a charge bar's snapshot current only while the bar is enabled or bar text shows its values.
+---Keeps a charge bar's snapshot current only while the bar is enabled or text it doesn't carry shows its values.
 local function SyncChargeBarsWanted()
-	local activeVars = TRB.Data.activeVariables
 	for barKey, vars in pairs(CHARGE_TEXT_VARIABLES) do
 		local _, _, visibility = GetBarConfig(barKey)
 		local wanted = IsEnabled(visibility)
 		if not wanted then
-			-- Until bar text rebuilds its variables, nothing says they stopped being shown.
-			wanted = activeVars == nil and chargeBarsWanted[barKey]
+			-- Until bar text first builds its variables, nothing says they stopped being shown.
+			wanted = textAnchors == nil and chargeBarsWanted[barKey]
 			for _, var in ipairs(vars) do
-				wanted = wanted or (activeVars ~= nil and activeVars[var] == true)
+				-- Text riding the disabled bar itself is never seen.
+				for anchor in pairs(textAnchors and textAnchors[var] or {}) do
+					wanted = wanted or anchor ~= barKey
+				end
 			end
 		end
 		if wanted ~= chargeBarsWanted[barKey] then
@@ -921,11 +925,13 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
 		RefreshZone()
 		local _, glide = C_PlayerInfo.GetGlidingInfo()
 		canGlide = glide == true
-		if eventsEnabled then
+		local registered = spellEventsRegistered
+		SyncSpellEvents()
+		-- Turning the events on has just refreshed everything.
+		if eventsEnabled and (registered or not spellEventsRegistered) then
 			RefreshAll()
 		end
 		SyncSnapshots()
-		SyncSpellEvents()
 		TRB.Functions.Skyriding:RefreshVisibility()
 	else
 		if event == "PLAYER_CAN_GLIDE_CHANGED" then
@@ -996,13 +1002,19 @@ function TRB.Functions.Skyriding:SyncEnabledState()
 	self:RefreshVisibility()
 end
 
----Takes what bar text shows each time it rebuilds its variables: whether a Skyriding value shows off the Skyriding bars.
+---Takes what bar text shows each time it rebuilds its variables: whether a Skyriding value shows off the Skyriding bars,
+---and per Skyriding variable the Skyriding bars its entries ride ("" for anywhere else).
 ---@param offBar boolean
-function TRB.Functions.Skyriding:SetBarTextUse(offBar)
-	if SKYRIDING == nil or not moduleEnabled then
+---@param anchors table<string, table<string, boolean>>
+function TRB.Functions.Skyriding:SetBarTextUse(offBar, anchors)
+	if SKYRIDING == nil then
 		return
 	end
 	textOffBar = offBar
+	textAnchors = anchors
+	if not moduleEnabled then
+		return
+	end
 	SyncChargeBarsWanted()
 	SyncSpellEvents()
 end

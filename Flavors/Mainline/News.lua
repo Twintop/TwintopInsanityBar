@@ -13,8 +13,8 @@ TRB.Flavor.newsContent = [====[
 ### Skyriding
 
 - [#854](#854) Add new Skyriding Speed, Skyriding Charges, Whirling Surge, and Second Wind bars on a new Skyriding tab, with `$skyridingSpeed`, `$skyridingCharges`, `$skyridingChargesMax`, `$skyridingChargeTime`, `$whirlingSurgeTime`, `$secondWindCharges`, `$secondWindChargesMax`, `$secondWindTime`, `$thrillOfTheSkies`, `$groundSkimming`, `$staticChargeStacks`, and `$staticChargeTime` bar text and `#surgeForward`, `#whirlingSurge`, `#lightningRush`, `#secondWind`, `#thrillOfTheSkies`, `#groundSkimming`, and `#staticCharge` icons, shown while Skyriding except Second Wind, which is set to Never Show by default.
-- [#854](#854) Skyriding Speed fills toward your zone's top speed, with a line at the fastest speed without abilities and optional colors while Thrill of the Skies or Ground Skimming is active; Skyriding Charges and Second Wind fill one segment per charge, and Whirling Surge fills as the cooldown of it or of Lightning Rush runs out, with an optional color while Lightning Rush is short of Static Charge.
-- [#854](#854) They join the bar text Relative to Frame list, with each recharging charge as a target of its own, add Not Skyriding to their Show Bar When and Always Hide Bar When lists, start with bar text for the speed, each recharge, and the cooldown, and are not Color Indicator or custom threshold line targets.
+- [#854](#854) Skyriding Speed fills toward your zone's top speed, Skyriding Charges and Second Wind fill one segment per charge, and Whirling Surge fills as its cooldown, or Lightning Rush's, runs out.
+- [#854](#854) They join the bar text Relative to Frame list, with each recharging charge as a target of its own, but not the Color Indicator or custom threshold line lists.
 
 ## Druid
 
