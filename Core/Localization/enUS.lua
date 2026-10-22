@@ -4071,3 +4071,5 @@ L["SkyridingColorPassiveSpeedCapEnableTooltip"] = "When checked, the Speed bar s
 L["SkyridingPassiveSpeedCapUseBorderColorTooltip"] = "This will override the line's color with the bar's border color."
 L["BarTextVariableMovementSpeed"] = "Your current speed as a percentage of normal running speed, including while mounted or flying. Empty while the game hides your speed, which it can do in combat, so it can't be used in comparisons."
 L["BarTextVariableSkyridingSpeed"] = "Identical to $movementSpeed: your current speed as a percentage of normal running speed. Empty while the game hides your speed, which it can do in combat unless you are gliding, so it can't be used in comparisons."
+L["SkyridingBarsPromptText"] = "Twintop's Resource Bar now has Skyriding bars that show your speed, Skyriding charges, and Whirling Surge while you skyride.\n\nWould you like to enable them?"
+L["SkyridingBarsPromptFollowUpText"] = "You can enable, disable, or customize the Skyriding bars at any time in the Skyriding section of Twintop's Resource Bar options (/trb)."

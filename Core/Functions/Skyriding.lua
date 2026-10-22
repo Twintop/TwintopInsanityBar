@@ -1,4 +1,5 @@
 local _, TRB = ...
+local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Skyriding = {}
 
@@ -1188,6 +1189,68 @@ function TRB.Functions.Skyriding:GetLiveNodeCount(barKey)
 		return nil
 	end
 	return maxCharges
+end
+
+---Sets the Skyriding bars to Never Show, or back to their defaults, in the global settings and every profile's global
+---piece. Specs follow these through Use Global unless the user opted a spec out.
+---@param settings table # Shaped like the saved variables
+---@param hidden boolean
+function TRB.Functions.Skyriding:SetBarsHidden(settings, hidden)
+	local function SetIn(core)
+		if type(core) ~= "table" or type(core.displayBar) ~= "table" then
+			return
+		end
+		for _, barKey in ipairs(BAR_KEYS) do
+			core.displayBar[barKey] = core.displayBar[barKey] or {}
+			core.displayBar[barKey].neverShow = hidden or TRB.Functions.Settings:DefaultSkyridingBarVisibility(barKey).neverShow
+		end
+	end
+
+	SetIn(settings.core)
+	if type(settings.profiles) == "table" and type(settings.profiles.list) == "table" then
+		for _, profile in pairs(settings.profiles.list) do
+			SetIn(profile.core)
+		end
+	end
+end
+
+---Asks an existing user once whether to keep the new Skyriding bars, then says where to change it later.
+function TRB.Functions.Skyriding:ShowEnablePrompt()
+	local checks = TRB.Data.settings.manualUpdateChecks
+	if TRB.Flavor.skyriding == nil or checks == nil or checks.skyridingBarsPrompt ~= false then
+		return
+	end
+
+	local function Answer()
+		checks.skyridingBarsPrompt = true
+		StaticPopup_Show("TwintopResourceBar_SkyridingBarsFollowUp")
+	end
+
+	StaticPopupDialogs["TwintopResourceBar_SkyridingBarsPrompt"] = {
+		text = L["SkyridingBarsPromptText"],
+		button1 = L["Yes"],
+		button2 = L["No"],
+		-- The bars stay hidden while the prompt is pending, so only Yes has anything to change.
+		OnAccept = function()
+			TRB.Functions.Skyriding:SetBarsHidden(TRB.Data.settings, false)
+			TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(nil, nil, false, true)
+			Answer()
+		end,
+		OnCancel = Answer,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = false,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_SkyridingBarsFollowUp"] = {
+		text = L["SkyridingBarsPromptFollowUpText"],
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopup_Show("TwintopResourceBar_SkyridingBarsPrompt")
 end
 
 ---Turns the temporary probe on or off.
