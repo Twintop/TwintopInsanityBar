@@ -658,6 +658,81 @@ function TRB.Functions.Character:GetDeathCount()
 	return deathCount
 end
 
+-- The player's speed as last read, and the GetTime() it was read at; speed has no event, so it's read on demand.
+local movementSpeed = { readAt = nil, speed = nil, percent = nil, isGliding = false, stopped = false }
+-- Bar text updates at 20Hz at most, so a read newer than this is reused. Slightly under 0.05 so a 20Hz caller's frame jitter still re-reads.
+local MOVEMENT_SPEED_INTERVAL = 0.045
+-- A stopped player who read 0 is re-read this often, in case something moved them without a movement event.
+local IDLE_SPEED_INTERVAL = 0.25
+local movementFrame = CreateFrame("Frame")
+local movementEventsRegistered = false
+
+movementFrame:SetScript("OnEvent", function(_, event)
+	if event == "PLAYER_STOPPED_MOVING" then
+		movementSpeed.stopped = true
+	else
+		-- Moving, gliding, or shoved: read again right away.
+		movementSpeed.stopped = false
+		movementSpeed.readAt = nil
+	end
+end)
+
+---Listens for the events that tell a stopped player from a moving one, on first use. Without the start and stop events speed is always read.
+local function RegisterMovementEvents()
+	movementEventsRegistered = true
+	local isValid = C_EventUtils ~= nil and C_EventUtils.IsEventValid or nil
+	if isValid == nil or not (isValid("PLAYER_STARTED_MOVING") and isValid("PLAYER_STOPPED_MOVING")) then
+		return
+	end
+	movementFrame:RegisterEvent("PLAYER_STARTED_MOVING")
+	movementFrame:RegisterEvent("PLAYER_STOPPED_MOVING")
+	for _, event in ipairs({ "PLAYER_IS_GLIDING_CHANGED", "PLAYER_IMPULSE_APPLIED" }) do
+		if isValid(event) then
+			movementFrame:RegisterEvent(event)
+		end
+	end
+	-- No event fires for a player who is already standing still.
+	local speed = GetUnitSpeed("player")
+	movementSpeed.stopped = not issecretvalue(speed) and speed == 0
+end
+
+---The player's speed in yards per second (secret while unit stats are restricted), its percent of run speed when
+---plain, and whether it is a skyriding glide's forward speed, which movement speed doesn't report. Reads at 20Hz at most, and
+---at 4Hz while the player is standing still.
+---@return number? speed, number? percent, boolean isGliding
+function TRB.Functions.Character:GetMovementSpeed()
+	if not movementEventsRegistered then
+		RegisterMovementEvents()
+	end
+	local now = GetTime()
+	local state = movementSpeed
+	local interval = MOVEMENT_SPEED_INTERVAL
+	if state.stopped and state.percent == 0 then
+		interval = IDLE_SPEED_INTERVAL
+	end
+	if state.readAt == nil or now - state.readAt >= interval then
+		state.readAt = now
+		local isGliding, forwardSpeed = false, nil
+		if TRB.Flavor.skyriding ~= nil then
+			local gliding, _, forward = C_PlayerInfo.GetGlidingInfo()
+			isGliding = gliding == true
+			forwardSpeed = forward
+		end
+		local speed = forwardSpeed
+		if not isGliding then
+			speed = GetUnitSpeed("player")
+		end
+		state.speed = speed
+		state.isGliding = isGliding
+		if speed == nil or issecretvalue(speed) then
+			state.percent = nil
+		else
+			state.percent = speed / TRB.Data.constants.runSpeed * 100
+		end
+	end
+	return state.speed, state.percent, state.isGliding
+end
+
 ---Registers all character-change events (power updates, health, stats, mounting, zone changes, etc.) on the characterChangeFrame.
 function TRB.Functions.Character:EnableCharacterChange()
 	-- Runs on every spec change, so re-registering replaces the last spec's unit filters.
@@ -1354,6 +1429,8 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	-- change). Pass them directly: compositeKey isn't stamped yet on first login.
 	TRB.Functions.Castbar:SyncEnabledState(cache.settings)
 	TRB.Functions.PetCastbar:SyncEnabledState(cache.settings)
+	-- The Skyriding buffs are the player's, not the spec's, so they follow the snapshot data that is active.
+	TRB.Functions.Skyriding:SyncSnapshots()
 end
 
 ---Clears all cached color data (border, bar, backdrop, health curve, absorb border curve) and resets the RGBA parse memoization.
@@ -1604,6 +1681,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		registry:AppendCastbar(globalTextureBars)
 		registry:AppendTargetFocusCastbars(globalTextureBars)
 		registry:AppendOtherBars(globalTextureBars, nil)
+		registry:AppendSkyridingBars(globalTextureBars)
 		local isGlobalTextureBar = {}
 		for _, barTypeDef in ipairs(globalTextureBars) do
 			isGlobalTextureBar[barTypeDef.key] = true
@@ -1871,6 +1949,21 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
+	-- Skyriding tables hold nothing spec-only either, so they swap whole the way the pet bars' do.
+	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+		local coreBar = core.bars and core.bars[barKey]
+		local currentBars = specCache.settings.bars
+		if coreBar and currentBars and currentBars[barKey] and s[barKey .. "Dimensions"] then
+			specCache.settings.bars = OverlayOn(currentBars, { [barKey] = coreBar })
+		end
+
+		local coreColors = core.colors and core.colors.bars and core.colors.bars[barKey]
+		local currentColorBars = specCache.settings.colors.bars
+		if coreColors and currentColorBars and currentColorBars[barKey] and s[barKey .. "Colors"] then
+			specCache.settings.colors.bars = OverlayOn(currentColorBars, { [barKey] = coreColors })
+		end
+	end
+
 	-- Pet tables hold nothing spec-only, so each section swaps the whole table; a spec without its own entry has no pet.
 	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.petBarKeys) do
 		local coreBar = core.bars and core.bars[barKey]
@@ -1939,6 +2032,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		TRB.Functions.Castbar:SyncEnabledState()
 		TRB.Functions.PetCastbar:SyncEnabledState()
 		TRB.Functions.OtherBars:SyncEnabledState()
+		TRB.Functions.Skyriding:SyncEnabledState()
 	end
 end
 
@@ -2009,6 +2103,8 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 			-- Only specs declaring a pet get these, which keeps the bars off every other spec's tabs, anchors, and targets.
 			local specEntry = TRB.Functions.Character:GetSpecRegistryEntry(className .. "_" .. specName)
 			TRB.Functions.Settings:InjectPetBarsDefaults(specDefaults, specEntry and specEntry.classId, specEntry and specEntry.specId)
+
+			TRB.Functions.Settings:InjectSkyridingDefaults(specDefaults)
 
 			-- End caps are a universal per-bar setting; inject their defaults the same way
 			TRB.Functions.Settings:InjectEndCapDefaults(specDefaults)
@@ -2222,6 +2318,7 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.TargetCastbar:Enable()
 		TRB.Functions.PetCastbar:Enable()
 		TRB.Functions.OtherBars:Enable()
+		TRB.Functions.Skyriding:Enable()
 		TRB.Functions.Character:EnableCharacterChange()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)

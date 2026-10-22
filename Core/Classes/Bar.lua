@@ -1842,9 +1842,63 @@ function TRB.Classes.BarGroup:EnableChargeTracker()
 		recharge = rechargeFrame,
 		clip = rechargeClip,
 		fills = {},
+		endCaps = {},
 	}
 
 	return self.chargeTracker
+end
+
+---Draws the tracker's end cap at one recharge fill's leading edge. The window clips away every cap but the
+---refilling charge's.
+---@param barGroup TRB.Classes.BarGroup
+---@param index integer
+local function ApplyChargeRechargeEndCap(barGroup, index)
+	local tracker = barGroup.chargeTracker
+	if tracker == nil or tracker.fills[index] == nil then
+		return
+	end
+
+	local fill = tracker.fills[index]
+	local config = tracker.endCap
+	local band = tracker.endCaps[index]
+	-- Without a fill texture yet, a nil anchor would pin the cap to the fill frame's edge.
+	local texture = fill:GetStatusBarTexture()
+	if config == nil or texture == nil then
+		if band ~= nil then
+			band:Hide()
+		end
+		return
+	end
+	if band == nil then
+		band = fill:CreateTexture(nil, "OVERLAY")
+		band:SetTexture("Interface\\Buttons\\WHITE8X8")
+		tracker.endCaps[index] = band
+	end
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(config.color, true)
+	band:SetVertexColor(r, g, b, a)
+
+	-- The same half-pixel nudge toward the leading edge as a node's end cap, closing the sub-pixel seam.
+	local edgeNudge = 0.5
+	local fillDirection = (barGroup.nodes[1] and barGroup.nodes[1].fillDirection) or "leftRight"
+	band:ClearAllPoints()
+	if fillDirection == "rightLeft" then
+		band:SetPoint("TOPLEFT", texture, "TOPLEFT", -edgeNudge, 0)
+		band:SetPoint("BOTTOMLEFT", texture, "BOTTOMLEFT", -edgeNudge, 0)
+		band:SetWidth(config.width)
+	elseif fillDirection == "bottomTop" then
+		band:SetPoint("TOPLEFT", texture, "TOPLEFT", 0, edgeNudge)
+		band:SetPoint("TOPRIGHT", texture, "TOPRIGHT", 0, edgeNudge)
+		band:SetHeight(config.width)
+	elseif fillDirection == "topBottom" then
+		band:SetPoint("BOTTOMLEFT", texture, "BOTTOMLEFT", 0, -edgeNudge)
+		band:SetPoint("BOTTOMRIGHT", texture, "BOTTOMRIGHT", 0, -edgeNudge)
+		band:SetHeight(config.width)
+	else
+		band:SetPoint("TOPRIGHT", texture, "TOPRIGHT", edgeNudge, 0)
+		band:SetPoint("BOTTOMRIGHT", texture, "BOTTOMRIGHT", edgeNudge, 0)
+		band:SetWidth(config.width)
+	end
+	band:Show()
 end
 
 ---Applies the stored texture and this charge's color to one recharge fill.
@@ -1861,7 +1915,7 @@ local function ApplyChargeRechargeFillAppearance(barGroup, index)
 		return
 	end
 
-	local key = barGroup.name .. "_chargeRecharge" .. index
+	local key = fill.colorKey
 	if tracker.texturePath ~= nil and fill.texturePath ~= tracker.texturePath then
 		fill.texturePath = tracker.texturePath
 		fill:SetStatusBarTexture(tracker.texturePath)
@@ -1872,6 +1926,9 @@ local function ApplyChargeRechargeFillAppearance(barGroup, index)
 		end
 		-- A texture swap resets the fill's vertex color, so force the color back on.
 		TRB.Data.cache.colors.bar[key] = nil
+		-- Rebind the timer after a swap rather than rely on the swap keeping it.
+		fill.boundDuration = nil
+		ApplyChargeRechargeEndCap(barGroup, index)
 	end
 
 	local colorEntry = tracker.colorEntries and tracker.colorEntries[index]
@@ -1937,6 +1994,7 @@ function TRB.Classes.BarGroup:LayoutChargeTracker(nodeExtent, nodeCross, nodeSpa
 		if node ~= nil and i <= self.nodeCount then
 			if fill == nil then
 				fill = CreateFrame("StatusBar", self.name .. "_ChargeRecharge" .. i, tracker.clip)
+				fill.colorKey = self.name .. "_chargeRecharge" .. i
 				tracker.fills[i] = fill
 				tracker.frameLevel = nil
 				ApplyChargeRechargeFillAppearance(self, i)
@@ -1956,6 +2014,10 @@ function TRB.Classes.BarGroup:LayoutChargeTracker(nodeExtent, nodeCross, nodeSpa
 
 	self:ApplyChargeRechargeFillDirection()
 	self:SyncChargeRechargeFrameLevel()
+	-- The fill direction may have changed, which moves each cap to another edge.
+	for i = 1, #tracker.fills do
+		ApplyChargeRechargeEndCap(self, i)
+	end
 end
 
 ---Keeps the recharge bar above the nodes it slides across. Node levels are assigned after the
@@ -2031,6 +2093,36 @@ function TRB.Classes.BarGroup:SetChargeRechargeAppearance(texture, colorEntries)
 	self:SyncChargeRechargeFrameLevel()
 end
 
+---Sets the end cap that rides the refilling charge's fill edge. A border-following cap takes the border color
+---the same way a node's does.
+---@param endCapEntry TRB.Classes.Settings.EndCapColorEntry? # nil or disabled hides it
+---@param borderColor string? # The bar's current border color
+---@param defaultBorderColor string? # The bar's configured border color
+function TRB.Classes.BarGroup:SetChargeRechargeEndCap(endCapEntry, borderColor, defaultBorderColor)
+	local tracker = self.chargeTracker
+	if tracker == nil then
+		return
+	end
+
+	local color, width = nil, nil
+	if endCapEntry ~= nil and endCapEntry.enabled == true then
+		color = endCapEntry.color
+		if endCapEntry.useBorderColor and borderColor ~= nil
+			and not (endCapEntry.useBorderColorExceptDefault and borderColor == defaultBorderColor) then
+			color = borderColor
+		end
+		width = math.max(1, endCapEntry.width or 1)
+	end
+	local current = tracker.endCap
+	if (current == nil and width == nil) or (current ~= nil and current.color == color and current.width == width) then
+		return
+	end
+	tracker.endCap = width ~= nil and { color = color, width = width } or nil
+	for i = 1, #tracker.fills do
+		ApplyChargeRechargeEndCap(self, i)
+	end
+end
+
 ---Shows the recharge bar running the given duration, or hides it when there is nothing refilling.
 ---@param durationObject any? # A DurationObject, or nil to hide
 function TRB.Classes.BarGroup:SetChargeRechargeDuration(durationObject)
@@ -2041,8 +2133,12 @@ function TRB.Classes.BarGroup:SetChargeRechargeDuration(durationObject)
 
 	local shouldShow = durationObject ~= nil
 	if shouldShow then
+		-- A bound object keeps animating its fill, so only a new one needs binding.
 		for _, fill in ipairs(tracker.fills) do
-			fill:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
+			if fill.boundDuration ~= durationObject then
+				fill:SetTimerDuration(durationObject, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.ElapsedTime)
+				fill.boundDuration = durationObject
+			end
 		end
 		tracker.recharge:Show()
 	else
@@ -2053,6 +2149,11 @@ function TRB.Classes.BarGroup:SetChargeRechargeDuration(durationObject)
 	-- else marks it when this frame appears, so the text would stay hidden until an unrelated event did.
 	if tracker.shown ~= shouldShow then
 		tracker.shown = shouldShow
+		if not shouldShow then
+			for _, fill in ipairs(tracker.fills) do
+				fill.boundDuration = nil
+			end
+		end
 		TRB.Functions.BarVisibility:MarkDirty()
 	end
 end
@@ -2197,6 +2298,7 @@ end
 ---@field public thresholdDecimals integer?
 ---@field public isCastbar boolean # Player, target, or focus cast bar, whose name already ends in "Cast Bar"
 ---@field public classScoped boolean # Other Bar offered only to classes whose spec descriptors claim it
+---@field public liveNodeCountFunc (fun(): integer?)? # Self-driven multi-node bar whose node count follows live game data; nil from it keeps maxNodes
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -2270,6 +2372,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.endCapMode = config.endCapMode -- "all" for independent-node bars; nil/"highest" shows the cap only on the highest progressed node
 	self.classScoped = config.classScoped or false -- Other Bar offered only to classes whose spec descriptors claim it (otherBars)
 	self.environmentShowConditions = config.environmentShowConditions or false
+	self.liveNodeCountFunc = config.liveNodeCountFunc
 
 	return self
 end
@@ -2669,6 +2772,42 @@ function TRB.Classes.BarTypeRegistry:AppendOtherBars(list, classId, includeAllSc
 	end
 end
 
+---The Skyriding bars, in tab order. Empty unless the flavor has skyriding. Speed roots their stack.
+TRB.Classes.BarTypeRegistry.skyridingBarKeys = TRB.Flavor.skyriding ~= nil and { "skyridingSpeed", "skyridingCharges", "whirlingSurge", "secondWind" } or {}
+-- The same keys as a set, since the bar text loop asks per entry.
+local skyridingBarKeySet = {}
+for _, skyridingKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+	skyridingBarKeySet[skyridingKey] = true
+end
+
+---Whether a bar key is one of the Skyriding bars.
+---@param key string?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsSkyridingBar(key)
+	return key ~= nil and skyridingBarKeySet[key] == true
+end
+
+---Appends the Skyriding bar definitions to a customBars list if registered and not already present.
+---Mirrors AppendOtherBars.
+---@param list TRB.Classes.BarTypeDefinition[]
+function TRB.Classes.BarTypeRegistry:AppendSkyridingBars(list)
+	for _, key in ipairs(self.skyridingBarKeys) do
+		local def = self.definitions[key]
+		if def ~= nil then
+			local exists = false
+			for _, d in ipairs(list) do
+				if d.key == key then
+					exists = true
+					break
+				end
+			end
+			if not exists then
+				list[#list + 1] = def
+			end
+		end
+	end
+end
+
 ---The Pet tab's bar keys, in tab order. Pet Resource is the tree root and Pet Health stacks below it,
 ---mirroring the player's own resource-over-health pair.
 TRB.Classes.BarTypeRegistry.petBarKeys = { "petPower", "petHealth" }
@@ -2840,6 +2979,13 @@ function TRB.Classes.BarTypeRegistry:GetBarTypesForSpec(classId, specId)
 
 	-- Pet bars are likewise not declared per-spec; add them for the specs that can hold a pet.
 	for _, key in ipairs(self:GetPetScopeKeys(classId, specId)) do
+		if self.definitions[key] then
+			result[key] = self.definitions[key]
+		end
+	end
+
+	-- Every spec has the Skyriding bars.
+	for _, key in ipairs(self.skyridingBarKeys) do
 		if self.definitions[key] then
 			result[key] = self.definitions[key]
 		end
@@ -3043,6 +3189,48 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			end,
 			defaultColorsFunc = function()
 				return TRB.Functions.Settings:DefaultSwingTimerBarColors(swingKey)
+			end,
+			defaultTexturesFunc = function()
+				return TRB.Functions.Settings:DefaultCustomBarTextures()
+			end
+		}))
+	end
+
+	-- Skyriding bars. Charges and Second Wind take one node per charge, sized from the live maximum;
+	-- Second Wind's 5 nodes cover the item that raises it from 3.
+	local skyridingBars = {
+		skyridingSpeed = { name = L["ResourceSkyridingSpeed"] },
+		skyridingCharges = { name = L["ResourceSkyridingCharges"], maxNodes = 6 },
+		whirlingSurge = { name = L["ResourceWhirlingSurge"], timerDrivenFill = true },
+		secondWind = { name = L["ResourceSecondWind"], maxNodes = 5 },
+	}
+	for _, skyridingKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+		local skyridingBar = skyridingBars[skyridingKey]
+		local isMultiNode = skyridingBar.maxNodes ~= nil
+		self:Register(TRB.Classes.BarTypeDefinition:New({
+			key = skyridingKey,
+			displayName = skyridingBar.name,
+			isMultiNode = isMultiNode,
+			maxNodes = skyridingBar.maxNodes or 1,
+			hasSameColor = false,
+			-- A charge bar's node i spans i-1..i, so every node takes the same count.
+			minMaxMode = isMultiNode and "stepped" or "custom",
+			hasSpacing = isMultiNode,
+			hasThresholds = false,
+			hasCustomThresholds = false,
+			colorCurveType = nil,
+			visibilityKey = skyridingKey,
+			isSelfDriven = true,
+			-- Smoothing a charge node would fight the duration-driven recharge fill handing off to it.
+			timerDrivenFill = isMultiNode or skyridingBar.timerDrivenFill,
+			liveNodeCountFunc = isMultiNode and function()
+				return TRB.Functions.Skyriding:GetLiveNodeCount(skyridingKey)
+			end or nil,
+			defaultDimensionsFunc = function(classic)
+				return TRB.Functions.Settings:DefaultSkyridingBarSettings(classic, skyridingKey)
+			end,
+			defaultColorsFunc = function()
+				return TRB.Functions.Settings:DefaultSkyridingBarColors(skyridingKey)
 			end,
 			defaultTexturesFunc = function()
 				return TRB.Functions.Settings:DefaultCustomBarTextures()

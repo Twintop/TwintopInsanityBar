@@ -21,6 +21,7 @@ TRB.Functions = TRB.Functions or {}
 ---@field isMountedFlying boolean # Whether the player is mounted and in real (non-gliding) flight (Hide-list alias of isSteadyFlight)
 ---@field isSkyriding boolean # Whether the player is mounted on a skyriding-capable mount in a skyriding-enabled area
 ---@field isSkyridingFlying boolean # Whether the player is actively skyriding (mounted, canGlide, and flying)
+---@field isNotSkyriding boolean # Whether isSkyriding is false; the Skyriding bars read their own, from canGlide alone
 ---@field isSteadyFlight boolean # Whether the player is mounted and in real (non-gliding) flight; IsFlying() is false while skyriding-gliding
 ---@field isSteadyFlightFlying boolean # Whether the player is mounted and in real (non-gliding) flight (same as isSteadyFlight; steady flight only exists while airborne)
 ---@field inGroup boolean # Whether the player is in a group (party or raid)
@@ -69,6 +70,7 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.isMountedFlying = params.isMountedFlying or false
 	self.isSkyriding = params.isSkyriding or false
 	self.isSkyridingFlying = params.isSkyridingFlying or false
+	self.isNotSkyriding = params.isNotSkyriding or false
 	self.isSteadyFlight = params.isSteadyFlight or false
 	self.isSteadyFlightFlying = params.isSteadyFlightFlying or false
 	self.inGroup = params.inGroup or false
@@ -168,6 +170,7 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 	target.isMountedFlying = isMountedFlying or false
 	target.isSkyriding = isSkyriding or false
 	target.isSkyridingFlying = isSkyridingFlying or false
+	target.isNotSkyriding = not isSkyriding
 	target.isSteadyFlight = isSteadyFlight or false
 	target.isSteadyFlightFlying = isSteadyFlightFlying or false
 	target.inGroup = IsInGroup() or false
@@ -524,6 +527,9 @@ function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
 	if conditions.isSkyridingFlying == true and context.isSkyridingFlying then
 		return true
 	end
+	if conditions.isNotSkyriding == true and context.isNotSkyriding then
+		return true
+	end
 	if conditions.isSteadyFlightFlying == true and context.isSteadyFlightFlying then
 		return true
 	end
@@ -630,6 +636,9 @@ function TRB.Functions.BarVisibility:MatchesShowConditions(context, conditions)
 		return true
 	end
 	if conditions.isSkyridingFlying and context.isSkyridingFlying then
+		return true
+	end
+	if conditions.isNotSkyriding and context.isNotSkyriding then
 		return true
 	end
 	if conditions.isSteadyFlight and context.isSteadyFlight then
@@ -1094,6 +1103,10 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	if not anyShowing and TRB.Functions.OtherBars:IsRendering() then
 		anyShowing = true
 	end
+	-- Skyriding bars too, which mostly show while every other bar is hidden by a mounted condition.
+	if not anyShowing and TRB.Functions.Skyriding:IsRendering() then
+		anyShowing = true
+	end
 
 	-- Kick the castbar's idle display (Always Show / non-zero inactive alpha) when no cast is active:
 	-- its self-driven updater stops while idle-hidden, so this is what restarts it after settings
@@ -1101,6 +1114,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	TRB.Functions.Castbar:EnsureIdleState()
 	TRB.Functions.PetCastbar:EnsureIdleState()
 	TRB.Functions.OtherBars:EnsureIdleState()
+	TRB.Functions.Skyriding:EnsureIdleState()
 
 	-- Detect hidden→visible transition: when the bar was not tracking but is now
 	-- showing, fully invalidate the lookup memoization cache so that every

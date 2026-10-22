@@ -797,6 +797,25 @@ local function EnsureOtherBarGroups(settings, barGroups)
 	end
 end
 
+---Guarantees the Skyriding bars' groups wherever the castbar group is ensured, and has them redraw in full after the
+---pass. A charge bar's tracker is enabled up front, since the layout pass is what positions it.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsureSkyridingBarGroups(settings, barGroups)
+	TRB.Functions.Skyriding:InvalidateRender()
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+		if barGroups[key] == nil and settings.bars ~= nil and settings.bars[key] ~= nil then
+			local definition = registry:Get(key)
+			local frameName = "TwintopResourceBarFrame_" .. key:gsub("^%l", string.upper)
+			barGroups[key] = TRB.Classes.BarGroup:New(UIParent, frameName, definition.maxNodes, false)
+			if definition.isMultiNode then
+				barGroups[key]:EnableChargeTracker()
+			end
+		end
+	end
+end
+
 ---Guarantees the pet bars' groups wherever the castbar group is ensured, on the active spec only when it
 ---has a pet: a group it can't use would join the anchor forest as a zero-size node.
 ---@param barGroups table<string, TRB.Classes.BarGroup>
@@ -854,6 +873,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
 	EnsureOtherBarGroups(settings, barGroups)
 	EnsurePetBarGroups(barGroups)
+	EnsureSkyridingBarGroups(settings, barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
@@ -905,6 +925,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
 	EnsureOtherBarGroups(settings, barGroups)
 	EnsurePetBarGroups(barGroups)
+	EnsureSkyridingBarGroups(settings, barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
 
@@ -2928,6 +2949,10 @@ function TRB.Functions.Bar:IsBarVisibleForLayout(settings, barKey, includeHidden
 			if not TRB.Functions.TargetCastbar:IsEnabled(displayBar and displayBar[barKey]) then
 				return false
 			end
+		elseif TRB.Classes.BarTypeRegistry:IsSkyridingBar(barKey) then
+			if not TRB.Functions.Skyriding:IsEnabled(displayBar and displayBar[barKey]) then
+				return false
+			end
 		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
 			-- Other Bars follow the same rule as the cast bars above, plus the swing bars' weapon checks.
 			if not TRB.Functions.OtherBars:IsEnabledForLayout(barKey, displayBar and displayBar[barKey]) then
@@ -3209,11 +3234,11 @@ function TRB.Functions.Bar:GetAllBarKeysFromSettings(settings, classId, specId)
 	return keys
 end
 
--- Bar-target list order; unlisted keys are spec bars (3) or Other Bars (9), both sorted by name.
+-- Bar-target list order; unlisted keys are spec bars (3), Other Bars (9), or Skyriding bars (12), each sorted by name.
 local barTargetRanks = { screen = 0, primary = 1, secondary = 2, health = 4, castbar = 5, targetCastbar = 6, focusCastbar = 7, petCastbar = 8, petPower = 10, petHealth = 11 }
 
 ---Where a bar sorts in every bar-target list: Screen, primary, secondary, spec bars, health, the four cast
----bars, Other Bars, then Pet Resource and Pet Health.
+---bars, Other Bars, Pet Resource and Pet Health, then the Skyriding bars.
 ---@param barKey string
 ---@return integer
 function TRB.Functions.Bar:GetBarTargetRank(barKey)
@@ -3225,6 +3250,9 @@ function TRB.Functions.Bar:GetBarTargetRank(barKey)
 		if otherBarKey == barKey then
 			return 9
 		end
+	end
+	if TRB.Classes.BarTypeRegistry:IsSkyridingBar(barKey) then
+		return 12
 	end
 	return 3
 end
@@ -4283,6 +4311,12 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 			effectiveNodeCount = enabledCount
 		end
 	end
+	if barTypeDef.liveNodeCountFunc ~= nil then
+		local liveCount = barTypeDef.liveNodeCountFunc()
+		if liveCount ~= nil and liveCount > 0 then
+			effectiveNodeCount = math.min(liveCount, effectiveNodeCount)
+		end
+	end
 
 	---@type TRB.Classes.AnchoredBarGroupConfig
 	local config = {
@@ -4351,6 +4385,8 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 			disabled = not TRB.Functions.PetCastbar:IsEnabled(visibility)
 		elseif barKey == "targetCastbar" or barKey == "focusCastbar" then
 			disabled = not TRB.Functions.TargetCastbar:IsEnabled(visibility)
+		elseif TRB.Classes.BarTypeRegistry:IsSkyridingBar(barKey) then
+			disabled = not TRB.Functions.Skyriding:IsEnabled(visibility)
 		elseif TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
 			disabled = not TRB.Functions.OtherBars:IsEnabledForLayout(barKey, visibility)
 		end
@@ -4509,6 +4545,8 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 			end
 		end
 	end
+	-- The Skyriding bars draw their own colors, which the pass above just replaced.
+	TRB.Functions.Skyriding:InvalidateRender()
 end
 
 ---Shows the end cap on the highest node with any fill in first..last and hides the rest of that run's caps.

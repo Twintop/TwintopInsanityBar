@@ -227,9 +227,12 @@ end
 ---@param swatchLabel string? # Color swatch label; defaults to L["EndCap"]
 ---@param classId integer? # Class ID for the panel being edited, nil for global
 ---@param specId integer? # Spec ID for the panel being edited, nil for global
+---@param opts { entryKey: string?, enabledLabel: string?, enabledTooltip: string?, useBorderColorTooltip: string?, widthLabel: string?, hideExceptDefault: boolean? }? # Edits another end-cap-shaped entry (e.g. a fixed line) with its own labels; hideExceptDefault drops the option only Color Indicators can trigger
 ---@return number yCoord # The updated Y coordinate after placing all controls
-function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, parentColorTable, namePrefix, controlKey, swatchLabel, classId, specId)
-	local endCapSettings = parentColorTable.endCap
+function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, parentColorTable, namePrefix, controlKey, swatchLabel, classId, specId, opts)
+	opts = opts or {}
+	local entryKey = opts.entryKey or "endCap"
+	local endCapSettings = parentColorTable[entryKey]
 	if endCapSettings == nil then
 		return yCoord
 	end
@@ -265,7 +268,9 @@ function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, cont
 		Primitives:ToggleColorPickerEnabled(controls.colors[controlKey], endCapSettings.enabled)
 		Primitives:ToggleSliderEnabled(controls.sliders[controlKey .. "Width"], endCapSettings.enabled)
 		Primitives:ToggleCheckboxEnabled(controls.checkBoxes[controlKey .. "UseBorderColor"], endCapSettings.enabled)
-		Primitives:ToggleCheckboxEnabled(controls.checkBoxes[controlKey .. "UseBorderColorExceptDefault"], endCapSettings.enabled and endCapSettings.useBorderColor == true)
+		if not opts.hideExceptDefault then
+			Primitives:ToggleCheckboxEnabled(controls.checkBoxes[controlKey .. "UseBorderColorExceptDefault"], endCapSettings.enabled and endCapSettings.useBorderColor == true)
+		end
 	end
 
 	-- Enable checkbox + color swatch on one row
@@ -273,8 +278,8 @@ function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, cont
 	local fCheckbox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_EndCapEnabled", parent, "ChatConfigCheckButtonTemplate")
 	controls.checkBoxes[controlKey .. "Enabled"] = fCheckbox
 	fCheckbox:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(fCheckbox:GetName() .. 'Text'):SetText(L["CheckboxEndCapEnabled"])
-	fCheckbox.tooltip = L["CheckboxEndCapEnabledTooltip"]
+	getglobal(fCheckbox:GetName() .. 'Text'):SetText(opts.enabledLabel or L["CheckboxEndCapEnabled"])
+	fCheckbox.tooltip = opts.enabledTooltip or L["CheckboxEndCapEnabledTooltip"]
 	fCheckbox:SetChecked(endCapSettings.enabled == true)
 	fCheckbox:SetScript("OnClick", function(self, ...)
 		endCapSettings.enabled = self:GetChecked()
@@ -282,14 +287,14 @@ function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, cont
 		RefreshEndCaps()
 	end)
 
-	-- The swatch proxy keys the color entry as "endCap" for ColorOnMouseDown while the
+	-- The swatch proxy keys the color entry by its entry key for ColorOnMouseDown while the
 	-- shared controls table keeps the panel-unique controlKey.
 	local swatchProxy = {}
 	local fSwatch = self:BuildColorPicker(parent, swatchLabel or L["EndCap"], endCapSettings.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	swatchProxy.endCap = fSwatch
+	swatchProxy[entryKey] = fSwatch
 	controls.colors[controlKey] = fSwatch
 	fSwatch:SetScript("OnMouseDown", function(_, button, ...)
-		self:ColorOnMouseDown(button, parentColorTable, swatchProxy, "endCap", nil, nil, classId, specId, RefreshEndCaps)
+		self:ColorOnMouseDown(button, parentColorTable, swatchProxy, entryKey, nil, nil, classId, specId, RefreshEndCaps)
 	end)
 
 	-- Border-follow checkboxes (indented, gated on enabled)
@@ -298,7 +303,7 @@ function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, cont
 	controls.checkBoxes[controlKey .. "UseBorderColor"] = fCheckbox
 	fCheckbox:SetPoint("TOPLEFT", oUi.xCoord + 20, yCoord)
 	getglobal(fCheckbox:GetName() .. 'Text'):SetText(L["CheckboxEndCapUseBorderColor"])
-	fCheckbox.tooltip = L["CheckboxEndCapUseBorderColorTooltip"]
+	fCheckbox.tooltip = opts.useBorderColorTooltip or L["CheckboxEndCapUseBorderColorTooltip"]
 	fCheckbox:SetChecked(endCapSettings.useBorderColor == true)
 	fCheckbox:SetScript("OnClick", function(self, ...)
 		endCapSettings.useBorderColor = self:GetChecked()
@@ -306,22 +311,25 @@ function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, cont
 		RefreshEndCaps()
 	end)
 
+	-- A hidden row still takes its space, so the width slider keeps its place.
 	yCoord = yCoord - 20
-	fCheckbox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_EndCapUseBorderColorExceptDefault", parent, "ChatConfigCheckButtonTemplate")
-	controls.checkBoxes[controlKey .. "UseBorderColorExceptDefault"] = fCheckbox
-	fCheckbox:SetPoint("TOPLEFT", oUi.xCoord + 40, yCoord)
-	getglobal(fCheckbox:GetName() .. 'Text'):SetText(L["CheckboxEndCapUseBorderColorExceptDefault"])
-	fCheckbox.tooltip = L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"]
-	fCheckbox:SetChecked(endCapSettings.useBorderColorExceptDefault == true)
-	fCheckbox:SetScript("OnClick", function(self, ...)
-		endCapSettings.useBorderColorExceptDefault = self:GetChecked()
-		RefreshEndCaps()
-	end)
+	if not opts.hideExceptDefault then
+		fCheckbox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_Checkbox_EndCapUseBorderColorExceptDefault", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes[controlKey .. "UseBorderColorExceptDefault"] = fCheckbox
+		fCheckbox:SetPoint("TOPLEFT", oUi.xCoord + 40, yCoord)
+		getglobal(fCheckbox:GetName() .. 'Text'):SetText(L["CheckboxEndCapUseBorderColorExceptDefault"])
+		fCheckbox.tooltip = L["CheckboxEndCapUseBorderColorExceptDefaultTooltip"]
+		fCheckbox:SetChecked(endCapSettings.useBorderColorExceptDefault == true)
+		fCheckbox:SetScript("OnClick", function(self, ...)
+			endCapSettings.useBorderColorExceptDefault = self:GetChecked()
+			RefreshEndCaps()
+		end)
+	end
 
 	-- Width slider
 	--yCoord = yCoord - 20
 	controls.sliders = controls.sliders or {}
-	controls.sliders[controlKey .. "Width"] = Primitives:BuildSlider(parent, L["EndCapWidth"], 1, 50, endCapSettings.width or 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.sliders[controlKey .. "Width"] = Primitives:BuildSlider(parent, opts.widthLabel or L["EndCapWidth"], 1, 50, endCapSettings.width or 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.sliders[controlKey .. "Width"]:SetScript("OnValueChanged", function(self, value)
 		value = Primitives:EditBoxSetTextMinMax(self, value)
 		endCapSettings.width = value
@@ -342,14 +350,15 @@ end
 ---@param yCoord number
 ---@param classId integer
 ---@param specId integer
+---@param onChanged function? # Optional callback run after the color changes
 ---@return Frame swatch
-function TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, controlsTbl, colorTable, key, label, yCoord, classId, specId)
+function TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, controlsTbl, colorTable, key, label, yCoord, classId, specId, onChanged)
 	local entry = colorTable[key]
 	local value = (type(entry) == "table" and entry.color) or entry or "FFFFFFFF"
 	local f = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, label, value, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 	controlsTbl[key] = f
 	f:SetScript("OnMouseDown", function(self, button)
-		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTable, controlsTbl, key, nil, nil, classId, specId)
+		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTable, controlsTbl, key, nil, nil, classId, specId, onChanged)
 	end)
 	return f
 end

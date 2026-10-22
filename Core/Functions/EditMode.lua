@@ -185,6 +185,9 @@ function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
 		-- The GCD bar hangs off the Cast Bar by default, so it is only a root once the user re-anchors it
 		-- to the screen. Park it just under the main stack's default spot when that happens.
 		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -260)
+	elseif rootBarKey == "skyridingSpeed" then
+		-- Root of the Skyriding stack, above screen center and clear of the main stack.
+		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 250)
 	else
 		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
 	end
@@ -1442,6 +1445,7 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		TRB.Functions.PetCastbar:EnsureIdleState()
 		TRB.Functions.TargetCastbar:RefreshVisibility()
 		TRB.Functions.OtherBars:RefreshVisibility()
+		TRB.Functions.Skyriding:RefreshVisibility()
 	end
 end
 

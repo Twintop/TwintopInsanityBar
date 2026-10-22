@@ -28,6 +28,17 @@ TRB.Flavor = {
 	-- The global the TOC's SavedVariables line declares. Per-flavor so two flavors can never share a
 	-- settings table, even if a future client ends up sharing an AddOns/WTF folder between lineages.
 	savedVariablesName = "TwintopInsanityBarSettings",
+	-- The Speed bar's scale; only a flavor with this block gets the Skyriding bars.
+	skyriding = {
+		-- Top and passive (no abilities) speeds in yards per second, measured with /trb skyriding. Outside
+		-- the Dragon Isles both are 85% of the Dragon Isles values.
+		speedCaps = {
+			default = { max = 85, passive = 55.25 },
+			dragonIsles = { max = 100, passive = 65 },
+		},
+		-- Dragon Isles UiMap ids, matched against the player's map and its parents.
+		dragonIslesMapIds = { 1978, 2057, 2107, 2131, 2241 },
+	},
 
 	---True when the running client is this flavor's game. Checked by the version gate when the TOC
 	---sets X-FlavorCheck to enabled. An unreadable project ID or interface number is not evidence of a

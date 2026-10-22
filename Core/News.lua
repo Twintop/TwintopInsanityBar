@@ -10,6 +10,10 @@ TRB.Details.coreNewsContent = [====[
 - Fix switching profiles, or logging in on another character with a different profile, carrying settings such as custom threshold lines over from the previous profile.
 - Fix deleting the active profile from a profile dropdown copying its settings into the profile that replaces it, or undoing a reset of the Default profile.
 
+## Bar Text
+
+- [#854](#854) Add `$movementSpeed` bar text, your current speed as a percentage of normal running speed, empty when the game hides it as a `secret` value while in combat.
+
 ---
 
 # Live 12.1.5.3-release / Forever 1.60.1.11-release (2026-10-21)

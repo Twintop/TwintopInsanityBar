@@ -122,6 +122,24 @@ for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 		paths = colorPaths }
 end
 
+-- Skyriding sections live on the top-level "Skyriding" nav category, two per bar, swapping whole tables like the pet bars'.
+local skyridingSectionLabels = {
+	skyridingSpeedDimensions = L["CopyMenuSection_skyridingSpeedDimensions"],
+	skyridingSpeedColors = L["CopyMenuSection_skyridingSpeedColors"],
+	skyridingChargesDimensions = L["CopyMenuSection_skyridingChargesDimensions"],
+	skyridingChargesColors = L["CopyMenuSection_skyridingChargesColors"],
+	whirlingSurgeDimensions = L["CopyMenuSection_whirlingSurgeDimensions"],
+	whirlingSurgeColors = L["CopyMenuSection_whirlingSurgeColors"],
+	secondWindDimensions = L["CopyMenuSection_secondWindDimensions"],
+	secondWindColors = L["CopyMenuSection_secondWindColors"],
+}
+for _, key in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
+	globalSettingDefinitions[key .. "Dimensions"] = { checkboxSuffix = key .. "Dimensions", tabKey = key, categoryKey = "skyriding", useGlobalLabel = L["CheckboxUseGlobalSkyriding"], sectionLabel = skyridingSectionLabels[key .. "Dimensions"],
+		paths = { {"bars", key} } }
+	globalSettingDefinitions[key .. "Colors"] = { checkboxSuffix = key .. "Colors", tabKey = key, categoryKey = "skyriding", useGlobalLabel = L["CheckboxUseGlobalSkyriding"], sectionLabel = skyridingSectionLabels[key .. "Colors"],
+		paths = { {"colors", "bars", key} } }
+end
+
 ---Sets a checkbox to tristate visual mode
 ---@param checkbox CheckButton # The checkbox to update
 ---@param state boolean|nil # true = checked, false = unchecked, nil = mixed/desaturated
@@ -530,6 +548,10 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		linkText = L["OpenGlobalPetBarsSettings"]
 		linkTooltip = L["OpenGlobalPetBarsSettingsTooltip"]
 		coverButtonText = L["OpenGlobalPetBarsSettings"]
+	elseif navKey == "skyriding" then
+		linkText = L["OpenGlobalSkyridingSettings"]
+		linkTooltip = L["OpenGlobalSkyridingSettingsTooltip"]
+		coverButtonText = L["OpenGlobalSkyridingSettings"]
 	end
 
 	local link = CreateFrame("Button", nil, checkbox) --[[@as TRB.Classes.OptionsUi.UseGlobalLink]]
