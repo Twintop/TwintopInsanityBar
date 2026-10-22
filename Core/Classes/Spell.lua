@@ -98,6 +98,7 @@ end
 ---@field public hasCooldown boolean? # Does this spell have a cooldown associated with its use?
 ---@field public hasCharges boolean? # Does this spell have charges?
 ---@field public hasCastCount boolean? # Does this spell have a cast count that needs to be tracked?
+---@field public ignoreGcdLock boolean? # Reads its cooldown's lock from the cooldown's own flags instead of the GCD, for a lock the GCD doesn't time
 ---@field public hasTicks boolean? # Does this spell have a buff/debuff/channel that has ticks?
 ---@field public ticks integer? # How many ticks this spell have at the beginning.
 ---@field public tickRate number? # How many seconds between ticks.
@@ -174,6 +175,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
 			(key == "hasCooldown"					 	and type(value) == "boolean") or
 			(key == "hasCharges"					 	and type(value) == "boolean") or
 			(key == "hasCastCount"					 	and type(value) == "boolean") or
+			(key == "ignoreGcdLock"					 	and type(value) == "boolean") or
 			(key == "hasTicks"						 	and type(value) == "boolean") or
 			(key == "ticks"								and type(value) == "number" and tonumber(value, 10) ~= nil) or
 			(key == "tickRate"							and type(value) == "number") or

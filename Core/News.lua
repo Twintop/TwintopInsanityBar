@@ -12,7 +12,7 @@ TRB.Details.coreNewsContent = [====[
 
 ## Bar Text
 
-- Add `$movementSpeed` bar text, your current speed as a percentage of normal running speed. It is empty while the game hides your speed, which it can do in combat.
+- [#854](#854) Add `$movementSpeed` bar text, your current speed as a percentage of normal running speed, empty when the game hides it as a `secret` value while in combat.
 
 ---
 

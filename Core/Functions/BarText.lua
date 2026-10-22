@@ -479,6 +479,7 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	TRB.Data.activeVariables = activeVars
 	skyridingTextOffBar = offBar
 	speedTextOffBar = speedOffBar
+	TRB.Functions.Skyriding:SetBarTextUse(offBar)
 end
 
 ---Creates and returns the common bar text icons shared by all specializations, with any additional spec-specific icons appended.
@@ -847,13 +848,13 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		for _, v in ipairs({
 			{ variable = "$skyridingSpeed", description = L["BarTextVariableSkyridingSpeed"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER,
 				logicType = logicTypes.INTEGER, booleanCheck = true },
-			{ variable = "$skyridingCharges", description = L["BarTextVariableSkyridingCharges"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
+			{ variable = "$skyridingCharges", description = L["BarTextVariableSkyridingCharges"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER,
 				logicType = logicTypes.INTEGER, booleanCheck = true },
 			{ variable = "$skyridingChargesMax", description = L["BarTextVariableSkyridingChargesMax"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
 				logicType = logicTypes.INTEGER, booleanCheck = true },
 			{ variable = "$skyridingChargeTime", description = L["BarTextVariableSkyridingChargeTime"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
 			{ variable = "$whirlingSurgeTime", description = L["BarTextVariableWhirlingSurgeTime"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true },
-			{ variable = "$secondWindCharges", description = L["BarTextVariableSecondWindCharges"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
+			{ variable = "$secondWindCharges", description = L["BarTextVariableSecondWindCharges"], printInSettings = true, color = false, secret = true, category = self.VariableCategory.OTHER,
 				logicType = logicTypes.INTEGER, booleanCheck = true },
 			{ variable = "$secondWindChargesMax", description = L["BarTextVariableSecondWindChargesMax"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
 				logicType = logicTypes.INTEGER, booleanCheck = true },
@@ -2304,11 +2305,14 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	lookupLogic["$healAbsorb"] = snapshotData.attributes.healAbsorb
 	lookup["$healAbsorb"] = formatted.healAbsorb or ""
 
-	-- Speed has no event, so it is read on every refresh. A secret speed can't be made a percent, so its text is empty.
-	local _, speedPercent = TRB.Functions.Character:GetMovementSpeed()
-	local speedText = speedPercent ~= nil and string.format("%.0f", speedPercent) or ""
-	for var in pairs(speedVariables) do
-		lookup[var] = speedText
+	-- Speed has no event, so it is read on every refresh that shows it. A secret speed can't be made a percent, so its text is empty.
+	local activeVars = TRB.Data.activeVariables
+	if activeVars == nil or activeVars["$movementSpeed"] or activeVars["$skyridingSpeed"] then
+		local _, speedPercent = TRB.Functions.Character:GetMovementSpeed()
+		local speedText = speedPercent ~= nil and string.format("%.0f", speedPercent) or ""
+		for var in pairs(speedVariables) do
+			lookup[var] = speedText
+		end
 	end
 
 	lookup["$gcd"] = formatted.gcd or ""
@@ -2559,6 +2563,19 @@ local skyridingChargeVars = {
 -- What the event-driven Skyriding variables were last written from, and the tables they went into.
 local skyridingWritten = { lookup = nil, lookupLogic = nil, version = nil, thrill = nil, skimming = nil, stacks = nil }
 
+---A Skyriding timer's logic value: 0 while it isn't running, like Static Charge's, and nothing while it is secret.
+---@param remaining number?
+---@return number?
+local function SkyridingTimeLogic(remaining)
+	if remaining == nil then
+		return 0
+	end
+	if issecretvalue(remaining) then
+		return nil
+	end
+	return remaining
+end
+
 ---Whether Skyriding text on screen can change: a Skyriding bar shows, or text elsewhere shows a running value.
 ---@return boolean
 local function IsSkyridingTextLive()
@@ -2609,12 +2626,12 @@ function TRB.Functions.BarText:RefreshSkyridingLookupData()
 			lookupLogic[vars.chargesMax] = chargesMax
 		end
 		lookup[vars.time] = TRB.Functions.BarText:TimerPrecision(remaining or 0)
-		lookupLogic[vars.time] = (remaining ~= nil and not issecretvalue(remaining)) and remaining or nil
+		lookupLogic[vars.time] = SkyridingTimeLogic(remaining)
 	end
 
 	local cooldownRemaining = skyriding:GetCooldownRemaining()
 	lookup["$whirlingSurgeTime"] = TRB.Functions.BarText:TimerPrecision(cooldownRemaining or 0)
-	lookupLogic["$whirlingSurgeTime"] = (cooldownRemaining ~= nil and not issecretvalue(cooldownRemaining)) and cooldownRemaining or nil
+	lookupLogic["$whirlingSurgeTime"] = SkyridingTimeLogic(cooldownRemaining)
 
 	-- Stored as strings, matching how $inCombat feeds the conditional engine.
 	local thrill, skimming = skyriding:GetBuffStates()

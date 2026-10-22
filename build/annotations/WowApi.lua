@@ -5,6 +5,9 @@
 ---@class CooldownViewerCooldown
 ---@field isInvisible boolean
 
+---@class SpellCooldownInfo
+---@field isActive boolean
+
 ---@class DropdownButtonMixin
 local DropdownButtonMixin = {}
 

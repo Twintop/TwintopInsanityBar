@@ -14,9 +14,6 @@ for _, barKey in ipairs(BAR_KEYS) do
 	BAR_TEXTURE_KEYS[barKey] = barKey .. "Bar"
 end
 
--- Yards per second at 100% speed.
-local RUN_SPEED = TRB.Data.constants.runSpeed
-
 -- The speed caps of the zone the player is in: the Dragon Isles' own, or the lower ones everywhere else.
 local speedCaps = (TRB.Flavor.skyriding ~= nil and SKYRIDING.speedCaps.default or nil) --[[@as TRB.Flavor.SkyridingSpeedCap]]
 local DRAGON_ISLES_MAP_IDS = {}
@@ -77,12 +74,14 @@ if TRB.Flavor.skyriding ~= nil then
 	})
 	spells.whirlingSurge = TRB.Classes.SpellBase:New({
 		id = 361584,
-		hasCooldown = true
+		hasCooldown = true,
+		ignoreGcdLock = true
 	})
 	-- Its choice node swaps it in for Whirling Surge.
 	spells.lightningRush = TRB.Classes.SpellBase:New({
 		id = 418592,
-		hasCooldown = true
+		hasCooldown = true,
+		ignoreGcdLock = true
 	})
 	spells.thrillOfTheSkies = TRB.Classes.SpellBase:New({
 		id = 377234,
@@ -144,10 +143,8 @@ local lightningRushSelected = false
 -- Whether the player can glide, which is all the buffs need tracking for.
 local canGlide = false
 
--- The live speed in yards per second (secret on the ground while unit stats are restricted), and its percent of run
--- speed when plain, as of the last tick.
+-- The live speed in yards per second as of the last tick, secret on the ground while unit stats are restricted.
 local speedValue = nil
-local speedPercent = nil
 
 -- Per bar: the alpha last applied, the alpha it is headed for, and the fade-out in progress.
 local appliedAlpha = {}
@@ -161,17 +158,24 @@ local cachedVisibility = {}
 local icons = {}
 
 local moduleEnabled = false
--- Whether any Skyriding bar is enabled, which is what the charge and cooldown events are registered for.
+-- Whether any Skyriding bar is enabled.
 local eventsEnabled = false
+-- Whether the charge and cooldown events are registered, which they are only while they can change what is shown.
+local spellEventsRegistered = false
+-- Whether bar text shows a Skyriding value somewhere other than a Skyriding bar.
+local textOffBar = false
+-- Per charge bar: whether it is enabled or bar text shows its values, which is what keeps its snapshot current.
+local chargeBarsWanted = { skyridingCharges = false, secondWind = false }
+-- The bar text variables that keep a charge bar's snapshot current while the bar itself is off.
+local CHARGE_TEXT_VARIABLES = {
+	skyridingCharges = { "$skyridingCharges", "$skyridingChargesMax", "$skyridingChargeTime" },
+	secondWind = { "$secondWindCharges", "$secondWindChargesMax", "$secondWindTime" },
+}
 
--- TEMPORARY DIAGNOSTIC (/trb skyriding): secrecy, each flight's top speed, and the live recharge per buff state.
+-- TEMPORARY DIAGNOSTIC (/trb skyriding): secrecy, the skyriding state with its spell overrides, and each cooldown read.
 local probeEnabled = false
-local probeFlightTop = nil
-local probeLandedAt = nil
-local probeSessionTop = 0
 local probeLastState = nil
-local probeLastRecharge = nil
-local probeLastCooldownStart = nil
+local probeLastCooldown = nil
 
 local updaterFrame = CreateFrame("Frame")
 updaterFrame:Hide()
@@ -404,60 +408,26 @@ local function GetActiveCooldown()
 end
 
 ---Reads the live speed: forward speed while gliding, movement speed otherwise.
----@param now number
-local function ReadSpeed(now)
-	local speed, percent, isGliding = TRB.Functions.Character:GetMovementSpeed()
-	speedValue = speed
-	speedPercent = percent
-
-	if probeEnabled then
-		if isGliding and speedPercent ~= nil then
-			probeFlightTop = math.max(probeFlightTop or 0, speedPercent)
-			probeLandedAt = nil
-		elseif not isGliding and probeFlightTop ~= nil then
-			-- A second on the ground ends the flight, so a skim past the ground doesn't split one in two.
-			probeLandedAt = probeLandedAt or now
-			if now - probeLandedAt >= 1 then
-				probeSessionTop = math.max(probeSessionTop, probeFlightTop)
-				ProbePrint("Flight top speed %.0f%% (%.1f yd/s); session top %.0f%%.", probeFlightTop, probeFlightTop * RUN_SPEED / 100, probeSessionTop)
-				probeFlightTop = nil
-				probeLandedAt = nil
-			end
-		end
-	end
+local function ReadSpeed()
+	speedValue = TRB.Functions.Character:GetMovementSpeed()
 end
 
----Prints the Charges bar's recharge whenever its length or the buffs change while a charge refills.
-local function ProbeCharges()
-	local snapshot = chargeSnapshots.skyridingCharges
-	if not probeEnabled or snapshot == nil or not snapshot.cooldown.isActive then
-		return
-	end
-	local cooldown = snapshot.cooldown
-	local thrill, skimming = GetBuffStates()
-	local key = Describe(cooldown.duration) .. "|" .. tostring(thrill) .. "|" .. tostring(skimming)
-	if key ~= probeLastRecharge then
-		probeLastRecharge = key
-		ProbePrint("Charges %s/%s recharging over %ss; Thrill of the Skies %s, Ground Skimming %s.", Describe(cooldown.charges), Describe(cooldown.maxCharges),
-			Describe(cooldown.duration), thrill and "up" or "down", skimming and "up" or "down")
-	end
-end
-
----Prints the skyriding and buff state when it changes, which answers how a mount, a form, or Soar reads.
+---Prints the skyriding state when it changes: how a mount, a form, or Soar reads, and which aura's spell copies are in.
 local function ProbeState()
 	if not probeEnabled then
 		return
 	end
 	local _, glide = C_PlayerInfo.GetGlidingInfo()
 	local thrill, skimming = GetBuffStates()
-	local state = string.format("canGlide %s, mounted %s, form %s -> Skyriding %s; Thrill of the Skies %s, Ground Skimming %s; Lightning Rush selected %s, usable %s",
+	local state = string.format("canGlide %s, mounted %s, form %s -> Skyriding %s; Thrill of the Skies %s, Ground Skimming %s; Lightning Rush selected %s, known %s, usable %s; overrides: Surge Forward %s, Whirling Surge %s, Second Wind %s; caps %g/%g yd/s; spell events %s",
 		tostring(glide), tostring(IsMounted()), tostring(GetShapeshiftFormID()), tostring(GetContext().isSkyriding), thrill and "up" or "down",
-		skimming and "up" or "down", tostring(lightningRushSelected), tostring(spells.lightningRush:IsUsable()))
+		skimming and "up" or "down", tostring(lightningRushSelected), tostring(C_SpellBook.IsSpellKnown(spells.lightningRush.id)),
+		tostring(spells.lightningRush:IsUsable()), Describe(C_Spell.GetOverrideSpell(spells.surgeForward.id)), Describe(C_Spell.GetOverrideSpell(spells.whirlingSurge.id)),
+		Describe(C_Spell.GetOverrideSpell(spells.secondWind.id)), speedCaps.max, speedCaps.passive, tostring(spellEventsRegistered))
 	if state ~= probeLastState then
 		probeLastState = state
 		ProbePrint("%s.", state)
 	end
-	ProbeCharges()
 end
 
 ---Re-reads a charge bar's charges. Outside a layout pass, a maximum the bar isn't laid out for re-lays the bars out.
@@ -485,8 +455,7 @@ local function RefreshCharges(barKey, duringLayout)
 	end
 end
 
----Re-reads the cooldown the Whirling Surge bar follows. The snapshot drops a cooldown no longer than the GCD, which
----is also how long the skyriding abilities lock each other out.
+---Re-reads the cooldown the Whirling Surge bar follows; the snapshot leaves out the lock the skyriding abilities put on each other.
 local function RefreshCooldown()
 	if TRB.Data.snapshotData == nil then
 		return
@@ -496,10 +465,16 @@ local function RefreshCooldown()
 	InvalidateRender()
 
 	if probeEnabled then
-		cooldown:GetRemainingTime()
-		if cooldown.onCooldown and cooldown.startTime ~= probeLastCooldownStart then
-			probeLastCooldownStart = cooldown.startTime
-			ProbePrint("%s cooldown %ss.", lightningRushSelected and spells.lightningRush.name or spells.whirlingSurge.name, Describe(cooldown.duration))
+		local spell = lightningRushSelected and spells.lightningRush or spells.whirlingSurge
+		local info = C_Spell.GetSpellCooldown(spell.id)
+		local line = string.format("%s cooldown: unknown", tostring(spell.name))
+		if info ~= nil then
+			line = string.format("%s cooldown: isActive %s, isOnGCD %s, category %s, duration %ss -> on cooldown %s", tostring(spell.name), tostring(info.isActive),
+				tostring(info.isOnGCD), Describe(info.activeCategory), Describe(info.duration), tostring(cooldown.onCooldown))
+		end
+		if line ~= probeLastCooldown then
+			probeLastCooldown = line
+			ProbePrint("%s.", line)
 		end
 	end
 end
@@ -553,12 +528,63 @@ end
 
 local function RefreshAll()
 	spellsData:FillSpellData()
-	RefreshCharges("skyridingCharges")
-	RefreshCharges("secondWind")
+	for barKey, wanted in pairs(chargeBarsWanted) do
+		if wanted then
+			RefreshCharges(barKey)
+		end
+	end
 	RefreshLightningRushSelection()
 	RefreshCooldown()
 	BuildIcons()
 	SyncSnapshots()
+end
+
+---Keeps a charge bar's snapshot current only while the bar is enabled or bar text shows its values.
+local function SyncChargeBarsWanted()
+	local activeVars = TRB.Data.activeVariables
+	for barKey, vars in pairs(CHARGE_TEXT_VARIABLES) do
+		local _, _, visibility = GetBarConfig(barKey)
+		local wanted = IsEnabled(visibility)
+		if not wanted then
+			-- Until bar text rebuilds its variables, nothing says they stopped being shown.
+			wanted = activeVars == nil and chargeBarsWanted[barKey]
+			for _, var in ipairs(vars) do
+				wanted = wanted or (activeVars ~= nil and activeVars[var] == true)
+			end
+		end
+		if wanted ~= chargeBarsWanted[barKey] then
+			chargeBarsWanted[barKey] = wanted
+			if wanted then
+				RefreshCharges(barKey)
+			else
+				chargeSnapshots[barKey].cooldown:Reset()
+				valuesVersion = valuesVersion + 1
+				InvalidateRender()
+			end
+		end
+	end
+end
+
+---Registers the charge and cooldown events only while they can change what is shown: a Skyriding bar is enabled and
+---the player can glide, a bar is showing, or bar text elsewhere shows a value that is still running.
+local function SyncSpellEvents()
+	local skyriding = TRB.Functions.Skyriding
+	local wanted = eventsEnabled and (canGlide or skyriding:IsRendering() or (textOffBar and skyriding:HasLiveValues()))
+	if wanted == spellEventsRegistered then
+		return
+	end
+	spellEventsRegistered = wanted
+	if wanted then
+		eventFrame:RegisterEvent("SPELL_UPDATE_CHARGES")
+		eventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+		eventFrame:RegisterEvent("SPELLS_CHANGED")
+		-- It missed whatever changed while it was off.
+		RefreshAll()
+	else
+		eventFrame:UnregisterEvent("SPELL_UPDATE_CHARGES")
+		eventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
+		eventFrame:UnregisterEvent("SPELLS_CHANGED")
+	end
 end
 
 ---Picks the speed caps from the player's map, walking up its parents to the Dragon Isles.
@@ -580,9 +606,6 @@ local function RefreshZone()
 	if caps ~= speedCaps then
 		speedCaps = caps
 		InvalidateRender()
-		if probeEnabled then
-			ProbePrint("Speed caps now %g yd/s top, %g yd/s passive.", caps.max, caps.passive)
-		end
 	end
 end
 
@@ -599,6 +622,10 @@ local function RenderPassiveLine(node, colors, settings)
 	local frame = node:GetFrame()
 	if passiveLine == nil then
 		passiveLine = CreateFrame("Frame", nil, frame) --[[@as TRB.Classes.ThresholdFrame]]
+	elseif passiveLine:GetParent() ~= frame then
+		-- A spec switch rebuilt the Speed bar, so the line moves to the new one and draws again.
+		passiveLine:SetParent(frame)
+		passiveLineDrawn.color = nil
 	end
 
 	-- Set up like an end cap: its own width and color, or the border's color, kept inside the side borders.
@@ -810,7 +837,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 
 	local settings = nil
 	if throttleTick then
-		ReadSpeed(now)
+		ReadSpeed()
 		ProbeState()
 		settings = GetActiveSettings()
 	end
@@ -862,9 +889,13 @@ end)
 
 eventFrame:SetScript("OnEvent", function(_, event, ...)
 	if event == "SPELL_UPDATE_CHARGES" then
-		RefreshCharges("skyridingCharges")
-		RefreshCharges("secondWind")
+		for barKey, wanted in pairs(chargeBarsWanted) do
+			if wanted then
+				RefreshCharges(barKey)
+			end
+		end
 		ForceThrottleTick()
+		SyncSpellEvents()
 	elseif event == "SPELL_UPDATE_COOLDOWN" then
 		local spellId, baseSpellId = ...
 		-- A secret id can't key a table, so it refreshes like a nil (update everything) one.
@@ -877,6 +908,7 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
 		if spellId == nil or COOLDOWN_SPELL_IDS[spellId] or (baseSpellId ~= nil and COOLDOWN_SPELL_IDS[baseSpellId]) then
 			RefreshCooldown()
 			ForceThrottleTick()
+			SyncSpellEvents()
 		end
 	elseif event == "SPELLS_CHANGED" then
 		-- Covers picking Lightning Rush or Whirling Surge from the mount journal.
@@ -891,11 +923,13 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
 			RefreshAll()
 		end
 		SyncSnapshots()
+		SyncSpellEvents()
 		TRB.Functions.Skyriding:RefreshVisibility()
 	else
 		if event == "PLAYER_CAN_GLIDE_CHANGED" then
 			canGlide = (...) == true
 			SyncSnapshots()
+			SyncSpellEvents()
 		end
 		-- A mount, form, vehicle, or death change may flip a show or hide condition, and the mounted state
 		-- the conditions read settles a moment after the event.
@@ -933,7 +967,7 @@ function TRB.Functions.Skyriding:Enable()
 	self:SyncEnabledState()
 end
 
----Registers the charge and cooldown events only while a Skyriding bar is enabled, so nobody else pays for them.
+---Follows whether any Skyriding bar is enabled, which gates the charge and cooldown events and the buff snapshots.
 function TRB.Functions.Skyriding:SyncEnabledState()
 	if SKYRIDING == nil or not moduleEnabled then
 		return
@@ -946,23 +980,29 @@ function TRB.Functions.Skyriding:SyncEnabledState()
 			break
 		end
 	end
+	SyncChargeBarsWanted()
 	if anyEnabled ~= eventsEnabled then
 		eventsEnabled = anyEnabled
 		local _, glide = C_PlayerInfo.GetGlidingInfo()
 		canGlide = glide == true
 		if anyEnabled then
-			eventFrame:RegisterEvent("SPELL_UPDATE_CHARGES")
-			eventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-			eventFrame:RegisterEvent("SPELLS_CHANGED")
 			RefreshAll()
-		else
-			eventFrame:UnregisterEvent("SPELL_UPDATE_CHARGES")
-			eventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
-			eventFrame:UnregisterEvent("SPELLS_CHANGED")
 		end
 	end
+	SyncSpellEvents()
 	SyncSnapshots()
 	self:RefreshVisibility()
+end
+
+---Takes what bar text shows each time it rebuilds its variables: whether a Skyriding value shows off the Skyriding bars.
+---@param offBar boolean
+function TRB.Functions.Skyriding:SetBarTextUse(offBar)
+	if SKYRIDING == nil or not moduleEnabled then
+		return
+	end
+	textOffBar = offBar
+	SyncChargeBarsWanted()
+	SyncSpellEvents()
 end
 
 ---Moves the Skyriding buff snapshots into the spec snapshot data that just became active. Called whenever it changes.
@@ -1118,15 +1158,11 @@ function TRB.Functions.Skyriding:ToggleProbe()
 	end
 	probeEnabled = not probeEnabled
 	if not probeEnabled then
-		ProbePrint("Probe OFF. Session top speed %.0f%%.", math.max(probeSessionTop, probeFlightTop or 0))
+		ProbePrint("Probe OFF.")
 		return
 	end
-	probeSessionTop = 0
-	probeFlightTop = nil
-	probeLandedAt = nil
 	probeLastState = nil
-	probeLastRecharge = nil
-	probeLastCooldownStart = nil
+	probeLastCooldown = nil
 
 	local function CooldownSecrecy(spellId)
 		if C_Secrets == nil or C_Secrets.GetSpellCooldownSecrecy == nil or spellId == nil then
@@ -1146,7 +1182,7 @@ function TRB.Functions.Skyriding:ToggleProbe()
 		AuraSecrecy(spells.groundSkimming.id), AuraSecrecy(spells.staticCharge.id))
 	local charges = chargeSnapshots.skyridingCharges.cooldown
 	local secondWind = chargeSnapshots.secondWind.cooldown
-	ProbePrint("Charges %s/%s, Second Wind %s/%s, bars enabled %s, buffs tracked %s. Fly, dive as fast as you can, then land; each flight reports its top speed.",
+	ProbePrint("Charges %s/%s, Second Wind %s/%s, bars enabled %s, buffs tracked %s. Use Surge Forward, Skyward Ascent, and Whirling Surge; each cooldown read prints.",
 		Describe(charges.charges), Describe(charges.maxCharges), Describe(secondWind.charges), Describe(secondWind.maxCharges), tostring(eventsEnabled),
 		tostring(eventsEnabled and canGlide))
 	ProbeState()

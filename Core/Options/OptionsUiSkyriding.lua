@@ -112,7 +112,7 @@ function TRB.Functions.OptionsUi.Skyriding:ConstructPanel(parent, classId, specI
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "background", L["ColorPickerUnfilledBarBackground"], yCoord, classId, specId, ReapplyBars)
 	-- These bars have no Color Indicators, so a border color is never anything but its default.
 	yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colors, controlsKey .. "_" .. barKey, "endCap_" .. barKey, L["EndCap"], classId, specId,
-		{ hideExceptDefault = true, onChanged = ReapplyBars })
+		{ hideExceptDefault = true })
 	if colors.passiveSpeedCap ~= nil then
 		yCoord = yCoord - 20
 		yCoord = TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, colors, controlsKey .. "_" .. barKey .. "_passiveSpeedCap", "passiveSpeedCap_" .. barKey,
@@ -123,7 +123,6 @@ function TRB.Functions.OptionsUi.Skyriding:ConstructPanel(parent, classId, specI
 				useBorderColorTooltip = L["SkyridingPassiveSpeedCapUseBorderColorTooltip"],
 				widthLabel = L["ThresholdDetailLineWidth"],
 				hideExceptDefault = true,
-				onChanged = ReapplyBars,
 			})
 	end
 	yCoord = yCoord - 40

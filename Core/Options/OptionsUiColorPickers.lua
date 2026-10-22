@@ -227,7 +227,7 @@ end
 ---@param swatchLabel string? # Color swatch label; defaults to L["EndCap"]
 ---@param classId integer? # Class ID for the panel being edited, nil for global
 ---@param specId integer? # Spec ID for the panel being edited, nil for global
----@param opts { entryKey: string?, enabledLabel: string?, enabledTooltip: string?, useBorderColorTooltip: string?, widthLabel: string?, hideExceptDefault: boolean?, onChanged: function? }? # Edits another end-cap-shaped entry (e.g. a fixed line) with its own labels; hideExceptDefault drops the option only Color Indicators can trigger
+---@param opts { entryKey: string?, enabledLabel: string?, enabledTooltip: string?, useBorderColorTooltip: string?, widthLabel: string?, hideExceptDefault: boolean? }? # Edits another end-cap-shaped entry (e.g. a fixed line) with its own labels; hideExceptDefault drops the option only Color Indicators can trigger
 ---@return number yCoord # The updated Y coordinate after placing all controls
 function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, parentColorTable, namePrefix, controlKey, swatchLabel, classId, specId, opts)
 	opts = opts or {}
@@ -261,9 +261,6 @@ function TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, cont
 			TRB.Functions.Bar:ApplyBarGroupsAppearance(specCacheEntry.settings, TRB.Frames.barGroups)
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
-		if opts.onChanged then
-			opts.onChanged()
 		end
 	end
 

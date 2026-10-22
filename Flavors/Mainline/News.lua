@@ -8,17 +8,17 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.5.4-release (2026-10-22)
+# 12.1.5.4-release (2026-10-21)
 ## General
 ### Skyriding
 
-- Add new Skyriding Speed, Skyriding Charges, Whirling Surge, and Second Wind bars on a new Skyriding tab, with `$skyridingSpeed`, `$skyridingCharges`, `$skyridingChargesMax`, `$skyridingChargeTime`, `$whirlingSurgeTime`, `$secondWindCharges`, `$secondWindChargesMax`, `$secondWindTime`, `$thrillOfTheSkies`, `$groundSkimming`, `$staticChargeStacks`, and `$staticChargeTime` bar text and `#surgeForward`, `#whirlingSurge`, `#lightningRush`, `#secondWind`, `#thrillOfTheSkies`, `#groundSkimming`, and `#staticCharge` icons. They show while Skyriding, except Second Wind, which is set to Never Show by default, and their Show Bar When and Always Hide Bar When lists add Not Skyriding.
-- Skyriding Speed fills toward the top speed, 100 yards per second in the Dragon Isles and 85 elsewhere, with a line at the fastest speed without abilities, and can change color while Thrill of the Skies or Ground Skimming is active. Skyriding Charges and Second Wind fill one segment per charge, and Whirling Surge fills as its cooldown runs out, following Lightning Rush when you choose it instead, with an optional color while Lightning Rush is short of Static Charge.
-- They join the bar text Relative to Frame list, with the recharging charge of Skyriding Charges and Second Wind as targets of their own, and start with bar text for the speed, each recharge, and the cooldown. They are not Color Indicator or custom threshold line targets.
+- [#854](#854) Add new Skyriding Speed, Skyriding Charges, Whirling Surge, and Second Wind bars on a new Skyriding tab, with `$skyridingSpeed`, `$skyridingCharges`, `$skyridingChargesMax`, `$skyridingChargeTime`, `$whirlingSurgeTime`, `$secondWindCharges`, `$secondWindChargesMax`, `$secondWindTime`, `$thrillOfTheSkies`, `$groundSkimming`, `$staticChargeStacks`, and `$staticChargeTime` bar text and `#surgeForward`, `#whirlingSurge`, `#lightningRush`, `#secondWind`, `#thrillOfTheSkies`, `#groundSkimming`, and `#staticCharge` icons, shown while Skyriding except Second Wind, which is set to Never Show by default.
+- [#854](#854) Skyriding Speed fills toward your zone's top speed, with a line at the fastest speed without abilities and optional colors while Thrill of the Skies or Ground Skimming is active; Skyriding Charges and Second Wind fill one segment per charge, and Whirling Surge fills as the cooldown of it or of Lightning Rush runs out, with an optional color while Lightning Rush is short of Static Charge.
+- [#854](#854) They join the bar text Relative to Frame list, with each recharging charge as a target of its own, add Not Skyriding to their Show Bar When and Always Hide Bar When lists, start with bar text for the speed, each recharge, and the cooldown, and are not Color Indicator or custom threshold line targets.
 
 ## Druid
 
-- The Skyriding and Skyriding (Flying Only) visibility conditions count Flight Form while it can skyride.
+- [#854](#854) The Skyriding and Skyriding (Flying Only) visibility conditions count Flight Form while it can skyride.
 
 ---
 
