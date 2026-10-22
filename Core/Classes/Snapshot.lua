@@ -1245,6 +1245,8 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 		local duration = 0
 		-- Whether a cooldown of its own is running, past the GCD; never secret, unlike the times.
 		local ownCooldown = nil
+		-- The same for either kind: a running cooldown, or a recharge.
+		local running = nil
 		if self.parent.spell.hasCharges == true then
 			local spellCharges = C_Spell.GetSpellCharges(self.parent.spell:GetRankedId())
 			if spellCharges ~= nil then
@@ -1268,6 +1270,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 				startTime = 0
 				duration = 0
 			end
+			running = self.isActive
 		else
 			local spellCooldown = C_Spell.GetSpellCooldown(self.parent.spell:GetRankedId())
 			self.isActive = false
@@ -1277,6 +1280,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 				startTime = spellCooldown.startTime
 				duration = spellCooldown.duration
 				ownCooldown = spellCooldown.isActive == true and spellCooldown.isOnGCD ~= true
+				running = ownCooldown
 			else
 				startTime = 0
 				duration = 0
@@ -1287,17 +1291,18 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
 			self.castCount = C_Spell.GetSpellCastCount(self.parent.spell:GetRankedId())
 		end
 
-		local ignoreGcdLock = self.parent.spell.ignoreGcdLock == true and ownCooldown ~= nil
+		local ignoreGcdLock = self.parent.spell.ignoreGcdLock == true and running ~= nil
 		self.secretOnCooldown = nil
 		if ignoreGcdLock and not issecretvalue(startTime) then
-			if ownCooldown and startTime > 0 and duration > 0 then
+			if running and startTime > 0 and duration > 0 then
 				self.startTime = startTime
 				self.duration = duration
 				self.retryForceTime = nil
 			else
 				self.startTime = nil
 				self.duration = 0
-				if retryForce then
+				-- Running with no start time yet: read again next frame rather than wait for the next event.
+				if running or retryForce then
 					self.retryForceTime = GetTime()
 				end
 			end

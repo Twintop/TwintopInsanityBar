@@ -66,11 +66,13 @@ if TRB.Flavor.skyriding ~= nil then
 	-- Skyward Ascent spends the same charges.
 	spells.surgeForward = TRB.Classes.SpellBase:New({
 		id = 372608,
-		hasCharges = true
+		hasCharges = true,
+		ignoreGcdLock = true
 	})
 	spells.secondWind = TRB.Classes.SpellBase:New({
 		id = 425782,
-		hasCharges = true
+		hasCharges = true,
+		ignoreGcdLock = true
 	})
 	spells.whirlingSurge = TRB.Classes.SpellBase:New({
 		id = 361584,
