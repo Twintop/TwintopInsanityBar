@@ -2304,9 +2304,9 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	lookupLogic["$healAbsorb"] = snapshotData.attributes.healAbsorb
 	lookup["$healAbsorb"] = formatted.healAbsorb or ""
 
-	-- Speed has no event, so it is read on every refresh. It is secret while unit stats are restricted, so it is only ever formatted.
-	local speed = TRB.Functions.Character:GetMovementSpeed()
-	local speedText = speed ~= nil and string.format("%.1f", speed) or ""
+	-- Speed has no event, so it is read on every refresh. A secret speed can't be made a percent, so its text is empty.
+	local _, speedPercent = TRB.Functions.Character:GetMovementSpeed()
+	local speedText = speedPercent ~= nil and string.format("%.0f", speedPercent) or ""
 	for var in pairs(speedVariables) do
 		lookup[var] = speedText
 	end
@@ -2725,7 +2725,7 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		return true
 	end
 	if speedVariables[var] then
-		return TRB.Functions.Character:GetMovementSpeed() ~= nil
+		return select(2, TRB.Functions.Character:GetMovementSpeed()) ~= nil
 	end
 	if var == "$inCombat" or var == "$inCombatTime" then
 		return TRB.Data.character.inCombat == true

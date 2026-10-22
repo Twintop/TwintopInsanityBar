@@ -1348,6 +1348,7 @@ function TRB.Functions.Settings:LoadDefaultSkyridingBarTextSettings()
 	end
 
 	local speed = self:LoadDefaultOtherBarTextSettings("SkyridingSpeedBar", L["ResourceSkyridingSpeed"], "$skyridingSpeed", "CENTER", 13)
+	speed.text = "{$skyridingSpeed}[$skyridingSpeed%]"
 	entries[#entries + 1] = speed
 
 	local chargesRecharge = self:LoadDefaultOtherBarTextSettings("SkyridingChargesRecharging", L["SkyridingChargesRecharging"], "$skyridingChargeTime", "CENTER", 11)
