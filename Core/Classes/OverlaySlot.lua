@@ -55,7 +55,6 @@ TRB.Classes = TRB.Classes or {}
 ---@field private _endCapColorFlat boolean? # Whether _endCapColor is current, since nil is a valid color
 ---@field public endCapOvershoot number? # Overshoot correction baked into the current anchor, for staleness checks
 ---@field public endCapAnchorSig TRB.Classes.OverlaySlot.EndCapAnchorSig? # Inputs the current anchor was placed with; nil forces the next re-anchor
----@field public endCapTrackTicks integer? # TEMPORARY: tick counter for /trb endcap
 TRB.Classes.OverlaySlot = {}
 TRB.Classes.OverlaySlot.__index = TRB.Classes.OverlaySlot
 
@@ -1368,8 +1367,6 @@ end
 ---@param state table
 ---@return boolean
 local function EndCapTrackSlot(slot, state)
-	-- TEMPORARY: tick counter for /trb endcap. Remove with the probe.
-	slot.endCapTrackTicks = (slot.endCapTrackTicks or 0) + 1
 	if slot.endCapClipFrame == nil or slot.parentNode == nil or slot.parentNode:IsEngineDriven() then
 		return false
 	end
@@ -1449,24 +1446,24 @@ function TRB.Classes.OverlaySlot:ReanchorEndCap(force, overshoot)
 	local Bar = TRB.Functions.Bar
 	local isVertical = Bar:IsVerticalFill(fillDirection)
 
-	overshoot = overshoot or self:GetEndCapOvershoot()
+	-- Anchor the rounded value the memo keys on; a raw value stays stuck and cancels edgeNudge on slow fills.
+	overshoot = math.floor((overshoot or self:GetEndCapOvershoot()) + 0.5)
 
 	-- Skip redundant re-anchoring when no geometry-relevant input has changed. The band
 	-- tracks the fill texture's leading edge automatically once anchored, so only re-anchor
 	-- when the geometry, fill texture object, cap width, or the near-full overshoot correction
 	-- (which depends on the fill ratio) actually changes. Fields, not a string: the tracker asks every frame.
 	local fillTexture = parent.frame:GetStatusBarTexture()
-	local roundedOvershoot = math.floor(overshoot + 0.5)
 	local sig = self.endCapAnchorSig
 	if force ~= true and self.endCapReady and sig ~= nil and sig.border == parent.border and sig.width == parent.width
 		and sig.height == parent.height and sig.fillDirection == fillDirection and sig.fullHeight == self.fullHeight
-		and sig.fillTexture == fillTexture and sig.endCapWidth == self.endCapWidth and sig.overshoot == roundedOvershoot then
+		and sig.fillTexture == fillTexture and sig.endCapWidth == self.endCapWidth and sig.overshoot == overshoot then
 		return
 	end
 	if sig == nil then
 		self.endCapAnchorSig = {
 			border = parent.border, width = parent.width, height = parent.height, fillDirection = fillDirection,
-			fullHeight = self.fullHeight, fillTexture = fillTexture, endCapWidth = self.endCapWidth, overshoot = roundedOvershoot,
+			fullHeight = self.fullHeight, fillTexture = fillTexture, endCapWidth = self.endCapWidth, overshoot = overshoot,
 		}
 	else
 		sig.border = parent.border
@@ -1476,7 +1473,7 @@ function TRB.Classes.OverlaySlot:ReanchorEndCap(force, overshoot)
 		sig.fullHeight = self.fullHeight
 		sig.fillTexture = fillTexture
 		sig.endCapWidth = self.endCapWidth
-		sig.overshoot = roundedOvershoot
+		sig.overshoot = overshoot
 	end
 	self.endCapOvershoot = overshoot
 
