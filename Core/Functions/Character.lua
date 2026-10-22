@@ -660,14 +660,16 @@ end
 
 -- The player's speed as last read, and the GetTime() it was read at; speed has no event, so it's read on demand.
 local movementSpeed = { readAt = nil, speed = nil, percent = nil, isGliding = false }
+-- Bar text updates at 20Hz at most, so a read newer than this is reused. Slightly under 0.05 so a 20Hz caller's frame jitter still re-reads.
+local MOVEMENT_SPEED_INTERVAL = 0.045
 
 ---The player's speed in yards per second (secret while unit stats are restricted), its percent of run speed when
----plain, and whether it is a skyriding glide's forward speed, which movement speed doesn't report.
+---plain, and whether it is a skyriding glide's forward speed, which movement speed doesn't report. Reads at 20Hz at most.
 ---@return number? speed, number? percent, boolean isGliding
 function TRB.Functions.Character:GetMovementSpeed()
 	local now = GetTime()
 	local state = movementSpeed
-	if state.readAt ~= now then
+	if state.readAt == nil or now - state.readAt >= MOVEMENT_SPEED_INTERVAL then
 		state.readAt = now
 		local isGliding, forwardSpeed = false, nil
 		if TRB.Flavor.skyriding ~= nil then
