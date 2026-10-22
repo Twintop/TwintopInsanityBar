@@ -238,11 +238,22 @@ local function GetBarConfig(barKey, settings)
 	return barSettings, colors, visibility
 end
 
+-- True while an existing user hasn't answered the Skyriding bars prompt, which keeps every bar hidden. Nil until first read.
+local promptPending = nil
+
 ---Whether the bar is enabled at all: not Never Show, and Always Show or some show condition is ticked.
 ---@param visibility table?
 ---@return boolean
 local function IsEnabled(visibility)
 	if visibility == nil or visibility.neverShow == true then
+		return false
+	end
+	if promptPending == nil then
+		local checks = TRB.Data.settings.manualUpdateChecks
+		local reprompt = checks ~= nil and checks.skyridingBarsReprompt or nil
+		promptPending = type(reprompt) == "table" and reprompt.answered == false
+	end
+	if promptPending then
 		return false
 	end
 	if visibility.alwaysShow == true then
@@ -1191,53 +1202,79 @@ function TRB.Functions.Skyriding:GetLiveNodeCount(barKey)
 	return maxCharges
 end
 
----Sets the Skyriding bars to Never Show, or back to their defaults, in the global settings and every profile's global
----piece. Specs follow these through Use Global unless the user opted a spec out.
+---Sets the Skyriding bars to Never Show, or back to their defaults, in the global settings, every spec, and every
+---profile's global and spec pieces.
 ---@param settings table # Shaped like the saved variables
 ---@param hidden boolean
 function TRB.Functions.Skyriding:SetBarsHidden(settings, hidden)
-	local function SetIn(core)
-		if type(core) ~= "table" or type(core.displayBar) ~= "table" then
+	local function SetIn(piece)
+		if type(piece) ~= "table" or type(piece.displayBar) ~= "table" then
 			return
 		end
 		for _, barKey in ipairs(BAR_KEYS) do
-			core.displayBar[barKey] = core.displayBar[barKey] or {}
-			core.displayBar[barKey].neverShow = hidden or TRB.Functions.Settings:DefaultSkyridingBarVisibility(barKey).neverShow
+			local default = TRB.Functions.Settings:DefaultSkyridingBarVisibility(barKey)
+			piece.displayBar[barKey] = piece.displayBar[barKey] or default
+			piece.displayBar[barKey].neverShow = hidden or default.neverShow
 		end
 	end
 
-	SetIn(settings.core)
+	local function SetInScopes(scopes)
+		SetIn(scopes.core)
+		for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+			local classPiece = scopes[classEntry.className]
+			if type(classPiece) == "table" then
+				for _, specEntry in ipairs(classEntry.specs) do
+					SetIn(classPiece[specEntry.specName])
+				end
+			end
+		end
+	end
+
+	SetInScopes(settings)
 	if type(settings.profiles) == "table" and type(settings.profiles.list) == "table" then
 		for _, profile in pairs(settings.profiles.list) do
-			SetIn(profile.core)
+			SetInScopes(profile)
 		end
 	end
 end
 
----Asks an existing user once whether to keep the new Skyriding bars, then says where to change it later.
+---Asks an existing user whether to enable the Skyriding bars everywhere, then says where to change it later. Users who
+---answered the first prompt get an apology and a Leave Settings As-Is option.
 function TRB.Functions.Skyriding:ShowEnablePrompt()
 	local checks = TRB.Data.settings.manualUpdateChecks
-	local prompt = checks ~= nil and checks.skyridingBarsPrompt or nil
-	if TRB.Flavor.skyriding == nil or type(prompt) ~= "table" or prompt.answered ~= false then
+	local reprompt = checks ~= nil and checks.skyridingBarsReprompt or nil
+	if TRB.Flavor.skyriding == nil or type(reprompt) ~= "table" or reprompt.answered ~= false then
 		return
 	end
 
-	local function Answer()
-		prompt.answered = true
+	---@param hidden boolean? # Nil leaves the settings as they are
+	local function Answer(hidden)
+		if hidden ~= nil then
+			TRB.Functions.Skyriding:SetBarsHidden(TRB.Data.settings, hidden)
+		end
+		reprompt.answered = true
+		promptPending = false
+		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(nil, nil, false, true)
 		StaticPopup_Show("TwintopResourceBar_SkyridingBarsFollowUp")
 	end
 
 	StaticPopupDialogs["TwintopResourceBar_SkyridingBarsPrompt"] = {
-		text = L["SkyridingBarsPromptText"],
+		text = reprompt.apology and L["SkyridingBarsRepromptText"] or L["SkyridingBarsPromptText"],
 		button1 = L["Yes"],
 		button2 = L["No"],
-		-- The bars stay hidden while the prompt is pending, so only Yes has anything to change.
+		button3 = reprompt.apology and L["SkyridingBarsPromptLeaveAsIs"] or nil,
 		OnAccept = function()
-			TRB.Functions.Skyriding:SetBarsHidden(TRB.Data.settings, false)
-			TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(nil, nil, false, true)
-			Answer()
+			Answer(false)
 		end,
-		OnCancel = Answer,
+		-- Blizzard also calls OnCancel, with no reason, when it can't show the popup at all.
+		OnCancel = function(_, _, reason)
+			if reason == "clicked" then
+				Answer(true)
+			end
+		end,
+		OnAlt = function()
+			Answer(nil)
+		end,
 		timeout = 0,
 		whileDead = true,
 		hideOnEscape = false,

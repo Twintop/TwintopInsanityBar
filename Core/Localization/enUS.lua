@@ -4073,3 +4073,5 @@ L["BarTextVariableMovementSpeed"] = "Your current speed as a percentage of norma
 L["BarTextVariableSkyridingSpeed"] = "Identical to $movementSpeed: your current speed as a percentage of normal running speed. Empty while the game hides your speed, which it can do in combat unless you are gliding, so it can't be used in comparisons."
 L["SkyridingBarsPromptText"] = "Twintop's Resource Bar now has Skyriding bars that show your speed, Skyriding charges, and Whirling Surge while you skyride.\n\nWould you like to enable them?"
 L["SkyridingBarsPromptFollowUpText"] = "You can enable, disable, or customize the Skyriding bars at any time in the Skyriding section of Twintop's Resource Bar options (/trb)."
+L["SkyridingBarsRepromptText"] = "Twintop's Resource Bar: sorry for asking again! Choosing 'No' on the earlier Skyriding bars prompt didn't turn the bars off for specializations that don't use the global Visibility settings.\n\nWould you like the Skyriding bars enabled?"
+L["SkyridingBarsPromptLeaveAsIs"] = "Leave Settings As-Is"

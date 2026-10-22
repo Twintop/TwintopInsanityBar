@@ -30,6 +30,9 @@ function TRB.Flavor.DefaultManualUpdateChecks()
 		-- A table because an early migration step indexes every value here as a spec table.
 		skyridingBarsPrompt = {
 			answered = true
+		},
+		skyridingBarsReprompt = {
+			answered = true
 		}
 	}
 end
@@ -8793,6 +8796,18 @@ function TRB.Flavor.PortForwardSettings(settings)
 		if TwintopInsanityBarSettings.manualUpdateChecks.skyridingBarsPrompt == nil then
 			TwintopInsanityBarSettings.manualUpdateChecks.skyridingBarsPrompt = { answered = false }
 			TRB.Functions.Skyriding:SetBarsHidden(TwintopInsanityBarSettings, true)
+		end
+	end
+
+	-- Skyriding bars, asked again: No on the first prompt missed specs off Use Global. Users who answered it get an
+	-- apology and a Leave Settings As-Is option.
+	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings == TRB.Flavor.GetSavedVariables() then
+		local checks = TwintopInsanityBarSettings.manualUpdateChecks
+		if checks ~= nil and checks.skyridingBarsReprompt == nil then
+			checks.skyridingBarsReprompt = {
+				answered = false,
+				apology = type(checks.skyridingBarsPrompt) == "table" and checks.skyridingBarsPrompt.answered == true
+			}
 		end
 	end
 

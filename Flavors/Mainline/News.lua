@@ -8,6 +8,15 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.6-release (2026-10-23)
+## General
+### Skyriding
+
+- Fix choosing No on the Skyriding bars prompt leaving them enabled for specializations not using the global Visibility settings.
+- Existing users are asked again, with an option to leave their settings as they are.
+
+---
+
 # 12.1.5.5-release (2026-10-23)
 ## General
 ### Skyriding
