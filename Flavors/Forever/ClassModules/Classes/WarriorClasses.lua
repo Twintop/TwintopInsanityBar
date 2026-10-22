@@ -40,10 +40,24 @@ local battleDefensive = { battle = true, defensive = true }
 ---@field public shieldBlock TRB.Classes.SpellThreshold
 ---@field public challengingShout TRB.Classes.SpellThreshold
 ---@field public mockingBlow TRB.Classes.SpellThreshold
+---@field public battleStance TRB.Classes.SpellBase
+---@field public defensiveStance TRB.Classes.SpellBase
+---@field public berserkerStance TRB.Classes.SpellBase
 
 ---Adds the Warrior's Rage-spending abilities to a new spell set.
 ---@param spells TRB.Classes.Warrior.GeneralSpells
 local function FillSpells(spells)
+	-- Stances, which Warrior.lua resolves the active one from.
+	spells.battleStance = TRB.Classes.SpellBase:New({
+		id = 2457,
+	})
+	spells.defensiveStance = TRB.Classes.SpellBase:New({
+		id = 71,
+	})
+	spells.berserkerStance = TRB.Classes.SpellBase:New({
+		id = 2458,
+	})
+
 	-- Offensive
 	spells.heroicStrike = TRB.Classes.SpellThreshold:New({
 		id = 78,

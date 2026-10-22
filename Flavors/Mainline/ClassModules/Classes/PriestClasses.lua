@@ -42,6 +42,7 @@ end
 ---@field public angelicFeather TRB.Classes.SpellBase
 ---@field public powerWordShield TRB.Classes.SpellBase
 ---@field public voidbinding TRB.Classes.SpellBase
+---@field public prayerOfMending TRB.Classes.SpellBase
 TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
 
@@ -90,6 +91,10 @@ function TRB.Classes.Priest.HealerSpells:New()
 		versPercent = 0.2,
 		cdrPercent = 0.3,
 		duration = 30
+	})
+	-- Voidbinding is read off its description's healing; Holy replaces this with its Holy Word version.
+	self.prayerOfMending = TRB.Classes.SpellBase:New({
+		id = 33076
 	})
 
 	return self

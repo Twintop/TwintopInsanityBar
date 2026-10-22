@@ -7,10 +7,27 @@ end
 -- layered on top so stance-gated threshold lines only draw in a stance that can cast them.
 local runtime = TRB.Forever.Templates.Runtime:Install("warrior")
 
-local stanceBySpellId = { [2457] = "battle", [71] = "defensive", [2458] = "berserker" }
 -- The stance bar is in learn order, so the index alone identifies the stance when the client's
 -- GetShapeshiftFormInfo gives no spell id.
 local stanceByIndex = { "battle", "defensive", "berserker" }
+
+---The stance a stance spell belongs to, from the spell list, or nil when it isn't one.
+---@param spellId integer?
+---@return string?
+local function GetStanceBySpellId(spellId)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.GeneralSpells?]]
+	if spellId == nil or spells == nil or spells.battleStance == nil then
+		return nil
+	end
+	if spellId == spells.battleStance.id then
+		return "battle"
+	elseif spellId == spells.defensiveStance.id then
+		return "defensive"
+	elseif spellId == spells.berserkerStance.id then
+		return "berserker"
+	end
+	return nil
+end
 
 ---The stance the character is in, or nil when in none.
 ---@return string?
@@ -20,7 +37,7 @@ local function GetActiveStance()
 		return nil
 	end
 	local spellId = select(4, GetShapeshiftFormInfo(index))
-	return stanceBySpellId[spellId] or stanceByIndex[index]
+	return GetStanceBySpellId(spellId) or stanceByIndex[index]
 end
 
 ---Re-reads the stance; a change redraws the threshold lines gated on it.
