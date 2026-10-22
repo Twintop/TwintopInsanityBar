@@ -658,6 +658,38 @@ function TRB.Functions.Character:GetDeathCount()
 	return deathCount
 end
 
+-- The player's speed as last read, and the GetTime() it was read at; speed has no event, so it's read on demand.
+local movementSpeed = { readAt = nil, speed = nil, percent = nil, isGliding = false }
+
+---The player's speed in yards per second (secret while unit stats are restricted), its percent of run speed when
+---plain, and whether it is a skyriding glide's forward speed, which movement speed doesn't report.
+---@return number? speed, number? percent, boolean isGliding
+function TRB.Functions.Character:GetMovementSpeed()
+	local now = GetTime()
+	local state = movementSpeed
+	if state.readAt ~= now then
+		state.readAt = now
+		local isGliding, forwardSpeed = false, nil
+		if TRB.Flavor.skyriding ~= nil then
+			local gliding, _, forward = C_PlayerInfo.GetGlidingInfo()
+			isGliding = gliding == true
+			forwardSpeed = forward
+		end
+		local speed = forwardSpeed
+		if not isGliding then
+			speed = GetUnitSpeed("player")
+		end
+		state.speed = speed
+		state.isGliding = isGliding
+		if speed == nil or issecretvalue(speed) then
+			state.percent = nil
+		else
+			state.percent = speed / TRB.Data.constants.runSpeed * 100
+		end
+	end
+	return state.speed, state.percent, state.isGliding
+end
+
 ---Registers all character-change events (power updates, health, stats, mounting, zone changes, etc.) on the characterChangeFrame.
 function TRB.Functions.Character:EnableCharacterChange()
 	-- Runs on every spec change, so re-registering replaces the last spec's unit filters.

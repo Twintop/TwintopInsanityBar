@@ -53,6 +53,13 @@ end
 -- Skyriding bar, where it stays visible while those bars are hidden.
 local skyridingVariables = {}
 local skyridingTextOffBar = false
+-- The speed variables, and whether an enabled entry shows one anywhere but on a Skyriding bar. Speed has no event,
+-- so that text refreshes all the time.
+local speedVariables = { ["$movementSpeed"] = true }
+if TRB.Flavor.skyriding ~= nil then
+	speedVariables["$skyridingSpeed"] = true
+end
+local speedTextOffBar = false
 
 -- Which of the above keys target the side icon frame rather than the bar itself.
 local castbarIconAnchors = {
@@ -442,6 +449,7 @@ end
 function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	local activeVars = {}
 	local offBar = false
+	local speedOffBar = false
 	if settings ~= nil and settings.displayText ~= nil then
 		local displayText = settings.displayText
 		local entries = #displayText.barText
@@ -455,8 +463,9 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 					-- Extract $variable references (e.g., $resource, $eclipseTime)
 					for var in string.gmatch(text, "%$[%a_][%w_]*") do
 						activeVars[var] = true
-						if not onSkyridingBar and skyridingVariables[var] then
-							offBar = true
+						if not onSkyridingBar then
+							offBar = offBar or skyridingVariables[var] == true
+							speedOffBar = speedOffBar or speedVariables[var] == true
 						end
 					end
 					-- Extract #icon references (e.g., #casting, #eclipse)
@@ -469,6 +478,7 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	end
 	TRB.Data.activeVariables = activeVars
 	skyridingTextOffBar = offBar
+	speedTextOffBar = speedOffBar
 end
 
 ---Creates and returns the common bar text icons shared by all specializations, with any additional spec-specific icons appended.
@@ -739,6 +749,8 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
 			logicType = logicTypes.BOOLEAN, renderType = renderTypes.TEXT },
 		{ variable = "$inCombatTime", description = L["BarTextVariableInCombatTime"], printInSettings = true, color = false, category = self.VariableCategory.OTHER },
+		{ variable = "$movementSpeed", description = L["BarTextVariableMovementSpeed"], printInSettings = true, color = false, category = self.VariableCategory.OTHER,
+			logicType = logicTypes.INTEGER, booleanCheck = true },
 
 		-- Player cast bar. A bare check gates on the cast being in progress (see castbarTimerVars).
 		-- $castSpellName is the one entry here with no lookupLogic value, so it cannot be compared.
@@ -2292,6 +2304,15 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	lookupLogic["$healAbsorb"] = snapshotData.attributes.healAbsorb
 	lookup["$healAbsorb"] = formatted.healAbsorb or ""
 
+	-- Speed has no event, so it is read on every refresh.
+	local _, speedPercent = TRB.Functions.Character:GetMovementSpeed()
+	local speedText = speedPercent ~= nil and string.format("%.0f", speedPercent) or ""
+	local speedLogic = speedPercent ~= nil and math.floor(speedPercent + 0.5) or nil
+	for var in pairs(speedVariables) do
+		lookup[var] = speedText
+		lookupLogic[var] = speedLogic
+	end
+
 	lookup["$gcd"] = formatted.gcd or ""
 	lookupLogic["$gcd"] = formatted.gcdRaw or 0
 
@@ -2581,10 +2602,6 @@ function TRB.Functions.BarText:RefreshSkyridingLookupData()
 		end
 	end
 
-	local speed = skyriding:GetSpeedPercent()
-	lookup["$skyridingSpeed"] = speed ~= nil and string.format("%.0f", speed) or ""
-	lookupLogic["$skyridingSpeed"] = speed ~= nil and math.floor(speed + 0.5) or nil
-
 	for _, vars in ipairs(skyridingChargeVars) do
 		local charges, chargesMax, remaining = skyriding:GetChargeValues(vars.barKey)
 		if countsChanged then
@@ -2660,9 +2677,6 @@ if TRB.Flavor.skyriding ~= nil then
 			return (select(3, TRB.Functions.Skyriding:GetChargeValues(barKey))) ~= nil
 		end
 	end
-	skyridingValidVars["$skyridingSpeed"] = function()
-		return TRB.Functions.Skyriding:GetSpeedPercent() ~= nil
-	end
 	skyridingValidVars["$skyridingCharges"] = HasCharges("skyridingCharges")
 	skyridingValidVars["$skyridingChargesMax"] = HasCharges("skyridingCharges")
 	skyridingValidVars["$skyridingChargeTime"] = IsRecharging("skyridingCharges")
@@ -2711,6 +2725,9 @@ local castbarInterruptVars = {
 function TRB.Functions.BarText:IsValidVariableBase(var)
 	if validBaseVars[var] then
 		return true
+	end
+	if speedVariables[var] then
+		return select(2, TRB.Functions.Character:GetMovementSpeed()) ~= nil
 	end
 	if var == "$inCombat" or var == "$inCombatTime" then
 		return TRB.Data.character.inCombat == true
@@ -2800,6 +2817,9 @@ for var in pairs(skyridingValidVars) do
 	selfDrivenBarVariables[var] = true
 	skyridingVariables[var] = true
 end
+for var in pairs(speedVariables) do
+	selfDrivenBarVariables[var] = true
+end
 
 ---Whether any running self-driven bar (the player/target/focus cast bars, or an Other Bars timer)
 ---drives a variable that an enabled bar text entry actually references. This is what justifies
@@ -2820,6 +2840,7 @@ local function HasActiveSelfDrivenBarVariableInUse()
 		or TRB.Functions.OtherBars:HasActiveTimer()
 		or TRB.Functions.OtherBars:IsAnyFadingOut()
 		or IsSkyridingTextLive()
+		or speedTextOffBar
 	if not anyActive then
 		return false
 	end

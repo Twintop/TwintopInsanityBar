@@ -83,6 +83,8 @@ TRB.Data.lookupDirty = true
 
 TRB.Data.constants = {
 	borderWidthFactor = 2,
+	-- Yards per second at 100% movement speed.
+	runSpeed = 7,
 	defaultSettings = {
 		fonts = {}, -- This will get populated by Functions\Settings.lua
 		textures = {

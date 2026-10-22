@@ -15,7 +15,7 @@ for _, barKey in ipairs(BAR_KEYS) do
 end
 
 -- Yards per second at 100% speed.
-local RUN_SPEED = 7
+local RUN_SPEED = TRB.Data.constants.runSpeed
 
 -- The speed caps of the zone the player is in: the Dragon Isles' own, or the lower ones everywhere else.
 local speedCaps = (TRB.Flavor.skyriding ~= nil and SKYRIDING.speedCaps.default or nil) --[[@as TRB.Flavor.SkyridingSpeedCap]]
@@ -144,11 +144,10 @@ local lightningRushSelected = false
 -- Whether the player can glide, which is all the buffs need tracking for.
 local canGlide = false
 
--- The live speed in yards per second (secret on the ground while unit stats are restricted), its percent of run
--- speed when plain, and the GetTime() it was read at.
+-- The live speed in yards per second (secret on the ground while unit stats are restricted), and its percent of run
+-- speed when plain, as of the last tick.
 local speedValue = nil
 local speedPercent = nil
-local speedReadAt = nil
 
 -- Per bar: the alpha last applied, the alpha it is headed for, and the fade-out in progress.
 local appliedAlpha = {}
@@ -407,18 +406,9 @@ end
 ---Reads the live speed: forward speed while gliding, movement speed otherwise.
 ---@param now number
 local function ReadSpeed(now)
-	local isGliding, _, forwardSpeed = C_PlayerInfo.GetGlidingInfo()
-	local speed = forwardSpeed
-	if not isGliding then
-		speed = GetUnitSpeed("player")
-	end
+	local speed, percent, isGliding = TRB.Functions.Character:GetMovementSpeed()
 	speedValue = speed
-	speedReadAt = now
-	if speed == nil or issecretvalue(speed) then
-		speedPercent = nil
-	else
-		speedPercent = speed / RUN_SPEED * 100
-	end
+	speedPercent = percent
 
 	if probeEnabled then
 		if isGliding and speedPercent ~= nil then
@@ -1038,19 +1028,6 @@ function TRB.Functions.Skyriding:HasLiveValues()
 	end
 	return self:IsRendering() or chargeSnapshots.skyridingCharges.cooldown.isActive or chargeSnapshots.secondWind.cooldown.isActive
 		or GetActiveCooldown().onCooldown or staticChargeSnapshot.buff.isActive
-end
-
----The live speed in percent of run speed, or nil while it is unknown. Speed has no event, so it is read on demand.
----@return number?
-function TRB.Functions.Skyriding:GetSpeedPercent()
-	if SKYRIDING == nil then
-		return nil
-	end
-	local now = GetTime()
-	if speedReadAt ~= now then
-		ReadSpeed(now)
-	end
-	return speedPercent
 end
 
 ---A charge bar's charges (may be secret), maximum, and the refilling charge's remaining seconds (nil when full).
