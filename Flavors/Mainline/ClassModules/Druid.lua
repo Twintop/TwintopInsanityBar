@@ -587,8 +587,9 @@ local function UpdateShapeshiftForm()
 		Bar:RefreshWrapperPositioning()
 	end
 
-	-- Form change swaps which spec's settings govern the castbar; re-evaluate enablement + Blizzard suppression.
+	-- Form change swaps which spec's settings govern the castbar and the Skyriding bars; re-evaluate their enablement.
 	TRB.Functions.Castbar:SyncEnabledState()
+	TRB.Functions.Skyriding:SyncEnabledState()
 end
 
 local shapeshiftFrame = CreateFrame("Frame")

@@ -270,8 +270,10 @@ local function GetContext()
 	local now = GetTime()
 	if contextTime ~= now then
 		TRB.Classes.BarVisibilityContext:FillFromGameState(context, false)
-		-- On these bars Skyriding is whether the game lets you glide, whatever the mount or form.
-		local canSkyride = TRB.Data.character.isSkyriding == true
+		-- On these bars Skyriding is whether the game lets you glide, whatever the mount or form. It is read live,
+		-- since a form can change it without the events that refresh the character's copy.
+		local _, glide = C_PlayerInfo.GetGlidingInfo()
+		local canSkyride = glide == true
 		context.isSkyriding = canSkyride
 		context.isSkyridingFlying = canSkyride and IsFlying()
 		context.isNotSkyriding = not canSkyride
@@ -598,6 +600,17 @@ local function SyncSpellEvents()
 	end
 end
 
+---Re-reads whether the player can glide, which a form can change without PLAYER_CAN_GLIDE_CHANGED, and follows it.
+local function RefreshCanGlide()
+	local _, glide = C_PlayerInfo.GetGlidingInfo()
+	glide = glide == true
+	if glide ~= canGlide then
+		canGlide = glide
+		SyncSnapshots()
+	end
+	SyncSpellEvents()
+end
+
 ---Picks the speed caps from the player's map, walking up its parents to the Dragon Isles.
 local function RefreshZone()
 	local caps = SKYRIDING.speedCaps.default
@@ -822,10 +835,18 @@ local function NeedsUpdater()
 end
 
 local function SyncUpdater()
+	-- An event can change what the context holds after something already read it this frame.
+	contextTime = nil
 	if NeedsUpdater() then
 		InvalidateRender()
 		updaterFrame:Show()
 	end
+end
+
+---Follows a mount, form, vehicle, glide, or death change once the state it changes has settled.
+local function ResyncAfterChange()
+	RefreshCanGlide()
+	SyncUpdater()
 end
 
 updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
@@ -848,6 +869,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 
 	local settings = nil
 	if throttleTick then
+		RefreshCanGlide()
 		ReadSpeed()
 		ProbeState()
 		settings = GetActiveSettings()
@@ -895,6 +917,8 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 
 	if not needsUpdater then
 		updaterFrame:Hide()
+		-- With nothing on screen, the charge and cooldown events may no longer be needed.
+		SyncSpellEvents()
 	end
 end)
 
@@ -939,15 +963,10 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
 		SyncSnapshots()
 		TRB.Functions.Skyriding:RefreshVisibility()
 	else
-		if event == "PLAYER_CAN_GLIDE_CHANGED" then
-			canGlide = (...) == true
-			SyncSnapshots()
-			SyncSpellEvents()
-		end
-		-- A mount, form, vehicle, or death change may flip a show or hide condition, and the mounted state
-		-- the conditions read settles a moment after the event.
-		SyncUpdater()
-		C_Timer.After(0.1, SyncUpdater)
+		-- A mount, form, vehicle, glide, or death change may flip a show or hide condition, and the state the
+		-- conditions read settles a moment after the event.
+		ResyncAfterChange()
+		C_Timer.After(0.1, ResyncAfterChange)
 	end
 end)
 
@@ -966,6 +985,8 @@ function TRB.Functions.Skyriding:Enable()
 	moduleEnabled = true
 	eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	eventFrame:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED")
+	-- Taking off in a flight form starts a glide, which may be the only event it gives.
+	eventFrame:RegisterEvent("PLAYER_IS_GLIDING_CHANGED")
 	eventFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 	eventFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 	eventFrame:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player")
