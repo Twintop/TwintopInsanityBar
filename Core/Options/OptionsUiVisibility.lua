@@ -376,20 +376,54 @@ function TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, s
 	return specEntry, false
 end
 
----Returns the options controls table for a scope, used to reach the bar visibility table API.
+---One key per options scope: the Global panels share one, each spec has its own.
 ---@param classId integer?
 ---@param specId integer?
----@return table|nil
-local function GetControlsForScope(classId, specId)
-	local container = TRB.Frames.interfaceSettingsFrameContainer
-	if container == nil or container.controls == nil then
-		return nil
-	end
+---@return string
+local function GetScopeKey(classId, specId)
 	if classId == nil or specId == nil then
-		return container.controls.global
+		return "global"
 	end
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
-	return container.controls[className .. "_" .. specName]
+	return classId .. "_" .. specId
+end
+
+-- Session-only, never saved: whether a scope's spec tab also lists the bars that have their own groupings' tabs.
+local includeAllGroups = {}
+
+-- Each Visibility tab's table API, by scope then grouping, so a bar's tab header can reach the tab that lists its bar.
+local visibilityApis = {}
+
+---Registers a Visibility tab's table API under its scope and grouping.
+---@param classId integer?
+---@param specId integer?
+---@param groupKey string? # nil is the spec's own tab
+---@param api table # { Refresh, SelectByDisplayBarKey }
+function TRB.Functions.OptionsUi.Visibility:RegisterApi(classId, specId, groupKey, api)
+	local scopeKey = GetScopeKey(classId, specId)
+	visibilityApis[scopeKey] = visibilityApis[scopeKey] or {}
+	visibilityApis[scopeKey][groupKey or "spec"] = api
+end
+
+---The table API of the Visibility tab for a scope and grouping, or nil when that tab has not been built.
+---@param classId integer?
+---@param specId integer?
+---@param groupKey string? # nil is the spec's own tab
+---@return table?
+function TRB.Functions.OptionsUi.Visibility:GetApi(classId, specId, groupKey)
+	local scopeApis = visibilityApis[GetScopeKey(classId, specId)]
+	return scopeApis and scopeApis[groupKey or "spec"] or nil
+end
+
+---Refreshes every built Visibility table of a scope.
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.OptionsUi.Visibility:RefreshApis(classId, specId)
+	local scopeApis = visibilityApis[GetScopeKey(classId, specId)]
+	if scopeApis ~= nil then
+		for _, api in pairs(scopeApis) do
+			api.Refresh()
+		end
+	end
 end
 
 ---Builds the enable/disable header pinned to the top of a bar's options tab.
@@ -446,24 +480,32 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 		SetCursor(nil)
 		GameTooltip:Hide()
 	end)
-	---Switches to the Visibility tab that owns this bar and selects its row. SwitchTab builds the
-	---tab if it is still deferred, so barVisibilityApi exists by the time the row is selected.
+	local barGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(visibilityKey)
+
+	---Switches to the Visibility tab that lists this bar and selects its row. SwitchTab builds a deferred
+	---tab first, so its table API exists by the time the row is selected.
 	local function OpenVisibilityTab()
-		-- Resolved from the scope, not from namePrefix: the castbar sub-tabs use a synthesized
-		-- prefix, and their Visibility tab lives on the owning spec's panel.
-		TRB.Functions.OptionsUi.Tabs:SwitchToTabByClassSpec(classId, specId, "barVisibility")
-		local controls = GetControlsForScope(classId, specId)
-		local api = controls and controls.barVisibilityApi
+		-- Resolved from the scope, not from namePrefix: the shared groupings' sub-tabs use synthesized prefixes.
+		local tabs = TRB.Functions.OptionsUi.Tabs
+		if barGroup == "spec" then
+			tabs:SwitchToTabByClassSpec(classId, specId, "barVisibility")
+		else
+			if classId ~= nil and specId ~= nil then
+				tabs:SwitchToTabByClassSpec(classId, specId, TRB.Classes.BarTypeRegistry.groupTabKey[barGroup])
+			end
+			tabs:SwitchToTabByNamePrefix(tabs:GetGroupInnerPrefix(barGroup, classId, specId), tabs.TabKeys.GroupVisibility)
+		end
+		local api = TRB.Functions.OptionsUi.Visibility:GetApi(classId, specId, barGroup)
 		if api ~= nil and api.SelectByDisplayBarKey ~= nil then
 			api.SelectByDisplayBarKey(visibilityKey)
 		end
 	end
 
 	configureLink:SetScript("OnClick", function()
-		-- Global-scope bars keep their visibility on the Global Options screen, which is a different
-		-- nav category than the Cast Bars screen the global castbar tabs live on. Selecting it is a
-		-- no-op when already there, and the tab switch is deferred so the panel exists first.
-		if classId == nil or specId == nil then
+		-- The spec's own bars keep their Global visibility on Global Options, a different nav category than
+		-- the shared groupings' screens the other global tabs live on. Selecting it is a no-op when already
+		-- there, and the tab switch is deferred so the panel exists first.
+		if (classId == nil or specId == nil) and barGroup == "spec" then
 			if TRB.Options.OptionsFrame then
 				TRB.Options.OptionsFrame:SelectCategory("global")
 				C_Timer.After(0, OpenVisibilityTab)
@@ -474,7 +516,12 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 	end)
 
 	-- Shown instead of the Configure link when Global Options owns this bar.
-	local globalLink = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, "barVisibility")
+	local globalLink
+	if barGroup == "spec" then
+		globalLink = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, "barVisibility")
+	else
+		globalLink = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, TRB.Functions.OptionsUi.Tabs.TabKeys.GroupVisibility, TRB.Classes.BarTypeRegistry.groupTabKey[barGroup])
+	end
 
 	-- Right-aligned summary. Word wrap is off, so the FontString ellipsizes anything wider than the
 	-- width applied below; the untruncated text stays reachable through the hitbox tooltip.
@@ -598,12 +645,8 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true, true)
 		Refresh()
 
-		-- Push straight into the Visibility tab's table when it has already been constructed.
-		local controls = GetControlsForScope(classId, specId)
-		local api = controls and controls.barVisibilityApi
-		if api ~= nil and api.Refresh ~= nil then
-			api.Refresh()
-		end
+		-- Push straight into the Visibility tables that have already been constructed.
+		TRB.Functions.OptionsUi.Visibility:RefreshApis(classId, specId)
 	end)
 
 	header.Refresh = Refresh
@@ -653,10 +696,14 @@ end
 ---@param includeManaBarVisibility boolean? Whether to include mana bar visibility
 ---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to include
 ---@param extraThresholdTypes table[]? Extra threshold condition definitions to include for matching bars
+---@param options { groupKey: string? }? Which grouping's bars to list; nil is the spec's own tab
 ---@return number yCoord New Y coordinate after adding controls
-function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility, includeManaBarVisibility, customBars, extraThresholdTypes)
+function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility, includeManaBarVisibility, customBars, extraThresholdTypes, options)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName .. "_barVisibility"
+	local groupKey = options and options.groupKey or "spec"
+	-- The spec tab keeps the unsuffixed name; every grouping's tab needs its own, as they share a scope.
+	local namePrefix = className .. "_" .. specName .. "_barVisibility" .. (groupKey ~= "spec" and ("_" .. groupKey) or "")
+	local scopeKey = GetScopeKey(classId, specId)
 	local f = nil
 	if customBars == nil then
 		customBars = {}
@@ -688,7 +735,11 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
-		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barVisibility")
+		if groupKey == "spec" then
+			TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barVisibility")
+		else
+			TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, TRB.Functions.OptionsUi.Tabs.TabKeys.GroupVisibility, TRB.Classes.BarTypeRegistry.groupTabKey[groupKey])
+		end
 		f.tooltip = L["CheckboxUseGlobalTooltip_BarDisplay"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayBar)
 		f:SetScript("OnClick", function(self, ...)
@@ -697,14 +748,28 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			-- so the applied show/alpha state is rebuilt rather than reused.
 			TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true, true)
 			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("displayBar")
-			if RefreshTableForGlobalToggle then
-				RefreshTableForGlobalToggle()
-			end
+			-- Every tab of this spec shares the flag, so each one's table and checkbox follow it.
+			TRB.Functions.OptionsUi.Visibility:RefreshApis(classId, specId)
 		end)
 		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "displayBar")
-	else
+	elseif groupKey == "spec" then
 		-- Global options panel - add bulk toggle checkbox
 		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllDisplayBar", "displayBar", yCoord)
+	end
+
+	-- Re-lists the table; assigned once the table exists.
+	local RebuildRows = nil
+	if groupKey == "spec" then
+		yCoord = yCoord - 20
+		controls.checkBoxes.includeAllGroups = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, "TwintopResourceBar_" .. namePrefix .. "_includeAllGroups",
+			L["CheckboxIncludeAllBarGroups"], L["CheckboxIncludeAllBarGroupsTooltip"], yCoord,
+			function() return includeAllGroups[scopeKey] == true end,
+			function(checked)
+				includeAllGroups[scopeKey] = checked
+				if RebuildRows ~= nil then
+					RebuildRows()
+				end
+			end)
 	end
 
 	yCoord = yCoord - 30
@@ -1350,13 +1415,13 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
-	-- Build list of bar entries for the table
-	local barEntries = {}
+	-- Build list of every bar entry; the tab lists the ones in its grouping
+	local allBarEntries = {}
 
 	local coreDisplayBar = TRB.Data.settings.core.displayBar
 
 	-- Primary bar (always present)
-	table.insert(barEntries, {
+	table.insert(allBarEntries, {
 		key = "primary",
 		displayBarKey = "primary",
 		label = string.format(L["BarVisibilityBarNamePrimary"], primaryResourceString or L["ResourceMana"]),
@@ -1367,7 +1432,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	-- Health bar
 	if includeHealthVisibility and spec.displayBar.health ~= nil then
-		table.insert(barEntries, {
+		table.insert(allBarEntries, {
 			key = "health",
 			displayBarKey = "health",
 			label = L["BarVisibilityBarNameHealth"],
@@ -1379,7 +1444,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	-- Secondary resource
 	if includeSecondaryVisibility then
-		table.insert(barEntries, {
+		table.insert(allBarEntries, {
 			key = "secondary",
 			displayBarKey = "secondary",
 			label = string.format(L["ShowBarVisibilitySecondary"], secondaryResourceString or L["ResourceComboPoints"]),
@@ -1391,7 +1456,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	-- Mana bar (secondary)
 	if includeManaBarVisibility and spec.displayBar.mana ~= nil then
-		table.insert(barEntries, {
+		table.insert(allBarEntries, {
 			key = "mana",
 			displayBarKey = "mana",
 			label = L["BarVisibilityBarNameMana"],
@@ -1408,7 +1473,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			if registryDef then
 				globalDisplayName = registryDef.displayName
 			end
-			table.insert(barEntries, {
+			table.insert(allBarEntries, {
 				key = barTypeDef.key,
 				displayBarKey = barTypeDef.visibilityKey,
 				label = string.format(L["ShowBarVisibilityCustom"], barTypeDef.displayName),
@@ -1422,7 +1487,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	-- Cast bar: self-driven render (Functions/Castbar.lua) configured through the same visibility entries
 	if spec.displayBar and spec.displayBar.castbar ~= nil then
-		table.insert(barEntries, {
+		table.insert(allBarEntries, {
 			key = "castbar",
 			displayBarKey = "castbar",
 			label = L["ResourcePlayerCastbar"],
@@ -1437,7 +1502,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	-- controls (cast-state show conditions, In Vehicle hide, alpha/fade). isCastbar reuses the entire
 	-- castbar row path (smooth hidden, thresholds excluded).
 	if spec.displayBar and spec.displayBar.targetCastbar ~= nil then
-		table.insert(barEntries, {
+		table.insert(allBarEntries, {
 			key = "targetCastbar",
 			displayBarKey = "targetCastbar",
 			label = L["BarVisibilityBarNameTargetCastbar"],
@@ -1448,7 +1513,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		})
 	end
 	if spec.displayBar and spec.displayBar.focusCastbar ~= nil then
-		table.insert(barEntries, {
+		table.insert(allBarEntries, {
 			key = "focusCastbar",
 			displayBarKey = "focusCastbar",
 			label = L["BarVisibilityBarNameFocusCastbar"],
@@ -1464,7 +1529,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		if spec.displayBar and spec.displayBar[otherBarKey] ~= nil then
 			local otherBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(otherBarKey)
 			local otherBarLabel = otherBarDef and otherBarDef.displayName or otherBarKey
-			table.insert(barEntries, {
+			table.insert(allBarEntries, {
 				key = otherBarKey,
 				displayBarKey = otherBarKey,
 				label = otherBarLabel,
@@ -1488,7 +1553,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			local petBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(petBarKey)
 			local petBarLabel = petBarDef and petBarDef.displayName or petBarKey
 			local isCastbar = petBarKey == "petCastbar"
-			table.insert(barEntries, {
+			table.insert(allBarEntries, {
 				key = petBarKey,
 				displayBarKey = petBarKey,
 				label = petBarLabel,
@@ -1506,7 +1571,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		if spec.displayBar and spec.displayBar[skyridingKey] ~= nil then
 			local skyridingDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(skyridingKey)
 			local skyridingLabel = skyridingDef and skyridingDef.displayName or skyridingKey
-			table.insert(barEntries, {
+			table.insert(allBarEntries, {
 				key = skyridingKey,
 				displayBarKey = skyridingKey,
 				label = skyridingLabel,
@@ -1518,6 +1583,20 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			})
 		end
 	end
+
+	-- Mutated in place: the table, detail panel, and handlers below all close over it.
+	local barEntries = {}
+	local function RebuildBarEntries()
+		for index = #barEntries, 1, -1 do
+			barEntries[index] = nil
+		end
+		for _, entry in ipairs(allBarEntries) do
+			if TRB.Functions.OptionsUi.Primitives:IsBarInGroupScope(entry.displayBarKey, groupKey, includeAllGroups[scopeKey]) then
+				barEntries[#barEntries + 1] = entry
+			end
+		end
+	end
+	RebuildBarEntries()
 
 	-- Create the LibScrollingTable for bar selection
 	local columns = {
@@ -1553,7 +1632,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	bvc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
 	bvc:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
 	-- Show at most 5 rows; LibScrollingTable adds a scrollbar when there are more bars than that.
-	local tableRowCount = math.min(math.max(#barEntries, 2), 5)
+	-- The spec tab can grow to every bar when the include-all box is ticked, so it is sized for that.
+	local tableRowCount = math.min(math.max(groupKey == "spec" and #allBarEntries or #barEntries, 2), 5)
 	bvc:SetHeight(35 + (tableRowCount * 15))
 
 	local barVisibilityTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, bvc, false, false)
@@ -1986,6 +2066,10 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	-- Define the refresh function that the "Use global settings" checkbox calls
 	-- to update the table state when the toggle changes.
 	RefreshTableForGlobalToggle = function()
+		local useGlobalCheckbox = controls.checkBoxes ~= nil and controls.checkBoxes.useGlobalDisplayBar or nil
+		if useGlobalCheckbox ~= nil then
+			useGlobalCheckbox:SetChecked(IsUsingGlobalDisplayBar())
+		end
 		SetTableValues()
 		-- If the currently selected bar is now controlled by global, deselect it
 		if IsUsingGlobalDisplayBar() and selectedBarKey ~= nil then
@@ -2000,10 +2084,18 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
+	RebuildRows = function()
+		RebuildBarEntries()
+		barVisibilityTable:ClearSelection()
+		detailFrame:Hide()
+		selectedBarKey = nil
+		SetTableValues()
+	end
+
 	-- Handle used by the per-bar tab visibility headers: refreshes the table after a header
 	-- toggle, and jumps to a bar's row when the header's "Configure Visibility" link is used.
 	-- Selection matches on displayBarKey because it diverges from key for custom bars.
-	controls.barVisibilityApi = {
+	TRB.Functions.OptionsUi.Visibility:RegisterApi(classId, specId, groupKey, {
 		Refresh = RefreshTableForGlobalToggle,
 		SelectByDisplayBarKey = function(displayBarKey)
 			for i, e in ipairs(barEntries) do
@@ -2017,7 +2109,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				end
 			end
 		end,
-	}
+	})
 
 	-- Keep the table in sync with visibility changes made from the per-bar tab headers.
 	parent:HookScript("OnShow", function()
@@ -2029,3 +2121,33 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	return yCoord
 end
 
+---Builds a shared grouping's Visibility tab: the spec tab's table and detail panel, listing only that grouping's bars.
+---@param parent Frame # The tab's scroll child
+---@param classId integer? # nil edits core (global) scope
+---@param specId integer?
+---@param groupKey string # castbar, otherBars, petBars, or skyriding
+function TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(parent, classId, specId, groupKey)
+	if parent == nil then
+		return
+	end
+	local classNameLower, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	local spec
+	if classId == nil then
+		spec = TRB.Data.settings.core
+	else
+		spec = TRB.Data.settings[classNameLower] and TRB.Data.settings[classNameLower][specName]
+	end
+	if spec == nil then
+		return
+	end
+
+	-- Each grouping's tab gets its own controls: they would otherwise overwrite each other's under one scope.
+	local controlsKey = (classId == nil) and "core" or (classNameLower .. "_" .. specName)
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	interfaceSettingsFrame.controls[controlsKey] = interfaceSettingsFrame.controls[controlsKey] or {}
+	local scopeControls = interfaceSettingsFrame.controls[controlsKey]
+	scopeControls.visibilityGroups = scopeControls.visibilityGroups or {}
+	scopeControls.visibilityGroups[groupKey] = { checkBoxes = {}, dropDown = {}, sliders = {}, colors = {}, buttons = {} }
+
+	self:GenerateBarVisibilityOptions(parent, scopeControls.visibilityGroups[groupKey], spec, classId, specId, 5, nil, nil, false, nil, false, false, {}, {}, { groupKey = groupKey })
+end

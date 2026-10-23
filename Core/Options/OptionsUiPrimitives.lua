@@ -1382,3 +1382,16 @@ function TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(checkbox, enable
 	end
 end
 
+---Whether a bar's options belong on a tab. A shared grouping's tabs list only its own bars; the spec tab lists
+---the spec's own bars, plus every grouping's when the include-all box is ticked.
+---@param barKey string
+---@param groupKey string? # nil or "spec" for the spec tab
+---@param includeAllGroups boolean?
+---@return boolean
+function TRB.Functions.OptionsUi.Primitives:IsBarInGroupScope(barKey, groupKey, includeAllGroups)
+	local barGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(barKey)
+	if groupKey == nil or groupKey == "spec" then
+		return includeAllGroups == true or barGroup == "spec"
+	end
+	return barGroup == groupKey
+end

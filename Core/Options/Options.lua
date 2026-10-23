@@ -721,6 +721,7 @@ local function ConstructCastbarOptionsPanel()
 		end, visibilityKey = "petCastbar" },
 	}
 
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, nil, nil, "castbar")
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Castbar", tabDefinitions, -37)
 end
 
@@ -763,6 +764,7 @@ local function ConstructOtherBarsOptionsPanel()
 		end
 	end
 
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, nil, nil, "otherBars")
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "OtherBars", tabDefinitions, -37)
 end
 
@@ -804,6 +806,7 @@ local function ConstructPetBarsOptionsPanel()
 		end
 	end
 
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, nil, nil, "petBars")
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "PetBars", tabDefinitions, -37)
 end
 
@@ -848,6 +851,7 @@ local function ConstructSkyridingOptionsPanel()
 		end
 	end
 
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, nil, nil, "skyriding")
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Skyriding", tabDefinitions, -37)
 end
 

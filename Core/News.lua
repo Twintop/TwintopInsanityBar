@@ -4,6 +4,15 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-23)
+## Bar Visibility
+
+- Add a Visibility tab to Cast Bars, Other Bars, Pet Bars, and Skyriding, listing only the bars under each, in Global Options and for every specialization.
+- The Visibility tab of Global Options and of each specialization lists only that specialization's own bars. A new checkbox adds the bars from Cast Bars, Other Bars, Pet Bars, and Skyriding to the list.
+- A bar tab's Configure Visibility link opens the Visibility tab of the group the bar belongs to.
+
+---
+
 # Live 12.1.5.5-release / Forever 1.60.1.13-release (2026-10-23)
 ## General
 
