@@ -4076,4 +4076,4 @@ L["SkyridingBarsPromptFollowUpText"] = "You can enable, disable, or customize th
 L["SkyridingBarsRepromptText"] = "Twintop's Resource Bar: sorry for asking again! Choosing 'No' on the earlier Skyriding bars prompt didn't turn the bars off for specializations that don't use the global Visibility settings.\n\nWould you like the Skyriding bars enabled?"
 L["SkyridingBarsPromptLeaveAsIs"] = "Leave Settings As-Is"
 L["CheckboxIncludeAllBarGroups"] = "Include bars from Cast Bars, Other Bars, Pet Bars, and Skyriding"
-L["CheckboxIncludeAllBarGroupsTooltip"] = "When checked, this list also shows the bars that have their own tabs under Cast Bars, Other Bars, Pet Bars, and Skyriding. Those bars can always be edited from their own tabs. This setting is not saved."
+L["CheckboxIncludeAllBarGroupsTooltip"] = "When checked, this list also shows the bars under Cast Bars, Other Bars, Pet Bars, and Skyriding, and they can be edited here as well as on their own tabs. This setting is not saved."
