@@ -536,12 +536,13 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	yCoord = yCoord - 30
 
 	-- ===== The table =====
+	-- Narrow enough, with the last column at its minimum, to fit a grouping's tab nested inside a specialization's.
 	local columns = {
 		{ ["name"] = "Key", ["width"] = 1, ["align"] = "CENTER" },
-		{ ["name"] = L["BarTexturesTableHeaderBar"], ["width"] = 200, ["align"] = "LEFT" },
-		{ ["name"] = L["BarTexturesTableHeaderFill"], ["width"] = 120, ["align"] = "LEFT" },
-		{ ["name"] = L["BarTexturesTableHeaderBorder"], ["width"] = 120, ["align"] = "LEFT" },
-		{ ["name"] = L["BarTexturesTableHeaderBackground"], ["width"] = 120, ["align"] = "LEFT" },
+		{ ["name"] = L["BarTexturesTableHeaderBar"], ["width"] = 170, ["align"] = "LEFT" },
+		{ ["name"] = L["BarTexturesTableHeaderFill"], ["width"] = 110, ["align"] = "LEFT" },
+		{ ["name"] = L["BarTexturesTableHeaderBorder"], ["width"] = 110, ["align"] = "LEFT" },
+		{ ["name"] = L["BarTexturesTableHeaderBackground"], ["width"] = 110, ["align"] = "LEFT" },
 	}
 	if isSpecScope then
 		columns[#columns + 1] = { ["name"] = L["BarTexturesTableHeaderSource"], ["width"] = 150, ["align"] = "LEFT" }
