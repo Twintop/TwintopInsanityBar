@@ -173,6 +173,9 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 				includeAllGroups[scopeKey] = checked
 				RefreshBarTextTable()
 			end)
+		-- Lined up with the Use Global box above it.
+		controls.checkBoxes.includeAllBarTextGroups:ClearAllPoints()
+		controls.checkBoxes.includeAllBarTextGroups:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
 		yCoord = yCoord - 20
 	end
 
