@@ -381,6 +381,33 @@ function TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, s
 	return specEntry and barVisibility:ComposeEntry(specEntry), false, specEntry
 end
 
+---Turns a bar on or off from its tab's header or its Visibility row. Does nothing while Global Options owns the bar.
+---@param classId integer? # Class ID, or nil for the global panel
+---@param specId integer? # Spec ID, or nil for the global panel
+---@param visibilityKey string # The displayBar key for the bar
+---@param enabled boolean
+function TRB.Functions.OptionsUi.Visibility:SetBarEnabled(classId, specId, visibilityKey, enabled)
+	local visSettings, isControlledByGlobal, saved = self:ResolveBarVisibilityEntry(classId, specId, visibilityKey)
+	if visSettings == nil or saved == nil or isControlledByGlobal then
+		return
+	end
+
+	-- Only Never Show is written: ShouldShowBar checks it before Always Show, so turning back on loses nothing.
+	saved.neverShow = not enabled
+	visSettings.neverShow = saved.neverShow
+
+	-- A bar nothing would ever show falls back to Always Show, leaving its preset first so the other bars keep theirs.
+	if not saved.neverShow and self:IsBarUnreachable(visSettings) then
+		TRB.Functions.BarVisibility:UnlinkEntry(saved)
+		saved.alwaysShow = true
+	end
+
+	-- forceReshow: toggling Never Show changes whether this bar renders at all.
+	self:ApplyVisibilityChange(classId, specId, true, true)
+	-- Push straight into the Visibility tables that have already been constructed.
+	self:RefreshApis(classId, specId)
+end
+
 ---One key per options scope: the Global panels share one, each spec has its own.
 ---@param classId integer?
 ---@param specId integer?
@@ -793,33 +820,8 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 	end
 
 	checkbox:SetScript("OnClick", function(self)
-		local visSettings, isControlledByGlobal, saved = TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, specId, visibilityKey)
-		if visSettings == nil or saved == nil or isControlledByGlobal then
-			Refresh()
-			return
-		end
-
-		-- Disabling only writes the Never Show bit. ShouldShowBar bails on neverShow before it ever
-		-- reads alwaysShow, so the bar is fully disabled either way, and leaving Always Show intact
-		-- keeps this a lossless round trip instead of quietly discarding the setting on the way out.
-		saved.neverShow = not self:GetChecked()
-		visSettings.neverShow = saved.neverShow
-
-		-- Enabling a bar has to leave it able to actually appear. If nothing else would ever show
-		-- it, fall back to Always Show, otherwise the checkbox would report the bar as enabled while
-		-- it stayed invisible. A bar that already has a condition or threshold keeps it untouched.
-		-- A bar on a preset leaves it first: Always Show belongs to the preset, and one bar must not change the rest.
-		if not saved.neverShow and TRB.Functions.OptionsUi.Visibility:IsBarUnreachable(visSettings) then
-			TRB.Functions.BarVisibility:UnlinkEntry(saved)
-			saved.alwaysShow = true
-		end
-
-		-- forceReshow: toggling Never Show changes whether this bar renders at all.
-		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true, true)
+		TRB.Functions.OptionsUi.Visibility:SetBarEnabled(classId, specId, visibilityKey, self:GetChecked())
 		Refresh()
-
-		-- Push straight into the Visibility tables that have already been constructed.
-		TRB.Functions.OptionsUi.Visibility:RefreshApis(classId, specId)
 	end)
 
 	header.Refresh = Refresh
@@ -984,7 +986,19 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
-	controls.barDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, isPresetHost and L["BarVisibilityPresetsHeader"] or L["BarDisplayHeader"], oUi.xCoord, yCoord)
+	local sectionTitle = L["BarDisplayHeader"]
+	if isPresetHost then
+		sectionTitle = L["BarVisibilityPresetsHeader"]
+	elseif groupKey == "castbar" then
+		sectionTitle = L["BarDisplayHeaderCastbar"]
+	elseif groupKey == "otherBars" then
+		sectionTitle = L["BarDisplayHeaderOtherBars"]
+	elseif groupKey == "petBars" then
+		sectionTitle = L["BarDisplayHeaderPetBars"]
+	elseif groupKey == "skyriding" then
+		sectionTitle = L["BarDisplayHeaderSkyriding"]
+	end
+	controls.barDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, sectionTitle, oUi.xCoord, yCoord)
 
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
@@ -2214,7 +2228,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	-- Detail panel below the table
-	local detailHeight = 360
+	local detailHeight = 390
 	controls.barVisibilityDetail = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarVisibilityDetail", parent, "BackdropTemplate")
 	local detailFrame = controls.barVisibilityDetail
 	detailFrame:SetPoint("TOPLEFT", detailAnchor, "BOTTOMLEFT", 0, 0)
@@ -2243,6 +2257,24 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	controls.buttons.barActions = actionsButton
 
 	detailYCoord = detailYCoord - 30
+	-- Above the cover: presets leave Never Show to each bar, so a bar on one can still be turned on and off.
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.checkBoxes.selectedEnabled = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_SelectedEnabled", detailFrame, "ChatConfigCheckButtonTemplate")
+	local enabledBox = controls.checkBoxes.selectedEnabled
+	enabledBox:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	-- Read-only while Global Options owns the bar, and its tooltip says so.
+	enabledBox:SetMotionScriptsWhileDisabled(true)
+	enabledBox:SetScript("OnClick", function(box)
+		for _, e in ipairs(barEntries) do
+			if e.key == selectedBarKey then
+				TRB.Functions.OptionsUi.Visibility:SetBarEnabled(classId, specId, e.displayBarKey, box:GetChecked())
+				return
+			end
+		end
+	end)
+
+	detailYCoord = detailYCoord - 30
+	local detailCoverTop = detailYCoord
 	controls.dropDown = controls.dropDown or {}
 	controls.dropDown.selectedBarVisibility = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_SelectedBarVisibility", detailFrame, "WowStyle1DropdownTemplate")
 	controls.dropDown.selectedBarVisibility:SetWidth(oUi.sliderWidth)
@@ -2401,7 +2433,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	-- Blocks the detail controls of a row that follows Global Options or a preset, with the way out.
-	local detailCover = TRB.Functions.OptionsUi.Primitives:BuildSectionCover(detailFrame, -30, -detailHeight)
+	local detailCover = TRB.Functions.OptionsUi.Primitives:BuildSectionCover(detailFrame, detailCoverTop, -detailHeight)
 	controls.barVisibilityDetailCover = detailCover
 	local coverMessage = detailCover:CreateFontString(nil, "OVERLAY")
 	coverMessage:SetFontObject(GameFontHighlightLarge)
@@ -2634,6 +2666,24 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end)
 		controls.sliders.selectedThresholdValue:SetValue(visSettings.resourceConditionValue or 0)
 		UpdateThresholdControlLabels(visSettings.resourceConditionType or "none")
+
+		-- Green "Enabled" / red "Disabled", as on the bar's own tab; Global Options' state is shown read-only.
+		if barEntry.isPreset then
+			enabledBox:Hide()
+		else
+			local isEnabled = not visSettings.neverShow
+			enabledBox:Show()
+			enabledBox:SetChecked(isEnabled)
+			enabledBox:SetEnabled(source ~= "global")
+			if source == "global" then
+				TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledBox, isEnabled, false)
+				getglobal(enabledBox:GetName() .. "Text"):SetText(isEnabled and L["BarTabEnabledGlobal"] or L["BarTabDisabledGlobal"])
+				enabledBox.tooltip = L["BarTabVisibilityGlobalTooltip"]
+			else
+				TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledBox, isEnabled, true)
+				enabledBox.tooltip = L["BarVisibilityEnabledTooltip"]
+			end
+		end
 
 		-- A row following Global Options or a preset is shown read-only behind a cover.
 		detailCover:SetShown(source ~= "own")
