@@ -569,6 +569,16 @@ StaticPopupDialogs["TwintopResourceBar_VisibilityPresetDelete"] = {
 	end,
 }
 
+-- Tells the user why an action did nothing; the message is the popup's first argument.
+StaticPopupDialogs["TwintopResourceBar_VisibilityMessage"] = {
+	text = "%s",
+	button1 = L["OK"],
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
 ---Builds the enable/disable header pinned to the top of a bar's options tab.
 ---The returned frame exposes :Refresh() so callers can resync it when the tab is shown.
 ---@param container Frame # The tabsheet frame the header is anchored into
@@ -2781,7 +2791,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			end
 		end
 		if applied == 0 then
-			print(L["BarVisibilityApplyNoneChecked"])
+			StaticPopup_Show("TwintopResourceBar_VisibilityMessage", L["BarVisibilityApplyNoneChecked"])
 			return
 		end
 		AfterRowEdit()
@@ -2801,11 +2811,11 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			end
 		end
 		if checked == 0 then
-			print(L["BarVisibilityApplyChooseFirst"])
+			StaticPopup_Show("TwintopResourceBar_VisibilityMessage", L["BarVisibilityApplyChooseFirst"])
 			return
 		end
 		if applied == 0 then
-			print(L["BarVisibilityApplyNoneGlobal"])
+			StaticPopup_Show("TwintopResourceBar_VisibilityMessage", L["BarVisibilityApplyNoneGlobal"])
 			return
 		end
 		AfterRowEdit()
