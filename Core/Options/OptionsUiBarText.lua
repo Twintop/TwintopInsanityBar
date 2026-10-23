@@ -1768,5 +1768,6 @@ function TRB.Functions.OptionsUi.BarText:ConstructGroupPanel(parent, classId, sp
 	-- Each grouping's tab gets its own controls: they would otherwise overwrite each other's under one scope.
 	local controls = { checkBoxes = {}, colors = {}, labels = {}, buttons = {} }
 	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, 5)
-	self:GenerateBarTextEditor(parent, controls, spec, classId, specId, classId == nil and -5 or -25, cache, { groupKey = groupKey })
+	-- The first row clears the header, as on a class's own Bar Text tab; the Global screens have no Use Global box there, so the table takes it.
+	self:GenerateBarTextEditor(parent, controls, spec, classId, specId, -25, cache, { groupKey = groupKey })
 end
