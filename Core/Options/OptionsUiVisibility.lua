@@ -896,7 +896,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	-- The preset the detail panel is showing, when it shows one; the refresh helpers below act on it.
 	local selectedPresetGuid = nil
 	-- Assigned below, once the panel they act on exists.
+	---@type fun(barKey: string)
 	local FillDetailPanel = nil
+	---@type fun()
 	local SetPresetTableValues = nil
 
 	---Whether a row follows Global Options for this specialization. The Global panel edits its own entries.
@@ -1907,6 +1909,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	-- The bars table, with its table-level action above it on the right. Manage Presets lists presets instead.
 	controls.buttons = controls.buttons or {}
 	local bvc = nil
+	---@type any
 	local barVisibilityTable = nil
 	local tableRowCount = 0
 	if not isPresetHost then
@@ -2029,7 +2032,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			if source == "global" then
 				sourceText = entry.globalLabel and string.format(L["BarVisibilitySettingsSourceGlobalNamed"], entry.globalLabel) or L["BarVisibilitySettingsSourceGlobal"]
 			elseif source == "preset" then
-				sourceText = string.format(L["BarVisibilitySettingsSourcePreset"], preset.name or "")
+				sourceText = string.format(L["BarVisibilitySettingsSourcePreset"], preset and preset.name or "")
 			elseif classId == nil then
 				sourceText = L["BarVisibilitySettingsSourceGlobal"]
 			else
@@ -2057,6 +2060,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local PRESET_TABLE_ROWS = 5
 	local PRESET_EDITOR_HEIGHT = 55
 	local presetsTableHeight = 35 + (PRESET_TABLE_ROWS * 15)
+	---@type any
 	local presetTable = nil
 	local presetList = {}
 	local presetEditorRow = nil
@@ -2065,6 +2069,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local presetKindDropdown = nil
 	local detailAnchor = bvc
 	-- Reselects the open bar or preset after a redraw; assigned once the detail panel exists.
+	---@type fun()
 	local ReselectSelection = nil
 	-- Shows the selected preset's name and kind, or hides them; a no-op wherever there are no presets.
 	---@type fun(preset: table?)
@@ -2220,12 +2225,14 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local detailYCoord = 0
 	local selectedBarKey = nil
 	-- Assigned below, once the detail panel can refill itself.
+	---@type fun()
 	local CustomizeSelectedRow = nil
 
 	-- Detail panel contents: header, show/hide dropdowns, smooth checkbox, sliders
 	local detailHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailFrame, "", oUi.xCoord, detailYCoord)
 
 	-- Copy, link, and save-as-preset actions for the selected bar; assigned below, with the menus.
+	---@type fun(owner: Frame)
 	local OpenActionsMenu = nil
 	local actionsButton = TRB.Functions.OptionsUi.Primitives:BuildButton(detailFrame, L["BarVisibilityActionsButton"], 0, 0, 120, 22)
 	actionsButton:ClearAllPoints()
@@ -2412,8 +2419,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	coverOpen:SetScript("OnClick", function()
 		for _, e in ipairs(barEntries) do
 			if e.key == selectedBarKey then
-				local source, _, _, preset = ResolveRow(e)
-				if source == "preset" then
+				local _, _, _, preset = ResolveRow(e)
+				if preset ~= nil then
 					TRB.Functions.OptionsUi.Visibility:OpenGlobalPreset(preset.guid)
 				else
 					TRB.Functions.OptionsUi.Visibility:OpenGlobalVisibility(e.displayBarKey)
@@ -2635,7 +2642,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			coverOpen:SetText(L["UseGlobalCoverOpenGlobal"])
 			coverCustomize:SetText(L["UseGlobalCoverCustomize"])
 		elseif source == "preset" then
-			coverMessage:SetText(string.format(L["BarVisibilityUsingPreset"], sourcePreset.name or ""))
+			coverMessage:SetText(string.format(L["BarVisibilityUsingPreset"], sourcePreset and sourcePreset.name or ""))
 			coverOpen:SetText(L["BarVisibilityEditPreset"])
 			coverCustomize:SetText(L["BarVisibilityCustomizeBar"])
 		end
