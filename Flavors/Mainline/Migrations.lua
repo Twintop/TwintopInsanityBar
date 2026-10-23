@@ -8811,11 +8811,6 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
-	-- Visibility: the per-specialization Use Global flag became per bar.
-	if TwintopInsanityBarSettings ~= nil then
-		TRB.Functions.Settings:MigrateDisplayBarUseGlobal(TwintopInsanityBarSettings)
-	end
-
 	-- Visibility presets: seed every table and link stored profiles; the live settings are linked after the defaults merge.
 	if TwintopInsanityBarSettings ~= nil then
 		TRB.Functions.Settings:SeedVisibilityPresets(TwintopInsanityBarSettings)

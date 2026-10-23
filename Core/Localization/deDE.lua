@@ -1226,7 +1226,6 @@ if locale == "deDE" then
     L["ResetBarTextCompactDialog"] = "Möchtest du den %s Ressourcenleisten-Text auf |cFFFFAAAAKompakte|r Standards zurücksetzen?"
     L["ResetBarTextClassic"] = "Leistentext zurücksetzen (Klassisch)"
     L["ResetBarTextClassicDialog"] = "Möchtest du den %s Ressourcenleisten-Text auf |cFFFFAAAAKlassische|r Standards zurücksetzen?"
-    L["CheckboxUseGlobalTooltip_BarDisplay"] = "Wenn aktiviert, wird die globale Einstellung für Leistenanzeige verwendet."
     L["EvokerAugmentationBarTextVariable_manaPercent"] = "Aktueller Mana Prozentsatz"
     L["EvokerDevastationBarTextVariable_manaPercent"] = "Aktueller Mana Prozentsatz"
     L["MageArcaneChargesCheckboxUseHighestForAll"] = "Benutze höchste Arkane Aufladung Farbe für alle?"

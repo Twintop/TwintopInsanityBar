@@ -1979,7 +1979,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
-	-- Each bar follows Global Options unless it opts out (useGlobal = false); copies keep runtime off the saved tables.
+	-- Each bar follows Global Options as its useGlobal says, or the spec's flag while that is nil; copies keep runtime off the saved tables.
 	do
 		local registry = TRB.Classes.BarTypeRegistry
 		local barVisibility = TRB.Functions.BarVisibility
@@ -1987,15 +1987,18 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		local specDisplayBar = spec.displayBar or {}
 		for k, v in pairs(specDisplayBar) do
 			if type(v) == "table" then
-				displayBar[k] = barVisibility:ComposeEntry(barVisibility:IsEntryGlobal(k, core.displayBar, specDisplayBar) and core.displayBar[k] or v)
+				displayBar[k] = barVisibility:ComposeEntry(barVisibility:IsEntryGlobal(k, core.displayBar, specDisplayBar, s.displayBar) and core.displayBar[k] or v)
 			else
 				-- Flags such as enableFormSwitching and showComboPoints.
 				displayBar[k] = v
 			end
 		end
-		for k, v in pairs(core.displayBar) do
-			if displayBar[k] == nil and type(v) == "table" and registry:IsGlobalScopeBar(k) then
-				displayBar[k] = barVisibility:ComposeEntry(v)
+		-- A bar the spec has no entry for comes from Global Options only under the spec's flag, as it always has.
+		if s.displayBar then
+			for k, v in pairs(core.displayBar) do
+				if displayBar[k] == nil and type(v) == "table" and registry:IsGlobalScopeBar(k) then
+					displayBar[k] = barVisibility:ComposeEntry(v)
+				end
 			end
 		end
 		specCache.settings.displayBar = displayBar

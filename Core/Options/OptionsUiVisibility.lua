@@ -375,7 +375,7 @@ function TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, s
 	-- Only keys present in core.displayBar are shared globally; custom bars stay spec-owned. IsEntryGlobal
 	-- also asks IsGlobalScopeBar, so a stale core entry for a class-scoped bar can't take its spec row
 	-- hostage (it would go read-only against a global entry with no UI behind it).
-	if barVisibility:IsEntryGlobal(visibilityKey, core.displayBar, spec and spec.displayBar) then
+	if barVisibility:IsEntryGlobal(visibilityKey, core.displayBar, spec and spec.displayBar, barVisibility:SpecFollowsGlobal(core, className, specName)) then
 		return barVisibility:ComposeEntry(globalEntry), true, globalEntry
 	end
 	return specEntry and barVisibility:ComposeEntry(specEntry), false, specEntry
@@ -903,11 +903,14 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---@type fun()
 	local SetPresetTableValues = nil
 
+	local settingsClassName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+
 	---Whether a row follows Global Options for this specialization. The Global panel edits its own entries.
 	---@param entry table # A bar entry
 	---@return boolean
 	local function IsRowControlledByGlobal(entry)
-		return classId ~= nil and entry.isGlobal and TRB.Functions.BarVisibility:IsEntryGlobal(entry.displayBarKey, coreDisplayBar, spec.displayBar)
+		return classId ~= nil and entry.isGlobal and barVisibility:IsEntryGlobal(entry.displayBarKey, coreDisplayBar, spec.displayBar,
+			barVisibility:SpecFollowsGlobal(TRB.Data.settings.core, settingsClassName, specName))
 	end
 
 	---Whether all, none, or some of the listed bars that could follow Global Options do.
@@ -932,17 +935,19 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	---Runs a function on every specialization's entry for each listed bar that could follow Global Options.
-	---@param fn fun(specEntry: table)
+	---@param fn fun(specEntry: table, followsGlobal: boolean)
 	local function ForEachSpecEntryOfListedBars(fn)
+		local core = TRB.Data.settings.core
 		for _, specRegistryEntry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
 			local classPiece = TRB.Data.settings[specRegistryEntry.className]
 			local piece = classPiece and classPiece[specRegistryEntry.specName]
 			if piece ~= nil and piece.displayBar ~= nil then
+				local specFollowsGlobal = barVisibility:SpecFollowsGlobal(core, specRegistryEntry.className, specRegistryEntry.specName)
 				for _, entry in ipairs(barEntries) do
 					local specEntry = piece.displayBar[entry.displayBarKey]
 					if type(specEntry) == "table" and coreDisplayBar[entry.displayBarKey] ~= nil
 						and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(entry.displayBarKey) then
-						fn(specEntry)
+						fn(specEntry, barVisibility:IsEntryGlobal(entry.displayBarKey, coreDisplayBar, piece.displayBar, specFollowsGlobal))
 					end
 				end
 			end
@@ -955,9 +960,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---@return integer total
 	local function GetBulkUseGlobalState()
 		local total, controlled = 0, 0
-		ForEachSpecEntryOfListedBars(function(specEntry)
+		ForEachSpecEntryOfListedBars(function(_, followsGlobal)
 			total = total + 1
-			if specEntry.useGlobal ~= false then
+			if followsGlobal then
 				controlled = controlled + 1
 			end
 		end)
@@ -1011,16 +1016,12 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility, groupKey ~= "spec" and groupKey or nil)
 		f.tooltip = L["CheckboxUseGlobalAllListedBarsTooltip"]
 		f:SetScript("OnClick", function()
-			-- Checked gives every listed bar its own settings; unchecked or mixed puts them all back on Global Options.
+			-- Clicking a checked box gives every listed bar its own settings; clicking an unchecked or mixed one puts them all on Global Options.
 			local useGlobal = GetUseGlobalState() ~= true
 			for _, entry in ipairs(barEntries) do
 				local specEntry = entry.isGlobal and spec.displayBar[entry.displayBarKey] or nil
 				if specEntry ~= nil then
-					if useGlobal then
-						specEntry.useGlobal = nil
-					else
-						specEntry.useGlobal = false
-					end
+					specEntry.useGlobal = useGlobal
 				end
 			end
 			-- Swapping the source can flip Never Show for several bars at once,
@@ -1046,11 +1047,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		f:SetScript("OnClick", function()
 			local useGlobal = GetBulkUseGlobalState() ~= true
 			ForEachSpecEntryOfListedBars(function(specEntry)
-				if useGlobal then
-					specEntry.useGlobal = nil
-				else
-					specEntry.useGlobal = false
-				end
+				specEntry.useGlobal = useGlobal
 			end)
 			TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()
 			TRB.Functions.OptionsUi.Visibility:RefreshAllApis()
@@ -1560,16 +1557,30 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end)
 	end
 
-	---Applies an edit to the selected preset to every bar using it, in every specialization.
-	local function RefreshPresetEdit()
-		barVisibility:PushPresetToEntries(selectedPresetGuid)
-		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChangeAllSpecs()
+	-- Presets edited since the last frame. A dragged slider edits on every tick, and the push reaches every profile.
+	local pendingPresetEdits = {}
+
+	---Applies an edit to a preset to every bar using it, in every specialization, once per frame.
+	---@param presetGuid string
+	local function RefreshPresetEdit(presetGuid)
+		local alreadyQueued = next(pendingPresetEdits) ~= nil
+		pendingPresetEdits[presetGuid] = true
+		if alreadyQueued then
+			return
+		end
+		C_Timer.After(0, function()
+			for guid in pairs(pendingPresetEdits) do
+				barVisibility:PushPresetToEntries(guid)
+			end
+			wipe(pendingPresetEdits)
+			TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChangeAllSpecs()
+		end)
 	end
 
 	---Refreshes the spec/global cache and re-evaluates bar visibility after visibility settings change.
 	local function RefreshVisibilitySettings()
 		if selectedPresetGuid ~= nil then
-			RefreshPresetEdit()
+			RefreshPresetEdit(selectedPresetGuid)
 			return
 		end
 		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, false)
@@ -1578,7 +1589,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---Refreshes the spec/global cache, reapplies bar appearance, and re-evaluates visibility for changes affecting custom bars.
 	local function RefreshVisibilityAndAppearance()
 		if selectedPresetGuid ~= nil then
-			RefreshPresetEdit()
+			RefreshPresetEdit(selectedPresetGuid)
 			return
 		end
 		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true)
@@ -1589,7 +1600,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---so a bar switched back on draws immediately instead of waiting for the next visibility event.
 	local function RefreshVisibilityConditions()
 		if selectedPresetGuid ~= nil then
-			RefreshPresetEdit()
+			RefreshPresetEdit(selectedPresetGuid)
 			return
 		end
 		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true, true)
@@ -2542,6 +2553,10 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 		-- Determine if this bar needs the appearance refresh (custom bars)
 		local refreshFunc = barEntry.isCustomBar and RefreshVisibilityAndAppearance or RefreshVisibilitySettings
+		-- A covered row shows a copy, so a refill that moves its sliders has nothing to apply.
+		if source ~= "own" then
+			refreshFunc = function() end
+		end
 		local profile = GetProfileForEntry(barEntry)
 		activeThresholdDefinitions = profile.thresholdDefinitions or thresholdTypeDefinitions
 
@@ -2719,26 +2734,33 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		TRB.Functions.OptionsUi.Visibility:RefreshApis(classId, specId)
 	end
 
+	---Gives a bar that follows Global Options its own settings, set to what it shows now, Never Show and thresholds included.
+	---@param barEntry table
+	local function DetachFromGlobal(barEntry)
+		local _, shown = ResolveRow(barEntry)
+		local specEntry = spec.displayBar[barEntry.displayBarKey]
+		for k in pairs(specEntry) do
+			specEntry[k] = nil
+		end
+		-- shown is already a copy of Global Options' entry with its preset's values laid over it.
+		for k, v in pairs(shown) do
+			specEntry[k] = v
+		end
+		specEntry.presetId = nil
+		specEntry.useGlobal = false
+	end
+
 	-- Detaches the selected row from what it follows, keeping the values it shows now so nothing changes until it is edited.
 	CustomizeSelectedRow = function()
 		local barEntry = GetSelectedBarEntry()
 		if barEntry == nil then
 			return
 		end
-		local source, shown, saved = ResolveRow(barEntry)
+		local source, _, saved = ResolveRow(barEntry)
 		if source == "preset" then
 			barVisibility:UnlinkEntry(saved)
 		elseif source == "global" then
-			local specEntry = spec.displayBar[barEntry.displayBarKey]
-			for k in pairs(specEntry) do
-				specEntry[k] = nil
-			end
-			-- shown is already a copy of Global Options' entry with its preset's values laid over it.
-			for k, v in pairs(shown) do
-				specEntry[k] = v
-			end
-			specEntry.presetId = nil
-			specEntry.useGlobal = false
+			DetachFromGlobal(barEntry)
 		else
 			return
 		end
@@ -2777,7 +2799,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 		local saved = spec.displayBar[barEntry.displayBarKey]
 		if saved ~= nil then
-			saved.useGlobal = nil
+			saved.useGlobal = true
 			AfterRowEdit()
 		end
 	end
@@ -2876,9 +2898,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			local saved = spec.displayBar[target.displayBarKey]
 			if applyTargets[target.displayBarKey] and saved ~= nil
 				and barVisibility:GetProfileKeyForBar(target.displayBarKey) == profileKey then
-				-- A bar that follows Global Options takes its own settings, or the change would never show.
+				-- A bar that follows Global Options takes its own copy of them first, or the change would never show.
 				if IsRowControlledByGlobal(target) then
-					saved.useGlobal = false
+					DetachFromGlobal(target)
 				end
 				if linkPresetId ~= nil then
 					barVisibility:LinkEntry(saved, linkPresetId)
@@ -2904,7 +2926,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				checked = checked + 1
 				local saved = spec.displayBar[target.displayBarKey]
 				if target.isGlobal and saved ~= nil then
-					saved.useGlobal = nil
+					saved.useGlobal = true
 					applied = applied + 1
 				end
 			end

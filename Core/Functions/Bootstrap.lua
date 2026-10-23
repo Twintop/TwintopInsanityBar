@@ -76,7 +76,7 @@ local function LoadSettings(module, classEntry)
 		checks.freshInstall = true
 	end
 
-	-- Each class is linked as its own defaults, which add the shared bars, are merged in.
+	-- Only Global Options' bars here: each class is linked once its own defaults, which add the shared bars, are merged in.
 	TRB.Functions.Settings:AutoLinkGlobalVisibilityPresets(TRB.Data.settings)
 
 	if module.OnSettingsLoaded ~= nil then
