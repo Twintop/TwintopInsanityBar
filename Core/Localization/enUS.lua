@@ -4182,3 +4182,7 @@ L["BarTexturesLockedTooltip"] = "Locked: '%s' is checked, so this texture matche
 L["BarTexturesLockedGlobalTooltip"] = "Locked: '%s' is checked in Global Options, so this texture matches %s (%s) on the %s row. The %s row uses Global settings, which brings Global Options' locks with it. Uncheck Use Global settings for that row to set this specialization's own locks."
 L["TextureLockGlobalTooltip"] = "The %s row uses Global settings, so this specialization uses the locks set in Global Options. Uncheck Use Global settings for that row to set its own."
 L["BarTexturesUsingGlobal"] = "This bar uses the textures from Global Options. The textures shown are the global ones."
+L["BarTexturesHeaderCastbar"] = "Cast Bar Textures"
+L["BarTexturesHeaderOtherBars"] = "Other Bar Textures"
+L["BarTexturesHeaderPetBars"] = "Pet Bar Textures"
+L["BarTexturesHeaderSkyriding"] = "Skyriding Bar Textures"

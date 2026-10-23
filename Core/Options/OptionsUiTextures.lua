@@ -378,7 +378,17 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	end
 
 	-- ===== Header, Use Global, and locks =====
-	controls.textBarTexturesSection = primitives:BuildSectionHeader(parent, L["BarTexturesHeader"], oUi.xCoord, yCoord)
+	local sectionTitle = L["BarTexturesHeader"]
+	if groupKey == "castbar" then
+		sectionTitle = L["BarTexturesHeaderCastbar"]
+	elseif groupKey == "otherBars" then
+		sectionTitle = L["BarTexturesHeaderOtherBars"]
+	elseif groupKey == "petBars" then
+		sectionTitle = L["BarTexturesHeaderPetBars"]
+	elseif groupKey == "skyriding" then
+		sectionTitle = L["BarTexturesHeaderSkyriding"]
+	end
+	controls.textBarTexturesSection = primitives:BuildSectionHeader(parent, sectionTitle, oUi.xCoord, yCoord)
 
 	-- Redraws the table, detail panel, and boxes from the settings; assigned below.
 	---@type fun()
