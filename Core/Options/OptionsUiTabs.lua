@@ -321,6 +321,38 @@ TRB.Functions.OptionsUi.Tabs.TabKeys = {
 	BarVisibility = "barVisibility",
 }
 
+local groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", skyriding = "Skyriding" }
+local groupInnerPrefixStem = { castbar = "CastbarInner_", otherBars = "OtherBarsInner_", petBars = "PetBarsInner_", skyriding = "SkyridingInner_" }
+
+---The tab group name prefix of a shared grouping's strip: the Global screen's own, or the spec panel's inner one.
+---@param groupKey string # castbar, otherBars, petBars, or skyriding
+---@param classId integer? # nil is the global scope
+---@param specId integer?
+---@return string
+function TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix(groupKey, classId, specId)
+	if classId == nil or specId == nil then
+		return groupGlobalPrefix[groupKey]
+	end
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	return groupInnerPrefixStem[groupKey] .. tostring(className) .. "_" .. tostring(specName)
+end
+
+---Appends the settings tabs every shared grouping's strip carries, each scoped to just that grouping's bars.
+---@param tabDefinitions table[] # The strip's tab definitions
+---@param classId integer? # nil is the global scope
+---@param specId integer?
+---@param groupKey string # castbar, otherBars, petBars, or skyriding
+function TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, classId, specId, groupKey)
+	tabDefinitions[#tabDefinitions + 1] = {
+		TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility,
+		TRB.Localization["TabVisibility"],
+		oUi.tabWidth.small,
+		function(scrollChild)
+			TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(scrollChild, classId, specId, groupKey)
+		end,
+	}
+end
+
 ---Builds the nested Cast Bar sub-tab group (player / target / focus) inside a spec's Cast Bar tab.
 ---Each sub-tab is scoped to the given spec so its settings can be overridden per-spec. The namePrefix
 ---never matches the castbar spec map, so BuildTabGroup's auto-injection is skipped here. Hosted in a
@@ -332,8 +364,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(parent, classId,
 	if parent == nil then
 		return
 	end
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = "CastbarInner_" .. tostring(className) .. "_" .. tostring(specName)
+	local namePrefix = TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("castbar", classId, specId)
 	local innerTabs = {
 		{ "castbar", TRB.Localization["ResourcePlayerCastbar"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, classId, specId, TRB.Functions.OptionsUi.Castbar:SpecUsesEmpower(classId, specId))
@@ -351,6 +382,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(parent, classId,
 			TRB.Functions.OptionsUi.Castbar:ConstructPanel(scrollChild, classId, specId, false, "petCastbar")
 		end, visibilityKey = "petCastbar" }
 	end
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "castbar")
 	-- The synthesized namePrefix never matches the castbar spec map, so the scope is passed explicitly.
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
 end
@@ -364,8 +396,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(parent, classI
 	if parent == nil then
 		return
 	end
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = "OtherBarsInner_" .. tostring(className) .. "_" .. tostring(specName)
+	local namePrefix = TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("otherBars", classId, specId)
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local innerTabs = {}
 	for _, barKey in ipairs(registry:GetOtherBarKeys(classId)) do
@@ -386,6 +417,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(parent, classI
 	if #innerTabs == 0 then
 		return
 	end
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "otherBars")
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
 end
 
@@ -398,8 +430,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildPetBarsInnerTabGroup(parent, classId,
 	if parent == nil then
 		return
 	end
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = "PetBarsInner_" .. tostring(className) .. "_" .. tostring(specName)
+	local namePrefix = TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("petBars", classId, specId)
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local innerTabs = {}
 	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry:GetPetBarKeys(classId, specId)) do
@@ -420,6 +451,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildPetBarsInnerTabGroup(parent, classId,
 	if #innerTabs == 0 then
 		return
 	end
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "petBars")
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
 end
 
@@ -431,8 +463,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildSkyridingInnerTabGroup(parent, classI
 	if parent == nil then
 		return
 	end
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = "SkyridingInner_" .. tostring(className) .. "_" .. tostring(specName)
+	local namePrefix = TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("skyriding", classId, specId)
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local innerTabs = {}
 	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
@@ -453,6 +484,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildSkyridingInnerTabGroup(parent, classI
 	if #innerTabs == 0 then
 		return
 	end
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "skyriding")
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
 end
 
