@@ -495,7 +495,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	if groupKey == "spec" then
 		yCoord = yCoord - 20
 		controls.checkBoxes.includeAllGroups = primitives:BuildCheckboxRow(parent, "TwintopResourceBar_" .. namePrefix .. "_includeAllGroups",
-			L["CheckboxIncludeAllBarGroups"], L["CheckboxIncludeAllBarGroupsTooltip"], yCoord,
+			L["CheckboxIncludeAllTextureGroups"], L["CheckboxIncludeAllTextureGroupsTooltip"], yCoord,
 			function() return includeAllGroups[scopeKey] == true end,
 			function(checked)
 				includeAllGroups[scopeKey] = checked
