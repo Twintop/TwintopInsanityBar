@@ -1717,15 +1717,16 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	-- Custom bars (stagger, defensives, utility, etc.)
 	for _, barTypeDef in ipairs(customBars) do
 		if spec.displayBar and spec.displayBar[barTypeDef.visibilityKey] ~= nil then
-			local globalDisplayName = barTypeDef.displayName
+			-- A class module may rename a shared bar after its own use of it, which Global Options must not show.
+			local globalDisplayName = barTypeDef.globalDisplayName
 			local registryDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(barTypeDef.visibilityKey)
 			if registryDef then
-				globalDisplayName = registryDef.displayName
+				globalDisplayName = registryDef.globalDisplayName
 			end
 			table.insert(allBarEntries, {
 				key = barTypeDef.key,
 				displayBarKey = barTypeDef.visibilityKey,
-				label = string.format(L["ShowBarVisibilityCustom"], barTypeDef.displayName),
+				label = string.format(L["ShowBarVisibilityCustom"], classId == nil and globalDisplayName or barTypeDef.displayName),
 				globalLabel = string.format(L["ShowBarVisibilityCustom"], globalDisplayName),
 				isCustomBar = true,
 				hidesSmooth = barTypeDef.timerDrivenFill == true,
