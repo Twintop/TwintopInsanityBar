@@ -696,11 +696,10 @@ function OptionsFrame:SelectCategory(key)
 	self.selectedKey = key
 
 	-- Show/hide the Bar Text Variables flyout based on the new panel's active tab
-	if entry.panel and entry.panel.lastTabId == "barText" then
+	local barTextScrollChild = entry.panel and TRB.Functions.OptionsUi.Tabs:GetShownBarTextScrollChild(entry.panel, entry.panel.lastTabId)
+	if entry.panel and (entry.panel.lastTabId == "barText" or barTextScrollChild ~= nil) then
 		-- Swap to the new spec's variables panel
-		local barTextSheet = entry.panel.tabsheets and entry.panel.tabsheets["barText"]
-		local scrollChild = barTextSheet and barTextSheet.scrollFrame and barTextSheet.scrollFrame.scrollChild
-		TRB.Functions.OptionsUi.Tabs:ActivateBarTextVariablesPanel(scrollChild)
+		TRB.Functions.OptionsUi.Tabs:ActivateBarTextVariablesPanel(barTextScrollChild)
 	else
 		TRB.Functions.OptionsUi.Tabs:HideAllBarTextVariablesPanels()
 	end

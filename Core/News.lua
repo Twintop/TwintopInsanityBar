@@ -5,6 +5,12 @@ local _, TRB = ...
 TRB.Details.coreNewsContent = [====[
 
 # Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-23)
+## Bar Text
+
+- Add a Bar Text tab to Cast Bars, Other Bars, Pet Bars, and Skyriding, listing only the bar text bound to the bars under each, in Global Options and for every specialization.
+- The Bar Text tab of Global Options and of each specialization lists only the bar text bound to that specialization's own bars and to the screen. A new checkbox adds the bar text from Cast Bars, Other Bars, Pet Bars, and Skyriding to the list.
+- Add a Move to bar option to a bar text entry's copy menu, listing the screen and every bar by group.
+
 ## Bar Visibility
 
 - [#858](#858) Add a Visibility tab to Cast Bars, Other Bars, Pet Bars, and Skyriding, listing only the bars under each, in Global Options and for every specialization.

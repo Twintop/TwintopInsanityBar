@@ -169,6 +169,25 @@ function TRB.Functions.OptionsUi.Tabs:ActivateBarTextVariablesPanel(scrollChild)
 	end
 end
 
+---The scroll child of the Bar Text tab showing under a tab, looking through the nested strips of Cast Bars and the other groupings.
+---@param host table # A panel or strip that ran BuildTabGroup
+---@param tabId string? # Its active tab
+---@return TRB.Classes.OptionsUi.ScrollChild|nil
+function TRB.Functions.OptionsUi.Tabs:GetShownBarTextScrollChild(host, tabId)
+	if host == nil or tabId == nil or host.tabsheets == nil or host.tabsheets[tabId] == nil then
+		return nil
+	end
+	local sheet = host.tabsheets[tabId]
+	if tabId == TRB.Functions.OptionsUi.Tabs.TabKeys.BarText then
+		return sheet.scrollFrame and sheet.scrollFrame.scrollChild
+	end
+	local inner = sheet.constructorFrame
+	if inner ~= nil and inner.tabsheets ~= nil then
+		return self:GetShownBarTextScrollChild(inner, inner.lastTabId)
+	end
+	return nil
+end
+
 ---Switches the visible tab in a multi-tab options panel, updating visual states and toggling the bar text variables flyout.
 ---@param self Button # The tab button that was clicked
 ---@param tabId string # The key of the tab to switch to
@@ -198,11 +217,10 @@ function TRB.Functions.OptionsUi.Tabs.SwitchTab(self, tabId)
 	parent.lastTabId = tabId
 
 	-- Show/hide the Bar Text Variables flyout based on active tab
-	if tabId == "barText" then
+	local barTextScrollChild = TRB.Functions.OptionsUi.Tabs:GetShownBarTextScrollChild(parent, tabId)
+	if tabId == "barText" or barTextScrollChild ~= nil then
 		-- Swap to the correct spec's variables panel via the tabsheet's scrollChild
-		local barTextSheet = parent.tabsheets and parent.tabsheets["barText"]
-		local scrollChild = barTextSheet and barTextSheet.scrollFrame and barTextSheet.scrollFrame.scrollChild
-		TRB.Functions.OptionsUi.Tabs:ActivateBarTextVariablesPanel(scrollChild)
+		TRB.Functions.OptionsUi.Tabs:ActivateBarTextVariablesPanel(barTextScrollChild)
 	else
 		TRB.Functions.OptionsUi.Tabs:HideAllBarTextVariablesPanels()
 		-- Clear active edit box tracking when leaving the Bar Text tab
@@ -350,6 +368,15 @@ function TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, cl
 		oUi.tabWidth.small,
 		function(scrollChild)
 			TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(scrollChild, classId, specId, groupKey)
+		end,
+	}
+	-- The key stays barText so the variables flyout follows this tab the way it follows the spec's own.
+	tabDefinitions[#tabDefinitions + 1] = {
+		TRB.Functions.OptionsUi.Tabs.TabKeys.BarText,
+		TRB.Localization["TabBarText"],
+		oUi.tabWidth.small,
+		function(scrollChild)
+			TRB.Functions.OptionsUi.BarText:ConstructGroupPanel(scrollChild, classId, specId, groupKey)
 		end,
 	}
 end

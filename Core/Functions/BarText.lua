@@ -242,6 +242,141 @@ function TRB.Functions.BarText:GetContainerAnchorOptions(classId, specId)
 	return options
 end
 
+---One frame a bar text entry can anchor to.
+---@class TRB.Classes.BarTextAnchor
+---@field public barKey string
+---@field public groupKey string # screen, or the option grouping that owns the bar: spec, castbar, otherBars, petBars, skyriding
+---@field public label string
+---@field public frame string
+
+---The frames a scope's bar text can anchor to, each bar's anchors together and tagged with its option grouping.
+---@class TRB.Classes.BarTextAnchorCatalog
+---@field public entries TRB.Classes.BarTextAnchor[]
+---@field public primaryLabel string
+---@field public frameByLabel table<string, string>
+---@field public labelByFrame table<string, string>
+---@field public groupByFrame table<string, string>
+
+---Builds the anchor catalog of a scope, in the order the bar text editor lists it.
+---@param classId integer? # nil is the global scope
+---@param specId integer?
+---@return TRB.Classes.BarTextAnchorCatalog
+function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
+	local registry = TRB.Classes.BarTypeRegistry
+	local frameByLabel = {}
+	-- Grouped by bar key so a bar's container, nodes, and icon stay together.
+	local anchorGroups = {}
+	---@param barKey string
+	---@param label string
+	---@param frame string
+	local function AddAnchorFrame(barKey, label, frame)
+		if frameByLabel[label] ~= nil then
+			return
+		end
+		frameByLabel[label] = frame
+		if anchorGroups[barKey] == nil then
+			anchorGroups[barKey] = { barKey = barKey, labels = {} }
+		end
+		table.insert(anchorGroups[barKey].labels, label)
+	end
+
+	local primaryLabel = TRB.Functions.Bar:GetSpecResourceBarName("primary", classId, specId) or L["MainResourceBar"]
+	AddAnchorFrame("screen", L["Screen"], "UIParent")
+	AddAnchorFrame("primary", primaryLabel, "Resource")
+	-- Containers go in first so each leads its bar's nodes.
+	for _, containerAnchor in ipairs(self:GetContainerAnchorOptions(classId, specId)) do
+		AddAnchorFrame(containerAnchor.barGroupKey, containerAnchor.label, containerAnchor.id)
+	end
+	local anchorFrames
+	if classId == nil then -- Global Bar Text
+		anchorFrames = { secondary = {} }
+		for i = 1, 5 do
+			anchorFrames.secondary[i] = { label = L["ComboPoint" .. i], frame = "ComboPoint_" .. i }
+		end
+	else
+		local descriptor = TRB.Functions.Character:GetSpecDescriptor(classId, specId)
+		anchorFrames = descriptor and descriptor.barTextAnchorFrames or {}
+	end
+	for barKey, entries in pairs(anchorFrames) do
+		for _, entry in ipairs(entries) do
+			AddAnchorFrame(barKey, entry.label, entry.frame)
+		end
+	end
+	AddAnchorFrame("health", L["HealthBar"], "HealthBar")
+	AddAnchorFrame("castbar", L["CastBar"], "CastBar")
+	AddAnchorFrame("castbar", L["CastBarIcon"], "CastBarIcon")
+	AddAnchorFrame("targetCastbar", L["ResourceTargetCastbar"], "TargetCastBar")
+	AddAnchorFrame("targetCastbar", L["ResourceTargetCastbarIcon"], "TargetCastBarIcon")
+	AddAnchorFrame("focusCastbar", L["ResourceFocusCastbar"], "FocusCastBar")
+	AddAnchorFrame("focusCastbar", L["ResourceFocusCastbarIcon"], "FocusCastBarIcon")
+
+	-- GetOtherBarKeys scopes the list, so a class-scoped bar like Feign Death only reaches its own class.
+	local barRegistry = registry:GetInstance()
+	for _, otherBarKey in ipairs(barRegistry:GetOtherBarKeys(classId)) do
+		local otherBarDef = barRegistry:Get(otherBarKey)
+		if otherBarDef ~= nil then
+			AddAnchorFrame(otherBarKey, otherBarDef.displayName, otherBarKey:gsub("^%l", string.upper) .. "Bar")
+		end
+	end
+
+	-- Pet bars reach the Global panel, which every spec's list merges from, and the specs with a pet.
+	if classId == nil or registry:SpecHasPet(classId, specId) then
+		for _, petBarKey in ipairs(registry.petBarKeys) do
+			local petBarDef = barRegistry:Get(petBarKey)
+			if petBarDef ~= nil then
+				AddAnchorFrame(petBarKey, petBarDef.displayName, petBarKey:gsub("^%l", string.upper) .. "Bar")
+			end
+		end
+		AddAnchorFrame("petCastbar", L["ResourcePetCastbar"], "PetCastBar")
+		AddAnchorFrame("petCastbar", L["ResourcePetCastbarIcon"], "PetCastBarIcon")
+	end
+
+	for _, skyridingKey in ipairs(registry.skyridingBarKeys) do
+		local skyridingDef = barRegistry:Get(skyridingKey)
+		if skyridingDef ~= nil then
+			AddAnchorFrame(skyridingKey, skyridingDef.displayName, skyridingKey:gsub("^%l", string.upper) .. "Bar")
+		end
+	end
+	if #registry.skyridingBarKeys > 0 then
+		AddAnchorFrame("skyridingCharges", L["SkyridingChargesRecharging"], "SkyridingChargesRecharging")
+		AddAnchorFrame("secondWind", L["SecondWindRecharging"], "SecondWindRecharging")
+	end
+
+	-- A group sorts by its first label; the labels within it keep the order they were added in.
+	local sortedAnchorGroups = {}
+	for _, group in pairs(anchorGroups) do
+		sortedAnchorGroups[#sortedAnchorGroups + 1] = group
+	end
+	TRB.Functions.Bar:SortBarTargets(sortedAnchorGroups, function(group)
+		return group.barKey, group.labels[1]
+	end)
+	local catalog = { entries = {}, primaryLabel = primaryLabel, frameByLabel = frameByLabel, labelByFrame = {}, groupByFrame = {} }
+	for _, group in ipairs(sortedAnchorGroups) do
+		local groupKey = group.barKey == "screen" and "screen" or registry:GetBarGroup(group.barKey)
+		for _, label in ipairs(group.labels) do
+			local frame = frameByLabel[label]
+			catalog.entries[#catalog.entries + 1] = { barKey = group.barKey, groupKey = groupKey, label = label, frame = frame }
+			catalog.labelByFrame[frame] = label
+			catalog.groupByFrame[frame] = groupKey
+		end
+	end
+	return catalog
+end
+
+---Which option grouping owns an entry's anchor: screen, or the grouping of the bar it is bound to.
+---A frame the catalog does not list, like a legacy name, resolves through the bar it names.
+---@param entry TRB.Classes.Settings.DisplayTextEntry
+---@param catalog TRB.Classes.BarTextAnchorCatalog
+---@return string
+function TRB.Functions.BarText:GetEntryGroupKey(entry, catalog)
+	local relativeToFrame = entry.position and entry.position.relativeToFrame
+	local groupKey = catalog.groupByFrame[relativeToFrame]
+	if groupKey ~= nil then
+		return groupKey
+	end
+	return TRB.Classes.BarTypeRegistry:GetBarGroup(self:GetAnchorBarKey(relativeToFrame))
+end
+
 ---@param relativeToFrame string
 ---@param classId integer?
 ---@param specId integer?
