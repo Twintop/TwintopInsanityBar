@@ -2119,6 +2119,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			function(value)
 				local preset = barVisibility:GetPreset(selectedPresetGuid)
 				if preset ~= nil then
+					-- No bar reads it now, and an entry only takes a preset of its own kind.
+					barVisibility:UnlinkPreset(preset.guid)
 					preset.profileKey = value
 					-- The kind decides which conditions the preset offers, so the panel is rebuilt around it.
 					SetPresetTableValues()
@@ -2943,11 +2945,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				message = string.format(L["BarVisibilityPresetDeleteConfirm"], preset.name or ""),
 				onAccept = function()
 					-- Bars using it keep the settings they show now.
-					barVisibility:ForEachEntry(TRB.Data.settings, function(entry)
-						if entry.presetId == guid then
-							barVisibility:UnlinkEntry(entry)
-						end
-					end)
+					barVisibility:UnlinkPreset(guid)
 					barVisibility:GetPresets()[guid] = nil
 					if selectedPresetGuid == guid then
 						selectedPresetGuid = nil
@@ -3026,6 +3024,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				for i, preset in ipairs(presetList) do
 					if preset.guid == selectedPresetGuid then
 						presetTable:SetSelection(i)
+						-- A bar may have started or stopped reading it since the panel opened.
+						TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(presetKindDropdown, barVisibility:CountPresetUses(preset.guid) == 0)
 						return
 					end
 				end

@@ -505,23 +505,40 @@ function TRB.Functions.BarVisibility:PushPresetToEntries(presetId)
 	end)
 end
 
----How many entries use a preset.
+---How many bars take their settings from a preset.
 ---@param presetId string
 ---@return integer
 function TRB.Functions.BarVisibility:CountPresetUses(presetId)
 	return self:CountAllPresetUses()[presetId] or 0
 end
 
----How many entries use each preset, by preset id, in one pass.
+---How many bars take their settings from each preset, by preset id, in one pass. A bar that follows Global Options counts
+---for the preset on Global Options' entry, since its own entry is never read.
 ---@return table<string, integer>
 function TRB.Functions.BarVisibility:CountAllPresetUses()
 	local uses = {}
-	self:ForEachEntry(TRB.Data.settings, function(entry)
-		if entry.presetId ~= nil then
-			uses[entry.presetId] = (uses[entry.presetId] or 0) + 1
+	local settings = TRB.Data.settings
+	local coreDisplayBar = settings.core and settings.core.displayBar or {}
+	self:ForEachEntry(settings, function(entry, key, displayBar, isCore)
+		local read = entry
+		if not isCore and self:IsEntryGlobal(key, coreDisplayBar, displayBar) then
+			read = coreDisplayBar[key]
+		end
+		if read.presetId ~= nil then
+			uses[read.presetId] = (uses[read.presetId] or 0) + 1
 		end
 	end)
 	return uses
+end
+
+---Detaches every entry that names a preset, each keeping the values it was showing.
+---@param presetId string
+function TRB.Functions.BarVisibility:UnlinkPreset(presetId)
+	self:ForEachEntry(TRB.Data.settings, function(entry)
+		if entry.presetId == presetId then
+			self:UnlinkEntry(entry)
+		end
+	end)
 end
 
 -- Reused by every HideResourceBar pass so building entries and the context allocates nothing.
