@@ -380,6 +380,10 @@ function TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, cl
 			TRB.Functions.OptionsUi.BarText:ConstructGroupPanel(scrollChild, classId, specId, groupKey)
 		end,
 	}
+	-- Pet bar textures are each specialization's own (Global's were never read), so Global Options has none to set.
+	if groupKey == "petBars" and not TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId) then
+		return
+	end
 	tabDefinitions[#tabDefinitions + 1] = {
 		TRB.Functions.OptionsUi.Tabs.TabKeys.GroupTextures,
 		TRB.Localization["TabTextures"],
