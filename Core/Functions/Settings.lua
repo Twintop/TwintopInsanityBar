@@ -2449,12 +2449,21 @@ local textureKeysByBar = {}
 ---The four texture locks, each matching one kind of texture across every bar.
 TRB.Functions.Settings.textureLockKeys = { "lockBar", "lockBorder", "lockBackground", "lockOverlay" }
 
----The locks that match one suffix of every bar's textures to the main bar's.
-TRB.Functions.Settings.textureSuffixLocks = {
-	{ lock = "lockBar", suffix = "Bar", source = "resourceBar" },
-	{ lock = "lockBorder", suffix = "Border", source = "border" },
-	{ lock = "lockBackground", suffix = "Background", source = "background" },
+---What each lock matches: the texture the others copy, the main bars' textures that copy it, and the suffix that adds every registered bar's.
+TRB.Functions.Settings.textureLockGroups = {
+	lockBar = { source = "resourceBar", suffix = "Bar", fixed = { "castingBar", "healthBar", "comboPointsBar", "comboPointsCastingBar" } },
+	lockBorder = { source = "border", suffix = "Border", fixed = { "healthBorder", "comboPointsBorder" } },
+	lockBackground = { source = "background", suffix = "Background", fixed = { "healthBackground", "comboPointsBackground" } },
+	lockOverlay = { source = "absorbBar", fixed = { "incomingHealBar", "healAbsorbBar" } },
 }
+
+-- The lock over each of the main bars' own textures.
+local textureLockOfFixedKey = {}
+for lock, group in pairs(TRB.Functions.Settings.textureLockGroups) do
+	for _, key in ipairs(group.fixed) do
+		textureLockOfFixedKey[key] = lock
+	end
+end
 
 ---The texture keys a bar row owns: its fill, border, and background, and the overlays that go with it.
 ---@param barKey string # primary, secondary, health, or a registered bar's key
@@ -2545,14 +2554,32 @@ function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures)
 	-- the spec's own, and a lock matches every one of them to the main bar's.
 	for prefix in pairs(TRB.Classes.BarTypeRegistry:GetInstance():GetAll()) do
 		local followed = globalBars.set[prefix] and useGlobal[prefix] ~= false
-		for _, suffixLock in ipairs(self.textureSuffixLocks) do
-			local key = prefix .. suffixLock.suffix
-			if textures[suffixLock.lock] then
-				textures[key] = textures[suffixLock.source]
-				textures[key .. "Name"] = textures[suffixLock.source .. "Name"]
-			elseif specTextures[key] ~= nil and (not followed or textures[key] == nil) then
-				textures[key] = specTextures[key]
-				textures[key .. "Name"] = specTextures[key .. "Name"]
+		for _, lock in ipairs(self.textureLockKeys) do
+			local group = self.textureLockGroups[lock]
+			if group.suffix ~= nil then
+				local key = prefix .. group.suffix
+				if textures[lock] then
+					textures[key] = textures[group.source]
+					textures[key .. "Name"] = textures[group.source .. "Name"]
+				elseif specTextures[key] ~= nil and (not followed or textures[key] == nil) then
+					textures[key] = specTextures[key]
+					textures[key .. "Name"] = specTextures[key .. "Name"]
+				end
+			end
+		end
+	end
+
+	-- Editing a lock's source only updates the copies in its own table, so a main bar owned apart from the main bar takes the lock here.
+	local primaryFollowed = useGlobal.primary ~= false
+	for _, barKey in ipairs({ "secondary", "health" }) do
+		if (useGlobal[barKey] ~= false) ~= primaryFollowed then
+			for _, key in ipairs(self:GetTextureKeysForBar(barKey).all) do
+				local lock = textureLockOfFixedKey[key]
+				if lock ~= nil and textures[lock] then
+					local source = self.textureLockGroups[lock].source
+					textures[key] = textures[source]
+					textures[key .. "Name"] = textures[source .. "Name"]
+				end
 			end
 		end
 	end

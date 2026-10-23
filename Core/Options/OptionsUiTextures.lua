@@ -19,13 +19,7 @@ local texturesEditors = {}
 local dimColor = { r = 0.5, g = 0.5, b = 0.5, a = 0.7 }
 local TABLE_ROW_COUNT = 8
 
--- What each lock matches: the texture the others copy, the keys that copy it, and the suffix that adds every registered bar's.
-local lockGroups = {
-	lockBar = { source = "resourceBar", suffix = "Bar", fixed = { "castingBar", "healthBar", "comboPointsBar", "comboPointsCastingBar" } },
-	lockBorder = { source = "border", suffix = "Border", fixed = { "healthBorder", "comboPointsBorder" } },
-	lockBackground = { source = "background", suffix = "Background", fixed = { "healthBackground", "comboPointsBackground" } },
-	lockOverlay = { source = "absorbBar", fixed = { "incomingHealBar", "healAbsorbBar" } },
-}
+local lockGroups = TRB.Functions.Settings.textureLockGroups
 
 ---@param classId integer?
 ---@param specId integer?
@@ -181,6 +175,11 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	local allRows = {}
 	---@type table<string, table>
 	local rowsByKey = {}
+	-- The row and item each texture key belongs to, so a lock's tooltip can name its source.
+	---@type table<string, table>
+	local rowByTextureKey = {}
+	---@type table<string, table>
+	local itemByTextureKey = {}
 	---@param key string
 	---@param label string
 	---@param lsmType string
@@ -196,6 +195,10 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		row.isRegistryBar = barRegistry:Get(row.key) ~= nil
 		rowsByKey[row.key] = row
 		allRows[#allRows + 1] = row
+		for _, item in ipairs(row.items) do
+			rowByTextureKey[item.key] = row
+			itemByTextureKey[item.key] = item
+		end
 	end
 
 	AddRow({ key = "primary", label = TRB.Functions.Bar:GetSpecResourceBarName("primary", classId, specId) or L["MainResourceBar"], items = {
@@ -280,14 +283,22 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		return lockName ~= nil and not isSource and LockTextures()[lockName] == true
 	end
 
-	---The texture name a bar draws with for one of its three main textures.
+	---Whether a locked texture draws its lock's source instead of its own copy, as ResolveTextures applies it: a registered
+	---bar always does, and a main bar whose textures are owned apart from the main bar's.
+	---@param row table
+	---@param item table
+	local function DrawsLockSource(row, item)
+		return IsLockedMember(item.key) and (row.isRegistryBar or IsFollowingGlobal(row) ~= PrimaryFollowsGlobal())
+	end
+
+	---The texture name a bar draws with for one of its textures.
 	---@param row table
 	---@param item table
 	local function DisplayName(row, item)
-		local lockName, isSource = GetLockOfKey(item.key)
-		-- A registered bar draws the main bar's texture under a lock whatever its own says.
-		if row.isRegistryBar and lockName ~= nil and not isSource and LockTextures()[lockName] then
-			return LockTextures()[lockGroups[lockName].source .. "Name"]
+		if DrawsLockSource(row, item) then
+			local source = lockGroups[GetLockOfKey(item.key)].source
+			local sourceRow = rowByTextureKey[source]
+			return (sourceRow ~= nil and OwnerTextures(sourceRow) or LockTextures())[source .. "Name"]
 		end
 		return OwnerTextures(row)[item.key .. "Name"]
 	end
@@ -459,6 +470,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 
 	-- The four locks, two to a row.
 	local lockBoxes = {}
+	---@type table<string, string>
+	local lockLabels = {}
 	local lockDefinitions = {
 		{ lock = "lockBar", label = L["TextureLockBar"], tooltip = L["TextureLockBarTooltip"] },
 		{ lock = "lockBorder", label = L["TextureLockBorder"], tooltip = L["TextureLockBorderTooltip"] },
@@ -484,7 +497,38 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			box:ClearAllPoints()
 			box:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 		end
+		-- Disabled while Global Options holds the locks, and its tooltip says so.
+		box:SetMotionScriptsWhileDisabled(true)
+		box.baseTooltip = definition.tooltip
 		lockBoxes[lockName] = box
+		lockLabels[lockName] = definition.label
+	end
+
+	---Why a texture cannot be changed on its own, for its dropdown's and table cell's tooltip; nil when it can.
+	---@param row table
+	---@param item table
+	---@return string?
+	local function GetDisabledReason(row, item)
+		local reasons = {}
+		if IsFollowingGlobal(row) then
+			reasons[#reasons + 1] = L["BarTexturesFollowsGlobalTooltip"]
+		end
+		if IsLockedMember(item.key) then
+			local lockName = GetLockOfKey(item.key) --[[@as string]]
+			local source = lockGroups[lockName].source
+			local sourceRow = rowByTextureKey[source]
+			local sourceItem = itemByTextureKey[source]
+			local sourceName = DisplayName(sourceRow, sourceItem) or ""
+			if PrimaryFollowsGlobal() then
+				reasons[#reasons + 1] = string.format(L["BarTexturesLockedGlobalTooltip"], lockLabels[lockName], sourceItem.label, sourceName, sourceRow.label, rowsByKey.primary.label)
+			else
+				reasons[#reasons + 1] = string.format(L["BarTexturesLockedTooltip"], lockLabels[lockName], sourceItem.label, sourceName, sourceRow.label)
+			end
+		end
+		if #reasons == 0 then
+			return nil
+		end
+		return table.concat(reasons, "\n\n")
 	end
 	yCoord = yCoord - 30
 
@@ -603,6 +647,21 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 					end
 					AfterChange()
 				end, namePrefix)
+			local dropdown = dropdowns[item.key]
+			-- A disabled button skips its mouse scripts unless told otherwise, and a disabled one is what needs explaining.
+			dropdown:SetMotionScriptsWhileDisabled(true)
+			dropdown:HookScript("OnEnter", function(button)
+				if button.disabledReason ~= nil then
+					GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
+					GameTooltip:SetText(button.disabledReason, 1, 1, 1, 1, true)
+					GameTooltip:Show()
+				end
+			end)
+			dropdown:HookScript("OnLeave", function(button)
+				if GameTooltip:GetOwner() == button then
+					GameTooltip:Hide()
+				end
+			end)
 		end
 		return dropdowns[item.key]
 	end
@@ -636,6 +695,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			anyLocked = anyLocked or locked
 			textureDropdowns:RefreshLsmDropdown(dropdown, displayName)
 			primitives:ToggleDropdownEnabled(dropdown, not followsGlobal and not locked)
+			dropdown.disabledReason = GetDisabledReason(row, item)
 			dropdown:Show()
 			dropdown.label:Show()
 			shownDropdowns[#shownDropdowns + 1] = dropdown
@@ -692,6 +752,11 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		for lockName, box in pairs(lockBoxes) do
 			box:SetChecked(lockTextures[lockName] == true)
 			primitives:ToggleCheckboxEnabled(box, editable)
+			if editable then
+				box.tooltip = box.baseTooltip
+			else
+				box.tooltip = box.baseTooltip .. "\n\n" .. string.format(L["TextureLockGlobalTooltip"], rowsByKey.primary.label)
+			end
 		end
 	end
 
@@ -719,7 +784,25 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		end
 	end
 
+	-- The texture cells say why one can't be changed on its own; the table's own hover highlight runs after.
 	barTexturesTable:RegisterEvents({
+		OnEnter = function(_, cellFrame, data, _, _, realrow, column)
+			if realrow == nil or realrow < 1 or column < 3 or column > 5 then
+				return
+			end
+			local row = rowsByKey[data[realrow].cols[1].value]
+			local reason = row ~= nil and GetDisabledReason(row, row.items[column - 2]) or nil
+			if reason ~= nil then
+				GameTooltip:SetOwner(cellFrame, "ANCHOR_RIGHT")
+				GameTooltip:SetText(reason, 1, 1, 1, 1, true)
+				GameTooltip:Show()
+			end
+		end,
+		OnLeave = function(_, cellFrame)
+			if GameTooltip:GetOwner() == cellFrame then
+				GameTooltip:Hide()
+			end
+		end,
 		OnClick = function(_, _, data, _, _, realrow, _, scrollingTable, button)
 			if button == "LeftButton" then
 				if realrow ~= nil and realrow > 0 then

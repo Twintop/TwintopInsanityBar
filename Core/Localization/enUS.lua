@@ -4177,3 +4177,7 @@ L["BarTexturesUseGlobalAllSpecs"] = "Use Global settings for all listed bars in 
 L["BarTexturesUseGlobalAllSpecsTooltip"] = "Checked bars draw with the textures set in Global Options in every specialization. Unchecking gives each specialization its own textures for them, starting from Global's. A dimmed check means some specializations do."
 L["BarTexturesUseGlobalCountFormat"] = "(%d of %d)"
 L["BarTexturesLockedNote"] = "A texture kept the same by a lock above follows the main bar and is changed there."
+L["BarTexturesFollowsGlobalTooltip"] = "This bar uses the textures set in Global Options. Uncheck Use Global settings for this bar to choose its own."
+L["BarTexturesLockedTooltip"] = "Locked: '%s' is checked, so this texture matches %s (%s) on the %s row. Change it there, or uncheck that box to choose this one on its own."
+L["BarTexturesLockedGlobalTooltip"] = "Locked: '%s' is checked in Global Options, so this texture matches %s (%s) on the %s row. The %s row uses Global settings, which brings Global Options' locks with it. Uncheck Use Global settings for that row to set this specialization's own locks."
+L["TextureLockGlobalTooltip"] = "The %s row uses Global settings, so this specialization uses the locks set in Global Options. Uncheck Use Global settings for that row to set its own."
