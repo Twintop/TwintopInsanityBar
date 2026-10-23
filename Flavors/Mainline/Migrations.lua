@@ -8816,6 +8816,14 @@ function TRB.Flavor.PortForwardSettings(settings)
 		TRB.Functions.Settings:MigrateDisplayBarUseGlobal(TwintopInsanityBarSettings)
 	end
 
+	-- Visibility presets: seed every table and link stored profiles; the live settings are linked after the defaults merge.
+	if TwintopInsanityBarSettings ~= nil then
+		TRB.Functions.Settings:SeedVisibilityPresets(TwintopInsanityBarSettings)
+		if settings ~= nil then
+			TRB.Functions.Settings:AutoLinkVisibilityPresets(TwintopInsanityBarSettings)
+		end
+	end
+
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

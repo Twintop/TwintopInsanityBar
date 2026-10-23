@@ -270,11 +270,258 @@ function TRB.Functions.BarVisibility:IsEntryGlobal(key, coreDisplayBar, specDisp
 	return type(specEntry) ~= "table" or specEntry.useGlobal ~= false
 end
 
----A copy of a visibility entry, as the spec cache holds it, so nothing at runtime touches the saved table.
+-- Visibility presets: named field sets in core.visibilityPresets that a bar entry takes through its presetId.
+
+---The entry fields a preset covers. Never Show and the resource/health thresholds stay per bar: the bar tab's Enabled
+---box and the Skyriding prompt write Never Show straight onto a bar, and a threshold compares one bar's own resource.
+local PRESET_FIELDS = { "alwaysShow", "conditions", "hideConditions", "smooth", "activeAlpha", "inactiveAlpha", "fadeDuration", "fadeDelay" }
+TRB.Functions.BarVisibility.presetFields = PRESET_FIELDS
+
+local PRESET_TABLE_FIELDS = { conditions = true, hideConditions = true }
+
+local castbarProfileKeys = { castbar = "castbar", targetCastbar = "targetCastbar", focusCastbar = "targetCastbar", petCastbar = "petCastbar" }
+
+---Which family of condition lists a bar offers, which is also the kind of preset it can use.
+---@param barKey string # The displayBar key
+---@return "standard"|"castbar"|"targetCastbar"|"petCastbar"|"timerBar"|"timerEnvironment"|"rangedSwing"|"mainHandSwing"|"petBar"|"skyriding"
+function TRB.Functions.BarVisibility:GetProfileKeyForBar(barKey)
+	local registry = TRB.Classes.BarTypeRegistry
+	if castbarProfileKeys[barKey] ~= nil then
+		return castbarProfileKeys[barKey]
+	end
+	if registry:IsPetBar(barKey) then
+		return "petBar"
+	end
+	if registry:IsSkyridingBar(barKey) then
+		return "skyriding"
+	end
+	if registry:GetBarGroup(barKey) == "otherBars" then
+		if barKey == "mainHandSwing" or barKey == "rangedSwing" then
+			return barKey
+		end
+		local definition = registry:GetInstance():Get(barKey)
+		return (definition ~= nil and definition.environmentShowConditions) and "timerEnvironment" or "timerBar"
+	end
+	return "standard"
+end
+
+---The preset definitions of Global Options, keyed by guid. Created on first use so settings saved before presets
+---existed still resolve to a table.
+---@return table<string, table>
+function TRB.Functions.BarVisibility:GetPresets()
+	local core = TRB.Data.settings and TRB.Data.settings.core
+	if core == nil then
+		return {}
+	end
+	core.visibilityPresets = core.visibilityPresets or {}
+	return core.visibilityPresets
+end
+
+---One preset by id, or nil when it was deleted after a bar was pointed at it.
+---@param presetId string?
+---@return table?
+function TRB.Functions.BarVisibility:GetPreset(presetId)
+	if presetId == nil then
+		return nil
+	end
+	local preset = self:GetPresets()[presetId]
+	return type(preset) == "table" and preset or nil
+end
+
+---Presets sorted by name, for the tables and menus.
+---@param profileKey string? # Only presets for this family of bars
+---@param presets table<string, table>? # Defaults to Global Options' presets
+---@return table[]
+function TRB.Functions.BarVisibility:GetPresetsOrdered(profileKey, presets)
+	local ordered = {}
+	for guid, preset in pairs(presets or self:GetPresets()) do
+		if type(preset) == "table" and (profileKey == nil or preset.profileKey == profileKey) then
+			preset.guid = preset.guid or guid
+			ordered[#ordered + 1] = preset
+		end
+	end
+	table.sort(ordered, function(a, b)
+		local aName, bName = a.name or "", b.name or ""
+		if aName == bName then
+			return (a.guid or "") < (b.guid or "")
+		end
+		return aName < bName
+	end)
+	return ordered
+end
+
+---The true keys of a condition table as one sorted string, so a missing key and a false one compare equal.
+---@param conditions table?
+---@param onlyKeys table<string, boolean>? # Count only these keys
+---@return string
+local function TrueKeys(conditions, onlyKeys)
+	local keys = {}
+	for key, value in pairs(conditions or {}) do
+		if value == true and (onlyKeys == nil or onlyKeys[key]) then
+			keys[#keys + 1] = key
+		end
+	end
+	table.sort(keys)
+	return table.concat(keys, ",")
+end
+
+-- The cast bars only ever read these two hard-hide conditions, so the rest never tell their presets apart.
+local CASTBAR_HIDE_KEYS = { inVehicle = true, isDead = true }
+local CASTBAR_PROFILE_KEYS = { castbar = true, targetCastbar = true, petCastbar = true }
+
+---A string identifying the preset-covered values of an entry or preset, so equal looks compare equal.
+---@param source table
+---@param profileKey string? # The kind of bar, which decides which hard-hide conditions count
+---@return string
+function TRB.Functions.BarVisibility:GetPresetSignature(source, profileKey)
+	return table.concat({
+		tostring(source.alwaysShow == true),
+		tostring(source.smooth == true),
+		tostring(source.activeAlpha or 100),
+		tostring(source.inactiveAlpha or 0),
+		tostring(source.fadeDuration or 0),
+		tostring(source.fadeDelay or 0),
+		TrueKeys(source.conditions),
+		TrueKeys(source.hideConditions, CASTBAR_PROFILE_KEYS[profileKey] and CASTBAR_HIDE_KEYS or nil),
+	}, ";")
+end
+
+---The first preset of a bar's kind whose values equal the entry's exactly, or nil.
+---@param entry table
+---@param profileKey string
+---@param presets table<string, table>? # Defaults to Global Options' presets
+---@return table?
+function TRB.Functions.BarVisibility:FindMatchingPreset(entry, profileKey, presets)
+	local signature = self:GetPresetSignature(entry, profileKey)
+	for _, preset in ipairs(self:GetPresetsOrdered(profileKey, presets)) do
+		if self:GetPresetSignature(preset, profileKey) == signature then
+			return preset
+		end
+	end
+	return nil
+end
+
+---Copies the preset-covered fields from one entry or preset onto another, leaving everything else alone.
+---@param source table
+---@param destination table
+function TRB.Functions.BarVisibility:CopyPresetFields(source, destination)
+	for _, field in ipairs(PRESET_FIELDS) do
+		local value = TRB.Functions.Table:DeepCopy(source[field])
+		if value == nil and PRESET_TABLE_FIELDS[field] then
+			value = {}
+		end
+		destination[field] = value
+	end
+end
+
+---Creates a preset from an entry's current values and stores it.
+---@param source table # An entry or preset to copy the values from
+---@param profileKey string
+---@param name string
+---@return table preset
+function TRB.Functions.BarVisibility:NewPreset(source, profileKey, name)
+	local preset = { guid = TRB.Functions.String:Guid(), name = name, profileKey = profileKey }
+	self:CopyPresetFields(source, preset)
+	self:GetPresets()[preset.guid] = preset
+	return preset
+end
+
+---A copy of a visibility entry as the spec cache holds it, with its preset's values laid over it. A preset that no
+---longer exists leaves the entry's own values standing.
 ---@param entry table
 ---@return table
 function TRB.Functions.BarVisibility:ComposeEntry(entry)
-	return TRB.Functions.Table:DeepCopy(entry)
+	local composed = TRB.Functions.Table:DeepCopy(entry)
+	local preset = self:GetPreset(entry.presetId)
+	if preset ~= nil then
+		self:CopyPresetFields(preset, composed)
+	end
+	return composed
+end
+
+---Points an entry at a preset. Its own copy of the values is brought up to date too, for anything that reads the
+---saved entry directly or finds the preset gone.
+---@param entry table
+---@param presetId string
+function TRB.Functions.BarVisibility:LinkEntry(entry, presetId)
+	entry.presetId = presetId
+	local preset = self:GetPreset(presetId)
+	if preset ~= nil then
+		self:CopyPresetFields(preset, entry)
+	end
+end
+
+---Detaches an entry from its preset, keeping the values it was showing.
+---@param entry table
+function TRB.Functions.BarVisibility:UnlinkEntry(entry)
+	local preset = self:GetPreset(entry.presetId)
+	if preset ~= nil then
+		self:CopyPresetFields(preset, entry)
+	end
+	entry.presetId = nil
+end
+
+---Runs a function on every visibility entry of a settings-shaped table: Global Options' and each specialization's.
+---@param settings table # The live settings, the saved variables, or one stored profile
+---@param fn fun(entry: table, key: string, displayBar: table, isCore: boolean)
+function TRB.Functions.BarVisibility:ForEachEntry(settings, fn)
+	local function Visit(displayBar, isCore)
+		if type(displayBar) ~= "table" then
+			return
+		end
+		for key, entry in pairs(displayBar) do
+			if type(entry) == "table" then
+				fn(entry, key, displayBar, isCore)
+			end
+		end
+	end
+	if type(settings.core) == "table" then
+		Visit(settings.core.displayBar, true)
+	end
+	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+		local classPiece = settings[classEntry.className]
+		if type(classPiece) == "table" then
+			for _, specEntry in ipairs(classEntry.specs) do
+				local piece = classPiece[specEntry.specName]
+				if type(piece) == "table" then
+					Visit(piece.displayBar, false)
+				end
+			end
+		end
+	end
+end
+
+---Brings the saved values of every entry using a preset up to date after the preset changed.
+---@param presetId string
+function TRB.Functions.BarVisibility:PushPresetToEntries(presetId)
+	local preset = self:GetPreset(presetId)
+	if preset == nil then
+		return
+	end
+	self:ForEachEntry(TRB.Data.settings, function(entry)
+		if entry.presetId == presetId then
+			self:CopyPresetFields(preset, entry)
+		end
+	end)
+end
+
+---How many entries use a preset.
+---@param presetId string
+---@return integer
+function TRB.Functions.BarVisibility:CountPresetUses(presetId)
+	return self:CountAllPresetUses()[presetId] or 0
+end
+
+---How many entries use each preset, by preset id, in one pass.
+---@return table<string, integer>
+function TRB.Functions.BarVisibility:CountAllPresetUses()
+	local uses = {}
+	self:ForEachEntry(TRB.Data.settings, function(entry)
+		if entry.presetId ~= nil then
+			uses[entry.presetId] = (uses[entry.presetId] or 0) + 1
+		end
+	end)
+	return uses
 end
 
 -- Reused by every HideResourceBar pass so building entries and the context allocates nothing.

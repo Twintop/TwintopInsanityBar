@@ -1979,8 +1979,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
-	-- Each bar follows Global Options unless its own entry opts out (useGlobal = false); every bar gets a copy,
-	-- so nothing at runtime writes into the saved tables. Bars Global Options has no entry for stay with the spec.
+	-- Each bar follows Global Options unless it opts out (useGlobal = false); copies keep runtime off the saved tables.
 	do
 		local registry = TRB.Classes.BarTypeRegistry
 		local barVisibility = TRB.Functions.BarVisibility
@@ -2111,6 +2110,9 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 	if seededBarTextForClass and TRB.Flavor.OnBarTextSeeded ~= nil then
 		TRB.Flavor.OnBarTextSeeded(settings, className)
 	end
+
+	-- The class now holds its defaults, so its matching bars can be linked to visibility presets.
+	TRB.Functions.Settings:AutoLinkClassVisibilityPresets(settings, className)
 
 	classDefaultsMerged[className] = true
 	return true

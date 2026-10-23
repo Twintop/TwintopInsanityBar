@@ -18,4 +18,10 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Visibility: the per-specialization Use Global flag became per bar.
 	TRB.Functions.Settings:MigrateDisplayBarUseGlobal(savedSettings)
+
+	-- Visibility presets: seed every table and link stored profiles; the live settings are linked after the defaults merge.
+	TRB.Functions.Settings:SeedVisibilityPresets(savedSettings)
+	if settings ~= nil then
+		TRB.Functions.Settings:AutoLinkVisibilityPresets(savedSettings)
+	end
 end

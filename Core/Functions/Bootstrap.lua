@@ -60,6 +60,10 @@ local function LoadSettings(module, classEntry)
 		if saved.core and saved.core.displayText and saved.core.displayText.barText then
 			settings.core.displayText.barText = {}
 		end
+		-- Same for the visibility presets: the saved list is the whole list, so a deleted preset stays deleted.
+		if saved.core and saved.core.visibilityPresets then
+			settings.core.visibilityPresets = {}
+		end
 		TRB.Data.settings = TRB.Functions.Table:Merge(settings, saved)
 		TRB.Data.settings = TRB.Functions.Settings:CleanupSettings(TRB.Data.settings)
 
@@ -71,6 +75,9 @@ local function LoadSettings(module, classEntry)
 		TRB.Data.settings = options.LoadDefaultSettings(true)
 		checks.freshInstall = true
 	end
+
+	-- Each class is linked as its own defaults, which add the shared bars, are merged in.
+	TRB.Functions.Settings:AutoLinkGlobalVisibilityPresets(TRB.Data.settings)
 
 	if module.OnSettingsLoaded ~= nil then
 		module.OnSettingsLoaded(TRB.Data.settings, saved, checks)
