@@ -319,9 +319,9 @@ TRB.Functions.OptionsUi.Tabs.TabKeys = {
 	HealthBar = "healthBar",
 	BarTextures = "barTextures",
 	BarVisibility = "barVisibility",
-	GroupVisibility = "visibility",
 }
 
+local groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", skyriding = "Skyriding" }
 local groupInnerPrefixStem = { castbar = "CastbarInner_", otherBars = "OtherBarsInner_", petBars = "PetBarsInner_", skyriding = "SkyridingInner_" }
 
 ---The tab group name prefix of a shared grouping's strip: the Global screen's own, or the spec panel's inner one.
@@ -331,7 +331,7 @@ local groupInnerPrefixStem = { castbar = "CastbarInner_", otherBars = "OtherBars
 ---@return string
 function TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix(groupKey, classId, specId)
 	if classId == nil or specId == nil then
-		return TRB.Classes.BarTypeRegistry.groupGlobalPrefix[groupKey]
+		return groupGlobalPrefix[groupKey]
 	end
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	return groupInnerPrefixStem[groupKey] .. tostring(className) .. "_" .. tostring(specName)
@@ -344,7 +344,7 @@ end
 ---@param groupKey string # castbar, otherBars, petBars, or skyriding
 function TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, classId, specId, groupKey)
 	tabDefinitions[#tabDefinitions + 1] = {
-		TRB.Functions.OptionsUi.Tabs.TabKeys.GroupVisibility,
+		TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility,
 		TRB.Localization["TabVisibility"],
 		oUi.tabWidth.small,
 		function(scrollChild)

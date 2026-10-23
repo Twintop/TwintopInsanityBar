@@ -2898,62 +2898,42 @@ function TRB.Classes.BarTypeRegistry:IsBarInScope(barKey, classId, specId)
 	return true
 end
 
----The option groupings: the spec's own bars plus the four shared strips. Every bar belongs to exactly one.
-TRB.Classes.BarTypeRegistry.groupKeys = { "spec", "castbar", "otherBars", "petBars", "skyriding" }
-
----The spec-panel tab key and Global nav category of each shared grouping.
-TRB.Classes.BarTypeRegistry.groupTabKey = { castbar = "castbar", otherBars = "otherBars", petBars = "petBars", skyriding = "skyriding" }
-
----The tab group prefix of each shared grouping's Global screen.
-TRB.Classes.BarTypeRegistry.groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", skyriding = "Skyriding" }
-
 local castbarGroupKeySet = { castbar = true, targetCastbar = true, focusCastbar = true, petCastbar = true }
 
 ---The grouping a bar's options live under. The Pet Cast Bar sits with the cast bars; anything unlisted is the spec's own.
+---A shared grouping's key is also its spec-panel tab key and its Global Options nav category.
 ---@param barKey string?
 ---@return "spec"|"castbar"|"otherBars"|"petBars"|"skyriding"
 function TRB.Classes.BarTypeRegistry:GetBarGroup(barKey)
 	if castbarGroupKeySet[barKey] then
 		return "castbar"
 	end
-	for _, key in ipairs(TRB.Classes.BarTypeRegistry.otherBarKeys) do
+	for _, key in ipairs(self.otherBarKeys) do
 		if key == barKey then
 			return "otherBars"
 		end
 	end
-	if TRB.Classes.BarTypeRegistry:IsPetBar(barKey) then
+	if self:IsPetBar(barKey) then
 		return "petBars"
 	end
-	if skyridingBarKeySet[barKey] then
+	if self:IsSkyridingBar(barKey) then
 		return "skyriding"
 	end
 	return "spec"
 end
 
----The bar keys of a shared grouping for a scope, in tab order. The spec grouping is open-ended, so it returns nil.
----@param groupKey string
----@param classId integer? # nil is the global scope
----@param specId integer?
----@return string[]?
-function TRB.Classes.BarTypeRegistry:GetBarGroupKeys(groupKey, classId, specId)
-	local registry = TRB.Classes.BarTypeRegistry
-	if groupKey == "castbar" then
-		local keys = { "castbar", "targetCastbar", "focusCastbar" }
-		if classId == nil or registry:SpecHasPet(classId, specId) then
-			keys[#keys + 1] = "petCastbar"
-		end
-		return keys
-	elseif groupKey == "otherBars" then
-		return registry:GetOtherBarKeys(classId)
-	elseif groupKey == "petBars" then
-		if classId == nil then
-			return { unpack(registry.petBarKeys) }
-		end
-		return registry:GetPetBarKeys(classId, specId)
-	elseif groupKey == "skyriding" then
-		return { unpack(registry.skyridingBarKeys) }
+---Whether a bar belongs on an options tab. A shared grouping's tabs list only its own bars; the spec tab lists the
+---spec's own bars, plus every grouping's when the include-all box is ticked.
+---@param barKey string
+---@param groupKey string? # nil or "spec" for the spec tab
+---@param includeAllGroups boolean?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsBarInGroupScope(barKey, groupKey, includeAllGroups)
+	local barGroup = self:GetBarGroup(barKey)
+	if groupKey == nil or groupKey == "spec" then
+		return includeAllGroups == true or barGroup == "spec"
 	end
-	return nil
+	return barGroup == groupKey
 end
 
 ---Appends the Pet bar definitions to a customBars list if registered and not already present.

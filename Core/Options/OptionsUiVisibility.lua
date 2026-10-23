@@ -488,12 +488,12 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 		-- Resolved from the scope, not from namePrefix: the shared groupings' sub-tabs use synthesized prefixes.
 		local tabs = TRB.Functions.OptionsUi.Tabs
 		if barGroup == "spec" then
-			tabs:SwitchToTabByClassSpec(classId, specId, "barVisibility")
+			tabs:SwitchToTabByClassSpec(classId, specId, tabs.TabKeys.BarVisibility)
 		else
 			if classId ~= nil and specId ~= nil then
-				tabs:SwitchToTabByClassSpec(classId, specId, TRB.Classes.BarTypeRegistry.groupTabKey[barGroup])
+				tabs:SwitchToTabByClassSpec(classId, specId, barGroup)
 			end
-			tabs:SwitchToTabByNamePrefix(tabs:GetGroupInnerPrefix(barGroup, classId, specId), tabs.TabKeys.GroupVisibility)
+			tabs:SwitchToTabByNamePrefix(tabs:GetGroupInnerPrefix(barGroup, classId, specId), tabs.TabKeys.BarVisibility)
 		end
 		local api = TRB.Functions.OptionsUi.Visibility:GetApi(classId, specId, barGroup)
 		if api ~= nil and api.SelectByDisplayBarKey ~= nil then
@@ -502,9 +502,7 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 	end
 
 	configureLink:SetScript("OnClick", function()
-		-- The spec's own bars keep their Global visibility on Global Options, a different nav category than
-		-- the shared groupings' screens the other global tabs live on. Selecting it is a no-op when already
-		-- there, and the tab switch is deferred so the panel exists first.
+		-- On a Global screen a spec bar's row is on Global Options' Visibility tab; the switch waits a frame for that panel.
 		if (classId == nil or specId == nil) and barGroup == "spec" then
 			if TRB.Options.OptionsFrame then
 				TRB.Options.OptionsFrame:SelectCategory("global")
@@ -516,12 +514,7 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 	end)
 
 	-- Shown instead of the Configure link when Global Options owns this bar.
-	local globalLink
-	if barGroup == "spec" then
-		globalLink = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, "barVisibility")
-	else
-		globalLink = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, TRB.Functions.OptionsUi.Tabs.TabKeys.GroupVisibility, TRB.Classes.BarTypeRegistry.groupTabKey[barGroup])
-	end
+	local globalLink = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility, barGroup ~= "spec" and barGroup or nil)
 
 	-- Right-aligned summary. Word wrap is off, so the FontString ellipsizes anything wider than the
 	-- width applied below; the untruncated text stays reachable through the hitbox tooltip.
@@ -735,11 +728,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
-		if groupKey == "spec" then
-			TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barVisibility")
-		else
-			TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, TRB.Functions.OptionsUi.Tabs.TabKeys.GroupVisibility, TRB.Classes.BarTypeRegistry.groupTabKey[groupKey])
-		end
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility, groupKey ~= "spec" and groupKey or nil)
 		f.tooltip = L["CheckboxUseGlobalTooltip_BarDisplay"]
 		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayBar)
 		f:SetScript("OnClick", function(self, ...)
@@ -770,6 +759,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 					RebuildRows()
 				end
 			end)
+		-- Lined up with the start of the Use Global row above it.
+		controls.checkBoxes.includeAllGroups:ClearAllPoints()
+		controls.checkBoxes.includeAllGroups:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
 	end
 
 	yCoord = yCoord - 30
@@ -1591,7 +1583,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			barEntries[index] = nil
 		end
 		for _, entry in ipairs(allBarEntries) do
-			if TRB.Functions.OptionsUi.Primitives:IsBarInGroupScope(entry.displayBarKey, groupKey, includeAllGroups[scopeKey]) then
+			if TRB.Classes.BarTypeRegistry:IsBarInGroupScope(entry.displayBarKey, groupKey, includeAllGroups[scopeKey]) then
 				barEntries[#barEntries + 1] = entry
 			end
 		end
@@ -1632,11 +1624,20 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	bvc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
 	bvc:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
 	-- Show at most 5 rows; LibScrollingTable adds a scrollbar when there are more bars than that.
-	-- The spec tab can grow to every bar when the include-all box is ticked, so it is sized for that.
-	local tableRowCount = math.min(math.max(groupKey == "spec" and #allBarEntries or #barEntries, 2), 5)
+	local function GetTableRowCount(entryCount)
+		return math.min(math.max(entryCount, 2), 5)
+	end
+	local tableRowCount = GetTableRowCount(#barEntries)
 	bvc:SetHeight(35 + (tableRowCount * 15))
 
 	local barVisibilityTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, bvc, false, false)
+
+	---Fits the table to the bars listed; the detail panel is anchored below it and follows.
+	local function ResizeTable()
+		local rowCount = GetTableRowCount(#barEntries)
+		barVisibilityTable:SetDisplayRows(rowCount, 15)
+		bvc:SetHeight(35 + (rowCount * 15))
+	end
 
 	-- Dynamically resize the Settings Source column to fill available width
 	bvc:HookScript("OnSizeChanged", function(self, w, h)
@@ -2082,14 +2083,28 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				end
 			end
 		end
+		-- Another tab listing this bar may have edited it, so the open panel is read again.
+		if selectedBarKey ~= nil then
+			FillDetailPanel(selectedBarKey)
+		end
 	end
 
 	RebuildRows = function()
 		RebuildBarEntries()
-		barVisibilityTable:ClearSelection()
-		detailFrame:Hide()
-		selectedBarKey = nil
+		ResizeTable()
 		SetTableValues()
+		-- The selected bar keeps its panel while it is still listed.
+		barVisibilityTable:ClearSelection()
+		if selectedBarKey ~= nil then
+			for i, e in ipairs(barEntries) do
+				if e.key == selectedBarKey then
+					barVisibilityTable:SetSelection(i)
+					return
+				end
+			end
+			detailFrame:Hide()
+			selectedBarKey = nil
+		end
 	end
 
 	-- Handle used by the per-bar tab visibility headers: refreshes the table after a header
@@ -2116,7 +2131,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		RefreshTableForGlobalToggle()
 	end)
 
-	yCoord = yCoord - (35 + (tableRowCount * 15)) - 10 - detailHeight
+	-- The spec tab's table can grow to every bar with the include-all box ticked, so the panel leaves room for that.
+	yCoord = yCoord - (35 + (GetTableRowCount(groupKey == "spec" and #allBarEntries or #barEntries) * 15)) - 10 - detailHeight
 
 	return yCoord
 end
@@ -2142,12 +2158,7 @@ function TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(parent, classId,
 	end
 
 	-- Each grouping's tab gets its own controls: they would otherwise overwrite each other's under one scope.
-	local controlsKey = (classId == nil) and "core" or (classNameLower .. "_" .. specName)
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-	interfaceSettingsFrame.controls[controlsKey] = interfaceSettingsFrame.controls[controlsKey] or {}
-	local scopeControls = interfaceSettingsFrame.controls[controlsKey]
-	scopeControls.visibilityGroups = scopeControls.visibilityGroups or {}
-	scopeControls.visibilityGroups[groupKey] = { checkBoxes = {}, dropDown = {}, sliders = {}, colors = {}, buttons = {} }
+	local groupControls = { checkBoxes = {}, dropDown = {}, sliders = {}, colors = {}, buttons = {} }
 
-	self:GenerateBarVisibilityOptions(parent, scopeControls.visibilityGroups[groupKey], spec, classId, specId, 5, nil, nil, false, nil, false, false, {}, {}, { groupKey = groupKey })
+	self:GenerateBarVisibilityOptions(parent, groupControls, spec, classId, specId, 5, nil, nil, false, nil, false, false, {}, {}, { groupKey = groupKey })
 end

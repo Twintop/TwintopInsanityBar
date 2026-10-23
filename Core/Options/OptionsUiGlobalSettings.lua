@@ -582,7 +582,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		GameTooltip:Hide()
 	end)
 
-	local tabNamePrefix = navKey:gsub("^%l", string.upper)
+	local tabNamePrefix = navKey == "global" and "Global" or TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix(navKey)
 	---Opens the link's global category on a tab, its own unless one is given.
 	---@param tabKey string?
 	link.OpenGlobalTab = function(tabKey)

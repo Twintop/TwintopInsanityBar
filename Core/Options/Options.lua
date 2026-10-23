@@ -722,7 +722,7 @@ local function ConstructCastbarOptionsPanel()
 	}
 
 	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, nil, nil, "castbar")
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Castbar", tabDefinitions, -37)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("castbar"), tabDefinitions, -37)
 end
 
 ---Constructs the top-level Other Bars options panel: global (core-scope) settings for the GCD bar and
@@ -765,7 +765,7 @@ local function ConstructOtherBarsOptionsPanel()
 	end
 
 	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, nil, nil, "otherBars")
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "OtherBars", tabDefinitions, -37)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("otherBars"), tabDefinitions, -37)
 end
 
 ---Constructs the top-level Pet Bars panel: global settings for the Pet Resource and Pet Health bars, tabbed
@@ -807,7 +807,7 @@ local function ConstructPetBarsOptionsPanel()
 	end
 
 	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, nil, nil, "petBars")
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "PetBars", tabDefinitions, -37)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("petBars"), tabDefinitions, -37)
 end
 
 ---Constructs the top-level Skyriding panel: global settings for the Skyriding bars, tabbed like Other Bars. Only
@@ -852,7 +852,7 @@ local function ConstructSkyridingOptionsPanel()
 	end
 
 	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, nil, nil, "skyriding")
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Skyriding", tabDefinitions, -37)
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("skyriding"), tabDefinitions, -37)
 end
 
 -- Class/spec catalog for the profile/nav lists: identity from the registry, labels from the localized
