@@ -600,7 +600,13 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		if TRB.Options.OptionsFrame then
 			TRB.Options.OptionsFrame:SelectCategory(navKey)
 			C_Timer.After(0, function()
-				TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(tabNamePrefix, tabKey or globalTabKey)
+				local targetKey = tabKey or globalTabKey
+				if navKey == "global" and targetKey == TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility then
+					-- Visibility holds a strip of its own, with the bars on its Bar Display tab.
+					TRB.Functions.OptionsUi.Tabs:SwitchToGlobalVisibilityTab()
+				else
+					TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(tabNamePrefix, targetKey)
+				end
 			end)
 		end
 	end

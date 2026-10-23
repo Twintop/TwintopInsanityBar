@@ -5,6 +5,11 @@ TRB.Functions.OptionsUi.Visibility = TRB.Functions.OptionsUi.Visibility or {}
 local oUi = TRB.Data.constants.optionsUi
 local L = TRB.Localization
 
+-- A table row's delete action: a red X that dims until it is hovered.
+local actionCellDimAlpha = 0.65
+local actionCellBrightAlpha = 1.0
+local deleteActionTextColor = { r = 1, g = 0.12, b = 0.12, a = 1 }
+
 -- ============================================================================
 -- Shared condition metadata
 --
@@ -442,7 +447,7 @@ function TRB.Functions.OptionsUi.Visibility:OpenGlobalVisibility(visibilityKey)
 	local tabs = TRB.Functions.OptionsUi.Tabs
 	local function OpenTab()
 		if barGroup == "spec" then
-			tabs:SwitchToTabByNamePrefix("Global", "barVisibility")
+			tabs:SwitchToGlobalVisibilityTab()
 		else
 			tabs:SwitchToTabByNamePrefix(tabs:GetGroupInnerPrefix(barGroup, nil, nil), tabs.TabKeys.BarVisibility)
 		end
@@ -468,14 +473,15 @@ function TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChangeAllSpecs()
 	self:RefreshAllApis()
 end
 
----Opens a preset on Global Options' Visibility tab.
+---Opens a preset on Global Options' Manage Presets tab.
 ---@param presetId string
 function TRB.Functions.OptionsUi.Visibility:OpenGlobalPreset(presetId)
 	if TRB.Options.OptionsFrame then
 		TRB.Options.OptionsFrame:SelectCategory("global")
 		C_Timer.After(0, function()
-			TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix("Global", "barVisibility")
-			local api = TRB.Functions.OptionsUi.Visibility:GetApi(nil, nil, "spec")
+			local tabs = TRB.Functions.OptionsUi.Tabs
+			tabs:SwitchToGlobalVisibilityTab(tabs.TabKeys.VisibilityPresets)
+			local api = TRB.Functions.OptionsUi.Visibility:GetApi(nil, nil, "presets")
 			if api ~= nil and api.SelectPreset ~= nil then
 				api.SelectPreset(presetId)
 			end
@@ -500,6 +506,22 @@ local presetKindOrder = { "standard", "castbar", "targetCastbar", "petCastbar", 
 if TRB.Flavor.swingTimers then
 	presetKindOrder[#presetKindOrder + 1] = "mainHandSwing"
 	presetKindOrder[#presetKindOrder + 1] = "rangedSwing"
+end
+
+---Draws an action cell dimmed; the table's hover handlers brighten it.
+local function UpdateActionCell(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, scrollingTable, ...)
+	scrollingTable.DoCellUpdate(rowFrame, cellFrame, data, cols, row, realrow, column, fShow, scrollingTable, ...)
+	if fShow and cellFrame ~= nil and cellFrame.text ~= nil then
+		cellFrame.text:SetAlpha(actionCellDimAlpha)
+	end
+end
+
+---Wraps menu text in the color of every "use global settings" label.
+---@param menuText string
+---@return string
+local function UseGlobalMenuText(menuText)
+	local r, g, b = TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor()
+	return string.format("|cff%02x%02x%02x%s|r", math.floor(r * 255 + 0.5), math.floor(g * 255 + 0.5), math.floor(b * 255 + 0.5), menuText)
 end
 
 -- Asks for a preset's name. Defined once, outside the generator: everything it needs arrives in the data payload.
@@ -609,7 +631,11 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 		-- Resolved from the scope, not from namePrefix: the shared groupings' sub-tabs use synthesized prefixes.
 		local tabs = TRB.Functions.OptionsUi.Tabs
 		if barGroup == "spec" then
-			tabs:SwitchToTabByClassSpec(classId, specId, tabs.TabKeys.BarVisibility)
+			if classId == nil or specId == nil then
+				tabs:SwitchToGlobalVisibilityTab()
+			else
+				tabs:SwitchToTabByClassSpec(classId, specId, tabs.TabKeys.BarVisibility)
+			end
 		else
 			if classId ~= nil and specId ~= nil then
 				tabs:SwitchToTabByClassSpec(classId, specId, barGroup)
@@ -813,7 +839,7 @@ end
 ---@param includeManaBarVisibility boolean? Whether to include mana bar visibility
 ---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to include
 ---@param extraThresholdTypes table[]? Extra threshold condition definitions to include for matching bars
----@param options { groupKey: string? }? Which grouping's bars to list; nil is the spec's own tab
+---@param options { groupKey: string? }? Which grouping's bars to list; nil is the spec's own tab, and "presets" lists Global Options' presets instead of bars
 ---@return number yCoord New Y coordinate after adding controls
 function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeSecondaryVisibility, secondaryResourceString, includeHealthVisibility, includeManaBarVisibility, customBars, extraThresholdTypes, options)
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
@@ -835,8 +861,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local barEntries = {}
 	local coreDisplayBar = TRB.Data.settings.core.displayBar
 	local barVisibility = TRB.Functions.BarVisibility
-	-- Global Options' first Visibility tab also manages the presets.
-	local isPresetHost = classId == nil and groupKey == "spec"
+	-- Global Options' Manage Presets tab lists presets where every other tab lists bars.
+	local isPresetHost = classId == nil and groupKey == "presets"
 	-- The preset the detail panel is showing, when it shows one; the refresh helpers below act on it.
 	local selectedPresetGuid = nil
 	-- Assigned below, once the panel they act on exists.
@@ -926,7 +952,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
-	controls.barDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayHeader"], oUi.xCoord, yCoord)
+	controls.barDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, isPresetHost and L["BarVisibilityPresetsHeader"] or L["BarDisplayHeader"], oUi.xCoord, yCoord)
 
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
@@ -1005,12 +1031,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	yCoord = yCoord - 30
 	-- Shapeshift form conditions only make sense for a class whose display follows forms (descriptor
-	-- `forms`): the panel's class, or the active class on the Global panel.
-	local formsClassId = classId
-	if formsClassId == nil and TRB.Data.character ~= nil then
-		formsClassId = TRB.Data.character.classId
-	end
-	local isDruidVisibilityPanel = TRB.Functions.Character:ClassHasForms(formsClassId)
+	-- `forms`). Global Options and its presets serve every class, so they always list them.
+	local isDruidVisibilityPanel = classId == nil or TRB.Functions.Character:ClassHasForms(classId)
 	local druidFormConditionKeys = CopyKeys(DRUID_FORM_CONDITION_KEYS)
 
 	-- Condition definitions for multi-select bar visibility
@@ -1847,69 +1869,79 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 	RebuildBarEntries()
 
-	-- Table-level actions sit above the table, on the right.
-	controls.buttons = controls.buttons or {}
-	controls.buttons.applyToBars = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["BarVisibilityApplyToBars"], 0, 0, 170, 22)
-	controls.buttons.applyToBars:ClearAllPoints()
-	controls.buttons.applyToBars:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
-
-	-- Create the LibScrollingTable for bar selection
-	local columns = {
-		{
-			["name"] = "Key",
-			["width"] = 1,
-			["align"] = "CENTER",
-		},
-		{
-			["name"] = L["BarVisibilityTableHeaderBar"],
-			["width"] = 200,
-			["align"] = "LEFT",
-		},
-		{
-			["name"] = L["BarVisibilityTableHeaderShow"],
-			["width"] = 95,
-			["align"] = "LEFT",
-		},
-		{
-			["name"] = L["BarVisibilityTableHeaderAlwaysHide"],
-			["width"] = 105,
-			["align"] = "LEFT",
-		},
-		{
-			["name"] = L["BarVisibilityTableHeaderSettingsSource"],
-			["width"] = 255,
-			["align"] = "LEFT",
-		},
-	}
-
-	controls.barVisibilityContainer = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-	local bvc = controls.barVisibilityContainer
-	bvc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
-	bvc:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
 	-- Show at most 5 rows; LibScrollingTable adds a scrollbar when there are more bars than that.
 	local function GetTableRowCount(entryCount)
 		return math.min(math.max(entryCount, 2), 5)
 	end
-	local tableRowCount = GetTableRowCount(#barEntries)
-	bvc:SetHeight(35 + (tableRowCount * 15))
 
-	local barVisibilityTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, bvc, false, false)
+	-- The bars table, with its table-level action above it on the right. Manage Presets lists presets instead.
+	controls.buttons = controls.buttons or {}
+	local bvc = nil
+	local barVisibilityTable = nil
+	local tableRowCount = 0
+	if not isPresetHost then
+		controls.buttons.applyToBars = TRB.Functions.OptionsUi.Primitives:BuildButton(parent, L["BarVisibilityApplyToBars"], 0, 0, 170, 22)
+		controls.buttons.applyToBars:ClearAllPoints()
+		controls.buttons.applyToBars:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -oUi.xCoord, yCoord)
+		yCoord = yCoord - 30
+
+		-- Create the LibScrollingTable for bar selection
+		local columns = {
+			{
+				["name"] = "Key",
+				["width"] = 1,
+				["align"] = "CENTER",
+			},
+			{
+				["name"] = L["BarVisibilityTableHeaderBar"],
+				["width"] = 200,
+				["align"] = "LEFT",
+			},
+			{
+				["name"] = L["BarVisibilityTableHeaderShow"],
+				["width"] = 95,
+				["align"] = "LEFT",
+			},
+			{
+				["name"] = L["BarVisibilityTableHeaderAlwaysHide"],
+				["width"] = 105,
+				["align"] = "LEFT",
+			},
+			{
+				["name"] = L["BarVisibilityTableHeaderSettingsSource"],
+				["width"] = 255,
+				["align"] = "LEFT",
+			},
+		}
+
+		controls.barVisibilityContainer = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+		bvc = controls.barVisibilityContainer
+		bvc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
+		bvc:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
+		tableRowCount = GetTableRowCount(#barEntries)
+		bvc:SetHeight(35 + (tableRowCount * 15))
+
+		barVisibilityTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, bvc, false, false)
+
+		-- Dynamically resize the Settings Source column to fill available width
+		bvc:HookScript("OnSizeChanged", function(self, w, h)
+			local fixedWidth = columns[1].width + columns[2].width + columns[3].width + columns[4].width
+			local newSettingsSourceWidth = math.max(180, w - fixedWidth - 30)
+			columns[5].width = newSettingsSourceWidth
+			barVisibilityTable:SetDisplayCols(columns)
+		end)
+	end
 
 	---Fits the table to the bars listed; the detail panel is anchored below it and follows.
 	local function ResizeTable()
+		-- Manage Presets lists presets, not bars, so it has no bars table.
+		if bvc == nil then
+			return
+		end
 		local rowCount = GetTableRowCount(#barEntries)
 		barVisibilityTable:SetDisplayRows(rowCount, 15)
 		bvc:SetHeight(35 + (rowCount * 15))
 	end
-
-	-- Dynamically resize the Settings Source column to fill available width
-	bvc:HookScript("OnSizeChanged", function(self, w, h)
-		local fixedWidth = columns[1].width + columns[2].width + columns[3].width + columns[4].width
-		local newSettingsSourceWidth = math.max(180, w - fixedWidth - 30)
-		columns[5].width = newSettingsSourceWidth
-		barVisibilityTable:SetDisplayCols(columns)
-	end)
 
 	local globalDimColor = { r = 0.5, g = 0.5, b = 0.5, a = 0.7 }
 
@@ -1950,6 +1982,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	---Refreshes the scrolling table data from the current bar visibility settings.
 	local function SetTableValues()
+		if barVisibilityTable == nil then
+			return
+		end
 		local dataTable = {}
 		for _, entry in ipairs(barEntries) do
 			local source, visSettings, _, preset = ResolveRow(entry)
@@ -1988,46 +2023,46 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		barVisibilityTable:EnableSelection(true)
 	end
 
-	-- ===== Presets: a table and an editor under the bars, on the first Global Options tab only =====
-	local PRESET_TABLE_ROWS = 4
-	local PRESETS_HEADER_HEIGHT = 25
+	-- ===== Presets: the table and editor of Global Options' Manage Presets tab =====
+	local PRESET_TABLE_ROWS = 5
+	local PRESET_EDITOR_HEIGHT = 55
 	local presetsTableHeight = 35 + (PRESET_TABLE_ROWS * 15)
-	local presetsBlockHeight = PRESETS_HEADER_HEIGHT + presetsTableHeight + 8 + 22 + 10 + 55
 	local presetTable = nil
 	local presetList = {}
-	local presetsContainer = nil
 	local presetEditorRow = nil
+	local presetNameLabel = nil
 	local presetNameBox = nil
 	local presetKindDropdown = nil
-	local presetDeleteButton = nil
 	local detailAnchor = bvc
 	-- Reselects the open bar or preset after a redraw; assigned once the detail panel exists.
 	local ReselectSelection = nil
 	-- Shows the selected preset's name and kind, or hides them; a no-op wherever there are no presets.
 	local SyncPresetEditor = function() end
 	local SelectPreset = nil
+	-- Asks before deleting a preset; assigned with the table's handlers.
+	local PromptDeletePreset = nil
 
 	if isPresetHost then
-		presetsContainer = CreateFrame("Frame", nil, parent)
-		controls.barVisibilityPresets = presetsContainer
-		presetsContainer:SetPoint("TOPLEFT", bvc, "BOTTOMLEFT", 0, -10)
-		presetsContainer:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
-		presetsContainer:SetHeight(presetsBlockHeight)
-		detailAnchor = presetsContainer
-
-		TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(presetsContainer, L["BarVisibilityPresetsHeader"], 0, 0)
-
-		local presetsTableFrame = CreateFrame("Frame", nil, presetsContainer, "BackdropTemplate")
-		presetsTableFrame:SetPoint("TOPLEFT", presetsContainer, "TOPLEFT", 0, -PRESETS_HEADER_HEIGHT)
-		presetsTableFrame:SetPoint("RIGHT", presetsContainer, "RIGHT", 0, 0)
+		local presetsTableFrame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+		controls.barVisibilityPresets = presetsTableFrame
+		presetsTableFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
+		presetsTableFrame:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
 		presetsTableFrame:SetHeight(presetsTableHeight)
 		local presetColumns = {
 			{ ["name"] = "Key", ["width"] = 1, ["align"] = "CENTER" },
 			{ ["name"] = L["BarVisibilityPresetTableHeaderName"], ["width"] = 260, ["align"] = "LEFT" },
-			{ ["name"] = L["BarVisibilityPresetTableHeaderKind"], ["width"] = 210, ["align"] = "LEFT" },
+			{ ["name"] = L["BarVisibilityPresetTableHeaderKind"], ["width"] = 230, ["align"] = "LEFT" },
 			{ ["name"] = L["BarVisibilityPresetTableHeaderUsedBy"], ["width"] = 70, ["align"] = "LEFT" },
+			{ ["name"] = "", ["width"] = 15, ["align"] = "CENTER", ["color"] = deleteActionTextColor },
 		}
 		presetTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(presetColumns, PRESET_TABLE_ROWS, 15, nil, presetsTableFrame, false, false)
+
+		-- Dynamically resize the Name column to fill available width
+		presetsTableFrame:HookScript("OnSizeChanged", function(self, w, h)
+			local fixedWidth = presetColumns[1].width + presetColumns[3].width + presetColumns[4].width + presetColumns[5].width
+			presetColumns[2].width = math.max(150, w - fixedWidth - 30)
+			presetTable:SetDisplayCols(presetColumns)
+		end)
 
 		SetPresetTableValues = function()
 			presetList = barVisibility:GetPresetsOrdered()
@@ -2040,6 +2075,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 						{ value = preset.name or "" },
 						{ value = presetKindLabels[preset.profileKey or "standard"] or "" },
 						{ value = tostring(uses[preset.guid] or 0) },
+						{ value = "X", color = deleteActionTextColor, DoCellUpdate = UpdateActionCell },
 					}
 				}
 			end
@@ -2047,23 +2083,25 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			presetTable:EnableSelection(true)
 		end
 
-		local buttonsY = -(PRESETS_HEADER_HEIGHT + presetsTableHeight + 8)
-		local addPresetButton = TRB.Functions.OptionsUi.Primitives:BuildButton(presetsContainer, L["BarVisibilityPresetAdd"], 0, buttonsY, 130, 22)
-		presetDeleteButton = TRB.Functions.OptionsUi.Primitives:BuildButton(presetsContainer, L["BarVisibilityPresetDelete"], 140, buttonsY, 130, 22)
-		controls.buttons.addPreset = addPresetButton
-		controls.buttons.deletePreset = presetDeleteButton
+		-- Name and kind of the open preset under the table, with Add Preset on the right.
+		presetEditorRow = CreateFrame("Frame", nil, parent)
+		presetEditorRow:SetPoint("TOPLEFT", presetsTableFrame, "BOTTOMLEFT", 0, -10)
+		presetEditorRow:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
+		presetEditorRow:SetHeight(PRESET_EDITOR_HEIGHT)
+		detailAnchor = presetEditorRow
 
-		presetEditorRow = CreateFrame("Frame", nil, presetsContainer)
-		presetEditorRow:SetPoint("TOPLEFT", presetsContainer, "TOPLEFT", 0, buttonsY - 22 - 10)
-		presetEditorRow:SetPoint("RIGHT", presetsContainer, "RIGHT", 0, 0)
-		presetEditorRow:SetHeight(55)
-		TRB.Functions.OptionsUi.Primitives:BuildLabel(presetEditorRow, L["BarVisibilityPresetName"], 0, 0, 250, 20, GameFontNormal)
+		local presetAddButton = TRB.Functions.OptionsUi.Primitives:BuildButton(presetEditorRow, L["BarVisibilityPresetAdd"], 0, 0, 140, 24)
+		presetAddButton:ClearAllPoints()
+		presetAddButton:SetPoint("TOPRIGHT", presetEditorRow, "TOPRIGHT", -5, -8)
+		controls.buttons.addPreset = presetAddButton
+
+		presetNameLabel = TRB.Functions.OptionsUi.Primitives:BuildLabel(presetEditorRow, L["BarVisibilityPresetName"], 0, 0, 250, 20, GameFontNormal)
 		presetNameBox = TRB.Functions.OptionsUi.Primitives:BuildTextBox(presetEditorRow, "", 60, 250, 24, 0, -22)
 		local kindOptions = {}
 		for _, kindKey in ipairs(presetKindOrder) do
 			kindOptions[#kindOptions + 1] = { value = kindKey, label = presetKindLabels[kindKey] }
 		end
-		presetKindDropdown = TRB.Functions.OptionsUi.Primitives:BuildDropdown(presetEditorRow, "TwintopResourceBar_" .. namePrefix .. "_PresetKind", L["BarVisibilityPresetKind"], kindOptions,
+		presetKindDropdown = TRB.Functions.OptionsUi.Primitives:BuildDropdown(presetEditorRow, "TwintopResourceBar_" .. namePrefix .. "_PresetKind", nil, kindOptions,
 			function()
 				local preset = barVisibility:GetPreset(selectedPresetGuid)
 				return preset ~= nil and preset.profileKey or "standard"
@@ -2077,18 +2115,27 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 					FillDetailPanel("preset:" .. preset.guid)
 					ReselectSelection()
 				end
-			end, 290, 0)
-		presetEditorRow:Hide()
-		presetDeleteButton:SetEnabled(false)
+			end, 0, 0)
+		-- Level with the name box, and narrow enough to leave room for Add Preset.
+		presetKindDropdown:ClearAllPoints()
+		presetKindDropdown:SetPoint("LEFT", presetNameBox, "RIGHT", 20, 0)
+		presetKindDropdown:SetWidth(235)
+		-- Its label sits on the Name label's row, and grays out with the dropdown.
+		presetKindDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildLabel(presetEditorRow, L["BarVisibilityPresetKind"], 270, 0, 235, 20, GameFontNormal)
+		presetNameLabel:Hide()
+		presetNameBox:Hide()
+		presetKindDropdown.label:Hide()
+		presetKindDropdown:Hide()
 
 		SyncPresetEditor = function(preset)
-			if preset == nil then
-				presetEditorRow:Hide()
-				presetDeleteButton:SetEnabled(false)
+			local isShown = preset ~= nil
+			presetNameLabel:SetShown(isShown)
+			presetNameBox:SetShown(isShown)
+			presetKindDropdown.label:SetShown(isShown)
+			presetKindDropdown:SetShown(isShown)
+			if not isShown then
 				return
 			end
-			presetEditorRow:Show()
-			presetDeleteButton:SetEnabled(true)
 			presetNameBox:SetText(preset.name or "")
 			presetNameBox:SetCursorPosition(0)
 			presetKindDropdown:SetDefaultText(presetKindLabels[preset.profileKey or "standard"] or "")
@@ -2314,9 +2361,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		for _, e in ipairs(barEntries) do
 			if e.key == selectedBarKey then
 				local source, _, _, preset = ResolveRow(e)
-				if source == "preset" and isPresetHost then
-					SelectPreset(preset.guid)
-				elseif source == "preset" then
+				if source == "preset" then
 					TRB.Functions.OptionsUi.Visibility:OpenGlobalPreset(preset.guid)
 				else
 					TRB.Functions.OptionsUi.Visibility:OpenGlobalVisibility(e.displayBarKey)
@@ -2615,6 +2660,19 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		AfterRowEdit()
 	end
 
+	---Puts the open bar back on Global Options. Its own settings stay saved but unused, as with the Use Global box.
+	local function UseGlobalSelected()
+		local barEntry = GetSelectedBarEntry()
+		if barEntry == nil then
+			return
+		end
+		local saved = spec.displayBar[barEntry.displayBarKey]
+		if saved ~= nil then
+			saved.useGlobal = nil
+			AfterRowEdit()
+		end
+	end
+
 	-- Names a new preset after the open bar's current settings.
 	local function PromptSavePreset()
 		local barEntry = GetSelectedBarEntry()
@@ -2642,6 +2700,11 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		local profileKey = barVisibility:GetProfileKeyForBar(barEntry.displayBarKey)
 		local presets = barVisibility:GetPresetsOrdered(profileKey)
 		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
+			-- A bar of its own, or one on a preset, can go back to following Global Options.
+			if classId ~= nil and barEntry.isGlobal and source ~= "global" then
+				rootDescription:CreateButton(UseGlobalMenuText(L["BarVisibilityUseGlobal"]), UseGlobalSelected)
+				rootDescription:CreateDivider()
+			end
 			-- A bar that follows Global Options or a preset is changed from its cover instead.
 			if source == "own" then
 				local copyMenu = rootDescription:CreateButton(L["BarVisibilityCopyFrom"])
@@ -2724,104 +2787,134 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		AfterRowEdit()
 	end
 
-	controls.buttons.applyToBars:SetScript("OnClick", function(self)
-		MenuUtil.CreateContextMenu(self, function(_, rootDescription)
-			rootDescription:CreateTitle(L["BarVisibilityApplyToBars"])
-
-			-- The listed bars, kind by kind, as checkboxes. A source below applies to the checked bars of its own kind.
-			local chooseMenu = rootDescription:CreateButton(L["BarVisibilityApplyChooseBars"])
-			TRB.Functions.OptionsUi.Primitives:LimitMenuRows(chooseMenu, #barEntries + #presetKindOrder)
-			local kindsPresent = {}
-			for _, kindKey in ipairs(presetKindOrder) do
-				local first = true
-				for _, e in ipairs(barEntries) do
-					if barVisibility:GetProfileKeyForBar(e.displayBarKey) == kindKey then
-						if first then
-							if next(kindsPresent) ~= nil then
-								chooseMenu:CreateDivider()
-							end
-							chooseMenu:CreateTitle(presetKindLabels[kindKey])
-							kindsPresent[kindKey] = true
-							first = false
-						end
-						local displayBarKey = e.displayBarKey
-						chooseMenu:CreateCheckbox(e.label,
-							function() return applyTargets[displayBarKey] == true end,
-							function()
-								if applyTargets[displayBarKey] then
-									applyTargets[displayBarKey] = nil
-								else
-									applyTargets[displayBarKey] = true
-								end
-							end)
-					end
-				end
-			end
-
-			local copyMenu = rootDescription:CreateButton(L["BarVisibilityApplyCopyFrom"])
-			local linkMenu = rootDescription:CreateButton(L["BarVisibilityApplyLinkTo"])
-			TRB.Functions.OptionsUi.Primitives:LimitMenuRows(copyMenu, #allBarEntries + #presetKindOrder)
-			for _, kindKey in ipairs(presetKindOrder) do
-				if kindsPresent[kindKey] then
-					local capturedKind = kindKey
-					local presets = barVisibility:GetPresetsOrdered(kindKey)
-					copyMenu:CreateTitle(presetKindLabels[kindKey])
-					linkMenu:CreateTitle(presetKindLabels[kindKey])
-					for _, e in ipairs(allBarEntries) do
-						if spec.displayBar[e.displayBarKey] ~= nil and barVisibility:GetProfileKeyForBar(e.displayBarKey) == kindKey then
-							copyMenu:CreateButton(e.label, function()
-								local _, shown = ResolveRow(e)
-								ApplyToTargets(shown, capturedKind, nil)
-							end)
-						end
-					end
-					for _, preset in ipairs(presets) do
-						local presetId = preset.guid
-						copyMenu:CreateButton(preset.name or "", function()
-							ApplyToTargets(preset, capturedKind, nil)
-						end)
-						linkMenu:CreateButton(preset.name or "", function()
-							ApplyToTargets(preset, capturedKind, presetId)
-						end)
-					end
-					if #presets == 0 then
-						linkMenu:CreateTitle(L["BarVisibilityNoPresets"])
-					end
-				end
-			end
-		end)
-	end)
-
-	-- Table click handler
-	barVisibilityTable:RegisterEvents({
-		OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
-			if button == "LeftButton" then
-				if realrow ~= nil and realrow > 0 then
-					local barKey = data[realrow].cols[1].value
-
-					local currentSelection = scrollingTable:GetSelection()
-					if presetTable ~= nil then
-						presetTable:ClearSelection()
-					end
-					FillDetailPanel(barKey)
-					C_Timer.After(0, function()
-						C_Timer.After(0.05, function()
-							local newSelection = scrollingTable:GetSelection()
-							if newSelection == nil then
-								barVisibilityTable:SetSelection(currentSelection)
-							end
-						end)
-					end)
+	---Puts every checked bar that can follow Global Options back on it.
+	local function ApplyUseGlobalToTargets()
+		local checked, applied = 0, 0
+		for _, target in ipairs(barEntries) do
+			if applyTargets[target.displayBarKey] then
+				checked = checked + 1
+				local saved = spec.displayBar[target.displayBarKey]
+				if target.isGlobal and saved ~= nil then
+					saved.useGlobal = nil
+					applied = applied + 1
 				end
 			end
 		end
-	})
+		if checked == 0 then
+			print(L["BarVisibilityApplyChooseFirst"])
+			return
+		end
+		if applied == 0 then
+			print(L["BarVisibilityApplyNoneGlobal"])
+			return
+		end
+		AfterRowEdit()
+	end
+
+	if controls.buttons.applyToBars ~= nil then
+		controls.buttons.applyToBars:SetScript("OnClick", function(self)
+			MenuUtil.CreateContextMenu(self, function(_, rootDescription)
+				rootDescription:CreateTitle(L["BarVisibilityApplyToBars"])
+
+				-- The listed bars, kind by kind, as checkboxes. A source below applies to the checked bars of its own kind.
+				local chooseMenu = rootDescription:CreateButton(L["BarVisibilityApplyChooseBars"])
+				TRB.Functions.OptionsUi.Primitives:LimitMenuRows(chooseMenu, #barEntries + #presetKindOrder)
+				local kindsPresent = {}
+				for _, kindKey in ipairs(presetKindOrder) do
+					local first = true
+					for _, e in ipairs(barEntries) do
+						if barVisibility:GetProfileKeyForBar(e.displayBarKey) == kindKey then
+							if first then
+								if next(kindsPresent) ~= nil then
+									chooseMenu:CreateDivider()
+								end
+								chooseMenu:CreateTitle(presetKindLabels[kindKey])
+								kindsPresent[kindKey] = true
+								first = false
+							end
+							local displayBarKey = e.displayBarKey
+							chooseMenu:CreateCheckbox(e.label,
+								function() return applyTargets[displayBarKey] == true end,
+								function()
+									if applyTargets[displayBarKey] then
+										applyTargets[displayBarKey] = nil
+									else
+										applyTargets[displayBarKey] = true
+									end
+								end)
+						end
+					end
+				end
+
+				local copyMenu = rootDescription:CreateButton(L["BarVisibilityApplyCopyFrom"])
+				local linkMenu = rootDescription:CreateButton(L["BarVisibilityApplyLinkTo"])
+				TRB.Functions.OptionsUi.Primitives:LimitMenuRows(copyMenu, #allBarEntries + #presetKindOrder)
+				for _, kindKey in ipairs(presetKindOrder) do
+					if kindsPresent[kindKey] then
+						local capturedKind = kindKey
+						local presets = barVisibility:GetPresetsOrdered(kindKey)
+						copyMenu:CreateTitle(presetKindLabels[kindKey])
+						linkMenu:CreateTitle(presetKindLabels[kindKey])
+						for _, e in ipairs(allBarEntries) do
+							if spec.displayBar[e.displayBarKey] ~= nil and barVisibility:GetProfileKeyForBar(e.displayBarKey) == kindKey then
+								copyMenu:CreateButton(e.label, function()
+									local _, shown = ResolveRow(e)
+									ApplyToTargets(shown, capturedKind, nil)
+								end)
+							end
+						end
+						for _, preset in ipairs(presets) do
+							local presetId = preset.guid
+							copyMenu:CreateButton(preset.name or "", function()
+								ApplyToTargets(preset, capturedKind, nil)
+							end)
+							linkMenu:CreateButton(preset.name or "", function()
+								ApplyToTargets(preset, capturedKind, presetId)
+							end)
+						end
+						if #presets == 0 then
+							linkMenu:CreateTitle(L["BarVisibilityNoPresets"])
+						end
+					end
+				end
+
+				-- Bars that can follow Global Options can go back to it.
+				if classId ~= nil then
+					rootDescription:CreateDivider()
+					rootDescription:CreateButton(UseGlobalMenuText(L["BarVisibilityUseGlobal"]), ApplyUseGlobalToTargets)
+				end
+			end)
+		end)
+	end
+
+	-- Table click handler
+	if barVisibilityTable ~= nil then
+		barVisibilityTable:RegisterEvents({
+			OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+				if button == "LeftButton" then
+					if realrow ~= nil and realrow > 0 then
+						local barKey = data[realrow].cols[1].value
+
+						local currentSelection = scrollingTable:GetSelection()
+						FillDetailPanel(barKey)
+						C_Timer.After(0, function()
+							C_Timer.After(0.05, function()
+								local newSelection = scrollingTable:GetSelection()
+								if newSelection == nil then
+									barVisibilityTable:SetSelection(currentSelection)
+								end
+							end)
+						end)
+					end
+				end
+			end
+		})
+	end
 
 	if isPresetHost then
 		-- Opens a preset in the detail panel and highlights its row.
 		SelectPreset = function(guid)
 			SetPresetTableValues()
-			barVisibilityTable:ClearSelection()
 			for i, preset in ipairs(presetList) do
 				if preset.guid == guid then
 					presetTable:SetSelection(i)
@@ -2831,37 +2924,11 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			FillDetailPanel("preset:" .. guid)
 		end
 
-		presetTable:RegisterEvents({
-			OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
-				if button == "LeftButton" and realrow ~= nil and realrow > 0 then
-					local guid = data[realrow].cols[1].value
-					local currentSelection = scrollingTable:GetSelection()
-					barVisibilityTable:ClearSelection()
-					FillDetailPanel("preset:" .. guid)
-					C_Timer.After(0, function()
-						C_Timer.After(0.05, function()
-							if scrollingTable:GetSelection() == nil then
-								presetTable:SetSelection(currentSelection)
-							end
-						end)
-					end)
-				end
-			end
-		})
-
-		controls.buttons.addPreset:SetScript("OnClick", function()
-			-- A new preset starts as a copy of the main resource bar's look.
-			local template = barVisibility:ComposeEntry(coreDisplayBar.primary or {})
-			local preset = barVisibility:NewPreset(template, "standard", L["BarVisibilityPresetNewName"])
-			SelectPreset(preset.guid)
-		end)
-
-		presetDeleteButton:SetScript("OnClick", function()
-			local preset = barVisibility:GetPreset(selectedPresetGuid)
+		PromptDeletePreset = function(guid)
+			local preset = barVisibility:GetPreset(guid)
 			if preset == nil then
 				return
 			end
-			local guid = preset.guid
 			StaticPopup_Show("TwintopResourceBar_VisibilityPresetDelete", nil, nil, {
 				message = string.format(L["BarVisibilityPresetDeleteConfirm"], preset.name or ""),
 				onAccept = function()
@@ -2872,13 +2939,63 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 						end
 					end)
 					barVisibility:GetPresets()[guid] = nil
-					selectedPresetGuid = nil
-					presetTable:ClearSelection()
-					detailFrame:Hide()
-					SyncPresetEditor(nil)
+					if selectedPresetGuid == guid then
+						selectedPresetGuid = nil
+						presetTable:ClearSelection()
+						detailFrame:Hide()
+						SyncPresetEditor(nil)
+					end
 					TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChangeAllSpecs()
 				end,
 			})
+		end
+
+		presetTable:RegisterEvents({
+			OnEnter = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+				scrollingTable.DefaultEvents.OnEnter(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+				if realrow ~= nil and realrow > 0 and column == 5 and cellFrame ~= nil and cellFrame.text ~= nil then
+					cellFrame.text:SetAlpha(actionCellBrightAlpha)
+					GameTooltip:SetOwner(cellFrame, "ANCHOR_RIGHT")
+					GameTooltip:SetText(L["BarVisibilityPresetDeleteActionTooltip"], 1, 1, 1, 1, true)
+					GameTooltip:Show()
+				end
+			end,
+			OnLeave = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+				scrollingTable.DefaultEvents.OnLeave(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
+				if column == 5 then
+					if cellFrame ~= nil and cellFrame.text ~= nil then
+						cellFrame.text:SetAlpha(actionCellDimAlpha)
+					end
+					GameTooltip:Hide()
+				end
+			end,
+			OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+				if button ~= "LeftButton" or realrow == nil or realrow <= 0 then
+					return
+				end
+				local guid = data[realrow].cols[1].value
+				if column == 5 then
+					PromptDeletePreset(guid)
+					-- The row is on its way out, so the click must not also select it.
+					return true
+				end
+				local currentSelection = scrollingTable:GetSelection()
+				FillDetailPanel("preset:" .. guid)
+				C_Timer.After(0, function()
+					C_Timer.After(0.05, function()
+						if scrollingTable:GetSelection() == nil then
+							presetTable:SetSelection(currentSelection)
+						end
+					end)
+				end)
+			end,
+		})
+
+		controls.buttons.addPreset:SetScript("OnClick", function()
+			-- A new preset starts as a copy of the main resource bar's look.
+			local template = barVisibility:ComposeEntry(coreDisplayBar.primary or {})
+			local preset = barVisibility:NewPreset(template, "standard", L["BarVisibilityPresetNewName"])
+			SelectPreset(preset.guid)
 		end)
 
 		SetPresetTableValues()
@@ -2949,9 +3066,6 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		SelectByDisplayBarKey = function(displayBarKey)
 			for i, e in ipairs(barEntries) do
 				if e.displayBarKey == displayBarKey then
-					if presetTable ~= nil then
-						presetTable:ClearSelection()
-					end
 					barVisibilityTable:SetSelection(i)
 					FillDetailPanel(e.key)
 					return
@@ -2970,10 +3084,11 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		RefreshTableForGlobalToggle()
 	end)
 
-	-- The spec tab's table can grow to every bar with the include-all box ticked, so the panel leaves room for that.
-	yCoord = yCoord - (35 + (GetTableRowCount(groupKey == "spec" and #allBarEntries or #barEntries) * 15)) - 10 - detailHeight
 	if isPresetHost then
-		yCoord = yCoord - presetsBlockHeight - 10
+		yCoord = yCoord - presetsTableHeight - 10 - PRESET_EDITOR_HEIGHT - detailHeight
+	else
+		-- The spec tab's table can grow to every bar with the include-all box ticked, so the panel leaves room for that.
+		yCoord = yCoord - (35 + (GetTableRowCount(groupKey == "spec" and #allBarEntries or #barEntries) * 15)) - 10 - detailHeight
 	end
 
 	return yCoord
@@ -2983,7 +3098,7 @@ end
 ---@param parent Frame # The tab's scroll child
 ---@param classId integer? # nil edits core (global) scope
 ---@param specId integer?
----@param groupKey string # castbar, otherBars, petBars, or skyriding
+---@param groupKey string # castbar, otherBars, petBars, or skyriding; "presets" builds Global Options' Manage Presets tab
 function TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(parent, classId, specId, groupKey)
 	if parent == nil then
 		return
