@@ -21,6 +21,7 @@ TRB.Details.coreNewsContent = [====[
 - Use Global settings for Textures is now set for each bar, with a checkbox to set every listed bar at once. In Global Options the checkbox sets them in every specialization. Remove the single Use Global settings option for all of a specialization's Textures.
 - Replace the single texture lock with four locks: Bar, Border, Background, and Overlays. A texture a lock keeps the same is changed on the main bar.
 - A texture that can't be changed says why when you hover over it: the lock that keeps it the same as another texture, or the bar using Global settings.
+- A bar that uses Global settings shows the textures from Global Options under a cover, with buttons to open them in Global Options or to customize the bar for this specialization.
 - Fix the Mana bar ignoring its own texture options. Existing specializations start from the textures the bar was drawing with.
 
 ## Bar Visibility

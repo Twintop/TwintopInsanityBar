@@ -12,8 +12,8 @@ local L = TRB.Localization
 -- Session-only, never saved: whether a scope's spec tab also lists the bars that have their own groupings' tabs.
 local includeAllGroups = {}
 
--- Each built Textures tab's refresh hook, by scope then grouping, so a change on one tab reaches the others.
----@type table<string, table<string, fun()>>
+-- Each built Textures tab, by scope then grouping, so a change on one tab reaches the others and a cover can open a row.
+---@type table<string, table<string, { Refresh: fun(), SelectBarKey: fun(barKey: string) }>>
 local texturesEditors = {}
 
 local dimColor = { r = 0.5, g = 0.5, b = 0.5, a = 0.7 }
@@ -120,6 +120,29 @@ local function RefreshAllSpecs()
 		end
 	end
 	RefreshBar(nil, nil)
+end
+
+---Opens a bar's row on the Global Options Textures tab that lists it, switching to the Global screen that holds it.
+---@param barKey string
+function TRB.Functions.OptionsUi.Textures:OpenGlobalTextures(barKey)
+	if TRB.Options.OptionsFrame == nil then
+		return
+	end
+	local barGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(barKey)
+	local tabs = TRB.Functions.OptionsUi.Tabs
+	TRB.Options.OptionsFrame:SelectCategory(barGroup == "spec" and "global" or barGroup)
+	-- The category's tabs exist only after it is selected.
+	C_Timer.After(0, function()
+		if barGroup == "spec" then
+			tabs:SwitchToTabByNamePrefix("Global", tabs.TabKeys.BarTextures)
+		else
+			tabs:SwitchToTabByNamePrefix(tabs:GetGroupInnerPrefix(barGroup, nil, nil), tabs.TabKeys.GroupTextures)
+		end
+		local editor = texturesEditors.global and texturesEditors.global[barGroup]
+		if editor ~= nil then
+			editor.SelectBarKey(barKey)
+		end
+	end)
 end
 
 ---Generates the bar textures options: a table of the bars with a detail panel for the selected bar's fill, border,
@@ -533,7 +556,11 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		end
 		return table.concat(reasons, "\n\n")
 	end
-	yCoord = yCoord - 30
+
+	yCoord = yCoord - 24
+	controls.labels = controls.labels or {}
+	controls.labels.texturesLockedNote = primitives:BuildLabel(parent, L["BarTexturesLockedNote"], oUi.xCoord, yCoord, 600, 18, GameFontHighlightSmall, "LEFT")
+	yCoord = yCoord - 28
 
 	-- ===== The table =====
 	-- Narrow enough, with the last column at its minimum, to fit a grouping's tab nested inside a specialization's.
@@ -605,10 +632,12 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 
 	-- ===== The selected bar's textures =====
 	yCoord = yCoord - (35 + (TABLE_ROW_COUNT * 15))
+	-- Room for the health bar's six dropdowns, the most a bar has.
+	local detailHeight = 270
 	local detailFrame = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarTexturesDetail", parent, "BackdropTemplate")
 	detailFrame:SetPoint("TOPLEFT", container, "BOTTOMLEFT", 0, 0)
 	detailFrame:SetPoint("TOPRIGHT", container, "BOTTOMRIGHT", 0, 0)
-	detailFrame:SetHeight(340)
+	detailFrame:SetHeight(detailHeight)
 	detailFrame:Hide()
 
 	local detailHeader = primitives:BuildSectionHeader(detailFrame, "", oUi.xCoord, 0)
@@ -625,7 +654,40 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		end
 	end)
 
-	local lockedNote = primitives:BuildLabel(detailFrame, L["BarTexturesLockedNote"], oUi.xCoord, -330, 500, 30, GameFontHighlightSmall, "LEFT")
+	-- Covers the dropdowns of a bar that follows Global Options, with the ways to change it.
+	local detailCover = primitives:BuildSectionCover(detailFrame, -58, -detailHeight)
+	controls.barTexturesDetailCover = detailCover
+	local coverMessage = detailCover:CreateFontString(nil, "OVERLAY")
+	coverMessage:SetFontObject(GameFontHighlightLarge)
+	coverMessage:SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
+	coverMessage:SetJustifyH("CENTER")
+	coverMessage:SetText(L["BarTexturesUsingGlobal"])
+	-- Raised by half the button row so the message and buttons sit centered as one block.
+	coverMessage:SetPoint("LEFT", detailCover, "LEFT", 20, 15)
+	coverMessage:SetPoint("RIGHT", detailCover, "RIGHT", -20, 15)
+
+	local coverOpen = CreateFrame("Button", nil, detailCover, "UIPanelButtonTemplate")
+	coverOpen:SetText(L["UseGlobalCoverOpenGlobal"])
+	coverOpen:SetSize(coverOpen:GetTextWidth() + 30, 22)
+	coverOpen:SetPoint("TOPRIGHT", coverMessage, "BOTTOM", -5, -8)
+	coverOpen:SetScript("OnClick", function()
+		if selectedKey ~= nil then
+			TRB.Functions.OptionsUi.Textures:OpenGlobalTextures(selectedKey)
+		end
+	end)
+
+	local coverCustomize = CreateFrame("Button", nil, detailCover, "UIPanelButtonTemplate")
+	coverCustomize:SetText(L["UseGlobalCoverCustomize"])
+	coverCustomize:SetSize(coverCustomize:GetTextWidth() + 30, 22)
+	coverCustomize:SetPoint("TOPLEFT", coverMessage, "BOTTOM", 5, -8)
+	coverCustomize:SetScript("OnClick", function()
+		if selectedKey ~= nil then
+			SetRowUsesGlobal(selectedKey, false)
+			AfterChange()
+		end
+	end)
+	detailCover.openButton = coverOpen
+	detailCover.customizeButton = coverCustomize
 
 	-- One dropdown per texture key, made the first time its bar is opened and shown only with that bar.
 	local dropdowns = {}
@@ -690,13 +752,12 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		local followsGlobal = IsFollowingGlobal(row)
 		rowGlobalBox:SetShown(row.canUseGlobal)
 		rowGlobalBox:SetChecked(followsGlobal)
+		detailCover:SetShown(followsGlobal)
 
-		local anyLocked = false
 		for slot, item in ipairs(row.items) do
 			local dropdown = EnsureDropdown(row, item, slot)
 			local displayName = DisplayName(row, item) or OwnerTextures(row)[item.key .. "Name"]
 			local locked = IsLockedMember(item.key)
-			anyLocked = anyLocked or locked
 			textureDropdowns:RefreshLsmDropdown(dropdown, displayName)
 			primitives:ToggleDropdownEnabled(dropdown, not followsGlobal and not locked)
 			dropdown.disabledReason = GetDisabledReason(row, item)
@@ -704,7 +765,6 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			dropdown.label:Show()
 			shownDropdowns[#shownDropdowns + 1] = dropdown
 		end
-		lockedNote:SetShown(anyLocked and not followsGlobal)
 		detailFrame:Show()
 	end
 
@@ -783,8 +843,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	end
 
 	RefreshEditors = function()
-		for _, refreshEditor in pairs(texturesEditors[scopeKey] or {}) do
-			refreshEditor()
+		for _, editor in pairs(texturesEditors[scopeKey] or {}) do
+			editor.Refresh()
 		end
 	end
 
@@ -828,7 +888,15 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 
 	local scopeEditors = texturesEditors[scopeKey] or {}
 	texturesEditors[scopeKey] = scopeEditors
-	scopeEditors[groupKey] = Refresh
+	scopeEditors[groupKey] = {
+		Refresh = Refresh,
+		SelectBarKey = function(barKey)
+			if tContains(listedRows, rowsByKey[barKey]) then
+				FillDetailPanel(barKey)
+				SetTableValues()
+			end
+		end,
+	}
 
 	-- A sibling tab's edits show up when this one comes back into view.
 	container:HookScript("OnShow", function()
@@ -837,7 +905,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 
 	Refresh()
 
-	return yCoord - 340
+	return yCoord - detailHeight
 end
 
 ---Constructs the Textures tab of a shared grouping's strip: the textures of just that grouping's bars.
