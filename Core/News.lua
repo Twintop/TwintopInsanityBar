@@ -11,15 +11,15 @@ TRB.Details.coreNewsContent = [====[
 - [#858](#858) The Visibility tab of Global Options and of each specialization no longer lists the bars under Cast Bars, Other Bars, Pet Bars, and Skyriding.
 - [#858](#858) Add a checkbox that also lists those bars on the Visibility tab of Global Options and of each specialization.
 - [#858](#858) A bar tab's Configure Visibility link opens the Visibility tab of the group the bar belongs to.
-- Use global settings on the Visibility tabs now works per bar. The box switches every bar listed, and a listed bar that uses the global settings can be customized on its own.
-- Remove the Copy button beside the Visibility tab's use global settings box.
-- Fix the Visibility tab of Global Options naming the Utility bar Angelic Feather.
-- Add visibility presets, named sets of Show Bar When, Always Hide When, opacity, fade, and smoothing settings. A bar can use a preset, and editing the preset changes every bar using it. Bars whose settings match a preset exactly use it automatically.
-- Split the Visibility tab of Global Options into a Bar Display tab and a Manage Presets tab. Manage Presets adds, renames, edits, and deletes presets.
-- Add an Actions button to the Visibility tab to copy settings onto a bar from Global Options, another bar, or a preset, to use a preset, to go back to the global settings, or to save a bar's settings as a preset.
-- Add Apply to Bars to the Visibility tab to copy settings onto, use a preset for, or go back to the global settings for several bars at once.
-- Add an Enabled checkbox to the selected bar's settings on the Visibility tab. Like the one at the top of the bar's own tab, it turns the bar on or off, including while the bar uses a preset.
-- Fix the Visibility tab of Global Options and its presets listing the form conditions only while playing a class with forms.
+- [#859](#859) Use global settings on the Visibility tabs now works per bar. The box switches every bar listed, and a listed bar that uses the global settings can be customized on its own.
+- [#859](#859) Remove the Copy button beside the Visibility tab's use global settings box.
+- [#859](#859) Fix the Visibility tab of Global Options naming the Utility bar Angelic Feather.
+- [#859](#859) Add visibility presets, named sets of Show Bar When, Always Hide When, opacity, fade, and smoothing settings. A bar can use a preset, and editing the preset changes every bar using it. Bars whose settings match a preset exactly use it automatically.
+- [#859](#859) Split the Visibility tab of Global Options into a Bar Display tab and a Manage Presets tab. Manage Presets adds, renames, edits, and deletes presets.
+- [#859](#859) Add an Actions button to the Visibility tab to copy settings onto a bar from Global Options, another bar, or a preset, to use a preset, to go back to the global settings, or to save a bar's settings as a preset.
+- [#859](#859) Add Apply to Bars to the Visibility tab to copy settings onto, use a preset for, or go back to the global settings for several bars at once.
+- [#859](#859) Add an Enabled checkbox to the selected bar's settings on the Visibility tab. Like the one at the top of the bar's own tab, it turns the bar on or off, including while the bar uses a preset.
+- [#859](#859) Fix the Visibility tab of Global Options and its presets listing the form conditions only while playing a class with forms.
 
 ---
 
