@@ -365,12 +365,10 @@ function TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, s
 	local spec = classSettings and classSettings[specName]
 	local specEntry = spec and spec.displayBar and spec.displayBar[visibilityKey]
 
-	-- Only keys present in core.displayBar are shared globally; custom bars stay spec-owned. IsGlobalScopeBar
-	-- is the authority on which those are, so a stale core entry for a class-scoped bar can't take its
-	-- spec row hostage (it would go read-only against a global entry with no UI behind it).
-	local globalFlags = core.global and core.global[className] and core.global[className][specName]
-	if globalFlags ~= nil and globalFlags.displayBar == true and globalEntry ~= nil
-		and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(visibilityKey) then
+	-- Only keys present in core.displayBar are shared globally; custom bars stay spec-owned. IsEntryGlobal
+	-- also asks IsGlobalScopeBar, so a stale core entry for a class-scoped bar can't take its spec row
+	-- hostage (it would go read-only against a global entry with no UI behind it).
+	if TRB.Functions.BarVisibility:IsEntryGlobal(visibilityKey, core.displayBar, spec and spec.displayBar) then
 		return globalEntry, true
 	end
 	return specEntry, false
@@ -423,6 +421,37 @@ function TRB.Functions.OptionsUi.Visibility:RefreshApis(classId, specId)
 		for _, api in pairs(scopeApis) do
 			api.Refresh()
 		end
+	end
+end
+
+---Refreshes every built Visibility table of every scope, for a change that reaches many specializations.
+function TRB.Functions.OptionsUi.Visibility:RefreshAllApis()
+	for _, scopeApis in pairs(visibilityApis) do
+		for _, api in pairs(scopeApis) do
+			api.Refresh()
+		end
+	end
+end
+
+---Opens a bar's row on its Global Options Visibility tab, switching to the Global screen that holds it.
+---@param visibilityKey string # The displayBar key
+function TRB.Functions.OptionsUi.Visibility:OpenGlobalVisibility(visibilityKey)
+	local barGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(visibilityKey)
+	local tabs = TRB.Functions.OptionsUi.Tabs
+	local function OpenTab()
+		if barGroup == "spec" then
+			tabs:SwitchToTabByNamePrefix("Global", "barVisibility")
+		else
+			tabs:SwitchToTabByNamePrefix(tabs:GetGroupInnerPrefix(barGroup, nil, nil), tabs.TabKeys.BarVisibility)
+		end
+		local api = TRB.Functions.OptionsUi.Visibility:GetApi(nil, nil, barGroup)
+		if api ~= nil and api.SelectByDisplayBarKey ~= nil then
+			api.SelectByDisplayBarKey(visibilityKey)
+		end
+	end
+	if TRB.Options.OptionsFrame then
+		TRB.Options.OptionsFrame:SelectCategory(barGroup == "spec" and "global" or barGroup)
+		C_Timer.After(0, OpenTab)
 	end
 end
 
@@ -705,45 +734,152 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		extraThresholdTypes = {}
 	end
 
-	-- Forward-declare so the checkbox OnClick (defined before the table) can call it
+	-- Declared up front: the Use Global boxes below, built before the table, and the table's own handlers share them.
 	local RefreshTableForGlobalToggle = nil
+	local allBarEntries = {}
+	local barEntries = {}
+	local coreDisplayBar = TRB.Data.settings.core.displayBar
 
-	---Returns true when this is a spec options panel and the "Use global settings" checkbox is checked for displayBar.
-	local function IsUsingGlobalDisplayBar()
-		if classId == nil or specId == nil then
-			return false
+	---Whether a row follows Global Options for this specialization. The Global panel edits its own entries.
+	---@param entry table # A bar entry
+	---@return boolean
+	local function IsRowControlledByGlobal(entry)
+		return classId ~= nil and entry.isGlobal and TRB.Functions.BarVisibility:IsEntryGlobal(entry.displayBarKey, coreDisplayBar, spec.displayBar)
+	end
+
+	---Whether all, none, or some of the listed bars that could follow Global Options do.
+	---@return boolean|nil state # nil is mixed
+	---@return integer total # How many listed bars could
+	local function GetUseGlobalState()
+		local total, controlled = 0, 0
+		for _, entry in ipairs(barEntries) do
+			if entry.isGlobal then
+				total = total + 1
+				if IsRowControlledByGlobal(entry) then
+					controlled = controlled + 1
+				end
+			end
 		end
-		local lc = string.lower(className)
-		return TRB.Data.settings.core.global[lc][specName].displayBar == true
+		if controlled == 0 then
+			return false, total
+		elseif controlled == total then
+			return true, total
+		end
+		return nil, total
+	end
+
+	---Runs a function on every specialization's entry for each listed bar that could follow Global Options.
+	---@param fn fun(specEntry: table)
+	local function ForEachSpecEntryOfListedBars(fn)
+		for _, specRegistryEntry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+			local classPiece = TRB.Data.settings[specRegistryEntry.className]
+			local piece = classPiece and classPiece[specRegistryEntry.specName]
+			if piece ~= nil and piece.displayBar ~= nil then
+				for _, entry in ipairs(barEntries) do
+					local specEntry = piece.displayBar[entry.displayBarKey]
+					if type(specEntry) == "table" and coreDisplayBar[entry.displayBarKey] ~= nil
+						and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(entry.displayBarKey) then
+						fn(specEntry)
+					end
+				end
+			end
+		end
+	end
+
+	---The same state across every specialization, for the Global panel's box.
+	---@return boolean|nil state # nil is mixed
+	---@return integer controlled
+	---@return integer total
+	local function GetBulkUseGlobalState()
+		local total, controlled = 0, 0
+		ForEachSpecEntryOfListedBars(function(specEntry)
+			total = total + 1
+			if specEntry.useGlobal ~= false then
+				controlled = controlled + 1
+			end
+		end)
+		if controlled == 0 then
+			return false, controlled, total
+		elseif controlled == total then
+			return true, controlled, total
+		end
+		return nil, controlled, total
+	end
+
+	---Syncs the Use Global box to the rows it covers.
+	local function SyncUseGlobalControls()
+		local checkbox = controls.checkBoxes ~= nil and (controls.checkBoxes.useGlobalDisplayBar or controls.checkBoxes.enableAllDisplayBar) or nil
+		if checkbox == nil then
+			return
+		end
+		if classId ~= nil then
+			local state, total = GetUseGlobalState()
+			checkbox:SetShown(total > 0)
+			TRB.Functions.OptionsUi.GlobalSettings:SetCheckboxTriState(checkbox, state)
+		else
+			local state, controlled, total = GetBulkUseGlobalState()
+			TRB.Functions.OptionsUi.GlobalSettings:SetCheckboxTriState(checkbox, state)
+			checkbox.specCount:SetText(string.format(L["UseGlobalBarCountFormat"], controlled, total))
+		end
 	end
 
 	controls.barDisplaySection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarDisplayHeader"], oUi.xCoord, yCoord)
 
 	if classId ~= nil and specId ~= nil then
 		yCoord = yCoord - 30
-		local lowerClassName = string.lower(className)
 		controls.checkBoxes = controls.checkBoxes or {}
 		controls.checkBoxes.useGlobalDisplayBar = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_useGlobal_displayBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.useGlobalDisplayBar
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobalAllListedBars"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility, groupKey ~= "spec" and groupKey or nil)
-		f.tooltip = L["CheckboxUseGlobalTooltip_BarDisplay"]
-		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].displayBar)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.core.global[lowerClassName][specName].displayBar = self:GetChecked()
-			-- Swapping the displayBar source can flip Never Show for several bars at once,
+		f.tooltip = L["CheckboxUseGlobalAllListedBarsTooltip"]
+		f:SetScript("OnClick", function()
+			-- Checked gives every listed bar its own settings; unchecked or mixed puts them all back on Global Options.
+			local useGlobal = GetUseGlobalState() ~= true
+			for _, entry in ipairs(barEntries) do
+				local specEntry = entry.isGlobal and spec.displayBar[entry.displayBarKey] or nil
+				if specEntry ~= nil then
+					if useGlobal then
+						specEntry.useGlobal = nil
+					else
+						specEntry.useGlobal = false
+					end
+				end
+			end
+			-- Swapping the source can flip Never Show for several bars at once,
 			-- so the applied show/alpha state is rebuilt rather than reused.
 			TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true, true)
-			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("displayBar")
-			-- Every tab of this spec shares the flag, so each one's table and checkbox follow it.
+			-- Every tab of this spec lists some of the bars, so each one's table and box follow.
 			TRB.Functions.OptionsUi.Visibility:RefreshApis(classId, specId)
 		end)
-		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "displayBar")
 	elseif groupKey == "spec" then
-		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllDisplayBar", "displayBar", yCoord)
+		-- Global options panel: one box for the listed bars in every specialization.
+		yCoord = yCoord - 30
+		controls.checkBoxes = controls.checkBoxes or {}
+		controls.checkBoxes.enableAllDisplayBar = CreateFrame("CheckButton", "TwintopResourceBar_Global_enableAll_displayBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.enableAllDisplayBar
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobalAllSpecsListedBars"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
+		f.tooltip = L["CheckboxUseGlobalAllSpecsListedBarsTooltip"]
+		f.specCount = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+		f.specCount:SetTextColor(0.75, 0.75, 0.75)
+		-- The template's label keeps its own width, so sit past the rendered text rather than its right edge.
+		f.specCount:SetPoint("LEFT", f, "RIGHT", getglobal(f:GetName() .. 'Text'):GetStringWidth() + 14, 0)
+		f:SetScript("OnClick", function()
+			local useGlobal = GetBulkUseGlobalState() ~= true
+			ForEachSpecEntryOfListedBars(function(specEntry)
+				if useGlobal then
+					specEntry.useGlobal = nil
+				else
+					specEntry.useGlobal = false
+				end
+			end)
+			TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()
+			TRB.Functions.OptionsUi.Visibility:RefreshAllApis()
+		end)
 	end
 
 	-- Re-lists the table; assigned once the table exists.
@@ -1408,9 +1544,6 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	-- Build list of every bar entry; the tab lists the ones in its grouping
-	local allBarEntries = {}
-
-	local coreDisplayBar = TRB.Data.settings.core.displayBar
 
 	-- Primary bar (always present)
 	table.insert(allBarEntries, {
@@ -1576,8 +1709,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
-	-- Mutated in place: the table, detail panel, and handlers below all close over it.
-	local barEntries = {}
+	-- barEntries is mutated in place: the Use Global box, table, detail panel, and handlers all close over it.
 	local function RebuildBarEntries()
 		for index = #barEntries, 1, -1 do
 			barEntries[index] = nil
@@ -1651,10 +1783,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	---Refreshes the scrolling table data from the current bar visibility settings.
 	local function SetTableValues()
-		local useGlobal = IsUsingGlobalDisplayBar()
 		local dataTable = {}
 		for _, entry in ipairs(barEntries) do
-			local isControlledByGlobal = useGlobal and entry.isGlobal
+			local isControlledByGlobal = IsRowControlledByGlobal(entry)
 			local visSettings
 			if isControlledByGlobal then
 				visSettings = coreDisplayBar[entry.displayBarKey]
@@ -1697,6 +1828,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	local detailYCoord = 0
 	local selectedBarKey = nil
+	-- Assigned below, once the detail panel can refill itself.
+	local CustomizeSelectedRow = nil
 
 	-- Detail panel contents: header, show/hide dropdowns, smooth checkbox, sliders
 	local detailHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailFrame, "", oUi.xCoord, detailYCoord)
@@ -1859,6 +1992,40 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
+	-- Blocks the detail controls of a row that follows Global Options, with the way out.
+	local detailCover = TRB.Functions.OptionsUi.Primitives:BuildSectionCover(detailFrame, -30, -detailHeight)
+	controls.barVisibilityDetailCover = detailCover
+	local coverMessage = detailCover:CreateFontString(nil, "OVERLAY")
+	coverMessage:SetFontObject(GameFontHighlightLarge)
+	coverMessage:SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
+	coverMessage:SetJustifyH("CENTER")
+	coverMessage:SetText(L["BarVisibilityUsingGlobal"])
+	-- Raised by half the button row so the message and buttons sit centered as one block.
+	coverMessage:SetPoint("LEFT", detailCover, "LEFT", 20, 15)
+	coverMessage:SetPoint("RIGHT", detailCover, "RIGHT", -20, 15)
+
+	local coverOpen = CreateFrame("Button", nil, detailCover, "UIPanelButtonTemplate")
+	coverOpen:SetText(L["UseGlobalCoverOpenGlobal"])
+	coverOpen:SetSize(coverOpen:GetTextWidth() + 30, 22)
+	coverOpen:SetPoint("TOPRIGHT", coverMessage, "BOTTOM", -5, -8)
+	coverOpen:SetScript("OnClick", function()
+		for _, e in ipairs(barEntries) do
+			if e.key == selectedBarKey then
+				TRB.Functions.OptionsUi.Visibility:OpenGlobalVisibility(e.displayBarKey)
+				return
+			end
+		end
+	end)
+
+	local coverCustomize = CreateFrame("Button", nil, detailCover, "UIPanelButtonTemplate")
+	coverCustomize:SetText(L["UseGlobalCoverCustomize"])
+	coverCustomize:SetSize(coverCustomize:GetTextWidth() + 30, 22)
+	coverCustomize:SetPoint("TOPLEFT", coverMessage, "BOTTOM", 5, -8)
+	coverCustomize:SetScript("OnClick", function()
+		CustomizeSelectedRow()
+	end)
+	detailCover.customizeButton = coverCustomize
+
 	---Populates the bar visibility detail panel with controls for the selected bar's visibility settings.
 	---@param barKey string The key identifying which bar to display details for
 	local function FillDetailPanel(barKey)
@@ -1875,7 +2042,9 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			return
 		end
 
-		local visSettings = spec.displayBar[barEntry.displayBarKey]
+		local controlled = IsRowControlledByGlobal(barEntry)
+		-- A row following Global Options shows its global values, read-only.
+		local visSettings = controlled and coreDisplayBar[barEntry.displayBarKey] or spec.displayBar[barEntry.displayBarKey]
 		if visSettings == nil then
 			detailFrame:Hide()
 			return
@@ -2025,7 +2194,34 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		controls.sliders.selectedThresholdValue:SetValue(visSettings.resourceConditionValue or 0)
 		UpdateThresholdControlLabels(visSettings.resourceConditionType or "none")
 
+		-- A row following Global Options is shown read-only behind a cover.
+		detailCover:SetShown(controlled)
 		detailFrame:Show()
+	end
+
+	-- Gives the selected row its own copy of what Global Options shows now, so nothing changes until it is edited.
+	CustomizeSelectedRow = function()
+		local barEntry = nil
+		for _, e in ipairs(barEntries) do
+			if e.key == selectedBarKey then
+				barEntry = e
+				break
+			end
+		end
+		if barEntry == nil or not IsRowControlledByGlobal(barEntry) then
+			return
+		end
+		local specEntry = spec.displayBar[barEntry.displayBarKey]
+		local globalCopy = TRB.Functions.Table:DeepCopy(coreDisplayBar[barEntry.displayBarKey])
+		for k in pairs(specEntry) do
+			specEntry[k] = nil
+		end
+		for k, v in pairs(globalCopy) do
+			specEntry[k] = v
+		end
+		specEntry.useGlobal = false
+		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specId, true, true)
+		TRB.Functions.OptionsUi.Visibility:RefreshApis(classId, specId)
 	end
 
 	-- Table click handler
@@ -2034,17 +2230,6 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			if button == "LeftButton" then
 				if realrow ~= nil and realrow > 0 then
 					local barKey = data[realrow].cols[1].value
-
-					-- Reject selection if this bar is currently controlled by global settings
-					if IsUsingGlobalDisplayBar() then
-						for _, e in ipairs(barEntries) do
-							if e.key == barKey and e.isGlobal then
-								scrollingTable:ClearSelection()
-								detailFrame:Hide()
-								return
-							end
-						end
-					end
 
 					local currentSelection = scrollingTable:GetSelection()
 					FillDetailPanel(barKey)
@@ -2063,29 +2248,23 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 
 	-- Initial table population
 	SetTableValues()
+	SyncUseGlobalControls()
 
-	-- Define the refresh function that the "Use global settings" checkbox calls
-	-- to update the table state when the toggle changes.
+	-- Re-reads every row after a Use Global change, here or on another tab of this specialization.
 	RefreshTableForGlobalToggle = function()
-		local useGlobalCheckbox = controls.checkBoxes ~= nil and controls.checkBoxes.useGlobalDisplayBar or nil
-		if useGlobalCheckbox ~= nil then
-			useGlobalCheckbox:SetChecked(IsUsingGlobalDisplayBar())
-		end
+		SyncUseGlobalControls()
 		SetTableValues()
-		-- If the currently selected bar is now controlled by global, deselect it
-		if IsUsingGlobalDisplayBar() and selectedBarKey ~= nil then
-			for _, e in ipairs(barEntries) do
-				if e.key == selectedBarKey and e.isGlobal then
-					barVisibilityTable:ClearSelection()
-					detailFrame:Hide()
-					selectedBarKey = nil
-					break
+		-- The selected row may have switched between Global Options and its own settings.
+		if selectedBarKey ~= nil then
+			for i, e in ipairs(barEntries) do
+				if e.key == selectedBarKey then
+					barVisibilityTable:SetSelection(i)
+					FillDetailPanel(selectedBarKey)
+					return
 				end
 			end
-		end
-		-- Another tab listing this bar may have edited it, so the open panel is read again.
-		if selectedBarKey ~= nil then
-			FillDetailPanel(selectedBarKey)
+			detailFrame:Hide()
+			selectedBarKey = nil
 		end
 	end
 
@@ -2093,6 +2272,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		RebuildBarEntries()
 		ResizeTable()
 		SetTableValues()
+		SyncUseGlobalControls()
 		-- The selected bar keeps its panel while it is still listed.
 		barVisibilityTable:ClearSelection()
 		if selectedBarKey ~= nil then
@@ -2115,9 +2295,6 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		SelectByDisplayBarKey = function(displayBarKey)
 			for i, e in ipairs(barEntries) do
 				if e.displayBarKey == displayBarKey then
-					if IsUsingGlobalDisplayBar() and e.isGlobal then
-						return
-					end
 					barVisibilityTable:SetSelection(i)
 					FillDetailPanel(e.key)
 					return

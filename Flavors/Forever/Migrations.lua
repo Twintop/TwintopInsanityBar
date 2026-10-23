@@ -15,4 +15,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Swing timer bars: same, for their remaining-time text.
 	TRB.Functions.Settings:SeedSwingTimersText(savedSettings.core)
+
+	-- Visibility: the per-specialization Use Global flag became per bar.
+	TRB.Functions.Settings:MigrateDisplayBarUseGlobal(savedSettings)
 end

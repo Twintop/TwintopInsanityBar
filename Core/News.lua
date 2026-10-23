@@ -11,6 +11,8 @@ TRB.Details.coreNewsContent = [====[
 - [#858](#858) The Visibility tab of Global Options and of each specialization no longer lists the bars under Cast Bars, Other Bars, Pet Bars, and Skyriding.
 - [#858](#858) Add a checkbox that also lists those bars on the Visibility tab of Global Options and of each specialization.
 - [#858](#858) A bar tab's Configure Visibility link opens the Visibility tab of the group the bar belongs to.
+- Use global settings on the Visibility tabs now works per bar. The box switches every bar listed, and a listed bar that uses the global settings can be customized on its own.
+- Remove the Copy button beside the Visibility tab's use global settings box.
 
 ---
 

@@ -1979,46 +1979,27 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
-	if s.displayBar then
-		-- Create a deep copy to avoid modifying the global displayBar object
-		specCache.settings.displayBar = {}
-		for k, v in pairs(core.displayBar) do
+	-- Each bar follows Global Options unless its own entry opts out (useGlobal = false); every bar gets a copy,
+	-- so nothing at runtime writes into the saved tables. Bars Global Options has no entry for stay with the spec.
+	do
+		local registry = TRB.Classes.BarTypeRegistry
+		local barVisibility = TRB.Functions.BarVisibility
+		local displayBar = {}
+		local specDisplayBar = spec.displayBar or {}
+		for k, v in pairs(specDisplayBar) do
 			if type(v) == "table" then
-				-- Deep copy the table (neverShow, conditions, smooth, etc.)
-				specCache.settings.displayBar[k] = {}
-				for k2, v2 in pairs(v) do
-					if type(v2) == "table" then
-						-- Deep copy nested tables (e.g., conditions)
-						specCache.settings.displayBar[k][k2] = {}
-						for k3, v3 in pairs(v2) do
-							specCache.settings.displayBar[k][k2][k3] = v3
-						end
-					else
-						specCache.settings.displayBar[k][k2] = v2
-					end
-				end
-				-- When using global displayBar, both visibility AND smooth come from global
+				displayBar[k] = barVisibility:ComposeEntry(barVisibility:IsEntryGlobal(k, core.displayBar, specDisplayBar) and core.displayBar[k] or v)
 			else
-				specCache.settings.displayBar[k] = v
+				-- Flags such as enableFormSwitching and showComboPoints.
+				displayBar[k] = v
 			end
 		end
-		
-		-- Override with spec-specific displayBar keys that don't exist in core.displayBar.
-		-- Custom bars (mana, stagger, defensives, holyWords, lightweaver, boneShield, etc.)
-		-- and non-visibility flags (enableFormSwitching, showComboPoints) are always
-		-- spec-specific because they aren't exposed in the global panel.
-		-- This loop automatically picks up any new custom bar types without needing
-		-- manual additions here — preventing the recurring bug where a new bar type
-		-- was invisible under "Use global settings" because it wasn't listed.
-		if spec.displayBar then
-			for k, v in pairs(spec.displayBar) do
-				if core.displayBar[k] == nil then
-					specCache.settings.displayBar[k] = v
-				end
+		for k, v in pairs(core.displayBar) do
+			if displayBar[k] == nil and type(v) == "table" and registry:IsGlobalScopeBar(k) then
+				displayBar[k] = barVisibility:ComposeEntry(v)
 			end
 		end
-	else
-		specCache.settings.displayBar = spec.displayBar
+		specCache.settings.displayBar = displayBar
 	end
 
 	--NYI

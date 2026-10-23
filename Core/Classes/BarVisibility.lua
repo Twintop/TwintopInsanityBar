@@ -256,6 +256,27 @@ TRB.Functions.BarVisibility.curveReplay = { count = 0, valid = false, settings =
 -- Inputs NewFromGameState reads live that no event marks dirty, as the last full pass saw them.
 TRB.Functions.BarVisibility.curveRecheck = {}
 
+---Whether a specialization's bar follows Global Options' visibility: Global Options has an entry for the bar and the
+---specialization's own entry has not opted out with `useGlobal = false`.
+---@param key string # The displayBar key
+---@param coreDisplayBar table? # Global Options' displayBar
+---@param specDisplayBar table? # The specialization's displayBar
+---@return boolean
+function TRB.Functions.BarVisibility:IsEntryGlobal(key, coreDisplayBar, specDisplayBar)
+	if coreDisplayBar == nil or coreDisplayBar[key] == nil or not TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(key) then
+		return false
+	end
+	local specEntry = specDisplayBar and specDisplayBar[key]
+	return type(specEntry) ~= "table" or specEntry.useGlobal ~= false
+end
+
+---A copy of a visibility entry, as the spec cache holds it, so nothing at runtime touches the saved table.
+---@param entry table
+---@return table
+function TRB.Functions.BarVisibility:ComposeEntry(entry)
+	return TRB.Functions.Table:DeepCopy(entry)
+end
+
 -- Reused by every HideResourceBar pass so building entries and the context allocates nothing.
 local pooledEntries = {}
 local entryPool = {}

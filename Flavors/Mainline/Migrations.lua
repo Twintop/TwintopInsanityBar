@@ -8811,6 +8811,11 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
+	-- Visibility: the per-specialization Use Global flag became per bar.
+	if TwintopInsanityBarSettings ~= nil then
+		TRB.Functions.Settings:MigrateDisplayBarUseGlobal(TwintopInsanityBarSettings)
+	end
+
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

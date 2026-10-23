@@ -61,7 +61,6 @@ local function NewSpecGlobalDefaults()
 		comboPoints = true,
 		healthBar = true,
 		thresholdIcons = true,
-		displayBar = true,
 		displayText = false,
 		globalBarText = true,
 		textColors = false,
@@ -407,6 +406,36 @@ function TRB.Functions.Settings:PortForwardProfile(profile)
 	-- Same for the indicator order lists: ApplyToRuntime overlays them by index, so a profile whose
 	-- list is shorter than the live one would leave a duplicate of the live tail behind.
 	self:ReconcileAllSharedIndicators(profile)
+end
+
+---Visibility used to follow Global Options through one flag per specialization. It is now per bar: a specialization
+---that had opted out keeps its own settings on every bar that could follow Global Options. Idempotent.
+---@param settings table # Shaped like the saved variables: the live root or one stored profile
+function TRB.Functions.Settings:MigrateDisplayBarUseGlobal(settings)
+	local global = type(settings.core) == "table" and settings.core.global or nil
+	if type(global) ~= "table" then
+		return
+	end
+	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+		local classFlags = global[classEntry.className]
+		local classPiece = settings[classEntry.className]
+		if type(classFlags) == "table" then
+			for _, specEntry in ipairs(classEntry.specs) do
+				local flags = classFlags[specEntry.specName]
+				if type(flags) == "table" and flags.displayBar ~= nil then
+					local piece = type(classPiece) == "table" and classPiece[specEntry.specName] or nil
+					if flags.displayBar == false and type(piece) == "table" and type(piece.displayBar) == "table" then
+						for key, entry in pairs(piece.displayBar) do
+							if type(entry) == "table" and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(key) then
+								entry.useGlobal = false
+							end
+						end
+					end
+					flags.displayBar = nil
+				end
+			end
+		end
+	end
 end
 
 ---Runs the flavor's saved-variable migrations against a settings-shaped table (defaults to the live
