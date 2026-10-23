@@ -21,4 +21,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 	if settings ~= nil then
 		TRB.Functions.Settings:AutoLinkVisibilityPresets(savedSettings)
 	end
+
+	-- Textures: the one Texture Lock became four, the per-specialization Use Global flag became per bar, and the mana bar's textures moved.
+	TRB.Functions.Settings:MigrateTextures(savedSettings)
 end

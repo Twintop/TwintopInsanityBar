@@ -68,7 +68,6 @@ local function NewSpecGlobalDefaults()
 		thresholdColors = true,
 		healthBarColors = true,
 		precision = false,
-		textures = true,
 		castbarDimensions = true,
 		castbarColors = true,
 		castbarOverlays = true,
@@ -2388,7 +2387,11 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 		borderName="1 Pixel",
 		resourceBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
 		resourceBarName=L["LSMStatusBarSmoother"],
-		textureLock=true,
+		lockBar=true,
+		lockBorder=true,
+		lockBackground=true,
+		lockOverlay=true,
+		useGlobal={},
 		healthBackground="Interface\\Tooltips\\UI-Tooltip-Background",
 		healthBackgroundName="Blizzard Tooltip",
 		healthBorder="Interface\\Buttons\\WHITE8X8",
@@ -2413,12 +2416,12 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 		textures.comboPointsBarName=L["LSMStatusBarSmoother"]
 	end
 	if includeManaBar then
-		textures.manaBarBackground="Interface\\Tooltips\\UI-Tooltip-Background"
-		textures.manaBarBackgroundName="Blizzard Tooltip"
-		textures.manaBarBorder="Interface\\Buttons\\WHITE8X8"
-		textures.manaBarBorderName="1 Pixel"
-		textures.manaBarBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
-		textures.manaBarBarName=L["LSMStatusBarSmoother"]
+		textures.manaBackground="Interface\\Tooltips\\UI-Tooltip-Background"
+		textures.manaBackgroundName="Blizzard Tooltip"
+		textures.manaBorder="Interface\\Buttons\\WHITE8X8"
+		textures.manaBorderName="1 Pixel"
+		textures.manaBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
+		textures.manaBarName=L["LSMStatusBarSmoother"]
 	end
 	if customBars then
 		for _, barTypeDef in ipairs(customBars) do
@@ -2433,6 +2436,229 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 		end
 	end
 	return textures
+end
+
+-- The texture keys the main bars own; every other bar owns <key>Bar, <key>Border, and <key>Background.
+local textureRowKeys = {
+	primary = { bar = "resourceBar", border = "border", background = "background", overlays = { "castingBar" } },
+	secondary = { bar = "comboPointsBar", border = "comboPointsBorder", background = "comboPointsBackground", overlays = { "comboPointsCastingBar" } },
+	health = { bar = "healthBar", border = "healthBorder", background = "healthBackground", overlays = { "absorbBar", "incomingHealBar", "healAbsorbBar" } },
+}
+local textureKeysByBar = {}
+
+---The four texture locks, each matching one kind of texture across every bar.
+TRB.Functions.Settings.textureLockKeys = { "lockBar", "lockBorder", "lockBackground", "lockOverlay" }
+
+---The locks that match one suffix of every bar's textures to the main bar's.
+TRB.Functions.Settings.textureSuffixLocks = {
+	{ lock = "lockBar", suffix = "Bar", source = "resourceBar" },
+	{ lock = "lockBorder", suffix = "Border", source = "border" },
+	{ lock = "lockBackground", suffix = "Background", source = "background" },
+}
+
+---The texture keys a bar row owns: its fill, border, and background, and the overlays that go with it.
+---@param barKey string # primary, secondary, health, or a registered bar's key
+---@return { bar: string, border: string, background: string, overlays: string[], all: string[] }
+function TRB.Functions.Settings:GetTextureKeysForBar(barKey)
+	local keys = textureKeysByBar[barKey]
+	if keys == nil then
+		keys = textureRowKeys[barKey] or {
+			bar = barKey .. "Bar",
+			border = barKey .. "Border",
+			background = barKey .. "Background",
+			overlays = {},
+		}
+		keys.all = { keys.bar, keys.border, keys.background, unpack(keys.overlays) }
+		textureKeysByBar[barKey] = keys
+	end
+	return keys
+end
+
+local globalTextureBars = nil
+---The bars whose textures follow Global Options until a specialization opts them out: the main, secondary, and health
+---bars, and every cast bar, Other Bar, and Skyriding bar Global offers. The mana bar, class bars, and pet bars are the spec's own.
+---@return { keys: string[], set: table<string, boolean> }
+function TRB.Functions.Settings:GetGlobalTextureBars()
+	if globalTextureBars == nil then
+		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+		local definitions = {}
+		registry:AppendCastbar(definitions)
+		registry:AppendTargetFocusCastbars(definitions)
+		registry:AppendOtherBars(definitions, nil)
+		registry:AppendSkyridingBars(definitions)
+		local keys = { "primary", "secondary", "health" }
+		for _, definition in ipairs(definitions) do
+			keys[#keys + 1] = definition.key
+		end
+		local set = {}
+		for _, key in ipairs(keys) do
+			set[key] = true
+		end
+		globalTextureBars = { keys = keys, set = set }
+	end
+	return globalTextureBars
+end
+
+---Layers a specialization's textures over Global's: each bar Global offers follows it unless the specialization opted the
+---bar out, and a lock matches every bar to the main bar. With every bar opted out it returns the specialization's own table.
+---@param coreTextures table
+---@param specTextures table?
+---@return table
+function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures)
+	specTextures = specTextures or {}
+	local useGlobal = specTextures.useGlobal or {}
+	local globalBars = self:GetGlobalTextureBars()
+	local anyFollowed = false
+	for _, barKey in ipairs(globalBars.keys) do
+		if useGlobal[barKey] ~= false then
+			anyFollowed = true
+			break
+		end
+	end
+	if not anyFollowed then
+		return specTextures
+	end
+
+	-- A copy, so layering this spec's own textures on top never writes them into Global's saved table.
+	local textures = {}
+	for key, value in pairs(coreTextures) do
+		textures[key] = value
+	end
+	for _, barKey in ipairs(globalBars.keys) do
+		if useGlobal[barKey] == false then
+			for _, key in ipairs(self:GetTextureKeysForBar(barKey).all) do
+				if specTextures[key] ~= nil then
+					textures[key] = specTextures[key]
+					textures[key .. "Name"] = specTextures[key .. "Name"]
+				end
+			end
+		end
+	end
+
+	-- The main bar's owner decides the locks, since the locks match every bar to its textures.
+	local lockSource = useGlobal.primary ~= false and coreTextures or specTextures
+	for _, lock in ipairs(self.textureLockKeys) do
+		textures[lock] = lockSource[lock]
+	end
+
+	-- The bars Global's Textures panel offers take Global's textures; the mana bar, class bars, and pet bars keep
+	-- the spec's own, and a lock matches every one of them to the main bar's.
+	for prefix in pairs(TRB.Classes.BarTypeRegistry:GetInstance():GetAll()) do
+		local followed = globalBars.set[prefix] and useGlobal[prefix] ~= false
+		for _, suffixLock in ipairs(self.textureSuffixLocks) do
+			local key = prefix .. suffixLock.suffix
+			if textures[suffixLock.lock] then
+				textures[key] = textures[suffixLock.source]
+				textures[key .. "Name"] = textures[suffixLock.source .. "Name"]
+			elseif specTextures[key] ~= nil and (not followed or textures[key] == nil) then
+				textures[key] = specTextures[key]
+				textures[key .. "Name"] = specTextures[key .. "Name"]
+			end
+		end
+	end
+
+	return textures
+end
+
+---Moves a textures table from the one Texture Lock to the four locks, which all take its value.
+---@param textures table
+local function MigrateTextureLocks(textures)
+	if textures.textureLock == nil then
+		return
+	end
+	local locked = textures.textureLock == true
+	for _, lock in ipairs(TRB.Functions.Settings.textureLockKeys) do
+		textures[lock] = locked
+	end
+	textures.textureLock = nil
+end
+
+local oldManaTextureKeys = { "manaBarBar", "manaBarBarName", "manaBarBorder", "manaBarBorderName", "manaBarBackground", "manaBarBackgroundName" }
+
+-- What the mana bar draws each texture from: the lock that matches it to the main bar, and that bar's texture.
+local manaTextureFields = {
+	{ key = "manaBar", lock = "lockBar", source = "resourceBar" },
+	{ key = "manaBorder", lock = "lockBorder", source = "border" },
+	{ key = "manaBackground", lock = "lockBackground", source = "background" },
+}
+
+---Whether a textures table still holds the mana bar's textures under their old keys.
+---@param textures table
+---@return boolean
+local function HasOldManaTextures(textures)
+	for _, key in ipairs(oldManaTextureKeys) do
+		if textures[key] ~= nil then
+			return true
+		end
+	end
+	return false
+end
+
+---Moves the mana bar's textures to the keys it reads. The old keys never drew, so the new ones take what the mana bar
+---drew with: the main bar's textures under a lock, otherwise its own under the new keys, otherwise the main bar's.
+---@param textures table # The specialization's textures
+---@param coreTextures table
+---@param ownsTextures boolean # Whether the specialization drew with its own textures rather than Global's
+local function MigrateManaTextures(textures, coreTextures, ownsTextures)
+	local base = ownsTextures and textures or coreTextures
+	for _, field in ipairs(manaTextureFields) do
+		local value, name = base[field.source], base[field.source .. "Name"]
+		if not base[field.lock] then
+			local holder = textures[field.key] ~= nil and textures or (not ownsTextures and coreTextures or nil)
+			if holder ~= nil and holder[field.key] ~= nil then
+				value, name = holder[field.key], holder[field.key .. "Name"]
+			end
+		end
+		textures[field.key] = value
+		textures[field.key .. "Name"] = name
+	end
+	for _, key in ipairs(oldManaTextureKeys) do
+		textures[key] = nil
+	end
+end
+
+---Textures: the one Texture Lock became four, the per-specialization Use Global flag became per bar, and the mana bar's
+---textures moved to the keys it reads. A flag is cleared once its specialization's textures are in the same table to receive it.
+---@param settings table # A saved-variables shaped table
+function TRB.Functions.Settings:MigrateTextures(settings)
+	local core = type(settings.core) == "table" and settings.core or nil
+	local coreTextures = core ~= nil and type(core.textures) == "table" and core.textures or nil
+	if coreTextures ~= nil then
+		MigrateTextureLocks(coreTextures)
+		-- Global has no mana bar of its own; these keys only ever travelled with a copy.
+		for _, key in ipairs(oldManaTextureKeys) do
+			coreTextures[key] = nil
+		end
+	end
+	local global = core ~= nil and type(core.global) == "table" and core.global or nil
+	local globalBars = self:GetGlobalTextureBars()
+	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+		local classPiece = settings[classEntry.className]
+		if type(classPiece) == "table" then
+			local classFlags = global ~= nil and global[classEntry.className] or nil
+			for _, specEntry in ipairs(classEntry.specs) do
+				local piece = classPiece[specEntry.specName]
+				local textures = type(piece) == "table" and type(piece.textures) == "table" and piece.textures or nil
+				if textures ~= nil then
+					MigrateTextureLocks(textures)
+					local flags = type(classFlags) == "table" and classFlags[specEntry.specName] or nil
+					if type(flags) == "table" and flags.textures ~= nil and coreTextures ~= nil then
+						local ownsTextures = flags.textures == false
+						if ownsTextures then
+							textures.useGlobal = type(textures.useGlobal) == "table" and textures.useGlobal or {}
+							for _, barKey in ipairs(globalBars.keys) do
+								textures.useGlobal[barKey] = false
+							end
+						end
+						if HasOldManaTextures(textures) then
+							MigrateManaTextures(textures, coreTextures, ownsTextures)
+						end
+						flags.textures = nil
+					end
+				end
+			end
+		end
+	end
 end
 
 ---Gets default settings for "End Of" buff tracking configuration

@@ -8819,6 +8819,10 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
+	-- Textures: the one Texture Lock became four, the per-specialization Use Global flag became per bar, and the mana bar's textures moved.
+	if TwintopInsanityBarSettings ~= nil then
+		TRB.Functions.Settings:MigrateTextures(TwintopInsanityBarSettings)
+	end
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

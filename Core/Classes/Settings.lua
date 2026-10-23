@@ -14,7 +14,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public thresholdColors boolean
 ---@field public healthBarColors boolean
 ---@field public precision boolean
----@field public textures boolean
 ---@field public castbarDimensions boolean
 ---@field public castbarColors boolean
 ---@field public castbarOverlays boolean

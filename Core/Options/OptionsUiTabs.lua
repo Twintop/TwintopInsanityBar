@@ -338,6 +338,7 @@ TRB.Functions.OptionsUi.Tabs.TabKeys = {
 	BarTextures = "barTextures",
 	BarVisibility = "barVisibility",
 	VisibilityPresets = "presets",
+	GroupTextures = "textures",
 }
 
 local groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", skyriding = "Skyriding" }
@@ -377,6 +378,14 @@ function TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, cl
 		oUi.tabWidth.small,
 		function(scrollChild)
 			TRB.Functions.OptionsUi.BarText:ConstructGroupPanel(scrollChild, classId, specId, groupKey)
+		end,
+	}
+	tabDefinitions[#tabDefinitions + 1] = {
+		TRB.Functions.OptionsUi.Tabs.TabKeys.GroupTextures,
+		TRB.Localization["TabTextures"],
+		oUi.tabWidth.small,
+		function(scrollChild)
+			TRB.Functions.OptionsUi.Textures:ConstructGroupPanel(scrollChild, classId, specId, groupKey)
 		end,
 	}
 end
