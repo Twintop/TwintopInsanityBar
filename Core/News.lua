@@ -8,7 +8,8 @@ TRB.Details.coreNewsContent = [====[
 ## Bar Visibility
 
 - [#858](#858) Add a Visibility tab to Cast Bars, Other Bars, Pet Bars, and Skyriding, listing only the bars under each, in Global Options and for every specialization.
-- [#858](#858) The Visibility tab of Global Options and of each specialization lists only that specialization's own bars. A new checkbox adds the bars from Cast Bars, Other Bars, Pet Bars, and Skyriding to the list.
+- [#858](#858) The Visibility tab of Global Options and of each specialization no longer lists the bars under Cast Bars, Other Bars, Pet Bars, and Skyriding.
+- [#858](#858) Add a checkbox that also lists those bars on the Visibility tab of Global Options and of each specialization.
 - [#858](#858) A bar tab's Configure Visibility link opens the Visibility tab of the group the bar belongs to.
 
 ---
