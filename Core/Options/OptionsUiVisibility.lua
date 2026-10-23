@@ -569,6 +569,26 @@ StaticPopupDialogs["TwintopResourceBar_VisibilityPresetDelete"] = {
 	end,
 }
 
+-- Confirms changing the kind of a preset bars use; No puts the dropdown back.
+StaticPopupDialogs["TwintopResourceBar_VisibilityPresetKind"] = {
+	text = "",
+	button1 = L["Yes"],
+	button2 = L["No"],
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+	OnShow = function(self, data)
+		self:SetFormattedText("%s", data.message)
+	end,
+	OnAccept = function(_, data)
+		data.onAccept()
+	end,
+	OnCancel = function(_, data)
+		data.onCancel()
+	end,
+}
+
 -- Tells the user why an action did nothing; the message is the popup's first argument.
 StaticPopupDialogs["TwintopResourceBar_VisibilityMessage"] = {
 	text = "%s",
@@ -2047,6 +2067,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	-- Reselects the open bar or preset after a redraw; assigned once the detail panel exists.
 	local ReselectSelection = nil
 	-- Shows the selected preset's name and kind, or hides them; a no-op wherever there are no presets.
+	---@type fun(preset: table?)
 	local SyncPresetEditor = function() end
 	local SelectPreset = nil
 	-- Asks before deleting a preset; assigned with the table's handlers.
@@ -2118,21 +2139,42 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			end,
 			function(value)
 				local preset = barVisibility:GetPreset(selectedPresetGuid)
-				if preset ~= nil then
-					-- No bar reads it now, and an entry only takes a preset of its own kind.
-					barVisibility:UnlinkPreset(preset.guid)
+				if preset == nil or preset.profileKey == value then
+					return
+				end
+				local guid = preset.guid
+				local function ChangeKind()
+					if barVisibility:GetPreset(guid) == nil then
+						return
+					end
+					-- An entry only takes a preset of its own kind, so the ones naming it let go and keep what they show.
+					barVisibility:UnlinkPreset(guid)
 					preset.profileKey = value
+					TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChangeAllSpecs()
 					-- The kind decides which conditions the preset offers, so the panel is rebuilt around it.
 					SetPresetTableValues()
-					FillDetailPanel("preset:" .. preset.guid)
+					FillDetailPanel("preset:" .. guid)
 					ReselectSelection()
 				end
+				local uses = barVisibility:CountPresetUses(guid)
+				if uses == 0 then
+					ChangeKind()
+					return
+				end
+				StaticPopup_Show("TwintopResourceBar_VisibilityPresetKind", nil, nil, {
+					message = string.format(L["BarVisibilityPresetKindConfirm"], preset.name or "",
+						presetKindLabels[preset.profileKey or "standard"] or "", presetKindLabels[value] or "", uses),
+					onAccept = ChangeKind,
+					onCancel = function()
+						SyncPresetEditor(preset)
+					end,
+				})
 			end, 0, 0)
 		-- Level with the name box, and narrow enough to leave room for Add Preset.
 		presetKindDropdown:ClearAllPoints()
 		presetKindDropdown:SetPoint("LEFT", presetNameBox, "RIGHT", 20, 0)
 		presetKindDropdown:SetWidth(235)
-		-- Its label sits on the Name label's row, and grays out with the dropdown.
+		-- Its label sits on the Name label's row.
 		presetKindDropdown.label = TRB.Functions.OptionsUi.Primitives:BuildLabel(presetEditorRow, L["BarVisibilityPresetKind"], 270, 0, 235, 20, GameFontNormal)
 		presetNameLabel:Hide()
 		presetNameBox:Hide()
@@ -2151,8 +2193,6 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			presetNameBox:SetText(preset.name or "")
 			presetNameBox:SetCursorPosition(0)
 			presetKindDropdown:SetDefaultText(presetKindLabels[preset.profileKey or "standard"] or "")
-			-- A preset's kind is fixed once a bar uses it, since the bar's conditions come from the preset.
-			TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(presetKindDropdown, barVisibility:CountPresetUses(preset.guid) == 0)
 		end
 
 		presetNameBox:SetScript("OnTextChanged", function(self, userInput)
@@ -2942,7 +2982,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				return
 			end
 			StaticPopup_Show("TwintopResourceBar_VisibilityPresetDelete", nil, nil, {
-				message = string.format(L["BarVisibilityPresetDeleteConfirm"], preset.name or ""),
+				message = string.format(L["BarVisibilityPresetDeleteConfirm"], preset.name or "", barVisibility:CountPresetUses(guid)),
 				onAccept = function()
 					-- Bars using it keep the settings they show now.
 					barVisibility:UnlinkPreset(guid)
@@ -3024,8 +3064,6 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				for i, preset in ipairs(presetList) do
 					if preset.guid == selectedPresetGuid then
 						presetTable:SetSelection(i)
-						-- A bar may have started or stopped reading it since the panel opened.
-						TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(presetKindDropdown, barVisibility:CountPresetUses(preset.guid) == 0)
 						return
 					end
 				end
