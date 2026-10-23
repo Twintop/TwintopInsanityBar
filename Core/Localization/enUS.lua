@@ -4152,3 +4152,7 @@ L["BarTextDeleteGlobalConfirmation"] = "'%s' is Global Bar Text. Deleting it als
 L["BarTextGlobalBadgeTooltip"] = "This bar text comes from Global Options. Changing it here changes it for every specialization that displays Global Bar Text."
 L["CheckboxUseGlobalBarText"] = "Display Global Bar Text on this specialization's bars"
 L["CheckboxUseGlobalTooltip_GlobalBarText"] = "When checked, the bar text set in Global Options is shown on this specialization's bars along with its own, and is listed on its Bar Text tabs in light blue. When unchecked, only this specialization's own bar text is shown."
+L["BarDisplayTextCustomizationHeaderCastbar"] = "Cast Bar Display Text Customization"
+L["BarDisplayTextCustomizationHeaderOtherBars"] = "Other Bar Display Text Customization"
+L["BarDisplayTextCustomizationHeaderPetBars"] = "Pet Bar Display Text Customization"
+L["BarDisplayTextCustomizationHeaderSkyriding"] = "Skyriding Bar Display Text Customization"

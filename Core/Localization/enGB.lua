@@ -537,4 +537,8 @@ if locale == "enGB" then
 	L["BarTextGlobalBadgeTooltip"] = "This bar text comes from Global Options. Changing it here changes it for every specialisation that displays Global Bar Text."
 	L["CheckboxUseGlobalBarText"] = "Display Global Bar Text on this specialisation's bars"
 	L["CheckboxUseGlobalTooltip_GlobalBarText"] = "When checked, the bar text set in Global Options is shown on this specialisation's bars along with its own, and is listed on its Bar Text tabs in light blue. When unchecked, only this specialisation's own bar text is shown."
+	L["BarDisplayTextCustomizationHeaderCastbar"] = "Cast Bar Display Text Customisation"
+	L["BarDisplayTextCustomizationHeaderOtherBars"] = "Other Bar Display Text Customisation"
+	L["BarDisplayTextCustomizationHeaderPetBars"] = "Pet Bar Display Text Customisation"
+	L["BarDisplayTextCustomizationHeaderSkyriding"] = "Skyriding Bar Display Text Customisation"
 end
