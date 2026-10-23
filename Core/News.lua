@@ -16,14 +16,14 @@ TRB.Details.coreNewsContent = [====[
 
 ## Bar Textures
 
-- The Textures tab of Global Options and of each specialization is now a table of bars. Select a bar to change its fill, border, and background textures, and the overlays that go with it.
-- Add a Textures tab to Cast Bars, Other Bars, Pet Bars, and Skyriding, listing only the bars under each, in Global Options and for every specialization. Pet bar textures are set for each specialization, so Global Options' Pet Bars has no Textures tab. The Textures tab of Global Options and of each specialization lists only that specialization's own bars, and a new checkbox adds the bars from Cast Bars, Other Bars, Pet Bars, and Skyriding to the list.
-- Use Global settings for Textures is now set for each bar, with a checkbox to set every listed bar at once. In Global Options the checkbox sets them in every specialization. Remove the single Use Global settings option for all of a specialization's Textures.
-- The Utility bar, such as Angelic Feather, can now use Global settings for its textures, set under Utility on the Textures tab of Global Options. A specialization whose Utility textures differ from Global's keeps its own.
-- Replace the single texture lock with four locks: Bar, Border, Background, and Overlays. A texture a lock keeps the same is changed on the main bar.
-- A texture that can't be changed says why when you hover over it: the lock that keeps it the same as another texture, or the bar using Global settings.
-- A bar that uses Global settings shows the textures from Global Options under a cover, with buttons to open them in Global Options or to customize the bar for this specialization.
-- Fix the Mana bar ignoring its own texture options. Existing specializations start from the textures the bar was drawing with.
+- [#861](#861) The Textures tab of Global Options and of each specialization is now a table of bars. Select a bar to change its fill, border, and background textures, and the overlays that go with it.
+- [#861](#861) Add a Textures tab to Cast Bars, Other Bars, Pet Bars, and Skyriding, listing only the bars under each, in Global Options and for every specialization. Pet bar textures are set for each specialization, so Global Options' Pet Bars has no Textures tab. The Textures tab of Global Options and of each specialization lists only that specialization's own bars, and a new checkbox adds the bars from Cast Bars, Other Bars, Pet Bars, and Skyriding to the list.
+- [#861](#861) Use Global settings for Textures is now set for each bar, with a checkbox to set every listed bar at once. In Global Options the checkbox sets them in every specialization. Remove the single Use Global settings option for all of a specialization's Textures.
+- [#861](#861) The Utility bar, such as Angelic Feather, can now use Global settings for its textures, set under Utility on the Textures tab of Global Options. A specialization whose Utility textures differ from Global's keeps its own.
+- [#861](#861) Replace the single texture lock with four locks: Bar, Border, Background, and Overlays. A texture a lock keeps the same is changed on the main bar.
+- [#861](#861) A texture that can't be changed says why when you hover over it: the lock that keeps it the same as another texture, or the bar using Global settings.
+- [#861](#861) A bar that uses Global settings shows the textures from Global Options under a cover, with buttons to open them in Global Options or to customize the bar for this specialization.
+- [#861](#861) Fix the Mana bar ignoring its own texture options. Existing specializations start from the textures the bar was drawing with.
 
 ## Bar Visibility
 
