@@ -297,7 +297,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					},
 				}
 			},
-			textures = TRB.Functions.Settings:DefaultTextures(true),
+			-- Utility's own textures too, which a class's Utility bar follows until a specialization opts it out.
+			textures = TRB.Functions.Settings:DefaultTextures(true, nil, { TRB.Classes.BarTypeRegistry:GetInstance():Get("utility") }),
 			displayText={
 				default = {
 					fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -2484,8 +2485,8 @@ function TRB.Functions.Settings:GetTextureKeysForBar(barKey)
 end
 
 local globalTextureBars = nil
----The bars whose textures follow Global Options until a specialization opts them out: the main, secondary, and health
----bars, and every cast bar, Other Bar, and Skyriding bar Global offers. The mana bar, class bars, and pet bars are the spec's own.
+---The bars whose textures follow Global Options until a specialization opts them out: the main, secondary, health, and
+---Utility bars, and every cast bar, Other Bar, and Skyriding bar Global offers. The mana bar, class bars, and pet bars are the spec's own.
 ---@return { keys: string[], set: table<string, boolean> }
 function TRB.Functions.Settings:GetGlobalTextureBars()
 	if globalTextureBars == nil then
@@ -2495,7 +2496,7 @@ function TRB.Functions.Settings:GetGlobalTextureBars()
 		registry:AppendTargetFocusCastbars(definitions)
 		registry:AppendOtherBars(definitions, nil)
 		registry:AppendSkyridingBars(definitions)
-		local keys = { "primary", "secondary", "health" }
+		local keys = { "primary", "secondary", "health", "utility" }
 		for _, definition in ipairs(definitions) do
 			keys[#keys + 1] = definition.key
 		end
@@ -2644,6 +2645,31 @@ local function MigrateManaTextures(textures, coreTextures, ownsTextures)
 	end
 end
 
+---Whether a specialization's Utility bar textures differ from Global's. Utility drew with the specialization's own
+---textures before it became a Global bar, so one that differs keeps them.
+---@param textures table # The specialization's textures
+---@param coreTextures table # Global's saved textures, which may predate their Utility defaults
+---@return boolean
+local function UtilityTexturesDiffer(textures, coreTextures)
+	local keys = TRB.Functions.Settings:GetTextureKeysForBar("utility")
+	if textures[keys.bar] == nil then
+		return false
+	end
+	local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
+	local defaults = definition ~= nil and definition:GetDefaultTextures() or {}
+	local defaultByKey = { [keys.bar] = defaults.bar, [keys.border] = defaults.border, [keys.background] = defaults.background }
+	for key, default in pairs(defaultByKey) do
+		local global = coreTextures[key]
+		if global == nil then
+			global = default
+		end
+		if textures[key] ~= global then
+			return true
+		end
+	end
+	return false
+end
+
 ---Textures: the one Texture Lock became four, the per-specialization Use Global flag became per bar, and the mana bar's
 ---textures moved to the keys it reads. A flag is cleared once its specialization's textures are in the same table to receive it.
 ---@param settings table # A saved-variables shaped table
@@ -2676,6 +2702,9 @@ function TRB.Functions.Settings:MigrateTextures(settings)
 							for _, barKey in ipairs(globalBars.keys) do
 								textures.useGlobal[barKey] = false
 							end
+						elseif UtilityTexturesDiffer(textures, coreTextures) then
+							textures.useGlobal = type(textures.useGlobal) == "table" and textures.useGlobal or {}
+							textures.useGlobal.utility = false
 						end
 						if HasOldManaTextures(textures) then
 							MigrateManaTextures(textures, coreTextures, ownsTextures)

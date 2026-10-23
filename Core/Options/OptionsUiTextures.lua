@@ -260,10 +260,12 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	for _, barTypeDef in ipairs(customBars) do
 		-- Cast bar display names already end in "Bar", so use a label that omits the redundant trailing "Bar".
 		local barLabel = barTypeDef.isCastbar and L["CustomBarTextureCastbarBar"] or L["CustomBarTextureBar"]
-		AddRow({ key = barTypeDef.key, label = barTypeDef.displayName, items = {
-			Item(barTypeDef.key .. "Bar", string.format(barLabel, barTypeDef.displayName), "statusbar"),
-			Item(barTypeDef.key .. "Border", string.format(L["CustomBarTextureBorder"], barTypeDef.displayName), "border"),
-			Item(barTypeDef.key .. "Background", string.format(L["CustomBarTextureBackground"], barTypeDef.displayName), "background"),
+		-- A class module may rename a shared bar after its own use of it, which Global Options must not show.
+		local barName = isSpecScope and barTypeDef.displayName or barTypeDef.globalDisplayName
+		AddRow({ key = barTypeDef.key, label = barName, items = {
+			Item(barTypeDef.key .. "Bar", string.format(barLabel, barName), "statusbar"),
+			Item(barTypeDef.key .. "Border", string.format(L["CustomBarTextureBorder"], barName), "border"),
+			Item(barTypeDef.key .. "Background", string.format(L["CustomBarTextureBackground"], barName), "background"),
 		} })
 	end
 
