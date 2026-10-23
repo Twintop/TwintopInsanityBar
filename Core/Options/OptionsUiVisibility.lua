@@ -564,7 +564,7 @@ StaticPopupDialogs["TwintopResourceBar_VisibilityPresetDelete"] = {
 	OnShow = function(self, data)
 		self:SetFormattedText("%s", data.message)
 	end,
-	OnAccept = function(self, data)
+	OnAccept = function(_, data)
 		data.onAccept()
 	end,
 }
@@ -1957,7 +1957,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		barVisibilityTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, bvc, false, false)
 
 		-- Dynamically resize the Settings Source column to fill available width
-		bvc:HookScript("OnSizeChanged", function(self, w, h)
+		bvc:HookScript("OnSizeChanged", function(_, w)
 			local fixedWidth = columns[1].width + columns[2].width + columns[3].width + columns[4].width
 			local newSettingsSourceWidth = math.max(180, w - fixedWidth - 30)
 			columns[5].width = newSettingsSourceWidth
@@ -2094,7 +2094,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		presetTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(presetColumns, PRESET_TABLE_ROWS, 15, nil, presetsTableFrame, false, false)
 
 		-- Dynamically resize the Name column to fill available width
-		presetsTableFrame:HookScript("OnSizeChanged", function(self, w, h)
+		presetsTableFrame:HookScript("OnSizeChanged", function(_, w)
 			local fixedWidth = presetColumns[1].width + presetColumns[3].width + presetColumns[4].width + presetColumns[5].width
 			presetColumns[2].width = math.max(150, w - fixedWidth - 30)
 			presetTable:SetDisplayCols(presetColumns)
@@ -2200,12 +2200,12 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			presetKindDropdown:SetDefaultText(presetKindLabels[preset.profileKey or "standard"] or "")
 		end
 
-		presetNameBox:SetScript("OnTextChanged", function(self, userInput)
+		presetNameBox:SetScript("OnTextChanged", function(editBox, userInput)
 			if not userInput or selectedPresetGuid == nil then
 				return
 			end
 			local preset = barVisibility:GetPreset(selectedPresetGuid)
-			local name = self:GetText()
+			local name = editBox:GetText()
 			if preset ~= nil and name ~= "" then
 				preset.name = name
 				ReselectSelection()
@@ -2237,8 +2237,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local actionsButton = TRB.Functions.OptionsUi.Primitives:BuildButton(detailFrame, L["BarVisibilityActionsButton"], 0, 0, 120, 22)
 	actionsButton:ClearAllPoints()
 	actionsButton:SetPoint("TOPRIGHT", detailFrame, "TOPRIGHT", -5, 0)
-	actionsButton:SetScript("OnClick", function(self)
-		OpenActionsMenu(self)
+	actionsButton:SetScript("OnClick", function(button)
+		OpenActionsMenu(button)
 	end)
 	controls.buttons.barActions = actionsButton
 
@@ -2871,8 +2871,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	if controls.buttons.applyToBars ~= nil then
-		controls.buttons.applyToBars:SetScript("OnClick", function(self)
-			MenuUtil.CreateContextMenu(self, function(_, rootDescription)
+		controls.buttons.applyToBars:SetScript("OnClick", function(button)
+			MenuUtil.CreateContextMenu(button, function(_, rootDescription)
 				rootDescription:CreateTitle(L["BarVisibilityApplyToBars"])
 
 				-- The listed bars, kind by kind, as checkboxes. A source below applies to the checked bars of its own kind.
@@ -2949,7 +2949,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	-- Table click handler
 	if barVisibilityTable ~= nil then
 		barVisibilityTable:RegisterEvents({
-			OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+			OnClick = function(_, _, data, _, _, realrow, _, scrollingTable, button)
 				if button == "LeftButton" then
 					if realrow ~= nil and realrow > 0 then
 						local barKey = data[realrow].cols[1].value
@@ -3024,7 +3024,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 					GameTooltip:Hide()
 				end
 			end,
-			OnClick = function(rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+			OnClick = function(_, _, data, _, _, realrow, column, scrollingTable, button)
 				if button ~= "LeftButton" or realrow == nil or realrow <= 0 then
 					return
 				end
