@@ -466,6 +466,9 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 				includeAllGroups[scopeKey] = checked
 				ReloadRows()
 			end)
+		-- Lined up with the Use Global box above it.
+		controls.checkBoxes.includeAllGroups:ClearAllPoints()
+		controls.checkBoxes.includeAllGroups:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
 	end
 
 	-- The four locks, two to a row.
