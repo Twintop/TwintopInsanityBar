@@ -407,7 +407,7 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 	end
 
 	if settingKey == "globalBarText" then
-		TRB.Functions.OptionsUi.BarText:RefreshUseGlobalCheckboxes()
+		TRB.Functions.OptionsUi.BarText:RefreshUseGlobalBarText()
 	end
 
 	TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()

@@ -60,7 +60,7 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 				break
 			end
 		end
-		d.setTableValues(d.displayText, d.btt)
+		d.refreshTable()
 		-- Refresh the active spec's merged bar text list when global bar text is in use
 		if d.classId == nil then
 			local charClassName = TRB.Data.character.className
@@ -153,7 +153,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 				end)
 			end
 			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("globalBarText")
-			TRB.Functions.OptionsUi.BarText:RefreshUseGlobalCheckboxes()
+			TRB.Functions.OptionsUi.BarText:RefreshUseGlobalBarText()
 		end)
 		yCoord = yCoord - 20
 	elseif groupKey == "spec" then
@@ -239,6 +239,32 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	-- The entries the table lists, in row order; its rows are not the settings list's indexes.
 	local listedEntries = {}
 
+	---Whether this specialization draws Global Bar Text, which its tabs then list beside its own.
+	---@return boolean
+	local function IsUsingGlobalBarText()
+		if classId == nil then
+			return false
+		end
+		local classFlags = TRB.Data.settings.core.global[string.lower(className)]
+		local flags = classFlags and classFlags[specName]
+		return flags ~= nil and flags.globalBarText == true
+	end
+
+	---Whether a specialization's tab is showing an entry of Global Bar Text.
+	---@param entry table?
+	---@return boolean
+	local function IsGlobalEntry(entry)
+		if classId == nil or entry == nil then
+			return false
+		end
+		for _, globalEntry in ipairs(TRB.Data.settings.core.displayText.barText) do
+			if globalEntry == entry then
+				return true
+			end
+		end
+		return false
+	end
+
 	---@param barTextEntry TRB.Classes.Settings.DisplayTextEntry|table|nil
 	---@return string
 	local function NormalizeBarTextEntryColor(barTextEntry)
@@ -274,7 +300,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		local shouldPreviewActiveSpec = false
 		if classId == activeClassId and specId == activeSpecId then
 			shouldPreviewActiveSpec = true
-		elseif classId == nil and specId == nil then
+		elseif (classId == nil and specId == nil) or IsGlobalEntry(workingBarText) then
 			local charClassName = TRB.Data.character.className
 			local charSpecName = TRB.Data.character.specName
 			shouldPreviewActiveSpec = charClassName ~= nil and charSpecName ~= nil and
@@ -435,13 +461,22 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	barTextRelativeToFrame.label.font:SetFontObject(GameFontNormal)
 
 	local catalog = TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
+	-- Global Bar Text reaches every specialization, so it only binds to the bars Global Options offers.
+	local globalCatalog = classId == nil and catalog or TRB.Functions.BarText:GetAnchorCatalog(nil, nil)
 	local primaryLabel = catalog.primaryLabel
+
+	---The anchors an entry can bind to.
+	---@param entry table?
+	---@return TRB.Classes.BarTextAnchorCatalog
+	local function CatalogFor(entry)
+		return IsGlobalEntry(entry) and globalCatalog or catalog
+	end
 
 	---An entry's anchor label, looked up from its frame so a renamed bar shows its current name.
 	---@param position table
 	---@return string
 	local function GetRelativeToFrameLabel(position)
-		return catalog.labelByFrame[position.relativeToFrame] or position.relativeToFrameName
+		return catalog.labelByFrame[position.relativeToFrame] or globalCatalog.labelByFrame[position.relativeToFrame] or position.relativeToFrameName
 	end
 
 	---Whether a bar text entry belongs on this tab: a grouping's tab lists the text bound to its bars, and the spec tab
@@ -466,7 +501,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	local function RelativeToFrameSetSelected(newValue)
 		if workingBarText ~= nil and workingBarText.position ~= nil then
 			workingBarText.position.relativeToFrame = newValue
-			workingBarText.position.relativeToFrameName = catalog.labelByFrame[newValue]
+			workingBarText.position.relativeToFrameName = CatalogFor(workingBarText).labelByFrame[newValue]
 			barTextRelativeToFrame:SetDefaultText(workingBarText.position.relativeToFrameName)
 			RefreshBarTextTable()
 			RefreshBarTextEditorPreview(false)
@@ -474,7 +509,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	end
 
 	local function RelativeToFrameGenerator(dropdown, rootDescription)
-		for _, anchor in ipairs(catalog.entries) do
+		for _, anchor in ipairs(CatalogFor(workingBarText).entries) do
 			if IsGroupListed(anchor.groupKey) then
 				rootDescription:CreateRadio(anchor.label, RelativeToFrameIsSelected, RelativeToFrameSetSelected, anchor.frame)
 			end
@@ -812,49 +847,67 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(maxWidthPercent, hasWorkingBarText and (workingBarText.constrainToParent or false))
 	end
 
-	---Populates the bar text scrolling table with a row for each displayText.barText entry this tab lists.
+	local globalRowR, globalRowG, globalRowB = TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor()
+	local globalRowColor = { r = globalRowR, g = globalRowG, b = globalRowB, a = 1 }
+
+	---Populates the bar text scrolling table with a row for each entry this tab lists: the Global Bar Text the
+	---specialization draws, first and in light blue as it draws it, then the tab's own displayText.barText entries.
 	---@param displayText TRB.Classes.Settings.DisplayText The display text settings containing the barText array
 	---@param btt table LibScrollingTable instance to populate with data rows
 	local function SetTableValues(displayText, btt)
 		local dataTable = {}
 		listedEntries = {}
-		local entries = TRB.Functions.Table:Length(displayText.barText)
-		for i = 1, entries do
-			local barTextEntry = displayText.barText[i]
+		---@param barTextEntry TRB.Classes.Settings.DisplayTextEntry
+		---@param isGlobal boolean
+		local function AddRow(barTextEntry, isGlobal)
 			NormalizeBarTextEntryColor(barTextEntry)
-			if IsGroupListed(TRB.Functions.BarText:GetEntryGroupKey(barTextEntry, catalog)) then
-				listedEntries[#listedEntries + 1] = barTextEntry
-				local nameColor = nil
-				if barTextEntry.enabled == false then
-					nameColor = { r = 1, g = 0.3, b = 0.3, a = 1 }
-				end
-				table.insert(dataTable, {
-					cols = {
-						{
-							value = barTextEntry.guid
-						},
-						{
-							value = barTextEntry.name,
-							color = nameColor,
-						},
-						{
-							value = GetRelativeToFrameLabel(barTextEntry.position),
-						},
-						{
-							value = barTextEntry.text,
-						},
-						{
-							value = barTextCopyIconMarkup,
-							DoCellUpdate = UpdateActionCell,
-						},
-						{
-							value = "X",
-							color = deleteActionTextColor,
-							DoCellUpdate = UpdateActionCell,
-						}
-					}
-				})
+			if not IsGroupListed(TRB.Functions.BarText:GetEntryGroupKey(barTextEntry, isGlobal and globalCatalog or catalog)) then
+				return
 			end
+			listedEntries[#listedEntries + 1] = barTextEntry
+			local nameColor = nil
+			if barTextEntry.enabled == false then
+				nameColor = { r = 1, g = 0.3, b = 0.3, a = 1 }
+			end
+			table.insert(dataTable, {
+				cols = {
+					{
+						value = barTextEntry.guid
+					},
+					{
+						value = barTextEntry.name,
+						color = nameColor,
+					},
+					{
+						value = GetRelativeToFrameLabel(barTextEntry.position),
+					},
+					{
+						value = barTextEntry.text,
+					},
+					{
+						value = barTextCopyIconMarkup,
+						DoCellUpdate = UpdateActionCell,
+					},
+					{
+						value = "X",
+						color = deleteActionTextColor,
+						DoCellUpdate = UpdateActionCell,
+					}
+				},
+				color = isGlobal and globalRowColor or nil,
+			})
+		end
+
+		if IsUsingGlobalBarText() then
+			for _, globalEntry in ipairs(TRB.Data.settings.core.displayText.barText) do
+				if TRB.Functions.BarText:IsEntryInScope(globalEntry, classId, specId) then
+					AddRow(globalEntry, true)
+				end
+			end
+		end
+		local entries = TRB.Functions.Table:Length(displayText.barText)
+		for index = 1, entries do
+			AddRow(displayText.barText[index], false)
 		end
 		btt:SetData(dataTable)
 		btt:EnableSelection(true)
@@ -936,10 +989,21 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 				end
 			end
 		end
+		if not found and IsUsingGlobalBarText() then
+			for _, globalEntry in ipairs(TRB.Data.settings.core.displayText.barText) do
+				if globalEntry.guid == guid then
+					workingBarText = globalEntry
+					found = true
+					break
+				end
+			end
+		end
 
 		if not found then
 			return
 		end
+
+		TRB.Functions.OptionsUi.Primitives:AttachGlobalBadgeToText(barTextName.label.font, IsGlobalEntry(workingBarText), L["BarTextGlobalBadgeTooltip"])
 
 		barTextName:SetText(workingBarText.name)
 		barTextEntryEnabled:SetChecked(workingBarText.enabled)
@@ -1271,8 +1335,9 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	local function MoveBarTextEntryToAnchor(entry, anchor)
 		entry.position.relativeToFrame = anchor.frame
 		entry.position.relativeToFrameName = anchor.label
+		local isGlobal = classId == nil or IsGlobalEntry(entry)
 		RefreshBarTextTable()
-		if classId == nil then
+		if isGlobal then
 			RefreshAfterBarTextEntryCopy("global", nil)
 		else
 			RefreshAfterBarTextEntryCopy("spec", nil, string.lower(className), specName)
@@ -1290,14 +1355,15 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			MoveBarTextEntryToAnchor(entry, anchor)
 		end
 
-		for _, anchor in ipairs(catalog.entries) do
+		local entryCatalog = CatalogFor(entry)
+		for _, anchor in ipairs(entryCatalog.entries) do
 			if anchor.groupKey == "screen" then
 				menu:CreateRadio(anchor.label, IsCurrentAnchor, MoveToAnchor, anchor)
 			end
 		end
 		for _, moveGroupKey in ipairs(moveGroupOrder) do
 			local isFirst = true
-			for _, anchor in ipairs(catalog.entries) do
+			for _, anchor in ipairs(entryCatalog.entries) do
 				if anchor.groupKey == moveGroupKey then
 					if isFirst then
 						menu:CreateDivider()
@@ -1532,15 +1598,32 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 					if column == 5 then
 						ShowBarTextEntryCopyMenu(cellFrame or rowFrame, listedEntries[realrow])
 					elseif column == 6 then
+						local entry = listedEntries[realrow]
+						local isGlobal = IsGlobalEntry(entry)
+						local message = string.format(L["BarTextDeleteConfirmation"], data[realrow].cols[2].value)
+						if isGlobal then
+							local otherSpecs = 0
+							for _, specEntry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+								if specEntry.classId ~= classId or specEntry.specId ~= specId then
+									local classFlags = TRB.Data.settings.core.global[specEntry.className]
+									local flags = classFlags and classFlags[specEntry.specName]
+									if flags ~= nil and flags.globalBarText == true and TRB.Functions.BarText:IsEntryInScope(entry, specEntry.classId, specEntry.specId) then
+										otherSpecs = otherSpecs + 1
+									end
+								end
+							end
+							message = string.format(L["BarTextDeleteGlobalConfirmation"], data[realrow].cols[2].value, otherSpecs)
+						end
+						-- Global Bar Text is deleted from Global Options, and refreshed the way that editor does.
 						StaticPopup_Show("TwintopResourceBar_ConfirmDeleteBarText", nil, nil, {
-							message = string.format(L["BarTextDeleteConfirmation"], data[realrow].cols[2].value),
-							displayText = spec.displayText,
+							message = message,
+							displayText = isGlobal and TRB.Data.settings.core.displayText or spec.displayText,
 							guid = guid,
 							btt = scrollingTable,
-							classId = classId,
-							specId = specId,
+							classId = (not isGlobal) and classId or nil,
+							specId = (not isGlobal) and specId or nil,
 							barTextOptionsFrame = barTextOptionsFrame,
-							setTableValues = SetTableValues,
+							refreshTable = RefreshBarTextTable,
 						})
 					else
 						FillBarTextEditorFields(guid, spec.displayText)
@@ -1631,11 +1714,13 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 end
 
----Redraws every built editor's Use Global Bar Text box from the saved flag.
-function TRB.Functions.OptionsUi.BarText:RefreshUseGlobalCheckboxes()
+---Redraws every built editor's Use Global Bar Text box from the saved flag, and its table, which lists Global Bar
+---Text only while that box is checked.
+function TRB.Functions.OptionsUi.BarText:RefreshUseGlobalBarText()
 	for _, scopeEditors in pairs(barTextEditors) do
 		for _, editor in pairs(scopeEditors) do
 			editor.RefreshUseGlobalCheckbox()
+			editor.RefreshTable()
 		end
 	end
 end

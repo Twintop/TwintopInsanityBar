@@ -4150,3 +4150,5 @@ L["CheckboxIncludeAllBarTextGroups"] = "Include bar text from Cast Bars, Other B
 L["CheckboxIncludeAllBarTextGroupsTooltip"] = "When checked, this list also shows the bar text bound to the bars that have their own tabs under Cast Bars, Other Bars, Pet Bars, and Skyriding. That text can always be edited from those tabs. This setting is not saved."
 L["BarTextMoveToBar"] = "Move to bar"
 L["BarTextGroupSpecBars"] = "Specialization bars"
+L["BarTextDeleteGlobalConfirmation"] = "'%s' is Global Bar Text. Deleting it also deletes it for every other specialization that uses it (%d). Are you sure?"
+L["BarTextGlobalBadgeTooltip"] = "This bar text comes from Global Options. Changing it here changes it for every specialization that includes Global Bar Text."
