@@ -160,6 +160,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			-- User-defined Border Glow appearances, keyed by guid. Color Indicators on any spec point at
 			-- these by id, so they live in core rather than per spec.
 			glows = {},
+			-- Bootstrap drops these when the saved settings hold their own list, so a deleted preset stays deleted.
+			visibilityPresets = TRB.Functions.Settings:DefaultVisibilityPresets(),
+			visibilityPresetsSeeded = true,
 			thresholds = {
 				properties = {
 					width = 2,
@@ -407,6 +410,155 @@ function TRB.Functions.Settings:PortForwardProfile(profile)
 	-- Same for the indicator order lists: ApplyToRuntime overlays them by index, so a profile whose
 	-- list is shorter than the live one would leave a duplicate of the live tail behind.
 	self:ReconcileAllSharedIndicators(profile)
+end
+
+---The presets a fresh install ships with, built from the defaults the shipped bars use, under fixed guids.
+---@return table<string, table>
+function TRB.Functions.Settings:DefaultVisibilityPresets()
+	local barVisibility = TRB.Functions.BarVisibility
+	local presets = {}
+
+	---@param guid string
+	---@param name string # The localized name
+	---@param profileKey string
+	---@param entry table # A default visibility entry to take the values from
+	local function Add(guid, name, profileKey, entry)
+		local preset = { guid = guid, name = name, profileKey = profileKey }
+		barVisibility:CopyPresetFields(entry, preset)
+		preset.alwaysShow = preset.alwaysShow == true
+		preset.smooth = preset.smooth == true
+		preset.activeAlpha = preset.activeAlpha or 100
+		preset.inactiveAlpha = preset.inactiveAlpha or 0
+		preset.fadeDuration = preset.fadeDuration or 0
+		preset.fadeDelay = preset.fadeDelay or 0
+		presets[guid] = preset
+	end
+
+	---@param alwaysShow boolean
+	---@param smooth boolean
+	---@return table
+	local function Standard(alwaysShow, smooth)
+		return {
+			alwaysShow = alwaysShow,
+			conditions = {},
+			hideConditions = self:LoadDefaultBarVisibilityHideConditions(),
+			smooth = smooth,
+			activeAlpha = 100,
+			inactiveAlpha = 0,
+			fadeDuration = 0,
+			fadeDelay = 0,
+		}
+	end
+
+	Add("trb-visibility-standard-always", L["VisibilityPresetAlwaysShow"], "standard", Standard(true, true))
+	Add("trb-visibility-standard-always-steady", L["VisibilityPresetAlwaysShowNoSmoothing"], "standard", Standard(true, false))
+	Add("trb-visibility-standard-conditions", L["VisibilityPresetConditionsOnly"], "standard", Standard(false, true))
+	Add("trb-visibility-standard-conditions-steady", L["VisibilityPresetConditionsOnlyNoSmoothing"], "standard", Standard(false, false))
+	Add("trb-visibility-castbar", L["VisibilityPresetCastbar"], "castbar", self:DefaultCastbarVisibility())
+	Add("trb-visibility-target-castbar", L["VisibilityPresetTargetCastbar"], "targetCastbar", self:DefaultTargetCastbarVisibility())
+	Add("trb-visibility-pet-castbar", L["VisibilityPresetPetCastbar"], "petCastbar", self:DefaultPetCastbarVisibility())
+	Add("trb-visibility-pet-bars", L["VisibilityPresetPetBars"], "petBar", self:DefaultPetBarVisibility())
+	Add("trb-visibility-skyriding", L["VisibilityPresetSkyridingBars"], "skyriding", self:DefaultSkyridingBarVisibility("skyridingCharges"))
+	Add("trb-visibility-skyriding-speed", L["VisibilityPresetSkyridingSpeed"], "skyriding", self:DefaultSkyridingBarVisibility("skyridingSpeed"))
+	Add("trb-visibility-timers", L["VisibilityPresetMirrorTimers"], "timerBar", self:DefaultOtherBarVisibility("fatigue"))
+	Add("trb-visibility-gcd", L["VisibilityPresetGcd"], "timerEnvironment", self:DefaultOtherBarVisibility("gcd"))
+	if TRB.Flavor.swingTimers then
+		Add("trb-visibility-swing-main-hand", L["VisibilityPresetMainHandSwing"], "mainHandSwing", self:DefaultOtherBarVisibility("mainHandSwing"))
+		Add("trb-visibility-swing-off-hand", L["VisibilityPresetOffHandSwing"], "timerEnvironment", self:DefaultOtherBarVisibility("offHandSwing"))
+		Add("trb-visibility-swing-ranged", L["VisibilityPresetRangedSwing"], "rangedSwing", self:DefaultOtherBarVisibility("rangedSwing"))
+	end
+	return presets
+end
+
+---Adds the shipped visibility presets to a settings-shaped table's Global Options, once. A table that has been seeded keeps
+---exactly the presets it has, so one the user deleted stays deleted.
+---@param settings table # The saved variables, one stored profile, or the live settings
+function TRB.Functions.Settings:SeedVisibilityPresets(settings)
+	local core = settings.core
+	if type(core) ~= "table" or core.visibilityPresetsSeeded == true then
+		return
+	end
+	core.visibilityPresets = core.visibilityPresets or {}
+	for guid, preset in pairs(self:DefaultVisibilityPresets()) do
+		if core.visibilityPresets[guid] == nil then
+			core.visibilityPresets[guid] = preset
+		end
+	end
+	core.visibilityPresetsSeeded = true
+end
+
+---Points bars whose visibility equals a preset's exactly at it, once per table, so nothing changes on screen.
+---@param settings table # The live settings or one stored profile; its Global Options hold the presets to match against
+---@param includeCore boolean # Link Global Options' own bars
+---@param classFilter boolean|string # true links every class, false none, a class name just that class
+local function LinkVisibilityPresets(settings, includeCore, classFilter)
+	local core = settings.core
+	if type(core) ~= "table" or type(core.visibilityPresets) ~= "table" then
+		return
+	end
+	local barVisibility = TRB.Functions.BarVisibility
+	local candidates = {}
+
+	---@param displayBar table?
+	local function LinkTable(displayBar)
+		if type(displayBar) ~= "table" or displayBar.presetAutoLink == true then
+			return
+		end
+		for key, entry in pairs(displayBar) do
+			if type(entry) == "table" and entry.presetId == nil then
+				local profileKey = barVisibility:GetProfileKeyForBar(key)
+				if candidates[profileKey] == nil then
+					candidates[profileKey] = {}
+					for _, preset in ipairs(barVisibility:GetPresetsOrdered(profileKey, core.visibilityPresets)) do
+						local signature = barVisibility:GetPresetSignature(preset, profileKey)
+						if candidates[profileKey][signature] == nil then
+							candidates[profileKey][signature] = preset
+						end
+					end
+				end
+				local preset = candidates[profileKey][barVisibility:GetPresetSignature(entry, profileKey)]
+				if preset ~= nil then
+					entry.presetId = preset.guid
+				end
+			end
+		end
+		displayBar.presetAutoLink = true
+	end
+
+	if includeCore then
+		LinkTable(core.displayBar)
+	end
+	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+		local classPiece = settings[classEntry.className]
+		if type(classPiece) == "table" and (classFilter == true or classFilter == classEntry.className) then
+			for _, specEntry in ipairs(classEntry.specs) do
+				local piece = classPiece[specEntry.specName]
+				if type(piece) == "table" then
+					LinkTable(piece.displayBar)
+				end
+			end
+		end
+	end
+end
+
+---Links a stored profile's matching bars to presets. A profile holds every table complete, so all of them are checked.
+---@param settings table
+function TRB.Functions.Settings:AutoLinkVisibilityPresets(settings)
+	LinkVisibilityPresets(settings, true, true)
+end
+
+---Links Global Options' matching bars to presets, once the defaults are merged into the live settings.
+---@param settings table
+function TRB.Functions.Settings:AutoLinkGlobalVisibilityPresets(settings)
+	LinkVisibilityPresets(settings, true, false)
+end
+
+---Links one class's matching bars to presets, once that class's defaults, including the shared bars injected into every
+---specialization, are merged into the live settings.
+---@param settings table
+---@param className string
+function TRB.Functions.Settings:AutoLinkClassVisibilityPresets(settings, className)
+	LinkVisibilityPresets(settings, false, className)
 end
 
 ---Runs the flavor's saved-variable migrations against a settings-shaped table (defaults to the live

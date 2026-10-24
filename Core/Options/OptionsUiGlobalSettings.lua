@@ -16,7 +16,6 @@ local globalSettingDefinitions = {
 	healthBar       = { checkboxSuffix = "healthBar",       tabKey = "healthBar",       sectionLabel = L["CopyMenuSection_healthBar"],       paths = { {"healthBar"} } },
 	healthBarColors = { checkboxSuffix = "healthBarColors", tabKey = "healthBar",       sectionLabel = L["CopyMenuSection_healthBarColors"], paths = { {"colors", "healthBar"} } },
 	textures        = { checkboxSuffix = "textures",        tabKey = "barTextures",     sectionLabel = L["CopyMenuSection_textures"],        paths = { {"textures"} } },
-	displayBar      = { checkboxSuffix = "displayBar",      tabKey = "barVisibility",   sectionLabel = L["CopyMenuSection_displayBar"],      paths = { {"displayBar"} }, shapeSensitive = true },
 	thresholdIcons  = { checkboxSuffix = "thresholdIcons",  tabKey = "thresholds",      sectionLabel = L["CopyMenuSection_thresholdIcons"],  paths = { {"thresholds", "properties"}, {"thresholds", "icons"} }, shapeSensitive = true },
 	thresholdColors = { checkboxSuffix = "thresholdColors", tabKey = "thresholds",      sectionLabel = L["CopyMenuSection_thresholdColors"], paths = { {"colors", "threshold"} }, shapeSensitive = true },
 	displayText     = { checkboxSuffix = "displayText",     tabKey = "fontText",        sectionLabel = L["CopyMenuSection_displayText"],     paths = { {"displayText", "default"} } },
@@ -166,6 +165,13 @@ local function SetCheckboxTriState(checkbox, state)
 			check:SetVertexColor(1, 1, 1, 1)
 		end
 	end
+end
+
+---Sets a checkbox to tristate visual mode, for the Visibility and Textures Use Global boxes that span several bars.
+---@param checkbox CheckButton # The checkbox to update
+---@param state boolean|nil # true = checked, false = unchecked, nil = mixed/desaturated
+function TRB.Functions.OptionsUi.GlobalSettings:SetCheckboxTriState(checkbox, state)
+	SetCheckboxTriState(checkbox, state)
 end
 
 ---@param settingKey string
@@ -400,6 +406,11 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 		end
 	end
 
+	TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()
+end
+
+---Refreshes every initialized specialization's cache and the active spec's bars after a setting changed for many specs at once.
+function TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()
 	-- Refresh caches for all specs that have been initialized (specCache exists)
 	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
 		if TRB.Data.specCache[entry.compositeKey] then
@@ -589,7 +600,13 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		if TRB.Options.OptionsFrame then
 			TRB.Options.OptionsFrame:SelectCategory(navKey)
 			C_Timer.After(0, function()
-				TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(tabNamePrefix, tabKey or globalTabKey)
+				local targetKey = tabKey or globalTabKey
+				if navKey == "global" and targetKey == TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility then
+					-- Visibility holds a strip of its own, with the bars on its Bar Display tab.
+					TRB.Functions.OptionsUi.Tabs:SwitchToGlobalVisibilityTab()
+				else
+					TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(tabNamePrefix, targetKey)
+				end
 			end)
 		end
 	end

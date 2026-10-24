@@ -496,6 +496,7 @@ local function HandleImport(input)
 			end
 		end
 
+		local importedVisibility = {}
 		for className, class in pairs(config) do
 			if className ~= "core" then
 				for specName, spec in pairs(class) do
@@ -505,11 +506,23 @@ local function HandleImport(input)
 						spec.displayText.barText = {}
 					end
 					TRB.Functions.Settings:ClearCustomIndicatorsForMerge(existing[className] and existing[className][specName], spec)
+					for key, entry in pairs(type(spec.displayBar) == "table" and spec.displayBar or {}) do
+						if type(entry) == "table" then
+							importedVisibility[#importedVisibility + 1] = { className = className, specName = specName, key = key, entry = entry }
+						end
+					end
 				end
 			end
 		end
 
 		local merged = TRB.Functions.Table:Merge(existing, config)
+
+		-- An imported bar keeps its preset only where the preset here shows what the exporter's did; the merge never clears one.
+		local presets = merged.core and merged.core.visibilityPresets
+		for _, imported in ipairs(importedVisibility) do
+			local presetId = TRB.Functions.BarVisibility:GetImportedPresetId(imported.entry, imported.key, presets)
+			merged[imported.className][imported.specName].displayBar[imported.key].presetId = presetId
+		end
 
 		-- Re-apply core barText as full replacement
 		if newCoreBarText then

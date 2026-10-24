@@ -2248,7 +2248,8 @@ end
 
 ---@class TRB.Classes.BarTypeDefinition
 ---@field public key string # Unique key for this bar type (e.g., "stagger", "mana", "defensives")
----@field public displayName string # Localized display name for UI
+---@field public displayName string # Localized display name for UI. A class module may rename a shared bar after its own use of it
+---@field public globalDisplayName string # The name Global Options and the Source column use, which a class module's rename of displayName does not change
 ---@field public settingsPath string # Path to settings (always "bars.<key>")
 ---@field public colorsPath string # Path to colors (always "colors.bars.<key>")
 ---@field public texturePrefix string # Prefix for texture keys (e.g., "stagger" -> "staggerBar", "staggerBorder", "staggerBackground")
@@ -2311,6 +2312,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 
 	self.key = config.key
 	self.displayName = config.displayName or config.key
+	self.globalDisplayName = config.globalDisplayName or self.displayName
 	self.settingsPath = "bars." .. config.key
 	self.colorsPath = "colors.bars." .. config.key
 	self.texturePrefix = config.key -- Flat texture keys: staggerBar, staggerBorder, staggerBackground

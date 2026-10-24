@@ -544,6 +544,12 @@ local function EnsureProfilePopupsRegistered()
 		-- cross-version imports land in a shape the rest of the addon expects.
 		local p = TRB.Data.settings and TRB.Data.settings.profiles
 		if p ~= nil and p.list ~= nil and p.list[name] ~= nil then
+			-- Without the exporter's Global Options, imported bars keep a preset only where this account's shows the same values.
+			local presets = wroteCore and p.list[name].core.visibilityPresets or TRB.Data.settings.core.visibilityPresets
+			for _, slot in ipairs(writtenSpecs) do
+				TRB.Functions.BarVisibility:SettleImportedPresetLinks(p.list[name][slot.className][slot.specName], presets)
+			end
+
 			if TRB.Functions.Settings and TRB.Functions.Settings.PortForwardProfile then
 				TRB.Functions.Settings:PortForwardProfile(p.list[name])
 			end

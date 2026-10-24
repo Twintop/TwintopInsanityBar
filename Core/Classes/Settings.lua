@@ -7,7 +7,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public comboPoints boolean
 ---@field public healthBar boolean
 ---@field public thresholdIcons boolean
----@field public displayBar boolean
+---@field public displayBar boolean # Whether a bar whose visibility entry has no useGlobal of its own follows Global Options
 ---@field public displayText boolean
 ---@field public globalBarText boolean
 ---@field public textColors boolean
@@ -564,6 +564,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public resourceConditionOperator string? # Comparison operator: ">=", ">", "<=", "<", "==", "!="
 ---@field public resourceConditionValue number? # Threshold value for the selected visibility condition
 ---@field public visibility trbBarVisibility? # DEPRECATED: Legacy field, migrated to neverShow+conditions
+---@field public useGlobal boolean? # Specialization entries only: true follows Global Options when it has an entry for the bar, false keeps this bar's own settings, and nil does what the spec's displayBar flag says
 
 ---@class trbBarVisibilityThresholdDefinition
 ---@field public valueType string # Threshold value interpretation: "percent" or "value"

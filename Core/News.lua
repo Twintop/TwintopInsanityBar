@@ -11,6 +11,20 @@ TRB.Details.coreNewsContent = [====[
 - [#858](#858) The Visibility tab of Global Options and of each specialization no longer lists the bars under Cast Bars, Other Bars, Pet Bars, and Skyriding.
 - [#858](#858) Add a checkbox that also lists those bars on the Visibility tab of Global Options and of each specialization.
 - [#858](#858) A bar tab's Configure Visibility link opens the Visibility tab of the group the bar belongs to.
+- [#859](#859) Use global settings on the Visibility tabs now works per bar.
+- [#859](#859) The use global settings box on a Visibility tab switches every bar it lists.
+- [#859](#859) A bar on a Visibility tab that uses the global settings can be customized on its own.
+- [#859](#859) Remove the Copy button beside the Visibility tab's use global settings box.
+- [#859](#859) Fix the Visibility tab of Global Options naming the Utility bar Angelic Feather.
+- [#859](#859) Add visibility presets, named sets of Show Bar When, Always Hide When, opacity, fade, and smoothing settings that bars can share.
+- [#859](#859) Editing a visibility preset changes every bar that uses it.
+- [#859](#859) Bars whose visibility settings match a preset exactly use that preset automatically.
+- [#859](#859) Split the Visibility tab of Global Options into Bar Display and Manage Presets tabs.
+- [#859](#859) Add, rename, edit, and delete visibility presets on the Manage Presets tab.
+- [#859](#859) Add an Actions button to the Visibility tab to copy settings onto a bar from Global Options, another bar, or a preset, to use a preset, to go back to the global settings, or to save a bar's settings as a preset.
+- [#859](#859) Add Apply to Bars to the Visibility tab to copy settings onto, use a preset for, or go back to the global settings for several bars at once.
+- [#859](#859) Add an Enabled checkbox to the selected bar's settings on the Visibility tab, which turns the bar on or off, including while it uses a preset.
+- [#859](#859) Fix the Visibility tab of Global Options listing the form conditions only while playing a class with forms.
 
 ---
 

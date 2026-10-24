@@ -117,6 +117,12 @@ local function ConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], "notFull", true, L["ResourceComboPoints"], true, nil, customBars)
 end
 
+---Constructs Global Options' Visibility tab: a strip holding the Bar Display and Manage Presets tabs.
+---@param parent Frame The Visibility tab's container frame
+local function ConstructVisibilityTabGroup(parent)
+	TRB.Functions.OptionsUi.Tabs:BuildGlobalVisibilityInnerTabGroup(parent, ConstructBarVisibilityPanel)
+end
+
 ---Constructs the threshold line color and icon options panel in the global options UI.
 ---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructThresholdPanel(parent)
@@ -673,7 +679,7 @@ local function ConstructGlobalOptionsPanel()
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ConstructHealthBarPanel, visibilityKey = "health" },
 		TRB.Functions.OptionsUi.Glows:BuildTabDefinition(controls),
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ConstructBarTexturesPanel },
-		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ConstructBarVisibilityPanel },
+		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ConstructVisibilityTabGroup, true },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ConstructThresholdPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, ConstructGlobalBarTextPanel },

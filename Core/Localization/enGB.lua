@@ -529,4 +529,7 @@ if locale == "enGB" then
 	L["SkyridingColorLightningRushUnusableEnableTooltip"] = "When checked, once the cooldown is over the Whirling Surge bar changes to this colour while you have chosen Lightning Rush but can't cast it yet, such as before you have 10 stacks of Static Charge."
 	L["SkyridingPassiveSpeedCapUseBorderColorTooltip"] = "This will override the line's colour with the bar's border colour."
 
+	L["BarVisibilityCustomizeBar"] = "Customise This Bar"
+	L["CheckboxUseGlobalAllSpecsListedBars"] = "Use global settings for the bars listed here in all specialisations"
+	L["CheckboxUseGlobalAllSpecsListedBarsTooltip"] = "When checked, every bar listed here follows its global settings in all specialisations across all classes. When unchecked, each of those specialisations uses its own settings for these bars."
 end

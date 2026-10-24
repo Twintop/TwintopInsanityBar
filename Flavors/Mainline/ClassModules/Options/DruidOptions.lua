@@ -1743,6 +1743,8 @@ local function BalanceConstructBarVisibilityPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- The cache is a copy, so the flag only reaches the bars through a re-fill.
+		TRB.Functions.Character:FillSpecializationCacheSettings("druid", "balance")
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(11, 1) then
 			-- Clear all caches before rebuilding
 			TRB.Functions.Character:ResetCaches()
@@ -2317,6 +2319,8 @@ local function FeralConstructBarVisibilityPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- The cache is a copy, so the flag only reaches the bars through a re-fill.
+		TRB.Functions.Character:FillSpecializationCacheSettings("druid", "feral")
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(11, 2) then
 			-- Clear all caches before rebuilding
 			TRB.Functions.Character:ResetCaches()
@@ -2828,6 +2832,8 @@ local function GuardianConstructBarVisibilityPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- The cache is a copy, so the flag only reaches the bars through a re-fill.
+		TRB.Functions.Character:FillSpecializationCacheSettings("druid", "guardian")
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(11, 3) then
 			-- Clear all caches before rebuilding
 			TRB.Functions.Character:ResetCaches()
@@ -3289,6 +3295,8 @@ local function RestorationConstructBarVisibilityPanel(parent)
 	f:SetChecked(spec.displayBar.enableFormSwitching)
 	f:SetScript("OnClick", function(self, ...)
 		spec.displayBar.enableFormSwitching = self:GetChecked()
+		-- The cache is a copy, so the flag only reaches the bars through a re-fill.
+		TRB.Functions.Character:FillSpecializationCacheSettings("druid", "restoration")
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(11, 4) then
 			-- Clear all caches before rebuilding
 			TRB.Functions.Character:ResetCaches()

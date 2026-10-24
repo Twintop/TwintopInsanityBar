@@ -319,6 +319,7 @@ TRB.Functions.OptionsUi.Tabs.TabKeys = {
 	HealthBar = "healthBar",
 	BarTextures = "barTextures",
 	BarVisibility = "barVisibility",
+	VisibilityPresets = "presets",
 }
 
 local groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", skyriding = "Skyriding" }
@@ -351,6 +352,32 @@ function TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, cl
 			TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(scrollChild, classId, specId, groupKey)
 		end,
 	}
+end
+
+---The tab group name prefix of the strip inside Global Options' Visibility tab, apart from the Global screen's own.
+TRB.Functions.OptionsUi.Tabs.globalVisibilityPrefix = "GlobalVisibility"
+
+---Builds the nested Bar Display / Manage Presets strip inside Global Options' Visibility tab.
+---@param parent Frame # The Visibility tab's manual container frame
+---@param barDisplayConstructor fun(scrollChild: Frame) # Builds the Bar Display tab
+function TRB.Functions.OptionsUi.Tabs:BuildGlobalVisibilityInnerTabGroup(parent, barDisplayConstructor)
+	if parent == nil then
+		return
+	end
+	local innerTabs = {
+		{ self.TabKeys.BarDisplay, TRB.Localization["TabBarDisplay"], oUi.tabWidth.small, barDisplayConstructor },
+		{ self.TabKeys.VisibilityPresets, TRB.Localization["TabManagePresets"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(scrollChild, nil, nil, "presets")
+		end },
+	}
+	self:BuildTabGroup(parent, self.globalVisibilityPrefix, innerTabs, -10)
+end
+
+---Opens Global Options' Visibility tab on one of its inner tabs.
+---@param innerKey string? # Defaults to Bar Display
+function TRB.Functions.OptionsUi.Tabs:SwitchToGlobalVisibilityTab(innerKey)
+	self:SwitchToTabByNamePrefix("Global", self.TabKeys.BarVisibility)
+	self:SwitchToTabByNamePrefix(self.globalVisibilityPrefix, innerKey or self.TabKeys.BarDisplay)
 end
 
 ---Builds the nested Cast Bar sub-tab group (player / target / focus) inside a spec's Cast Bar tab.

@@ -15,4 +15,10 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Swing timer bars: same, for their remaining-time text.
 	TRB.Functions.Settings:SeedSwingTimersText(savedSettings.core)
+
+	-- Visibility presets: seed every table and link stored profiles; the live settings are linked after the defaults merge.
+	TRB.Functions.Settings:SeedVisibilityPresets(savedSettings)
+	if settings ~= nil then
+		TRB.Functions.Settings:AutoLinkVisibilityPresets(savedSettings)
+	end
 end
