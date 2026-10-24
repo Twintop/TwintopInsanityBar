@@ -111,6 +111,12 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@class TRB.Classes.OptionsUi.RegeneratingDropdown : WowStyle1DropdownTemplate
 ---@field public GeneratorFunction fun(owner: any, rootDescription: table)
 
+---A LibSharedMedia texture dropdown, which checks the radio of the saved name it was last pointed at.
+---@class TRB.Classes.OptionsUi.LsmDropdown : TRB.Classes.OptionsUi.RegeneratingDropdown
+---@field public label table
+---@field public lsmType string
+---@field public selectedName string?
+
 ---The profile picker, which relabels itself with the active profile.
 ---@class TRB.Classes.OptionsUi.ProfileDropdown : TRB.Classes.OptionsUi.RegeneratingDropdown
 ---@field public UpdateButtonText fun(self: TRB.Classes.OptionsUi.ProfileDropdown?)

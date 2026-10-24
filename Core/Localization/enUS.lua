@@ -220,20 +220,6 @@ L["PositionBottomLeft"] = "Bottom Left"
 L["PositionBottom"] = "Bottom "
 L["PositionBottomRight"] = "Bottom Right"
 
--- Warnings
-L["LSMInvalidFont"] = "TRB: |cFFFF5555Invalid font (%s bar text '%s'): '|r%s|cFFFF5555'. Resetting to a default font.|r"
-L["LSMInvalidBarBackgroundTexture"] = "TRB: |cFFFF5555Invalid texture (%s bar background): '|r%s|cFFFF5555'. Resetting to a default texture.|r"
-L["LSMInvalidBarBorderTexture"] = "TRB: |cFFFF5555Invalid texture (%s bar border): '|r%s|cFFFF5555'. Resetting to a default texture.|r"
-L["LSMInvalidBarResourceTexture"] = "TRB: |cFFFF5555Invalid texture (%s resource bar): '|r%s|cFFFF5555'. Resetting to a default texture.|r"
-L["LSMInvalidComboPointBackgroundTexture"] = "TRB: |cFFFF5555Invalid texture (%s combo points background): '|r%s|cFFFF5555'. Resetting to a default texture.|r"
-L["LSMInvalidComboPointBorderTexture"] = "TRB: |cFFFF5555Invalid texture (%s combo points border): '|r%s|cFFFF5555'. Resetting to a default texture.|r"
-L["LSMInvalidComboPointResourceTexture"] = "TRB: |cFFFF5555Invalid texture (%s combo points bar): '|r%s|cFFFF5555'. Resetting to a default texture.|r"
-L["LSMInvalidSoundNameBoth"] = "TRB: |cFFFF5555Invalid sound (%s '%s'): '|r%s|cFFFF5555'. Resetting to a default sound.|r"
-L["LSMInvalidSoundNameOnlySoundName"] = "TRB: |cFFFF5555Invalid sound (%s): '|r%s|cFFFF5555'. Resetting to a default sound.|r"
-L["LSMInvalidSoundNameOnlyName"] = "TRB: |cFFFF5555Invalid sound (%s '%s'). Resetting to a default sound.|r"
-L["LSMInvalidSound"] = "TRB: |cFFFF5555Invalid sound (%s). Resetting to a default sound.|r"
-
-
 -- LibSharedMedia entries
 L["LSMSoundWilhelmScream"] = "TRB: Wilhelm Scream"
 L["LSMSoundBoxingArenaGong"] = "TRB: Boxing Arena Gong"
@@ -4172,3 +4158,4 @@ L["BarTexturesHeaderPetBars"] = "Pet Bar Textures"
 L["BarTexturesHeaderSkyriding"] = "Skyriding Bar Textures"
 L["CheckboxIncludeAllTextureGroups"] = "Include bars from the other Textures tabs"
 L["CheckboxIncludeAllTextureGroupsTooltip"] = "When checked, this table also lists the bars from every other Textures tab, such as the one under Cast Bars, and they can be edited here as well as there. This setting is not saved."
+L["LSMNotLoaded"] = "%s (not loaded)"

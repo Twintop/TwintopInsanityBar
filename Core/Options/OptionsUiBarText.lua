@@ -588,7 +588,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	controls.colors.text = controls.colors.text or {}
 
 	local fontPairs = TRB.Functions.OptionsUi.Media:GetFontPairs()
-	local fontPairsByName = TRB.Functions.OptionsUi.Media:GetFontPairsByName()
 	local UpdateBarTextEditorInheritedControlState
 
 	local barTextFontFace = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontFace", barTextOptionsFrame, "WowStyle1DropdownTemplate")
@@ -596,26 +595,27 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	barTextFontFace.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(barTextOptionsFrame, L["FontFaceHeader"], oUi.xCoord, yCoord)
 	barTextFontFace.label.font:SetFontObject(GameFontNormal)
 
-	local function FontFaceIsSelected(value)
+	-- By name, since a saved path can be stale and several names can share one file.
+	local function FontFaceIsSelected(pair)
 		if workingBarText ~= nil then
-			return value == workingBarText.fontFace
+			return pair[1] == workingBarText.fontFaceName
 		else
 			return false
 		end
 	end
 
-	local function FontFaceSetSelected(newValue)
+	local function FontFaceSetSelected(pair)
 		if workingBarText ~= nil then
-			workingBarText.fontFace = newValue
-			workingBarText.fontFaceName = fontPairsByName[newValue]
-			barTextFontFace:SetDefaultText(workingBarText.fontFaceName)
+			workingBarText.fontFace = pair[2]
+			workingBarText.fontFaceName = pair[1]
+			barTextFontFace:SetDefaultText(pair[1])
 			RefreshBarTextEditorPreview(true)
 		end
 	end
 
 	local function FontFaceGenerator(dropdown, rootDescription)
-		for k, v in pairs(fontPairs) do
-			local radio = rootDescription:CreateRadio(v[1], FontFaceIsSelected, FontFaceSetSelected, v[2])
+		for _, v in ipairs(fontPairs) do
+			local radio = rootDescription:CreateRadio(v[1], FontFaceIsSelected, FontFaceSetSelected, v)
 			radio:AddInitializer(function(button, description, menu)
 				local font = CreateFont(v[2])
 				local outlineFlag = (workingBarText and workingBarText.fontOutline) or "OUTLINE"
@@ -627,6 +627,10 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	end
 	barTextFontFace:SetupMenu(FontFaceGenerator)
 	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+	local function RefreshFontFaceLabel()
+		barTextFontFace:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("font", workingBarText.fontFaceName) or TRB.Data.constants.defaultSettings.fonts.fontFaceName)
+	end
+	TRB.Functions.OptionsUi.Media:SetLabelRefresher(barTextFontFace, RefreshFontFaceLabel)
 
 	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontFace:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
@@ -1022,7 +1026,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		barTextFontJustifyHorizontal:SetupMenu(FontJustifyHorizontalGenerator)
 		barTextRelativeToFrame:SetDefaultText(GetRelativeToFrameLabel(workingBarText.position))
 		barTextRelativeTo:SetDefaultText(workingBarText.position.relativeToName)
-		barTextFontFace:SetDefaultText(workingBarText.fontFaceName)
+		RefreshFontFaceLabel()
 		barTextFontJustifyHorizontal:SetDefaultText(workingBarText.fontJustifyHorizontalName)
 
 		fontSize:SetValue(workingBarText.fontSize)

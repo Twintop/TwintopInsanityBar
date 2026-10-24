@@ -1497,7 +1497,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 				TRB.Functions.Threshold:RefreshThresholdAudio()
 				TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(audioCheckbox, dictEntry.audio.enabled, true)
 				if dictEntry.audio.enabled and dictEntry.audio.sound and dictEntry.audio.sound ~= "" then
-					PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+					PlaySoundFile(TRB.Functions.LibSharedMedia:ResolveSound(dictEntry.audio.soundName, dictEntry.audio.sound), TRB.Data.settings.core.audio.channel.channel)
 				end
 				SetTableValues()
 			end)
@@ -1505,24 +1505,26 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 
 			-- Audio sound dropdown
 			local soundPairs = TRB.Functions.OptionsUi.Media:GetSoundPairs()
-			local soundPairsByName = TRB.Functions.OptionsUi.Media:GetSoundPairsByName()
-			local soundDisplayName = dictEntry.audio.soundName
-			audioDropdown:SetDefaultText((soundDisplayName and soundDisplayName ~= "") and soundDisplayName or L["ThresholdDetailAudioNone"])
-			local function AudioIsSelected(value)
-				return value == dictEntry.audio.sound
+			local function RefreshAudioLabel()
+				audioDropdown:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("sound", dictEntry.audio.soundName) or L["ThresholdDetailAudioNone"])
 			end
-			local function AudioSetSelected(newValue)
-				dictEntry.audio.sound = newValue
-				dictEntry.audio.soundName = soundPairsByName[newValue]
+			RefreshAudioLabel()
+			TRB.Functions.OptionsUi.Media:SetLabelRefresher(audioDropdown, RefreshAudioLabel)
+			-- By name, since a saved path can be stale and several names can share one file.
+			local function AudioIsSelected(pair)
+				return pair[1] == dictEntry.audio.soundName
+			end
+			local function AudioSetSelected(pair)
+				dictEntry.audio.sound = pair[2]
+				dictEntry.audio.soundName = pair[1]
 				TRB.Functions.Threshold:RefreshThresholdAudio()
-				local newSoundName = dictEntry.audio.soundName
-				audioDropdown:SetDefaultText((newSoundName and newSoundName ~= "") and newSoundName or L["ThresholdDetailAudioNone"])
-				PlaySoundFile(dictEntry.audio.sound, TRB.Data.settings.core.audio.channel.channel)
+				audioDropdown:SetDefaultText(pair[1])
+				PlaySoundFile(TRB.Functions.LibSharedMedia:ResolveSound(dictEntry.audio.soundName, dictEntry.audio.sound), TRB.Data.settings.core.audio.channel.channel)
 				SetTableValues()
 			end
 			audioDropdown:SetupMenu(function(dropdown, rootDescription)
-				for k, v in pairs(soundPairs) do
-					rootDescription:CreateRadio(v[1], AudioIsSelected, AudioSetSelected, v[2])
+				for _, v in ipairs(soundPairs) do
+					rootDescription:CreateRadio(v[1], AudioIsSelected, AudioSetSelected, v)
 				end
 				rootDescription:SetScrollMode(400)
 			end)

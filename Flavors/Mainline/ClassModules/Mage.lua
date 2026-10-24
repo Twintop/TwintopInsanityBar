@@ -1385,17 +1385,21 @@ local function UpdateArcaneSalvo(specSettings, specCacheSettings, barColors, fil
 	slot = node:GetOrCreateOverlaySlot("arcaneSalvoRange")
 	slot:CreateRangeOverlays(#arcaneSalvoActiveRanges)
 
+	-- The ranges replace the bar's fill, so they take its texture, which Lock Bar swaps for the main bar's.
+	local textures = specCacheSettings.textures
+	local rangeTexture = textures and ((not textures.lockBar and textures.arcaneSalvoBar) or textures.resourceBar)
+
 	-- The baseline gate takes over painting the bar color so the node's own fill can go transparent.
 	local baseline = slot:GetRangeBaselineIndex()
 	slot:SetParentFillHidden(true)
-	slot:SetRangeOverlayTexture(baseline, specSettings.textures.arcaneSalvoBar)
+	slot:SetRangeOverlayTexture(baseline, rangeTexture)
 	Color:ApplyRangeOverlayFillColor(slot, baseline, barColors.bar)
 	slot:ShowRangeOverlay(baseline)
 
 	for index = 1, #arcaneSalvoActiveRanges do
 		local range = arcaneSalvoActiveRanges[index]
 		slot:SetRangeOverlayThreshold(index, range.value)
-		slot:SetRangeOverlayTexture(index, specSettings.textures.arcaneSalvoBar)
+		slot:SetRangeOverlayTexture(index, rangeTexture)
 		Color:ApplyRangeOverlayFillColor(slot, index, range)
 		slot:SetRangeOverlayValue(index, stacks)
 		slot:ShowRangeOverlay(index)

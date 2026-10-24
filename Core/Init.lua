@@ -87,14 +87,6 @@ TRB.Data.constants = {
 	runSpeed = 7,
 	defaultSettings = {
 		fonts = {}, -- This will get populated by Functions\Settings.lua
-		textures = {
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga",
-			resourceBarName="TRB: Smoother",
-		},
 		sounds = {
 			sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 			soundName = L["LSMSoundAirHorn"]

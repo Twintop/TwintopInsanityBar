@@ -129,6 +129,15 @@ local function RefreshAllSpecs()
 	RefreshBar(nil, nil)
 end
 
+---Redraws every built Textures tab, so a pick marked as not loaded loses the mark once its media registers.
+function TRB.Functions.OptionsUi.Textures:RefreshAllEditors()
+	for _, scopeEditors in pairs(texturesEditors) do
+		for _, editor in pairs(scopeEditors) do
+			editor.Refresh()
+		end
+	end
+end
+
 ---Opens a bar's row on the Global Options Textures tab that lists it, switching to the Global screen that holds it.
 ---@param barKey string
 function TRB.Functions.OptionsUi.Textures:OpenGlobalTextures(barKey)
@@ -615,7 +624,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			local followsGlobal = IsFollowingGlobal(row)
 			local function Cell(item)
 				local locked = IsLockedMember(item.key)
-				return { value = DisplayName(row, item) or "", color = locked and dimColor or nil }
+				return { value = TRB.Functions.LibSharedMedia:GetDisplayName(item.lsmType, DisplayName(row, item)) or "", color = locked and dimColor or nil }
 			end
 			local cols = {
 				{ value = row.key },
@@ -718,9 +727,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			local xPos = (slot % 2 == 1) and oUi.xCoord or oUi.xCoord2
 			local yPos = -70 - (60 * math.floor((slot - 1) / 2))
 			textureDropdowns:CreateLsmDropdown(detailFrame, dropdowns, textures, classId, specId, xPos, yPos, item.lsmType, item.key, item.label, L["StatusBarTextures"],
-				function(newValue)
+				function(newValue, newName)
 					local ownerTextures = OwnerTextures(row)
-					local newName = dropdowns[item.key].lsmPairsByName[newValue]
 					ownerTextures[item.key] = newValue
 					ownerTextures[item.key .. "Name"] = newName
 					-- Changing the texture a lock copies changes everything the lock matches to it.
@@ -773,9 +781,9 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 
 		for slot, item in ipairs(row.items) do
 			local dropdown = EnsureDropdown(row, item, slot)
-			local displayName = DisplayName(row, item) or OwnerTextures(row)[item.key .. "Name"]
+			local name = DisplayName(row, item) or OwnerTextures(row)[item.key .. "Name"]
 			local locked = IsLockedMember(item.key)
-			textureDropdowns:RefreshLsmDropdown(dropdown, displayName)
+			textureDropdowns:RefreshLsmDropdown(dropdown, name)
 			primitives:ToggleDropdownEnabled(dropdown, not followsGlobal and not locked)
 			dropdown.disabledReason = GetDisabledReason(row, item)
 			dropdown:Show()
