@@ -78,6 +78,8 @@ saved-variables replay and golden-snapshot options used to verify refactors.
 | --- | --- |
 | Check that Core has no class/spec leakage | `.\build\lint-core.ps1` |
 | Smoke-load both flavors for every class | `.\build\smoke.ps1 -Lua <lua5.1>` |
+| Build every options tab and run the Textures and media checks | `.\build\drivers.ps1 -Lua <lua5.1>` |
+| Compare every bar text font with another build | `.\build\font-compare.ps1 -Lua <lua5.1> [-Ref main] [-Saved <file> -EdgeCases]` |
 | Build a release zip locally (into `dist\`) | `.\build\stage.ps1 -Flavor mainline` / `-Flavor forever` |
 | Same, stamping a version | `.\build\stage.ps1 -Flavor mainline -Version 12.1.0.11 -ReleaseType beta01` |
 | Link / unlink a client | `.\build\dev-link.ps1 -Flavor <f> -AddOnsPath <path> [-Remove]` |

@@ -43,6 +43,34 @@ Environment variables:
   class/spec registries, the bar type registry (with its default dimensions/colors) and every class
   options module's `LoadDefaultSettings(true)` output. Diffing two snapshots is how a refactor proves
   it changed no defaults.
+- `TRB_DRIVER=<file>`: a driver, below.
 
 `build/smoke.ps1` runs the load + `ADDON_LOADED` check for every class of both flavors and fails on
 any real error; CI runs the same thing.
+
+## Drivers
+
+A driver is a Lua file returning hook functions, each called with a context table (`TRB`, `stubs`,
+`addonName`, `addonDir`, `tocRel`, `classId`, `harnessDir`):
+
+- `afterInstall`, after the stubs install and before the addon's files load;
+- `afterLoad`, after the files load and before the events;
+- `afterEvents`, after the events. A number it returns counts as that many failures.
+
+A hook that errors prints `DRIVER ERROR` and fails the run. `drivers\parity.lua` holds the client
+behavior a driver needs past smoke-loading: Forever's project id, template children, positional
+`string.format`, and `HoldDeferredSetup`, which holds the 1s deferred setup until the driver fires
+`TRB_RELEASE_DEFERRED`, as the game runs it after `PLAYER_LOGIN`.
+
+| Driver | Run by | What it does |
+| --- | --- | --- |
+| `drivers\options-tabs.lua` | `drivers.ps1` | Builds every options tab for every class, then runs the Textures tab checks from #861 and #584. Prints `PASS`, `FAIL`, and `TAB ERROR` lines. |
+| `drivers\media-pickup.lua` | `drivers.ps1` | Checks that fonts, textures, and sounds that aren't loaded draw or play the default, are picked up live (after combat, with a Druid form's spec), and are never written into settings. |
+| `drivers\bartext-fonts.lua` | `font-compare.ps1` | Writes the font each bar text string gets at login to `TRB_FONT_OUT`. `TRB_SPEC` picks the specialization index, and `TRB_REGISTER_SAVED_MEDIA=1` registers every name the save uses at its saved path, as if all its media loaded. |
+
+`drivers.ps1 -AddonDir <checkout>` runs the current drivers against another checkout, such as a
+`git worktree` of an older commit, to show a check fails without the fix it covers.
+
+`font-edge-save.lua <in> <out> [case]` rewrites a save's bar text and default fonts into the edge cases
+`font-compare.ps1 -EdgeCases` uses: without a case they cycle through a nil name, an empty name, a name
+without a file, and the untouched pick; with case 1, 2, or 3, every font but the first takes that case.

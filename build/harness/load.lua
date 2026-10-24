@@ -9,6 +9,14 @@ local classId = tonumber(classIdArg) or 5
 local harnessDir = arg[0]:match("^(.*)[/\\]") or "."
 package.path = harnessDir .. "/?.lua;" .. package.path
 
+-- Optional driver: TRB_DRIVER names a Lua file returning hooks that run after the stubs install, after the files load,
+-- and after the events (see README.md).
+local driver = nil
+local driverPath = os.getenv("TRB_DRIVER")
+if driverPath and driverPath ~= "" then
+	driver = assert(loadfile(driverPath))()
+end
+
 local function normalize(p)
 	p = p:gsub("\\", "/")
 	return p
@@ -93,6 +101,27 @@ local TRB = {}
 local failures = 0
 local loaded = 0
 local skipped = 0
+
+local driverContext = { TRB = TRB, stubs = stubs, addonName = addonName, addonDir = addonDir, tocRel = tocRel, classId = classId, harnessDir = harnessDir }
+---Runs one of the driver's hooks; an error, or the failure count afterEvents returns, fails the run.
+---@param name "afterInstall"|"afterLoad"|"afterEvents"
+local function RunHook(name)
+	local hook = driver and driver[name]
+	if hook == nil then
+		return
+	end
+	local ok, result = xpcall(function() return hook(driverContext) end, function(e)
+		return debug.traceback(tostring(e), 2)
+	end)
+	if not ok then
+		failures = failures + 1
+		print("DRIVER ERROR " .. name .. "\n    " .. tostring(result):gsub("\n", "\n    "))
+	elseif type(result) == "number" then
+		failures = failures + result
+	end
+end
+
+RunHook("afterInstall")
 for _, path in ipairs(files) do
 	local rel = path:sub(#normalize(addonDir) + 2)
 	if rel:match("^Libs/") then
@@ -116,12 +145,20 @@ for _, path in ipairs(files) do
 	end
 end
 print(string.format("Loaded %d files (%d libs skipped), %d failures", loaded, skipped, failures))
+local loadedCleanly = failures == 0
+if loadedCleanly then
+	RunHook("afterLoad")
+end
 
 local timerFailures = 0
 if fireEvents and fireEvents ~= "" and failures == 0 then
 	local eventFailures
 	eventFailures, timerFailures = stubs.fireEvents(fireEvents, addonName)
 	failures = failures + eventFailures
+end
+
+if loadedCleanly then
+	RunHook("afterEvents")
 end
 
 local dumpSaved = os.getenv("TRB_DUMP_SAVED")
