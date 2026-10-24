@@ -13,7 +13,11 @@ local CORE_TEXTURE_KEYS = {
 	"borderName",
 	"resourceBar",
 	"resourceBarName",
-	"textureLock",
+	"lockBar",
+	"lockBorder",
+	"lockBackground",
+	"lockOverlay",
+	"useGlobal",
 	"healthBackground",
 	"healthBackgroundName",
 	"healthBorder",
@@ -137,10 +141,6 @@ local function CopyCustomBarConfiguration(configuration, settings, barKey)
 		local visibilityKey = barTypeDef and barTypeDef.visibilityKey or barKey
 		CopyKey(configuration.displayBar, settings.displayBar, visibilityKey)
 		CopyTexturePrefix(configuration.textures, settings.textures, barKey)
-
-		if barKey == "mana" then
-			CopyTexturePrefix(configuration.textures, settings.textures, "manaBar")
-		end
 	end
 
 	local barColors = settings.colors and settings.colors.bars and settings.colors.bars[barKey]

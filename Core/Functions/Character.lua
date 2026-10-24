@@ -1666,48 +1666,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.precision = spec.precision
 	end
 	
-	if s.textures then
-		-- A copy, so layering this spec's own textures on top never writes them into Global's saved table.
-		local textures = {}
-		for key, value in pairs(core.textures) do
-			textures[key] = value
-		end
-		specCache.settings.textures = textures
-
-		-- The bars Global's Textures panel offers take Global's textures; the mana bar and class bars keep
-		-- the spec's own, and Texture Lock matches every one of them to Global's main bar.
-		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
-		local globalTextureBars = {}
-		registry:AppendCastbar(globalTextureBars)
-		registry:AppendTargetFocusCastbars(globalTextureBars)
-		registry:AppendOtherBars(globalTextureBars, nil)
-		registry:AppendSkyridingBars(globalTextureBars)
-		local isGlobalTextureBar = {}
-		for _, barTypeDef in ipairs(globalTextureBars) do
-			isGlobalTextureBar[barTypeDef.key] = true
-		end
-
-		local specTextures = spec.textures or {}
-		local lockSources = { Bar = "resourceBar", Border = "border", Background = "background" }
-		local prefixes = { "manaBar" }
-		for key in pairs(registry:GetAll()) do
-			prefixes[#prefixes + 1] = key
-		end
-		for _, prefix in ipairs(prefixes) do
-			for suffix, lockSource in pairs(lockSources) do
-				local key = prefix .. suffix
-				if textures.textureLock then
-					textures[key] = textures[lockSource]
-					textures[key .. "Name"] = textures[lockSource .. "Name"]
-				elseif specTextures[key] ~= nil and (not isGlobalTextureBar[prefix] or textures[key] == nil) then
-					textures[key] = specTextures[key]
-					textures[key .. "Name"] = specTextures[key .. "Name"]
-				end
-			end
-		end
-	else
-		specCache.settings.textures = spec.textures
-	end
+	specCache.settings.textures = TRB.Functions.Settings:ResolveTextures(core.textures, spec.textures, s.textures)
 
 	-- Custom bar dimensions (stagger, defensives, mana, etc.) - always spec-specific
 	if spec.bars then

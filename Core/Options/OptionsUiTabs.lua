@@ -356,12 +356,24 @@ function TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix(groupKey, classId, spe
 	return groupInnerPrefixStem[groupKey] .. tostring(className) .. "_" .. tostring(specName)
 end
 
----Appends the settings tabs every shared grouping's strip carries, each scoped to just that grouping's bars.
+---Appends the settings tabs every shared grouping's strip carries, each scoped to just that grouping's bars, in the
+---order a specialization's and Global Options' own tabs use: Textures, Visibility, Bar Text.
 ---@param tabDefinitions table[] # The strip's tab definitions
 ---@param classId integer? # nil is the global scope
 ---@param specId integer?
 ---@param groupKey string # castbar, otherBars, petBars, or skyriding
 function TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, classId, specId, groupKey)
+	-- Pet bar textures are each specialization's own (Global's were never read), so Global Options has none to set.
+	if groupKey ~= "petBars" or TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId) then
+		tabDefinitions[#tabDefinitions + 1] = {
+			TRB.Functions.OptionsUi.Tabs.TabKeys.BarTextures,
+			TRB.Localization["TabTextures"],
+			oUi.tabWidth.small,
+			function(scrollChild)
+				TRB.Functions.OptionsUi.Textures:ConstructGroupPanel(scrollChild, classId, specId, groupKey)
+			end,
+		}
+	end
 	tabDefinitions[#tabDefinitions + 1] = {
 		TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility,
 		TRB.Localization["TabVisibility"],

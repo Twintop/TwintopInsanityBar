@@ -93,7 +93,14 @@ local function ConstructBarTexturesPanel(parent)
 	local controls = interfaceSettingsFrame.controls.global
 	local yCoord = 5
 
-	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, nil, nil, yCoord, true, L["ResourceComboPoints"])
+	-- Every class's Utility bar follows these textures until a specialization opts it out.
+	local customBars = {}
+	local utilityBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
+	if utilityBarDef then
+		table.insert(customBars, utilityBarDef)
+	end
+
+	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, nil, nil, yCoord, true, L["ResourceComboPoints"], false, customBars)
 end
 
 ---Constructs the bar visibility and display options panel including custom bar (utility) visibility in the global options UI.

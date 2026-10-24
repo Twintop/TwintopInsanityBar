@@ -375,7 +375,7 @@ function TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, s
 	-- Only keys present in core.displayBar are shared globally; custom bars stay spec-owned. IsEntryGlobal
 	-- also asks IsGlobalScopeBar, so a stale core entry for a class-scoped bar can't take its spec row
 	-- hostage (it would go read-only against a global entry with no UI behind it).
-	if barVisibility:IsEntryGlobal(visibilityKey, core.displayBar, spec and spec.displayBar, barVisibility:SpecFollowsGlobal(core, className, specName)) then
+	if barVisibility:IsEntryGlobal(visibilityKey, core.displayBar, spec and spec.displayBar, barVisibility:SpecFollowsGlobal(core, className, specName, "displayBar")) then
 		return barVisibility:ComposeEntry(globalEntry), true, globalEntry
 	end
 	return specEntry and barVisibility:ComposeEntry(specEntry), false, specEntry
@@ -910,7 +910,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---@return boolean
 	local function IsRowControlledByGlobal(entry)
 		return classId ~= nil and entry.isGlobal and barVisibility:IsEntryGlobal(entry.displayBarKey, coreDisplayBar, spec.displayBar,
-			barVisibility:SpecFollowsGlobal(TRB.Data.settings.core, settingsClassName, specName))
+			barVisibility:SpecFollowsGlobal(TRB.Data.settings.core, settingsClassName, specName, "displayBar"))
 	end
 
 	---Whether all, none, or some of the listed bars that could follow Global Options do.
@@ -942,7 +942,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			local classPiece = TRB.Data.settings[specRegistryEntry.className]
 			local piece = classPiece and classPiece[specRegistryEntry.specName]
 			if piece ~= nil and piece.displayBar ~= nil then
-				local specFollowsGlobal = barVisibility:SpecFollowsGlobal(core, specRegistryEntry.className, specRegistryEntry.specName)
+				local specFollowsGlobal = barVisibility:SpecFollowsGlobal(core, specRegistryEntry.className, specRegistryEntry.specName, "displayBar")
 				for _, entry in ipairs(barEntries) do
 					local specEntry = piece.displayBar[entry.displayBarKey]
 					if type(specEntry) == "table" and coreDisplayBar[entry.displayBarKey] ~= nil

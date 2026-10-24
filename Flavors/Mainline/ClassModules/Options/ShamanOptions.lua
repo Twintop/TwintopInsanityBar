@@ -293,7 +293,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(false, true, {
+		textures = TRB.Functions.Settings:DefaultTextures(false, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("elementalBlastBuffs"),
 		}),
 	}

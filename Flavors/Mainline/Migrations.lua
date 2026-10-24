@@ -8819,6 +8819,10 @@ function TRB.Flavor.PortForwardSettings(settings)
 		end
 	end
 
+	-- Textures: the one Texture Lock became four, the Utility bar began following Global, and the mana bar's unread texture keys are dropped.
+	if TwintopInsanityBarSettings ~= nil then
+		TRB.Functions.Settings:MigrateTextures(TwintopInsanityBarSettings)
+	end
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

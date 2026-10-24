@@ -395,7 +395,7 @@ local function GetBarTexture(settings, barKey)
 	if textures == nil then
 		return nil
 	end
-	if textures.textureLock then
+	if textures.lockBar then
 		return textures.resourceBar
 	end
 	return textures[BAR_TEXTURE_KEYS[barKey]]

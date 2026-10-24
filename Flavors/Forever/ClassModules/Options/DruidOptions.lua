@@ -198,7 +198,7 @@ local function LoadDefaultSettings(includeBarText, classic)
 			barText = {},
 		},
 		audio = {},
-		textures = TRB.Functions.Settings:DefaultTextures(true, false, GetFormBarTypes()),
+		textures = TRB.Functions.Settings:DefaultTextures(true, GetFormBarTypes()),
 	}
 
 	-- Each form bar's Overcap gradient steps at that bar's own threshold.

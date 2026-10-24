@@ -14,6 +14,22 @@ TRB.Details.coreNewsContent = [====[
 - [#860](#860) A specialization's Bar Text tabs also list the Global Bar Text it displays.
 - [#860](#860) Deleting Global Bar Text from a specialization's Bar Text tab warns that it is deleted for every specialization that uses it.
 
+## Bar Textures
+
+- [#861](#861) The Textures tab of Global Options and of each specialization is now a table of bars, with the selected bar's fill, border, background, and overlay textures below it.
+- [#861](#861) Add a Textures tab to Cast Bars, Other Bars, Pet Bars, and Skyriding, listing only the bars under each, in Global Options and for every specialization.
+- [#861](#861) The Textures tab of Global Options and of each specialization no longer lists the bars under Cast Bars, Other Bars, Pet Bars, and Skyriding.
+- [#861](#861) Add a checkbox that also lists those bars on the Textures tab of Global Options and of each specialization.
+- [#861](#861) Use global settings on the Textures tabs now works per bar.
+- [#861](#861) The use global settings box on a Textures tab switches every bar it lists.
+- [#861](#861) Remove the Global badge from the Textures tab's header.
+- [#861](#861) Remove the Copy button beside the Textures tab's use global settings box.
+- [#861](#861) The Utility bar, such as Angelic Feather, can use the textures set under Utility on Global Options' Textures tab, except where a specialization already changed its own.
+- [#861](#861) Replace the single texture lock with separate locks for bar, border, background, and health overlay textures.
+- [#861](#861) A texture that can't be changed says why when you hover over it: the lock that keeps it the same as another texture, or the bar using global settings.
+- [#861](#861) A bar that uses global settings shows the textures from Global Options under a cover, with buttons to open them in Global Options or to customize the bar for this specialization.
+- [#861](#861) Fix the Mana bar ignoring its own texture options; until they are set, it keeps the main bar's textures.
+
 ## Bar Visibility
 
 - [#858](#858) Add a Visibility tab to Cast Bars, Other Bars, Pet Bars, and Skyriding, listing only the bars under each, in Global Options and for every specialization.

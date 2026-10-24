@@ -85,12 +85,8 @@ if locale == "zhCN" then
     L["StatusBarTextures"] = "状态条材质"
     L["BorderTexture"] = "边框材质"
     L["SecondaryBorderTexture"] = "%s边框材质"
-    L["BorderTextures"] = "边框材质"
     L["BackgroundTexture"] = "背景（空条）材质"
     L["SecondaryBackgroundTexture"] = "%s背景（空条）材质"
-    L["BackgroundTextures"] = "背景材质"
-    L["TextureLock"] = "所有条、边框、背景分别使用统一材质"
-    L["TextureLockTooltip"] = "锁定同类材质全局统一，例如：所有资源条材质一致、所有边框材质一致、所有背景材质一致。"
 
 	--- GenerateFlashOptions / GenerateBarVisibilityOptions
     L["BarDisplayHeader"] = "资源条显示"
@@ -967,7 +963,6 @@ if locale == "zhCN" then
     L["CheckboxUseGlobalTooltip_Precision"] = "勾选后，将套用进度条文本中小数与资源精度的全局设置。"
     L["Resource"] = "资源"
     L["CheckboxUseGlobalTooltip_BarDimensions"] = "勾选后，将套用进度条位置与尺寸的全局设置。"
-    L["CheckboxUseGlobalTooltip_Textures"] = "勾选后，将套用进度条材质的全局设置。"
     L["GlobalAudioPowerInfusion"] = "获得能量灌注"
     L["HunterBeastMasteryAudioBeastCleaveDown"] = "兽群劈砍buff消失"
     L["HunterBeastMasteryAudioCheckboxBeastCleaveDown"] = "兽群劈砍buff消失时播放音效"
@@ -1214,9 +1209,6 @@ if locale == "zhCN" then
     L["BarTextVariable_healthPercent"] = "当前生命值百分比"
 
 	-- Texture Section Headers
-    L["BarTexturesSectionHeader"] = "进度条材质"
-    L["BorderTexturesSectionHeader"] = "边框材质"
-    L["BackgroundTexturesSectionHeader"] = "背景材质"
     L["HealthBarTexture"] = "生命值进度条材质"
     L["HealthBorderTexture"] = "生命值边框材质"
     L["HealthBackgroundTexture"] = "生命值背景（空进度条）材质"
@@ -1665,9 +1657,6 @@ if locale == "zhCN" then
     L["OverlayModeAppended"] = "追加显示"
     L["OverlayModeOverlay"] = "叠加显示（从左侧）"
     L["OverlayModeInset"] = "叠加显示（从右侧/内嵌）"
-
-	-- Overlay Textures
-    L["OverlayTexturesSectionHeader"] = "叠加层纹理"
 
 	-- Casting Overlay
     L["CastingBarTexture"] = "施法覆盖层材质"
@@ -2681,7 +2670,6 @@ if locale == "zhCN" then
     L["CopyMenuSection_comboPoints"] = "连击点"
     L["CopyMenuSection_healthBar"] = "生命值条"
     L["CopyMenuSection_healthBarColors"] = "生命值条颜色"
-    L["CopyMenuSection_textures"] = "资源条材质"
     L["CopyMenuSection_thresholdIcons"] = "阈值图标"
     L["CopyMenuSection_thresholdColors"] = "阈值颜色"
     L["CopyMenuSection_displayText"] = "字体与文本"
@@ -3679,7 +3667,6 @@ if locale == "zhCN" then
 	L["UseGlobalBadgeHeader"] = "全局设置"
 	L["UseGlobalBadgeTooltip"] = "此区域使用全局设置。取消勾选使用全局选项，即可单独为本专精配置。"
 	L["UseGlobalBadgeTooltipLinkedFormat"] = "当%s区域勾选使用全局选项时，此区域将跟随全局设置。"
-	L["UseGlobalBadgeTooltipTextures"] = "主进度条、施法、生命值条、次要资源、叠加层、施法条、公共冷却、疲劳值、呼吸条贴图，以及贴图锁定均使用全局设置。法力条、职业条和假死贴图保留专精独立配置；若开启全局贴图锁定，则会同步为主进度条、边框与背景的全局贴图。"
 	L["UseGlobalBadgeTooltipTextColors"] = "当前、施法、消耗、被动、阈值上限、溢出文本颜色使用全局设置，包含各项启用状态。法力条文本颜色以及专精专属颜色仍为本专精独立设置。"
 	L["UseGlobalSpecCountFormat"] = "%d/%d个专精正在使用"
 	L["ResourceShamanElementalBlastBuffs"] = "元素冲击增益"

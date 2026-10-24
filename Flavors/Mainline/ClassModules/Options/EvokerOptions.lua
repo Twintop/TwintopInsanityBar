@@ -445,7 +445,7 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(true, nil, {
+		textures = TRB.Functions.Settings:DefaultTextures(true, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("dragonrage"),
 		}),
 	}

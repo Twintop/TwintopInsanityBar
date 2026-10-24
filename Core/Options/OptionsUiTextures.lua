@@ -8,7 +8,148 @@ local L = TRB.Localization
 -- ============================================================================
 -- Texture dropdowns and texture option panels
 -- ============================================================================
----Generates the bar textures options panel with statusbar, overlay, border, and background texture dropdowns.
+
+-- Session-only, never saved: whether a scope's spec tab also lists the bars that have their own groupings' tabs.
+local includeAllGroups = {}
+
+-- Each built Textures tab, by scope then grouping, so a change on one tab reaches the others and a cover can open a row.
+---@type table<string, table<string, { Refresh: fun(), SelectBarKey: fun(barKey: string) }>>
+local texturesEditors = {}
+
+local dimColor = { r = 0.5, g = 0.5, b = 0.5, a = 0.7 }
+local MAX_TABLE_ROWS = 8
+
+---The bars table's height in rows: one per listed bar, at least two and at most MAX_TABLE_ROWS.
+---@param rowCount integer
+---@return integer
+local function GetTableRowCount(rowCount)
+	return math.min(math.max(rowCount, 2), MAX_TABLE_ROWS)
+end
+
+local lockGroups = TRB.Functions.Settings.textureLockGroups
+
+---@param classId integer?
+---@param specId integer?
+---@return string
+local function GetScopeKey(classId, specId)
+	if classId == nil then
+		return "global"
+	end
+	return classId .. "_" .. specId
+end
+
+---Every texture key a lock matches to its source.
+---@param lockName string
+---@return string[]
+local function GetLockMembers(lockName)
+	local group = lockGroups[lockName]
+	local members = {}
+	for _, key in ipairs(group.fixed) do
+		members[#members + 1] = key
+	end
+	if group.suffix ~= nil then
+		for prefix in pairs(TRB.Classes.BarTypeRegistry:GetInstance():GetAll()) do
+			members[#members + 1] = prefix .. group.suffix
+		end
+	end
+	return members
+end
+
+---@type table<string, { lock: string, isSource: boolean }>?
+local lockByKey = nil
+
+---The lock that governs a texture key, and whether the key is the texture the others copy.
+---@param key string
+---@return string? lockName
+---@return boolean isSource
+local function GetLockOfKey(key)
+	if lockByKey == nil then
+		lockByKey = {}
+		for lockName, group in pairs(lockGroups) do
+			for _, member in ipairs(GetLockMembers(lockName)) do
+				lockByKey[member] = { lock = lockName, isSource = false }
+			end
+			lockByKey[group.source] = { lock = lockName, isSource = true }
+		end
+	end
+	local found = lockByKey[key]
+	if found == nil then
+		return nil, false
+	end
+	return found.lock, found.isSource
+end
+
+---Copies a lock's source texture to everything the lock matches that the table holds.
+---@param textures table
+---@param lockName string
+local function SyncLock(textures, lockName)
+	local source = lockGroups[lockName].source
+	local value = textures[source]
+	if value == nil then
+		return
+	end
+	local name = textures[source .. "Name"]
+	for _, key in ipairs(GetLockMembers(lockName)) do
+		if textures[key] ~= nil then
+			textures[key] = value
+			textures[key .. "Name"] = name
+		end
+	end
+end
+
+---Applies a changed texture to the active bar, when the panel edits it.
+---@param classId integer?
+---@param specId integer?
+local function RefreshBar(classId, specId)
+	if not TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
+		return
+	end
+	TRB.Functions.Character:ResetCaches()
+	if TRB.Frames.barGroups ~= nil then
+		local character = TRB.Data.character
+		-- The cache holds its own copy of global textures, so an edit only reaches the bar through a re-fill.
+		TRB.Functions.Character:FillSpecializationCacheSettings(character.className, character.specName)
+		local settings = TRB.Data.specCache[character.compositeKey].settings
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end
+	end
+end
+
+---Re-fills every specialization's cache that has been initialized, then applies the result to the active bar.
+local function RefreshAllSpecs()
+	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+		if TRB.Data.specCache[entry.compositeKey] then
+			TRB.Functions.Character:FillSpecializationCacheSettings(entry.className, entry.specName)
+		end
+	end
+	RefreshBar(nil, nil)
+end
+
+---Opens a bar's row on the Global Options Textures tab that lists it, switching to the Global screen that holds it.
+---@param barKey string
+function TRB.Functions.OptionsUi.Textures:OpenGlobalTextures(barKey)
+	if TRB.Options.OptionsFrame == nil then
+		return
+	end
+	local barGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(barKey)
+	local tabs = TRB.Functions.OptionsUi.Tabs
+	TRB.Options.OptionsFrame:SelectCategory(barGroup == "spec" and "global" or barGroup)
+	-- The category's tabs exist only after it is selected.
+	C_Timer.After(0, function()
+		tabs:SwitchToTabByNamePrefix(barGroup == "spec" and "Global" or tabs:GetGroupInnerPrefix(barGroup, nil, nil), tabs.TabKeys.BarTextures)
+		local editor = texturesEditors.global and texturesEditors.global[barGroup]
+		if editor ~= nil then
+			editor.SelectBarKey(barKey)
+		end
+	end)
+end
+
+---Generates the bar textures options: a table of the bars with a detail panel for the selected bar's fill, border,
+---background, and overlay textures, and the locks that keep a kind of texture the same across the bars.
 ---@param parent Frame Parent frame for the controls
 ---@param controls table Table to store control references
 ---@param spec table Spec settings table
@@ -20,660 +161,785 @@ local L = TRB.Localization
 ---@param includeManaBar boolean? Whether to include mana bar textures
 ---@param customBars TRB.Classes.BarTypeDefinition[]? Custom bar definitions to include
 ---@param includeComboPointsCastingOverlay boolean? Whether to include secondary casting overlay texture
+---@param options { groupKey: string? }? Which grouping's bars to list; nil is the spec's own tab
 ---@return number yCoord New Y coordinate after adding controls
-function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString, includeManaBar, customBars, includeComboPointsCastingOverlay)
-	if includeComboPoints == nil then
-		includeComboPoints = false
-	end
-	if includeComboPointsCastingOverlay == nil then
-		includeComboPointsCastingOverlay = false
-	end
-	if includeManaBar == nil then
-		includeManaBar = false
-	end
-	if customBars == nil then
-		customBars = {}
-	end
+function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString, includeManaBar, customBars, includeComboPointsCastingOverlay, options)
+	includeComboPoints = includeComboPoints == true
+	includeComboPointsCastingOverlay = includeComboPointsCastingOverlay == true
+	includeManaBar = includeManaBar == true
+	customBars = customBars or {}
+	local barRegistry = TRB.Classes.BarTypeRegistry:GetInstance()
 	-- Castbar is an all-spec bar; include it in every textures panel without per-class wiring.
-	TRB.Classes.BarTypeRegistry:GetInstance():AppendCastbar(customBars)
+	barRegistry:AppendCastbar(customBars)
 	-- Target and Focus Cast Bars are likewise all-spec; include them in every textures panel.
-	TRB.Classes.BarTypeRegistry:GetInstance():AppendTargetFocusCastbars(customBars)
+	barRegistry:AppendTargetFocusCastbars(customBars)
 	-- Other Bars too, scoped so Feign Death only appears for Hunters.
-	TRB.Classes.BarTypeRegistry:GetInstance():AppendOtherBars(customBars, classId)
+	barRegistry:AppendOtherBars(customBars, classId)
 	-- Pet bars, scoped so they only appear on the specs that can hold a permanent pet.
-	TRB.Classes.BarTypeRegistry:GetInstance():AppendPetBars(customBars, classId, specId)
-	TRB.Classes.BarTypeRegistry:GetInstance():AppendSkyridingBars(customBars)
+	barRegistry:AppendPetBars(customBars, classId, specId)
+	barRegistry:AppendSkyridingBars(customBars)
 
 	if secondaryResourceString == nil then
 		secondaryResourceString = L["ResourceComboPoints"]
 	end
 
+	local groupKey = options and options.groupKey or "spec"
+	local scopeKey = GetScopeKey(classId, specId)
+	local isSpecScope = classId ~= nil and specId ~= nil
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName
+	local namePrefix = className .. "_" .. specName .. (groupKey == "spec" and "" or "_" .. groupKey)
+	local primitives = TRB.Functions.OptionsUi.Primitives
+	local textureDropdowns = TRB.Functions.OptionsUi.TextureDropdowns
+	local settingsFunctions = TRB.Functions.Settings
+	local textures = spec.textures
+	local coreTextures = TRB.Data.settings.core.textures
+	local globalBars = settingsFunctions:GetGlobalTextureBars()
 	local f = nil
 
-	controls.textBarTexturesSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["BarTexturesHeader"], oUi.xCoord, yCoord)
-
-	if classId ~= nil and specId ~= nil then
-		yCoord = yCoord - 30
-		local lowerClassName = string.lower(className)
-		controls.checkBoxes.useGlobalTextures = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .."_useGlobal_textures", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.useGlobalTextures
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobal"])
-		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
-		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barTextures")
-		f.tooltip = L["CheckboxUseGlobalTooltip_Textures"]
-		f:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName].textures)
-		f:SetScript("OnClick", function(self, ...)
-			TRB.Data.settings.core.global[lowerClassName][specName].textures = self:GetChecked()
-			TRB.Functions.Character:FillSpecializationCacheSettings(lowerClassName, specName)
-			if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-				TRB.Functions.Character:ResetCaches()
-				if TRB.Frames.barGroups ~= nil then
-					local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-					TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-					TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-					TRB.Functions.BarVisibility:MarkDirty()
-					TRB.Functions.Bar:HideResourceBar()
-					if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-						TRB.Data.lookupDirty = true
-						TRB.Functions.Class:TriggerResourceBarUpdates()
-					end
-				end
-			end
-			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("textures")
-		end)
-		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "textures")
-		TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalBadge(f, controls.textBarTexturesSection, L["UseGlobalBadgeTooltipTextures"])
-	else
-		-- Global options panel - add bulk toggle checkbox
-		yCoord = TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(parent, controls, "enableAllTextures", "textures", yCoord)
+	-- ===== The bars this scope can texture, in the order the table lists them =====
+	---@type table[]
+	local allRows = {}
+	---@type table<string, table>
+	local rowsByKey = {}
+	-- The row and item each texture key belongs to, so a lock's tooltip can name its source.
+	---@type table<string, table>
+	local rowByTextureKey = {}
+	---@type table<string, table>
+	local itemByTextureKey = {}
+	---@param key string
+	---@param label string
+	---@param lsmType string
+	local function Item(key, label, lsmType)
+		return { key = key, label = label, lsmType = lsmType }
 	end
-
-	controls.dropDown.textures = {}
-	local textureDropdowns = TRB.Functions.OptionsUi.TextureDropdowns
-	local backgroundPairsByName = textureDropdowns:GetBackgroundPairsByName()
-	local borderPairsByName = textureDropdowns:GetBorderPairsByName()
-	local function DropdownSetupMenuWrapper(control)
-		textureDropdowns:RefreshLsmDropdown(control)
-	end
-
-	yCoord = yCoord - 30
-
-	---Applies a new statusbar texture value and syncs all related dropdowns via UpdateStatusbarDropdowns.
-	---@param variable string The texture variable being changed (e.g., "resource", "casting")
-	---@param newValue string The new texture value
-	local function StatusbarSetValue(variable, newValue)
-		TRB.Functions.OptionsUi.TextureDropdowns:UpdateStatusbarDropdowns(controls.dropDown.textures, spec.textures, newValue, variable, includeComboPoints, includeManaBar, customBars, includeComboPointsCastingOverlay)
-	end
-
-	---Applies a new overlay texture value and syncs all related dropdowns via UpdateOverlayDropdowns.
-	---@param variable string The overlay variable being changed (e.g., "absorb", "incomingHeal")
-	---@param newValue string The new texture value
-	local function OverlaySetValue(variable, newValue)
-		TRB.Functions.OptionsUi.TextureDropdowns:UpdateOverlayDropdowns(controls.dropDown.textures, spec.textures, newValue, variable)
-	end
-
-	---Refreshes bar layout and appearance after a texture option change if editing the active spec.
-	local function RefreshBar()
-		if not TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
+	---@param row table
+	local function AddRow(row)
+		if rowsByKey[row.key] ~= nil then
 			return
 		end
-		TRB.Functions.Character:ResetCaches()
-		if TRB.Frames.barGroups ~= nil then
-			local character = TRB.Data.character
-			-- The cache holds its own copy of global textures, so an edit only reaches the bar through a re-fill.
-			TRB.Functions.Character:FillSpecializationCacheSettings(character.className, character.specName)
-			local settings = TRB.Data.specCache[character.compositeKey].settings
-			TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-			TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+		row.canUseGlobal = isSpecScope and globalBars.set[row.key] == true
+		row.isRegistryBar = barRegistry:Get(row.key) ~= nil
+		rowsByKey[row.key] = row
+		allRows[#allRows + 1] = row
+		for _, item in ipairs(row.items) do
+			rowByTextureKey[item.key] = row
+			itemByTextureKey[item.key] = item
 		end
 	end
 
-	-- ===== BAR TEXTURES SUBSECTION =====
-	controls.barTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["BarTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
-
-	yCoord = yCoord - 20
-
-	-- Row 1: Primary Bar (left), Health Bar (right)
-	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", L["MainBarTexture"], L["StatusBarTextures"],
-		function(newValue)
-			StatusbarSetValue("resource", newValue)
-		end)
-
-	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", L["CastingBarTexture"], L["StatusBarTextures"],
-		function(newValue)
-			StatusbarSetValue("casting", newValue)
-		end)
-
-	-- Collect remaining bar texture items, then place in two-column layout (left-to-right fill)
-	local barTextureItems = {}
-	table.insert(barTextureItems, { key = "healthBar", label = L["HealthBarTexture"], callback = function(newValue) StatusbarSetValue("health", newValue) end })
+	AddRow({ key = "primary", label = TRB.Functions.Bar:GetSpecResourceBarName("primary", classId, specId) or L["MainResourceBar"], items = {
+		Item("resourceBar", L["MainBarTexture"], "statusbar"),
+		Item("border", L["BorderTexture"], "border"),
+		Item("background", L["BackgroundTexture"], "background"),
+		Item("castingBar", L["CastingBarTexture"], "statusbar"),
+	} })
 	if includeComboPoints then
-		table.insert(barTextureItems, { key = "comboPointsBar", label = string.format(L["SecondaryBarTexture"], secondaryResourceString), callback = function(newValue) StatusbarSetValue("comboPoints", newValue) end })
+		local items = {
+			Item("comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), "statusbar"),
+			Item("comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), "border"),
+			Item("comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), "background"),
+		}
 		if includeComboPointsCastingOverlay then
-			table.insert(barTextureItems, { key = "comboPointsCastingBar", label = string.format(L["SecondaryCastingOverlayTexture"], secondaryResourceString), callback = function(newValue) StatusbarSetValue("comboPointsCasting", newValue) end })
+			items[#items + 1] = Item("comboPointsCastingBar", string.format(L["SecondaryCastingOverlayTexture"], secondaryResourceString), "statusbar")
 		end
+		AddRow({ key = "secondary", label = secondaryResourceString, items = items })
 	end
+	AddRow({ key = "health", label = L["HealthBar"], items = {
+		Item("healthBar", L["HealthBarTexture"], "statusbar"),
+		Item("healthBorder", L["HealthBorderTexture"], "border"),
+		Item("healthBackground", L["HealthBackgroundTexture"], "background"),
+		Item("absorbBar", L["AbsorbBarTexture"], "statusbar"),
+		Item("incomingHealBar", L["IncomingHealBarTexture"], "statusbar"),
+		Item("healAbsorbBar", L["HealAbsorbBarTexture"], "statusbar"),
+	} })
 	if includeManaBar then
-		table.insert(barTextureItems, { key = "manaBarBar", label = L["ManaBarTexture"], callback = function(newValue) StatusbarSetValue("manaBar", newValue) end })
+		local manaDefinition = barRegistry:Get("mana")
+		AddRow({ key = "mana", label = manaDefinition and manaDefinition.displayName or L["BarNameManaBar"], items = {
+			Item("manaBar", L["ManaBarTexture"], "statusbar"),
+			Item("manaBorder", L["ManaBarBorderTexture"], "border"),
+			Item("manaBackground", L["ManaBarBackgroundTexture"], "background"),
+		} })
 	end
 	for _, barTypeDef in ipairs(customBars) do
-		local barKey = barTypeDef.key .. "Bar"
 		-- Cast bar display names already end in "Bar", so use a label that omits the redundant trailing "Bar".
 		local barLabel = barTypeDef.isCastbar and L["CustomBarTextureCastbarBar"] or L["CustomBarTextureBar"]
-		table.insert(barTextureItems, { key = barKey, label = string.format(barLabel, barTypeDef.displayName), callback = function(newValue) StatusbarSetValue(barTypeDef.key, newValue) end })
+		-- A class module may rename a shared bar after its own use of it, which Global Options must not show.
+		local barName = isSpecScope and barTypeDef.displayName or barTypeDef.globalDisplayName
+		AddRow({ key = barTypeDef.key, label = barName, items = {
+			Item(barTypeDef.key .. "Bar", string.format(barLabel, barName), "statusbar"),
+			Item(barTypeDef.key .. "Border", string.format(L["CustomBarTextureBorder"], barName), "border"),
+			Item(barTypeDef.key .. "Background", string.format(L["CustomBarTextureBackground"], barName), "background"),
+		} })
 	end
 
-	for i, item in ipairs(barTextureItems) do
-		if i % 2 == 1 then
-			yCoord = yCoord - 60
+	-- Mutated in place: the table, detail panel, and handlers below all close over it.
+	local listedRows = {}
+	local function RebuildRows()
+		for index = #listedRows, 1, -1 do
+			listedRows[index] = nil
 		end
-		local xPos = (i % 2 == 1) and oUi.xCoord or oUi.xCoord2
-		TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "statusbar", item.key, item.label, L["StatusBarTextures"], item.callback)
-	end
-
-	yCoord = yCoord - 70
-
-	-- ===== OVERLAY TEXTURES SUBSECTION =====
-	controls.overlayTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["OverlayTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
-
-	yCoord = yCoord - 20
-
-	-- Row 1: Absorb Overlay + Incoming Heal Overlay
-	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "absorbBar", L["AbsorbBarTexture"], L["StatusBarTextures"],
-		function(newValue)
-			OverlaySetValue("absorb", newValue)
-		end)
-
-	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "incomingHealBar", L["IncomingHealBarTexture"], L["StatusBarTextures"],
-		function(newValue)
-			OverlaySetValue("incomingHeal", newValue)
-		end)
-
-	yCoord = yCoord - 70
-
-	-- Row 2: Heal Absorb Overlay
-	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "healAbsorbBar", L["HealAbsorbBarTexture"], L["StatusBarTextures"],
-		function(newValue)
-			OverlaySetValue("healAbsorb", newValue)
-		end)
-
-	yCoord = yCoord - 70
-
-	-- ===== BORDER TEXTURES SUBSECTION =====
-	controls.borderTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["BorderTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
-
-	yCoord = yCoord - 20
-
-	-- Row 1: Primary Bar (left), Health Bar (right)
-	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", L["BorderTexture"], L["BorderTextures"],
-		function(newValue)
-			local newName = borderPairsByName[newValue]
-			spec.textures.border = newValue
-			spec.textures.borderName = newName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.border)
-
-			if spec.textures.textureLock then
-				if includeComboPoints then
-					spec.textures.comboPointsBorder = newValue
-					spec.textures.comboPointsBorderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
-				end
-				if includeManaBar then
-					spec.textures.manaBarBorder = newValue
-					spec.textures.manaBarBorderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
-				end
-				-- Sync custom bar borders
-				for _, barTypeDef in ipairs(customBars) do
-					local borderKey = barTypeDef.key .. "Border"
-					spec.textures[borderKey] = newValue
-					spec.textures[borderKey .. "Name"] = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures[borderKey])
-				end
-				spec.textures.healthBorder = newValue
-				spec.textures.healthBorderName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
+		for _, row in ipairs(allRows) do
+			if TRB.Classes.BarTypeRegistry:IsBarInGroupScope(row.key, groupKey, includeAllGroups[scopeKey]) then
+				listedRows[#listedRows + 1] = row
 			end
-
-			RefreshBar()
-		end)
-
-	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "border", "healthBorder", L["HealthBorderTexture"], L["BorderTextures"],
-		function(newValue)
-			local newName = borderPairsByName[newValue]
-			spec.textures.healthBorder = newValue
-			spec.textures.healthBorderName = newName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
-
-			if spec.textures.textureLock then
-				spec.textures.border = newValue
-				spec.textures.borderName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.border)
-				if includeComboPoints then
-					spec.textures.comboPointsBorder = newValue
-					spec.textures.comboPointsBorderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
-				end
-				if includeManaBar then
-					spec.textures.manaBarBorder = newValue
-					spec.textures.manaBarBorderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
-				end
-				-- Sync custom bar borders
-				for _, barTypeDef in ipairs(customBars) do
-					local borderKey = barTypeDef.key .. "Border"
-					spec.textures[borderKey] = newValue
-					spec.textures[borderKey .. "Name"] = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures[borderKey])
-				end
-			end
-
-			RefreshBar()
-		end)
-
-
-	-- Collect remaining border texture items, then place in two-column layout (left-to-right fill)
-	local borderItems = {}
-	if includeComboPoints then
-		table.insert(borderItems, { key = "comboPointsBorder", label = string.format(L["SecondaryBorderTexture"], secondaryResourceString), callback =
-			function(newValue)
-				local newName = borderPairsByName[newValue]
-				spec.textures.comboPointsBorder = newValue
-				spec.textures.comboPointsBorderName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
-
-				if spec.textures.textureLock then
-					spec.textures.border = newValue
-					spec.textures.borderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.border)
-					spec.textures.healthBorder = newValue
-					spec.textures.healthBorderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
-					if includeManaBar then
-						spec.textures.manaBarBorder = newValue
-						spec.textures.manaBarBorderName = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
-					end
-					for _, barTypeDef in ipairs(customBars) do
-						local bKey = barTypeDef.key .. "Border"
-						spec.textures[bKey] = newValue
-						spec.textures[bKey .. "Name"] = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures[bKey])
-					end
-				end
-
-				RefreshBar()
-			end })
-	end
-	if includeManaBar then
-		table.insert(borderItems, { key = "manaBarBorder", label = L["ManaBarBorderTexture"], callback =
-			function(newValue)
-				local newName = borderPairsByName[newValue]
-				spec.textures.manaBarBorder = newValue
-				spec.textures.manaBarBorderName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
-
-				if spec.textures.textureLock then
-					spec.textures.border = newValue
-					spec.textures.borderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.border)
-					spec.textures.healthBorder = newValue
-					spec.textures.healthBorderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
-					if includeComboPoints then
-						spec.textures.comboPointsBorder = newValue
-						spec.textures.comboPointsBorderName = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
-					end
-					for _, barTypeDef in ipairs(customBars) do
-						local bKey = barTypeDef.key .. "Border"
-						spec.textures[bKey] = newValue
-						spec.textures[bKey .. "Name"] = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures[bKey])
-					end
-				end
-
-				RefreshBar()
-			end })
-	end
-	for _, barTypeDef in ipairs(customBars) do
-		local borderKey = barTypeDef.key .. "Border"
-		local borderLabel = string.format(L["CustomBarTextureBorder"], barTypeDef.displayName)
-		table.insert(borderItems, { key = borderKey, label = borderLabel, callback =
-			function(newValue)
-				local newName = borderPairsByName[newValue]
-				spec.textures[borderKey] = newValue
-				spec.textures[borderKey .. "Name"] = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures[borderKey])
-
-				if spec.textures.textureLock then
-					spec.textures.border = newValue
-					spec.textures.borderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.border)
-					spec.textures.healthBorder = newValue
-					spec.textures.healthBorderName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
-					if includeComboPoints then
-						spec.textures.comboPointsBorder = newValue
-						spec.textures.comboPointsBorderName = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
-					end
-					if includeManaBar then
-						spec.textures.manaBarBorder = newValue
-						spec.textures.manaBarBorderName = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
-					end
-					for _, otherBarTypeDef in ipairs(customBars) do
-						if otherBarTypeDef.key ~= barTypeDef.key then
-							local otherBorderKey = otherBarTypeDef.key .. "Border"
-							spec.textures[otherBorderKey] = newValue
-							spec.textures[otherBorderKey .. "Name"] = newName
-							DropdownSetupMenuWrapper(controls.dropDown.textures[otherBorderKey])
-						end
-					end
-				end
-
-				RefreshBar()
-			end })
-	end
-
-	for i, item in ipairs(borderItems) do
-		if i % 2 == 1 then
-			yCoord = yCoord - 60
 		end
-		local xPos = (i % 2 == 1) and oUi.xCoord or oUi.xCoord2
-		TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "border", item.key, item.label, L["BorderTextures"], item.callback)
+	end
+	RebuildRows()
+
+	-- ===== Who owns what =====
+	local barVisibility = TRB.Functions.BarVisibility
+	local settingsClassName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	---This specialization's Use Global flag, which a bar with no choice of its own follows.
+	local function SpecFollowsGlobal()
+		return barVisibility:SpecFollowsGlobal(TRB.Data.settings.core, settingsClassName, specName, "textures")
+	end
+	---Whether the main bar's textures, and the locks that match every bar to them, come from Global Options.
+	local function PrimaryFollowsGlobal()
+		return isSpecScope and settingsFunctions:TextureFollowsGlobal(textures, "primary", SpecFollowsGlobal())
+	end
+	---@param row table
+	local function IsFollowingGlobal(row)
+		return row.canUseGlobal and settingsFunctions:TextureFollowsGlobal(textures, row.key, SpecFollowsGlobal())
+	end
+	---The table a bar's textures are read from and written to.
+	---@param row table
+	local function OwnerTextures(row)
+		return IsFollowingGlobal(row) and coreTextures or textures
+	end
+	---The table whose locks apply: the main bar's owner decides them.
+	local function LockTextures()
+		return PrimaryFollowsGlobal() and coreTextures or textures
+	end
+	---Whether a texture is one a lock is currently matching to another, so it cannot be changed on its own.
+	---@param key string
+	local function IsLockedMember(key)
+		local lockName, isSource = GetLockOfKey(key)
+		return lockName ~= nil and not isSource and LockTextures()[lockName] == true
 	end
 
-	yCoord = yCoord - 70
-
-	-- ===== BACKGROUND TEXTURES SUBSECTION =====
-	controls.backgroundTexturesSubsection = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["BackgroundTexturesSectionHeader"], oUi.xCoord, yCoord, 500, 20, GameFontNormalMed2)
-
-	yCoord = yCoord - 20
-
-	-- Row 1: Primary Bar (left), Health Bar (right)
-	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "background", "background", L["BackgroundTexture"], L["BackgroundTextures"],
-		function(newValue)
-			local newName = backgroundPairsByName[newValue]
-			spec.textures.background = newValue
-			spec.textures.backgroundName = newName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.background)
-
-			if spec.textures.textureLock then
-				if includeComboPoints then
-					spec.textures.comboPointsBackground = newValue
-					spec.textures.comboPointsBackgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
-				end
-				if includeManaBar then
-					spec.textures.manaBarBackground = newValue
-					spec.textures.manaBarBackgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
-				end
-				-- Sync custom bar backgrounds
-				for _, barTypeDef in ipairs(customBars) do
-					local bgKey = barTypeDef.key .. "Background"
-					spec.textures[bgKey] = newValue
-					spec.textures[bgKey .. "Name"] = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
-				end
-				spec.textures.healthBackground = newValue
-				spec.textures.healthBackgroundName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
-			end
-
-			RefreshBar()
-		end)
-
-	TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "healthBackground", L["HealthBackgroundTexture"], L["BackgroundTextures"],
-		function(newValue)
-			local newName = backgroundPairsByName[newValue]
-			spec.textures.healthBackground = newValue
-			spec.textures.healthBackgroundName = newName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
-
-			if spec.textures.textureLock then
-				spec.textures.background = newValue
-				spec.textures.backgroundName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.background)
-				if includeComboPoints then
-					spec.textures.comboPointsBackground = newValue
-					spec.textures.comboPointsBackgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
-				end
-				if includeManaBar then
-					spec.textures.manaBarBackground = newValue
-					spec.textures.manaBarBackgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
-				end
-				-- Sync custom bar backgrounds
-				for _, barTypeDef in ipairs(customBars) do
-					local bgKey = barTypeDef.key .. "Background"
-					spec.textures[bgKey] = newValue
-					spec.textures[bgKey .. "Name"] = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
-				end
-			end
-
-			RefreshBar()
-		end)
-
-
-	-- Collect remaining background texture items, then place in two-column layout (left-to-right fill)
-	local bgItems = {}
-	if includeComboPoints then
-		table.insert(bgItems, { key = "comboPointsBackground", label = string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), callback =
-			function(newValue)
-				local newName = backgroundPairsByName[newValue]
-				spec.textures.comboPointsBackground = newValue
-				spec.textures.comboPointsBackgroundName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
-
-				if spec.textures.textureLock then
-					spec.textures.background = newValue
-					spec.textures.backgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.background)
-					spec.textures.healthBackground = newValue
-					spec.textures.healthBackgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
-					if includeManaBar then
-						spec.textures.manaBarBackground = newValue
-						spec.textures.manaBarBackgroundName = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
-					end
-					for _, barTypeDef in ipairs(customBars) do
-						local bKey = barTypeDef.key .. "Background"
-						spec.textures[bKey] = newValue
-						spec.textures[bKey .. "Name"] = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures[bKey])
-					end
-				end
-
-				RefreshBar()
-			end })
-	end
-	if includeManaBar then
-		table.insert(bgItems, { key = "manaBarBackground", label = L["ManaBarBackgroundTexture"], callback =
-			function(newValue)
-				local newName = backgroundPairsByName[newValue]
-				spec.textures.manaBarBackground = newValue
-				spec.textures.manaBarBackgroundName = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
-
-				if spec.textures.textureLock then
-					spec.textures.background = newValue
-					spec.textures.backgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.background)
-					spec.textures.healthBackground = newValue
-					spec.textures.healthBackgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
-					if includeComboPoints then
-						spec.textures.comboPointsBackground = newValue
-						spec.textures.comboPointsBackgroundName = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
-					end
-					for _, barTypeDef in ipairs(customBars) do
-						local bKey = barTypeDef.key .. "Background"
-						spec.textures[bKey] = newValue
-						spec.textures[bKey .. "Name"] = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures[bKey])
-					end
-				end
-
-				RefreshBar()
-			end })
-	end
-	for _, barTypeDef in ipairs(customBars) do
-		local bgKey = barTypeDef.key .. "Background"
-		local bgLabel = string.format(L["CustomBarTextureBackground"], barTypeDef.displayName)
-		table.insert(bgItems, { key = bgKey, label = bgLabel, callback =
-			function(newValue)
-				local newName = backgroundPairsByName[newValue]
-				spec.textures[bgKey] = newValue
-				spec.textures[bgKey .. "Name"] = newName
-				DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
-
-				if spec.textures.textureLock then
-					spec.textures.background = newValue
-					spec.textures.backgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.background)
-					spec.textures.healthBackground = newValue
-					spec.textures.healthBackgroundName = newName
-					DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
-					if includeComboPoints then
-						spec.textures.comboPointsBackground = newValue
-						spec.textures.comboPointsBackgroundName = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
-					end
-					if includeManaBar then
-						spec.textures.manaBarBackground = newValue
-						spec.textures.manaBarBackgroundName = newName
-						DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
-					end
-					for _, otherBarTypeDef in ipairs(customBars) do
-						if otherBarTypeDef.key ~= barTypeDef.key then
-							local otherBgKey = otherBarTypeDef.key .. "Background"
-							spec.textures[otherBgKey] = newValue
-							spec.textures[otherBgKey .. "Name"] = newName
-							DropdownSetupMenuWrapper(controls.dropDown.textures[otherBgKey])
-						end
-					end
-				end
-
-				RefreshBar()
-			end })
-	end
-
-	for i, item in ipairs(bgItems) do
-		if i % 2 == 1 then
-			yCoord = yCoord - 60
+	---Whether a texture draws its lock's source instead of its own copy, as ResolveTextures and Bar.lua apply it: a
+	---registered bar's when it is locked or unset, and a locked main bar's whose textures are owned apart from the main bar's.
+	---@param row table
+	---@param item table
+	local function DrawsLockSource(row, item)
+		if row.isRegistryBar and OwnerTextures(row)[item.key] == nil and GetLockOfKey(item.key) ~= nil then
+			return true
 		end
-		local xPos = (i % 2 == 1) and oUi.xCoord or oUi.xCoord2
-		TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, xPos, yCoord, "background", item.key, item.label, L["BackgroundTextures"], item.callback)
+		return IsLockedMember(item.key) and (row.isRegistryBar or IsFollowingGlobal(row) ~= PrimaryFollowsGlobal())
 	end
 
-	yCoord = yCoord - 70
+	---The texture name a bar draws with for one of its textures.
+	---@param row table
+	---@param item table
+	local function DisplayName(row, item)
+		if DrawsLockSource(row, item) then
+			local source = lockGroups[GetLockOfKey(item.key)].source
+			local sourceRow = rowByTextureKey[source]
+			return (sourceRow ~= nil and OwnerTextures(sourceRow) or LockTextures())[source .. "Name"]
+		end
+		return OwnerTextures(row)[item.key .. "Name"]
+	end
 
-	-- ===== TEXTURE LOCK CHECKBOX =====
-	controls.checkBoxes.textureLock = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_TextureLock", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.textureLock
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	f:SetChecked(spec.textures.textureLock)
-	getglobal(f:GetName() .. 'Text'):SetText(L["TextureLock"])
-	f.tooltip = L["TextureLockTooltip"]
-
-	f:SetScript("OnClick", function(self, ...)
-		spec.textures.textureLock = self:GetChecked()
-		if spec.textures.textureLock then
-			-- Sync bar textures
-			if includeComboPoints then
-				spec.textures.comboPointsBar = spec.textures.resourceBar
-				spec.textures.comboPointsBarName = spec.textures.resourceBarName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBar)
+	---Records a bar's choice in a specialization's textures. Opting a bar out starts it from the textures it was showing,
+	---which are Global's when it followed them.
+	---@param specTextures table
+	---@param barKey string
+	---@param useGlobal boolean
+	---@param wasFollowing boolean
+	local function WriteUsesGlobal(specTextures, barKey, useGlobal, wasFollowing)
+		if not useGlobal and wasFollowing then
+			for _, key in ipairs(settingsFunctions:GetTextureKeysForBar(barKey).all) do
+				if coreTextures[key] ~= nil then
+					specTextures[key] = coreTextures[key]
+					specTextures[key .. "Name"] = coreTextures[key .. "Name"]
+				end
 			end
-			if includeManaBar then
-				spec.textures.manaBarBar = spec.textures.resourceBar
-				spec.textures.manaBarBarName = spec.textures.resourceBarName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBar)
+		end
+		specTextures.useGlobal = specTextures.useGlobal or {}
+		specTextures.useGlobal[barKey] = useGlobal
+	end
+	---@param barKey string
+	---@param useGlobal boolean
+	local function SetRowUsesGlobal(barKey, useGlobal)
+		WriteUsesGlobal(textures, barKey, useGlobal, IsFollowingGlobal(rowsByKey[barKey]))
+	end
+
+	---Runs a function on every specialization's textures for each listed bar it has that could follow Global Options.
+	---@param fn fun(specTextures: table, barKey: string, followsGlobal: boolean)
+	local function ForEachSpecTexturesOfListedBars(fn)
+		local core = TRB.Data.settings.core
+		for _, specEntry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+			local classPiece = TRB.Data.settings[specEntry.className]
+			local piece = classPiece and classPiece[specEntry.specName]
+			local specTextures = piece and piece.textures
+			if specTextures ~= nil then
+				local specFollowsGlobal = barVisibility:SpecFollowsGlobal(core, specEntry.className, specEntry.specName, "textures")
+				for _, row in ipairs(listedRows) do
+					if globalBars.set[row.key] and specTextures[settingsFunctions:GetTextureKeysForBar(row.key).bar] ~= nil then
+						fn(specTextures, row.key, settingsFunctions:TextureFollowsGlobal(specTextures, row.key, specFollowsGlobal))
+					end
+				end
 			end
-			spec.textures.healthBar = spec.textures.resourceBar
-			spec.textures.healthBarName = spec.textures.resourceBarName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBar)
+		end
+	end
 
-			spec.textures.castingBar = spec.textures.resourceBar
-			spec.textures.castingBarName = spec.textures.resourceBarName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.castingBar)
+	---All, none, or some of a count: true, false, or nil.
+	---@param followed integer
+	---@param total integer
+	---@return boolean|nil
+	local function GetUseGlobalState(followed, total)
+		if followed == total then
+			return true
+		elseif followed == 0 then
+			return false
+		end
+		return nil
+	end
 
-			-- Sync overlay textures
-			spec.textures.absorbBar = spec.textures.resourceBar
-			spec.textures.absorbBarName = spec.textures.resourceBarName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.absorbBar)
-			spec.textures.incomingHealBar = spec.textures.resourceBar
-			spec.textures.incomingHealBarName = spec.textures.resourceBarName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.incomingHealBar)
+	-- Redraws everything on this scope's Textures tabs; assigned once they exist.
+	---@type fun()
+	local RefreshEditors = function() end
+	---Applies an edit to the bar and every tab of this scope.
+	local function AfterChange()
+		if isSpecScope then
+			TRB.Functions.Character:FillSpecializationCacheSettings(string.lower(className), specName)
+		end
+		RefreshBar(classId, specId)
+		RefreshEditors()
+	end
 
-			-- Sync border textures
-			if includeComboPoints then
-				spec.textures.comboPointsBorder = spec.textures.border
-				spec.textures.comboPointsBorderName = spec.textures.borderName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBorder)
+	-- ===== Header, Use Global, and locks =====
+	local sectionTitle = L["BarTexturesHeader"]
+	if groupKey == "castbar" then
+		sectionTitle = L["BarTexturesHeaderCastbar"]
+	elseif groupKey == "otherBars" then
+		sectionTitle = L["BarTexturesHeaderOtherBars"]
+	elseif groupKey == "petBars" then
+		sectionTitle = L["BarTexturesHeaderPetBars"]
+	elseif groupKey == "skyriding" then
+		sectionTitle = L["BarTexturesHeaderSkyriding"]
+	end
+	controls.textBarTexturesSection = primitives:BuildSectionHeader(parent, sectionTitle, oUi.xCoord, yCoord)
+
+	-- Redraws the table, detail panel, and boxes from the settings; assigned below.
+	---@type fun()
+	local Refresh = function() end
+
+	local useGlobalBox = nil
+	if isSpecScope then
+		yCoord = yCoord - 30
+		useGlobalBox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useGlobal_textures", parent, "ChatConfigCheckButtonTemplate")
+		f = useGlobalBox
+		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobalAllListedBars"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, TRB.Functions.OptionsUi.Tabs.TabKeys.BarTextures, groupKey ~= "spec" and groupKey or nil)
+		f.tooltip = L["BarTexturesUseGlobalAllTooltip"]
+		f:SetScript("OnClick", function()
+			-- Checked gives every listed bar its own textures; unchecked or mixed puts them all back on Global Options.
+			local useGlobal = true
+			local followed, total = 0, 0
+			for _, row in ipairs(listedRows) do
+				if row.canUseGlobal then
+					total = total + 1
+					if IsFollowingGlobal(row) then
+						followed = followed + 1
+					end
+				end
 			end
-			if includeManaBar then
-				spec.textures.manaBarBorder = spec.textures.border
-				spec.textures.manaBarBorderName = spec.textures.borderName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBorder)
+			useGlobal = followed ~= total
+			for _, row in ipairs(listedRows) do
+				if row.canUseGlobal then
+					SetRowUsesGlobal(row.key, useGlobal)
+				end
 			end
-			spec.textures.healthBorder = spec.textures.border
-			spec.textures.healthBorderName = spec.textures.borderName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBorder)
+			AfterChange()
+		end)
+	else
+		-- Global options panel: one box for the listed bars in every specialization.
+		yCoord = yCoord - 30
+		useGlobalBox = CreateFrame("CheckButton", "TwintopResourceBar_Global_enableAll_textures" .. (groupKey == "spec" and "" or "_" .. groupKey), parent, "ChatConfigCheckButtonTemplate")
+		f = useGlobalBox
+		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobalAllSpecsListedBars"])
+		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
+		f.tooltip = L["BarTexturesUseGlobalAllSpecsTooltip"]
+		f.specCount = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+		f.specCount:SetTextColor(0.75, 0.75, 0.75)
+		-- The template's label keeps its own width, so sit past the rendered text rather than its right edge.
+		f.specCount:SetPoint("LEFT", f, "RIGHT", getglobal(f:GetName() .. 'Text'):GetStringWidth() + 14, 0)
+		f:SetScript("OnClick", function()
+			local followed, total = 0, 0
+			ForEachSpecTexturesOfListedBars(function(_, _, followsGlobal)
+				total = total + 1
+				if followsGlobal then
+					followed = followed + 1
+				end
+			end)
+			local useGlobal = followed ~= total
+			ForEachSpecTexturesOfListedBars(function(specTextures, barKey, followsGlobal)
+				WriteUsesGlobal(specTextures, barKey, useGlobal, followsGlobal)
+			end)
+			RefreshAllSpecs()
+			RefreshEditors()
+		end)
+	end
 
-			-- Sync background textures
-			if includeComboPoints then
-				spec.textures.comboPointsBackground = spec.textures.background
-				spec.textures.comboPointsBackgroundName = spec.textures.backgroundName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.comboPointsBackground)
+	-- Re-lists the table; assigned once the table exists.
+	---@type fun()
+	local ReloadRows = function() end
+	if groupKey == "spec" then
+		yCoord = yCoord - 20
+		controls.checkBoxes.includeAllGroups = primitives:BuildCheckboxRow(parent, "TwintopResourceBar_" .. namePrefix .. "_includeAllGroups",
+			L["CheckboxIncludeAllTextureGroups"], L["CheckboxIncludeAllTextureGroupsTooltip"], yCoord,
+			function() return includeAllGroups[scopeKey] == true end,
+			function(checked)
+				includeAllGroups[scopeKey] = checked
+				ReloadRows()
+			end)
+		-- Lined up with the Use Global box above it.
+		controls.checkBoxes.includeAllGroups:ClearAllPoints()
+		controls.checkBoxes.includeAllGroups:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
+	end
+
+	-- The four locks, two to a row.
+	local lockBoxes = {}
+	---@type table<string, string>
+	local lockLabels = {}
+	local lockDefinitions = {
+		{ lock = "lockBar", label = L["TextureLockBar"], tooltip = L["TextureLockBarTooltip"] },
+		{ lock = "lockBorder", label = L["TextureLockBorder"], tooltip = L["TextureLockBorderTooltip"] },
+		{ lock = "lockBackground", label = L["TextureLockBackground"], tooltip = L["TextureLockBackgroundTooltip"] },
+		{ lock = "lockOverlay", label = L["TextureLockOverlay"], tooltip = L["TextureLockOverlayTooltip"] },
+	}
+	yCoord = yCoord - 10
+	for index, definition in ipairs(lockDefinitions) do
+		if index % 2 == 1 then
+			yCoord = yCoord - 20
+		end
+		local lockName = definition.lock
+		local box = primitives:BuildCheckboxRow(parent, "TwintopResourceBar_" .. namePrefix .. "_" .. lockName, definition.label, definition.tooltip, yCoord,
+			function() return LockTextures()[lockName] == true end,
+			function(checked)
+				textures[lockName] = checked
+				if checked then
+					SyncLock(textures, lockName)
+				end
+				AfterChange()
+			end)
+		if index % 2 == 0 then
+			box:ClearAllPoints()
+			box:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+		end
+		-- Disabled while Global Options holds the locks, and its tooltip says so.
+		box:SetMotionScriptsWhileDisabled(true)
+		box.baseTooltip = definition.tooltip
+		lockBoxes[lockName] = box
+		lockLabels[lockName] = definition.label
+	end
+
+	---Why a texture cannot be changed on its own, for its dropdown's and table cell's tooltip; nil when it can.
+	---@param row table
+	---@param item table
+	---@return string?
+	local function GetDisabledReason(row, item)
+		local reasons = {}
+		if IsFollowingGlobal(row) then
+			reasons[#reasons + 1] = L["BarTexturesFollowsGlobalTooltip"]
+		end
+		if IsLockedMember(item.key) then
+			local lockName = GetLockOfKey(item.key) --[[@as string]]
+			local source = lockGroups[lockName].source
+			local sourceRow = rowByTextureKey[source]
+			local sourceItem = itemByTextureKey[source]
+			local sourceName = DisplayName(sourceRow, sourceItem) or ""
+			if PrimaryFollowsGlobal() then
+				reasons[#reasons + 1] = string.format(L["BarTexturesLockedGlobalTooltip"], lockLabels[lockName], sourceItem.label, sourceName, sourceRow.label, rowsByKey.primary.label)
+			else
+				reasons[#reasons + 1] = string.format(L["BarTexturesLockedTooltip"], lockLabels[lockName], sourceItem.label, sourceName, sourceRow.label)
 			end
-			if includeManaBar then
-				spec.textures.manaBarBackground = spec.textures.background
-				spec.textures.manaBarBackgroundName = spec.textures.backgroundName
-				DropdownSetupMenuWrapper(controls.dropDown.textures.manaBarBackground)
+		end
+		if #reasons == 0 then
+			return nil
+		end
+		return table.concat(reasons, "\n\n")
+	end
+
+	yCoord = yCoord - 24
+	controls.labels = controls.labels or {}
+	controls.labels.texturesLockedNote = primitives:BuildLabel(parent, L["BarTexturesLockedNote"], oUi.xCoord, yCoord, 600, 18, GameFontHighlightSmall, "LEFT")
+	yCoord = yCoord - 28
+
+	-- ===== The table =====
+	-- Narrow enough, with the last column at its minimum, to fit a grouping's tab nested inside a specialization's.
+	local columns = {
+		{ ["name"] = "Key", ["width"] = 1, ["align"] = "CENTER" },
+		{ ["name"] = L["BarTexturesTableHeaderBar"], ["width"] = 170, ["align"] = "LEFT" },
+		{ ["name"] = L["BarTexturesTableHeaderFill"], ["width"] = 110, ["align"] = "LEFT" },
+		{ ["name"] = L["BarTexturesTableHeaderBorder"], ["width"] = 110, ["align"] = "LEFT" },
+		{ ["name"] = L["BarTexturesTableHeaderBackground"], ["width"] = 110, ["align"] = "LEFT" },
+	}
+	if isSpecScope then
+		columns[#columns + 1] = { ["name"] = L["BarTexturesTableHeaderSource"], ["width"] = 150, ["align"] = "LEFT" }
+	end
+	-- The last column takes whatever width is left.
+	local fillColumn = columns[#columns]
+
+	local container = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	container:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
+	container:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
+	local tableRowCount = GetTableRowCount(#listedRows)
+	container:SetHeight(35 + (tableRowCount * 15))
+
+	local barTexturesTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, container, false, false)
+
+	-- Dynamically resize the last column to fill available width
+	container:HookScript("OnSizeChanged", function(_, w)
+		local fixedWidth = 0
+		for _, column in ipairs(columns) do
+			if column ~= fillColumn then
+				fixedWidth = fixedWidth + column.width
 			end
-			spec.textures.healthBackground = spec.textures.background
-			spec.textures.healthBackgroundName = spec.textures.backgroundName
-			DropdownSetupMenuWrapper(controls.dropDown.textures.healthBackground)
+		end
+		fillColumn.width = math.max(100, w - fixedWidth - 30)
+		barTexturesTable:SetDisplayCols(columns)
+	end)
 
-			-- Sync custom bar textures (using flat keys like staggerBar, staggerBorder, staggerBackground)
-			for _, barTypeDef in ipairs(customBars) do
-				local barKey = barTypeDef.key .. "Bar"
-				local borderKey = barTypeDef.key .. "Border"
-				local bgKey = barTypeDef.key .. "Background"
+	local selectedKey = nil
 
-				spec.textures[barKey] = spec.textures.resourceBar
-				spec.textures[barKey .. "Name"] = spec.textures.resourceBarName
-				DropdownSetupMenuWrapper(controls.dropDown.textures[barKey])
-
-				spec.textures[borderKey] = spec.textures.border
-				spec.textures[borderKey .. "Name"] = spec.textures.borderName
-				DropdownSetupMenuWrapper(controls.dropDown.textures[borderKey])
-
-				spec.textures[bgKey] = spec.textures.background
-				spec.textures[bgKey .. "Name"] = spec.textures.backgroundName
-				DropdownSetupMenuWrapper(controls.dropDown.textures[bgKey])
+	---Refreshes the scrolling table from the current textures and keeps the open bar highlighted.
+	local function SetTableValues()
+		local dataTable = {}
+		local selectedRow = nil
+		for index, row in ipairs(listedRows) do
+			local followsGlobal = IsFollowingGlobal(row)
+			local function Cell(item)
+				local locked = IsLockedMember(item.key)
+				return { value = DisplayName(row, item) or "", color = locked and dimColor or nil }
 			end
+			local cols = {
+				{ value = row.key },
+				{ value = row.label },
+				Cell(row.items[1]),
+				Cell(row.items[2]),
+				Cell(row.items[3]),
+			}
+			if isSpecScope then
+				cols[#cols + 1] = { value = row.canUseGlobal and (followsGlobal and L["BarVisibilitySettingsSourceGlobal"] or L["BarVisibilitySettingsSourceSpec"]) or L["BarVisibilitySettingsSourceSpec"] }
+			end
+			dataTable[#dataTable + 1] = { cols = cols, color = followsGlobal and dimColor or nil }
+			if row.key == selectedKey then
+				selectedRow = index
+			end
+		end
+		barTexturesTable:SetData(dataTable)
+		barTexturesTable:EnableSelection(true)
+		if selectedRow ~= nil then
+			barTexturesTable:SetSelection(selectedRow)
+		end
+	end
 
-			RefreshBar()
+	---Fits the table to the bars listed; the detail panel is anchored below it and follows.
+	local function ResizeTable()
+		local rowCount = GetTableRowCount(#listedRows)
+		barTexturesTable:SetDisplayRows(rowCount, 15)
+		container:SetHeight(35 + (rowCount * 15))
+	end
+
+	-- ===== The selected bar's textures =====
+	-- The spec tab's table can grow to every bar with the include-all box ticked, so the panel leaves room for that.
+	yCoord = yCoord - (35 + (GetTableRowCount(groupKey == "spec" and #allRows or #listedRows) * 15))
+	-- Room for the health bar's six dropdowns, the most a bar has.
+	local detailHeight = 270
+	local detailFrame = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarTexturesDetail", parent, "BackdropTemplate")
+	detailFrame:SetPoint("TOPLEFT", container, "BOTTOMLEFT", 0, 0)
+	detailFrame:SetPoint("TOPRIGHT", container, "BOTTOMRIGHT", 0, 0)
+	detailFrame:SetHeight(detailHeight)
+	detailFrame:Hide()
+
+	local detailHeader = primitives:BuildSectionHeader(detailFrame, "", oUi.xCoord, 0)
+
+	local rowGlobalBox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useGlobal_row", detailFrame, "ChatConfigCheckButtonTemplate")
+	rowGlobalBox:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, -30)
+	getglobal(rowGlobalBox:GetName() .. 'Text'):SetText(L["BarTexturesUseGlobalRow"])
+	getglobal(rowGlobalBox:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
+	rowGlobalBox.tooltip = L["BarTexturesUseGlobalRowTooltip"]
+	rowGlobalBox:SetScript("OnClick", function(self)
+		if selectedKey ~= nil then
+			SetRowUsesGlobal(selectedKey, self:GetChecked() == true)
+			AfterChange()
 		end
 	end)
 
-	return yCoord
+	-- Covers the dropdowns of a bar that follows Global Options, with the ways to change it.
+	local detailCover = primitives:BuildSectionCover(detailFrame, -58, -detailHeight)
+	controls.barTexturesDetailCover = detailCover
+	local coverMessage = detailCover:CreateFontString(nil, "OVERLAY")
+	coverMessage:SetFontObject(GameFontHighlightLarge)
+	coverMessage:SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
+	coverMessage:SetJustifyH("CENTER")
+	coverMessage:SetText(L["BarTexturesUsingGlobal"])
+	-- Raised by half the button row so the message and buttons sit centered as one block.
+	coverMessage:SetPoint("LEFT", detailCover, "LEFT", 20, 15)
+	coverMessage:SetPoint("RIGHT", detailCover, "RIGHT", -20, 15)
+
+	local coverOpen = CreateFrame("Button", nil, detailCover, "UIPanelButtonTemplate")
+	coverOpen:SetText(L["UseGlobalCoverOpenGlobal"])
+	coverOpen:SetSize(coverOpen:GetTextWidth() + 30, 22)
+	coverOpen:SetPoint("TOPRIGHT", coverMessage, "BOTTOM", -5, -8)
+	coverOpen:SetScript("OnClick", function()
+		if selectedKey ~= nil then
+			TRB.Functions.OptionsUi.Textures:OpenGlobalTextures(selectedKey)
+		end
+	end)
+
+	local coverCustomize = CreateFrame("Button", nil, detailCover, "UIPanelButtonTemplate")
+	coverCustomize:SetText(L["UseGlobalCoverCustomize"])
+	coverCustomize:SetSize(coverCustomize:GetTextWidth() + 30, 22)
+	coverCustomize:SetPoint("TOPLEFT", coverMessage, "BOTTOM", 5, -8)
+	coverCustomize:SetScript("OnClick", function()
+		if selectedKey ~= nil then
+			SetRowUsesGlobal(selectedKey, false)
+			AfterChange()
+		end
+	end)
+	detailCover.openButton = coverOpen
+	detailCover.customizeButton = coverCustomize
+
+	-- One dropdown per texture key, made the first time its bar is opened and shown only with that bar.
+	local dropdowns = {}
+	local shownDropdowns = {}
+
+	---@param row table
+	---@param item table
+	---@param slot integer
+	local function EnsureDropdown(row, item, slot)
+		if dropdowns[item.key] == nil then
+			local xPos = (slot % 2 == 1) and oUi.xCoord or oUi.xCoord2
+			local yPos = -70 - (60 * math.floor((slot - 1) / 2))
+			textureDropdowns:CreateLsmDropdown(detailFrame, dropdowns, textures, classId, specId, xPos, yPos, item.lsmType, item.key, item.label, L["StatusBarTextures"],
+				function(newValue)
+					local ownerTextures = OwnerTextures(row)
+					local newName = dropdowns[item.key].lsmPairsByName[newValue]
+					ownerTextures[item.key] = newValue
+					ownerTextures[item.key .. "Name"] = newName
+					-- Changing the texture a lock copies changes everything the lock matches to it.
+					local lockName, isSource = GetLockOfKey(item.key)
+					if lockName ~= nil and isSource and ownerTextures[lockName] then
+						SyncLock(ownerTextures, lockName)
+					end
+					AfterChange()
+				end, namePrefix)
+			local dropdown = dropdowns[item.key]
+			-- A disabled button skips its mouse scripts unless told otherwise, and a disabled one is what needs explaining.
+			dropdown:SetMotionScriptsWhileDisabled(true)
+			dropdown:HookScript("OnEnter", function(button)
+				if button.disabledReason ~= nil then
+					GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
+					GameTooltip:SetText(button.disabledReason, 1, 1, 1, 1, true)
+					GameTooltip:Show()
+				end
+			end)
+			dropdown:HookScript("OnLeave", function(button)
+				if GameTooltip:GetOwner() == button then
+					GameTooltip:Hide()
+				end
+			end)
+		end
+		return dropdowns[item.key]
+	end
+
+	---Opens a bar in the detail panel.
+	---@param barKey string
+	local function FillDetailPanel(barKey)
+		local row = rowsByKey[barKey]
+		for _, dropdown in ipairs(shownDropdowns) do
+			dropdown:Hide()
+			dropdown.label:Hide()
+		end
+		shownDropdowns = {}
+		if row == nil then
+			selectedKey = nil
+			detailFrame:Hide()
+			return
+		end
+		selectedKey = barKey
+		detailHeader.font:SetText(row.label)
+
+		local followsGlobal = IsFollowingGlobal(row)
+		rowGlobalBox:SetShown(row.canUseGlobal)
+		rowGlobalBox:SetChecked(followsGlobal)
+		detailCover:SetShown(followsGlobal)
+
+		for slot, item in ipairs(row.items) do
+			local dropdown = EnsureDropdown(row, item, slot)
+			local displayName = DisplayName(row, item) or OwnerTextures(row)[item.key .. "Name"]
+			local locked = IsLockedMember(item.key)
+			textureDropdowns:RefreshLsmDropdown(dropdown, displayName)
+			primitives:ToggleDropdownEnabled(dropdown, not followsGlobal and not locked)
+			dropdown.disabledReason = GetDisabledReason(row, item)
+			dropdown:Show()
+			dropdown.label:Show()
+			shownDropdowns[#shownDropdowns + 1] = dropdown
+		end
+		detailFrame:Show()
+	end
+
+	-- ===== Wiring =====
+	---Syncs the Use Global box to the rows it covers.
+	local function SyncUseGlobalBox()
+		if useGlobalBox == nil then
+			return
+		end
+		if isSpecScope then
+			local followed, total = 0, 0
+			for _, row in ipairs(listedRows) do
+				if row.canUseGlobal then
+					total = total + 1
+					if IsFollowingGlobal(row) then
+						followed = followed + 1
+					end
+				end
+			end
+			useGlobalBox:SetShown(total > 0)
+			TRB.Functions.OptionsUi.GlobalSettings:SetCheckboxTriState(useGlobalBox, GetUseGlobalState(followed, total))
+		else
+			local followed, total = 0, 0
+			ForEachSpecTexturesOfListedBars(function(_, _, followsGlobal)
+				total = total + 1
+				if followsGlobal then
+					followed = followed + 1
+				end
+			end)
+			useGlobalBox:SetShown(total > 0)
+			TRB.Functions.OptionsUi.GlobalSettings:SetCheckboxTriState(useGlobalBox, GetUseGlobalState(followed, total))
+			useGlobalBox.specCount:SetText(string.format(L["UseGlobalBarCountFormat"], followed, total))
+		end
+	end
+
+	---Shows the locks of the main bar's owner; they can only be changed there.
+	local function SyncLockBoxes()
+		local lockTextures = LockTextures()
+		local editable = not PrimaryFollowsGlobal()
+		for lockName, box in pairs(lockBoxes) do
+			box:SetChecked(lockTextures[lockName] == true)
+			primitives:ToggleCheckboxEnabled(box, editable)
+			if editable then
+				box.tooltip = box.baseTooltip
+			else
+				box.tooltip = box.baseTooltip .. "\n\n" .. string.format(L["TextureLockGlobalTooltip"], rowsByKey.primary.label)
+			end
+		end
+	end
+
+	Refresh = function()
+		SetTableValues()
+		if selectedKey ~= nil then
+			FillDetailPanel(selectedKey)
+		end
+		SyncLockBoxes()
+		SyncUseGlobalBox()
+	end
+
+	ReloadRows = function()
+		RebuildRows()
+		ResizeTable()
+		if selectedKey ~= nil and not tContains(listedRows, rowsByKey[selectedKey]) then
+			selectedKey = nil
+			detailFrame:Hide()
+		end
+		Refresh()
+	end
+
+	RefreshEditors = function()
+		for _, editor in pairs(texturesEditors[scopeKey] or {}) do
+			editor.Refresh()
+		end
+	end
+
+	-- The texture cells say why one can't be changed on its own; the table's own hover highlight runs after.
+	barTexturesTable:RegisterEvents({
+		OnEnter = function(_, cellFrame, data, _, _, realrow, column)
+			if realrow == nil or realrow < 1 or column < 3 or column > 5 then
+				return
+			end
+			local row = rowsByKey[data[realrow].cols[1].value]
+			local reason = row ~= nil and GetDisabledReason(row, row.items[column - 2]) or nil
+			if reason ~= nil then
+				GameTooltip:SetOwner(cellFrame, "ANCHOR_RIGHT")
+				GameTooltip:SetText(reason, 1, 1, 1, 1, true)
+				GameTooltip:Show()
+			end
+		end,
+		OnLeave = function(_, cellFrame)
+			if GameTooltip:GetOwner() == cellFrame then
+				GameTooltip:Hide()
+			end
+		end,
+		OnClick = function(_, _, data, _, _, realrow, _, scrollingTable, button)
+			if button == "LeftButton" then
+				if realrow ~= nil and realrow > 0 then
+					local barKey = data[realrow].cols[1].value
+					local currentSelection = scrollingTable:GetSelection()
+					FillDetailPanel(barKey)
+					C_Timer.After(0, function()
+						C_Timer.After(0.05, function()
+							local newSelection = scrollingTable:GetSelection()
+							if newSelection == nil then
+								barTexturesTable:SetSelection(currentSelection)
+							end
+						end)
+					end)
+				end
+			end
+		end
+	})
+
+	local scopeEditors = texturesEditors[scopeKey] or {}
+	texturesEditors[scopeKey] = scopeEditors
+	scopeEditors[groupKey] = {
+		Refresh = Refresh,
+		SelectBarKey = function(barKey)
+			if tContains(listedRows, rowsByKey[barKey]) then
+				FillDetailPanel(barKey)
+				SetTableValues()
+			end
+		end,
+	}
+
+	-- A sibling tab's edits show up when this one comes back into view.
+	container:HookScript("OnShow", function()
+		Refresh()
+	end)
+
+	Refresh()
+
+	return yCoord - detailHeight
+end
+
+---Constructs the Textures tab of a shared grouping's strip: the textures of just that grouping's bars.
+---@param parent Frame # The tab's scroll child
+---@param classId integer? # nil edits core (global) scope
+---@param specId integer?
+---@param groupKey string # castbar, otherBars, petBars, or skyriding
+function TRB.Functions.OptionsUi.Textures:ConstructGroupPanel(parent, classId, specId, groupKey)
+	if parent == nil then
+		return
+	end
+	local classNameLower, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	local spec
+	if classId == nil then
+		spec = TRB.Data.settings.core
+	else
+		spec = TRB.Data.settings[classNameLower] and TRB.Data.settings[classNameLower][specName]
+	end
+	if spec == nil or spec.textures == nil then
+		return
+	end
+
+	-- Each grouping's tab gets its own controls: they would otherwise overwrite each other's under one scope.
+	local controls = { checkBoxes = {}, dropDown = {}, buttons = {}, labels = {}, colors = {} }
+	self:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, 5, false, nil, false, {}, false, { groupKey = groupKey })
 end
 
 ---Generates the flash/pulse animation options section (alpha, period, enable checkbox).

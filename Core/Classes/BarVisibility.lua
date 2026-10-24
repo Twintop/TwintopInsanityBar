@@ -256,18 +256,19 @@ TRB.Functions.BarVisibility.curveReplay = { count = 0, valid = false, settings =
 -- Inputs NewFromGameState reads live that no event marks dirty, as the last full pass saw them.
 TRB.Functions.BarVisibility.curveRecheck = {}
 
----The specialization's own Use Global flag for visibility, which a bar that has never chosen for itself follows.
+---One of the specialization's own Use Global flags, which a bar that has never chosen for itself follows.
 ---@param core table? # The Global Options table whose flags to read
 ---@param className string?
 ---@param specName string?
+---@param flagKey "displayBar"|"textures" # The flag of the settings the bar would take from Global
 ---@return boolean
-function TRB.Functions.BarVisibility:SpecFollowsGlobal(core, className, specName)
+function TRB.Functions.BarVisibility:SpecFollowsGlobal(core, className, specName, flagKey)
 	if className == nil or specName == nil then
 		return false
 	end
 	local classFlags = core and type(core.global) == "table" and core.global[className] or nil
 	local flags = type(classFlags) == "table" and classFlags[specName] or nil
-	return type(flags) == "table" and flags.displayBar == true
+	return type(flags) == "table" and flags[flagKey] == true
 end
 
 ---Whether a specialization's bar follows Global Options' visibility: Global Options has an entry for the bar, and the
@@ -556,7 +557,7 @@ function TRB.Functions.BarVisibility:CountAllPresetUses()
 	local coreDisplayBar = core and core.displayBar or {}
 	self:ForEachEntryOfAllProfiles(function(entry, key, displayBar, isCore, className, specName)
 		local read = entry
-		if not isCore and self:IsEntryGlobal(key, coreDisplayBar, displayBar, self:SpecFollowsGlobal(core, className, specName)) then
+		if not isCore and self:IsEntryGlobal(key, coreDisplayBar, displayBar, self:SpecFollowsGlobal(core, className, specName, "displayBar")) then
 			read = coreDisplayBar[key]
 		end
 		if read.presetId ~= nil then
