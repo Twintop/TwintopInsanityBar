@@ -171,8 +171,6 @@ if locale == "enGB" then
     L["RogueCheckboxThresholdOvercapTooltip"] = "This will change the Energy text colour when your Energy is at or above the configured overcap threshold."
     L["ShamanElementalCheckboxThresholdOvercapTooltip"] = "This will change the Maelstrom text colour when your Maelstrom is at or above the configured overcap threshold."
     L["ShamanEnhancementCheckboxMaelstromWeaponCompressedViewTooltip"] = "When enabled, displays 5 nodes where stacks 1-5 fill with the base colour and stacks 6-10 overwrite from the left with the overflow colour. When disabled, displays all 10 nodes individually."
-    L["StaggerBarColorBorder"] = "Stagger Bar Border Colour"
-    L["StaggerBarColorHeader"] = "Stagger Bar Colours"
     L["StaggerBarColorHeavy"] = "Heavy Stagger Colour"
     L["StaggerBarColorLight"] = "Light Stagger Colour"
     L["StaggerBarColorMedium"] = "Medium Stagger Colour"
