@@ -22,6 +22,6 @@ function TRB.Flavor.PortForwardSettings(settings)
 		TRB.Functions.Settings:AutoLinkVisibilityPresets(savedSettings)
 	end
 
-	-- Textures: the one Texture Lock became four, the Utility bar began following Global, and the mana bar's textures moved.
+	-- Textures: the one Texture Lock became four, the Utility bar began following Global, and the mana bar's unread texture keys are dropped.
 	TRB.Functions.Settings:MigrateTextures(savedSettings)
 end

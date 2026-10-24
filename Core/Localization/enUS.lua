@@ -1678,8 +1678,6 @@ L["OverlayModeAppended"] = "Appended"
 L["OverlayModeOverlay"] = "Overlay (from left)"
 L["OverlayModeInset"] = "Overlay (from right / inset)"
 
--- Overlay Textures
-
 -- Casting Overlay
 L["CastingBarTexture"] = "Casting Overlay Texture"
 L["BarColorCastingOverlay"] = "Casting Overlay"

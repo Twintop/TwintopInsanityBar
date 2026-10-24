@@ -1658,8 +1658,6 @@ if locale == "zhCN" then
     L["OverlayModeOverlay"] = "叠加显示（从左侧）"
     L["OverlayModeInset"] = "叠加显示（从右侧/内嵌）"
 
-	-- Overlay Textures
-
 	-- Casting Overlay
     L["CastingBarTexture"] = "施法覆盖层材质"
     L["BarColorCastingOverlay"] = "施法覆盖层"

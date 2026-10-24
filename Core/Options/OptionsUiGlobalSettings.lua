@@ -245,7 +245,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, spe
 end
 
 ---Counts the specs that carry a section's Use Global flag, and how many of them have it on.
----@param settingKey string # The setting key (e.g., "bar", "comboPoints", "textures")
+---@param settingKey string # The setting key (e.g., "bar", "comboPoints", "healthBar")
 ---@return integer used
 ---@return integer total
 local function CountSpecsUsingGlobal(settingKey)
@@ -267,7 +267,7 @@ local function CountSpecsUsingGlobal(settingKey)
 end
 
 ---Gets the aggregate state of a global setting across all class/specs
----@param settingKey string # The setting key (e.g., "bar", "comboPoints", "textures")
+---@param settingKey string # The setting key (e.g., "bar", "comboPoints", "healthBar")
 ---@return boolean|nil # true if all enabled, false if all disabled, nil if mixed
 local function GetAllSpecsGlobalState(settingKey)
 	local used, total = CountSpecsUsingGlobal(settingKey)
@@ -375,7 +375,7 @@ local function BuildUseGlobalCover(checkbox, parent, topY, bottomY, globalTabKey
 end
 
 ---Sets a global setting for all class/specs and updates related UI checkboxes
----@param settingKey string # The setting key (e.g., "bar", "comboPoints", "textures")
+---@param settingKey string # The setting key (e.g., "bar", "comboPoints", "healthBar")
 ---@param value boolean # The value to set
 local function SetAllSpecsGlobalSetting(settingKey, value)
 	local global = TRB.Data.settings.core.global
@@ -520,7 +520,7 @@ end
 
 ---Refreshes the bulk global toggle checkbox state based on current per-spec settings
 ---Call this after changing a per-spec "Use global settings" checkbox
----@param settingKey string # The global setting key (e.g., "bar", "comboPoints", "textures")
+---@param settingKey string # The global setting key (e.g., "bar", "comboPoints", "healthBar")
 function TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(settingKey)
 	local frameName = "TwintopResourceBar_Global_enableAll_" .. settingKey
 	local checkbox = _G[frameName]

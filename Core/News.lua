@@ -22,7 +22,8 @@ TRB.Details.coreNewsContent = [====[
 - [#861](#861) Add a checkbox that also lists those bars on the Textures tab of Global Options and of each specialization.
 - [#861](#861) Use global settings on the Textures tabs now works per bar.
 - [#861](#861) The use global settings box on a Textures tab switches every bar it lists.
-- [#861](#861) Remove the Global badge from the Textures tab's header, and the Copy button beside its use global settings box.
+- [#861](#861) Remove the Global badge from the Textures tab's header.
+- [#861](#861) Remove the Copy button beside the Textures tab's use global settings box.
 - [#861](#861) The Utility bar, such as Angelic Feather, can use the textures set under Utility on Global Options' Textures tab, except where a specialization already changed its own.
 - [#861](#861) Replace the single texture lock with separate locks for bar, border, background, and health overlay textures.
 - [#861](#861) A texture that can't be changed says why when you hover over it: the lock that keeps it the same as another texture, or the bar using global settings.
