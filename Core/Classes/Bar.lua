@@ -20,12 +20,11 @@ local barNodeCounter = 0
 ---@field public tooltipElapsed number? # Throttle accumulator for the hover refresh
 
 ---The uninterruptible shield: a dedicated frame wrapping a single texture. It gets its own frame (not just
----a texture) so its frame level can be set per-mode -- above the icon frame to draw over it, below the bar
----to peek out behind. Draw layers alone can't order across separate frames.
+---a texture) so its frame level can be set per-mode -- above the bar's tick lines (but under the icon) to
+---draw over the bar, below the bar to peek out behind. Draw layers alone can't order across separate frames.
 ---@class TRB.Classes.BarNode.Shield : Frame
 ---@field public texture Texture
 ---@field public mode trbCastBarIconShieldMode? # Last mode applied by ApplyShieldLayout, so the setters can re-assert the frame level each show
----@field public levelAnchor Frame? # Frame the shield's level is derived from ("over" -> the icon), so a re-leveled icon doesn't leave the shield stranded below it
 
 ---A threshold line's spell icon with its cooldown swipe.
 ---@class TRB.Classes.ThresholdFrame.Icon : Frame, BackdropTemplate
@@ -690,7 +689,7 @@ function TRB.Classes.BarNode:GetMarkerFrame()
 	if self.markerFrame == nil then
 		local marker = CreateFrame("Frame", nil, self.frame)
 		marker:SetAllPoints(self.frame)
-		-- Top of the node's level stride, above the end cap at +8.
+		-- Above the end cap at +8; the shield and icon stack at +10/+11 over it.
 		marker:SetFrameLevel(self.frame:GetFrameLevel() + 9)
 		self.markerFrame = marker
 	end
@@ -784,8 +783,8 @@ end
 
 ---Creates the uninterruptible shield frame on first use. Its own frame (parented to the group container,
 ---like the icon) rather than a texture on the bar, so ApplyShieldLayout can set its frame level per-mode --
----above the icon to draw over it, below the bar to peek out behind. A bar-frame texture could never order
----above the icon (which lives on a higher-level frame). Survives with the icon disabled. Starts hidden; the
+---above the bar's tick lines to draw over the bar, below the bar to peek out behind. Survives with the icon
+---disabled. Starts hidden; the
 ---render path drives its alpha per cast (plain bool on the player bar, secret-safe curve on target/focus).
 ---@return TRB.Classes.BarNode.Shield
 function TRB.Classes.BarNode:EnsureShield()
@@ -851,8 +850,8 @@ end
 ---(`target`). The shield is square with a side of `sizePercent`% of the target's reference length -- the
 ---icon width when targeting the icon, the bar height when targeting the bar -- so >100% overhangs. Its
 ---center sits at `anchor`'s 9-point on the target. `mode` picks the shield frame's level relative to the
----bar/icon: "over" puts it above (draws on top), "behind" below (peeks out around). Draw layers can't order
----across separate frames, so the frame level is what actually stacks it. Visibility/alpha is driven
+---bar: "over" puts it above the bar and its tick lines but under the icon, "behind" below (peeks out
+---around). Draw layers can't order across separate frames, so the frame level stacks it. Visibility/alpha is driven
 ---separately per cast by the shield setters. Cast-bar only. Hides the shield when the icon target is chosen
 ---but no icon frame exists.
 ---@param mode trbCastBarIconShieldMode
@@ -886,29 +885,31 @@ function TRB.Classes.BarNode:ApplyShieldLayout(mode, target, sizePercent, anchor
 	local yNudge = -side * 0.09
 	shield:ClearAllPoints()
 	shield:SetPoint("CENTER", anchorFrame, anchor, 0, yNudge)
-	-- Stack the shield frame relative to the bar/icon. Frame level, not draw layer, orders across these
-	-- separate frames. Store the mode and the frame the level derives from so the render-path setters can
-	-- re-assert it every show: the bar/icon can be re-leveled after this one-time layout (group reconstruct,
-	-- show/hide cycle), which would otherwise strand a snapshotted "over" shield below the raised icon.
+	-- Stored so the setters can re-level on every show; the bar can be re-leveled after this layout.
 	shield:SetFrameStrata(self.frame:GetFrameStrata())
 	shield.mode = mode
-	-- "over" derives from the icon when present (draw above it); everything else keys off the bar.
-	shield.levelAnchor = (mode == "over" and self.icon ~= nil) and self.icon or self.frame
 	self:_ReassertShieldLevel()
 end
 
----Recomputes the shield's frame level from its level-anchor's CURRENT level. "over" sits one above its
----anchor (the icon, else the bar); "behind" drops below the bar so it peeks out around everything. Called
----at layout and again on every show, so a re-leveled bar/icon never leaves the shield stranded.
+---Re-levels the shield from the bar's current level: "over" sits above the marker frame (+9) with the icon
+---lifted above it, "behind" drops below the bar.
 ---@private
 function TRB.Classes.BarNode:_ReassertShieldLevel()
 	local shield = self.shield
-	if shield == nil or shield.levelAnchor == nil then
+	if shield == nil or shield.mode == nil then
 		return
 	end
 	shield:SetFrameStrata(self.frame:GetFrameStrata())
-	local anchorLevel = shield.levelAnchor:GetFrameLevel()
-	shield:SetFrameLevel(shield.mode == "over" and (anchorLevel + 1) or math.max(anchorLevel - 1, 0))
+	local barLevel = self.frame:GetFrameLevel()
+	if shield.mode == "over" then
+		shield:SetFrameLevel(barLevel + 10)
+		if self.icon ~= nil then
+			-- ApplyIconLayout resets the icon to +1 each layout pass, so "behind" needs no reset.
+			self.icon:SetFrameLevel(barLevel + 11)
+		end
+	else
+		shield:SetFrameLevel(math.max(barLevel - 1, 0))
+	end
 end
 
 ---Shows or hides the uninterruptible shield, tinting it to the given RGB and alpha. Used by the player cast

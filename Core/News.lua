@@ -5,6 +5,11 @@ local _, TRB = ...
 TRB.Details.coreNewsContent = [====[
 
 # Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-23)
+## General
+
+- Fix the uninterruptible shield on the cast bars drawing under channel ticks and empower stage lines when its Shield Layer is set to Over.
+- Fix the uninterruptible shield on the cast bars covering the ability icon when its Shield Layer is set to Over.
+
 ## Bar Text
 
 - [#860](#860) Add a Bar Text tab to Cast Bars, Other Bars, Pet Bars, and Skyriding, listing only the bar text bound to the bars under each, in Global Options and for every specialization.
