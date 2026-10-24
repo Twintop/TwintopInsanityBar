@@ -317,11 +317,14 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		return lockName ~= nil and not isSource and LockTextures()[lockName] == true
 	end
 
-	---Whether a locked texture draws its lock's source instead of its own copy, as ResolveTextures applies it: a registered
-	---bar always does, and a main bar whose textures are owned apart from the main bar's.
+	---Whether a texture draws its lock's source instead of its own copy, as ResolveTextures and Bar.lua apply it: a
+	---registered bar's when it is locked or unset, and a locked main bar's whose textures are owned apart from the main bar's.
 	---@param row table
 	---@param item table
 	local function DrawsLockSource(row, item)
+		if row.isRegistryBar and OwnerTextures(row)[item.key] == nil and GetLockOfKey(item.key) ~= nil then
+			return true
+		end
 		return IsLockedMember(item.key) and (row.isRegistryBar or IsFollowingGlobal(row) ~= PrimaryFollowsGlobal())
 	end
 

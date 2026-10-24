@@ -323,7 +323,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 		},
 		audio = {
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(false, nil, {
+		textures = TRB.Functions.Settings:DefaultTextures(false, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger"),
 		}),
 	}

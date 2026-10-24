@@ -27,7 +27,7 @@ TRB.Details.coreNewsContent = [====[
 - [#861](#861) Replace the single texture lock with separate locks for bar, border, background, and health overlay textures.
 - [#861](#861) A texture that can't be changed says why when you hover over it: the lock that keeps it the same as another texture, or the bar using global settings.
 - [#861](#861) A bar that uses global settings shows the textures from Global Options under a cover, with buttons to open them in Global Options or to customize the bar for this specialization.
-- [#861](#861) Fix the Mana bar ignoring its own texture options, which start from the textures the bar was drawing with.
+- [#861](#861) Fix the Mana bar ignoring its own texture options; until they are set, it keeps the main bar's textures.
 
 ## Bar Visibility
 

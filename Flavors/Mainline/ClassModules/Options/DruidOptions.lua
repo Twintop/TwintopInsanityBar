@@ -543,7 +543,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(false, true),
+		textures = TRB.Functions.Settings:DefaultTextures(false),
 	}
 
 	if includeBarText then
@@ -1266,7 +1266,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 		},
 		audio = {
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(nil, nil, {
+		textures = TRB.Functions.Settings:DefaultTextures(nil, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("ironfur"),
 		}),
 	}

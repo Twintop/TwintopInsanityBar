@@ -566,7 +566,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 		},
 		audio = {
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(true, nil, {
+		textures = TRB.Functions.Settings:DefaultTextures(true, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("enrage"),
 		}),
 	}
@@ -884,7 +884,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundAirHorn"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(false, nil, {
+		textures = TRB.Functions.Settings:DefaultTextures(false, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("defensives"),
 		}),
 	}

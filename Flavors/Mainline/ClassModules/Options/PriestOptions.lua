@@ -402,7 +402,7 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			}
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(true, nil, {
+		textures = TRB.Functions.Settings:DefaultTextures(true, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("utility"),
 		}),
 	}
@@ -994,7 +994,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				}
 			}
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(false, nil, {
+		textures = TRB.Functions.Settings:DefaultTextures(false, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("holyWords"),
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("lightweaver"),
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("utility"),
@@ -1306,7 +1306,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				soundName = L["LSMSoundBoxingArenaGong"]
 			},
 		},
-		textures = TRB.Functions.Settings:DefaultTextures(false, true, {
+		textures = TRB.Functions.Settings:DefaultTextures(false, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("utility"),
 		}),
 	}

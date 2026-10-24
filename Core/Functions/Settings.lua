@@ -299,7 +299,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 				}
 			},
 			-- Utility's own textures too, which a class's Utility bar follows until a specialization opts it out.
-			textures = TRB.Functions.Settings:DefaultTextures(true, nil, { TRB.Classes.BarTypeRegistry:GetInstance():Get("utility") }),
+			textures = TRB.Functions.Settings:DefaultTextures(true, { TRB.Classes.BarTypeRegistry:GetInstance():Get("utility") }),
 			displayText={
 				default = {
 					fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
@@ -2378,10 +2378,9 @@ end
 
 ---Gets the default textures for bars
 ---@param includeComboPoints boolean?
----@param includeManaBar boolean?
 ---@param customBars TRB.Classes.BarTypeDefinition[]?
 ---@return table
-function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaBar, customBars)
+function TRB.Functions.Settings:DefaultTextures(includeComboPoints, customBars)
 	local textures = {
 		background="Interface\\Tooltips\\UI-Tooltip-Background",
 		backgroundName="Blizzard Tooltip",
@@ -2416,14 +2415,6 @@ function TRB.Functions.Settings:DefaultTextures(includeComboPoints, includeManaB
 		textures.comboPointsBorderName="1 Pixel"
 		textures.comboPointsBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
 		textures.comboPointsBarName=L["LSMStatusBarSmoother"]
-	end
-	if includeManaBar then
-		textures.manaBackground="Interface\\Tooltips\\UI-Tooltip-Background"
-		textures.manaBackgroundName="Blizzard Tooltip"
-		textures.manaBorder="Interface\\Buttons\\WHITE8X8"
-		textures.manaBorderName="1 Pixel"
-		textures.manaBar="Interface\\Addons\\TwintopInsanityBar\\StatusBars\\smoother.tga"
-		textures.manaBarName=L["LSMStatusBarSmoother"]
 	end
 	if customBars then
 		for _, barTypeDef in ipairs(customBars) do
@@ -2618,49 +2609,8 @@ local function MigrateTextureLocks(textures)
 	textures.textureLock = nil
 end
 
+-- The keys the mana bar's texture options wrote but nothing ever read.
 local oldManaTextureKeys = { "manaBarBar", "manaBarBarName", "manaBarBorder", "manaBarBorderName", "manaBarBackground", "manaBarBackgroundName" }
-
--- What the mana bar draws each texture from: the lock that matches it to the main bar, and that bar's texture.
-local manaTextureFields = {
-	{ key = "manaBar", lock = "lockBar", source = "resourceBar" },
-	{ key = "manaBorder", lock = "lockBorder", source = "border" },
-	{ key = "manaBackground", lock = "lockBackground", source = "background" },
-}
-
----Whether a textures table still holds the mana bar's textures under their old keys.
----@param textures table
----@return boolean
-local function HasOldManaTextures(textures)
-	for _, key in ipairs(oldManaTextureKeys) do
-		if textures[key] ~= nil then
-			return true
-		end
-	end
-	return false
-end
-
----Moves the mana bar's textures to the keys it reads. The old keys never drew, so the new ones take what the mana bar
----drew with: the main bar's textures under a lock, otherwise its own under the new keys, otherwise the main bar's.
----@param textures table # The specialization's textures
----@param coreTextures table
----@param ownsTextures boolean # Whether the specialization drew with its own textures rather than Global's
-local function MigrateManaTextures(textures, coreTextures, ownsTextures)
-	local base = ownsTextures and textures or coreTextures
-	for _, field in ipairs(manaTextureFields) do
-		local value, name = base[field.source], base[field.source .. "Name"]
-		if not base[field.lock] then
-			local holder = textures[field.key] ~= nil and textures or (not ownsTextures and coreTextures or nil)
-			if holder ~= nil and holder[field.key] ~= nil then
-				value, name = holder[field.key], holder[field.key .. "Name"]
-			end
-		end
-		textures[field.key] = value
-		textures[field.key .. "Name"] = name
-	end
-	for _, key in ipairs(oldManaTextureKeys) do
-		textures[key] = nil
-	end
-end
 
 ---The Utility bar's default textures, by texture key.
 ---@return table<string, { path: string?, name: string? }>
@@ -2691,8 +2641,8 @@ local function UtilityTexturesDiffer(textures)
 	return false
 end
 
----Textures: the one Texture Lock became four, the Utility bar began following Global, and the mana bar's textures moved
----to the keys it reads. A specialization's Use Global flag stays the choice of every bar that has none of its own.
+---Textures: the one Texture Lock became four, the Utility bar began following Global, and the mana bar's unread texture
+---keys are dropped. A specialization's Use Global flag stays the choice of every bar that has none of its own.
 ---@param settings table # A saved-variables shaped table
 function TRB.Functions.Settings:MigrateTextures(settings)
 	local core = type(settings.core) == "table" and settings.core or nil
@@ -2713,11 +2663,9 @@ function TRB.Functions.Settings:MigrateTextures(settings)
 			coreTextures[key] = nil
 		end
 	end
-	local global = core ~= nil and type(core.global) == "table" and core.global or nil
 	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
 		local classPiece = settings[classEntry.className]
 		if type(classPiece) == "table" then
-			local classFlags = global ~= nil and global[classEntry.className] or nil
 			for _, specEntry in ipairs(classEntry.specs) do
 				local piece = classPiece[specEntry.specName]
 				local textures = type(piece) == "table" and type(piece.textures) == "table" and piece.textures or nil
@@ -2728,9 +2676,9 @@ function TRB.Functions.Settings:MigrateTextures(settings)
 						textures.useGlobal.utility = false
 					end
 					MigrateTextureLocks(textures)
-					local flags = type(classFlags) == "table" and classFlags[specEntry.specName] or nil
-					if type(flags) == "table" and flags.textures ~= nil and coreTextures ~= nil and HasOldManaTextures(textures) then
-						MigrateManaTextures(textures, coreTextures, not self:TextureFollowsGlobal(textures, "primary", flags.textures == true))
+					-- Left unset, the mana bar keeps drawing the main bar's textures, whichever Global Options it is paired with.
+					for _, key in ipairs(oldManaTextureKeys) do
+						textures[key] = nil
 					end
 				end
 			end
