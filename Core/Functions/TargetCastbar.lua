@@ -88,6 +88,12 @@ local function GetShieldVisibleColor(r, g, b, a)
 	return cached
 end
 
+---Drops the cached ColorMixins so colors no longer in use are freed; ResetColorCaches calls it.
+function TRB.Functions.TargetCastbar:ClearColorCache()
+	wipe(colorCache)
+	wipe(shieldOpaqueCache)
+end
+
 ---Returns the model for a unit key, lazily creating both models on first use.
 ---@param modelKey string
 ---@return TRB.Classes.TargetCastbar
