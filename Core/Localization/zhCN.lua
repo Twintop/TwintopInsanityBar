@@ -1780,8 +1780,6 @@ if locale == "zhCN" then
     L["GlobalBarTextVariable_comboPointsMax"] = "最大连击点数/次要资源值（非所有专精可用）"
     L["GlobalBarTextBulkToggleLabel"] = "在所有专精中显示全局施法条文本"
     L["GlobalBarTextBulkToggleTooltip"] = "勾选后，全局施法条文本将在所有职业的所有专精中显示，与该专精自身的施法条文本项叠加。取消勾选后，所有专精均不再显示全局施法条文本。"
-    L["CheckboxUseGlobalBarText"] = "启用全局施法条文本"
-    L["CheckboxUseGlobalTooltip_GlobalBarText"] = "勾选后，除该专精自身的施法条文本项外，还会显示在全局选项-施法条文本中配置的所有文本项。"
 
 	-- Global Bar Text Reset
     L["ResetGlobalBarTextHeader"] = "重置全局施法条文本"

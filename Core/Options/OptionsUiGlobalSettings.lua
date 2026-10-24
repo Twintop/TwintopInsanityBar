@@ -406,6 +406,10 @@ local function SetAllSpecsGlobalSetting(settingKey, value)
 		end
 	end
 
+	if settingKey == "globalBarText" then
+		TRB.Functions.OptionsUi.BarText:RefreshUseGlobalBarText()
+	end
+
 	TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()
 end
 

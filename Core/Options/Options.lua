@@ -625,22 +625,7 @@ local function ConstructGlobalBarTextPanel(parent)
 
 	yCoord = yCoord - 10
 
-	-- Build a lightweight cache object with global-applicable barTextVariables
-	local varCategory = TRB.Functions.BarText.VariableCategory
-	local globalCache = {
-		barTextVariables = {
-			icons = TRB.Functions.BarText:GetCommonIcons(),
-			values = TRB.Functions.BarText:GetCommonValues({
-				{ variable = "$resource", description = L["GlobalBarTextVariable_resource"], printInSettings = true, color = false, category = varCategory.RESOURCES },
-				{ variable = "$resourceMax", description = L["GlobalBarTextVariable_resourceMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
-				{ variable = "$casting", description = L["GlobalBarTextVariable_casting"], printInSettings = true, color = false, category = varCategory.RESOURCES },
-				{ variable = "$comboPoints", description = L["GlobalBarTextVariable_comboPoints"] .. " " .. L["GlobalBarTextWarningComboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
-				{ variable = "$comboPointsMax", description = L["GlobalBarTextVariable_comboPointsMax"] .. " " .. L["GlobalBarTextWarningComboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
-			}),
-		}
-	}
-
-	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, TRB.Data.settings.core, nil, nil, yCoord, globalCache)
+	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, TRB.Data.settings.core, nil, nil, yCoord, TRB.Functions.OptionsUi.BarText:GetGlobalVariablesCache())
 end
 
 ---Constructs the global options panel with all tab groups (resource bar, combo points, health, textures, visibility, thresholds, font/text, bar text, miscellaneous, reset defaults) and registers it with the addon's options frame.
