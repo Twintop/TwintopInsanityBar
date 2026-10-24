@@ -7,11 +7,10 @@ TRB.Details.coreNewsContent = [====[
 # Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-23)
 ## General
 
-- [#584](#584) A font, texture, or sound that isn't loaded no longer resets to the default.
-- [#584](#584) Bars, bar text, and audio cues use the default font, texture, or sound until the chosen one loads, then switch back without a reload.
+- [#584](#584) A font, texture, or sound that isn't loaded keeps its setting instead of resetting, and every bar, bar text, audio cue, and threshold sound uses the default until it loads.
+- [#584](#584) A font, texture, or sound that loads later is used without a reload.
 - [#584](#584) Options show a font, texture, or sound that isn't loaded with "(not loaded)" after its name.
-- [#584](#584) Remove the chat messages about invalid fonts, textures, and sounds.
-- [#584](#584) Fix cast bar, health bar, and other bar textures that aren't loaded drawing as missing textures instead of the default.
+- [#584](#584) Remove the chat messages about invalid fonts, textures, and sounds, and the unused audio option and media lookup functions in the options.
 - Fix the uninterruptible shield on the cast bars drawing under channel ticks and empower stage lines when its Shield Layer is set to Over.
 - Fix the uninterruptible shield on the cast bars covering the ability icon when its Shield Layer is set to Over.
 

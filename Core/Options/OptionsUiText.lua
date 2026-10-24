@@ -95,7 +95,11 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 		rootDescription:SetScrollMode(400)
 	end
 	barTextFontFace:SetupMenu(FontFaceGenerator)
-	barTextFontFace:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("font", spec.displayText.default.fontFaceName) or "")
+	local function RefreshFontFaceLabel()
+		barTextFontFace:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("font", spec.displayText.default.fontFaceName) or "")
+	end
+	RefreshFontFaceLabel()
+	TRB.Functions.OptionsUi.Media:SetLabelRefresher(barTextFontFace, RefreshFontFaceLabel)
 	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	yCoord = yCoord - 10
@@ -324,82 +328,3 @@ function TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent,
 
 	return yCoord
 end
-
----Creates an audio cue option row with an enable checkbox and a sound selection dropdown for a named audio trigger.
----@param parent frame The parent frame to attach controls to
----@param controls table The controls table to store created UI elements
----@param name string The key name of the audio option in spec.audio (e.g., "overcap")
----@param spec table The spec settings table containing audio configuration
----@param classId integer? The class ID, or nil for global settings
----@param specId integer? The spec ID, or nil for global settings
----@param yCoord number The current Y coordinate for layout positioning
----@param localization string The localized label text for the checkbox
----@param localizationTooltip string The localized tooltip text for the checkbox
----@param defaultValue any Reserved for future use
----@param maximumValue any Reserved for future use
----@return number yCoord The updated Y coordinate after placing all controls
-function TRB.Functions.OptionsUi.Text:CreateAudioOption(parent, controls, name, spec, classId, specId, yCoord, localization, localizationTooltip, defaultValue, maximumValue)
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName
-
-	controls.checkBoxes[name] = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_" .. name .. "Checkbox", parent, "ChatConfigCheckButtonTemplate")
-
-	local f = controls.checkBoxes[name]
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(localization)
-	f.tooltip = localizationTooltip
-	f:SetChecked(spec.audio[name].enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio[name].enabled = self:GetChecked()
-		if spec.audio[name].enabled then
-			PlaySoundFile(spec.audio[name].sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-	TRB.Functions.OptionsUi.Text:CreateAudioDropDown(parent, controls, name, spec, classId, specId, yCoord)
-
-	yCoord = yCoord - 60
-	return yCoord
-end
-
----Creates a sound file selection dropdown for a named audio trigger, populated from LibSharedMedia sound entries.
----@param parent frame The parent frame to attach controls to
----@param controls table The controls table to store created UI elements
----@param name string The key name of the audio option in spec.audio (e.g., "overcap")
----@param spec table The spec settings table containing audio configuration
----@param classId integer? The class ID, or nil for global settings
----@param specId integer? The spec ID, or nil for global settings
----@param yCoord number The current Y coordinate for vertical positioning of the dropdown
-function TRB.Functions.OptionsUi.Text:CreateAudioDropDown(parent, controls, name, spec, classId, specId, yCoord)
-	local soundPairs = TRB.Functions.OptionsUi.Media:GetSoundPairs()
-	local soundPairsByName = TRB.Functions.OptionsUi.Media:GetSoundPairsByName()
-	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
-	local namePrefix = className .. "_" .. specName
-
-	controls.dropDown = controls.dropDown or {}
-
-	controls.dropDown[name .. "Audio"] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. name .. "Audio", parent, "WowStyle1DropdownTemplate")
-	local dd = controls.dropDown[name .. "Audio"]
-	dd:SetWidth(oUi.sliderWidth)
-	dd:SetDefaultText(spec.audio[name].soundName)
-	local function IsSelected(value)
-		return value == spec.audio[name].sound
-	end
-
-	local function SetSelected(newValue)
-		spec.audio[name].sound = newValue
-		spec.audio[name].soundName = soundPairsByName[newValue]
-		dd:SetDefaultText(spec.audio[name].soundName)
-		PlaySoundFile(spec.audio[name].sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-	local function Generator(dropdown, rootDescription)
-		for k, v in pairs(soundPairs) do
-			rootDescription:CreateRadio(v[1], IsSelected, SetSelected, v[2])
-		end
-		rootDescription:SetScrollMode(400)
-
-	end
-	dd:SetupMenu(Generator)
-	dd:SetPoint("TOPLEFT", oUi.xPadding2, yCoord-20)
-end
-

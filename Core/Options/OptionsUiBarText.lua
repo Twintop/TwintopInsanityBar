@@ -614,7 +614,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	end
 
 	local function FontFaceGenerator(dropdown, rootDescription)
-		for k, v in pairs(fontPairs) do
+		for _, v in ipairs(fontPairs) do
 			local radio = rootDescription:CreateRadio(v[1], FontFaceIsSelected, FontFaceSetSelected, v)
 			radio:AddInitializer(function(button, description, menu)
 				local font = CreateFont(v[2])
@@ -627,6 +627,10 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	end
 	barTextFontFace:SetupMenu(FontFaceGenerator)
 	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+	local function RefreshFontFaceLabel()
+		barTextFontFace:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("font", workingBarText.fontFaceName) or "")
+	end
+	TRB.Functions.OptionsUi.Media:SetLabelRefresher(barTextFontFace, RefreshFontFaceLabel)
 
 	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontFace:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
@@ -1022,7 +1026,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		barTextFontJustifyHorizontal:SetupMenu(FontJustifyHorizontalGenerator)
 		barTextRelativeToFrame:SetDefaultText(GetRelativeToFrameLabel(workingBarText.position))
 		barTextRelativeTo:SetDefaultText(workingBarText.position.relativeToName)
-		barTextFontFace:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("font", workingBarText.fontFaceName) or "")
+		RefreshFontFaceLabel()
 		barTextFontJustifyHorizontal:SetDefaultText(workingBarText.fontJustifyHorizontalName)
 
 		fontSize:SetValue(workingBarText.fontSize)

@@ -9,32 +9,28 @@ local oUi = TRB.Data.constants.optionsUi
 -- ============================================================================
 local lsm = TRB.Details.addonData.libs.SharedMedia
 
--- Each texture type's entries as { name, path }, and each path's name. Refilled in place, so built dropdowns see new media.
+-- Each texture type's entries as { name, path }. Refilled in place, so built dropdowns see new media.
 local texturePairs = { statusbar = {}, background = {}, border = {} }
-local texturePairsByName = { statusbar = {}, background = {}, border = {} }
 
 ---Fills one texture type's entries from LibSharedMedia.
 ---@param lsmType string
 local function FillTexturePairs(lsmType)
 	local list = texturePairs[lsmType]
-	local byName = texturePairsByName[lsmType]
 	wipe(list)
-	wipe(byName)
 	local paths = lsm:HashTable(lsmType)
 	for _, name in ipairs(lsm:List(lsmType)) do
 		list[#list + 1] = { name, paths[name] }
-		byName[paths[name]] = name
 	end
 end
 
 ---One texture type's entries, filled the first time they are needed.
 ---@param lsmType string
----@return table pairs, table pairsByName
+---@return table
 local function GetTexturePairs(lsmType)
 	if #texturePairs[lsmType] == 0 then
 		FillTexturePairs(lsmType)
 	end
-	return texturePairs[lsmType], texturePairsByName[lsmType]
+	return texturePairs[lsmType]
 end
 
 ---Refills the texture entries already built, after more media registers.
@@ -44,18 +40,6 @@ function TRB.Functions.OptionsUi.TextureDropdowns:RefreshCaches()
 			FillTexturePairs(lsmType)
 		end
 	end
-end
-
----@return table backgroundPairsByName
-function TRB.Functions.OptionsUi.TextureDropdowns:GetBackgroundPairsByName()
-	local _, byName = GetTexturePairs("background")
-	return byName
-end
-
----@return table borderPairsByName
-function TRB.Functions.OptionsUi.TextureDropdowns:GetBorderPairsByName()
-	local _, byName = GetTexturePairs("border")
-	return byName
 end
 
 ---Refreshes a WowStyle1DropdownTemplate control by re-invoking its stored GeneratorFunction.
@@ -122,17 +106,14 @@ function TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, drop
 		namePrefix = className .. "_" .. specName
 	end
 
-	local lsmPairs, lsmPairsByName = GetTexturePairs(lsmType)
+	local lsmPairs = GetTexturePairs(lsmType)
 
 	local dropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. varName .. "_" .. lsmType, parent, "WowStyle1DropdownTemplate") --[[@as TRB.Classes.OptionsUi.LsmDropdown]]
 	dropDowns[varName] = dropdown
 	dropdown:SetWidth(oUi.sliderWidth)
 	dropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
 	dropdown.label.font:SetFontObject(GameFontNormal)
-	dropdown.varName = varName
 	dropdown.lsmType = lsmType
-	dropdown.lsmPairs = lsmPairs
-	dropdown.lsmPairsByName = lsmPairsByName
 	dropdown.selectedName = section[varName .. "Name"]
 
 	-- By name, since a saved path can be stale and several names can share one file.

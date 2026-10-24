@@ -589,6 +589,19 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 
 	local PickBuff
 
+	---@param cue TRB.Classes.Settings.AudioCue
+	local function RefreshSoundLabel(cue)
+		soundDropdown:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("sound", cue.soundName) or L["AudioCueSoundNone"])
+	end
+
+	TRB.Functions.OptionsUi.Media:SetLabelRefresher(soundDropdown, function()
+		local cue = GetSelectedCue()
+		if cue ~= nil then
+			RefreshSoundLabel(cue)
+		end
+		SetTableValues()
+	end)
+
 	local function RefreshEditor(id)
 		selectedId = id
 		local currentSpec = GetCurrentSpec()
@@ -622,10 +635,10 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		enabledCheckbox:SetChecked(cue.enabled == true)
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledCheckbox, cue.enabled == true, true)
 
-		soundDropdown:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("sound", cue.soundName) or L["AudioCueSoundNone"])
+		RefreshSoundLabel(cue)
 		soundDropdown:SetupMenu(function(dropdown, rootDescription)
 			-- By name, since a saved path can be stale and several names can share one file.
-			for _, v in pairs(soundPairs) do
+			for _, v in ipairs(soundPairs) do
 				rootDescription:CreateRadio(v[1], function(pair)
 					return pair[1] == cue.soundName
 				end, function(pair)

@@ -1505,7 +1505,11 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 
 			-- Audio sound dropdown
 			local soundPairs = TRB.Functions.OptionsUi.Media:GetSoundPairs()
-			audioDropdown:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("sound", dictEntry.audio.soundName) or L["ThresholdDetailAudioNone"])
+			local function RefreshAudioLabel()
+				audioDropdown:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("sound", dictEntry.audio.soundName) or L["ThresholdDetailAudioNone"])
+			end
+			RefreshAudioLabel()
+			TRB.Functions.OptionsUi.Media:SetLabelRefresher(audioDropdown, RefreshAudioLabel)
 			-- By name, since a saved path can be stale and several names can share one file.
 			local function AudioIsSelected(pair)
 				return pair[1] == dictEntry.audio.soundName
@@ -1519,7 +1523,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 				SetTableValues()
 			end
 			audioDropdown:SetupMenu(function(dropdown, rootDescription)
-				for k, v in pairs(soundPairs) do
+				for _, v in ipairs(soundPairs) do
 					rootDescription:CreateRadio(v[1], AudioIsSelected, AudioSetSelected, v)
 				end
 				rootDescription:SetScrollMode(400)

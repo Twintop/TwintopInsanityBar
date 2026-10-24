@@ -12,7 +12,7 @@ TRB.Flavor.newsContent = [====[
 ## Mage
 ### Arcane
 
-- [#584](#584) Fix the Arcane Salvo bar's stack ranges ignoring the bar texture lock while the main bar uses the global textures.
+- [#584](#584) Fix the Arcane Salvo bar's stack ranges keeping their own texture when Use the same bar texture for all bars is checked.
 
 ### Frost
 

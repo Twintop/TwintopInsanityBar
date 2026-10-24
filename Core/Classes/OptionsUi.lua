@@ -114,10 +114,7 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---A LibSharedMedia texture dropdown, which checks the radio of the saved name it was last pointed at.
 ---@class TRB.Classes.OptionsUi.LsmDropdown : TRB.Classes.OptionsUi.RegeneratingDropdown
 ---@field public label table
----@field public varName string
 ---@field public lsmType string
----@field public lsmPairs table
----@field public lsmPairsByName table
 ---@field public selectedName string?
 
 ---The profile picker, which relabels itself with the active profile.

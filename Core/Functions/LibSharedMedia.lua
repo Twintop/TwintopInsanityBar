@@ -60,14 +60,8 @@ function TRB.Functions.LibSharedMedia:GetDisplayName(mediaType, name)
 	return string.format(L["LSMNotLoaded"], tostring(name))
 end
 
----Re-resolves every built specialization's textures, then re-applies the active bars and bar text.
-local function ReapplyMedia()
-	reapplyQueued = false
-	-- The deferred setup's own fill resolves anything registered before it.
-	if not TRB.Details.addonData.optionsPanelFinished then
-		return
-	end
-
+---Re-resolves every built specialization's textures, then re-applies the displayed bars and bar text.
+local function ApplyMedia()
 	local Character = TRB.Functions.Character
 	for _, entry in ipairs(Character:GetSpecRegistryEntriesOrdered()) do
 		if TRB.Data.specCache[entry.compositeKey] then
@@ -75,15 +69,37 @@ local function ReapplyMedia()
 		end
 	end
 
-	local specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
-	if TRB.Frames.barGroups ~= nil and specCache ~= nil then
-		TRB.Functions.Bar:ApplyBarGroupsLayout(specCache.settings, TRB.Frames.barGroups)
-		TRB.Functions.Bar:ApplyBarGroupsAppearance(specCache.settings, TRB.Frames.barGroups)
+	-- The displayed settings, which are a form's spec for a Druid in that form.
+	local settings = TRB.Functions.Class:GetActiveDisplaySettings()
+	if TRB.Frames.barGroups ~= nil and settings ~= nil then
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 		TRB.Functions.BarText:CreateBarTextFrames()
 		TRB.Functions.BarVisibility:MarkDirty()
 		TRB.Data.lookupDirty = true
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
+end
+
+local combatEndFrame = CreateFrame("Frame")
+combatEndFrame:SetScript("OnEvent", function(self)
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	ApplyMedia()
+end)
+
+local function ReapplyMedia()
+	reapplyQueued = false
+	-- The deferred setup's own fill resolves anything registered before it.
+	if not TRB.Details.addonData.optionsPanelFinished then
+		return
+	end
+
+	-- Re-applying fades the bars out for a moment, so a pickup in combat waits for it to end.
+	if InCombatLockdown() then
+		combatEndFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		return
+	end
+	ApplyMedia()
 end
 
 ---Refills the options' media lists, so media registered after they were built can be picked, and redraws the
