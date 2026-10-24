@@ -187,8 +187,11 @@ end
 ---@field public procSpendWindow number # How long a cast's spend arm stays claimable
 ---@field public procExpiryGrace number # How long a banked end outlives its due time waiting on the event
 ---@field public procSpendArmed number? # When a cast that had a charge to burn armed a spend
+---@field public procGainArmed number? # When a cast that always grants a charge armed a gain
 ---@field public procExpectedEnd number? # Banked endTime of the last gain, used to recognize a timeout
 ---@field public procOverlayActive boolean # Whether the proc's activation overlay is currently showing
+---@field public procSettleDelay number # How long after an event the overlay is trusted to correct the count
+---@field public procSettleAt number? # When the overlay next gets to correct the count, nil once checked
 ---@field public useIndependentStacks boolean # When true, every application expires on its own timer instead of sharing endTime
 ---@field public independentStacks number[] # End times of the live applications, sorted ascending
 ---@field public independentStackDurations number[] # Original durations of the live applications, parallel to `independentStacks`
@@ -724,14 +727,36 @@ function TRB.Classes.SnapshotBuff:UpdateIndependentStacks(currentTime)
 	return #stacks
 end
 
+---Adds one proc charge and banks its end for expiry detection
+---@param buff TRB.Classes.SnapshotBuff
+local function GainProcCharge(buff)
+	buff:AddStackOrInitializeCustom(buff.parent.spell.duration, nil, true, 1)
+	buff.procExpectedEnd = buff.endTime
+end
+
+---Burns one proc charge, or every charge when the overlay is already out
+---@param buff TRB.Classes.SnapshotBuff
+local function SpendProcCharge(buff)
+	if buff.procOverlayActive then
+		buff:RemoveStack()
+	else
+		buff:Reset()
+	end
+	if not buff.isActive then
+		buff.procExpectedEnd = nil
+	end
+end
+
 ---Enables Lua-side charge tracking for a proc whose real stack count is secret. Every charge change
 ---fires one indistinguishable event, so a cast arms a spend and the activation overlay marks a full loss.
----@param spendWindow number? # How long a cast's spend arm stays claimable. Defaults to 0.5.
+---@param spendWindow number? # How long a cast's spend or gain arm stays claimable. Defaults to 0.5.
 ---@param expiryGrace number? # How long a banked end outlives its due time waiting on the event. Defaults to 0.5.
-function TRB.Classes.SnapshotBuff:InitializeProcCharges(spendWindow, expiryGrace)
+---@param settleDelay number? # How long after an event the overlay is trusted to correct the count. Defaults to 0.3.
+function TRB.Classes.SnapshotBuff:InitializeProcCharges(spendWindow, expiryGrace, settleDelay)
 	self.useProcCharges = true
 	self.procSpendWindow = spendWindow or 0.5
 	self.procExpiryGrace = expiryGrace or 0.5
+	self.procSettleDelay = settleDelay or 0.3
 	self:ResetProcCharges()
 end
 
@@ -739,18 +764,36 @@ end
 ---alone: the banked end has to outlive the Reset() a natural timeout triggers.
 function TRB.Classes.SnapshotBuff:ResetProcCharges()
 	self.procSpendArmed = nil
+	self.procGainArmed = nil
 	self.procExpectedEnd = nil
 	self.procOverlayActive = false
+	self.procSettleAt = nil
 end
 
 ---Arms a spend from a successful cast. Arming on the charge, not the cast, keeps a filler cast from
 ---claiming an unrelated proc.
 ---@param currentTime number? # Timestamp to arm at. If not specified, `GetTime()` will be used instead.
 function TRB.Classes.SnapshotBuff:ArmProcSpend(currentTime)
-	if not self.useProcCharges or not self.isActive then
+	if not self.useProcCharges then
 		return
 	end
-	self.procSpendArmed = currentTime or GetTime()
+	currentTime = currentTime or GetTime()
+	-- An undercount or a same-frame gain still leaves this cast a charge to burn.
+	local gainPending = self.procGainArmed ~= nil and (currentTime - self.procGainArmed) <= self.procSpendWindow
+	if not (self.isActive or self.procOverlayActive or gainPending) then
+		return
+	end
+	self.procSpendArmed = currentTime
+end
+
+---Arms a gain from a successful cast that always grants a charge. The client folds a gain and a
+---spend in the same frame into one event, which would otherwise read as the spend alone.
+---@param currentTime number? # Timestamp to arm at. If not specified, `GetTime()` will be used instead.
+function TRB.Classes.SnapshotBuff:ArmProcGain(currentTime)
+	if not self.useProcCharges then
+		return
+	end
+	self.procGainArmed = currentTime or GetTime()
 end
 
 ---Records whether the proc's activation overlay is showing
@@ -760,6 +803,7 @@ function TRB.Classes.SnapshotBuff:SetProcOverlay(active)
 		return
 	end
 	self.procOverlayActive = active
+	self.procSettleAt = GetTime() + self.procSettleDelay
 end
 
 ---Classifies a single charge change event as a spend, an expiry or a gain, and applies it
@@ -770,15 +814,23 @@ function TRB.Classes.SnapshotBuff:HandleProcChargeEvent(currentTime)
 		return nil
 	end
 	currentTime = currentTime or GetTime()
+	self.procSettleAt = currentTime + self.procSettleDelay
 
+	local gainArmed = self.procGainArmed ~= nil and (currentTime - self.procGainArmed) <= self.procSpendWindow
 	if self.procSpendArmed ~= nil and (currentTime - self.procSpendArmed) <= self.procSpendWindow then
 		-- One cast burns one charge, so the arm retires here rather than claiming the next event too.
 		self.procSpendArmed = nil
-		self:RemoveStack()
-		if not self.isActive then
-			self.procExpectedEnd = nil
+		if gainArmed then
+			-- This one event is a same-frame gain and spend.
+			self.procGainArmed = nil
+			GainProcCharge(self)
 		end
+		SpendProcCharge(self)
 		return "spend"
+	elseif gainArmed then
+		self.procGainArmed = nil
+		GainProcCharge(self)
+		return "gain"
 	elseif (self.isActive and not self.procOverlayActive)
 		or (self.procExpectedEnd ~= nil
 			and (not self.isActive or currentTime >= self.procExpectedEnd)) then
@@ -789,16 +841,17 @@ function TRB.Classes.SnapshotBuff:HandleProcChargeEvent(currentTime)
 		return "expire"
 	end
 
-	self:AddStackOrInitializeCustom(self.parent.spell.duration, nil, true, 1)
-	self.procExpectedEnd = self.endTime
+	GainProcCharge(self)
 	return "gain"
 end
 
----Advances a tracked proc for the current frame and retires a banked end whose event never came
+---Advances a tracked proc for the current frame, retires a banked end whose event never came, and
+---lets the overlay correct the count once the events have settled
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, `GetTime()` will be used instead.
+---@return trbProcChargeOutcome? # "expire" or "gain" when the overlay corrected the count, otherwise nil
 function TRB.Classes.SnapshotBuff:RefreshProcCharges(currentTime)
 	if not self.useProcCharges then
-		return
+		return nil
 	end
 	currentTime = currentTime or GetTime()
 	self:GetRemainingTime(currentTime)
@@ -808,6 +861,20 @@ function TRB.Classes.SnapshotBuff:RefreshProcCharges(currentTime)
 	if not self.isActive and self.procExpectedEnd ~= nil and currentTime > self.procExpectedEnd + self.procExpiryGrace then
 		self.procExpectedEnd = nil
 	end
+
+	-- A random proc folded into a spend's event goes uncounted, but the overlay still says whether any charge is up.
+	if self.procSettleAt ~= nil and currentTime >= self.procSettleAt then
+		self.procSettleAt = nil
+		if self.isActive and not self.procOverlayActive then
+			self:Reset()
+			self.procExpectedEnd = nil
+			return "expire"
+		elseif not self.isActive and self.procOverlayActive then
+			GainProcCharge(self)
+			return "gain"
+		end
+	end
+	return nil
 end
 
 

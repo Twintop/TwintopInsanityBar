@@ -2139,7 +2139,14 @@ local function UpdateSnapshot_Healers()
 
 	local surgeOfLight = snapshots[spells.surgeOfLight.id]
 	if surgeOfLight ~= nil then
-		surgeOfLight.buff:RefreshProcCharges()
+		local outcome = surgeOfLight.buff:RefreshProcCharges()
+		if outcome ~= nil then
+			TRB.Data.lookupDirty = true
+			if outcome == "expire" then
+				TRB.Functions.AudioCues:ResetLatch(TRB.Data.snapshotData, "surgeOfLight")
+				TRB.Functions.AudioCues:ResetLatch(TRB.Data.snapshotData, "surgeOfLight2")
+			end
+		end
 	end
 
 	-- Track Flash Heal mana cost to detect Surge of Light via cost reduction

@@ -285,6 +285,8 @@ end
 ---@field icicles TRB.Classes.SpellBase
 ---@field shatter TRB.Classes.SpellBase
 ---@field iceLance TRB.Classes.SpellBase
+---@field glacialSpike TRB.Classes.SpellBase
+---@field flashFreeze TRB.Classes.SpellBase
 ---@field fingersOfFrost TRB.Classes.SpellBase
 ---@field brainFreeze TRB.Classes.SpellBase
 ---@field polishedFocus TRB.Classes.SpellBase
@@ -313,6 +315,14 @@ function TRB.Classes.Mage.FrostSpells:New()
     })
     self.iceLance = TRB.Classes.SpellBase:New({
         id = 30455
+    })
+    self.glacialSpike = TRB.Classes.SpellBase:New({
+        id = 199786
+    })
+    -- Flash Freeze: every Glacial Spike grants a Fingers of Frost charge
+    self.flashFreeze = TRB.Classes.SpellBase:New({
+        id = 379993,
+        isTalent = true
     })
     self.fingersOfFrost = TRB.Classes.SpellBase:New({
         id = 44544,

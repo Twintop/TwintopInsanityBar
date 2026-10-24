@@ -8,6 +8,24 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.7-release (2026-10-24)
+## Mage
+### Frost
+
+- Fix Fingers of Frost losing count when Ice Lance is queued behind Glacial Spike, leaving its Color Indicators on with no charges up, or off with one up.
+- Fingers of Frost tracking corrects itself when a charge is gained as you spend one.
+
+## Priest
+### Discipline
+
+- Surge of Light tracking corrects itself when a stack is gained as you spend one.
+
+### Holy
+
+- Surge of Light tracking corrects itself when a stack is gained as you spend one.
+
+---
+
 # 12.1.5.6-release (2026-10-23)
 ## General
 ### Skyriding

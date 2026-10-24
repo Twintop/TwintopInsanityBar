@@ -1080,6 +1080,12 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			if snapshot ~= nil then
 				snapshot.buff:ArmProcSpend()
 			end
+		elseif spells ~= nil and spells.glacialSpike ~= nil and spellId == spells.glacialSpike.id then
+			local snapshot = spells.fingersOfFrost and snapshotData.snapshots
+				and snapshotData.snapshots[spells.fingersOfFrost.id]
+			if snapshot ~= nil and talents:IsTalentActive(spells.flashFreeze) then
+				snapshot.buff:ArmProcGain()
+			end
 		end
 	end
 end
@@ -1224,8 +1230,8 @@ local function UpdateSnapshot_Frost()
 	RefreshProcTimeFromCdm(snapshots[spells.brainFreeze.id], spells.brainFreeze.id)
 
 	local fingersOfFrost = snapshots[spells.fingersOfFrost.id]
-	if fingersOfFrost ~= nil then
-		fingersOfFrost.buff:RefreshProcCharges(currentTime)
+	if fingersOfFrost ~= nil and fingersOfFrost.buff:RefreshProcCharges(currentTime) ~= nil then
+		TRB.Data.lookupDirty = true
 	end
 end
 
