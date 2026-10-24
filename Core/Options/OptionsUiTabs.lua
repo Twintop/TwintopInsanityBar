@@ -338,7 +338,6 @@ TRB.Functions.OptionsUi.Tabs.TabKeys = {
 	BarTextures = "barTextures",
 	BarVisibility = "barVisibility",
 	VisibilityPresets = "presets",
-	GroupTextures = "textures",
 }
 
 local groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", skyriding = "Skyriding" }
@@ -367,7 +366,7 @@ function TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, cl
 	-- Pet bar textures are each specialization's own (Global's were never read), so Global Options has none to set.
 	if groupKey ~= "petBars" or TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId) then
 		tabDefinitions[#tabDefinitions + 1] = {
-			TRB.Functions.OptionsUi.Tabs.TabKeys.GroupTextures,
+			TRB.Functions.OptionsUi.Tabs.TabKeys.BarTextures,
 			TRB.Localization["TabTextures"],
 			oUi.tabWidth.small,
 			function(scrollChild)

@@ -541,7 +541,6 @@ if locale == "enGB" then
 	L["BarDisplayTextCustomizationHeaderOtherBars"] = "Other Bar Display Text Customisation"
 	L["BarDisplayTextCustomizationHeaderPetBars"] = "Pet Bar Display Text Customisation"
 	L["BarDisplayTextCustomizationHeaderSkyriding"] = "Skyriding Bar Display Text Customisation"
-	L["BarTexturesUseGlobalAllSpecs"] = "Use Global settings for all listed bars in every specialisation"
 	L["BarTexturesUseGlobalAllSpecsTooltip"] = "Checked bars draw with the textures set in Global Options in every specialisation. Unchecking gives each specialisation its own textures for them, starting from Global's. A dimmed check means some specialisations do."
 	L["BarTexturesLockedGlobalTooltip"] = "Locked: '%s' is checked in Global Options, so this texture matches %s (%s) on the %s row. The %s row uses Global settings, which brings Global Options' locks with it. Uncheck Use Global settings for that row to set this specialisation's own locks."
 	L["TextureLockGlobalTooltip"] = "The %s row uses Global settings, so this specialisation uses the locks set in Global Options. Uncheck Use Global settings for that row to set its own."

@@ -1666,7 +1666,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		specCache.settings.precision = spec.precision
 	end
 	
-	specCache.settings.textures = TRB.Functions.Settings:ResolveTextures(core.textures, spec.textures)
+	specCache.settings.textures = TRB.Functions.Settings:ResolveTextures(core.textures, spec.textures, s.textures)
 
 	-- Custom bar dimensions (stagger, defensives, mana, etc.) - always spec-specific
 	if spec.bars then

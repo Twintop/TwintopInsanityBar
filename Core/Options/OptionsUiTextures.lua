@@ -17,7 +17,14 @@ local includeAllGroups = {}
 local texturesEditors = {}
 
 local dimColor = { r = 0.5, g = 0.5, b = 0.5, a = 0.7 }
-local TABLE_ROW_COUNT = 8
+local MAX_TABLE_ROWS = 8
+
+---The bars table's height in rows: one per listed bar, at least two and at most MAX_TABLE_ROWS.
+---@param rowCount integer
+---@return integer
+local function GetTableRowCount(rowCount)
+	return math.min(math.max(rowCount, 2), MAX_TABLE_ROWS)
+end
 
 local lockGroups = TRB.Functions.Settings.textureLockGroups
 
@@ -133,11 +140,7 @@ function TRB.Functions.OptionsUi.Textures:OpenGlobalTextures(barKey)
 	TRB.Options.OptionsFrame:SelectCategory(barGroup == "spec" and "global" or barGroup)
 	-- The category's tabs exist only after it is selected.
 	C_Timer.After(0, function()
-		if barGroup == "spec" then
-			tabs:SwitchToTabByNamePrefix("Global", tabs.TabKeys.BarTextures)
-		else
-			tabs:SwitchToTabByNamePrefix(tabs:GetGroupInnerPrefix(barGroup, nil, nil), tabs.TabKeys.GroupTextures)
-		end
+		tabs:SwitchToTabByNamePrefix(barGroup == "spec" and "Global" or tabs:GetGroupInnerPrefix(barGroup, nil, nil), tabs.TabKeys.BarTextures)
 		local editor = texturesEditors.global and texturesEditors.global[barGroup]
 		if editor ~= nil then
 			editor.SelectBarKey(barKey)
@@ -284,13 +287,19 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	RebuildRows()
 
 	-- ===== Who owns what =====
+	local barVisibility = TRB.Functions.BarVisibility
+	local settingsClassName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	---This specialization's Use Global flag, which a bar with no choice of its own follows.
+	local function SpecFollowsGlobal()
+		return barVisibility:SpecFollowsGlobal(TRB.Data.settings.core, settingsClassName, specName, "textures")
+	end
 	---Whether the main bar's textures, and the locks that match every bar to them, come from Global Options.
 	local function PrimaryFollowsGlobal()
-		return isSpecScope and (textures.useGlobal == nil or textures.useGlobal.primary ~= false)
+		return isSpecScope and settingsFunctions:TextureFollowsGlobal(textures, "primary", SpecFollowsGlobal())
 	end
 	---@param row table
 	local function IsFollowingGlobal(row)
-		return row.canUseGlobal and (textures.useGlobal == nil or textures.useGlobal[row.key] ~= false)
+		return row.canUseGlobal and settingsFunctions:TextureFollowsGlobal(textures, row.key, SpecFollowsGlobal())
 	end
 	---The table a bar's textures are read from and written to.
 	---@param row table
@@ -328,27 +337,46 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		return OwnerTextures(row)[item.key .. "Name"]
 	end
 
+	---Records a bar's choice in a specialization's textures. Opting a bar out starts it from the textures it was showing,
+	---which are Global's when it followed them.
+	---@param specTextures table
 	---@param barKey string
-	local function CopyGlobalRow(barKey)
-		for _, key in ipairs(settingsFunctions:GetTextureKeysForBar(barKey).all) do
-			if coreTextures[key] ~= nil then
-				textures[key] = coreTextures[key]
-				textures[key .. "Name"] = coreTextures[key .. "Name"]
+	---@param useGlobal boolean
+	---@param wasFollowing boolean
+	local function WriteUsesGlobal(specTextures, barKey, useGlobal, wasFollowing)
+		if not useGlobal and wasFollowing then
+			for _, key in ipairs(settingsFunctions:GetTextureKeysForBar(barKey).all) do
+				if coreTextures[key] ~= nil then
+					specTextures[key] = coreTextures[key]
+					specTextures[key .. "Name"] = coreTextures[key .. "Name"]
+				end
 			end
 		end
+		specTextures.useGlobal = specTextures.useGlobal or {}
+		specTextures.useGlobal[barKey] = useGlobal
 	end
-	---Opting a bar out starts it from the textures it was showing, which are Global's.
 	---@param barKey string
 	---@param useGlobal boolean
 	local function SetRowUsesGlobal(barKey, useGlobal)
-		textures.useGlobal = textures.useGlobal or {}
-		if useGlobal then
-			textures.useGlobal[barKey] = nil
-		else
-			if textures.useGlobal[barKey] ~= false then
-				CopyGlobalRow(barKey)
+		WriteUsesGlobal(textures, barKey, useGlobal, IsFollowingGlobal(rowsByKey[barKey]))
+	end
+
+	---Runs a function on every specialization's textures for each listed bar it has that could follow Global Options.
+	---@param fn fun(specTextures: table, barKey: string, followsGlobal: boolean)
+	local function ForEachSpecTexturesOfListedBars(fn)
+		local core = TRB.Data.settings.core
+		for _, specEntry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+			local classPiece = TRB.Data.settings[specEntry.className]
+			local piece = classPiece and classPiece[specEntry.specName]
+			local specTextures = piece and piece.textures
+			if specTextures ~= nil then
+				local specFollowsGlobal = barVisibility:SpecFollowsGlobal(core, specEntry.className, specEntry.specName, "textures")
+				for _, row in ipairs(listedRows) do
+					if globalBars.set[row.key] and specTextures[settingsFunctions:GetTextureKeysForBar(row.key).bar] ~= nil then
+						fn(specTextures, row.key, settingsFunctions:TextureFollowsGlobal(specTextures, row.key, specFollowsGlobal))
+					end
+				end
 			end
-			textures.useGlobal[barKey] = false
 		end
 	end
 
@@ -400,13 +428,9 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		useGlobalBox = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_useGlobal_textures", parent, "ChatConfigCheckButtonTemplate")
 		f = useGlobalBox
 		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["BarTexturesUseGlobalAll"])
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobalAllListedBars"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
-		if groupKey == "spec" then
-			TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, "barTextures")
-		else
-			TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, TRB.Functions.OptionsUi.Tabs.TabKeys.GroupTextures, groupKey)
-		end
+		TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(f, TRB.Functions.OptionsUi.Tabs.TabKeys.BarTextures, groupKey ~= "spec" and groupKey or nil)
 		f.tooltip = L["BarTexturesUseGlobalAllTooltip"]
 		f:SetScript("OnClick", function()
 			-- Checked gives every listed bar its own textures; unchecked or mixed puts them all back on Global Options.
@@ -434,7 +458,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		useGlobalBox = CreateFrame("CheckButton", "TwintopResourceBar_Global_enableAll_textures" .. (groupKey == "spec" and "" or "_" .. groupKey), parent, "ChatConfigCheckButtonTemplate")
 		f = useGlobalBox
 		f:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["BarTexturesUseGlobalAllSpecs"])
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxUseGlobalAllSpecsListedBars"])
 		getglobal(f:GetName() .. 'Text'):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 		f.tooltip = L["BarTexturesUseGlobalAllSpecsTooltip"]
 		f.specCount = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -443,47 +467,16 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		f.specCount:SetPoint("LEFT", f, "RIGHT", getglobal(f:GetName() .. 'Text'):GetStringWidth() + 14, 0)
 		f:SetScript("OnClick", function()
 			local followed, total = 0, 0
-			for _, specEntry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
-				local classPiece = TRB.Data.settings[specEntry.className]
-				local piece = classPiece and classPiece[specEntry.specName]
-				local specTextures = piece and piece.textures
-				if specTextures ~= nil then
-					for _, row in ipairs(listedRows) do
-						if globalBars.set[row.key] then
-							total = total + 1
-							if specTextures.useGlobal == nil or specTextures.useGlobal[row.key] ~= false then
-								followed = followed + 1
-							end
-						end
-					end
+			ForEachSpecTexturesOfListedBars(function(_, _, followsGlobal)
+				total = total + 1
+				if followsGlobal then
+					followed = followed + 1
 				end
-			end
+			end)
 			local useGlobal = followed ~= total
-			for _, specEntry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
-				local classPiece = TRB.Data.settings[specEntry.className]
-				local piece = classPiece and classPiece[specEntry.specName]
-				local specTextures = piece and piece.textures
-				if specTextures ~= nil then
-					specTextures.useGlobal = specTextures.useGlobal or {}
-					for _, row in ipairs(listedRows) do
-						if globalBars.set[row.key] then
-							if useGlobal then
-								specTextures.useGlobal[row.key] = nil
-							else
-								if specTextures.useGlobal[row.key] ~= false then
-									for _, key in ipairs(settingsFunctions:GetTextureKeysForBar(row.key).all) do
-										if coreTextures[key] ~= nil then
-											specTextures[key] = coreTextures[key]
-											specTextures[key .. "Name"] = coreTextures[key .. "Name"]
-										end
-									end
-								end
-								specTextures.useGlobal[row.key] = false
-							end
-						end
-					end
-				end
-			end
+			ForEachSpecTexturesOfListedBars(function(specTextures, barKey, followsGlobal)
+				WriteUsesGlobal(specTextures, barKey, useGlobal, followsGlobal)
+			end)
 			RefreshAllSpecs()
 			RefreshEditors()
 		end)
@@ -592,9 +585,10 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	local container = CreateFrame("Frame", nil, parent, "BackdropTemplate")
 	container:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
 	container:SetPoint("RIGHT", parent, "RIGHT", -oUi.xCoord, 0)
-	container:SetHeight(35 + (TABLE_ROW_COUNT * 15))
+	local tableRowCount = GetTableRowCount(#listedRows)
+	container:SetHeight(35 + (tableRowCount * 15))
 
-	local barTexturesTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, TABLE_ROW_COUNT, 15, nil, container, false, false)
+	local barTexturesTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, tableRowCount, 15, nil, container, false, false)
 
 	-- Dynamically resize the last column to fill available width
 	container:HookScript("OnSizeChanged", function(_, w)
@@ -642,8 +636,16 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		end
 	end
 
+	---Fits the table to the bars listed; the detail panel is anchored below it and follows.
+	local function ResizeTable()
+		local rowCount = GetTableRowCount(#listedRows)
+		barTexturesTable:SetDisplayRows(rowCount, 15)
+		container:SetHeight(35 + (rowCount * 15))
+	end
+
 	-- ===== The selected bar's textures =====
-	yCoord = yCoord - (35 + (TABLE_ROW_COUNT * 15))
+	-- The spec tab's table can grow to every bar with the include-all box ticked, so the panel leaves room for that.
+	yCoord = yCoord - (35 + (GetTableRowCount(groupKey == "spec" and #allRows or #listedRows) * 15))
 	-- Room for the health bar's six dropdowns, the most a bar has.
 	local detailHeight = 270
 	local detailFrame = CreateFrame("Frame", "TwintopResourceBar_" .. namePrefix .. "_BarTexturesDetail", parent, "BackdropTemplate")
@@ -800,24 +802,15 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			TRB.Functions.OptionsUi.GlobalSettings:SetCheckboxTriState(useGlobalBox, GetUseGlobalState(followed, total))
 		else
 			local followed, total = 0, 0
-			for _, specEntry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
-				local classPiece = TRB.Data.settings[specEntry.className]
-				local piece = classPiece and classPiece[specEntry.specName]
-				local specTextures = piece and piece.textures
-				if specTextures ~= nil then
-					for _, row in ipairs(listedRows) do
-						if globalBars.set[row.key] then
-							total = total + 1
-							if specTextures.useGlobal == nil or specTextures.useGlobal[row.key] ~= false then
-								followed = followed + 1
-							end
-						end
-					end
+			ForEachSpecTexturesOfListedBars(function(_, _, followsGlobal)
+				total = total + 1
+				if followsGlobal then
+					followed = followed + 1
 				end
-			end
+			end)
 			useGlobalBox:SetShown(total > 0)
 			TRB.Functions.OptionsUi.GlobalSettings:SetCheckboxTriState(useGlobalBox, GetUseGlobalState(followed, total))
-			useGlobalBox.specCount:SetText(string.format(L["BarTexturesUseGlobalCountFormat"], followed, total))
+			useGlobalBox.specCount:SetText(string.format(L["UseGlobalBarCountFormat"], followed, total))
 		end
 	end
 
@@ -847,6 +840,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 
 	ReloadRows = function()
 		RebuildRows()
+		ResizeTable()
 		if selectedKey ~= nil and not tContains(listedRows, rowsByKey[selectedKey]) then
 			selectedKey = nil
 			detailFrame:Hide()

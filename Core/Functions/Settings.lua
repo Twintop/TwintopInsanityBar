@@ -68,6 +68,7 @@ local function NewSpecGlobalDefaults()
 		thresholdColors = true,
 		healthBarColors = true,
 		precision = false,
+		textures = true,
 		castbarDimensions = true,
 		castbarColors = true,
 		castbarOverlays = true,
@@ -2509,21 +2510,38 @@ function TRB.Functions.Settings:GetGlobalTextureBars()
 	return globalTextureBars
 end
 
----Layers a specialization's textures over Global's: each bar Global offers follows it unless the specialization opted the
----bar out, and a lock matches every bar to the main bar. With every bar opted out it returns the specialization's own table.
+---Whether a specialization's bar draws with Global Options' textures: the bar's own `useGlobal`, or the specialization's
+---flag while the bar has none. Only the bars Global offers can.
+---@param specTextures table?
+---@param barKey string
+---@param specFollowsGlobal boolean? # The specialization's flag, from BarVisibility:SpecFollowsGlobal
+---@return boolean
+function TRB.Functions.Settings:TextureFollowsGlobal(specTextures, barKey, specFollowsGlobal)
+	if not self:GetGlobalTextureBars().set[barKey] then
+		return false
+	end
+	local useGlobal = specTextures and specTextures.useGlobal
+	if type(useGlobal) == "table" and useGlobal[barKey] ~= nil then
+		return useGlobal[barKey] == true
+	end
+	return specFollowsGlobal == true
+end
+
+---Layers a specialization's textures over Global's: each bar Global offers follows it as TextureFollowsGlobal says, and a
+---lock matches every bar to the main bar. With no bar following Global it returns the specialization's own table.
 ---@param coreTextures table
 ---@param specTextures table?
+---@param specFollowsGlobal boolean? # The specialization's flag, which a bar with no choice of its own follows
 ---@return table
-function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures)
+function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures, specFollowsGlobal)
 	specTextures = specTextures or {}
-	local useGlobal = specTextures.useGlobal or {}
 	local globalBars = self:GetGlobalTextureBars()
+	---@type table<string, boolean>
+	local followed = {}
 	local anyFollowed = false
 	for _, barKey in ipairs(globalBars.keys) do
-		if useGlobal[barKey] ~= false then
-			anyFollowed = true
-			break
-		end
+		followed[barKey] = self:TextureFollowsGlobal(specTextures, barKey, specFollowsGlobal)
+		anyFollowed = anyFollowed or followed[barKey]
 	end
 	if not anyFollowed then
 		return specTextures
@@ -2535,7 +2553,7 @@ function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures)
 		textures[key] = value
 	end
 	for _, barKey in ipairs(globalBars.keys) do
-		if useGlobal[barKey] == false then
+		if not followed[barKey] then
 			for _, key in ipairs(self:GetTextureKeysForBar(barKey).all) do
 				if specTextures[key] ~= nil then
 					textures[key] = specTextures[key]
@@ -2546,7 +2564,7 @@ function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures)
 	end
 
 	-- The main bar's owner decides the locks, since the locks match every bar to its textures.
-	local lockSource = useGlobal.primary ~= false and coreTextures or specTextures
+	local lockSource = followed.primary and coreTextures or specTextures
 	for _, lock in ipairs(self.textureLockKeys) do
 		textures[lock] = lockSource[lock]
 	end
@@ -2554,7 +2572,7 @@ function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures)
 	-- The bars Global's Textures panel offers take Global's textures; the mana bar, class bars, and pet bars keep
 	-- the spec's own, and a lock matches every one of them to the main bar's.
 	for prefix in pairs(TRB.Classes.BarTypeRegistry:GetInstance():GetAll()) do
-		local followed = globalBars.set[prefix] and useGlobal[prefix] ~= false
+		local prefixFollowed = followed[prefix] == true
 		for _, lock in ipairs(self.textureLockKeys) do
 			local group = self.textureLockGroups[lock]
 			if group.suffix ~= nil then
@@ -2562,7 +2580,7 @@ function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures)
 				if textures[lock] then
 					textures[key] = textures[group.source]
 					textures[key .. "Name"] = textures[group.source .. "Name"]
-				elseif specTextures[key] ~= nil and (not followed or textures[key] == nil) then
+				elseif specTextures[key] ~= nil and (not prefixFollowed or textures[key] == nil) then
 					textures[key] = specTextures[key]
 					textures[key .. "Name"] = specTextures[key .. "Name"]
 				end
@@ -2571,9 +2589,8 @@ function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures)
 	end
 
 	-- Editing a lock's source only updates the copies in its own table, so a main bar owned apart from the main bar takes the lock here.
-	local primaryFollowed = useGlobal.primary ~= false
 	for _, barKey in ipairs({ "secondary", "health" }) do
-		if (useGlobal[barKey] ~= false) ~= primaryFollowed then
+		if followed[barKey] ~= followed.primary then
 			for _, key in ipairs(self:GetTextureKeysForBar(barKey).all) do
 				local lock = textureLockOfFixedKey[key]
 				if lock ~= nil and textures[lock] then
@@ -2645,38 +2662,51 @@ local function MigrateManaTextures(textures, coreTextures, ownsTextures)
 	end
 end
 
----Whether a specialization's Utility bar textures differ from Global's. Utility drew with the specialization's own
----textures before it became a Global bar, so one that differs keeps them.
----@param textures table # The specialization's textures
----@param coreTextures table # Global's saved textures, which may predate their Utility defaults
----@return boolean
-local function UtilityTexturesDiffer(textures, coreTextures)
-	local keys = TRB.Functions.Settings:GetTextureKeysForBar("utility")
-	if textures[keys.bar] == nil then
-		return false
-	end
+---The Utility bar's default textures, by texture key.
+---@return table<string, { path: string?, name: string? }>
+local function GetUtilityDefaultTextures()
 	local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get("utility")
 	local defaults = definition ~= nil and definition:GetDefaultTextures() or {}
-	local defaultByKey = { [keys.bar] = defaults.bar, [keys.border] = defaults.border, [keys.background] = defaults.background }
-	for key, default in pairs(defaultByKey) do
-		local global = coreTextures[key]
-		if global == nil then
-			global = default
-		end
-		if textures[key] ~= global then
+	local keys = TRB.Functions.Settings:GetTextureKeysForBar("utility")
+	return {
+		[keys.bar] = { path = defaults.bar, name = defaults.barName },
+		[keys.border] = { path = defaults.border, name = defaults.borderName },
+		[keys.background] = { path = defaults.background, name = defaults.backgroundName },
+	}
+end
+
+---Whether a specialization's Utility bar textures differ from the defaults, which Global's start from. Utility drew with
+---the specialization's own textures before it became a Global bar, so one that differs keeps them.
+---@param textures table # The specialization's textures
+---@return boolean
+local function UtilityTexturesDiffer(textures)
+	if textures[TRB.Functions.Settings:GetTextureKeysForBar("utility").bar] == nil then
+		return false
+	end
+	for key, default in pairs(GetUtilityDefaultTextures()) do
+		if textures[key] ~= default.path then
 			return true
 		end
 	end
 	return false
 end
 
----Textures: the one Texture Lock became four, the per-specialization Use Global flag became per bar, and the mana bar's
----textures moved to the keys it reads. A flag is cleared once its specialization's textures are in the same table to receive it.
+---Textures: the one Texture Lock became four, the Utility bar began following Global, and the mana bar's textures moved
+---to the keys it reads. A specialization's Use Global flag stays the choice of every bar that has none of its own.
 ---@param settings table # A saved-variables shaped table
 function TRB.Functions.Settings:MigrateTextures(settings)
 	local core = type(settings.core) == "table" and settings.core or nil
 	local coreTextures = core ~= nil and type(core.textures) == "table" and core.textures or nil
 	if coreTextures ~= nil then
+		-- Nothing drew Global's Utility textures before, and copying a spec's Textures to Global could have filled them.
+		if coreTextures.textureLock ~= nil then
+			for key, default in pairs(GetUtilityDefaultTextures()) do
+				if coreTextures[key] ~= nil and default.path ~= nil then
+					coreTextures[key] = default.path
+					coreTextures[key .. "Name"] = default.name
+				end
+			end
+		end
 		MigrateTextureLocks(coreTextures)
 		-- Global has no mana bar of its own; these keys only ever travelled with a copy.
 		for _, key in ipairs(oldManaTextureKeys) do
@@ -2684,7 +2714,6 @@ function TRB.Functions.Settings:MigrateTextures(settings)
 		end
 	end
 	local global = core ~= nil and type(core.global) == "table" and core.global or nil
-	local globalBars = self:GetGlobalTextureBars()
 	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
 		local classPiece = settings[classEntry.className]
 		if type(classPiece) == "table" then
@@ -2693,23 +2722,15 @@ function TRB.Functions.Settings:MigrateTextures(settings)
 				local piece = classPiece[specEntry.specName]
 				local textures = type(piece) == "table" and type(piece.textures) == "table" and piece.textures or nil
 				if textures ~= nil then
+					-- Only a table from before the four locks can hold Utility textures chosen while Utility ignored Global.
+					if textures.textureLock ~= nil and UtilityTexturesDiffer(textures) then
+						textures.useGlobal = type(textures.useGlobal) == "table" and textures.useGlobal or {}
+						textures.useGlobal.utility = false
+					end
 					MigrateTextureLocks(textures)
 					local flags = type(classFlags) == "table" and classFlags[specEntry.specName] or nil
-					if type(flags) == "table" and flags.textures ~= nil and coreTextures ~= nil then
-						local ownsTextures = flags.textures == false
-						if ownsTextures then
-							textures.useGlobal = type(textures.useGlobal) == "table" and textures.useGlobal or {}
-							for _, barKey in ipairs(globalBars.keys) do
-								textures.useGlobal[barKey] = false
-							end
-						elseif UtilityTexturesDiffer(textures, coreTextures) then
-							textures.useGlobal = type(textures.useGlobal) == "table" and textures.useGlobal or {}
-							textures.useGlobal.utility = false
-						end
-						if HasOldManaTextures(textures) then
-							MigrateManaTextures(textures, coreTextures, ownsTextures)
-						end
-						flags.textures = nil
+					if type(flags) == "table" and flags.textures ~= nil and coreTextures ~= nil and HasOldManaTextures(textures) then
+						MigrateManaTextures(textures, coreTextures, not self:TextureFollowsGlobal(textures, "primary", flags.textures == true))
 					end
 				end
 			end
