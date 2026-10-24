@@ -1679,7 +1679,6 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			healthNode:ApplyEndCap(settings.colors.healthBar.endCap, settings.colors.healthBar.border.color)
 			healthNode:SetBorderColor(settings.colors.healthBar.border.color)
 			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background.color)
-			healthNode:SetColor(settings.colors.healthBar.bar)
 			healthNode:SetFrameLevel(self:GetBarFrameLevel("health"))
 
 			-- Apply absorb overlay appearance via named slot (if it exists)
