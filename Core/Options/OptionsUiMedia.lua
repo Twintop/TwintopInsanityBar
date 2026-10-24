@@ -9,7 +9,7 @@ local lsm = TRB.Details.addonData.libs.SharedMedia
 local mediaPairs = { sound = {}, font = {} }
 
 -- Relabels a font or sound dropdown, so a pick marked as not loaded loses the mark once its media registers.
-local labelRefreshers = setmetatable({}, { __mode = "k" })
+local labelRefreshers = {}
 
 ---Fills one media type's entries from LibSharedMedia.
 ---@param mediaType string
@@ -39,8 +39,12 @@ function TRB.Functions.OptionsUi.Media:RefreshCaches()
 			FillPairs(mediaType)
 		end
 	end
+	-- One failing refresher reports without skipping the rest, or the Textures refresh after it.
 	for _, refresh in pairs(labelRefreshers) do
-		refresh()
+		local ok, err = pcall(refresh)
+		if not ok then
+			geterrorhandler()(err)
+		end
 	end
 end
 

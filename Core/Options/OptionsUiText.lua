@@ -96,7 +96,7 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 	end
 	barTextFontFace:SetupMenu(FontFaceGenerator)
 	local function RefreshFontFaceLabel()
-		barTextFontFace:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("font", spec.displayText.default.fontFaceName) or "")
+		barTextFontFace:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("font", spec.displayText.default.fontFaceName) or TRB.Data.constants.defaultSettings.fonts.fontFaceName)
 	end
 	RefreshFontFaceLabel()
 	TRB.Functions.OptionsUi.Media:SetLabelRefresher(barTextFontFace, RefreshFontFaceLabel)

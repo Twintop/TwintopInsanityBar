@@ -3322,18 +3322,13 @@ function TRB.Functions.BarText:RepositionBarTextEntry(entryIndex, classId, specI
 	return true
 end
 
----The file a bar text font draws with, from its saved name; an empty pick draws the default. Never writes the entry,
----which is the saved table.
+---The file a bar text font draws with, from its saved name; an entry without a name draws the default, as the #578
+---backfill drew it. Never writes the entry, which is the saved table.
 ---@param fontFaceName string?
----@param fontFace string?
 ---@param fallbackFontFace string
 ---@return string
-local function ResolveFontFace(fontFaceName, fontFace, fallbackFontFace)
-	local path = TRB.Functions.LibSharedMedia:Resolve("font", fontFaceName, fontFace, fallbackFontFace)
-	if path == nil or path == "" then
-		return fallbackFontFace
-	end
-	return path
+local function ResolveFontFace(fontFaceName, fallbackFontFace)
+	return TRB.Functions.LibSharedMedia:Resolve("font", fontFaceName, fallbackFontFace, fallbackFontFace)
 end
 
 ---Builds the required bar text frames
@@ -3363,7 +3358,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	local frameCount = 1
 	if entries > 0 then
 		local fallbackFontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
-		local defaultFontFace = ResolveFontFace(displayText.default.fontFaceName, displayText.default.fontFace, fallbackFontFace)
+		local defaultFontFace = ResolveFontFace(displayText.default.fontFaceName, fallbackFontFace)
 
 		for i = 1, entries do
 			local e = displayText.barText[i]
@@ -3375,7 +3370,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			if e.useDefaultFontFace then
 				fontFace = defaultFontFace
 			else
-				fontFace = ResolveFontFace(e.fontFaceName, e.fontFace, fallbackFontFace)
+				fontFace = ResolveFontFace(e.fontFaceName, fallbackFontFace)
 			end
 
 			if e.useDefaultFontSize then

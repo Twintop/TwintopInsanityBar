@@ -628,7 +628,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	barTextFontFace:SetupMenu(FontFaceGenerator)
 	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	local function RefreshFontFaceLabel()
-		barTextFontFace:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("font", workingBarText.fontFaceName) or "")
+		barTextFontFace:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("font", workingBarText.fontFaceName) or TRB.Data.constants.defaultSettings.fonts.fontFaceName)
 	end
 	TRB.Functions.OptionsUi.Media:SetLabelRefresher(barTextFontFace, RefreshFontFaceLabel)
 
