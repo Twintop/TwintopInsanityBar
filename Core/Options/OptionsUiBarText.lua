@@ -485,10 +485,13 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	---Whether a bar text entry belongs on this tab: a grouping's tab lists the text bound to its bars, and the spec tab
 	---lists the rest plus the text on the screen, or everything when the include-all box is ticked.
 	---@param groupOfEntry string
+	---@param entryCatalog TRB.Classes.BarTextAnchorCatalog? # The catalog the entry's bar comes from
 	---@return boolean
-	local function IsGroupListed(groupOfEntry)
+	local function IsGroupListed(groupOfEntry, entryCatalog)
 		if groupKey == "spec" then
+			-- Text bound to a bar this scope has no tab for, like pet bar text copied to a spec without a pet, stays listed here.
 			return includeAllGroups[scopeKey] == true or groupOfEntry == "spec" or groupOfEntry == "screen"
+				or (entryCatalog ~= nil and not entryCatalog.groups[groupOfEntry])
 		end
 		return groupOfEntry == groupKey
 	end
@@ -864,7 +867,8 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		---@param isGlobal boolean
 		local function AddRow(barTextEntry, isGlobal)
 			NormalizeBarTextEntryColor(barTextEntry)
-			if not IsGroupListed(TRB.Functions.BarText:GetEntryGroupKey(barTextEntry, isGlobal and globalCatalog or catalog)) then
+			local entryCatalog = isGlobal and globalCatalog or catalog
+			if not IsGroupListed(TRB.Functions.BarText:GetEntryGroupKey(barTextEntry, entryCatalog), entryCatalog) then
 				return
 			end
 			listedEntries[#listedEntries + 1] = barTextEntry
@@ -1310,9 +1314,10 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		return editorClassName == destClassName and specName == destSpecName
 	end
 
-	local function CopyBarTextEntryAndRefreshEditor(entry, destScope, destProfileName, destClassName, destSpecName)
+	---@param selectCopy boolean? # Select the copy even though this tab is not its destination, for a Global copy made on a spec's tab
+	local function CopyBarTextEntryAndRefreshEditor(entry, destScope, destProfileName, destClassName, destSpecName, selectCopy)
 		local copiedEntry = CopyBarTextEntryToDestination(entry, destScope, destProfileName, destClassName, destSpecName)
-		if copiedEntry ~= nil and IsCurrentEditorDestination(destScope, destProfileName, destClassName, destSpecName) then
+		if copiedEntry ~= nil and (selectCopy or IsCurrentEditorDestination(destScope, destProfileName, destClassName, destSpecName)) then
 			SetTableValues(spec.displayText, barTextTable)
 			local newRow = FindListedRow(copiedEntry.guid)
 			if newRow ~= nil then
@@ -1464,8 +1469,9 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
 			rootDescription:CreateTitle(string.format(L["BarTextCopyMenuTitleFormat"], entry.name or L["BarText"]))
 			rootDescription:CreateButton(L["BarTextCopyMenuDuplicate"], function()
-				if classId == nil or specId == nil then
-					CopyBarTextEntryAndRefreshEditor(entry, "global", nil)
+				-- Duplicate in the entry's own scope, as Move and Delete do: a Global entry on a spec's tab stays Global and is listed here.
+				if classId == nil or specId == nil or IsGlobalEntry(entry) then
+					CopyBarTextEntryAndRefreshEditor(entry, "global", nil, nil, nil, true)
 				else
 					CopyBarTextEntryAndRefreshEditor(entry, "spec", nil, string.lower(className), specName)
 				end

@@ -256,6 +256,7 @@ end
 ---@field public frameByLabel table<string, string>
 ---@field public labelByFrame table<string, string>
 ---@field public groupByFrame table<string, string>
+---@field public groups table<string, boolean> # The groupings with at least one anchor in this scope
 
 ---Builds the anchor catalog of a scope, in the order the bar text editor lists it.
 ---@param classId integer? # nil is the global scope
@@ -350,7 +351,7 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 	TRB.Functions.Bar:SortBarTargets(sortedAnchorGroups, function(group)
 		return group.barKey, group.labels[1]
 	end)
-	local catalog = { entries = {}, primaryLabel = primaryLabel, frameByLabel = frameByLabel, labelByFrame = {}, groupByFrame = {} }
+	local catalog = { entries = {}, primaryLabel = primaryLabel, frameByLabel = frameByLabel, labelByFrame = {}, groupByFrame = {}, groups = {} }
 	for _, group in ipairs(sortedAnchorGroups) do
 		local groupKey = group.barKey == "screen" and "screen" or registry:GetBarGroup(group.barKey)
 		for _, label in ipairs(group.labels) do
@@ -359,6 +360,7 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 			catalog.labelByFrame[frame] = label
 			catalog.groupByFrame[frame] = groupKey
 		end
+		catalog.groups[groupKey] = true
 	end
 	return catalog
 end

@@ -10,9 +10,9 @@ TRB.Details.coreNewsContent = [====[
 - [#860](#860) Add a Bar Text tab to Cast Bars, Other Bars, Pet Bars, and Skyriding, listing only the bar text bound to the bars under each, in Global Options and for every specialization.
 - [#860](#860) The Bar Text tab of Global Options and of each specialization no longer lists the bar text bound to the bars under Cast Bars, Other Bars, Pet Bars, and Skyriding.
 - [#860](#860) Add a checkbox that also lists that bar text on the Bar Text tab of Global Options and of each specialization.
-- [#860](#860) Add a Move to bar option to a bar text entry's copy menu, listing the screen and every bar by group.
-- [#860](#860) A specialization's Bar Text tabs also list the Global Bar Text it displays, in light blue. Deleting one warns that it is deleted for every other specialization that uses it.
-- [#860](#860) Rename a specialization's Include Global Bar Text checkbox to Display Global Bar Text on this specialization's bars.
+- [#860](#860) Add a Move to bar option to a bar text entry's copy menu.
+- [#860](#860) A specialization's Bar Text tabs also list the Global Bar Text it displays.
+- [#860](#860) Deleting Global Bar Text from a specialization's Bar Text tab warns that it is deleted for every specialization that uses it.
 
 ## Bar Visibility
 
