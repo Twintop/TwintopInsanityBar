@@ -9,6 +9,11 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.7-release (2026-10-24)
+## Death Knight
+### Blood
+
+- [#872](#872) Fix the Bone Shield bar's End Cap keeping its own color, with Only non-default border colors checked, while a gradient Color Indicator recolors the border.
+
 ## Mage
 ### Arcane
 
