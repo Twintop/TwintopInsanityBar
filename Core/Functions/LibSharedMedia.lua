@@ -3,136 +3,116 @@ local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.LibSharedMedia = {}
 
+local lsm = TRB.Details.addonData.libs.SharedMedia
 
----Validates all LibSharedMedia references (fonts, textures, sounds) in a spec's settings, resetting any invalid entries to defaults
----@param specName string The name of the specialization whose settings are being validated
----@param settings table The spec settings table containing displayText, textures, and audio sub-tables
----@return table settings The validated settings table with any invalid LSM references replaced by defaults
-function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
-	--[[
-		Other addons can add/remove/alter entries in the LibSharedMedia. As a result, sometimes a previously usable asset
-		goes missing or gets renamed. Do some logic checks here to fix common errors instead of causing the bar to blow
-		up with Lua errors or show default neon-green textures.
-	]]
-	
-	-- Text
-	if settings.displayText ~= nil and settings.displayText.default ~= nil then
-		---@type table
-		local defaultText = settings.displayText.default
-		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.FONT, defaultText.fontFaceName) then
-			defaultText.fontFace = TRB.Details.addonData.libs.SharedMedia.MediaTable.font[defaultText.fontFaceName]
-		else
-			print(string.format(L["LSMInvalidFont"], specName, "Default", tostring(defaultText.fontFaceName)))
-			defaultText.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
-			defaultText.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
-		end
+-- Names looked up while unregistered, by media type, so their registration can re-apply them.
+---@type table<string, table<any, boolean>>
+local missing = {}
+local reapplyQueued = false
+local listsQueued = false
+
+---The file a saved media name is registered to. Settings are never written: a name that isn't loaded
+---draws the fallback until it registers, and a pick without a name keeps its saved path.
+---@param mediaType string # A LibSharedMedia media type
+---@param name any # The saved name
+---@param savedPath any # The saved path
+---@param fallbackPath any # What draws or plays while the name isn't registered
+---@return any path
+function TRB.Functions.LibSharedMedia:Resolve(mediaType, name, savedPath, fallbackPath)
+	if name == nil or name == "" then
+		return savedPath
 	end
 
-	if settings.displayText ~= nil and settings.displayText.barText ~= nil then
-		---@type TRB.Classes.Settings.DisplayTextEntry[]
-		local barText = settings.displayText.barText
-		for _, bt in pairs(barText) do
-			if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.FONT, bt.fontFaceName) then
-				bt.fontFace = TRB.Details.addonData.libs.SharedMedia.MediaTable.font[bt.fontFaceName]
-			else
-				print(string.format(L["LSMInvalidFont"], specName, bt.name, bt.fontFaceName))
-				bt.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
-				bt.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
-			end
-		end
+	local path = lsm:HashTable(mediaType)[name]
+	if path ~= nil then
+		return path
 	end
 
-	-- Textures
-	-- Bar
-	if settings.textures ~= nil then
-		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.BACKGROUND, settings.textures.backgroundName) then
-			settings.textures.background = TRB.Details.addonData.libs.SharedMedia.MediaTable.background[settings.textures.backgroundName]
-		else
-			print(string.format(L["LSMInvalidBarBackgroundTexture"], specName, settings.textures.backgroundName))
-			settings.textures.background = TRB.Data.constants.defaultSettings.textures.background
-			settings.textures.backgroundName = TRB.Data.constants.defaultSettings.textures.backgroundName
-		end
-
-		if not TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.BORDER, settings.textures.borderName) and settings.textures.borderName ~= "1 Pixel" then
-			print(string.format(L["LSMInvalidBarBorderTexture"], specName, settings.textures.borderName))
-			settings.textures.border = TRB.Data.constants.defaultSettings.textures.border
-			settings.textures.borderName = TRB.Data.constants.defaultSettings.textures.borderName
-		else
-			settings.textures.border = TRB.Details.addonData.libs.SharedMedia.MediaTable.border[settings.textures.borderName]
-		end
-
-		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.STATUSBAR, settings.textures.resourceBarName) then
-			settings.textures.resourceBar = TRB.Details.addonData.libs.SharedMedia.MediaTable.statusbar[settings.textures.resourceBarName]
-		else
-			print(string.format(L["LSMInvalidBarResourceTexture"], specName, settings.textures.resourceBarName))
-			settings.textures.resourceBar = TRB.Data.constants.defaultSettings.textures.resourceBar
-			settings.textures.resourceBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
-		end
-
-		-- Combo Points
-		if settings.textures.comboPointsBorder ~= nil then
-			if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.BACKGROUND, settings.textures.comboPointsBackgroundName) then
-				settings.textures.comboPointsBackground = TRB.Details.addonData.libs.SharedMedia.MediaTable.background[settings.textures.comboPointsBackgroundName]
-			else
-				print(string.format(L["LSMInvalidComboPointBackgroundTexture"], specName, settings.textures.comboPointsBackgroundName))
-				settings.textures.comboPointsBackground = TRB.Data.constants.defaultSettings.textures.background
-				settings.textures.comboPointsBackgroundName = TRB.Data.constants.defaultSettings.textures.backgroundName
-			end
-
-			if not TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.BORDER, settings.textures.comboPointsBorderName) and settings.textures.comboPointsBorderName ~= "1 Pixel" then
-				print(string.format(L["LSMInvalidComboPointBorderTexture"], specName, settings.textures.comboPointsBorderName))
-				settings.textures.comboPointsBorder = TRB.Data.constants.defaultSettings.textures.border
-				settings.textures.comboPointsBorderName = TRB.Data.constants.defaultSettings.textures.borderName
-			else
-				settings.textures.comboPointsBorder = TRB.Details.addonData.libs.SharedMedia.MediaTable.border[settings.textures.comboPointsBorderName]
-			end
-
-			if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.STATUSBAR, settings.textures.comboPointsBarName) then
-				settings.textures.comboPointsBar = TRB.Details.addonData.libs.SharedMedia.MediaTable.statusbar[settings.textures.comboPointsBarName]
-			else
-				print(string.format(L["LSMInvalidComboPointResourceTexture"], specName, settings.textures.comboPointsBarName))
-				settings.textures.comboPointsBar = TRB.Data.constants.defaultSettings.textures.resourceBar
-				settings.textures.comboPointsBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
-			end
-		end
+	local missingOfType = missing[mediaType]
+	if missingOfType == nil then
+		missingOfType = {}
+		missing[mediaType] = missingOfType
 	end
-
-	if settings.audio ~= nil then
-		for k, v in pairs(settings.audio) do
-			if k ~= "channel" and v.soundName == nil or not TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.SOUND, v.soundName) then
-				if type(v.name) == "table" or type(v.soundName) == "table" then
-					print(string.format(L["LSMInvalidSound"], specName))
-				elseif v.name ~= nil and v.soundName ~= nil then
-					print(string.format(L["LSMInvalidSoundNameBoth"], specName, v.name, v.soundName))
-				elseif v.soundName ~= nil then
-					print(string.format(L["LSMInvalidSoundNameOnlySoundName"], specName, v.soundName))
-				elseif v.name ~= nil then
-					print(string.format(L["LSMInvalidSoundNameOnlyName"], specName, v.name))
-				else
-					print(string.format(L["LSMInvalidSound"], specName))
-				end
-				settings.audio[k].sound = TRB.Data.constants.defaultSettings.sounds.sound
-				settings.audio[k].soundName = TRB.Data.constants.defaultSettings.sounds.soundName
-			else
-				settings.audio[k].sound = TRB.Details.addonData.libs.SharedMedia.MediaTable.sound[v.soundName]
-			end
-		end
-	end
-
-	-- Threshold Dictionary Audio
-	if settings.thresholds ~= nil and settings.thresholds.thresholdDictionary ~= nil then
-		for k, dictEntry in pairs(settings.thresholds.thresholdDictionary) do
-			if dictEntry.audio ~= nil and dictEntry.audio.soundName ~= nil and dictEntry.audio.soundName ~= "" then
-				if not TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.SOUND, dictEntry.audio.soundName) then
-					print(string.format(L["LSMInvalidSoundNameOnlySoundName"], specName, dictEntry.audio.soundName))
-					dictEntry.audio.sound = TRB.Data.constants.defaultSettings.sounds.sound
-					dictEntry.audio.soundName = TRB.Data.constants.defaultSettings.sounds.soundName
-				else
-					dictEntry.audio.sound = TRB.Details.addonData.libs.SharedMedia.MediaTable.sound[dictEntry.audio.soundName]
-				end
-			end
-		end
-	end
-
-	return settings
+	missingOfType[name] = true
+	return fallbackPath
 end
+
+---The file a saved sound name plays, or the default sound while it isn't loaded.
+---@param name any # The saved sound name
+---@param savedPath any # The saved sound path
+---@return any path
+function TRB.Functions.LibSharedMedia:ResolveSound(name, savedPath)
+	return self:Resolve("sound", name, savedPath, TRB.Data.constants.defaultSettings.sounds.sound)
+end
+
+---A saved media name for the options to show, marked while it isn't loaded; nil when there is no name.
+---@param mediaType string # A LibSharedMedia media type
+---@param name any # The saved name
+---@return string?
+function TRB.Functions.LibSharedMedia:GetDisplayName(mediaType, name)
+	if name == nil or name == "" then
+		return nil
+	end
+
+	if lsm:HashTable(mediaType)[name] ~= nil then
+		return tostring(name)
+	end
+	return string.format(L["LSMNotLoaded"], tostring(name))
+end
+
+---Re-resolves every built specialization's textures, then re-applies the active bars and bar text.
+local function ReapplyMedia()
+	reapplyQueued = false
+	-- The deferred setup's own fill resolves anything registered before it.
+	if not TRB.Details.addonData.optionsPanelFinished then
+		return
+	end
+
+	local Character = TRB.Functions.Character
+	for _, entry in ipairs(Character:GetSpecRegistryEntriesOrdered()) do
+		if TRB.Data.specCache[entry.compositeKey] then
+			Character:FillSpecializationCacheSettings(entry.className, entry.specName)
+		end
+	end
+
+	local specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
+	if TRB.Frames.barGroups ~= nil and specCache ~= nil then
+		TRB.Functions.Bar:ApplyBarGroupsLayout(specCache.settings, TRB.Frames.barGroups)
+		TRB.Functions.Bar:ApplyBarGroupsAppearance(specCache.settings, TRB.Frames.barGroups)
+		TRB.Functions.BarText:CreateBarTextFrames()
+		TRB.Functions.BarVisibility:MarkDirty()
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+	end
+end
+
+---Refills the options' media lists, so media registered after they were built can be picked, and redraws the
+---Textures tabs that mark a pick as not loaded.
+local function RefreshLists()
+	listsQueued = false
+	TRB.Functions.OptionsUi.Media:RefreshCaches()
+	TRB.Functions.OptionsUi.TextureDropdowns:RefreshCaches()
+	if TRB.Details.addonData.optionsPanelFinished then
+		TRB.Functions.OptionsUi.Textures:RefreshAllEditors()
+	end
+end
+
+-- Fires for every addon's registrations, so it only marks work and coalesces it to one pass per frame.
+local function OnMediaRegistered(_, mediaType, name)
+	local missingOfType = missing[mediaType]
+	if missingOfType ~= nil and missingOfType[name] then
+		missingOfType[name] = nil
+		-- A sound resolves each time it plays, so only drawn media need re-applying.
+		if mediaType ~= lsm.MediaType.SOUND and not reapplyQueued then
+			reapplyQueued = true
+			C_Timer.After(0, ReapplyMedia)
+		end
+	end
+
+	if not listsQueued then
+		listsQueued = true
+		C_Timer.After(0, RefreshLists)
+	end
+end
+
+lsm.RegisterCallback(TRB.Functions.LibSharedMedia, "LibSharedMedia_Registered", OnMediaRegistered)

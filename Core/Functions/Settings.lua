@@ -2476,6 +2476,56 @@ function TRB.Functions.Settings:GetTextureKeysForBar(barKey)
 	return keys
 end
 
+local textureMedia = nil
+---Each texture key's media type and what it draws while its pick isn't loaded: the slot's default, else the main bar's
+---of that type. Built on first use, once every bar type has registered.
+---@return table<string, { mediaType: string, fallback: string }>
+local function GetTextureMedia()
+	if textureMedia == nil then
+		local defaults = TRB.Functions.Settings:DefaultTextures(true)
+		local typeDefaults = { statusbar = defaults.resourceBar, border = defaults.border, background = defaults.background }
+		local media = {}
+		local function Add(key, mediaType, fallback)
+			media[key] = { mediaType = mediaType, fallback = fallback or typeDefaults[mediaType] }
+		end
+
+		for barKey in pairs(textureRowKeys) do
+			local keys = TRB.Functions.Settings:GetTextureKeysForBar(barKey)
+			Add(keys.bar, "statusbar", defaults[keys.bar])
+			Add(keys.border, "border", defaults[keys.border])
+			Add(keys.background, "background", defaults[keys.background])
+			for _, overlay in ipairs(keys.overlays) do
+				Add(overlay, "statusbar", defaults[overlay])
+			end
+		end
+
+		for barKey, definition in pairs(TRB.Classes.BarTypeRegistry:GetInstance():GetAll()) do
+			local keys = TRB.Functions.Settings:GetTextureKeysForBar(barKey)
+			local barDefaults = definition:GetDefaultTextures()
+			Add(keys.bar, "statusbar", barDefaults.bar)
+			Add(keys.border, "border", barDefaults.border)
+			Add(keys.background, "background", barDefaults.background)
+		end
+		textureMedia = media
+	end
+	return textureMedia
+end
+
+---Points every texture at its saved name's file, in a table that is never saved.
+---@param textures table
+---@return table
+local function ResolveTextureNames(textures)
+	local LibSharedMedia = TRB.Functions.LibSharedMedia
+	for key, media in pairs(GetTextureMedia()) do
+		local path = textures[key]
+		-- An unset key, like the mana bar's, keeps drawing what an unset key draws.
+		if path ~= nil then
+			textures[key] = LibSharedMedia:Resolve(media.mediaType, textures[key .. "Name"], path, media.fallback)
+		end
+	end
+	return textures
+end
+
 local globalTextureBars = nil
 ---The bars whose textures follow Global Options until a specialization opts them out: the main, secondary, health, and
 ---Utility bars, and every cast bar, Other Bar, and Skyriding bar Global offers. The mana bar, class bars, and pet bars are the spec's own.
@@ -2519,7 +2569,7 @@ function TRB.Functions.Settings:TextureFollowsGlobal(specTextures, barKey, specF
 end
 
 ---Layers a specialization's textures over Global's: each bar Global offers follows it as TextureFollowsGlobal says, and a
----lock matches every bar to the main bar. With no bar following Global it returns the specialization's own table.
+---lock matches every bar to the main bar. Always a copy, with each texture resolved from its saved name.
 ---@param coreTextures table
 ---@param specTextures table?
 ---@param specFollowsGlobal boolean? # The specialization's flag, which a bar with no choice of its own follows
@@ -2535,7 +2585,7 @@ function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures, spec
 		anyFollowed = anyFollowed or followed[barKey]
 	end
 	if not anyFollowed then
-		return specTextures
+		return ResolveTextureNames(TRB.Functions.Table:ShallowCopy(specTextures))
 	end
 
 	-- A copy, so layering this spec's own textures on top never writes them into Global's saved table.
@@ -2593,7 +2643,7 @@ function TRB.Functions.Settings:ResolveTextures(coreTextures, specTextures, spec
 		end
 	end
 
-	return textures
+	return ResolveTextureNames(textures)
 end
 
 ---Moves a textures table from the one Texture Lock to the four locks, which all take its value.
@@ -3470,7 +3520,7 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 	local textSettings = {
 		{
 			enabled = false,
-			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 			useDefaultFontFace = false,
 			guid = TRB.Functions.String:Guid(),
 			constrainToParent = false,
@@ -3478,7 +3528,7 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 			fontJustifyHorizontalName = "Center",
 			text = "{$inCombatTime}[$inCombatTime]",
 			useDefaultFontColor = false,
-			fontFaceName = "Friz Quadrata TT",
+			fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
 			name = "Combat Time",
 			position = {
 				relativeToName = "Center",

@@ -1,11 +1,10 @@
 local addonName, TRB = ...
-local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Bootstrap = {}
 
 -- The addon's load sequence, shared by every class module. A class runtime module registers itself
 -- once (see RegisterClassModule) and Core does the rest: settings load/merge/migrate at ADDON_LOADED,
--- saving at PLAYER_LOGOUT, the deferred first-time setup (media validation, spell data, options panel,
+-- saving at PLAYER_LOGOUT, the deferred first-time setup (spell data, options panel,
 -- bar construction) once the character is known, and the spec re-switch on spec/talent changes.
 --
 -- Only the module for the player's class ever registers (each module returns early otherwise), so
@@ -90,7 +89,7 @@ local function LoadSettings(module, classEntry)
 	end
 end
 
----The deferred first-time setup: validate media, fill spell data, switch to the active spec, build the
+---The deferred first-time setup: fill spell data, switch to the active spec, build the
 ---options panel and construct the bars. Delayed a little to let other addons register their media.
 ---@param module TRB.Functions.Bootstrap.ClassModule
 ---@param classEntry TRB.Data.ClassRegistryEntry
@@ -100,16 +99,10 @@ local function StartDeferredSetup(module, classEntry)
 		module.OnBeforeReady()
 	end
 
-	-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
+	-- Delay creation a bit so other addons' media is registered before the bars first draw.
 	C_Timer.After(0, function()
 		C_Timer.After(1, function()
 			local options = TRB.Options[classEntry.classModuleName]
-			local classSettings = TRB.Data.settings[classEntry.className]
-
-			TRB.Data.settings.core = TRB.Functions.LibSharedMedia:ValidateLsmValues(L["GlobalOptions"], TRB.Data.settings.core)
-			for _, specEntry in ipairs(classEntry.specs) do
-				classSettings[specEntry.specName] = TRB.Functions.LibSharedMedia:ValidateLsmValues(L[specEntry.specLocaleKey .. "Full"], classSettings[specEntry.specName])
-			end
 
 			for _, fill in ipairs(module.fillSpellData or {}) do
 				fill()

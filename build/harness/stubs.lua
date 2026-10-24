@@ -784,9 +784,17 @@ function M.install(opts)
 			end
 			if name == "LibSharedMedia-3.0" then
 				local lsm = libs[name]
-				lsm.MediaTable = { statusbar = { ["Blizzard"] = "Interface\\TargetingFrame\\UI-StatusBar" }, border = { ["None"] = "Interface\\None", ["Blizzard Tooltip"] = "Interface\\Tooltips\\UI-Tooltip-Border" }, background = { ["None"] = "Interface\\None", ["Blizzard Tooltip"] = "Interface\\Tooltips\\UI-Tooltip-Background" }, font = { ["Friz Quadrata TT"] = "Fonts\\FRIZQT__.TTF" }, sound = { ["None"] = "Interface\\Quiet.ogg" } }
+				lsm.MediaTable = { statusbar = { ["Blizzard"] = "Interface\\TargetingFrame\\UI-StatusBar", ["Solid"] = "Interface\\Buttons\\WHITE8X8" }, border = { ["None"] = "Interface\\None", ["Blizzard Tooltip"] = "Interface\\Tooltips\\UI-Tooltip-Border" }, background = { ["None"] = "Interface\\None", ["Blizzard Tooltip"] = "Interface\\Tooltips\\UI-Tooltip-Background" }, font = { ["Friz Quadrata TT"] = "Fonts\\FRIZQT__.TTF" }, sound = { ["None"] = "Interface\\Quiet.ogg" } }
 				lsm.DefaultMedia = { statusbar = "Blizzard", border = "None", background = "None", font = "Friz Quadrata TT", sound = "None" }
-				lsm.Register = function(self, mediatype, key, data) self.MediaTable[mediatype] = self.MediaTable[mediatype] or {} self.MediaTable[mediatype][key] = data return true end
+				-- Register fires LibSharedMedia_Registered like CallbackHandler, so late media can be tested.
+				local lsmHandlers = {}
+				lsm.Register = function(self, mediatype, key, data)
+					self.MediaTable[mediatype] = self.MediaTable[mediatype] or {}
+					if self.MediaTable[mediatype][key] ~= nil then return false end
+					self.MediaTable[mediatype][key] = data
+					for _, handler in ipairs(lsmHandlers) do handler("LibSharedMedia_Registered", mediatype, key) end
+					return true
+				end
 				lsm.Fetch = function(self, mediatype, key, noDefault) local t = self.MediaTable[mediatype] or {} return t[key] or (not noDefault and t[self.DefaultMedia[mediatype]]) or nil end
 				lsm.IsValid = function(self, mediatype, key) if key == nil then return self.MediaTable[mediatype] ~= nil end return self.MediaTable[mediatype] ~= nil and self.MediaTable[mediatype][key] ~= nil end
 				lsm.HashTable = function(self, mediatype) return self.MediaTable[mediatype] or {} end
@@ -794,7 +802,7 @@ function M.install(opts)
 				lsm.GetDefault = function(self, mediatype) return self.DefaultMedia[mediatype] end
 				lsm.GetGlobal = function(self, mediatype) return nil end
 				lsm.SetGlobal = noop
-				lsm.RegisterCallback = noop
+				lsm.RegisterCallback = function(_, event, method) if event == "LibSharedMedia_Registered" and type(method) == "function" then lsmHandlers[#lsmHandlers + 1] = method end end
 				lsm.UnregisterCallback = noop
 			end
 		end

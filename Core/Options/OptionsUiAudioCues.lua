@@ -189,7 +189,6 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 	local selectedId = nil
 	local isRefreshing = false
 	local soundPairs = TRB.Functions.OptionsUi.Media:GetSoundPairs()
-	local soundPairsByName = TRB.Functions.OptionsUi.Media:GetSoundPairsByName()
 
 	local function GetCurrentSpec()
 		return TRB.Data.settings[lowerClassName] and TRB.Data.settings[lowerClassName][specName]
@@ -470,7 +469,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 				cdmDependency = entry.builtIn.cdm
 			end
 			local typeLabel = isCustom and L["AudioCueTypeCustom"] or L["AudioCueTypeBuiltIn"]
-			local soundName = (cue.soundName ~= nil and cue.soundName ~= "") and cue.soundName or L["AudioCueSoundNone"]
+			local soundName = TRB.Functions.LibSharedMedia:GetDisplayName("sound", cue.soundName) or L["AudioCueSoundNone"]
 			local enabledText = cue.enabled and ("|cFF00FF00" .. L["BarTextVariablesStatusYes"] .. "|r") or ("|cFFFF0000" .. L["BarTextVariablesStatusNo"] .. "|r")
 
 			rowTooltips[entry.id] = {
@@ -623,18 +622,19 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		enabledCheckbox:SetChecked(cue.enabled == true)
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledCheckbox, cue.enabled == true, true)
 
-		soundDropdown:SetDefaultText((cue.soundName ~= nil and cue.soundName ~= "") and cue.soundName or L["AudioCueSoundNone"])
+		soundDropdown:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("sound", cue.soundName) or L["AudioCueSoundNone"])
 		soundDropdown:SetupMenu(function(dropdown, rootDescription)
+			-- By name, since a saved path can be stale and several names can share one file.
 			for _, v in pairs(soundPairs) do
-				rootDescription:CreateRadio(v[1], function(value)
-					return value == cue.sound
-				end, function(newValue)
-					cue.sound = newValue
-					cue.soundName = soundPairsByName[newValue]
-					soundDropdown:SetDefaultText((cue.soundName ~= nil and cue.soundName ~= "") and cue.soundName or L["AudioCueSoundNone"])
-					PlaySoundFile(cue.sound, TRB.Data.settings.core.audio.channel.channel)
+				rootDescription:CreateRadio(v[1], function(pair)
+					return pair[1] == cue.soundName
+				end, function(pair)
+					cue.sound = pair[2]
+					cue.soundName = pair[1]
+					soundDropdown:SetDefaultText(pair[1])
+					PlaySoundFile(TRB.Functions.LibSharedMedia:ResolveSound(cue.soundName, cue.sound), TRB.Data.settings.core.audio.channel.channel)
 					SetTableValues()
-				end, v[2])
+				end, v)
 			end
 			rootDescription:SetScrollMode(400)
 		end)
@@ -860,7 +860,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		cue.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledCheckbox, cue.enabled, true)
 		if cue.enabled and cue.sound ~= nil and cue.sound ~= "" then
-			PlaySoundFile(cue.sound, TRB.Data.settings.core.audio.channel.channel)
+			PlaySoundFile(TRB.Functions.LibSharedMedia:ResolveSound(cue.soundName, cue.sound), TRB.Data.settings.core.audio.channel.channel)
 		end
 		RefreshRuntime()
 		SetTableValues()

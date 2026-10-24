@@ -3130,7 +3130,7 @@ function TRB.Functions.Threshold:LatchThresholdCue(snapshotData, settingKey, aud
 			local isBaseline = cues[settingKey] == nil
 			cues[settingKey] = true
 			if not isBaseline and (audio.playOutOfCombat ~= false or TRB.Data.character.inCombat) then
-				PlaySoundFile(audio.sound, TRB.Data.settings.core.audio.channel.channel)
+				PlaySoundFile(TRB.Functions.LibSharedMedia:ResolveSound(audio.soundName, audio.sound), TRB.Data.settings.core.audio.channel.channel)
 			end
 		end
 	else

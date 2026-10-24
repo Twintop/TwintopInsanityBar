@@ -1388,14 +1388,14 @@ local function UpdateArcaneSalvo(specSettings, specCacheSettings, barColors, fil
 	-- The baseline gate takes over painting the bar color so the node's own fill can go transparent.
 	local baseline = slot:GetRangeBaselineIndex()
 	slot:SetParentFillHidden(true)
-	slot:SetRangeOverlayTexture(baseline, specSettings.textures.arcaneSalvoBar)
+	slot:SetRangeOverlayTexture(baseline, specCacheSettings.textures.arcaneSalvoBar)
 	Color:ApplyRangeOverlayFillColor(slot, baseline, barColors.bar)
 	slot:ShowRangeOverlay(baseline)
 
 	for index = 1, #arcaneSalvoActiveRanges do
 		local range = arcaneSalvoActiveRanges[index]
 		slot:SetRangeOverlayThreshold(index, range.value)
-		slot:SetRangeOverlayTexture(index, specSettings.textures.arcaneSalvoBar)
+		slot:SetRangeOverlayTexture(index, specCacheSettings.textures.arcaneSalvoBar)
 		Color:ApplyRangeOverlayFillColor(slot, index, range)
 		slot:SetRangeOverlayValue(index, stacks)
 		slot:ShowRangeOverlay(index)

@@ -10,6 +10,10 @@ TRB.Flavor.newsContent = [====[
 
 # 12.1.5.7-release (2026-10-24)
 ## Mage
+### Arcane
+
+- [#584](#584) Fix the Arcane Salvo bar's stack ranges ignoring the bar texture lock while the main bar uses the global textures.
+
 ### Frost
 
 - Fix Fingers of Frost losing count when Ice Lance is queued behind Glacial Spike, leaving its Color Indicators on with no charges up, or off with one up.
@@ -19,10 +23,16 @@ TRB.Flavor.newsContent = [====[
 ### Discipline
 
 - Surge of Light tracking corrects itself when a stack is gained as you spend one.
+- [#584](#584) Fix the Power Word Radiance checkbox redrawing the bars with this specialization's settings while they use the global settings.
 
 ### Holy
 
 - Surge of Light tracking corrects itself when a stack is gained as you spend one.
+
+## Shaman
+### Enhancement
+
+- [#584](#584) Fix the Maelstrom Weapon compressed view checkbox redrawing the bar with this specialization's settings while it uses the global settings.
 
 ---
 

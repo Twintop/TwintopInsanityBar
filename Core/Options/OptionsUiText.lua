@@ -65,26 +65,27 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 	yCoord = yCoord - 30
 
 	local fontPairs = TRB.Functions.OptionsUi.Media:GetFontPairs()
-	local fontPairsByName = TRB.Functions.OptionsUi.Media:GetFontPairsByName()
 
 	local barTextFontFace = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_fontFaceDefault", parent, "WowStyle1DropdownTemplate")
 	barTextFontFace:SetWidth(oUi.sliderWidth)
 	barTextFontFace.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["FontFaceHeader"], oUi.xCoord, yCoord)
 	barTextFontFace.label.font:SetFontObject(GameFontNormal)
 
-	local function FontFaceIsSelected(value)
-		return value == spec.displayText.default.fontFace
+	-- By name, since a saved path can be stale and several names can share one file.
+	local function FontFaceIsSelected(pair)
+		return pair[1] == spec.displayText.default.fontFaceName
 	end
 
-	local function FontFaceSetSelected(newValue)
-		spec.displayText.default.fontFace = newValue
-		spec.displayText.default.fontFaceName = fontPairsByName[newValue]
+	local function FontFaceSetSelected(pair)
+		spec.displayText.default.fontFace = pair[2]
+		spec.displayText.default.fontFaceName = pair[1]
+		barTextFontFace:SetDefaultText(pair[1])
 		TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 	end
 
 	local function FontFaceGenerator(dropdown, rootDescription)
-		for k, v in pairs(fontPairs) do
-			local radio = rootDescription:CreateRadio(v[1], FontFaceIsSelected, FontFaceSetSelected, v[2])
+		for _, v in ipairs(fontPairs) do
+			local radio = rootDescription:CreateRadio(v[1], FontFaceIsSelected, FontFaceSetSelected, v)
 			radio:AddInitializer(function(button, description, menu)
 				local font = CreateFont(v[2])
 				font:SetFont(v[2], 12, spec.displayText.default.fontOutline or "OUTLINE")
@@ -94,6 +95,7 @@ function TRB.Functions.OptionsUi.Text:GenerateDefaultFontOptions(parent, control
 		rootDescription:SetScrollMode(400)
 	end
 	barTextFontFace:SetupMenu(FontFaceGenerator)
+	barTextFontFace:SetDefaultText(TRB.Functions.LibSharedMedia:GetDisplayName("font", spec.displayText.default.fontFaceName) or "")
 	barTextFontFace:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
 	yCoord = yCoord - 10

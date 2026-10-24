@@ -226,19 +226,6 @@ if locale == "zhCN" then
     L["PositionBottom"] = "底部"
     L["PositionBottomRight"] = "右下角"
 
-	-- Warnings
-    L["LSMInvalidFont"] = "TRB：|cFFFF5555无效字体（%s资源条文字「%s」）：|r%s|cFFFF5555，已重置为默认字体。|r"
-    L["LSMInvalidBarBackgroundTexture"] = "TRB：|cFFFF5555无效材质（%s资源条背景）：|r%s|cFFFF5555，已重置为默认材质。|r"
-    L["LSMInvalidBarBorderTexture"] = "TRB：|cFFFF5555无效材质（%s资源条边框）：|r%s|cFFFF5555，已重置为默认材质。|r"
-    L["LSMInvalidBarResourceTexture"] = "TRB：|cFFFF5555无效材质（%s资源条）：|r%s|cFFFF5555，已重置为默认材质。|r"
-    L["LSMInvalidComboPointBackgroundTexture"] = "TRB：|cFFFF5555无效材质（%s连击点背景）：|r%s|cFFFF5555，已重置为默认材质。|r"
-    L["LSMInvalidComboPointBorderTexture"] = "TRB：|cFFFF5555无效材质（%s连击点边框）：|r%s|cFFFF5555，已重置为默认材质。|r"
-    L["LSMInvalidComboPointResourceTexture"] = "TRB：|cFFFF5555无效材质（%s连击点条）：|r%s|cFFFF5555，已重置为默认材质。|r"
-    L["LSMInvalidSoundNameBoth"] = "TRB：|cFFFF5555无效音效（%s「%s」）：|r%s|cFFFF5555，已重置为默认音效。|r"
-    L["LSMInvalidSoundNameOnlySoundName"] = "TRB：|cFFFF5555无效音效（%s）：|r%s|cFFFF5555，已重置为默认音效。|r"
-    L["LSMInvalidSoundNameOnlyName"] = "TRB：|cFFFF5555无效音效（%s「%s」），已重置为默认音效。|r"
-    L["LSMInvalidSound"] = "TRB：|cFFFF5555无效音效（%s），已重置为默认音效。|r"
-
 	-- LibSharedMedia entries
     L["LSMSoundWilhelmScream"] = "TRB：威廉尖叫"
     L["LSMSoundBoxingArenaGong"] = "TRB：擂台锣声"

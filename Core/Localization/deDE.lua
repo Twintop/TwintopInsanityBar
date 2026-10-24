@@ -202,18 +202,6 @@ if locale == "deDE" then
     L["PositionBottom"] = "Unten"
     L["PositionBottomRight"] = "Unten Rechts"
 
-    L["LSMInvalidFont"] = "TRB: |cFFFF5555Ungültige Schriftart (%s Leistentext '%s'): '|r%s|cFFFF5555'. Setze auf Standard-Schriftart zurück.|r"
-    L["LSMInvalidBarBackgroundTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Leistenhintergrund): '|r%s|cFFFF5555'. Setze auf Standard-Textur zurück.|r"
-    L["LSMInvalidBarBorderTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Leistenrahmen): '|r%s|cFFFF5555'. Setze auf Standard-Textur zurück.|r"
-    L["LSMInvalidBarResourceTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Ressourcenleiste): '|r%s|cFFFF5555'. Setze auf Standard-Textur zurück.|r"
-    L["LSMInvalidComboPointBackgroundTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Combopunkte Hintergrund): '|r%s|cFFFF5555'. Setze auf Standard-Textur zurück.|r"
-    L["LSMInvalidComboPointBorderTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Combopunkte Rahmen): '|r%s|cFFFF5555'. Setze auf Standard-Textur zurück.|r"
-    L["LSMInvalidComboPointResourceTexture"] = "TRB: |cFFFF5555Ungültige Textur (%s Combopunkte Leiste): '|r%s|cFFFF5555'. Setze auf Standard-Textur zurück.|r"
-    L["LSMInvalidSoundNameBoth"] = "TRB: |cFFFF5555Ungültiger Sound (%s '%s'): '|r%s|cFFFF5555'. Setze auf Standard-Sound zurück.|r"
-    L["LSMInvalidSoundNameOnlySoundName"] = "TRB: |cFFFF5555Ungültiger Sound (%s): '|r%s|cFFFF5555'. Setze auf Standard-Sound zurück.|r"
-    L["LSMInvalidSoundNameOnlyName"] = "TRB: |cFFFF5555Ungültiger Sound (%s '%s'). Setze auf Standard-Sound zurück.|r"
-    L["LSMInvalidSound"] = "TRB: |cFFFF5555Ungültiger Sound (%s). Setze auf Standard-Sound zurück.|r"
-
     L["LSMSoundWilhelmScream"] = "TRB: Wilhelmsschrei"
     L["LSMSoundBoxingArenaGong"] = "TRB: Boxkampf Gong"
     L["LSMSoundAirHorn"] = "TRB: Lufthorn"

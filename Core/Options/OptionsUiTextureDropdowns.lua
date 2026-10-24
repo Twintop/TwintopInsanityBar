@@ -7,67 +7,55 @@ local oUi = TRB.Data.constants.optionsUi
 -- ============================================================================
 -- LibSharedMedia texture dropdown helpers
 -- ============================================================================
-local backgrounds = {}
-local backgroundsList = {}
-local backgroundPairs = {}
-local backgroundPairsByName = {}
----Populates the background texture cache from LibSharedMedia if not already filled.
-local function FillBackgroundCache()
-	if TRB.Functions.Table:Length(backgrounds) == 0 then
-		backgrounds = TRB.Details.addonData.libs.SharedMedia:HashTable("background")
-		backgroundsList = TRB.Details.addonData.libs.SharedMedia:List("background")
+local lsm = TRB.Details.addonData.libs.SharedMedia
 
-		for k, v in pairs(backgroundsList) do
-			table.insert(backgroundPairs, { v, backgrounds[v] })
-			backgroundPairsByName[backgrounds[v]] = v
+-- Each texture type's entries as { name, path }, and each path's name. Refilled in place, so built dropdowns see new media.
+local texturePairs = { statusbar = {}, background = {}, border = {} }
+local texturePairsByName = { statusbar = {}, background = {}, border = {} }
+
+---Fills one texture type's entries from LibSharedMedia.
+---@param lsmType string
+local function FillTexturePairs(lsmType)
+	local list = texturePairs[lsmType]
+	local byName = texturePairsByName[lsmType]
+	wipe(list)
+	wipe(byName)
+	local paths = lsm:HashTable(lsmType)
+	for _, name in ipairs(lsm:List(lsmType)) do
+		list[#list + 1] = { name, paths[name] }
+		byName[paths[name]] = name
+	end
+end
+
+---One texture type's entries, filled the first time they are needed.
+---@param lsmType string
+---@return table pairs, table pairsByName
+local function GetTexturePairs(lsmType)
+	if #texturePairs[lsmType] == 0 then
+		FillTexturePairs(lsmType)
+	end
+	return texturePairs[lsmType], texturePairsByName[lsmType]
+end
+
+---Refills the texture entries already built, after more media registers.
+function TRB.Functions.OptionsUi.TextureDropdowns:RefreshCaches()
+	for lsmType, list in pairs(texturePairs) do
+		if #list > 0 then
+			FillTexturePairs(lsmType)
 		end
 	end
 end
 
 ---@return table backgroundPairsByName
 function TRB.Functions.OptionsUi.TextureDropdowns:GetBackgroundPairsByName()
-	FillBackgroundCache()
-	return backgroundPairsByName
-end
-
-local borders = {}
-local bordersList = {}
-local borderPairs = {}
-local borderPairsByName = {}
----Populates the border texture cache from LibSharedMedia if not already filled.
-local function FillBorderCache()
-	if TRB.Functions.Table:Length(borders) == 0 then
-		borders = TRB.Details.addonData.libs.SharedMedia:HashTable("border")
-		bordersList = TRB.Details.addonData.libs.SharedMedia:List("border")
-
-		for k, v in pairs(bordersList) do
-			table.insert(borderPairs, { v, borders[v] })
-			borderPairsByName[borders[v]] = v
-		end
-	end
+	local _, byName = GetTexturePairs("background")
+	return byName
 end
 
 ---@return table borderPairsByName
 function TRB.Functions.OptionsUi.TextureDropdowns:GetBorderPairsByName()
-	FillBorderCache()
-	return borderPairsByName
-end
-
-local statusbars = {}
-local statusbarsList = {}
-local statusbarPairs = {}
-local statusbarPairsByName = {}
----Populates the status bar texture cache from LibSharedMedia if not already filled.
-local function FillStatusbarCache()
-	if TRB.Functions.Table:Length(statusbars) == 0 then
-		statusbars = TRB.Details.addonData.libs.SharedMedia:HashTable("statusbar")
-		statusbarsList = TRB.Details.addonData.libs.SharedMedia:List("statusbar")
-
-		for k, v in pairs(statusbarsList) do
-			table.insert(statusbarPairs, { v, statusbars[v] })
-			statusbarPairsByName[statusbars[v]] = v
-		end
-	end
+	local _, byName = GetTexturePairs("border")
+	return byName
 end
 
 ---Refreshes a WowStyle1DropdownTemplate control by re-invoking its stored GeneratorFunction.
@@ -95,15 +83,23 @@ local function SetDropdownDisplayText(control, text)
 	end
 end
 
-local function RefreshLsmDropdown(control, displayText)
+---Points a texture dropdown at a saved name: the radio it checks, and its label, marked while the name isn't loaded.
+---@param control TRB.Classes.OptionsUi.LsmDropdown?
+---@param name string?
+local function RefreshLsmDropdown(control, name)
+	if control == nil then
+		return
+	end
+
+	control.selectedName = name
 	DropdownSetupMenuWrapper(control)
-	SetDropdownDisplayText(control, displayText)
+	SetDropdownDisplayText(control, TRB.Functions.LibSharedMedia:GetDisplayName(control.lsmType, name))
 end
 
----@param control DropdownButton? # The dropdown control to refresh
----@param displayText string? # Optional text to show on the dropdown button
-function TRB.Functions.OptionsUi.TextureDropdowns:RefreshLsmDropdown(control, displayText)
-	RefreshLsmDropdown(control, displayText)
+---@param control TRB.Classes.OptionsUi.LsmDropdown? # The dropdown control to refresh
+---@param name string? # The saved texture name the dropdown shows and checks
+function TRB.Functions.OptionsUi.TextureDropdowns:RefreshLsmDropdown(control, name)
+	RefreshLsmDropdown(control, name)
 end
 
 ---Creates a LibSharedMedia dropdown for selecting a statusbar, background, or border texture.
@@ -118,7 +114,7 @@ end
 ---@param varName string # The key in the section table for this texture setting
 ---@param sectionHeaderText string # Label text displayed above the dropdown
 ---@param dropdownInfoText string # Informational text for the dropdown (unused in current implementation)
----@param setSelectedFunc function # Callback invoked when a new texture is selected
+---@param setSelectedFunc fun(path: string, name: string) # Callback invoked when a new texture is selected
 ---@param namePrefix string? # Frame name prefix; defaults to the class and specialization, which tabs listing the same bar must not share
 function TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, dropDowns, section, classId, specId, xCoord, yCoord, lsmType, varName, sectionHeaderText, dropdownInfoText, setSelectedFunc, namePrefix)
 	if namePrefix == nil then
@@ -126,38 +122,32 @@ function TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, drop
 		namePrefix = className .. "_" .. specName
 	end
 
-	local lsmPairs
-	local lsmPairsByName
+	local lsmPairs, lsmPairsByName = GetTexturePairs(lsmType)
 
-	if lsmType == "statusbar" then
-		FillStatusbarCache()
-		lsmPairs = statusbarPairs
-		lsmPairsByName = statusbarPairsByName
-	elseif lsmType == "background" then
-		FillBackgroundCache()
-		lsmPairs = backgroundPairs
-		lsmPairsByName = backgroundPairsByName
-	elseif lsmType == "border" then
-		FillBorderCache()
-		lsmPairs = borderPairs
-		lsmPairsByName = borderPairsByName
+	local dropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. varName .. "_" .. lsmType, parent, "WowStyle1DropdownTemplate") --[[@as TRB.Classes.OptionsUi.LsmDropdown]]
+	dropDowns[varName] = dropdown
+	dropdown:SetWidth(oUi.sliderWidth)
+	dropdown.label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
+	dropdown.label.font:SetFontObject(GameFontNormal)
+	dropdown.varName = varName
+	dropdown.lsmType = lsmType
+	dropdown.lsmPairs = lsmPairs
+	dropdown.lsmPairsByName = lsmPairsByName
+	dropdown.selectedName = section[varName .. "Name"]
+
+	-- By name, since a saved path can be stale and several names can share one file.
+	local function IsSelected(pair)
+		return pair[1] == dropdown.selectedName
 	end
 
-	dropDowns[varName] = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_" .. varName .. "_" .. lsmType, parent, "WowStyle1DropdownTemplate") --[[@as TRB.Classes.OptionsUi.RegeneratingDropdown]]
-	dropDowns[varName]:SetWidth(oUi.sliderWidth)
-	dropDowns[varName].label = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
-	dropDowns[varName].label.font:SetFontObject(GameFontNormal)
-	dropDowns[varName].varName = varName
-	dropDowns[varName].lsmPairs = lsmPairs
-	dropDowns[varName].lsmPairsByName = lsmPairsByName
-
-	local function IsSelected(value)
-		return value == section[varName]
+	local function SetSelected(pair)
+		dropdown.selectedName = pair[1]
+		setSelectedFunc(pair[2], pair[1])
 	end
 
-	local function Generator(dropdown, rootDescription)
-		for k, v in pairs(lsmPairs) do
-			local radio = rootDescription:CreateRadio(v[1], IsSelected, setSelectedFunc, v[2])
+	local function Generator(_, rootDescription)
+		for _, v in ipairs(lsmPairs) do
+			local radio = rootDescription:CreateRadio(v[1], IsSelected, SetSelected, v)
 			radio:AddInitializer(function(button, description, menu)
 				local rightTexture = button:AttachTexture()
 				rightTexture:SetSize(1, 18)
@@ -183,8 +173,8 @@ function TRB.Functions.OptionsUi.TextureDropdowns:CreateLsmDropdown(parent, drop
 		end
 		rootDescription:SetScrollMode(400)
 	end
-	dropDowns[varName].GeneratorFunction = Generator
-	dropDowns[varName]:SetupMenu(Generator)
-	SetDropdownDisplayText(dropDowns[varName], lsmPairsByName[section[varName]] or section[varName .. "Name"] or dropdownInfoText)
-	dropDowns[varName]:SetPoint("TOPLEFT", xCoord, yCoord-30)
+	dropdown.GeneratorFunction = Generator
+	dropdown:SetupMenu(Generator)
+	SetDropdownDisplayText(dropdown, TRB.Functions.LibSharedMedia:GetDisplayName(lsmType, dropdown.selectedName) or dropdownInfoText)
+	dropdown:SetPoint("TOPLEFT", xCoord, yCoord-30)
 end

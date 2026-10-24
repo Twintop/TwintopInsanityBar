@@ -3353,6 +3353,10 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			displayText.default.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
 		end
 
+		local LibSharedMedia = TRB.Functions.LibSharedMedia
+		local fallbackFontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
+		local defaultFontFace = LibSharedMedia:Resolve("font", displayText.default.fontFaceName, displayText.default.fontFace, fallbackFontFace)
+
 		for i = 1, entries do
 			local e = displayText.barText[i]
 
@@ -3361,12 +3365,14 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 				e.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
 			end
 
-			local fontFace = e.fontFace
+			local fontFace
 			local fontSize = e.fontSize
 			local fontJustifyHorizontal = e.fontJustifyHorizontal
 
 			if e.useDefaultFontFace then
-				fontFace = displayText.default.fontFace
+				fontFace = defaultFontFace
+			else
+				fontFace = LibSharedMedia:Resolve("font", e.fontFaceName, e.fontFace, fallbackFontFace)
 			end
 
 			if e.useDefaultFontSize then
@@ -3422,7 +3428,10 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			if relativeToFrame ~= nil and e.enabled and isEnabled then
 				font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 				font:SetJustifyH(fontJustifyHorizontal)
-				font:SetFont(fontFace, fontSize, fontOutline)
+				-- A registered font whose file won't load leaves the string without a font.
+				if not font:SetFont(fontFace, fontSize, fontOutline) then
+					font:SetFont(fallbackFontFace, fontSize, fontOutline)
+				end
 
 				-- Apply font shadow settings
 				if fontShadow and fontShadow.enabled then

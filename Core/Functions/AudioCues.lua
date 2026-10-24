@@ -203,7 +203,7 @@ end
 ---@param cue TRB.Classes.Settings.AudioCue
 local function PlayCue(cue)
 	if cue.sound ~= nil and cue.sound ~= "" and IsAudible(cue) then
-		PlaySoundFile(cue.sound, TRB.Data.settings.core.audio.channel.channel)
+		PlaySoundFile(TRB.Functions.LibSharedMedia:ResolveSound(cue.soundName, cue.sound), TRB.Data.settings.core.audio.channel.channel)
 	end
 end
 
