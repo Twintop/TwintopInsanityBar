@@ -154,6 +154,8 @@ local function FillSpecializationCache()
 	specCache.monk_windwalker.snapshotData.snapshots[spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(spells.danceOfChiJi)
 	---@type TRB.Classes.Snapshot
 	specCache.monk_windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
+	---@type TRB.Classes.Snapshot
+	specCache.monk_windwalker.snapshotData.snapshots[spells.hitCombo.id] = TRB.Classes.Snapshot:New(spells.hitCombo)
 
 	specCache.monk_windwalker.barTextVariables = {
 		icons = {},
@@ -589,6 +591,23 @@ local function RefreshLookupData_Windwalker()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
+	-- Block C: Hit Combo ($hitComboStacks, $hitComboTime)
+	if not activeVars or activeVars["$hitComboStacks"] or activeVars["$hitComboTime"] then
+		local currentTime = GetTime()
+		local hitCombo = snapshots[spells.hitCombo.id].buff
+		local _hitComboTime = hitCombo:GetRemainingTime(currentTime)
+		local _hitComboStacks = (hitCombo.isActive and (hitCombo.applications or 0)) or 0
+
+		lookupLogic["$hitComboStacks"] = _hitComboStacks
+		lookupLogic["$hitComboTime"] = _hitComboTime
+		if lookupChanged(prevState, "$hitComboStacks", _hitComboStacks) then
+			lookup["$hitComboStacks"] = string.format("%.0f", _hitComboStacks)
+		end
+		if lookupChanged(prevState, "$hitComboTime", _hitComboTime) then
+			lookup["$hitComboTime"] = TRB.Functions.BarText:TimerPrecision(_hitComboTime)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -604,6 +623,73 @@ local function UpdateCastingResourceFinal_Mistweaver()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
+end
+
+-- Temporary /trb hitcombo probe for the in-game Hit Combo test; remove before merge.
+local hitComboProbe = { enabled = false, ignored = {}, lastId = nil, lastTime = 0 }
+
+local function HitComboProbePrint(fmt, ...)
+	print("|cFF00FF00TRB Hit Combo:|r " .. string.format(fmt, ...))
+end
+
+---Prints the tracker's result for a Windwalker cast event while the probe is on.
+---@param event trbSpellCastType
+---@param spellId integer
+---@param currentTime number
+local function ProbeHitComboCast(event, spellId, currentTime)
+	if event ~= "UNIT_SPELLCAST_SUCCEEDED" and event ~= "UNIT_SPELLCAST_EMPOWER_STOP" then
+		return
+	end
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+	local name = C_Spell.GetSpellName(spellId) or "?"
+	if not spells.hitCombo.attributes.comboStrikeIds[spellId] then
+		if event == "UNIT_SPELLCAST_SUCCEEDED" and not hitComboProbe.ignored[spellId] then
+			hitComboProbe.ignored[spellId] = true
+			HitComboProbePrint("ignored %d %s (first time seen)", spellId, name)
+		end
+		return
+	end
+	if event == "UNIT_SPELLCAST_EMPOWER_STOP" then
+		HitComboProbePrint("EMPOWER_STOP %d %s", spellId, name)
+		return
+	end
+
+	local again = ""
+	if hitComboProbe.lastId == spellId and currentTime - hitComboProbe.lastTime < 0.2 then
+		again = string.format(" (same id again after %.2fs)", currentTime - hitComboProbe.lastTime)
+	end
+	hitComboProbe.lastId = spellId
+	hitComboProbe.lastTime = currentTime
+
+	local buff = TRB.Data.snapshotData.snapshots[spells.hitCombo.id].buff
+	if not talents:IsTalentActive(spells.hitCombo) then
+		HitComboProbePrint("%d %s -> last ability set (Hit Combo not talented)%s", spellId, name, again)
+	elseif buff.isActive then
+		HitComboProbePrint("%d %s -> %d stacks, %.1fs%s", spellId, name, buff.applications, buff.remaining, again)
+	else
+		HitComboProbePrint("%d %s -> dropped (repeat)%s", spellId, name, again)
+	end
+end
+
+---Toggles the temporary Hit Combo probe.
+function TRB.Functions.Class:ToggleHitComboProbe()
+	if TRB.Data.character.specId ~= 3 then
+		print("|cFFFF8800TRB Hit Combo:|r Windwalker only.")
+		return
+	end
+	hitComboProbe.enabled = not hitComboProbe.enabled
+	if not hitComboProbe.enabled then
+		HitComboProbePrint("Probe OFF.")
+		return
+	end
+	wipe(hitComboProbe.ignored)
+	hitComboProbe.lastId = nil
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+	local mapped = 0
+	for _ in pairs(spells.hitCombo.attributes.comboStrikeIds) do
+		mapped = mapped + 1
+	end
+	HitComboProbePrint("Probe ON. Hit Combo talented: %s; %d trigger ids mapped.", talents:IsTalentActive(spells.hitCombo) and "yes" or "no", mapped)
 end
 
 ---Handles UNIT_SPELLCAST_ events for the class
@@ -717,6 +803,21 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				UpdateCastingResourceFinal()
 			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spells.hitCombo.attributes.comboStrikeIds[spellId] then
+				if talents:IsTalentActive(spells.hitCombo) then
+					local hitCombo = snapshotData.snapshots[spells.hitCombo.id].buff
+					if spellId == snapshotData.attributes.lastComboStrike then
+						hitCombo:Reset()
+					else
+						hitCombo:GetRemainingTime(currentTime)
+						local stacks = math.min((hitCombo.isActive and hitCombo.applications or 0) + 1, spells.hitCombo.maxStacks)
+						-- InitializeCustom, not AddStack, so the snapshot stays isCustom and aura refreshes leave it alone.
+						hitCombo:InitializeCustom(spells.hitCombo.duration, currentTime, true, stacks)
+					end
+				end
+				snapshotData.attributes.lastComboStrike = spellId
+			end
+
 			if spellId == spells.strikeOfTheWindlord.id then
 				local cooldown = spells.strikeOfTheWindlord.cooldown
 				if talents:IsTalentActive(spells.communionWithWind) then
@@ -744,6 +845,10 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					snapshotData.snapshots[spells.heartOfTheJadeSerpent.id].buff:InitializeCustom(spells.heartOfTheJadeSerpent.duration, currentTime)
 				end
 			end
+		end
+
+		if hitComboProbe.enabled then
+			ProbeHitComboCast(event, spellId, currentTime)
 		end
 	end
 end
@@ -773,6 +878,13 @@ local function HandleSpellEvents(self, event, ...)
 				TRB.Functions.AudioCues:ResetLatch(snapshotData, "danceOfChiJi")
 			end
 		end
+	elseif event == "ENCOUNTER_START" or event == "CHALLENGE_MODE_START" then
+		-- Hit Combo is removed when a raid encounter or a Mythic+ key starts; dungeon bosses keep it.
+		if TRB.Data.character.specId == 3 and (event == "CHALLENGE_MODE_START" or TRB.Data.character.instanceType == "raid") then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+			TRB.Data.snapshotData.snapshots[spells.hitCombo.id].buff:Reset()
+			TRB.Data.lookupDirty = true
+		end
 	end
 end
 
@@ -783,11 +895,15 @@ spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
 function TRB.Functions.Class:EnableEvents()
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	spellEventFrame:RegisterEvent("ENCOUNTER_START")
+	spellEventFrame:RegisterEvent("CHALLENGE_MODE_START")
 end
 
 function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	spellEventFrame:UnregisterEvent("ENCOUNTER_START")
+	spellEventFrame:UnregisterEvent("CHALLENGE_MODE_START")
 end
 
 local function UpdateSnapshot()
@@ -958,6 +1074,13 @@ local function UpdateSnapshot_Windwalker()
 	snapshots[spells.whirlingDragonPunch.id].cooldown:GetRemainingTime(currentTime)
 	snapshots[spells.strikeOfTheWindlord.id].cooldown:GetRemainingTime(currentTime)
 	snapshots[spells.heartOfTheJadeSerpent.id].buff:GetRemainingTime(currentTime)
+
+	-- Out of combat, bar text stops refreshing once HasActiveTimers goes false, so repaint the expiry.
+	local wasHitComboActive = snapshots[spells.hitCombo.id].buff.isActive
+	snapshots[spells.hitCombo.id].buff:GetRemainingTime(currentTime)
+	if wasHitComboActive and not snapshots[spells.hitCombo.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 end
 
 
@@ -1386,6 +1509,8 @@ local function UpdateResourceBar()
 		conditionMap.heartOfTheJadeSerpentReady = heartOfTheJadeSerpentReady
 		conditionMap.heartOfTheJadeSerpent = heartOfTheJadeSerpentActive
 		conditionMap.danceOfChiJi = danceOfChiJiActive
+		conditionMap.hitCombo = snapshots[spells.hitCombo.id].buff.isActive
+			and snapshots[spells.hitCombo.id].buff.applications >= specSettings.stacks.hitCombo.min
 		conditionMap.borderOvercap = affectingCombat
 		local energyBarColors = scratch.energyBarColors2
 		wipe(energyBarColors)
@@ -1558,8 +1683,9 @@ local function UpdateResourceBar()
 		-- Threshold line sounds (independent of bar visibility)
 		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
 
-		-- Chi threshold audio cues (independent of bar visibility)
+		-- Chi and Hit Combo threshold audio cues (independent of bar visibility)
 		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "chi", snapshotData.attributes.resource2)
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "hitComboStacks", snapshots[spells.hitCombo.id].buff.applications or 0)
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
@@ -1663,6 +1789,7 @@ local function SwitchSpec()
 		lookup["#expelHarm"] = spells.expelHarm.icon
 		lookup["#fistsOfFury"] = spells.fistsOfFury.icon
 		lookup["#fof"] = spells.fistsOfFury.icon
+		lookup["#hitCombo"] = spells.hitCombo.icon
 		lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
 		lookup["#paralysis"] = spells.paralysis.icon
 		lookup["#risingSunKick"] = spells.risingSunKick.icon
@@ -1873,6 +2000,7 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData and snapshotData.attributes then
 		snapshotData.attributes.danceOfChiJiActive = false
+		snapshotData.attributes.lastComboStrike = nil
 	end
 end
 
@@ -1914,12 +2042,17 @@ do
 	}
 	for k, v in pairs(healthVars) do mistweaver[k] = v end
 	-- Windwalker
+	local hitComboFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.hitCombo.id].buff.isActive
+	end
 	local windwalker = {
 		["$casting"] = castingFn,
 		["$resource"] = false, ["$energy"] = false,
 		["$resourceMax"] = true, ["$energyMax"] = true,
 		["$comboPoints"] = true, ["$chi"] = true,
 		["$comboPointsMax"] = true, ["$chiMax"] = true,
+		["$hitComboStacks"] = hitComboFn, ["$hitComboTime"] = hitComboFn,
 	}
 	for k, v in pairs(healthVars) do windwalker[k] = v end
 
@@ -2054,8 +2187,8 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 	end
 end
 
----Returns true when Invoke Niuzao buff is active (Brewmaster only).
----Mistweaver and Windwalker have no timer variables.
+---Returns true while a timer variable is counting: Invoke Niuzao (Brewmaster) or Hit Combo (Windwalker).
+---Mistweaver has no timer variables.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	if TRB.Data.character.specId == 1 then -- Brewmaster
@@ -2063,6 +2196,15 @@ function TRB.Functions.Class:HasActiveTimers()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if snapshotData and spells and spells.invokeNiuzao then
 			local snapshot = snapshotData.snapshots[spells.invokeNiuzao.id]
+			if snapshot and snapshot.buff and snapshot.buff.isActive then
+				return true
+			end
+		end
+	elseif TRB.Data.character.specId == 3 then -- Windwalker
+		local snapshotData = TRB.Data.snapshotData
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if snapshotData and spells and spells.hitCombo then
+			local snapshot = snapshotData.snapshots[spells.hitCombo.id]
 			if snapshot and snapshot.buff and snapshot.buff.isActive then
 				return true
 			end
