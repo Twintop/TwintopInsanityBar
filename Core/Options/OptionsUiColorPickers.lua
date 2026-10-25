@@ -59,7 +59,7 @@ end
 ---@param colorTable table # The settings table containing the color entry
 ---@param colorControlsTable table # The controls table containing the color picker frame
 ---@param key string # The key into colorTable/colorControlsTable for the color entry
----@param frameType string? # The type of frame to update ("backdrop", "border", "bar", "threshold", or "health")
+---@param frameType string? # The type of frame to update ("backdrop", "border", "bar", or "health")
 ---@param frame Frame|table|nil # The frame(s) to update live, or nil for health-type updates
 ---@param classId integer? # Class ID for the panel being edited
 ---@param specId integer? # Spec ID for the panel being edited
@@ -106,8 +106,6 @@ function TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTabl
 						end
 					elseif frameType == "bar" then
 						TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, nil, newColorString)
-					elseif frameType == "threshold" then
-						TRB.Functions.Color:SetThresholdColor(frame, newColorString, true, classId, specId)
 					end
 				elseif frameType == "health" then
 					TRB.Functions.Character:UpdateHealthValues()
@@ -163,19 +161,6 @@ function TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames()
 		end
 	end
 	return frames
-end
-
----Gets the health bar's container frame for use in color picker callbacks
----@return Frame|nil
-function TRB.Functions.OptionsUi.ColorPickers:GetHealthBackdropFrame()
-	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-	if barGroups and barGroups.health then
-		local healthNode = barGroups.health:GetNode(1)
-		if healthNode then
-			return healthNode:GetFrame()
-		end
-	end
-	return nil
 end
 
 ---Creates a color picker button with a colored texture swatch and a descriptive text label.

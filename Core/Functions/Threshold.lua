@@ -585,6 +585,8 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		end
 		threshold.icon:SetBackdropColor(0, 0, 0, 0)
 		threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
+		-- The border was just blacked out, so the color below must repaint even if it matches the last one.
+		threshold.trbColorIcon = nil
 	end
 	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.threshold.over.color, true)
 end
@@ -663,6 +665,8 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 		end
 		threshold.icon:SetBackdropColor(0, 0, 0, 0)
 		threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
+		-- The border was just blacked out, so the color below must repaint even if it matches the last one.
+		threshold.trbColorIcon = nil
 	end
 
 	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.comboPoints.border.color, true)

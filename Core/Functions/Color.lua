@@ -4,8 +4,8 @@ local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Color = {}
 
--- GetRGBAFromString memos for the unadjusted case, {r, g, b, a} by hex string, one per normalize flag so a
--- lookup builds no key. A hex string always maps to the same RGBA; ResetColorCaches() clears them to bound memory.
+-- GetRGBAFromString memos, {r, g, b, a} by hex string, one per normalize flag so a lookup builds no key.
+-- A hex string always maps to the same RGBA; ResetColorCaches() clears them to bound memory.
 local rgbaCacheNormalized = {}
 local rgbaCacheRaw = {}
 
@@ -15,13 +15,9 @@ local playerClassColorHex = nil
 ---Converts a hexdecimal AARRGGBB string to separate numerical RGBA values, either out of 0-255 or 0.0 - 1.0
 ---@param s string # Hexdecimal string
 ---@param normalize boolean? # Should this be normalized to 0.0 - 1.0?
----@param percentColorAdjust number? # How much we scale this color down
----@param percentAlphaAdjust number? # How much we scale the alpha down
 ---@return number, number, number, number
-function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust, percentAlphaAdjust)
-	-- Fast path: when no color/alpha adjustment, use memoized result
-	local canCache = (percentColorAdjust == nil or percentColorAdjust == 1) and (percentAlphaAdjust == nil or percentAlphaAdjust == 1)
-	if canCache and s ~= nil and #s == 8 then
+function TRB.Functions.Color:GetRGBAFromString(s, normalize)
+	if s ~= nil and #s == 8 then
 		local rgbaCache = normalize and rgbaCacheNormalized or rgbaCacheRaw
 		local cached = rgbaCache[s]
 		if cached then
@@ -39,38 +35,11 @@ function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust,
 		return _r, _g, _b, _a
 	end
 
-	-- Slow path: adjustment factors are non-default
-	if percentColorAdjust == nil or percentColorAdjust > 1 then
-		percentColorAdjust = 1
-	elseif percentColorAdjust < 0 then
-		percentColorAdjust = 0
-	end
-
-	if percentAlphaAdjust == nil or percentAlphaAdjust > 1 then
-		percentAlphaAdjust = 1
-	elseif percentAlphaAdjust < 0 then
-		percentAlphaAdjust = 0
-	end
-
-	local _a = 1
-	local _r = 0
-	local _g = 1
-	local _b = 0
-
-	if not (s == nil) then
-		if #s == 8 then
-			_a = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 1, 2), 16)) * percentAlphaAdjust, 0, floor, true)
-			_r = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 3, 4), 16)) * percentColorAdjust, 0, floor, true)
-			_g = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 5, 6), 16)) * percentColorAdjust, 0, floor, true)
-			_b = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 7, 8), 16)) * percentColorAdjust, 0, floor, true)
-		end
-	end
-
+	-- A malformed saved color draws near-transparent instead of erroring.
 	if normalize then
-		return _r/255, _g/255, _b/255, _a/255
-	else
-		return _r, _g, _b, _a
+		return 0, 1/255, 0, 1/255
 	end
+	return 0, 1, 0, 1
 end
 
 ---Clears the RGBA parse memoization cache. Call from ResetColorCaches() to bound memory.
@@ -139,13 +108,27 @@ function TRB.Functions.Color:GetPlayerClassColor()
 		return nil
 	end
 
-	local color = C_ClassColor.GetClassColor(classFilename)
-	if color == nil then
-		return nil
-	end
-
-	playerClassColorHex = self:ConvertColorDecimalToHex(color.r, color.g, color.b, 1)
+	playerClassColorHex = select(4, GetClassColor(classFilename))
 	return playerClassColorHex
+end
+
+-- Per health colors table, the curve last returned and the inputs it came from, so a repeat call builds no key.
+local healthCurveRecords = setmetatable({}, { __mode = "k" })
+
+---Records the curve GetHealthColorCurve returns for a colors table, along with the inputs that chose it.
+---@return any # The curve, passed through
+local function RecordHealthCurve(healthColors, curve, curves, highColor, highThreshold, lowColor, lowThreshold, medColor, medThreshold, curveType, classColor)
+	local record = healthCurveRecords[healthColors]
+	if record == nil then
+		record = {}
+		healthCurveRecords[healthColors] = record
+	end
+	record.curve, record.curves = curve, curves
+	record.highColor, record.highThreshold = highColor, highThreshold
+	record.lowColor, record.lowThreshold = lowColor, lowThreshold
+	record.medColor, record.medThreshold = medColor, medThreshold
+	record.curveType, record.classColor = curveType, classColor
+	return curve
 end
 
 ---Builds, or reuses, the Low, Medium, and High health color curve that UnitHealthPercent evaluates.
@@ -165,6 +148,17 @@ function TRB.Functions.Color:GetHealthColorCurve(healthColors)
 	if curveTypeStr == "classColor" then
 		classColor = self:GetPlayerClassColor() or ""
 	end
+
+	-- ResetColorCaches drops healthCurves, which also retires every record built against it.
+	local record = healthCurveRecords[healthColors]
+	if record ~= nil and record.curves ~= nil and record.curves == TRB.Data.cache.healthCurves
+		and record.highColor == highColor and record.highThreshold == highThreshold
+		and record.lowColor == lowColor and record.lowThreshold == lowThreshold
+		and record.medColor == medColor and record.medThreshold == medThreshold
+		and record.curveType == curveTypeStr and record.classColor == classColor then
+		return record.curve
+	end
+
 	local cacheKey = highColor .. highThreshold .. lowColor .. lowThreshold .. medColor .. medThreshold .. curveTypeStr .. classColor
 
 	local curves = TRB.Data.cache.healthCurves
@@ -173,7 +167,7 @@ function TRB.Functions.Color:GetHealthColorCurve(healthColors)
 		TRB.Data.cache.healthCurves = curves
 	end
 	if curves[cacheKey] ~= nil then
-		return curves[cacheKey]
+		return RecordHealthCurve(healthColors, curves[cacheKey], curves, highColor, highThreshold, lowColor, lowThreshold, medColor, medThreshold, curveTypeStr, classColor)
 	end
 
 	---@type integer?
@@ -228,7 +222,7 @@ function TRB.Functions.Color:GetHealthColorCurve(healthColors)
 	end
 
 	curves[cacheKey] = curve
-	return curve
+	return RecordHealthCurve(healthColors, curve, curves, highColor, highThreshold, lowColor, lowThreshold, medColor, medThreshold, curveTypeStr, classColor)
 end
 
 ---Sets a frame's backdrop color, using a cache to skip redundant SetBackdropColor calls when the color hasn't changed
@@ -307,13 +301,12 @@ end
 ---@param frame table # The frame whose backdrop border color to set
 ---@param key string? # Cache key for deduplication; if nil, always applies the color
 ---@param rgbaString string # AARRGGBB hexadecimal color string
----@param normalize boolean? # Whether to normalize values to 0.0-1.0 (defaults to true)
-function TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, key, rgbaString, normalize)
+function TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(frame, key, rgbaString)
 	local cached = key ~= nil and TRB.Data.cache.colors.border[key] or nil
 	if cached ~= nil and rgbaString ~= nil and cached.source == rgbaString then
 		return
 	end
-	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, true)
 	TRB.Functions.Color:SetBackdropBorderColor(frame, key, r, g, b, a)
 	if key ~= nil then
 		TRB.Data.cache.colors.border[key].source = rgbaString
@@ -389,53 +382,16 @@ function TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 	end
 end
 
----Sets a status bar's texture vertex color, using a cache to skip redundant calls when the color hasn't changed
----@param frame table # The status bar frame whose texture vertex color to set
----@param key string? # Cache key for deduplication; if nil, always applies the color
----@param r number # Red channel value (0.0-1.0)
----@param g number # Green channel value (0.0-1.0)
----@param b number # Blue channel value (0.0-1.0)
----@param a number # Alpha channel value (0.0-1.0)
-function TRB.Functions.Color:SetStatusBarVertexColor(frame, key, r, g, b, a)
-	local changed = false
-
-	if key == nil then
-		changed = true
-	else
-		if TRB.Data.cache.colors.bar[key] == nil then
-			TRB.Data.cache.colors.bar[key] = {
-				r = r,
-				g = g,
-				b = b,
-				a = a
-			}
-			changed = true
-		elseif TRB.Data.cache.colors.bar[key].r ~= r or TRB.Data.cache.colors.bar[key].g ~= g or TRB.Data.cache.colors.bar[key].b ~= b or TRB.Data.cache.colors.bar[key].a ~= a then
-			TRB.Data.cache.colors.bar[key].r = r
-			TRB.Data.cache.colors.bar[key].g = g
-			TRB.Data.cache.colors.bar[key].b = b
-			TRB.Data.cache.colors.bar[key].a = a
-			changed = true
-		end
-		TRB.Data.cache.colors.bar[key].source = nil
-	end
-	
-	if changed then
-		frame:GetStatusBarTexture():SetVertexColor(r, g, b, a)
-	end
-end
-
 ---Sets a status bar frame's color from an AARRGGBB hex string, parsing and applying it through the cached color setter
 ---@param frame table # The status bar frame whose color to set
 ---@param key string? # Cache key for deduplication; if nil, always applies the color
 ---@param rgbaString string # AARRGGBB hexadecimal color string
----@param normalize boolean? # Whether to normalize values to 0.0-1.0 (defaults to true)
-function TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, key, rgbaString, normalize)
+function TRB.Functions.Color:SetStatusBarColorFromRGBAString(frame, key, rgbaString)
 	local cached = key ~= nil and TRB.Data.cache.colors.bar[key] or nil
 	if cached ~= nil and rgbaString ~= nil and cached.source == rgbaString then
 		return
 	end
-	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize or true)
+	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, true)
 	TRB.Functions.Color:SetStatusBarColor(frame, key, r, g, b, a)
 	if key ~= nil then
 		TRB.Data.cache.colors.bar[key].source = rgbaString
@@ -454,9 +410,17 @@ function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, cla
 		if frame.texture == nil then
 			frame.texture = frame:CreateTexture(nil, "OVERLAY")
 			frame.texture:SetAllPoints(frame)
+			frame.trbColorIcon = nil
 		end
+		-- Static colors are often re-applied every tick; skip the writes while nothing they cover changed.
+		-- paintIcon is never nil, so a cleared trbColorIcon forces a write even for a nil color.
+		local paintIcon = frame.icon ~= nil and frame.hasIcon == true
+		if frame.trbColor == rgbaString and frame.trbColorNormalized == normalize and frame.trbColorIcon == paintIcon then
+			return
+		end
+		frame.trbColor, frame.trbColorNormalized, frame.trbColorIcon = rgbaString, normalize, paintIcon
 		frame.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
-		if frame.icon ~= nil and frame.hasIcon == true then
+		if paintIcon then
 			local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize)
 			frame.icon:SetBackdropBorderColor(r, g, b, a)
 			-- Remember the applied border color so SetThresholdIcon can restore it after any
@@ -632,6 +596,10 @@ function TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor,
 	end
 
 	local cache = TRB.Data.cache.stepColorCurves
+	local fastCurve = self:GetFastCurve(cache, "step", cacheKey, belowColor, aboveColor, thresholdPercent)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
 	local fullKey = cacheKey .. "_" .. belowColor .. "_" .. aboveColor .. "_" .. tostring(thresholdPercent)
 	
 	if cache[fullKey] == nil then
@@ -655,56 +623,8 @@ function TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor,
 		cache[fullKey] = curve
 	end
 	
+	self:SetFastCurve(cache, cache[fullKey], "step", cacheKey, belowColor, aboveColor, thresholdPercent)
 	return cache[fullKey]
-end
-
----Evaluates a Step ColorCurve and returns the appropriate color string
----@param spec table # The spec settings containing overcap configuration
----@param belowColor string # ARGB hex color string for below threshold
----@param aboveColor string # ARGB hex color string for at/above threshold  
----@param currentResourcePercent number # Current resource percentage (0-1)
----@param maxResource number # Maximum resource value
----@param cacheKey string # Unique key for caching
----@return string # The color string to use (either belowColor or aboveColor based on threshold)
-function TRB.Functions.Color:EvaluateStepColor(spec, belowColor, aboveColor, currentResourcePercent, maxResource, cacheKey)
-	if spec.overcap == nil then
-		return belowColor
-	end
-	
-	-- Calculate the overcap threshold
-	local overcapThreshold
-	if spec.overcap.mode == "relative" then
-		overcapThreshold = maxResource + (spec.overcap.relative or 0)
-	else
-		overcapThreshold = spec.overcap.fixed or maxResource
-	end
-	
-	-- Calculate the percentage where the threshold triggers
-	local thresholdPercent = overcapThreshold / maxResource
-	
-	-- Get the cached curve
-	local curve = TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor, thresholdPercent)
-	
-	if curve == nil then
-		return belowColor
-	end
-	
-	-- Evaluate the curve at current resource percentage
-	local colorResult = curve:Evaluate(currentResourcePercent)
-	
-	-- Convert the color result back to a hex string
-	if colorResult and type(colorResult.GetRGBA) == "function" then
-		local r, g, b, a = colorResult:GetRGBA()
-		local result = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, a)
-		return result
-	end
-	
-	return belowColor
-end
-
----Clears the Step ColorCurve cache (call when settings change)
-function TRB.Functions.Color:ClearStepColorCurveCache()
-	TRB.Data.cache.stepColorCurves = {}
 end
 
 ---Builds a resource threshold ColorCurve for use with UnitPowerPercent (e.g., overcap border/text color)
@@ -883,12 +803,6 @@ function TRB.Functions.Color:BuildThresholdValueCurve(value, maxResource, underC
 	return colorCurve
 end
 
----Clears the threshold ColorCurve cache (call when settings change)
-function TRB.Functions.Color:ClearThresholdCurveCache()
-	TRB.Data.cache.thresholdCurves = {}
-	TRB.Data.cache.customThresholdCurves = {}
-end
-
 ---Evaluates a threshold curve using UnitPowerPercent and returns the color object
 ---Uses UnitPowerPercent to safely handle secret resource values in Midnight
 ---@param colorCurve table # The ColorCurve to evaluate
@@ -918,6 +832,7 @@ function TRB.Functions.Color:SetThresholdColorFromCurve(frame, colorResult, clas
 		end
 		-- Pass the color directly to SetColorTexture via GetRGBA - WoW API handles secret values
 		frame.texture:SetColorTexture(colorResult:GetRGBA())
+		frame.trbColorIcon = nil
 		if frame.icon ~= nil and frame.hasIcon == true then
 			local r, g, b, a = colorResult:GetRGBA()
 			frame.icon:SetBackdropBorderColor(r, g, b, a)

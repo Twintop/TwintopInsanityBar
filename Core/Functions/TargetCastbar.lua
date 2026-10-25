@@ -88,6 +88,12 @@ local function GetShieldVisibleColor(r, g, b, a)
 	return cached
 end
 
+---Drops the cached ColorMixins so colors no longer in use are freed; ResetColorCaches calls it.
+function TRB.Functions.TargetCastbar:ClearColorCache()
+	wipe(colorCache)
+	wipe(shieldOpaqueCache)
+end
+
 ---Returns the model for a unit key, lazily creating both models on first use.
 ---@param modelKey string
 ---@return TRB.Classes.TargetCastbar
@@ -366,11 +372,7 @@ local function GetUnitClassColor(unit, barSettings)
 	if classFilename == nil or issecretvalue(classFilename) then
 		return nil
 	end
-	local color = C_ClassColor.GetClassColor(classFilename)
-	if color == nil then
-		return nil
-	end
-	return TRB.Functions.Color:ConvertColorDecimalToHex(color.r, color.g, color.b, 1)
+	return select(4, GetClassColor(classFilename))
 end
 
 ---Applies the fill color for the current state. The monitored unit's class color (when enabled) wins for

@@ -576,6 +576,9 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
 		comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic),
 		healthBar = TRB.Functions.Settings:DefaultHealthDimensions(classic),
+		stacks = {
+			hitCombo = { min = 5 }
+		},
 		colors = {
 			text = {
 				current = {
@@ -644,7 +647,8 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				nodeOrder = {
 					"heartOfTheJadeSerpentReady",
 					"heartOfTheJadeSerpent",
-					"danceOfChiJi"
+					"danceOfChiJi",
+					"hitCombo"
 				},
 				gradientOrder = {
 					"borderOvercap"
@@ -673,6 +677,16 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					heartOfTheJadeSerpent = {
 						color = "FF00FFBB",
 						color2 = "FF00FFBB",
+						gradientDirection = "disabled",
+						enabled = true,
+						targets = {
+							energyBar = { bar = false, border = true, background = false },
+							chiBar = { bar = false, border = false, background = false }
+						}
+					},
+					hitCombo = {
+						color = "FFFFC000",
+						color2 = "FFFFC000",
 						gradientDirection = "disabled",
 						enabled = true,
 						targets = {
@@ -1931,6 +1945,7 @@ local function WindwalkerConstructIndicatorColorsPanel(parent)
 			{ key = "danceOfChiJi", label = L["MonkWindwalkerCheckboxDanceOfChiJi"], tooltip = L["MonkWindwalkerIndicatorDanceOfChiJiTooltip"], colorLabel = L["MonkWindwalkerIndicatorDanceOfChiJiColor"] },
 			{ key = "heartOfTheJadeSerpent", label = L["MonkWindwalkerCheckboxHeartOfTheJadeSerpent"], tooltip = L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentTooltip"], colorLabel = L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentColor"] },
 			{ key = "heartOfTheJadeSerpentReady", label = L["MonkWindwalkerCheckboxHeartOfTheJadeSerpentReady"], tooltip = L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyTooltip"], colorLabel = L["MonkWindwalkerIndicatorHeartOfTheJadeSerpentReadyColor"] },
+			{ key = "hitCombo", label = L["MonkWindwalkerCheckboxHitCombo"], tooltip = L["MonkWindwalkerIndicatorHitComboTooltip"], colorLabel = L["MonkWindwalkerIndicatorHitComboColor"] },
 		},
 		gradientDefs = {
 			{ key = "borderOvercap", label = L["MonkIndicatorBorderOvercap"], tooltip = L["MonkIndicatorOvercapTooltip"], colorLabel = L["MonkIndicatorOvercapColor"] },
@@ -1940,6 +1955,14 @@ local function WindwalkerConstructIndicatorColorsPanel(parent)
 				{ key = "chiBar", label = L["ResourceChi"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Monk_Windwalker",
+		stacksConfigs = {
+			{
+				stacksKey = "hitCombo",
+				sectionHeader = L["MonkWindwalkerHeaderHitComboConfiguration"],
+				sliderLabel = L["MonkWindwalkerHitComboStacks"],
+				sliderMax = 5,
+			},
+		},
 		overcapConfig = {
 			primaryResourceString = L["ResourceEnergy"],
 			primaryResourceMax = WINDWALKER_MAX_ENERGY,

@@ -5,10 +5,10 @@ local L = TRB.Localization
 
 ---A frame this addon glows, with a record of the glows it started there.
 ---@class TRB.Classes.GlowTarget : Frame
----@field public trbGlows table<string, table>? # Running glows by glow id: { type, signature }
+---@field public trbGlows table<string, table>? # Running glows by glow id: { type, color, <style fields> }
 ---@field public trbButtonGlowOwner string? # Id of the glow holding the frame's single Action Button Glow
 
--- Reused for the {r,g,b,a} the library wants: it reads the table without keeping it.
+-- Reused for the {r,g,b,a} the pixel, autocast, and proc styles want: they read the table without keeping it.
 local colorScratch = { 1, 1, 1, 1 }
 
 -- Lets Apply reach ApplySet without building a one-entry set per call.
@@ -19,7 +19,7 @@ local singleScratch = {}
 ---@field label string
 ---@field fields string[] # Setting keys this type reads, in editor order
 
--- `fields` drives which editor rows a style shows and which values go into its change signature.
+-- `fields` drives which editor rows a style shows and which values its change check compares.
 local glowTypes = {
 	{
 		key = "pixel",
@@ -138,20 +138,26 @@ function TRB.Functions.Glow:GetOrdered()
 	return ordered
 end
 
----Identifies the exact appearance a frame is currently glowing with. Start is skipped while this
----matches, which keeps the library's per-call setup (mask points, texture resizing) off the frame loop.
+---Whether a frame's record for a glow id already holds this exact appearance. Start is skipped while it
+---does, which keeps the library's per-call setup (mask points, texture resizing) off the frame loop.
+---@param entry table # The frame's record for this glow id
 ---@param glow table
 ---@param colorString string
----@return string
-local function BuildSignature(glow, colorString)
+---@return boolean
+local function IsSameAppearance(entry, glow, colorString)
+	if entry.type ~= glow.type or entry.color ~= colorString then
+		return false
+	end
 	local typeDef = glowTypeByKey[glow.type]
-	local signature = (glow.type or "pixel") .. "|" .. colorString
 	if typeDef ~= nil then
-		for _, field in ipairs(typeDef.fields) do
-			signature = signature .. "|" .. tostring(glow[field])
+		local fields = typeDef.fields
+		for i = 1, #fields do
+			if entry[fields[i]] ~= glow[fields[i]] then
+				return false
+			end
 		end
 	end
-	return signature
+	return true
 end
 
 ---Stops one running glow. Each style parks its frame on the target under its own field name, so the
@@ -181,13 +187,12 @@ end
 ---@param frame TRB.Classes.GlowTarget
 ---@param glow table
 ---@param colorString string
----@param applied table<string, table> # The frame's id -> { type, signature } record
+---@param applied table<string, table> # The frame's id -> { type, color, <style fields> } record
 local function StartOne(frame, glow, colorString, applied)
 	local lib = TRB.Details.addonData.libs.CustomGlow
 	local key = glow.guid
-	local signature = BuildSignature(glow, colorString)
 	local entry = applied[key]
-	if entry ~= nil and entry.type == glow.type and entry.signature == signature then
+	if entry ~= nil and IsSameAppearance(entry, glow, colorString) then
 		return
 	end
 	if entry ~= nil and entry.type ~= glow.type then
@@ -201,7 +206,8 @@ local function StartOne(frame, glow, colorString, applied)
 		lib.AutoCastGlow_Start(frame, colorScratch, glow.particleGroups, glow.frequency, glow.scale,
 			glow.xOffset, glow.yOffset, key)
 	elseif glow.type == "button" then
-		lib.ButtonGlow_Start(frame, colorScratch, glow.frequency)
+		-- ButtonGlow keeps its color table (f.color) and reads the old alpha on restart, so it can't share the scratch.
+		lib.ButtonGlow_Start(frame, { r, g, b, a }, glow.frequency)
 	elseif glow.type == "proc" then
 		lib.ProcGlow_Start(frame, {
 			color = colorScratch,
@@ -223,7 +229,13 @@ local function StartOne(frame, glow, colorString, applied)
 		applied[key] = entry
 	end
 	entry.type = glow.type
-	entry.signature = signature
+	entry.color = colorString
+	local typeDef = glowTypeByKey[glow.type]
+	if typeDef ~= nil then
+		for _, field in ipairs(typeDef.fields) do
+			entry[field] = glow[field]
+		end
+	end
 end
 
 ---The color one glow runs in: its own when it pins one, otherwise the indicator's.
