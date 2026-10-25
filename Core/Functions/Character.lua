@@ -1369,7 +1369,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Functions.Skyriding:SyncSnapshots()
 end
 
----Clears all cached color data (border, bar, backdrop, health curve, absorb border curve) and resets the RGBA parse memoization.
+---Clears all cached color data (border, bar, backdrop, health curve, absorb border curve, color curves) and resets the RGBA parse memoization.
 function TRB.Functions.Character:ResetColorCaches()
 	wipe(TRB.Data.cache.colors.border)
 	wipe(TRB.Data.cache.colors.bar)
@@ -1379,7 +1379,18 @@ function TRB.Functions.Character:ResetColorCaches()
 	TRB.Data.cache.healthCurves = nil
 	-- Clear RGBA parse memoization to bound memory
 	TRB.Functions.Color:ClearRGBACache()
-end 
+	-- Curve keys include every input, so these never go stale; clearing bounds memory and drops each cache's fast-curve trie too.
+	wipe(TRB.Data.cache.stepColorCurves)
+	wipe(TRB.Data.cache.thresholdCurves)
+	if TRB.Data.cache.customThresholdCurves ~= nil then
+		wipe(TRB.Data.cache.customThresholdCurves)
+	end
+	if TRB.Data.cache.iconVertexColorCurves ~= nil then
+		wipe(TRB.Data.cache.iconVertexColorCurves)
+	end
+	TRB.Functions.TargetCastbar:ClearColorCache()
+	TRB.Functions.BarText:ClearColorCodes()
+end
 
 ---Clears all runtime caches (bar text, symbols, parse trees, resource/threshold values, colors) and rebuilds the threshold spell list.
 function TRB.Functions.Character:ResetCaches()
