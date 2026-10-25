@@ -693,11 +693,12 @@ end
 ---@param settings table
 ---@param thresholdOverrides table? Per-threshold overrides from thresholdDictionary (optional)
 ---@param barSettings table? # Dimension block of the bar hosting the line; defaults to `settings.bar`
-function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides, barSettings)
+---@param fillDirection trbFillDirection? # The host bar's resolved direction, for lines with no dimension block of their own
+function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides, barSettings, fillDirection)
 	if threshold == nil or threshold.icon == nil then
 		return
 	end
-	local fillDirection = (barSettings or settings.bar).fillDirection
+	fillDirection = fillDirection or (barSettings or settings.bar).fillDirection
 
 	local cache = GetThresholdCache(key)
 
@@ -814,18 +815,12 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	hasIcon = hasIcon or false
 	local bar = barSettings or settings.bar
 	--[[
-		Threshold StrataFrameLevel info, decreasing:
-		- Starts at 1200 for unusable
-		- Starts at 1400 for not enough resources
-		- Starts at 1600 for usable
-		- Counter increments by 3 on every render in modules that source threshold data from the spell table
-		- Threshold Line Frame is X-2, Icon Frame Level is X-1, Cooldown Frame Level is X, for X = Counter
-		Example:
-		Threshold doesn't have enough resources and is the 4th threshold processed.
-		Counter = 9 (seen 3).
-		Line = 1389, Icon = 1390, Cooldown = 1391
-
-		This is done to maintain backward compatability for how threshold line stacking used to work before this change.
+		Threshold frame levels (Init.lua frameLevels). X starts at the line's state: special 2600, over 2200,
+		under 2000, unusable 1800, or out of range 1200. Subtract 100 (thresholdOffsetNoCooldown) for a spell
+		without a cooldown, then the line's pairOffset, 3 per line ahead of it on the bar.
+		Line = X-2, icon = X-1, cooldown = X.
+		Example: the 4th line, under cost, with a cooldown: X = 2000 - 9 = 1991, so line 1989, icon 1990, cooldown 1991.
+		A new line starts at thresholdBase: line 998, icon 999, cooldown 1000.
 	]]
 	local borderSubtraction = 0
 
@@ -893,20 +888,7 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 		return
 	end
 	hasIcon = hasIcon or false
-	--[[
-		Threshold StrataFrameLevel info, decreasing:
-		- Starts at 1200 for unusable
-		- Starts at 1400 for not enough resources
-		- Starts at 1600 for usable
-		- Counter increments by 3 on every render in modules that source threshold data from the spell table
-		- Threshold Line Frame is X-2, Icon Frame Level is X-1, Cooldown Frame Level is X, for X = Counter
-		Example:
-		Threshold doesn't have enough resources and is the 4th threshold processed.
-		Counter = 9 (seen 3).
-		Line = 1389, Icon = 1390, Cooldown = 1391
-
-		This is done to maintain backward compatability for how threshold line stacking used to work before this change.
-	]]
+	-- Frame levels follow the table in ResetThresholdLine.
 	
 	-- For vertical growth, the threshold is a horizontal stripe (swap width/height)
 	local isVertical = IsVerticalFillDirection(settings.comboPoints.fillDirection)
@@ -2795,7 +2777,9 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					thresholdColor,
 					nil,
 					settings,
-					thresholdOverrides
+					thresholdOverrides,
+					nil,
+					targetInfo.fillDirection
 				)
 				TRB.Functions.Threshold:RepositionThresholdCustomBar(
 					frameKey,
@@ -3058,8 +3042,9 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param thresholdOverrides table? Per-threshold overrides from thresholdDictionary (optional)
 ---@param barSettings table? # Dimension block of the bar hosting the line (a custom bar's `bars.<key>`); defaults to `settings.bar`
+---@param fillDirection trbFillDirection? # The host bar's resolved direction, for lines with no dimension block of their own
 ---@return boolean
-function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings, thresholdOverrides, barSettings)
+function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings, thresholdOverrides, barSettings, fillDirection)
 	local cache = GetThresholdCache(key)
 
 	-- When thresholdColor is nil, a ColorCurve is managing the visual color externally
@@ -3176,7 +3161,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true, barSettings)
 			end
 
-			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides, barSettings)
+			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides, barSettings, fillDirection)
 
 			-- Per-threshold line width override (thickness of the line)
 			local lineThickness = settings.thresholds.properties.width
