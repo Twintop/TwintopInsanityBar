@@ -141,6 +141,7 @@ end
 ---@param effectiveHeight number
 ---@param lineThickness number
 ---@param borderSubtraction number
+---@return number crossSection # The line's length across the bar
 local function SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
 	local crossSection = IsVerticalFillDirection(fillDirection) and effectiveWidth or effectiveHeight
 	crossSection = math.max((crossSection or 0) - (borderSubtraction or 0), 0)
@@ -166,6 +167,87 @@ local function SetThresholdLineDimensions(thresholdLine, fillDirection, effectiv
 		SetThresholdLineSize(thresholdLine, crossSection, lineThickness)
 	else
 		SetThresholdLineSize(thresholdLine, lineThickness, crossSection)
+	end
+	return crossSection
+end
+
+---Center of a line along its bar axis, measured from the parent's left or bottom edge.
+---@param fillDirection trbFillDirection?
+---@param effectiveWidth number
+---@param effectiveHeight number
+---@param xOffset number
+---@param yOffset number
+---@param lineThickness number?
+---@return number
+local function GetLineAxisPosition(fillDirection, effectiveWidth, effectiveHeight, xOffset, yOffset, lineThickness)
+	local halfThickness = (tonumber(lineThickness) or 0) / 2
+	if fillDirection == "rightLeft" then
+		return effectiveWidth + xOffset - halfThickness
+	elseif fillDirection == "bottomTop" then
+		return yOffset + halfThickness
+	elseif fillDirection == "topBottom" then
+		return effectiveHeight + yOffset - halfThickness
+	end
+	return xOffset + halfThickness
+end
+
+---Returns the icon's anchor point and the line point it attaches to. Vertical bars map Above to LEFT and Below to RIGHT.
+---@param relativeTo string?
+---@param fillDirection trbFillDirection?
+---@return string setPoint
+---@return string relativePoint
+local function GetIconAnchorPoints(relativeTo, fillDirection)
+	if IsVerticalFillDirection(fillDirection) then
+		if relativeTo == "TOP" then
+			return "RIGHT", "LEFT"
+		elseif relativeTo == "CENTER" then
+			return "CENTER", "CENTER"
+		end
+		return "LEFT", "RIGHT"
+	end
+
+	if relativeTo == "TOP" then
+		return "BOTTOM", "TOP"
+	elseif relativeTo == "CENTER" then
+		return "CENTER", "CENTER"
+	end
+	return "TOP", "BOTTOM"
+end
+
+---Anchors a threshold icon from its cached geometry plus its overlap-layout shift.
+---@param threshold TRB.Classes.ThresholdFrame
+---@param cache table
+local function AnchorThresholdIcon(threshold, cache)
+	local setPoint, relativePoint = GetIconAnchorPoints(cache.iconRelativeTo, cache.iconFillDirection)
+	threshold.icon:ClearAllPoints()
+	threshold.icon:SetPoint(setPoint, threshold, relativePoint, cache.iconXPos + (cache.iconStaggerX or 0), cache.iconYPos + (cache.iconStaggerY or 0))
+	threshold.icon:SetSize(cache.iconWidth, cache.iconHeight)
+end
+
+---Applies an icon's border backdrop, restoring the last threshold border color that SetBackdrop resets.
+---@param threshold TRB.Classes.ThresholdFrame
+---@param border number
+local function ApplyThresholdIconBorder(threshold, border)
+	if border < 1 then
+		threshold.icon:SetBackdrop({
+			insets = { left = 0, right = 0, top = 0, bottom = 0 }
+		})
+	else
+		threshold.icon:SetBackdrop({
+			edgeFile = "Interface\\Buttons\\WHITE8X8",
+			tile = true,
+			tileSize = 4,
+			edgeSize = border,
+			insets = { left = 0, right = 0, top = 0, bottom = 0 }
+		})
+	end
+	threshold.icon:SetBackdropColor(0, 0, 0, 0)
+	-- Falls back to black only before the first color pass.
+	local bc = threshold.icon.borderColorCache
+	if bc ~= nil then
+		threshold.icon:SetBackdropBorderColor(bc[1], bc[2], bc[3], bc[4])
+	else
+		threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
 	end
 end
 
@@ -231,6 +313,285 @@ local function GetPrimaryBarMaxValue(settings, fallback)
 	return GetPositivePlainNumber(maxResource, 100), resourceMax
 end
 
+---Icon bounds before any overlap shift, in its line's parent space with the cross axis centered.
+---@param cache table
+---@return number left
+---@return number right
+---@return number bottom
+---@return number top
+local function GetIconBounds(cache)
+	local width = cache.iconWidth
+	local height = cache.iconHeight
+	local xPos = cache.iconXPos
+	local yPos = cache.iconYPos
+	local halfCross = (cache.lineCross or 0) / 2
+	local relativeTo = cache.iconRelativeTo
+	if IsVerticalFillDirection(cache.iconFillDirection) then
+		local bottom = cache.linePos + yPos - height / 2
+		local left
+		if relativeTo == "TOP" then
+			left = xPos - halfCross - width
+		elseif relativeTo == "CENTER" then
+			left = xPos - width / 2
+		else
+			left = xPos + halfCross
+		end
+		return left, left + width, bottom, bottom + height
+	end
+
+	local left = cache.linePos + xPos - width / 2
+	local bottom
+	if relativeTo == "TOP" then
+		bottom = yPos + halfCross
+	elseif relativeTo == "CENTER" then
+		bottom = yPos - height / 2
+	else
+		bottom = yPos - halfCross - height
+	end
+	return left, left + width, bottom, bottom + height
+end
+
+-- Overlap layout per line parent frame; entries live on their line frames as trbIconLayout.
+local iconLayouts = {}
+-- Layouts awaiting a solve, so a tick with no changes checks one count.
+local dirtyIconLayouts = {}
+local iconLayoutOrderScratch = {}
+
+---@param layout table
+local function MarkIconLayoutDirty(layout)
+	if not layout.dirty then
+		layout.dirty = true
+		dirtyIconLayouts[#dirtyIconLayouts + 1] = layout
+	end
+end
+
+---Records whether a line's icon takes part in its parent's overlap layout, dirtying the layout on any change it reads.
+---@param threshold TRB.Classes.ThresholdFrame
+---@param parentFrame Frame # The frame the line is parented to
+---@param key string
+---@param drawn boolean
+local function TrackIconLayout(threshold, parentFrame, key, drawn)
+	if threshold.icon == nil then
+		return
+	end
+
+	local layout = iconLayouts[parentFrame]
+	if layout == nil then
+		layout = { entries = {}, dirty = false }
+		iconLayouts[parentFrame] = layout
+	end
+
+	local entry = threshold.trbIconLayout
+	if entry == nil then
+		entry = { frame = threshold }
+		threshold.trbIconLayout = entry
+	end
+
+	-- Custom lines re-parent when their target changes.
+	if entry.layout ~= layout then
+		local previous = entry.layout
+		if previous ~= nil then
+			local entries = previous.entries
+			for i = #entries, 1, -1 do
+				if entries[i] == entry then
+					table.remove(entries, i)
+				end
+			end
+			MarkIconLayoutDirty(previous)
+		end
+		layout.entries[#layout.entries + 1] = entry
+		entry.layout = layout
+		MarkIconLayoutDirty(layout)
+	end
+
+	if entry.key ~= key then
+		entry.key = key
+		MarkIconLayoutDirty(layout)
+	end
+
+	local cache = GetThresholdCache(key)
+	drawn = drawn and cache.iconWanted == true and cache.linePos ~= nil
+	if cache.layoutDrawn ~= drawn then
+		cache.layoutDrawn = drawn
+		MarkIconLayoutDirty(layout)
+	end
+
+	if cache.layoutChanged then
+		cache.layoutChanged = nil
+		if drawn then
+			MarkIconLayoutDirty(layout)
+		end
+	end
+end
+
+---Marks a line's icon as out of the layout when its frame is hidden outside the per-line pass.
+---@param threshold TRB.Classes.ThresholdFrame
+---@param cache table?
+local function UntrackIconLayout(threshold, cache)
+	local entry = threshold.trbIconLayout
+	if entry ~= nil and cache ~= nil and cache.layoutDrawn then
+		cache.layoutDrawn = false
+		MarkIconLayoutDirty(entry.layout)
+	end
+end
+
+---True when entry `a` claims the row nearest the bar ahead of entry `b`: usable state first, then lower cost.
+---@param a table
+---@param b table
+---@return boolean
+local function IconRanksAbove(a, b)
+	local aLevel = a.cache.frameLevel or 0
+	local bLevel = b.cache.frameLevel or 0
+	if aLevel ~= bLevel then
+		return aLevel > bLevel
+	end
+
+	local aValue = a.cache.value or 0
+	local bValue = b.cache.value or 0
+	if aValue ~= bValue then
+		return aValue < bValue
+	end
+	return a.key < b.key
+end
+
+---@param entry table
+---@param count integer # Entries before this one in rank order
+---@param order table[]
+---@param spacing number
+---@return boolean
+local function IconCollides(entry, count, order, spacing)
+	local left = entry.left + entry.shiftX
+	local right = entry.right + entry.shiftX
+	local bottom = entry.bottom + entry.shiftY
+	local top = entry.top + entry.shiftY
+	for i = 1, count do
+		local other = order[i]
+		if other.placed
+			and left < other.right + other.shiftX + spacing and other.left + other.shiftX < right + spacing
+			and bottom < other.top + other.shiftY + spacing and other.bottom + other.shiftY < top + spacing then
+			return true
+		end
+	end
+	return false
+end
+
+---Writes an icon's layout result, re-anchoring or toggling it only when the result changed.
+---@param entry table
+---@param shiftX number
+---@param shiftY number
+---@param hidden boolean
+local function ApplyIconLayoutResult(entry, shiftX, shiftY, hidden)
+	local cache = entry.cache
+	local threshold = entry.frame
+	if (cache.iconStaggerX or 0) ~= shiftX or (cache.iconStaggerY or 0) ~= shiftY then
+		cache.iconStaggerX = shiftX
+		cache.iconStaggerY = shiftY
+		if cache.iconWidth ~= nil then
+			AnchorThresholdIcon(threshold, cache)
+			if cache.iconBorder ~= nil then
+				ApplyThresholdIconBorder(threshold, cache.iconBorder)
+			end
+		end
+	end
+
+	if (cache.iconLayoutHidden == true) ~= hidden then
+		cache.iconLayoutHidden = hidden
+		if cache.iconWanted then
+			if hidden then
+				threshold.icon:Hide()
+			else
+				threshold.icon:Show()
+			end
+			cache.iconShown = not hidden
+		end
+	end
+end
+
+---Places one parent's icons in rank order, each on the nearest row away from the bar that clears every icon placed before it.
+---@param layout table
+---@param iconSettings TRB.Classes.Settings.ThresholdIcons
+local function SolveIconLayout(layout, iconSettings)
+	layout.dirty = false
+	local maxRows = iconSettings.overlapMode == "topOnly" and 1 or math.max(tonumber(iconSettings.overlapMaxRows) or 1, 1)
+	local spacing = tonumber(iconSettings.overlapSpacing) or 0
+	local order = iconLayoutOrderScratch
+	local count = 0
+
+	for _, entry in ipairs(layout.entries) do
+		local cache = GetThresholdCache(entry.key)
+		entry.cache = cache
+		entry.placed = false
+		if cache.layoutDrawn and cache.iconWidth ~= nil then
+			entry.left, entry.right, entry.bottom, entry.top = GetIconBounds(cache)
+			local position = count + 1
+			while position > 1 and IconRanksAbove(entry, order[position - 1]) do
+				order[position] = order[position - 1]
+				position = position - 1
+			end
+			order[position] = entry
+			count = count + 1
+		else
+			ApplyIconLayoutResult(entry, 0, 0, false)
+		end
+	end
+
+	for i = 1, count do
+		local entry = order[i]
+		local cache = entry.cache
+		local isVertical = IsVerticalFillDirection(cache.iconFillDirection)
+		local pitch = (isVertical and cache.iconWidth or cache.iconHeight) + spacing
+		-- Rows grow away from the bar: Above moves up (left on vertical bars), Below and Middle move down (right).
+		local direction
+		if cache.iconRelativeTo == "TOP" then
+			direction = isVertical and -1 or 1
+		else
+			direction = isVertical and 1 or -1
+		end
+
+		for row = 0, maxRows - 1 do
+			local shift = row * pitch * direction
+			entry.shiftX = isVertical and shift or 0
+			entry.shiftY = isVertical and 0 or shift
+			if not IconCollides(entry, i - 1, order, spacing) then
+				entry.placed = true
+				break
+			end
+		end
+
+		if entry.placed then
+			ApplyIconLayoutResult(entry, entry.shiftX, entry.shiftY, false)
+		else
+			ApplyIconLayoutResult(entry, 0, 0, true)
+		end
+	end
+
+	for i = 1, count do
+		order[i] = nil
+	end
+end
+
+---Solves every overlap layout whose icons changed since the last solve.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+local function FlushIconLayouts(settings)
+	local dirtyCount = #dirtyIconLayouts
+	if dirtyCount == 0 then
+		return
+	end
+
+	local iconSettings = settings.thresholds.icons
+	for i = dirtyCount, 1, -1 do
+		SolveIconLayout(dirtyIconLayouts[i], iconSettings)
+		dirtyIconLayouts[i] = nil
+	end
+end
+
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@return boolean
+local function IsIconLayoutActive(settings)
+	local mode = settings.thresholds.icons.overlapMode
+	return mode == "stagger" or mode == "topOnly"
+end
+
 
 ---Configures a threshold icon's anchor point, position, and size based on the spec's threshold icon settings.
 ---For vertical bars, "Above" (TOP) remaps to LEFT, "Below" (BOTTOM) remaps to RIGHT.
@@ -239,35 +600,7 @@ end
 ---@param fillDirection trbFillDirection? # The fill direction of the parent bar (nil defaults to horizontal)
 local function SetThresholdIconSizeAndPosition(settings, thresholdLine, fillDirection)
 	if thresholdLine.icon ~= nil then
-		local isVertical = IsVerticalFillDirection(fillDirection)
-		local relativeTo = settings.thresholds.icons.relativeTo
-
-		local setPoint, setPointRelativeTo
-		if isVertical then
-			-- Vertical bar: remap Above(TOP)→LEFT, Below(BOTTOM)→RIGHT, Center→Center
-			if relativeTo == "TOP" then
-				setPoint = "RIGHT"
-				setPointRelativeTo = "LEFT"
-			elseif relativeTo == "CENTER" then
-				setPoint = "CENTER"
-				setPointRelativeTo = "CENTER"
-			else -- "BOTTOM" or default
-				setPoint = "LEFT"
-				setPointRelativeTo = "RIGHT"
-			end
-		else
-			-- Horizontal bar: original behavior
-			if relativeTo == "TOP" then
-				setPoint = "BOTTOM"
-				setPointRelativeTo = "TOP"
-			elseif relativeTo == "CENTER" then
-				setPoint = "CENTER"
-				setPointRelativeTo = "CENTER"
-			else -- "BOTTOM" or default
-				setPoint = "TOP"
-				setPointRelativeTo = "BOTTOM"
-			end
-		end
+		local setPoint, setPointRelativeTo = GetIconAnchorPoints(settings.thresholds.icons.relativeTo, fillDirection)
 
 		thresholdLine.icon:ClearAllPoints()
 		thresholdLine.icon:SetPoint(setPoint, thresholdLine, setPointRelativeTo, settings.thresholds.icons.xPos, settings.thresholds.icons.yPos)
@@ -325,7 +658,11 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 	if not overlapBorder then
 		borderSubtraction = bar.border * 2
 	end
-	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
+	local crossSection = SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
+	if cache.lineCross ~= crossSection then
+		cache.lineCross = crossSection
+		cache.layoutChanged = true
+	end
 
 	-- Use the appropriate axis for the cache key
 	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
@@ -339,6 +676,8 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 		cache.maxResource = maxResource
 		cache.effectiveSize = effectiveSize
 		cache.fillDirection = fillDirection
+		cache.linePos = GetLineAxisPosition(fillDirection, effectiveWidth, effectiveHeight, xOffset, yOffset, lineThickness)
+		cache.layoutChanged = true
 	end
 
 	if cache.icon ~= thresholdLine.icon then
@@ -390,10 +729,17 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 		showIcon = false
 	end
 
+	cache.iconWanted = showIcon
 	if showIcon then
-		if cache.iconShown ~= true then
-			threshold.icon:Show()
-			cache.iconShown = true
+		-- The overlap layout can hide a wanted icon; it still resolves geometry so the layout can place it.
+		local visible = cache.iconLayoutHidden ~= true
+		if cache.iconShown ~= visible then
+			if visible then
+				threshold.icon:Show()
+			else
+				threshold.icon:Hide()
+			end
+			cache.iconShown = visible
 		end
 
 		-- Determine effective icon size/position: per-threshold override > global
@@ -421,47 +767,17 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 		end
 
 		if cache.iconWidth ~= width or cache.iconHeight ~= height or cache.iconXPos ~= xPos or cache.iconYPos ~= yPos or cache.iconRelativeTo ~= effectiveRelativeTo or cache.iconFillDirection ~= fillDirection then
-			local isVertical = IsVerticalFillDirection(fillDirection)
-
-			local setPoint, setPointRelativeTo
-			if isVertical then
-				-- Vertical bar: remap Above(TOP)→LEFT, Below(BOTTOM)→RIGHT, Center→Center
-				if effectiveRelativeTo == "TOP" then
-					setPoint = "RIGHT"
-					setPointRelativeTo = "LEFT"
-				elseif effectiveRelativeTo == "CENTER" then
-					setPoint = "CENTER"
-					setPointRelativeTo = "CENTER"
-				else -- "BOTTOM" or default
-					setPoint = "LEFT"
-					setPointRelativeTo = "RIGHT"
-				end
-			else
-				-- Horizontal bar: original behavior
-				if effectiveRelativeTo == "TOP" then
-					setPoint = "BOTTOM"
-					setPointRelativeTo = "TOP"
-				elseif effectiveRelativeTo == "CENTER" then
-					setPoint = "CENTER"
-					setPointRelativeTo = "CENTER"
-				else -- "BOTTOM" or default
-					setPoint = "TOP"
-					setPointRelativeTo = "BOTTOM"
-				end
-			end
-
-			threshold.icon:ClearAllPoints()
-			threshold.icon:SetPoint(setPoint, threshold, setPointRelativeTo, xPos, yPos)
-			threshold.icon:SetSize(width, height)
 			cache.iconWidth = width
 			cache.iconHeight = height
 			cache.iconXPos = xPos
 			cache.iconYPos = yPos
 			cache.iconRelativeTo = effectiveRelativeTo
 			cache.iconFillDirection = fillDirection
+			AnchorThresholdIcon(threshold, cache)
 			-- ClearAllPoints/SetSize invalidate BackdropTemplate rendering; force the
 			-- border block below to re-call SetBackdrop on this same pass.
 			cache.iconBorder = nil
+			cache.layoutChanged = true
 		end
 
 		-- Determine effective icon border: per-threshold override > global. The override is
@@ -473,32 +789,7 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 		end
 
 		if cache.iconBorder ~= effectiveBorder then
-			if effectiveBorder < 1 then
-				threshold.icon:SetBackdrop({
-					insets = { left = 0, right = 0, top = 0, bottom = 0 }
-				})
-			else
-				threshold.icon:SetBackdrop({
-					edgeFile = "Interface\\Buttons\\WHITE8X8",
-					tile = true,
-					tileSize = 4,
-					edgeSize = effectiveBorder,
-					insets = { left = 0, right = 0, top = 0, bottom = 0 }
-				})
-			end
-			threshold.icon:SetBackdropColor(0, 0, 0, 0)
-			-- SetBackdrop resets the border color, so restore the last threshold color applied by
-			-- SetThresholdColor/SetThresholdColorFromCurve. Falls back to black only on the very
-			-- first pass before any color has been applied. Without this, re-applying the backdrop
-			-- (e.g. on a border/position change, or after a cache clear on login/spec switch) would
-			-- leave the border black until the next color pass, which is delayed by the bar-text
-			-- update early-out.
-			local bc = threshold.icon.borderColorCache
-			if bc ~= nil then
-				threshold.icon:SetBackdropBorderColor(bc[1], bc[2], bc[3], bc[4])
-			else
-				threshold.icon:SetBackdropBorderColor(0, 0, 0, 1)
-			end
+			ApplyThresholdIconBorder(threshold, effectiveBorder)
 			cache.iconBorder = effectiveBorder
 		end
 
@@ -821,10 +1112,14 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 	if overlapBorder == false then
 		borderSubtraction = (tonumber(barBorder) or 0) * 2
 	end
-	SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
+	local crossSection = SetThresholdLineDimensions(thresholdLine, fillDirection, effectiveWidth, effectiveHeight, lineThickness, borderSubtraction)
 	local effectiveSize = IsVerticalFillDirection(fillDirection) and effectiveHeight or effectiveWidth
 
 	local cache = GetThresholdCache(key)
+	if cache.lineCross ~= crossSection then
+		cache.lineCross = crossSection
+		cache.layoutChanged = true
+	end
 	if cache.value ~= value or cache.maxResource ~= maxResource or cache.effectiveSize ~= effectiveSize or cache.fillDirection ~= fillDirection then
 		local anchorPoint, parentAnchor, xOffset, yOffset = GetThresholdAnchorInfo(fillDirection, effectiveWidth, effectiveHeight, value, maxResource)
 
@@ -834,6 +1129,8 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 		cache.maxResource = maxResource
 		cache.effectiveSize = effectiveSize
 		cache.fillDirection = fillDirection
+		cache.linePos = GetLineAxisPosition(fillDirection, effectiveWidth, effectiveHeight, xOffset, yOffset, lineThickness)
+		cache.layoutChanged = true
 	end
 end
 
@@ -2315,6 +2612,7 @@ function TRB.Functions.Threshold:HideInactiveCustomThresholdFrames(activeFrameKe
 				if cache ~= nil then
 					cache.iconShown = false
 				end
+				UntrackIconLayout(threshold, cache)
 			end
 		end
 	end
@@ -2336,6 +2634,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 		TRB.Functions.Threshold:HideInactiveCustomThresholdFrames(activeFrameKeys)
 		return
 	end
+	local layoutActive = IsIconLayoutActive(settings)
 
 	for guid, customThreshold in pairs(settings.thresholds.customThresholds) do
 		local rawGuid = customThreshold.guid or guid
@@ -2512,12 +2811,18 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					lineThickness,
 					overlapBorder
 				)
+				if layoutActive then
+					TrackIconLayout(threshold, targetInfo.parentFrame, frameKey, showThreshold)
+				end
 				customThreshold.value = configuredValue
 			end
 		end
 	end
 
 	TRB.Functions.Threshold:HideInactiveCustomThresholdFrames(activeFrameKeys)
+	if layoutActive then
+		FlushIconLayouts(settings)
+	end
 end
 
 ---Redraws all threshold lines across primary and secondary bar groups by resetting their appearance and clearing the threshold position cache.
@@ -2911,6 +3216,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				threshold.icon.cooldown:SetFrameLevel(thresholdIconCooldownLevel)
 
 				cache.frameLevel = frameLevel
+				cache.layoutChanged = true
 			end
 
 			-- Only apply color if thresholdColor is provided (nil means color is handled externally via curve)
@@ -3021,6 +3327,7 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 	line.bar = bar
 	line.state = state
 	line.data = data
+	local layoutActive = IsIconLayoutActive(settings)
 
 	local index = 0
 	for _, spell in ipairs(data.thresholdSpells) do
@@ -3041,9 +3348,15 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 			if bar.resourceType ~= nil and spell.primaryResourceType ~= bar.resourceType then
 				-- Hidden in place rather than skipped, so a form swap never hands this frame to another spell.
 				frame:Hide()
+				if layoutActive then
+					TrackIconLayout(frame, nodeFrame, spell.settingKey, false)
+				end
 			elseif not isActive then
 				-- A disabled line with no sound always ends hidden, and its rules touch only the line and its frame.
 				self:Hide(spell.settingKey, frame)
+				if layoutActive then
+					TrackIconLayout(frame, nodeFrame, spell.settingKey, false)
+				end
 			else
 				line.spell = spell
 				line.frame = frame
@@ -3089,8 +3402,15 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 
 				local isDrawn = self:AdjustThresholdDisplay(spell, spell.settingKey, frame, line.show, line.frameLevel, line.pairOffset, line.color, line.snapshot, settings, dictEntry, bar.barSettings)
 				self:RepositionThreshold(settings, spell.settingKey, frame, line.show and isDrawn, nodeFrame, line.resourceAmount, bar.maxResource, nil, bar.barSettings)
+				if layoutActive then
+					TrackIconLayout(frame, nodeFrame, spell.settingKey, line.show and isDrawn)
+				end
 			end
 		end
+	end
+
+	if layoutActive then
+		FlushIconLayouts(settings)
 	end
 end
 

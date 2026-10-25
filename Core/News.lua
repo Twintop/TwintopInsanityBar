@@ -10,6 +10,11 @@ TRB.Details.coreNewsContent = [====[
 - Fix the End Cap still leaving a sliver of the bar showing past it during long channels such as Fishing.
 - Fix the End Cap narrowing as the Target and Focus Cast Bars near full.
 
+## Thresholds
+
+- [#333](#333) Add a When Threshold Icons Overlap option: Stagger into rows moves overlapping icons onto rows away from the bar, and Show highest priority only hides all but the most usable, lowest-cost icon.
+- [#333](#333) Stagger into rows has spacing and maximum row options; icons that don't fit are hidden.
+
 # Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-25)
 ## General
 

@@ -259,8 +259,55 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		TRB.Functions.Threshold:RedrawThresholdLines()
 	end)
 
-	-- The returned row is the Overlap Border checkbox's top, so the cover reaches past it.
-	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, yCoord - 30)
+	local function RedrawIfLive()
+		if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or
+			(classId == nil and specId == nil) then
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end
+	end
+
+	local function RefreshOverlapControlStates()
+		local staggering = spec.thresholds.icons.overlapMode == "stagger"
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapSpacing, staggering)
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapMaxRows, staggering)
+	end
+
+	yCoord = yCoord - 20
+	local overlapModeOptions = {
+		{ value = "off", label = L["ThresholdIconOverlapModeOff"] },
+		{ value = "stagger", label = L["ThresholdIconOverlapModeStagger"] },
+		{ value = "topOnly", label = L["ThresholdIconOverlapModeTopOnly"] },
+	}
+	controls.thresholdIconOverlapMode = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconOverlapMode", L["ThresholdIconOverlapMode"], overlapModeOptions,
+		function() return spec.thresholds.icons.overlapMode end,
+		function(value)
+			spec.thresholds.icons.overlapMode = value
+			RefreshOverlapControlStates()
+			RedrawIfLive()
+		end,
+		oUi.xCoord, yCoord)
+
+	controls.thresholdIconOverlapSpacing = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["ThresholdIconOverlapSpacing"], 0, 20, spec.thresholds.icons.overlapSpacing, 1, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord - 30)
+	controls.thresholdIconOverlapSpacing:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		spec.thresholds.icons.overlapSpacing = value
+		RedrawIfLive()
+	end)
+
+	yCoord = yCoord - 80
+	controls.thresholdIconOverlapMaxRows = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["ThresholdIconOverlapMaxRows"], 1, 10, spec.thresholds.icons.overlapMaxRows, 1, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.thresholdIconOverlapMaxRows:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		spec.thresholds.icons.overlapMaxRows = value
+		RedrawIfLive()
+	end)
+
+	RefreshOverlapControlStates()
+
+	-- The returned row is the Max Rows slider's top, so the cover reaches past it.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, yCoord - 50)
 
 	return yCoord
 end

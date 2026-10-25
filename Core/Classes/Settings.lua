@@ -149,6 +149,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public yPos number
 ---@field public width number
 ---@field public height number
+---@field public overlapMode string # "off", "stagger", or "topOnly"
+---@field public overlapSpacing number
+---@field public overlapMaxRows integer
 
 ---@class TRB.Classes.Settings.Precision
 ---@field public health integer
