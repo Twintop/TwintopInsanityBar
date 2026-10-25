@@ -75,6 +75,10 @@ TRB.Details.coreNewsContent = [====[
 
 - [#885](#885) Fix exported profiles leaving out a Color Indicator's minimum stacks setting, such as Resonant Energy's.
 
+## Localization
+
+- [#857 - @MOSS099](#857) Updated translations for Simplified Chinese (zhCN).
+
 ---
 
 # Live 12.1.5.5-release / Forever 1.60.1.13-release (2026-10-23)
