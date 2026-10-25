@@ -19,6 +19,11 @@ TRB.Flavor.newsContent = [====[
 - Fix Fingers of Frost losing count when Ice Lance is queued behind Glacial Spike, leaving its Color Indicators on with no charges up, or off with one up.
 - Fingers of Frost tracking corrects itself when a charge is gained as you spend one.
 
+## Monk
+### Brewmaster
+
+- [#867](#867) Improve Stagger bar and stagger bar text update performance.
+
 ## Priest
 ### Discipline
 

@@ -328,6 +328,10 @@ local function ConstructResourceBar(settings)
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
+-- The stagger text's hex for the last stagger bar color, kept until UpdateStaggerColor evaluates a new color.
+local staggerTextColorSource = nil
+local staggerTextColorHex = nil
+
 local function RefreshLookupData_Brewmaster()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -403,20 +407,25 @@ local function RefreshLookupData_Brewmaster()
 		local _stagger = snapshotData.attributes.stagger or 0
 		local _staggerPercent = snapshotData.attributes.staggerPercent or 0
 
-		local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
-		local staggerColor = staggerColors.low and staggerColors.low.color
-		if snapshotData.attributes.staggerColor then
-			local r, g, b, a = snapshotData.attributes.staggerColor:GetRGBA()
-			staggerColor = Color:ConvertColorDecimalToHex(r, g, b, a)
-		end
-
 		-- Stagger text color mode: "bar" uses the stagger bar color, "custom" a fixed color, "none" no coloring
 		local staggerTextColors = specSettings.colors and specSettings.colors.text and specSettings.colors.text.stagger
 		local staggerTextMode = staggerTextColors and staggerTextColors.mode or "bar"
+		local staggerColor = nil
 		if staggerTextMode == "custom" then
 			staggerColor = staggerTextColors.color
-		elseif staggerTextMode == "none" then
-			staggerColor = nil
+		elseif staggerTextMode ~= "none" then
+			local barColor = snapshotData.attributes.staggerColor
+			if barColor == nil then
+				local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
+				staggerColor = staggerColors.low and staggerColors.low.color
+			else
+				if barColor ~= staggerTextColorSource then
+					local r, g, b, a = barColor:GetRGBA()
+					staggerTextColorSource = barColor
+					staggerTextColorHex = Color:ConvertColorDecimalToHex(r, g, b, a)
+				end
+				staggerColor = staggerTextColorHex
+			end
 		end
 
 		lookupLogic["$stagger"] = _stagger
@@ -795,23 +804,42 @@ local function UpdateSnapshot()
 	--local currentTime = GetTime()
 end
 
----Updates the stagger color curve based on current stagger percentage and configured thresholds
-local function UpdateStaggerColor()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+-- The stagger curve depends only on its settings, so it is rebuilt only when one of them changes.
+local staggerCurve = nil
+local staggerCurveInputs = {}
+local staggerCurvePercent = nil
 
-	-- Get configurable color curve settings from spec settings (new custom bar structure)
-	local staggerBarSettings = nil
-	if TRB.Data.specCache and TRB.Data.specCache.monk_brewmaster then
-		local specCache = TRB.Data.specCache.monk_brewmaster
-		if specCache and specCache.settings and specCache.settings.colors and specCache.settings.colors.bars then
-			staggerBarSettings = specCache.settings.colors.bars.stagger
-		end
+---Records the stagger bar's curve inputs, returning true when any differs from the last call.
+---@param staggerBarSettings table # colors.bars.stagger
+---@return boolean
+local function StaggerCurveInputsChanged(staggerBarSettings)
+	local low = staggerBarSettings.low or staggerBarSettings.light
+	local medium = staggerBarSettings.medium
+	local heavy = staggerBarSettings.heavy
+	local extreme = staggerBarSettings.extreme
+	local lowColor, lowThreshold = low and low.color, low and low.threshold
+	local mediumColor, mediumThreshold = medium and medium.color, medium and medium.threshold
+	local heavyColor, heavyThreshold = heavy and heavy.color, heavy and heavy.threshold
+	local extremeColor, extremeThreshold = extreme and extreme.color, extreme and extreme.threshold
+	local curveType = staggerBarSettings.type
+	local inputs = staggerCurveInputs
+	if inputs.built and inputs[1] == lowColor and inputs[2] == lowThreshold
+		and inputs[3] == mediumColor and inputs[4] == mediumThreshold
+		and inputs[5] == heavyColor and inputs[6] == heavyThreshold
+		and inputs[7] == extremeColor and inputs[8] == extremeThreshold and inputs[9] == curveType then
+		return false
 	end
+	inputs[1], inputs[2], inputs[3], inputs[4] = lowColor, lowThreshold, mediumColor, mediumThreshold
+	inputs[5], inputs[6], inputs[7], inputs[8] = heavyColor, heavyThreshold, extremeColor, extremeThreshold
+	inputs[9] = curveType
+	inputs.built = true
+	return true
+end
 
-	if staggerBarSettings == nil then
-		return
-	end
-
+---Builds the stagger bar's color curve from its configured thresholds and colors.
+---@param staggerBarSettings table # colors.bars.stagger
+---@return any # A ColorCurve
+local function BuildStaggerCurve(staggerBarSettings)
 	-- Use configurable settings or defaults
 	---@type Enum.LuaCurveType?
 	local curveType = Enum.LuaCurveType.Step
@@ -909,10 +937,37 @@ local function UpdateStaggerColor()
 		curve:AddPoint(extremeThreshold, CreateColor(extremeR, extremeG, extremeB, extremeA))
 	end
 
-	-- Evaluate the curve at current stagger percent
+	return curve
+end
+
+---Evaluates the stagger bar color at the current stagger percent from the curve its settings build.
+local function UpdateStaggerColor()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+	-- Get configurable color curve settings from spec settings (new custom bar structure)
+	local staggerBarSettings = nil
+	if TRB.Data.specCache and TRB.Data.specCache.monk_brewmaster then
+		local specCache = TRB.Data.specCache.monk_brewmaster
+		if specCache and specCache.settings and specCache.settings.colors and specCache.settings.colors.bars then
+			staggerBarSettings = specCache.settings.colors.bars.stagger
+		end
+	end
+
+	if staggerBarSettings == nil then
+		return
+	end
+
+	local rebuilt = StaggerCurveInputsChanged(staggerBarSettings)
+	if rebuilt then
+		staggerCurve = BuildStaggerCurve(staggerBarSettings)
+	end
+
+	-- The stagger percent is plain, so the color is only re-evaluated when it or the curve changes.
 	local staggerPercent = snapshotData.attributes.staggerPercent or 0
-	local staggerColor = curve:Evaluate(staggerPercent)
-	snapshotData.attributes.staggerColor = staggerColor
+	if rebuilt or staggerPercent ~= staggerCurvePercent or snapshotData.attributes.staggerColor == nil then
+		staggerCurvePercent = staggerPercent
+		snapshotData.attributes.staggerColor = staggerCurve:Evaluate(staggerPercent)
+	end
 end
 
 local function UpdateSnapshot_Brewmaster()
