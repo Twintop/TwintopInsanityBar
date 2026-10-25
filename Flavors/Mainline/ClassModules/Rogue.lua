@@ -816,8 +816,10 @@ local function ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, condition
 	return flatIndicatorTargets, overcapIndicator
 end
 
-local function BuildBarElementOvercapCurves(specSettings, overcapIndicator, barKey, targetColors)
-	local curves = {}
+---Fills a caller's scratch table with the overcap indicator's per-element curves for one bar.
+---@param curves table # Scratch table, wiped first
+local function BuildBarElementOvercapCurves(specSettings, overcapIndicator, barKey, targetColors, curves)
+	wipe(curves)
 	local targets = overcapIndicator and overcapIndicator.targets and overcapIndicator.targets[barKey]
 	if targets == nil or overcapIndicator == nil or overcapIndicator.color == nil then
 		return curves
@@ -872,6 +874,8 @@ local scratch = {
 	flatIndicatorTargets1 = {}, flatTargetFlags1 = {},
 	flatIndicatorTargets2 = {}, flatTargetFlags2 = {},
 	flatIndicatorTargets3 = {}, flatTargetFlags3 = {},
+	-- One per BuildBarElementOvercapCurves call site; the specs never run in the same tick.
+	comboPointOvercapCurves1 = {}, energyBarOvercapCurves1 = {}, comboPointOvercapCurves2 = {},
 }
 
 local function UpdateResourceBar()
@@ -916,7 +920,7 @@ local function UpdateResourceBar()
 		wipe(comboPointBarColorMap)
 		comboPointBarColorMap.comboPointsBar = comboPointsColors
 		local comboPointIndicatorTargets, comboPointOvercapIndicator = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap, scratch.comboPointIndicatorTargets1, scratch.comboPointTargetFlags1)
-		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors)
+		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves1)
 		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or emptyIndicatorFlags
 
 		if snapshotData.attributes.isTracking then
@@ -970,8 +974,8 @@ local function UpdateResourceBar()
 				barColorMap.energyBar = energyBarColors
 				barColorMap.comboPointsBar = comboPointsColors
 				local flatIndicatorTargets, overcapIndicator = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap, scratch.flatIndicatorTargets1, scratch.flatTargetFlags1)
-				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors)
-				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors)
+				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors, scratch.energyBarOvercapCurves1)
+				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves2)
 				local comboPointFlatTargets = flatIndicatorTargets.comboPointsBar or emptyIndicatorFlags
 
 				barColor = energyBarColors.bar
@@ -1112,7 +1116,7 @@ local function UpdateResourceBar()
 		wipe(comboPointBarColorMap)
 		comboPointBarColorMap.comboPointsBar = comboPointsColors
 		local comboPointIndicatorTargets, comboPointOvercapIndicator = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap, scratch.comboPointIndicatorTargets2, scratch.comboPointTargetFlags2)
-		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors)
+		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves1)
 		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or emptyIndicatorFlags
 
 		if snapshotData.attributes.isTracking then
@@ -1166,8 +1170,8 @@ local function UpdateResourceBar()
 				barColorMap.energyBar = energyBarColors
 				barColorMap.comboPointsBar = comboPointsColors
 				local flatIndicatorTargets, overcapIndicator = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap, scratch.flatIndicatorTargets2, scratch.flatTargetFlags2)
-				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors)
-				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors)
+				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors, scratch.energyBarOvercapCurves1)
+				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves2)
 				local comboPointFlatTargets = flatIndicatorTargets.comboPointsBar or emptyIndicatorFlags
 
 				barColor = energyBarColors.bar
@@ -1307,7 +1311,7 @@ local function UpdateResourceBar()
 		wipe(comboPointBarColorMap)
 		comboPointBarColorMap.comboPointsBar = comboPointsColors
 		local comboPointIndicatorTargets, comboPointOvercapIndicator = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap, scratch.comboPointIndicatorTargets3, scratch.comboPointTargetFlags3)
-		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors)
+		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, comboPointOvercapIndicator, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves1)
 		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or emptyIndicatorFlags
 
 		if snapshotData.attributes.isTracking then
@@ -1361,8 +1365,8 @@ local function UpdateResourceBar()
 				barColorMap.energyBar = energyBarColors
 				barColorMap.comboPointsBar = comboPointsColors
 				local flatIndicatorTargets, overcapIndicator = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap, scratch.flatIndicatorTargets3, scratch.flatTargetFlags3)
-				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors)
-				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors)
+				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "energyBar", energyBarColors, scratch.energyBarOvercapCurves1)
+				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, overcapIndicator, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves2)
 				local comboPointFlatTargets = flatIndicatorTargets.comboPointsBar or emptyIndicatorFlags
 
 				barColor = energyBarColors.bar
