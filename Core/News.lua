@@ -7,6 +7,7 @@ TRB.Details.coreNewsContent = [====[
 # Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-23)
 ## General
 
+- [#213](#213) Remove unused color code.
 - [#584](#584) A font, texture, or sound that isn't loaded keeps its setting instead of resetting to the default.
 - [#584](#584) Bars, bar text, audio cues, and threshold sounds use the default in place of a font, texture, or sound until it loads, with no reload needed.
 - [#584](#584) Options show a font, texture, or sound that isn't loaded with "(not loaded)" after its name.

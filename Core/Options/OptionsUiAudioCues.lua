@@ -284,16 +284,17 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		GameTooltip:Show()
 	end
 
+	local cdmBadgeColor = CreateColor(TRB.Functions.OptionsUi.Primitives:GetCdmBadgeColor())
+
 	---Badge-colored CDM label, for text where the badge frame cannot go.
 	---@param format string # Wraps the label, e.g. "[%s]"
 	---@return string
 	local function GetCdmLabelMarkup(format)
-		local r, g, b = TRB.Functions.OptionsUi.Primitives:GetCdmBadgeColor()
-		return string.format("|c%s%s|r", TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, 1), string.format(format, L["CdmBadgeLabel"]))
+		return cdmBadgeColor:WrapTextInColorCode(string.format(format, L["CdmBadgeLabel"]))
 	end
 
 	local notTrackedR, notTrackedG, notTrackedB = TRB.Functions.OptionsUi.Primitives:GetNotTrackedColor()
-	local notTrackedHex = TRB.Functions.Color:ConvertColorDecimalToHex(notTrackedR, notTrackedG, notTrackedB, 1)
+	local notTrackedHex = CreateColor(notTrackedR, notTrackedG, notTrackedB):GenerateHexColor()
 
 	---Shows a cue's name, firing condition and description on row hover.
 	---@param cellFrame Frame?
