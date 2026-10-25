@@ -45,8 +45,8 @@ TRB.Flavor.newsContent = [====[
 
 ### Shadow
 
-- Fix a Lua error from casting Shadow Word: Madness just as Voidform ends, with Ancient Madness talented.
-- Fix Halo and Power Surge briefly restarting Voidform when they land just as it ends, with Sustained Potency talented.
+- [#888](#888) Fix a Lua error from casting Shadow Word: Madness just as Voidform ends, with Ancient Madness talented.
+- [#888](#888) Fix Halo and Power Surge briefly restarting Voidform when they land just as it ends, with Sustained Potency talented.
 
 ## Shaman
 ### Enhancement
