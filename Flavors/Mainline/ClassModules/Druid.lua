@@ -3444,7 +3444,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 
 		if sharedSettings ~= nil and sharedDisplayBar ~= nil then
 			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
-			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
+			-- The text frames are built from the active spec's bar text list, not the form spec's.
+			TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings, activeSettings)
 		else
 			TRB.Functions.BarVisibility:HideAllEntries(entries, snapshotData, nil)
 		end
