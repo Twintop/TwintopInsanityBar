@@ -1679,6 +1679,12 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 			healthNode:ApplyEndCap(settings.colors.healthBar.endCap, settings.colors.healthBar.border.color)
 			healthNode:SetBorderColor(settings.colors.healthBar.border.color)
 			healthNode:SetBackgroundColorFromString(settings.colors.healthBar.background.color)
+			-- SetTextures may reset the fill, which only the health curve colors, so reapply its last result.
+			local snapshotData = TRB.Data.snapshotData
+			if snapshotData ~= nil then
+				TRB.Functions.Character:FlushHealthValues()
+				healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+			end
 			healthNode:SetFrameLevel(self:GetBarFrameLevel("health"))
 
 			-- Apply absorb overlay appearance via named slot (if it exists)
