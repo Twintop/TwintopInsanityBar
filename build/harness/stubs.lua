@@ -160,8 +160,22 @@ function frameMethods:GetAnimations() return nil end
 function frameMethods:CreateTexture(name, layer, template) local t = newFrame("Texture", name, self, template); return t end
 function frameMethods:CreateMaskTexture(name) return newFrame("MaskTexture", name, self) end
 function frameMethods:CreateFontString(name, layer, template) return newFrame("FontString", name, self, template) end
-function frameMethods:CreateAnimationGroup(name) return newFrame("AnimationGroup", name, self) end
-function frameMethods:CreateAnimation(kind, name) return newFrame(kind or "Animation", name, self) end
+-- Animation groups track whether they're playing, and VertexColor animations keep the colors they're given.
+local function newAnimation(kind, name, parent)
+	local a = newFrame(kind, name, parent)
+	a.Play = function(self) self.__playing = true end
+	a.Stop = function(self) self.__playing = false end
+	a.IsPlaying = function(self) return self.__playing == true end
+	a.SetDuration = function(self, duration) self.__duration = duration end
+	a.GetDuration = function(self) return self.__duration or 0 end
+	a.SetStartColor = function(self, color) self.__startColor = color end
+	a.GetStartColor = function(self) return self.__startColor end
+	a.SetEndColor = function(self, color) self.__endColor = color end
+	a.GetEndColor = function(self) return self.__endColor end
+	return a
+end
+function frameMethods:CreateAnimationGroup(name) return newAnimation("AnimationGroup", name, self) end
+function frameMethods:CreateAnimation(kind, name) return newAnimation(kind or "Animation", name, self) end
 function frameMethods:CreateLine(name) return newFrame("Line", name, self) end
 function frameMethods:GetFontObject() return nil end
 function frameMethods:GetNormalTexture() return newFrame("Texture", nil, self) end
@@ -350,9 +364,70 @@ function M.install(opts)
 	G.getglobal = function(n) return G[n] end
 	G.setglobal = function(n, v) G[n] = v end
 	G.SecondsFormatter = {}
-	G.CreateColor = function(r, g, b, a) return { r = r, g = g, b = b, a = a or 1, GetRGBA = function(s) return s.r, s.g, s.b, s.a end, GetRGB = function(s) return s.r, s.g, s.b end, GenerateHexColor = function(s) return string.format("%02x%02x%02x%02x", (s.a or 1) * 255, s.r * 255, s.g * 255, s.b * 255) end, GenerateHexColorMarkup = function(s) return "|cff" .. string.format("%02x%02x%02x", s.r * 255, s.g * 255, s.b * 255) end, WrapTextInColorCode = function(s, t) return t end, IsEqualTo = function(s, o) return false end } end
-	G.CreateColorFromHexString = function(hex) return G.CreateColor(1, 1, 1, 1) end
-	G.CreateColorFromBytes = function(r, g, b, a) return G.CreateColor(r / 255, g / 255, b / 255, (a or 255) / 255) end
+	-- ColorMixin and the ColorUtil helpers as the client's Blizzard_SharedXMLBase/Color.lua and
+	-- Blizzard_SharedXML/ColorUtil.lua define them, so color conversions behave offline as they do in game.
+	local ColorMixin = {}
+	G.ColorMixin = ColorMixin
+	function ColorMixin:OnLoad(r, g, b, a) self:SetRGBA(r, g, b, a) end
+	function ColorMixin:IsRGBEqualTo(other) return self.r == other.r and self.g == other.g and self.b == other.b end
+	function ColorMixin:IsEqualTo(other) return self:IsRGBEqualTo(other) and self.a == other.a end
+	function ColorMixin:GetRGB() return self.r, self.g, self.b end
+	function ColorMixin:GetRGBAsBytes() return G.Round(self.r * 255), G.Round(self.g * 255), G.Round(self.b * 255) end
+	function ColorMixin:GetRGBA() return self.r, self.g, self.b, self.a end
+	function ColorMixin:GetRGBAAsBytes() return G.Round(self.r * 255), G.Round(self.g * 255), G.Round(self.b * 255), G.Round((self.a or 1) * 255) end
+	function ColorMixin:SetRGBA(r, g, b, a) self.r, self.g, self.b, self.a = r, g, b, a or 1 end
+	function ColorMixin:SetRGB(r, g, b) self:SetRGBA(r, g, b, nil) end
+	function ColorMixin:GenerateHexColor() return G.C_ColorUtil.GenerateTextColorCode(self) end
+	function ColorMixin:GenerateHexColorNoAlpha() return ("%.2X%.2X%.2X"):format(self:GetRGBAsBytes()) end
+	function ColorMixin:GenerateHexColorMarkup() return "|c" .. self:GenerateHexColor() end
+	function ColorMixin:WrapTextInColorCode(text) return G.C_ColorUtil.WrapTextInColor(text, self) end
+	G.CreateColor = function(r, g, b, a) local color = G.CreateFromMixins(ColorMixin) color:OnLoad(r, g, b, a) return color end
+	G.WrapTextInColorCode = function(text, colorHexString) return G.C_ColorUtil.WrapTextInColorCode(text, colorHexString) end
+	G.WrapTextInColor = function(text, color) return G.C_ColorUtil.WrapTextInColor(text, color) end
+	-- assertsafe reports and carries on, so the caller still gets its fallback.
+	G.assertsafe = function(condition, message, ...) if not condition then print("ASSERTSAFE " .. string.format(message or "", ...)) end return condition end
+	G.ExtractColorValueFromHex = function(str, index) return tonumber(str:sub(index, index + 1), 16) / 255 end
+	G.CreateColorFromHexString = function(hexColor)
+		if #hexColor == 8 then
+			local e = G.ExtractColorValueFromHex
+			return G.CreateColor(e(hexColor, 3), e(hexColor, 5), e(hexColor, 7), e(hexColor, 1))
+		end
+		G.assertsafe(false, "CreateColorFromHexString input must be hexadecimal digits in this format: %s.", "AARRGGBB")
+		return nil
+	end
+	G.CreateColorFromRGBAHexString = function(hexColor)
+		if #hexColor == 8 then
+			local e = G.ExtractColorValueFromHex
+			return G.CreateColor(e(hexColor, 1), e(hexColor, 3), e(hexColor, 5), e(hexColor, 7))
+		end
+		G.assertsafe(false, "CreateColorFromHexString input must be hexadecimal digits in this format: %s", "RRGGBBAA")
+		return nil
+	end
+	G.CreateColorFromRGBHexString = function(hexColor)
+		if #hexColor == 6 then
+			local e = G.ExtractColorValueFromHex
+			return G.CreateColor(e(hexColor, 1), e(hexColor, 3), e(hexColor, 5), 1)
+		end
+		G.assertsafe(false, "CreateColorFromRGBHexString input must be hexadecimal digits in this format: %s", "RRGGBB")
+		return nil
+	end
+	G.CreateColorFromBestRGBHexString = function(hexColor)
+		if #hexColor == 8 then return G.CreateColorFromRGBAHexString(hexColor) end
+		if #hexColor == 6 then return G.CreateColorFromRGBHexString(hexColor) end
+		G.assertsafe(false, "CreateColorFromBestRGBHexString input must be hexadecimal digits in either of these formats: %s / %s", "RRGGBBAA", "RRGGBB")
+		return nil
+	end
+	G.CreateColorFromBytes = function(r, g, b, a) return G.CreateColor(r / 255, g / 255, b / 255, a / 255) end
+	G.AreColorsEqual = function(left, right) if left and right then return left:IsEqualTo(right) end return left == right end
+	G.IsRGBAEqualToColor = function(r, g, b, a, color) return color.r == r and color.g == g and color.b == b and color.a == a end
+	G.RGBToColorCode = function(r, g, b) return string.format("|cff%02x%02x%02x", r * 255, g * 255, b * 255) end
+	G.RGBTableToColorCode = function(rgbTable) return G.RGBToColorCode(rgbTable.r, rgbTable.g, rgbTable.b) end
+	-- Built in C by the client; generated hex is assumed lowercase, like RAID_CLASS_COLORS' colorStr.
+	G.C_ColorUtil = {
+		GenerateTextColorCode = function(color) return ("ff%02x%02x%02x"):format(G.Round(color.r * 255), G.Round(color.g * 255), G.Round(color.b * 255)) end,
+		WrapTextInColor = function(text, color) return "|c" .. G.C_ColorUtil.GenerateTextColorCode(color) .. text .. "|r" end,
+		WrapTextInColorCode = function(text, textColorCode) return "|c" .. textColorCode .. text .. "|r" end,
+	}
 	G.NORMAL_FONT_COLOR = G.CreateColor(1, 0.82, 0)
 	G.HIGHLIGHT_FONT_COLOR = G.CreateColor(1, 1, 1)
 	G.GRAY_FONT_COLOR = G.CreateColor(0.5, 0.5, 0.5)
@@ -368,7 +443,13 @@ function M.install(opts)
 	G.LEGENDARY_ORANGE_COLOR = G.CreateColor(1, 0.5, 0)
 	G.ARTIFACT_GOLD_COLOR = G.CreateColor(0.9, 0.8, 0.5)
 	G.HEIRLOOM_BLUE_COLOR = G.CreateColor(0, 0.8, 1)
-	G.RAID_CLASS_COLORS = setmetatable({}, { __index = function() return G.CreateColor(1, 1, 1) end })
+	-- Shaped like the client's (colorStr, nil for an unknown token); the colors stay white, since they come from the client's data.
+	G.RAID_CLASS_COLORS = {}
+	for _, entry in pairs(classes) do
+		local color = G.CreateColor(1, 1, 1)
+		color.colorStr = color:GenerateHexColor()
+		G.RAID_CLASS_COLORS[entry[2]] = color
+	end
 	G.CUSTOM_CLASS_COLORS = nil
 	G.PowerBarColor = setmetatable({}, { __index = function() return { r = 0, g = 0, b = 1 } end })
 	G.STAGGER_STATES = { RED = { r = 1, g = 0, b = 0 }, YELLOW = { r = 1, g = 1, b = 0 }, GREEN = { r = 0, g = 1, b = 0 } }
@@ -405,6 +486,7 @@ function M.install(opts)
 		PlayerInteractionType = {},
 		ChatChannelType = {},
 		ItemQuality = { Poor = 0, Common = 1, Uncommon = 2, Rare = 3, Epic = 4, Legendary = 5, Artifact = 6, Heirloom = 7 },
+		LuaCurveType = { Linear = 0, Step = 1, Cosine = 2, Cubic = 3 },
 	}, { __index = function(t, k) local e = setmetatable({}, { __index = function() return 0 end }) rawset(t, k, e) return e end })
 	G.LE_UNIT_STAT_STRENGTH, G.LE_UNIT_STAT_AGILITY, G.LE_UNIT_STAT_STAMINA, G.LE_UNIT_STAT_INTELLECT = 1, 2, 3, 4
 	G.CR_HASTE_SPELL, G.CR_HASTE_MELEE, G.CR_HASTE_RANGED, G.CR_VERSATILITY_DAMAGE_DONE, G.CR_VERSATILITY_DAMAGE_TAKEN, G.CR_CRIT_SPELL, G.CR_MASTERY, G.CR_SPEED, G.CR_LIFESTEAL, G.CR_AVOIDANCE = 20, 18, 19, 29, 31, 11, 26, 14, 17, 21
@@ -456,11 +538,22 @@ function M.install(opts)
 	G.UnitPower = function(u, p) return 0 end
 	G.UnitPowerMax = function(u, p) return 100 end
 	G.UnitPowerType = function() return 0, "MANA" end
-	G.UnitPowerPercent = function() return 0 end
+	-- The fraction of max, or the given curve evaluated at it, as the client returns.
+	G.UnitPowerPercent = function(unit, powerType, unmodified, curve)
+		local max = G.UnitPowerMax(unit, powerType) or 0
+		local fraction = max > 0 and (G.UnitPower(unit, powerType) or 0) / max or 0
+		if curve ~= nil then return curve:Evaluate(fraction) end
+		return fraction
+	end
 	G.UnitPowerDisplayMod = function() return 1 end
 	G.UnitHealth = function() return 100 end
 	G.UnitHealthMax = function() return 100 end
-	G.UnitHealthPercent = function() return 100 end
+	G.UnitHealthPercent = function(unit, usePredicted, curve)
+		local max = G.UnitHealthMax(unit) or 0
+		local fraction = max > 0 and (G.UnitHealth(unit) or 0) / max or 0
+		if curve ~= nil then return curve:Evaluate(fraction) end
+		return fraction
+	end
 	G.UnitGetTotalAbsorbs = retZero
 	G.UnitGetTotalHealAbsorbs = retZero
 	G.UnitGetIncomingHeals = retZero
@@ -492,7 +585,12 @@ function M.install(opts)
 	G.GetNumSpecializations = function() if classId == 11 then return 4 end return 3 end
 	G.GetSpecializationName = function() return "Spec" end
 	G.GetSpecializationRole = function() return "DAMAGER" end
-	G.GetClassColor = function(token) return 1, 1, 1, "ffffffff" end
+	G.GetClassColor = function(classFilename)
+		local color = G.RAID_CLASS_COLORS[classFilename]
+		if color then return color.r, color.g, color.b, color.colorStr end
+		return 1, 1, 1, "ffffffff"
+	end
+	G.GetClassColorObj = function(classFilename) return G.RAID_CLASS_COLORS[classFilename] end
 	G.GetClassInfo = function(id) local c = classes[id] if c then return c[1], c[2], id end return nil end
 	G.GetNumClasses = function() return 13 end
 	G.LocalizedClassList = function() local r = {} for _, c in pairs(classes) do r[c[2]] = c[1] end return r end
@@ -709,8 +807,66 @@ function M.install(opts)
 	G.C_PlayerInfo = ns({ GetGlidingInfo = function() return false, false, 0 end, IsPlayerNPERestricted = retFalse, GetPlayerCharacterData = retNil, UnitIsSameServer = retTrue, GetClass = function() return classId end, GetRace = function() return 1 end, GetSex = function() return 2 end, IsPlayerInGuildFromGUID = retFalse, GUIDIsPlayer = retTrue, GetContentDifficultyCreatureForPlayer = retNil, GetInstancedContentDifficulty = retNil, IsMercenary = retFalse, CanPlayerEnterChromieTime = retFalse, IsPlayerEligibleForNPE = retFalse, IsConnectionValid = retTrue })
 	G.C_CooldownViewer = ns({ GetCooldownViewerCategorySet = retEmpty, GetCooldownViewerCooldownInfo = retNil, IsCooldownViewerAvailable = retTrue, GetCooldownViewerCooldownIDs = retEmpty, GetCooldownViewerCooldownList = retEmpty, GetCooldownInfoForSpellID = retNil, SetCooldownViewerCategorySet = noop })
 	G.C_Item = ns({ GetItemInfo = retNil, GetItemIconByID = function() return 134400 end, GetItemIcon = function() return 134400 end, GetDetailedItemLevelInfo = retZero, GetItemInfoInstant = retNil, GetItemNameByID = retNil, GetItemCount = retZero, GetItemCooldown = function() return 0, 0, 1 end, IsEquippedItem = retFalse, DoesItemExist = retFalse, GetItemLink = retNil, GetItemSpell = retNil, IsItemDataCachedByID = retTrue, RequestLoadItemDataByID = noop, GetItemQualityByID = retZero, GetItemInventoryTypeByID = retZero, GetItemClassInfo = retNil, GetItemSubClassInfo = retNil, GetItemSetInfo = retNil, GetItemSpecInfo = retEmpty, IsItemInRange = retNil, GetItemGem = retNil, GetItemStats = retEmpty })
-	local curveMeta = { __index = { AddPoint = noop, SetPoints = noop, Evaluate = function() return G.CreateColor(1, 1, 1, 1) end, EvaluateColor = function() return G.CreateColor(1, 1, 1, 1) end, ClearPoints = noop, SetType = noop, GetType = function() return 0 end, GetPoints = retEmpty, GetPointCount = retZero } }
-	G.C_CurveUtil = ns({ CreateColorCurve = function() return setmetatable({}, curveMeta) end, CreateCurve = function() return setmetatable({}, curveMeta) end, EvaluateColorFromBoolean = function(b, c1, c2) return b and c1 or c2 end, EvaluateColorFromValue = function(v, curve) return G.CreateColor(1, 1, 1, 1) end, EvaluateColorCurve = function() return G.CreateColor(1, 1, 1, 1) end, CreateColorCurveFromTable = function() return setmetatable({}, curveMeta) end })
+	-- Curves that evaluate their points: Step snaps to the point at or below x, the other types interpolate
+	-- linearly, and x outside the points clamps to the nearest one. A second point at an x keeps the first.
+	local STEP = 1
+	local curveMethods = {}
+	local curveMeta = { __index = curveMethods }
+	local function NewCurve(isColor) return setmetatable({ __points = {}, __type = 0, __isColor = isColor }, curveMeta) end
+	function curveMethods:SetType(curveType) self.__type = curveType end
+	function curveMethods:GetType() return self.__type end
+	function curveMethods:HasSecretValues() return false end
+	function curveMethods:AddPoint(x, y)
+		local points = self.__points
+		local at = #points + 1
+		for i, p in ipairs(points) do
+			if p.x == x then return end
+			if p.x > x then at = i break end
+		end
+		table.insert(points, at, { x = x, y = y })
+	end
+	function curveMethods:ClearPoints() self.__points = {} end
+	function curveMethods:SetToDefaults() self.__points = {} self.__type = 0 end
+	function curveMethods:SetPoints(points) self.__points = {} for _, p in ipairs(points or {}) do self:AddPoint(p.x, p.y) end end
+	function curveMethods:GetPoints() local out = {} for i, p in ipairs(self.__points) do out[i] = { x = p.x, y = p.y } end return out end
+	function curveMethods:GetPointCount() return #self.__points end
+	function curveMethods:GetPoint(index) local p = self.__points[index] if p then return p.x, p.y end end
+	function curveMethods:RemovePoint(index) table.remove(self.__points, index) end
+	function curveMethods:Copy() local c = NewCurve(self.__isColor) c.__type = self.__type for _, p in ipairs(self.__points) do c:AddPoint(p.x, p.y) end return c end
+	function curveMethods:Evaluate(x)
+		local points = self.__points
+		local n = #points
+		if n == 0 then return self.__isColor and G.CreateColor(0, 0, 0, 0) or 0 end
+		local lo, hi = points[1], points[n]
+		if x <= lo.x then
+			hi = lo
+		elseif x >= hi.x then
+			lo = hi
+		else
+			for i = 2, n do
+				if x < points[i].x then lo, hi = points[i - 1], points[i] break end
+			end
+		end
+		local t = (self.__type ~= STEP and hi ~= lo) and (x - lo.x) / (hi.x - lo.x) or 0
+		if self.__isColor then
+			local r1, g1, b1, a1 = lo.y:GetRGBA()
+			local r2, g2, b2, a2 = hi.y:GetRGBA()
+			return G.CreateColor(r1 + (r2 - r1) * t, g1 + (g2 - g1) * t, b1 + (b2 - b1) * t, a1 + (a2 - a1) * t)
+		end
+		return lo.y + (hi.y - lo.y) * t
+	end
+	function curveMethods:EvaluateUnpacked(x) return self:Evaluate(x):GetRGBA() end
+	G.C_CurveUtil = ns({
+		CreateColorCurve = function() return NewCurve(true) end,
+		CreateCurve = function() return NewCurve(false) end,
+		EvaluateColorFromBoolean = function(b, c1, c2) return b and c1 or c2 end,
+		EvaluateColorValueFromBoolean = function(b, v1, v2) return b and v1 or v2 end,
+	})
+	-- The client's built-in 0..1 to 0..100 curve, which percent text passes to UnitPowerPercent and UnitHealthPercent.
+	G.CurveConstants.ScaleTo100 = G.C_CurveUtil.CreateCurve()
+	G.CurveConstants.ScaleTo100:SetType(G.Enum.LuaCurveType.Linear)
+	G.CurveConstants.ScaleTo100:AddPoint(0, 0)
+	G.CurveConstants.ScaleTo100:AddPoint(1, 100)
 	G.C_EditMode = ns({ GetLayouts = function() return { layouts = {}, activeLayout = 1 } end, SaveLayouts = noop, GetAccountSettings = retEmpty, SetAccountSetting = noop, IsEditModeActive = retFalse, OnLayoutAdded = noop, OnLayoutDeleted = noop, ConvertLayoutInfoToString = function() return "" end, ConvertStringToLayoutInfo = retNil, OnEditModeExit = noop })
 	G.C_ChatInfo = ns({ SendAddonMessage = retTrue, RegisterAddonMessagePrefix = retTrue, IsAddonMessagePrefixRegistered = retFalse, GetChannelInfoFromIdentifier = retNil })
 	G.C_MountJournal = ns({ IsDragonridingUnlocked = retFalse, GetMountFromSpell = retNil, GetMountInfoByID = retNil, GetNumMounts = retZero, GetMountIDs = retEmpty })
@@ -741,7 +897,7 @@ function M.install(opts)
 	G.C_UnitAuras.GetAuraDataByIndex = retNil
 	G.C_NamePlate = ns({ GetNamePlates = retEmpty, GetNamePlateForUnit = retNil })
 	G.C_CreatureInfo = ns({ GetClassInfo = function(id) local c = classes[id] if c then return { className = c[1], classFile = c[2], classID = id } end return nil end, GetRaceInfo = function() return { raceName = "Human", clientFileString = "Human", raceID = 1 } end, GetFactionInfo = function() return { name = "Alliance", groupTag = "Alliance" } end })
-	G.C_ClassColor = ns({ GetClassColor = function() return G.CreateColor(1, 1, 1) end })
+	G.C_ClassColor = ns({ GetClassColor = function(className) local c = G.RAID_CLASS_COLORS[className] return c and G.CreateColor(c.r, c.g, c.b) or nil end })
 	G.C_Reputation = ns({})
 	G.C_QuestLog = ns({})
 	G.C_Garrison = ns({})
