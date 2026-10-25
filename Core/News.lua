@@ -7,6 +7,7 @@ TRB.Details.coreNewsContent = [====[
 # Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-23)
 ## General
 
+- [#213](#213) Remove unused color code.
 - [#584](#584) A font, texture, or sound that isn't loaded keeps its setting instead of resetting to the default.
 - [#584](#584) Bars, bar text, audio cues, and threshold sounds use the default in place of a font, texture, or sound until it loads, with no reload needed.
 - [#584](#584) Options show a font, texture, or sound that isn't loaded with "(not loaded)" after its name.
@@ -61,6 +62,10 @@ TRB.Details.coreNewsContent = [====[
 - [#859](#859) Add Apply to Bars to the Visibility tab to copy settings onto, use a preset for, or go back to the global settings for several bars at once.
 - [#859](#859) Add an Enabled checkbox to the selected bar's settings on the Visibility tab, which turns the bar on or off, including while it uses a preset.
 - [#859](#859) Fix the Visibility tab of Global Options listing the form conditions only while playing a class with forms.
+
+## Color Indicators
+
+- [#885](#885) Fix exported profiles leaving out a Color Indicator's minimum stacks setting, such as Resonant Energy's.
 
 ---
 
