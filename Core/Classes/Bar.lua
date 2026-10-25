@@ -50,6 +50,9 @@ local barNodeCounter = 0
 ---@field public lineThickness number?
 ---@field public trbWidth number? # Size last written, so repeat writes are skipped
 ---@field public trbHeight number?
+---@field public trbColor string? # Hex SetThresholdColor last painted
+---@field public trbColorNormalized boolean? # Its normalize flag
+---@field public trbColorIcon boolean? # Whether the icon border was painted with it; nil forces the next write
 
 ---The node's StatusBar, plus what other modules hang on it.
 ---@class TRB.Classes.BarNode.Frame : StatusBar, BackdropTemplate, TRB.Classes.GlowTarget

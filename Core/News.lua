@@ -17,6 +17,7 @@ TRB.Details.coreNewsContent = [====[
 - [#866](#866) Improve update performance of bars whose node order can be rearranged.
 - [#868](#868) Improve the player cast bar's update performance during empowered casts.
 - [#868](#868) Fix the player cast bar's End Cap not lining up with the fill's edge during empowered casts with Fill Each Empower Level Separately on.
+- [#869](#869) Improve bar update performance, primarily around Color Indicators, glows, overlays, threshold lines, and the Health bar's colors.
 - [#870](#870) Fix an Action Button Glow taking its brightness from another glow's color when glows with different opacities start together.
 - [#873](#873) Free the memory held for bar colors no longer in use on a specialization or bar layout change, instead of keeping it until a reload.
 - [#875](#875) Remove unused color option code from the options.

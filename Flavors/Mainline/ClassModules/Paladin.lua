@@ -840,7 +840,104 @@ local scratch = {
 	holyPowerColors2 = {},
 	manaBarColors3 = {},
 	holyPowerColors3 = {},
+	-- Shared by the three specs' indicator calls; only one runs per tick.
+	conditionMap1 = {},
+	barColorMap1 = {},
 }
+
+-- Kept at module scope so UpdateResourceBar creates no closures each tick.
+---Draws the Holy Power nodes, including their casting and refund overlays.
+local function UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors, castingHolyPower, refundingHolyPower)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local currentHolyPower = snapshotData.attributes.resource2 or 0
+	local backgroundColor = holyPowerColors and holyPowerColors.background or specSettings.colors.comboPoints.background.color
+	local barOverrideActive = holyPowerColors and holyPowerColors.barOverridden == true
+	local castingSettings = specCacheSettings.colors.comboPoints.casting
+	local refundingSettings = specCacheSettings.colors.comboPoints.refunding
+	local castingTexture = specCacheSettings.textures.comboPointsCastingBar
+	local incomingHolyPower = castingHolyPower or 0
+	local firstRefundedNode = currentHolyPower - (refundingHolyPower or 0) + 1
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundColor, true)
+	for x = 1, TRB.Data.character.maxResource2 do
+		local cpBorderColor = holyPowerColors and holyPowerColors.border or specSettings.colors.comboPoints.border.color
+		local cpColor = holyPowerColors and holyPowerColors.bar or specSettings.colors.comboPoints.base
+		local cpBR = cpBackgroundRed
+		local cpBG = cpBackgroundGreen
+		local cpBB = cpBackgroundBlue
+		local filled = currentHolyPower >= x
+		local overlayAmount = 0
+
+		if incomingHolyPower > 0 then
+			local nodeStart = x - 1
+			local nodeEnd = x
+			local predictionEnd = math.min(currentHolyPower + incomingHolyPower, TRB.Data.character.maxResource2)
+			overlayAmount = math.max(0, math.min(predictionEnd, nodeEnd) - math.max(currentHolyPower, nodeStart))
+		end
+
+		if filled and not barOverrideActive then
+			if (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
+				cpColor = specSettings.colors.comboPoints.second
+			elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
+				cpColor = specSettings.colors.comboPoints.third
+			elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+				cpColor = specSettings.colors.comboPoints.penultimate
+			elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+				cpColor = specSettings.colors.comboPoints.final
+			end
+		end
+
+		local nodeRefundingSettings = nil
+		if filled and x >= firstRefundedNode then
+			overlayAmount = -1
+			nodeRefundingSettings = refundingSettings
+		end
+
+		if barGroups and barGroups.secondary then
+			local holyPowerNode = barGroups.secondary:GetNode(x)
+			if holyPowerNode then
+				Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, holyPowerNode, filled and 1 or 0, 1)
+				holyPowerNode:SetBorderColor(cpBorderColor)
+				TRB.Functions.Color:ApplyFillColor(holyPowerNode, cpColor)
+				holyPowerNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+				Bar:ApplyNodeIndicators(holyPowerNode, "holyPowerBar")
+
+				-- No casting gate: Retribution has no casting colors, but its refund overlay still has to clear.
+				if overlayAmount ~= 0 or holyPowerNode:GetOverlaySlot("casting") ~= nil then
+					Bar:UpdateCastingResourceOverlay(holyPowerNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nodeRefundingSettings, castingTexture)
+				end
+			end
+		end
+	end
+end
+
+---Resolves flat indicator colors into a bar color map, marking each bar whose fill an indicator claimed.
+local function ApplyFlatIndicatorColors(sharedColors, conditionMap, barColorMap)
+	-- barOverridden tells the render below to skip the resource-threshold fill curve: once an indicator
+	-- owns the fill, its flat color has to survive rather than being recomputed from the resource.
+	-- Inner flag tables are pooled by barKey and wiped: ApplyIndicatorColors only writes true.
+	local overrides = scratch.overrides1
+	wipe(overrides)
+	local overrideFlags = scratch.overrideFlags1
+	for barKey in pairs(barColorMap) do
+		local flags = overrideFlags[barKey]
+		if flags == nil then
+			flags = {}
+			overrideFlags[barKey] = flags
+		else
+			wipe(flags)
+		end
+		overrides[barKey] = flags
+	end
+
+	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
+
+	for barKey, colorEntry in pairs(barColorMap) do
+		if overrides[barKey].bar then
+			colorEntry.barOverridden = true
+		end
+	end
+end
 
 local function UpdateResourceBar()
 	local refreshText = false
@@ -869,95 +966,6 @@ local function UpdateResourceBar()
 		return
 	end
 
-	local function UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors, castingHolyPower, refundingHolyPower)
-		local currentHolyPower = snapshotData.attributes.resource2 or 0
-		local backgroundColor = holyPowerColors and holyPowerColors.background or specSettings.colors.comboPoints.background.color
-		local barOverrideActive = holyPowerColors and holyPowerColors.barOverridden == true
-		local castingSettings = specCacheSettings.colors.comboPoints.casting
-		local refundingSettings = specCacheSettings.colors.comboPoints.refunding
-		local castingTexture = specCacheSettings.textures.comboPointsCastingBar
-		local incomingHolyPower = castingHolyPower or 0
-		local firstRefundedNode = currentHolyPower - (refundingHolyPower or 0) + 1
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundColor, true)
-		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = holyPowerColors and holyPowerColors.border or specSettings.colors.comboPoints.border.color
-			local cpColor = holyPowerColors and holyPowerColors.bar or specSettings.colors.comboPoints.base
-			local cpBR = cpBackgroundRed
-			local cpBG = cpBackgroundGreen
-			local cpBB = cpBackgroundBlue
-			local filled = currentHolyPower >= x
-			local overlayAmount = 0
-
-			if incomingHolyPower > 0 then
-				local nodeStart = x - 1
-				local nodeEnd = x
-				local predictionEnd = math.min(currentHolyPower + incomingHolyPower, TRB.Data.character.maxResource2)
-				overlayAmount = math.max(0, math.min(predictionEnd, nodeEnd) - math.max(currentHolyPower, nodeStart))
-			end
-
-			if filled and not barOverrideActive then
-				if (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
-					cpColor = specSettings.colors.comboPoints.second
-				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
-					cpColor = specSettings.colors.comboPoints.third
-				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate
-				elseif (specSettings.comboPoints.sameColor and currentHolyPower == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final
-				end
-			end
-
-			local nodeRefundingSettings = nil
-			if filled and x >= firstRefundedNode then
-				overlayAmount = -1
-				nodeRefundingSettings = refundingSettings
-			end
-
-			if barGroups and barGroups.secondary then
-				local holyPowerNode = barGroups.secondary:GetNode(x)
-				if holyPowerNode then
-					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, holyPowerNode, filled and 1 or 0, 1)
-					holyPowerNode:SetBorderColor(cpBorderColor)
-					TRB.Functions.Color:ApplyFillColor(holyPowerNode, cpColor)
-					holyPowerNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-					Bar:ApplyNodeIndicators(holyPowerNode, "holyPowerBar")
-
-					-- No casting gate: Retribution has no casting colors, but its refund overlay still has to clear.
-					if overlayAmount ~= 0 or holyPowerNode:GetOverlaySlot("casting") ~= nil then
-						Bar:UpdateCastingResourceOverlay(holyPowerNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nodeRefundingSettings, castingTexture)
-					end
-				end
-			end
-		end
-	end
-
-	local function ApplyFlatIndicatorColors(sharedColors, conditionMap, barColorMap)
-		-- barOverridden tells the render below to skip the resource-threshold fill curve: once an indicator
-		-- owns the fill, its flat color has to survive rather than being recomputed from the resource.
-		-- Inner flag tables are pooled by barKey and wiped: ApplyIndicatorColors only writes true.
-		local overrides = scratch.overrides1
-		wipe(overrides)
-		local overrideFlags = scratch.overrideFlags1
-		for barKey in pairs(barColorMap) do
-			local flags = overrideFlags[barKey]
-			if flags == nil then
-				flags = {}
-				overrideFlags[barKey] = flags
-			else
-				wipe(flags)
-			end
-			overrides[barKey] = flags
-		end
-
-		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
-
-		for barKey, colorEntry in pairs(barColorMap) do
-			if overrides[barKey].bar then
-				colorEntry.barOverridden = true
-			end
-		end
-	end
-
 	if TRB.Data.character.specId == 1 then
 		local specSettings = classSettings.holy
 		local specCacheSettings = TRB.Data.specCache.paladin_holy.settings
@@ -977,10 +985,14 @@ local function UpdateResourceBar()
 		holyPowerColors.bar = specSettings.colors.comboPoints.base
 		holyPowerColors.border = specSettings.colors.comboPoints.border.color
 		holyPowerColors.background = specSettings.colors.comboPoints.background.color
-		ApplyFlatIndicatorColors(specSettings.colors.shared, { infusionOfLight = infusionOfLightActive, divinePurpose = divinePurposeActive }, {
-			manaBar = manaBarColors,
-			holyPowerBar = holyPowerColors,
-		})
+		local conditionMap = scratch.conditionMap1
+		wipe(conditionMap)
+		conditionMap.infusionOfLight = infusionOfLightActive
+		conditionMap.divinePurpose = divinePurposeActive
+		local barColorMap = scratch.barColorMap1
+		barColorMap.manaBar = manaBarColors
+		barColorMap.holyPowerBar = holyPowerColors
+		ApplyFlatIndicatorColors(specSettings.colors.shared, conditionMap, barColorMap)
 		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "infusionOfLight", infusionOfLightActive)
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
@@ -1030,10 +1042,14 @@ local function UpdateResourceBar()
 		holyPowerColors.bar = specSettings.colors.comboPoints.base
 		holyPowerColors.border = specSettings.colors.comboPoints.border.color
 		holyPowerColors.background = specSettings.colors.comboPoints.background.color
-		ApplyFlatIndicatorColors(specSettings.colors.shared, { infusionOfLight = infusionOfLightActive, divinePurpose = divinePurposeActive }, {
-			manaBar = manaBarColors,
-			holyPowerBar = holyPowerColors,
-		})
+		local conditionMap = scratch.conditionMap1
+		wipe(conditionMap)
+		conditionMap.infusionOfLight = infusionOfLightActive
+		conditionMap.divinePurpose = divinePurposeActive
+		local barColorMap = scratch.barColorMap1
+		barColorMap.manaBar = manaBarColors
+		barColorMap.holyPowerBar = holyPowerColors
+		ApplyFlatIndicatorColors(specSettings.colors.shared, conditionMap, barColorMap)
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1098,10 +1114,16 @@ local function UpdateResourceBar()
 		holyPowerColors.bar = specSettings.colors.comboPoints.base
 		holyPowerColors.border = specSettings.colors.comboPoints.border.color
 		holyPowerColors.background = specSettings.colors.comboPoints.background.color
-		ApplyFlatIndicatorColors(specSettings.colors.shared, { divinePurpose = divinePurposeActive, executionSentence = executionSentenceActive, avengingWrath = avengingWrathActive, avengingWrathEnd = avengingWrathEnding }, {
-			manaBar = manaBarColors,
-			holyPowerBar = holyPowerColors,
-		})
+		local conditionMap = scratch.conditionMap1
+		wipe(conditionMap)
+		conditionMap.divinePurpose = divinePurposeActive
+		conditionMap.executionSentence = executionSentenceActive
+		conditionMap.avengingWrath = avengingWrathActive
+		conditionMap.avengingWrathEnd = avengingWrathEnding
+		local barColorMap = scratch.barColorMap1
+		barColorMap.manaBar = manaBarColors
+		barColorMap.holyPowerBar = holyPowerColors
+		ApplyFlatIndicatorColors(specSettings.colors.shared, conditionMap, barColorMap)
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true

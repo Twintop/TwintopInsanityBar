@@ -112,6 +112,25 @@ function TRB.Functions.Color:GetPlayerClassColor()
 	return playerClassColorHex
 end
 
+-- Per health colors table, the curve last returned and the inputs it came from, so a repeat call builds no key.
+local healthCurveRecords = setmetatable({}, { __mode = "k" })
+
+---Records the curve GetHealthColorCurve returns for a colors table, along with the inputs that chose it.
+---@return any # The curve, passed through
+local function RecordHealthCurve(healthColors, curve, curves, highColor, highThreshold, lowColor, lowThreshold, medColor, medThreshold, curveType, classColor)
+	local record = healthCurveRecords[healthColors]
+	if record == nil then
+		record = {}
+		healthCurveRecords[healthColors] = record
+	end
+	record.curve, record.curves = curve, curves
+	record.highColor, record.highThreshold = highColor, highThreshold
+	record.lowColor, record.lowThreshold = lowColor, lowThreshold
+	record.medColor, record.medThreshold = medColor, medThreshold
+	record.curveType, record.classColor = curveType, classColor
+	return curve
+end
+
 ---Builds, or reuses, the Low, Medium, and High health color curve that UnitHealthPercent evaluates.
 ---Shared by the player and pet health bars, each cached under its own settings.
 ---@param healthColors table # The health bar's colors: type plus low, medium, and high color and threshold
@@ -129,6 +148,17 @@ function TRB.Functions.Color:GetHealthColorCurve(healthColors)
 	if curveTypeStr == "classColor" then
 		classColor = self:GetPlayerClassColor() or ""
 	end
+
+	-- ResetColorCaches drops healthCurves, which also retires every record built against it.
+	local record = healthCurveRecords[healthColors]
+	if record ~= nil and record.curves ~= nil and record.curves == TRB.Data.cache.healthCurves
+		and record.highColor == highColor and record.highThreshold == highThreshold
+		and record.lowColor == lowColor and record.lowThreshold == lowThreshold
+		and record.medColor == medColor and record.medThreshold == medThreshold
+		and record.curveType == curveTypeStr and record.classColor == classColor then
+		return record.curve
+	end
+
 	local cacheKey = highColor .. highThreshold .. lowColor .. lowThreshold .. medColor .. medThreshold .. curveTypeStr .. classColor
 
 	local curves = TRB.Data.cache.healthCurves
@@ -137,7 +167,7 @@ function TRB.Functions.Color:GetHealthColorCurve(healthColors)
 		TRB.Data.cache.healthCurves = curves
 	end
 	if curves[cacheKey] ~= nil then
-		return curves[cacheKey]
+		return RecordHealthCurve(healthColors, curves[cacheKey], curves, highColor, highThreshold, lowColor, lowThreshold, medColor, medThreshold, curveTypeStr, classColor)
 	end
 
 	---@type integer?
@@ -192,7 +222,7 @@ function TRB.Functions.Color:GetHealthColorCurve(healthColors)
 	end
 
 	curves[cacheKey] = curve
-	return curve
+	return RecordHealthCurve(healthColors, curve, curves, highColor, highThreshold, lowColor, lowThreshold, medColor, medThreshold, curveTypeStr, classColor)
 end
 
 ---Sets a frame's backdrop color, using a cache to skip redundant SetBackdropColor calls when the color hasn't changed
@@ -380,9 +410,17 @@ function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, cla
 		if frame.texture == nil then
 			frame.texture = frame:CreateTexture(nil, "OVERLAY")
 			frame.texture:SetAllPoints(frame)
+			frame.trbColorIcon = nil
 		end
+		-- Static colors are often re-applied every tick; skip the writes while nothing they cover changed.
+		-- paintIcon is never nil, so a cleared trbColorIcon forces a write even for a nil color.
+		local paintIcon = frame.icon ~= nil and frame.hasIcon == true
+		if frame.trbColor == rgbaString and frame.trbColorNormalized == normalize and frame.trbColorIcon == paintIcon then
+			return
+		end
+		frame.trbColor, frame.trbColorNormalized, frame.trbColorIcon = rgbaString, normalize, paintIcon
 		frame.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize))
-		if frame.icon ~= nil and frame.hasIcon == true then
+		if paintIcon then
 			local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(rgbaString, normalize)
 			frame.icon:SetBackdropBorderColor(r, g, b, a)
 			-- Remember the applied border color so SetThresholdIcon can restore it after any
@@ -558,6 +596,10 @@ function TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor,
 	end
 
 	local cache = TRB.Data.cache.stepColorCurves
+	local fastCurve = self:GetFastCurve(cache, "step", cacheKey, belowColor, aboveColor, thresholdPercent)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
 	local fullKey = cacheKey .. "_" .. belowColor .. "_" .. aboveColor .. "_" .. tostring(thresholdPercent)
 	
 	if cache[fullKey] == nil then
@@ -581,6 +623,7 @@ function TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor,
 		cache[fullKey] = curve
 	end
 	
+	self:SetFastCurve(cache, cache[fullKey], "step", cacheKey, belowColor, aboveColor, thresholdPercent)
 	return cache[fullKey]
 end
 
@@ -789,6 +832,7 @@ function TRB.Functions.Color:SetThresholdColorFromCurve(frame, colorResult, clas
 		end
 		-- Pass the color directly to SetColorTexture via GetRGBA - WoW API handles secret values
 		frame.texture:SetColorTexture(colorResult:GetRGBA())
+		frame.trbColorIcon = nil
 		if frame.icon ~= nil and frame.hasIcon == true then
 			local r, g, b, a = colorResult:GetRGBA()
 			frame.icon:SetBackdropBorderColor(r, g, b, a)

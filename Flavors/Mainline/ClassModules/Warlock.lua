@@ -1367,6 +1367,223 @@ local scratch = {
 	barColorMap3 = {},
 }
 
+-- Kept at module scope so UpdateResourceBar creates no closures each tick.
+local function GetSoulShardOverlayAmount(normalizedResource2, incomingShards, spendingShards, nodeIndex)
+	local nodeStart = nodeIndex - 1
+	local nodeEnd = nodeIndex
+
+	if incomingShards > 0 then
+		local predictionEnd = math.min(normalizedResource2 + incomingShards, TRB.Data.character.maxResource2)
+		return math.max(0, math.min(predictionEnd, nodeEnd) - math.max(normalizedResource2, nodeStart))
+	elseif spendingShards > 0 then
+		local spendingEnd = math.max(normalizedResource2 - spendingShards, 0)
+		local overlayValue = math.max(0, math.min(normalizedResource2, nodeEnd) - math.max(spendingEnd, nodeStart))
+		return -overlayValue
+	end
+
+	return 0
+end
+
+---The Destruction Soul Shard color for a node, by count or position.
+local function GetSoulShardFillColor(specSettings, resourceCount, nodeIndex)
+	local shardColor = specSettings.colors.comboPoints.base
+	if (specSettings.comboPoints.sameColor and resourceCount == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and nodeIndex == (TRB.Data.character.maxResource2 - 3)) then
+		shardColor = specSettings.colors.comboPoints.second
+	elseif (specSettings.comboPoints.sameColor and resourceCount == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and nodeIndex == (TRB.Data.character.maxResource2 - 2)) then
+		shardColor = specSettings.colors.comboPoints.third
+	elseif (specSettings.comboPoints.sameColor and resourceCount == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and nodeIndex == (TRB.Data.character.maxResource2 - 1)) then
+		shardColor = specSettings.colors.comboPoints.penultimate
+	elseif (specSettings.comboPoints.sameColor and resourceCount == TRB.Data.character.maxResource2) or nodeIndex == TRB.Data.character.maxResource2 then
+		shardColor = specSettings.colors.comboPoints.final
+	end
+
+	return shardColor
+end
+
+local function UpdateSoulShardsDemonology(specSettings, specCacheSettings, normalizedResource2, fillOverride, borderOverride, backgroundOverride)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundOverride or specSettings.colors.comboPoints.background.color, true)
+	local castingSettings = specCacheSettings.colors.comboPoints.casting
+	local spendingSettings = specCacheSettings.colors.comboPoints.spending
+	local castingTexture = specCacheSettings.textures.comboPointsCastingBar
+	local incomingShards = snapshotData.casting.resource2Casting or 0
+	local spendingShards = math.abs(snapshotData.casting.resource2Spending or 0)
+	-- Demonology renders whole-shard (binary) nodes, so anchor the predictive/spending
+	-- overlay to the whole-shard boundary. Without flooring, a fractional Soul Shard
+	-- value (which can occur transiently after a talent change, before it settles on a
+	-- whole shard via a passive power update) splits a single-shard prediction across
+	-- two adjacent nodes.
+	local overlayBaseline = math.floor(normalizedResource2)
+	-- Dominion of Argus refund: the leftmost shard of Hand of Gul'dan's full cost (just
+	-- below the spending overlay) survives the cast, so mark it with the refunding overlay.
+	local refundingShards = math.abs(snapshotData.casting.resource2Refunding or 0)
+	local refundingSettings = specCacheSettings.colors.comboPoints.refunding
+	local refundingNodeIndex = nil
+	if refundingShards > 0 then
+		local idx = overlayBaseline - spendingShards
+		if idx >= 1 then
+			refundingNodeIndex = idx
+		end
+	end
+
+	for x = 1, TRB.Data.character.maxResource2 do
+		local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
+		local cpColor = fillOverride or specSettings.colors.comboPoints.base
+		local cpBR = cpBackgroundRed
+		local cpBG = cpBackgroundGreen
+		local cpBB = cpBackgroundBlue
+		local filled = normalizedResource2 >= x
+		local overlayAmount = GetSoulShardOverlayAmount(overlayBaseline, incomingShards, spendingShards, x)
+
+		if filled and fillOverride == nil then
+			if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
+				cpColor = specSettings.colors.comboPoints.second
+			elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
+				cpColor = specSettings.colors.comboPoints.third
+			elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+				cpColor = specSettings.colors.comboPoints.penultimate
+			elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+				cpColor = specSettings.colors.comboPoints.final
+			end
+		end
+
+		-- The refund node sits below the spend overlay and always draws an overlay; when the
+		-- refunding color is enabled it uses that color, otherwise it falls back to spending.
+		local nodeSpendingSettings = spendingSettings
+		if refundingNodeIndex ~= nil and x == refundingNodeIndex then
+			overlayAmount = -refundingShards
+			if refundingSettings and refundingSettings.enabled then
+				nodeSpendingSettings = refundingSettings
+			end
+		end
+
+		if barGroups and barGroups.secondary then
+			local shardNode = barGroups.secondary:GetNode(x)
+			if shardNode then
+				Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, filled and 1 or 0, 1)
+				shardNode:SetBorderColor(cpBorderColor)
+				TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
+				shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+				Bar:ApplyNodeIndicators(shardNode, "soulShardsBar")
+
+				if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
+					Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nodeSpendingSettings, castingTexture)
+				end
+			end
+		end
+	end
+end
+
+local function UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, fillOverride, borderOverride, backgroundOverride)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundOverride or specSettings.colors.comboPoints.background.color, true)
+	local castingSettings = specCacheSettings.colors.comboPoints.casting
+	local spendingSettings = specCacheSettings.colors.comboPoints.spending
+	local castingTexture = specCacheSettings.textures.comboPointsCastingBar or specCacheSettings.textures.castingBar or specCacheSettings.textures.resourceBar
+	local incomingShards = snapshotData.casting.resource2Casting or 0
+	local spendingShards = math.abs(snapshotData.casting.resource2Spending or 0)
+	-- Affliction renders whole-shard (binary) nodes, so anchor the predictive/spending
+	-- overlay to the whole-shard boundary. Without flooring, a fractional Soul Shard
+	-- value (which can occur transiently after a talent change, before it settles on a
+	-- whole shard via a passive power update) splits a single-shard prediction across
+	-- two adjacent nodes.
+	local overlayBaseline = math.floor(normalizedResource2)
+
+	for x = 1, TRB.Data.character.maxResource2 do
+		local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
+		local cpColor = fillOverride or specSettings.colors.comboPoints.base
+		local cpBR = cpBackgroundRed
+		local cpBG = cpBackgroundGreen
+		local cpBB = cpBackgroundBlue
+		local filled = normalizedResource2 >= x
+		local overlayAmount = GetSoulShardOverlayAmount(overlayBaseline, incomingShards, spendingShards, x)
+
+		if filled and fillOverride == nil then
+			if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
+				cpColor = specSettings.colors.comboPoints.second
+			elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
+				cpColor = specSettings.colors.comboPoints.third
+			elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+				cpColor = specSettings.colors.comboPoints.penultimate
+			elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+				cpColor = specSettings.colors.comboPoints.final
+			end
+		end
+
+		if barGroups and barGroups.secondary then
+			local shardNode = barGroups.secondary:GetNode(x)
+			if shardNode then
+				Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, filled and 1 or 0, 1)
+				shardNode:SetBorderColor(cpBorderColor)
+				TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
+				shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+				Bar:ApplyNodeIndicators(shardNode, "soulShardsBar")
+
+				if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
+					Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
+				end
+			end
+		end
+	end
+end
+
+local function UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2, fillOverride, borderOverride, backgroundOverride)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundOverride or specSettings.colors.comboPoints.background.color, true)
+	local regeneratingColor = specSettings.colors.comboPoints.regenerating
+	local castingSettings = specCacheSettings.colors.comboPoints.casting
+	local spendingSettings = specCacheSettings.colors.comboPoints.spending
+	local castingTexture = specCacheSettings.textures.comboPointsCastingBar
+	local castingFragments = snapshotData.casting.resource2Casting or 0
+	local incomingShards = castingFragments / TRB.Data.resource2Factor
+	local spendingFragments = snapshotData.casting.resource2Spending or 0
+	local spendingShards = math.abs(spendingFragments / TRB.Data.resource2Factor)
+	for x = 1, TRB.Data.character.maxResource2 do
+		local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
+		local cpColor = fillOverride or specSettings.colors.comboPoints.base
+		local cpBR = cpBackgroundRed
+		local cpBG = cpBackgroundGreen
+		local cpBB = cpBackgroundBlue
+		local fillValue = 0
+		local overlayAmount = GetSoulShardOverlayAmount(normalizedResource2, incomingShards, spendingShards, x)
+
+		if normalizedResource2 >= x then
+			fillValue = 1
+			if fillOverride == nil then
+				cpColor = GetSoulShardFillColor(specSettings, math.floor(normalizedResource2), x)
+			end
+		elseif normalizedResource2 >= (x - 1) then
+			-- Partial fill for Destruction
+			fillValue = normalizedResource2 - (x - 1)
+			if fillOverride == nil and fillValue > 0 and fillValue < 1 then
+				if regeneratingColor and regeneratingColor.enabled then
+					cpColor = regeneratingColor
+				else
+					cpColor = GetSoulShardFillColor(specSettings, x, x)
+				end
+			end
+		end
+
+		if barGroups and barGroups.secondary then
+			local shardNode = barGroups.secondary:GetNode(x)
+			if shardNode then
+				Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, fillValue, 1)
+				shardNode:SetBorderColor(cpBorderColor)
+				TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
+				shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+				Bar:ApplyNodeIndicators(shardNode, "soulShardsBar")
+
+				if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
+					Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
+				end
+			end
+		end
+	end
+end
+
 local function UpdateResourceBar()
 	local refreshText = false
 	local coreSettings = TRB.Data.settings.core
@@ -1394,215 +1611,6 @@ local function UpdateResourceBar()
 
 	if snapshotData.attributes == nil or snapshotData.attributes.resourceModified == nil or snapshotData.attributes.resource2Modified == nil then
 		return
-	end
-
-	local function GetSoulShardOverlayAmount(normalizedResource2, incomingShards, spendingShards, nodeIndex)
-		local nodeStart = nodeIndex - 1
-		local nodeEnd = nodeIndex
-
-		if incomingShards > 0 then
-			local predictionEnd = math.min(normalizedResource2 + incomingShards, TRB.Data.character.maxResource2)
-			return math.max(0, math.min(predictionEnd, nodeEnd) - math.max(normalizedResource2, nodeStart))
-		elseif spendingShards > 0 then
-			local spendingEnd = math.max(normalizedResource2 - spendingShards, 0)
-			local overlayValue = math.max(0, math.min(normalizedResource2, nodeEnd) - math.max(spendingEnd, nodeStart))
-			return -overlayValue
-		end
-
-		return 0
-	end
-
-	local function UpdateSoulShardsDemonology(specSettings, specCacheSettings, normalizedResource2, fillOverride, borderOverride, backgroundOverride)
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundOverride or specSettings.colors.comboPoints.background.color, true)
-		local castingSettings = specCacheSettings.colors.comboPoints.casting
-		local spendingSettings = specCacheSettings.colors.comboPoints.spending
-		local castingTexture = specCacheSettings.textures.comboPointsCastingBar
-		local incomingShards = snapshotData.casting.resource2Casting or 0
-		local spendingShards = math.abs(snapshotData.casting.resource2Spending or 0)
-		-- Demonology renders whole-shard (binary) nodes, so anchor the predictive/spending
-		-- overlay to the whole-shard boundary. Without flooring, a fractional Soul Shard
-		-- value (which can occur transiently after a talent change, before it settles on a
-		-- whole shard via a passive power update) splits a single-shard prediction across
-		-- two adjacent nodes.
-		local overlayBaseline = math.floor(normalizedResource2)
-		-- Dominion of Argus refund: the leftmost shard of Hand of Gul'dan's full cost (just
-		-- below the spending overlay) survives the cast, so mark it with the refunding overlay.
-		local refundingShards = math.abs(snapshotData.casting.resource2Refunding or 0)
-		local refundingSettings = specCacheSettings.colors.comboPoints.refunding
-		local refundingNodeIndex = nil
-		if refundingShards > 0 then
-			local idx = overlayBaseline - spendingShards
-			if idx >= 1 then
-				refundingNodeIndex = idx
-			end
-		end
-
-		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
-			local cpColor = fillOverride or specSettings.colors.comboPoints.base
-			local cpBR = cpBackgroundRed
-			local cpBG = cpBackgroundGreen
-			local cpBB = cpBackgroundBlue
-			local filled = normalizedResource2 >= x
-			local overlayAmount = GetSoulShardOverlayAmount(overlayBaseline, incomingShards, spendingShards, x)
-
-			if filled and fillOverride == nil then
-				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
-					cpColor = specSettings.colors.comboPoints.second
-				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
-					cpColor = specSettings.colors.comboPoints.third
-				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate
-				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final
-				end
-			end
-
-			-- The refund node sits below the spend overlay and always draws an overlay; when the
-			-- refunding color is enabled it uses that color, otherwise it falls back to spending.
-			local nodeSpendingSettings = spendingSettings
-			if refundingNodeIndex ~= nil and x == refundingNodeIndex then
-				overlayAmount = -refundingShards
-				if refundingSettings and refundingSettings.enabled then
-					nodeSpendingSettings = refundingSettings
-				end
-			end
-
-			if barGroups and barGroups.secondary then
-				local shardNode = barGroups.secondary:GetNode(x)
-				if shardNode then
-					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, filled and 1 or 0, 1)
-					shardNode:SetBorderColor(cpBorderColor)
-					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
-					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-					Bar:ApplyNodeIndicators(shardNode, "soulShardsBar")
-
-					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
-						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, nodeSpendingSettings, castingTexture)
-					end
-				end
-			end
-		end
-	end
-
-	local function UpdateSoulShardsAffliction(specSettings, specCacheSettings, normalizedResource2, fillOverride, borderOverride, backgroundOverride)
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundOverride or specSettings.colors.comboPoints.background.color, true)
-		local castingSettings = specCacheSettings.colors.comboPoints.casting
-		local spendingSettings = specCacheSettings.colors.comboPoints.spending
-		local castingTexture = specCacheSettings.textures.comboPointsCastingBar or specCacheSettings.textures.castingBar or specCacheSettings.textures.resourceBar
-		local incomingShards = snapshotData.casting.resource2Casting or 0
-		local spendingShards = math.abs(snapshotData.casting.resource2Spending or 0)
-		-- Affliction renders whole-shard (binary) nodes, so anchor the predictive/spending
-		-- overlay to the whole-shard boundary. Without flooring, a fractional Soul Shard
-		-- value (which can occur transiently after a talent change, before it settles on a
-		-- whole shard via a passive power update) splits a single-shard prediction across
-		-- two adjacent nodes.
-		local overlayBaseline = math.floor(normalizedResource2)
-
-		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
-			local cpColor = fillOverride or specSettings.colors.comboPoints.base
-			local cpBR = cpBackgroundRed
-			local cpBG = cpBackgroundGreen
-			local cpBB = cpBackgroundBlue
-			local filled = normalizedResource2 >= x
-			local overlayAmount = GetSoulShardOverlayAmount(overlayBaseline, incomingShards, spendingShards, x)
-
-			if filled and fillOverride == nil then
-				if (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 3)) then
-					cpColor = specSettings.colors.comboPoints.second
-				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 2)) then
-					cpColor = specSettings.colors.comboPoints.third
-				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-					cpColor = specSettings.colors.comboPoints.penultimate
-				elseif (specSettings.comboPoints.sameColor and normalizedResource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-					cpColor = specSettings.colors.comboPoints.final
-				end
-			end
-
-			if barGroups and barGroups.secondary then
-				local shardNode = barGroups.secondary:GetNode(x)
-				if shardNode then
-					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, filled and 1 or 0, 1)
-					shardNode:SetBorderColor(cpBorderColor)
-					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
-					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-					Bar:ApplyNodeIndicators(shardNode, "soulShardsBar")
-
-					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
-						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
-					end
-				end
-			end
-		end
-	end
-
-	local function UpdateSoulShardsDestruction(specSettings, specCacheSettings, normalizedResource2, fillOverride, borderOverride, backgroundOverride)
-		local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(backgroundOverride or specSettings.colors.comboPoints.background.color, true)
-		local regeneratingColor = specSettings.colors.comboPoints.regenerating
-		local castingSettings = specCacheSettings.colors.comboPoints.casting
-		local spendingSettings = specCacheSettings.colors.comboPoints.spending
-		local castingTexture = specCacheSettings.textures.comboPointsCastingBar
-		local castingFragments = snapshotData.casting.resource2Casting or 0
-		local incomingShards = castingFragments / TRB.Data.resource2Factor
-		local spendingFragments = snapshotData.casting.resource2Spending or 0
-		local spendingShards = math.abs(spendingFragments / TRB.Data.resource2Factor)
-		local function GetSoulShardFillColor(resourceCount, nodeIndex)
-			local shardColor = specSettings.colors.comboPoints.base
-			if (specSettings.comboPoints.sameColor and resourceCount == (TRB.Data.character.maxResource2 - 3)) or (not specSettings.comboPoints.sameColor and nodeIndex == (TRB.Data.character.maxResource2 - 3)) then
-				shardColor = specSettings.colors.comboPoints.second
-			elseif (specSettings.comboPoints.sameColor and resourceCount == (TRB.Data.character.maxResource2 - 2)) or (not specSettings.comboPoints.sameColor and nodeIndex == (TRB.Data.character.maxResource2 - 2)) then
-				shardColor = specSettings.colors.comboPoints.third
-			elseif (specSettings.comboPoints.sameColor and resourceCount == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and nodeIndex == (TRB.Data.character.maxResource2 - 1)) then
-				shardColor = specSettings.colors.comboPoints.penultimate
-			elseif (specSettings.comboPoints.sameColor and resourceCount == TRB.Data.character.maxResource2) or nodeIndex == TRB.Data.character.maxResource2 then
-				shardColor = specSettings.colors.comboPoints.final
-			end
-
-			return shardColor
-		end
-
-		for x = 1, TRB.Data.character.maxResource2 do
-			local cpBorderColor = borderOverride or specSettings.colors.comboPoints.border.color
-			local cpColor = fillOverride or specSettings.colors.comboPoints.base
-			local cpBR = cpBackgroundRed
-			local cpBG = cpBackgroundGreen
-			local cpBB = cpBackgroundBlue
-			local fillValue = 0
-			local overlayAmount = GetSoulShardOverlayAmount(normalizedResource2, incomingShards, spendingShards, x)
-
-			if normalizedResource2 >= x then
-				fillValue = 1
-				if fillOverride == nil then
-					cpColor = GetSoulShardFillColor(math.floor(normalizedResource2), x)
-				end
-			elseif normalizedResource2 >= (x - 1) then
-				-- Partial fill for Destruction
-				fillValue = normalizedResource2 - (x - 1)
-				if fillOverride == nil and fillValue > 0 and fillValue < 1 then
-					if regeneratingColor and regeneratingColor.enabled then
-						cpColor = regeneratingColor
-					else
-						cpColor = GetSoulShardFillColor(x, x)
-					end
-				end
-			end
-
-			if barGroups and barGroups.secondary then
-				local shardNode = barGroups.secondary:GetNode(x)
-				if shardNode then
-					Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, fillValue, 1)
-					shardNode:SetBorderColor(cpBorderColor)
-					TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
-					shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-					Bar:ApplyNodeIndicators(shardNode, "soulShardsBar")
-
-					if overlayAmount ~= 0 or shardNode:GetOverlaySlot("casting") ~= nil then
-						Bar:UpdateCastingResourceOverlay(shardNode, snapshotData, specCacheSettings, overlayAmount, 1, castingSettings, spendingSettings, castingTexture)
-					end
-				end
-			end
-		end
 	end
 
 	if TRB.Data.character.specId == 1 then
