@@ -1254,9 +1254,10 @@ end
 ---@param context TRB.Classes.BarVisibilityContext # The shared environment snapshot
 ---@param entries TRB.Classes.BarVisibilityEntry[] # Array of bar entries to process
 ---@param snapshotData TRB.Classes.SnapshotData # The snapshot data to update isTracking on
----@param settings table|nil # The spec settings, passed to BarText:Show/Hide
+---@param settings table|nil # The spec settings the visibility curves read, and BarText:Show/Hide unless barTextSettings is given
+---@param barTextSettings table|nil # The settings whose bar text list built the text frames, when they differ from settings
 ---@return boolean # Whether any bar is showing (isTracking value)
-function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, settings)
+function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, settings, barTextSettings)
 	local anyShowing = false
 	local anyFading = false
 	local anyEntryHasCurve = false
@@ -1479,10 +1480,11 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 		TRB.Data.barTextVisibilityRefreshNeeded = true
 	end
 
-	if anyShowing and settings ~= nil then
-		TRB.Functions.BarText:Show(settings)
+	barTextSettings = barTextSettings or settings
+	if anyShowing and barTextSettings ~= nil then
+		TRB.Functions.BarText:Show(barTextSettings)
 	else
-		TRB.Functions.BarText:Hide(settings)
+		TRB.Functions.BarText:Hide(barTextSettings)
 	end
 
 	if recordCurves then

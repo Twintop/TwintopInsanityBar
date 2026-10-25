@@ -14,6 +14,12 @@ TRB.Flavor.newsContent = [====[
 
 - [#872](#872) Fix the Bone Shield bar's End Cap keeping its own color, with Only non-default border colors checked, while a gradient Color Indicator recolors the border.
 
+## Druid
+
+- [#871](#871) Fix `$energy`, `$rage`, and `$astralPower` bar text losing the overcap color while the resource holds steady, such as at cap.
+- [#871](#871) Fix `$resource` and `$resourceMax` bar text switching to the specialization's own resource while in another form, such as Energy while in Bear Form.
+- [#871](#871) Fix Balance's Energy and Rage bar text disappearing after entering or leaving combat in Cat Form or Bear Form.
+
 ## Mage
 ### Arcane
 
@@ -36,8 +42,8 @@ TRB.Flavor.newsContent = [====[
 ## Priest
 ### Discipline
 
-- Surge of Light tracking corrects itself when a stack is gained as you spend one.
 - [#584](#584) Fix the Power Word Radiance checkbox redrawing the bars with this specialization's settings while they use the global settings.
+- Surge of Light tracking corrects itself when a stack is gained as you spend one.
 
 ### Holy
 
