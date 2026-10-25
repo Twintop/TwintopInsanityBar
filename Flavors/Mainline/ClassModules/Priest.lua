@@ -1463,6 +1463,25 @@ local function AddVoidVolleyCharges(charges)
 	ClampVoidVolleyCharges()
 end
 
+---Refreshes Voidform and applies its exit grant or cap on expiry. Run before reading isActive in an event,
+---since the throttled bar update may not have seen the expiry yet.
+---@param currentTime number
+local function RefreshVoidform(currentTime)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local voidformBuff = TRB.Data.snapshotData.snapshots[spells.voidform.id].buff
+
+	-- Voidform ends on its own timer rather than an event, so the exit grant and cap ride the transition.
+	local wasVoidformActive = voidformBuff.isActive
+	voidformBuff:GetRemainingTime(currentTime)
+	if wasVoidformActive and not voidformBuff.isActive then
+		if talents:IsTalentActive(spells.crushingVoid) then
+			AddVoidVolleyCharges(spells.voidVolley.attributes.crushingVoidCharges)
+		else
+			ClampVoidVolleyCharges()
+		end
+	end
+end
+
 ---Handles UNIT_SPELLCAST_ events for the class
 ---@param event trbSpellCastType
 ---@param spellId integer
@@ -1829,6 +1848,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				-- Everything Halo grants per tick, so the cast and each Power Surge pulse stay in step.
 				local function HaloTick()
 					if talents:IsTalentActive(spells.sustainedPotency) then
+						RefreshVoidform(GetTime())
 						if snapshots[spells.voidform.id].buff.isActive then
 							snapshots[spells.voidform.id].buff:AddTimeOrInitializeCustom(spells.sustainedPotency.attributes.durationMod)
 						else
@@ -1904,6 +1924,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					snapshots[spells.screamsOfTheVoid.id].buff:AddTimeOrInitializeCustom(spells.screamsOfTheVoid.duration, currentTime)
 				end
 
+				RefreshVoidform(currentTime)
 				if snapshots[spells.voidform.id].buff.isActive and talents:IsTalentActive(spells.ancientMadness) and snapshots[spells.voidform.id].buff.attributes["swmCasts"] < spells.ancientMadness.attributes.maxCasts then
 					local increasedDuration = spells.ancientMadness.attributes.durationMod
 					snapshots[spells.voidform.id].buff:AddTimeOrInitializeCustom(increasedDuration)
@@ -2299,17 +2320,7 @@ local function UpdateSnapshot_Shadow()
 	snapshots[spells.voidVolley.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.entropicRift.id].buff:GetRemainingTime(currentTime)
-
-	-- Voidform ends on its own timer rather than an event, so the exit grant and cap ride the transition.
-	local wasVoidformActive = snapshots[spells.voidform.id].buff.isActive
-	snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
-	if wasVoidformActive and not snapshots[spells.voidform.id].buff.isActive then
-		if talents:IsTalentActive(spells.crushingVoid) then
-			AddVoidVolleyCharges(spells.voidVolley.attributes.crushingVoidCharges)
-		else
-			ClampVoidVolleyCharges()
-		end
-	end
+	RefreshVoidform(currentTime)
 	--snapshots[spells.mindBlast.id].cooldown:Refresh()
 end
 

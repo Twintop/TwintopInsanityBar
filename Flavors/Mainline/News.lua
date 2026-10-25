@@ -43,6 +43,11 @@ TRB.Flavor.newsContent = [====[
 
 - Surge of Light tracking corrects itself when a stack is gained as you spend one.
 
+### Shadow
+
+- [#888](#888) Fix a Lua error from casting Shadow Word: Madness just as Voidform ends, with Ancient Madness talented.
+- [#888](#888) Fix Halo and Power Surge briefly restarting Voidform when they land just as it ends, with Sustained Potency talented.
+
 ## Shaman
 ### Enhancement
 
