@@ -195,16 +195,6 @@ function TRB.Classes.BarNode:SetValue(value, smooth)
 	else
 		self.frame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 	end
-
-	-- Watch the fill as well as correcting it now: the texture keeps easing toward this value after we
-	-- return, so under smooth interpolation the correction measured here is already out of date.
-	if self.endCapConfig then
-		local endCapSlot = self.overlaySlots.endCap
-		if endCapSlot then
-			endCapSlot:ReanchorEndCap()
-			endCapSlot:StartEndCapTracking()
-		end
-	end
 end
 
 ---True while the aura engine owns this node's fill. Its fill texture is a forbidden object, so
@@ -225,16 +215,6 @@ function TRB.Classes.BarNode:SetTimerDuration(durationObject, interpolation, dir
 	direction = direction or Enum.StatusBarTimerDirection.ElapsedTime
 	self.frame:SetTimerDuration(durationObject, interpolation, direction)
 	self.hasTimerDuration = true
-
-	-- The engine now drives the fill with no further SetValue calls, so the end cap's correction has
-	-- nothing left to refresh it. Watch the fill for as long as it keeps moving.
-	if self.endCapConfig then
-		local endCapSlot = self.overlaySlots.endCap
-		if endCapSlot then
-			endCapSlot:ReanchorEndCap()
-			endCapSlot:StartEndCapTracking()
-		end
-	end
 end
 
 ---Clears any active DurationObject-driven animation, restoring normal SetValue behavior.
@@ -249,10 +229,6 @@ function TRB.Classes.BarNode:ClearTimerDuration()
 			self.frame:Show()
 		end
 		self.hasTimerDuration = false
-		local endCapSlot = self.overlaySlots.endCap
-		if endCapSlot then
-			endCapSlot:StopEndCapTracking()
-		end
 	end
 end
 

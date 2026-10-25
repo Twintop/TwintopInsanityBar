@@ -4,6 +4,12 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.8-release / Forever 1.60.1.15-release (2026-10-26)
+## General
+
+- Fix the End Cap still leaving a sliver of the bar showing past it during long channels such as Fishing.
+- Fix the End Cap narrowing as the Target and Focus Cast Bars near full.
+
 # Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-25)
 ## General
 

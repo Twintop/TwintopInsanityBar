@@ -49,24 +49,14 @@ TRB.Classes = TRB.Classes or {}
 ---@field private _rangeGradientActive table<integer, boolean>
 ---@field public endCapClipFrame Frame? # Clip container for the end cap band
 ---@field public endCapFrame TRB.Classes.OverlaySlot.EndCapBand? # Fixed-width band anchored to the fill's leading edge
+---@field public endCapPinnedClipFrame Frame? # Clip ending where endCapFrame starts, inside endCapClipFrame
+---@field public endCapPinnedFrame TRB.Classes.OverlaySlot.EndCapBand? # Band pinned to the inner bar end, the cap's front once the fill reaches the border
 ---@field public endCapReady boolean? # One-frame readiness guard for the end cap
 ---@field public endCapWidth number? # Configured fill-axis width of the end cap in pixels
 ---@field private _endCapColor string? # Last end cap color applied
 ---@field private _endCapColorFlat boolean? # Whether _endCapColor is current, since nil is a valid color
----@field public endCapOvershoot number? # Overshoot correction baked into the current anchor, for staleness checks
----@field public endCapAnchorSig TRB.Classes.OverlaySlot.EndCapAnchorSig? # Inputs the current anchor was placed with; nil forces the next re-anchor
 TRB.Classes.OverlaySlot = {}
 TRB.Classes.OverlaySlot.__index = TRB.Classes.OverlaySlot
-
----@class TRB.Classes.OverlaySlot.EndCapAnchorSig
----@field public border number
----@field public width number
----@field public height number
----@field public fillDirection trbFillDirection
----@field public fullHeight boolean?
----@field public fillTexture Texture
----@field public endCapWidth number?
----@field public overshoot number # Rounded to whole pixels
 
 ---@class TRB.Classes.OverlaySlot.ColorRecord
 ---@field public set boolean? # False or nil forces the next write
@@ -142,6 +132,8 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self._rangeGradientActive = {}
 	self.endCapClipFrame = nil
 	self.endCapFrame = nil
+	self.endCapPinnedClipFrame = nil
+	self.endCapPinnedFrame = nil
 	self.endCapReady = nil
 	self.endCapWidth = nil
 
@@ -222,30 +214,6 @@ function TRB.Classes.OverlaySlot:GetParentFillRatio()
 	end
 
 	return math.max(0, math.min(1, (value - minValue) / (maxValue - minValue)))
-end
-
----Recovers the fill ratio by measuring the rendered fill texture, the only source that stays live while
----a DurationObject drives the fill. Not a secret escape hatch: a secret fill makes the extent secret too.
----@return number?
-function TRB.Classes.OverlaySlot:GetRenderedFillRatio()
-	local parent = self.parentNode
-	local frame = parent and parent.frame
-	if frame == nil or frame.GetStatusBarTexture == nil then
-		return nil
-	end
-	local fillTexture = frame:GetStatusBarTexture()
-	if fillTexture == nil then
-		return nil
-	end
-
-	local isVertical = TRB.Functions.Bar:IsVerticalFill(parent.fillDirection or "leftRight")
-	local filled = isVertical and fillTexture:GetHeight() or fillTexture:GetWidth()
-	local total = isVertical and frame:GetHeight() or frame:GetWidth()
-	if filled == nil or total == nil or issecretvalue(filled) or issecretvalue(total) or total <= 0 then
-		return nil
-	end
-
-	return math.max(0, math.min(1, filled / total))
 end
 
 ---Returns the offset needed to translate the raw StatusBar fill edge to the
@@ -1330,222 +1298,83 @@ end
 -- fill texture's leading edge, extending backward into the fill, inside a clip
 -- container. The clip trims the band at the bar start, so a fill narrower than
 -- the cap shows a proportionally shrunken cap and an empty fill shows none.
+-- Past the inner bar end, a band pinned there shows what the clip trims off the riding band's front.
 
----The overshoot for a known fill ratio: how far the raw fill edge sits inside the leading border zone.
----@param parent TRB.Classes.BarNode?
----@param fillRatio number
----@return number
-local function EndCapOvershootAt(parent, fillRatio)
-	if parent == nil or parent.border == nil or parent.border <= 0 then
-		return 0
-	end
-	local isVertical = TRB.Functions.Bar:IsVerticalFill(parent.fillDirection or "leftRight")
-	local extent = isVertical and parent.height or parent.width
-	if extent == nil then
-		return 0
-	end
-	return math.max(0, (fillRatio * extent) - (extent - parent.border))
-end
-
----Distance the raw fill edge has pushed into the leading border zone, which the band must slide back by
----to stay inside the clip. Zero whenever the fill ratio cannot be read, so the cap sits flush instead.
----@return number
-function TRB.Classes.OverlaySlot:GetEndCapOvershoot()
-	local parent = self.parentNode
-	if parent == nil or parent.border == nil or parent.border <= 0 then
-		return 0
-	end
-
-	-- Rendered first: a bound DurationObject freezes GetValue at whatever was last written by hand,
-	-- so the value ratio goes stale mid-cast while the texture keeps moving.
-	local fillRatio = self:GetRenderedFillRatio()
-	if fillRatio == nil and not parent.hasTimerDuration then
-		-- Only reachable with no timer bound: under one, the range is pinned to 0..1 while GetValue counts
-		-- the duration, so the ratio clamps to 1 and slides the cap back by a full border all cast long.
-		fillRatio = self:GetParentFillRatio()
-	end
-	if fillRatio == nil then
-		return 0
-	end
-
-	return EndCapOvershootAt(parent, fillRatio)
-end
-
--- A fill that moves without a SetValue (a bound DurationObject, smooth interpolation settling) strands
--- the overshoot correction at the ratio it was last measured at, so those fills get watched instead.
-local endCapTrackedSlots = {}
-local endCapTrackerFrame = nil
-local END_CAP_TRACK_IDLE_FRAMES = 6
-
----Stops watching a slot's fill for overshoot changes.
-function TRB.Classes.OverlaySlot:StopEndCapTracking()
-	endCapTrackedSlots[self] = nil
-	if endCapTrackerFrame ~= nil and next(endCapTrackedSlots) == nil then
-		endCapTrackerFrame:Hide()
-	end
-end
-
----Re-checks one tracked slot. Returns false when it no longer needs watching.
----@param slot TRB.Classes.OverlaySlot
----@param state table
----@return boolean
-local function EndCapTrackSlot(slot, state)
-	if slot.endCapClipFrame == nil or slot.parentNode == nil or slot.parentNode:IsEngineDriven() then
-		return false
-	end
-
-	local ratio = slot:GetRenderedFillRatio()
-	if ratio == nil then
-		-- A secret fill stays unmeasurable for its whole life, so drop any correction left over from when
-		-- the bar was last readable rather than leaving it riding along behind the fill.
-		if slot.endCapOvershoot ~= 0 then
-			slot:ReanchorEndCap()
-		end
-		return false
-	end
-
-	if state.ratio ~= nil and math.abs(ratio - state.ratio) < 0.0001 then
-		state.idle = state.idle + 1
-		return state.idle < END_CAP_TRACK_IDLE_FRAMES
-	end
-	state.ratio = ratio
-	state.idle = 0
-
-	-- ReanchorEndCap memoizes on a rounded overshoot, so let it decide whether a SetPoint is warranted.
-	-- The ratio was just measured, so its overshoot is handed over rather than measured again.
-	slot:ReanchorEndCap(nil, EndCapOvershootAt(slot.parentNode, ratio))
-	return true
-end
-
----Starts watching this slot's fill so the overshoot correction follows it. Idempotent.
-function TRB.Classes.OverlaySlot:StartEndCapTracking()
-	if self.endCapClipFrame == nil or self.endCapFrame == nil then
-		return
-	end
-
-	local state = endCapTrackedSlots[self]
-	if state == nil then
-		endCapTrackedSlots[self] = { ratio = nil, idle = 0 }
-	else
-		state.idle = 0
-	end
-
-	if endCapTrackerFrame == nil then
-		endCapTrackerFrame = CreateFrame("Frame")
-		endCapTrackerFrame:SetScript("OnUpdate", function()
-			for slot, slotState in pairs(endCapTrackedSlots) do
-				if not EndCapTrackSlot(slot, slotState) then
-					endCapTrackedSlots[slot] = nil
-				end
-			end
-			if next(endCapTrackedSlots) == nil then
-				endCapTrackerFrame:Hide()
-			end
-		end)
-	end
-	endCapTrackerFrame:Show()
-end
-
----Re-anchors the end cap clip frame and its band frame.
----Called on geometry changes and whenever the overshoot correction's fill ratio moves.
----@param force boolean? # When true, always re-anchors. When false/nil, skips when no geometry-relevant input changed.
----@param overshoot number? # The caller's GetEndCapOvershoot result, when it already has one
-function TRB.Classes.OverlaySlot:ReanchorEndCap(force, overshoot)
-	if not self.endCapClipFrame then return end
+---Re-anchors the end cap's clips and bands. Called on geometry changes only; once anchored, the bands follow the fill.
+function TRB.Classes.OverlaySlot:ReanchorEndCap()
+	local clip = self.endCapClipFrame
+	if clip == nil then return end
 
 	local parent = self.parentNode
 	-- The engine's fill texture is forbidden: SetPoint against it errors. A cap on an engine-driven
 	-- bar would have to be a region the engine's own button owns.
 	if parent:IsEngineDriven() then
-		self.endCapClipFrame:Hide()
+		clip:Hide()
 		self.endCapReady = false
-		self.endCapAnchorSig = nil
-		self.endCapOvershoot = nil
-		self:StopEndCapTracking()
 		return
 	end
 
 	local fillDirection = parent.fillDirection or "leftRight"
-	local Bar = TRB.Functions.Bar
-	local isVertical = Bar:IsVerticalFill(fillDirection)
-
-	-- Anchor the rounded value the memo keys on; a raw value stays stuck and cancels edgeNudge on slow fills.
-	overshoot = math.floor((overshoot or self:GetEndCapOvershoot()) + 0.5)
-
-	-- Skip redundant re-anchoring when no geometry-relevant input has changed. The band
-	-- tracks the fill texture's leading edge automatically once anchored, so only re-anchor
-	-- when the geometry, fill texture object, cap width, or the near-full overshoot correction
-	-- (which depends on the fill ratio) actually changes. Fields, not a string: the tracker asks every frame.
+	local isVertical = TRB.Functions.Bar:IsVerticalFill(fillDirection)
 	local fillTexture = parent.frame:GetStatusBarTexture()
-	local sig = self.endCapAnchorSig
-	if force ~= true and self.endCapReady and sig ~= nil and sig.border == parent.border and sig.width == parent.width
-		and sig.height == parent.height and sig.fillDirection == fillDirection and sig.fullHeight == self.fullHeight
-		and sig.fillTexture == fillTexture and sig.endCapWidth == self.endCapWidth and sig.overshoot == overshoot then
-		return
-	end
-	if sig == nil then
-		self.endCapAnchorSig = {
-			border = parent.border, width = parent.width, height = parent.height, fillDirection = fillDirection,
-			fullHeight = self.fullHeight, fillTexture = fillTexture, endCapWidth = self.endCapWidth, overshoot = overshoot,
-		}
-	else
-		sig.border = parent.border
-		sig.width = parent.width
-		sig.height = parent.height
-		sig.fillDirection = fillDirection
-		sig.fullHeight = self.fullHeight
-		sig.fillTexture = fillTexture
-		sig.endCapWidth = self.endCapWidth
-		sig.overshoot = overshoot
-	end
-	self.endCapOvershoot = overshoot
 
 	-- Both axes trim to the inner bar: the cap draws above the backdrop edge, so its sub-pixel spill
 	-- would otherwise land on the border and read as a taller cap.
-	self.endCapClipFrame:ClearAllPoints()
+	clip:ClearAllPoints()
 	local clipLX, clipTY, clipRX, clipBY = self:GetAnchorInsets(fillDirection)
-	self.endCapClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", clipLX, clipTY)
-	self.endCapClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", clipRX, clipBY)
+	clip:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", clipLX, clipTY)
+	clip:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", clipRX, clipBY)
 	self.endCapReady = true
 
-	if self.endCapFrame then
-		self.endCapFrame:ClearAllPoints()
-		-- Anchor a SINGLE edge (not two corners) to the fill's leading edge, so the explicit size set
-		-- below is honored and the band is centered on the cross axis. The band extends backward into
-		-- the fill; the overshoot slides it back toward the fill start when the raw edge is inside
-		-- the border zone.
-		--
-		-- edgeNudge pushes the band's leading edge a half-pixel further in the growth direction. The
-		-- bar renders at a fractional effective scale (non-integer widths), so the fill's leading edge
-		-- lands on a sub-pixel boundary; the band frame rounds to a different boundary, leaving a thin
-		-- fill sliver past the cap. Half a pixel toward the leading edge closes that seam.
-		local edgeNudge = 0.5
-		if fillDirection == "rightLeft" then
-			self.endCapFrame:SetPoint("LEFT", fillTexture, "LEFT", overshoot - edgeNudge, 0)
-		elseif fillDirection == "bottomTop" then
-			self.endCapFrame:SetPoint("TOP", fillTexture, "TOP", 0, -overshoot + edgeNudge)
-		elseif fillDirection == "topBottom" then
-			self.endCapFrame:SetPoint("BOTTOM", fillTexture, "BOTTOM", 0, overshoot - edgeNudge)
-		else -- leftRight
-			self.endCapFrame:SetPoint("RIGHT", fillTexture, "RIGHT", -overshoot + edgeNudge, 0)
-		end
+	local band = self.endCapFrame
+	local pinnedClip = self.endCapPinnedClipFrame
+	local pinnedBand = self.endCapPinnedFrame
+	if band == nil or pinnedClip == nil or pinnedBand == nil then
+		return
+	end
 
-		-- Fill axis = the configured cap width. CROSS axis subtracts the border on both sides
-		-- (border * 2) so the band sits inside the side borders -- unless fullHeight, which
-		-- extends it through them.
-		local crossInset = self.fullHeight and 0 or (2 * parent.border)
-		local capWidth = math.max(1, self.endCapWidth or 1)
-		if isVertical then
-			self.endCapFrame:SetHeight(capWidth)
-			self.endCapFrame:SetWidth(math.max(1, parent.width - crossInset))
-		else
-			self.endCapFrame:SetWidth(capWidth)
-			self.endCapFrame:SetHeight(math.max(1, parent.height - crossInset))
-		end
+	-- The cross axis stays inside the side borders unless fullHeight extends the bands through them.
+	local crossInset = self.fullHeight and 0 or (2 * parent.border)
+	local capWidth = math.max(1, self.endCapWidth or 1)
+	local crossSize = math.max(1, (isVertical and parent.width or parent.height) - crossInset)
+	if isVertical then
+		band:SetSize(crossSize, capWidth)
+		pinnedBand:SetSize(crossSize, capWidth)
+	else
+		band:SetSize(capWidth, crossSize)
+		pinnedBand:SetSize(capWidth, crossSize)
+	end
+
+	-- edgeNudge closes the seam fractional-scale rounding leaves between the fill edge and the band.
+	-- The pinned clip ends at the riding band's trailing edge, so the two bands never overlap.
+	local edgeNudge = 0.5
+	band:ClearAllPoints()
+	pinnedClip:ClearAllPoints()
+	pinnedBand:ClearAllPoints()
+	if fillDirection == "rightLeft" then
+		band:SetPoint("LEFT", fillTexture, "LEFT", -edgeNudge, 0)
+		pinnedClip:SetPoint("TOPRIGHT", parent.frame, "TOPRIGHT")
+		pinnedClip:SetPoint("BOTTOMLEFT", fillTexture, "BOTTOMLEFT", capWidth - edgeNudge, 0)
+		pinnedBand:SetPoint("LEFT", clip, "LEFT")
+	elseif fillDirection == "bottomTop" then
+		band:SetPoint("TOP", fillTexture, "TOP", 0, edgeNudge)
+		pinnedClip:SetPoint("BOTTOMLEFT", parent.frame, "BOTTOMLEFT")
+		pinnedClip:SetPoint("TOPRIGHT", fillTexture, "TOPRIGHT", 0, edgeNudge - capWidth)
+		pinnedBand:SetPoint("TOP", clip, "TOP")
+	elseif fillDirection == "topBottom" then
+		band:SetPoint("BOTTOM", fillTexture, "BOTTOM", 0, -edgeNudge)
+		pinnedClip:SetPoint("TOPLEFT", parent.frame, "TOPLEFT")
+		pinnedClip:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, capWidth - edgeNudge)
+		pinnedBand:SetPoint("BOTTOM", clip, "BOTTOM")
+	else -- leftRight
+		band:SetPoint("RIGHT", fillTexture, "RIGHT", edgeNudge, 0)
+		pinnedClip:SetPoint("TOPLEFT", parent.frame, "TOPLEFT")
+		pinnedClip:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", edgeNudge - capWidth, 0)
+		pinnedBand:SetPoint("RIGHT", clip, "RIGHT")
 	end
 end
 
----Creates the end cap system: a clip container + fixed-width band frame.
+---Creates the end cap system: a clip container, the band riding the fill edge, and the band pinned to the inner bar end.
 ---Idempotent: calling this multiple times is safe.
 function TRB.Classes.OverlaySlot:CreateEndCap()
 	if self.endCapClipFrame then
@@ -1572,12 +1401,24 @@ function TRB.Classes.OverlaySlot:CreateEndCap()
 	band.texture:SetAllPoints(band)
 	band.texture:SetTexture("Interface\\Buttons\\WHITE8X8")
 
+	-- Nested in the cap's clip, so it also stays inside the inner bar.
+	local pinnedClip = CreateFrame("Frame", clipName .. "Pinned", clip)
+	pinnedClip:SetFrameLevel(clip:GetFrameLevel())
+	pinnedClip:SetClipsChildren(true)
+
+	---@type TRB.Classes.OverlaySlot.EndCapBand
+	local pinnedBand = CreateFrame("Frame", bandName .. "Pinned", pinnedClip)
+	pinnedBand:SetFrameLevel(clip:GetFrameLevel())
+	pinnedBand.texture = pinnedBand:CreateTexture(nil, "ARTWORK")
+	pinnedBand.texture:SetAllPoints(pinnedBand)
+	pinnedBand.texture:SetTexture("Interface\\Buttons\\WHITE8X8")
+
 	self.endCapClipFrame = clip
 	self.endCapFrame = band
+	self.endCapPinnedClipFrame = pinnedClip
+	self.endCapPinnedFrame = pinnedBand
 	self.endCapReady = false
-	-- Reset memoized state so the freshly-created frame re-applies anchor/color.
-	self.endCapAnchorSig = nil
-	self.endCapOvershoot = nil
+	-- Reset memoized state so the freshly-created frame re-applies its color.
 	self._endCapColorFlat = false
 
 	-- After one frame, reanchor the clip to the correct position on the bar.
@@ -1585,7 +1426,7 @@ function TRB.Classes.OverlaySlot:CreateEndCap()
 	local slot = self
 	C_Timer.After(0, function()
 		if slot.endCapClipFrame then
-			slot:ReanchorEndCap(true)
+			slot:ReanchorEndCap()
 		end
 	end)
 end
@@ -1597,31 +1438,35 @@ function TRB.Classes.OverlaySlot:SetEndCapWidth(width)
 	self.endCapWidth = width
 	-- Before the first (off-screen) anchor pass, the creation timer applies the width instead
 	if self.endCapReady then
-		self:ReanchorEndCap(true)
+		self:ReanchorEndCap()
 	end
 end
 
 ---Sets the end cap band color from an AARRGGBB hex string. No-op if not created.
 ---@param colorString string
 function TRB.Classes.OverlaySlot:SetEndCapColor(colorString)
-	if not self.endCapFrame then return end
+	local band, pinnedBand = self.endCapFrame, self.endCapPinnedFrame
+	if band == nil or pinnedBand == nil then return end
 	-- A flag beside the string, so a nil color still counts as applied without building a signature.
 	if self._endCapColorFlat and self._endCapColor == colorString then return end
 	self._endCapColorFlat = true
 	self._endCapColor = colorString
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
-	self.endCapFrame.texture:SetVertexColor(r, g, b, a)
+	band.texture:SetVertexColor(r, g, b, a)
+	pinnedBand.texture:SetVertexColor(r, g, b, a)
 end
 
 ---Sets the end cap band color from a ColorCurve result (secret-safe; bypasses the color cache).
 ---@param colorResult LuaCurveEvaluatedResult
 function TRB.Classes.OverlaySlot:SetEndCapColorResult(colorResult)
-	if not self.endCapFrame then return end
+	local band, pinnedBand = self.endCapFrame, self.endCapPinnedFrame
+	if band == nil or pinnedBand == nil then return end
 	if colorResult == nil or type(colorResult.GetRGBA) ~= "function" then
 		return
 	end
 	self._endCapColorFlat = false
-	self.endCapFrame.texture:SetVertexColor(colorResult:GetRGBA())
+	band.texture:SetVertexColor(colorResult:GetRGBA())
+	pinnedBand.texture:SetVertexColor(colorResult:GetRGBA())
 end
 
 ---Shows or hides the end cap. No-op if not created.
@@ -1639,7 +1484,6 @@ end
 ---Hides the end cap. No-op if not created.
 function TRB.Classes.OverlaySlot:HideEndCap()
 	if not self.endCapClipFrame then return end
-	self:StopEndCapTracking()
 	self.endCapClipFrame:Hide()
 end
 
@@ -1676,7 +1520,7 @@ function TRB.Classes.OverlaySlot:Reanchor()
 	self:ReanchorRangeOverlays(true)
 
 	-- Re-anchor end cap if it exists
-	self:ReanchorEndCap(true)
+	self:ReanchorEndCap()
 end
 
 ---Reapplies the stored texture and color to all existing overlay frame types.

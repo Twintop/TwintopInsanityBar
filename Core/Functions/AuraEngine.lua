@@ -441,6 +441,11 @@ function AuraEngine:Attach(node, unit, filter, ...)
 	-- last held shows through while the aura is down.
 	node:SetMinMax(0, 1)
 	node:SetValue(0)
+	-- The engine's fill can't carry the end cap, so this takes it down, or back up after a failed wire.
+	local endCapSlot = node.overlaySlots.endCap
+	if endCapSlot ~= nil then
+		endCapSlot:ReanchorEndCap()
+	end
 	return entry.wireError == nil
 end
 
@@ -497,4 +502,9 @@ function AuraEngine:Detach(node)
 	record.active = nil
 	node.engineDriven = nil
 	records[node] = nil
+	-- Geometry passes skip the cap while the engine owns the node, so its anchors may be stale.
+	local endCapSlot = node.overlaySlots.endCap
+	if endCapSlot ~= nil then
+		endCapSlot:ReanchorEndCap()
+	end
 end
