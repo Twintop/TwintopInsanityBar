@@ -1890,6 +1890,50 @@ local scratch = {
 	barColorMap4 = {},
 }
 
+-- Feral's per-element curve cache and result keys, built once so the per-tick color pass builds no strings.
+local FERAL_ELEMENTS = { "bar", "border", "background" }
+local feralCurveKeys = { combinedEnergy = {}, maxBite = {}, combinedCp = {}, maxBiteCp = {}, result = {} }
+for _, elem in ipairs(FERAL_ELEMENTS) do
+	feralCurveKeys.combinedEnergy[elem] = "feralCombinedEnergy_" .. elem
+	feralCurveKeys.maxBite[elem] = "feralMaxBite_" .. elem
+	feralCurveKeys.combinedCp[elem] = "feralCombinedCp_" .. elem
+	feralCurveKeys.maxBiteCp[elem] = "feralMaxBiteCp_" .. elem
+	feralCurveKeys.result[elem] = elem .. "Curve"
+end
+
+---Builds or reuses Feral's three-point step curve: base color, then the Ferocious Bite maximum, then overcap.
+---@param cacheKey string # Distinct per element; also leads the fast-curve keys
+---@param baseColor string
+---@param maxBiteColor string
+---@param overcapColor string
+---@param maxBitePercent number
+---@param overcapPercent number
+---@return any # A ColorCurve
+local function BuildFeralCombinedCurve(cacheKey, baseColor, maxBiteColor, overcapColor, maxBitePercent, overcapPercent)
+	local cache = TRB.Data.cache.stepColorCurves
+	local curve = Color:GetFastCurve(cache, cacheKey, baseColor, maxBiteColor, overcapColor, maxBitePercent, overcapPercent)
+	if curve ~= nil then
+		return curve
+	end
+	local fullKey = cacheKey .. "_" .. baseColor .. "_" .. maxBiteColor .. "_" .. overcapColor .. "_" .. tostring(maxBitePercent) .. "_" .. tostring(overcapPercent)
+	curve = cache[fullKey]
+	if curve == nil then
+		curve = C_CurveUtil.CreateColorCurve()
+		curve:SetType(Enum.LuaCurveType.Step)
+		local bR, bG, bB, bA = Color:GetRGBAFromString(baseColor, true)
+		local mR, mG, mB, mA = Color:GetRGBAFromString(maxBiteColor, true)
+		local oR, oG, oB, oA = Color:GetRGBAFromString(overcapColor, true)
+		curve:AddPoint(0, CreateColor(bR, bG, bB, bA))
+		curve:AddPoint(maxBitePercent, CreateColor(mR, mG, mB, mA))
+		curve:AddPoint(overcapPercent, CreateColor(oR, oG, oB, oA))
+		curve:AddPoint(2.0, CreateColor(oR, oG, oB, oA))
+		Color:SetCurveThresholdMeta(curve, baseColor, { { x = maxBitePercent, color = maxBiteColor }, { x = overcapPercent, color = overcapColor }, { x = 2.0, color = overcapColor } })
+		cache[fullKey] = curve
+	end
+	Color:SetFastCurve(cache, curve, cacheKey, baseColor, maxBiteColor, overcapColor, maxBitePercent, overcapPercent)
+	return curve
+end
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -2406,31 +2450,10 @@ local function UpdateResourceBar()
 							overcapPercent = thresholdValue / maxResource
 						end
 
-						-- Helper: build a combined 3-point step curve (base → maxBite → overcap)
-						local function BuildCombinedCurve(cacheKey, baseColor, maxBiteColor, overcapColor)
-							local cache = TRB.Data.cache.stepColorCurves
-							local fullKey = cacheKey .. "_" .. baseColor .. "_" .. maxBiteColor .. "_" .. overcapColor .. "_" .. tostring(maxBitePercent) .. "_" .. tostring(overcapPercent)
-							if cache[fullKey] then
-								return cache[fullKey]
-							end
-							local curve = C_CurveUtil.CreateColorCurve()
-							curve:SetType(Enum.LuaCurveType.Step)
-							local bR, bG, bB, bA = Color:GetRGBAFromString(baseColor, true)
-							local mR, mG, mB, mA = Color:GetRGBAFromString(maxBiteColor, true)
-							local oR, oG, oB, oA = Color:GetRGBAFromString(overcapColor, true)
-							curve:AddPoint(0, CreateColor(bR, bG, bB, bA))
-							curve:AddPoint(maxBitePercent, CreateColor(mR, mG, mB, mA))
-							curve:AddPoint(overcapPercent, CreateColor(oR, oG, oB, oA))
-							curve:AddPoint(2.0, CreateColor(oR, oG, oB, oA))
-							Color:SetCurveThresholdMeta(curve, baseColor, { { x = maxBitePercent, color = maxBiteColor }, { x = overcapPercent, color = overcapColor }, { x = 2.0, color = overcapColor } })
-							cache[fullKey] = curve
-							return curve
-						end
-
 						-- Process energy bar elements
 						local maxBiteEnergyTargets = maxBiteActive and maxBiteInd.targets and maxBiteInd.targets.energyBar
 						local overcapEnergyTargets = overcapActive and overcapInd.targets and overcapInd.targets.energyBar
-						for _, elem in ipairs({"bar", "border", "background"}) do
+						for _, elem in ipairs(FERAL_ELEMENTS) do
 							local mbTargets = maxBiteEnergyTargets and maxBiteEnergyTargets[elem]
 							local ocTargets = overcapEnergyTargets and overcapEnergyTargets[elem]
 							local baseColor = energyBarColors[elem]
@@ -2440,7 +2463,7 @@ local function UpdateResourceBar()
 							if baseColor then
 								if mbTargets and ocTargets then
 									-- Combined 3-point curve
-									local curve = BuildCombinedCurve("feralCombinedEnergy_" .. elem, baseColor, maxBiteInd.color, overcapInd.color)
+									local curve = BuildFeralCombinedCurve(feralCurveKeys.combinedEnergy[elem], baseColor, maxBiteInd.color, overcapInd.color, maxBitePercent, overcapPercent)
 									local result = UnitPowerPercent("player", displayResourceType, true, curve)
 									if elem == "bar" then
 										barColorCurveResult = result
@@ -2451,7 +2474,7 @@ local function UpdateResourceBar()
 									end
 									energyBarColors[elem] = nil
 								elseif mbTargets then
-									local curve = Color:GetStepColorCurve("feralMaxBite_" .. elem, baseColor, maxBiteInd.color, maxBitePercent)
+									local curve = Color:GetStepColorCurve(feralCurveKeys.maxBite[elem], baseColor, maxBiteInd.color, maxBitePercent)
 									local result = UnitPowerPercent("player", displayResourceType, true, curve)
 									if elem == "bar" then
 										barColorCurveResult = result
@@ -2484,7 +2507,7 @@ local function UpdateResourceBar()
 						cpBaseColors.bar = specSettings.colors.comboPoints.base
 						cpBaseColors.border = specSettings.colors.comboPoints.border.color
 						cpBaseColors.background = specSettings.colors.comboPoints.background.color
-						for _, elem in ipairs({"bar", "border", "background"}) do
+						for _, elem in ipairs(FERAL_ELEMENTS) do
 							local mbTargets = maxBiteCpTargets and maxBiteCpTargets[elem]
 							local ocTargets = overcapCpTargets and overcapCpTargets[elem]
 							local cpBase = cpBaseColors[elem]
@@ -2493,14 +2516,14 @@ local function UpdateResourceBar()
 							end
 							local curve = nil
 							if mbTargets and ocTargets then
-								curve = BuildCombinedCurve("feralCombinedCp_" .. elem, cpBase, maxBiteInd.color, overcapInd.color)
+								curve = BuildFeralCombinedCurve(feralCurveKeys.combinedCp[elem], cpBase, maxBiteInd.color, overcapInd.color, maxBitePercent, overcapPercent)
 							elseif mbTargets then
-								curve = Color:GetStepColorCurve("feralMaxBiteCp_" .. elem, cpBase, maxBiteInd.color, maxBitePercent)
+								curve = Color:GetStepColorCurve(feralCurveKeys.maxBiteCp[elem], cpBase, maxBiteInd.color, maxBitePercent)
 							elseif ocTargets then
 								curve = Color:BuildResourceThresholdCurve(specSettings, cpBase, overcapInd.color)
 							end
 							if curve then
-								comboPointColors[elem .. "Curve"] = UnitPowerPercent("player", displayResourceType, true, curve)
+								comboPointColors[feralCurveKeys.result[elem]] = UnitPowerPercent("player", displayResourceType, true, curve)
 								-- Keep the border's source curve so end caps can derive their companion curve at apply time
 								if elem == "border" then
 									comboPointColors.borderCurveSource = curve
@@ -2526,7 +2549,6 @@ local function UpdateResourceBar()
 
 				if barColorCurveResult ~= nil then
 					primaryNode:SetColorCurve(barColorCurveResult)
-					TRB.Data.cache.colors.bar[primaryNode.name .. "_resource"] = nil
 				elseif barColor then
 					TRB.Functions.Color:ApplyFillColor(primaryNode, barColor)
 				end
