@@ -12,6 +12,7 @@ TRB.Details.coreNewsContent = [====[
 - [#584](#584) Options show a font, texture, or sound that isn't loaded with "(not loaded)" after its name.
 - [#584](#584) Remove the chat messages about invalid fonts, textures, and sounds.
 - [#584](#584) Remove unused audio dropdown and media lookup code from the options.
+- [#868](#868) Improve the player cast bar's update performance during empowered casts.
 - Fix the uninterruptible shield on the cast bars drawing under channel ticks and empower stage lines when its Shield Layer is set to Over.
 - Fix the uninterruptible shield on the cast bars covering the ability icon when its Shield Layer is set to Over.
 

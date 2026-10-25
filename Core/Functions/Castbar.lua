@@ -780,9 +780,16 @@ local function GetEmpowerTexture(pool, node, i)
 	return pool.empower[i]
 end
 
+---@class TRB.Classes.CastbarSegmentTexture : Texture
+---@field public trbColor string? # Hex color last painted, so a repaint is skipped while it holds
+
+-- Empower stage color keys by level, so a stage lookup builds no string.
+local EMPOWER_LEVEL_KEYS = { "level1", "level2", "level3", "level4" }
+
 ---Returns a pooled empower segment-fill texture at index i, creating it on demand. Sits at ARTWORK --
 ---above the bar background but below the OVERLAY latency/pushback/tick/boundary overlays, so those still
 ---render on top of the segment fills.
+---@return TRB.Classes.CastbarSegmentTexture
 local function GetSegmentTexture(pool, node, i)
 	if pool.segments[i] == nil then
 		local t = node.frame:CreateTexture(nil, "ARTWORK")
@@ -898,7 +905,7 @@ local function ApplyStateFillColor(node, colors, model, barSettings, indicatorKe
 			if stage <= 0 then
 				entry = stageColors.base
 			else
-				entry = stageColors["level" .. math.min(stage, 4)]
+				entry = stageColors[EMPOWER_LEVEL_KEYS[math.min(stage, 4)]]
 			end
 		end
 		Color:ApplyFillColor(node, entry or colors.bar)
@@ -982,13 +989,16 @@ local function DrawEmpowerSegments(node, colors, model, fill)
 		local a = (k == 0) and 0 or fractions[k]
 		local b = (k == n) and 1 or fractions[k + 1]
 		if b > a and fill > a + 0.0001 then
-			local entry = (k == 0) and stageColors.base or stageColors["level" .. math.min(k, 4)]
+			local entry = (k == 0) and stageColors.base or stageColors[EMPOWER_LEVEL_KEYS[math.min(k, 4)]]
 			local color = (type(entry) == "table" and entry.color) or entry
 			if color then
 				drawn = drawn + 1
 				local t = GetSegmentTexture(pool, node, drawn)
-				local cr, cg, cb, ca = TRB.Functions.Color:GetRGBAFromString(color, true)
-				t:SetColorTexture(cr, cg, cb, ca)
+				-- Stage colors hold for the whole cast, so only the segment geometry changes per frame.
+				if t.trbColor ~= color then
+					t.trbColor = color
+					t:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(color, true))
+				end
 				PlaceRegion(t, node, a, math.min(fill, b), isVertical)
 				t:Show()
 			end
