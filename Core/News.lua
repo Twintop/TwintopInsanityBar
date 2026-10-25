@@ -16,11 +16,13 @@ TRB.Details.coreNewsContent = [====[
 - [#865](#865) Fix the Health bar's fill briefly turning transparent while changing bar options.
 - [#866](#866) Improve update performance of bars whose node order can be rearranged.
 - [#868](#868) Improve the player cast bar's update performance during empowered casts.
+- [#868](#868) Fix the player cast bar's End Cap not lining up with the fill's edge during empowered casts with Fill Each Empower Level Separately on.
 - [#870](#870) Fix an Action Button Glow taking its brightness from another glow's color when glows with different opacities start together.
 - [#873](#873) Free the memory held for bar colors no longer in use on a specialization or bar layout change, instead of keeping it until a reload.
 - [#875](#875) Remove unused color option code from the options.
 - Fix the uninterruptible shield on the cast bars drawing under channel ticks and empower stage lines when its Shield Layer is set to Over.
 - Fix the uninterruptible shield on the cast bars covering the ability icon when its Shield Layer is set to Over.
+- Fix the cast bars showing the last cast's latency zone, ticks, and empower stage lines when they reappear idle after hiding.
 
 ## Bar Text
 
