@@ -25,6 +25,10 @@ TRB.Flavor.newsContent = [====[
 - Fingers of Frost tracking corrects itself when a charge is gained as you spend one.
 
 ## Monk
+### Brewmaster
+
+- [#867](#867) Improve Stagger bar and stagger bar text update performance.
+
 ### Windwalker
 
 - [#885](#885) Add Hit Combo tracking, with a Hit Combo Color Indicator, Hit Combo stack Audio Cues, the `$hitComboStacks` and `$hitComboTime` bar text variables, and the `#hitCombo` icon. The indicator defaults to the Energy bar border, and only turns on at the stack count set on the Indicator Colors tab.
