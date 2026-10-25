@@ -456,11 +456,12 @@ function M.install(opts)
 	G.UnitPower = function(u, p) return 0 end
 	G.UnitPowerMax = function(u, p) return 100 end
 	G.UnitPowerType = function() return 0, "MANA" end
-	G.UnitPowerPercent = function() return 0 end
+	-- Given a color curve, the percent APIs return the evaluated color, not a percentage.
+	G.UnitPowerPercent = function(_, _, _, curve) if curve ~= nil and curve.isColorCurve then return curve:Evaluate(0) end return 0 end
 	G.UnitPowerDisplayMod = function() return 1 end
 	G.UnitHealth = function() return 100 end
 	G.UnitHealthMax = function() return 100 end
-	G.UnitHealthPercent = function() return 100 end
+	G.UnitHealthPercent = function(_, _, curve) if curve ~= nil and curve.isColorCurve then return curve:Evaluate(1) end return 100 end
 	G.UnitGetTotalAbsorbs = retZero
 	G.UnitGetTotalHealAbsorbs = retZero
 	G.UnitGetIncomingHeals = retZero
@@ -710,7 +711,7 @@ function M.install(opts)
 	G.C_CooldownViewer = ns({ GetCooldownViewerCategorySet = retEmpty, GetCooldownViewerCooldownInfo = retNil, IsCooldownViewerAvailable = retTrue, GetCooldownViewerCooldownIDs = retEmpty, GetCooldownViewerCooldownList = retEmpty, GetCooldownInfoForSpellID = retNil, SetCooldownViewerCategorySet = noop })
 	G.C_Item = ns({ GetItemInfo = retNil, GetItemIconByID = function() return 134400 end, GetItemIcon = function() return 134400 end, GetDetailedItemLevelInfo = retZero, GetItemInfoInstant = retNil, GetItemNameByID = retNil, GetItemCount = retZero, GetItemCooldown = function() return 0, 0, 1 end, IsEquippedItem = retFalse, DoesItemExist = retFalse, GetItemLink = retNil, GetItemSpell = retNil, IsItemDataCachedByID = retTrue, RequestLoadItemDataByID = noop, GetItemQualityByID = retZero, GetItemInventoryTypeByID = retZero, GetItemClassInfo = retNil, GetItemSubClassInfo = retNil, GetItemSetInfo = retNil, GetItemSpecInfo = retEmpty, IsItemInRange = retNil, GetItemGem = retNil, GetItemStats = retEmpty })
 	local curveMeta = { __index = { AddPoint = noop, SetPoints = noop, Evaluate = function() return G.CreateColor(1, 1, 1, 1) end, EvaluateColor = function() return G.CreateColor(1, 1, 1, 1) end, ClearPoints = noop, SetType = noop, GetType = function() return 0 end, GetPoints = retEmpty, GetPointCount = retZero } }
-	G.C_CurveUtil = ns({ CreateColorCurve = function() return setmetatable({}, curveMeta) end, CreateCurve = function() return setmetatable({}, curveMeta) end, EvaluateColorFromBoolean = function(b, c1, c2) return b and c1 or c2 end, EvaluateColorFromValue = function(v, curve) return G.CreateColor(1, 1, 1, 1) end, EvaluateColorCurve = function() return G.CreateColor(1, 1, 1, 1) end, CreateColorCurveFromTable = function() return setmetatable({}, curveMeta) end })
+	G.C_CurveUtil = ns({ CreateColorCurve = function() return setmetatable({ isColorCurve = true }, curveMeta) end, CreateCurve = function() return setmetatable({}, curveMeta) end, EvaluateColorFromBoolean = function(b, c1, c2) return b and c1 or c2 end, EvaluateColorFromValue = function(v, curve) return G.CreateColor(1, 1, 1, 1) end, EvaluateColorCurve = function() return G.CreateColor(1, 1, 1, 1) end, CreateColorCurveFromTable = function() return setmetatable({ isColorCurve = true }, curveMeta) end })
 	G.C_EditMode = ns({ GetLayouts = function() return { layouts = {}, activeLayout = 1 } end, SaveLayouts = noop, GetAccountSettings = retEmpty, SetAccountSetting = noop, IsEditModeActive = retFalse, OnLayoutAdded = noop, OnLayoutDeleted = noop, ConvertLayoutInfoToString = function() return "" end, ConvertStringToLayoutInfo = retNil, OnEditModeExit = noop })
 	G.C_ChatInfo = ns({ SendAddonMessage = retTrue, RegisterAddonMessagePrefix = retTrue, IsAddonMessagePrefixRegistered = retFalse, GetChannelInfoFromIdentifier = retNil })
 	G.C_MountJournal = ns({ IsDragonridingUnlocked = retFalse, GetMountFromSpell = retNil, GetMountInfoByID = retNil, GetNumMounts = retZero, GetMountIDs = retEmpty })

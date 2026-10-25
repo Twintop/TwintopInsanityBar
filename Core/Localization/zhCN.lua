@@ -1214,7 +1214,6 @@ if locale == "zhCN" then
     L["HealthBarThresholdHighTooltip"] = "进度条颜色从中等血量过渡到高血量的生命值百分比。"
 
 	-- Stagger Bar Color Curve
-    L["StaggerBarColorHeader"] = "醉拳进度条颜色"
     L["StaggerBarColorType"] = "颜色过渡类型"
     L["StaggerBarColorTypeStep"] = "阶跃式"
     L["StaggerBarColorTypeLinear"] = "平滑渐变（线性）"
@@ -1222,7 +1221,6 @@ if locale == "zhCN" then
     L["StaggerBarColorLight"] = "轻度醉拳颜色"
     L["StaggerBarColorMedium"] = "中度醉拳颜色"
     L["StaggerBarColorHeavy"] = "重度醉拳颜色"
-    L["StaggerBarColorBorder"] = "醉拳进度条边框颜色"
     L["StaggerBarThresholdMedium"] = "中度醉拳阈值"
     L["StaggerBarThresholdMediumTooltip"] = "进度条颜色从轻度醉拳过渡到中度醉拳的醉拳百分比。"
     L["StaggerBarThresholdHeavy"] = "重度醉拳阈值"
