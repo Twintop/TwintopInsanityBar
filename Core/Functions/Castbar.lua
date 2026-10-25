@@ -841,11 +841,7 @@ local function GetTargetClassColor(barSettings)
 	if classFilename == nil or issecretvalue(classFilename) then
 		return nil
 	end
-	local color = C_ClassColor.GetClassColor(classFilename)
-	if color == nil then
-		return nil
-	end
-	return TRB.Functions.Color:ConvertColorDecimalToHex(color.r, color.g, color.b, 1)
+	return select(4, GetClassColor(classFilename))
 end
 
 ---Hides only the pooled empower segment-fill textures, leaving the latency overlay intact. Used when a
