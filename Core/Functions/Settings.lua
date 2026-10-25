@@ -2949,6 +2949,9 @@ function TRB.Functions.Settings:DefaultThresholdDictionaryEntry(isEnabled)
 			relativeTo = "BOTTOM",
 			desaturated = true,
 			border = 2,
+			priority = "normal",
+			neverHide = false,
+			excludeFromLayout = false,
 		},
 		line = {
 			enabled = false,

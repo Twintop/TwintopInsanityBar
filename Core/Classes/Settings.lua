@@ -128,6 +128,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public relativeTo string?
 ---@field public desaturated boolean?
 ---@field public border number?
+---@field public priority string? # "high", "normal", or "low"; applies whether or not `enabled` is on
+---@field public neverHide boolean?
+---@field public excludeFromLayout boolean?
 
 ---@class TRB.Classes.Settings.ThresholdDictionaryLine
 ---@field public enabled boolean
