@@ -5,13 +5,14 @@
 .DESCRIPTION
 	options-tabs builds every options tab for every class and runs the Textures tab checks; it runs once per flavor.
 	media-pickup checks that fonts, textures, and sounds that aren't loaded draw the default and are picked up live;
-	it runs once per class. See build\harness\README.md.
+	it runs once per class.
+	colors checks color conversion, color curves, class colors, and VertexColor animations; it runs once per flavor. See build\harness\README.md.
 
 .PARAMETER Lua
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever). Default: all.
@@ -39,7 +40,8 @@ if ($null -eq (Get-Command $Lua -ErrorAction SilentlyContinue)) {
 
 $drivers = @(
 	[pscustomobject]@{ Name = "options-tabs"; EveryClass = $false },
-	[pscustomobject]@{ Name = "media-pickup"; EveryClass = $true }
+	[pscustomobject]@{ Name = "media-pickup"; EveryClass = $true },
+	[pscustomobject]@{ Name = "colors"; EveryClass = $false }
 )
 $known = $drivers | ForEach-Object { $_.Name }
 if ($Driver -ne "" -and $known -notcontains $Driver) {

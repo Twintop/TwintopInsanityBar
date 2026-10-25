@@ -7,7 +7,10 @@ checker cannot: load-order errors, nil indexing at file scope, and errors in the
 
 It is deliberately shallow past the bootstrap: frames, libraries and Blizzard APIs are stubs, so the
 deferred UI construction eventually hits a stub it cannot emulate. Those show up as `TIMER ERROR` lines
-and are informational; `ERROR`, `SYNTAX` and `EVENT ERROR` lines are real.
+and are informational; `ERROR`, `SYNTAX` and `EVENT ERROR` lines are real. The color APIs are the
+exception: `ColorMixin`, the ColorUtil helpers, `C_ColorUtil`, and color and numeric curves (also through
+`UnitPowerPercent` and `UnitHealthPercent`) behave like the client's, minus secret values, and class colors
+are white.
 
 ## Requirements
 
@@ -66,6 +69,7 @@ behavior a driver needs past smoke-loading: Forever's project id, template child
 | --- | --- | --- |
 | `drivers\options-tabs.lua` | `drivers.ps1` | Builds every options tab for every class, then runs the Textures tab checks from #861 and #584. Prints `PASS`, `FAIL`, and `TAB ERROR` lines. |
 | `drivers\media-pickup.lua` | `drivers.ps1` | Checks that fonts, textures, and sounds that aren't loaded draw or play the default, are picked up live (after combat, with a Druid form's spec), and are never written into settings. |
+| `drivers\colors.lua` | `drivers.ps1` | Checks color conversion, color curves (including through `UnitPowerPercent`), class colors, and VertexColor animations against the client's behavior. |
 | `drivers\bartext-fonts.lua` | `font-compare.ps1` | Writes the font each bar text string gets at login to `TRB_FONT_OUT`. `TRB_SPEC` picks the specialization index, and `TRB_REGISTER_SAVED_MEDIA=1` registers every name the save uses at its saved path, as if all its media loaded. |
 
 `drivers.ps1 -AddonDir <checkout>` runs the current drivers against another checkout, such as a
