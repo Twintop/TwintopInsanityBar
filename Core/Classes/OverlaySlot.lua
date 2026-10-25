@@ -1115,7 +1115,7 @@ function TRB.Classes.OverlaySlot:_CreateRangeGate(index, fillDirection)
 	gate:Hide()
 	self.rangeOverlayFrames[index] = gate
 	self._rangeTexturePaths[index] = nil
-	self._rangeColorRecords[index] = nil
+	self:GetRangeColorRecord(index).set = false
 	self._rangeGradientActive[index] = false
 end
 
@@ -1221,7 +1221,7 @@ function TRB.Classes.OverlaySlot:SetRangeOverlayTexture(index, texture)
 	if self._rangeTexturePaths[index] == texture then return end
 	self._rangeTexturePaths[index] = texture
 	-- Changing the texture resets the fill texture's vertex color, so force color re-apply.
-	self._rangeColorRecords[index] = nil
+	self:GetRangeColorRecord(index).set = false
 	gate:SetStatusBarTexture(texture)
 	local fillTexture = gate:GetStatusBarTexture()
 	if fillTexture then

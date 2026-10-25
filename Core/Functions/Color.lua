@@ -410,9 +410,10 @@ function TRB.Functions.Color:SetThresholdColor(frame, rgbaString, normalize, cla
 		if frame.texture == nil then
 			frame.texture = frame:CreateTexture(nil, "OVERLAY")
 			frame.texture:SetAllPoints(frame)
-			frame.trbColor = nil
+			frame.trbColorIcon = nil
 		end
 		-- Static colors are often re-applied every tick; skip the writes while nothing they cover changed.
+		-- paintIcon is never nil, so a cleared trbColorIcon forces a write even for a nil color.
 		local paintIcon = frame.icon ~= nil and frame.hasIcon == true
 		if frame.trbColor == rgbaString and frame.trbColorNormalized == normalize and frame.trbColorIcon == paintIcon then
 			return
@@ -831,7 +832,7 @@ function TRB.Functions.Color:SetThresholdColorFromCurve(frame, colorResult, clas
 		end
 		-- Pass the color directly to SetColorTexture via GetRGBA - WoW API handles secret values
 		frame.texture:SetColorTexture(colorResult:GetRGBA())
-		frame.trbColor = nil
+		frame.trbColorIcon = nil
 		if frame.icon ~= nil and frame.hasIcon == true then
 			local r, g, b, a = colorResult:GetRGBA()
 			frame.icon:SetBackdropBorderColor(r, g, b, a)
