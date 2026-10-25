@@ -372,11 +372,7 @@ local function GetUnitClassColor(unit, barSettings)
 	if classFilename == nil or issecretvalue(classFilename) then
 		return nil
 	end
-	local color = C_ClassColor.GetClassColor(classFilename)
-	if color == nil then
-		return nil
-	end
-	return TRB.Functions.Color:ConvertColorDecimalToHex(color.r, color.g, color.b, 1)
+	return select(4, GetClassColor(classFilename))
 end
 
 ---Applies the fill color for the current state. The monitored unit's class color (when enabled) wins for
