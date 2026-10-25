@@ -92,14 +92,14 @@ local function ColorUnchanged(record, gradient, color1, color2, direction)
 end
 
 ---Returns a range gate's fill record, creating it on first use.
----@param slot TRB.Classes.OverlaySlot
+---@private
 ---@param index integer
 ---@return TRB.Classes.OverlaySlot.ColorRecord
-local function GetRangeColorRecord(slot, index)
-	local record = slot._rangeColorRecords[index]
+function TRB.Classes.OverlaySlot:GetRangeColorRecord(index)
+	local record = self._rangeColorRecords[index]
 	if record == nil then
 		record = {}
-		slot._rangeColorRecords[index] = record
+		self._rangeColorRecords[index] = record
 	end
 	return record
 end
@@ -1237,7 +1237,7 @@ end
 function TRB.Classes.OverlaySlot:SetRangeOverlayColor(index, colorString)
 	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
 	if not gate then return end
-	if ColorUnchanged(GetRangeColorRecord(self, index), false, colorString) then return end
+	if ColorUnchanged(self:GetRangeColorRecord(index), false, colorString) then return end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = gate:GetStatusBarTexture()
 	if fillTexture then
@@ -1258,7 +1258,7 @@ end
 function TRB.Classes.OverlaySlot:SetRangeOverlayColorGradient(index, color1String, color2String, direction)
 	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
 	if not gate then return end
-	if ColorUnchanged(GetRangeColorRecord(self, index), true, color1String, color2String, direction) then return end
+	if ColorUnchanged(self:GetRangeColorRecord(index), true, color1String, color2String, direction) then return end
 	local Color = TRB.Functions.Color
 	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
 	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
