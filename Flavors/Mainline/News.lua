@@ -9,6 +9,11 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.7-release (2026-10-24)
+## Druid
+
+- [#871](#871) Fix `$energy`, `$rage`, and `$astralPower` bar text losing the overcap color while the resource holds steady, such as at cap.
+- [#871](#871) Fix `$resource` and `$resourceMax` bar text switching to the specialization's own resource while in another form, such as Energy while in Bear Form.
+
 ## Mage
 ### Arcane
 

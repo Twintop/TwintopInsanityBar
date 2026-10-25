@@ -1289,12 +1289,14 @@ local function RefreshLookupData_Unified()
 	local prevState = TRB.Data.prevLookupState or {}
 	local activeVars = TRB.Data.activeVariables
 
-	-- Block A: All primary resources + $resource/$resourceMax mapping
-	if not activeVars or activeVars["$energy"] or activeVars["$energyMax"]
+	local resourcesActive = not activeVars or activeVars["$energy"] or activeVars["$energyMax"]
 		or activeVars["$rage"] or activeVars["$rageMax"]
 		or activeVars["$mana"] or activeVars["$manaMax"] or activeVars["$manaPercent"]
 		or activeVars["$astralPower"] or activeVars["$astralPowerMax"]
-		or activeVars["$resource"] or activeVars["$resourceMax"] then
+		or activeVars["$resource"] or activeVars["$resourceMax"]
+
+	-- Block A: All primary resources
+	if resourcesActive then
 
 		local energy = snapshotData.attributes.energy or 0
 		local rage = snapshotData.attributes.rageModified or 0
@@ -1302,7 +1304,6 @@ local function RefreshLookupData_Unified()
 		local astralPower = snapshotData.attributes.astralPower or 0
 
 		-- Resource color configuration
-		local astralPowerColor = TRB.Data.settings.druid.balance.colors.text.current.color
 		local energyColor = TRB.Data.settings.druid.feral.colors.text.current.color
 		local rageColor = TRB.Data.settings.druid.guardian.colors.text.current.color
 		local manaColor = TRB.Data.settings.druid.restoration.colors.text.current.color
@@ -1327,14 +1328,14 @@ local function RefreshLookupData_Unified()
 			lookupLogic["$astralPowerMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
 		end
 
-		-- FCS: Energy ($energy)
-		if lookupChanged(prevState, "u$energy", energy, energyColor, true) then
+		-- FCS: Energy ($energy). The spec's own resource is left to its spec function, which adds the overcap and threshold colors.
+		if specId ~= 2 and lookupChanged(prevState, "u$energy", energy, energyColor, true) then
 			lookup["$energy"] = string.format("|c%s%s|r", energyColor, energy)
 		end
 		lookup["$energyMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
 
 		-- FCS: Rage ($rage)
-		if lookupChanged(prevState, "u$rage", rage, rageColor, true) then
+		if specId ~= 3 and lookupChanged(prevState, "u$rage", rage, rageColor, true) then
 			lookup["$rage"] = string.format("|c%s%s|r", rageColor, rage)
 		end
 		lookup["$rageMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
@@ -1364,36 +1365,9 @@ local function RefreshLookupData_Unified()
 			lookup["$manaPercent"] = string.format("|c%s%s|r", manaColor, unifiedManaPercentFormatted)
 		end
 
-		-- FCS: Astral Power ($astralPower, $astralPowerMax) - Balance only
+		-- Astral Power ($astralPower) is only Balance's, so its spec function writes it.
 		if specId == 1 then
-			if lookupChanged(prevState, "u$astralPower", astralPower, astralPowerColor, true) then
-				lookup["$astralPower"] = string.format("|c%s%s|r", astralPowerColor, astralPower)
-			end
 			lookup["$astralPowerMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
-		end
-
-		-- Primary $resource and $resourceMax - mapped to current form's resource
-		if currentForm == "cat" then
-			lookup["$resource"] = lookup["$energy"]
-			lookup["$resourceMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
-			lookupLogic["$resource"] = energy
-			lookupLogic["$resourceMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
-		elseif currentForm == "bear" then
-			lookup["$resource"] = lookup["$rage"]
-			lookup["$resourceMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
-			lookupLogic["$resource"] = rage
-			lookupLogic["$resourceMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
-		elseif currentForm == "moonkin" and specId == 1 then
-			lookup["$resource"] = lookup["$astralPower"]
-			lookup["$resourceMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
-			lookupLogic["$resource"] = astralPower
-			lookupLogic["$resourceMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
-		else
-			-- Humanoid/other forms use mana
-			lookup["$resource"] = lookup["$mana"]
-			lookup["$resourceMax"] = TRB.Data.character.maxMana / MANA_RESOURCE_FACTOR
-			lookupLogic["$resource"] = mana
-			lookupLogic["$resourceMax"] = TRB.Data.character.maxMana / MANA_RESOURCE_FACTOR
 		end
 	end
 
@@ -1419,7 +1393,33 @@ local function RefreshLookupData_Unified()
 	elseif specId == 4 then
 		RefreshLookupData_Restoration()
 	end
-	
+
+	-- $resource follows the current form, mapped after the spec function so its own writes can't replace it.
+	if resourcesActive then
+		if currentForm == "cat" then
+			lookup["$resource"] = lookup["$energy"]
+			lookup["$resourceMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
+			lookupLogic["$resource"] = lookupLogic["$energy"]
+			lookupLogic["$resourceMax"] = TRB.Data.character.maxEnergy / ENERGY_RESOURCE_FACTOR
+		elseif currentForm == "bear" then
+			lookup["$resource"] = lookup["$rage"]
+			lookup["$resourceMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
+			lookupLogic["$resource"] = lookupLogic["$rage"]
+			lookupLogic["$resourceMax"] = TRB.Data.character.maxRage / RAGE_RESOURCE_FACTOR
+		elseif currentForm == "moonkin" and specId == 1 then
+			lookup["$resource"] = lookup["$astralPower"]
+			lookup["$resourceMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
+			lookupLogic["$resource"] = lookupLogic["$astralPower"]
+			lookupLogic["$resourceMax"] = TRB.Data.character.maxAstralPower / ASTRAL_POWER_RESOURCE_FACTOR
+		else
+			-- Humanoid/other forms use mana
+			lookup["$resource"] = lookup["$mana"]
+			lookup["$resourceMax"] = TRB.Data.character.maxMana / MANA_RESOURCE_FACTOR
+			lookupLogic["$resource"] = lookupLogic["$mana"]
+			lookupLogic["$resourceMax"] = TRB.Data.character.maxMana / MANA_RESOURCE_FACTOR
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
