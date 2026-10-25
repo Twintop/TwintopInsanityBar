@@ -311,6 +311,8 @@ end
 ---@field public communionWithWind TRB.Classes.SpellBase
 ---@field public whirlingDragonPunch TRB.Classes.SpellBase
 ---@field public hitCombo TRB.Classes.SpellBase
+---@field public zenith TRB.Classes.SpellBase
+---@field public zenithStomp TRB.Classes.SpellBase
 ---@field public blackoutKick TRB.Classes.SpellComboPoint
 ---@field public spinningCraneKick TRB.Classes.SpellComboPoint
 ---@field public risingSunKick TRB.Classes.SpellComboPoint
@@ -492,6 +494,15 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 			[1249625] = true,	-- Zenith
 			[1272696] = true,	-- Zenith Stomp
 		}
+	})
+	self.zenith = TRB.Classes.SpellBase:New({
+		id = 1249625,
+		isTalent = true
+	})
+	self.zenithStomp = TRB.Classes.SpellBase:New({
+		id = 1272696,
+		talentId = 1272694,
+		isTalent = true
 	})
 
 	-- Conduit of the Celestials
@@ -838,16 +849,6 @@ do
 	SpecDescriptor:Declare("monk_windwalker", {
 		secondary = { exportable = true },
 		empowerCastbar = true,
-		-- Temporary Hit Combo probe; remove with ProbeHitComboCast before merge.
-		slashCommands = {
-			hitcombo = function(subcmd)
-				if subcmd ~= nil and subcmd ~= "" then
-					print("|cFFFF8800TRB Hit Combo:|r Unknown argument '" .. subcmd .. "'. Usage: /trb hitcombo")
-					return
-				end
-				TRB.Functions.Class:ToggleHitComboProbe()
-			end,
-		},
 		barTextAnchorFrames = {
 			secondary = {
 				{ label = L["Chi1"], frame = "ComboPoint_1" }, { label = L["Chi2"], frame = "ComboPoint_2" }, { label = L["Chi3"], frame = "ComboPoint_3" }, { label = L["Chi4"], frame = "ComboPoint_4" },

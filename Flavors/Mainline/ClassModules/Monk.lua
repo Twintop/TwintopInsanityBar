@@ -625,71 +625,24 @@ local function UpdateCastingResourceFinal_Mistweaver()
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 end
 
--- Temporary /trb hitcombo probe for the in-game Hit Combo test; remove before merge.
-local hitComboProbe = { enabled = false, ignored = {}, lastId = nil, lastTime = 0 }
-
-local function HitComboProbePrint(fmt, ...)
-	print("|cFF00FF00TRB Hit Combo:|r " .. string.format(fmt, ...))
-end
-
----Prints the tracker's result for a Windwalker cast event while the probe is on.
----@param event trbSpellCastType
+---Applies one Combo Strikes trigger to Hit Combo: repeating the last one drops it, anything else adds a stack.
+---@param spells TRB.Classes.Monk.WindwalkerSpells
+---@param snapshotData TRB.Classes.SnapshotData
 ---@param spellId integer
 ---@param currentTime number
-local function ProbeHitComboCast(event, spellId, currentTime)
-	if event ~= "UNIT_SPELLCAST_SUCCEEDED" and event ~= "UNIT_SPELLCAST_EMPOWER_STOP" then
-		return
-	end
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-	local name = C_Spell.GetSpellName(spellId) or "?"
-	if not spells.hitCombo.attributes.comboStrikeIds[spellId] then
-		if event == "UNIT_SPELLCAST_SUCCEEDED" and not hitComboProbe.ignored[spellId] then
-			hitComboProbe.ignored[spellId] = true
-			HitComboProbePrint("ignored %d %s (first time seen)", spellId, name)
+local function TriggerComboStrike(spells, snapshotData, spellId, currentTime)
+	if talents:IsTalentActive(spells.hitCombo) then
+		local hitCombo = snapshotData.snapshots[spells.hitCombo.id].buff
+		if spellId == snapshotData.attributes.lastComboStrike then
+			hitCombo:Reset()
+		else
+			hitCombo:GetRemainingTime(currentTime)
+			local stacks = math.min((hitCombo.isActive and hitCombo.applications or 0) + 1, spells.hitCombo.maxStacks)
+			-- InitializeCustom, not AddStack, so the snapshot stays isCustom and aura refreshes leave it alone.
+			hitCombo:InitializeCustom(spells.hitCombo.duration, currentTime, true, stacks)
 		end
-		return
 	end
-	if event == "UNIT_SPELLCAST_EMPOWER_STOP" then
-		HitComboProbePrint("EMPOWER_STOP %d %s", spellId, name)
-		return
-	end
-
-	local again = ""
-	if hitComboProbe.lastId == spellId and currentTime - hitComboProbe.lastTime < 0.2 then
-		again = string.format(" (same id again after %.2fs)", currentTime - hitComboProbe.lastTime)
-	end
-	hitComboProbe.lastId = spellId
-	hitComboProbe.lastTime = currentTime
-
-	local buff = TRB.Data.snapshotData.snapshots[spells.hitCombo.id].buff
-	if not talents:IsTalentActive(spells.hitCombo) then
-		HitComboProbePrint("%d %s -> last ability set (Hit Combo not talented)%s", spellId, name, again)
-	elseif buff.isActive then
-		HitComboProbePrint("%d %s -> %d stacks, %.1fs%s", spellId, name, buff.applications, buff.remaining, again)
-	else
-		HitComboProbePrint("%d %s -> dropped (repeat)%s", spellId, name, again)
-	end
-end
-
----Toggles the temporary Hit Combo probe.
-function TRB.Functions.Class:ToggleHitComboProbe()
-	if TRB.Data.character.specId ~= 3 then
-		print("|cFFFF8800TRB Hit Combo:|r Windwalker only.")
-		return
-	end
-	hitComboProbe.enabled = not hitComboProbe.enabled
-	if not hitComboProbe.enabled then
-		HitComboProbePrint("Probe OFF.")
-		return
-	end
-	wipe(hitComboProbe.ignored)
-	hitComboProbe.lastId = nil
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
-	local mapped = 0
-	for _ in pairs(spells.hitCombo.attributes.comboStrikeIds) do
-		mapped = mapped + 1
-	end
-	HitComboProbePrint("Probe ON. Hit Combo talented: %s; %d trigger ids mapped.", talents:IsTalentActive(spells.hitCombo) and "yes" or "no", mapped)
+	snapshotData.attributes.lastComboStrike = spellId
 end
 
 ---Handles UNIT_SPELLCAST_ events for the class
@@ -804,18 +757,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spells.hitCombo.attributes.comboStrikeIds[spellId] then
-				if talents:IsTalentActive(spells.hitCombo) then
-					local hitCombo = snapshotData.snapshots[spells.hitCombo.id].buff
-					if spellId == snapshotData.attributes.lastComboStrike then
-						hitCombo:Reset()
-					else
-						hitCombo:GetRemainingTime(currentTime)
-						local stacks = math.min((hitCombo.isActive and hitCombo.applications or 0) + 1, spells.hitCombo.maxStacks)
-						-- InitializeCustom, not AddStack, so the snapshot stays isCustom and aura refreshes leave it alone.
-						hitCombo:InitializeCustom(spells.hitCombo.duration, currentTime, true, stacks)
-					end
+				TriggerComboStrike(spells, snapshotData, spellId, currentTime)
+				-- Zenith's automatic stomp is a second Combo Strike that fires no cast event of its own.
+				if spellId == spells.zenith.id and talents:IsTalentActive(spells.zenithStomp) then
+					TriggerComboStrike(spells, snapshotData, spells.zenithStomp.id, currentTime)
 				end
-				snapshotData.attributes.lastComboStrike = spellId
 			end
 
 			if spellId == spells.strikeOfTheWindlord.id then
@@ -845,10 +791,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					snapshotData.snapshots[spells.heartOfTheJadeSerpent.id].buff:InitializeCustom(spells.heartOfTheJadeSerpent.duration, currentTime)
 				end
 			end
-		end
-
-		if hitComboProbe.enabled then
-			ProbeHitComboCast(event, spellId, currentTime)
 		end
 	end
 end
