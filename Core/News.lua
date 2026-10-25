@@ -61,6 +61,10 @@ TRB.Details.coreNewsContent = [====[
 - [#859](#859) Add an Enabled checkbox to the selected bar's settings on the Visibility tab, which turns the bar on or off, including while it uses a preset.
 - [#859](#859) Fix the Visibility tab of Global Options listing the form conditions only while playing a class with forms.
 
+## Color Indicators
+
+- [#885](#885) Fix exported profiles leaving out a Color Indicator's minimum stacks setting, such as Resonant Energy's.
+
 ---
 
 # Live 12.1.5.5-release / Forever 1.60.1.13-release (2026-10-23)
