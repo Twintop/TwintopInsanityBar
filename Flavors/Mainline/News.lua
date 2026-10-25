@@ -9,6 +9,11 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.7-release (2026-10-24)
+## Death Knight
+### Blood
+
+- [#872](#872) Fix the Bone Shield bar's End Cap keeping its own color, with Only non-default border colors checked, while a gradient Color Indicator recolors the border.
+
 ## Druid
 
 - [#871](#871) Fix `$energy`, `$rage`, and `$astralPower` bar text losing the overcap color while the resource holds steady, such as at cap.
@@ -24,6 +29,15 @@ TRB.Flavor.newsContent = [====[
 - Fix Fingers of Frost losing count when Ice Lance is queued behind Glacial Spike, leaving its Color Indicators on with no charges up, or off with one up.
 - Fingers of Frost tracking corrects itself when a charge is gained as you spend one.
 
+## Monk
+### Brewmaster
+
+- [#867](#867) Improve Stagger bar and stagger bar text update performance.
+
+### Windwalker
+
+- [#885](#885) Add Hit Combo tracking, with a Hit Combo Color Indicator, Hit Combo stack Audio Cues, the `$hitComboStacks` and `$hitComboTime` bar text variables, and the `#hitCombo` icon. The indicator defaults to the Energy bar border, and only turns on at the stack count set on the Indicator Colors tab.
+
 ## Priest
 ### Discipline
 
@@ -33,6 +47,11 @@ TRB.Flavor.newsContent = [====[
 ### Holy
 
 - Surge of Light tracking corrects itself when a stack is gained as you spend one.
+
+### Shadow
+
+- [#888](#888) Fix a Lua error from casting Shadow Word: Madness just as Voidform ends, with Ancient Madness talented.
+- [#888](#888) Fix Halo and Power Surge briefly restarting Voidform when they land just as it ends, with Sustained Potency talented.
 
 ## Shaman
 ### Enhancement

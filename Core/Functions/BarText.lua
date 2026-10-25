@@ -3029,6 +3029,11 @@ local barTextBuffer = { text = "", color = "" }
 -- "|c" .. color by color string, so a visible entry builds no string per tick.
 local colorCodes = {}
 
+---Drops the memoized color prefixes so colors no longer in use are freed; ResetColorCaches calls it.
+function TRB.Functions.BarText:ClearColorCodes()
+	wipe(colorCodes)
+end
+
 -- Pre-computed "textFrames"..i key strings (populated on demand, avoids per-frame string concat)
 local textFrameKeys = {}
 ---Returns the cached "textFrames"..i key string for a given bar text entry index, creating it on first access to avoid per-frame string concatenation

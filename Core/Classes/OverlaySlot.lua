@@ -18,21 +18,21 @@ TRB.Classes = TRB.Classes or {}
 ---@field public healthInputs table? # Inputs of the last health overlay update (Bar.lua HealthOverlayUnchanged)
 ---@field public overlayFrame StatusBar? # Full-bar overlay StatusBar
 ---@field private _overlayTexturePath string? # Last overlay texture applied, so repeat writes are skipped
----@field private _overlayColorSig string? # Last overlay color applied, flat or gradient, so repeat writes are skipped
+---@field private _overlayColor TRB.Classes.OverlaySlot.ColorRecord # Last overlay fill applied, so repeat writes are skipped
 ---@field private _overlayGradientActive boolean?
 ---@field public appendedClipFrame Frame? # Clip container for the appended overlay
 ---@field public appendedOverlayFrame StatusBar? # StatusBar inside clip, anchored to fill's RIGHT edge
 ---@field public appendedOverlayReady boolean? # One-frame readiness guard for appended overlay
 ---@field private _appendedAnchorSig string? # Geometry the appended clip was anchored with
 ---@field private _appendedTexturePath string?
----@field private _appendedColorSig string?
+---@field private _appendedColor TRB.Classes.OverlaySlot.ColorRecord
 ---@field private _appendedGradientActive boolean?
 ---@field public insetClipFrame Frame? # Clip container for the inset overlay
 ---@field public insetOverlayFrame StatusBar? # Reverse-fill StatusBar inside clip
 ---@field public insetOverlayReady boolean? # One-frame readiness guard for inset overlay
 ---@field private _insetAnchorSig string? # Geometry the inset clip was anchored with
 ---@field private _insetTexturePath string?
----@field private _insetColorSig string?
+---@field private _insetColor TRB.Classes.OverlaySlot.ColorRecord
 ---@field private _insetGradientActive boolean?
 ---@field public rangeBoundsClipFrame Frame? # Outer clip trimming the range overlays to the inner bar
 ---@field public rangeClipFrame Frame? # Clip container tracking the fill edge for the range overlays
@@ -45,7 +45,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public rangeColors table<integer, string|TRB.Classes.Settings.ColorGradientEntry> # Last-applied color entry per range gate
 ---@field private _rangeAnchorSig string? # Geometry the range clip was anchored with
 ---@field private _rangeTexturePaths table<integer, string> # Last texture per range gate
----@field private _rangeColorSigs table<integer, string> # Last color signature per range gate
+---@field private _rangeColorRecords table<integer, TRB.Classes.OverlaySlot.ColorRecord> # Last fill per range gate
 ---@field private _rangeGradientActive table<integer, boolean>
 ---@field public endCapClipFrame Frame? # Clip container for the end cap band
 ---@field public endCapFrame TRB.Classes.OverlaySlot.EndCapBand? # Fixed-width band anchored to the fill's leading edge
@@ -68,6 +68,42 @@ TRB.Classes.OverlaySlot.__index = TRB.Classes.OverlaySlot
 ---@field public endCapWidth number?
 ---@field public overshoot number # Rounded to whole pixels
 
+---@class TRB.Classes.OverlaySlot.ColorRecord
+---@field public set boolean? # False or nil forces the next write
+---@field public gradient boolean?
+---@field public color1 string?
+---@field public color2 string?
+---@field public direction string?
+
+---Records the fill an overlay is given, returning true when it already has exactly that fill.
+---@param record TRB.Classes.OverlaySlot.ColorRecord
+---@param gradient boolean
+---@param color1 string?
+---@param color2 string?
+---@param direction string?
+---@return boolean
+local function ColorUnchanged(record, gradient, color1, color2, direction)
+	if record.set and record.gradient == gradient and record.color1 == color1 and record.color2 == color2
+		and record.direction == direction then
+		return true
+	end
+	record.set, record.gradient, record.color1, record.color2, record.direction = true, gradient, color1, color2, direction
+	return false
+end
+
+---Returns a range gate's fill record, creating it on first use.
+---@private
+---@param index integer
+---@return TRB.Classes.OverlaySlot.ColorRecord
+function TRB.Classes.OverlaySlot:GetRangeColorRecord(index)
+	local record = self._rangeColorRecords[index]
+	if record == nil then
+		record = {}
+		self._rangeColorRecords[index] = record
+	end
+	return record
+end
+
 ---Creates a new OverlaySlot. No frames are created until explicitly requested.
 ---@param parentNode TRB.Classes.BarNode # The BarNode this slot belongs to
 ---@param slotName string # Unique identifier for this slot
@@ -83,6 +119,9 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self.spendingColor = nil
 	self.fullHeight = false
 	self.overlayFrame = nil
+	self._overlayColor = {}
+	self._appendedColor = {}
+	self._insetColor = {}
 	self.appendedClipFrame = nil
 	self.appendedOverlayFrame = nil
 	self.appendedOverlayReady = nil
@@ -99,7 +138,7 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self.rangeTexture = nil
 	self.rangeColors = {}
 	self._rangeTexturePaths = {}
-	self._rangeColorSigs = {}
+	self._rangeColorRecords = {}
 	self._rangeGradientActive = {}
 	self.endCapClipFrame = nil
 	self.endCapFrame = nil
@@ -262,7 +301,7 @@ function TRB.Classes.OverlaySlot:CreateOverlay()
 	self.overlayFrame = overlay
 	-- Reset memoized state so the freshly-created frame re-applies texture/color.
 	self._overlayTexturePath = nil
-	self._overlayColorSig = nil
+	self._overlayColor.set = false
 end
 
 ---Sets the overlay StatusBar value. No-op if overlay has not been created.
@@ -287,7 +326,7 @@ function TRB.Classes.OverlaySlot:SetOverlayTexture(texture)
 	if self._overlayTexturePath == texture then return end
 	self._overlayTexturePath = texture
 	-- Changing the texture resets the fill texture's vertex color, so force color re-apply.
-	self._overlayColorSig = nil
+	self._overlayColor.set = false
 	self.overlayFrame:SetStatusBarTexture(texture)
 	local fillTexture = self.overlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -299,9 +338,7 @@ end
 ---@param colorString string # ARGB hex color string (e.g., "66FFFFFF" for semi-transparent white)
 function TRB.Classes.OverlaySlot:SetOverlayColor(colorString)
 	if not self.overlayFrame then return end
-	local sig = "flat:" .. tostring(colorString)
-	if self._overlayColorSig == sig then return end
-	self._overlayColorSig = sig
+	if ColorUnchanged(self._overlayColor, false, colorString) then return end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = self.overlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -321,9 +358,7 @@ end
 ---@param direction string # "horizontal" or "vertical"
 function TRB.Classes.OverlaySlot:SetOverlayColorGradient(color1String, color2String, direction)
 	if not self.overlayFrame then return end
-	local sig = "grad:" .. tostring(color1String) .. ":" .. tostring(color2String) .. ":" .. tostring(direction)
-	if self._overlayColorSig == sig then return end
-	self._overlayColorSig = sig
+	if ColorUnchanged(self._overlayColor, true, color1String, color2String, direction) then return end
 	local Color = TRB.Functions.Color
 	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
 	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
@@ -518,7 +553,7 @@ function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 	-- Reset memoized state so the freshly-created frame re-applies anchor/texture/color.
 	self._appendedAnchorSig = nil
 	self._appendedTexturePath = nil
-	self._appendedColorSig = nil
+	self._appendedColor.set = false
 
 	-- After one frame, reanchor the clip to the correct position on the bar.
 	-- Any flash from initial geometry happens off-screen during this frame.
@@ -574,7 +609,7 @@ function TRB.Classes.OverlaySlot:SetAppendedOverlayTexture(texture)
 	if self._appendedTexturePath == texture then return end
 	self._appendedTexturePath = texture
 	-- Changing the texture resets the fill texture's vertex color, so force color re-apply.
-	self._appendedColorSig = nil
+	self._appendedColor.set = false
 	self.appendedOverlayFrame:SetStatusBarTexture(texture)
 	local fillTexture = self.appendedOverlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -586,9 +621,7 @@ end
 ---@param colorString string
 function TRB.Classes.OverlaySlot:SetAppendedOverlayColor(colorString)
 	if not self.appendedOverlayFrame then return end
-	local sig = "flat:" .. tostring(colorString)
-	if self._appendedColorSig == sig then return end
-	self._appendedColorSig = sig
+	if ColorUnchanged(self._appendedColor, false, colorString) then return end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = self.appendedOverlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -608,9 +641,7 @@ end
 ---@param direction string # "horizontal" or "vertical"
 function TRB.Classes.OverlaySlot:SetAppendedOverlayColorGradient(color1String, color2String, direction)
 	if not self.appendedOverlayFrame then return end
-	local sig = "grad:" .. tostring(color1String) .. ":" .. tostring(color2String) .. ":" .. tostring(direction)
-	if self._appendedColorSig == sig then return end
-	self._appendedColorSig = sig
+	if ColorUnchanged(self._appendedColor, true, color1String, color2String, direction) then return end
 	local Color = TRB.Functions.Color
 	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
 	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
@@ -805,7 +836,7 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	-- Reset memoized state so the freshly-created frame re-applies anchor/texture/color.
 	self._insetAnchorSig = nil
 	self._insetTexturePath = nil
-	self._insetColorSig = nil
+	self._insetColor.set = false
 
 	-- After one frame, reanchor the clip to the correct position on the bar.
 	-- Any flash from initial geometry happens off-screen during this frame.
@@ -843,7 +874,7 @@ function TRB.Classes.OverlaySlot:SetInsetOverlayTexture(texture)
 	if self._insetTexturePath == texture then return end
 	self._insetTexturePath = texture
 	-- Changing the texture resets the fill texture's vertex color, so force color re-apply.
-	self._insetColorSig = nil
+	self._insetColor.set = false
 	self.insetOverlayFrame:SetStatusBarTexture(texture)
 	local fillTexture = self.insetOverlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -855,9 +886,7 @@ end
 ---@param colorString string
 function TRB.Classes.OverlaySlot:SetInsetOverlayColor(colorString)
 	if not self.insetOverlayFrame then return end
-	local sig = "flat:" .. tostring(colorString)
-	if self._insetColorSig == sig then return end
-	self._insetColorSig = sig
+	if ColorUnchanged(self._insetColor, false, colorString) then return end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = self.insetOverlayFrame:GetStatusBarTexture()
 	if fillTexture then
@@ -877,9 +906,7 @@ end
 ---@param direction string # "horizontal" or "vertical"
 function TRB.Classes.OverlaySlot:SetInsetOverlayColorGradient(color1String, color2String, direction)
 	if not self.insetOverlayFrame then return end
-	local sig = "grad:" .. tostring(color1String) .. ":" .. tostring(color2String) .. ":" .. tostring(direction)
-	if self._insetColorSig == sig then return end
-	self._insetColorSig = sig
+	if ColorUnchanged(self._insetColor, true, color1String, color2String, direction) then return end
 	local Color = TRB.Functions.Color
 	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
 	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)
@@ -1088,7 +1115,7 @@ function TRB.Classes.OverlaySlot:_CreateRangeGate(index, fillDirection)
 	gate:Hide()
 	self.rangeOverlayFrames[index] = gate
 	self._rangeTexturePaths[index] = nil
-	self._rangeColorSigs[index] = nil
+	self:GetRangeColorRecord(index).set = false
 	self._rangeGradientActive[index] = false
 end
 
@@ -1194,7 +1221,7 @@ function TRB.Classes.OverlaySlot:SetRangeOverlayTexture(index, texture)
 	if self._rangeTexturePaths[index] == texture then return end
 	self._rangeTexturePaths[index] = texture
 	-- Changing the texture resets the fill texture's vertex color, so force color re-apply.
-	self._rangeColorSigs[index] = nil
+	self:GetRangeColorRecord(index).set = false
 	gate:SetStatusBarTexture(texture)
 	local fillTexture = gate:GetStatusBarTexture()
 	if fillTexture then
@@ -1210,9 +1237,7 @@ end
 function TRB.Classes.OverlaySlot:SetRangeOverlayColor(index, colorString)
 	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
 	if not gate then return end
-	local sig = "flat:" .. tostring(colorString)
-	if self._rangeColorSigs[index] == sig then return end
-	self._rangeColorSigs[index] = sig
+	if ColorUnchanged(self:GetRangeColorRecord(index), false, colorString) then return end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
 	local fillTexture = gate:GetStatusBarTexture()
 	if fillTexture then
@@ -1233,9 +1258,7 @@ end
 function TRB.Classes.OverlaySlot:SetRangeOverlayColorGradient(index, color1String, color2String, direction)
 	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
 	if not gate then return end
-	local sig = "grad:" .. tostring(color1String) .. ":" .. tostring(color2String) .. ":" .. tostring(direction)
-	if self._rangeColorSigs[index] == sig then return end
-	self._rangeColorSigs[index] = sig
+	if ColorUnchanged(self:GetRangeColorRecord(index), true, color1String, color2String, direction) then return end
 	local Color = TRB.Functions.Color
 	local r1, g1, b1, a1 = Color:GetRGBAFromString(color1String, true)
 	local r2, g2, b2, a2 = Color:GetRGBAFromString(color2String, true)

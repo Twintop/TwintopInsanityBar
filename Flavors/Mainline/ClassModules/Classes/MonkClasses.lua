@@ -310,6 +310,9 @@ end
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
 ---@field public communionWithWind TRB.Classes.SpellBase
 ---@field public whirlingDragonPunch TRB.Classes.SpellBase
+---@field public hitCombo TRB.Classes.SpellBase
+---@field public zenith TRB.Classes.SpellBase
+---@field public zenithStomp TRB.Classes.SpellBase
 ---@field public blackoutKick TRB.Classes.SpellComboPoint
 ---@field public spinningCraneKick TRB.Classes.SpellComboPoint
 ---@field public risingSunKick TRB.Classes.SpellComboPoint
@@ -468,6 +471,39 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 		talentId = 325201,
 		isTalent = true
 	})
+	self.hitCombo = TRB.Classes.SpellBase:New({
+		id = 196741,
+		talentId = 196740,
+		isTalent = true,
+		duration = 30,
+		maxStacks = 5,
+		-- Casts that trigger Mastery: Combo Strikes; repeating the last one drops Hit Combo.
+		comboStrikeIds = {
+			[100780] = true,	-- Tiger Palm
+			[100784] = true,	-- Blackout Kick
+			[101546] = true,	-- Spinning Crane Kick
+			[107428] = true,	-- Rising Sun Kick
+			[113656] = true,	-- Fists of Fury
+			[117952] = true,	-- Crackling Jade Lightning
+			[152175] = true,	-- Whirling Dragon Punch
+			[322109] = true,	-- Touch of Death
+			[392983] = true,	-- Strike of the Windlord
+			[443028] = true,	-- Celestial Conduit
+			[467307] = true,	-- Rushing Wind Kick
+			[1217413] = true,	-- Slicing Winds
+			[1249625] = true,	-- Zenith
+			[1272696] = true,	-- Zenith Stomp
+		}
+	})
+	self.zenith = TRB.Classes.SpellBase:New({
+		id = 1249625,
+		isTalent = true
+	})
+	self.zenithStomp = TRB.Classes.SpellBase:New({
+		id = 1272696,
+		talentId = 1272694,
+		isTalent = true
+	})
 
 	-- Conduit of the Celestials
 	self.heartOfTheJadeSerpent = TRB.Classes.SpellBase:New({
@@ -500,6 +536,7 @@ function TRB.Classes.Monk.WindwalkerSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
 		{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
 		{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
+		{ variable = "#hitCombo", icon = spells.hitCombo.icon, description = spells.hitCombo.name, printInSettings = true },
 		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
 		{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
 		{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
@@ -522,6 +559,9 @@ function TRB.Classes.Monk.WindwalkerSpells.FillBarTextVariables(specCacheEntry)
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 		{ variable = "$chiMax", description = L["MonkWindwalkerBarTextVariable_chiMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+
+		{ variable = "$hitComboStacks", description = L["MonkWindwalkerBarTextVariable_hitComboStacks"], printInSettings = true, color = false },
+		{ variable = "$hitComboTime", description = L["MonkWindwalkerBarTextVariable_hitComboTime"], printInSettings = true, color = false },
 	})
 end
 
@@ -773,6 +813,20 @@ do
 						thresholdValue = 6,
 					},
 				},
+			},
+			{
+				id = "hitComboStacks",
+				label = L["MonkWindwalkerAudioCueSourceHitCombo"],
+				description = L["MonkWindwalkerAudioCueSourceHitComboDescription"],
+				sliderLabel = L["MonkWindwalkerAudioHitComboThresholdSliderTitle"],
+				defaultName = L["MonkWindwalkerAudioCueHitComboDefaultName"],
+				-- Exact, not atLeast: stacks only climb by one or reset, so 0 can mean the buff was lost.
+				min = 0,
+				max = 5,
+				step = 1,
+				decimals = 0,
+				compare = "exact",
+				requiresCombat = true,
 			},
 		},
 	})

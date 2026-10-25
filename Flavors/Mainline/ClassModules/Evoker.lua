@@ -1102,6 +1102,18 @@ local scratch = {
 	barColorMap3 = {},
 }
 
+-- Kept at module scope so UpdateResourceBar creates no closures each tick.
+local function UpdateEssenceOuter(specSettings, specCacheSettings, essenceOverrides)
+	local refreshTextEssence = false
+	
+	if not specSettings.displayBar.secondary.neverShow then
+		refreshTextEssence = true
+		UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
+	end
+
+	return refreshTextEssence
+end
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -1122,17 +1134,6 @@ local function UpdateResourceBar()
 
 	if snapshotData.attributes == nil or snapshotData.attributes.resourceModified == nil or snapshotData.attributes.resource2 == nil then
 		return
-	end
-
-	local function UpdateEssenceOuter(specSettings, specCacheSettings, essenceOverrides)
-		local refreshTextEssence = false
-		
-		if not specSettings.displayBar.secondary.neverShow then
-			refreshTextEssence = true
-			UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
-		end
-
-		return refreshTextEssence
 	end
 
 	if TRB.Data.character.specId == 1 then
