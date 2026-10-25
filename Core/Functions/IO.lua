@@ -183,6 +183,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.colors.healthBar = settings.colors and settings.colors.healthBar
 		configuration.overcap = settings.overcap
 		configuration.endOf = settings.endOf
+		configuration.stacks = settings.stacks
 
 		CopyKeys(configuration.displayBar, settings.displayBar, { "primary", "health" })
 		CopyFormDisplayBarFlags(configuration, settings, classId, specId)
