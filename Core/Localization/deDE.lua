@@ -1176,7 +1176,6 @@ if locale == "deDE" then
     L["HealthBarThresholdHigh"] = "Schwellenwert für hohe Gesundheit"
     L["HealthBarThresholdHighTooltip"] = "Gesundheitsprozentsatz, bei dem die Leistenfarbe von Mittel zu Hoch wechselt."
 
-    L["StaggerBarColorHeader"] = "Staffelungsleisten-Farben"
     L["StaggerBarColorType"] = "Farbübergangs-Typ"
     L["StaggerBarColorTypeStep"] = "Schritt"
     L["StaggerBarColorTypeLinear"] = "Graduell (Linear)"
@@ -1184,7 +1183,6 @@ if locale == "deDE" then
     L["StaggerBarColorLight"] = "Farbe für leichte Staffelung"
     L["StaggerBarColorMedium"] = "Farbe für mittlere Staffelung"
     L["StaggerBarColorHeavy"] = "Farbe für schwere Staffelung"
-    L["StaggerBarColorBorder"] = "Staffelungsleisten-Rahmenfarbe"
     L["StaggerBarThresholdMedium"] = "Schwellenwert für mittlere Staffelung"
     L["StaggerBarThresholdMediumTooltip"] = "Staffelungsprozentsatz, bei dem die Leistenfarbe von Leicht zu Mittel wechselt."
     L["StaggerBarThresholdHeavy"] = "Schwellenwert für schwere Staffelung"

@@ -7,14 +7,23 @@ TRB.Details.coreNewsContent = [====[
 # Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-23)
 ## General
 
+- [#213](#213) Remove unused color code.
 - [#584](#584) A font, texture, or sound that isn't loaded keeps its setting instead of resetting to the default.
 - [#584](#584) Bars, bar text, audio cues, and threshold sounds use the default in place of a font, texture, or sound until it loads, with no reload needed.
 - [#584](#584) Options show a font, texture, or sound that isn't loaded with "(not loaded)" after its name.
 - [#584](#584) Remove the chat messages about invalid fonts, textures, and sounds.
 - [#584](#584) Remove unused audio dropdown and media lookup code from the options.
+- [#865](#865) Fix the Health bar's fill briefly turning transparent while changing bar options.
+- [#866](#866) Improve update performance of bars whose node order can be rearranged.
+- [#868](#868) Improve the player cast bar's update performance during empowered casts.
+- [#868](#868) Fix the player cast bar's End Cap not lining up with the fill's edge during empowered casts with Fill Each Empower Level Separately on.
 - [#869](#869) Improve bar update performance, primarily around Color Indicators, glows, overlays, threshold lines, and the Health bar's colors.
+- [#870](#870) Fix an Action Button Glow taking its brightness from another glow's color when glows with different opacities start together.
+- [#873](#873) Free the memory held for bar colors no longer in use on a specialization or bar layout change, instead of keeping it until a reload.
+- [#875](#875) Remove unused color option code from the options.
 - Fix the uninterruptible shield on the cast bars drawing under channel ticks and empower stage lines when its Shield Layer is set to Over.
 - Fix the uninterruptible shield on the cast bars covering the ability icon when its Shield Layer is set to Over.
+- Fix the cast bars showing the last cast's latency zone, ticks, and empower stage lines when they reappear idle after hiding.
 
 ## Bar Text
 
@@ -61,6 +70,10 @@ TRB.Details.coreNewsContent = [====[
 - [#859](#859) Add Apply to Bars to the Visibility tab to copy settings onto, use a preset for, or go back to the global settings for several bars at once.
 - [#859](#859) Add an Enabled checkbox to the selected bar's settings on the Visibility tab, which turns the bar on or off, including while it uses a preset.
 - [#859](#859) Fix the Visibility tab of Global Options listing the form conditions only while playing a class with forms.
+
+## Color Indicators
+
+- [#885](#885) Fix exported profiles leaving out a Color Indicator's minimum stacks setting, such as Resonant Energy's.
 
 ---
 

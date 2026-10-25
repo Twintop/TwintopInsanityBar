@@ -1252,7 +1252,7 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 			-- Border: gradient > flat indicator > default
 			if bsOvercapCurves.border then
 				local borderResult = UnitPowerPercent("player", TRB.Data.resource, true, bsOvercapCurves.border)
-				boneShieldNode:SetBorderColorCurve(borderResult)
+				boneShieldNode:SetBorderColorCurve(borderResult, Color:EvaluateEndCapCurve(boneShieldNode, bsOvercapCurves.border))
 			else
 				boneShieldNode:SetBorderColor(bsBorderOverride or cpBorderColor)
 			end

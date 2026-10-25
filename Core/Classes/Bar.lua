@@ -1462,20 +1462,6 @@ function TRB.Classes.BarGroup:SetDimensions(width, height, border)
 	end
 end
 
----Sets the same color for all nodes
----@param baseColor string
----@param borderColor string
----@param backgroundColor string
-function TRB.Classes.BarGroup:SetAllNodeColors(baseColor, borderColor, backgroundColor)
-	for i = 1, self.maxNodes do
-		if self.nodes[i] then
-			self.nodes[i]:SetColor(baseColor)
-			self.nodes[i]:SetBorderColor(borderColor)
-			self.nodes[i]:SetBackgroundColorFromString(backgroundColor)
-		end
-	end
-end
-
 ---Sets the same textures for all nodes
 ---@param barTexture string
 ---@param borderTexture string
@@ -2279,6 +2265,9 @@ end
 ---@field public visibilityKey string # Key in displayBar for visibility setting (e.g., "stagger", "mana")
 ---@field public nodeColors TRB.Classes.BarTypeDefinition.NodeColorEntry[]? # Per-node color/enable definitions (e.g., Warrior defensives: Ignore Pain + Shield Block)
 ---@field public hasOrdering boolean # True if node display order can be customized by the user
+---@field public definitionNodeOrder string[]? # nodeColors keys in declared order (GetDefinitionNodeOrder)
+---@field public definitionNodeKeys table<string, boolean>? # Set of nodeColors keys (GetDefinitionNodeOrder)
+---@field public definitionNodeOrderSource TRB.Classes.BarTypeDefinition.NodeColorEntry[]? # nodeColors table the two above were built from
 ---@field public orderUpTooltip string? # Localized tooltip for the "move up" arrow button
 ---@field public orderDownTooltip string? # Localized tooltip for the "move down" arrow button
 ---@field public onChangeCallback function? # Optional callback function to call after color/threshold changes
@@ -2453,50 +2442,68 @@ function TRB.Classes.BarTypeDefinition:GetEnabledNodeCount(colorSettings)
 	return count
 end
 
----Returns the ordered list of node keys, respecting colorSettings.nodeOrder if present.
----Sanitizes the persisted order: removes unknown/duplicate keys and appends any
----definition keys that are missing. Writes the sanitized list back to
----colorSettings.nodeOrder so settings self-heal on first access.
----Falls back to the definition order in self.nodeColors when no nodeOrder is stored.
+---Returns the definition's node keys in declared order and as a set, rebuilt only when nodeColors is replaced.
+---@return string[] order # Shared; callers must not modify it
+---@return table<string, boolean> keys # Shared; callers must not modify it
+function TRB.Classes.BarTypeDefinition:GetDefinitionNodeOrder()
+	if self.definitionNodeOrder == nil or self.definitionNodeOrderSource ~= self.nodeColors then
+		local order = {} ---@type string[]
+		local known = {} ---@type table<string, boolean>
+		if self.nodeColors then
+			for _, nodeConfig in ipairs(self.nodeColors) do
+				known[nodeConfig.key] = true
+				order[#order + 1] = nodeConfig.key
+			end
+		end
+		self.definitionNodeOrder = order
+		self.definitionNodeKeys = known
+		self.definitionNodeOrderSource = self.nodeColors
+		return order, known
+	end
+	return self.definitionNodeOrder --[[@as string[] ]], self.definitionNodeKeys --[[@as table<string, boolean>]]
+end
+
+---Rewrites colorSettings.nodeOrder without unknown or duplicate keys, appending any definition keys it
+---lacks. Settings.SanitizeNodeOrders runs it when settings load or change, so reads need no checks.
+---@param colorSettings table # The bar's color settings (may contain nodeOrder)
+function TRB.Classes.BarTypeDefinition:SanitizeNodeOrder(colorSettings)
+	local nodeOrder = colorSettings.nodeOrder
+	if nodeOrder == nil or #nodeOrder == 0 then
+		return
+	end
+
+	local definitionOrder, knownKeys = self:GetDefinitionNodeOrder()
+	local seen = {} ---@type table<string, boolean>
+	local sanitized = {} ---@type string[]
+
+	-- Keep only known, non-duplicate keys in their persisted order
+	for _, key in ipairs(nodeOrder) do
+		if knownKeys[key] and not seen[key] then
+			seen[key] = true
+			sanitized[#sanitized + 1] = key
+		end
+	end
+
+	-- Append any definition keys that were missing from the persisted order
+	for _, key in ipairs(definitionOrder) do
+		if not seen[key] then
+			sanitized[#sanitized + 1] = key
+		end
+	end
+
+	colorSettings.nodeOrder = sanitized
+end
+
+---Returns the ordered list of node keys: colorSettings.nodeOrder, kept valid by SanitizeNodeOrder, or
+---the definition order when no nodeOrder is stored.
 ---@param colorSettings table? # The bar's color settings (may contain nodeOrder)
----@return string[] # Ordered array of node keys (one entry per defined nodeColor, no duplicates)
+---@return string[] # Ordered array of node keys; callers must not modify it
 function TRB.Classes.BarTypeDefinition:GetOrderedNodeKeys(colorSettings)
-	-- Build the canonical set of known keys from the definition
-	local knownKeys = {} ---@type table<string, boolean>
-	local definitionOrder = {} ---@type string[]
-	if self.nodeColors then
-		for _, nodeConfig in ipairs(self.nodeColors) do
-			knownKeys[nodeConfig.key] = true
-			definitionOrder[#definitionOrder + 1] = nodeConfig.key
-		end
+	local nodeOrder = colorSettings and colorSettings.nodeOrder
+	if nodeOrder ~= nil and #nodeOrder > 0 then
+		return nodeOrder
 	end
-
-	if colorSettings and colorSettings.nodeOrder and #colorSettings.nodeOrder > 0 then
-		local seen = {} ---@type table<string, boolean>
-		local sanitized = {} ---@type string[]
-
-		-- Keep only known, non-duplicate keys in their persisted order
-		for _, key in ipairs(colorSettings.nodeOrder) do
-			if knownKeys[key] and not seen[key] then
-				seen[key] = true
-				sanitized[#sanitized + 1] = key
-			end
-		end
-
-		-- Append any definition keys that were missing from the persisted order
-		for _, key in ipairs(definitionOrder) do
-			if not seen[key] then
-				sanitized[#sanitized + 1] = key
-			end
-		end
-
-		-- Write the sanitized list back so settings self-heal
-		colorSettings.nodeOrder = sanitized
-		return sanitized
-	end
-
-	-- No persisted order — return definition order
-	return definitionOrder
+	return (self:GetDefinitionNodeOrder())
 end
 
 ---Sets the settings table for this bar type in a spec's settings

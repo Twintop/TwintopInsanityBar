@@ -8,7 +8,7 @@ local L = TRB.Localization
 ---@field public trbGlows table<string, table>? # Running glows by glow id: { type, color, <style fields> }
 ---@field public trbButtonGlowOwner string? # Id of the glow holding the frame's single Action Button Glow
 
--- Reused for the {r,g,b,a} the library wants: it reads the table without keeping it.
+-- Reused for the {r,g,b,a} the pixel, autocast, and proc styles want: they read the table without keeping it.
 local colorScratch = { 1, 1, 1, 1 }
 
 -- Lets Apply reach ApplySet without building a one-entry set per call.
@@ -206,7 +206,8 @@ local function StartOne(frame, glow, colorString, applied)
 		lib.AutoCastGlow_Start(frame, colorScratch, glow.particleGroups, glow.frequency, glow.scale,
 			glow.xOffset, glow.yOffset, key)
 	elseif glow.type == "button" then
-		lib.ButtonGlow_Start(frame, colorScratch, glow.frequency)
+		-- ButtonGlow keeps its color table (f.color) and reads the old alpha on restart, so it can't share the scratch.
+		lib.ButtonGlow_Start(frame, { r, g, b, a }, glow.frequency)
 	elseif glow.type == "proc" then
 		lib.ProcGlow_Start(frame, {
 			color = colorScratch,

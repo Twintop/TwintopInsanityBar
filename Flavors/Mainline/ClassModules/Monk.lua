@@ -154,6 +154,8 @@ local function FillSpecializationCache()
 	specCache.monk_windwalker.snapshotData.snapshots[spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(spells.danceOfChiJi)
 	---@type TRB.Classes.Snapshot
 	specCache.monk_windwalker.snapshotData.snapshots[spells.heartOfTheJadeSerpent.id] = TRB.Classes.Snapshot:New(spells.heartOfTheJadeSerpent)
+	---@type TRB.Classes.Snapshot
+	specCache.monk_windwalker.snapshotData.snapshots[spells.hitCombo.id] = TRB.Classes.Snapshot:New(spells.hitCombo)
 
 	specCache.monk_windwalker.barTextVariables = {
 		icons = {},
@@ -328,6 +330,10 @@ local function ConstructResourceBar(settings)
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
+-- The stagger text's hex for the last stagger bar color, kept until UpdateStaggerColor evaluates a new color.
+local staggerTextColorSource = nil
+local staggerTextColorHex = nil
+
 local function RefreshLookupData_Brewmaster()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -403,20 +409,25 @@ local function RefreshLookupData_Brewmaster()
 		local _stagger = snapshotData.attributes.stagger or 0
 		local _staggerPercent = snapshotData.attributes.staggerPercent or 0
 
-		local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
-		local staggerColor = staggerColors.low and staggerColors.low.color
-		if snapshotData.attributes.staggerColor then
-			local r, g, b, a = snapshotData.attributes.staggerColor:GetRGBA()
-			staggerColor = Color:ConvertColorDecimalToHex(r, g, b, a)
-		end
-
 		-- Stagger text color mode: "bar" uses the stagger bar color, "custom" a fixed color, "none" no coloring
 		local staggerTextColors = specSettings.colors and specSettings.colors.text and specSettings.colors.text.stagger
 		local staggerTextMode = staggerTextColors and staggerTextColors.mode or "bar"
+		local staggerColor = nil
 		if staggerTextMode == "custom" then
 			staggerColor = staggerTextColors.color
-		elseif staggerTextMode == "none" then
-			staggerColor = nil
+		elseif staggerTextMode ~= "none" then
+			local barColor = snapshotData.attributes.staggerColor
+			if barColor == nil then
+				local staggerColors = specSettings.colors and specSettings.colors.bars and specSettings.colors.bars.stagger or {}
+				staggerColor = staggerColors.low and staggerColors.low.color
+			else
+				if barColor ~= staggerTextColorSource then
+					local r, g, b, a = barColor:GetRGBA()
+					staggerTextColorSource = barColor
+					staggerTextColorHex = Color:ConvertColorDecimalToHex(r, g, b, a)
+				end
+				staggerColor = staggerTextColorHex
+			end
 		end
 
 		lookupLogic["$stagger"] = _stagger
@@ -589,6 +600,23 @@ local function RefreshLookupData_Windwalker()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
+	-- Block C: Hit Combo ($hitComboStacks, $hitComboTime)
+	if not activeVars or activeVars["$hitComboStacks"] or activeVars["$hitComboTime"] then
+		local currentTime = GetTime()
+		local hitCombo = snapshots[spells.hitCombo.id].buff
+		local _hitComboTime = hitCombo:GetRemainingTime(currentTime)
+		local _hitComboStacks = (hitCombo.isActive and (hitCombo.applications or 0)) or 0
+
+		lookupLogic["$hitComboStacks"] = _hitComboStacks
+		lookupLogic["$hitComboTime"] = _hitComboTime
+		if lookupChanged(prevState, "$hitComboStacks", _hitComboStacks) then
+			lookup["$hitComboStacks"] = string.format("%.0f", _hitComboStacks)
+		end
+		if lookupChanged(prevState, "$hitComboTime", _hitComboTime) then
+			lookup["$hitComboTime"] = TRB.Functions.BarText:TimerPrecision(_hitComboTime)
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -604,6 +632,26 @@ local function UpdateCastingResourceFinal_Mistweaver()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
+end
+
+---Applies one Combo Strikes trigger to Hit Combo: repeating the last one drops it, anything else adds a stack.
+---@param spells TRB.Classes.Monk.WindwalkerSpells
+---@param snapshotData TRB.Classes.SnapshotData
+---@param spellId integer
+---@param currentTime number
+local function TriggerComboStrike(spells, snapshotData, spellId, currentTime)
+	if talents:IsTalentActive(spells.hitCombo) then
+		local hitCombo = snapshotData.snapshots[spells.hitCombo.id].buff
+		if spellId == snapshotData.attributes.lastComboStrike then
+			hitCombo:Reset()
+		else
+			hitCombo:GetRemainingTime(currentTime)
+			local stacks = math.min((hitCombo.isActive and hitCombo.applications or 0) + 1, spells.hitCombo.maxStacks)
+			-- InitializeCustom, not AddStack, so the snapshot stays isCustom and aura refreshes leave it alone.
+			hitCombo:InitializeCustom(spells.hitCombo.duration, currentTime, true, stacks)
+		end
+	end
+	snapshotData.attributes.lastComboStrike = spellId
 end
 
 ---Handles UNIT_SPELLCAST_ events for the class
@@ -717,6 +765,14 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				UpdateCastingResourceFinal()
 			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+			if spells.hitCombo.attributes.comboStrikeIds[spellId] then
+				TriggerComboStrike(spells, snapshotData, spellId, currentTime)
+				-- Zenith's automatic stomp is a second Combo Strike that fires no cast event of its own.
+				if spellId == spells.zenith.id and talents:IsTalentActive(spells.zenithStomp) then
+					TriggerComboStrike(spells, snapshotData, spells.zenithStomp.id, currentTime)
+				end
+			end
+
 			if spellId == spells.strikeOfTheWindlord.id then
 				local cooldown = spells.strikeOfTheWindlord.cooldown
 				if talents:IsTalentActive(spells.communionWithWind) then
@@ -773,6 +829,13 @@ local function HandleSpellEvents(self, event, ...)
 				TRB.Functions.AudioCues:ResetLatch(snapshotData, "danceOfChiJi")
 			end
 		end
+	elseif event == "ENCOUNTER_START" or event == "CHALLENGE_MODE_START" then
+		-- Hit Combo is removed when a raid encounter or a Mythic+ key starts; dungeon bosses keep it.
+		if TRB.Data.character.specId == 3 and (event == "CHALLENGE_MODE_START" or TRB.Data.character.instanceType == "raid") then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+			TRB.Data.snapshotData.snapshots[spells.hitCombo.id].buff:Reset()
+			TRB.Data.lookupDirty = true
+		end
 	end
 end
 
@@ -783,11 +846,15 @@ spellEventFrame:SetScript("OnEvent", HandleSpellEvents)
 function TRB.Functions.Class:EnableEvents()
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	spellEventFrame:RegisterEvent("ENCOUNTER_START")
+	spellEventFrame:RegisterEvent("CHALLENGE_MODE_START")
 end
 
 function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	spellEventFrame:UnregisterEvent("ENCOUNTER_START")
+	spellEventFrame:UnregisterEvent("CHALLENGE_MODE_START")
 end
 
 local function UpdateSnapshot()
@@ -795,23 +862,42 @@ local function UpdateSnapshot()
 	--local currentTime = GetTime()
 end
 
----Updates the stagger color curve based on current stagger percentage and configured thresholds
-local function UpdateStaggerColor()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+-- The stagger curve depends only on its settings, so it is rebuilt only when one of them changes.
+local staggerCurve = nil
+local staggerCurveInputs = {}
+local staggerCurvePercent = nil
 
-	-- Get configurable color curve settings from spec settings (new custom bar structure)
-	local staggerBarSettings = nil
-	if TRB.Data.specCache and TRB.Data.specCache.monk_brewmaster then
-		local specCache = TRB.Data.specCache.monk_brewmaster
-		if specCache and specCache.settings and specCache.settings.colors and specCache.settings.colors.bars then
-			staggerBarSettings = specCache.settings.colors.bars.stagger
-		end
+---Records the stagger bar's curve inputs, returning true when any differs from the last call.
+---@param staggerBarSettings table # colors.bars.stagger
+---@return boolean
+local function StaggerCurveInputsChanged(staggerBarSettings)
+	local low = staggerBarSettings.low or staggerBarSettings.light
+	local medium = staggerBarSettings.medium
+	local heavy = staggerBarSettings.heavy
+	local extreme = staggerBarSettings.extreme
+	local lowColor, lowThreshold = low and low.color, low and low.threshold
+	local mediumColor, mediumThreshold = medium and medium.color, medium and medium.threshold
+	local heavyColor, heavyThreshold = heavy and heavy.color, heavy and heavy.threshold
+	local extremeColor, extremeThreshold = extreme and extreme.color, extreme and extreme.threshold
+	local curveType = staggerBarSettings.type
+	local inputs = staggerCurveInputs
+	if inputs.built and inputs[1] == lowColor and inputs[2] == lowThreshold
+		and inputs[3] == mediumColor and inputs[4] == mediumThreshold
+		and inputs[5] == heavyColor and inputs[6] == heavyThreshold
+		and inputs[7] == extremeColor and inputs[8] == extremeThreshold and inputs[9] == curveType then
+		return false
 	end
+	inputs[1], inputs[2], inputs[3], inputs[4] = lowColor, lowThreshold, mediumColor, mediumThreshold
+	inputs[5], inputs[6], inputs[7], inputs[8] = heavyColor, heavyThreshold, extremeColor, extremeThreshold
+	inputs[9] = curveType
+	inputs.built = true
+	return true
+end
 
-	if staggerBarSettings == nil then
-		return
-	end
-
+---Builds the stagger bar's color curve from its configured thresholds and colors.
+---@param staggerBarSettings table # colors.bars.stagger
+---@return any # A ColorCurve
+local function BuildStaggerCurve(staggerBarSettings)
 	-- Use configurable settings or defaults
 	---@type Enum.LuaCurveType?
 	local curveType = Enum.LuaCurveType.Step
@@ -909,10 +995,37 @@ local function UpdateStaggerColor()
 		curve:AddPoint(extremeThreshold, CreateColor(extremeR, extremeG, extremeB, extremeA))
 	end
 
-	-- Evaluate the curve at current stagger percent
+	return curve
+end
+
+---Evaluates the stagger bar color at the current stagger percent from the curve its settings build.
+local function UpdateStaggerColor()
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+	-- Get configurable color curve settings from spec settings (new custom bar structure)
+	local staggerBarSettings = nil
+	if TRB.Data.specCache and TRB.Data.specCache.monk_brewmaster then
+		local specCache = TRB.Data.specCache.monk_brewmaster
+		if specCache and specCache.settings and specCache.settings.colors and specCache.settings.colors.bars then
+			staggerBarSettings = specCache.settings.colors.bars.stagger
+		end
+	end
+
+	if staggerBarSettings == nil then
+		return
+	end
+
+	local rebuilt = StaggerCurveInputsChanged(staggerBarSettings)
+	if rebuilt then
+		staggerCurve = BuildStaggerCurve(staggerBarSettings)
+	end
+
+	-- The stagger percent is plain, so the color is only re-evaluated when it or the curve changes.
 	local staggerPercent = snapshotData.attributes.staggerPercent or 0
-	local staggerColor = curve:Evaluate(staggerPercent)
-	snapshotData.attributes.staggerColor = staggerColor
+	if rebuilt or staggerPercent ~= staggerCurvePercent or snapshotData.attributes.staggerColor == nil then
+		staggerCurvePercent = staggerPercent
+		snapshotData.attributes.staggerColor = staggerCurve:Evaluate(staggerPercent)
+	end
 end
 
 local function UpdateSnapshot_Brewmaster()
@@ -958,6 +1071,13 @@ local function UpdateSnapshot_Windwalker()
 	snapshots[spells.whirlingDragonPunch.id].cooldown:GetRemainingTime(currentTime)
 	snapshots[spells.strikeOfTheWindlord.id].cooldown:GetRemainingTime(currentTime)
 	snapshots[spells.heartOfTheJadeSerpent.id].buff:GetRemainingTime(currentTime)
+
+	-- Out of combat, bar text stops refreshing once HasActiveTimers goes false, so repaint the expiry.
+	local wasHitComboActive = snapshots[spells.hitCombo.id].buff.isActive
+	snapshots[spells.hitCombo.id].buff:GetRemainingTime(currentTime)
+	if wasHitComboActive and not snapshots[spells.hitCombo.id].buff.isActive then
+		TRB.Data.lookupDirty = true
+	end
 end
 
 
@@ -1386,6 +1506,8 @@ local function UpdateResourceBar()
 		conditionMap.heartOfTheJadeSerpentReady = heartOfTheJadeSerpentReady
 		conditionMap.heartOfTheJadeSerpent = heartOfTheJadeSerpentActive
 		conditionMap.danceOfChiJi = danceOfChiJiActive
+		conditionMap.hitCombo = snapshots[spells.hitCombo.id].buff.isActive
+			and snapshots[spells.hitCombo.id].buff.applications >= specSettings.stacks.hitCombo.min
 		conditionMap.borderOvercap = affectingCombat
 		local energyBarColors = scratch.energyBarColors2
 		wipe(energyBarColors)
@@ -1558,8 +1680,9 @@ local function UpdateResourceBar()
 		-- Threshold line sounds (independent of bar visibility)
 		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
 
-		-- Chi threshold audio cues (independent of bar visibility)
+		-- Chi and Hit Combo threshold audio cues (independent of bar visibility)
 		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "chi", snapshotData.attributes.resource2)
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "hitComboStacks", snapshots[spells.hitCombo.id].buff.applications or 0)
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
@@ -1663,6 +1786,7 @@ local function SwitchSpec()
 		lookup["#expelHarm"] = spells.expelHarm.icon
 		lookup["#fistsOfFury"] = spells.fistsOfFury.icon
 		lookup["#fof"] = spells.fistsOfFury.icon
+		lookup["#hitCombo"] = spells.hitCombo.icon
 		lookup["#hotjs"] = spells.heartOfTheJadeSerpent.icon
 		lookup["#paralysis"] = spells.paralysis.icon
 		lookup["#risingSunKick"] = spells.risingSunKick.icon
@@ -1873,6 +1997,7 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData and snapshotData.attributes then
 		snapshotData.attributes.danceOfChiJiActive = false
+		snapshotData.attributes.lastComboStrike = nil
 	end
 end
 
@@ -1914,12 +2039,17 @@ do
 	}
 	for k, v in pairs(healthVars) do mistweaver[k] = v end
 	-- Windwalker
+	local hitComboFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.hitCombo.id].buff.isActive
+	end
 	local windwalker = {
 		["$casting"] = castingFn,
 		["$resource"] = false, ["$energy"] = false,
 		["$resourceMax"] = true, ["$energyMax"] = true,
 		["$comboPoints"] = true, ["$chi"] = true,
 		["$comboPointsMax"] = true, ["$chiMax"] = true,
+		["$hitComboStacks"] = hitComboFn, ["$hitComboTime"] = hitComboFn,
 	}
 	for k, v in pairs(healthVars) do windwalker[k] = v end
 
@@ -2054,8 +2184,8 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 	end
 end
 
----Returns true when Invoke Niuzao buff is active (Brewmaster only).
----Mistweaver and Windwalker have no timer variables.
+---Returns true while a timer variable is counting: Invoke Niuzao (Brewmaster) or Hit Combo (Windwalker).
+---Mistweaver has no timer variables.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	if TRB.Data.character.specId == 1 then -- Brewmaster
@@ -2063,6 +2193,15 @@ function TRB.Functions.Class:HasActiveTimers()
 		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
 		if snapshotData and spells and spells.invokeNiuzao then
 			local snapshot = snapshotData.snapshots[spells.invokeNiuzao.id]
+			if snapshot and snapshot.buff and snapshot.buff.isActive then
+				return true
+			end
+		end
+	elseif TRB.Data.character.specId == 3 then -- Windwalker
+		local snapshotData = TRB.Data.snapshotData
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+		if snapshotData and spells and spells.hitCombo then
+			local snapshot = snapshotData.snapshots[spells.hitCombo.id]
 			if snapshot and snapshot.buff and snapshot.buff.isActive then
 				return true
 			end
