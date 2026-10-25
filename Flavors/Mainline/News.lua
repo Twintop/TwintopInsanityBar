@@ -41,8 +41,8 @@ TRB.Flavor.newsContent = [====[
 ## Priest
 ### Discipline
 
-- Surge of Light tracking corrects itself when a stack is gained as you spend one.
 - [#584](#584) Fix the Power Word Radiance checkbox redrawing the bars with this specialization's settings while they use the global settings.
+- Surge of Light tracking corrects itself when a stack is gained as you spend one.
 
 ### Holy
 
