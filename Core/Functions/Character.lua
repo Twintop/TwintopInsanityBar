@@ -1968,6 +1968,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	specCache.settings.maxResource = spec.maxResource
 	specCache.settings.barVisibilityThresholds = spec.barVisibilityThresholds
 
+	-- Multi-node bar orders are sanitized as settings compose, so the per-tick GetOrderedNodeKeys reads need no checks.
+	TRB.Functions.Settings:SanitizeNodeOrders(spec)
+
 	-- Castbar enablement + Blizzard cast bar suppression follow the display spec's recomposed
 	-- settings, which only become valid/refreshed here (initial login fill lands after PLAYER_ENTERING_WORLD).
 	if TRB.Functions.Class:GetActiveDisplayCompositeKey() == compositeKey then

@@ -49,6 +49,9 @@ local isHolyWordEndCapElement = {
 	endCapChastise = true,
 }
 
+-- The previous Holy Word mapping, compared against the rebuilt one each tick; reused so the tick allocates nothing.
+local holyWordMappingSnapshot = {}
+
 --- Builds (or refreshes) the Holy Word node mapping that maps e.g. "holyWordSerenity1" → physical node index.
 --- This is used by GetBarTextFrame to anchor bar text to the correct Holy Word node.
 --- Safe to call any time after SwitchSpec has populated talents/spells; the mapping is also
@@ -75,7 +78,8 @@ local function BuildHolyWordNodeMapping()
 	TRB.Data.holyWordNodeMapping = TRB.Data.holyWordNodeMapping or {}
 	local nodeMapping = TRB.Data.holyWordNodeMapping
 	-- Snapshot old mapping to detect changes (for re-anchoring bar text)
-	local oldSnapshot = {}
+	local oldSnapshot = holyWordMappingSnapshot
+	wipe(oldSnapshot)
 	for k, v in pairs(nodeMapping) do
 		oldSnapshot[k] = v
 	end
