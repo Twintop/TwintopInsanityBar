@@ -63,7 +63,7 @@ TRB.Details.coreNewsContent = [====[
 
 ## Color Indicators
 
-- Fix exported profiles leaving out a Color Indicator's minimum stacks setting, such as Resonant Energy's.
+- [#885](#885) Fix exported profiles leaving out a Color Indicator's minimum stacks setting, such as Resonant Energy's.
 
 ---
 
