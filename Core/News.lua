@@ -4,7 +4,7 @@ local _, TRB = ...
 -- first. Each section names the Live and Forever releases that carry it.
 TRB.Details.coreNewsContent = [====[
 
-# Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-23)
+# Live 12.1.5.7-release / Forever 1.60.1.14-release (2026-10-25)
 ## General
 
 - [#213](#213) Remove unused color code.

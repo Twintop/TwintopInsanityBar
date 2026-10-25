@@ -1254,7 +1254,8 @@ function TRB.Functions.Skyriding:ShowEnablePrompt()
 		end
 		reprompt.answered = true
 		promptPending = false
-		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(nil, nil, false, true)
+		-- Every spec, since a Druid form shows another spec's settings.
+		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChangeAllSpecs()
 		StaticPopup_Show("TwintopResourceBar_SkyridingBarsFollowUp")
 	end
 

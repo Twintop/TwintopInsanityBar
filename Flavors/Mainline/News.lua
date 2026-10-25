@@ -8,7 +8,12 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.5.7-release (2026-10-24)
+# 12.1.5.7-release (2026-10-25)
+## General
+### Skyriding
+
+- Fix the Skyriding bars staying hidden until a reload after answering the Skyriding bars prompt as a Balance, Feral, or Guardian Druid.
+
 ## Death Knight
 ### Blood
 
