@@ -399,70 +399,6 @@ function TRB.Functions.Character:UpdatePetValues()
 	end
 end
 
----Updates the overcap color based on current resource percentage and overcap settings
----Stores the result in snapshotData.attributes.overcapColor (raw ColorMixin object)
----NOTE: Currently unused — snapshotData.attributes.overcapColor has zero consumers.
----Kept for potential future use. All call sites have been removed for performance.
-function TRB.Functions.Character:UpdateOvercapColor()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	
-	-- Get spec settings
-	local specSettings = nil
-	local sharedSettings = nil
-	if TRB.Data.settings and TRB.Data.character and TRB.Data.character.className and TRB.Data.character.specName then
-		local classSettings = TRB.Data.settings[TRB.Data.character.className]
-		if classSettings then
-			specSettings = classSettings[TRB.Data.character.specName]
-		end
-		if TRB.Data.specCache and TRB.Data.specCache[TRB.Data.character.compositeKey] then
-			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-		end
-	end
-	
-	-- Need both settings objects
-	if specSettings == nil or specSettings.overcap == nil then
-		snapshotData.attributes.overcapColor = nil
-		return
-	end
-	
-	if sharedSettings == nil or sharedSettings.colors == nil or sharedSettings.colors.text == nil or sharedSettings.colors.text.overcap == nil then
-		snapshotData.attributes.overcapColor = nil
-		return
-	end
-	
-	-- Get the normal and overcap colors
-	local normalColor = sharedSettings.colors.text.current.color
-	local overcapColor = sharedSettings.colors.text.overcap.color
-	local maxResource = TRB.Data.character.maxResource or 100
-	
-	-- Calculate the overcap threshold as a percentage
-	local overcapThreshold
-	if specSettings.overcap.mode == "relative" then
-		overcapThreshold = maxResource + (specSettings.overcap.relative or 0)
-	else
-		overcapThreshold = specSettings.overcap.fixed or maxResource
-	end
-	local overcapPercent = overcapThreshold / maxResource
-	
-	-- Get RGBA from colors
-	local normalR, normalG, normalB, normalA = TRB.Functions.Color:GetRGBAFromString(normalColor, true)
-	local overcapR, overcapG, overcapB, overcapA = TRB.Functions.Color:GetRGBAFromString(overcapColor, true)
-	
-	local normalColorObj = CreateColor(normalR, normalG, normalB, normalA)
-	local overcapColorObj = CreateColor(overcapR, overcapG, overcapB, overcapA)
-	
-	-- Create the curve
-	local curve = C_CurveUtil.CreateColorCurve()
-	curve:SetType(Enum.LuaCurveType.Step)
-	curve:AddPoint(0, normalColorObj)
-	curve:AddPoint(overcapPercent, overcapColorObj)
-	curve:AddPoint(2.0, overcapColorObj) -- Extend beyond 100% for overflow
-	
-	-- Evaluate using UnitPowerPercent with the curve - returns the appropriate color
-	-- Store the raw color object (like healthColor) for use with SetVertexColor
-	snapshotData.attributes.overcapColor = UnitPowerPercent("player", TRB.Data.resource, true, curve)
-end
-
 -- Incremented on PLAYER_DEAD; deferred buff re-arms compare against it to skip firing after a death.
 local deathCount = 0
 
@@ -1433,7 +1369,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Functions.Skyriding:SyncSnapshots()
 end
 
----Clears all cached color data (border, bar, backdrop, health curve, absorb border curve) and resets the RGBA parse memoization.
+---Clears all cached color data (border, bar, backdrop, health curve, absorb border curve, color curves) and resets the RGBA parse memoization.
 function TRB.Functions.Character:ResetColorCaches()
 	wipe(TRB.Data.cache.colors.border)
 	wipe(TRB.Data.cache.colors.bar)
@@ -1443,7 +1379,18 @@ function TRB.Functions.Character:ResetColorCaches()
 	TRB.Data.cache.healthCurves = nil
 	-- Clear RGBA parse memoization to bound memory
 	TRB.Functions.Color:ClearRGBACache()
-end 
+	-- Curve keys include every input, so these never go stale; clearing bounds memory and drops each cache's fast-curve trie too.
+	wipe(TRB.Data.cache.stepColorCurves)
+	wipe(TRB.Data.cache.thresholdCurves)
+	if TRB.Data.cache.customThresholdCurves ~= nil then
+		wipe(TRB.Data.cache.customThresholdCurves)
+	end
+	if TRB.Data.cache.iconVertexColorCurves ~= nil then
+		wipe(TRB.Data.cache.iconVertexColorCurves)
+	end
+	TRB.Functions.TargetCastbar:ClearColorCache()
+	TRB.Functions.BarText:ClearColorCodes()
+end
 
 ---Clears all runtime caches (bar text, symbols, parse trees, resource/threshold values, colors) and rebuilds the threshold spell list.
 function TRB.Functions.Character:ResetCaches()

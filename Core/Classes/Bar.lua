@@ -1459,20 +1459,6 @@ function TRB.Classes.BarGroup:SetDimensions(width, height, border)
 	end
 end
 
----Sets the same color for all nodes
----@param baseColor string
----@param borderColor string
----@param backgroundColor string
-function TRB.Classes.BarGroup:SetAllNodeColors(baseColor, borderColor, backgroundColor)
-	for i = 1, self.maxNodes do
-		if self.nodes[i] then
-			self.nodes[i]:SetColor(baseColor)
-			self.nodes[i]:SetBorderColor(borderColor)
-			self.nodes[i]:SetBackgroundColorFromString(backgroundColor)
-		end
-	end
-end
-
 ---Sets the same textures for all nodes
 ---@param barTexture string
 ---@param borderTexture string
