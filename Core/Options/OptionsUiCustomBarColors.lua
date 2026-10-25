@@ -463,6 +463,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 			for i, k in ipairs(orderedKeys) do
 				colorSettings.nodeOrder[i] = k
 			end
+			-- orderedKeys skips nodes without colors, so the in-place write can leave a stale tail.
+			barTypeDef:SanitizeNodeOrder(colorSettings)
 			RefreshRow(indexA)
 			RefreshRow(indexB)
 			RebuildBarAfterNodeChange()

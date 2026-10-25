@@ -1397,6 +1397,8 @@ profilesFrame:SetScript("OnEvent", function(_, event)
 		if Settings ~= nil and Settings.ReconcileAllSharedIndicators ~= nil then
 			Settings:ReconcileAllSharedIndicators(TRB.Data.settings)
 		end
+		-- It merges each multi-node bar's node order by index the same way.
+		Settings:SanitizeAllNodeOrders(TRB.Data.settings)
 	elseif event == "PLAYER_LOGOUT" then
 		if TRB.Data == nil or TRB.Data.settings == nil then
 			return

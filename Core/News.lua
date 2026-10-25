@@ -14,6 +14,7 @@ TRB.Details.coreNewsContent = [====[
 - [#584](#584) Remove the chat messages about invalid fonts, textures, and sounds.
 - [#584](#584) Remove unused audio dropdown and media lookup code from the options.
 - [#865](#865) Fix the Health bar's fill briefly turning transparent while changing bar options.
+- [#866](#866) Improve update performance of bars whose node order can be rearranged.
 - [#870](#870) Fix an Action Button Glow taking its brightness from another glow's color when glows with different opacities start together.
 - [#873](#873) Free the memory held for bar colors no longer in use on a specialization or bar layout change, instead of keeping it until a reload.
 - [#875](#875) Remove unused color option code from the options.

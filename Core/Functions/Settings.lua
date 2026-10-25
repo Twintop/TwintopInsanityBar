@@ -3410,6 +3410,36 @@ function TRB.Functions.Settings:ReconcileAllSharedIndicators(settings)
 	end
 end
 
+---Sanitizes the saved node order of every multi-node bar in one spec's settings, so the per-tick
+---GetOrderedNodeKeys reads can return it as is.
+---@param specSettings table # One spec's settings
+function TRB.Functions.Settings:SanitizeNodeOrders(specSettings)
+	for _, definition in pairs(TRB.Classes.BarTypeRegistry:GetInstance():GetAll()) do
+		if definition.nodeColors ~= nil then
+			local colorSettings = definition:GetColors(specSettings)
+			if colorSettings ~= nil then
+				definition:SanitizeNodeOrder(colorSettings)
+			end
+		end
+	end
+end
+
+---Runs SanitizeNodeOrders across every spec in a settings table.
+---@param settings table? # The full addon settings table
+function TRB.Functions.Settings:SanitizeAllNodeOrders(settings)
+	if settings == nil then
+		return
+	end
+
+	for _, entry in pairs(TRB.Data.specRegistry) do
+		local class = settings[entry.className]
+		local spec = class ~= nil and class[entry.specName] or nil
+		if type(spec) == "table" then
+			TRB.Functions.Settings:SanitizeNodeOrders(spec)
+		end
+	end
+end
+
 ---Returns default bar text for the health bar
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.DisplayTextEntry[]
