@@ -542,4 +542,5 @@ if locale == "enGB" then
 	L["BarTexturesUseGlobalAllSpecsTooltip"] = "Checked bars draw with the textures set in Global Options in every specialisation. Unchecking gives each specialisation its own textures for them, starting from Global's. A dimmed check means some specialisations do."
 	L["BarTexturesLockedGlobalTooltip"] = "Locked: '%s' is checked in Global Options, so this texture matches %s (%s) on the %s row. The %s row uses Global settings, which brings Global Options' locks with it. Uncheck Use Global settings for that row to set this specialisation's own locks."
 	L["TextureLockGlobalTooltip"] = "The %s row uses Global settings, so this specialisation uses the locks set in Global Options. Uncheck Use Global settings for that row to set its own."
+	L["MonkWindwalkerIndicatorHitComboTooltip"] = "Changes to this colour when Hit Combo is active at or above the number of stacks selected below."
 end
