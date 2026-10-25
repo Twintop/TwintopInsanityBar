@@ -991,6 +991,15 @@ local scratch = {
 	sfGradientConditionMap1 = {},
 }
 
+-- Kept at module scope so UpdateResourceBar creates no closures each tick.
+---A threshold color entry's mode: shared, override, or hidden, from the legacy enabled flag when unset.
+local function GetThresholdColorMode(colorEntry)
+	if colorEntry == nil then return "shared" end
+	if colorEntry.mode ~= nil then return colorEntry.mode end
+	if colorEntry.enabled then return "override" end
+	return "shared"
+end
+
 local function UpdateResourceBar()
 	local currentTime = GetTime()
 	local refreshText = false
@@ -1711,22 +1720,15 @@ local function UpdateResourceBar()
 								-- Per-threshold color override (mode-based: shared/override/hidden)
 								local hideThreshold = false
 								if csDictEntry.colors then
-									local function GetMode(colorEntry)
-										if colorEntry == nil then return "shared" end
-										if colorEntry.mode ~= nil then return colorEntry.mode end
-										if colorEntry.enabled then return "override" end
-										return "shared"
-									end
-
 									if frameLevel >= frameLevels.thresholdOver then
-										local mode = GetMode(csDictEntry.colors.over)
+										local mode = GetThresholdColorMode(csDictEntry.colors.over)
 										if mode == "hidden" then
 											hideThreshold = true
 										elseif mode == "override" and csDictEntry.colors.over and csDictEntry.colors.over.color then
 											thresholdColor = csDictEntry.colors.over.color
 										end
 									else
-										local mode = GetMode(csDictEntry.colors.under)
+										local mode = GetThresholdColorMode(csDictEntry.colors.under)
 										if mode == "hidden" then
 											hideThreshold = true
 										elseif mode == "override" and csDictEntry.colors.under and csDictEntry.colors.under.color then
