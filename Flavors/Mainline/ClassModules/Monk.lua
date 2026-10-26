@@ -666,33 +666,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	if TRB.Data.character.specId == 1 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 		if event == "UNIT_SPELLCAST_SUCCEEDED" then
-			if spellId == spells.expelHarm.castId then
-				local cooldown = spells.expelHarm.cooldown
-
-				snapshotData.snapshots[spells.expelHarm.id].cooldown:InitializeCustom(cooldown, currentTime)
-			elseif spellId == spells.paralysis.castId then
-				local cooldown = spells.paralysis.cooldown
-
-				if talents:IsTalentActive(spells.ancientArts) then
-					cooldown = cooldown + spells.ancientArts.attributes.cooldownMod
-				end
-
-				snapshotData.snapshots[spells.paralysis.id].cooldown:InitializeCustom(cooldown, currentTime)
-			elseif spellId == spells.detox.castId then -- This doesn't actually trigger a CD if it doesn't dispel anything, but we have no way of knowing that here
-				local cooldown = spells.detox.cooldown
-
-				snapshotData.snapshots[spells.detox.id].cooldown:InitializeCustom(cooldown, currentTime)
-			elseif spellId == spells.invokeNiuzao.id then
+			if spellId == spells.invokeNiuzao.id then
 				snapshotData.snapshots[spells.invokeNiuzao.id].buff:InitializeCustom(spells.invokeNiuzao.duration, currentTime)
 			end
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 			if spellId == spells.cracklingJadeLightning.castId then
-				if talents:IsTalentActive(spells.jadeFlash) then
-					local cooldown = spells.jadeFlash.cooldown
-
-					snapshotData.snapshots[spells.cracklingJadeLightning.id].cooldown:InitializeCustom(cooldown, currentTime)
-				end
-				
 				snapshotData.casting.spellId = spells.cracklingJadeLightning.id
 				snapshotData.casting.startTime = currentTime
 				snapshotData.casting.resourceRaw = -spells.cracklingJadeLightning:GetPrimaryResourceCost()
@@ -1029,10 +1007,7 @@ local function UpdateStaggerColor()
 end
 
 local function UpdateSnapshot_Brewmaster()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local snapshots = snapshotData.snapshots
-	local currentTime = GetTime()
 	UpdateSnapshot()
 
 	snapshotData.attributes.stagger = UnitStagger("player")
@@ -1043,11 +1018,6 @@ local function UpdateSnapshot_Brewmaster()
 		snapshotData.attributes.staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.healthMax
 	end
 	UpdateStaggerColor()
-
-	snapshots[spells.expelHarm.id].cooldown:GetRemainingTime(currentTime)
-	snapshots[spells.detox.id].cooldown:GetRemainingTime(currentTime)
-	snapshots[spells.paralysis.id].cooldown:GetRemainingTime(currentTime)
-	snapshots[spells.cracklingJadeLightning.id].cooldown:GetRemainingTime(currentTime)
 end
 
 local function UpdateSnapshot_Mistweaver()

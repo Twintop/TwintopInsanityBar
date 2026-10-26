@@ -114,6 +114,16 @@ local function SetIconCooldown(cooldown, startTime, duration)
 	end
 end
 
+---Starts an icon cooldown swipe from a duration object, whose secret times only the widget can read.
+---@param cooldown TRB.Classes.ThresholdFrame.Cooldown
+---@param durationObject any
+local function SetIconCooldownFromDuration(cooldown, durationObject)
+	cooldown:SetCooldownFromDurationObject(durationObject)
+	-- The plain record no longer matches what is drawn, so the next plain start or clear always applies.
+	cooldown.trbStart = nil
+	cooldown.trbDuration = nil
+end
+
 ---Resolves a per-threshold color entry to "shared", "override", or "hidden".
 ---@param colorEntry table?
 ---@return string
@@ -3321,7 +3331,6 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 
 	local dictEntry = spell.settingKey and settings.thresholds.thresholdDictionary[spell.settingKey]
 	if dictEntry and dictEntry.enabled and showThreshold then
-		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
 		local outOfRange = not spell:GetIsSpellInRange()
 		local colorOverrides = thresholdOverrides and thresholdOverrides.colors
@@ -3507,12 +3516,24 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				end
 			end
 			
-			if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot ~= nil and snapshot.cooldown:GetRemainingTime(currentTime) > 0 then
-				SetIconCooldown(threshold.icon.cooldown, snapshot.cooldown.startTime, snapshot.cooldown.duration)
-				cache.cooldown = true
-			elseif cache.cooldown then
-				SetIconCooldown(threshold.icon.cooldown, 0, 0)
-				cache.cooldown = false
+			-- Redrawn only when the tracked cooldown changes; secret times draw from the duration object.
+			local cooldownState = settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot ~= nil and snapshot.cooldown or nil
+			local swipeVersion = nil
+			if cooldownState ~= nil and cooldownState.onCooldown then
+				swipeVersion = cooldownState.version
+			end
+			if cache.swipeVersion ~= swipeVersion then
+				cache.swipeVersion = swipeVersion
+				if cooldownState == nil or swipeVersion == nil then
+					SetIconCooldown(threshold.icon.cooldown, 0, 0)
+				elseif cooldownState:HasPlainTiming() then
+					SetIconCooldown(threshold.icon.cooldown, cooldownState.startTime, cooldownState.duration)
+				else
+					local durationObject = cooldownState:GetDurationObject()
+					if durationObject ~= nil then
+						SetIconCooldownFromDuration(threshold.icon.cooldown, durationObject)
+					end
+				end
 			end
 		end
 	else

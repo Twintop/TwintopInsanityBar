@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.15-release (2026-10-27)
+## General
+### Thresholds
+
+- [#279](#279) Remove the threshold lines' separate cooldown refresh.
+
+---
+
 # 1.60.1.14-release (2026-10-25)
 ## General
 ### Core Changes

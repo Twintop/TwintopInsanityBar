@@ -2184,6 +2184,7 @@ function TRB.Functions.Character:RefreshThresholdSpellsLearned()
 			learned[spell.settingKey] = spell
 		end
 	end
+	TRB.Functions.ThresholdCooldowns:Sync()
 end
 
 ---Default implementation of RecreateThresholds. Class modules can override this
@@ -2265,6 +2266,7 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.Skyriding:Enable()
 		TRB.Functions.Character:EnableCharacterChange()
 		TRB.Functions.Character:EnableSpellRangeCheckUpdate()
+		TRB.Functions.ThresholdCooldowns:Enable()
 		targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 		timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 
@@ -2313,6 +2315,7 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.PetCastbar:Disable()
 		TRB.Functions.Character:DisableCharacterChange()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
+		TRB.Functions.ThresholdCooldowns:Disable()
 		TRB.Details.addonData.registered = false
 		if barGroups then
 			if barGroups.primary then

@@ -8,6 +8,30 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.8-release (2026-10-27)
+## Death Knight
+### Frost
+
+- [#279](#279) Remove the Breath of Sindragosa threshold line's separate cooldown timer.
+
+## Hunter
+### Marksmanship
+
+- [#279](#279) Remove the Explosive Shot threshold line's separate cooldown timer.
+
+## Monk
+### Brewmaster
+
+- [#279](#279) Fix the Detox threshold line showing a cooldown after a cast that dispels nothing.
+- [#279](#279) Remove the Crackling Jade Lightning, Detox, Expel Harm, and Paralysis threshold lines' separate cooldown timers.
+- [#279](#279) Remove unused Ancient Arts and Jade Flash spell data.
+
+## Warrior
+
+- [#279](#279) Remove Shield Block's separate cooldown refresh.
+
+---
+
 # 12.1.5.7-release (2026-10-25)
 ## General
 ### Skyriding

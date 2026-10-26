@@ -27,6 +27,7 @@
 	<Script file="Functions\String.lua"/>
 	<Script file="Functions\Talent.lua"/>
 	<Script file="Functions\Threshold.lua"/>
+	<Script file="Functions\ThresholdCooldowns.lua"/>
 	<Script file="Functions\WagoCreator.lua"/>
 	<Script file="Functions\Bootstrap.lua"/>
 	<Script file="Options\OptionsUiMedia.lua"/>

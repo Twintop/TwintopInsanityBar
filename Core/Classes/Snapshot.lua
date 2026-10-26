@@ -1099,6 +1099,8 @@ end
 ---@field private startRetries integer # Next-frame re-reads in a row of a running cooldown with no start time yet
 ---@field public hastedCooldown boolean # When true, cooldown remaining is dynamically adjusted when haste changes
 ---@field public lastKnownGcd number? # The GCD duration used when the cooldown was last initialized or recalculated
+---@field public version integer # Bumped whenever the cooldown starts, changes, or ends, so readers can redraw only on a change
+---@field public endsAt number? # GetTime() the running cooldown ends, when its times are plain
 TRB.Classes.SnapshotCooldown = {}
 TRB.Classes.SnapshotCooldown.__index = TRB.Classes.SnapshotCooldown
 
@@ -1139,6 +1141,9 @@ function TRB.Classes.SnapshotCooldown:Reset()
 	self.startRetries = 0
 	self.hastedCooldown = false
 	self.lastKnownGcd = nil
+	self.endsAt = nil
+	-- Never restarts at a value a reader may already hold.
+	self.version = (self.version or 0) + 1
 end
 
 ---Computes the time remaining on the Snapshot
@@ -1249,6 +1254,7 @@ function TRB.Classes.SnapshotCooldown:InitializeCustom(duration, startTime, hast
 	self.isCustom = true
 	self.hastedCooldown = hastedCooldown or false
 	self.lastKnownGcd = self.hastedCooldown and currentGcd or nil
+	self.version = self.version + 1
 	self:GetRemainingTime()
 end
 
@@ -1425,9 +1431,12 @@ end
 ---Determines if the cooldown is unusable, either by virtue of being completely on cooldown or having no charges to spend
 ---@return boolean
 function TRB.Classes.SnapshotCooldown:IsUnusable()
-	-- Lie and say it is not unusable if we have secret values for charges or cooldown state
-	if issecretvalue(self.charges) or issecretvalue(self.onCooldown) then
+	if issecretvalue(self.onCooldown) then
 		return false
+	end
+	-- Secret charges: the cooldown event's never-secret flags said whether none are left.
+	if issecretvalue(self.charges) then
+		return self.secretOnCooldown == true
 	end
 	return (self.charges == nil or self.charges == 0) and self.onCooldown
 end
@@ -1604,12 +1613,16 @@ end
 
 ---Refreshes the cached DurationObject. Uses GetSpellChargeDuration for charge-based spells,
 ---or GetSpellCooldownDuration for single-cooldown spells, mirroring the pattern in Refresh().
-function TRB.Classes.SnapshotCooldown:RefreshDurationObject()
+---@param ignoreGcd boolean? # Leave the GCD out of a single cooldown; defaults to the spell's ignoreGcdLock
+function TRB.Classes.SnapshotCooldown:RefreshDurationObject(ignoreGcd)
 	if self.parent.spell ~= nil and self.parent.spell.id ~= nil then
 		if self.parent.spell.hasCharges == true then
 			self.durationObject = C_Spell.GetSpellChargeDuration(self.parent.spell:GetRankedId())
 		else
-			self.durationObject = C_Spell.GetSpellCooldownDuration(self.parent.spell:GetRankedId(), self.parent.spell.ignoreGcdLock == true)
+			if ignoreGcd == nil then
+				ignoreGcd = self.parent.spell.ignoreGcdLock == true
+			end
+			self.durationObject = C_Spell.GetSpellCooldownDuration(self.parent.spell:GetRankedId(), ignoreGcd)
 		end
 	else
 		self.durationObject = nil
@@ -1629,6 +1642,85 @@ end
 ---@return boolean
 function TRB.Classes.SnapshotCooldown:IsRechargingManual()
 	return self.useManualCharges and self.manualCharges < self.manualMaxCharges
+end
+
+---Records a running cooldown read in a cooldown event: plain times when the API gives them, otherwise only the
+---duration object, which widgets can still draw. A charge spell is only on cooldown with no charges left.
+---@param info SpellCooldownInfo
+function TRB.Classes.SnapshotCooldown:Start(info)
+	self.onCooldown = true
+	self.secretOnCooldown = true
+	if self.parent.spell.hasCharges == true then
+		self.charges = 0
+	end
+	self:Retime(info)
+end
+
+---Re-reads a running cooldown's times after it changed, such as a reduction.
+---@param info SpellCooldownInfo
+function TRB.Classes.SnapshotCooldown:Retime(info)
+	self.startTime = info.startTime
+	self.duration = info.duration
+	self.endsAt = nil
+	if not issecretvalue(info.startTime) and not issecretvalue(info.duration) then
+		self.endsAt = info.startTime + info.duration
+	end
+	self:RefreshDurationObject(true)
+	self.version = self.version + 1
+end
+
+---Clears a cooldown seen to end.
+function TRB.Classes.SnapshotCooldown:MarkEnded()
+	self.startTime = nil
+	self.duration = 0
+	self.remaining = 0
+	self.remainingTotal = 0
+	self.onCooldown = false
+	self.secretOnCooldown = nil
+	self.endsAt = nil
+	self.durationObject = nil
+	self.version = self.version + 1
+end
+
+---Re-reads a charge spell's counts after a charge event. Whether it is on cooldown comes from the cooldown events.
+function TRB.Classes.SnapshotCooldown:RefreshCharges()
+	local spellCharges = C_Spell.GetSpellCharges(self.parent.spell:GetRankedId())
+	if spellCharges == nil then
+		return
+	end
+	self.charges = spellCharges.currentCharges
+	self.maxCharges = spellCharges.maxCharges
+	self.isActive = spellCharges["isActive"] == true
+end
+
+---Reads a newly tracked cooldown once, outside any event. Only plain times can be told apart from the GCD here, so a
+---cooldown already running behind secret values waits for its next event.
+function TRB.Classes.SnapshotCooldown:ReadInitial()
+	local spell = self.parent.spell --[[@as TRB.Classes.SpellBase]]
+	if spell.hasCharges == true then
+		self:RefreshCharges()
+	end
+	local info = C_Spell.GetSpellCooldown(spell:GetRankedId())
+	if info == nil or info.isActive ~= true or issecretvalue(info.startTime) or issecretvalue(info.duration) then
+		return
+	end
+	local remaining = info.startTime + info.duration - GetTime()
+	local gcd = TRB.Data.snapshotData.casting:GetCurrentGCDLockRemaining()
+	if remaining > gcd + TRB.Data.character.latency then
+		self:Start(info)
+	end
+end
+
+---Whether the running cooldown's times are plain, so Lua can read its remaining time.
+---@return boolean
+function TRB.Classes.SnapshotCooldown:HasPlainTiming()
+	return self.endsAt ~= nil
+end
+
+---The spell this cooldown belongs to.
+---@return TRB.Classes.SpellBase
+function TRB.Classes.SnapshotCooldown:GetSpell()
+	return self.parent.spell --[[@as TRB.Classes.SpellBase]]
 end
 
 

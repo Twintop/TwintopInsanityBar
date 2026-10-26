@@ -723,20 +723,13 @@ end
 ---@param event trbSpellCastType
 ---@param spellId integer
 function TRB.Functions.Class:SpellCast(event, spellId)
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
-	local currentTime = GetTime()
-	
+
 	if TRB.Data.character.specId == 1 then
 	elseif TRB.Data.character.specId == 2 then
-		local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-			if spellId == spells.breathOfSindragosa.castId then
-				snapshotData.snapshots[spells.breathOfSindragosa.id].cooldown:InitializeCustom(spells.breathOfSindragosa.cooldown, currentTime)
-			end
 		end
 	elseif TRB.Data.character.specId == 3 then
 	end
@@ -853,11 +846,6 @@ end
 
 local function UpdateSnapshot_Frost()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local currentTime = GetTime()
-
-	snapshotData.snapshots[spells.breathOfSindragosa.id].cooldown:GetRemainingTime(currentTime)
 end
 
 ---Refreshes Runic Corruption from the Cooldown Manager, its only source: the rune regeneration rate
