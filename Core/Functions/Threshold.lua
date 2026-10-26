@@ -3298,6 +3298,11 @@ function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thre
 	local curveColorResult
 	if durationObject ~= nil then
 		curveColorResult = durationObject:EvaluateRemainingDuration(thresholdCurve)
+		-- Only a color object can paint; anything else leaves the caller's plain color.
+		local resultType = type(curveColorResult)
+		if resultType ~= "table" and resultType ~= "userdata" then
+			return false
+		end
 	else
 		curveColorResult = TRB.Functions.Color:EvaluateThresholdCurve(thresholdCurve, resourceType)
 	end
