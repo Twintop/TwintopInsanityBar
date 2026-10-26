@@ -37,6 +37,45 @@ local pickerWording = {
 	notDisplayed = L["CustomIndicatorNotDisplayedTooltip"],
 }
 
+local ThresholdState = TRB.Functions.Threshold.ConditionState
+
+local thresholdStateLabels = {
+	[ThresholdState.USABLE] = L["ThresholdIndicatorStateUsable"],
+	[ThresholdState.UNUSABLE] = L["ThresholdIndicatorStateUnusable"],
+	[ThresholdState.ON_COOLDOWN] = L["ThresholdIndicatorStateOnCooldown"],
+	[ThresholdState.OUT_OF_RANGE] = L["ThresholdIndicatorStateOutOfRange"],
+	[ThresholdState.IN_RANGE] = L["ThresholdIndicatorStateInRange"],
+	[ThresholdState.STATIC] = L["ThresholdIndicatorStateStatic"],
+}
+
+local thresholdStateRowFormats = {
+	[ThresholdState.USABLE] = L["ThresholdIndicatorUsableFormat"],
+	[ThresholdState.UNUSABLE] = L["ThresholdIndicatorUnusableFormat"],
+	[ThresholdState.ON_COOLDOWN] = L["ThresholdIndicatorOnCooldownFormat"],
+	[ThresholdState.OUT_OF_RANGE] = L["ThresholdIndicatorOutOfRangeFormat"],
+	[ThresholdState.IN_RANGE] = L["ThresholdIndicatorInRangeFormat"],
+	[ThresholdState.STATIC] = L["ThresholdIndicatorStaticFormat"],
+}
+
+-- A square swatch tinted by the trailing RGB triplet; colored menu text can be unreadable on the dark menu.
+local stateSwatchMarkup = "|TInterface\\Buttons\\WHITE8X8:12:12:0:0:8:8:0:8:0:8:%d:%d:%d|t %s"
+
+local thresholdStateTooltips = {
+	[ThresholdState.OUT_OF_RANGE] = L["ThresholdIndicatorOutOfRangeTooltip"],
+	[ThresholdState.IN_RANGE] = L["ThresholdIndicatorInRangeTooltip"],
+	[ThresholdState.STATIC] = L["ThresholdIndicatorStaticTooltip"],
+}
+
+-- Each state's color as the Thresholds tab names it.
+local thresholdStateColorNames = {
+	[ThresholdState.USABLE] = L["ThresholdDetailColorsOver"],
+	[ThresholdState.UNUSABLE] = L["ThresholdDetailColorsUnder"],
+	[ThresholdState.ON_COOLDOWN] = L["ThresholdDetailColorsUnusable"],
+	[ThresholdState.OUT_OF_RANGE] = L["ThresholdDetailColorsOutOfRange"],
+	[ThresholdState.IN_RANGE] = L["ThresholdDetailColorsOver"],
+	[ThresholdState.STATIC] = L["ThresholdDetailColorModeStatic"],
+}
+
 StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteCustomIndicator"] = {
 	text = "%s",
 	button1 = L["CustomIndicatorDelete"],
@@ -434,6 +473,162 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 
+	local Threshold = TRB.Functions.Threshold
+	local ColorPickers = TRB.Functions.OptionsUi.ColorPickers
+	local settingsClassName, settingsSpecName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	local thresholdLabels = config.thresholdLabels or {}
+
+	---@param spell TRB.Classes.SpellThreshold
+	---@return string
+	local function GetThresholdName(spell)
+		return thresholdLabels[spell.settingKey] or spell.name or spell.settingKey
+	end
+
+	-- The Thresholds tab's built-in lines, minus those a color curve colors (they're also the ones without audio cues).
+	---@type TRB.Classes.SpellThreshold[]
+	local thresholdSpells = {}
+	do
+		local compositeKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+		local specCacheEntry = compositeKey ~= nil and TRB.Data.specCache[compositeKey] or nil
+		local specSpells = specCacheEntry ~= nil and specCacheEntry.spellsData ~= nil and specCacheEntry.spellsData.spells or nil
+		local dictionary = spec.thresholds ~= nil and spec.thresholds.thresholdDictionary or nil
+		if specSpells ~= nil and dictionary ~= nil then
+			for _, v in pairs(specSpells) do
+				if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() then
+					local spell = v --[[@as TRB.Classes.SpellThreshold]]
+					if spell.canHaveAudioCue ~= false and dictionary[spell.settingKey] ~= nil then
+						thresholdSpells[#thresholdSpells + 1] = spell
+					end
+				end
+			end
+		end
+		table.sort(thresholdSpells, function(a, b)
+			local aName = GetThresholdName(a):lower()
+			local bName = GetThresholdName(b):lower()
+			if aName == bName then
+				return a.settingKey < b.settingKey
+			end
+			return aName < bName
+		end)
+	end
+
+	---@param settingKey string
+	---@return TRB.Classes.SpellThreshold?
+	local function FindThresholdSpell(settingKey)
+		for _, spell in ipairs(thresholdSpells) do
+			if spell.settingKey == settingKey then
+				return spell
+			end
+		end
+		return nil
+	end
+
+	---The states a line's menu offers, by the Thresholds tab's own rules; a line in Static color mode only has Static.
+	---@param spell TRB.Classes.SpellThreshold
+	---@return string[]
+	local function GetThresholdStates(spell)
+		local dictEntry = spec.thresholds.thresholdDictionary[spell.settingKey]
+		if dictEntry ~= nil and dictEntry.colors ~= nil and dictEntry.colors.colorMode == "static" then
+			return { ThresholdState.STATIC }
+		end
+		local states = { ThresholdState.USABLE, ThresholdState.UNUSABLE }
+		if spell.hasCooldown == true then
+			states[#states + 1] = ThresholdState.ON_COOLDOWN
+		end
+		if spell.rangeCheck ~= false and spec.colors.threshold.outOfRange ~= nil then
+			states[#states + 1] = ThresholdState.OUT_OF_RANGE
+			states[#states + 1] = ThresholdState.IN_RANGE
+		end
+		return states
+	end
+
+	---@param settingKey string
+	---@param state string
+	---@return string
+	local function GetThresholdStateColor(settingKey, state)
+		return Threshold:GetConditionStateColor(settingsClassName, settingsSpecName, settingKey, state) or "FFFFFFFF"
+	end
+
+	---@param condition TRB.CustomIndicatorCondition
+	---@param spell TRB.Classes.SpellThreshold
+	---@param state string
+	local function PointThresholdConditionAt(condition, spell, state)
+		condition.settingKey = spell.settingKey
+		condition.state = state
+		condition.name = GetThresholdName(spell)
+	end
+
+	---Fills a menu with the spec's threshold lines, each opening its states beside swatches of the line's colors.
+	---@param rootDescription table
+	---@param current TRB.CustomIndicatorCondition?
+	---@param onPick fun(spell: TRB.Classes.SpellThreshold, state: string)
+	local function PopulateThresholdPicker(rootDescription, current, onPick)
+		for _, spell in ipairs(thresholdSpells) do
+			local text = GetThresholdName(spell)
+			if spell.texture ~= nil then
+				text = "|T" .. spell.texture .. ":16:16:0:0|t " .. text
+			end
+			local lineButton = rootDescription:CreateButton(text)
+			for _, state in ipairs(GetThresholdStates(spell)) do
+				local r, g, b = TRB.Functions.Color:GetRGBAFromString(GetThresholdStateColor(spell.settingKey, state))
+				local stateText = string.format(stateSwatchMarkup, r, g, b, thresholdStateLabels[state])
+				local radio = lineButton:CreateRadio(stateText, function()
+					return current ~= nil and current.settingKey == spell.settingKey and current.state == state
+				end, function()
+					onPick(spell, state)
+					return MenuResponse.Close
+				end)
+				local note = thresholdStateTooltips[state]
+				if note ~= nil then
+					radio:SetTooltip(function(tooltipFrame)
+						tooltipFrame:SetText(note, 1, 1, 1, 1, true)
+					end)
+				end
+			end
+		end
+		Primitives:LimitMenuRows(rootDescription, #thresholdSpells)
+	end
+
+	---Resolves a threshold row's label and tracked state; on its own spec, an unlearned line is Not Tracked.
+	---@param condition TRB.CustomIndicatorCondition
+	---@return string label
+	---@return boolean notTracked
+	---@return string badgeTooltip
+	---@return string name # The line's name alone
+	local function ResolveThresholdRow(condition)
+		local spell = FindThresholdSpell(condition.settingKey)
+		local name = (spell ~= nil and GetThresholdName(spell)) or condition.name or L["CustomIndicatorUnknownEntry"]
+		local label = string.format(thresholdStateRowFormats[condition.state] or thresholdStateRowFormats[ThresholdState.USABLE], name)
+		if spell == nil then
+			return label, true, L["ThresholdIndicatorMissingTooltip"], name
+		end
+		local character = TRB.Data.character
+		if character ~= nil and character.classId == classId and character.specId == specId
+			and (TRB.Data.cache.thresholdSpellsByKey[spell.settingKey] == nil or (TRB.Flavor.thresholdsRequireKnown and not spell:IsKnown())) then
+			return label, true, L["ThresholdIndicatorNotLearnedTooltip"], name
+		end
+		return label, false, L["ThresholdIndicatorBadgeTooltip"], name
+	end
+
+	---@param indicator table?
+	---@return TRB.CustomIndicatorCondition?
+	local function GetThresholdCondition(indicator)
+		local conditions = indicator ~= nil and indicator.custom ~= nil and indicator.custom.conditions or nil
+		local condition = conditions ~= nil and conditions[1] or nil
+		if condition ~= nil and condition.source == Threshold.CONDITION_SOURCE then
+			return condition
+		end
+		return nil
+	end
+
+	---Turns range checks on when a threshold indicator on the played spec now reads range.
+	local function RefreshRangeChecks()
+		local character = TRB.Data.character
+		if character ~= nil and character.classId == classId and character.specId == specId then
+			TRB.Functions.Character:EnableSpellRangeCheckUpdate()
+		end
+	end
+
 	---Why Add and Edit can't be used right now (nil when they can), and the layout status behind it.
 	---@return string? reason
 	---@return TRB.CdmLayoutStatus? status
@@ -546,7 +741,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 	local function RefreshAddButton()
 		if addButton ~= nil then
-			addButton:SetEnabled(blockReason == nil)
+			addButton:SetEnabled(blockReason == nil or #thresholdSpells > 0)
 		end
 	end
 
@@ -565,9 +760,15 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		if not def or not indicator then return end
 
 		local isCustom = def.custom == true
+		local thresholdCondition = isCustom and GetThresholdCondition(indicator) or nil
 		local notTracked = false
 		local badgeTooltip = nil
-		if isCustom then
+		local readOnlyTooltip = nil
+		if thresholdCondition ~= nil then
+			local name
+			def.colorLabel, notTracked, badgeTooltip, name = ResolveThresholdRow(thresholdCondition)
+			readOnlyTooltip = string.format(L["ThresholdIndicatorColorTooltip"], thresholdStateColorNames[thresholdCondition.state] or "", name)
+		elseif isCustom then
 			def.colorLabel, notTracked, badgeTooltip = ResolveCustomRow(key)
 		end
 
@@ -597,6 +798,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				Primitives:AttachCustomBadgeToText(row.colorPicker.Font, isCustom, notTracked, badgeTooltip or "")
 			end
 			Primitives:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
+			ColorPickers:SetGradientColorPickerReadOnly(row.colorPicker, readOnlyTooltip)
 			-- Colors and targets stay editable for when the entry is tracked again; only the name says it isn't.
 			if notTracked and row.colorPicker.Font then
 				row.colorPicker.Font:SetFontObject(GameFontDisable)
@@ -608,7 +810,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		end
 		row.removeBtn:SetShown(isCustom)
 		row.editBtn:SetShown(isCustom)
-		row.editBtn:SetEnabled(blockReason == nil)
+		-- Threshold lines are the spec's own data, so they can be re-picked on any spec.
+		row.editBtn:SetEnabled(thresholdCondition ~= nil or blockReason == nil)
 		-- Arrow enabled state
 		if row.upBtn then row.upBtn:SetEnabled(rowIndex > 1) end
 		if row.downBtn then row.downBtn:SetEnabled(rowIndex < #orderedKeys) end
@@ -616,6 +819,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 	local function RefreshAllRows()
 		UpdatePickerBlock()
+		Threshold:SyncIndicatorColors(settingsClassName, settingsSpecName)
 		for rowIndex = 1, #orderedKeys do
 			RefreshRow(rowIndex, true)
 		end
@@ -676,6 +880,18 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			local conditions = currentIndicator and currentIndicator.custom and currentIndicator.custom.conditions
 			local condition = conditions and conditions[1]
 			if condition == nil then return end
+			if condition.source == Threshold.CONDITION_SOURCE then
+				MenuUtil.CreateContextMenu(self, function(_, rootDescription)
+					PopulateThresholdPicker(rootDescription, condition, function(spell, state)
+						PointThresholdConditionAt(condition, spell, state)
+						Threshold:SyncIndicatorColors(settingsClassName, settingsSpecName)
+						RefreshRow(capturedRowIdx)
+						RefreshRangeChecks()
+						RefreshRuntime()
+					end)
+				end)
+				return
+			end
 			-- The Cooldown Manager or spec can change under an open panel; say why instead of doing nothing.
 			if GetPickerBlock() ~= nil then
 				RefreshAllRows()
@@ -693,7 +909,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			if not self:IsEnabled() and GetPickerBlock() == nil then
 				RefreshAllRows()
 			end
-			ShowRowButtonTooltip(self, L["CustomIndicatorEditTooltip"])
+			local isThreshold = GetThresholdCondition(indicatorColors[orderedKeys[capturedRowIdx]]) ~= nil
+			ShowRowButtonTooltip(self, isThreshold and L["ThresholdIndicatorEditTooltip"] or L["CustomIndicatorEditTooltip"])
 		end)
 		row.editBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
@@ -820,6 +1037,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		-- Color picker
 		local cp = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, "", indicatorColors[orderedKeys[rowIndex]], oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, 0, L["GradientBarFillOnlyTooltip"])
 		cp.Swatch1:SetScript("OnMouseDown", function(self, button)
+			if cp.readOnlyTooltip ~= nil then return end
 			local currentKey = orderedKeys[capturedRowIdx]
 			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicatorColors, { [currentKey] = rows[capturedRowIdx].colorPicker }, currentKey)
 		end)
@@ -886,14 +1104,10 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return "custom_" .. n
 	end
 
-	---Adds a custom indicator for an entry at the lowest priority, white and untargeted, and grows the
-	---list by one row.
-	---@param entry TRB.CdmLayoutEntry
-	local function AddCustomIndicator(entry)
+	---Adds a custom indicator at the lowest priority, white and untargeted, and grows the list by one row.
+	---@param condition TRB.CustomIndicatorCondition
+	local function AddIndicatorRow(condition)
 		local key = NextCustomKey()
-		---@type TRB.CustomIndicatorCondition
-		local condition = { source = cdm.CONDITION_SOURCE, state = cdm.ConditionState.ACTIVE, cooldownID = entry.cooldownID }
-		cdm:PointConditionAt(condition, entry, true)
 		indicatorColors[key] = {
 			color = "FFFFFFFF",
 			color2 = "FFFFFFFF",
@@ -917,12 +1131,50 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			SetRowShown(rows[rowIndex], true)
 		end
 		UpdatePickerBlock()
+		-- A threshold row starts in its line's color rather than white.
+		Threshold:SyncIndicatorColors(settingsClassName, settingsSpecName)
 		RefreshRow(rowIndex, true)
 		if rowIndex > 1 then
 			RefreshRow(rowIndex - 1, true)
 		end
 		RefreshAddButton()
 		RefreshRuntime()
+	end
+
+	---@param entry TRB.CdmLayoutEntry
+	local function AddCustomIndicator(entry)
+		---@type TRB.CustomIndicatorCondition
+		local condition = { source = cdm.CONDITION_SOURCE, state = cdm.ConditionState.ACTIVE, cooldownID = entry.cooldownID }
+		cdm:PointConditionAt(condition, entry, true)
+		AddIndicatorRow(condition)
+	end
+
+	---@param spell TRB.Classes.SpellThreshold
+	---@param state string
+	local function AddThresholdIndicator(spell, state)
+		local condition = { source = Threshold.CONDITION_SOURCE }
+		PointThresholdConditionAt(condition, spell, state)
+		AddIndicatorRow(condition)
+		RefreshRangeChecks()
+	end
+
+	---Opens the Add menu: Cooldown Manager buffs, or a threshold line's state.
+	---@param owner Frame
+	local function OpenAddMenu(owner)
+		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
+			local cdmLabel = CreateColor(Primitives:GetCdmBadgeColor()):WrapTextInColorCode(string.format("(%s)", L["CdmBadgeLabel"]))
+			local buffsButton = rootDescription:CreateButton(string.format(L["CustomIndicatorSourceBuffsFormat"], cdmLabel))
+			local reason = GetPickerBlock()
+			if reason ~= nil then
+				buffsButton:SetEnabled(false)
+				buffsButton:SetTooltip(function(tooltipFrame)
+					tooltipFrame:SetText(reason, 1, 1, 1, 1, true)
+				end)
+			else
+				Primitives:PopulateCdmPicker(buffsButton, nil, pickerWording, AddCustomIndicator)
+			end
+			PopulateThresholdPicker(rootDescription:CreateButton(L["CustomIndicatorSourceThresholds"]), nil, AddThresholdIndicator)
+		end)
 	end
 
 	---Deletes a custom indicator and shrinks the list by one row.
@@ -972,7 +1224,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	addButton:SetDisabledFontObject(GameFontDisable)
 	addButton:SetMotionScriptsWhileDisabled(true)
 	addButton:SetScript("OnEnter", function(self)
-		local reason = GetPickerBlock()
+		-- With threshold lines to offer, the Add menu explains a Cooldown Manager block itself.
+		local reason = #thresholdSpells == 0 and GetPickerBlock() or nil
 		if reason ~= nil then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 			GameTooltip:SetText(reason, 1, 1, 1, 1, true)
@@ -982,6 +1235,10 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		end
 	end)
 	addButton:SetScript("OnClick", function(self)
+		if #thresholdSpells > 0 then
+			OpenAddMenu(self)
+			return
+		end
 		if GetPickerBlock() ~= nil then
 			RefreshAllRows()
 			self:GetScript("OnEnter")(self)

@@ -894,6 +894,14 @@ local function ElementalConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 7, 1, yCoord)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local elementalThresholdLabels = {
+	earthShock = L["ShamanElementalThresholdCheckboxEarthShock"],
+	elementalBlast = L["ShamanElementalThresholdElementalBlast"],
+	earthquake = L["ShamanElementalThresholdEarthquake"],
+	earthquakeTargeted = L["ShamanElementalThresholdEarthquakeTargeted"],
+}
+
 local function ElementalConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -951,6 +959,7 @@ local function ElementalConstructIndicatorColorsPanel(parent)
 			primaryResourceString = L["ResourceMaelstrom"],
 			primaryResourceMax = ELEMENTAL_MAX_MAELSTROM,
 		},
+		thresholdLabels = elementalThresholdLabels,
 	})
 
 	yCoord = yCoord - 40
@@ -1001,12 +1010,7 @@ local function ElementalConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceMaelstrom"],
 		},
-		labels = {
-			earthShock = L["ShamanElementalThresholdCheckboxEarthShock"],
-			elementalBlast = L["ShamanElementalThresholdElementalBlast"],
-			earthquake = L["ShamanElementalThresholdEarthquake"],
-			earthquakeTargeted = L["ShamanElementalThresholdEarthquakeTargeted"],
-		},
+		labels = elementalThresholdLabels,
 		tooltips = {
 			earthShock = L["ShamanElementalThresholdCheckboxEarthShockTooltip"],
 			elementalBlast = L["ShamanElementalThresholdElementalBlastTooltip"],

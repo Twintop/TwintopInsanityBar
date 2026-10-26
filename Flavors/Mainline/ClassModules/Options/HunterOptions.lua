@@ -846,6 +846,19 @@ local function BeastMasteryConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 3, 1, yCoord)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local beastMasteryThresholdLabels = {
+	revivePet = L["HunterThresholdCheckboxRevivePet"],
+	wingClip = L["HunterThresholdCheckboxWingClip"],
+	scareBeast = L["HunterThresholdCheckboxScareBeast"],
+	killCommand = L["HunterBeastMasteryThresholdCheckboxKillCommand"],
+	cobraShot = L["HunterBeastMasteryThresholdCheckboxCobraShot"],
+	blackArrow = L["HunterBeastMasteryThresholdCheckboxBlackArrow"],
+	wildThrash = L["HunterBeastMasteryThresholdCheckboxWildThrash"],
+	wailingArrow = L["HunterBeastMasteryThresholdCheckboxWailingArrow"],
+	direBeastHawk = L["HunterBeastMasteryThresholdCheckboxDireBeastHawk"],
+}
+
 local function BeastMasteryConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -886,6 +899,7 @@ local function BeastMasteryConstructIndicatorColorsPanel(parent)
 			primaryResourceString = L["ResourceFocus"],
 			primaryResourceMax = BEAST_MASTERY_MAX_FOCUS,
 		},
+		thresholdLabels = beastMasteryThresholdLabels,
 	})
 
 	yCoord = yCoord - 40
@@ -936,17 +950,7 @@ local function BeastMasteryConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceFocus"],
 		},
-		labels = {
-			revivePet = L["HunterThresholdCheckboxRevivePet"],
-			wingClip = L["HunterThresholdCheckboxWingClip"],
-			scareBeast = L["HunterThresholdCheckboxScareBeast"],
-			killCommand = L["HunterBeastMasteryThresholdCheckboxKillCommand"],
-			cobraShot = L["HunterBeastMasteryThresholdCheckboxCobraShot"],
-			blackArrow = L["HunterBeastMasteryThresholdCheckboxBlackArrow"],
-			wildThrash = L["HunterBeastMasteryThresholdCheckboxWildThrash"],
-			wailingArrow = L["HunterBeastMasteryThresholdCheckboxWailingArrow"],
-			direBeastHawk = L["HunterBeastMasteryThresholdCheckboxDireBeastHawk"],
-		},
+		labels = beastMasteryThresholdLabels,
 		tooltips = {
 			blackArrow = L["HunterBeastMasteryThresholdCheckboxBlackArrowTooltip"],
 			cobraShot = L["HunterBeastMasteryThresholdCheckboxCobraShotTooltip"],
@@ -1250,6 +1254,20 @@ local function MarksmanshipConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 3, 2, yCoord)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local marksmanshipThresholdLabels = {
+	arcaneShot = L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShot"],
+	revivePet = L["HunterThresholdCheckboxRevivePet"],
+	wingClip = L["HunterThresholdCheckboxWingClip"],
+	scareBeast = L["HunterThresholdCheckboxScareBeast"],
+	killShot = L["HunterMarksmanshipThresholdCheckboxKillShot"],
+	aimedShot = L["HunterMarksmanshipThresholdCheckboxAimedShot"],
+	multiShot = L["HunterMarksmanshipThresholdCheckboxMultiShot"],
+	blackArrow = L["HunterMarksmanshipThresholdCheckboxBlackArrow"],
+	wailingArrow = L["HunterMarksmanshipThresholdCheckboxWailingArrow"],
+	explosiveShot = L["HunterMarksmanshipThresholdCheckboxExplosiveShot"],
+}
+
 local function MarksmanshipConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -1289,6 +1307,7 @@ local function MarksmanshipConstructIndicatorColorsPanel(parent)
 			primaryResourceString = L["ResourceFocus"],
 			primaryResourceMax = MARKSMANSHIP_MAX_FOCUS,
 		},
+		thresholdLabels = marksmanshipThresholdLabels,
 	})
 
 	yCoord = yCoord - 40
@@ -1336,18 +1355,7 @@ local function MarksmanshipConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 3, 2, yCoord, {
-		labels = {
-			arcaneShot = L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShot"],
-			revivePet = L["HunterThresholdCheckboxRevivePet"],
-			wingClip = L["HunterThresholdCheckboxWingClip"],
-			scareBeast = L["HunterThresholdCheckboxScareBeast"],
-			killShot = L["HunterMarksmanshipThresholdCheckboxKillShot"],
-			aimedShot = L["HunterMarksmanshipThresholdCheckboxAimedShot"],
-			multiShot = L["HunterMarksmanshipThresholdCheckboxMultiShot"],
-			blackArrow = L["HunterMarksmanshipThresholdCheckboxBlackArrow"],
-			wailingArrow = L["HunterMarksmanshipThresholdCheckboxWailingArrow"],
-			explosiveShot = L["HunterMarksmanshipThresholdCheckboxExplosiveShot"],
-		},
+		labels = marksmanshipThresholdLabels,
 		barTargetLabels = {
 			primary = L["ResourceFocus"],
 		},
@@ -1741,6 +1749,16 @@ local function SurvivalConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 3, 3, yCoord)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local survivalThresholdLabels = {
+	revivePet = L["HunterThresholdCheckboxRevivePet"],
+	wingClip = L["HunterThresholdCheckboxWingClip"],
+	scareBeast = L["HunterThresholdCheckboxScareBeast"],
+	boomstick = L["HunterSurvivalThresholdCheckboxBoomstick"],
+	hatchetToss = L["HunterSurvivalThresholdCheckboxHatchetToss"],
+	raptorStrike = L["HunterSurvivalThresholdCheckboxRaptorStrike"],
+}
+
 local function SurvivalConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -1781,6 +1799,7 @@ local function SurvivalConstructIndicatorColorsPanel(parent)
 			primaryResourceString = L["ResourceFocus"],
 			primaryResourceMax = SURVIVAL_MAX_FOCUS,
 		},
+		thresholdLabels = survivalThresholdLabels,
 	})
 
 	yCoord = yCoord - 40
@@ -1831,14 +1850,7 @@ local function SurvivalConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceFocus"],
 		},
-		labels = {
-			revivePet = L["HunterThresholdCheckboxRevivePet"],
-			wingClip = L["HunterThresholdCheckboxWingClip"],
-			scareBeast = L["HunterThresholdCheckboxScareBeast"],
-			boomstick = L["HunterSurvivalThresholdCheckboxBoomstick"],
-			hatchetToss = L["HunterSurvivalThresholdCheckboxHatchetToss"],
-			raptorStrike = L["HunterSurvivalThresholdCheckboxRaptorStrike"],
-		},
+		labels = survivalThresholdLabels,
 		tooltips = {
 			boomstick = L["HunterSurvivalThresholdCheckboxBoomstickTooltip"],
 			hatchetToss = L["HunterSurvivalThresholdCheckboxHatchetTossTooltip"],

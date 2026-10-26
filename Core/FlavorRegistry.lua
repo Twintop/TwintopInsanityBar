@@ -98,6 +98,9 @@ end
 if TRB.Flavor.swingTimers == nil then
 	TRB.Flavor.swingTimers = false
 end
+if TRB.Flavor.thresholdsRequireKnown == nil then
+	TRB.Flavor.thresholdsRequireKnown = false
+end
 
 -- Placeholder rank resolution: a flavor with ranked spells (Forever, and any Classic lineage later) replaces it.
 if TRB.Flavor.ResolveSpellRankId == nil then

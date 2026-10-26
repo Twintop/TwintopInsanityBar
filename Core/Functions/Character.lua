@@ -828,8 +828,10 @@ spellRangeCheckUpdateFrame:SetScript("OnEvent", SpellRangeCheckUpdateEvent)
 ---Enables all spells that need to have range checks performed
 function TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
-	
-	if specCache ~= nil and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(specCache.settings) then
+	local registryEntry = self:GetSpecRegistryEntry(TRB.Data.barConstructedForSpec or "")
+
+	if specCache ~= nil and (TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(specCache.settings)
+		or (registryEntry ~= nil and TRB.Functions.Threshold:UsesRangeConditions(registryEntry.className, registryEntry.specName))) then
 		for _, v in pairs(specCache.spellsData.spells) do
 			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
 				C_Spell.EnableSpellRangeCheck(v:GetRankedId(), true)
@@ -1917,6 +1919,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 
 	-- Multi-node bar orders are sanitized as settings compose, so the per-tick GetOrderedNodeKeys reads need no checks.
 	TRB.Functions.Settings:SanitizeNodeOrders(spec)
+	TRB.Functions.Threshold:SyncIndicatorColors(className, specName)
 
 	-- Castbar enablement + Blizzard cast bar suppression follow the display spec's recomposed
 	-- settings, which only become valid/refreshed here (initial login fill lands after PLAYER_ENTERING_WORLD).
@@ -2119,21 +2122,25 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 	-- in missing thresholds from the list. Sometimes. I don't know why, but it does, so we're doing it manually.
 	---@type TRB.Classes.SpellThreshold[]
 	local thresholdSpells = {}
+	---@type table<string, TRB.Classes.SpellThreshold>
+	local thresholdSpellsByKey = {}
 	local thresholdId = 0
 	for _, v in pairs(spells) do
 		local spell = v --[[@as TRB.Classes.SpellBase]]
 		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) then
 			spell = spell --[[@as TRB.Classes.SpellThreshold]]
 			if spell:IsValid() then
-				if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected	
+				if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 				else
 					thresholdId = thresholdId + 1
 					thresholdSpells[thresholdId] = spell
+					thresholdSpellsByKey[spell.settingKey] = spell
 				end
 			end
 		end
 	end
 	TRB.Data.cache.thresholdSpells = thresholdSpells
+	TRB.Data.cache.thresholdSpellsByKey = thresholdSpellsByKey
 	TRB.Functions.Threshold:RefreshThresholdAudio()
 	TRB.Functions.Threshold:RefreshThresholdIconPriorities()
 end

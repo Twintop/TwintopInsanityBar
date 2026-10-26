@@ -145,6 +145,8 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public Font TRB.Classes.OptionsUi.BadgedText
 ---@field public Texture Texture # Swatch1's fill, for callers that treat both picker kinds alike
 ---@field public UpdateSwatch2State fun() # Dims the second swatch while the gradient is disabled
+---@field public readOnlyTooltip string? # Set while ColorPickers:SetGradientColorPickerReadOnly locks it: where its color comes from
+---@field public readOnlyHooked boolean? # The first swatch's read-only tooltip hooks are installed
 
 ---@class TRB.Classes.OptionsUi.Color
 ---@field public name string
@@ -209,6 +211,7 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public endOfConfigs TRB.Classes.OptionsUi.EndOfConfig[]? List of EndOf configuration entries
 ---@field public stacksConfigs TRB.Classes.OptionsUi.StacksConfig[]? List of minimum-stacks configuration entries
 ---@field public overcapConfig TRB.Classes.OptionsUi.OvercapConfig? Overcap configuration
+---@field public thresholdLabels table<string, string>? The Thresholds tab's names by settingKey, for the Threshold Line menu; unnamed lines use the spell's name
 TRB.Classes.OptionsUi.IndicatorColorsPanelConfig = {}
 TRB.Classes.OptionsUi.IndicatorColorsPanelConfig.__index = TRB.Classes.OptionsUi.IndicatorColorsPanelConfig
 
@@ -226,5 +229,6 @@ function TRB.Classes.OptionsUi.IndicatorColorsPanelConfig:New(data)
 	obj.endOfConfigs = data.endOfConfigs
 	obj.stacksConfigs = data.stacksConfigs
 	obj.overcapConfig = data.overcapConfig
+	obj.thresholdLabels = data.thresholdLabels
 	return obj
 end

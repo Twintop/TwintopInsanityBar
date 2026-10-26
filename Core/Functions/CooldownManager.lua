@@ -840,9 +840,10 @@ end
 
 ---A custom Color Indicator's or Buff Alert's condition: which source it reads and what must hold.
 ---@class TRB.CustomIndicatorCondition
----@field source string # CDM.CONDITION_SOURCE
----@field cooldownID integer
----@field state string # A CDM.ConditionState value
+---@field source string # CDM.CONDITION_SOURCE, or Threshold.CONDITION_SOURCE for a threshold line's state
+---@field cooldownID integer # CDM conditions only; threshold conditions leave it unset
+---@field settingKey string? # Threshold conditions only: the line's `thresholdDictionary` key
+---@field state string # A CDM.ConditionState or Threshold.ConditionState value
 ---@field name string? # Display name, cached for panels shown while on another spec
 ---@field spellID integer? # The entry's spell, cached so a renumbered entry can be found again
 

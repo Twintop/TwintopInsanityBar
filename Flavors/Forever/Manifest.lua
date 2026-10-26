@@ -32,6 +32,8 @@ TRB.Flavor = {
 	},
 	-- Blizzard_SwingTimer's PLAYER_SWING event; no other client has it.
 	swingTimers = true,
+	-- Ranked spells are learned one at a time, so a threshold's spell may not be known yet.
+	thresholdsRequireKnown = true,
 
 	---True when the running client is WoW Forever: the mainline project with a 1.x interface number
 	---(the same rule AceDB uses). An unreadable project ID or interface number is not evidence of a mismatch.

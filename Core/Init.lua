@@ -224,6 +224,8 @@ TRB.Data.cache.values = {
 }
 ---@type TRB.Classes.SpellThreshold[]
 TRB.Data.cache.thresholdSpells = {}
+---@type table<string, TRB.Classes.SpellThreshold>
+TRB.Data.cache.thresholdSpellsByKey = {}
 TRB.Data.specCache = {}
 
 TRB.Data.character = {

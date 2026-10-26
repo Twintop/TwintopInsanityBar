@@ -1136,6 +1136,8 @@ function TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, condit
 	end
 
 	local cdm = TRB.Functions.CooldownManager
+	local threshold = TRB.Functions.Threshold
+	local thresholdSource = threshold.CONDITION_SOURCE
 	for i = 1, #nodeOrder do
 		local key = nodeOrder[i]
 		local indicator = indicatorColors[key]
@@ -1143,7 +1145,14 @@ function TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, condit
 		if conditions ~= nil then
 			local met = #conditions > 0
 			for c = 1, #conditions do
-				if not cdm:IsConditionMet(conditions[c]) then
+				local condition = conditions[c]
+				local conditionMet
+				if condition.source == thresholdSource then
+					conditionMet = threshold:IsConditionMet(condition)
+				else
+					conditionMet = cdm:IsConditionMet(condition)
+				end
+				if not conditionMet then
 					met = false
 					break
 				end

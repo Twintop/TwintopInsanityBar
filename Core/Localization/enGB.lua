@@ -544,4 +544,7 @@ if locale == "enGB" then
 	L["TextureLockGlobalTooltip"] = "The %s row uses Global settings, so this specialisation uses the locks set in Global Options. Uncheck Use Global settings for that row to set its own."
 	L["MonkWindwalkerIndicatorHitComboTooltip"] = "Changes to this colour when Hit Combo is active at or above the number of stacks selected below."
 	L["ThresholdIconExtendLineTooltip"] = "When checked, each threshold line extends from the bar to its icon, in the line's colour."
+	L["ThresholdIndicatorInRangeTooltip"] = "Uses the Usable colour. Always on out of combat, as on the threshold line."
+	L["ThresholdIndicatorStaticTooltip"] = "On whenever you know this ability, in its threshold line's static colour."
+	L["ThresholdIndicatorColorTooltip"] = "This colour follows the %s colour of the %s threshold line. Change it on the Thresholds tab."
 end
