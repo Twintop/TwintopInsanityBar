@@ -528,7 +528,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         isTalent = true
     })
     self.rollTheBones = TRB.Classes.SpellThreshold:New({
-        id = 315508,
+        id = 1214909,
         primaryResourceType = Enum.PowerType.Energy,
         settingKey = "rollTheBones",
         hasCooldown = true,

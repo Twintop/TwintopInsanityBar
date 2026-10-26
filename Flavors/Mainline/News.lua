@@ -30,6 +30,7 @@ TRB.Flavor.newsContent = [====[
 ### Outlaw
 
 - [#279](#279) Fix the Restless Blades threshold line color not showing.
+- [#279](#279) Fix the Roll the Bones threshold line and `#rollTheBones` icon using an old version of the ability.
 
 ## Warrior
 
