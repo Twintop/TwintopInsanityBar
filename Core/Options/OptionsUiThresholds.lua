@@ -259,6 +259,17 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		TRB.Functions.Threshold:RedrawThresholdLines()
 	end)
 
+	controls.checkBoxes.thresholdIconExtendLine = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdIconExtendLine", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdIconExtendLine
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdIconExtendLine"])
+	f.tooltip = L["ThresholdIconExtendLineTooltip"]
+	f:SetChecked(spec.thresholds.icons.extendLineToIcon)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.icons.extendLineToIcon = self:GetChecked()
+		TRB.Functions.Threshold:RedrawThresholdLines()
+	end)
+
 	local function RedrawIfLive()
 		if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or
 			(classId == nil and specId == nil) then
@@ -270,6 +281,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		local staggering = spec.thresholds.icons.overlapMode == "stagger"
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapSpacing, staggering)
 		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapMaxRows, staggering)
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapAllowance, spec.thresholds.icons.overlapMode ~= "off")
 	end
 
 	yCoord = yCoord - 20
@@ -301,6 +313,14 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	controls.thresholdIconOverlapMaxRows:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
 		spec.thresholds.icons.overlapMaxRows = value
+		RedrawIfLive()
+	end)
+
+	controls.thresholdIconOverlapAllowance = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["ThresholdIconOverlapAllowance"], 0, 90, spec.thresholds.icons.overlapAllowance, 1, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.thresholdIconOverlapAllowance:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi.Primitives:EditBoxSetTextMinMax(self, value)
+		spec.thresholds.icons.overlapAllowance = value
 		RedrawIfLive()
 	end)
 

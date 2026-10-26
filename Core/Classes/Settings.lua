@@ -152,6 +152,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public overlapMode string # "off", "stagger", or "topOnly"
 ---@field public overlapSpacing number
 ---@field public overlapMaxRows integer
+---@field public overlapAllowance number # Percent of an icon's size other icons may cover before it moves
+---@field public extendLineToIcon boolean
 
 ---@class TRB.Classes.Settings.Precision
 ---@field public health integer

@@ -2901,7 +2901,9 @@ function TRB.Functions.Settings:DefaultThresholdIconSettings()
 		height = 24,
 		overlapMode = "off",
 		overlapSpacing = 2,
-		overlapMaxRows = 3
+		overlapMaxRows = 3,
+		overlapAllowance = 0,
+		extendLineToIcon = false
 	}
 end
 

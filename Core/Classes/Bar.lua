@@ -41,6 +41,9 @@ local barNodeCounter = 0
 
 ---@class TRB.Classes.ThresholdFrame.LineTexture : Texture
 ---@field public trbAlpha number? # Alpha last written, so repeat writes are skipped
+---@field public trbExtendLow number? # Extension toward the icon last anchored; nil forces the next write
+---@field public trbExtendHigh number?
+---@field public trbExtendVertical boolean?
 
 ---A threshold line registered on a node. Functions/Threshold.lua's Reset functions create its pieces.
 ---@class TRB.Classes.ThresholdFrame : Frame
