@@ -48,7 +48,8 @@ foreach ($f in $flavors) {
 		$real = ($output -split "`n" | Where-Object { $_ -match "^(ERROR|SYNTAX|EVENT ERROR|SNAPSHOT ERROR)" }).Count
 		$timers = ($output -split "`n" | Where-Object { $_ -match "^TIMER ERROR" }).Count
 		$loaded = ($output -split "`n" | Where-Object { $_ -match "^Loaded " }) -join ""
-		if ($real -gt 0 -or $LASTEXITCODE -ne 0 -and $real -gt 0) {
+		# No "Loaded" line means the harness never ran the TOC, which must not pass as clean.
+		if ($real -gt 0 -or $loaded -eq "") {
 			$failed = $true
 			Write-Host ("FAIL  {0,-9} class {1,2}: {2}" -f $f.Name, $classId, $loaded)
 			Write-Host ($output -split "`n" | Where-Object { $_ -match "^(ERROR|SYNTAX|EVENT ERROR)" -or $_ -match "^\s+" } | Select-Object -First 12 | Out-String)

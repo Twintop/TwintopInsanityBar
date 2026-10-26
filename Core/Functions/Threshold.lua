@@ -610,10 +610,10 @@ end
 ---@param threshold TRB.Classes.ThresholdFrame
 local function ReleaseIconLayout(threshold)
 	local entry = threshold.trbIconLayout
-	local layout = entry and entry.layout
-	if layout == nil then
+	if entry == nil or entry.layout == nil then
 		return
 	end
+	local layout = entry.layout
 
 	local entries = layout.entries
 	for i = #entries, 1, -1 do
@@ -770,11 +770,11 @@ function TRB.Functions.Threshold:RefreshThresholdIconPriorities()
 		-- An unfilled spec cache has no thresholds yet.
 		local dictionary = settings ~= nil and settings.thresholds ~= nil and settings.thresholds.thresholdDictionary or nil
 		if dictionary ~= nil then
-			-- Keyed by bar target, as UpdateSpellThresholds indexes lines per bar; false stands in for a nil target.
+			-- Keyed by bar target, as UpdateSpellThresholds indexes lines per bar.
 			local lineCounts = {}
 			local highCounts = {}
 			for _, spell in ipairs(spells) do
-				local target = spell.barTarget or false
+				local target = spell.barTarget
 				lineCounts[target] = (lineCounts[target] or 0) + 1
 				local dictEntry = dictionary[spell.settingKey]
 				if GetIconPriorityTier(dictEntry and dictEntry.icon) == iconPriorityTiers.high then
@@ -787,7 +787,7 @@ function TRB.Functions.Threshold:RefreshThresholdIconPriorities()
 			local highSeen = {}
 			local lowSeen = {}
 			for _, spell in ipairs(spells) do
-				local target = spell.barTarget or false
+				local target = spell.barTarget
 				local index = (indexes[target] or 0) + 1
 				indexes[target] = index
 				local dictEntry = dictionary[spell.settingKey]
