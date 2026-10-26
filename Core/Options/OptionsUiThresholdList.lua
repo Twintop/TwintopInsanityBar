@@ -549,25 +549,6 @@ function TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout(confi
 		iconHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
 		y = y - 30
 
-		if showIconLayoutControls then
-			local priorityDropdown = iconLayoutControls.priorityDropdown
-			priorityDropdown.label:Show()
-			priorityDropdown:Show()
-			iconLayoutControls.neverHideCheckbox:Show()
-			iconLayoutControls.excludeCheckbox:Show()
-
-			priorityDropdown.label:ClearAllPoints()
-			priorityDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y)
-			priorityDropdown:ClearAllPoints()
-			priorityDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 30)
-
-			iconLayoutControls.neverHideCheckbox:ClearAllPoints()
-			iconLayoutControls.neverHideCheckbox:SetPoint("TOPLEFT", oUi.xCoord2, y - 30)
-			iconLayoutControls.excludeCheckbox:ClearAllPoints()
-			iconLayoutControls.excludeCheckbox:SetPoint("TOPLEFT", oUi.xCoord2, y - 50)
-			y = y - 80
-		end
-
 		iconUseSpecificCheckbox:ClearAllPoints()
 		iconUseSpecificCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
 		y = y - 30
@@ -600,6 +581,25 @@ function TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout(confi
 			iconBorderSlider:ClearAllPoints()
 			iconBorderSlider:SetPoint("TOPLEFT", oUi.xCoord + 18, y)
 			y = y - 50
+		end
+
+		if showIconLayoutControls then
+			local priorityDropdown = iconLayoutControls.priorityDropdown
+			priorityDropdown.label:Show()
+			priorityDropdown:Show()
+			iconLayoutControls.neverHideCheckbox:Show()
+			iconLayoutControls.excludeCheckbox:Show()
+
+			priorityDropdown.label:ClearAllPoints()
+			priorityDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y)
+			priorityDropdown:ClearAllPoints()
+			priorityDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 30)
+
+			iconLayoutControls.neverHideCheckbox:ClearAllPoints()
+			iconLayoutControls.neverHideCheckbox:SetPoint("TOPLEFT", oUi.xCoord2, y - 30)
+			iconLayoutControls.excludeCheckbox:ClearAllPoints()
+			iconLayoutControls.excludeCheckbox:SetPoint("TOPLEFT", oUi.xCoord2, y - 50)
+			y = y - 80
 		end
 	end
 
