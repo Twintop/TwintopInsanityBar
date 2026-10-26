@@ -415,7 +415,7 @@ local function TrackIconLayout(threshold, parentFrame, key, drawn)
 		cache.layoutEntry = entry
 		MarkIconLayoutDirty(layout)
 	end
-	drawn = drawn and cache.iconWanted == true and cache.linePos ~= nil
+	drawn = drawn and cache.iconWanted == true and cache.linePos ~= nil and not cache.curveMayHide
 	if cache.layoutDrawn ~= drawn then
 		cache.layoutDrawn = drawn
 		MarkIconLayoutDirty(layout)
@@ -565,6 +565,54 @@ local function ApplyIconLayoutResult(entry, shiftX, shiftY, hidden)
 	end
 end
 
+---Raises a laid-out icon above every line at its rank's level, or hands its level back to the state-bucket writers.
+---@param entry table
+---@param level integer?
+local function ApplyIconLayoutLevel(entry, level)
+	local cache = entry.cache
+	if cache.iconLayoutLevel == level then
+		return
+	end
+
+	cache.iconLayoutLevel = level
+	if level == nil then
+		-- AdjustThresholdDisplay rewrites the bucket levels on its next pass.
+		cache.frameLevel = nil
+	else
+		local icon = entry.frame.icon
+		SetLevelIfChanged(icon, level)
+		SetLevelIfChanged(icon.cooldown, level + 1)
+	end
+end
+
+---Takes a line's icon out of its overlap layout when the line's own settings turn the layout off, undoing its shift, hide, and level.
+---@param threshold TRB.Classes.ThresholdFrame
+local function ReleaseIconLayout(threshold)
+	local entry = threshold.trbIconLayout
+	local layout = entry and entry.layout
+	if layout == nil then
+		return
+	end
+
+	local entries = layout.entries
+	for i = #entries, 1, -1 do
+		if entries[i] == entry then
+			table.remove(entries, i)
+		end
+	end
+	entry.layout = nil
+	MarkIconLayoutDirty(layout)
+
+	local cache = GetThresholdCache(entry.key)
+	if cache.layoutEntry == entry then
+		cache.layoutEntry = nil
+		cache.layoutDrawn = nil
+		entry.cache = cache
+		ApplyIconLayoutResult(entry, 0, 0, false)
+		ApplyIconLayoutLevel(entry, nil)
+	end
+end
+
 ---Places one parent's icons in rank order, each on the nearest row away from the bar that clears every icon placed before it.
 ---@param layout table
 ---@param iconSettings TRB.Classes.Settings.ThresholdIcons
@@ -611,6 +659,7 @@ local function SolveIconLayout(layout, iconSettings)
 			count = count + 1
 		else
 			ApplyIconLayoutResult(entry, 0, 0, false)
+			ApplyIconLayoutLevel(entry, nil)
 		end
 	end
 
@@ -642,6 +691,7 @@ local function SolveIconLayout(layout, iconSettings)
 		else
 			ApplyIconLayoutResult(entry, 0, 0, true)
 		end
+		ApplyIconLayoutLevel(entry, TRB.Data.constants.frameLevels.thresholdIconLayout - (i - 1) * 2)
 	end
 
 	for i = 1, count do
@@ -659,7 +709,9 @@ local function FlushIconLayouts(settings)
 
 	local iconSettings = settings.thresholds.icons
 	for i = dirtyCount, 1, -1 do
-		SolveIconLayout(dirtyIconLayouts[i], iconSettings)
+		local layout = dirtyIconLayouts[i]
+		-- A Druid form draws spell lines with its form spec's settings and custom lines with the active spec's.
+		SolveIconLayout(layout, layout.iconSettings or iconSettings)
 		dirtyIconLayouts[i] = nil
 	end
 end
@@ -916,6 +968,7 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		Line = X-2, icon = X-1, cooldown = X.
 		Example: the 4th line, under cost, with a cooldown: X = 2000 - 9 = 1991, so line 1989, icon 1990, cooldown 1991.
 		A new line starts at thresholdBase: line 998, icon 999, cooldown 1000.
+		While an overlap layout is active, its icons sit at thresholdIconLayout (3000) minus 2 per rank, cooldown +1, above every line.
 	]]
 	local borderSubtraction = 0
 
@@ -2897,6 +2950,8 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 				)
 				if layoutActive then
 					TrackIconLayout(threshold, targetInfo.parentFrame, frameKey, showThreshold)
+				elseif threshold.trbIconLayout ~= nil then
+					ReleaseIconLayout(threshold)
 				end
 				customThreshold.value = configuredValue
 			end
@@ -3072,11 +3127,19 @@ function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thre
 		outOfRange = false
 	end
 
-	-- Apply frame levels
+	-- Apply frame levels, dropping a spell without a cooldown as AdjustThresholdDisplay does so the two writers agree.
+	if not spell.hasCooldown then
+		frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
+	end
 	local effectiveLevel = frameLevel - pairOffset
 	local thresholdFrameLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetLine
 	local thresholdIconLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetIcon
 	local thresholdIconCooldownLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetCooldown
+	local iconLayoutLevel = GetThresholdCache(spell.settingKey).iconLayoutLevel
+	if iconLayoutLevel ~= nil then
+		thresholdIconLevel = iconLayoutLevel
+		thresholdIconCooldownLevel = iconLayoutLevel + 1
+	end
 
 	SetLevelIfChanged(threshold, thresholdFrameLevel)
 	if threshold.icon then
@@ -3146,6 +3209,13 @@ end
 ---@return boolean
 function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings, thresholdOverrides, barSettings, fillDirection)
 	local cache = GetThresholdCache(key)
+	-- The cache records writes to one frame, so a line rebuilt under the same key starts clean and gets them all again.
+	if cache.frame ~= threshold then
+		if cache.frame ~= nil then
+			wipe(cache)
+		end
+		cache.frame = threshold
+	end
 
 	-- When thresholdColor is nil, a ColorCurve is managing the visual color externally
 	-- (e.g., Shadow Word: Madness x2/x3, Druid form thresholds). The override colors are
@@ -3163,6 +3233,9 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		local frameLevel = currentFrameLevel
 		local outOfRange = not spell:GetIsSpellInRange()
 		local colorOverrides = thresholdOverrides and thresholdOverrides.colors
+		-- A curve hides a side Lua can't read, so the icon may be invisible; the overlap layout leaves it out.
+		cache.curveMayHide = curveManagesColor and colorOverrides ~= nil and colorOverrides.colorMode ~= "static"
+			and (GetMode(colorOverrides.under) == "hidden" or GetMode(colorOverrides.over) == "hidden")
 
 		-- Per-threshold color overrides: each color type has a mode (shared/override/hidden)
 		-- Static color mode: always show with a fixed color, bypass all dynamic color logic
@@ -3302,12 +3375,13 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				local thresholdIconLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetIcon
 				local thresholdIconCooldownLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetCooldown
 
+				-- The overlap layout raises its icons above every line, in rank order.
+				local iconLayoutLevel = cache.iconLayoutLevel
 				threshold:SetFrameLevel(thresholdFrameLevel)
-				threshold.icon:SetFrameLevel(thresholdIconLevel)
-				threshold.icon.cooldown:SetFrameLevel(thresholdIconCooldownLevel)
+				threshold.icon:SetFrameLevel(iconLayoutLevel or thresholdIconLevel)
+				threshold.icon.cooldown:SetFrameLevel(iconLayoutLevel and iconLayoutLevel + 1 or thresholdIconCooldownLevel)
 
 				cache.frameLevel = frameLevel
-				cache.layoutChanged = true
 			end
 
 			-- Only apply color if thresholdColor is provided (nil means color is handled externally via curve)
@@ -3441,12 +3515,16 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 				frame:Hide()
 				if layoutActive then
 					TrackIconLayout(frame, nodeFrame, spell.settingKey, false)
+				elseif frame.trbIconLayout ~= nil then
+					ReleaseIconLayout(frame)
 				end
 			elseif not isActive then
 				-- A disabled line with no sound always ends hidden, and its rules touch only the line and its frame.
 				self:Hide(spell.settingKey, frame)
 				if layoutActive then
 					TrackIconLayout(frame, nodeFrame, spell.settingKey, false)
+				elseif frame.trbIconLayout ~= nil then
+					ReleaseIconLayout(frame)
 				end
 			else
 				line.spell = spell
@@ -3495,11 +3573,18 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 				self:RepositionThreshold(settings, spell.settingKey, frame, line.show and isDrawn, nodeFrame, line.resourceAmount, bar.maxResource, nil, bar.barSettings)
 				if layoutActive then
 					TrackIconLayout(frame, nodeFrame, spell.settingKey, line.show and isDrawn)
+				elseif frame.trbIconLayout ~= nil then
+					ReleaseIconLayout(frame)
 				end
 			end
 		end
 	end
 
+	-- The node's spell lines set the layout's settings; custom lines on it follow them.
+	local layout = iconLayouts[nodeFrame]
+	if layout ~= nil then
+		layout.iconSettings = layoutActive and settings.thresholds.icons or nil
+	end
 	if layoutActive then
 		FlushIconLayouts(settings)
 	end

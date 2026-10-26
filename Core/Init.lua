@@ -120,6 +120,8 @@ TRB.Data.constants = {
 		thresholdUnder = 2000,
 		thresholdOver = 2200,
 		thresholdHighPriority = 2600,
+		-- Overlap layout icons, 2 levels per rank, above every threshold line.
+		thresholdIconLayout = 3000,
 		thresholdOffsetLine = 2,
 		thresholdOffsetIcon = 1,
 		thresholdOffsetCooldown = 0,

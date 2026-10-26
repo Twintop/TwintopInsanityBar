@@ -12,7 +12,7 @@ TRB.Details.coreNewsContent = [====[
 
 ## Thresholds
 
-- [#333](#333) Add a When Threshold Icons Overlap option: Stagger into rows moves overlapping icons onto rows away from the bar, and Show highest priority only hides all but the most usable, lowest-cost icon.
+- [#333](#333) Add a When Threshold Icons Overlap option: Stagger into rows moves overlapping icons onto rows away from the bar, and Show highest priority only hides an icon that overlaps a higher-priority one.
 - [#333](#333) Stagger into rows has spacing and maximum row options; icons that don't fit are hidden.
 - [#333](#333) Add an Allowed Icon Overlap option, letting overlapping icons cover each other by up to that share of their size before they move.
 - [#333](#333) Add an Extend threshold lines to their icons option.
