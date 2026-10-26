@@ -56,6 +56,16 @@ function hooks.afterEvents(ctx)
 	table.sort(missing)
 	check("Every threshold line with a cooldown has a snapshot", #missing == 0, table.concat(missing, ", "))
 
+	-- A remaining-time curve, as Restless Blades uses: the within color through the limit, the beyond color past it.
+	local remainingCurve = TRB.Functions.Color:BuildRemainingTimeCurve(3, "FFFF0000", "FF0000FF")
+	local function IsColor(color, r, g, b)
+		local cr, cg, cb = color:GetRGBA()
+		return math.abs(cr - r) < 1e-6 and math.abs(cg - g) < 1e-6 and math.abs(cb - b) < 1e-6
+	end
+	check("A remaining-time curve is the within color at its limit", IsColor(remainingCurve:Evaluate(3), 1, 0, 0))
+	check("A remaining-time curve is the beyond color past its limit", IsColor(remainingCurve:Evaluate(3.01), 0, 0, 1))
+	check("A remaining-time curve is reused for the same inputs", TRB.Functions.Color:BuildRemainingTimeCurve(3, "FFFF0000", "FF0000FF") == remainingCurve)
+
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData == nil then
 		check("The live spec has snapshot data", false)

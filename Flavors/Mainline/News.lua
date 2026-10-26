@@ -26,6 +26,11 @@ TRB.Flavor.newsContent = [====[
 - [#279](#279) Remove the Crackling Jade Lightning, Detox, Expel Harm, and Paralysis threshold lines' separate cooldown timers.
 - [#279](#279) Remove unused Ancient Arts and Jade Flash spell data.
 
+## Rogue
+### Outlaw
+
+- [#279](#279) Fix the Restless Blades threshold line color not showing.
+
 ## Warrior
 
 - [#279](#279) Remove Shield Block's separate cooldown refresh.

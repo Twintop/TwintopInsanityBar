@@ -134,6 +134,13 @@ local function GetMode(colorEntry)
 	return "shared"
 end
 
+---Resolves a per-threshold color entry to "shared", "override", or "hidden", as the line drawing does.
+---@param colorEntry table?
+---@return string
+function TRB.Functions.Threshold:GetColorMode(colorEntry)
+	return GetMode(colorEntry)
+end
+
 ---Like GetMode, but an out-of-range entry with show == false also resolves to "hidden".
 ---@param colorEntry table?
 ---@return string
@@ -3196,14 +3203,15 @@ end
 ---@param spell TRB.Classes.SpellThreshold # The spell threshold being processed
 ---@param threshold TRB.Classes.ThresholdFrame # The threshold frame
 ---@param thresholdCurve table # The ColorCurve created by BuildThresholdCurve
----@param resourceType number # The resource type (e.g., TRB.Data.resource or Enum.PowerType.*)
+---@param resourceType number? # The resource type (e.g., TRB.Data.resource or Enum.PowerType.*); nil with a durationObject
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase # The spec settings
 ---@param iconCurve table? # Optional icon vertex color curve for desaturation mimicry
 ---@param currentFrameLevel integer # The frame level for this threshold (thresholdOver, thresholdUnder, etc.)
 ---@param pairOffset integer # Offset for stacking multiple thresholds
 ---@param isUsable boolean # Whether the base (1x) threshold is usable (has enough resources)
+---@param durationObject any? # Evaluates the curve over this cooldown's remaining time instead of the resource
 ---@return boolean # True if curve color was applied, false if caller should use normal color handling
-function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thresholdCurve, resourceType, settings, iconCurve, currentFrameLevel, pairOffset, isUsable)
+function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thresholdCurve, resourceType, settings, iconCurve, currentFrameLevel, pairOffset, isUsable, durationObject)
 	if not threshold or not thresholdCurve then
 		return false
 	end
@@ -3287,7 +3295,12 @@ function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thre
 	end
 
 	-- Valid target and in range - apply the curve color
-	local curveColorResult = TRB.Functions.Color:EvaluateThresholdCurve(thresholdCurve, resourceType)
+	local curveColorResult
+	if durationObject ~= nil then
+		curveColorResult = durationObject:EvaluateRemainingDuration(thresholdCurve)
+	else
+		curveColorResult = TRB.Functions.Color:EvaluateThresholdCurve(thresholdCurve, resourceType)
+	end
 	if curveColorResult then
 		TRB.Functions.Color:SetThresholdColorFromCurve(threshold, curveColorResult)
 	end

@@ -696,14 +696,19 @@ TRB.Classes.Rogue.OutlawSpells.thresholdSnowflakes = {
 		local spells = line.data.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 		local attributes = line.spell.attributes
 		local snapshot = line.snapshot
-		-- Restless Blades: a finisher with the current Combo Points would bring this ability off cooldown. Needs plain times.
-		if line.state.settings.colors.threshold.restlessBlades.enabled and attributes.restlessBlades
+		-- Restless Blades: a finisher with the current Combo Points (1 sec each) would bring this ability off cooldown.
+		if line.show and line.state.settings.colors.threshold.restlessBlades.enabled and attributes.restlessBlades
 			and (attributes.floatLikeAButterfly == nil or (attributes.floatLikeAButterfly and line.data.talents:IsTalentActive(spells.floatLikeAButterfly)))
-			and snapshot ~= nil and snapshot.cooldown:HasPlainTiming() then
+			and snapshot ~= nil and snapshot.cooldown.onCooldown then
 			local cooldown = snapshot.cooldown
-			cooldown:GetRemainingTime(line.state.currentTime)
-			if cooldown.remainingTotal > 0 and cooldown.remaining <= line.state.snapshotData.attributes.resource2 then
-				line:SetColor("restlessBlades", TRB.Data.constants.frameLevels.thresholdUnder)
+			local comboPoints = line.state.snapshotData.attributes.resource2
+			if cooldown:HasPlainTiming() then
+				cooldown:GetRemainingTime(line.state.currentTime)
+				if cooldown.remainingTotal > 0 and cooldown.remaining <= comboPoints then
+					line:SetColor("restlessBlades", TRB.Data.constants.frameLevels.thresholdUnder)
+				end
+			elseif comboPoints > 0 then
+				line:ColorByRemainingCooldown(comboPoints, "restlessBlades")
 			end
 		end
 	end,
