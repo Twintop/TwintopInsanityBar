@@ -93,14 +93,14 @@ try {
 	}
 	if (-not (Test-Path $outPath)) { throw "lua-language-server wrote no results to $outPath." }
 
-	# Diagnostic URIs are file:/// URIs of the copy; reduce them to repository-relative paths.
-	$prefix = ([Uri](Resolve-Path $checkDir).Path).AbsoluteUri.TrimEnd("/") + "/"
+	# Diagnostic keys are file URIs of the copy; the unique temp folder name marks where the repository path starts.
+	$marker = "$(Split-Path -Leaf $work)/$checkName/"
 	$results = Get-Content $outPath -Raw | ConvertFrom-Json
 	$current = @()
 	foreach ($property in $results.PSObject.Properties) {
-		$uri = [Uri]::UnescapeDataString($property.Name)
-		$unescapedPrefix = [Uri]::UnescapeDataString($prefix)
-		$file = if ($uri.StartsWith($unescapedPrefix, [StringComparison]::OrdinalIgnoreCase)) { $uri.Substring($unescapedPrefix.Length) } else { $uri }
+		$uri = [Uri]::UnescapeDataString($property.Name).Replace("\", "/")
+		$at = $uri.IndexOf($marker, [StringComparison]::OrdinalIgnoreCase)
+		$file = if ($at -ge 0) { $uri.Substring($at + $marker.Length) } else { $uri }
 		foreach ($diagnostic in $property.Value) {
 			if ($diagnostic.severity -gt 3) { continue }
 			$current += [pscustomobject]@{
