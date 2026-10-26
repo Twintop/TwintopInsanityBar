@@ -26,7 +26,13 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+# CI shows only the calling line for a script error, so name the failing line here.
+trap {
+	Write-Host "luals: $($_.Exception.Message)"
+	Write-Host $_.InvocationInfo.PositionMessage
+	exit 1
+}
+$scriptDir =if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
 $root = Split-Path -Parent $scriptDir
 $configPath = Join-Path $scriptDir "luals/config.json"
 $baselinePath = Join-Path $scriptDir "luals/baseline.json"
