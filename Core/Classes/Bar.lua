@@ -41,6 +41,9 @@ local barNodeCounter = 0
 
 ---@class TRB.Classes.ThresholdFrame.LineTexture : Texture
 ---@field public trbAlpha number? # Alpha last written, so repeat writes are skipped
+---@field public trbExtendLow number? # Extension toward the icon last anchored; nil forces the next write
+---@field public trbExtendHigh number?
+---@field public trbExtendVertical boolean?
 
 ---A threshold line registered on a node. Functions/Threshold.lua's Reset functions create its pieces.
 ---@class TRB.Classes.ThresholdFrame : Frame
@@ -53,6 +56,7 @@ local barNodeCounter = 0
 ---@field public trbColor string? # Hex SetThresholdColor last painted
 ---@field public trbColorNormalized boolean? # Its normalize flag
 ---@field public trbColorIcon boolean? # Whether the icon border was painted with it; nil forces the next write
+---@field public trbIconLayout table? # Its icon's entry in the parent's overlap layout
 
 ---The node's StatusBar, plus what other modules hang on it.
 ---@class TRB.Classes.BarNode.Frame : StatusBar, BackdropTemplate, TRB.Classes.GlowTarget
