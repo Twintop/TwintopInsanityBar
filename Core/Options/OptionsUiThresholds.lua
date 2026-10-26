@@ -278,10 +278,10 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	end
 
 	local function RefreshOverlapControlStates()
-		local staggering = spec.thresholds.icons.overlapMode == "stagger"
-		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapSpacing, staggering)
-		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapMaxRows, staggering)
-		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapAllowance, spec.thresholds.icons.overlapMode ~= "off")
+		local mode = spec.thresholds.icons.overlapMode
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapSpacing, mode ~= "off")
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapMaxRows, mode == "stagger")
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapAllowance, mode ~= "off")
 	end
 
 	yCoord = yCoord - 20

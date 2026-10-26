@@ -410,6 +410,11 @@ local function TrackIconLayout(threshold, parentFrame, key, drawn)
 	end
 
 	local cache = GetThresholdCache(key)
+	-- The key's live line owns it; a line discarded by ClearThresholds keeps its entry until the next solve prunes it.
+	if cache.layoutEntry ~= entry then
+		cache.layoutEntry = entry
+		MarkIconLayoutDirty(layout)
+	end
 	drawn = drawn and cache.iconWanted == true and cache.linePos ~= nil
 	if cache.layoutDrawn ~= drawn then
 		cache.layoutDrawn = drawn
@@ -429,7 +434,7 @@ end
 ---@param cache table?
 local function UntrackIconLayout(threshold, cache)
 	local entry = threshold.trbIconLayout
-	if entry ~= nil and cache ~= nil and cache.layoutDrawn then
+	if entry ~= nil and entry.layout ~= nil and cache ~= nil and cache.layoutDrawn then
 		cache.layoutDrawn = false
 		MarkIconLayoutDirty(entry.layout)
 	end
@@ -440,8 +445,8 @@ end
 ---@param b table
 ---@return boolean
 local function IconRanksAbove(a, b)
-	local aLevel = a.cache.frameLevel or 0
-	local bLevel = b.cache.frameLevel or 0
+	local aLevel = a.cache.stateLevel or 0
+	local bLevel = b.cache.stateLevel or 0
 	if aLevel ~= bLevel then
 		return aLevel > bLevel
 	end
@@ -457,7 +462,7 @@ end
 ---@param entry table
 ---@param count integer # Entries before this one in rank order
 ---@param order table[]
----@param spacing number
+---@param spacing number # Minimum gap between icons
 ---@return boolean
 local function IconCollides(entry, count, order, spacing)
 	local left = entry.left + entry.shiftX
@@ -569,17 +574,30 @@ local function SolveIconLayout(layout, iconSettings)
 	local spacing = tonumber(iconSettings.overlapSpacing) or 0
 	-- Icons may overlap by this share of their size, so collisions test inset bounds and rows pack tighter.
 	local allowance = math.min(math.max((tonumber(iconSettings.overlapAllowance) or 0) / 100, 0), 0.9)
+	-- Stacked rows sit exactly `spacing` apart, so the test needs slack against rounding in fractional bounds.
+	local padding = spacing - 0.01
 	local order = iconLayoutOrderScratch
 	local count = 0
 
-	for _, entry in ipairs(layout.entries) do
+	local entries = layout.entries
+	for i = #entries, 1, -1 do
+		local entry = entries[i]
+		if GetThresholdCache(entry.key).layoutEntry ~= entry then
+			table.remove(entries, i)
+			entry.layout = nil
+		end
+	end
+
+	for _, entry in ipairs(entries) do
 		local cache = GetThresholdCache(entry.key)
 		entry.cache = cache
 		entry.placed = false
 		if cache.layoutDrawn and cache.iconWidth ~= nil then
 			local left, right, bottom, top = GetIconBounds(cache)
-			local insetX = cache.iconWidth * allowance / 2
-			local insetY = cache.iconHeight * allowance / 2
+			local insetX = math.floor(cache.iconWidth * allowance / 2 + 0.5)
+			local insetY = math.floor(cache.iconHeight * allowance / 2 + 0.5)
+			entry.insetX = insetX
+			entry.insetY = insetY
 			entry.left = left + insetX
 			entry.right = right - insetX
 			entry.bottom = bottom + insetY
@@ -600,7 +618,7 @@ local function SolveIconLayout(layout, iconSettings)
 		local entry = order[i]
 		local cache = entry.cache
 		local isVertical = IsVerticalFillDirection(cache.iconFillDirection)
-		local pitch = (isVertical and cache.iconWidth or cache.iconHeight) * (1 - allowance) + spacing
+		local pitch = (isVertical and cache.iconWidth - 2 * entry.insetX or cache.iconHeight - 2 * entry.insetY) + spacing
 		-- Rows grow away from the bar: Above moves up (left on vertical bars), Below and Middle move down (right).
 		local direction
 		if cache.iconRelativeTo == "TOP" then
@@ -613,7 +631,7 @@ local function SolveIconLayout(layout, iconSettings)
 			local shift = row * pitch * direction
 			entry.shiftX = isVertical and shift or 0
 			entry.shiftY = isVertical and 0 or shift
-			if not IconCollides(entry, i - 1, order, spacing) then
+			if not IconCollides(entry, i - 1, order, padding) then
 				entry.placed = true
 				break
 			end
@@ -3264,6 +3282,12 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			end
 
 			local thresholdUsable = false
+
+			-- The overlap layout ranks on state alone, so having no cooldown doesn't outrank priority or cost.
+			if cache.stateLevel ~= frameLevel then
+				cache.stateLevel = frameLevel
+				cache.layoutChanged = true
+			end
 
 			if not spell.hasCooldown then
 				frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
