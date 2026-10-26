@@ -262,7 +262,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 
 	local thresholdBar = TRB.Classes.ThresholdBar:New()
 	local thresholdState = TRB.Classes.ThresholdState:New()
-	local thresholdData = TRB.Classes.ThresholdData:New(true)
+	local thresholdData = TRB.Classes.ThresholdData:New()
 
 	local function UpdateResourceBar()
 		local refreshText = false

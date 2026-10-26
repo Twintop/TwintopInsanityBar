@@ -527,8 +527,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	---@param spell TRB.Classes.SpellThreshold
 	---@return string[]
 	local function GetThresholdStates(spell)
-		local dictEntry = spec.thresholds.thresholdDictionary[spell.settingKey]
-		if dictEntry ~= nil and dictEntry.colors ~= nil and dictEntry.colors.colorMode == "static" then
+		if Threshold:IsLineStatic(spec, spell.settingKey) then
 			return { ThresholdState.STATIC }
 		end
 		local states = { ThresholdState.USABLE, ThresholdState.UNUSABLE }
@@ -602,9 +601,12 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		if spell == nil then
 			return label, true, L["ThresholdIndicatorMissingTooltip"], name
 		end
+		if Threshold:IsColorModeMismatched(condition) then
+			return label, true, string.format(L["ThresholdIndicatorColorModeChangedTooltip"], L["ThresholdDetailColorModePrefix"]), name
+		end
 		local character = TRB.Data.character
 		if character ~= nil and character.classId == classId and character.specId == specId
-			and (TRB.Data.cache.thresholdSpellsByKey[spell.settingKey] == nil or (TRB.Flavor.thresholdsRequireKnown and not spell:IsKnown())) then
+			and TRB.Data.cache.thresholdSpellsByKey[spell.settingKey] == nil then
 			return label, true, L["ThresholdIndicatorNotLearnedTooltip"], name
 		end
 		return label, false, L["ThresholdIndicatorBadgeTooltip"], name
@@ -621,11 +623,11 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return nil
 	end
 
-	---Turns range checks on when a threshold indicator on the played spec now reads range.
+	---Turns range checks on or off after a threshold indicator on the played spec is added, re-pointed, or removed.
 	local function RefreshRangeChecks()
 		local character = TRB.Data.character
 		if character ~= nil and character.classId == classId and character.specId == specId then
-			TRB.Functions.Character:EnableSpellRangeCheckUpdate()
+			TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
 		end
 	end
 
@@ -1104,7 +1106,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return "custom_" .. n
 	end
 
-	---Adds a custom indicator at the lowest priority, white and untargeted, and grows the list by one row.
+	---Adds a custom indicator at the lowest priority and untargeted, and grows the list by one row.
 	---@param condition TRB.CustomIndicatorCondition
 	local function AddIndicatorRow(condition)
 		local key = NextCustomKey()
@@ -1131,7 +1133,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			SetRowShown(rows[rowIndex], true)
 		end
 		UpdatePickerBlock()
-		-- A threshold row starts in its line's color rather than white.
+		-- A Cooldown Manager row starts white; a threshold row takes its line's color here.
 		Threshold:SyncIndicatorColors(settingsClassName, settingsSpecName)
 		RefreshRow(rowIndex, true)
 		if rowIndex > 1 then
@@ -1196,8 +1198,12 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				break
 			end
 		end
+		local wasThreshold = GetThresholdCondition(indicatorColors[key]) ~= nil
 		indicatorColors[key] = nil
 		indicatorDefByKey[key] = nil
+		if wasThreshold then
+			RefreshRangeChecks()
+		end
 
 		local lastRow = rows[#orderedKeys + 1]
 		if lastRow ~= nil then

@@ -4205,5 +4205,6 @@ L["ThresholdIndicatorStaticTooltip"] = "On whenever you know this ability, in it
 L["ThresholdIndicatorColorTooltip"] = "This color follows the %s color of the %s threshold line. Change it on the Thresholds tab."
 L["ThresholdIndicatorBadgeTooltip"] = "You added this indicator. It turns on while its threshold line is in the chosen state."
 L["ThresholdIndicatorMissingTooltip"] = "This threshold line isn't available anymore. Edit it to choose another, or remove it."
-L["ThresholdIndicatorNotLearnedTooltip"] = "You haven't learned this ability. This indicator works once you do."
+L["ThresholdIndicatorNotLearnedTooltip"] = "You don't have this ability right now. This indicator works once you do."
 L["ThresholdIndicatorEditTooltip"] = "Choose the threshold line and state this indicator follows."
+L["ThresholdIndicatorColorModeChangedTooltip"] = "This threshold line's %s changed, so it no longer offers this state. Edit this indicator to choose another, or change the line back."

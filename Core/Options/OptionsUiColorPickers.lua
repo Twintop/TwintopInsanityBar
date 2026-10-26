@@ -518,7 +518,7 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 end
 
 ---Locks a gradient color picker to colors set elsewhere, or unlocks it; callers check `readOnlyTooltip` before
----opening the color picker. Re-apply after ToggleColorPickerEnabled, which re-enables the gradient controls.
+---opening the color picker. Call after ToggleColorPickerEnabled, which owns the unlocked picker's mouse state.
 ---@param picker TRB.Classes.OptionsUi.GradientColorPicker
 ---@param readOnlyTooltip string? # Shown on the first swatch while locked; nil unlocks
 function TRB.Functions.OptionsUi.ColorPickers:SetGradientColorPickerReadOnly(picker, readOnlyTooltip)
@@ -538,13 +538,13 @@ function TRB.Functions.OptionsUi.ColorPickers:SetGradientColorPickerReadOnly(pic
 	end
 
 	local locked = readOnlyTooltip ~= nil
-	picker.DirectionButton:EnableMouse(not locked)
 	picker.DirectionButton:SetAlpha(locked and 0.35 or 1.0)
 	if locked then
+		-- Hoverable even while the row is disabled, so the tooltip can say where the color comes from.
+		picker.Swatch1:EnableMouse(true)
 		picker.Swatch2:SetAlpha(0.35)
 		picker.Swatch2:EnableMouse(false)
-	else
-		picker.UpdateSwatch2State()
+		picker.DirectionButton:EnableMouse(false)
 	end
 end
 

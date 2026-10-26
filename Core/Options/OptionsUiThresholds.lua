@@ -435,12 +435,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
 			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
-				if not spec.colors.threshold.outOfRange.show or (spec.colors.threshold.outOfRange.show and spec.colors.threshold.outOfRange.enabled)
-					or TRB.Functions.Threshold:UsesRangeConditions(TRB.Data.character.className, TRB.Data.character.specName) then
-					TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-				else
-					TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-				end
+				TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
 			end
 		end)
 
@@ -454,12 +449,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 			spec.colors.threshold.outOfRange.enabled = self:GetChecked()
 			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
-				if not spec.colors.threshold.outOfRange.show or (spec.colors.threshold.outOfRange.show and spec.colors.threshold.outOfRange.enabled)
-					or TRB.Functions.Threshold:UsesRangeConditions(TRB.Data.character.className, TRB.Data.character.specName) then
-					TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-				else
-					TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-				end
+				TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
 			end
 		end)
 

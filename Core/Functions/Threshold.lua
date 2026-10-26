@@ -3767,6 +3767,9 @@ TRB.Functions.Threshold.ConditionState = {
 }
 local ConditionState = TRB.Functions.Threshold.ConditionState
 
+-- Conditions whose line's Color Mode no longer offers their state, judged by SyncIndicatorColors; they stay off.
+local colorModeMismatches = setmetatable({}, { __mode = "k" })
+
 -- The `colors.threshold` key each state recolors with; In Range shares Usable's.
 local conditionStateColorKeys = {
 	[ConditionState.USABLE] = "over",
@@ -3782,7 +3785,7 @@ local conditionStateColorKeys = {
 ---@return boolean
 function TRB.Functions.Threshold:IsConditionMet(condition)
 	local spell = TRB.Data.cache.thresholdSpellsByKey[condition.settingKey]
-	if spell == nil or (TRB.Flavor.thresholdsRequireKnown and not spell:IsKnown()) then
+	if spell == nil or colorModeMismatches[condition] then
 		return false
 	end
 
@@ -3826,9 +3829,9 @@ function TRB.Functions.Threshold:GetConditionStateColor(className, specName, set
 	local overrides = dictEntry ~= nil and dictEntry.colors or nil
 
 	if state == ConditionState.STATIC then
-		-- The Thresholds tab's static swatch shows the Under color until one is picked.
+		-- Until a static color is picked, match the Thresholds tab's static swatch, which shows the spec's own Under color.
 		local staticColor = overrides ~= nil and overrides.staticColor or nil
-		return (staticColor ~= nil and staticColor.color) or shared.under.color
+		return (staticColor ~= nil and staticColor.color) or spec.colors.threshold.under.color
 	end
 
 	local colorKey = conditionStateColorKeys[state]
@@ -3844,21 +3847,38 @@ function TRB.Functions.Threshold:GetConditionStateColor(className, specName, set
 	return entry.color
 end
 
----Points a spec's threshold Color Indicators at their lines' current state colors. Runs whenever a threshold
----color, a color mode, or the Use Global choice behind them changes.
+---Whether a line is in Static color mode, where it offers only the Static state.
+---@param spec table # The spec's raw settings
+---@param settingKey string
+---@return boolean
+function TRB.Functions.Threshold:IsLineStatic(spec, settingKey)
+	local dictionary = spec.thresholds ~= nil and spec.thresholds.thresholdDictionary or nil
+	local dictEntry = dictionary ~= nil and dictionary[settingKey] or nil
+	return dictEntry ~= nil and dictEntry.colors ~= nil and dictEntry.colors.colorMode == "static"
+end
+
+---Whether a condition's line changed Color Mode after it was picked, so the line no longer offers its state.
+---@param condition TRB.CustomIndicatorCondition
+---@return boolean
+function TRB.Functions.Threshold:IsColorModeMismatched(condition)
+	return colorModeMismatches[condition] == true
+end
+
+---Points a spec's threshold Color Indicators at their lines' current state colors, and judges whether each line's
+---Color Mode still offers its state. Runs whenever a threshold color, a color mode, or the Use Global choice behind them changes.
 ---@param className string
 ---@param specName string
 function TRB.Functions.Threshold:SyncIndicatorColors(className, specName)
 	local spec = TRB.Data.settings[className] ~= nil and TRB.Data.settings[className][specName] or nil
-	local shared = spec ~= nil and spec.colors ~= nil and spec.colors.shared or nil
-	if shared == nil or shared.indicatorColors == nil then
+	if spec == nil or spec.colors == nil or spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil then
 		return
 	end
 
-	for _, indicator in pairs(shared.indicatorColors) do
+	for _, indicator in pairs(spec.colors.shared.indicatorColors) do
 		local conditions = type(indicator) == "table" and indicator.custom ~= nil and indicator.custom.conditions or nil
 		local condition = conditions ~= nil and conditions[1] or nil
 		if condition ~= nil and condition.source == self.CONDITION_SOURCE then
+			colorModeMismatches[condition] = (self:IsLineStatic(spec, condition.settingKey) ~= (condition.state == ConditionState.STATIC)) or nil
 			local color = self:GetConditionStateColor(className, specName, condition.settingKey, condition.state)
 			if color ~= nil then
 				indicator.color = color

@@ -464,6 +464,8 @@ local function CharacterChange(self, event, ...)
 	elseif event == "SPELL_UPDATE_USABLE" then
 		TRB.Classes.SpellBase.InvalidateSpellUsable()
 		TRB.Data.snapshotData.casting:RefreshCost()
+	elseif event == "SPELLS_CHANGED" then
+		TRB.Functions.Character:RefreshThresholdSpellsLearned()
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" then
 		local unitTarget = ...
 		if unitTarget == "player" then
@@ -722,6 +724,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 	characterChangeFrame:RegisterEvent("SPELL_UPDATE_USABLE")
+	characterChangeFrame:RegisterEvent("SPELLS_CHANGED")
 end
 
 ---Unregisters all character-change events from the characterChangeFrame and stops flight polling.
@@ -762,6 +765,7 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
 	characterChangeFrame:UnregisterEvent("SPELL_UPDATE_USABLE")
+	characterChangeFrame:UnregisterEvent("SPELLS_CHANGED")
 	TRB.Functions.Character:StopFlightPolling()
 end
 
@@ -825,13 +829,25 @@ end
 local spellRangeCheckUpdateFrame = CreateFrame("Frame")
 spellRangeCheckUpdateFrame:SetScript("OnEvent", SpellRangeCheckUpdateEvent)
 
+---Whether the live spec needs range checks: its threshold lines show out of range, or a threshold Color Indicator reads range.
+---@param specCache TRB.Classes.SpecCache?
+---@return boolean
+local function NeedsSpellRangeChecks(specCache)
+	if specCache == nil then
+		return false
+	end
+	if TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(specCache.settings) then
+		return true
+	end
+	local registryEntry = TRB.Functions.Character:GetSpecRegistryEntry(TRB.Data.barConstructedForSpec or "")
+	return registryEntry ~= nil and TRB.Functions.Threshold:UsesRangeConditions(registryEntry.className, registryEntry.specName)
+end
+
 ---Enables all spells that need to have range checks performed
 function TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 	local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
-	local registryEntry = self:GetSpecRegistryEntry(TRB.Data.barConstructedForSpec or "")
 
-	if specCache ~= nil and (TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(specCache.settings)
-		or (registryEntry ~= nil and TRB.Functions.Threshold:UsesRangeConditions(registryEntry.className, registryEntry.specName))) then
+	if NeedsSpellRangeChecks(specCache) then
 		for _, v in pairs(specCache.spellsData.spells) do
 			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
 				C_Spell.EnableSpellRangeCheck(v:GetRankedId(), true)
@@ -865,6 +881,15 @@ function TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	end
 
 	TRB.Data.cache.values.range = {}
+end
+
+---Turns range checks on or off after a setting that decides whether the live spec needs them changes.
+function TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
+	if NeedsSpellRangeChecks(TRB.Data.specCache[TRB.Data.barConstructedForSpec]) then
+		self:EnableSpellRangeCheckUpdate()
+	else
+		self:DisableSpellRangeCheckUpdate()
+	end
 end
 
 ---@param className string?
@@ -1227,7 +1252,11 @@ end
 
 ---Updates character state flags (PvP talents, mounted, skyriding, instance type) and starts or stops flight polling based on mount state.
 function TRB.Functions.Character:CheckCharacter()
-	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
+	local isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
+	if isPvp ~= TRB.Data.character.isPvp then
+		TRB.Data.character.isPvp = isPvp
+		TRB.Functions.Character:RefreshThresholdSpellsLearned()
+	end
 	TRB.Data.character.isMounted = IsMounted()
 	TRB.Data.character.onTaxi = UnitOnTaxi("player") or false
 	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle() or false
@@ -2122,8 +2151,6 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 	-- in missing thresholds from the list. Sometimes. I don't know why, but it does, so we're doing it manually.
 	---@type TRB.Classes.SpellThreshold[]
 	local thresholdSpells = {}
-	---@type table<string, TRB.Classes.SpellThreshold>
-	local thresholdSpellsByKey = {}
 	local thresholdId = 0
 	for _, v in pairs(spells) do
 		local spell = v --[[@as TRB.Classes.SpellBase]]
@@ -2134,15 +2161,29 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 				else
 					thresholdId = thresholdId + 1
 					thresholdSpells[thresholdId] = spell
-					thresholdSpellsByKey[spell.settingKey] = spell
 				end
 			end
 		end
 	end
 	TRB.Data.cache.thresholdSpells = thresholdSpells
-	TRB.Data.cache.thresholdSpellsByKey = thresholdSpellsByKey
+	TRB.Functions.Character:RefreshThresholdSpellsLearned()
 	TRB.Functions.Threshold:RefreshThresholdAudio()
 	TRB.Functions.Threshold:RefreshThresholdIconPriorities()
+end
+
+---Rebuilds the threshold lines a threshold Color Indicator counts as learned, by the lines' own PvP and known-spell
+---gates. Runs when the threshold list, PvP state, or the spellbook changes, so the per-frame read is a table lookup.
+function TRB.Functions.Character:RefreshThresholdSpellsLearned()
+	local learned = TRB.Data.cache.thresholdSpellsByKey
+	wipe(learned)
+	local isPvp = TRB.Data.character.isPvp
+	local talents = TRB.Data.talents
+	for _, spell in ipairs(TRB.Data.cache.thresholdSpells) do
+		if (not spell.isPvp or (isPvp and talents ~= nil and talents:IsTalentActive(spell)))
+			and (not TRB.Flavor.thresholdsRequireKnown or spell:IsKnown()) then
+			learned[spell.settingKey] = spell
+		end
+	end
 end
 
 ---Default implementation of RecreateThresholds. Class modules can override this

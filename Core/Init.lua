@@ -224,6 +224,7 @@ TRB.Data.cache.values = {
 }
 ---@type TRB.Classes.SpellThreshold[]
 TRB.Data.cache.thresholdSpells = {}
+-- The learned lines by settingKey, rebuilt by Character:RefreshThresholdSpellsLearned.
 ---@type table<string, TRB.Classes.SpellThreshold>
 TRB.Data.cache.thresholdSpellsByKey = {}
 TRB.Data.specCache = {}

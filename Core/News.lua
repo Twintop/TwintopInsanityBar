@@ -25,7 +25,7 @@ TRB.Details.coreNewsContent = [====[
 - [#333](#333) Add an Extend threshold lines to their icons option.
 - [#333](#333) Add Icon Priority, Never hide this icon, and Ignore overlapping icons options to each threshold and custom threshold.
 - [#333](#333) Icon Priority decides which overlapping icon stays nearest the bar or visible, and which draws on top when icons are left to overlap.
-- [#890](#890)Fix custom threshold icons on a vertical bar other than the main resource bar being placed as if the bar were horizontal.
+- [#890](#890) Fix custom threshold icons on a vertical bar other than the main resource bar being placed as if the bar were horizontal.
 
 ---
 
