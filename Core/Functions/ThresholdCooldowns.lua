@@ -13,7 +13,7 @@ local tracked = {}
 -- Tracked cooldowns by every spell id a cooldown event can name them by.
 ---@type table<integer, TRB.Classes.SnapshotCooldown[]>
 local trackedById = {}
--- No event marks a cooldown's natural end, so a hidden Cooldown frame per cooldown reports it.
+-- No event marks a cooldown's natural end, so an invisible Cooldown frame per cooldown reports it.
 ---@type table<TRB.Classes.SnapshotCooldown, Cooldown>
 local endWidgets = {}
 ---@type table<TRB.Classes.SnapshotCooldown, number>
@@ -36,10 +36,15 @@ local function LoadEndWidget(cooldown)
 	local widget = endWidgets[cooldown]
 	if widget == nil then
 		widget = CreateFrame("Cooldown", nil, UIParent, "CooldownFrameTemplate") --[[@as Cooldown]]
+		-- The template fills its parent and every load shows the frame, so it must be one invisible pixel that draws nothing.
+		widget:ClearAllPoints()
 		widget:SetSize(1, 1)
 		widget:SetPoint("CENTER")
-		-- A hidden Cooldown frame still fires OnCooldownDone.
-		widget:Hide()
+		widget:SetAlpha(0)
+		widget:SetDrawSwipe(false)
+		widget:SetDrawEdge(false)
+		widget:SetDrawBling(false)
+		widget:SetHideCountdownNumbers(true)
 		widget:SetScript("OnCooldownDone", function()
 			if cooldown.onCooldown then
 				End(cooldown)
