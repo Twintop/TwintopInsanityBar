@@ -1,0 +1,92 @@
+name: Checks
+
+# The offline checks under build/, one job each so a failure names what broke. Runs on every pull request
+# and push to main, and release.yml calls it before staging a tag. None of these load the game client:
+# they catch load-order, bootstrap, options-construction, and type errors, not in-game behavior.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint Core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Core for class and spec leakage
+        shell: pwsh
+        run: ./build/lint-core.ps1
+
+  syntax:
+    name: Lua syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua 5.1
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 > /dev/null
+
+      - name: Syntax-check every Lua file
+        shell: bash
+        run: |
+          status=0
+          while IFS= read -r f; do
+            luac5.1 -p "$f" || status=1
+          done < <(git ls-files '*.lua' | grep -v '^Libs/')
+          exit $status
+
+  smoke:
+    name: Smoke load
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua 5.1
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 > /dev/null
+
+      - name: Smoke-load every flavor for every class
+        shell: pwsh
+        run: ./build/smoke.ps1 -Lua lua5.1
+
+  drivers:
+    name: Harness drivers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua 5.1
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 > /dev/null
+
+      - name: Build every options tab and run the media and color checks
+        shell: pwsh
+        run: ./build/drivers.ps1 -Lua lua5.1
+
+  luals:
+    name: LuaLS
+    runs-on: ubuntu-latest
+    env:
+      # Match the VS Code extensions so CI and the editor report the same diagnostics.
+      LUALS_VERSION: 3.19.2
+      WOW_API_VERSION: 0.22.3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install lua-language-server and the WoW API annotations
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/luals"
+          curl -sSfL "https://github.com/LuaLS/lua-language-server/releases/download/${LUALS_VERSION}/lua-language-server-${LUALS_VERSION}-linux-x64.tar.gz" \
+            | tar -xz -C "$RUNNER_TEMP/luals"
+          git clone -q --depth 1 --branch "$WOW_API_VERSION" https://github.com/Ketho/vscode-wow-api.git "$RUNNER_TEMP/wow-api"
+
+      - name: Check against the baseline
+        shell: pwsh
+        run: ./build/luals-check.ps1 -LuaLS "$env:RUNNER_TEMP/luals/bin/lua-language-server" -WowApi "$env:RUNNER_TEMP/wow-api/Annotations/Core"

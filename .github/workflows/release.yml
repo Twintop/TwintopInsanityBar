@@ -4,7 +4,8 @@ name: Release
 #   12.1.0.11-release           -> mainline (retail) build
 #   12.1.0.11-beta01            -> mainline pre-release
 #   forever-1.60.1.0-release    -> WoW Forever build
-# The stage job lints, smoke-loads, and builds the flavor with build/stage.ps1 as a workflow artifact.
+# The checks job runs checks.yml, the same offline checks every pull request runs. The stage job then builds the
+# flavor with build/stage.ps1 as a workflow artifact.
 # The publish job runs the BigWigs packager, which creates the GitHub release, attaches its zip, and
 # uploads to CurseForge / Wago / WoWInterface for every site whose token secret exists (WoWInterface
 # only for -release tags). Its changelog is the newest section of the flavor's News.lua. A
@@ -35,8 +36,13 @@ permissions:
   contents: write
 
 jobs:
+  checks:
+    name: Checks
+    uses: ./.github/workflows/checks.yml
+
   stage:
-    name: Check and stage
+    name: Stage
+    needs: checks
     runs-on: ubuntu-latest
     outputs:
       flavor: ${{ steps.meta.outputs.flavor }}
@@ -92,24 +98,6 @@ jobs:
             fi
           done
           exit 1
-
-      - name: Lint Core for class/spec leakage
-        shell: pwsh
-        run: ./build/lint-core.ps1
-
-      - name: Syntax-check every Lua file
-        shell: bash
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 > /dev/null
-          status=0
-          while IFS= read -r f; do
-            luac5.1 -p "$f" || status=1
-          done < <(git ls-files '*.lua' | grep -v '^Libs/')
-          exit $status
-
-      - name: Smoke-load every flavor for every class
-        shell: pwsh
-        run: ./build/smoke.ps1 -Lua lua5.1
 
       - name: Stage flavor
         shell: pwsh

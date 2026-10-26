@@ -79,6 +79,7 @@ saved-variables replay and golden-snapshot options used to verify refactors.
 | Check that Core has no class/spec leakage | `.\build\lint-core.ps1` |
 | Smoke-load both flavors for every class | `.\build\smoke.ps1 -Lua <lua5.1>` |
 | Build every options tab and run the Textures and media checks | `.\build\drivers.ps1 -Lua <lua5.1>` |
+| Type-check with LuaLS against the baseline | `.\build\luals-check.ps1` (finds the VS Code extensions; `-UpdateBaseline` rewrites it) |
 | Compare every bar text font with another build | `.\build\font-compare.ps1 -Lua <lua5.1> [-Ref main] [-Saved <file> -EdgeCases]` |
 | Build a release zip locally (into `dist\`) | `.\build\stage.ps1 -Flavor mainline` / `-Flavor forever` |
 | Same, stamping a version | `.\build\stage.ps1 -Flavor mainline -Version 12.1.0.11 -ReleaseType beta01` |
@@ -89,7 +90,7 @@ saved-variables replay and golden-snapshot options used to verify refactors.
 
 Before tagging, stamp `## Version:` and `## X-ReleaseDate:` in the flavor's TOC and add the release's
 section to the top of `Flavors\<Flavor>\News.lua`; the packager rewrites neither. Then push a tag. The
-workflow in `.github\workflows\release.yml` lints, syntax-checks, smoke-loads, stages the flavor with
+workflow in `.github\workflows\release.yml` runs the pull request checks (section 5), stages the flavor with
 `stage.ps1` as a workflow artifact, and hands the checkout to the BigWigs packager, which builds the
 zip, creates the GitHub release with it attached, and uploads to every addon site whose token secret
 exists (`CF_API_KEY`, `WAGO_API_TOKEN`, `WOWI_API_TOKEN`):
@@ -115,3 +116,21 @@ with `-d` (no uploads, no GitHub release) and the zip is attached to the run as 
 artifact. Locally it needs bash, `zip`, `jq`, and pandoc, which WSL has (`sudo apt install zip jq
 pandoc`); clone the packager and run `release.sh -d -m .pkgmeta` from the checkout root. Output lands in
 `.release\`, which is git-ignored.
+
+## 5. Pull request checks
+
+`.github\workflows\checks.yml` runs on every pull request and every push to `main`, and `release.yml` calls
+it before staging a tag. Each check is its own job:
+
+- **Lint Core:** `lint-core.ps1`.
+- **Lua syntax:** `luac5.1 -p` on every tracked Lua file outside `Libs\`.
+- **Smoke load:** `smoke.ps1`, both flavors, every class. A run that loads no files fails.
+- **Harness drivers:** `drivers.ps1`, every driver.
+- **LuaLS:** `luals-check.ps1` with lua-language-server and Ketho's WoW API annotations, pinned in the
+  workflow to the versions of the VS Code extensions. It fails on any Error, Warning, or Information
+  diagnostic missing from `build\luals\baseline.json`, which matches on file, code, and message, not line.
+
+The LuaLS settings for the check live in `build\luals\config.json`, a copy of the `Lua.*` keys in
+`.vscode\settings.json` (which isn't tracked). Change both together. When a fix clears a baseline entry, the
+check says so; run `.\build\luals-check.ps1 -UpdateBaseline` and commit the smaller baseline. Add to the
+baseline only a warning that can't be fixed in code.
