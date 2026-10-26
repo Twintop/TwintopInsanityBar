@@ -752,11 +752,12 @@ end
 
 -- Spell lines' draw-order offsets within a state bucket, by spec cache settings table, then setting key.
 local thresholdIconPairOffsets = {}
--- Custom lines sit at 0 like before priorities existed; High and Low step outside the spell lines' Normal range.
+-- Custom lines sit at 0 like before priorities existed. Low stays at half the 100-level sub-bucket, leaving room
+-- below it for the next state's High lines.
 local customThresholdPairOffsets = {
 	-3,
 	0,
-	96
+	48
 }
 
 ---Rebuilds each spell line's draw-order offset: Normal keeps its list position, High draws above every Normal line, and Low below.
@@ -1047,7 +1048,7 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		Threshold frame levels (Init.lua frameLevels). X starts at the line's state: special 2600, over 2200,
 		under 2000, unusable 1800, or out of range 1200. Subtract 100 (thresholdOffsetNoCooldown) for a spell
 		without a cooldown, then the line's pairOffset, 3 per line ahead of it on the bar. RefreshThresholdIconPriorities
-		gives High icons negative offsets and Low icons offsets past the last Normal line; custom thresholds use -3, 0, or 96.
+		gives High icons negative offsets and Low icons offsets past the last Normal line; custom thresholds use -3, 0, or 48.
 		Line = X-2, icon = X-1, cooldown = X.
 		Example: the 4th line, under cost, with a cooldown: X = 2000 - 9 = 1991, so line 1989, icon 1990, cooldown 1991.
 		A new line starts at thresholdBase: line 998, icon 999, cooldown 1000.
