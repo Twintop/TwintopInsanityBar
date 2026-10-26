@@ -307,6 +307,75 @@ function TRB.Functions.OptionsUi.ThresholdList:ApplyColorOverrideLayout(config)
 	return y
 end
 
+---Builds the icon priority dropdown and overlap checkboxes, hidden until bound and laid out.
+---@param parent Frame
+---@param namePrefix string # Unique global frame name prefix
+---@return table layoutControls # Pass to BindIconLayoutControls and to ApplyLineIconOverrideLayout as `iconLayoutControls`
+function TRB.Functions.OptionsUi.ThresholdList:BuildIconLayoutControls(parent, namePrefix)
+	-- Rebound to the selected threshold's icon settings by BindIconLayoutControls.
+	local state = {}
+	local priorityOptions = {
+		{ value = "high", label = L["ThresholdDetailIconPriorityHigh"] },
+		{ value = "normal", label = L["ThresholdDetailIconPriorityNormal"] },
+		{ value = "low", label = L["ThresholdDetailIconPriorityLow"] },
+	}
+
+	local layoutControls = {
+		state = state,
+		priorityOptions = priorityOptions,
+	}
+
+	layoutControls.priorityDropdown = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_IconPriority", L["ThresholdDetailIconPriority"], priorityOptions,
+		function() return state.icon ~= nil and state.icon.priority or "normal" end,
+		function(value)
+			if state.icon ~= nil then
+				state.icon.priority = value
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end,
+		oUi.xCoord, 0)
+	layoutControls.priorityDropdown.label:Hide()
+	layoutControls.priorityDropdown:Hide()
+
+	layoutControls.neverHideCheckbox = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_IconNeverHide", L["ThresholdDetailIconNeverHide"], L["ThresholdDetailIconNeverHideTooltip"], 0,
+		function() return state.icon ~= nil and state.icon.neverHide == true end,
+		function(checked)
+			if state.icon ~= nil then
+				state.icon.neverHide = checked
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end)
+	layoutControls.neverHideCheckbox:Hide()
+
+	layoutControls.excludeCheckbox = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_IconExcludeFromLayout", L["ThresholdDetailIconExcludeFromLayout"], L["ThresholdDetailIconExcludeFromLayoutTooltip"], 0,
+		function() return state.icon ~= nil and state.icon.excludeFromLayout == true end,
+		function(checked)
+			if state.icon ~= nil then
+				state.icon.excludeFromLayout = checked
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end)
+	layoutControls.excludeCheckbox:Hide()
+
+	return layoutControls
+end
+
+---Points the icon priority and overlap controls at a threshold's icon settings.
+---@param layoutControls table # From BuildIconLayoutControls
+---@param iconSettings TRB.Classes.Settings.ThresholdDictionaryIcon
+function TRB.Functions.OptionsUi.ThresholdList:BindIconLayoutControls(layoutControls, iconSettings)
+	layoutControls.state.icon = iconSettings
+	local priority = iconSettings.priority or "normal"
+	for _, option in ipairs(layoutControls.priorityOptions) do
+		if option.value == priority then
+			layoutControls.priorityDropdown:SetDefaultText(option.label)
+			break
+		end
+	end
+	layoutControls.neverHideCheckbox:SetChecked(iconSettings.neverHide == true)
+	layoutControls.excludeCheckbox:SetChecked(iconSettings.excludeFromLayout == true)
+end
+
 ---Applies shared visibility and positioning logic for Line/Icon override sections.
 ---This is used by both Threshold Lines and Custom Thresholds so spacing and
 ---anchors remain identical between tabs.
@@ -465,6 +534,16 @@ function TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout(confi
 		iconBorderSlider:Hide()
 	end
 
+	-- Priority and overlap controls apply whether or not the icon override is on.
+	local iconLayoutControls = config.iconLayoutControls
+	local showIconLayoutControls = iconLayoutControls ~= nil and hasIconSection and iconHeader:IsShown()
+	if iconLayoutControls ~= nil and not showIconLayoutControls then
+		iconLayoutControls.priorityDropdown.label:Hide()
+		iconLayoutControls.priorityDropdown:Hide()
+		iconLayoutControls.neverHideCheckbox:Hide()
+		iconLayoutControls.excludeCheckbox:Hide()
+	end
+
 	if hasIconSection and iconHeader:IsShown() then
 		iconHeader:ClearAllPoints()
 		iconHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
@@ -502,6 +581,25 @@ function TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout(confi
 			iconBorderSlider:ClearAllPoints()
 			iconBorderSlider:SetPoint("TOPLEFT", oUi.xCoord + 18, y)
 			y = y - 50
+		end
+
+		if showIconLayoutControls then
+			local priorityDropdown = iconLayoutControls.priorityDropdown
+			priorityDropdown.label:Show()
+			priorityDropdown:Show()
+			iconLayoutControls.neverHideCheckbox:Show()
+			iconLayoutControls.excludeCheckbox:Show()
+
+			priorityDropdown.label:ClearAllPoints()
+			priorityDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y)
+			priorityDropdown:ClearAllPoints()
+			priorityDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 30)
+
+			iconLayoutControls.neverHideCheckbox:ClearAllPoints()
+			iconLayoutControls.neverHideCheckbox:SetPoint("TOPLEFT", oUi.xCoord2, y - 30)
+			iconLayoutControls.excludeCheckbox:ClearAllPoints()
+			iconLayoutControls.excludeCheckbox:SetPoint("TOPLEFT", oUi.xCoord2, y - 50)
+			y = y - 80
 		end
 	end
 
@@ -888,6 +986,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	controls.sliders.thresholdIconBorderWidth = TRB.Functions.OptionsUi.Primitives:BuildSlider(detailScrollChild, L["ThresholdDetailIconBorderWidth"], 0, 12, 2, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, detailYCoord)
 	controls.sliders.thresholdIconBorderWidth:Hide()
 
+	controls.thresholdIconLayout = TRB.Functions.OptionsUi.ThresholdList:BuildIconLayoutControls(detailScrollChild, "TwintopResourceBar_" .. namePrefix .. "_Detail_Threshold")
+
 	-- ===== AUDIO CUE SECTION =====
 	detailYCoord = detailYCoord - 50
 	local audioHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailAudioHeader"], oUi.xCoord, detailYCoord)
@@ -971,6 +1071,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			iconXSlider = controls.sliders.thresholdIconXPos,
 			iconYSlider = controls.sliders.thresholdIconYPos,
 			iconBorderSlider = controls.sliders.thresholdIconBorderWidth,
+			iconLayoutControls = controls.thresholdIconLayout,
 		})
 
 		-- Audio section (only visible when threshold supports audio cues)
@@ -1058,6 +1159,9 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			xPos = spec.thresholds.icons.xPos or 0,
 			yPos = spec.thresholds.icons.yPos or 0,
 			border = spec.thresholds.icons.border or 2,
+			priority = "normal",
+			neverHide = false,
+			excludeFromLayout = false,
 		}
 		dictEntry.line = dictEntry.line or {
 			enabled = false,
@@ -1323,6 +1427,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 				controls.sliders.thresholdIconBorderWidth:Hide()
 			end
 		end
+
+		TRB.Functions.OptionsUi.ThresholdList:BindIconLayoutControls(controls.thresholdIconLayout, dictEntry.icon)
 
 		iconUseSpecificCheckbox:SetChecked(dictEntry.icon.enabled or false)
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(iconUseSpecificCheckbox, dictEntry.icon.enabled or false, true)

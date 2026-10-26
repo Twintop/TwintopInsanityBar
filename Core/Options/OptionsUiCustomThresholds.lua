@@ -413,6 +413,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 	editorY = editorY - 85
 	local iconXSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, L["ThresholdDetailIconXPos"], -128, 128, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, editorY)
 	local iconYSlider = TRB.Functions.OptionsUi.Primitives:BuildSlider(editorContent, L["ThresholdDetailIconYPos"], -128, 128, 0, 1, 0, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, editorY)
+	local iconLayoutControls = TRB.Functions.OptionsUi.ThresholdList:BuildIconLayoutControls(editorContent, "TwintopResourceBar_" .. namePrefix)
 
 	local function GetSelectedLine()
 		local currentSpec = GetCurrentSpec()
@@ -571,6 +572,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 			iconXSlider = iconXSlider,
 			iconYSlider = iconYSlider,
 			iconBorderSlider = iconBorderSlider,
+			iconLayoutControls = iconLayoutControls,
 		})
 		-- Forced-static thresholds (secret cast-count bars) always show a full-color icon (no
 		-- under->over trigger exists), so the "Desaturate icon" option is meaningless: keep it
@@ -850,6 +852,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 		lineWidthSlider:SetValue(dictLine.width or (currentThresholdSettings.properties and currentThresholdSettings.properties.width) or 2)
 		lineWidthSlider.EditBox:SetText(dictLine.width or (currentThresholdSettings.properties and currentThresholdSettings.properties.width) or 2)
 
+		TRB.Functions.OptionsUi.ThresholdList:BindIconLayoutControls(iconLayoutControls, dictIcon)
 		iconUseSpecificCheckbox:SetChecked(dictIcon.enabled == true)
 		iconShowCheckbox:SetChecked(dictIcon.show ~= false)
 		iconDesaturateCheckbox:SetChecked(dictIcon.desaturated == true)

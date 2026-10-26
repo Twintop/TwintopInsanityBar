@@ -370,7 +370,8 @@ end
 ---@param parentFrame Frame # The frame the line is parented to
 ---@param key string
 ---@param drawn boolean
-local function TrackIconLayout(threshold, parentFrame, key, drawn)
+---@param iconSettings TRB.Classes.Settings.ThresholdDictionaryIcon? # The line's per-threshold icon settings
+local function TrackIconLayout(threshold, parentFrame, key, drawn, iconSettings)
 	if threshold.icon == nil then
 		return
 	end
@@ -408,6 +409,8 @@ local function TrackIconLayout(threshold, parentFrame, key, drawn)
 		entry.key = key
 		MarkIconLayoutDirty(layout)
 	end
+	-- Edits to these settings redraw, which dirties every layout.
+	entry.icon = iconSettings
 
 	local cache = GetThresholdCache(key)
 	-- The key's live line owns it; a line discarded by ClearThresholds keeps its entry until the next solve prunes it.
@@ -440,7 +443,19 @@ local function UntrackIconLayout(threshold, cache)
 	end
 end
 
----True when entry `a` claims the row nearest the bar ahead of entry `b`: usable state first, then lower cost.
+local iconPriorityTiers = {
+	high = 1,
+	normal = 2,
+	low = 3
+}
+
+---@param iconSettings TRB.Classes.Settings.ThresholdDictionaryIcon?
+---@return integer
+local function GetIconPriorityTier(iconSettings)
+	return iconSettings ~= nil and iconPriorityTiers[iconSettings.priority] or iconPriorityTiers.normal
+end
+
+---True when entry `a` claims the row nearest the bar ahead of entry `b`: usable state first, then icon priority, then lower cost.
 ---@param a table
 ---@param b table
 ---@return boolean
@@ -449,6 +464,12 @@ local function IconRanksAbove(a, b)
 	local bLevel = b.cache.stateLevel or 0
 	if aLevel ~= bLevel then
 		return aLevel > bLevel
+	end
+
+	local aTier = GetIconPriorityTier(a.icon)
+	local bTier = GetIconPriorityTier(b.icon)
+	if aTier ~= bTier then
+		return aTier < bTier
 	end
 
 	local aValue = a.cache.value or 0
@@ -640,7 +661,8 @@ local function SolveIconLayout(layout, iconSettings)
 		local cache = GetThresholdCache(entry.key)
 		entry.cache = cache
 		entry.placed = false
-		if cache.layoutDrawn and cache.iconWidth ~= nil then
+		local excluded = entry.icon ~= nil and entry.icon.excludeFromLayout == true
+		if cache.layoutDrawn and cache.iconWidth ~= nil and not excluded then
 			local left, right, bottom, top = GetIconBounds(cache)
 			local insetX = math.floor(cache.iconWidth * allowance / 2 + 0.5)
 			local insetY = math.floor(cache.iconHeight * allowance / 2 + 0.5)
@@ -686,6 +708,11 @@ local function SolveIconLayout(layout, iconSettings)
 			end
 		end
 
+		if not entry.placed and entry.icon ~= nil and entry.icon.neverHide == true then
+			-- Overlaps on the last row instead of hiding.
+			entry.placed = true
+		end
+
 		if entry.placed then
 			ApplyIconLayoutResult(entry, entry.shiftX, entry.shiftY, false)
 		else
@@ -721,6 +748,65 @@ end
 local function IsIconLayoutActive(settings)
 	local mode = settings.thresholds.icons.overlapMode
 	return mode == "stagger" or mode == "topOnly"
+end
+
+-- Spell lines' draw-order offsets within a state bucket, by spec cache settings table, then setting key.
+local thresholdIconPairOffsets = {}
+-- Custom lines sit at 0 like before priorities existed. They never have a cooldown, so High climbs the 100-level
+-- no-cooldown drop to clear the state's cooldown lines; Low stays at half the drop, clear of the next state's High lines.
+local customThresholdPairOffsets = {
+	-103,
+	0,
+	48
+}
+
+---Rebuilds each spell line's draw-order offset: Normal keeps its list position, High draws above every Normal line, and Low below.
+function TRB.Functions.Threshold:RefreshThresholdIconPriorities()
+	wipe(thresholdIconPairOffsets)
+	local thresholdOffsetNoCooldown = TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
+	local spells = TRB.Data.cache.thresholdSpells
+	for _, specCache in pairs(TRB.Data.specCache) do
+		local settings = specCache.settings
+		-- An unfilled spec cache has no thresholds yet.
+		local dictionary = settings ~= nil and settings.thresholds ~= nil and settings.thresholds.thresholdDictionary or nil
+		if dictionary ~= nil then
+			-- Keyed by bar target, as UpdateSpellThresholds indexes lines per bar; false stands in for a nil target.
+			local lineCounts = {}
+			local highCounts = {}
+			for _, spell in ipairs(spells) do
+				local target = spell.barTarget or false
+				lineCounts[target] = (lineCounts[target] or 0) + 1
+				local dictEntry = dictionary[spell.settingKey]
+				if GetIconPriorityTier(dictEntry and dictEntry.icon) == iconPriorityTiers.high then
+					highCounts[target] = (highCounts[target] or 0) + 1
+				end
+			end
+
+			local offsets = {}
+			local indexes = {}
+			local highSeen = {}
+			local lowSeen = {}
+			for _, spell in ipairs(spells) do
+				local target = spell.barTarget or false
+				local index = (indexes[target] or 0) + 1
+				indexes[target] = index
+				local dictEntry = dictionary[spell.settingKey]
+				local tier = GetIconPriorityTier(dictEntry and dictEntry.icon)
+				if tier == iconPriorityTiers.high then
+					highSeen[target] = (highSeen[target] or 0) + 1
+					-- Cancels the no-cooldown drop so High outranks every Normal line of its state.
+					offsets[spell.settingKey] = (highSeen[target] - 1 - highCounts[target]) * 3 - (spell.hasCooldown and 0 or thresholdOffsetNoCooldown)
+				elseif tier == iconPriorityTiers.low then
+					lowSeen[target] = (lowSeen[target] or 0) + 1
+					-- Applies the drop to cooldown lines too, so Low sits under every Normal line of its state.
+					offsets[spell.settingKey] = (lineCounts[target] + lowSeen[target] - 1) * 3 + (spell.hasCooldown and thresholdOffsetNoCooldown or 0)
+				else
+					offsets[spell.settingKey] = (index - 1) * 3
+				end
+			end
+			thresholdIconPairOffsets[settings] = offsets
+		end
+	end
 end
 
 
@@ -964,7 +1050,9 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	--[[
 		Threshold frame levels (Init.lua frameLevels). X starts at the line's state: special 2600, over 2200,
 		under 2000, unusable 1800, or out of range 1200. Subtract 100 (thresholdOffsetNoCooldown) for a spell
-		without a cooldown, then the line's pairOffset, 3 per line ahead of it on the bar.
+		without a cooldown, then the line's pairOffset, 3 per line ahead of it on the bar. RefreshThresholdIconPriorities
+		lifts High lines above every Normal line of their state, cooldown or not, and drops Low lines below them;
+		custom thresholds use -103, 0, or 48.
 		Line = X-2, icon = X-1, cooldown = X.
 		Example: the 4th line, under cost, with a cooldown: X = 2000 - 9 = 1991, so line 1989, icon 1990, cooldown 1991.
 		A new line starts at thresholdBase: line 998, icon 999, cooldown 1000.
@@ -2926,7 +3014,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					threshold,
 					inRange,
 					frameLevel,
-					0,
+					customThresholdPairOffsets[GetIconPriorityTier(thresholdOverrides.icon)],
 					thresholdColor,
 					nil,
 					settings,
@@ -2949,7 +3037,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					overlapBorder
 				)
 				if layoutActive then
-					TrackIconLayout(threshold, targetInfo.parentFrame, frameKey, showThreshold)
+					TrackIconLayout(threshold, targetInfo.parentFrame, frameKey, showThreshold, thresholdOverrides.icon)
 				elseif threshold.trbIconLayout ~= nil then
 					ReleaseIconLayout(threshold)
 				end
@@ -3020,6 +3108,7 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 	end
 
 	TRB.Data.cache.values.threshold = {}
+	TRB.Functions.Threshold:RefreshThresholdIconPriorities()
 	TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 
 	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -3493,6 +3582,7 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 	line.state = state
 	line.data = data
 	local layoutActive = IsIconLayoutActive(settings)
+	local pairOffsets = thresholdIconPairOffsets[settings]
 
 	local index = 0
 	for _, spell in ipairs(data.thresholdSpells) do
@@ -3514,7 +3604,7 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 				-- Hidden in place rather than skipped, so a form swap never hands this frame to another spell.
 				frame:Hide()
 				if layoutActive then
-					TrackIconLayout(frame, nodeFrame, spell.settingKey, false)
+					TrackIconLayout(frame, nodeFrame, spell.settingKey, false, dictEntry and dictEntry.icon)
 				elseif frame.trbIconLayout ~= nil then
 					ReleaseIconLayout(frame)
 				end
@@ -3522,14 +3612,14 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 				-- A disabled line with no sound always ends hidden, and its rules touch only the line and its frame.
 				self:Hide(spell.settingKey, frame)
 				if layoutActive then
-					TrackIconLayout(frame, nodeFrame, spell.settingKey, false)
+					TrackIconLayout(frame, nodeFrame, spell.settingKey, false, dictEntry and dictEntry.icon)
 				elseif frame.trbIconLayout ~= nil then
 					ReleaseIconLayout(frame)
 				end
 			else
 				line.spell = spell
 				line.frame = frame
-				line.pairOffset = (index - 1) * 3
+				line.pairOffset = pairOffsets ~= nil and pairOffsets[spell.settingKey] or (index - 1) * 3
 				line.dictEntry = dictEntry
 				line.snapshot = snapshots[spell.id]
 				line.resourceAmount = spell:GetPrimaryResourceCost()
@@ -3572,7 +3662,7 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 				local isDrawn = self:AdjustThresholdDisplay(spell, spell.settingKey, frame, line.show, line.frameLevel, line.pairOffset, line.color, line.snapshot, settings, dictEntry, bar.barSettings)
 				self:RepositionThreshold(settings, spell.settingKey, frame, line.show and isDrawn, nodeFrame, line.resourceAmount, bar.maxResource, nil, bar.barSettings)
 				if layoutActive then
-					TrackIconLayout(frame, nodeFrame, spell.settingKey, line.show and isDrawn)
+					TrackIconLayout(frame, nodeFrame, spell.settingKey, line.show and isDrawn, dictEntry and dictEntry.icon)
 				elseif frame.trbIconLayout ~= nil then
 					ReleaseIconLayout(frame)
 				end
