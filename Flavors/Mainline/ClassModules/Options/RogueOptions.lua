@@ -1184,6 +1184,30 @@ local function AssassinationConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceComboPoints"], true)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local assassinationThresholdLabels = {
+	ambush = L["RogueAssassinationThresholdAmbush"],
+	cheapShot = L["RogueAssassinationThresholdCheapShot"],
+	crimsonVial = L["RogueAssassinationThresholdCrimsonVial"],
+	distract = L["RogueAssassinationThresholdDistract"],
+	feint = L["RogueAssassinationThresholdFeint"],
+	gouge = L["RogueAssassinationThresholdGouge"],
+	kidneyShot = L["RogueAssassinationThresholdKidneyShot"],
+	sap = L["RogueAssassinationThresholdSap"],
+	shiv = L["RogueAssassinationThresholdShiv"],
+	sliceAndDice = L["RogueAssassinationThresholdSliceAndDice"],
+	crimsonTempest = L["RogueAssassinationThresholdCrimsonTempest"],
+	envenom = L["RogueAssassinationThresholdEnvenom"],
+	fanOfKnives = L["RogueAssassinationThresholdFanOfKnives"],
+	garrote = L["RogueAssassinationThresholdGarrote"],
+	kingsbane = L["RogueAssassinationThresholdKingsbane"],
+	mutilate = L["RogueAssassinationThresholdMutilate"],
+	poisonedKnife = L["RogueAssassinationThresholdPoisonedKnife"],
+	rupture = L["RogueAssassinationThresholdRupture"],
+	deathFromAbove = L["RogueAssassinationThresholdDeathFromAbove"],
+	dismantle = L["RogueAssassinationThresholdDismantle"],
+}
+
 local function AssassinationConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
@@ -1199,28 +1223,7 @@ local function AssassinationConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceEnergy"],
 		},
-		labels = {
-			ambush = L["RogueAssassinationThresholdAmbush"],
-			cheapShot = L["RogueAssassinationThresholdCheapShot"],
-			crimsonVial = L["RogueAssassinationThresholdCrimsonVial"],
-			distract = L["RogueAssassinationThresholdDistract"],
-			feint = L["RogueAssassinationThresholdFeint"],
-			gouge = L["RogueAssassinationThresholdGouge"],
-			kidneyShot = L["RogueAssassinationThresholdKidneyShot"],
-			sap = L["RogueAssassinationThresholdSap"],
-			shiv = L["RogueAssassinationThresholdShiv"],
-			sliceAndDice = L["RogueAssassinationThresholdSliceAndDice"],
-			crimsonTempest = L["RogueAssassinationThresholdCrimsonTempest"],
-			envenom = L["RogueAssassinationThresholdEnvenom"],
-			fanOfKnives = L["RogueAssassinationThresholdFanOfKnives"],
-			garrote = L["RogueAssassinationThresholdGarrote"],
-			kingsbane = L["RogueAssassinationThresholdKingsbane"],
-			mutilate = L["RogueAssassinationThresholdMutilate"],
-			poisonedKnife = L["RogueAssassinationThresholdPoisonedKnife"],
-			rupture = L["RogueAssassinationThresholdRupture"],
-			deathFromAbove = L["RogueAssassinationThresholdDeathFromAbove"],
-			dismantle = L["RogueAssassinationThresholdDismantle"],
-		},
+		labels = assassinationThresholdLabels,
 		tooltips = {
 			ambush = L["RogueAssassinationThresholdAmbushTooltip"],
 			cheapShot = L["RogueAssassinationThresholdCheapShotTooltip"],
@@ -1394,6 +1397,7 @@ local function AssassinationConstructIndicatorColorsPanel(parent)
 			primaryResourceString = L["ResourceEnergy"],
 			primaryResourceMax = ASSASSINATION_MAX_ENERGY,
 		},
+		thresholdLabels = assassinationThresholdLabels,
 	})
 
 	yCoord = yCoord - 40
@@ -1753,6 +1757,30 @@ local function OutlawConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceComboPoints"], true)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local outlawThresholdLabels = {
+	ambush = L["RogueOutlawThresholdAmbush"],
+	cheapShot = L["RogueOutlawThresholdCheapShot"],
+	crimsonVial = L["RogueOutlawThresholdCrimsonVial"],
+	distract = L["RogueOutlawThresholdDistract"],
+	feint = L["RogueOutlawThresholdFeint"],
+	gouge = L["RogueOutlawThresholdGouge"],
+	kidneyShot = L["RogueOutlawThresholdKidneyShot"],
+	sap = L["RogueOutlawThresholdSap"],
+	shiv = L["RogueOutlawThresholdShiv"],
+	sinisterStrike = L["RogueOutlawThresholdSinisterStrike"],
+	sliceAndDice = L["RogueOutlawThresholdSliceAndDice"],
+	betweenTheEyes = L["RogueOutlawThresholdBetweenTheEyes"],
+	bladeFlurry = L["RogueOutlawThresholdBladeFlurry"],
+	dispatch = L["RogueOutlawThresholdDispatch"],
+	coupDeGrace = L["RogueOutlawThresholdCoupDeGrace"],
+	killingSpree = L["RogueOutlawThresholdKillingSpree"],
+	pistolShot = L["RogueOutlawThresholdPistolShot"],
+	rollTheBones = L["RogueOutlawThresholdRollTheBones"],
+	deathFromAbove = L["RogueOutlawThresholdDeathFromAbove"],
+	dismantle = L["RogueOutlawThresholdDismantle"],
+}
+
 local function OutlawConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
@@ -1768,28 +1796,7 @@ local function OutlawConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceEnergy"],
 		},
-		labels = {
-			ambush = L["RogueOutlawThresholdAmbush"],
-			cheapShot = L["RogueOutlawThresholdCheapShot"],
-			crimsonVial = L["RogueOutlawThresholdCrimsonVial"],
-			distract = L["RogueOutlawThresholdDistract"],
-			feint = L["RogueOutlawThresholdFeint"],
-			gouge = L["RogueOutlawThresholdGouge"],
-			kidneyShot = L["RogueOutlawThresholdKidneyShot"],
-			sap = L["RogueOutlawThresholdSap"],
-			shiv = L["RogueOutlawThresholdShiv"],
-			sinisterStrike = L["RogueOutlawThresholdSinisterStrike"],
-			sliceAndDice = L["RogueOutlawThresholdSliceAndDice"],
-			betweenTheEyes = L["RogueOutlawThresholdBetweenTheEyes"],
-			bladeFlurry = L["RogueOutlawThresholdBladeFlurry"],
-			dispatch = L["RogueOutlawThresholdDispatch"],
-			coupDeGrace = L["RogueOutlawThresholdCoupDeGrace"],
-			killingSpree = L["RogueOutlawThresholdKillingSpree"],
-			pistolShot = L["RogueOutlawThresholdPistolShot"],
-			rollTheBones = L["RogueOutlawThresholdRollTheBones"],
-			deathFromAbove = L["RogueOutlawThresholdDeathFromAbove"],
-			dismantle = L["RogueOutlawThresholdDismantle"],
-		},
+		labels = outlawThresholdLabels,
 		tooltips = {
 			ambush = L["RogueOutlawThresholdAmbushTooltip"],
 			cheapShot = L["RogueOutlawThresholdCheapShotTooltip"],
@@ -1971,6 +1978,7 @@ local function OutlawConstructIndicatorColorsPanel(parent)
 			primaryResourceString = L["ResourceEnergy"],
 			primaryResourceMax = OUTLAW_MAX_ENERGY,
 		},
+		thresholdLabels = outlawThresholdLabels,
 	})
 
 	yCoord = yCoord - 40
@@ -2320,6 +2328,31 @@ local function SubtletyConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], "notFull", true, L["ResourceComboPoints"], true)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local subtletyThresholdLabels = {
+	cheapShot = L["RogueSubtletyThresholdCheapShot"],
+	crimsonVial = L["RogueSubtletyThresholdCrimsonVial"],
+	distract = L["RogueSubtletyThresholdDistract"],
+	eviscerate = L["RogueSubtletyThresholdEviscerate"],
+	coupDeGrace = L["RogueSubtletyThresholdCoupDeGrace"],
+	feint = L["RogueSubtletyThresholdFeint"],
+	gouge = L["RogueSubtletyThresholdGouge"],
+	kidneyShot = L["RogueSubtletyThresholdKidneyShot"],
+	sap = L["RogueSubtletyThresholdSap"],
+	shiv = L["RogueSubtletyThresholdShiv"],
+	sliceAndDice = L["RogueSubtletyThresholdSliceAndDice"],
+	backstab = L["RogueSubtletyThresholdCheckboxBackstab"],
+	gloomblade = L["RogueSubtletyThresholdGloomblade"],
+	blackPowder = L["RogueSubtletyThresholdBlackPowder"],
+	goremawsBite = L["RogueSubtletyThresholdGoremawsBite"],
+	secretTechnique = L["RogueSubtletyThresholdSecretTechnique"],
+	shadowstrike = L["RogueSubtletyThresholdShadowStrike"],
+	shurikenStorm = L["RogueSubtletyThresholdShurikenStorm"],
+	shurikenToss = L["RogueSubtletyThresholdShurikenToss"],
+	deathFromAbove = L["RogueSubtletyThresholdDeathFromAbove"],
+	dismantle = L["RogueSubtletyThresholdDismantle"],
+}
+
 local function SubtletyConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
@@ -2335,29 +2368,7 @@ local function SubtletyConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceEnergy"],
 		},
-		labels = {
-			cheapShot = L["RogueSubtletyThresholdCheapShot"],
-			crimsonVial = L["RogueSubtletyThresholdCrimsonVial"],
-			distract = L["RogueSubtletyThresholdDistract"],
-			eviscerate = L["RogueSubtletyThresholdEviscerate"],
-			coupDeGrace = L["RogueSubtletyThresholdCoupDeGrace"],
-			feint = L["RogueSubtletyThresholdFeint"],
-			gouge = L["RogueSubtletyThresholdGouge"],
-			kidneyShot = L["RogueSubtletyThresholdKidneyShot"],
-			sap = L["RogueSubtletyThresholdSap"],
-			shiv = L["RogueSubtletyThresholdShiv"],
-			sliceAndDice = L["RogueSubtletyThresholdSliceAndDice"],
-			backstab = L["RogueSubtletyThresholdCheckboxBackstab"],
-			gloomblade = L["RogueSubtletyThresholdGloomblade"],
-			blackPowder = L["RogueSubtletyThresholdBlackPowder"],
-			goremawsBite = L["RogueSubtletyThresholdGoremawsBite"],
-			secretTechnique = L["RogueSubtletyThresholdSecretTechnique"],
-			shadowstrike = L["RogueSubtletyThresholdShadowStrike"],
-			shurikenStorm = L["RogueSubtletyThresholdShurikenStorm"],
-			shurikenToss = L["RogueSubtletyThresholdShurikenToss"],
-			deathFromAbove = L["RogueSubtletyThresholdDeathFromAbove"],
-			dismantle = L["RogueSubtletyThresholdDismantle"],
-		},
+		labels = subtletyThresholdLabels,
 		tooltips = {
 			cheapShot = L["RogueSubtletyThresholdCheapShotTooltip"],
 			crimsonVial = L["RogueSubtletyThresholdCrimsonVialTooltip"],
@@ -2533,6 +2544,7 @@ local function SubtletyConstructIndicatorColorsPanel(parent)
 			primaryResourceString = L["ResourceEnergy"],
 			primaryResourceMax = SUBTLETY_MAX_ENERGY,
 		},
+		thresholdLabels = subtletyThresholdLabels,
 	})
 
 	yCoord = yCoord - 40

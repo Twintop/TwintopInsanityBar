@@ -3054,6 +3054,9 @@ end
 
 ---Redraws all threshold lines across primary and secondary bar groups by resetting their appearance and clearing the threshold position cache.
 function TRB.Functions.Threshold:RedrawThresholdLines()
+	-- Every threshold color and mode edit lands here, on whichever spec's panel made it.
+	TRB.Functions.Threshold:SyncAllIndicatorColors()
+
 	if TRB.Data.barConstructedForSpec == nil or TRB.Data.barConstructedForSpec == "" then
 		return
 	end
@@ -3748,4 +3751,172 @@ function TRB.Functions.Threshold:UpdateSpellThresholdAudio(settings, snapshotDat
 			self:LatchThresholdCue(snapshotData, spell.settingKey, audio, spell:IsUsable())
 		end
 	end
+end
+
+-- Custom Color Indicators that follow a threshold line's state.
+TRB.Functions.Threshold.CONDITION_SOURCE = "threshold"
+
+---@enum TRB.ThresholdConditionState
+TRB.Functions.Threshold.ConditionState = {
+	USABLE = "usable",
+	UNUSABLE = "unusable",
+	ON_COOLDOWN = "onCooldown",
+	OUT_OF_RANGE = "outOfRange",
+	IN_RANGE = "inRange",
+	STATIC = "static",
+}
+local ConditionState = TRB.Functions.Threshold.ConditionState
+
+-- Conditions whose line's Color Mode no longer offers their state, judged by SyncIndicatorColors; they stay off.
+local colorModeMismatches = setmetatable({}, { __mode = "k" })
+
+-- The `colors.threshold` key each state recolors with; In Range shares Usable's.
+local conditionStateColorKeys = {
+	[ConditionState.USABLE] = "over",
+	[ConditionState.UNUSABLE] = "under",
+	[ConditionState.ON_COOLDOWN] = "unusable",
+	[ConditionState.OUT_OF_RANGE] = "outOfRange",
+	[ConditionState.IN_RANGE] = "over",
+}
+
+---Whether a threshold line's state holds right now, from the same reads its line uses. Out of combat a
+---spell is never out of range, as on the line.
+---@param condition TRB.CustomIndicatorCondition
+---@return boolean
+function TRB.Functions.Threshold:IsConditionMet(condition)
+	local spell = TRB.Data.cache.thresholdSpellsByKey[condition.settingKey]
+	if spell == nil or colorModeMismatches[condition] then
+		return false
+	end
+
+	local state = condition.state
+	if state == ConditionState.USABLE then
+		return spell:IsUsable()
+	elseif state == ConditionState.UNUSABLE then
+		return not spell:IsUsable()
+	elseif state == ConditionState.ON_COOLDOWN then
+		local snapshot = TRB.Data.snapshotData.snapshots[spell.id]
+		return snapshot ~= nil and snapshot.cooldown:IsUnusable()
+	elseif state == ConditionState.STATIC then
+		return true
+	end
+
+	local outOfRange = TRB.Data.character.inCombat and not spell:GetIsSpellInRange()
+	if state == ConditionState.OUT_OF_RANGE then
+		return outOfRange
+	end
+	return state == ConditionState.IN_RANGE and not outOfRange
+end
+
+---The color a threshold line shows in a state, after Use Global and the line's own overrides. A state the
+---line hides keeps the shared color.
+---@param className string
+---@param specName string
+---@param settingKey string
+---@param state string # A ConditionState value
+---@return string?
+function TRB.Functions.Threshold:GetConditionStateColor(className, specName, settingKey, state)
+	local settings = TRB.Data.settings
+	local spec = settings[className] ~= nil and settings[className][specName] or nil
+	if spec == nil or spec.colors == nil or spec.colors.threshold == nil then
+		return nil
+	end
+
+	local global = settings.core.global[className] ~= nil and settings.core.global[className][specName] or nil
+	local shared = (global ~= nil and global.thresholdColors) and settings.core.colors.threshold or spec.colors.threshold
+	local dictionary = spec.thresholds ~= nil and spec.thresholds.thresholdDictionary or nil
+	local dictEntry = dictionary ~= nil and dictionary[settingKey] or nil
+	local overrides = dictEntry ~= nil and dictEntry.colors or nil
+
+	if state == ConditionState.STATIC then
+		-- Until a static color is picked, match the Thresholds tab's static swatch, which shows the spec's own Under color.
+		local staticColor = overrides ~= nil and overrides.staticColor or nil
+		return (staticColor ~= nil and staticColor.color) or spec.colors.threshold.under.color
+	end
+
+	local colorKey = conditionStateColorKeys[state]
+	local entry = colorKey ~= nil and shared[colorKey] or nil
+	if entry == nil then
+		return nil
+	end
+	local override = overrides ~= nil and overrides[colorKey] or nil
+	local mode = colorKey == "outOfRange" and GetOorMode(override) or GetMode(override)
+	if mode == "override" and override ~= nil and override.color ~= nil then
+		return override.color
+	end
+	return entry.color
+end
+
+---Whether a line is in Static color mode, where it offers only the Static state.
+---@param spec table # The spec's raw settings
+---@param settingKey string
+---@return boolean
+function TRB.Functions.Threshold:IsLineStatic(spec, settingKey)
+	local dictionary = spec.thresholds ~= nil and spec.thresholds.thresholdDictionary or nil
+	local dictEntry = dictionary ~= nil and dictionary[settingKey] or nil
+	return dictEntry ~= nil and dictEntry.colors ~= nil and dictEntry.colors.colorMode == "static"
+end
+
+---Whether a condition's line changed Color Mode after it was picked, so the line no longer offers its state.
+---@param condition TRB.CustomIndicatorCondition
+---@return boolean
+function TRB.Functions.Threshold:IsColorModeMismatched(condition)
+	return colorModeMismatches[condition] == true
+end
+
+---Points a spec's threshold Color Indicators at their lines' current state colors, and judges whether each line's
+---Color Mode still offers its state. Runs whenever a threshold color, a color mode, or the Use Global choice behind them changes.
+---@param className string
+---@param specName string
+function TRB.Functions.Threshold:SyncIndicatorColors(className, specName)
+	local spec = TRB.Data.settings[className] ~= nil and TRB.Data.settings[className][specName] or nil
+	if spec == nil or spec.colors == nil or spec.colors.shared == nil or spec.colors.shared.indicatorColors == nil then
+		return
+	end
+
+	for _, indicator in pairs(spec.colors.shared.indicatorColors) do
+		local conditions = type(indicator) == "table" and indicator.custom ~= nil and indicator.custom.conditions or nil
+		local condition = conditions ~= nil and conditions[1] or nil
+		if condition ~= nil and condition.source == self.CONDITION_SOURCE then
+			colorModeMismatches[condition] = (self:IsLineStatic(spec, condition.settingKey) ~= (condition.state == ConditionState.STATIC)) or nil
+			local color = self:GetConditionStateColor(className, specName, condition.settingKey, condition.state)
+			if color ~= nil then
+				indicator.color = color
+				indicator.color2 = color
+			end
+			indicator.gradientDirection = "disabled"
+		end
+	end
+end
+
+---SyncIndicatorColors for every spec, for an edit that can reach several of them.
+function TRB.Functions.Threshold:SyncAllIndicatorColors()
+	for _, entry in pairs(TRB.Data.specRegistry) do
+		self:SyncIndicatorColors(entry.className, entry.specName)
+	end
+end
+
+---Whether a spec has a threshold Color Indicator that needs range checks.
+---@param className string
+---@param specName string
+---@return boolean
+function TRB.Functions.Threshold:UsesRangeConditions(className, specName)
+	local spec = TRB.Data.settings[className] ~= nil and TRB.Data.settings[className][specName] or nil
+	local shared = spec ~= nil and spec.colors ~= nil and spec.colors.shared or nil
+	if shared == nil or shared.indicatorColors == nil then
+		return false
+	end
+
+	for _, indicator in pairs(shared.indicatorColors) do
+		local conditions = type(indicator) == "table" and indicator.custom ~= nil and indicator.custom.conditions or nil
+		if conditions ~= nil then
+			for _, condition in ipairs(conditions) do
+				if condition.source == self.CONDITION_SOURCE
+					and (condition.state == ConditionState.OUT_OF_RANGE or condition.state == ConditionState.IN_RANGE) then
+					return true
+				end
+			end
+		end
+	end
+	return false
 end

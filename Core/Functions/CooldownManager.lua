@@ -840,9 +840,10 @@ end
 
 ---A custom Color Indicator's or Buff Alert's condition: which source it reads and what must hold.
 ---@class TRB.CustomIndicatorCondition
----@field source string # CDM.CONDITION_SOURCE
----@field cooldownID integer
----@field state string # A CDM.ConditionState value
+---@field source string # CDM.CONDITION_SOURCE, or Threshold.CONDITION_SOURCE for a threshold line's state
+---@field cooldownID integer? # CDM conditions only
+---@field settingKey string? # Threshold conditions only: the line's `thresholdDictionary` key
+---@field state string # A CDM.ConditionState or Threshold.ConditionState value
 ---@field name string? # Display name, cached for panels shown while on another spec
 ---@field spellID integer? # The entry's spell, cached so a renumbered entry can be found again
 
@@ -857,10 +858,11 @@ CDM.ConditionState = {
 ---@param condition TRB.CustomIndicatorCondition
 ---@return boolean?
 function CDM:ReadCondition(condition)
-	if condition.source ~= CDM.CONDITION_SOURCE or condition.state ~= CDM.ConditionState.ACTIVE then
+	local cooldownID = condition.cooldownID
+	if condition.source ~= CDM.CONDITION_SOURCE or condition.state ~= CDM.ConditionState.ACTIVE or cooldownID == nil then
 		return false
 	end
-	return self:IsCooldownActive(condition.cooldownID)
+	return self:IsCooldownActive(cooldownID)
 end
 
 ---Whether one custom indicator condition holds right now. Unknown answers count as not met.
@@ -1147,7 +1149,7 @@ end
 ---@param condition TRB.CustomIndicatorCondition
 ---@return TRB.CdmLayoutEntry?
 function CDM:ResolveCondition(condition)
-	local entry = self:GetLayoutEntry(condition.cooldownID)
+	local entry = condition.cooldownID ~= nil and self:GetLayoutEntry(condition.cooldownID) or nil
 	if entry == nil and condition.spellID ~= nil then
 		entry = self:FindLayoutEntryBySpellId(condition.spellID)
 	end

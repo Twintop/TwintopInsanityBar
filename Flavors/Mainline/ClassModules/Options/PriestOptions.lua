@@ -2348,6 +2348,13 @@ local function ShadowConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 40
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local shadowThresholdLabels = {
+	shadowWordMadness = L["PriestShadowThresholdShadowWordMadness"],
+	shadowWordMadness2 = L["PriestShadowThresholdShadowWordMadness2Times"],
+	shadowWordMadness3 = L["PriestShadowThresholdShadowWordMadness3Times"],
+}
+
 local function ShadowConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -2397,6 +2404,7 @@ local function ShadowConstructIndicatorColorsPanel(parent)
 			},
 		},
 		overcapConfig = { primaryResourceString = L["ResourceInsanity"], primaryResourceMax = SHADOW_MAX_INSANITY },
+		thresholdLabels = shadowThresholdLabels,
 	}))
 
 	yCoord = yCoord - 40
@@ -2510,11 +2518,7 @@ local function ShadowConstructThresholdListPanel(parent)
 	local yCoord = 5
 
 	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 5, 3, yCoord, {
-		labels = {
-			shadowWordMadness = L["PriestShadowThresholdShadowWordMadness"],
-			shadowWordMadness2 = L["PriestShadowThresholdShadowWordMadness2Times"],
-			shadowWordMadness3 = L["PriestShadowThresholdShadowWordMadness3Times"],
-		},
+		labels = shadowThresholdLabels,
 		tooltips = {
 			shadowWordMadness = L["PriestShadowThresholdShadowWordMadnessTooltip"],
 			shadowWordMadness2 = L["PriestShadowThresholdShadowWordMadness2TimesTooltip"],

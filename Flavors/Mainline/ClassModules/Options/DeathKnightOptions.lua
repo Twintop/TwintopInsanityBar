@@ -1324,6 +1324,13 @@ local function BloodConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 6, 1, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true, nil, customBars)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local bloodThresholdLabels = {
+	deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+	deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+	raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
+}
+
 local function BloodConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
@@ -1336,11 +1343,7 @@ local function BloodConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 6, 1, yCoord, {
 		barTargetLabels = { primary = L["ResourceRunicPower"] },
-		labels = {
-			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
-			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
-			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
-		},
+		labels = bloodThresholdLabels,
 		tooltips = {
 			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
 			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
@@ -1466,6 +1469,7 @@ local function BloodConstructIndicatorColorsPanel(parent)
 		},
 		ddNamePrefix = "TwintopResourceBar_DeathKnight_Blood",
 		overcapConfig = { primaryResourceString = L["ResourceRunicPower"], primaryResourceMax = BLOOD_MAX_RUNIC_POWER },
+		thresholdLabels = bloodThresholdLabels,
 	}))
 
 	yCoord = yCoord - 40
@@ -1758,6 +1762,15 @@ local function FrostConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 6, 2, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local frostThresholdLabels = {
+	breathOfSindragosa = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosa"],
+	deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+	deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+	frostStrike = L["DeathKnightFrostThresholdCheckboxFrostStrike"],
+	glacialAdvance = L["DeathKnightFrostThresholdCheckboxGlacialAdvance"],
+}
+
 local function FrostConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
@@ -1770,13 +1783,7 @@ local function FrostConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 6, 2, yCoord, {
 		barTargetLabels = { primary = L["ResourceRunicPower"] },
-		labels = {
-			breathOfSindragosa = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosa"],
-			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
-			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
-			frostStrike = L["DeathKnightFrostThresholdCheckboxFrostStrike"],
-			glacialAdvance = L["DeathKnightFrostThresholdCheckboxGlacialAdvance"],
-		},
+		labels = frostThresholdLabels,
 		tooltips = {
 			breathOfSindragosa = L["DeathKnightFrostThresholdCheckboxBreathOfSindragosaTooltip"],
 			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
@@ -1895,6 +1902,7 @@ local function FrostConstructIndicatorColorsPanel(parent)
 		},
 		ddNamePrefix = "TwintopResourceBar_DeathKnight_Frost",
 		overcapConfig = { primaryResourceString = L["ResourceRunicPower"], primaryResourceMax = FROST_MAX_RUNIC_POWER },
+		thresholdLabels = frostThresholdLabels,
 	}))
 
 	yCoord = yCoord - 40
@@ -2184,6 +2192,15 @@ local function UnholyConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 6, 3, yCoord, L["ResourceRunicPower"], "notEmpty", true, L["ResourceRunes"], true)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local unholyThresholdLabels = {
+	deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
+	deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
+	epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemic"],
+	raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
+	zombify = L["DeathKnightUnholyThresholdCheckboxZombify"],
+}
+
 local function UnholyConstructThresholdListPanel(parent)
 	if parent == nil then
 		return
@@ -2196,13 +2213,7 @@ local function UnholyConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 6, 3, yCoord, {
 		barTargetLabels = { primary = L["ResourceRunicPower"] },
-		labels = {
-			deathCoil = L["DeathKnightThresholdCheckboxDeathCoil"],
-			deathStrike = L["DeathKnightThresholdCheckboxDeathStrike"],
-			epidemic = L["DeathKnightUnholyThresholdCheckboxEpidemic"],
-			raiseAlly = L["DeathKnightThresholdCheckboxRaiseAlly"],
-			zombify = L["DeathKnightUnholyThresholdCheckboxZombify"],
-		},
+		labels = unholyThresholdLabels,
 		tooltips = {
 			deathCoil = L["DeathKnightThresholdCheckboxDeathCoilTooltip"],
 			deathStrike = L["DeathKnightThresholdCheckboxDeathStrikeTooltip"],
@@ -2323,6 +2334,7 @@ local function UnholyConstructIndicatorColorsPanel(parent)
 		},
 		ddNamePrefix = "TwintopResourceBar_DeathKnight_Unholy",
 		overcapConfig = { primaryResourceString = L["ResourceRunicPower"], primaryResourceMax = UNHOLY_MAX_RUNIC_POWER },
+		thresholdLabels = unholyThresholdLabels,
 	}))
 
 	yCoord = yCoord - 40

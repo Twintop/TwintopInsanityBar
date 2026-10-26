@@ -517,6 +517,37 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 	return container
 end
 
+---Locks a gradient color picker to colors set elsewhere, or unlocks it; callers check `readOnlyTooltip` before
+---opening the color picker. Call after ToggleColorPickerEnabled, which owns the unlocked picker's mouse state.
+---@param picker TRB.Classes.OptionsUi.GradientColorPicker
+---@param readOnlyTooltip string? # Shown on the first swatch while locked; nil unlocks
+function TRB.Functions.OptionsUi.ColorPickers:SetGradientColorPickerReadOnly(picker, readOnlyTooltip)
+	picker.readOnlyTooltip = readOnlyTooltip
+	if readOnlyTooltip ~= nil and not picker.readOnlyHooked then
+		picker.readOnlyHooked = true
+		picker.Swatch1:HookScript("OnEnter", function(swatch)
+			if picker.readOnlyTooltip ~= nil then
+				GameTooltip:SetOwner(swatch, "ANCHOR_RIGHT")
+				GameTooltip:SetText(picker.readOnlyTooltip, 1, 1, 1, 1, true)
+				GameTooltip:Show()
+			end
+		end)
+		picker.Swatch1:HookScript("OnLeave", function()
+			GameTooltip:Hide()
+		end)
+	end
+
+	local locked = readOnlyTooltip ~= nil
+	picker.DirectionButton:SetAlpha(locked and 0.35 or 1.0)
+	if locked then
+		-- Hoverable even while the row is disabled, so the tooltip can say where the color comes from.
+		picker.Swatch1:EnableMouse(true)
+		picker.Swatch2:SetAlpha(0.35)
+		picker.Swatch2:EnableMouse(false)
+		picker.DirectionButton:EnableMouse(false)
+	end
+end
+
 ---Handles mouse-down on a gradient color picker's secondary swatch: opens the color picker for `color2`.
 ---@param button string # The mouse button pressed
 ---@param colorEntry table # The settings entry with `color`, `color2`, `gradientDirection`

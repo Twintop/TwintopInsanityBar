@@ -1049,6 +1049,22 @@ local function ArmsConstructRageBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, classId, specId, yCoord, L["ResourceRage"], 1, ARMS_MAX_RAGE)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local armsThresholdLabels = {
+	executeMinimum = L["WarriorArmsThresholdExecuteMinimum"],
+	executeMaximum = L["WarriorArmsThresholdExecuteMaximum"],
+	cleave = L["WarriorArmsThresholdCleave"],
+	whirlwind = L["WarriorArmsThresholdWhirlwind"],
+	hamstring = L["WarriorArmsThresholdHamstring"],
+	ignorePain = L["WarriorArmsThresholdIgnorePain"],
+	impendingVictory = L["WarriorArmsThresholdImpendingVictory"],
+	mortalStrike = L["WarriorArmsThresholdMortalStrike"],
+	rend = L["WarriorArmsThresholdRend"],
+	shieldBlock = L["WarriorArmsThresholdShieldBlock"],
+	slam = L["WarriorArmsThresholdSlam"],
+	thunderClap = L["WarriorArmsThresholdThunderClap"],
+}
+
 local function ArmsConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -1074,6 +1090,7 @@ local function ArmsConstructIndicatorColorsPanel(parent)
 			primaryResourceString = L["ResourceRage"],
 			primaryResourceMax = ARMS_MAX_RAGE,
 		},
+		thresholdLabels = armsThresholdLabels,
 	})
 
 	yCoord = yCoord - 40
@@ -1138,20 +1155,7 @@ local function ArmsConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceRage"],
 		},
-		labels = {
-			executeMinimum = L["WarriorArmsThresholdExecuteMinimum"],
-			executeMaximum = L["WarriorArmsThresholdExecuteMaximum"],
-			cleave = L["WarriorArmsThresholdCleave"],
-			whirlwind = L["WarriorArmsThresholdWhirlwind"],
-			hamstring = L["WarriorArmsThresholdHamstring"],
-			ignorePain = L["WarriorArmsThresholdIgnorePain"],
-			impendingVictory = L["WarriorArmsThresholdImpendingVictory"],
-			mortalStrike = L["WarriorArmsThresholdMortalStrike"],
-			rend = L["WarriorArmsThresholdRend"],
-			shieldBlock = L["WarriorArmsThresholdShieldBlock"],
-			slam = L["WarriorArmsThresholdSlam"],
-			thunderClap = L["WarriorArmsThresholdThunderClap"],
-		},
+		labels = armsThresholdLabels,
 		tooltips = {
 			cleave = L["WarriorArmsThresholdCleaveTooltip"],
 			whirlwind = L["WarriorArmsThresholdWhirlwindTooltip"],
@@ -1457,6 +1461,19 @@ local function FuryConstructRageBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], 1, FURY_MAX_RAGE)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local furyThresholdLabels = {
+	executeMinimum = L["WarriorFuryThresholdExecuteMinimum"],
+	executeMaximum = L["WarriorFuryThresholdExecuteMaximum"],
+	execute = L["WarriorFuryThresholdExecute"],
+	hamstring = L["WarriorFuryThresholdHamstring"],
+	impendingVictory = L["WarriorFuryThresholdImpendingVictory"],
+	rampage = L["WarriorFuryThresholdRampage"],
+	shieldBlock = L["WarriorFuryThresholdShieldBlock"],
+	slam = L["WarriorFuryThresholdSlam"],
+	thunderClap = L["WarriorFuryThresholdThunderClap"],
+}
+
 local function FuryConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -1487,6 +1504,7 @@ local function FuryConstructIndicatorColorsPanel(parent)
 			primaryResourceString = L["ResourceRage"],
 			primaryResourceMax = FURY_MAX_RAGE,
 		},
+		thresholdLabels = furyThresholdLabels,
 	})
 
 	yCoord = yCoord - 40
@@ -1602,17 +1620,7 @@ local function FuryConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceRage"],
 		},
-		labels = {
-			executeMinimum = L["WarriorFuryThresholdExecuteMinimum"],
-			executeMaximum = L["WarriorFuryThresholdExecuteMaximum"],
-			execute = L["WarriorFuryThresholdExecute"],
-			hamstring = L["WarriorFuryThresholdHamstring"],
-			impendingVictory = L["WarriorFuryThresholdImpendingVictory"],
-			rampage = L["WarriorFuryThresholdRampage"],
-			shieldBlock = L["WarriorFuryThresholdShieldBlock"],
-			slam = L["WarriorFuryThresholdSlam"],
-			thunderClap = L["WarriorFuryThresholdThunderClap"],
-		},
+		labels = furyThresholdLabels,
 		tooltips = {
 			executeMinimum = L["WarriorFuryThresholdExecuteMinimumTooltip"],
 			executeMaximum = L["WarriorFuryThresholdExecuteMaximumTooltip"],
@@ -1916,6 +1924,20 @@ local function ProtectionConstructRageBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, controls, spec, 1, 3, yCoord, L["ResourceRage"], 1, PROTECTION_MAX_RAGE)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local protectionThresholdLabels = {
+	executeMinimum = L["WarriorProtectionThresholdExecuteMinimum"],
+	executeMaximum = L["WarriorProtectionThresholdExecuteMaximum"],
+	hamstring = L["WarriorProtectionThresholdHamstring"],
+	ignorePain = L["WarriorProtectionThresholdIgnorePain"],
+	impendingVictory = L["WarriorProtectionThresholdImpendingVictory"],
+	rend = L["WarriorProtectionThresholdRend"],
+	revenge = L["WarriorProtectionThresholdRevenge"],
+	shieldBlock = L["WarriorProtectionThresholdShieldBlock"],
+	slam = L["WarriorProtectionThresholdSlam"],
+	whirlwind = L["WarriorProtectionThresholdWhirlwind"],
+}
+
 local function ProtectionConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -1946,6 +1968,7 @@ local function ProtectionConstructIndicatorColorsPanel(parent)
 			primaryResourceString = L["ResourceRage"],
 			primaryResourceMax = PROTECTION_MAX_RAGE,
 		},
+		thresholdLabels = protectionThresholdLabels,
 	})
 
 	yCoord = yCoord - 40
@@ -2037,18 +2060,7 @@ local function ProtectionConstructThresholdListPanel(parent)
 		barTargetLabels = {
 			primary = L["ResourceRage"],
 		},
-		labels = {
-			executeMinimum = L["WarriorProtectionThresholdExecuteMinimum"],
-			executeMaximum = L["WarriorProtectionThresholdExecuteMaximum"],
-			hamstring = L["WarriorProtectionThresholdHamstring"],
-			ignorePain = L["WarriorProtectionThresholdIgnorePain"],
-			impendingVictory = L["WarriorProtectionThresholdImpendingVictory"],
-			rend = L["WarriorProtectionThresholdRend"],
-			revenge = L["WarriorProtectionThresholdRevenge"],
-			shieldBlock = L["WarriorProtectionThresholdShieldBlock"],
-			slam = L["WarriorProtectionThresholdSlam"],
-			whirlwind = L["WarriorProtectionThresholdWhirlwind"],
-		},
+		labels = protectionThresholdLabels,
 		tooltips = {
 			executeMinimum = L["WarriorProtectionThresholdExecuteMinimumTooltip"],
 			executeMaximum = L["WarriorProtectionThresholdExecuteMaximumTooltip"],

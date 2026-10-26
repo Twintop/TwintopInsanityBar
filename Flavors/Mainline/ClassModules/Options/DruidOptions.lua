@@ -1646,6 +1646,14 @@ local function BalanceConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 11, 1, yCoord)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local balanceThresholdLabels = {
+	starsurge = L["DruidBalanceThresholdCheckboxStarsurge"],
+	starsurge2 = L["DruidBalanceThresholdCheckboxStarsurge2Times"],
+	starsurge3 = L["DruidBalanceThresholdCheckboxStarsurge3Times"],
+	starfall = L["DruidBalanceThresholdCheckboxStarfall"],
+}
+
 local function BalanceConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -1687,6 +1695,7 @@ local function BalanceConstructIndicatorColorsPanel(parent)
 			},
 		},
 		overcapConfig = { primaryResourceString = L["ResourceAstralPower"], primaryResourceMax = BALANCE_MAX_ASTRAL_POWER },
+		thresholdLabels = balanceThresholdLabels,
 	}))
 
 	yCoord = yCoord - 40
@@ -1816,12 +1825,7 @@ local function BalanceConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 11, 1, yCoord, {
 		barTargetLabels = { primary = L["ResourceAstralPower"] },
-		labels = {
-			starsurge = L["DruidBalanceThresholdCheckboxStarsurge"],
-			starsurge2 = L["DruidBalanceThresholdCheckboxStarsurge2Times"],
-			starsurge3 = L["DruidBalanceThresholdCheckboxStarsurge3Times"],
-			starfall = L["DruidBalanceThresholdCheckboxStarfall"],
-		},
+		labels = balanceThresholdLabels,
 		tooltips = {
 			starfall = L["DruidBalanceThresholdCheckboxStarfallTooltip"],
 			starsurge = L["DruidBalanceThresholdCheckboxStarsurgeTooltip"],
@@ -2242,6 +2246,24 @@ local function FeralConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 11, 2, yCoord)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local feralThresholdLabels = {
+	feralFrenzy = L["DruidFeralThresholdCheckboxFeralFrenzy"],
+	franticFrenzy = L["DruidFeralThresholdCheckboxFranticFrenzy"],
+	ferociousBiteMinimum = L["DruidFeralThresholdCheckboxFerociousBiteMinimum"],
+	ferociousBiteMaximum = L["DruidFeralThresholdCheckboxFerociousBiteMaximum"],
+	ravageMinimum = L["DruidFeralThresholdCheckboxRavageMinimum"],
+	ravageMaximum = L["DruidFeralThresholdCheckboxRavageMaximum"],
+	frenziedRegeneration = L["DruidFeralThresholdCheckboxFrenziedRegeneration"],
+	maim = L["DruidFeralThresholdCheckboxMaim"],
+	moonfire = L["DruidFeralThresholdCheckboxMoonfire"],
+	primalWrath = L["DruidFeralThresholdCheckboxPrimalWrath"],
+	rake = L["DruidFeralThresholdCheckboxRake"],
+	rip = L["DruidFeralThresholdCheckboxRip"],
+	shred = L["DruidFeralThresholdCheckboxShred"],
+	swipe = L["DruidFeralThresholdCheckboxSwipe"],
+}
+
 local function FeralConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -2277,6 +2299,7 @@ local function FeralConstructIndicatorColorsPanel(parent)
 			rageBar = { bar = true, border = true, background = true },
 		},
 		overcapConfig = { primaryResourceString = L["ResourceEnergy"], primaryResourceMax = FERAL_MAX_ENERGY },
+		thresholdLabels = feralThresholdLabels,
 	}))
 
 	yCoord = yCoord - 40
@@ -2386,22 +2409,7 @@ local function FeralConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 11, 2, yCoord, {
 		barTargetLabels = { primary = L["ResourceEnergy"] },
-		labels = {
-			feralFrenzy = L["DruidFeralThresholdCheckboxFeralFrenzy"],
-			franticFrenzy = L["DruidFeralThresholdCheckboxFranticFrenzy"],
-			ferociousBiteMinimum = L["DruidFeralThresholdCheckboxFerociousBiteMinimum"],
-			ferociousBiteMaximum = L["DruidFeralThresholdCheckboxFerociousBiteMaximum"],
-			ravageMinimum = L["DruidFeralThresholdCheckboxRavageMinimum"],
-			ravageMaximum = L["DruidFeralThresholdCheckboxRavageMaximum"],
-			frenziedRegeneration = L["DruidFeralThresholdCheckboxFrenziedRegeneration"],
-			maim = L["DruidFeralThresholdCheckboxMaim"],
-			moonfire = L["DruidFeralThresholdCheckboxMoonfire"],
-			primalWrath = L["DruidFeralThresholdCheckboxPrimalWrath"],
-			rake = L["DruidFeralThresholdCheckboxRake"],
-			rip = L["DruidFeralThresholdCheckboxRip"],
-			shred = L["DruidFeralThresholdCheckboxShred"],
-			swipe = L["DruidFeralThresholdCheckboxSwipe"],
-		},
+		labels = feralThresholdLabels,
 		tooltips = {
 			feralFrenzy = L["DruidFeralThresholdCheckboxFeralFrenzyTooltip"],
 			franticFrenzy = L["DruidFeralThresholdCheckboxFranticFrenzyTooltip"],
@@ -2713,6 +2721,18 @@ local function GuardianConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 11, 3, yCoord)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local guardianThresholdLabels = {
+	maul = L["DruidGuardianThresholdCheckboxMaul"],
+	raze = L["DruidGuardianThresholdCheckboxRaze"],
+	maulKillingBlow = L["DruidGuardianThresholdCheckboxMaulKillingBlow"],
+	razeKillingBlow = L["DruidGuardianThresholdCheckboxRazeKillingBlow"],
+	maulHarnessedRage = L["DruidGuardianThresholdCheckboxMaulHarnessedRage"],
+	razeHarnessedRage = L["DruidGuardianThresholdCheckboxRazeHarnessedRage"],
+	ironfur = L["DruidGuardianThresholdCheckboxIronfur"],
+	frenziedRegeneration = L["DruidGuardianThresholdCheckboxFrenziedRegeneration"],
+}
+
 local function GuardianConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -2751,6 +2771,7 @@ local function GuardianConstructIndicatorColorsPanel(parent)
 			},
 		},
 		overcapConfig = { primaryResourceString = L["ResourceRage"], primaryResourceMax = GUARDIAN_MAX_RAGE },
+		thresholdLabels = guardianThresholdLabels,
 	}))
 
 	yCoord = yCoord - 40
@@ -2907,16 +2928,7 @@ local function GuardianConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 11, 3, yCoord, {
 		barTargetLabels = { primary = L["ResourceRage"] },
-		labels = {
-			maul = L["DruidGuardianThresholdCheckboxMaul"],
-			raze = L["DruidGuardianThresholdCheckboxRaze"],
-			maulKillingBlow = L["DruidGuardianThresholdCheckboxMaulKillingBlow"],
-			razeKillingBlow = L["DruidGuardianThresholdCheckboxRazeKillingBlow"],
-			maulHarnessedRage = L["DruidGuardianThresholdCheckboxMaulHarnessedRage"],
-			razeHarnessedRage = L["DruidGuardianThresholdCheckboxRazeHarnessedRage"],
-			ironfur = L["DruidGuardianThresholdCheckboxIronfur"],
-			frenziedRegeneration = L["DruidGuardianThresholdCheckboxFrenziedRegeneration"],
-		},
+		labels = guardianThresholdLabels,
 		tooltips = {
 			frenziedRegeneration = L["DruidGuardianThresholdCheckboxFrenziedRegenerationTooltip"],
 			ironfur = L["DruidGuardianThresholdCheckboxIronfurTooltip"],

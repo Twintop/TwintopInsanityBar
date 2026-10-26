@@ -10,6 +10,13 @@ TRB.Details.coreNewsContent = [====[
 - Fix the End Cap still leaving a sliver of the bar showing past it during long channels such as Fishing.
 - Fix the End Cap narrowing as the Target and Focus Cast Bars near full.
 
+## Color Indicators
+
+- [#515](#515) Custom Color Indicators can follow a threshold line, from a Threshold Line menu beside Buffs (CDM) on specializations with threshold lines.
+- [#515](#515) A threshold line's Color Indicator turns on while its ability is usable, unusable, on cooldown, out of range, or in range, or whenever you know it, for a line set to Static.
+- [#515](#515) A threshold line's Color Indicator uses the line's color for its state, and In Range uses the Usable color.
+- [#515](#515) Threshold lines that change color in steps, such as Shadow Word: Madness (x2), and custom thresholds aren't offered.
+
 ## Thresholds
 
 - [#333](#333) Add a When Threshold Icons Overlap option: Stagger into rows moves overlapping icons onto rows away from the bar, and Show highest priority only hides an icon that overlaps a higher-priority one.
@@ -18,7 +25,7 @@ TRB.Details.coreNewsContent = [====[
 - [#333](#333) Add an Extend threshold lines to their icons option.
 - [#333](#333) Add Icon Priority, Never hide this icon, and Ignore overlapping icons options to each threshold and custom threshold.
 - [#333](#333) Icon Priority decides which overlapping icon stays nearest the bar or visible, and which draws on top when icons are left to overlap.
-- [#890](#890)Fix custom threshold icons on a vertical bar other than the main resource bar being placed as if the bar were horizontal.
+- [#890](#890) Fix custom threshold icons on a vertical bar other than the main resource bar being placed as if the bar were horizontal.
 
 ---
 

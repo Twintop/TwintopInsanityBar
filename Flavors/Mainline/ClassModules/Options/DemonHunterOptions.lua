@@ -927,6 +927,18 @@ local function HavocConstructHealthBarPanel(parent)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_havoc = controls
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local havocThresholdLabels = {
+	bladeDance = L["DemonHunterHavocThresholdCheckboxBladeDance"],
+	deathSweep = L["DemonHunterHavocThresholdCheckboxDeathSweep"],
+	chaosStrike = L["DemonHunterHavocThresholdCheckboxChaosStrike"],
+	annihilation = L["DemonHunterHavocThresholdCheckboxAnnihilation"],
+	eyeBeam = L["DemonHunterHavocThresholdCheckboxEyeBeam"],
+	abyssalGaze = L["DemonHunterHavocThresholdCheckboxAbyssalGaze"],
+	chaosNova = L["DemonHunterHavocThresholdCheckboxChaosNova"],
+	throwGlaive = L["DemonHunterHavocThresholdCheckboxThrowGlaive"],
+}
+
 local function HavocConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -961,6 +973,7 @@ local function HavocConstructIndicatorColorsPanel(parent)
 			},
 		},
 		overcapConfig = { primaryResourceString = L["ResourceFury"], primaryResourceMax = HAVOC_MAX_FURY },
+		thresholdLabels = havocThresholdLabels,
 	}))
 
 	yCoord = yCoord - 40
@@ -1010,16 +1023,7 @@ local function HavocConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 12, 1, yCoord, {
 		barTargetLabels = { primary = L["ResourceFury"] },
-		labels = {
-			bladeDance = L["DemonHunterHavocThresholdCheckboxBladeDance"],
-			deathSweep = L["DemonHunterHavocThresholdCheckboxDeathSweep"],
-			chaosStrike = L["DemonHunterHavocThresholdCheckboxChaosStrike"],
-			annihilation = L["DemonHunterHavocThresholdCheckboxAnnihilation"],
-			eyeBeam = L["DemonHunterHavocThresholdCheckboxEyeBeam"],
-			abyssalGaze = L["DemonHunterHavocThresholdCheckboxAbyssalGaze"],
-			chaosNova = L["DemonHunterHavocThresholdCheckboxChaosNova"],
-			throwGlaive = L["DemonHunterHavocThresholdCheckboxThrowGlaive"],
-		},
+		labels = havocThresholdLabels,
 		tooltips = {
 			bladeDance = L["DemonHunterHavocThresholdCheckboxBladeDanceTooltip"],
 			deathSweep = L["DemonHunterHavocThresholdCheckboxDeathSweepTooltip"],
@@ -1372,6 +1376,14 @@ local function VengeanceConstructSoulFragmentsBarPanel(parent)
 	TRB.Frames.interfaceSettingsFrameContainer.controls.demonhunter_vengeance = controls
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local vengeanceThresholdLabels = {
+	soulCleave = L["DemonHunterVengeanceThresholdCheckboxSoulCleave"],
+	chaosNova = L["DemonHunterVengeanceThresholdCheckboxChaosNova"],
+	felDevastation = L["DemonHunterVengeanceThresholdCheckboxFelDevastation"],
+	spiritBomb = L["DemonHunterVengeanceThresholdCheckboxSpiritBomb"],
+}
+
 local function VengeanceConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -1413,6 +1425,7 @@ local function VengeanceConstructIndicatorColorsPanel(parent)
 			},
 		},
 		overcapConfig = { primaryResourceString = L["ResourceFury"], primaryResourceMax = VENGEANCE_MAX_FURY },
+		thresholdLabels = vengeanceThresholdLabels,
 	}))
 
 	yCoord = yCoord - 40
@@ -1480,12 +1493,7 @@ local function VengeanceConstructThresholdListPanel(parent)
 	controls.colors.threshold = {}
 	yCoord = TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent, controls, spec, 12, 2, yCoord, {
 		barTargetLabels = { primary = L["ResourceFury"] },
-		labels = {
-			soulCleave = L["DemonHunterVengeanceThresholdCheckboxSoulCleave"],
-			chaosNova = L["DemonHunterVengeanceThresholdCheckboxChaosNova"],
-			felDevastation = L["DemonHunterVengeanceThresholdCheckboxFelDevastation"],
-			spiritBomb = L["DemonHunterVengeanceThresholdCheckboxSpiritBomb"],
-		},
+		labels = vengeanceThresholdLabels,
 		tooltips = {
 			chaosNova = L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"],
 			felDevastation = L["DemonHunterVengeanceThresholdCheckboxFelDevastationTooltip"],
@@ -1800,6 +1808,12 @@ local function DevourerConstructHealthBarPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, controls, spec, 12, 3, yCoord)
 end
 
+-- Shared by the Thresholds tab and the Color Indicators tab's Threshold Line menu.
+local devourerThresholdLabels = {
+	voidRay = L["DemonHunterDevourerThresholdCheckboxVoidRay"],
+	collapsingStarThreshold = L["DemonHunterDevourerThresholdCheckboxCollapsingStar"],
+}
+
 local function DevourerConstructIndicatorColorsPanel(parent)
 	if parent == nil then
 		return
@@ -1830,6 +1844,7 @@ local function DevourerConstructIndicatorColorsPanel(parent)
 		},
 		ddNamePrefix = "TwintopResourceBar_DemonHunter_Devourer",
 		overcapConfig = { primaryResourceString = L["ResourceFury"], primaryResourceMax = DEVOURER_MAX_FURY },
+		thresholdLabels = devourerThresholdLabels,
 	}))
 
 	yCoord = yCoord - 40
@@ -1878,10 +1893,7 @@ local function DevourerConstructThresholdListPanel(parent)
 			primary = L["ResourceFury"],
 			secondary = L["ResourceCollapsingStar"],
 		},
-		labels = {
-			voidRay = L["DemonHunterDevourerThresholdCheckboxVoidRay"],
-			collapsingStarThreshold = L["DemonHunterDevourerThresholdCheckboxCollapsingStar"],
-		},
+		labels = devourerThresholdLabels,
 		tooltips = {
 			collapsingStarThreshold = L["DemonHunterDevourerThresholdCheckboxCollapsingStarTooltip"],
 			voidRay = L["DemonHunterDevourerThresholdCheckboxVoidRayTooltip"],

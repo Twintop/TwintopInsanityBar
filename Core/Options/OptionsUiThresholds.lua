@@ -386,12 +386,17 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 	-- The cover stops above the first custom color that stays per spec.
 	local globalRowsBottomY = nil
 
+	-- Threshold Color Indicators show these colors, on this spec or every spec using Global Options.
+	local function SyncIndicatorColors()
+		TRB.Functions.Threshold:SyncAllIndicatorColors()
+	end
+
 	if under == true then
 		yCoord = yCoord - 30
 		controls.colors.threshold.under = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], localizationResource), spec.colors.threshold.under.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under", nil, nil, nil, nil, SyncIndicatorColors)
 		end)
 		globalRowsBottomY = yCoord - 30
 	end
@@ -401,7 +406,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		controls.colors.threshold.over = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], localizationResource), spec.colors.threshold.over.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over", nil, nil, nil, nil, SyncIndicatorColors)
 		end)
 		globalRowsBottomY = yCoord - 30
 	end
@@ -411,7 +416,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		controls.colors.threshold.unusable = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ThresholdUnusable"], spec.colors.threshold.unusable.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable", nil, nil, nil, nil, SyncIndicatorColors)
 		end)
 		globalRowsBottomY = yCoord - 30
 	end
@@ -430,11 +435,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
 			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
-				if not spec.colors.threshold.outOfRange.show or (spec.colors.threshold.outOfRange.show and spec.colors.threshold.outOfRange.enabled) then
-					TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-				else
-					TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-				end
+				TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
 			end
 		end)
 
@@ -448,11 +449,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 			spec.colors.threshold.outOfRange.enabled = self:GetChecked()
 			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
-				if not spec.colors.threshold.outOfRange.show or (spec.colors.threshold.outOfRange.show and spec.colors.threshold.outOfRange.enabled) then
-					TRB.Functions.Character:EnableSpellRangeCheckUpdate()
-				else
-					TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-				end
+				TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
 			end
 		end)
 
@@ -461,7 +458,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange", nil, nil, nil, nil, SyncIndicatorColors)
 		end)
 		globalRowsBottomY = yCoord - 30
 	end

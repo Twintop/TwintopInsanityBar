@@ -69,11 +69,10 @@ end
 TRB.Classes.ThresholdData = {}
 TRB.Classes.ThresholdData.__index = TRB.Classes.ThresholdData
 
----@param requireKnown boolean?
 ---@return TRB.Classes.ThresholdData
-function TRB.Classes.ThresholdData:New(requireKnown)
+function TRB.Classes.ThresholdData:New()
 	local self = setmetatable({}, TRB.Classes.ThresholdData)
-	self.requireKnown = requireKnown == true
+	self.requireKnown = TRB.Flavor.thresholdsRequireKnown == true
 	return self
 end
 

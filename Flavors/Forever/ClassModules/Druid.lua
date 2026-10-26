@@ -302,7 +302,7 @@ end
 
 local thresholdBars = { rage = TRB.Classes.ThresholdBar:New("rage"), energy = TRB.Classes.ThresholdBar:New("energy") }
 local thresholdState = TRB.Classes.ThresholdState:New()
-local thresholdData = TRB.Classes.ThresholdData:New(true)
+local thresholdData = TRB.Classes.ThresholdData:New()
 
 local function UpdateResourceBar()
 	local refreshText = false
