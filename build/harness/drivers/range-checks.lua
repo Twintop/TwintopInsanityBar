@@ -78,36 +78,72 @@ function hooks.afterEvents(ctx)
 		return registered, string.format("event %s, spells on: %s", registered and "registered" or "unregistered", #ids > 0 and table.concat(ids, " ") or "none")
 	end
 
+	---The specialization's range-checked threshold spells, when its settings need range checks.
+	---@param key string
+	---@return integer[]
+	local function RangeCheckedIds(key)
+		local ids = {}
+		local cache = TRB.Data.specCache[key]
+		local entry = Character:GetSpecRegistryEntry(key)
+		if not TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(cache.settings) and not TRB.Functions.Threshold:UsesRangeConditions(entry.className, entry.specName) then
+			return ids
+		end
+		-- Several lines can share one spell, such as one ability at different costs.
+		local seen = {}
+		for _, spell in pairs(cache.spellsData.spells) do
+			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() and spell.rangeCheck == true and not seen[spell:GetRankedId()] then
+				seen[spell:GetRankedId()] = true
+				ids[#ids + 1] = spell:GetRankedId()
+			end
+		end
+		table.sort(ids)
+		return ids
+	end
+
 	---The specialization's range-checked threshold spells that need range checks but aren't on.
 	---@param key string
 	---@return integer[]
 	local function MissingIds(key)
 		local missing = {}
-		local cache = TRB.Data.specCache[key]
-		local entry = Character:GetSpecRegistryEntry(key)
-		if not TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(cache.settings) and not TRB.Functions.Threshold:UsesRangeConditions(entry.className, entry.specName) then
-			return missing
-		end
-		for _, spell in pairs(cache.spellsData.spells) do
-			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() and spell.rangeCheck == true and enabledIds[spell:GetRankedId()] == nil then
-				missing[#missing + 1] = spell:GetRankedId()
+		for _, id in ipairs(RangeCheckedIds(key)) do
+			if enabledIds[id] == nil then
+				missing[#missing + 1] = id
 			end
 		end
-		table.sort(missing)
 		return missing
 	end
 
-	-- On means the step's specialization is built, its range-checked spells are on, and turning range checks on again changes nothing.
+	---Spells with range checks on that aren't the specialization's own, such as the previous specialization's.
+	---@param key string
+	---@return integer[]
+	local function ExtraIds(key)
+		local own = {}
+		for _, id in ipairs(RangeCheckedIds(key)) do
+			own[id] = true
+		end
+		local extra = {}
+		for id in pairs(enabledIds) do
+			if not own[id] then
+				extra[#extra + 1] = id
+			end
+		end
+		table.sort(extra)
+		return extra
+	end
+
+	-- On means the step's specialization is built, only its own range-checked spells are on, and turning range checks on again changes nothing.
 	local function CheckOn(label, key)
 		local registered, now = State()
 		if not TRB.Data.specSupported then
-			check(label .. ": range checks stay off for an unsupported specialization", not registered)
+			check(string.format("%s: range checks stay off for an unsupported specialization (%s)", label, now), not registered and next(enabledIds) == nil)
 			return
 		end
 		check(label .. ": the bar is built for " .. key, TRB.Data.barConstructedForSpec == key)
 		check(label .. ": the range event is registered", registered)
 		local missing = MissingIds(key)
 		check(label .. ": its range-checked spells are on" .. (#missing > 0 and " (off: " .. table.concat(missing, " ") .. ")" or ""), #missing == 0)
+		local extra = ExtraIds(key)
+		check(label .. ": only its own range checks are on" .. (#extra > 0 and " (also on: " .. table.concat(extra, " ") .. ")" or ""), #extra == 0)
 		Character:EnableSpellRangeCheckUpdate()
 		local _, expected = State()
 		if now == expected then
@@ -149,6 +185,28 @@ function hooks.afterEvents(ctx)
 		Step(entry.compositeKey .. " after " .. change, "PLAYER_SPECIALIZATION_CHANGED", entry.compositeKey)
 		Step(entry.compositeKey .. " after a loading screen", "PLAYER_ENTERING_WORLD", entry.compositeKey)
 		Step(entry.compositeKey .. " after a talent change", "TRAIT_CONFIG_UPDATED:12345", entry.compositeKey)
+	end
+
+	-- Disabling the live spec drops the immediate SwitchSpec on a spec change, leaving only Bootstrap's run to turn range checks on.
+	local from, to = entries[#entries], nil
+	for i = 1, #entries - 1 do
+		if #RangeCheckedIds(entries[i].compositeKey) > 0 then
+			to = entries[i]
+			break
+		end
+	end
+	if to ~= nil then
+		local enabled = TRB.Data.settings.core.enabled[from.className]
+		enabled[from.specName] = false
+		TRB.Functions.Class:EventRegistration()
+		CheckOn(from.compositeKey .. " once disabled", from.compositeKey)
+		-- Nothing on before the switch, as after logging in on the disabled spec.
+		for id in pairs(enabledIds) do
+			enabledIds[id] = nil
+		end
+		SetSpec(to.specId)
+		Step(to.compositeKey .. " after a change from a disabled specialization", "PLAYER_SPECIALIZATION_CHANGED", to.compositeKey)
+		enabled[from.specName] = true
 	end
 	return errors
 end
