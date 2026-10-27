@@ -8,6 +8,13 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.8-release (2026-10-27)
+## Monk
+
+- Fix threshold lines getting stuck in or out of range after a loading screen, talent change, or specialization change.
+
+---
+
 # 12.1.5.7-release (2026-10-25)
 ## General
 ### Skyriding
