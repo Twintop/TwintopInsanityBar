@@ -59,6 +59,7 @@ function hooks.afterEvents(ctx)
 		return disable(...)
 	end
 
+	---Whether the range event is registered, and the event and enabled spells as one comparable string.
 	---@return boolean registered
 	---@return string summary
 	local function State()
@@ -77,13 +78,36 @@ function hooks.afterEvents(ctx)
 		return registered, string.format("event %s, spells on: %s", registered and "registered" or "unregistered", #ids > 0 and table.concat(ids, " ") or "none")
 	end
 
-	-- On means turning the range checks on again changes nothing.
-	local function CheckOn(label)
+	---The specialization's range-checked threshold spells that need range checks but aren't on.
+	---@param key string
+	---@return integer[]
+	local function MissingIds(key)
+		local missing = {}
+		local cache = TRB.Data.specCache[key]
+		local entry = Character:GetSpecRegistryEntry(key)
+		if not TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(cache.settings) and not TRB.Functions.Threshold:UsesRangeConditions(entry.className, entry.specName) then
+			return missing
+		end
+		for _, spell in pairs(cache.spellsData.spells) do
+			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() and spell.rangeCheck == true and enabledIds[spell:GetRankedId()] == nil then
+				missing[#missing + 1] = spell:GetRankedId()
+			end
+		end
+		table.sort(missing)
+		return missing
+	end
+
+	-- On means the step's specialization is built, its range-checked spells are on, and turning range checks on again changes nothing.
+	local function CheckOn(label, key)
 		local registered, now = State()
 		if not TRB.Data.specSupported then
 			check(label .. ": range checks stay off for an unsupported specialization", not registered)
 			return
 		end
+		check(label .. ": the bar is built for " .. key, TRB.Data.barConstructedForSpec == key)
+		check(label .. ": the range event is registered", registered)
+		local missing = MissingIds(key)
+		check(label .. ": its range-checked spells are on" .. (#missing > 0 and " (off: " .. table.concat(missing, " ") .. ")" or ""), #missing == 0)
 		Character:EnableSpellRangeCheckUpdate()
 		local _, expected = State()
 		if now == expected then
@@ -93,12 +117,12 @@ function hooks.afterEvents(ctx)
 		end
 	end
 
-	local function Step(label, event)
+	local function Step(label, event, key)
 		local before = switches
 		stubs.fireEvents(event, ctx.addonName)
 		Drain(event:match("^[^:]+"))
 		check(label .. ": SwitchSpec ran again", switches > before)
-		CheckOn(label)
+		CheckOn(label, key)
 	end
 
 	local function SetSpec(index)
@@ -106,14 +130,25 @@ function hooks.afterEvents(ctx)
 		desktop.C_SpecializationInfo.GetSpecialization = function() return index end
 	end
 
-	CheckOn("after login")
+	CheckOn("after login", TRB.Data.character.compositeKey)
+	local entries = {}
 	for _, entry in ipairs(Character:GetSpecRegistryEntriesOrdered()) do
 		if entry.classId == ctx.classId then
-			SetSpec(entry.specId)
-			Step(entry.compositeKey .. " after a specialization change", "PLAYER_SPECIALIZATION_CHANGED")
-			Step(entry.compositeKey .. " after a loading screen", "PLAYER_ENTERING_WORLD")
-			Step(entry.compositeKey .. " after a talent change", "TRAIT_CONFIG_UPDATED:12345")
+			entries[#entries + 1] = entry
 		end
+	end
+	-- The login spec goes last, so every specialization of a multi-spec class is changed into.
+	if #entries > 1 then
+		table.insert(entries, table.remove(entries, 1))
+	end
+	local current = desktop.C_SpecializationInfo.GetSpecialization()
+	for _, entry in ipairs(entries) do
+		local change = entry.specId ~= current and "a specialization change" or "a same-specialization event"
+		current = entry.specId
+		SetSpec(entry.specId)
+		Step(entry.compositeKey .. " after " .. change, "PLAYER_SPECIALIZATION_CHANGED", entry.compositeKey)
+		Step(entry.compositeKey .. " after a loading screen", "PLAYER_ENTERING_WORLD", entry.compositeKey)
+		Step(entry.compositeKey .. " after a talent change", "TRAIT_CONFIG_UPDATED:12345", entry.compositeKey)
 	end
 	return errors
 end

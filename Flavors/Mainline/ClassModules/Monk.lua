@@ -1726,7 +1726,7 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar
+		-- Re-enables the range checks disabled above on every run, and fills the snapshots ConstructResourceBar reads.
 		TRB.Functions.Class:EventRegistration()
 
 		if TRB.Data.barConstructedForSpec ~= "monk_brewmaster" then
@@ -1752,7 +1752,7 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar
+		-- Re-enables the range checks disabled above on every run, and fills the snapshots ConstructResourceBar reads.
 		TRB.Functions.Class:EventRegistration()
 
 		if TRB.Data.barConstructedForSpec ~= "monk_mistweaver" then
@@ -1797,7 +1797,7 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
-		-- CRITICAL: EventRegistration MUST be called BEFORE ConstructResourceBar
+		-- Re-enables the range checks disabled above on every run, and fills the snapshots ConstructResourceBar reads.
 		TRB.Functions.Class:EventRegistration()
 
 		if TRB.Data.barConstructedForSpec ~= "monk_windwalker" then
