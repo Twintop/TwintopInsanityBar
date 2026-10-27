@@ -38,6 +38,10 @@ local barNodeCounter = 0
 ---@class TRB.Classes.ThresholdFrame.Cooldown : Cooldown
 ---@field public trbStart number? # Swipe last written, so repeat writes are skipped
 ---@field public trbDuration number?
+---@field public trbDrawSwipe boolean? # The template's swipe, edge, and countdown text settings, recorded before the first style change
+---@field public trbDrawEdge boolean?
+---@field public trbHideNumbers boolean?
+---@field public noCooldownCount boolean? # Read by cooldown text addons such as OmniCC
 
 ---@class TRB.Classes.ThresholdFrame.LineTexture : Texture
 ---@field public trbAlpha number? # Alpha last written, so repeat writes are skipped

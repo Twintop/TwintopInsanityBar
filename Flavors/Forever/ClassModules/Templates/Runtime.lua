@@ -597,14 +597,6 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				snapshotData.casting:SnapshotManaSpell()
 				snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 			end
-		elseif event == "UNIT_SPELLCAST_SUCCEEDED" and spellId ~= nil then
-			local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-			local spells = spellsData.spellsById[spellId]
-			local spell = spells and spells[1]
-			local snapshot = spell and snapshotData.snapshots[spell.id]
-			if snapshot ~= nil and spell.hasCooldown then
-				snapshot.cooldown:Refresh(true)
-			end
 		end
 	end
 

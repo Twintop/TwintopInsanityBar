@@ -917,7 +917,6 @@ local function UpdateSnapshot()
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	--[[snapshots[spells.impendingVictory.id].cooldown:Refresh()]]
-	snapshots[spells.shieldBlock.id].cooldown:Refresh()
 	--[[snapshots[spells.thunderClap.id].cooldown:Refresh()
 	snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)]]
 end

@@ -65,7 +65,7 @@ jobs:
       - name: Install Lua 5.1
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 > /dev/null
 
-      - name: Build every options tab and run the media and color checks
+      - name: Build every options tab and run the media, color, and range checks
         shell: pwsh
         run: ./build/drivers.ps1 -Lua lua5.1
 

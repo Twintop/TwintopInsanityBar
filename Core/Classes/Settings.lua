@@ -127,6 +127,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public yPos number
 ---@field public relativeTo string?
 ---@field public desaturated boolean?
+---@field public showCooldown boolean?
+---@field public showCooldownText boolean?
+---@field public rechargeMode string? # "full", "edge", or "hidden"
 ---@field public border number?
 ---@field public priority string? # "high", "normal", or "low"; applies whether or not `enabled` is on
 ---@field public neverHide boolean?
@@ -142,7 +145,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public overlapBorder boolean
 
 ---@class TRB.Classes.Settings.ThresholdIcons
----@field public showCooldown boolean
+---@field public showCooldown boolean # Draw the cooldown swipe on icons
+---@field public showCooldownText boolean # Leave the countdown text to the game and cooldown text addons; false hides it
+---@field public rechargeMode string # How a charge spell's recharge draws while charges are left: "full", "edge", or "hidden"
 ---@field public border number
 ---@field public relativeTo string
 ---@field public relativeToName string

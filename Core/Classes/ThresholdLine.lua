@@ -161,6 +161,29 @@ function TRB.Classes.ThresholdLine:ColorByCooldown()
 	end
 end
 
+---Colors the line from a curve over its cooldown's remaining time, which a secret value can't be compared against
+---directly: the color key at or under `seconds`, the line's current color past it.
+---@param seconds number
+---@param colorKey string # Key under `colors.threshold`
+function TRB.Classes.ThresholdLine:ColorByRemainingCooldown(seconds, colorKey)
+	local durationObject = self.snapshot ~= nil and self.snapshot.cooldown:GetDurationObject() or nil
+	local colors = self.dictEntry ~= nil and self.dictEntry.colors or nil
+	-- A Static line's own color always wins, so the curve would be wasted.
+	if durationObject == nil or self.color == nil or (colors ~= nil and colors.colorMode == "static") then
+		return
+	end
+	local beyondColor = self.color
+	-- Hidden while unusable, the line still shows inside the window, as the plain comparison does.
+	if colors ~= nil and TRB.Functions.Threshold:GetColorMode(colors.unusable) == "hidden" then
+		beyondColor = "00000000"
+	end
+	local settings = self.state.settings
+	local curve = TRB.Functions.Color:BuildRemainingTimeCurve(seconds, settings.colors.threshold[colorKey].color, beyondColor)
+	if TRB.Functions.Threshold:ApplyThresholdCurveColor(self.spell, self.frame, curve, nil, settings, nil, self.frameLevel, self.pairOffset, false, durationObject) then
+		self.color = nil
+	end
+end
+
 ---Whether the spell spends combo points.
 ---@return boolean
 function TRB.Classes.ThresholdLine:IsComboPointFinisher()

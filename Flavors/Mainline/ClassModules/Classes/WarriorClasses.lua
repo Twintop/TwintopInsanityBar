@@ -875,6 +875,7 @@ do
 	})
 	SpecDescriptor:Declare("warrior_protection", {
 		customBars = { "defensives" },
+		cooldownSpells = { "shieldBlock" },
 		barTextAnchorFrames = {
 			defensives = {
 				{ label = L["IgnorePainTime"], frame = "IgnorePain" }, { label = L["IgnorePainAbsorb"], frame = "IgnorePainAbsorb" }, { label = L["ShieldBlock"], frame = "ShieldBlock" },

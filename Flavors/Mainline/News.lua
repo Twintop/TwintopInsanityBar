@@ -8,6 +8,46 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.8-release (2026-10-26)
+## Death Knight
+### Frost
+
+- [#279](#279) Remove the Breath of Sindragosa threshold line's separate cooldown timer.
+
+## Druid
+
+- Fix Balance, Guardian, and Restoration threshold lines getting stuck in or out of range in Cat Form when only Feral is set to recolor or hide out of range lines.
+
+## Hunter
+### Marksmanship
+
+- [#279](#279) Remove the Explosive Shot threshold line's separate cooldown timer.
+
+## Monk
+### Brewmaster
+
+- [#279](#279) Fix the Detox threshold line showing a cooldown after a cast that dispels nothing.
+- [#279](#279) Fix the Keg Smash threshold line not showing its cooldown.
+- [#279](#279) Remove the Crackling Jade Lightning, Detox, Expel Harm, and Paralysis threshold lines' separate cooldown timers.
+- [#279](#279) Remove unused Ancient Arts and Jade Flash spell data.
+- Fix threshold lines getting stuck in or out of range after a loading screen, talent change, or specialization change.
+
+### Windwalker
+
+- Fix threshold lines getting stuck in or out of range after a loading screen, talent change, or specialization change.
+
+## Rogue
+### Outlaw
+
+- [#279](#279) Fix the Restless Blades threshold line color not showing.
+- [#279](#279) Fix the Roll the Bones threshold line and `#rollTheBones` icon using an old version of the ability.
+
+## Warrior
+
+- [#279](#279) Remove Shield Block's separate cooldown refresh.
+
+---
+
 # 12.1.5.7-release (2026-10-25)
 ## General
 ### Skyriding

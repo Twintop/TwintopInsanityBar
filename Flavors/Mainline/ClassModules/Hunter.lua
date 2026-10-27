@@ -709,8 +709,6 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				-- Both spend Double Tap. The castbar has already read the buff by now: its channel-start
 				-- bridge runs ahead of this handler (see Functions/SpellCast.lua).
 				snapshotData.snapshots[spells.doubleTap.id].buff:Reset()
-			elseif spellId == spells.explosiveShot.id then
-				snapshotData.snapshots[spells.explosiveShot.id].cooldown:InitializeCustom(spells.explosiveShot.cooldown, currentTime)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
@@ -791,7 +789,6 @@ local function UpdateSnapshot_Marksmanship()
 	local snapshotData = TRB.Data.snapshotData
 	local snapshots = snapshotData.snapshots
 
-	snapshots[spells.explosiveShot.id].cooldown:GetRemainingTime(currentTime)
 	snapshots[spells.doubleTap.id].buff:GetRemainingTime(currentTime)
 
 	if snapshotData.casting.spellId == spells.rapidFire.id then

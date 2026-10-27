@@ -528,7 +528,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         isTalent = true
     })
     self.rollTheBones = TRB.Classes.SpellThreshold:New({
-        id = 315508,
+        id = 1214909,
         primaryResourceType = Enum.PowerType.Energy,
         settingKey = "rollTheBones",
         hasCooldown = true,
@@ -696,11 +696,22 @@ TRB.Classes.Rogue.OutlawSpells.thresholdSnowflakes = {
 		local spells = line.data.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 		local attributes = line.spell.attributes
 		local snapshot = line.snapshot
-		-- Restless Blades: a finisher with the current Combo Points would bring this ability off cooldown.
-		if line.state.settings.colors.threshold.restlessBlades.enabled and attributes.restlessBlades
+		-- Restless Blades: a finisher with the current Combo Points (1 sec each) would bring this ability off cooldown.
+		if line.show and line.state.settings.colors.threshold.restlessBlades.enabled and attributes.restlessBlades
 			and (attributes.floatLikeAButterfly == nil or (attributes.floatLikeAButterfly and line.data.talents:IsTalentActive(spells.floatLikeAButterfly)))
-			and snapshot ~= nil and snapshot.cooldown.remainingTotal > 0 and snapshot.cooldown.remaining <= line.state.snapshotData.attributes.resource2 then
-			line:SetColor("restlessBlades", TRB.Data.constants.frameLevels.thresholdUnder)
+			and snapshot ~= nil and snapshot.cooldown.onCooldown then
+			local cooldown = snapshot.cooldown
+			local comboPoints = line.state.snapshotData.attributes.resource2
+			local endsAt = cooldown.endsAt
+			if endsAt ~= nil then
+				-- Read from the tracked end: GetRemainingTime would mark the cooldown off behind the tracker's back.
+				local remaining = endsAt - line.state.currentTime
+				if remaining > 0 and remaining <= comboPoints then
+					line:SetColor("restlessBlades", TRB.Data.constants.frameLevels.thresholdUnder)
+				end
+			elseif comboPoints > 0 then
+				line:ColorByRemainingCooldown(comboPoints, "restlessBlades")
+			end
 		end
 	end,
 }

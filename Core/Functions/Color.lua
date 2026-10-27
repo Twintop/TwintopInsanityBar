@@ -746,6 +746,26 @@ function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, under
 	return colorCurve
 end
 
+---Builds a step ColorCurve over a cooldown's remaining seconds, for a remaining time that is secret.
+---@param seconds number # Remaining time at or under which the within color shows
+---@param withinColor string # ARGB hex color at or under `seconds`
+---@param beyondColor string # ARGB hex color past `seconds`
+---@return LuaColorCurveObject colorCurve # A ColorCurve for DurationObject:EvaluateRemainingDuration
+function TRB.Functions.Color:BuildRemainingTimeCurve(seconds, withinColor, beyondColor)
+	local cache = TRB.Data.cache.thresholdCurves
+	local fastCurve = self:GetFastCurve(cache, "remaining", seconds, withinColor, beyondColor)
+	if fastCurve ~= nil then
+		return fastCurve
+	end
+	local colorCurve = C_CurveUtil.CreateColorCurve()
+	colorCurve:SetType(Enum.LuaCurveType.Step)
+	colorCurve:AddPoint(0, CreateColor(self:GetRGBAFromString(withinColor, true)))
+	-- Just past the limit, so a remaining time exactly at it still counts as within.
+	colorCurve:AddPoint(seconds + 0.001, CreateColor(self:GetRGBAFromString(beyondColor, true)))
+	self:SetFastCurve(cache, colorCurve, "remaining", seconds, withinColor, beyondColor)
+	return colorCurve
+end
+
 ---Builds a threshold ColorCurve for an explicit value on a known max range.
 ---@param value number # The threshold value
 ---@param maxResource number # The maximum resource value represented by the bar

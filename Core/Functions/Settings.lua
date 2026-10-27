@@ -2691,6 +2691,27 @@ local function UtilityTexturesDiffer(textures)
 	return false
 end
 
+---Threshold icons: the cooldown time option starts off wherever the cooldown swipe was off, since neither drew before it.
+---@param settings table # A saved-variables shaped table
+function TRB.Functions.Settings:MigrateThresholdIconCooldownText(settings)
+	local function Migrate(piece)
+		local thresholds = type(piece) == "table" and type(piece.thresholds) == "table" and piece.thresholds or nil
+		local icons = thresholds ~= nil and type(thresholds.icons) == "table" and thresholds.icons or nil
+		if icons ~= nil and icons.showCooldown == false and icons.showCooldownText == nil then
+			icons.showCooldownText = false
+		end
+	end
+	Migrate(settings.core)
+	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+		local classPiece = settings[classEntry.className]
+		if type(classPiece) == "table" then
+			for _, specEntry in ipairs(classEntry.specs) do
+				Migrate(classPiece[specEntry.specName])
+			end
+		end
+	end
+end
+
 ---Textures: the one Texture Lock became four, the Utility bar began following Global, and the mana bar's unread texture
 ---keys are dropped. A specialization's Use Global flag stays the choice of every bar that has none of its own.
 ---@param settings table # A saved-variables shaped table
@@ -2890,6 +2911,8 @@ TRB.Data.constants.defaultSettings.fonts = TRB.Functions.Settings:DefaultFontCon
 function TRB.Functions.Settings:DefaultThresholdIconSettings()
 	return {
 		showCooldown = true,
+		showCooldownText = true,
+		rechargeMode = "edge",
 		border = 2,
 		relativeTo = "BOTTOM",
 		relativeToName = L["ThresholdIconPositionBelowRight"],
@@ -2948,6 +2971,9 @@ function TRB.Functions.Settings:DefaultThresholdDictionaryEntry(isEnabled)
 			yPos = 12,
 			relativeTo = "BOTTOM",
 			desaturated = true,
+			showCooldown = true,
+			showCooldownText = true,
+			rechargeMode = "edge",
 			border = 2,
 			priority = "normal",
 			neverHide = false,

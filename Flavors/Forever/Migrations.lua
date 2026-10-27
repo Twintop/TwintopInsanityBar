@@ -24,4 +24,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Textures: the one Texture Lock became four, the Utility bar began following Global, and the mana bar's unread texture keys are dropped.
 	TRB.Functions.Settings:MigrateTextures(savedSettings)
+
+	-- Threshold icons: the cooldown time option starts off where the cooldown swipe was off.
+	TRB.Functions.Settings:MigrateThresholdIconCooldownText(savedSettings)
 end
