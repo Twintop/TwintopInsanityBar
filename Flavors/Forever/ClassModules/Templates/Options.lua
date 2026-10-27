@@ -40,6 +40,7 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadT
 				overlapBorder = true,
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = loadThresholdDictionary ~= nil and loadThresholdDictionary() or {},
 			customThresholds = {},
 		},
@@ -364,7 +365,10 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 			local yCoord = 5
 			yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, specSettings, classId, specId, yCoord, resourceName, true, true, true, true, {})
 			yCoord = yCoord - 40
-			TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, specSettings, classId, specId, yCoord)
+			yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, specSettings, classId, specId, yCoord)
+
+			yCoord = yCoord - 40
+			yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, specSettings, classId, specId, yCoord)
 		end)
 
 		local thresholdListPanel = loadThresholdDictionary ~= nil and withSpec(function(parent, specSettings, controls)

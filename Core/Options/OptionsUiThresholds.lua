@@ -117,6 +117,12 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	thresholdIconRelativeTo:SetupMenu(RelativeToGenerator)
 	thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 
+	local function RefreshDesaturateState()
+		local iconsOn = spec.thresholds.icons.enabled
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, iconsOn)
+		TRB.Functions.OptionsUi.Primitives:SetDisabledReason(controls.checkBoxes.thresholdIconDesaturated, not iconsOn and L["ThresholdIconsOffTooltip"] or nil)
+	end
+
 	controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_".. namePrefix .."_ThresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.thresholdIconEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
@@ -126,7 +132,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.enabled = self:GetChecked()
 
-		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
+		RefreshDesaturateState()
 		controls.refreshThresholdIconCooldownStates()
 
 		if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or
@@ -150,7 +156,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		end
 	end)
 
-	TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
+	RefreshDesaturateState()
 
 	yCoord = yCoord - 100
 	title = L["ThresholdIconWidth"]
@@ -289,10 +295,15 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	end
 
 	local function RefreshOverlapControlStates()
+		local primitives = TRB.Functions.OptionsUi.Primitives
 		local mode = spec.thresholds.icons.overlapMode
-		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapSpacing, mode ~= "off")
-		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapMaxRows, mode == "stagger")
-		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(controls.thresholdIconOverlapAllowance, mode ~= "off")
+		local offReason = mode == "off" and L["ThresholdIconOverlapOffTooltip"] or nil
+		primitives:ToggleSliderEnabled(controls.thresholdIconOverlapSpacing, mode ~= "off")
+		primitives:ToggleSliderEnabled(controls.thresholdIconOverlapMaxRows, mode == "stagger")
+		primitives:ToggleSliderEnabled(controls.thresholdIconOverlapAllowance, mode ~= "off")
+		primitives:SetDisabledReason(controls.thresholdIconOverlapSpacing, offReason)
+		primitives:SetDisabledReason(controls.thresholdIconOverlapMaxRows, offReason or (mode ~= "stagger" and L["ThresholdIconOverlapNotStaggerTooltip"] or nil))
+		primitives:SetDisabledReason(controls.thresholdIconOverlapAllowance, offReason)
 	end
 
 	yCoord = yCoord - 20
@@ -338,10 +349,16 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	RefreshOverlapControlStates()
 
 	local function RefreshCooldownControlStates()
+		local primitives = TRB.Functions.OptionsUi.Primitives
 		local icons = spec.thresholds.icons
-		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconShowCooldown, icons.enabled)
-		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconShowCooldownText, icons.enabled)
-		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(controls.thresholdIconRechargeMode, icons.enabled and (icons.showCooldown or icons.showCooldownText))
+		local iconsReason = not icons.enabled and L["ThresholdIconsOffTooltip"] or nil
+		local partsReason = not (icons.showCooldown or icons.showCooldownText) and L["ThresholdIconCooldownPartsOffTooltip"] or nil
+		primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconShowCooldown, icons.enabled)
+		primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconShowCooldownText, icons.enabled)
+		primitives:ToggleDropdownEnabled(controls.thresholdIconRechargeMode, icons.enabled and (icons.showCooldown or icons.showCooldownText))
+		primitives:SetDisabledReason(controls.checkBoxes.thresholdIconShowCooldown, iconsReason)
+		primitives:SetDisabledReason(controls.checkBoxes.thresholdIconShowCooldownText, iconsReason)
+		primitives:SetDisabledReason(controls.thresholdIconRechargeMode, iconsReason or partsReason)
 	end
 	controls.refreshThresholdIconCooldownStates = RefreshCooldownControlStates
 
@@ -381,8 +398,71 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 
 	RefreshCooldownControlStates()
 
-	-- The returned row is the recharge dropdown's label, so the cover reaches past the dropdown below it.
+	-- The recharge dropdown sits a row below its label, so the cover and the last row are past it.
 	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, yCoord - 60)
+
+	return yCoord - 30
+end
+
+---Whether any of a spec's threshold lines has a cooldown, from its cached spell data.
+---@param classId integer
+---@param specId integer
+---@return boolean
+local function SpecHasCooldownLines(classId, specId)
+	local compositeKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+	local specCache = compositeKey and TRB.Data.specCache[compositeKey] or nil
+	local spells = specCache and specCache.spellsData and specCache.spellsData.spells or nil
+	if spells == nil then
+		return false
+	end
+	for _, spell in pairs(spells) do
+		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell.hasCooldown == true then
+			return true
+		end
+	end
+	return false
+end
+
+---Generates the Threshold Line Behavior section. A spec's tab offers only the rows its lines can use and leaves
+---the section out when none apply; Global Options offers every row.
+---@param parent Frame
+---@param controls table
+---@param spec table
+---@param classId integer?
+---@param specId integer?
+---@param yCoord number
+---@return number
+function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, classId, specId, yCoord)
+	if classId ~= nil and specId ~= nil and not SpecHasCooldownLines(classId, specId) then
+		return yCoord
+	end
+
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local namePrefix = className .. "_" .. specName
+
+	yCoord = yCoord - 30
+	controls.thresholdBehaviorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ThresholdLineBehaviorHeader"], oUi.xCoord, yCoord)
+	local sectionHeader = controls.thresholdBehaviorSection
+
+	local useGlobalCheckbox
+	yCoord, useGlobalCheckbox = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, "thresholdBehavior", yCoord, {
+		-- A Druid form draws with another spec's settings, so any spec's change can reach the live bar.
+		onClick = function()
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end,
+	})
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.thresholdBehaviorTrackCooldowns = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdBehaviorTrackCooldowns",
+		L["ThresholdBehaviorTrackCooldowns"], L["ThresholdBehaviorTrackCooldownsTooltip"], yCoord,
+		function() return spec.thresholds.behavior.trackCooldowns end,
+		function(checked)
+			spec.thresholds.behavior.trackCooldowns = checked
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+
+	-- One row is shorter than the cover's message and buttons, so the cover takes the room they need.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, yCoord - 70)
 
 	return yCoord
 end
@@ -480,6 +560,12 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 	end
 
 	if outOfRange == true then
+		local function RefreshOutOfRangeColorState()
+			local shown = spec.colors.threshold.outOfRange.show
+			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, shown)
+			TRB.Functions.OptionsUi.Primitives:SetDisabledReason(controls.checkBoxes.thresholdOutOfRangeColorEnabled, not shown and L["ThresholdOutOfRangeHiddenTooltip"] or nil)
+		end
+
 		yCoord = yCoord - 30
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOutOfRange
@@ -490,7 +576,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.threshold.outOfRange.show = self:GetChecked()
 
-			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
+			RefreshOutOfRangeColorState()
 			-- Global colors can reach the live spec through a form's spec too, so the Global panel always refreshes.
 			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or (classId == nil and specId == nil) then
 				TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
@@ -511,9 +597,9 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 			end
 		end)
 
-		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
+		RefreshOutOfRangeColorState()
 
-		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.threshold.outOfRange =TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange", nil, nil, nil, nil, SyncIndicatorColors)

@@ -12,6 +12,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public globalBarText boolean
 ---@field public textColors boolean
 ---@field public thresholdColors boolean
+---@field public thresholdBehavior boolean
 ---@field public healthBarColors boolean
 ---@field public precision boolean
 ---@field public textures boolean
@@ -83,6 +84,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.Thresholds
 ---@field public properties TRB.Classes.Settings.ThresholdProperties
 ---@field public icons TRB.Classes.Settings.ThresholdIcons
+---@field public behavior TRB.Classes.Settings.ThresholdBehavior
 ---@field public specProperties table?
 ---@field public thresholdDictionary { [string]: TRB.Classes.Settings.ThresholdDictionaryEntry }
 ---@field public customThresholds { [string]: TRB.Classes.Settings.CustomThresholdLine }
@@ -103,6 +105,10 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public colors TRB.Classes.Settings.ThresholdDictionaryColors
 ---@field public icon TRB.Classes.Settings.ThresholdDictionaryIcon
 ---@field public line TRB.Classes.Settings.ThresholdDictionaryLine
+---@field public behavior TRB.Classes.Settings.ThresholdDictionaryBehavior? # Created by the options panel when first needed
+
+---@class TRB.Classes.Settings.ThresholdDictionaryBehavior
+---@field public cooldownTracking string? # "shared", "on", or "off"; nil follows the shared setting
 
 ---@class TRB.Classes.Settings.ThresholdDictionaryAudio
 ---@field public enabled boolean
@@ -162,6 +168,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public overlapMaxRows integer
 ---@field public overlapAllowance number # Percent of an icon's size other icons may cover before it moves
 ---@field public extendLineToIcon boolean
+
+---@class TRB.Classes.Settings.ThresholdBehavior
+---@field public trackCooldowns boolean # Lines with a cooldown follow it unless a line says otherwise
 
 ---@class TRB.Classes.Settings.Precision
 ---@field public health integer

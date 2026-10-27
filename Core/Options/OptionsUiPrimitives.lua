@@ -1331,6 +1331,33 @@ function TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(dropdown, enab
 	end
 end
 
+---Sets the tooltip a grayed-out checkbox, dropdown, or slider shows to say why; nil clears it.
+---@param widget CheckButton|DropdownButton|Slider
+---@param reason string?
+function TRB.Functions.OptionsUi.Primitives:SetDisabledReason(widget, reason)
+	local control = widget --[[@as TRB.Classes.OptionsUi.ExplainedControl]]
+	if not control.trbDisabledReasonHooked then
+		control.trbDisabledReasonHooked = true
+		-- A disabled button skips its mouse scripts unless told otherwise; sliders have no such switch.
+		if control:IsObjectType("Button") then
+			control:SetMotionScriptsWhileDisabled(true)
+		end
+		control:HookScript("OnEnter", function()
+			if control.trbDisabledReason ~= nil and not control:IsEnabled() then
+				GameTooltip:SetOwner(control, "ANCHOR_RIGHT")
+				GameTooltip:SetText(control.trbDisabledReason, 1, 1, 1, 1, true)
+				GameTooltip:Show()
+			end
+		end)
+		control:HookScript("OnLeave", function()
+			if GameTooltip:GetOwner() == control then
+				GameTooltip:Hide()
+			end
+		end)
+	end
+	control.trbDisabledReason = reason
+end
+
 ---Enables or disables a color picker button and grays out its label when disabled.
 ---@param colorPicker TRB.Classes.OptionsUi.ColorPicker|TRB.Classes.OptionsUi.GradientColorPicker # A picker from BuildColorPicker or BuildGradientColorPicker
 ---@param enable boolean # Whether to enable or disable the control

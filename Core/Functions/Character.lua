@@ -1629,10 +1629,12 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		if s.thresholdIcons then
 			thresholdIconSource = core.thresholds
 		end
+		local thresholdBehaviorSource = s.thresholdBehavior and core.thresholds or specThresholds
 		specCache.settings.thresholds = {
 			specProperties = spec.thresholds.specProperties,
 			properties = thresholdIconSource.properties,
 			icons = thresholdIconSource.icons,
+			behavior = thresholdBehaviorSource.behavior,
 			thresholdDictionary = {},
 			customThresholds = {}
 		}
@@ -1653,6 +1655,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			specProperties = {},
 			properties = core.thresholds.properties,
 			icons = core.thresholds.icons,
+			behavior = core.thresholds.behavior,
 			thresholdDictionary = {},
 			customThresholds = {}
 		}

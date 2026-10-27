@@ -158,6 +158,9 @@ local function ConstructThresholdPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, nil, nil, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, nil, nil, yCoord)
 end
 
 ---Constructs the font, text color, and decimal precision options panel in the global options UI.

@@ -1708,15 +1708,21 @@ function TRB.Classes.SnapshotCooldown:ClearRecharge()
 	self.version = self.version + 1
 end
 
----Reads a newly tracked cooldown once, outside any event. Only plain times can be told apart from the GCD here, so a
----cooldown already running behind secret values waits for its next event.
+---Reads a newly tracked cooldown once, outside any event, so one already running shows from the moment it's tracked.
 function TRB.Classes.SnapshotCooldown:ReadInitial()
 	local spell = self.parent.spell --[[@as TRB.Classes.SpellBase]]
 	if spell.hasCharges == true then
 		self:RefreshCharges()
 	end
 	local info = C_Spell.GetSpellCooldown(spell:GetRankedId())
-	if info == nil or info.isActive ~= true or issecretvalue(info.startTime) or issecretvalue(info.duration) then
+	if info == nil or info.isActive ~= true then
+		return
+	end
+	-- Secret times can't be compared, but the never-secret isOnGCD false still marks the ability's own cooldown.
+	if issecretvalue(info.startTime) or issecretvalue(info.duration) then
+		if info.isOnGCD == false then
+			self:Start(info)
+		end
 		return
 	end
 	local remaining = info.startTime + info.duration - GetTime()

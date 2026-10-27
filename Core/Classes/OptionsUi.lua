@@ -125,6 +125,11 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@class TRB.Classes.OptionsUi.Dropdown : WowStyle1DropdownTemplate
 ---@field public label TRB.Classes.OptionsUi.SectionHeader?
 
+---A checkbox, dropdown, or slider whose tooltip says why it's grayed out, from Primitives:SetDisabledReason.
+---@class TRB.Classes.OptionsUi.ExplainedControl : Button
+---@field public trbDisabledReasonHooked boolean?
+---@field public trbDisabledReason string?
+
 ---A color swatch button.
 ---@class TRB.Classes.OptionsUi.ColorSwatch : Button, BackdropTemplate
 ---@field public Texture Texture # The swatch fill

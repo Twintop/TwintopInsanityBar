@@ -1015,9 +1015,87 @@ function hooks.afterEvents(ctx)
 			check("every grouping strip ends Textures, Visibility, Bar Text (" .. table.concat(badOrder, "; ") .. ")", #badOrder == 0 and strips > 0)
 		end
 
+		-- The Threshold Line Behavior section is on a spec's tab only when one of its lines has a cooldown, and always on Global Options.
+		do
+			local wrong, withSection, withoutSection = {}, 0, {}
+			for _, panel in ipairs(drv.thresholdPanels) do
+				local compositeKey = TRB_.Functions.Character:GetCompositeKeyFromIds(panel.classId, panel.specId)
+				local specCache = compositeKey and TRB_.Data.specCache[compositeKey] or nil
+				local spells = specCache and specCache.spellsData and specCache.spellsData.spells or nil
+				if spells ~= nil then
+					local hasCooldownLine = false
+					for _, spell in pairs(spells) do
+						if type(spell) == "table" and spell.Is ~= nil and (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell.hasCooldown == true then
+							hasCooldownLine = true
+						end
+					end
+					local className, specName = TRB_.Functions.Character:GetClassAndSpecializationNames(panel.classId, panel.specId)
+					local namePrefix = "TwintopResourceBar_" .. className .. "_" .. specName
+					local hasBox = rawget(G, namePrefix .. "_ThresholdBehaviorTrackCooldowns") ~= nil
+					local hasUseGlobal = rawget(G, namePrefix .. "_useGlobal_thresholdBehavior") ~= nil
+					if hasBox ~= hasCooldownLine or hasUseGlobal ~= hasCooldownLine then
+						wrong[#wrong + 1] = string.format("%s cooldownLines=%s box=%s useGlobal=%s", compositeKey, tostring(hasCooldownLine), tostring(hasBox), tostring(hasUseGlobal))
+					end
+					if hasCooldownLine then withSection = withSection + 1 else withoutSection[#withoutSection + 1] = compositeKey end
+				end
+			end
+			table.sort(withoutSection)
+			print(string.format("INFO Threshold Line Behavior sections: %d specs with, without on %s", withSection, table.concat(withoutSection, ", ")))
+			table.sort(wrong)
+			check("a spec's tab has the Threshold Line Behavior section only with a cooldown line (" .. table.concat(wrong, ", ") .. ")", #wrong == 0 and withSection > 0)
+			check("Global Options has the Threshold Line Behavior section and its bulk Use Global box",
+				rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorTrackCooldowns") ~= nil and rawget(G, "TwintopResourceBar_Global_enableAll_thresholdBehavior") ~= nil)
+		end
+
+		-- Every grayed-out shared threshold option says why, on Global Options' Threshold Lines tab.
+		do
+			local function named(suffix) return rawget(G, "TwintopResourceBar_Global__" .. suffix) end
+			local globalControls = TRB_.Frames.interfaceSettingsFrameContainer.controls.global
+			local iconsBox, desaturate = named("ThresholdIconEnabled"), named("ThresholdIconDesaturated")
+			local swipe, time, recharge = named("ThresholdIconShowCooldown"), named("ThresholdIconShowCooldownText"), named("ThresholdIconRechargeMode")
+			local oorShow, oorColor = named("thresholdOutOfRange"), named("thresholdOutOfRangeColorEnabled")
+			local icons, outOfRange = TRB_.Data.settings.core.thresholds.icons, TRB_.Data.settings.core.colors.threshold.outOfRange
+			local wrongReasons = {}
+			local function expect(label, control, reason)
+				if control == nil or control.trbDisabledReason ~= reason then
+					wrongReasons[#wrongReasons + 1] = label .. "=" .. tostring(control and control.trbDisabledReason)
+				end
+			end
+			if iconsBox ~= nil and swipe ~= nil and time ~= nil and oorShow ~= nil then
+				local saved = { icons.enabled, icons.showCooldown, icons.showCooldownText, icons.overlapMode, outOfRange.show }
+				toggle(iconsBox, false)
+				expect("iconsOff.desaturate", desaturate, L_["ThresholdIconsOffTooltip"])
+				expect("iconsOff.swipe", swipe, L_["ThresholdIconsOffTooltip"])
+				expect("iconsOff.recharge", recharge, L_["ThresholdIconsOffTooltip"])
+				toggle(iconsBox, true)
+				expect("iconsOn.desaturate", desaturate, nil)
+				expect("iconsOn.recharge", recharge, nil)
+				toggle(swipe, false)
+				toggle(time, false)
+				expect("partsOff.recharge", recharge, L_["ThresholdIconCooldownPartsOffTooltip"])
+				expect("partsOff.swipe", swipe, nil)
+				toggle(swipe, true)
+				toggle(time, true)
+				if icons.overlapMode == "off" then
+					expect("overlapOff.spacing", globalControls.thresholdIconOverlapSpacing, L_["ThresholdIconOverlapOffTooltip"])
+					expect("overlapOff.maxRows", globalControls.thresholdIconOverlapMaxRows, L_["ThresholdIconOverlapOffTooltip"])
+				end
+				toggle(oorShow, false)
+				expect("oorHidden.color", oorColor, L_["ThresholdOutOfRangeHiddenTooltip"])
+				toggle(oorShow, true)
+				expect("oorShown.color", oorColor, nil)
+				icons.enabled, icons.showCooldown, icons.showCooldownText, icons.overlapMode, outOfRange.show = saved[1], saved[2], saved[3], saved[4], saved[5]
+			else
+				wrongReasons[#wrongReasons + 1] = "missing Global Options threshold controls"
+			end
+			check("every grayed-out shared threshold option says why (" .. table.concat(wrongReasons, ", ") .. ")", #wrongReasons == 0)
+		end
+
 		-- With a line's icon override on, its cooldown options show only when its ability has a cooldown, and the recharge choice only with charges.
+		-- A line with a cooldown offers Cooldown Tracking; untracked, its cooldown-only options gray out and say why.
 		do
 			local wrong, withCooldown, withoutCooldown, withCharges = {}, 0, 0, 0
+			local trackingWrong, unusableKept = {}, 0
 			for _, panel in ipairs(drv.thresholdPanels) do
 				local st = panel.st
 				local compositeKey = panel.classId and TRB_.Functions.Character:GetCompositeKeyFromIds(panel.classId, panel.specId) or nil
@@ -1064,6 +1142,59 @@ function hooks.afterEvents(ctx)
 								end
 								if hasCooldown then withCooldown = withCooldown + 1 else withoutCooldown = withoutCooldown + 1 end
 								if hasCharges then withCharges = withCharges + 1 end
+
+								local trackingDropdown = rawget(G, prefix .. "CooldownTracking")
+								local unusableDropdown = rawget(G, prefix .. "ColorUnusableMode")
+								local problems = {}
+								if trackingDropdown == nil or (trackingDropdown.__shown == true) ~= hasCooldown then
+									problems[#problems + 1] = "tracking=" .. tostring(trackingDropdown and trackingDropdown.__shown)
+								end
+								if hasCooldown and trackingDropdown ~= nil and unusableDropdown ~= nil then
+									local dictEntry = panel.spec.thresholds.thresholdDictionary[key]
+									local classGlobal = TRB_.Data.settings.core.global[string.lower(className)]
+									local behavior = (classGlobal[specName].thresholdBehavior and TRB_.Data.settings.core.thresholds or panel.spec.thresholds).behavior
+									local savedLine, savedShared = dictEntry.behavior, behavior.trackCooldowns
+									local unusableLive = (spell:Is("TRB.Classes.SpellComboPointThreshold") and spell.comboPoints == true) or spell.attributes.unusableWhileCasting == true
+									if unusableLive then unusableKept = unusableKept + 1 end
+									-- Re-checking the override re-lays the panel out, which refreshes its tracking states.
+									local function Expect(state, reason)
+										toggle(useSpecific, true)
+										local grayed = reason ~= nil
+										if (swipeBox.__enabled == false) ~= grayed or swipeBox.trbDisabledReason ~= reason
+											or (rechargeDropdown.__enabled == false and not grayed and hasCharges) then
+											problems[#problems + 1] = state .. ":swipe=" .. tostring(swipeBox.__enabled)
+										end
+										local unusableReason = (not unusableLive) and reason or nil
+										if (unusableDropdown.__enabled == false) ~= (unusableReason ~= nil) or unusableDropdown.trbDisabledReason ~= unusableReason then
+											problems[#problems + 1] = state .. ":unusable=" .. tostring(unusableDropdown.__enabled)
+										end
+									end
+									dictEntry.behavior = { cooldownTracking = "off" }
+									Expect("off", L_["ThresholdDetailCooldownNotTrackedLineTooltip"])
+									dictEntry.behavior = { cooldownTracking = "shared" }
+									behavior.trackCooldowns = false
+									Expect("sharedOff", L_["ThresholdDetailCooldownNotTrackedSharedTooltip"])
+									dictEntry.behavior = { cooldownTracking = "on" }
+									Expect("on", nil)
+									dictEntry.behavior, behavior.trackCooldowns = savedLine, savedShared
+									Expect("restored", nil)
+
+									-- A hidden icon grays out its Desaturate box and cooldown options, saying so.
+									local iconShow, desaturate = rawget(G, prefix .. "IconShow"), rawget(G, prefix .. "IconDesaturated")
+									local wasShown = dictEntry.icon.show
+									toggle(iconShow, false)
+									local hidden = L_["ThresholdDetailIconHiddenTooltip"]
+									if desaturate.trbDisabledReason ~= hidden or swipeBox.trbDisabledReason ~= hidden or rechargeDropdown.trbDisabledReason ~= hidden then
+										problems[#problems + 1] = "iconHidden:desaturate=" .. tostring(desaturate.trbDisabledReason ~= nil) .. " swipe=" .. tostring(swipeBox.trbDisabledReason ~= nil)
+									end
+									toggle(iconShow, wasShown ~= false)
+									if desaturate.trbDisabledReason ~= nil or swipeBox.trbDisabledReason ~= nil then
+										problems[#problems + 1] = "iconShown:reason left over"
+									end
+								end
+								if #problems > 0 then
+									trackingWrong[#trackingWrong + 1] = compositeKey .. "." .. key .. " " .. table.concat(problems, " ")
+								end
 								toggle(useSpecific, wasOn)
 								if not wasEnabled then
 									toggle(enabledBox, false)
@@ -1077,6 +1208,10 @@ function hooks.afterEvents(ctx)
 			table.sort(wrong)
 			check("an icon override shows the cooldown options only for a line with a cooldown, and the recharge choice only with charges (" .. table.concat(wrong, ", ") .. ")",
 				#wrong == 0 and withCooldown > 0 and withoutCooldown > 0)
+			print(string.format("INFO untracked lines whose Unusable row stays live: %d", unusableKept))
+			table.sort(trackingWrong)
+			check("a line with a cooldown offers Cooldown Tracking, and untracked, its cooldown-only options gray out with the reason (" .. table.concat(trackingWrong, "; ") .. ")",
+				#trackingWrong == 0 and withCooldown > 0)
 		end
 
 		return errors

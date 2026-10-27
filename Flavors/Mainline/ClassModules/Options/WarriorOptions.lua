@@ -51,6 +51,7 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 				overlapBorder=true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
 					enabled = false,
@@ -401,6 +402,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 				overlapBorder=true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
 					enabled = true,
@@ -718,6 +720,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				overlapBorder=true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {
 				executeMinimum = {
 					enabled = false,
@@ -1189,6 +1192,9 @@ local function ArmsConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 1, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 1, 1, yCoord)
 end
 
 local function ArmsConstructFontAndTextPanel(parent)
@@ -1650,6 +1656,9 @@ local function FuryConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 1, 2, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 1, 2, yCoord)
 end
 
 local function FuryConstructFontAndTextPanel(parent)
@@ -2096,6 +2105,9 @@ local function ProtectionConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 1, 3, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 1, 3, yCoord)
 end
 
 local function ProtectionConstructFontAndTextPanel(parent)

@@ -547,4 +547,9 @@ if locale == "enGB" then
 	L["ThresholdIndicatorInRangeTooltip"] = "Uses the Usable colour. Always on out of combat, as on the threshold line."
 	L["ThresholdIndicatorStaticTooltip"] = "On whenever you know this ability, in its threshold line's static colour."
 	L["ThresholdIndicatorColorTooltip"] = "This colour follows the %s colour of the %s threshold line. Change it on the Thresholds tab."
+	L["ThresholdLineBehaviorHeader"] = "Threshold Line Behaviour"
+	L["CheckboxUseGlobalTooltip_ThresholdBehavior"] = "When checked, the global settings for threshold line behaviour will be used."
+	L["CopyMenuSection_thresholdBehavior"] = "Threshold Line Behaviour"
+	L["ThresholdBehaviorTrackCooldownsTooltip"] = "When checked, a threshold line for an ability with a cooldown shows the Unusable colour, and its icon shows the cooldown, while the ability is on cooldown. Each threshold line can override this."
+	L["ThresholdDetailBehaviorHeader"] = "Behaviour Override"
 end

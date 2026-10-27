@@ -109,6 +109,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				overlapBorder=true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {
 				cracklingJadeLightning = {
 					enabled = false,
@@ -368,6 +369,7 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 				overlapBorder = true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {},
 			customThresholds = {}
 		},
@@ -531,6 +533,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 				overlapBorder=true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {
 				cracklingJadeLightning = {
 					enabled = false,
@@ -1160,6 +1163,9 @@ local function BrewmasterConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 10, 1, yCoord)
 end
 
 local function BrewmasterConstructFontAndTextPanel(parent)
@@ -1671,6 +1677,9 @@ local function MistweaverConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 2, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 10, 2, yCoord)
 end
 
 local function MistweaverConstructOptionsPanel(cache)
@@ -2062,6 +2071,9 @@ local function WindwalkerConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 3, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 10, 3, yCoord)
 end
 
 local function WindwalkerConstructFontAndTextPanel(parent)

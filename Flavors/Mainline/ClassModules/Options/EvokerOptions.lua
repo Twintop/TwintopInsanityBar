@@ -267,6 +267,7 @@ local function DevastationLoadDefaultSettings(includeBarText, classic)
 				overlapBorder = true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {},
 			customThresholds = {}
 		},
@@ -493,6 +494,7 @@ local function PreservationLoadDefaultSettings(includeBarText, classic)
 				overlapBorder = true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {},
 			customThresholds = {}
 		},
@@ -750,6 +752,7 @@ local function AugmentationLoadDefaultSettings(includeBarText, classic)
 				overlapBorder = true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {},
 			customThresholds = {}
 		},
@@ -1307,6 +1310,9 @@ local function DevastationConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 13, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 13, 1, yCoord)
 end
 
 local function DevastationConstructOptionsPanel(cache)
@@ -1704,6 +1710,9 @@ local function PreservationConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 13, 2, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 13, 2, yCoord)
 end
 
 local function PreservationConstructOptionsPanel(cache)
@@ -2116,6 +2125,9 @@ local function AugmentationConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 13, 3, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 13, 3, yCoord)
 end
 
 local function AugmentationConstructOptionsPanel(cache)
