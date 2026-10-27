@@ -128,6 +128,8 @@ function TRB.Classes.Monk.BrewmasterSpells:New()
 		id = 121253,
 		primaryResourceType = Enum.PowerType.Energy,
 		settingKey = "kegSmash",
+		hasCooldown = true,
+		hasCharges = true,
 		isTalent = true,
 		category = "offensive"
 	})

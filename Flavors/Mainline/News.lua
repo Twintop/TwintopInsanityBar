@@ -23,6 +23,7 @@ TRB.Flavor.newsContent = [====[
 ### Brewmaster
 
 - [#279](#279) Fix the Detox threshold line showing a cooldown after a cast that dispels nothing.
+- [#279](#279) Fix the Keg Smash threshold line not showing its cooldown.
 - [#279](#279) Remove the Crackling Jade Lightning, Detox, Expel Harm, and Paralysis threshold lines' separate cooldown timers.
 - [#279](#279) Remove unused Ancient Arts and Jade Flash spell data.
 
