@@ -78,16 +78,36 @@ function hooks.afterEvents(ctx)
 		return registered, string.format("event %s, spells on: %s", registered and "registered" or "unregistered", #ids > 0 and table.concat(ids, " ") or "none")
 	end
 
-	---The specialization's range-checked threshold spells, when its settings need range checks.
+	---Whether the specialization needs range checks, by the rules Character.lua's NeedsSpellRangeChecks follows.
+	---@param key string
+	---@return boolean
+	local function NeedsRangeChecks(key)
+		local entry = Character:GetSpecRegistryEntry(key)
+		if TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(TRB.Data.specCache[key].settings) or TRB.Functions.Threshold:UsesRangeConditions(entry.className, entry.specName) then
+			return true
+		end
+		local descriptor = Character:GetSpecDescriptor(entry.classId, entry.specId)
+		if descriptor == nil or descriptor.forms == nil then
+			return false
+		end
+		for _, other in ipairs(Character:GetSpecRegistryEntriesOrdered()) do
+			local cache = TRB.Data.specCache[other.compositeKey]
+			if other.classId == entry.classId and cache ~= nil and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(cache.settings) then
+				return true
+			end
+		end
+		return false
+	end
+
+	---The specialization's range-checked threshold spells, when it needs range checks.
 	---@param key string
 	---@return integer[]
 	local function RangeCheckedIds(key)
 		local ids = {}
-		local cache = TRB.Data.specCache[key]
-		local entry = Character:GetSpecRegistryEntry(key)
-		if not TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(cache.settings) and not TRB.Functions.Threshold:UsesRangeConditions(entry.className, entry.specName) then
+		if not NeedsRangeChecks(key) then
 			return ids
 		end
+		local cache = TRB.Data.specCache[key]
 		-- Several lines can share one spell, such as one ability at different costs.
 		local seen = {}
 		for _, spell in pairs(cache.spellsData.spells) do
@@ -201,6 +221,8 @@ function hooks.afterEvents(ctx)
 		enabled[from.specName] = false
 		TRB.Functions.Class:EventRegistration()
 		CheckOn(from.compositeKey .. " once disabled", from.compositeKey)
+		Character:RefreshSpellRangeCheckUpdate()
+		CheckOn(from.compositeKey .. " once disabled, after an options refresh", from.compositeKey)
 		-- Nothing on before the switch, as after logging in on the disabled spec.
 		for id in pairs(enabledIds) do
 			enabledIds[id] = nil
@@ -208,6 +230,52 @@ function hooks.afterEvents(ctx)
 		SetSpec(to.specId)
 		Step(to.compositeKey .. " after a change from a disabled specialization", "PLAYER_SPECIALIZATION_CHANGED", to.compositeKey)
 		enabled[from.specName] = true
+	end
+
+	---Turns Use Global threshold colors off for the class's specs, with their own colors needing no range checks.
+	---@return boolean off # Whether range checks are off afterward
+	local function UseOwnColorsWithoutRangeChecks()
+		for _, entry in ipairs(entries) do
+			TRB.Data.settings.core.global[entry.className][entry.specName].thresholdColors = false
+			local colors = TRB.Data.settings[entry.className][entry.specName].colors
+			local outOfRange = colors and colors.threshold and colors.threshold.outOfRange
+			if outOfRange then
+				outOfRange.show, outOfRange.enabled = true, false
+			end
+			Character:FillSpecializationCacheSettings(entry.className, entry.specName)
+		end
+		Character:RefreshSpellRangeCheckUpdate()
+		local registered = State()
+		return not registered and next(enabledIds) == nil
+	end
+
+	-- Global's default colors need range checks, so Use Global can turn them on.
+	local live = Character:GetSpecRegistryEntry(TRB.Data.character.compositeKey)
+	check(live.compositeKey .. " with no settings needing range checks: range checks are off", UseOwnColorsWithoutRangeChecks())
+	-- No color rows: the Use Global box comes first, and healer specs lack some rows' colors.
+	local controls = { colors = {}, checkBoxes = {} }
+	TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(desktop.CreateFrame("Frame"), controls, TRB.Data.settings[live.className][live.specName], live.classId, live.specId, 0, "", false, false, false, false, nil)
+	local useGlobal = controls.checkBoxes.useGlobalThresholdColors
+	useGlobal.GetChecked = function() return true end
+	useGlobal.__scripts.OnClick(useGlobal)
+	CheckOn(live.compositeKey .. " after ticking its Use Global threshold colors box", live.compositeKey)
+
+	check(live.compositeKey .. " with no settings needing range checks again: range checks are off", UseOwnColorsWithoutRangeChecks())
+	for _, entry in ipairs(entries) do
+		TRB.Data.settings.core.global[entry.className][entry.specName].thresholdColors = true
+	end
+	TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()
+	CheckOn(live.compositeKey .. " after the Global Options bulk Use Global toggle", live.compositeKey)
+
+	-- A shapeshift form can draw the live spec's lines with another spec's settings.
+	local descriptor = Character:GetSpecDescriptor(live.classId, live.specId)
+	if descriptor ~= nil and descriptor.forms ~= nil and #entries > 1 then
+		TRB.Data.settings.core.global[live.className][live.specName].thresholdColors = false
+		Character:FillSpecializationCacheSettings(live.className, live.specName)
+		Character:RefreshSpellRangeCheckUpdate()
+		local ownNeeds = TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(TRB.Data.specCache[live.compositeKey].settings)
+		check(live.compositeKey .. " drawn with another specialization's settings: its own need no range checks, and it has range-checked lines", not ownNeeds and #RangeCheckedIds(live.compositeKey) > 0)
+		CheckOn(live.compositeKey .. " with only another specialization's settings needing range checks", live.compositeKey)
 	end
 	return errors
 end

@@ -375,6 +375,9 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
+			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) then
+				TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
+			end
 			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("thresholdColors")
 		end)
 		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "thresholdColors")

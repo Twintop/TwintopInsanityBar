@@ -830,6 +830,7 @@ local spellRangeCheckUpdateFrame = CreateFrame("Frame")
 spellRangeCheckUpdateFrame:SetScript("OnEvent", SpellRangeCheckUpdateEvent)
 
 ---Whether a spec needs range checks: its threshold lines show out of range, or a threshold Color Indicator reads range.
+---For a class with shapeshift forms, every spec's settings count, since a form can draw the lines with another spec's.
 ---@param compositeKey string?
 ---@return boolean
 local function NeedsSpellRangeChecks(compositeKey)
@@ -841,7 +842,23 @@ local function NeedsSpellRangeChecks(compositeKey)
 		return true
 	end
 	local registryEntry = TRB.Functions.Character:GetSpecRegistryEntry(compositeKey or "")
-	return registryEntry ~= nil and TRB.Functions.Threshold:UsesRangeConditions(registryEntry.className, registryEntry.specName)
+	if registryEntry == nil then
+		return false
+	end
+	if TRB.Functions.Threshold:UsesRangeConditions(registryEntry.className, registryEntry.specName) then
+		return true
+	end
+	local descriptor = TRB.Functions.Character:GetSpecDescriptor(registryEntry.classId, registryEntry.specId)
+	if descriptor == nil or descriptor.forms == nil then
+		return false
+	end
+	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+		local cache = TRB.Data.specCache[entry.compositeKey]
+		if entry.classId == registryEntry.classId and cache ~= nil and cache.settings ~= nil and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(cache.settings) then
+			return true
+		end
+	end
+	return false
 end
 
 ---Enables all spells that need to have range checks performed
@@ -888,7 +905,7 @@ end
 
 ---Turns range checks on or off after a setting that decides whether the live spec needs them changes.
 function TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
-	if NeedsSpellRangeChecks(TRB.Data.character.compositeKey) then
+	if TRB.Data.specSupported and NeedsSpellRangeChecks(TRB.Data.character.compositeKey) then
 		self:EnableSpellRangeCheckUpdate()
 	else
 		self:DisableSpellRangeCheckUpdate()

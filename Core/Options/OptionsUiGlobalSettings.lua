@@ -420,6 +420,8 @@ function TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()
 			TRB.Functions.Character:FillSpecializationCacheSettings(entry.className, entry.specName)
 		end
 	end
+	-- Use Global threshold colors can change whether the live spec needs range checks.
+	TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
 
 	-- Trigger bar updates for current spec
 	TRB.Functions.Character:ResetCaches()

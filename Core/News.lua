@@ -27,6 +27,8 @@ TRB.Details.coreNewsContent = [====[
 - [#333](#333) Icon Priority decides which overlapping icon stays nearest the bar or visible, and which draws on top when icons are left to overlap.
 - [#890](#890) Fix custom threshold icons on a vertical bar other than the main resource bar being placed as if the bar were horizontal.
 - Fix threshold lines getting stuck in or out of range after switching from a specialization that Twintop's Resource Bar isn't enabled for.
+- Fix threshold lines getting stuck in or out of range after checking or unchecking use global settings for Threshold Line Colors.
+- Fix a Druid's threshold lines getting stuck in or out of range in Cat Form or Bear Form when only Feral or Guardian is set to recolor or hide out of range lines.
 
 ---
 
