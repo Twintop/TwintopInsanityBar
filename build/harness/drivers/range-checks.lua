@@ -208,6 +208,68 @@ function hooks.afterEvents(ctx)
 		Step(entry.compositeKey .. " after a talent change", "TRAIT_CONFIG_UPDATED:12345", entry.compositeKey)
 	end
 
+	---Turns Use Global threshold colors off for the class's specs, with their own colors needing no range checks.
+	---@return boolean off # Whether range checks are off afterward
+	local function UseOwnColorsWithoutRangeChecks()
+		for _, entry in ipairs(entries) do
+			TRB.Data.settings.core.global[entry.className][entry.specName].thresholdColors = false
+			local colors = TRB.Data.settings[entry.className][entry.specName].colors
+			local outOfRange = colors and colors.threshold and colors.threshold.outOfRange
+			if outOfRange then
+				outOfRange.show, outOfRange.enabled = true, false
+			end
+			Character:FillSpecializationCacheSettings(entry.className, entry.specName)
+		end
+		Character:RefreshSpellRangeCheckUpdate()
+		local registered = State()
+		return not registered and next(enabledIds) == nil
+	end
+
+	-- A shapeshift form can draw the live spec's lines with another spec's settings, so each one alone must turn range checks on.
+	local login = entries[#entries]
+	local descriptor = Character:GetSpecDescriptor(login.classId, login.specId)
+	if descriptor ~= nil and descriptor.forms ~= nil and #entries > 1 then
+		for i = 1, #entries - 1 do
+			local other = entries[i]
+			UseOwnColorsWithoutRangeChecks()
+			local colors = TRB.Data.settings[other.className][other.specName].colors
+			local outOfRange = colors and colors.threshold and colors.threshold.outOfRange
+			if outOfRange then
+				outOfRange.enabled = true
+				Character:FillSpecializationCacheSettings(other.className, other.specName)
+				Character:RefreshSpellRangeCheckUpdate()
+				local label = login.compositeKey .. " with only " .. other.compositeKey .. "'s settings needing range checks"
+				local ownNeeds = TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(TRB.Data.specCache[login.compositeKey].settings)
+				check(label .. ": its own need none, and it has range-checked lines", not ownNeeds and #RangeCheckedIds(login.compositeKey) > 0)
+				CheckOn(label, login.compositeKey)
+			end
+		end
+
+		-- Global Options' out-of-range boxes reach the live spec through another spec on Global colors.
+		local globalOutOfRange = TRB.Data.settings.core.colors.threshold.outOfRange
+		UseOwnColorsWithoutRangeChecks()
+		globalOutOfRange.show, globalOutOfRange.enabled = true, false
+		TRB.Data.settings.core.global[entries[1].className][entries[1].specName].thresholdColors = true
+		Character:FillSpecializationCacheSettings(entries[1].className, entries[1].specName)
+		Character:RefreshSpellRangeCheckUpdate()
+		local label = login.compositeKey .. " with only " .. entries[1].compositeKey .. " on Global colors"
+		local registered = State()
+		check(label .. ": range checks are off while Global's colors need none", not registered and next(enabledIds) == nil)
+		local globalControls = { colors = {}, checkBoxes = {} }
+		TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(desktop.CreateFrame("Frame"), globalControls, TRB.Data.settings.core, nil, nil, 0, "", false, false, false, true, nil)
+		local recolor = globalControls.checkBoxes.thresholdOutOfRangeColorEnabled
+		recolor.GetChecked = function() return true end
+		recolor.__scripts.OnClick(recolor)
+		CheckOn(label .. ", after ticking Global Options' change color when out of range box", login.compositeKey)
+		globalOutOfRange.enabled = true
+
+		for _, entry in ipairs(entries) do
+			TRB.Data.settings.core.global[entry.className][entry.specName].thresholdColors = true
+			Character:FillSpecializationCacheSettings(entry.className, entry.specName)
+		end
+		Character:RefreshSpellRangeCheckUpdate()
+	end
+
 	-- Disabling the live spec drops the immediate SwitchSpec on a spec change, leaving only Bootstrap's run to turn range checks on.
 	local from, to = entries[#entries], nil
 	for i = 1, #entries - 1 do
@@ -232,27 +294,10 @@ function hooks.afterEvents(ctx)
 		enabled[from.specName] = true
 	end
 
-	---Turns Use Global threshold colors off for the class's specs, with their own colors needing no range checks.
-	---@return boolean off # Whether range checks are off afterward
-	local function UseOwnColorsWithoutRangeChecks()
-		for _, entry in ipairs(entries) do
-			TRB.Data.settings.core.global[entry.className][entry.specName].thresholdColors = false
-			local colors = TRB.Data.settings[entry.className][entry.specName].colors
-			local outOfRange = colors and colors.threshold and colors.threshold.outOfRange
-			if outOfRange then
-				outOfRange.show, outOfRange.enabled = true, false
-			end
-			Character:FillSpecializationCacheSettings(entry.className, entry.specName)
-		end
-		Character:RefreshSpellRangeCheckUpdate()
-		local registered = State()
-		return not registered and next(enabledIds) == nil
-	end
-
 	-- Global's default colors need range checks, so Use Global can turn them on.
 	local live = Character:GetSpecRegistryEntry(TRB.Data.character.compositeKey)
 	check(live.compositeKey .. " with no settings needing range checks: range checks are off", UseOwnColorsWithoutRangeChecks())
-	-- No color rows: the Use Global box comes first, and healer specs lack some rows' colors.
+	-- No color rows: the Use Global box comes first, and Shadow, Elemental, and Balance have no Unusable color.
 	local controls = { colors = {}, checkBoxes = {} }
 	TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(desktop.CreateFrame("Frame"), controls, TRB.Data.settings[live.className][live.specName], live.classId, live.specId, 0, "", false, false, false, false, nil)
 	local useGlobal = controls.checkBoxes.useGlobalThresholdColors
@@ -266,17 +311,6 @@ function hooks.afterEvents(ctx)
 	end
 	TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()
 	CheckOn(live.compositeKey .. " after the Global Options bulk Use Global toggle", live.compositeKey)
-
-	-- A shapeshift form can draw the live spec's lines with another spec's settings.
-	local descriptor = Character:GetSpecDescriptor(live.classId, live.specId)
-	if descriptor ~= nil and descriptor.forms ~= nil and #entries > 1 then
-		TRB.Data.settings.core.global[live.className][live.specName].thresholdColors = false
-		Character:FillSpecializationCacheSettings(live.className, live.specName)
-		Character:RefreshSpellRangeCheckUpdate()
-		local ownNeeds = TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(TRB.Data.specCache[live.compositeKey].settings)
-		check(live.compositeKey .. " drawn with another specialization's settings: its own need no range checks, and it has range-checked lines", not ownNeeds and #RangeCheckedIds(live.compositeKey) > 0)
-		CheckOn(live.compositeKey .. " with only another specialization's settings needing range checks", live.compositeKey)
-	end
 	return errors
 end
 

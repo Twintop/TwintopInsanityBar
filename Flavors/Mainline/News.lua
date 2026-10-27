@@ -9,6 +9,10 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.8-release (2026-10-27)
+## Druid
+
+- Fix Balance, Guardian, and Restoration threshold lines getting stuck in or out of range in Cat Form when only Feral is set to recolor or hide out of range lines.
+
 ## Monk
 ### Brewmaster
 
