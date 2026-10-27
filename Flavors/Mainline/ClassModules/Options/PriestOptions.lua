@@ -226,6 +226,7 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				overlapBorder = true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {},
 			customThresholds = {}
 		},
@@ -689,6 +690,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 				overlapBorder = true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {},
 			customThresholds = {}
 		},
@@ -1052,6 +1054,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 				overlapBorder=true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			specProperties = {
 				shadowWordMadnessThresholdOnlyOverShow = false,
 			},
@@ -1746,6 +1749,9 @@ local function DisciplineConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 5, 1, yCoord)
 end
 
 local function DisciplineConstructOptionsPanel(cache)
@@ -2181,6 +2187,9 @@ local function HolyConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 2, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 5, 2, yCoord)
 end
 
 local function HolyConstructOptionsPanel(cache)
@@ -2567,6 +2576,9 @@ local function ShadowConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 3, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 5, 3, yCoord)
 end
 
 local function ShadowConstructFontAndTextPanel(parent)

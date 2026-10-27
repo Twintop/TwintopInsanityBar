@@ -623,12 +623,14 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return nil
 	end
 
-	---Turns range checks on or off after a threshold indicator on the played spec is added, re-pointed, or removed.
-	local function RefreshRangeChecks()
+	---Refreshes range checks and tracked cooldowns after a threshold indicator is added, re-pointed, or removed.
+	local function RefreshThresholdTracking()
 		local character = TRB.Data.character
 		if character ~= nil and character.classId == classId and character.specId == specId then
 			TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
 		end
+		-- A Druid form follows another spec's indicators, so this spec's edit can matter while playing a sibling.
+		TRB.Functions.ThresholdCooldowns:Sync()
 	end
 
 	---Why Add and Edit can't be used right now (nil when they can), and the layout status behind it.
@@ -888,7 +890,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 						PointThresholdConditionAt(condition, spell, state)
 						Threshold:SyncIndicatorColors(settingsClassName, settingsSpecName)
 						RefreshRow(capturedRowIdx)
-						RefreshRangeChecks()
+						RefreshThresholdTracking()
 						RefreshRuntime()
 					end)
 				end)
@@ -1157,7 +1159,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		local condition = { source = Threshold.CONDITION_SOURCE }
 		PointThresholdConditionAt(condition, spell, state)
 		AddIndicatorRow(condition)
-		RefreshRangeChecks()
+		RefreshThresholdTracking()
 	end
 
 	---Opens the Add menu: Cooldown Manager buffs, or a threshold line's state.
@@ -1202,7 +1204,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		indicatorColors[key] = nil
 		indicatorDefByKey[key] = nil
 		if wasThreshold then
-			RefreshRangeChecks()
+			RefreshThresholdTracking()
 		end
 
 		local lastRow = rows[#orderedKeys + 1]

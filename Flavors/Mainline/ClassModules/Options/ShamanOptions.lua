@@ -56,6 +56,7 @@ local function ElementalLoadDefaultSettings(includeBarText, classic)
 				overlapBorder=true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {
 				earthShock = {
 					enabled = true,
@@ -339,6 +340,7 @@ local function EnhancementLoadDefaultSettings(includeBarText, classic)
 				overlapBorder = true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {},
 			customThresholds = {}
 		},
@@ -568,6 +570,7 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 				overlapBorder = true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {},
 			customThresholds = {}
 		},
@@ -1047,6 +1050,9 @@ local function ElementalConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 7, 1, yCoord)
 end
 
 local function ElementalConstructFontAndTextPanel(parent)
@@ -1589,6 +1595,9 @@ local function EnhancementConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 2, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 7, 2, yCoord)
 end
 
 local function EnhancementConstructOptionsPanel(cache)
@@ -1930,6 +1939,9 @@ local function RestorationConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 3, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 7, 3, yCoord)
 end
 
 local function RestorationConstructOptionsPanel(cache)

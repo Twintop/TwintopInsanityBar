@@ -219,6 +219,51 @@ local function Track(spell, snapshots)
 	AddSpellIds(snapshot.spell, cooldown)
 end
 
+---The settings the live spec's lines can draw with, and the lines its On Cooldown Color Indicators follow.
+---A spec with forms draws them with any of its class's specs' settings.
+---@return TRB.Classes.Settings.SpecializationSettingsBase[] settingsList
+---@return table<string, boolean> conditionKeys
+local function GetLineSources()
+	local settingsList = {}
+	local conditionKeys = {}
+	local compositeKey = TRB.Data.character.compositeKey
+	local registryEntry = TRB.Functions.Character:GetSpecRegistryEntry(compositeKey or "")
+	if registryEntry == nil then
+		return settingsList, conditionKeys
+	end
+	local descriptor = TRB.Functions.Character:GetSpecDescriptor(registryEntry.classId, registryEntry.specId)
+	local hasForms = descriptor ~= nil and descriptor.forms ~= nil
+	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+		if entry.compositeKey == compositeKey or (hasForms and entry.classId == registryEntry.classId) then
+			local cache = TRB.Data.specCache[entry.compositeKey]
+			if cache ~= nil and cache.settings ~= nil and cache.settings.thresholds ~= nil then
+				settingsList[#settingsList + 1] = cache.settings
+			end
+			TRB.Functions.Threshold:AddCooldownConditionKeys(entry.className, entry.specName, conditionKeys)
+		end
+	end
+	return settingsList, conditionKeys
+end
+
+---Whether a line needs its cooldown: it draws with tracking on in some settings, or an indicator follows it.
+---@param spell TRB.Classes.SpellThreshold|TRB.Classes.SpellComboPointThreshold
+---@param settingsList TRB.Classes.Settings.SpecializationSettingsBase[]
+---@param conditionKeys table<string, boolean>
+---@return boolean
+local function NeedsCooldown(spell, settingsList, conditionKeys)
+	if conditionKeys[spell.settingKey] or #settingsList == 0 then
+		return true
+	end
+	for _, settings in ipairs(settingsList) do
+		local thresholds = settings.thresholds --[[@as TRB.Classes.Settings.Thresholds]]
+		local dictEntry = thresholds.thresholdDictionary ~= nil and thresholds.thresholdDictionary[spell.settingKey] or nil
+		if (dictEntry == nil or dictEntry.enabled == true) and TRB.Functions.Threshold:IsCooldownTracked(thresholds.behavior, dictEntry) then
+			return true
+		end
+	end
+	return false
+end
+
 local function SyncEventRegistration()
 	local wanted = #tracked > 0
 	if wanted == eventsRegistered then
@@ -234,8 +279,8 @@ local function SyncEventRegistration()
 	end
 end
 
----Rebuilds the tracked set from the live spec's learned threshold lines with a cooldown and its descriptor's
----cooldownSpells. A cooldown that joins is read once; one that leaves ends, so no stale cooldown outlives tracking.
+---Rebuilds the tracked set from the live spec's lines that need their cooldown and its descriptor's cooldownSpells.
+---A cooldown that joins is read once; one that leaves ends, so no stale cooldown outlives tracking.
 function ThresholdCooldowns:Sync()
 	local previous = tracked
 	tracked = {}
@@ -244,8 +289,9 @@ function ThresholdCooldowns:Sync()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
 	if enabled and snapshotData ~= nil then
 		local snapshots = snapshotData.snapshots
+		local settingsList, conditionKeys = GetLineSources()
 		for _, spell in pairs(TRB.Data.cache.thresholdSpellsByKey) do
-			if spell.hasCooldown then
+			if spell.hasCooldown and NeedsCooldown(spell, settingsList, conditionKeys) then
 				Track(spell, snapshots)
 			end
 		end

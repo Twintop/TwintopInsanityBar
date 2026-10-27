@@ -86,6 +86,7 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 				overlapBorder=true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {
 				abyssalGaze = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
 				annihilation = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
@@ -293,6 +294,7 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 				overlapBorder=true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {
 				soulCleave = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
 				chaosNova = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
@@ -539,6 +541,7 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 				overlapBorder=true
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {
 				voidRay = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
 				collapsingStarThreshold = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true),
@@ -1056,6 +1059,9 @@ local function HavocConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 12, 1, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 12, 1, yCoord)
 end
 
 local function HavocConstructFontAndTextPanel(parent)
@@ -1522,6 +1528,9 @@ local function VengeanceConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 12, 2, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 12, 2, yCoord)
 end
 
 local function VengeanceConstructFontAndTextPanel(parent)
@@ -1920,6 +1929,9 @@ local function DevourerConstructThresholdSettingsPanel(parent)
 
 	yCoord = yCoord - 40
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, spec, 12, 3, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, 12, 3, yCoord)
 end
 
 local function DevourerConstructFontAndTextPanel(parent)

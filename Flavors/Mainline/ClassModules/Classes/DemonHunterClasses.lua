@@ -457,6 +457,8 @@ function TRB.Classes.DemonHunter.DevourerSpells:New()
 		isTalent = true,
 		rangeCheck = false,
 		isSnowflake = true,
+		-- Its line shows Unusable while channeling, cooldown tracked or not.
+		unusableWhileCasting = true,
 		resource = 100
 	})
 	-- Really Void Metamorphosis but splitting out for tracking

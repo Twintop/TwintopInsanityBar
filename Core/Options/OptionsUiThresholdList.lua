@@ -390,15 +390,30 @@ function TRB.Functions.OptionsUi.ThresholdList:BuildIconCooldownControls(parent,
 		rechargeOptions = rechargeOptions,
 	}
 
+	-- state.untrackedReason is set while the line ignores its cooldown, which turns these off too.
 	local function RefreshRechargeEnabled()
+		local primitives = TRB.Functions.OptionsUi.Primitives
 		local icon = state.icon
-		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(cooldownControls.rechargeDropdown,
-			icon ~= nil and icon.show ~= false and (icon.showCooldown ~= false or icon.showCooldownText ~= false))
+		local reason = state.untrackedReason
+		if reason == nil and icon ~= nil and icon.show == false then
+			reason = L["ThresholdDetailIconHiddenTooltip"]
+		elseif reason == nil and icon ~= nil and icon.showCooldown == false and icon.showCooldownText == false then
+			reason = L["ThresholdIconCooldownPartsOffTooltip"]
+		end
+		primitives:ToggleDropdownEnabled(cooldownControls.rechargeDropdown, icon ~= nil and reason == nil)
+		primitives:SetDisabledReason(cooldownControls.rechargeDropdown, reason)
 	end
 	cooldownControls.refreshEnabled = function()
-		local shown = state.icon ~= nil and state.icon.show ~= false
-		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(cooldownControls.swipeCheckbox, shown)
-		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(cooldownControls.textCheckbox, shown)
+		local primitives = TRB.Functions.OptionsUi.Primitives
+		local icon = state.icon
+		local reason = state.untrackedReason
+		if reason == nil and icon ~= nil and icon.show == false then
+			reason = L["ThresholdDetailIconHiddenTooltip"]
+		end
+		primitives:ToggleCheckboxEnabled(cooldownControls.swipeCheckbox, icon ~= nil and reason == nil)
+		primitives:ToggleCheckboxEnabled(cooldownControls.textCheckbox, icon ~= nil and reason == nil)
+		primitives:SetDisabledReason(cooldownControls.swipeCheckbox, reason)
+		primitives:SetDisabledReason(cooldownControls.textCheckbox, reason)
 		RefreshRechargeEnabled()
 	end
 
@@ -868,6 +883,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	local detailHasOutOfRange = false
 	local detailCanHaveAudio = true
 	local detailHasThresholdIcon = true
+	-- Combo point finishers and casts can show Unusable with no cooldown, so their Unusable row stays live untracked.
+	local detailUnusableWithoutCooldown = false
 
 	---Refreshes the scrolling table data from the current threshold settings.
 	local function SetTableValues()
@@ -1013,6 +1030,20 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	controls.colors.thresholdOutOfRange = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(detailScrollChild, L["ThresholdDetailColorsOutOfRange"], "FFFFFFFF", oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, detailYCoord)
 	controls.colors.thresholdOutOfRange:Hide()
 
+	-- ===== BEHAVIOR OVERRIDE SECTION =====
+	detailYCoord = detailYCoord - 40
+	local behaviorHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailBehaviorHeader"], oUi.xCoord, detailYCoord)
+	behaviorHeader.font:SetFontObject(GameFontNormalLarge)
+	behaviorHeader.font:SetTextColor(1, 1, 1)
+	behaviorHeader:Hide()
+	detailYCoord = detailYCoord - 30
+
+	controls.dropDown.thresholdCooldownTracking = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdCooldownTracking", detailScrollChild, "WowStyle1DropdownTemplate")
+	local cooldownTrackingDropdown = controls.dropDown.thresholdCooldownTracking
+	cooldownTrackingDropdown:SetWidth(oUi.sliderWidth)
+	cooldownTrackingDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	cooldownTrackingDropdown:Hide()
+
 	-- ===== LINE OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 40
 	local lineHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailLineHeader"], oUi.xCoord, detailYCoord)
@@ -1126,6 +1157,40 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	audioPlayOutOfCombatCheckbox.tooltip = L["AudioCuePlayOutOfCombatCheckboxTooltip"]
 	audioPlayOutOfCombatCheckbox:Hide()
 
+	local lowerClassName = string.lower(className)
+
+	---Grays out the selected line's cooldown-only options while it ignores its cooldown, with a tooltip saying why.
+	local function RefreshTrackingStates()
+		local primitives = TRB.Functions.OptionsUi.Primitives
+		local dictEntry = selectedSettingKey ~= nil and spec.thresholds.thresholdDictionary[selectedSettingKey] or nil
+		local reason = nil
+		if detailHasUnusable and dictEntry ~= nil then
+			local classGlobal = TRB.Data.settings.core.global[lowerClassName]
+			local useGlobal = classGlobal ~= nil and classGlobal[specName] ~= nil and classGlobal[specName].thresholdBehavior
+			local behavior = (useGlobal and TRB.Data.settings.core.thresholds or spec.thresholds).behavior
+			if not TRB.Functions.Threshold:IsCooldownTracked(behavior, dictEntry) then
+				local lineMode = dictEntry.behavior ~= nil and dictEntry.behavior.cooldownTracking or nil
+				reason = lineMode == "off" and L["ThresholdDetailCooldownNotTrackedLineTooltip"] or L["ThresholdDetailCooldownNotTrackedSharedTooltip"]
+			end
+		end
+		local unusableReason = not detailUnusableWithoutCooldown and reason or nil
+		primitives:ToggleDropdownEnabled(colorUnusableModeDropdown, unusableReason == nil)
+		primitives:ToggleColorPickerEnabled(controls.colors.thresholdUnusable, unusableReason == nil)
+		primitives:SetDisabledReason(colorUnusableModeDropdown, unusableReason)
+		controls.thresholdIconCooldown.state.untrackedReason = reason
+		controls.thresholdIconCooldown.refreshEnabled()
+	end
+
+	-- The shared setting and Use Global live on other tabs, so a return here may find either changed.
+	detailFrame:HookScript("OnShow", RefreshTrackingStates)
+
+	---Grays out the selected line's Desaturate box while its icon is hidden, with a tooltip saying why.
+	---@param iconShown boolean
+	local function RefreshDesaturateState(iconShown)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, iconShown)
+		TRB.Functions.OptionsUi.Primitives:SetDisabledReason(iconDesaturateCheckbox, not iconShown and L["ThresholdDetailIconHiddenTooltip"] or nil)
+	end
+
 	---Dynamically repositions all detail panel controls based on which sections
 	---are currently visible, eliminating empty gaps from hidden controls.
 	local function RepositionDetailControls()
@@ -1162,6 +1227,22 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			outOfRangeModeDropdown = colorOorModeDropdown,
 			outOfRangeColorPicker = controls.colors.thresholdOutOfRange,
 		})
+
+		-- Only a line with a cooldown has anything to track.
+		if isEnabled and detailHasUnusable then
+			behaviorHeader:ClearAllPoints()
+			behaviorHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
+			behaviorHeader:Show()
+			y = y - 30
+
+			cooldownTrackingDropdown:ClearAllPoints()
+			cooldownTrackingDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+			cooldownTrackingDropdown:Show()
+			y = y - 30
+		else
+			behaviorHeader:Hide()
+			cooldownTrackingDropdown:Hide()
+		end
 
 		y = TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout({
 			yCoord = y,
@@ -1208,6 +1289,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		end
 
 		detailScrollChild:SetHeight(math.abs(y) + 20)
+		RefreshTrackingStates()
 	end
 
 	---Populates the detail panel for the selected threshold.
@@ -1245,6 +1327,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		detailHasOutOfRange = hasOutOfRange
 		detailCanHaveAudio = spellObj == nil or spellObj.canHaveAudioCue ~= false
 		detailHasThresholdIcon = spellObj == nil or spellObj.hasThresholdIcon ~= false
+		detailUnusableWithoutCooldown = spellObj ~= nil and ((spellObj:Is("TRB.Classes.SpellComboPointThreshold") and spellObj.comboPoints == true)
+			or spellObj.attributes.unusableWhileCasting == true)
 
 		-- Update header
 		detailHeader.font:SetText(string.format(L["ThresholdDetailHeader"], entry.icon .. " " .. entry.name))
@@ -1313,6 +1397,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 				end
 			end
 			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(enabledCheckbox, checked, false)
+			-- Only enabled lines keep their cooldowns tracked.
+			TRB.Functions.ThresholdCooldowns:Sync()
 			RepositionDetailControls()
 			SetTableValues()
 			for i, e in ipairs(thresholdEntries) do
@@ -1475,6 +1561,31 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			controls.colors.thresholdOutOfRange:Hide()
 		end
 
+		-- ===== BEHAVIOR OVERRIDE SECTION =====
+		local trackingPrefix = L["ThresholdDetailCooldownTrackingPrefix"]
+		local trackingLabels = {
+			shared = L["ThresholdDetailCooldownTrackingShared"],
+			on = L["ThresholdDetailCooldownTrackingOn"],
+			off = L["ThresholdDetailCooldownTrackingOff"],
+		}
+		local function GetCooldownTracking()
+			return dictEntry.behavior ~= nil and dictEntry.behavior.cooldownTracking or "shared"
+		end
+		EnsureDropdownPrefixHook(cooldownTrackingDropdown, trackingPrefix)
+		cooldownTrackingDropdown:SetDefaultText(trackingPrefix .. ": " .. (trackingLabels[GetCooldownTracking()] or trackingLabels.shared))
+		cooldownTrackingDropdown:SetupMenu(function(_, rootDescription)
+			for _, mode in ipairs({ "shared", "on", "off" }) do
+				rootDescription:CreateRadio(trackingLabels[mode], function(value)
+					return GetCooldownTracking() == value
+				end, function(value)
+					dictEntry.behavior = dictEntry.behavior or {}
+					dictEntry.behavior.cooldownTracking = value
+					RefreshTrackingStates()
+					TRB.Functions.Threshold:RedrawThresholdLines()
+				end, mode)
+			end
+		end)
+
 		-- ===== LINE OVERRIDE SECTION =====
 		local function UpdateLineControlsVisibility()
 			if dictEntry.line.enabled then
@@ -1526,7 +1637,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 				iconRelativeToDropdown:Show()
 				iconShowCheckbox:Show()
 				iconDesaturateCheckbox:Show()
-				TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show ~= false)
+				RefreshDesaturateState(dictEntry.icon.show ~= false)
 				controls.sliders.thresholdIconWidth:Show()
 				controls.sliders.thresholdIconHeight:Show()
 				controls.sliders.thresholdIconXPos:Show()
@@ -1602,7 +1713,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		iconShowCheckbox:SetChecked(dictEntry.icon.show ~= false)
 		iconShowCheckbox:SetScript("OnClick", function(self, ...)
 			dictEntry.icon.show = self:GetChecked()
-			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show)
+			RefreshDesaturateState(dictEntry.icon.show ~= false)
 			controls.thresholdIconCooldown.refreshEnabled()
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end)
@@ -1613,7 +1724,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			dictEntry.icon.desaturated = self:GetChecked()
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end)
-		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show ~= false)
+		RefreshDesaturateState(dictEntry.icon.show ~= false)
 
 		-- Icon size/position sliders
 		local iconWidth = dictEntry.icon.width or spec.thresholds.icons.width or 32

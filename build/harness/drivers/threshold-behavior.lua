@@ -3,9 +3,12 @@ local desktop = _G --[[@as table<string, any>]]
 local parity = desktop.require("drivers.parity")
 
 local hooks = {}
+-- Live Druids run as Feral with every talent learned, so the form checks have lines; Forever's Druid has one spec.
+local isLiveDruid = false
 
 function hooks.afterInstall(ctx)
-	parity.Install(ctx)
+	isLiveDruid = ctx.classId == 11 and not ctx.tocRel:find("^Flavors/")
+	parity.Install(ctx, isLiveDruid and { spec = 2 } or nil)
 end
 
 ---@param spell table
@@ -85,6 +88,45 @@ function hooks.afterEvents(ctx)
 		(specs[2] == nil or migrated[specs[2].specName].thresholds.icons.showCooldownText == nil)
 		and (specs[3] == nil or migrated[specs[3].specName].thresholds.icons.showCooldownText == true))
 
+	-- A line's own Cooldown Tracking wins over the shared Track ability cooldowns.
+	local Threshold = TRB.Functions.Threshold
+	check("Tracking: a line tracks by default", Threshold:IsCooldownTracked(nil, nil) and Threshold:IsCooldownTracked({ trackCooldowns = true }, {}))
+	check("Tracking: the shared setting off stops a line that uses it", not Threshold:IsCooldownTracked({ trackCooldowns = false }, { behavior = { cooldownTracking = "shared" } }))
+	check("Tracking: Track wins over the shared setting off", Threshold:IsCooldownTracked({ trackCooldowns = false }, { behavior = { cooldownTracking = "on" } }))
+	check("Tracking: Don't Track wins over the shared setting on", not Threshold:IsCooldownTracked({ trackCooldowns = true }, { behavior = { cooldownTracking = "off" } }))
+
+	-- Every spec ships tracking cooldowns and following Global Options for it.
+	local badDefaults = {}
+	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+		local classSettings = TRB.Data.settings[entry.className]
+		local spec = classSettings ~= nil and classSettings[entry.specName] or nil
+		local classFlags = TRB.Data.settings.core.global[entry.className]
+		local flags = classFlags ~= nil and classFlags[entry.specName] or nil
+		if spec ~= nil and spec.thresholds ~= nil and (spec.thresholds.behavior == nil or spec.thresholds.behavior.trackCooldowns ~= true
+			or flags == nil or flags.thresholdBehavior ~= true) then
+			badDefaults[#badDefaults + 1] = entry.compositeKey
+		end
+	end
+	check("Every spec tracks cooldowns by default, following Global Options", #badDefaults == 0 and TRB.Data.settings.core.thresholds.behavior.trackCooldowns == true,
+		table.concat(badDefaults, ", "))
+
+	-- Use Global hands the spec cache Global Options' behavior settings, and its own once off.
+	local liveEntry = TRB.Functions.Character:GetSpecRegistryEntry(TRB.Data.character.compositeKey or "")
+	if liveEntry ~= nil then
+		local flags = TRB.Data.settings.core.global[liveEntry.className][liveEntry.specName]
+		local liveSpec = TRB.Data.settings[liveEntry.className][liveEntry.specName]
+		local wasGlobal = flags.thresholdBehavior
+		local function CachedBehavior(useGlobal)
+			flags.thresholdBehavior = useGlobal
+			TRB.Functions.Character:FillSpecializationCacheSettings(liveEntry.className, liveEntry.specName)
+			return TRB.Data.specCache[liveEntry.compositeKey].settings.thresholds.behavior
+		end
+		local onGlobal = CachedBehavior(true) == TRB.Data.settings.core.thresholds.behavior
+		local onSpec = CachedBehavior(false) == liveSpec.thresholds.behavior
+		CachedBehavior(wasGlobal)
+		check("Use Global: the spec follows Global Options' Threshold Line Behavior, or its own once off", onGlobal and onSpec)
+	end
+
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData == nil then
 		check("The live spec has snapshot data", false)
@@ -97,6 +139,30 @@ function hooks.afterEvents(ctx)
 	if TRB.Flavor.thresholdsRequireKnown then
 		G.C_SpellBook.IsSpellKnown = function() return true end
 		TRB.Functions.Character:RefreshThresholdSpellsLearned()
+	end
+	local talents = TRB.Data.talents
+	if isLiveDruid then
+		talents.IsTalentActive = function() return true end
+		TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData.spells, talents)
+	end
+
+	-- Only enabled lines track their cooldowns, so every line starts enabled for these checks.
+	local liveDictionary = TRB.Data.specCache[TRB.Data.character.compositeKey].settings.thresholds.thresholdDictionary
+	local enabledSaved = {}
+	for key, entry in pairs(liveDictionary) do
+		enabledSaved[key] = entry.enabled
+		entry.enabled = true
+	end
+	TRB.Functions.ThresholdCooldowns:Sync()
+	local function RestoreEnabled()
+		for key, enabled in pairs(enabledSaved) do
+			liveDictionary[key].enabled = enabled
+		end
+		if isLiveDruid then
+			talents.IsTalentActive = nil
+			TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData.spells, talents)
+		end
+		TRB.Functions.ThresholdCooldowns:Sync()
 	end
 
 	-- The tracked set, as the tracker builds it: learned cooldown lines plus the descriptor's cooldownSpells.
@@ -135,6 +201,7 @@ function hooks.afterEvents(ctx)
 	if trackedCount == 0 then
 		print("INFO " .. tostring(TRB.Data.character.compositeKey) .. " has no threshold line with a cooldown")
 		G.C_SpellBook.IsSpellKnown = isSpellKnown
+		RestoreEnabled()
 		return failures
 	end
 
@@ -450,6 +517,189 @@ function hooks.afterEvents(ctx)
 		dictEntry.enabled = lineEnabled
 	end
 
+	-- Threshold Line Behavior, on a line whose cooldown no other line or bar text shares.
+	local linesPerCooldown = {}
+	for _, key in ipairs(keys) do
+		local cooldown = snapshots[TRB.Data.cache.thresholdSpellsByKey[key].id].cooldown
+		linesPerCooldown[cooldown] = (linesPerCooldown[cooldown] or 0) + 1
+	end
+	if descriptor ~= nil and descriptor.cooldownSpells ~= nil then
+		for _, key in ipairs(descriptor.cooldownSpells) do
+			local spell = TRB.Data.spellsData.spells[key]
+			local snapshot = spell ~= nil and snapshots[spell.id] or nil
+			if snapshot ~= nil then
+				linesPerCooldown[snapshot.cooldown] = 2
+			end
+		end
+	end
+	local behaviorSpell = nil
+	for _, key in ipairs(keys) do
+		local spell = TRB.Data.cache.thresholdSpellsByKey[key]
+		if behaviorSpell == nil and linesPerCooldown[snapshots[spell.id].cooldown] == 1 then
+			behaviorSpell = spell
+		end
+	end
+	if behaviorSpell ~= nil then
+		local id = behaviorSpell:GetRankedId()
+		local key = behaviorSpell.settingKey
+		local cooldown = snapshots[behaviorSpell.id].cooldown
+		local Cooldowns = TRB.Functions.ThresholdCooldowns
+		local registryEntry = TRB.Functions.Character:GetSpecRegistryEntry(TRB.Data.character.compositeKey)
+		local hasForms = (TRB.Functions.Character:GetActiveSpecDescriptor() or {}).forms ~= nil
+
+		-- A spec with forms tracks a line any of its class's specs' settings track, so changes go to all of them.
+		local lineEntries, behaviors = {}, {}
+		for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+			local cache = TRB.Data.specCache[entry.compositeKey]
+			if (entry.compositeKey == registryEntry.compositeKey or (hasForms and entry.classId == registryEntry.classId))
+				and cache ~= nil and cache.settings ~= nil and cache.settings.thresholds ~= nil then
+				local dictionary = cache.settings.thresholds.thresholdDictionary
+				local lineEntry = dictionary[key]
+				local created = lineEntry == nil
+				if created then
+					lineEntry = { enabled = true }
+					dictionary[key] = lineEntry
+				end
+				lineEntries[#lineEntries + 1] = { dictionary = dictionary, entry = lineEntry, created = created, enabled = lineEntry.enabled, behavior = lineEntry.behavior,
+					isLive = entry.compositeKey == registryEntry.compositeKey }
+				local behavior = cache.settings.thresholds.behavior
+				if behaviors[behavior] == nil then
+					behaviors[behavior] = behavior.trackCooldowns
+				end
+			end
+		end
+		local function SetLine(field, value, liveOnly)
+			for _, lineEntry in ipairs(lineEntries) do
+				if not liveOnly or lineEntry.isLive then
+					lineEntry.entry[field] = value
+				end
+			end
+			Cooldowns:Sync()
+		end
+		local function SetShared(value)
+			for behavior in pairs(behaviors) do
+				behavior.trackCooldowns = value
+			end
+			Cooldowns:Sync()
+		end
+		local function ReadsOnEvent()
+			local before = readsById[id] or 0
+			Fire(id)
+			return (readsById[id] or 0) - before
+		end
+
+		SetLine("enabled", true)
+		-- Plain times, as for an options change out of combat, so a line that joins reads its running cooldown.
+		readings[id] = Reading(true, false, now - 1, 30)
+		check(key .. ": a tracked line reads its cooldown on an event naming it", ReadsOnEvent() == 1 and cooldown.onCooldown)
+		SetLine("behavior", { cooldownTracking = "off" })
+		check(key .. ": Don't Track ends its cooldown", not cooldown.onCooldown and not cooldown:IsUnusable())
+		check(key .. ": Don't Track drops it from the event filter", ReadsOnEvent() == 0)
+		if hasForms and #lineEntries > 1 then
+			SetLine("behavior", nil)
+			SetLine("behavior", { cooldownTracking = "off" }, true)
+			check(key .. ": another form's settings still tracking it keep it tracked", cooldown.onCooldown and ReadsOnEvent() == 1)
+			SetLine("behavior", { cooldownTracking = "off" })
+		end
+		SetShared(false)
+		SetLine("behavior", { cooldownTracking = "on" })
+		check(key .. ": Track keeps it with the shared setting off, reading it as it joins", cooldown.onCooldown and ReadsOnEvent() == 1)
+		SetLine("behavior", { cooldownTracking = "shared" })
+		check(key .. ": the shared setting off drops a line that uses it", not cooldown.onCooldown and ReadsOnEvent() == 0)
+		SetShared(true)
+		check(key .. ": the shared setting back on tracks it again", cooldown.onCooldown and ReadsOnEvent() == 1)
+
+		-- In combat the times are secret, so joining reads the ability's own cooldown from the never-secret flag.
+		local function TotalLoads()
+			local total = 0
+			for _, frame in ipairs(cooldownFrames) do
+				total = total + frame.loads
+			end
+			return total
+		end
+		SetLine("behavior", { cooldownTracking = "off" })
+		readings[id] = Reading(true, false)
+		local loads = TotalLoads()
+		SetLine("behavior", { cooldownTracking = "on" })
+		check(key .. ": joining mid-cooldown in combat starts it and its end widget", cooldown.onCooldown and not cooldown:HasPlainTiming() and TotalLoads() > loads)
+		SetLine("behavior", { cooldownTracking = "off" })
+		readings[id] = Reading(true, true)
+		SetLine("behavior", { cooldownTracking = "on" })
+		check(key .. ": joining in combat during only the GCD leaves it off cooldown", not cooldown.onCooldown)
+		readings[id] = Reading(true, false, now - 1, 30)
+		SetLine("enabled", false)
+		check(key .. ": a disabled line drops out", not cooldown.onCooldown and ReadsOnEvent() == 0)
+
+		-- An On Cooldown Color Indicator needs the cooldown, whatever the line's own settings say.
+		local liveSpec = TRB.Data.settings[registryEntry.className][registryEntry.specName]
+		local shared = liveSpec.colors.shared
+		local createdShared = shared == nil
+		shared = shared or {}
+		liveSpec.colors.shared = shared
+		local createdIndicators = shared.indicatorColors == nil
+		shared.indicatorColors = shared.indicatorColors or {}
+		shared.indicatorColors.trbDriverOnCooldown = { custom = { conditions = {
+			{ source = Threshold.CONDITION_SOURCE, state = Threshold.ConditionState.ON_COOLDOWN, settingKey = key },
+		} } }
+		Cooldowns:Sync()
+		check(key .. ": an On Cooldown Color Indicator keeps a disabled line tracked", cooldown.onCooldown and ReadsOnEvent() == 1)
+		shared.indicatorColors.trbDriverOnCooldown = nil
+		if createdIndicators then
+			shared.indicatorColors = nil
+		end
+		if createdShared then
+			liveSpec.colors.shared = nil
+		end
+		SetLine("enabled", true)
+
+		-- The tick hands an untracked line no snapshot, so none of its rules, colors, or swipe see the cooldown.
+		local settings = TRB.Data.specCache[registryEntry.compositeKey].settings
+		local nodeFrame = G.CreateFrame("Frame")
+		local nodeThresholds = {}
+		local node = {
+			GetFrame = function() return nodeFrame end,
+			GetThresholds = function() return nodeThresholds end,
+			RegisterThreshold = function(_, frame) nodeThresholds[#nodeThresholds + 1] = frame end,
+		}
+		local bar = TRB.Classes.ThresholdBar:New(behaviorSpell.barTarget)
+		bar:Set(node, 1000000)
+		local state = TRB.Classes.ThresholdState:New()
+		state:Refresh(settings)
+		local data = { thresholdSpells = { behaviorSpell }, spells = TRB.Data.spellsData.spells, talents = TRB.Data.talents, requireKnown = false }
+		local seen = {}
+		local snowflakes = {
+			before = function(line)
+				seen.ran = true
+				seen.snapshot = line.snapshot
+				return true
+			end,
+		}
+		local function Tick()
+			seen = {}
+			local ok, err = pcall(Threshold.UpdateSpellThresholds, Threshold, bar, state, data, snowflakes)
+			return ok, tostring(err)
+		end
+		local ok, err = Tick()
+		check(key .. ": a tracked line's rules see its cooldown", ok and seen.ran and seen.snapshot == snapshots[behaviorSpell.id], err)
+		SetLine("behavior", { cooldownTracking = "off" }, true)
+		ok, err = Tick()
+		check(key .. ": an untracked line's rules see no cooldown", ok and seen.ran and seen.snapshot == nil, err)
+
+		for _, lineEntry in ipairs(lineEntries) do
+			if lineEntry.created then
+				lineEntry.dictionary[key] = nil
+			else
+				lineEntry.entry.enabled, lineEntry.entry.behavior = lineEntry.enabled, lineEntry.behavior
+			end
+		end
+		for behavior, value in pairs(behaviors) do
+			behavior.trackCooldowns = value
+		end
+		readings[id] = nil
+		Cooldowns:Sync()
+	end
+
+	RestoreEnabled()
 	G.GetTime = saved.GetTime
 	G.issecretvalue = saved.issecretvalue
 	G.C_Spell.GetSpellCooldown = saved.GetSpellCooldown

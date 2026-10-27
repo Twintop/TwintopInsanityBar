@@ -66,6 +66,7 @@ local function NewSpecGlobalDefaults()
 		globalBarText = true,
 		textColors = false,
 		thresholdColors = true,
+		thresholdBehavior = true,
 		healthBarColors = true,
 		precision = false,
 		textures = true,
@@ -169,6 +170,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					overlapBorder=true
 				},
 				icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+				behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			},
 			displayBar = {
 				primary = {
@@ -2930,6 +2932,14 @@ function TRB.Functions.Settings:DefaultThresholdIconSettings()
 	}
 end
 
+---Gets the default shared Threshold Line Behavior settings
+---@return TRB.Classes.Settings.ThresholdBehavior
+function TRB.Functions.Settings:DefaultThresholdBehaviorSettings()
+	return {
+		trackCooldowns = true
+	}
+end
+
 ---Creates default per-threshold settings for a threshold dictionary entry.
 ---When `enabled` is false on a sub-entry (audio, individual color, icon, line),
 ---the global setting is used instead.
@@ -3023,6 +3033,7 @@ function TRB.Functions.Settings:DefaultThresholdSettings()
 			overlapBorder = true,
 		},
 		icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+		behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 		specProperties = {},
 		thresholdDictionary = {},
 		customThresholds = {},

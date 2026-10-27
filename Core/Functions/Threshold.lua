@@ -3114,6 +3114,7 @@ end
 function TRB.Functions.Threshold:RedrawThresholdLines()
 	-- Every threshold color and mode edit lands here, on whichever spec's panel made it.
 	TRB.Functions.Threshold:SyncAllIndicatorColors()
+	TRB.Functions.ThresholdCooldowns:Sync()
 
 	if TRB.Data.barConstructedForSpec == nil or TRB.Data.barConstructedForSpec == "" then
 		return
@@ -3198,6 +3199,21 @@ function TRB.Functions.Threshold:ShouldShowUnusableThresholds(settings)
 		not settings.colors.threshold.unusable.show or
 		(settings.colors.threshold.unusable.show and settings.colors.threshold.unusable.enabled)
 	)
+end
+
+---Whether a threshold line follows its ability's cooldown: the line's own choice, or else the shared setting.
+---@param behavior TRB.Classes.Settings.ThresholdBehavior? # The shared Threshold Line Behavior settings
+---@param dictEntry TRB.Classes.Settings.ThresholdDictionaryEntry?
+---@return boolean
+function TRB.Functions.Threshold:IsCooldownTracked(behavior, dictEntry)
+	local lineBehavior = dictEntry ~= nil and dictEntry.behavior or nil
+	local mode = lineBehavior ~= nil and lineBehavior.cooldownTracking or nil
+	if mode == "on" then
+		return true
+	elseif mode == "off" then
+		return false
+	end
+	return behavior == nil or behavior.trackCooldowns ~= false
 end
 
 ---Resolves the effective under/over threshold colors for a ColorCurve, accounting for per-threshold overrides.
@@ -3689,6 +3705,7 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 	line.data = data
 	local layoutActive = IsIconLayoutActive(settings)
 	local pairOffsets = thresholdIconPairOffsets[settings]
+	local behavior = settings.thresholds.behavior
 
 	local index = 0
 	for _, spell in ipairs(data.thresholdSpells) do
@@ -3727,7 +3744,11 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 				line.frame = frame
 				line.pairOffset = pairOffsets ~= nil and pairOffsets[spell.settingKey] or (index - 1) * 3
 				line.dictEntry = dictEntry
+				-- An untracked line has no snapshot, so no rule, color, or swipe sees its cooldown.
 				line.snapshot = snapshots[spell.id]
+				if spell.hasCooldown and not self:IsCooldownTracked(behavior, dictEntry) then
+					line.snapshot = nil
+				end
 				line.resourceAmount = spell:GetPrimaryResourceCost()
 				line.isUsable = spell:IsUsable()
 				line.show = true
@@ -4022,4 +4043,27 @@ function TRB.Functions.Threshold:UsesRangeConditions(className, specName)
 		end
 	end
 	return false
+end
+
+---Adds the threshold lines a spec's On Cooldown Color Indicators follow to keys, by setting key.
+---@param className string
+---@param specName string
+---@param keys table<string, boolean>
+function TRB.Functions.Threshold:AddCooldownConditionKeys(className, specName, keys)
+	local spec = TRB.Data.settings[className] ~= nil and TRB.Data.settings[className][specName] or nil
+	local shared = spec ~= nil and spec.colors ~= nil and spec.colors.shared or nil
+	if shared == nil or shared.indicatorColors == nil then
+		return
+	end
+
+	for _, indicator in pairs(shared.indicatorColors) do
+		local conditions = type(indicator) == "table" and indicator.custom ~= nil and indicator.custom.conditions or nil
+		if conditions ~= nil then
+			for _, condition in ipairs(conditions) do
+				if condition.source == self.CONDITION_SOURCE and condition.state == ConditionState.ON_COOLDOWN and condition.settingKey ~= nil then
+					keys[condition.settingKey] = true
+				end
+			end
+		end
+	end
 end

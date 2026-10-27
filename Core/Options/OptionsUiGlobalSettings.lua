@@ -17,6 +17,7 @@ local globalSettingDefinitions = {
 	healthBarColors = { checkboxSuffix = "healthBarColors", tabKey = "healthBar",       sectionLabel = L["CopyMenuSection_healthBarColors"], paths = { {"colors", "healthBar"} } },
 	thresholdIcons  = { checkboxSuffix = "thresholdIcons",  tabKey = "thresholds",      sectionLabel = L["CopyMenuSection_thresholdIcons"],  paths = { {"thresholds", "properties"}, {"thresholds", "icons"} }, shapeSensitive = true },
 	thresholdColors = { checkboxSuffix = "thresholdColors", tabKey = "thresholds",      sectionLabel = L["CopyMenuSection_thresholdColors"], paths = { {"colors", "threshold"} }, shapeSensitive = true },
+	thresholdBehavior = { checkboxSuffix = "thresholdBehavior", tabKey = "thresholds",  sectionLabel = L["CopyMenuSection_thresholdBehavior"], paths = { {"thresholds", "behavior"} } },
 	displayText     = { checkboxSuffix = "displayText",     tabKey = "fontText",        sectionLabel = L["CopyMenuSection_displayText"],     paths = { {"displayText", "default"} } },
 	textColors      = { checkboxSuffix = "textColors",      tabKey = "fontText",        sectionLabel = L["CopyMenuSection_textColors"],      paths = { {"colors", "text"} } },
 	precision       = { checkboxSuffix = "precision",       tabKey = "fontText",        sectionLabel = L["CopyMenuSection_precision"],       paths = { {"precision"} } },
@@ -420,8 +421,9 @@ function TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()
 			TRB.Functions.Character:FillSpecializationCacheSettings(entry.className, entry.specName)
 		end
 	end
-	-- Use Global threshold colors can change whether the live spec needs range checks.
+	-- Use Global threshold colors can change whether the live spec needs range checks, and behavior which cooldowns it tracks.
 	TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
+	TRB.Functions.ThresholdCooldowns:Sync()
 
 	-- Trigger bar updates for current spec
 	TRB.Functions.Character:ResetCaches()

@@ -101,6 +101,7 @@ local function LoadDefaultSettings(includeBarText, classic)
 				overlapBorder = true,
 			},
 			icons = TRB.Functions.Settings:DefaultThresholdIconSettings(),
+			behavior = TRB.Functions.Settings:DefaultThresholdBehaviorSettings(),
 			thresholdDictionary = {
 				maul = { enabled = true },
 				primalBite = { enabled = true },
@@ -323,7 +324,10 @@ local thresholdSettingsPanel = withSpec(function(parent, specSettings, controls)
 	local yCoord = 5
 	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(parent, controls, specSettings, classId, specId, yCoord, L["ResourceMana"], true, true, true, true, {})
 	yCoord = yCoord - 40
-	TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, specSettings, classId, specId, yCoord)
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(parent, controls, specSettings, classId, specId, yCoord)
+
+	yCoord = yCoord - 40
+	yCoord = TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, specSettings, classId, specId, yCoord)
 end)
 
 local thresholdListPanel = withSpec(function(parent, specSettings, controls)
