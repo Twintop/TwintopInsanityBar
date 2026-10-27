@@ -375,6 +375,9 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 			if (TRB.Data.character.classId == classId and TRB.Data.character.specId == specId) then
 				TRB.Functions.Threshold:RedrawThresholdLines()
 			end
+			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) then
+				TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
+			end
 			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("thresholdColors")
 		end)
 		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "thresholdColors")
@@ -433,8 +436,8 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 			spec.colors.threshold.outOfRange.show = self:GetChecked()
 
 			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdOutOfRangeColorEnabled, spec.colors.threshold.outOfRange.show)
-			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or
-			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
+			-- Global colors can reach the live spec through a form's spec too, so the Global panel always refreshes.
+			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or (classId == nil and specId == nil) then
 				TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
 			end
 		end)
@@ -447,8 +450,8 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineColorOptions(pa
 		f:SetChecked(spec.colors.threshold.outOfRange.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.threshold.outOfRange.enabled = self:GetChecked()
-			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or
-			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].thresholdColors) then
+			-- Global colors can reach the live spec through a form's spec too, so the Global panel always refreshes.
+			if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or (classId == nil and specId == nil) then
 				TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
 			end
 		end)

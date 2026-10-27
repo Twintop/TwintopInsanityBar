@@ -7,13 +7,15 @@
 	media-pickup checks that fonts, textures, and sounds that aren't loaded draw the default and are picked up live;
 	it runs once per class.
 	colors checks color conversion, color curves, class colors, and VertexColor animations; it runs once per flavor.
-	threshold-behavior checks the threshold line cooldown tracker; it runs once per class. See build\harness\README.md.
+	threshold-behavior checks the threshold line cooldown tracker; it runs once per class.
+	range-checks checks that range checks stay on after a loading screen, a talent change, and a specialization change;
+	it runs once per class. See build\harness\README.md.
 
 .PARAMETER Lua
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever). Default: all.
@@ -43,7 +45,8 @@ $drivers = @(
 	[pscustomobject]@{ Name = "options-tabs"; EveryClass = $false },
 	[pscustomobject]@{ Name = "media-pickup"; EveryClass = $true },
 	[pscustomobject]@{ Name = "colors"; EveryClass = $false },
-	[pscustomobject]@{ Name = "threshold-behavior"; EveryClass = $true }
+	[pscustomobject]@{ Name = "threshold-behavior"; EveryClass = $true },
+	[pscustomobject]@{ Name = "range-checks"; EveryClass = $true }
 )
 $known = $drivers | ForEach-Object { $_.Name }
 if ($Driver -ne "" -and $known -notcontains $Driver) {

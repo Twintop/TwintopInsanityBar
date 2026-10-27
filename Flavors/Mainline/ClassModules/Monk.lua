@@ -1696,12 +1696,11 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
+		-- Re-enables the range checks disabled above on every run, and fills the snapshots ConstructResourceBar reads.
+		TRB.Functions.Class:EventRegistration()
+
 		if TRB.Data.barConstructedForSpec ~= "monk_brewmaster" then
 			talents = specCache.monk_brewmaster.talents
-			-- CRITICAL: EventRegistration must be called BEFORE ConstructResourceBar
-			-- because ConstructResourceBar calls TriggerResourceBarUpdates() which needs
-			-- snapshot data to be initialized.
-			TRB.Functions.Class:EventRegistration()
 			TRB.Data.barConstructedForSpec = "monk_brewmaster"
 			ConstructResourceBar(specCache.monk_brewmaster.settings)
 		end
@@ -1723,12 +1722,11 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
+		-- Re-enables the range checks disabled above on every run, and fills the snapshots ConstructResourceBar reads.
+		TRB.Functions.Class:EventRegistration()
+
 		if TRB.Data.barConstructedForSpec ~= "monk_mistweaver" then
 			talents = specCache.monk_mistweaver.talents
-			-- CRITICAL: EventRegistration must be called BEFORE ConstructResourceBar
-			-- because ConstructResourceBar calls TriggerResourceBarUpdates() which needs
-			-- snapshot data to be initialized.
-			TRB.Functions.Class:EventRegistration()
 			TRB.Data.barConstructedForSpec = "monk_mistweaver"
 			ConstructResourceBar(specCache.monk_mistweaver.settings)
 		end
@@ -1769,12 +1767,11 @@ local function SwitchSpec()
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
+		-- Re-enables the range checks disabled above on every run, and fills the snapshots ConstructResourceBar reads.
+		TRB.Functions.Class:EventRegistration()
+
 		if TRB.Data.barConstructedForSpec ~= "monk_windwalker" then
 			talents = specCache.monk_windwalker.talents
-			-- CRITICAL: EventRegistration must be called BEFORE ConstructResourceBar
-			-- because ConstructResourceBar calls TriggerResourceBarUpdates() which needs
-			-- snapshot data to be initialized.
-			TRB.Functions.Class:EventRegistration()
 			TRB.Data.barConstructedForSpec = "monk_windwalker"
 			ConstructResourceBar(specCache.monk_windwalker.settings)
 		end
