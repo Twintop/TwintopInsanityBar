@@ -57,6 +57,14 @@ local function LoadEndWidget(cooldown)
 	local durationObject = cooldown:GetDurationObject()
 	if durationObject ~= nil then
 		widget:SetCooldownFromDurationObject(durationObject)
+	elseif cooldown.endsAt ~= nil then
+		-- With nothing for the widget to time, a plain end time ends it; any later change bumps the version and reloads.
+		local version = cooldown.version
+		C_Timer.After(math.max(cooldown.endsAt - GetTime(), 0), function()
+			if cooldown.onCooldown and cooldown.version == version then
+				End(cooldown)
+			end
+		end)
 	end
 end
 
@@ -73,7 +81,8 @@ local function ScheduleRetime(cooldown)
 			return
 		end
 		local info = C_Spell.GetSpellCooldown(cooldown:GetSpell():GetRankedId())
-		if info == nil or info.isActive ~= true then
+		-- Only the GCD left means the change finished the ability's own cooldown.
+		if info == nil or info.isActive ~= true or info.isOnGCD == true then
 			End(cooldown)
 			return
 		end

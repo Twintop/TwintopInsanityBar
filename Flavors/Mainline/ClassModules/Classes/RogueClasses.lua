@@ -702,9 +702,11 @@ TRB.Classes.Rogue.OutlawSpells.thresholdSnowflakes = {
 			and snapshot ~= nil and snapshot.cooldown.onCooldown then
 			local cooldown = snapshot.cooldown
 			local comboPoints = line.state.snapshotData.attributes.resource2
-			if cooldown:HasPlainTiming() then
-				cooldown:GetRemainingTime(line.state.currentTime)
-				if cooldown.remainingTotal > 0 and cooldown.remaining <= comboPoints then
+			local endsAt = cooldown.endsAt
+			if endsAt ~= nil then
+				-- Read from the tracked end: GetRemainingTime would mark the cooldown off behind the tracker's back.
+				local remaining = endsAt - line.state.currentTime
+				if remaining > 0 and remaining <= comboPoints then
 					line:SetColor("restlessBlades", TRB.Data.constants.frameLevels.thresholdUnder)
 				end
 			elseif comboPoints > 0 then

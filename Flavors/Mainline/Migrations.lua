@@ -8823,6 +8823,11 @@ function TRB.Flavor.PortForwardSettings(settings)
 	if TwintopInsanityBarSettings ~= nil then
 		TRB.Functions.Settings:MigrateTextures(TwintopInsanityBarSettings)
 	end
+
+	-- Threshold icons: the cooldown time option starts off where the cooldown swipe was off.
+	if TwintopInsanityBarSettings ~= nil then
+		TRB.Functions.Settings:MigrateThresholdIconCooldownText(TwintopInsanityBarSettings)
+	end
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

@@ -345,7 +345,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	end
 	controls.refreshThresholdIconCooldownStates = RefreshCooldownControlStates
 
-	yCoord = yCoord - 60
+	yCoord = yCoord - 40
 	controls.checkBoxes.thresholdIconShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconShowCooldown", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.thresholdIconShowCooldown
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -370,8 +370,8 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		RedrawIfLive()
 	end)
 
-	yCoord = yCoord - 30
-	controls.thresholdIconRechargeMode = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconRechargeMode", L["ThresholdIconRechargeMode"], TRB.Functions.OptionsUi.Thresholds:GetIconRechargeModeOptions(),
+	yCoord = yCoord - 20
+	controls.thresholdIconRechargeMode =TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconRechargeMode", L["ThresholdIconRechargeMode"], TRB.Functions.OptionsUi.Thresholds:GetIconRechargeModeOptions(),
 		function() return spec.thresholds.icons.rechargeMode end,
 		function(value)
 			spec.thresholds.icons.rechargeMode = value

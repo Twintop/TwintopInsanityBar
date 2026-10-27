@@ -723,9 +723,6 @@ end
 ---@param event trbSpellCastType
 ---@param spellId integer
 function TRB.Functions.Class:SpellCast(event, spellId)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local casting = snapshotData.casting
-
 	if TRB.Data.character.specId == 1 then
 	elseif TRB.Data.character.specId == 2 then
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then

@@ -1,4 +1,4 @@
--- Checks the threshold line cooldown tracker (#279): snapshot coverage, the event filter, the cooldown flag rules, and the end widget.
+-- Checks the threshold line cooldown tracker (#279): snapshot coverage, the event filter, the cooldown flag rules, the end widget, charge recharges, and the icon swipe.
 local desktop = _G --[[@as table<string, any>]]
 local parity = desktop.require("drivers.parity")
 
@@ -65,6 +65,25 @@ function hooks.afterEvents(ctx)
 	check("A remaining-time curve is the within color at its limit", IsColor(remainingCurve:Evaluate(3), 1, 0, 0))
 	check("A remaining-time curve is the beyond color past its limit", IsColor(remainingCurve:Evaluate(3.01), 0, 0, 1))
 	check("A remaining-time curve is reused for the same inputs", TRB.Functions.Color:BuildRemainingTimeCurve(3, "FFFF0000", "FF0000FF") == remainingCurve)
+
+	-- Old saves with the cooldown swipe off drew no cooldown time either, so the new time option starts off there.
+	local classEntry = TRB.Data.classRegistryOrder[1]
+	local specs = classEntry.specs
+	local oldSave = { core = { thresholds = { icons = { showCooldown = false } } }, [classEntry.className] = {} }
+	oldSave[classEntry.className][specs[1].specName] = { thresholds = { icons = { showCooldown = false } } }
+	if specs[2] ~= nil then
+		oldSave[classEntry.className][specs[2].specName] = { thresholds = { icons = { showCooldown = true } } }
+	end
+	if specs[3] ~= nil then
+		oldSave[classEntry.className][specs[3].specName] = { thresholds = { icons = { showCooldown = false, showCooldownText = true } } }
+	end
+	TRB.Functions.Settings:MigrateThresholdIconCooldownText(oldSave)
+	local migrated = oldSave[classEntry.className]
+	check("Migration: the cooldown time starts off where the swipe was off", oldSave.core.thresholds.icons.showCooldownText == false
+		and migrated[specs[1].specName].thresholds.icons.showCooldownText == false)
+	check("Migration: a save with the swipe on, or the time already set, is left alone",
+		(specs[2] == nil or migrated[specs[2].specName].thresholds.icons.showCooldownText == nil)
+		and (specs[3] == nil or migrated[specs[3].specName].thresholds.icons.showCooldownText == true))
 
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData == nil then
@@ -142,11 +161,16 @@ function hooks.afterEvents(ctx)
 	end
 	local cooldownReads = 0
 	local readsById = {}
+	-- Readings handed out one per read before `readings` applies, for a change seen differently a frame later.
+	local queued = {}
 	G.C_Spell.GetSpellCooldown = function(id)
 		if trackedIds[id] then
 			cooldownReads = cooldownReads + 1
 		end
 		readsById[id] = (readsById[id] or 0) + 1
+		if queued[id] ~= nil and #queued[id] > 0 then
+			return table.remove(queued[id], 1)
+		end
 		return readings[id] or saved.GetSpellCooldown(id)
 	end
 	local chargeReads = 0
@@ -156,7 +180,8 @@ function hooks.afterEvents(ctx)
 		return chargeReading
 	end
 	local durationObject = { HasSecretValues = function() return true end }
-	G.C_Spell.GetSpellCooldownDuration = function(id) return readings[id] ~= nil and durationObject or nil end
+	local noDurationObject = false
+	G.C_Spell.GetSpellCooldownDuration = function(id) return not noDurationObject and readings[id] ~= nil and durationObject or nil end
 	G.C_Spell.GetSpellChargeDuration = G.C_Spell.GetSpellCooldownDuration
 	local cooldownFrames = {}
 	G.CreateFrame = function(frameType, ...)
@@ -251,6 +276,38 @@ function hooks.afterEvents(ctx)
 		now = now + 1
 		readings[id] = Reading(false, nil)
 		Fire(id)
+
+		now = now + 1
+		readings[id] = Reading(true, false)
+		Fire(id)
+		now = now + 1
+		queued[id] = { Reading(true, nil), Reading(true, true) }
+		Fire(id)
+		check(label .. ": a change that leaves only the GCD a frame later ends it", not cooldown.onCooldown)
+
+		-- The stubs run every timer at once, so the end timer is checked by the delay it asked for.
+		now = now + 1
+		secretsOn = false
+		noDurationObject = true
+		local delays = {}
+		local after = G.C_Timer.After
+		G.C_Timer.After = function(delay, fn)
+			delays[#delays + 1] = delay
+			return after(delay, fn)
+		end
+		readings[id] = Reading(true, false, now, 30)
+		Fire(id)
+		G.C_Timer.After = after
+		noDurationObject = false
+		secretsOn = true
+		local timed = false
+		for _, delay in ipairs(delays) do
+			if math.abs(delay - 30) < 1e-6 then
+				timed = true
+			end
+		end
+		check(label .. ": with no duration object, its plain end time ends it", timed and not cooldown.onCooldown)
+		readings[id] = Reading(false, nil)
 	end
 
 	if chargeSpell ~= nil then

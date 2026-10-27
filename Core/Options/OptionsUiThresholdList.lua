@@ -678,7 +678,7 @@ function TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout(confi
 				cooldownControls.swipeCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
 				cooldownControls.textCheckbox:ClearAllPoints()
 				cooldownControls.textCheckbox:SetPoint("TOPLEFT", oUi.xCoord2, y)
-				y = y - 30
+				y = y - 20
 			end
 
 			if cooldownControls ~= nil and showRechargeDropdown then
@@ -687,7 +687,7 @@ function TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout(confi
 				rechargeDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y)
 				rechargeDropdown:ClearAllPoints()
 				rechargeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 30)
-				y = y - 60
+				y = y - 80
 			end
 		end
 

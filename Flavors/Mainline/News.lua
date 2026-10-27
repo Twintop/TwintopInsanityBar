@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.5.8-release (2026-10-27)
+# 12.1.5.8-release (2026-10-26)
 ## Death Knight
 ### Frost
 

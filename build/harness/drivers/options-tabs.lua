@@ -1,4 +1,4 @@
--- Builds every options tab for every class, then runs the Textures tab checks from #861 and #584.
+-- Builds every options tab for every class, then runs the Textures tab checks from #861 and #584 and the threshold icon override checks.
 local desktop = _G --[[@as table<string, any>]]
 local debug = desktop.debug
 local parity = desktop.require("drivers.parity")
