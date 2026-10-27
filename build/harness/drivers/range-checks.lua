@@ -135,7 +135,8 @@ function hooks.afterEvents(ctx)
 	local function CheckOn(label, key)
 		local registered, now = State()
 		if not TRB.Data.specSupported then
-			check(string.format("%s: range checks stay off for an unsupported specialization (%s)", label, now), not registered and next(enabledIds) == nil)
+			local off = not registered and next(enabledIds) == nil
+			check(label .. ": range checks stay off for an unsupported specialization" .. (off and "" or " (" .. now .. ")"), off)
 			return
 		end
 		check(label .. ": the bar is built for " .. key, TRB.Data.barConstructedForSpec == key)
