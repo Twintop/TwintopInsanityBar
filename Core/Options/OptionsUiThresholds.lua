@@ -9,6 +9,16 @@ local L = TRB.Localization
 -- Threshold option panels
 -- ============================================================================
 
+---The choices for how a charge spell's recharge draws on its icon while charges are left.
+---@return { value: string, label: string }[]
+function TRB.Functions.OptionsUi.Thresholds:GetIconRechargeModeOptions()
+	return {
+		{ value = "full", label = L["ThresholdIconRechargeModeFull"] },
+		{ value = "edge", label = L["ThresholdIconRechargeModeEdge"] },
+		{ value = "hidden", label = L["ThresholdIconRechargeModeHidden"] },
+	}
+end
+
 ---Generates the threshold line icon position and dimension options panel, including icon size, border, position, threshold line width, and overlap settings.
 ---@param parent frame The parent frame to attach controls to
 ---@param controls table The controls table to store created UI elements
@@ -117,6 +127,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		spec.thresholds.icons.enabled = self:GetChecked()
 
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconDesaturated, spec.thresholds.icons.enabled)
+		controls.refreshThresholdIconCooldownStates()
 
 		if TRB.Functions.Character:IsPanelForLiveSpec(classId, specId) or
 			(classId == nil and specId == nil) then
@@ -326,8 +337,52 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 
 	RefreshOverlapControlStates()
 
-	-- The returned row is the Max Rows slider's top, so the cover reaches past it.
-	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, yCoord - 50)
+	local function RefreshCooldownControlStates()
+		local icons = spec.thresholds.icons
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconShowCooldown, icons.enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdIconShowCooldownText, icons.enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(controls.thresholdIconRechargeMode, icons.enabled and (icons.showCooldown or icons.showCooldownText))
+	end
+	controls.refreshThresholdIconCooldownStates = RefreshCooldownControlStates
+
+	yCoord = yCoord - 60
+	controls.checkBoxes.thresholdIconShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconShowCooldown", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdIconShowCooldown
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdIconShowCooldown"])
+	f.tooltip = L["ThresholdIconShowCooldownTooltip"]
+	f:SetChecked(spec.thresholds.icons.showCooldown)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.icons.showCooldown = self:GetChecked()
+		RefreshCooldownControlStates()
+		RedrawIfLive()
+	end)
+
+	controls.checkBoxes.thresholdIconShowCooldownText = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconShowCooldownText", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdIconShowCooldownText
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdIconShowCooldownText"])
+	f.tooltip = L["ThresholdIconShowCooldownTextTooltip"]
+	f:SetChecked(spec.thresholds.icons.showCooldownText)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.icons.showCooldownText = self:GetChecked()
+		RefreshCooldownControlStates()
+		RedrawIfLive()
+	end)
+
+	yCoord = yCoord - 30
+	controls.thresholdIconRechargeMode = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconRechargeMode", L["ThresholdIconRechargeMode"], TRB.Functions.OptionsUi.Thresholds:GetIconRechargeModeOptions(),
+		function() return spec.thresholds.icons.rechargeMode end,
+		function(value)
+			spec.thresholds.icons.rechargeMode = value
+			RedrawIfLive()
+		end,
+		oUi.xCoord, yCoord)
+
+	RefreshCooldownControlStates()
+
+	-- The returned row is the recharge dropdown's label, so the cover reaches past the dropdown below it.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, yCoord - 60)
 
 	return yCoord
 end

@@ -2890,6 +2890,8 @@ TRB.Data.constants.defaultSettings.fonts = TRB.Functions.Settings:DefaultFontCon
 function TRB.Functions.Settings:DefaultThresholdIconSettings()
 	return {
 		showCooldown = true,
+		showCooldownText = true,
+		rechargeMode = "edge",
 		border = 2,
 		relativeTo = "BOTTOM",
 		relativeToName = L["ThresholdIconPositionBelowRight"],
@@ -2948,6 +2950,9 @@ function TRB.Functions.Settings:DefaultThresholdDictionaryEntry(isEnabled)
 			yPos = 12,
 			relativeTo = "BOTTOM",
 			desaturated = true,
+			showCooldown = true,
+			showCooldownText = true,
+			rechargeMode = "edge",
 			border = 2,
 			priority = "normal",
 			neverHide = false,

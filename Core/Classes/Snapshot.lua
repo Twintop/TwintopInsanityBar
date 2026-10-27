@@ -1101,6 +1101,7 @@ end
 ---@field public lastKnownGcd number? # The GCD duration used when the cooldown was last initialized or recalculated
 ---@field public version integer # Bumped whenever the cooldown starts, changes, or ends, so readers can redraw only on a change
 ---@field public endsAt number? # GetTime() the running cooldown ends, when its times are plain
+---@field public rechargeDurationObject any? # A charge spell's running recharge, from the last charge read; nil when every charge is up
 TRB.Classes.SnapshotCooldown = {}
 TRB.Classes.SnapshotCooldown.__index = TRB.Classes.SnapshotCooldown
 
@@ -1142,6 +1143,7 @@ function TRB.Classes.SnapshotCooldown:Reset()
 	self.hastedCooldown = false
 	self.lastKnownGcd = nil
 	self.endsAt = nil
+	self.rechargeDurationObject = nil
 	-- Never restarts at a value a reader may already hold.
 	self.version = (self.version or 0) + 1
 end
@@ -1682,15 +1684,28 @@ function TRB.Classes.SnapshotCooldown:MarkEnded()
 	self.version = self.version + 1
 end
 
----Re-reads a charge spell's counts after a charge event. Whether it is on cooldown comes from the cooldown events.
+---Re-reads a charge spell's counts and recharge after a charge event. Whether it is on cooldown comes from the cooldown events.
 function TRB.Classes.SnapshotCooldown:RefreshCharges()
-	local spellCharges = C_Spell.GetSpellCharges(self.parent.spell:GetRankedId())
+	local id = self.parent.spell:GetRankedId()
+	local spellCharges = C_Spell.GetSpellCharges(id)
 	if spellCharges == nil then
 		return
 	end
+	local wasRecharging = self.isActive
 	self.charges = spellCharges.currentCharges
 	self.maxCharges = spellCharges.maxCharges
 	self.isActive = spellCharges["isActive"] == true
+	self.rechargeDurationObject = self.isActive and C_Spell.GetSpellChargeDuration(id) or nil
+	if self.isActive or wasRecharging then
+		self.version = self.version + 1
+	end
+end
+
+---Clears a charge spell's recharge once nothing tracks it, so no swipe outlives tracking.
+function TRB.Classes.SnapshotCooldown:ClearRecharge()
+	self.isActive = false
+	self.rechargeDurationObject = nil
+	self.version = self.version + 1
 end
 
 ---Reads a newly tracked cooldown once, outside any event. Only plain times can be told apart from the GCD here, so a

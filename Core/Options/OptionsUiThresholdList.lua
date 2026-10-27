@@ -376,6 +376,86 @@ function TRB.Functions.OptionsUi.ThresholdList:BindIconLayoutControls(layoutCont
 	layoutControls.excludeCheckbox:SetChecked(iconSettings.excludeFromLayout == true)
 end
 
+---Builds the icon cooldown swipe and time checkboxes and the recharge dropdown, hidden until bound and laid out.
+---@param parent Frame
+---@param namePrefix string # Unique global frame name prefix
+---@return table cooldownControls # Pass to BindIconCooldownControls and to ApplyLineIconOverrideLayout as `iconCooldownControls`
+function TRB.Functions.OptionsUi.ThresholdList:BuildIconCooldownControls(parent, namePrefix)
+	-- Rebound to the selected threshold's icon settings by BindIconCooldownControls.
+	local state = {}
+	local rechargeOptions = TRB.Functions.OptionsUi.Thresholds:GetIconRechargeModeOptions()
+
+	local cooldownControls = {
+		state = state,
+		rechargeOptions = rechargeOptions,
+	}
+
+	local function RefreshRechargeEnabled()
+		local icon = state.icon
+		TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(cooldownControls.rechargeDropdown,
+			icon ~= nil and icon.show ~= false and (icon.showCooldown ~= false or icon.showCooldownText ~= false))
+	end
+	cooldownControls.refreshEnabled = function()
+		local shown = state.icon ~= nil and state.icon.show ~= false
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(cooldownControls.swipeCheckbox, shown)
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(cooldownControls.textCheckbox, shown)
+		RefreshRechargeEnabled()
+	end
+
+	cooldownControls.swipeCheckbox = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_IconShowCooldown", L["ThresholdDetailIconShowCooldown"], L["ThresholdDetailIconShowCooldownTooltip"], 0,
+		function() return state.icon ~= nil and state.icon.showCooldown ~= false end,
+		function(checked)
+			if state.icon ~= nil then
+				state.icon.showCooldown = checked
+				RefreshRechargeEnabled()
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end)
+	cooldownControls.swipeCheckbox:Hide()
+
+	cooldownControls.textCheckbox = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_IconShowCooldownText", L["ThresholdDetailIconShowCooldownText"], L["ThresholdDetailIconShowCooldownTextTooltip"], 0,
+		function() return state.icon ~= nil and state.icon.showCooldownText ~= false end,
+		function(checked)
+			if state.icon ~= nil then
+				state.icon.showCooldownText = checked
+				RefreshRechargeEnabled()
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end)
+	cooldownControls.textCheckbox:Hide()
+
+	cooldownControls.rechargeDropdown = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, namePrefix .. "_IconRechargeMode", L["ThresholdIconRechargeMode"], rechargeOptions,
+		function() return state.icon ~= nil and state.icon.rechargeMode or "edge" end,
+		function(value)
+			if state.icon ~= nil then
+				state.icon.rechargeMode = value
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end
+		end,
+		oUi.xCoord, 0)
+	cooldownControls.rechargeDropdown.label:Hide()
+	cooldownControls.rechargeDropdown:Hide()
+
+	return cooldownControls
+end
+
+---Points the icon cooldown controls at a threshold's icon settings.
+---@param cooldownControls table # From BuildIconCooldownControls
+---@param iconSettings TRB.Classes.Settings.ThresholdDictionaryIcon
+function TRB.Functions.OptionsUi.ThresholdList:BindIconCooldownControls(cooldownControls, iconSettings)
+	cooldownControls.state.icon = iconSettings
+	cooldownControls.swipeCheckbox:SetChecked(iconSettings.showCooldown ~= false)
+	cooldownControls.textCheckbox:SetChecked(iconSettings.showCooldownText ~= false)
+	local rechargeMode = iconSettings.rechargeMode or "edge"
+	for _, option in ipairs(cooldownControls.rechargeOptions) do
+		if option.value == rechargeMode then
+			cooldownControls.rechargeDropdown:SetDefaultText(option.label)
+			break
+		end
+	end
+	cooldownControls.refreshEnabled()
+end
+
 ---Applies shared visibility and positioning logic for Line/Icon override sections.
 ---This is used by both Threshold Lines and Custom Thresholds so spacing and
 ---anchors remain identical between tabs.
@@ -544,6 +624,17 @@ function TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout(confi
 		iconLayoutControls.excludeCheckbox:Hide()
 	end
 
+	-- Cooldown display is part of the icon override, for lines with a cooldown; the recharge choice needs charges.
+	local cooldownControls = config.iconCooldownControls
+	local showCooldownControls = cooldownControls ~= nil and hasIconSection and iconRelativeToDropdown:IsShown() and config.hasCooldown == true
+	local showRechargeDropdown = showCooldownControls and config.hasCharges == true
+	if cooldownControls ~= nil then
+		cooldownControls.swipeCheckbox:SetShown(showCooldownControls)
+		cooldownControls.textCheckbox:SetShown(showCooldownControls)
+		cooldownControls.rechargeDropdown.label:SetShown(showRechargeDropdown)
+		cooldownControls.rechargeDropdown:SetShown(showRechargeDropdown)
+	end
+
 	if hasIconSection and iconHeader:IsShown() then
 		iconHeader:ClearAllPoints()
 		iconHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
@@ -581,6 +672,23 @@ function TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout(confi
 			iconBorderSlider:ClearAllPoints()
 			iconBorderSlider:SetPoint("TOPLEFT", oUi.xCoord + 18, y)
 			y = y - 50
+
+			if cooldownControls ~= nil and showCooldownControls then
+				cooldownControls.swipeCheckbox:ClearAllPoints()
+				cooldownControls.swipeCheckbox:SetPoint("TOPLEFT", oUi.xCoord, y)
+				cooldownControls.textCheckbox:ClearAllPoints()
+				cooldownControls.textCheckbox:SetPoint("TOPLEFT", oUi.xCoord2, y)
+				y = y - 30
+			end
+
+			if cooldownControls ~= nil and showRechargeDropdown then
+				local rechargeDropdown = cooldownControls.rechargeDropdown
+				rechargeDropdown.label:ClearAllPoints()
+				rechargeDropdown.label:SetPoint("TOPLEFT", oUi.xCoord, y)
+				rechargeDropdown:ClearAllPoints()
+				rechargeDropdown:SetPoint("TOPLEFT", oUi.xCoord, y - 30)
+				y = y - 60
+			end
 		end
 
 		if showIconLayoutControls then
@@ -756,6 +864,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 
 	local selectedSettingKey = nil
 	local detailHasUnusable = false
+	local detailHasCharges = false
 	local detailHasOutOfRange = false
 	local detailCanHaveAudio = true
 	local detailHasThresholdIcon = true
@@ -987,6 +1096,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	controls.sliders.thresholdIconBorderWidth:Hide()
 
 	controls.thresholdIconLayout = TRB.Functions.OptionsUi.ThresholdList:BuildIconLayoutControls(detailScrollChild, "TwintopResourceBar_" .. namePrefix .. "_Detail_Threshold")
+	controls.thresholdIconCooldown = TRB.Functions.OptionsUi.ThresholdList:BuildIconCooldownControls(detailScrollChild, "TwintopResourceBar_" .. namePrefix .. "_Detail_Threshold")
 
 	-- ===== AUDIO CUE SECTION =====
 	detailYCoord = detailYCoord - 50
@@ -1072,6 +1182,9 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			iconYSlider = controls.sliders.thresholdIconYPos,
 			iconBorderSlider = controls.sliders.thresholdIconBorderWidth,
 			iconLayoutControls = controls.thresholdIconLayout,
+			iconCooldownControls = controls.thresholdIconCooldown,
+			hasCooldown = detailHasUnusable,
+			hasCharges = detailHasCharges,
 		})
 
 		-- Audio section (only visible when threshold supports audio cues)
@@ -1128,6 +1241,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		local hasUnusable = spellObj ~= nil and spellObj.hasCooldown == true
 		local hasOutOfRange = spellObj ~= nil and spellObj.rangeCheck ~= false
 		detailHasUnusable = hasUnusable
+		detailHasCharges = spellObj ~= nil and spellObj.hasCooldown == true and spellObj.hasCharges == true
 		detailHasOutOfRange = hasOutOfRange
 		detailCanHaveAudio = spellObj == nil or spellObj.canHaveAudioCue ~= false
 		detailHasThresholdIcon = spellObj == nil or spellObj.hasThresholdIcon ~= false
@@ -1153,6 +1267,9 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			enabled = false,
 			show = true,
 			desaturated = true,
+			showCooldown = spec.thresholds.icons.showCooldown ~= false,
+			showCooldownText = spec.thresholds.icons.showCooldownText ~= false,
+			rechargeMode = spec.thresholds.icons.rechargeMode or "edge",
 			relativeTo = spec.thresholds.icons.relativeTo or "BOTTOM",
 			width = spec.thresholds.icons.width or 32,
 			height = spec.thresholds.icons.height or 32,
@@ -1429,6 +1546,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		end
 
 		TRB.Functions.OptionsUi.ThresholdList:BindIconLayoutControls(controls.thresholdIconLayout, dictEntry.icon)
+		TRB.Functions.OptionsUi.ThresholdList:BindIconCooldownControls(controls.thresholdIconCooldown, dictEntry.icon)
 
 		iconUseSpecificCheckbox:SetChecked(dictEntry.icon.enabled or false)
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxOnOff(iconUseSpecificCheckbox, dictEntry.icon.enabled or false, true)
@@ -1485,6 +1603,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		iconShowCheckbox:SetScript("OnClick", function(self, ...)
 			dictEntry.icon.show = self:GetChecked()
 			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(iconDesaturateCheckbox, dictEntry.icon.show)
+			controls.thresholdIconCooldown.refreshEnabled()
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end)
 

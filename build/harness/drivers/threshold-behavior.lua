@@ -150,9 +150,10 @@ function hooks.afterEvents(ctx)
 		return readings[id] or saved.GetSpellCooldown(id)
 	end
 	local chargeReads = 0
+	local chargeReading = { currentCharges = SECRET, maxCharges = 2, cooldownStartTime = SECRET, cooldownDuration = SECRET, chargeModRate = 1, isActive = true }
 	G.C_Spell.GetSpellCharges = function()
 		chargeReads = chargeReads + 1
-		return { currentCharges = SECRET, maxCharges = 2, cooldownStartTime = SECRET, cooldownDuration = SECRET, chargeModRate = 1, isActive = true }
+		return chargeReading
 	end
 	local durationObject = { HasSecretValues = function() return true end }
 	G.C_Spell.GetSpellCooldownDuration = function(id) return readings[id] ~= nil and durationObject or nil end
@@ -275,6 +276,121 @@ function hooks.afterEvents(ctx)
 		readings[id] = Reading(true, nil)
 		Fire(id)
 		check(label .. ": a charge coming back ends its cooldown", not cooldown.onCooldown and not cooldown:IsUnusable())
+		check(label .. ": a charge coming back keeps the recharge", cooldown.isActive and cooldown.rechargeDurationObject == durationObject)
+		cooldown:MarkEnded()
+		check(label .. ": the end of a no-charges cooldown leaves the recharge", cooldown.rechargeDurationObject == durationObject)
+
+		-- The icon swipe, on a line frame built over the recording Cooldown stub.
+		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		local dictEntry = settings.thresholds.thresholdDictionary[chargeSpell.settingKey]
+		local lineFrame = G.CreateFrame("Frame")
+		TRB.Functions.Threshold:ResetThresholdLine(lineFrame, settings, true)
+		local swipe = lineFrame.icon.cooldown
+		swipe.SetCooldown = function(self, _, duration)
+			self.loaded = duration ~= 0 and duration or nil
+		end
+		-- The template's look: a swipe, no edge, and countdown numbers.
+		swipe.drawSwipe, swipe.drawEdge, swipe.hideNumbers = true, false, false
+		swipe.GetDrawSwipe = function(self) return self.drawSwipe end
+		swipe.SetDrawSwipe = function(self, value) self.drawSwipe = value end
+		swipe.GetDrawEdge = function(self) return self.drawEdge end
+		swipe.SetDrawEdge = function(self, value) self.drawEdge = value end
+		swipe.GetHideCountdownNumbers = function(self) return self.hideNumbers end
+		swipe.SetHideCountdownNumbers = function(self, value) self.hideNumbers = value end
+		local showCooldown, lineEnabled = settings.thresholds.icons.showCooldown, dictEntry.enabled
+		settings.thresholds.icons.showCooldown = true
+		dictEntry.enabled = true
+		local function DrawSwipe(step)
+			local ok, err = pcall(TRB.Functions.Threshold.AdjustThresholdDisplay, TRB.Functions.Threshold, chargeSpell, chargeSpell.settingKey, lineFrame, true,
+				TRB.Data.constants.frameLevels.thresholdOver, 0, settings.colors.threshold.over.color, snapshots[chargeSpell.id], settings, dictEntry)
+			if not ok then
+				check(label .. ": the line draws " .. step, false, tostring(err))
+			end
+		end
+
+		DrawSwipe("with charges left")
+		check(label .. ": by default a charge recharging with charges left draws only the swipe's edge",
+			swipe.loaded == durationObject and swipe.drawSwipe == false and swipe.drawEdge == true)
+
+		local reads, version = chargeReads, cooldown.version
+		Fire(id)
+		check(label .. ": a cooldown event naming a recharging spell re-reads its recharge", chargeReads - reads == 1 and cooldown.version > version,
+			(chargeReads - reads) .. " reads")
+
+		chargeReading.isActive = false
+		stubs.fireEvents("SPELL_UPDATE_CHARGES", ctx.addonName)
+		check(label .. ": the recharge clears once every charge is up", not cooldown.isActive and cooldown.rechargeDurationObject == nil)
+		DrawSwipe("with every charge up")
+		check(label .. ": the swipe clears once every charge is up", swipe.loaded == nil)
+		reads = chargeReads
+		Fire(id)
+		check(label .. ": a cooldown event with every charge up reads no recharge", chargeReads == reads, (chargeReads - reads) .. " reads")
+
+		readings[id] = Reading(true, false)
+		chargeReading.isActive = true
+		stubs.fireEvents("SPELL_UPDATE_CHARGES", ctx.addonName)
+		Fire(id)
+		DrawSwipe("with no charges left")
+		check(label .. ": the swipe shows the recharge with no charges left", cooldown.onCooldown and swipe.loaded == durationObject)
+		check(label .. ": by default a cooldown draws the template's swipe and time",
+			swipe.drawSwipe == true and swipe.drawEdge == false and swipe.hideNumbers == false and swipe.noCooldownCount == nil)
+
+		local icons = settings.thresholds.icons
+		local iconsSaved = { icons.showCooldown, icons.showCooldownText, icons.rechargeMode }
+		now = now + 1
+		readings[id] = Reading(true, nil)
+		Fire(id)
+		icons.rechargeMode = "edge"
+		DrawSwipe("as an edge")
+		check(label .. ": Swipe edge only draws the recharge's edge without the swipe",
+			swipe.loaded == durationObject and swipe.drawSwipe == false and swipe.drawEdge == true)
+		icons.rechargeMode = "hidden"
+		DrawSwipe("hiding the recharge")
+		check(label .. ": Hide until no charges are left clears a recharge with charges left", swipe.loaded == nil)
+		readings[id] = Reading(true, false)
+		Fire(id)
+		DrawSwipe("hiding the recharge, with no charges left")
+		check(label .. ": Hide until no charges are left still draws the full cooldown with none left",
+			swipe.loaded == durationObject and swipe.drawSwipe == true and swipe.drawEdge == false)
+		icons.rechargeMode = "full"
+
+		icons.showCooldown = false
+		DrawSwipe("without the swipe")
+		check(label .. ": turning the swipe off keeps the time", swipe.loaded == durationObject and swipe.drawSwipe == false and swipe.hideNumbers == false)
+		icons.showCooldown = true
+		icons.showCooldownText = false
+		DrawSwipe("without the time")
+		check(label .. ": turning the time off hides the numbers and cooldown text addons' text",
+			swipe.loaded == durationObject and swipe.drawSwipe == true and swipe.hideNumbers == true and swipe.noCooldownCount == true)
+		icons.showCooldown = false
+		DrawSwipe("with neither")
+		check(label .. ": turning the swipe and the time off draws nothing", swipe.loaded == nil)
+		icons.showCooldown, icons.showCooldownText = true, true
+
+		-- Some lines have no icon settings until the options panel creates them.
+		local hadIconOverride = dictEntry.icon ~= nil
+		dictEntry.icon = dictEntry.icon or { enabled = false }
+		local iconOverride = dictEntry.icon
+		local overrideSaved = { iconOverride.enabled, iconOverride.showCooldown }
+		iconOverride.showCooldown = false
+		DrawSwipe("with an unused line setting")
+		check(label .. ": a line's own setting waits for its icon override", swipe.loaded == durationObject and swipe.drawSwipe == true)
+		iconOverride.enabled = true
+		DrawSwipe("with the line's own setting")
+		check(label .. ": a line's own setting wins with its icon override on", swipe.loaded == durationObject and swipe.drawSwipe == false)
+		iconOverride.enabled, iconOverride.showCooldown = overrideSaved[1], overrideSaved[2]
+		if not hadIconOverride then
+			dictEntry.icon = nil
+		end
+		icons.showCooldown, icons.showCooldownText, icons.rechargeMode = iconsSaved[1], iconsSaved[2], iconsSaved[3]
+
+		TRB.Functions.ThresholdCooldowns:Disable()
+		DrawSwipe("once untracked")
+		check(label .. ": the recharge and swipe clear once nothing tracks the spell", not cooldown.isActive and swipe.loaded == nil)
+		TRB.Functions.ThresholdCooldowns:Enable()
+
+		settings.thresholds.icons.showCooldown = showCooldown
+		dictEntry.enabled = lineEnabled
 	end
 
 	G.GetTime = saved.GetTime

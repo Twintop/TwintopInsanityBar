@@ -20,6 +20,8 @@ local endWidgets = {}
 local startedAt = {}
 ---@type table<TRB.Classes.SnapshotCooldown, boolean>
 local retimePending = {}
+---@type table<TRB.Classes.SnapshotCooldown, boolean>
+local chargeRefreshPending = {}
 
 ---@param cooldown TRB.Classes.SnapshotCooldown
 local function End(cooldown)
@@ -80,12 +82,30 @@ local function ScheduleRetime(cooldown)
 	end)
 end
 
+---Re-reads a recharging spell's recharge a frame after a cooldown event names it, since a reduction can move it.
+---@param cooldown TRB.Classes.SnapshotCooldown
+local function ScheduleChargeRefresh(cooldown)
+	if chargeRefreshPending[cooldown] then
+		return
+	end
+	chargeRefreshPending[cooldown] = true
+	C_Timer.After(0, function()
+		chargeRefreshPending[cooldown] = nil
+		if cooldown.isActive then
+			cooldown:RefreshCharges()
+		end
+	end)
+end
+
 ---Applies a cooldown event. isOnGCD false is the spell's own cooldown (a charge spell's: no charges left), true is only
 ---the GCD, and nil is a running cooldown whose times changed, such as a reduction.
 ---@param cooldown TRB.Classes.SnapshotCooldown
 ---@param now number
 local function ApplyCooldownEvent(cooldown, now)
 	local spell = cooldown:GetSpell()
+	if spell.hasCharges == true and cooldown.isActive then
+		ScheduleChargeRefresh(cooldown)
+	end
 	local info = C_Spell.GetSpellCooldown(spell:GetRankedId())
 	if info == nil then
 		return
@@ -245,8 +265,12 @@ function ThresholdCooldowns:Sync()
 	end
 	for cooldown in pairs(left) do
 		End(cooldown)
+		if cooldown:GetSpell().hasCharges == true then
+			cooldown:ClearRecharge()
+		end
 		startedAt[cooldown] = nil
 		retimePending[cooldown] = nil
+		chargeRefreshPending[cooldown] = nil
 	end
 
 	SyncEventRegistration()

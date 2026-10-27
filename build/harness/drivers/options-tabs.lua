@@ -77,6 +77,18 @@ function hooks.afterLoad(ctx)
 			return r
 		end
 
+		local TL = TRB_.Functions.OptionsUi.ThresholdList
+		local thresholdCtx = nil
+		drv.thresholdPanels = {}
+		local origList = TL.GenerateThresholdListPanel
+		TL.GenerateThresholdListPanel = function(self, parent, controls, spec, classId_, specId_, ...)
+			thresholdCtx = { classId = classId_, specId = specId_, spec = spec }
+			drv.thresholdPanels[#drv.thresholdPanels + 1] = thresholdCtx
+			local r = { origList(self, parent, controls, spec, classId_, specId_, ...) }
+			thresholdCtx = nil
+			return unpack(r)
+		end
+
 		local TX = TRB_.Functions.OptionsUi.Textures
 		local currentCtx = nil
 		drv.editors = {}
@@ -126,10 +138,16 @@ function hooks.afterLoad(ctx)
 			function st:GetSelection() return self.sel end
 			function st:SetSelection(i) self.sel = i end
 			function st:ClearSelection() self.sel = nil end
-			function st:RegisterEvents(e) self.events = e end
+			-- Merged, as lib-st keeps handlers a later call doesn't name.
+			function st:RegisterEvents(e)
+				local events = rawget(self, "events") or {}
+				for k, v in pairs(e) do events[k] = v end
+				self.events = events
+			end
 			local plain = { filtered = true, data = true, scrollframe = true, displayRows = true, rowHeight = true }
 			setmetatable(st, { __index = function(_, k) if plain[k] then return nil end return function() end end })
 			if currentCtx and currentCtx.st == nil then currentCtx.st = st end
+			if thresholdCtx and thresholdCtx.st == nil then thresholdCtx.st = st end
 			return st
 		end)
 
@@ -995,6 +1013,70 @@ function hooks.afterEvents(ctx)
 			end
 			print("INFO strips with grouping settings tabs: " .. strips)
 			check("every grouping strip ends Textures, Visibility, Bar Text (" .. table.concat(badOrder, "; ") .. ")", #badOrder == 0 and strips > 0)
+		end
+
+		-- With a line's icon override on, its cooldown options show only when its ability has a cooldown, and the recharge choice only with charges.
+		do
+			local wrong, withCooldown, withoutCooldown, withCharges = {}, 0, 0, 0
+			for _, panel in ipairs(drv.thresholdPanels) do
+				local st = panel.st
+				local compositeKey = panel.classId and TRB_.Functions.Character:GetCompositeKeyFromIds(panel.classId, panel.specId) or nil
+				local specCache = compositeKey and TRB_.Data.specCache[compositeKey] or nil
+				local spells = specCache and specCache.spellsData and specCache.spellsData.spells or nil
+				if st ~= nil and st.events ~= nil and st.events.OnClick ~= nil and spells ~= nil and #st.rows > 0 then
+					local className, specName = TRB_.Functions.Character:GetClassAndSpecializationNames(panel.classId, panel.specId)
+					local prefix = "TwintopResourceBar_" .. className .. "_" .. specName .. "_Detail_Threshold"
+					local enabledBox = rawget(G, prefix .. "Enabled")
+					local useSpecific = rawget(G, prefix .. "IconUseSpecific")
+					local swipeBox = rawget(G, prefix .. "_IconShowCooldown")
+					local rechargeDropdown = rawget(G, prefix .. "_IconRechargeMode")
+					local bySettingKey = {}
+					for _, spell in pairs(spells) do
+						if type(spell) == "table" and spell.settingKey ~= nil then bySettingKey[spell.settingKey] = spell end
+					end
+					-- Enabling a line rebuilds the rows, so each is found again by its key.
+					local keys = {}
+					for _, row in ipairs(st.rows) do keys[#keys + 1] = row.cols[1].value end
+					for _, key in ipairs(keys) do
+						local spell = bySettingKey[key]
+						if spell ~= nil and spell.hasThresholdIcon ~= false and enabledBox ~= nil and useSpecific ~= nil and swipeBox ~= nil and rechargeDropdown ~= nil then
+							try("open threshold " .. compositeKey .. "." .. key, function()
+								local index = 0
+								for i, row in ipairs(st.rows) do if row.cols[1].value == key then index = i break end end
+								st.events.OnClick(nil, nil, st.rows, nil, index, index, 1, st, "LeftButton")
+								-- The icon override only shows for an enabled line.
+								local wasEnabled = enabledBox:GetChecked()
+								if not wasEnabled then
+									toggle(enabledBox, true)
+								end
+								local icon = panel.spec.thresholds.thresholdDictionary[key].icon
+								local wasOn = icon.enabled
+								if wasOn then
+									toggle(useSpecific, false)
+								end
+								local hiddenWhileOff = swipeBox.__shown ~= true
+								toggle(useSpecific, true)
+								local hasCooldown = spell.hasCooldown == true
+								local hasCharges = hasCooldown and spell.hasCharges == true
+								if not hiddenWhileOff or (swipeBox.__shown == true) ~= hasCooldown or (rechargeDropdown.__shown == true) ~= hasCharges then
+									wrong[#wrong + 1] = string.format("%s.%s off=%s swipe=%s recharge=%s", compositeKey, key,
+										tostring(not hiddenWhileOff), tostring(swipeBox.__shown), tostring(rechargeDropdown.__shown))
+								end
+								if hasCooldown then withCooldown = withCooldown + 1 else withoutCooldown = withoutCooldown + 1 end
+								if hasCharges then withCharges = withCharges + 1 end
+								toggle(useSpecific, wasOn)
+								if not wasEnabled then
+									toggle(enabledBox, false)
+								end
+							end)
+						end
+					end
+				end
+			end
+			print(string.format("INFO threshold icon overrides checked: %d with a cooldown, %d without, %d with charges", withCooldown, withoutCooldown, withCharges))
+			table.sort(wrong)
+			check("an icon override shows the cooldown options only for a line with a cooldown, and the recharge choice only with charges (" .. table.concat(wrong, ", ") .. ")",
+				#wrong == 0 and withCooldown > 0 and withoutCooldown > 0)
 		end
 
 		return errors

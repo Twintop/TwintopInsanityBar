@@ -124,6 +124,47 @@ local function SetIconCooldownFromDuration(cooldown, durationObject)
 	cooldown.trbDuration = nil
 end
 
+---Sets how an icon cooldown draws: the swipe, only its edge in the swipe's place, and the countdown text.
+---@param cooldown TRB.Classes.ThresholdFrame.Cooldown
+---@param showSwipe boolean
+---@param edgeOnly boolean
+---@param showText boolean
+local function SetIconCooldownStyle(cooldown, showSwipe, edgeOnly, showText)
+	-- The template's own look, which a shown part returns to.
+	if cooldown.trbDrawSwipe == nil then
+		cooldown.trbDrawSwipe = cooldown:GetDrawSwipe() == true
+		cooldown.trbDrawEdge = cooldown:GetDrawEdge() == true
+		cooldown.trbHideNumbers = cooldown:GetHideCountdownNumbers() == true
+	end
+	cooldown:SetDrawSwipe(showSwipe and not edgeOnly and cooldown.trbDrawSwipe)
+	cooldown:SetDrawEdge((showSwipe and edgeOnly) or cooldown.trbDrawEdge)
+	cooldown:SetHideCountdownNumbers(not showText or cooldown.trbHideNumbers)
+	-- Cooldown text addons such as OmniCC skip a cooldown with this flag.
+	cooldown.noCooldownCount = (not showText) or nil
+end
+
+---The icon cooldown display a line uses: its own when its icon override is on, otherwise the shared one.
+---@param icons TRB.Classes.Settings.ThresholdIcons
+---@param iconOverride TRB.Classes.Settings.ThresholdDictionaryIcon?
+---@return boolean showSwipe
+---@return boolean showText
+---@return string rechargeMode
+local function ResolveIconCooldownSettings(icons, iconOverride)
+	local showSwipe, showText, rechargeMode = icons.showCooldown ~= false, icons.showCooldownText ~= false, icons.rechargeMode or "edge"
+	if iconOverride ~= nil and iconOverride.enabled then
+		if iconOverride.showCooldown ~= nil then
+			showSwipe = iconOverride.showCooldown
+		end
+		if iconOverride.showCooldownText ~= nil then
+			showText = iconOverride.showCooldownText
+		end
+		if iconOverride.rechargeMode ~= nil then
+			rechargeMode = iconOverride.rechargeMode
+		end
+	end
+	return showSwipe, showText, rechargeMode
+end
+
 ---Resolves a per-threshold color entry to "shared", "override", or "hidden".
 ---@param colorEntry table?
 ---@return string
@@ -3535,15 +3576,38 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			end
 			
 			-- Redrawn only when the tracked cooldown changes; secret times draw from the duration object.
-			local cooldownState = settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot ~= nil and snapshot.cooldown or nil
+			local cooldownState = nil
 			local swipeVersion = nil
-			if cooldownState ~= nil and cooldownState.onCooldown then
-				swipeVersion = cooldownState.version
+			if spell.hasCooldown and snapshot ~= nil then
+				local showSwipe, showText, rechargeMode = ResolveIconCooldownSettings(settings.thresholds.icons, thresholdOverrides and thresholdOverrides.icon)
+				if showSwipe or showText then
+					cooldownState = snapshot.cooldown
+					local edgeOnly = false
+					if cooldownState.onCooldown then
+						swipeVersion = cooldownState.version
+					-- isActive is a charge spell's recharge, here with charges left.
+					elseif cooldownState.isActive and rechargeMode ~= "hidden" then
+						swipeVersion = cooldownState.version
+						edgeOnly = rechargeMode == "edge"
+					end
+					if swipeVersion ~= nil then
+						local style = (showSwipe and 1 or 0) + (edgeOnly and 2 or 0) + (showText and 4 or 0)
+						if cache.swipeStyle ~= style then
+							cache.swipeStyle = style
+							SetIconCooldownStyle(threshold.icon.cooldown, showSwipe, edgeOnly, showText)
+							-- Reloaded, so a cooldown text addon sees the new text flag.
+							cache.swipeVersion = false
+						end
+					end
+				end
 			end
 			if cache.swipeVersion ~= swipeVersion then
 				cache.swipeVersion = swipeVersion
 				if cooldownState == nil or swipeVersion == nil then
 					SetIconCooldown(threshold.icon.cooldown, 0, 0)
+				elseif cooldownState.rechargeDurationObject ~= nil then
+					-- With no charges left, the recharge is the cooldown too.
+					SetIconCooldownFromDuration(threshold.icon.cooldown, cooldownState.rechargeDurationObject)
 				elseif cooldownState:HasPlainTiming() then
 					SetIconCooldown(threshold.icon.cooldown, cooldownState.startTime, cooldownState.duration)
 				else
