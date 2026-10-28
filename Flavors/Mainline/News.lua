@@ -9,6 +9,11 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.8-release (2026-10-26)
+## General
+### Skyriding
+
+- Fix the Skyriding bars turning back on after answering No to the Skyriding bars prompt, in profiles that are reset, made with Use Baseline, or imported from strings exported before 12.1.5.4-release.
+
 ## Death Knight
 ### Frost
 
