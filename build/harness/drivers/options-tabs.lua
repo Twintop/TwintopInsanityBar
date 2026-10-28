@@ -1146,6 +1146,7 @@ function hooks.afterEvents(ctx)
 		do
 			local wrong, withCooldown, withoutCooldown, withCharges = {}, 0, 0, 0
 			local trackingWrong, unusableKept = {}, 0
+			local unusableHiddenGrayed, unusableHiddenLive, windowColorChecked = 0, 0, 0
 			for _, panel in ipairs(drv.thresholdPanels) do
 				local st = panel.st
 				local compositeKey = panel.classId and TRB_.Functions.Character:GetCompositeKeyFromIds(panel.classId, panel.specId) or nil
@@ -1247,10 +1248,14 @@ function hooks.afterEvents(ctx)
 									else
 										dictEntry.behavior = nil
 										local shared = behavior.hideOnCooldown
+										-- Off the defaults, so only a copy of the shared window passes.
+										local sharedSaved = { shared.mode, shared.gcdsMax, shared.timeMax }
+										shared.mode, shared.gcdsMax, shared.timeMax = "time", 7.5, 4
 										local own = Choose("hide") and dictEntry.behavior ~= nil and dictEntry.behavior.onCooldownWindow or nil
 										if own == nil or own == shared or own.mode ~= shared.mode or own.gcdsMax ~= shared.gcdsMax or own.timeMax ~= shared.timeMax or windowRadio.__shown ~= true then
 											problems[#problems + 1] = "hide:window=" .. tostring(own ~= nil) .. " shown=" .. tostring(windowRadio.__shown)
 										end
+										shared.mode, shared.gcdsMax, shared.timeMax = sharedSaved[1], sharedSaved[2], sharedSaved[3]
 										dictEntry.behavior.cooldownTracking = "off"
 										toggle(useSpecific, true)
 										local lineReason = L_["ThresholdDetailCooldownNotTrackedLineTooltip"]
@@ -1259,6 +1264,35 @@ function hooks.afterEvents(ctx)
 											problems[#problems + 1] = "untracked:onCooldown=" .. tostring(onCooldownDropdown.__enabled) .. " window=" .. tostring(windowRadio.__enabled)
 										end
 										dictEntry.behavior.cooldownTracking = nil
+										-- Hidden while Unusable, a line without a handler of its own or a window color can't come back, so both gray out.
+										local colors = dictEntry.colors
+										local colorsSaved = { colors.colorMode, colors.unusable }
+										local windowColorKey = spell.attributes.cooldownWindowColor
+										local windowColor = windowColorKey ~= nil and panel.spec.colors.threshold[windowColorKey] or nil
+										local hiddenReason = spell.isSnowflake ~= true and not (windowColor ~= nil and windowColor.enabled)
+											and L_["ThresholdDetailOnCooldownUnusableHiddenTooltip"] or nil
+										if hiddenReason ~= nil then unusableHiddenGrayed = unusableHiddenGrayed + 1 else unusableHiddenLive = unusableHiddenLive + 1 end
+										colors.colorMode, colors.unusable = "dynamic", { mode = "hidden" }
+										toggle(useSpecific, true)
+										if onCooldownDropdown.trbDisabledReason ~= hiddenReason or (onCooldownDropdown.__enabled == false) ~= (hiddenReason ~= nil)
+											or windowRadio.trbDisabledReason ~= hiddenReason then
+											problems[#problems + 1] = "unusableHidden:onCooldown=" .. tostring(onCooldownDropdown.__enabled) .. " window=" .. tostring(windowRadio.trbDisabledReason ~= nil)
+										end
+										if spell.isSnowflake ~= true and windowColor ~= nil and windowColor.enabled then
+											windowColor.enabled = false
+											toggle(useSpecific, true)
+											if onCooldownDropdown.trbDisabledReason ~= L_["ThresholdDetailOnCooldownUnusableHiddenTooltip"] then
+												problems[#problems + 1] = "windowColorOff:onCooldown=" .. tostring(onCooldownDropdown.__enabled)
+											end
+											windowColor.enabled = true
+											windowColorChecked = windowColorChecked + 1
+										end
+										colors.colorMode = "static"
+										toggle(useSpecific, true)
+										if onCooldownDropdown.__enabled == false or onCooldownDropdown.trbDisabledReason ~= nil then
+											problems[#problems + 1] = "static:onCooldown=" .. tostring(onCooldownDropdown.__enabled)
+										end
+										colors.colorMode, colors.unusable = colorsSaved[1], colorsSaved[2]
 										if not Choose("show") or windowRadio.__shown == true or onCooldownDropdown.__enabled == false then
 											problems[#problems + 1] = "show:window=" .. tostring(windowRadio.__shown)
 										end
@@ -1296,9 +1330,11 @@ function hooks.afterEvents(ctx)
 			check("an icon override shows the cooldown options only for a line with a cooldown, and the recharge choice only with charges (" .. table.concat(wrong, ", ") .. ")",
 				#wrong == 0 and withCooldown > 0 and withoutCooldown > 0)
 			print(string.format("INFO untracked lines whose Unusable row stays live: %d", unusableKept))
+			print(string.format("INFO lines hidden while Unusable whose While on Cooldown grays out: %d, stays live: %d, live from a window color: %d",
+				unusableHiddenGrayed, unusableHiddenLive, windowColorChecked))
 			table.sort(trackingWrong)
 			check("a line with a cooldown offers Cooldown Tracking, and untracked, its cooldown-only options gray out with the reason (" .. table.concat(trackingWrong, "; ") .. ")",
-				#trackingWrong == 0 and withCooldown > 0)
+				#trackingWrong == 0 and withCooldown > 0 and unusableHiddenGrayed > 0)
 		end
 
 		return errors

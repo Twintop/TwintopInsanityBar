@@ -885,6 +885,9 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	local detailHasThresholdIcon = true
 	-- Combo point finishers and casts can show Unusable with no cooldown, so their Unusable row stays live untracked.
 	local detailUnusableWithoutCooldown = false
+	-- Only a line with no handler of its own is sure to be Unusable for its whole cooldown.
+	local detailStandardCooldownColor = false
+	local detailCooldownWindowColor = nil
 
 	---Refreshes the scrolling table data from the current threshold settings.
 	local function SetTableValues()
@@ -1198,9 +1201,17 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		primitives:ToggleColorPickerEnabled(controls.colors.thresholdUnusable, unusableReason == nil)
 		primitives:SetDisabledReason(colorUnusableModeDropdown, unusableReason)
 		-- Hiding on cooldown needs the cooldown, even on lines whose Unusable color doesn't.
-		primitives:ToggleDropdownEnabled(onCooldownDropdown, reason == nil)
-		primitives:SetDisabledReason(onCooldownDropdown, reason)
-		onCooldownWindow:SetEnabled(reason == nil, reason)
+		local onCooldownReason = reason
+		local colors = dictEntry ~= nil and dictEntry.colors or nil
+		local windowColor = detailCooldownWindowColor ~= nil and spec.colors.threshold[detailCooldownWindowColor] or nil
+		-- Hidden while Unusable, the line can't show inside its window unless its spec shows it there in a color of its own.
+		if onCooldownReason == nil and detailStandardCooldownColor and colors ~= nil and colors.colorMode ~= "static"
+			and TRB.Functions.Threshold:GetColorMode(colors.unusable) == "hidden" and not (windowColor ~= nil and windowColor.enabled) then
+			onCooldownReason = L["ThresholdDetailOnCooldownUnusableHiddenTooltip"]
+		end
+		primitives:ToggleDropdownEnabled(onCooldownDropdown, onCooldownReason == nil)
+		primitives:SetDisabledReason(onCooldownDropdown, onCooldownReason)
+		onCooldownWindow:SetEnabled(onCooldownReason == nil, onCooldownReason)
 		controls.thresholdIconCooldown.state.untrackedReason = reason
 		controls.thresholdIconCooldown.refreshEnabled()
 	end
@@ -1368,6 +1379,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		detailHasThresholdIcon = spellObj == nil or spellObj.hasThresholdIcon ~= false
 		detailUnusableWithoutCooldown = spellObj ~= nil and ((spellObj:Is("TRB.Classes.SpellComboPointThreshold") and spellObj.comboPoints == true)
 			or spellObj.attributes.unusableWhileCasting == true)
+		detailStandardCooldownColor = spellObj ~= nil and spellObj.isSnowflake ~= true
+		detailCooldownWindowColor = spellObj ~= nil and spellObj.attributes.cooldownWindowColor or nil
 
 		-- Update header
 		detailHeader.font:SetText(string.format(L["ThresholdDetailHeader"], entry.icon .. " " .. entry.name))
