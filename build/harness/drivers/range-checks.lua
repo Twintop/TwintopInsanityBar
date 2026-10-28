@@ -83,7 +83,10 @@ function hooks.afterEvents(ctx)
 	---@return boolean
 	local function NeedsRangeChecks(key)
 		local entry = Character:GetSpecRegistryEntry(key)
-		if TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(TRB.Data.specCache[key].settings) or TRB.Functions.Threshold:UsesRangeConditions(entry.className, entry.specName) then
+		local function LinesReadRange(settings)
+			return TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings) or TRB.Functions.Threshold:HidesAnyLineWithoutTarget(settings)
+		end
+		if LinesReadRange(TRB.Data.specCache[key].settings) or TRB.Functions.Threshold:UsesRangeConditions(entry.className, entry.specName) then
 			return true
 		end
 		local descriptor = Character:GetSpecDescriptor(entry.classId, entry.specId)
@@ -92,7 +95,7 @@ function hooks.afterEvents(ctx)
 		end
 		for _, other in ipairs(Character:GetSpecRegistryEntriesOrdered()) do
 			local cache = TRB.Data.specCache[other.compositeKey]
-			if other.classId == entry.classId and cache ~= nil and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(cache.settings) then
+			if other.classId == entry.classId and cache ~= nil and LinesReadRange(cache.settings) then
 				return true
 			end
 		end
@@ -111,7 +114,8 @@ function hooks.afterEvents(ctx)
 		-- Several lines can share one spell, such as one ability at different costs.
 		local seen = {}
 		for _, spell in pairs(cache.spellsData.spells) do
-			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() and spell.rangeCheck == true and not seen[spell:GetRankedId()] then
+			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() and spell.rangeCheck == true and spell:HasRange()
+				and not seen[spell:GetRankedId()] then
 				seen[spell:GetRankedId()] = true
 				ids[#ids + 1] = spell:GetRankedId()
 			end
@@ -188,6 +192,96 @@ function hooks.afterEvents(ctx)
 	end
 
 	CheckOn("after login", TRB.Data.character.compositeKey)
+
+	-- A check with no answer is cached, so a line reads the API once per target, and the range event stores answers without reading it.
+	local rangeFrame = nil
+	for _, frame in ipairs(frames) do
+		local events = rawget(frame, "__events")
+		if events ~= nil and events.SPELL_RANGE_CHECK_UPDATE then
+			rangeFrame = frame
+		end
+	end
+	local rangeSpell = nil
+	for _, spell in pairs(TRB.Data.specCache[TRB.Data.character.compositeKey].spellsData.spells) do
+		if rangeSpell == nil and type(spell) == "table" and spell.Is ~= nil and (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold"))
+			and enabledIds[spell:GetRankedId()] then
+			rangeSpell = spell
+		end
+	end
+	if rangeSpell ~= nil and rangeFrame ~= nil then
+		local id = rangeSpell:GetRankedId()
+		local OnEvent = rangeFrame.__scripts.OnEvent
+		local reads, inRange = 0, nil
+		local isSpellInRange, spellHasRange = desktop.C_Spell.IsSpellInRange, desktop.C_Spell.SpellHasRange
+		desktop.C_Spell.IsSpellInRange = function()
+			reads = reads + 1
+			return inRange
+		end
+		Character:InvalidateSpellRanges()
+		local first, second = rangeSpell:GetIsSpellInRange(), rangeSpell:GetIsSpellInRange()
+		check("with no target, a line reads its range once and counts as out of range with no valid target",
+			reads == 1 and first == false and second == false and rangeSpell:HasNoValidTarget())
+		reads = 0
+		OnEvent(rangeFrame, "SPELL_RANGE_CHECK_UPDATE", id, true, true)
+		local inRangeNow, noTargetNow = rangeSpell:GetIsSpellInRange(), rangeSpell:HasNoValidTarget()
+		check("a range event with a check stores it without reading the API", reads == 0 and inRangeNow and not noTargetNow)
+		OnEvent(rangeFrame, "SPELL_RANGE_CHECK_UPDATE", id, false, false)
+		inRangeNow, noTargetNow = rangeSpell:GetIsSpellInRange(), rangeSpell:HasNoValidTarget()
+		check("a range event without a check stores no valid target without reading the API", reads == 0 and not inRangeNow and noTargetNow)
+		-- Another addon's range check: its events are ignored, and turning ours off, even with nothing cached, leaves only it on.
+		desktop.C_Spell.EnableSpellRangeCheck(987654321, true)
+		OnEvent(rangeFrame, "SPELL_RANGE_CHECK_UPDATE", 987654321, true, true)
+		check("a range event for another caller's spell is ignored", TRB.Data.cache.values.range[987654321] == nil)
+		Character:InvalidateSpellRanges()
+		Character:DisableSpellRangeCheckUpdate()
+		local othersOn = {}
+		for otherId in pairs(enabledIds) do
+			othersOn[#othersOn + 1] = otherId
+		end
+		check("turning range checks off turns off every one this addon turned on, and only those", #othersOn == 1 and othersOn[1] == 987654321)
+		enabledIds[987654321] = nil
+		Character:EnableSpellRangeCheckUpdate()
+		inRange = true
+		stubs.fireEvents("PLAYER_TARGET_CHANGED", ctx.addonName)
+		reads = 0
+		check("a target change reads the range again, once", rangeSpell:GetIsSpellInRange() and rangeSpell:GetIsSpellInRange() and reads == 1)
+		-- A spell with no range gets no range checks and never reads out of range or without a target.
+		inRange = nil
+		desktop.C_Spell.SpellHasRange = function(spellId) return spellId ~= id end
+		-- As each SwitchSpec does, so the spell's range is read again.
+		Character:DisableSpellRangeCheckUpdate()
+		Character:EnableSpellRangeCheckUpdate()
+		check("a spell with no range gets no range checks, and is never out of range or without a target",
+			enabledIds[id] == nil and rangeSpell:GetIsSpellInRange() and not rangeSpell:HasNoValidTarget())
+		desktop.C_Spell.IsSpellInRange, desktop.C_Spell.SpellHasRange = isSpellInRange, spellHasRange
+		-- Read before it had a range, as a spell read before it's learned can be: a spellbook change catches it up.
+		stubs.fireEvents("SPELLS_CHANGED", ctx.addonName)
+		check("a spell that has a range after a spellbook change gets range checks", enabledIds[id] == true)
+
+		-- A new rank gets range checks on a spellbook change, and the old rank loses them.
+		local rankedSpell = nil
+		for _, spell in pairs(TRB.Data.specCache[TRB.Data.character.compositeKey].spellsData.spells) do
+			if rankedSpell == nil and type(spell) == "table" and spell.Is ~= nil and (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold"))
+				and spell.rankIds ~= nil and #spell.rankIds > 1 and enabledIds[spell:GetRankedId()] and spell:GetRankedId() ~= spell.rankIds[#spell.rankIds] then
+				rankedSpell = spell
+			end
+		end
+		if rankedSpell ~= nil then
+			local oldRank, newRank = rankedSpell:GetRankedId(), rankedSpell.rankIds[#rankedSpell.rankIds]
+			local isSpellKnown = desktop.C_SpellBook.IsSpellKnown
+			desktop.C_SpellBook.IsSpellKnown = function(spellId, ...) return spellId == newRank or isSpellKnown(spellId, ...) end
+			stubs.fireEvents("SPELLS_CHANGED", ctx.addonName)
+			check("a new rank gets range checks on a spellbook change, and the old rank loses them",
+				rankedSpell:GetRankedId() == newRank and enabledIds[newRank] == true and enabledIds[oldRank] == nil)
+			desktop.C_SpellBook.IsSpellKnown = isSpellKnown
+			stubs.fireEvents("SPELLS_CHANGED", ctx.addonName)
+		else
+			print("INFO " .. tostring(TRB.Data.character.compositeKey) .. " has no ranked line with range checks on")
+		end
+	else
+		print("INFO " .. tostring(TRB.Data.character.compositeKey) .. " has no line with range checks on")
+	end
+
 	local entries = {}
 	for _, entry in ipairs(Character:GetSpecRegistryEntriesOrdered()) do
 		if entry.classId == ctx.classId then
@@ -243,6 +337,18 @@ function hooks.afterEvents(ctx)
 				check(label .. ": its own need none, and it has range-checked lines", not ownNeeds and #RangeCheckedIds(login.compositeKey) > 0)
 				CheckOn(label, login.compositeKey)
 			end
+		end
+
+		-- Another form's line hiding with no valid target needs range checks too.
+		UseOwnColorsWithoutRangeChecks()
+		local otherDictionary = TRB.Data.specCache[entries[1].compositeKey].settings.thresholds.thresholdDictionary
+		local otherKey = next(otherDictionary)
+		if otherKey ~= nil then
+			local savedBehavior = otherDictionary[otherKey].behavior
+			otherDictionary[otherKey].behavior = { noTarget = "hideAlways" }
+			Character:RefreshSpellRangeCheckUpdate()
+			CheckOn(login.compositeKey .. " with only " .. entries[1].compositeKey .. "'s line hiding with no valid target", login.compositeKey)
+			otherDictionary[otherKey].behavior = savedBehavior
 		end
 
 		-- Global Options' out-of-range boxes reach the live spec through another spec on Global colors.
@@ -305,7 +411,43 @@ function hooks.afterEvents(ctx)
 	useGlobal.__scripts.OnClick(useGlobal)
 	CheckOn(live.compositeKey .. " after ticking its Use Global threshold colors box", live.compositeKey)
 
+	-- Hiding with no valid target needs range checks, from the shared setting or one line's own.
 	check(live.compositeKey .. " with no settings needing range checks again: range checks are off", UseOwnColorsWithoutRangeChecks())
+	local liveThresholds = TRB.Data.specCache[live.compositeKey].settings.thresholds
+	liveThresholds.behavior.hideNoTarget.enabled = true
+	Character:RefreshSpellRangeCheckUpdate()
+	CheckOn(live.compositeKey .. " hiding lines with no valid target", live.compositeKey)
+	liveThresholds.behavior.hideNoTarget.enabled = false
+	local lineKey = next(liveThresholds.thresholdDictionary)
+	if lineKey ~= nil then
+		local savedBehavior = liveThresholds.thresholdDictionary[lineKey].behavior
+		liveThresholds.thresholdDictionary[lineKey].behavior = { noTarget = "hideCombat" }
+		Character:RefreshSpellRangeCheckUpdate()
+		CheckOn(live.compositeKey .. " with one line hiding with no valid target", live.compositeKey)
+		liveThresholds.thresholdDictionary[lineKey].behavior = savedBehavior
+	end
+
+	-- Unticking Use Global on Threshold Line Behavior moves the spec onto its own settings, which may hide lines with no valid target.
+	local liveSpec = TRB.Data.settings[live.className][live.specName]
+	local liveGlobal = TRB.Data.settings.core.global[live.className][live.specName]
+	local ownHide, usedGlobal = liveSpec.thresholds.behavior.hideNoTarget.enabled, liveGlobal.thresholdBehavior
+	liveGlobal.thresholdBehavior = true
+	liveSpec.thresholds.behavior.hideNoTarget.enabled = true
+	check(live.compositeKey .. " on Global's Threshold Line Behavior, its own hiding lines with no valid target: range checks are off", UseOwnColorsWithoutRangeChecks())
+	local behaviorControls = { colors = {}, checkBoxes = {}, dropDown = {} }
+	TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(desktop.CreateFrame("Frame"), behaviorControls, liveSpec, live.classId, live.specId, 0)
+	local useGlobalBehavior = behaviorControls.checkBoxes.useGlobalThresholdBehavior
+	if useGlobalBehavior ~= nil then
+		useGlobalBehavior.GetChecked = function() return false end
+		useGlobalBehavior.__scripts.OnClick(useGlobalBehavior)
+		CheckOn(live.compositeKey .. " after unticking its Use Global Threshold Line Behavior box", live.compositeKey)
+	else
+		print("INFO " .. live.compositeKey .. " has no Threshold Line Behavior section")
+	end
+	liveSpec.thresholds.behavior.hideNoTarget.enabled, liveGlobal.thresholdBehavior = ownHide, usedGlobal
+	Character:FillSpecializationCacheSettings(live.className, live.specName)
+
+	check(live.compositeKey .. " with no settings needing range checks once more: range checks are off", UseOwnColorsWithoutRangeChecks())
 	for _, entry in ipairs(entries) do
 		TRB.Data.settings.core.global[entry.className][entry.specName].thresholdColors = true
 	end
