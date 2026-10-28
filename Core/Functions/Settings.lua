@@ -2942,6 +2942,10 @@ function TRB.Functions.Settings:DefaultThresholdBehaviorSettings()
 			mode = "gcd",
 			gcdsMax = 2,
 			timeMax = 3
+		},
+		hideNoTarget = {
+			enabled = false,
+			outOfCombat = false
 		}
 	}
 end

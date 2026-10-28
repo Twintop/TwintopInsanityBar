@@ -545,15 +545,32 @@ function TRB.Classes.SpellBase:IsValid()
 	return true
 end
 
+---Whether a rank has a range and can be cast on enemies, from static spell data read once.
+---@param rankedId integer
+---@return { hasRange: boolean, harmful: boolean }
+local function GetRangeInfo(rankedId)
+	local info = TRB.Data.cache.values.rangeInfo[rankedId]
+	if info == nil then
+		info = { hasRange = C_Spell.SpellHasRange(rankedId) == true, harmful = C_Spell.IsSpellHarmful(rankedId) == true }
+		TRB.Data.cache.values.rangeInfo[rankedId] = info
+	end
+	return info
+end
+
 ---Updates the cache value for the spell check of if it is in range.
 function TRB.Classes.SpellBase:UpdateIsSpellInRange()
 	if self.rangeCheck == true then
 		local rankedId = self:GetRankedId()
-		TRB.Data.cache.values.range[rankedId] = C_Spell.IsSpellInRange(rankedId, self.targetUnit or "target")
+		-- A spell with no range is never out of range, as on Blizzard's Cooldown Manager.
+		local inRange = true
+		if GetRangeInfo(rankedId).hasRange then
+			inRange = C_Spell.IsSpellInRange(rankedId, self.targetUnit or "target")
+		end
+		TRB.Data.cache.values.range[rankedId] = inRange == nil and TRB.Data.constants.rangeInvalid or inRange
 	end
 end
 
----Determines if the spell is within range to be used
+---Determines if the spell is within range to be used. A check with no answer counts as out of range.
 ---@return boolean
 function TRB.Classes.SpellBase:GetIsSpellInRange()
 	if self.rangeCheck ~= true then
@@ -564,7 +581,37 @@ function TRB.Classes.SpellBase:GetIsSpellInRange()
 		self:UpdateIsSpellInRange()
 	end
 
-	return TRB.Data.cache.values.range[rankedId]
+	return TRB.Data.cache.values.range[rankedId] == true
+end
+
+---Whether the spell has a range to check.
+---@return boolean
+function TRB.Classes.SpellBase:HasRange()
+	return GetRangeInfo(self:GetRankedId()).hasRange
+end
+
+---Whether having no valid target can hide the spell's line: it's range checked, has a range, and can be cast on enemies.
+---@param rankedId integer? # The spell's current rank, when the caller already has it
+---@return boolean
+function TRB.Classes.SpellBase:NeedsTarget(rankedId)
+	if self.rangeCheck ~= true then
+		return false
+	end
+	local info = GetRangeInfo(rankedId or self:GetRankedId())
+	return info.hasRange and info.harmful
+end
+
+---Whether the spell needs a target and its range check has no answer: no target, or one it can't be used on.
+---@return boolean
+function TRB.Classes.SpellBase:HasNoValidTarget()
+	local rankedId = self:GetRankedId()
+	if not self:NeedsTarget(rankedId) then
+		return false
+	end
+	if TRB.Data.cache.values.range[rankedId] == nil then
+		self:UpdateIsSpellInRange()
+	end
+	return TRB.Data.cache.values.range[rankedId] == TRB.Data.constants.rangeInvalid
 end
 
 

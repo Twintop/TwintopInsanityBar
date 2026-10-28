@@ -888,6 +888,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	-- Only a line with no handler of its own is sure to be Unusable for its whole cooldown.
 	local detailStandardCooldownColor = false
 	local detailCooldownWindowColor = nil
+	local detailNeedsTarget = false
 
 	---Refreshes the scrolling table data from the current threshold settings.
 	local function SetTableValues()
@@ -1035,7 +1036,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 
 	-- ===== BEHAVIOR OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 40
-	local behaviorHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailBehaviorHeader"], oUi.xCoord, detailYCoord)
+	controls.thresholdDetailBehaviorHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailBehaviorHeader"], oUi.xCoord, detailYCoord)
+	local behaviorHeader = controls.thresholdDetailBehaviorHeader
 	behaviorHeader.font:SetFontObject(GameFontNormalLarge)
 	behaviorHeader.font:SetTextColor(1, 1, 1)
 	behaviorHeader:Hide()
@@ -1061,6 +1063,12 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		timeSlider = L["ThresholdCooldownWindowTimeSlider"],
 	})
 	local onCooldownWindow = controls.thresholdOnCooldownWindow
+
+	controls.dropDown.thresholdNoTarget = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdNoTarget", detailScrollChild, "WowStyle1DropdownTemplate")
+	local noTargetDropdown = controls.dropDown.thresholdNoTarget
+	noTargetDropdown:SetWidth(oUi.sliderWidth)
+	noTargetDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	noTargetDropdown:Hide()
 
 	-- ===== LINE OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 40
@@ -1263,13 +1271,17 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			outOfRangeColorPicker = controls.colors.thresholdOutOfRange,
 		})
 
-		-- Only a line with a cooldown has anything to track.
-		if isEnabled and detailHasUnusable then
+		if isEnabled and (detailHasUnusable or detailNeedsTarget) then
 			behaviorHeader:ClearAllPoints()
 			behaviorHeader:SetPoint("TOPLEFT", oUi.xCoord, y)
 			behaviorHeader:Show()
 			y = y - 30
+		else
+			behaviorHeader:Hide()
+		end
 
+		-- Only a line with a cooldown has anything to track.
+		if isEnabled and detailHasUnusable then
 			cooldownTrackingDropdown:ClearAllPoints()
 			cooldownTrackingDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
 			cooldownTrackingDropdown:Show()
@@ -1288,10 +1300,18 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			end
 			onCooldownWindow:SetShown(hidesOnCooldown)
 		else
-			behaviorHeader:Hide()
 			cooldownTrackingDropdown:Hide()
 			onCooldownDropdown:Hide()
 			onCooldownWindow:SetShown(false)
+		end
+
+		if isEnabled and detailNeedsTarget then
+			noTargetDropdown:ClearAllPoints()
+			noTargetDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+			noTargetDropdown:Show()
+			y = y - 30
+		else
+			noTargetDropdown:Hide()
 		end
 
 		y = TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout({
@@ -1371,7 +1391,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		end
 
 		local hasUnusable = spellObj ~= nil and spellObj.hasCooldown == true
-		local hasOutOfRange = spellObj ~= nil and spellObj.rangeCheck ~= false
+		-- A spell with no range is never out of range.
+		local hasOutOfRange = spellObj ~= nil and spellObj.rangeCheck ~= false and spellObj:HasRange()
 		detailHasUnusable = hasUnusable
 		detailHasCharges = spellObj ~= nil and spellObj.hasCooldown == true and spellObj.hasCharges == true
 		detailHasOutOfRange = hasOutOfRange
@@ -1381,6 +1402,7 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			or spellObj.attributes.unusableWhileCasting == true)
 		detailStandardCooldownColor = spellObj ~= nil and spellObj.isSnowflake ~= true
 		detailCooldownWindowColor = spellObj ~= nil and spellObj.attributes.cooldownWindowColor or nil
+		detailNeedsTarget = spellObj ~= nil and spellObj:NeedsTarget()
 
 		-- Update header
 		detailHeader.font:SetText(string.format(L["ThresholdDetailHeader"], entry.icon .. " " .. entry.name))
@@ -1677,6 +1699,31 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			end
 		end)
 		BindOnCooldownWindow()
+
+		local noTargetPrefix = L["ThresholdDetailNoTargetPrefix"]
+		local noTargetLabels = {
+			shared = L["ThresholdDetailCooldownTrackingShared"],
+			show = L["ThresholdDetailOnCooldownShow"],
+			hideCombat = L["ThresholdDetailNoTargetHideCombat"],
+			hideAlways = L["ThresholdDetailNoTargetHideAlways"],
+		}
+		local function GetNoTarget()
+			return dictEntry.behavior ~= nil and dictEntry.behavior.noTarget or "shared"
+		end
+		EnsureDropdownPrefixHook(noTargetDropdown, noTargetPrefix)
+		noTargetDropdown:SetDefaultText(noTargetPrefix .. ": " .. (noTargetLabels[GetNoTarget()] or noTargetLabels.shared))
+		noTargetDropdown:SetupMenu(function(_, rootDescription)
+			for _, mode in ipairs({ "shared", "show", "hideCombat", "hideAlways" }) do
+				rootDescription:CreateRadio(noTargetLabels[mode], function(value)
+					return GetNoTarget() == value
+				end, function(value)
+					dictEntry.behavior = dictEntry.behavior or {}
+					dictEntry.behavior.noTarget = value
+					TRB.Functions.Threshold:RedrawThresholdLines()
+					TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
+				end, mode)
+			end
+		end)
 
 		-- ===== LINE OVERRIDE SECTION =====
 		local function UpdateLineControlsVisibility()

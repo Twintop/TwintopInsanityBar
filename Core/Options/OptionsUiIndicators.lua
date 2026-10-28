@@ -534,7 +534,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		if spell.hasCooldown == true then
 			states[#states + 1] = ThresholdState.ON_COOLDOWN
 		end
-		if spell.rangeCheck ~= false and spec.colors.threshold.outOfRange ~= nil then
+		if spell.rangeCheck ~= false and spell:HasRange() and spec.colors.threshold.outOfRange ~= nil then
 			states[#states + 1] = ThresholdState.OUT_OF_RANGE
 			states[#states + 1] = ThresholdState.IN_RANGE
 		end
