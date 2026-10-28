@@ -469,6 +469,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         isSnowflake = true,
         cooldown = 45,
         restlessBlades = true,
+        cooldownWindowColor = "restlessBlades",
         baseline = true,
         category = "offensive"
     })
@@ -513,6 +514,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         hasCooldown = true,
         cooldown = 30,
         restlessBlades = true,
+        cooldownWindowColor = "restlessBlades",
         baseline = true,
         isTalent = true,
         rangeCheck = false,
@@ -521,6 +523,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
 
     -- Outlaw Spec Abilities
     self.adrenalineRush.attributes.restlessBlades = true
+    self.adrenalineRush.attributes.cooldownWindowColor = "restlessBlades"
     self.adrenalineRush.isTalent = true
 
     self.restlessBlades = TRB.Classes.SpellBase:New({
@@ -534,6 +537,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         hasCooldown = true,
         cooldown = 45,
         restlessBlades = true,
+        cooldownWindowColor = "restlessBlades",
         rangeCheck = false,
         category = "utility"
     })
@@ -581,6 +585,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         isTalent = true,
         cooldown = 90,
         restlessBlades = true,
+        cooldownWindowColor = "restlessBlades",
         rangeCheck = false,
         category = "offensive"
     })
@@ -589,6 +594,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         isTalent = true
     })
     self.feint.attributes.restlessBlades = true
+    self.feint.attributes.cooldownWindowColor = "restlessBlades"
     self.feint.attributes.floatLikeAButterfly = true
 
     -- Trickster

@@ -95,6 +95,20 @@ function hooks.afterEvents(ctx)
 	check("Tracking: Track wins over the shared setting off", Threshold:IsCooldownTracked({ trackCooldowns = false }, { behavior = { cooldownTracking = "on" } }))
 	check("Tracking: Don't Track wins over the shared setting on", not Threshold:IsCooldownTracked({ trackCooldowns = true }, { behavior = { cooldownTracking = "off" } }))
 
+	-- A line's own While on Cooldown wins over the shared Hide while on cooldown.
+	local sharedOn = { trackCooldowns = true, hideOnCooldown = { enabled = true, mode = "gcd", gcdsMax = 2, timeMax = 3 } }
+	local sharedOff = { trackCooldowns = true, hideOnCooldown = { enabled = false, mode = "gcd", gcdsMax = 2, timeMax = 3 } }
+	local lineWindow = { mode = "time", gcdsMax = 1, timeMax = 5 }
+	check("Hiding: nothing hides by default", Threshold:GetCooldownHideWindow(nil, nil) == nil
+		and Threshold:GetCooldownHideWindow(TRB.Functions.Settings:DefaultThresholdBehaviorSettings(), {}) == nil)
+	check("Hiding: the shared setting on hides a line that uses it", Threshold:GetCooldownHideWindow(sharedOn, { behavior = { onCooldown = "shared" } }) == sharedOn.hideOnCooldown)
+	check("Hiding: Show wins over the shared setting on", Threshold:GetCooldownHideWindow(sharedOn, { behavior = { onCooldown = "show" } }) == nil)
+	check("Hiding: Hide uses the line's own window with the shared setting off",
+		Threshold:GetCooldownHideWindow(sharedOff, { behavior = { onCooldown = "hide", onCooldownWindow = lineWindow } }) == lineWindow)
+	check("Hiding: Hide uses the line's own window with the shared setting on",
+		Threshold:GetCooldownHideWindow(sharedOn, { behavior = { onCooldown = "hide", onCooldownWindow = lineWindow } }) == lineWindow)
+	check("Hiding: Hide with no window of its own uses the shared one", Threshold:GetCooldownHideWindow(sharedOff, { behavior = { onCooldown = "hide" } }) == sharedOff.hideOnCooldown)
+
 	-- Every spec ships tracking cooldowns and following Global Options for it.
 	local badDefaults = {}
 	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
@@ -102,13 +116,16 @@ function hooks.afterEvents(ctx)
 		local spec = classSettings ~= nil and classSettings[entry.specName] or nil
 		local classFlags = TRB.Data.settings.core.global[entry.className]
 		local flags = classFlags ~= nil and classFlags[entry.specName] or nil
-		if spec ~= nil and spec.thresholds ~= nil and (spec.thresholds.behavior == nil or spec.thresholds.behavior.trackCooldowns ~= true
+		local behavior = spec ~= nil and spec.thresholds ~= nil and spec.thresholds.behavior or nil
+		if spec ~= nil and spec.thresholds ~= nil and (behavior == nil or behavior.trackCooldowns ~= true
+			or behavior.hideOnCooldown == nil or behavior.hideOnCooldown.enabled ~= false
 			or flags == nil or flags.thresholdBehavior ~= true) then
 			badDefaults[#badDefaults + 1] = entry.compositeKey
 		end
 	end
-	check("Every spec tracks cooldowns by default, following Global Options", #badDefaults == 0 and TRB.Data.settings.core.thresholds.behavior.trackCooldowns == true,
-		table.concat(badDefaults, ", "))
+	local coreBehavior = TRB.Data.settings.core.thresholds.behavior
+	check("Every spec tracks cooldowns and shows lines on cooldown by default, following Global Options", #badDefaults == 0
+		and coreBehavior.trackCooldowns == true and coreBehavior.hideOnCooldown.enabled == false, table.concat(badDefaults, ", "))
 
 	-- Use Global hands the spec cache Global Options' behavior settings, and its own once off.
 	local liveEntry = TRB.Functions.Character:GetSpecRegistryEntry(TRB.Data.character.compositeKey or "")
@@ -435,6 +452,13 @@ function hooks.afterEvents(ctx)
 		DrawSwipe("with charges left")
 		check(label .. ": by default a charge recharging with charges left draws only the swipe's edge",
 			swipe.loaded == durationObject and swipe.drawSwipe == false and swipe.drawEdge == true)
+		-- Hiding for the whole cooldown waits for the last charge.
+		local behavior = settings.thresholds.behavior
+		local hideSaved = behavior.hideOnCooldown
+		behavior.hideOnCooldown = { enabled = true, mode = "time", gcdsMax = 2, timeMax = 0 }
+		DrawSwipe("hiding on cooldown, with charges left")
+		check(label .. ": hiding on cooldown leaves a charge line with charges left", lineFrame:IsShown())
+		behavior.hideOnCooldown = hideSaved
 
 		local reads, version = chargeReads, cooldown.version
 		Fire(id)
@@ -458,6 +482,10 @@ function hooks.afterEvents(ctx)
 		check(label .. ": the swipe shows the recharge with no charges left", cooldown.onCooldown and swipe.loaded == durationObject)
 		check(label .. ": by default a cooldown draws the template's swipe and time",
 			swipe.drawSwipe == true and swipe.drawEdge == false and swipe.hideNumbers == false and swipe.noCooldownCount == nil)
+		behavior.hideOnCooldown = { enabled = true, mode = "time", gcdsMax = 2, timeMax = 0 }
+		DrawSwipe("hiding on cooldown, with no charges left")
+		check(label .. ": hiding on cooldown hides a charge line with no charges left", not lineFrame:IsShown())
+		behavior.hideOnCooldown = hideSaved
 
 		local icons = settings.thresholds.icons
 		local iconsSaved = { icons.showCooldown, icons.showCooldownText, icons.rechargeMode }
@@ -632,24 +660,32 @@ function hooks.afterEvents(ctx)
 
 		-- An On Cooldown Color Indicator needs the cooldown, whatever the line's own settings say.
 		local liveSpec = TRB.Data.settings[registryEntry.className][registryEntry.specName]
-		local shared = liveSpec.colors.shared
-		local createdShared = shared == nil
-		shared = shared or {}
-		liveSpec.colors.shared = shared
-		local createdIndicators = shared.indicatorColors == nil
-		shared.indicatorColors = shared.indicatorColors or {}
-		shared.indicatorColors.trbDriverOnCooldown = { custom = { conditions = {
-			{ source = Threshold.CONDITION_SOURCE, state = Threshold.ConditionState.ON_COOLDOWN, settingKey = key },
-		} } }
-		Cooldowns:Sync()
+		local createdShared, createdIndicators = false, false
+		local function SetOnCooldownIndicator(on)
+			if on then
+				createdShared = liveSpec.colors.shared == nil
+				liveSpec.colors.shared = liveSpec.colors.shared or {}
+				local shared = liveSpec.colors.shared
+				createdIndicators = shared.indicatorColors == nil
+				shared.indicatorColors = shared.indicatorColors or {}
+				shared.indicatorColors.trbDriverOnCooldown = { custom = { conditions = {
+					{ source = Threshold.CONDITION_SOURCE, state = Threshold.ConditionState.ON_COOLDOWN, settingKey = key },
+				} } }
+			else
+				local shared = liveSpec.colors.shared
+				shared.indicatorColors.trbDriverOnCooldown = nil
+				if createdIndicators then
+					shared.indicatorColors = nil
+				end
+				if createdShared then
+					liveSpec.colors.shared = nil
+				end
+			end
+			Cooldowns:Sync()
+		end
+		SetOnCooldownIndicator(true)
 		check(key .. ": an On Cooldown Color Indicator keeps a disabled line tracked", cooldown.onCooldown and ReadsOnEvent() == 1)
-		shared.indicatorColors.trbDriverOnCooldown = nil
-		if createdIndicators then
-			shared.indicatorColors = nil
-		end
-		if createdShared then
-			liveSpec.colors.shared = nil
-		end
+		SetOnCooldownIndicator(false)
 		SetLine("enabled", true)
 
 		-- The tick hands an untracked line no snapshot, so none of its rules, colors, or swipe see the cooldown.
@@ -671,6 +707,8 @@ function hooks.afterEvents(ctx)
 			before = function(line)
 				seen.ran = true
 				seen.snapshot = line.snapshot
+				-- A cost on the bar, so the line draws.
+				line.resourceAmount = 1
 				return true
 			end,
 		}
@@ -684,6 +722,102 @@ function hooks.afterEvents(ctx)
 		SetLine("behavior", { cooldownTracking = "off" }, true)
 		ok, err = Tick()
 		check(key .. ": an untracked line's rules see no cooldown", ok and seen.ran and seen.snapshot == nil, err)
+
+		-- Hide while on cooldown: plain times hide the line until its window, and secret times leave that to its alpha.
+		local liveBehavior = settings.thresholds.behavior
+		local hideSaved = liveBehavior.hideOnCooldown
+		local liveDictEntry = settings.thresholds.thresholdDictionary[key]
+		local secretRemaining = 0
+		durationObject.EvaluateRemainingDuration = function(_, curve) return curve:Evaluate(secretRemaining) end
+		local function Hiding(enabled, mode, timeMax)
+			liveBehavior.hideOnCooldown = { enabled = enabled, mode = mode or "time", gcdsMax = 2, timeMax = timeMax or 5 }
+		end
+		local function StartCooldown(plain)
+			readings[id] = plain and Reading(true, false, now, 30) or Reading(true, false)
+			Fire(id)
+		end
+		-- Moves the clock to `secondsLeft` before a plain cooldown's end, then draws a tick.
+		local function Drawn(secondsLeft)
+			if secondsLeft ~= nil then
+				now = cooldown.endsAt - secondsLeft
+			end
+			local tickOk = Tick()
+			local frame = nodeThresholds[1]
+			return tickOk and frame ~= nil and frame:IsShown()
+		end
+		SetLine("behavior", nil)
+		StartCooldown(true)
+		Hiding(false)
+		check(key .. ": with hiding off, a line draws on cooldown", cooldown:HasPlainTiming() and Drawn(20))
+		local frame = nodeThresholds[1]
+		frame.SetAlpha = function(self, alpha) self.trbDriverAlpha = alpha end
+		Hiding(true)
+		check(key .. ": with hiding on, a line hides with more than its window left", not Drawn(20))
+		check(key .. ": it shows again inside its window, leaving its alpha alone", Drawn(4) and frame.trbDriverAlpha == nil)
+		Hiding(true, "time", 0)
+		check(key .. ": a window of 0 hides it for the whole cooldown", not Drawn(0.5))
+		local gcdWindow = 2 * TRB.Functions.Character:GetCurrentGCDTime()
+		Hiding(true, "gcd")
+		check(key .. ": a GCD window hides it until that many GCDs are left", not Drawn(gcdWindow + 0.5) and Drawn(gcdWindow - 0.5))
+		Hiding(true)
+		local colorsSaved = liveDictEntry.colors
+		liveDictEntry.colors = { colorMode = "static", staticColor = { color = "FFFF0000" } }
+		check(key .. ": a Static color line hides too", not Drawn(20))
+		liveDictEntry.colors = colorsSaved
+		SetLine("behavior", { onCooldown = "show" }, true)
+		check(key .. ": Show wins over the shared setting", Drawn(20))
+		Hiding(false)
+		SetLine("behavior", { onCooldown = "hide", onCooldownWindow = { mode = "time", gcdsMax = 2, timeMax = 10 } }, true)
+		check(key .. ": Hide uses the line's own window with the shared setting off", not Drawn(12) and Drawn(8))
+		Hiding(true)
+		check(key .. ": Hide uses the line's own window with the shared setting on", not Drawn(12) and Drawn(8))
+		SetLine("behavior", { cooldownTracking = "off", onCooldown = "hide" }, true)
+		-- The indicator keeps the cooldown running, so only the line's missing snapshot shows it.
+		SetOnCooldownIndicator(true)
+		check(key .. ": an untracked line never hides", cooldown.onCooldown and Drawn(8))
+		SetOnCooldownIndicator(false)
+
+		SetLine("behavior", nil)
+		StartCooldown(false)
+		secretRemaining = 20
+		check(key .. ": with secret times, a line draws at alpha 0 until its window", not cooldown:HasPlainTiming() and Drawn() and frame.trbDriverAlpha == 0)
+		-- Its icon keeps its place in the overlap layout, so it returns on its own row, above the lines, not under another icon.
+		local icons = settings.thresholds.icons
+		local iconsSaved = { icons.enabled, icons.overlapMode }
+		icons.enabled, icons.overlapMode = true, "stagger"
+		Drawn()
+		Drawn()
+		check(key .. ": hidden by its alpha, its icon keeps its place in the overlap layout", frame.trbDriverAlpha == 0 and frame.icon ~= nil
+			and frame.icon:GetFrameLevel() > TRB.Data.constants.frameLevels.thresholdIconLayout - 100, frame.icon and tostring(frame.icon:GetFrameLevel()))
+		icons.enabled, icons.overlapMode = iconsSaved[1], iconsSaved[2]
+		Drawn()
+		secretRemaining = 4
+		check(key .. ": its alpha turns 1 inside its window", Drawn() and frame.trbDriverAlpha == 1)
+		Hiding(true, "gcd", 10)
+		secretRemaining = gcdWindow + 0.5
+		local gcdGated = Drawn() and frame.trbDriverAlpha == 0
+		secretRemaining = gcdWindow - 0.5
+		check(key .. ": with secret times, a GCD window sets its alpha by that many GCDs left", gcdGated and Drawn() and frame.trbDriverAlpha == 1)
+		Hiding(true, "time", 0)
+		check(key .. ": with secret times, a window of 0 hides it outright", not Drawn())
+		Hiding(true)
+		secretRemaining = 20
+		Drawn()
+		readings[id] = Reading(false, nil)
+		Fire(id)
+		check(key .. ": its alpha comes back once the cooldown ends", Drawn() and frame.trbDriverAlpha == 1 and not frame.trbGateAlpha)
+		secretRemaining = 20
+		StartCooldown(false)
+		local gatedBeforeReset = Drawn() and frame.trbDriverAlpha == 0
+		Threshold:ResetThresholdLine(frame, settings, true, bar.barSettings)
+		check(key .. ": resetting the line brings its alpha back", gatedBeforeReset and frame.trbDriverAlpha == 1 and not frame.trbGateAlpha)
+		if settings.comboPoints ~= nil and settings.colors.comboPoints ~= nil then
+			local gatedBeforeComboPointReset = Drawn() and frame.trbDriverAlpha == 0
+			Threshold:ResetThresholdLineComboPoint(frame, settings)
+			check(key .. ": resetting a combo point line brings its alpha back", gatedBeforeComboPointReset and frame.trbDriverAlpha == 1 and not frame.trbGateAlpha)
+		end
+		liveBehavior.hideOnCooldown = hideSaved
+		durationObject.EvaluateRemainingDuration = nil
 
 		for _, lineEntry in ipairs(lineEntries) do
 			if lineEntry.created then

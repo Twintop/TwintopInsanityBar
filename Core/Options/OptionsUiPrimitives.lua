@@ -1246,6 +1246,120 @@ function TRB.Functions.OptionsUi.Primitives:BuildFontOutlineDropdown(parent, nam
 	return dropdown, RefreshText
 end
 
+---Builds GCD and seconds radios, each with a slider, for a window of time left, such as on a cooldown. Hidden until
+---bound and placed; 0 is allowed on either slider.
+---@param parent Frame
+---@param namePrefix string # Unique global frame name prefix
+---@param labels { gcdRadio: string, gcdSlider: string, timeRadio: string, timeSlider: string }
+---@return TRB.Classes.OptionsUi.RemainingWindowControls
+function TRB.Functions.OptionsUi.Primitives:BuildRemainingWindowControls(parent, namePrefix, labels)
+	local primitives = self
+	-- Rebound by Bind; a bind's own slider writes aren't edits.
+	local state = { window = nil, onChanged = nil, binding = false }
+	local radios = {}
+
+	local function ShowMode(mode)
+		radios.gcd:SetChecked(mode ~= "time")
+		radios.time:SetChecked(mode == "time")
+	end
+
+	---@param suffix string
+	---@param label string
+	---@param mode string
+	---@return CheckButton
+	local function BuildRadio(suffix, label, mode)
+		local radio = CreateFrame("CheckButton", namePrefix .. suffix, parent, "UIRadioButtonTemplate")
+		local text = getglobal(radio:GetName() .. "Text")
+		text:SetText(label)
+		text:SetFontObject(GameFontHighlight)
+		radio:SetScript("OnClick", function()
+			ShowMode(mode)
+			if state.window ~= nil and state.window.mode ~= mode then
+				state.window.mode = mode
+				state.onChanged()
+			end
+		end)
+		radio:Hide()
+		return radio
+	end
+
+	---@param title string
+	---@param maxValue number
+	---@param key string
+	---@return TRB.Classes.OptionsUi.Slider
+	local function BuildWindowSlider(title, maxValue, key)
+		local slider = primitives:BuildSlider(parent, title, 0, maxValue, 0, 0.25, 2, oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, 0)
+		slider:SetScript("OnValueChanged", function(frame, value)
+			value = primitives:EditBoxSetTextMinMax(frame, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			frame.EditBox:SetText(value)
+			if not state.binding and state.window ~= nil and state.window[key] ~= value then
+				state.window[key] = value
+				state.onChanged()
+			end
+		end)
+		slider:Hide()
+		return slider
+	end
+
+	radios.gcd = BuildRadio("_ModeGCDs", labels.gcdRadio, "gcd")
+	radios.time = BuildRadio("_ModeTime", labels.timeRadio, "time")
+
+	---@type TRB.Classes.OptionsUi.RemainingWindowControls
+	local windowControls = {
+		gcdRadio = radios.gcd,
+		gcdSlider = BuildWindowSlider(labels.gcdSlider, 10, "gcdsMax"),
+		timeRadio = radios.time,
+		timeSlider = BuildWindowSlider(labels.timeSlider, 30, "timeMax"),
+
+		Bind = function(self, window, onChanged)
+			state.window = window
+			state.onChanged = onChanged
+			state.binding = true
+			ShowMode(window.mode)
+			self.gcdSlider:SetValue(window.gcdsMax)
+			self.gcdSlider.EditBox:SetText(tostring(window.gcdsMax))
+			self.timeSlider:SetValue(window.timeMax)
+			self.timeSlider.EditBox:SetText(tostring(window.timeMax))
+			state.binding = false
+		end,
+
+		SetPosition = function(self, y)
+			-- Each radio sits beside its slider, which needs the row's full height for its labels.
+			self.gcdSlider:ClearAllPoints()
+			self.gcdSlider:SetPoint("TOPLEFT", oUi.xCoord2 + 18, y)
+			self.gcdRadio:ClearAllPoints()
+			self.gcdRadio:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, y + 10)
+			y = y - 60
+			self.timeSlider:ClearAllPoints()
+			self.timeSlider:SetPoint("TOPLEFT", oUi.xCoord2 + 18, y)
+			self.timeRadio:ClearAllPoints()
+			self.timeRadio:SetPoint("TOPLEFT", oUi.xCoord + oUi.xPadding, y + 10)
+			return y
+		end,
+
+		SetShown = function(self, shown)
+			self.gcdRadio:SetShown(shown)
+			self.gcdSlider:SetShown(shown)
+			self.timeRadio:SetShown(shown)
+			self.timeSlider:SetShown(shown)
+		end,
+
+		SetEnabled = function(self, enabled, reason)
+			reason = not enabled and reason or nil
+			for _, radio in ipairs({ self.gcdRadio, self.timeRadio }) do
+				primitives:ToggleCheckboxEnabled(radio, enabled)
+				primitives:SetDisabledReason(radio, reason)
+			end
+			for _, slider in ipairs({ self.gcdSlider, self.timeSlider }) do
+				primitives:ToggleSliderEnabled(slider, enabled)
+				primitives:SetDisabledReason(slider, reason)
+			end
+		end,
+	}
+	return windowControls
+end
+
 ---Enables or disables a ChatConfigCheckButton checkbox and grays out its label text when disabled.
 ---@param checkbox CheckButton # The checkbox frame to toggle
 ---@param enable boolean # Whether to enable (true) or disable (false) the checkbox

@@ -25,6 +25,7 @@ TRB.Details.coreNewsContent = [====[
 - [#279](#279) Add Show cooldown swipe on icons, Show cooldown time on icons, and While an Ability with Charges Recharges options, shared and to each threshold.
 - [#279](#279) Add a Threshold Line Behavior section, with its own use global settings, and a Track ability cooldowns option, shared and to each threshold.
 - [#279](#279) Grayed-out threshold options say why in their tooltip.
+- [#279](#279) Add a Hide while on cooldown option to Threshold Line Behavior, shared and to each threshold, that shows the line again with a set number of GCDs or seconds left.
 - [#333](#333) Add a When Threshold Icons Overlap option: Stagger into rows moves overlapping icons onto rows away from the bar, and Show highest priority only hides an icon that overlaps a higher-priority one.
 - [#333](#333) Stagger into rows has spacing and maximum row options; icons that don't fit are hidden.
 - [#333](#333) Add an Allowed Icon Overlap option, letting overlapping icons cover each other by up to that share of their size before they move.

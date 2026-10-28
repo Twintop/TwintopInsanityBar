@@ -885,6 +885,9 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	local detailHasThresholdIcon = true
 	-- Combo point finishers and casts can show Unusable with no cooldown, so their Unusable row stays live untracked.
 	local detailUnusableWithoutCooldown = false
+	-- Only a line with no handler of its own is sure to be Unusable for its whole cooldown.
+	local detailStandardCooldownColor = false
+	local detailCooldownWindowColor = nil
 
 	---Refreshes the scrolling table data from the current threshold settings.
 	local function SetTableValues()
@@ -1044,6 +1047,21 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 	cooldownTrackingDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
 	cooldownTrackingDropdown:Hide()
 
+	detailYCoord = detailYCoord - 30
+	controls.dropDown.thresholdOnCooldown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdOnCooldown", detailScrollChild, "WowStyle1DropdownTemplate")
+	local onCooldownDropdown = controls.dropDown.thresholdOnCooldown
+	onCooldownDropdown:SetWidth(oUi.sliderWidth)
+	onCooldownDropdown:SetPoint("TOPLEFT", oUi.xCoord, detailYCoord)
+	onCooldownDropdown:Hide()
+
+	controls.thresholdOnCooldownWindow = TRB.Functions.OptionsUi.Primitives:BuildRemainingWindowControls(detailScrollChild, "TwintopResourceBar_" .. namePrefix .. "_Detail_ThresholdOnCooldownWindow", {
+		gcdRadio = L["ThresholdCooldownWindowGcds"],
+		gcdSlider = L["ThresholdCooldownWindowGcdsSlider"],
+		timeRadio = L["ThresholdCooldownWindowTime"],
+		timeSlider = L["ThresholdCooldownWindowTimeSlider"],
+	})
+	local onCooldownWindow = controls.thresholdOnCooldownWindow
+
 	-- ===== LINE OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 40
 	local lineHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailLineHeader"], oUi.xCoord, detailYCoord)
@@ -1159,16 +1177,21 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 
 	local lowerClassName = string.lower(className)
 
+	---The shared Threshold Line Behavior settings this spec's lines follow: the global ones under Use Global.
+	---@return TRB.Classes.Settings.ThresholdBehavior
+	local function GetSharedBehavior()
+		local classGlobal = TRB.Data.settings.core.global[lowerClassName]
+		local useGlobal = classGlobal ~= nil and classGlobal[specName] ~= nil and classGlobal[specName].thresholdBehavior
+		return (useGlobal and TRB.Data.settings.core.thresholds or spec.thresholds).behavior
+	end
+
 	---Grays out the selected line's cooldown-only options while it ignores its cooldown, with a tooltip saying why.
 	local function RefreshTrackingStates()
 		local primitives = TRB.Functions.OptionsUi.Primitives
 		local dictEntry = selectedSettingKey ~= nil and spec.thresholds.thresholdDictionary[selectedSettingKey] or nil
 		local reason = nil
 		if detailHasUnusable and dictEntry ~= nil then
-			local classGlobal = TRB.Data.settings.core.global[lowerClassName]
-			local useGlobal = classGlobal ~= nil and classGlobal[specName] ~= nil and classGlobal[specName].thresholdBehavior
-			local behavior = (useGlobal and TRB.Data.settings.core.thresholds or spec.thresholds).behavior
-			if not TRB.Functions.Threshold:IsCooldownTracked(behavior, dictEntry) then
+			if not TRB.Functions.Threshold:IsCooldownTracked(GetSharedBehavior(), dictEntry) then
 				local lineMode = dictEntry.behavior ~= nil and dictEntry.behavior.cooldownTracking or nil
 				reason = lineMode == "off" and L["ThresholdDetailCooldownNotTrackedLineTooltip"] or L["ThresholdDetailCooldownNotTrackedSharedTooltip"]
 			end
@@ -1177,6 +1200,18 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		primitives:ToggleDropdownEnabled(colorUnusableModeDropdown, unusableReason == nil)
 		primitives:ToggleColorPickerEnabled(controls.colors.thresholdUnusable, unusableReason == nil)
 		primitives:SetDisabledReason(colorUnusableModeDropdown, unusableReason)
+		-- Hiding on cooldown needs the cooldown, even on lines whose Unusable color doesn't.
+		local onCooldownReason = reason
+		local colors = dictEntry ~= nil and dictEntry.colors or nil
+		local windowColor = detailCooldownWindowColor ~= nil and spec.colors.threshold[detailCooldownWindowColor] or nil
+		-- Hidden while Unusable, the line can't show inside its window unless its spec shows it there in a color of its own.
+		if onCooldownReason == nil and detailStandardCooldownColor and colors ~= nil and colors.colorMode ~= "static"
+			and TRB.Functions.Threshold:GetColorMode(colors.unusable) == "hidden" and not (windowColor ~= nil and windowColor.enabled) then
+			onCooldownReason = L["ThresholdDetailOnCooldownUnusableHiddenTooltip"]
+		end
+		primitives:ToggleDropdownEnabled(onCooldownDropdown, onCooldownReason == nil)
+		primitives:SetDisabledReason(onCooldownDropdown, onCooldownReason)
+		onCooldownWindow:SetEnabled(onCooldownReason == nil, onCooldownReason)
 		controls.thresholdIconCooldown.state.untrackedReason = reason
 		controls.thresholdIconCooldown.refreshEnabled()
 	end
@@ -1239,9 +1274,24 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 			cooldownTrackingDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
 			cooldownTrackingDropdown:Show()
 			y = y - 30
+
+			onCooldownDropdown:ClearAllPoints()
+			onCooldownDropdown:SetPoint("TOPLEFT", oUi.xCoord, y)
+			onCooldownDropdown:Show()
+			y = y - 30
+
+			-- Only a line that hides on its own has a window of its own.
+			local lineBehavior = dictEntryForLayout and dictEntryForLayout.behavior or nil
+			local hidesOnCooldown = lineBehavior ~= nil and lineBehavior.onCooldown == "hide"
+			if hidesOnCooldown then
+				y = onCooldownWindow:SetPosition(y - 20) - 50
+			end
+			onCooldownWindow:SetShown(hidesOnCooldown)
 		else
 			behaviorHeader:Hide()
 			cooldownTrackingDropdown:Hide()
+			onCooldownDropdown:Hide()
+			onCooldownWindow:SetShown(false)
 		end
 
 		y = TRB.Functions.OptionsUi.ThresholdList:ApplyLineIconOverrideLayout({
@@ -1329,6 +1379,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		detailHasThresholdIcon = spellObj == nil or spellObj.hasThresholdIcon ~= false
 		detailUnusableWithoutCooldown = spellObj ~= nil and ((spellObj:Is("TRB.Classes.SpellComboPointThreshold") and spellObj.comboPoints == true)
 			or spellObj.attributes.unusableWhileCasting == true)
+		detailStandardCooldownColor = spellObj ~= nil and spellObj.isSnowflake ~= true
+		detailCooldownWindowColor = spellObj ~= nil and spellObj.attributes.cooldownWindowColor or nil
 
 		-- Update header
 		detailHeader.font:SetText(string.format(L["ThresholdDetailHeader"], entry.icon .. " " .. entry.name))
@@ -1585,6 +1637,46 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 				end, mode)
 			end
 		end)
+
+		local onCooldownPrefix = L["ThresholdDetailOnCooldownPrefix"]
+		local onCooldownLabels = {
+			shared = L["ThresholdDetailCooldownTrackingShared"],
+			show = L["ThresholdDetailOnCooldownShow"],
+			hide = L["ThresholdDetailOnCooldownHide"],
+		}
+		local function GetOnCooldown()
+			return dictEntry.behavior ~= nil and dictEntry.behavior.onCooldown or "shared"
+		end
+		local function BindOnCooldownWindow()
+			local lineBehavior = dictEntry.behavior
+			if lineBehavior == nil or lineBehavior.onCooldown ~= "hide" then
+				return
+			end
+			-- A line's own window starts from the shared one it was following.
+			if lineBehavior.onCooldownWindow == nil then
+				local shared = GetSharedBehavior().hideOnCooldown
+				lineBehavior.onCooldownWindow = { mode = shared.mode, gcdsMax = shared.gcdsMax, timeMax = shared.timeMax }
+			end
+			onCooldownWindow:Bind(lineBehavior.onCooldownWindow, function()
+				TRB.Functions.Threshold:RedrawThresholdLines()
+			end)
+		end
+		EnsureDropdownPrefixHook(onCooldownDropdown, onCooldownPrefix)
+		onCooldownDropdown:SetDefaultText(onCooldownPrefix .. ": " .. (onCooldownLabels[GetOnCooldown()] or onCooldownLabels.shared))
+		onCooldownDropdown:SetupMenu(function(_, rootDescription)
+			for _, mode in ipairs({ "shared", "show", "hide" }) do
+				rootDescription:CreateRadio(onCooldownLabels[mode], function(value)
+					return GetOnCooldown() == value
+				end, function(value)
+					dictEntry.behavior = dictEntry.behavior or {}
+					dictEntry.behavior.onCooldown = value
+					BindOnCooldownWindow()
+					RepositionDetailControls()
+					TRB.Functions.Threshold:RedrawThresholdLines()
+				end, mode)
+			end
+		end)
+		BindOnCooldownWindow()
 
 		-- ===== LINE OVERRIDE SECTION =====
 		local function UpdateLineControlsVisibility()
