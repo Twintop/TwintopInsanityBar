@@ -21,3 +21,18 @@ function GetNumTalentTabs(isInspect, isPet) end
 ---@param isPet boolean?
 ---@return number numTalents
 function GetNumTalents(tabIndex, isInspect, isPet) end
+
+---The current COMBAT_LOG_EVENT_UNFILTERED's payload: timestamp, subevent, hideCaster, source and dest GUID/name/flags/raid flags, then the subevent's own values.
+---@return number timestamp
+---@return string subevent
+---@return boolean hideCaster
+---@return string sourceGUID
+---@return string sourceName
+---@return number sourceFlags
+---@return number sourceRaidFlags
+---@return string destGUID
+---@return string destName
+---@return number destFlags
+---@return number destRaidFlags
+---@return any ...
+function CombatLogGetCurrentEventInfo() end

@@ -192,6 +192,8 @@ unitAuraFrame:SetScript("OnEvent", AuraUpdateEvent)
 ---Registers the UNIT_AURA event so the addon begins processing aura updates for the player
 function TRB.Functions.Aura:EnableUnitAura()
 	unitAuraFrame:RegisterUnitEvent("UNIT_AURA", "player")
+	-- Buffs gained or lost while UNIT_AURA was off left the followed buffs stale.
+	self:RefreshConditionSpells()
 end
 
 ---Unregisters the UNIT_AURA event so the addon stops processing aura updates

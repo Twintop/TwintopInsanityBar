@@ -93,10 +93,38 @@ TRB.Flavor = {
 	-- Ranked spells are learned one at a time, so a threshold's spell may not be known yet.
 	thresholdsRequireKnown = true,
 	pvpTalents = false,
+	-- Talent tabs announce a learned or reset talent with this, as Blizzard's own talent frame reads it.
+	talentEvents = { "PLAYER_TALENT_UPDATE" },
 	-- The Cooldown Manager API exists, but its viewers do not and every category is empty.
 	cooldownManager = false,
-	-- Nothing on this client is secret, so buffs are read straight from the player's auras instead.
+	-- Buffs are read straight from the player's auras, and no value this client hands out is a secret.
 	playerAuras = true,
+	secretValues = false,
+	-- No Blizzard swing timer or PLAYER_SWING here, so swings come from the combat log and these casts.
+	swingTimers = true,
+	swingSpells = {
+		meleeResets = {
+			1464, 8820, 11604, 11605, -- Slam
+			78, 284, 285, 1608, 11564, 11565, 11566, 11567, 25286, -- Heroic Strike
+			845, 7369, 11608, 11609, 20569, -- Cleave
+			2973, 14260, 14261, 14262, 14263, 14264, 14265, 14266, -- Raptor Strike
+			6807, 6808, 6809, 8972, 9745, 9880, 9881, -- Maul
+			20549, -- War Stomp
+			2480, 7919, 7918, 2764, 5019, -- Shoot Bow, Shoot Crossbow, Shoot Gun, Throw, Shoot
+			5384, -- Feign Death
+		},
+		rangedShots = {
+			75, -- Auto Shot
+			2480, 7919, 7918, 2764, 5019, -- Shoot Bow, Shoot Crossbow, Shoot Gun, Throw, Shoot
+			5384, -- Feign Death
+		},
+		castsKeepSwing = {
+			1464, 8820, 11604, 11605, -- Slam
+			19434, 20900, 20901, 20902, 20903, 20904, -- Aimed Shot
+			4054, 4061, 4062, 8331, 23000, 23063, -- Rough, Coarse, Heavy, Ez-Thro, Ez-Thro II, and Dense Dynamite
+			4064, 4065, 4066, 4067, 4068, 4069, 12421, 12543, 12562, 19769, 19784, 19821, -- Bombs and grenades
+		},
+	},
 
 	---True when the running client is WoW Classic: the classic project with a 1.13 to 1.15 interface number.
 	---An unreadable project ID or interface number is not evidence of a mismatch.

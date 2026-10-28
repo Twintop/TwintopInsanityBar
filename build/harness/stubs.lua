@@ -473,6 +473,7 @@ function M.install(opts)
 	G.Enum = setmetatable({
 		PowerType = { HealthCost = -2, None = -1, Mana = 0, Rage = 1, Focus = 2, Energy = 3, ComboPoints = 4, Runes = 5, RunicPower = 6, SoulShards = 7, LunarPower = 8, HolyPower = 9, Alternate = 10, Maelstrom = 11, Chi = 12, Insanity = 13, Obsolete = 14, Obsolete2 = 15, ArcaneCharges = 16, Fury = 17, Pain = 18, Essence = 19, RuneBlood = 20, RuneFrost = 21, RuneUnholy = 22, AlternateMount = 23, AlternateQuest = 24, AlternateEncounter = 25, NumPowerTypes = 26 },
 		Damageclass = { Physical = 0, Holy = 1, Fire = 2, Nature = 3, Frost = 4, Shadow = 5, Arcane = 6 },
+		PlayerSwingType = { MainHand = 0, OffHand = 1, Ranged = 2 },
 		EditModeLayoutType = { Preset = 0, Account = 1, Character = 2 },
 		EditModeSettingDisplayType = { Dropdown = 0, Slider = 1, Checkbox = 2 },
 		CooldownViewerCategory = { Essential = 0, Utility = 1, TrackedBuff = 2, TrackedBar = 3 },
@@ -839,6 +840,14 @@ function M.install(opts)
 		setmetatable(playerInfo, { __index = function(_, k) if k == "GetGlidingInfo" then return nil end return noop end })
 		for _, event in ipairs({ "PLAYER_SWING", "PLAYER_SWING_RANGE_UPDATE", "UNIT_POWER_POINT_CHARGE", "PLAYER_MAP_CHANGED" }) do
 			unknownEvents[event] = true
+		end
+		-- No PlayerSwingType enum either, which the autovivifying Enum would otherwise invent.
+		rawset(G.Enum, "PlayerSwingType", nil)
+		local enumMeta = getmetatable(G.Enum)
+		local enumIndex = enumMeta.__index
+		enumMeta.__index = function(t, k)
+			if k == "PlayerSwingType" then return nil end
+			return enumIndex(t, k)
 		end
 	end
 	G.C_EventUtils = ns({ IsEventValid = function(event) return not unknownEvents[event] end })

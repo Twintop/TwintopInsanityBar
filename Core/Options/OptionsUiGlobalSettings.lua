@@ -110,8 +110,8 @@ for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 	globalSettingDefinitions[key .. "Dimensions"] = { checkboxSuffix = key .. "Dimensions", tabKey = key, categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = swingSectionLabels[key .. "Dimensions"],
 		paths = { {"bars", key, "width"}, {"bars", key, "height"}, {"bars", key, "border"}, {"bars", key, "xPos"}, {"bars", key, "yPos"}, {"bars", key, "anchor"}, {"bars", key, "fillDirection"} } }
 	local colorPaths = { {"colors", "bars", key, "bar"}, {"colors", "bars", key, "border"}, {"colors", "bars", key, "background"}, {"colors", "bars", key, "endCap"}, {"bars", key, "durationPrecision"}, {"bars", key, "timerDirection"} }
-	-- The one Hide Blizzard switch for all three swing bars is stored on Main Hand.
-	if key == "mainHandSwing" then
+	-- The one Hide Blizzard switch for all three swing bars is stored on Main Hand, where the client has Blizzard's bars.
+	if key == "mainHandSwing" and TRB.Flavor.blizzardSwingTimer then
 		colorPaths[#colorPaths + 1] = {"bars", key, "disableBlizzardBar"}
 	elseif key == "rangedSwing" then
 		colorPaths[#colorPaths + 1] = {"colors", "bars", key, "moving"}

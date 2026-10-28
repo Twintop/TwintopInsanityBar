@@ -599,6 +599,8 @@ local function ConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			local newBarText = TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings()
+			-- The reset runs through the Bar Text tab's editor, which isn't built until that tab is first opened.
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(interfaceSettingsFrame.optionsPanel, "barText")
 			controls.barTextFields.ResetTableValues(newBarText)
 		end,
 		timeout = 0,

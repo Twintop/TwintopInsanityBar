@@ -220,6 +220,22 @@ function hooks.afterEvents(ctx)
 		TRB_.Functions.Class.TriggerResourceBarUpdates = function() end
 		TRB_.Functions.Bar.UpdateHealthBar = function() end
 		try("ConstructOptionsPanel", function() TRB_.Options:ConstructOptionsPanel() end)
+		do
+			local globalPanel = TRB_.Frames.interfaceSettingsFrameContainer.optionsPanel
+			local barTextUnbuilt = globalPanel ~= nil and globalPanel.tabConstructors ~= nil and globalPanel.tabConstructors.barText ~= nil
+			Tabs:EnsureTabConstructed(globalPanel, "resetDefaults")
+			local ok = try("Reset Global Bar Text", function() G.StaticPopupDialogs["TwintopResourceBar_ResetGlobalBarText"].OnAccept() end)
+			check("Reset Global Bar Text works before its Bar Text tab is opened", barTextUnbuilt and ok
+				and #TRB_.Data.settings.core.displayText.barText == #Settings:LoadDefaultGlobalBarTextSettings())
+		end
+		do
+			local health = TRB_.Functions.BarText:GetVariableMetadata({ variable = "$health" }, "values")
+			if TRB_.Flavor.secretValues then
+				check("$health is secret, with no comparisons, where the client has secret values", health.secret and not health.comparisonUsable)
+			else
+				check("nothing is secret, and $health compares, where the client has no secret values", not health.secret and health.comparisonUsable)
+			end
+		end
 		for _, classDef in ipairs(TRB_.Data.allClassSpecs) do
 			local built = false
 			for _, g in ipairs(groups) do

@@ -42,7 +42,7 @@ do
 			isMultiNode = false,
 			maxNodes = 1,
 			hasSameColor = false,
-			-- The runtime ranges the node 0..UnitPowerMax, capped by the override, and writes the (secret) live power into it.
+			-- The runtime ranges the node 0..UnitPowerMax, capped by the override, and writes the live power into it.
 			minMaxMode = "custom",
 			hasSpacing = false,
 			hasThresholds = true,

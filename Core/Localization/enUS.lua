@@ -4271,3 +4271,6 @@ L["AudioCueBuffAlertAuraDescription"] = "Plays once when you gain the chosen buf
 L["AudioCueBuffAuraUnknownSpellTooltip"] = "No spell has the ID %s. Enter another, or delete this alert."
 L["AudioCueBuffAuraUnavailableTooltip"] = "This game client can't follow buffs by spell ID, so this alert never plays."
 L["SupportedClassesFormat"] = "Supported Classes (%s)"
+L["ClassicIndicatorOvercap"] = "Overcap"
+L["ClassicIndicatorRageOvercapTooltip"] = "Changes to this color while your Rage is at or above the overcap threshold."
+L["ClassicIndicatorEnergyOvercapTooltip"] = "Changes to this color while your Energy is at or above the overcap threshold."

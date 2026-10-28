@@ -293,6 +293,19 @@ function hooks.afterEvents(ctx)
 		check("a full update finds it gone", not Met("custom_driver"))
 		check("an ID no spell has never turns on", not Met("custom_nospell"))
 
+		-- Turning the class off and on drops UNIT_AURA in between, so a buff can come or go unseen.
+		Gain(SND_RANK1)
+		Aura:DisableUnitAura()
+		wipe(drv.auras)
+		Aura:EnableUnitAura()
+		check("a buff lost while UNIT_AURA was off reads off once it's back", not Met("custom_driver"))
+		Aura:DisableUnitAura()
+		drv.auras[#drv.auras + 1] = { name = "Slice and Dice", spellId = SND_RANK1, auraInstanceID = 901, isHelpful = true }
+		Aura:EnableUnitAura()
+		check("and one gained reads on", Met("custom_driver"))
+		wipe(drv.auras)
+		FireAura({ isFullUpdate = true })
+
 		drv.followedReads = 0
 		Gain(SPRINT)
 		FireAura({ isFullUpdate = false, removedAuraInstanceIDs = { 12345 } })

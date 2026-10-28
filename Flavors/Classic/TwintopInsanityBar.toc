@@ -38,7 +38,6 @@
 ## X-Category: Interface Enhancements
 ## X-Website: https://github.com/Twintop/TwintopInsanityBar
 ## X-Curse-Project-ID: 293075
-## X-WoWI-ID: 24628
 ## X-Wago-ID: Qb6mM46P
 
 # Libraries

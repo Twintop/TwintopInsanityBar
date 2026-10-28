@@ -138,6 +138,16 @@ function TRB.Classic.Templates.Runtime:Install(className)
 	end
 	runtime.ConstructResourceBar = ConstructResourceBar
 
+	---Whether the resource is at or above the spec's overcap threshold.
+	---@param spec table
+	---@param specSettings table # The raw settings: the spec cache's composed copy carries no overcap threshold
+	---@return boolean
+	local function IsOvercapped(spec, specSettings)
+		local maxResource = TRB.Data.character.maxResourceUnmodified
+		return spec.archetype.overcap ~= nil and maxResource ~= nil and maxResource > 0
+			and TRB.Data.snapshotData.attributes.resource >= Color:GetOvercapThreshold(specSettings.overcap, maxResource)
+	end
+
 	---Whether any enabled threshold ability can be cast right now, for the over-threshold text color.
 	---@param specCacheSettings table
 	---@return boolean
@@ -180,21 +190,18 @@ function TRB.Classic.Templates.Runtime:Install(className)
 			local castingResource = snapshotData.casting.resourceFinal
 			local resourcePercent = UnitPowerPercent("player", archetype.powerType)
 
-			-- The live value's text takes the overcap curve's color, when one applies, in place of currentColor.
-			local overcapColor = nil
+			-- The live value's text takes the overcap color, when one applies, in place of currentColor.
+			local valueColor = nil
 			if archetype.overcap ~= nil and TRB.Data.character.inCombat then
 				if textColors.overThreshold.enabled and AnyThresholdUsable(sharedSettings) then
 					currentColor = textColors.overThreshold.color
 					castingColor = textColors.overThreshold.color
 				end
-				if textColors.overcap.enabled and not (spec.stealth and IsStealthed()) then
-					-- The raw settings: the spec cache's composed copy carries no overcap threshold.
-					local overcapCurve = Color:BuildResourceThresholdCurve(TRB.Data.settings[className][spec.entry.specName], currentColor, textColors.overcap.color)
-					if overcapCurve ~= nil then
-						overcapColor = UnitPowerPercent("player", archetype.powerType, true, overcapCurve)
-					end
+				if textColors.overcap.enabled and not (spec.stealth and IsStealthed()) and IsOvercapped(spec, TRB.Data.settings[className][spec.entry.specName]) then
+					valueColor = textColors.overcap.color
 				end
 			end
+			valueColor = valueColor or currentColor
 
 			lookupLogic["$resource"] = normalizedResource
 			lookupLogic[variable] = normalizedResource
@@ -205,8 +212,8 @@ function TRB.Classic.Templates.Runtime:Install(className)
 			lookupLogic["$casting"] = castingResource
 
 			local resourceFormatted = snapshotData.formatted.resourceAbbrev or ""
-			if lookupChanged(prevState, variable, resourceFormatted, currentColor, overcapColor ~= nil) then
-				local formatted = overcapColor ~= nil and overcapColor:WrapTextInColorCode(resourceFormatted) or string.format("|c%s%s|r", currentColor, resourceFormatted)
+			if lookupChanged(prevState, variable, resourceFormatted, valueColor) then
+				local formatted = string.format("|c%s%s|r", valueColor, resourceFormatted)
 				lookup[variable] = formatted
 				lookup["$resource"] = formatted
 			end
@@ -216,8 +223,8 @@ function TRB.Classic.Templates.Runtime:Install(className)
 				lookup["$resourceMax"] = formatted
 			end
 			local percentFormatted = snapshotData.formatted.resourcePercent or ""
-			if lookupChanged(prevState, variable .. "Percent", percentFormatted, currentColor, overcapColor ~= nil) then
-				local formatted = overcapColor ~= nil and overcapColor:WrapTextInColorCode(percentFormatted) or string.format("|c%s%s|r", currentColor, percentFormatted)
+			if lookupChanged(prevState, variable .. "Percent", percentFormatted, valueColor) then
+				local formatted = string.format("|c%s%s|r", valueColor, percentFormatted)
 				lookup[variable .. "Percent"] = formatted
 				lookup["$resourcePercent"] = formatted
 			end
@@ -296,12 +303,11 @@ function TRB.Classic.Templates.Runtime:Install(className)
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar
 			-- have their own visibility, so they still need coloring when the resource bar is set to Never Show.
 			local sharedColors = specSettings.colors.shared
-			local powerType = spec.archetype.powerType
 			local isStealthed = spec.stealth == true and IsStealthed()
 			local conditionMap = scratch.conditionMap
 			wipe(conditionMap)
 			conditionMap.borderStealth = isStealthed
-			conditionMap.borderOvercap = TRB.Data.character.inCombat and not isStealthed
+			conditionMap.borderOvercap = TRB.Data.character.inCombat and not isStealthed and IsOvercapped(spec, specSettings)
 			local barColors = scratch.barColors
 			wipe(barColors)
 			barColors.bar = specSettings.colors.bar.base
@@ -322,27 +328,23 @@ function TRB.Classic.Templates.Runtime:Install(className)
 			wipe(claimed.comboPointsBar)
 
 			Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, claimed)
-			local gradient = Color:GetResolvedGradient()
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				-- The bar's range is raw units (maxResource); threshold costs are in displayed units.
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, snapshotData.attributes.resource)
 				Bar:ApplyNodeIndicators(primaryNode, "resourceBar")
-				Color:ApplyNodeGradientColors(primaryNode, "resourceBar", barColors, gradient, powerType, specSettings.overcap)
+				Color:ApplyNodeColors(primaryNode, barColors)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				local thresholdMax = TRB.Data.character.maxResourceUnmodified
-				-- A secret maximum leaves nothing to place the lines against.
-				if not issecretvalue(thresholdMax) then
-					if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
-						thresholdMax = math.min(specCacheSettings.maxResource.value, thresholdMax)
-					end
-					thresholdBar:Set(primaryNode, thresholdMax)
-					thresholdState:Refresh(specCacheSettings)
-					thresholdState.stance = runtime.stance
-					thresholdData:Refresh(runtime.talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, spec.spellsClass.thresholdSnowflakes)
+				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
+					thresholdMax = math.min(specCacheSettings.maxResource.value, thresholdMax)
 				end
+				thresholdBar:Set(primaryNode, thresholdMax)
+				thresholdState:Refresh(specCacheSettings)
+				thresholdState.stance = runtime.stance
+				thresholdData:Refresh(runtime.talents)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, spec.spellsClass.thresholdSnowflakes)
 			end
 
 			if spec.archetype.secondary ~= nil and barGroups.secondary and not specSettings.displayBar.secondary.neverShow then
@@ -351,8 +353,7 @@ function TRB.Classic.Templates.Runtime:Install(className)
 				local current = snapshotData.attributes.resource2 or 0
 				local max = TRB.Data.character.maxResource2 or spec.archetype.secondary.maxNodes
 				-- An element an indicator owns keeps the indicator's color over the per-point colors.
-				local gradientTargets = gradient ~= nil and gradient.targets and gradient.targets.comboPointsBar or nil
-				local fillClaimed = claimed.comboPointsBar.bar or (gradientTargets ~= nil and gradientTargets.bar)
+				local fillClaimed = claimed.comboPointsBar.bar
 				local nodeColors = scratch.comboPointNodeColors
 				for x = 1, max do
 					local node = barGroups.secondary:GetNode(x)
@@ -375,7 +376,7 @@ function TRB.Classic.Templates.Runtime:Install(className)
 							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, 0, 1)
 						end
 						Bar:ApplyNodeIndicators(node, "comboPointsBar")
-						Color:ApplyNodeGradientColors(node, "comboPointsBar", nodeColors, gradient, powerType, specSettings.overcap)
+						Color:ApplyNodeColors(node, nodeColors)
 					end
 				end
 			end
@@ -579,8 +580,7 @@ function TRB.Classic.Templates.Runtime:Install(className)
 		end
 	end
 
-	-- Logic validity: the live resource is secret, so only its max (and the discrete secondary count)
-	-- can gate a conditional; $casting gates on an actual cast being tracked.
+	-- Logic validity: the resource and its percent while above zero, its max and the secondary count always, $casting while a cast is tracked.
 	local castingFn = function()
 		local casting = TRB.Data.snapshotData.casting
 		return casting.resourceRaw ~= nil and casting.resourceRaw ~= 0
@@ -593,6 +593,10 @@ function TRB.Classic.Templates.Runtime:Install(className)
 		local variable = "$" .. spec.archetype.variable
 		if var == "$resourceMax" or var == variable .. "Max" then
 			return true
+		end
+		if var == "$resource" or var == variable or var == "$resourcePercent" or var == variable .. "Percent" then
+			local value = TRB.Data.lookupLogic[var]
+			return type(value) == "number" and value > 0
 		end
 		if var == "$casting" then
 			return castingFn() or false

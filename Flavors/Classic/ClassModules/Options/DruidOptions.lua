@@ -202,13 +202,13 @@ local function LoadDefaultSettings(includeBarText, classic)
 		textures = TRB.Functions.Settings:DefaultTextures(true, GetFormBarTypes()),
 	}
 
-	-- Each form bar's Overcap gradient steps at that bar's own threshold.
+	-- Each form bar's Overcap indicator turns on at that bar's own threshold.
 	local shared = settings.colors.shared
 	for _, formBar in ipairs(formBars) do
 		settings.bars[formBar.key].overcap = { mode = "relative", relative = 0, fixed = maxResources[formBar.key] }
 		settings.bars[formBar.key].maxResource = { enabled = false, value = maxResources[formBar.key] }
-		shared.gradientOrder[#shared.gradientOrder + 1] = formBar.overcapKey
-		shared.indicatorColors[formBar.overcapKey] = { color = formBar.archetype.overcap.color, enabled = true, isGradient = true, targets = { [formBar.indicator] = { bar = false, border = true, background = false } } }
+		shared.nodeOrder[#shared.nodeOrder + 1] = formBar.overcapKey
+		shared.indicatorColors[formBar.overcapKey] = { color = formBar.archetype.overcap.color, enabled = true, targets = { [formBar.indicator] = { bar = false, border = true, background = false } } }
 	end
 
 	if includeBarText then
@@ -386,17 +386,16 @@ local fontTextPanel = withSpec(function(parent, specSettings, controls)
 end)
 
 local indicatorColorsPanel = withSpec(function(parent, specSettings, controls)
-	local gradientDefs = {}
+	local indicatorDefs = {
+		{ key = "borderStealth", label = L["CheckboxBorderStealth"], tooltip = L["DruidFeralIndicatorBorderStealthTooltip"], colorLabel = L["DruidFeralIndicatorBorderStealthColor"] },
+	}
 	for _, formBar in ipairs(formBars) do
 		local labels = formBar.archetype.overcap
-		gradientDefs[#gradientDefs + 1] = { key = formBar.overcapKey, label = L[labels.indicatorKey], tooltip = L[labels.indicatorTooltipKey], colorLabel = L[labels.indicatorColorKey], barKeys = { formBar.indicator } }
+		indicatorDefs[#indicatorDefs + 1] = { key = formBar.overcapKey, label = L[labels.indicatorKey], tooltip = L[labels.indicatorTooltipKey], colorLabel = L[labels.indicatorColorKey], barKeys = { formBar.indicator } }
 	end
 
 	local yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, specSettings, classId, specId, 5, {
-		indicatorDefs = {
-			{ key = "borderStealth", label = L["CheckboxBorderStealth"], tooltip = L["DruidFeralIndicatorBorderStealthTooltip"], colorLabel = L["DruidFeralIndicatorBorderStealthColor"] },
-		},
-		gradientDefs = gradientDefs,
+		indicatorDefs = indicatorDefs,
 		barTargetDefs = {
 			{ key = "resourceBar", label = L["BarNameManaBar"] },
 			{ key = "comboPointsBar", label = L["BarNameComboPoints"] },

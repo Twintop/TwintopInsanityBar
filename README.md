@@ -49,6 +49,19 @@ TRB started life as Twintop's Insanity Bar WeakAura set for Shadow Priests durin
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Warlock?color=8788EE&label=Warlock)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Warlock)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Forever-Warrior?color=C69B6D&label=Warrior)](https://github.com/Twintop/TwintopInsanityBar/labels/Forever-Warrior)
 
+### World of Warcraft Classic (Vanilla)
+
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla?color=fef2c0&label=Classic)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Druid?color=FF7C0A&label=Druid)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Druid)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Hunter?color=AAD372&label=Hunter)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Hunter)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Mage?color=3FC7EB&label=Mage)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Mage)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Paladin?color=F48CBA&label=Paladin)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Paladin)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Priest?color=FFFFFF&label=Priest)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Priest)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Rogue?color=FFF468&label=Rogue)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Rogue)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Shaman?color=0070DD&label=Shaman)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Shaman)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Warlock?color=8788EE&label=Warlock)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Warlock)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Warrior?color=C69B6D&label=Warrior)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Warrior)
+
 ## Supported Game Versions
 
 | Game | Classes | Status |
@@ -140,8 +153,10 @@ Forever support is in early development, and class-specific tracking is still be
 
 Classic support is in early development, and class-specific tracking is still being added. Like Forever, Classic has:
 
+- Main hand, off hand, and ranged swing timer bars, with the ranged bar showing when movement delays your shot.
 - Abilities that use your highest known spell rank.
-- Mana, Rage, Energy, and Combo Points as separate Druid bars that follow your shapeshift form.
+- Bar text stat variables match the Classic character sheet, such as Spirit, spell power, defense, and resistances.
+- Color Indicators bassed on your own buffs.
 
 ## Localization
 

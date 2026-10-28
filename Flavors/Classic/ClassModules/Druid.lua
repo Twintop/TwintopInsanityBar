@@ -152,18 +152,16 @@ local function AnyThresholdUsable(specCacheSettings, barKey)
 	return false
 end
 
----The step curve from one color to another at a form bar's own overcap threshold, or nil while its maximum is unreadable.
+---Whether a form bar's power is at or above that bar's own overcap threshold.
 ---@param formBar table
 ---@param specSettings table
----@param belowColor string|table
----@param aboveColor string
----@return table?
-local function FormBarOvercapCurve(formBar, specSettings, belowColor, aboveColor)
+---@return boolean
+local function IsFormBarOvercapped(formBar, specSettings)
 	local maxPower = UnitPowerMax("player", formBar.powerType)
-	if maxPower == nil or issecretvalue(maxPower) or maxPower == 0 then
-		return nil
+	if maxPower == nil or maxPower == 0 then
+		return false
 	end
-	return Color:BuildResourceThresholdCurve(nil, belowColor, aboveColor, specSettings.bars[formBar.key].overcap, maxPower)
+	return UnitPower("player", formBar.powerType) >= Color:GetOvercapThreshold(specSettings.bars[formBar.key].overcap, maxPower)
 end
 
 ---Refreshes lookup/lookupLogic: Mana on the primary variables, the form powers, and Combo Points.
@@ -223,21 +221,19 @@ local function RefreshLookupData()
 			local token = formBar.token
 			local textColors = sharedSettings.colors.text
 			local currentColor = textColors[formBar.key].color
-			-- The live value's text takes the overcap curve's color, when one applies, in place of currentColor.
-			local overcapColor = nil
+			-- The live value's text takes the overcap color, when one applies, in place of currentColor.
+			local valueColor = nil
 			if TRB.Data.character.inCombat then
 				local overThreshold = textColors[formBar.overThresholdText]
 				if overThreshold.enabled and AnyThresholdUsable(sharedSettings, formBar.key) then
 					currentColor = overThreshold.color
 				end
 				local overcap = textColors[formBar.overcapText]
-				if overcap.enabled and not (formBar.overcapPausedInStealth and isStealthed) then
-					local overcapCurve = FormBarOvercapCurve(formBar, specSettings, currentColor, overcap.color)
-					if overcapCurve ~= nil then
-						overcapColor = UnitPowerPercent("player", formBar.powerType, true, overcapCurve)
-					end
+				if overcap.enabled and not (formBar.overcapPausedInStealth and isStealthed) and IsFormBarOvercapped(formBar, specSettings) then
+					valueColor = overcap.color
 				end
 			end
+			valueColor = valueColor or currentColor
 			-- Power events only mark the entry dirty; the value is re-read here at most once per tick.
 			local power = snapshotData.formatted.additionalPower[token]
 			if power == nil or power.dirty then
@@ -246,8 +242,8 @@ local function RefreshLookupData()
 			end
 			lookupLogic[variable] = power.current
 			lookupLogic[variable .. "Max"] = power.max
-			if lookupChanged(prevState, variable, power.currentFormatted, currentColor, overcapColor ~= nil) then
-				lookup[variable] = overcapColor ~= nil and overcapColor:WrapTextInColorCode(power.currentFormatted) or string.format("|c%s%s|r", currentColor, power.currentFormatted)
+			if lookupChanged(prevState, variable, power.currentFormatted, valueColor) then
+				lookup[variable] = string.format("|c%s%s|r", valueColor, power.currentFormatted)
 			end
 			if lookupChanged(prevState, variable .. "Max", power.maxFormatted, currentColor) then
 				lookup[variable .. "Max"] = string.format("|c%s%s|r", currentColor, power.maxFormatted)
@@ -282,23 +278,6 @@ end
 
 -- Reused per-tick scratch tables so UpdateResourceBar allocates nothing.
 local scratch = { conditionMap = {}, barColors = {}, barColorMap = {}, formBarColors = { rage = {}, energy = {} }, comboPointColors = {}, formBarMax = {}, claimed = { comboPointsBar = {} } }
-
----A form bar's own Overcap gradient while its condition holds, or nil. These gradients stay out of the shared
----resolver, which measures every gradient against the primary resource: Mana here.
----@param formBar table
----@param sharedColors table
----@param isStealthed boolean
----@return table?
-local function ActiveFormBarGradient(formBar, sharedColors, isStealthed)
-	if not TRB.Data.character.inCombat or (formBar.overcapPausedInStealth and isStealthed) then
-		return nil
-	end
-	local indicator = sharedColors.indicatorColors[formBar.overcapIndicator]
-	if indicator ~= nil and indicator.enabled and indicator.isGradient then
-		return indicator
-	end
-	return nil
-end
 
 local thresholdBars = { rage = TRB.Classes.ThresholdBar:New("rage"), energy = TRB.Classes.ThresholdBar:New("energy") }
 local thresholdState = TRB.Classes.ThresholdState:New()
@@ -336,6 +315,10 @@ local function UpdateResourceBar()
 		local conditionMap = scratch.conditionMap
 		wipe(conditionMap)
 		conditionMap.borderStealth = isStealthed
+		for _, formBar in ipairs(formBars) do
+			conditionMap[formBar.overcapIndicator] = TRB.Data.character.inCombat and not (formBar.overcapPausedInStealth and isStealthed)
+				and IsFormBarOvercapped(formBar, specSettings)
+		end
 		local barColors = scratch.barColors
 		wipe(barColors)
 		barColors.bar = specSettings.colors.bar.base
@@ -368,9 +351,7 @@ local function UpdateResourceBar()
 			refreshText = true
 			Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, snapshotData.attributes.resourceModified)
 			Bar:ApplyNodeIndicators(primaryNode, "resourceBar")
-			primaryNode:SetBorderColor(barColors.border)
-			Color:ApplyFillColor(primaryNode, barColors.bar)
-			primaryNode:SetBackgroundColorFromString(barColors.background)
+			Color:ApplyNodeColors(primaryNode, barColors)
 			Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 		end
 
@@ -383,36 +364,19 @@ local function UpdateResourceBar()
 				if maxPower == nil or maxPower == 0 then
 					maxPower = 100
 				end
-				-- The overcap curves below measure against maxPower: UnitPowerPercent ignores the bar's override.
-				local barMax = maxPower
-				if not issecretvalue(maxPower) then
-					barMax = Bar:GetCustomBarMaxValue(specSettings.bars[formBar.key], maxPower)
-				end
-				-- A secret UnitPower goes straight to the StatusBar unscaled, so its range must be the bar's maximum.
+				local barMax = Bar:GetCustomBarMaxValue(specSettings.bars[formBar.key], maxPower)
 				if scratch.formBarMax[formBar.key] ~= barMax then
 					scratch.formBarMax[formBar.key] = barMax
 					node:SetMinMax(0, barMax)
 				end
 				Bar:SetBarNodeValue(specCacheSettings, formBar.key, node, UnitPower("player", formBar.powerType), barMax)
 				Bar:ApplyNodeIndicators(node, formBar.indicator)
-				-- A secret maximum leaves no threshold to step the gradient at.
-				local gradient = not issecretvalue(maxPower) and ActiveFormBarGradient(formBar, sharedColors, isStealthed) or nil
-				local overcap = specSettings.bars[formBar.key].overcap
-				Color:ApplyNodeGradientColors(node, formBar.indicator, barColorMap[formBar.indicator], gradient, formBar.powerType, overcap, maxPower)
-				local gradientTargets = gradient ~= nil and gradient.targets and gradient.targets[formBar.indicator] or nil
-				if gradient ~= nil and gradientTargets ~= nil and gradientTargets.endCap and node.endCapConfig ~= nil then
-					local curve = Color:BuildResourceThresholdCurve(nil, node.endCapConfig.color, gradient.color, overcap, maxPower)
-					if curve ~= nil then
-						node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", formBar.powerType, true, curve))
-					end
-				end
-				if not issecretvalue(maxPower) then
-					local thresholdBar = thresholdBars[formBar.key]
-					thresholdBar:Set(node, barMax, nil, GetBarSettings(specCacheSettings, formBar.key))
-					thresholdState:Refresh(specCacheSettings)
-					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Classic.Druid.GeneralSpells.thresholdSnowflakes)
-				end
+				Color:ApplyNodeColors(node, barColorMap[formBar.indicator])
+				local thresholdBar = thresholdBars[formBar.key]
+				thresholdBar:Set(node, barMax, nil, GetBarSettings(specCacheSettings, formBar.key))
+				thresholdState:Refresh(specCacheSettings)
+				thresholdData:Refresh(talents)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Classic.Druid.GeneralSpells.thresholdSnowflakes)
 			end
 		end
 
@@ -656,8 +620,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 end
 
--- Logic validity: the live resources are secret, so only their maxes and the discrete combo point
--- count can gate a conditional; $casting gates on an actual cast being tracked.
+-- Logic validity: each resource and Mana's percent while above zero, their maxes and the combo points always, $casting while a cast is tracked.
+local liveResourceVariables = { ["$resource"] = true, ["$mana"] = true, ["$resourcePercent"] = true, ["$manaPercent"] = true, ["$rage"] = true, ["$energy"] = true }
 local castingFn = function()
 	local casting = TRB.Data.snapshotData.casting
 	return casting.resourceRaw ~= nil and casting.resourceRaw ~= 0
@@ -668,6 +632,10 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	if var == "$resourceMax" or var == "$manaMax" or var == "$rageMax" or var == "$energyMax"
 		or var == "$comboPoints" or var == "$comboPointsMax" or var == "$inStealth" then
 		return true
+	end
+	if liveResourceVariables[var] then
+		local value = TRB.Data.lookupLogic[var]
+		return type(value) == "number" and value > 0
 	end
 	if var == "$casting" then
 		return castingFn() or false

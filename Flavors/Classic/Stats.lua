@@ -1,24 +1,10 @@
 local _, TRB = ...
 
 -- Classic bar text stats; the Vanilla character sheet only proves the base stats, attack power, armor, and resistances exist.
--- Composites return nil while a component is secret: arithmetic on a secret errors, and the variable renders empty instead.
 
----@return boolean
-local function AnySecret(...)
-	for i = 1, select("#", ...) do
-		if issecretvalue((select(i, ...))) then
-			return true
-		end
-	end
-	return false
-end
-
----Sum of its arguments, or nil when any of them is secret.
----@return number?
+---Sum of its arguments.
+---@return number
 local function Sum(...)
-	if AnySecret(...) then
-		return nil
-	end
 	local total = 0
 	for i = 1, select("#", ...) do
 		total = total + ((select(i, ...)) or 0)
@@ -26,11 +12,11 @@ local function Sum(...)
 	return total
 end
 
----Mana regeneration per five seconds from one of GetManaRegen's per-second values, or nil when secret.
+---Mana regeneration per five seconds from one of GetManaRegen's per-second values.
 ---@param perSecond number?
 ---@return number?
 local function PerFiveSeconds(perSecond)
-	if perSecond == nil or issecretvalue(perSecond) then
+	if perSecond == nil then
 		return nil
 	end
 	return math.floor(perSecond * 5)
@@ -39,16 +25,13 @@ end
 -- GetSpellBonusDamage and GetSpellCritChance take the 1-based spell school index: 2 Holy, 3 Fire, 4 Nature, 5 Frost, 6 Shadow, 7 Arcane.
 local spellSchools = { holy = 2, fire = 3, nature = 4, frost = 5, shadow = 6, arcane = 7 }
 
----The value every school shares (the character sheet's Spell Power and Spell Crit), or nil when any school is secret.
+---The value every school shares: the character sheet's Spell Power and Spell Crit.
 ---@param read fun(school: integer): number
 ---@return number?
 local function Shared(read)
 	local shared
 	for _, school in pairs(spellSchools) do
 		local value = read(school)
-		if issecretvalue(value) then
-			return nil
-		end
 		if shared == nil or value < shared then
 			shared = value
 		end

@@ -627,6 +627,19 @@ function TRB.Functions.Color:GetStepColorCurve(cacheKey, belowColor, aboveColor,
 	return cache[fullKey]
 end
 
+---The resource amount an overcap setting marks: the maximum plus its relative offset, or its fixed value.
+---@param overcap table? # { mode, relative, fixed }; nil marks the maximum itself
+---@param maxResource number
+---@return number
+function TRB.Functions.Color:GetOvercapThreshold(overcap, maxResource)
+	if overcap == nil then
+		return maxResource
+	elseif overcap.mode == "relative" then
+		return maxResource + (overcap.relative or 0)
+	end
+	return overcap.fixed or maxResource
+end
+
 ---Builds a resource threshold ColorCurve for use with UnitPowerPercent (e.g., overcap border/text color)
 ---@param specSettings table? The spec-specific settings table (e.g., specSettings.overcap)
 ---@param belowColor string The color hex string for below threshold (e.g., "FF00FF00")
@@ -647,17 +660,7 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 
 	maxResource = maxResource or TRB.Data.character.maxResourceUnmodified or 100
 	overcap = overcap or (specSettings and specSettings.overcap)
-	local thresholdValue = maxResource
-
-	if overcap then
-		if overcap.mode == "relative" then
-			thresholdValue = maxResource + (overcap.relative or 0)
-		else
-			thresholdValue = overcap.fixed or maxResource
-		end
-	end
-
-	local thresholdPercent = thresholdValue / maxResource
+	local thresholdPercent = self:GetOvercapThreshold(overcap, maxResource) / maxResource
 
 	-- Handle edge case: if threshold is not a finite positive number, return nil to skip curve evaluation
 	if thresholdPercent ~= thresholdPercent or thresholdPercent == math.huge or thresholdPercent == -math.huge or maxResource <= 0 then
@@ -1443,6 +1446,16 @@ end
 
 -- Read-only stand-in for a bar no gradient targets; never written to.
 local noGradientTargets = {}
+
+---Colors a spec bar node's fill, border, and background as given, with no gradient: for a flavor whose
+---resources are plain numbers, where an overcap indicator is an ordinary flat one.
+---@param node TRB.Classes.BarNode
+---@param colors table # { bar = color entry, border = color string, background = color string }
+function TRB.Functions.Color:ApplyNodeColors(node, colors)
+	node:SetBorderColor(colors.border)
+	self:ApplyFillColor(node, colors.bar)
+	node:SetBackgroundColorFromString(colors.background)
+end
 
 ---Colors a spec bar node's fill, border, and background, letting a gradient indicator step any element it
 ---targets from that color up to its own at the overcap threshold of the resource the curve tracks.

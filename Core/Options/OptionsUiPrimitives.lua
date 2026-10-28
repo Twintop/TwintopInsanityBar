@@ -868,7 +868,8 @@ end
 ---@return integer?
 local function ParseAuraSpellId(text)
 	local spellId = tonumber(text ~= nil and text:match("^%s*(%d+)%s*$") or nil)
-	if spellId == nil or C_Spell.GetSpellName(spellId) == nil then
+	-- No spell ID passes a signed 32-bit integer, so a longer pasted number never reaches the spell API.
+	if spellId == nil or spellId > 2147483647 or C_Spell.GetSpellName(spellId) == nil then
 		return nil
 	end
 	return spellId

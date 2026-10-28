@@ -72,8 +72,8 @@ local comboPointsSecondary = {
 local rageOvercap = {
 	color = "FF800000",
 	barNameKey = "BarNameRageBar",
-	indicatorKey = "WarriorIndicatorBorderOvercap",
-	indicatorTooltipKey = "WarriorIndicatorOvercapTooltip",
+	indicatorKey = "ClassicIndicatorOvercap",
+	indicatorTooltipKey = "ClassicIndicatorRageOvercapTooltip",
 	indicatorColorKey = "WarriorIndicatorOvercapColor",
 	textOverThresholdKey = "WarriorColorPickerThresholdOver",
 	textOverThresholdTooltipKey = "WarriorCheckboxThresholdOverTooltip",
@@ -85,8 +85,8 @@ local rageOvercap = {
 local energyOvercap = {
 	color = "FFFF0000",
 	barNameKey = "BarNameEnergyBar",
-	indicatorKey = "RogueIndicatorBorderOvercap",
-	indicatorTooltipKey = "RogueIndicatorOvercapTooltip",
+	indicatorKey = "ClassicIndicatorOvercap",
+	indicatorTooltipKey = "ClassicIndicatorEnergyOvercapTooltip",
 	indicatorColorKey = "RogueIndicatorOvercapColor",
 	textOverThresholdKey = "ColorPickerHaveEnoughEnergyToUseAbilityThreshold",
 	textOverThresholdTooltipKey = "CheckboxThresholdOverTooltip",
@@ -274,10 +274,10 @@ local function DefineSpellsClass(classModule, spec)
 		end
 		specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons(iconVariables)
 		local values = {
-			{ variable = "$" .. variable, description = string.format(L["ForeverBarTextVariable_resource"], resourceName), printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
-			{ variable = "$resource", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
-			{ variable = "$" .. variable .. "Percent", description = string.format(L["ForeverBarTextVariable_resourcePercent"], resourceName), printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
-			{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, secret = true, category = varCategory.RESOURCES },
+			{ variable = "$" .. variable, description = string.format(L["ForeverBarTextVariable_resource"], resourceName), printInSettings = true, color = false, category = varCategory.RESOURCES },
+			{ variable = "$resource", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
+			{ variable = "$" .. variable .. "Percent", description = string.format(L["ForeverBarTextVariable_resourcePercent"], resourceName), printInSettings = true, color = false, category = varCategory.RESOURCES },
+			{ variable = "$resourcePercent", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 			{ variable = "$" .. variable .. "Max", description = string.format(L["ForeverBarTextVariable_resourceMax"], resourceName), printInSettings = true, color = false, category = varCategory.RESOURCES },
 			{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 			{ variable = "$casting", description = string.format(L["ForeverBarTextVariable_casting"], resourceName), printInSettings = true, color = false, category = varCategory.RESOURCES },

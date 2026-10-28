@@ -11,17 +11,22 @@ TRB.Flavor.newsContent = [====[
 # 1.15.9.0-alpha (2026-10-28)
 ## General
 
-- First build for World of Warcraft Classic. Every class gets its primary resource bar plus the health, cast, Global Cooldown, mirror timer, and pet bars.
+- First build for World of Warcraft Classic, with every class's primary resource bar plus the health, cast, Global Cooldown, mirror timer, and pet bars.
 - Hunters, Mages, Paladins, Priests, Shamans, and Warlocks use a Mana bar.
 - Bar text stat variables follow this game's stats.
 
 ### Audio Cues
 
-- Buff Alerts follow one of your buffs by its spell ID, since this game has no Cooldown Manager. Any rank of that spell counts.
+- Buff Alerts follow one of your buffs, at any rank, by its spell ID.
 
 ### Color Indicators
 
-- Custom Color Indicators can follow one of your buffs by its spell ID, since this game has no Cooldown Manager. Any rank of that spell counts.
+- Custom Color Indicators can follow one of your buffs, at any rank, by its spell ID.
+
+### Other Bars
+
+- Add new Main Hand Swing, Off Hand Swing, and Ranged Swing bars, tracking your auto attack swing timers, with `$mainHandSwingDuration`, `$mainHandSwingDurationRemaining`, `$offHandSwingDuration`, `$offHandSwingDurationRemaining`, `$rangedSwingDuration`, `$rangedSwingDurationRemaining`, `$rangedSwingReadyRemaining`, `$mainHandLocale`, `$offHandLocale`, and `$rangedLocale` bar text, set to Never Show by default.
+- Each bar fills by your next swing: Heroic Strike, Cleave, Maul, Raptor Strike, and Slam restart Main Hand Swing, casting pauses both melee bars, a parry shortens your next main hand swing, and Ranged Swing follows Auto Shot, wands, and thrown, bow, gun, and crossbow shots.
 
 ## Druid
 

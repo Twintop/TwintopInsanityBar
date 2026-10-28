@@ -108,8 +108,8 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadT
 		shared.indicatorColors.borderStealth = { color = "FF000000", enabled = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
 	end
 	if archetype.overcap ~= nil then
-		shared.gradientOrder[#shared.gradientOrder + 1] = "borderOvercap"
-		shared.indicatorColors.borderOvercap = { color = archetype.overcap.color, enabled = true, isGradient = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
+		shared.nodeOrder[#shared.nodeOrder + 1] = "borderOvercap"
+		shared.indicatorColors.borderOvercap = { color = archetype.overcap.color, enabled = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
 	end
 
 	if hasSecondary then
@@ -414,22 +414,22 @@ function TRB.Classic.Templates.Options:Install(className, specThresholds)
 			TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, specSettings, classId, specId, yCoord)
 		end)
 
-		-- Every archetype gets the tab for custom indicators; only a resource that can overcap adds its gradient.
+		-- Every archetype gets the tab for custom indicators; only a resource that can overcap adds its Overcap indicator.
 		local indicatorColorsPanel = withSpec(function(parent, specSettings, controls)
 			local indicatorDefs = {}
 			if spec.stealth then
-				indicatorDefs[1] = { key = "borderStealth", label = L["RogueCheckboxStealth"], tooltip = L["RogueIndicatorStealthTooltip"], colorLabel = L["RogueIndicatorStealthColor"] }
+				indicatorDefs[#indicatorDefs + 1] = { key = "borderStealth", label = L["RogueCheckboxStealth"], tooltip = L["RogueIndicatorStealthTooltip"], colorLabel = L["RogueIndicatorStealthColor"] }
 			end
 			local overcap = archetype.overcap
+			if overcap ~= nil then
+				indicatorDefs[#indicatorDefs + 1] = { key = "borderOvercap", label = L[overcap.indicatorKey], tooltip = L[overcap.indicatorTooltipKey], colorLabel = L[overcap.indicatorColorKey] }
+			end
 			local barTargetDefs = { { key = "resourceBar", label = overcap ~= nil and L[overcap.barNameKey] or resourceName } }
 			if hasSecondary then
 				barTargetDefs[2] = { key = "comboPointsBar", label = L[archetype.secondary.nameKey] }
 			end
 			TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, specSettings, classId, specId, 5, {
 				indicatorDefs = indicatorDefs,
-				gradientDefs = overcap ~= nil and {
-					{ key = "borderOvercap", label = L[overcap.indicatorKey], tooltip = L[overcap.indicatorTooltipKey], colorLabel = L[overcap.indicatorColorKey] },
-				} or nil,
 				barTargetDefs = barTargetDefs,
 				ddNamePrefix = "TwintopResourceBar_" .. namePrefix,
 				overcapConfig = overcap ~= nil and {
