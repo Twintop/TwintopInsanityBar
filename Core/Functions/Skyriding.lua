@@ -1238,6 +1238,40 @@ function TRB.Functions.Skyriding:SetBarsHidden(settings, hidden)
 	end
 end
 
+---Whether the user answered No to the Skyriding bars prompt, which the bars' defaults follow. Reads the saved variables
+---until the settings load, since the Global defaults are built before then.
+---@return boolean
+function TRB.Functions.Skyriding:AreBarsDeclined()
+	local checks = TRB.Data.settings.manualUpdateChecks
+	if checks == nil then
+		local saved = TRB.Flavor.GetSavedVariables()
+		checks = saved ~= nil and saved.manualUpdateChecks or nil
+	end
+	local reprompt = checks ~= nil and checks.skyridingBarsReprompt or nil
+	return type(reprompt) == "table" and reprompt.hidden == true
+end
+
+---Whether a save's Skyriding bars read as a No: the Default profile's Global Speed, Charges, and Whirling Surge are all
+---Never Show, or the live Global's are without a Default profile. Second Wind starts hidden for everyone.
+---@param settings table # Shaped like the saved variables
+---@return boolean
+function TRB.Functions.Skyriding:InferBarsDeclined(settings)
+	local profiles = type(settings.profiles) == "table" and settings.profiles.list or nil
+	local profile = type(profiles) == "table" and profiles[TRB.Functions.Profiles.DEFAULT_NAME] or nil
+	local core = type(profile) == "table" and type(profile.core) == "table" and profile.core or settings.core
+	local displayBar = type(core) == "table" and core.displayBar or nil
+	if type(displayBar) ~= "table" then
+		return false
+	end
+	for _, barKey in ipairs(BAR_KEYS) do
+		local entry = displayBar[barKey]
+		if barKey ~= "secondWind" and (type(entry) ~= "table" or entry.neverShow ~= true) then
+			return false
+		end
+	end
+	return true
+end
+
 ---Asks an existing user whether to enable the Skyriding bars everywhere, then says where to change it later. Users who
 ---answered the first prompt get an apology and a Leave Settings As-Is option.
 function TRB.Functions.Skyriding:ShowEnablePrompt()
@@ -1249,8 +1283,12 @@ function TRB.Functions.Skyriding:ShowEnablePrompt()
 
 	---@param hidden boolean? # Nil leaves the settings as they are
 	local function Answer(hidden)
+		-- Recorded before SetBarsHidden, whose defaults follow it.
 		if hidden ~= nil then
+			reprompt.hidden = hidden
 			TRB.Functions.Skyriding:SetBarsHidden(TRB.Data.settings, hidden)
+		else
+			reprompt.hidden = TRB.Functions.Skyriding:InferBarsDeclined(TRB.Data.settings)
 		end
 		reprompt.answered = true
 		promptPending = false

@@ -32,7 +32,8 @@ function TRB.Flavor.DefaultManualUpdateChecks()
 			answered = true
 		},
 		skyridingBarsReprompt = {
-			answered = true
+			answered = true,
+			hidden = false
 		}
 	}
 end
@@ -8827,6 +8828,15 @@ function TRB.Flavor.PortForwardSettings(settings)
 	-- Threshold icons: the cooldown time option starts off where the cooldown swipe was off.
 	if TwintopInsanityBarSettings ~= nil then
 		TRB.Functions.Settings:MigrateThresholdIconCooldownText(TwintopInsanityBarSettings)
+	end
+
+	-- Skyriding bars: remember a No already given to the prompt, which the bars' defaults follow from now on.
+	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings == TRB.Flavor.GetSavedVariables() then
+		local checks = TwintopInsanityBarSettings.manualUpdateChecks
+		local reprompt = checks ~= nil and checks.skyridingBarsReprompt or nil
+		if type(reprompt) == "table" and reprompt.answered == true and reprompt.hidden == nil then
+			reprompt.hidden = TRB.Functions.Skyriding:InferBarsDeclined(TwintopInsanityBarSettings)
+		end
 	end
 end
 

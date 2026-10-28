@@ -17,6 +17,13 @@ TRB.Details.coreNewsContent = [====[
 - [#515](#515) A threshold line's Color Indicator uses the line's color for its state, and In Range uses the Usable color.
 - [#515](#515) Threshold lines that change color in steps, such as Shadow Word: Madness (x2), and custom thresholds aren't offered.
 
+## Localization
+
+- [#889 - @MOSS099](#889) Updated translations for Simplified Chinese (zhCN).
+- [#897 - @MOSS099](#897) Updated translations for Simplified Chinese (zhCN).
+- [#901 - @MOSS099](#901) Updated translations for Simplified Chinese (zhCN).
+- [#903 - @MOSS099](#903) Updated translations for Simplified Chinese (zhCN).
+
 ## Thresholds
 
 - [#279](#279) Fix threshold lines not using the unusable color while their ability is on cooldown.

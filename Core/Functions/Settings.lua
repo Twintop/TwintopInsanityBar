@@ -1986,7 +1986,7 @@ function TRB.Functions.Settings:DefaultSkyridingBarColors(barKey)
 end
 
 ---Gets the default visibility entry for a Skyriding bar: shown while skyriding, hidden otherwise. Second Wind
----starts disabled.
+---starts disabled, and every bar does after a No to the Skyriding bars prompt.
 ---@param barKey string
 ---@return trbBarVisibilitySetting
 function TRB.Functions.Settings:DefaultSkyridingBarVisibility(barKey)
@@ -1994,7 +1994,7 @@ function TRB.Functions.Settings:DefaultSkyridingBarVisibility(barKey)
 	hideConditions.isNotSkyriding = true
 
 	return {
-		neverShow = barKey == "secondWind",
+		neverShow = barKey == "secondWind" or TRB.Functions.Skyriding:AreBarsDeclined(),
 		alwaysShow = false,
 		conditions = { isSkyriding = true },
 		hideConditions = hideConditions,
