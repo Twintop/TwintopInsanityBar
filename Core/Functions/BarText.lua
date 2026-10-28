@@ -830,7 +830,7 @@ function TRB.Functions.BarText:GetVariableMetadata(entry, sectionKey)
 	entry = entry or {}
 	sectionKey = sectionKey or "values"
 
-	local secret = entry.secret == true or defaultSecretBarTextVariables[entry.variable] == true
+	local secret = TRB.Flavor.secretValues and (entry.secret == true or defaultSecretBarTextVariables[entry.variable] == true)
 	local logicType = InferBarTextVariableLogicType(entry.variable, sectionKey, entry)
 
 	-- Comparison operators need a real value in lookupLogic. Icons and pipe commands never write one,

@@ -66,8 +66,8 @@ local function FillSpecializationCache()
 		effects = {},
 		items = {},
 	}
-	cache.spellsData.spells = TRB.Classes.Druid.GeneralSpells:New()
-	local spells = cache.spellsData.spells --[[@as TRB.Classes.Druid.GeneralSpells]]
+	cache.spellsData.spells = TRB.Classes.Forever.Druid.GeneralSpells:New()
+	local spells = cache.spellsData.spells --[[@as TRB.Classes.Forever.Druid.GeneralSpells]]
 	local snapshots = cache.snapshotData.snapshots
 	cache.snapshotData.attributes.resource2 = 0
 	for _, spell in ipairs({ spells.primalBite, spells.bash, spells.challengingRoar, spells.frenziedRegeneration, spells.feralCharge, spells.cower }) do
@@ -81,7 +81,7 @@ local function Setup()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= compositeKey then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
+		TRB.Frames.barGroups = TRB.Classes.Forever.Druid.BarGroupsFactory:CreateForSpec(specId)
 	end
 end
 
@@ -89,7 +89,7 @@ local function FillSpellData()
 	Setup()
 	local cache = specCache[compositeKey]
 	cache.spellsData:FillSpellData()
-	TRB.Classes.Druid.GeneralSpells.FillBarTextVariables(cache)
+	TRB.Classes.Forever.Druid.GeneralSpells.FillBarTextVariables(cache)
 end
 
 ---The dimension block a bar's threshold lines size against.
@@ -411,7 +411,7 @@ local function UpdateResourceBar()
 					thresholdBar:Set(node, barMax, nil, GetBarSettings(specCacheSettings, formBar.key))
 					thresholdState:Refresh(specCacheSettings)
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Druid.GeneralSpells.thresholdSnowflakes)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Forever.Druid.GeneralSpells.thresholdSnowflakes)
 				end
 			end
 		end
@@ -513,7 +513,7 @@ local function SwitchSpec()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData
 		Bar:UpdateSanityCheckValues(cache.settings)
-		local spells = cache.spellsData.spells --[[@as TRB.Classes.Druid.GeneralSpells]]
+		local spells = cache.spellsData.spells --[[@as TRB.Classes.Forever.Druid.GeneralSpells]]
 		local lookup = TRB.Data.lookup or {}
 		lookup["#bearForm"] = spells.bearForm.icon
 		lookup["#catForm"] = spells.catForm.icon

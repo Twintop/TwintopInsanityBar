@@ -1,9 +1,9 @@
 local _, TRB = ...
 
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Rogue = TRB.Classes.Rogue or {}
+TRB.Classes.Mainline.Rogue = TRB.Classes.Mainline.Rogue or {}
 
----@class TRB.Classes.Rogue.RogueBaseSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Rogue.RogueBaseSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public subterfuge TRB.Classes.SpellBase
 ---@field public adrenalineRush TRB.Classes.SpellBase
 ---@field public echoingReprimand TRB.Classes.SpellBase
@@ -18,15 +18,15 @@ TRB.Classes.Rogue = TRB.Classes.Rogue or {}
 ---@field public gouge TRB.Classes.SpellComboPointThreshold
 ---@field public dismantle TRB.Classes.SpellThreshold
 ---@field public deathFromAbove TRB.Classes.SpellThreshold
-TRB.Classes.Rogue.RogueBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Rogue.RogueBaseSpells.__index = TRB.Classes.Rogue.RogueBaseSpells
+TRB.Classes.Mainline.Rogue.RogueBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Rogue.RogueBaseSpells.__index = TRB.Classes.Mainline.Rogue.RogueBaseSpells
 
 ---Creates a new RogueBaseSpells
----@return TRB.Classes.Rogue.RogueBaseSpells
-function TRB.Classes.Rogue.RogueBaseSpells:New()
+---@return TRB.Classes.Mainline.Rogue.RogueBaseSpells
+function TRB.Classes.Mainline.Rogue.RogueBaseSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Rogue.RogueBaseSpells) --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Rogue.RogueBaseSpells) --[[@as TRB.Classes.Mainline.Rogue.RogueBaseSpells]]
 
     -- Rogue Class Baseline Abilities
     self.cheapShot = TRB.Classes.SpellComboPointThreshold:New({
@@ -157,7 +157,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
 end
 
 
----@class TRB.Classes.Rogue.AssassinationSpells : TRB.Classes.Rogue.RogueBaseSpells
+---@class TRB.Classes.Mainline.Rogue.AssassinationSpells : TRB.Classes.Mainline.Rogue.RogueBaseSpells
 ---@field public improvedGarrote TRB.Classes.SpellBase
 ---@field public blindside TRB.Classes.SpellBase
 ---@field public ambush TRB.Classes.SpellComboPointThreshold
@@ -169,13 +169,13 @@ end
 ---@field public rupture TRB.Classes.SpellComboPointThreshold
 ---@field public crimsonTempest TRB.Classes.SpellComboPointThreshold
 ---@field public kingsbane TRB.Classes.SpellComboPointThreshold
-TRB.Classes.Rogue.AssassinationSpells = setmetatable({}, {__index = TRB.Classes.Rogue.RogueBaseSpells})
-TRB.Classes.Rogue.AssassinationSpells.__index = TRB.Classes.Rogue.AssassinationSpells
+TRB.Classes.Mainline.Rogue.AssassinationSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Rogue.RogueBaseSpells})
+TRB.Classes.Mainline.Rogue.AssassinationSpells.__index = TRB.Classes.Mainline.Rogue.AssassinationSpells
 
-function TRB.Classes.Rogue.AssassinationSpells:New()
-    ---@type TRB.Classes.Rogue.RogueBaseSpells
-    local base = TRB.Classes.Rogue.RogueBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.Rogue.AssassinationSpells) --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+function TRB.Classes.Mainline.Rogue.AssassinationSpells:New()
+    ---@type TRB.Classes.Mainline.Rogue.RogueBaseSpells
+    local base = TRB.Classes.Mainline.Rogue.RogueBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Rogue.AssassinationSpells) --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 
     -- Rogue Class Baseline Abilities
     self.ambush = TRB.Classes.SpellComboPointThreshold:New({
@@ -284,13 +284,13 @@ end
 
 ---Fills barTextVariables for Assassination Rogue options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Rogue.AssassinationSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Rogue.AssassinationSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Rogue.AssassinationSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#blindside", icon = spells.blindside.icon, description = spells.blindside.name, printInSettings = true },
@@ -324,11 +324,11 @@ end
 
 ---Gets built-in castbar channel tick profiles for Assassination, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Rogue.AssassinationSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Rogue.AssassinationSpells.GetCastbarTickProfiles()
 	return {}
 end
 
----@class TRB.Classes.Rogue.ThresholdState : TRB.Classes.ThresholdState
+---@class TRB.Classes.Mainline.Rogue.ThresholdState : TRB.Classes.ThresholdState
 ---@field public stealthViaBuff boolean # A buff lets stealth abilities be cast out of stealth
 
 ---Out of stealth, a stealth ability draws only while a buff lets it be cast. Returns true when it handled the line.
@@ -338,7 +338,7 @@ local function StealthViaBuff(line)
 	if not line.spell.attributes.stealth or line.state.isStealthed then
 		return false
 	end
-	if (line.state --[[@as TRB.Classes.Rogue.ThresholdState]]).stealthViaBuff then
+	if (line.state --[[@as TRB.Classes.Mainline.Rogue.ThresholdState]]).stealthViaBuff then
 		line:ColorByUsable()
 	else
 		line:Hide()
@@ -378,7 +378,7 @@ end
 ---@param line TRB.Classes.ThresholdLine
 ---@return boolean
 local function EchoingReprimand(line)
-	local spells = line.data.spells --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
+	local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.RogueBaseSpells]]
 	if line.state.settings.colors.threshold.echoingReprimand.enabled and line.state.snapshotData.snapshots[spells.echoingReprimand.id].buff.isActive then
 		line:Special("echoingReprimand")
 		return true
@@ -387,12 +387,12 @@ local function EchoingReprimand(line)
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Rogue.AssassinationSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Rogue.AssassinationSpells.thresholdSnowflakes = {
 	before = function(line)
-		local spells = line.data.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+		local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 		-- Blindside lets Ambush be cast out of stealth.
 		if line.spell.id == spells.ambush.id and line.spell.attributes.stealth and not line.state.isStealthed
-			and not (line.state --[[@as TRB.Classes.Rogue.ThresholdState]]).stealthViaBuff and line.state.snapshotData.snapshots[spells.blindside.id].buff.isActive then
+			and not (line.state --[[@as TRB.Classes.Mainline.Rogue.ThresholdState]]).stealthViaBuff and line.state.snapshotData.snapshots[spells.blindside.id].buff.isActive then
 			line:Over()
 			return true
 		end
@@ -401,7 +401,7 @@ TRB.Classes.Rogue.AssassinationSpells.thresholdSnowflakes = {
 	spells = {
 		sliceAndDice = TRB.Classes.ThresholdLine.ColorByUsable,
 		garrote = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 			local improvedGarrote = line.state.snapshotData.snapshots[spells.improvedGarrote.id]
 			if (line.state.settings.colors.threshold.special.enabled and improvedGarrote.attributes.isActiveStealth) or improvedGarrote.buff.isActive then
 				line:Special("special")
@@ -419,7 +419,7 @@ TRB.Classes.Rogue.AssassinationSpells.thresholdSnowflakes = {
 }
 
 
----@class TRB.Classes.Rogue.OutlawSpells : TRB.Classes.Rogue.RogueBaseSpells
+---@class TRB.Classes.Mainline.Rogue.OutlawSpells : TRB.Classes.Mainline.Rogue.RogueBaseSpells
 ---@field public opportunity TRB.Classes.SpellBase
 ---@field public restlessBlades TRB.Classes.SpellBase
 ---@field public broadside TRB.Classes.SpellBase
@@ -440,13 +440,13 @@ TRB.Classes.Rogue.AssassinationSpells.thresholdSnowflakes = {
 ---@field public pistolShot TRB.Classes.SpellComboPointThreshold
 ---@field public sinisterStrike TRB.Classes.SpellComboPointThreshold
 ---@field public coupDeGrace TRB.Classes.SpellComboPointThreshold
-TRB.Classes.Rogue.OutlawSpells = setmetatable({}, {__index = TRB.Classes.Rogue.RogueBaseSpells})
-TRB.Classes.Rogue.OutlawSpells.__index = TRB.Classes.Rogue.OutlawSpells
+TRB.Classes.Mainline.Rogue.OutlawSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Rogue.RogueBaseSpells})
+TRB.Classes.Mainline.Rogue.OutlawSpells.__index = TRB.Classes.Mainline.Rogue.OutlawSpells
 
-function TRB.Classes.Rogue.OutlawSpells:New()
-    ---@type TRB.Classes.Rogue.RogueBaseSpells
-    local base = TRB.Classes.Rogue.RogueBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.Rogue.OutlawSpells) --[[@as TRB.Classes.Rogue.OutlawSpells]]
+function TRB.Classes.Mainline.Rogue.OutlawSpells:New()
+    ---@type TRB.Classes.Mainline.Rogue.RogueBaseSpells
+    local base = TRB.Classes.Mainline.Rogue.RogueBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Rogue.OutlawSpells) --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 
     -- Rogue Class Baseline Abilities
     self.ambush = TRB.Classes.SpellComboPointThreshold:New({
@@ -614,13 +614,13 @@ end
 
 ---Fills barTextVariables for Outlaw Rogue options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Rogue.OutlawSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Rogue.OutlawSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Rogue.OutlawSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#adrenalineRush", icon = spells.adrenalineRush.icon, description = spells.adrenalineRush.name, printInSettings = true },
@@ -661,7 +661,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Outlaw, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Rogue.OutlawSpells.GetCastbarTickProfiles()
 	return {
 		-- Killing Spree
 		[51690] = { mode = "fixedCount", baseTickRate = 0.5, tickCountSource = "comboPointsSpent", bonusTicksPerChargedPoint = 2 },
@@ -669,22 +669,22 @@ function TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles()
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Rogue.OutlawSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Rogue.OutlawSpells.thresholdSnowflakes = {
 	before = StealthViaBuff,
 	spells = {
 		sinisterStrike = function(line)
 			if not EchoingReprimand(line) then
-				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]).skullAndCrossbones)
+				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]).skullAndCrossbones)
 			end
 		end,
 		pistolShot = function(line)
-			SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]).opportunity)
+			SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]).opportunity)
 		end,
 		betweenTheEyes = function(line)
 			if line.snapshot ~= nil and line.snapshot.cooldown:IsUnusable() then
 				line:Unusable()
 			else
-				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]).ruthlessPrecision)
+				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]).ruthlessPrecision)
 			end
 		end,
 		sliceAndDice = TRB.Classes.ThresholdLine.ColorByUsable,
@@ -699,7 +699,7 @@ TRB.Classes.Rogue.OutlawSpells.thresholdSnowflakes = {
 	},
 	after = function(line)
 		FinisherUnusable(line)
-		local spells = line.data.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+		local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 		local attributes = line.spell.attributes
 		local snapshot = line.snapshot
 		-- Restless Blades: a finisher with the current Combo Points (1 sec each) would bring this ability off cooldown.
@@ -723,7 +723,7 @@ TRB.Classes.Rogue.OutlawSpells.thresholdSnowflakes = {
 }
 
 
----@class TRB.Classes.Rogue.SubtletySpells : TRB.Classes.Rogue.RogueBaseSpells
+---@class TRB.Classes.Mainline.Rogue.SubtletySpells : TRB.Classes.Mainline.Rogue.RogueBaseSpells
 ---@field public shadowTechniques TRB.Classes.SpellBase
 ---@field public symbolsOfDeath TRB.Classes.SpellBase
 ---@field public shadowBlades TRB.Classes.SpellBase
@@ -745,13 +745,13 @@ TRB.Classes.Rogue.OutlawSpells.thresholdSnowflakes = {
 ---@field public secretTechnique TRB.Classes.SpellComboPointThreshold
 ---@field public goremawsBite TRB.Classes.SpellComboPointThreshold
 ---@field public killingSpree TRB.Classes.SpellComboPointThreshold
-TRB.Classes.Rogue.SubtletySpells = setmetatable({}, {__index = TRB.Classes.Rogue.RogueBaseSpells})
-TRB.Classes.Rogue.SubtletySpells.__index = TRB.Classes.Rogue.SubtletySpells
+TRB.Classes.Mainline.Rogue.SubtletySpells = setmetatable({}, {__index = TRB.Classes.Mainline.Rogue.RogueBaseSpells})
+TRB.Classes.Mainline.Rogue.SubtletySpells.__index = TRB.Classes.Mainline.Rogue.SubtletySpells
 
-function TRB.Classes.Rogue.SubtletySpells:New()
-    ---@type TRB.Classes.Rogue.RogueBaseSpells
-    local base = TRB.Classes.Rogue.RogueBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.Rogue.SubtletySpells) --[[@as TRB.Classes.Rogue.SubtletySpells]]
+function TRB.Classes.Mainline.Rogue.SubtletySpells:New()
+    ---@type TRB.Classes.Mainline.Rogue.RogueBaseSpells
+    local base = TRB.Classes.Mainline.Rogue.RogueBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Rogue.SubtletySpells) --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 
     self.eviscerate = TRB.Classes.SpellComboPointThreshold:New({ -- This is technically a Rogue ability but is missing from the other specs
         id = 196819,
@@ -895,13 +895,13 @@ end
 
 ---Fills barTextVariables for Subtlety Rogue options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Rogue.SubtletySpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Rogue.SubtletySpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Rogue.SubtletySpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
@@ -931,17 +931,17 @@ end
 
 ---Gets built-in castbar channel tick profiles for Subtlety, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Rogue.SubtletySpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Rogue.SubtletySpells.GetCastbarTickProfiles()
 	return {}
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Rogue.SubtletySpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Rogue.SubtletySpells.thresholdSnowflakes = {
 	before = StealthViaBuff,
 	spells = {
 		sliceAndDice = TRB.Classes.ThresholdLine.ColorByUsable,
 		backstab = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 			if line.data.talents:IsTalentActive(spells.gloomblade) then
 				line:Hide()
 			else
@@ -954,7 +954,7 @@ TRB.Classes.Rogue.SubtletySpells.thresholdSnowflakes = {
 			end
 		end,
 		cheapShot = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 			if line.state.snapshotData.snapshots[spells.shotInTheDark.id].buff.isActive then
 				line:Special("over")
 			else
@@ -962,16 +962,16 @@ TRB.Classes.Rogue.SubtletySpells.thresholdSnowflakes = {
 			end
 		end,
 		shurikenStorm = function(line)
-			SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]).silentStorm)
+			SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]).silentStorm)
 		end,
 		blackPowder = function(line)
-			SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]).finalityBlackPowder)
+			SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]).finalityBlackPowder)
 		end,
 		eviscerate = function(line)
 			if line.state.snapshotData.attributes.coupDeGraceActive then
 				line:Hide()
 			else
-				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]).finalityEviscerate)
+				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]).finalityEviscerate)
 			end
 		end,
 		coupDeGrace = CoupDeGrace,
@@ -984,7 +984,7 @@ TRB.Classes.Rogue.SubtletySpells.thresholdSnowflakes = {
 			line:Unusable()
 			return
 		end
-		local spells = line.data.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+		local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 		if line.color ~= line.state.settings.colors.threshold.special.color and line.state.snapshotData.snapshots[spells.goremawsBite.id].buff.isActive
 			and (line.snapshot == nil or line.snapshot.cooldown:IsUsable()) then
 			line:Over()
@@ -1002,15 +1002,15 @@ TRB.Classes.Rogue.SubtletySpells.thresholdSnowflakes = {
     - Secondary bar (N=5-7): Combo Points
 ]]
 
----@class TRB.Classes.Rogue.BarGroupsFactory
-TRB.Classes.Rogue.BarGroupsFactory = {}
-TRB.Classes.Rogue.BarGroupsFactory.__index = TRB.Classes.Rogue.BarGroupsFactory
+---@class TRB.Classes.Mainline.Rogue.BarGroupsFactory
+TRB.Classes.Mainline.Rogue.BarGroupsFactory = {}
+TRB.Classes.Mainline.Rogue.BarGroupsFactory.__index = TRB.Classes.Mainline.Rogue.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Rogue specialization
 ---@param specId integer # 1=Assassination, 2=Outlaw, 3=Subtlety
 ---@param parentFrame Frame # The parent frame for the primary bar group (typically UIParent)
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+function TRB.Classes.Mainline.Rogue.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
     -- Primary Energy bar (1 node) - all specs
@@ -1044,7 +1044,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Rogue.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Rogue.BarGroupsFactory:GetSpecConfiguration(specId)
     return {
         primary = {
             maxNodes = 1,
@@ -1066,15 +1066,15 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["rogue_assassination"] = TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["rogue_outlaw"] = TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["rogue_subtlety"] = TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["rogue_assassination"] = TRB.Classes.Mainline.Rogue.AssassinationSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["rogue_outlaw"] = TRB.Classes.Mainline.Rogue.OutlawSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["rogue_subtlety"] = TRB.Classes.Mainline.Rogue.SubtletySpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["rogue_assassination"] = TRB.Classes.Rogue.AssassinationSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["rogue_outlaw"] = TRB.Classes.Rogue.OutlawSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["rogue_subtlety"] = TRB.Classes.Rogue.SubtletySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["rogue_assassination"] = TRB.Classes.Mainline.Rogue.AssassinationSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["rogue_outlaw"] = TRB.Classes.Mainline.Rogue.OutlawSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["rogue_subtlety"] = TRB.Classes.Mainline.Rogue.SubtletySpells.GetCastbarTickProfiles
 
 -- Register audio cue vocabularies
 do

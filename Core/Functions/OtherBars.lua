@@ -15,8 +15,8 @@ TRB.Functions.OtherBars = {}
 	    "Duration Bars". GetMirrorTimerInfo / GetMirrorTimerProgress are not secret, so these fill from
 	    plain numbers. Pause falls out for free: a paused timer stops advancing its progress.
 
-	  * Main Hand / Off Hand / Ranged Swing -- only on a flavor that fires PLAYER_SWING, whose plain swing
-	    length fills them by hand. Off Hand and Ranged only show while their slot holds a weapon.
+	  * Main Hand / Off Hand / Ranged Swing -- filled by hand from PLAYER_SWING's plain length, or else from the combat
+	    log and the player's casts at the weapon's speed. Off Hand and Ranged only show while their slot holds a weapon.
 
 	Like the cast bars these are NOT in BarVisibility:ProcessBars, so the updater re-asserts
 	alpha/visibility while a bar is on screen to self-heal after render transitions.
@@ -36,11 +36,16 @@ local BARS = {
 -- Swing bars lead, matching the tab order; `speedIndex` picks the UnitAttackSpeed return. Unarmed swings count.
 if TRB.Flavor.swingTimers then
 	local swingEntries = {
-		{ key = "mainHandSwing", kind = "swing", swingType = Enum.PlayerSwingType.MainHand, slot = INVSLOT_MAINHAND, speedIndex = 1, blizzardFrame = "SwingTimerMainHandFrame" },
-		{ key = "offHandSwing", kind = "swing", swingType = Enum.PlayerSwingType.OffHand, slot = INVSLOT_OFFHAND, speedIndex = 2, blizzardFrame = "SwingTimerOffHandFrame", requiresWeapon = true },
-		{ key = "rangedSwing", kind = "swing", swingType = Enum.PlayerSwingType.Ranged, slot = INVSLOT_RANGED, speedIndex = 3, blizzardFrame = "SwingTimerRangedFrame", requiresWeapon = true, heldByMovement = true },
+		{ key = "mainHandSwing", kind = "swing", hand = "MainHand", slot = INVSLOT_MAINHAND, speedIndex = 1 },
+		{ key = "offHandSwing", kind = "swing", hand = "OffHand", slot = INVSLOT_OFFHAND, speedIndex = 2, requiresWeapon = true },
+		{ key = "rangedSwing", kind = "swing", hand = "Ranged", slot = INVSLOT_RANGED, speedIndex = 3, requiresWeapon = true, heldByMovement = true, ranged = true },
 	}
 	for index, entry in ipairs(swingEntries) do
+		-- PLAYER_SWING names the hand, and Blizzard's bar for it can be hidden, only with Blizzard's swing timer.
+		if TRB.Flavor.blizzardSwingTimer then
+			entry.swingType = Enum.PlayerSwingType[entry.hand]
+			entry.blizzardFrame = "SwingTimer" .. entry.hand .. "Frame"
+		end
 		table.insert(BARS, index, entry)
 	end
 end
@@ -54,7 +59,9 @@ for _, b in ipairs(BARS) do
 		BAR_BY_TIMER_NAME[b.timerName] = b
 	end
 	if b.kind == "swing" then
-		BAR_BY_SWING_TYPE[b.swingType] = b
+		if b.swingType ~= nil then
+			BAR_BY_SWING_TYPE[b.swingType] = b
+		end
 		SWING_SLOTS[b.slot] = true
 	end
 end
@@ -665,13 +672,12 @@ local function IsSwingStillRunning(barKey)
 	return false
 end
 
----Starts or restarts a swing bar from PLAYER_SWING.
----@param swingType integer # Enum.PlayerSwingType
----@param length number # Seconds
-local function StartSwing(swingType, length)
-	local entry = BAR_BY_SWING_TYPE[swingType]
+---Starts or restarts a swing bar.
+---@param entry table # The BARS entry
+---@param length number? # Seconds
+local function StartSwing(entry, length)
 	-- A secret length could not drive a fill written by hand.
-	if entry == nil or length == nil or issecretvalue(length) or length <= 0 or not IsAvailable(entry.key) then
+	if length == nil or issecretvalue(length) or length <= 0 or not IsAvailable(entry.key) then
 		return
 	end
 	local _, _, visibility = GetBarConfig(entry.key)
@@ -719,18 +725,187 @@ local function RefreshWeapons()
 	end
 end
 
+---A swing bar's weapon speed in seconds, or nil without one. Only Blizzard's swing timer clients report the ranged
+---speed through UnitAttackSpeed; the others report it through UnitRangedDamage.
+---@param entry table # The BARS entry
+---@return number?
+local function ReadSwingSpeed(entry)
+	local speed
+	if entry.ranged and not TRB.Flavor.blizzardSwingTimer then
+		speed = UnitRangedDamage("player")
+	else
+		speed = select(entry.speedIndex, UnitAttackSpeed("player"))
+	end
+	-- Secret while unit stats are restricted.
+	if speed == nil or issecretvalue(speed) or speed <= 0 then
+		return nil
+	end
+	return speed
+end
+
 ---Restarts each running swing from its hand's new weapon speed, as Blizzard's bar does on a weapon swap.
 local function RestartSwingsForEquippedWeapons()
 	for _, entry in ipairs(BARS) do
 		if entry.kind == "swing" and active[entry.key] then
-			local speed = select(entry.speedIndex, UnitAttackSpeed("player"))
-			-- Secret while unit stats are restricted; the running swing then stands.
-			if speed ~= nil and not issecretvalue(speed) and speed > 0 then
+			-- Without a readable speed the running swing stands.
+			local speed = ReadSwingSpeed(entry)
+			if speed ~= nil then
 				swingStart[entry.key] = GetTime()
 				swingLength[entry.key] = speed
 				BeginRender(entry)
 			end
 		end
+	end
+end
+
+-- ============================================================================
+-- Combat log swing tracking (no Blizzard swing timer)
+-- ============================================================================
+
+local MAIN_HAND = BAR_BY_KEY.mainHandSwing
+local OFF_HAND = BAR_BY_KEY.offHandSwing
+local RANGED = BAR_BY_KEY.rangedSwing
+local MELEE_ENTRIES = { MAIN_HAND, OFF_HAND }
+-- Spell ID sets from the flavor's swingSpells.
+local meleeResetSpells = {}
+local rangedShotSpells = {}
+local castKeepsSwingSpells = {}
+if TRB.Flavor.swingSpells ~= nil then
+	for _, id in ipairs(TRB.Flavor.swingSpells.meleeResets) do meleeResetSpells[id] = true end
+	for _, id in ipairs(TRB.Flavor.swingSpells.rangedShots) do rangedShotSpells[id] = true end
+	for _, id in ipairs(TRB.Flavor.swingSpells.castsKeepSwing) do castKeepsSwingSpells[id] = true end
+end
+-- Extra attacks (Windfury, Sword Specialization, Hand of Justice) swing just after their SPELL_EXTRA_ATTACKS without restarting the swing.
+local EXTRA_ATTACK_WINDOW = 0.04
+local extraAttacks = 0
+local extraAttacksAt = 0
+-- Auto attack is on, between PLAYER_ENTER_COMBAT and PLAYER_LEAVE_COMBAT; only then does a cast restart the main hand.
+local isAutoAttacking = false
+-- A cast paused the melee swings; its success restarts the main hand.
+local castPausedSwing = false
+local playerGuid = nil
+
+---Starts a swing bar at its weapon's speed.
+---@param entry table # The BARS entry
+local function StartSwingAtSpeed(entry)
+	StartSwing(entry, ReadSwingSpeed(entry))
+end
+
+---Parrying an attack hurries the main hand: 40% of the swing comes off, but never below 20% of it left.
+local function ApplyParryHaste()
+	local key = MAIN_HAND.key
+	local start = swingStart[key]
+	if not active[key] or start == nil then
+		return
+	end
+	local length = swingLength[key]
+	local remaining = start + length - GetTime()
+	local floor = 0.2 * length
+	if remaining > floor then
+		swingStart[key] = start - math.min(0.4 * length, remaining - floor)
+	end
+end
+
+---Rescales the running melee swings to a new attack speed, keeping the share of each swing already done.
+local function RescaleMeleeSwings()
+	local now = GetTime()
+	for _, entry in ipairs(MELEE_ENTRIES) do
+		local length = swingLength[entry.key]
+		local speed = active[entry.key] and length ~= nil and ReadSwingSpeed(entry) or nil
+		if speed ~= nil and speed ~= length then
+			local remaining = (swingStart[entry.key] + length - now) * speed / length
+			swingStart[entry.key] = now + remaining - speed
+			swingLength[entry.key] = speed
+		end
+	end
+end
+
+---Starts a melee swing from the player's swings in the combat log, and applies parry haste from their parries.
+local function OnCombatLogSwing()
+	local timestamp, subevent, _, sourceGuid, _, _, _, destGuid, _, _, _, arg12, arg13, _, arg15, _, _, _, _, _, arg21 = CombatLogGetCurrentEventInfo()
+	if sourceGuid == playerGuid then
+		if subevent == "SWING_DAMAGE" or subevent == "SWING_MISSED" then
+			if extraAttacks > 0 and timestamp - extraAttacksAt < EXTRA_ATTACK_WINDOW then
+				extraAttacks = extraAttacks - 1
+				return
+			end
+			-- isOffHand is the damage suffix's tenth value and the miss suffix's second.
+			local isOffHand = (subevent == "SWING_DAMAGE" and arg21) or (subevent == "SWING_MISSED" and arg13)
+			StartSwingAtSpeed(isOffHand and OFF_HAND or MAIN_HAND)
+		elseif subevent == "SPELL_EXTRA_ATTACKS" then
+			extraAttacks = arg15 or 0
+			extraAttacksAt = timestamp
+		end
+	elseif destGuid == playerGuid and ((subevent == "SWING_MISSED" and arg12 == "PARRY") or (subevent == "SPELL_MISSED" and arg15 == "PARRY")) then
+		ApplyParryHaste()
+	end
+end
+
+local combatLogSwingFrame = CreateFrame("Frame")
+combatLogSwingFrame:SetScript("OnEvent", function(_, event, ...)
+	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+		OnCombatLogSwing()
+	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local spellId = select(3, ...)
+		if meleeResetSpells[spellId] or castPausedSwing then
+			castPausedSwing = false
+			if isAutoAttacking then
+				StartSwingAtSpeed(MAIN_HAND)
+			end
+		end
+		if rangedShotSpells[spellId] then
+			StartSwingAtSpeed(RANGED)
+		end
+	elseif event == "UNIT_SPELLCAST_START" then
+		if not castKeepsSwingSpells[select(3, ...)] then
+			castPausedSwing = true
+			StopTimer(MAIN_HAND)
+			StopTimer(OFF_HAND)
+		end
+	elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" then
+		castPausedSwing = false
+	elseif event == "UNIT_ATTACK_SPEED" then
+		RescaleMeleeSwings()
+	elseif event == "PLAYER_ENTER_COMBAT" then
+		isAutoAttacking = true
+	elseif event == "PLAYER_LEAVE_COMBAT" then
+		isAutoAttacking = false
+	end
+end)
+
+---Registers what the combat log swing tracker reads: the player's casts while any swing bar is enabled, and the
+---combat log, attack speed, and auto attack state while a melee one is.
+---@param anyEnabled boolean
+---@param meleeEnabled boolean
+local function SyncCombatLogSwingEvents(anyEnabled, meleeEnabled)
+	if anyEnabled then
+		combatLogSwingFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+	else
+		combatLogSwingFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+	end
+	if meleeEnabled == combatLogSwingFrame:IsEventRegistered("COMBAT_LOG_EVENT_UNFILTERED") then
+		return
+	end
+	isAutoAttacking = false
+	castPausedSwing = false
+	extraAttacks = 0
+	if meleeEnabled then
+		playerGuid = UnitGUID("player")
+		combatLogSwingFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		combatLogSwingFrame:RegisterEvent("PLAYER_ENTER_COMBAT")
+		combatLogSwingFrame:RegisterEvent("PLAYER_LEAVE_COMBAT")
+		combatLogSwingFrame:RegisterUnitEvent("UNIT_ATTACK_SPEED", "player")
+		combatLogSwingFrame:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")
+		combatLogSwingFrame:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player")
+		combatLogSwingFrame:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player")
+	else
+		combatLogSwingFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		combatLogSwingFrame:UnregisterEvent("PLAYER_ENTER_COMBAT")
+		combatLogSwingFrame:UnregisterEvent("PLAYER_LEAVE_COMBAT")
+		combatLogSwingFrame:UnregisterEvent("UNIT_ATTACK_SPEED")
+		combatLogSwingFrame:UnregisterEvent("UNIT_SPELLCAST_START")
+		combatLogSwingFrame:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+		combatLogSwingFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
 	end
 end
 
@@ -774,6 +949,9 @@ end
 
 ---Detaches or restores Blizzard's three swing bars together.
 function TRB.Functions.OtherBars:UpdateBlizzardSwingTimerVisibility()
+	if not TRB.Flavor.blizzardSwingTimer then
+		return
+	end
 	local shouldDisable = ShouldDetachBlizzardSwingBars()
 	for _, entry in ipairs(BARS) do
 		local frame = entry.kind == "swing" and _G[entry.blizzardFrame] or nil
@@ -1151,7 +1329,10 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
 		-- any extra bookkeeping. Nothing to do beyond keeping the bar on screen.
 	elseif event == "PLAYER_SWING" then
 		local length, swingType = ...
-		StartSwing(swingType, length)
+		local entry = BAR_BY_SWING_TYPE[swingType]
+		if entry ~= nil then
+			StartSwing(entry, length)
+		end
 	elseif event == "PLAYER_STARTED_MOVING" then
 		-- A shot that was clear to fire and didn't means auto-shooting stopped, so nothing is held.
 		if rangedSwingEnd ~= nil and GetRangedReadyRemaining(GetTime()) <= 0 then
@@ -1223,13 +1404,14 @@ local function SyncMovementEvents(enable)
 	end
 end
 
----Registers PLAYER_SWING only while a swing bar is enabled, and the movement events only while the Ranged
----Swing bar is, so nobody else pays for either.
+---Registers PLAYER_SWING (or the combat log tracker's events) only while a swing bar is enabled, and the movement
+---events only while the Ranged Swing bar is, so nobody else pays for either.
 function TRB.Functions.OtherBars:SyncSwingEvents()
 	if not TRB.Flavor.swingTimers then
 		return
 	end
 	local anyEnabled = false
+	local meleeEnabled = false
 	local tracksMovement = false
 	rangedHoldsPastEnd = false
 	for _, entry in ipairs(BARS) do
@@ -1237,6 +1419,7 @@ function TRB.Functions.OtherBars:SyncSwingEvents()
 			local _, colors, visibility = GetBarConfig(entry.key)
 			if visibility ~= nil and IsEnabled(visibility) then
 				anyEnabled = true
+				meleeEnabled = meleeEnabled or not entry.ranged
 				if entry.heldByMovement then
 					tracksMovement = true
 					rangedHoldsPastEnd = (colors ~= nil and colors.moving ~= nil and colors.moving.enabled == true)
@@ -1245,7 +1428,9 @@ function TRB.Functions.OtherBars:SyncSwingEvents()
 			end
 		end
 	end
-	if anyEnabled then
+	if not TRB.Flavor.blizzardSwingTimer then
+		SyncCombatLogSwingEvents(anyEnabled, meleeEnabled)
+	elseif anyEnabled then
 		eventFrame:RegisterEvent("PLAYER_SWING")
 	else
 		eventFrame:UnregisterEvent("PLAYER_SWING")
@@ -1287,11 +1472,13 @@ function TRB.Functions.OtherBars:PrintDiagnostics()
 	if TRB.Flavor.swingTimers then
 		local mainSpeed, offSpeed, rangedSpeed = UnitAttackSpeed("player")
 		local secretSpeed = function(v) return issecretvalue(v) and ("<secret " .. type(v) .. ">") or tostring(v) end
-		print(string.format("  UnitAttackSpeed = %s, %s, %s PLAYER_SWING registered=%s", secretSpeed(mainSpeed), secretSpeed(offSpeed), secretSpeed(rangedSpeed), tostring(eventFrame:IsEventRegistered("PLAYER_SWING"))))
+		local swingEvent = TRB.Flavor.blizzardSwingTimer and "PLAYER_SWING" or "COMBAT_LOG_EVENT_UNFILTERED"
+		local swingEventFrame = TRB.Flavor.blizzardSwingTimer and eventFrame or combatLogSwingFrame
+		print(string.format("  UnitAttackSpeed = %s, %s, %s %s registered=%s", secretSpeed(mainSpeed), secretSpeed(offSpeed), secretSpeed(rangedSpeed), swingEvent, tostring(swingEventFrame:IsEventRegistered(swingEvent))))
 		for _, entry in ipairs(BARS) do
 			if entry.kind == "swing" then
 				local itemId = GetInventoryItemID("player", entry.slot)
-				local frame = _G[entry.blizzardFrame]
+				local frame = entry.blizzardFrame ~= nil and _G[entry.blizzardFrame] or nil
 				print(string.format("  %s slot %d item=%s classID=%s weapon=%s blizzardFrame=%s parentIsHolder=%s shown=%s", entry.key, entry.slot, tostring(itemId),
 					tostring(itemId and select(6, C_Item.GetItemInfoInstant(itemId))), tostring(SlotHoldsWeapon(entry.slot)), tostring(frame ~= nil),
 					tostring(frame ~= nil and blizzardSwingHolder ~= nil and frame:GetParent() == blizzardSwingHolder), tostring(frame ~= nil and frame:IsShown())))
@@ -1329,7 +1516,7 @@ function TRB.Functions.OtherBars:PrintDiagnostics()
 	echoMirrorEvents = not echoMirrorEvents
 	echoGcd = echoMirrorEvents
 	local echoEvents = { "MIRROR_TIMER_START", "MIRROR_TIMER_STOP", "MIRROR_TIMER_PAUSE" }
-	if TRB.Flavor.swingTimers then
+	if TRB.Flavor.blizzardSwingTimer then
 		for _, event in ipairs({ "PLAYER_SWING", "WEAPON_SLOT_CHANGED", "PLAYER_EQUIPMENT_CHANGED", "PLAYER_SWING_RANGE_UPDATE" }) do
 			echoEvents[#echoEvents + 1] = event
 		end
@@ -1384,6 +1571,9 @@ end
 ---Unregisters everything and tears down every bar.
 function TRB.Functions.OtherBars:Disable()
 	eventFrame:UnregisterAllEvents()
+	if TRB.Flavor.swingTimers and not TRB.Flavor.blizzardSwingTimer then
+		SyncCombatLogSwingEvents(false, false)
+	end
 	for _, entry in ipairs(BARS) do
 		active[entry.key] = false
 		fadeStart[entry.key] = nil

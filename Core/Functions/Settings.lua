@@ -1791,8 +1791,8 @@ function TRB.Functions.Settings:DefaultSwingTimerBarSettings(classic, barKey)
 	settings.height = 20
 	settings.timerDirection = "fill"
 	settings.durationPrecision = 1
-	-- One Hide Blizzard switch for all three swing bars, stored on Main Hand.
-	if barKey == "mainHandSwing" then
+	-- One Hide Blizzard switch for all three swing bars, stored on Main Hand, where the client has Blizzard's bars.
+	if barKey == "mainHandSwing" and TRB.Flavor.blizzardSwingTimer then
 		settings.disableBlizzardBar = true
 	end
 

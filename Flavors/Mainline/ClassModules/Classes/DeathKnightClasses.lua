@@ -1,17 +1,17 @@
 local _, TRB = ...
 
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.DeathKnight = TRB.Classes.DeathKnight or {}
+TRB.Classes.Mainline.DeathKnight = TRB.Classes.Mainline.DeathKnight or {}
 
----@class TRB.Classes.DeathKnight.DeathKnightBaseSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells : TRB.Classes.SpecializationSpellsBase
 ---@field deathCoil TRB.Classes.SpellThreshold
 ---@field deathStrike TRB.Classes.SpellThreshold
-TRB.Classes.DeathKnight.DeathKnightBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.DeathKnight.DeathKnightBaseSpells.__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells
+TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells.__index = TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells
 
-function TRB.Classes.DeathKnight.DeathKnightBaseSpells:New()
+function TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(TRB.Classes.SpecializationSpellsBase:New(), TRB.Classes.DeathKnight.DeathKnightBaseSpells) --[[@as TRB.Classes.DeathKnight.DeathKnightBaseSpells]]
+    self = setmetatable(TRB.Classes.SpecializationSpellsBase:New(), TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells) --[[@as TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells]]
 
     -- Baseline
     self.deathCoil = TRB.Classes.SpellThreshold:New({
@@ -35,7 +35,7 @@ function TRB.Classes.DeathKnight.DeathKnightBaseSpells:New()
     return self
 end
 
----@class TRB.Classes.DeathKnight.BloodSpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
+---@class TRB.Classes.Mainline.DeathKnight.BloodSpells : TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells
 ---@field boneShield TRB.Classes.SpellBase
 ---@field coagulatingBlood TRB.Classes.SpellBase
 ---@field improvedBoneShield TRB.Classes.SpellBase
@@ -43,13 +43,13 @@ end
 ---@field ossuary TRB.Classes.SpellBase
 ---@field raiseAlly TRB.Classes.SpellThreshold
 ---@field vampiricStrike TRB.Classes.SpellBase
-TRB.Classes.DeathKnight.BloodSpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
-TRB.Classes.DeathKnight.BloodSpells.__index = TRB.Classes.DeathKnight.BloodSpells
+TRB.Classes.Mainline.DeathKnight.BloodSpells = setmetatable({}, {__index = TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells})
+TRB.Classes.Mainline.DeathKnight.BloodSpells.__index = TRB.Classes.Mainline.DeathKnight.BloodSpells
 
-function TRB.Classes.DeathKnight.BloodSpells:New()
-    ---@type TRB.Classes.DeathKnight.DeathKnightBaseSpells
-    local base = TRB.Classes.DeathKnight.DeathKnightBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.DeathKnight.BloodSpells) --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+function TRB.Classes.Mainline.DeathKnight.BloodSpells:New()
+    ---@type TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells
+    local base = TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.DeathKnight.BloodSpells) --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
     -- Death Knight Class Baseline Abilities
     self.raiseAlly = TRB.Classes.SpellThreshold:New({
         id = 61999,
@@ -100,13 +100,13 @@ end
 
 ---Fills barTextVariables for Blood Death Knight options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.DeathKnight.BloodSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.DeathKnight.BloodSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.DeathKnight.BloodSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#boneShield", icon = spells.boneShield.icon, description = spells.boneShield.name, printInSettings = true },
@@ -146,22 +146,22 @@ end
 
 ---Gets built-in castbar channel tick profiles for Blood, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.DeathKnight.BloodSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.DeathKnight.BloodSpells.GetCastbarTickProfiles()
 	return {}
 end
 
 
----@class TRB.Classes.DeathKnight.FrostSpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
+---@class TRB.Classes.Mainline.DeathKnight.FrostSpells : TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells
 ---@field breathOfSindragosa TRB.Classes.SpellThreshold
 ---@field frostStrike TRB.Classes.SpellThreshold
 ---@field glacialAdvance TRB.Classes.SpellThreshold
-TRB.Classes.DeathKnight.FrostSpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
-TRB.Classes.DeathKnight.FrostSpells.__index = TRB.Classes.DeathKnight.FrostSpells
+TRB.Classes.Mainline.DeathKnight.FrostSpells = setmetatable({}, {__index = TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells})
+TRB.Classes.Mainline.DeathKnight.FrostSpells.__index = TRB.Classes.Mainline.DeathKnight.FrostSpells
 
-function TRB.Classes.DeathKnight.FrostSpells:New()
-    ---@type TRB.Classes.DeathKnight.DeathKnightBaseSpells
-    local base = TRB.Classes.DeathKnight.DeathKnightBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.DeathKnight.FrostSpells) --[[@as TRB.Classes.DeathKnight.FrostSpells]]
+function TRB.Classes.Mainline.DeathKnight.FrostSpells:New()
+    ---@type TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells
+    local base = TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.DeathKnight.FrostSpells) --[[@as TRB.Classes.Mainline.DeathKnight.FrostSpells]]
 
     self.breathOfSindragosa = TRB.Classes.SpellThreshold:New({
         id = 1249658,
@@ -194,13 +194,13 @@ end
 
 ---Fills barTextVariables for Frost Death Knight options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.DeathKnight.FrostSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.DeathKnight.FrostSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.DeathKnight.FrostSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.DeathKnight.FrostSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.FrostSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
 	local varCategory = TRB.Functions.BarText.VariableCategory
@@ -230,24 +230,24 @@ end
 
 ---Gets built-in castbar channel tick profiles for Frost, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.DeathKnight.FrostSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.DeathKnight.FrostSpells.GetCastbarTickProfiles()
 	return {}
 end
 
 
----@class TRB.Classes.DeathKnight.UnholySpells : TRB.Classes.DeathKnight.DeathKnightBaseSpells
+---@class TRB.Classes.Mainline.DeathKnight.UnholySpells : TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells
 ---@field epidemic TRB.Classes.SpellThreshold
 ---@field raiseAlly TRB.Classes.SpellThreshold
 ---@field zombify TRB.Classes.SpellThreshold
 ---@field runicCorruption TRB.Classes.SpellBase
 ---@field vampiricStrike TRB.Classes.SpellBase
-TRB.Classes.DeathKnight.UnholySpells = setmetatable({}, {__index = TRB.Classes.DeathKnight.DeathKnightBaseSpells})
-TRB.Classes.DeathKnight.UnholySpells.__index = TRB.Classes.DeathKnight.UnholySpells
+TRB.Classes.Mainline.DeathKnight.UnholySpells = setmetatable({}, {__index = TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells})
+TRB.Classes.Mainline.DeathKnight.UnholySpells.__index = TRB.Classes.Mainline.DeathKnight.UnholySpells
 
-function TRB.Classes.DeathKnight.UnholySpells:New()
-    ---@type TRB.Classes.DeathKnight.DeathKnightBaseSpells
-    local base = TRB.Classes.DeathKnight.DeathKnightBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.DeathKnight.UnholySpells) --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+function TRB.Classes.Mainline.DeathKnight.UnholySpells:New()
+    ---@type TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells
+    local base = TRB.Classes.Mainline.DeathKnight.DeathKnightBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.DeathKnight.UnholySpells) --[[@as TRB.Classes.Mainline.DeathKnight.UnholySpells]]
     
     self.epidemic = TRB.Classes.SpellThreshold:New({
         id = 207317,
@@ -293,13 +293,13 @@ end
 
 ---Fills barTextVariables for Unholy Death Knight options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.DeathKnight.UnholySpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.DeathKnight.UnholySpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.DeathKnight.UnholySpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.UnholySpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#runicCorruption", icon = spells.runicCorruption.icon, description = spells.runicCorruption.name, printInSettings = true },
@@ -333,7 +333,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Unholy, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.DeathKnight.UnholySpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.DeathKnight.UnholySpells.GetCastbarTickProfiles()
 	return {}
 end
 
@@ -345,15 +345,15 @@ end
     All specs: Primary bar (N=1) for Runic Power + Runes (N=6)
 ]]
 
----@class TRB.Classes.DeathKnight.BarGroupsFactory
-TRB.Classes.DeathKnight.BarGroupsFactory = {}
-TRB.Classes.DeathKnight.BarGroupsFactory.__index = TRB.Classes.DeathKnight.BarGroupsFactory
+---@class TRB.Classes.Mainline.DeathKnight.BarGroupsFactory
+TRB.Classes.Mainline.DeathKnight.BarGroupsFactory = {}
+TRB.Classes.Mainline.DeathKnight.BarGroupsFactory.__index = TRB.Classes.Mainline.DeathKnight.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Death Knight specialization
 ---@param specId integer # 1=Blood, 2=Frost, 3=Unholy
 ---@param parentFrame Frame # The parent frame to attach bar groups to
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+function TRB.Classes.Mainline.DeathKnight.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
     -- All Death Knight specs have the same bar structure:
@@ -411,7 +411,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.DeathKnight.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.DeathKnight.BarGroupsFactory:GetSpecConfiguration(specId)
     local config = {
         primary = {
             maxNodes = 1,
@@ -450,15 +450,15 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["deathknight_blood"] = TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["deathknight_frost"] = TRB.Classes.DeathKnight.FrostSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["deathknight_unholy"] = TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["deathknight_blood"] = TRB.Classes.Mainline.DeathKnight.BloodSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["deathknight_frost"] = TRB.Classes.Mainline.DeathKnight.FrostSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["deathknight_unholy"] = TRB.Classes.Mainline.DeathKnight.UnholySpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["deathknight_blood"] = TRB.Classes.DeathKnight.BloodSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["deathknight_frost"] = TRB.Classes.DeathKnight.FrostSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["deathknight_unholy"] = TRB.Classes.DeathKnight.UnholySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["deathknight_blood"] = TRB.Classes.Mainline.DeathKnight.BloodSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["deathknight_frost"] = TRB.Classes.Mainline.DeathKnight.FrostSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["deathknight_unholy"] = TRB.Classes.Mainline.DeathKnight.UnholySpells.GetCastbarTickProfiles
 
 -- Spec descriptors: the traits Core needs to know about these specs (see Core\Classes\SpecDescriptor.lua).
 -- Everything class-specific that shared code used to hard-code by class/spec id is declared here instead.

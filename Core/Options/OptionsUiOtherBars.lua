@@ -176,7 +176,7 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 	TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(colorsCheckbox, controls[barKey .. "ColorSection"], controls[barKey .. "BehaviorSection"], yCoord)
 
 	-- One Hide Blizzard switch for all three swing bars, stored on Main Hand and following Main Hand's Colors box.
-	if isSwing then
+	if isSwing and TRB.Flavor.blizzardSwingTimer then
 		controls[barKey .. "BlizzardSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["SwingTimerBlizzardHeader"], oUi.xCoord, yCoord)
 		yCoord = yCoord - 30
 		cc.disableBlizzardBar = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_disableBlizzardBar", L["MirrorTimerDisableBlizzard"], L["SwingTimerDisableBlizzardTooltip"], yCoord,

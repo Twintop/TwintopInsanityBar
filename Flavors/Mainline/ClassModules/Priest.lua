@@ -61,7 +61,7 @@ local function BuildHolyWordNodeMapping()
 	local holyTalents = specCache and specCache.priest_holy and specCache.priest_holy.talents
 	if not holyTalents then return end
 
-	local holySpells = specCache.priest_holy.spellsData and specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local holySpells = specCache.priest_holy.spellsData and specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 	if not holySpells then return end
 
 	local settings = TRB.Data.settings and TRB.Data.settings.priest and TRB.Data.settings.priest.holy
@@ -163,7 +163,7 @@ local function SustainedPotencyEventHandler(self, event)
 	local buff = nil
 
 	if TRB.Data.character.specId == 2 then
-		---@type TRB.Classes.Priest.HolySpells
+		---@type TRB.Classes.Mainline.Priest.HolySpells
 		local spells = spellsData.spells
 		
 		local apotheosisSnapshot = snapshotData.snapshots[spells.apotheosis.id]
@@ -173,7 +173,7 @@ local function SustainedPotencyEventHandler(self, event)
 
 		buff = apotheosisSnapshot.buff
 	elseif TRB.Data.character.specId == 3 then
-		---@type TRB.Classes.Priest.ShadowSpells
+		---@type TRB.Classes.Mainline.Priest.ShadowSpells
 		local spells = spellsData.spells
 
 		local voidformSnapshot = snapshotData.snapshots[spells.voidform.id]
@@ -263,8 +263,8 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	specCache.priest_discipline.spellsData.spells = TRB.Classes.Priest.DisciplineSpells:New()
-	local spells = specCache.priest_discipline.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	specCache.priest_discipline.spellsData.spells = TRB.Classes.Mainline.Priest.DisciplineSpells:New()
+	local spells = specCache.priest_discipline.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 
 	specCache.priest_discipline.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -315,9 +315,9 @@ local function FillSpecializationCache()
 		}
 	}
 
-	---@type TRB.Classes.Priest.HolySpells
-	specCache.priest_holy.spellsData.spells = TRB.Classes.Priest.HolySpells:New()
-	local spells = specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	---@type TRB.Classes.Mainline.Priest.HolySpells
+	specCache.priest_holy.spellsData.spells = TRB.Classes.Mainline.Priest.HolySpells:New()
+	local spells = specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 
 	specCache.priest_holy.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -366,9 +366,9 @@ local function FillSpecializationCache()
 		}
 	}
 
-	---@type TRB.Classes.Priest.ShadowSpells
-	specCache.priest_shadow.spellsData.spells = TRB.Classes.Priest.ShadowSpells:New()
-	local spells = specCache.priest_shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	---@type TRB.Classes.Mainline.Priest.ShadowSpells
+	specCache.priest_shadow.spellsData.spells = TRB.Classes.Mainline.Priest.ShadowSpells:New()
+	local spells = specCache.priest_shadow.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.priest_shadow.snapshotData.snapshots[spells.voidform.id] = TRB.Classes.Snapshot:New(spells.voidform, nil, "sometimes")
@@ -409,7 +409,7 @@ local function Setup_Discipline()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "priest_discipline" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(1, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Priest.BarGroupsFactory:CreateForSpec(1, UIParent)
 	end
 end
 
@@ -417,9 +417,9 @@ local function FillSpellData_Discipline()
 	Setup_Discipline()
 	---@type TRB.Classes.SpellsData
 	specCache.priest_discipline.spellsData:FillSpellData()
-	local spells = specCache.priest_discipline.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	local spells = specCache.priest_discipline.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 
-	TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCache.priest_discipline)
+	TRB.Classes.Mainline.Priest.DisciplineSpells.FillBarTextVariables(specCache.priest_discipline)
 end
 
 local function Setup_Holy()
@@ -428,21 +428,21 @@ local function Setup_Holy()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "priest_holy" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(2, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Priest.BarGroupsFactory:CreateForSpec(2, UIParent)
 	end
 end
 
 local function FillSpellData_Holy()
 	Setup_Holy()
 	specCache.priest_holy.spellsData:FillSpellData()
-	local spells = specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = specCache.priest_holy.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 
 	-- Populate static spell references in the pre-allocated holyWordDefs table
 	holyWordDefsCache[1].spell = spells.holyWordSerenity
 	holyWordDefsCache[2].spell = spells.holyWordSanctify
 	holyWordDefsCache[3].spell = spells.holyWordChastise
 
-	TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCache.priest_holy)
+	TRB.Classes.Mainline.Priest.HolySpells.FillBarTextVariables(specCache.priest_holy)
 end
 
 local function Setup_Shadow()
@@ -451,16 +451,16 @@ local function Setup_Shadow()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "priest_shadow" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(3, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Priest.BarGroupsFactory:CreateForSpec(3, UIParent)
 	end
 end
 
 local function FillSpellData_Shadow()
 	Setup_Shadow()
 	specCache.priest_shadow.spellsData:FillSpellData()
-	local spells = specCache.priest_shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = specCache.priest_shadow.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 
-	TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCache.priest_shadow)
+	TRB.Classes.Mainline.Priest.ShadowSpells.FillBarTextVariables(specCache.priest_shadow)
 end
 
 local function RefreshTargetTracking()
@@ -549,9 +549,9 @@ local function ConstructResourceBar(settings)
 					if nodeColorEntry and nodeColorEntry.enabled then
 						local hwDef = holyWordKeyToDef[nodeKey]
 						if hwDef and hwDef.spell and talents and talents:IsTalentActive(hwDef.spell) then
-							if nodeKey ~= "holyWordSanctify" or not talents:IsTalentActive(specCache.priest_holy.spellsData.spells--[[@as TRB.Classes.Priest.HolySpells]].ultimateSerenity) then
+							if nodeKey ~= "holyWordSanctify" or not talents:IsTalentActive(specCache.priest_holy.spellsData.spells--[[@as TRB.Classes.Mainline.Priest.HolySpells]].ultimateSerenity) then
 								local maxCharges = 1
-								if (nodeKey == "holyWordSerenity" or nodeKey == "holyWordSanctify") and talents:IsTalentActive(specCache.priest_holy.spellsData.spells--[[@as TRB.Classes.Priest.HolySpells]].miracleWorker) then
+								if (nodeKey == "holyWordSerenity" or nodeKey == "holyWordSanctify") and talents:IsTalentActive(specCache.priest_holy.spellsData.spells--[[@as TRB.Classes.Mainline.Priest.HolySpells]].miracleWorker) then
 									maxCharges = 2
 								end
 								for _ = 1, maxCharges do
@@ -612,7 +612,7 @@ end
 ---@param holyWordSpell TRB.Classes.SpellBase # The Holy Word spell (holyWordSerenity, holyWordSanctify, or holyWordChastise)
 ---@return number # The effective cooldown duration in seconds
 local function CalculateHolyWordDuration(holyWordSpell)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 	local duration = holyWordSpell.duration
 	if talents:IsTalentActive(spells.holyCelerity) then
 		duration = duration + spells.holyCelerity.attributes.durationMod
@@ -636,7 +636,7 @@ end
 ---@param spellKey string # The Holy Word's spell key, which is also its node key
 ---@return integer?, number?, number?
 local function GetHolyWordRechargeState(spellKey)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 	local spell = spells[spellKey]
 	local snapshot = spell and TRB.Data.snapshotData.snapshots[spell.id]
 	if snapshot == nil or talents == nil then
@@ -655,17 +655,17 @@ end
 ---@param base number
 ---@return number
 local function CalculateHolyWordCooldown(base)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local mod = 1
 
 	if snapshots[spells.apotheosis.id].buff.isActive then
-		mod = mod * spells.apotheosis--[[@as TRB.Classes.Priest.HolyWordSpell]].holyWordModifier
+		mod = mod * spells.apotheosis--[[@as TRB.Classes.Mainline.Priest.HolyWordSpell]].holyWordModifier
 	end
 
 	if talents:IsTalentActive(spells.lightOfTheNaaru) then
-		mod = mod * (1 + (spells.lightOfTheNaaru--[[@as TRB.Classes.Priest.HolyWordSpell]].holyWordModifier * talents.talents[spells.lightOfTheNaaru.id].currentRank))
+		mod = mod * (1 + (spells.lightOfTheNaaru--[[@as TRB.Classes.Mainline.Priest.HolyWordSpell]].holyWordModifier * talents.talents[spells.lightOfTheNaaru.id].currentRank))
 	end
 
 	return mod * (base)
@@ -681,7 +681,7 @@ end
 ---Is Surge of Light usable for a Holy Word cooldown reduction right now? The grace covers the frame
 ---batch where the spend event lands ahead of the cast that consumed it.
 ---@param snapshotData TRB.Classes.SnapshotData
----@param spells TRB.Classes.Priest.HolySpells
+---@param spells TRB.Classes.Mainline.Priest.HolySpells
 ---@return boolean
 local function SurgeOfLightUsable(snapshotData, spells)
 	return snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive == true
@@ -691,7 +691,7 @@ end
 ---Did the cast that just landed actually have Surge of Light behind it? A hard cast needs it at both
 ---ends; an instant fires no START, leaving the reading nil, and there the live value is the whole story.
 ---@param snapshotData TRB.Classes.SnapshotData
----@param spells TRB.Classes.Priest.HolySpells
+---@param spells TRB.Classes.Mainline.Priest.HolySpells
 ---@return boolean
 local function SurgeOfLightEmpoweredCast(snapshotData, spells)
 	if snapshotData.attributes.surgeOfLightAtCastStart == false then
@@ -744,10 +744,10 @@ local function ApplyVoidbindingCDR(apply)
 	local specId = TRB.Data.character.specId
 
 	if specId == 1 then
-		---@cast spells TRB.Classes.Priest.DisciplineSpells
+		---@cast spells TRB.Classes.Mainline.Priest.DisciplineSpells
 		AdjustCooldownForVoidbinding(snapshots[spells.powerWordRadiance.id].cooldown, cdrPercent, apply)
 	elseif specId == 2 then
-		---@cast spells TRB.Classes.Priest.HolySpells
+		---@cast spells TRB.Classes.Mainline.Priest.HolySpells
 		AdjustCooldownForVoidbinding(snapshots[spells.holyWordSerenity.id].cooldown, cdrPercent, apply)
 		AdjustCooldownForVoidbinding(snapshots[spells.holyWordSanctify.id].cooldown, cdrPercent, apply)
 		AdjustCooldownForVoidbinding(snapshots[spells.holyWordChastise.id].cooldown, cdrPercent, apply)
@@ -785,7 +785,7 @@ function TRB.Functions.Class:PrintHolyWordDiagnostics()
 		return
 	end
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local currentTime = GetTime()
@@ -817,7 +817,7 @@ end
 
 local function RefreshLookupData_Discipline()
 	local sharedSettings = TRB.Data.specCache["priest_discipline"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
@@ -997,7 +997,7 @@ local function RefreshLookupData_Discipline()
 end
 
 local function RefreshLookupData_Holy()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local sharedSettings = TRB.Data.specCache["priest_holy"].settings
@@ -1207,7 +1207,7 @@ end
 local function RefreshLookupData_Shadow()
 	local specSettings = TRB.Data.settings.priest.shadow
 	local sharedSettings = TRB.Data.specCache["priest_shadow"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -1425,7 +1425,7 @@ end
 --TODO: Remove?
 local function UpdateCastingResourceFinal_Discipline()
 	-- Do nothing for now
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
@@ -1434,7 +1434,7 @@ end
 --TODO: Remove?
 local function UpdateCastingResourceFinal_Holy()
 	-- Do nothing for now
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
@@ -1446,7 +1446,7 @@ end
 
 ---Drops Void Volley back to its out-of-Voidform cap, which the buff is held to whenever Voidform is down.
 local function ClampVoidVolleyCharges()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local buff = snapshots[spells.voidVolley.id].buff
 	local cap = spells.voidVolley.attributes.maxChargesOutOfVoidform
@@ -1460,7 +1460,7 @@ end
 ---which reads nil in combat.
 ---@param charges integer
 local function AddVoidVolleyCharges(charges)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 	local snapshots = TRB.Data.snapshotData.snapshots
 
 	snapshots[spells.voidVolley.id].buff:AddStackOrInitializeCustom(spells.voidVolley.duration, GetTime(), true, charges)
@@ -1471,7 +1471,7 @@ end
 ---since the throttled bar update may not have seen the expiry yet.
 ---@param currentTime number
 local function RefreshVoidform(currentTime)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 	local voidformBuff = TRB.Data.snapshotData.snapshots[spells.voidform.id].buff
 
 	-- Voidform ends on its own timer rather than an event, so the exit grant and cap ride the transition.
@@ -1497,7 +1497,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 	-- Angelic Feather charge tracking (shared across all specs)
 	if event == "UNIT_SPELLCAST_SUCCEEDED" then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HealerSpells|TRB.Classes.Priest.ShadowSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HealerSpells|TRB.Classes.Mainline.Priest.ShadowSpells]]
 		if spells.angelicFeather and spellId == spells.angelicFeather.id then
 			local snapshots = snapshotData.snapshots
 			if snapshots[spells.angelicFeather.id] then
@@ -1507,7 +1507,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 
 	if (TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2) and event == "UNIT_SPELLCAST_SUCCEEDED" then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HealerSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HealerSpells]]
 		if spells.flashHeal ~= nil and spellId == spells.flashHeal.id then
 			local snapshot = spells.surgeOfLight and snapshotData.snapshots
 				and snapshotData.snapshots[spells.surgeOfLight.id]
@@ -1518,7 +1518,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 
 	if TRB.Data.character.specId == 1 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 		local snapshots = snapshotData.snapshots
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
@@ -1558,7 +1558,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 		local snapshots = snapshotData.snapshots
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
@@ -1748,7 +1748,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 
 			if cdrSpell ~= nil then
-				local hwSpell = cdrSpell --[[@as TRB.Classes.Priest.HolyWordSpell]]
+				local hwSpell = cdrSpell --[[@as TRB.Classes.Mainline.Priest.HolyWordSpell]]
 				if hwSpell.holyWordKey ~= nil and hwSpell.holyWordReduction ~= nil then
 					local targetSpell = spells[hwSpell.holyWordKey]
 
@@ -1772,7 +1772,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			snapshotData.attributes.surgeOfLightAtCastStart = nil
 		end
 	elseif TRB.Data.character.specId == 3 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 		local snapshots = snapshotData.snapshots
 		if event == "UNIT_SPELLCAST_START" then
 			if spellId == spells.mindBlast.id then
@@ -1935,7 +1935,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 					snapshots[spells.voidform.id].buff.attributes["swmCasts"] = snapshots[spells.voidform.id].buff.attributes["swmCasts"] + 1
 				end
 			elseif spellId == spells.tentacleSlam.castId then
-				if TRB.Functions.Item:HasSetBonus(TRB.Classes.Priest.ShadowSpells.midnightSeason2SetKey, 4) then
+				if TRB.Functions.Item:HasSetBonus(TRB.Classes.Mainline.Priest.ShadowSpells.midnightSeason2SetKey, 4) then
 					AddVoidVolleyCharges(spells.voidVolley.attributes.tentacleSlamCharges)
 				end
 
@@ -1965,7 +1965,7 @@ end
 local surgeOfLightVisibleOverlays = {}
 
 ---@param snapshotData TRB.Classes.SnapshotData
----@param spells TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells
+---@param spells TRB.Classes.Mainline.Priest.DisciplineSpells|TRB.Classes.Mainline.Priest.HolySpells
 ---@return integer
 local function GetSurgeOfLightStacks(snapshotData, spells)
 	local snapshot = spells.surgeOfLight and snapshotData.snapshots
@@ -1986,7 +1986,7 @@ local surgeOfLightCues = {
 ---takes you straight to two, and the one-stack cue can offer a play-on-drop for spending back to one.
 ---@param specSettings table
 ---@param snapshotData TRB.Classes.SnapshotData
----@param spells TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells
+---@param spells TRB.Classes.Mainline.Priest.DisciplineSpells|TRB.Classes.Mainline.Priest.HolySpells
 local function FireSurgeOfLightCues(specSettings, snapshotData, spells)
 	local spiritwellActive = (talents ~= nil and spells.spiritwell ~= nil
 		and talents:IsTalentActive(spells.spiritwell)) or false
@@ -2023,7 +2023,7 @@ end
 local function ResetSurgeOfLightTracking()
 	wipe(surgeOfLightVisibleOverlays)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells|TRB.Classes.Mainline.Priest.HolySpells]]
 	local snapshot = spells and spells.surgeOfLight and snapshotData.snapshots
 		and snapshotData.snapshots[spells.surgeOfLight.id]
 	if snapshot ~= nil then
@@ -2041,7 +2041,7 @@ end
 local function HandleSurgeOfLightEvent(spellId)
 	if TRB.Data.character.specId ~= 1 and TRB.Data.character.specId ~= 2 then return end
 
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells|TRB.Classes.Mainline.Priest.HolySpells]]
 	if not (spells and spells.flashHeal and spells.surgeOfLight) then return end
 	if spellId ~= spells.flashHeal.id then return end
 
@@ -2076,7 +2076,7 @@ local function HandleSpellEvents(self, event, ...)
 		local spellId = ...
 		local isShow = event == "SPELL_ACTIVATION_OVERLAY_SHOW"
 		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells|TRB.Classes.Mainline.Priest.HolySpells]]
 			-- Flag only: a hide-all carries no spell id and is always followed by a re-show of whatever is
 			-- still up, and leaving the stack count to SPELL_UPDATE_USES keeps a misread from wiping it.
 			if spellId ~= nil and spells.surgeOfLight.attributes.overlayIds[spellId] then
@@ -2087,7 +2087,7 @@ local function HandleSpellEvents(self, event, ...)
 				end
 			end
 		elseif TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 			if spellId == spells.shadowyInsight.id then
 				snapshotData.attributes.shadowyInsightActive = isShow
 			end
@@ -2096,7 +2096,7 @@ local function HandleSpellEvents(self, event, ...)
 		local spellId, rSpellId = ...
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		if TRB.Data.character.specId == 1 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 			if spellId == spells.powerWordShield.id then
 				if rSpellId == nil or rSpellId ~= spells.masterTheDarkness.id then
 					snapshotData.snapshots[spells.masterTheDarkness.id].buff:Reset()
@@ -2108,7 +2108,7 @@ local function HandleSpellEvents(self, event, ...)
 				end
 			end
 		elseif TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 			if spellId == spells.flashHeal.id then
 				local benedictionBuff = snapshotData.snapshots[spells.benediction.id].buff
 				if rSpellId == nil or rSpellId ~= spells.benediction.id then
@@ -2150,7 +2150,7 @@ end
 
 local function UpdateSnapshot()
 	Character:UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells|TRB.Classes.Mainline.Priest.HolySpells|TRB.Classes.Mainline.Priest.ShadowSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	snapshots[spells.angelicFeather.id].cooldown:Refresh(true)
@@ -2158,7 +2158,7 @@ end
 
 local function UpdateSnapshot_Healers()
 	local _
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells|TRB.Classes.Mainline.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -2231,7 +2231,7 @@ local function UpdateSnapshot_Healers()
 end
 
 local function UpdateSnapshot_Voidweaver()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells|TRB.Classes.Mainline.Priest.ShadowSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local entropicRift = snapshots[spells.entropicRift.id]
@@ -2250,7 +2250,7 @@ local function UpdateSnapshot_Discipline()
 	UpdateSnapshot_Healers()
 	--UpdateSnapshot_Voidweaver()
 	
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -2273,7 +2273,7 @@ local function UpdateSnapshot_Holy()
 	UpdateSnapshot()
 	UpdateSnapshot_Healers()
 	
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -2314,7 +2314,7 @@ local function UpdateSnapshot_Shadow()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 	UpdateSnapshot_Voidweaver()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
@@ -2393,7 +2393,7 @@ local function UpdateResourceBar()
 	end
 
 	if TRB.Data.character.specId == 1 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 		local specSettings = classSettings.discipline
 		local specCacheSettings = TRB.Data.specCache.priest_discipline.settings
 		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
@@ -2539,7 +2539,7 @@ local function UpdateResourceBar()
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 		local specSettings = classSettings.holy
 		local specCacheSettings = TRB.Data.specCache.priest_holy.settings
 		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
@@ -2548,7 +2548,7 @@ local function UpdateResourceBar()
 			local holyWordCooldownCompletesKey = nil
 
 			if snapshotData.casting.spellKey ~= nil then
-				local maybeHolyWordSpell = spells[snapshotData.casting.spellKey]--[[@as TRB.Classes.Priest.HolyWordSpell]]
+				local maybeHolyWordSpell = spells[snapshotData.casting.spellKey]--[[@as TRB.Classes.Mainline.Priest.HolyWordSpell]]
 				if maybeHolyWordSpell ~= nil and
 					maybeHolyWordSpell.holyWordKey ~= nil and
 					maybeHolyWordSpell.holyWordReduction ~= nil and
@@ -2887,7 +2887,7 @@ local function UpdateResourceBar()
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 3 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 		local specSettings = classSettings.shadow
 		local specCacheSettings = TRB.Data.specCache.priest_shadow.settings
 		local displaySettings = specCacheSettings.displayBar or specSettings.displayBar
@@ -3032,7 +3032,7 @@ local function UpdateResourceBar()
 				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 				thresholdState:Refresh(specCacheSettings)
 				thresholdData:Refresh(talents)
-				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Priest.ShadowSpells.thresholdSnowflakes)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Priest.ShadowSpells.thresholdSnowflakes)
 
 				if spells.shadowWordMadness:IsFree() or spells.shadowWordMadness:IsUsable() then
 					if specSettings.colors.bar.flashEnabled then
@@ -3186,7 +3186,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.priest_discipline)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -3237,7 +3237,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.priest_holy)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -3341,7 +3341,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.priest_shadow)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -3534,7 +3534,7 @@ function TRB.Functions.Class:CheckCharacter()
 	local snapshots = TRB.Data.snapshotData.snapshots
 
 	if TRB.Data.character.specId == 1 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 		TRB.Data.character.specName = "discipline"
 		TRB.Data.character.compositeKey = "priest_discipline"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
@@ -3564,7 +3564,7 @@ function TRB.Functions.Class:CheckCharacter()
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 		TRB.Data.character.specName = "holy"
 		TRB.Data.character.compositeKey = "priest_holy"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
@@ -3590,7 +3590,7 @@ function TRB.Functions.Class:CheckCharacter()
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 		TRB.Data.character.specName = "shadow"
 		TRB.Data.character.compositeKey = "priest_shadow"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity, true)
@@ -3662,7 +3662,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		local manaVisSettings = (sharedSettings and sharedSettings.displayBar.mana) or nil
 
 		-- Utility bar (Angelic Feather): all specs, talent-gated
-		local spells = nil --[[@as TRB.Classes.Priest.HealerSpells|TRB.Classes.Priest.ShadowSpells|nil]]
+		local spells = nil --[[@as TRB.Classes.Mainline.Priest.HealerSpells|TRB.Classes.Mainline.Priest.ShadowSpells|nil]]
 		if TRB.Data.spellsData and TRB.Data.spellsData.spells then
 			spells = TRB.Data.spellsData.spells
 		end
@@ -4005,7 +4005,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 				local chargeIndex = tonumber(pwrMatch)
 				if chargeIndex ~= nil then
 					local discTalents = TRB.Data.specCache.priest_discipline and TRB.Data.specCache.priest_discipline.talents
-					local discSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+					local discSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 					local discSettings = TRB.Data.settings.priest.discipline
 
 					if discTalents and discTalents:IsTalentActive(discSpells.powerWordRadiance) and discSettings.colors.comboPoints.powerWordRadiance.enabled then

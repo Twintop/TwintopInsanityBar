@@ -240,14 +240,18 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		end
 
 		local metadata = rowData.metadata or {}
-		local summary = {
-			L["BarTextVariablesDescriptionSecret"] .. ": " .. GetBooleanStatusLabel(metadata.secret),
-			L["BarTextVariablesDescriptionCdm"] .. ": " .. GetCdmLabel(metadata.cdm),
-			L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType),
-			L["BarTextVariablesDescriptionBooleanCheck"] .. ": " .. GetBooleanStatusLabel(metadata.booleanCheck),
-			L["BarTextVariablesDescriptionLogicComparisons"] .. ": " .. GetBooleanStatusLabel(metadata.comparisonUsable),
-			L["BarTextVariablesDescriptionOutput"] .. ": " .. GetRenderTypeLabel(metadata.renderType),
-		}
+		local summary = {}
+		-- A client without secret values or the Cooldown Manager has nothing to say about either.
+		if TRB.Flavor.secretValues then
+			summary[#summary + 1] = L["BarTextVariablesDescriptionSecret"] .. ": " .. GetBooleanStatusLabel(metadata.secret)
+		end
+		if TRB.Flavor.cooldownManager then
+			summary[#summary + 1] = L["BarTextVariablesDescriptionCdm"] .. ": " .. GetCdmLabel(metadata.cdm)
+		end
+		summary[#summary + 1] = L["BarTextVariablesDescriptionLogicType"] .. ": " .. GetLogicTypeLabel(metadata.logicType)
+		summary[#summary + 1] = L["BarTextVariablesDescriptionBooleanCheck"] .. ": " .. GetBooleanStatusLabel(metadata.booleanCheck)
+		summary[#summary + 1] = L["BarTextVariablesDescriptionLogicComparisons"] .. ": " .. GetBooleanStatusLabel(metadata.comparisonUsable)
+		summary[#summary + 1] = L["BarTextVariablesDescriptionOutput"] .. ": " .. GetRenderTypeLabel(metadata.renderType)
 
 		local description = rowData.description or ""
 		if description ~= "" then
@@ -257,6 +261,10 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 	end
 
 	local function GetColumnTooltipText(column, rowData)
+		-- The Secret and CDM columns stay as blank spacing where the client has neither.
+		if (column == 3 and not TRB.Flavor.secretValues) or (column == 4 and not TRB.Flavor.cooldownManager) then
+			return nil
+		end
 		if rowData ~= nil and not rowData.isHeader then
 			local metadata = rowData.metadata or {}
 			if column == 3 then
@@ -576,7 +584,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			end,
 		},
 		{
-			["name"] = L["BarTextVariablesColumnSecret"],
+			["name"] = TRB.Flavor.secretValues and L["BarTextVariablesColumnSecret"] or "",
 			["width"] = 20,
 			["align"] = "CENTER",
 			["defaultsort"] = 2,
@@ -584,7 +592,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 			["DoCellUpdate"] = UpdateMetadataCell,
 		},
 		{
-			["name"] = L["BarTextVariablesColumnCdm"],
+			["name"] = TRB.Flavor.cooldownManager and L["BarTextVariablesColumnCdm"] or "",
 			["width"] = 20,
 			["align"] = "CENTER",
 			["defaultsort"] = 2,

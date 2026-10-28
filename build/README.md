@@ -54,9 +54,27 @@ manifest), and its Vanilla talent trees are one `CamelotCombat` trait tree per c
 even out of combat. Characters have a surname (`UnitName("player")` is "First Last") and realms still exist
 on the beta.
 
-You can keep the checkout anywhere else instead (e.g. `C:\dev\TwintopInsanityBar`) and link *both*
-clients with `dev-link.ps1 -Flavor mainline ...` and `-Flavor forever ...`; nothing depends on the
-checkout living inside `_retail_`.
+**World of Warcraft Classic — the same command.** The Vanilla Era client installs as `_classic_era_`:
+
+```
+.\build\dev-link.ps1 -Flavor classic -AddOnsPath "C:\Program Files (x86)\World of Warcraft\_classic_era_\Interface\AddOns"
+```
+
+**Classic client facts (1.15.9).** The TOC interface number is 11509 and the TOC game type is `vanilla`; the
+manifest expects `WOW_PROJECT_ID` to be `WOW_PROJECT_CLASSIC`. The addon API is the same modern one Forever has
+(secret values, Cooldown Manager, Edit Mode), with these gaps, which the harness stubs also remove for a 115xx TOC:
+no `C_ClassTalents`, PvP talents, `C_PlayerInfo.GetGlidingInfo`, charged combo points, `PLAYER_SWING`, or
+`PLAYER_MAP_CHANGED`. There are no specializations either: each class has three talent tabs, read through
+`GetNumTalentTabs`, `GetNumTalents`, and `C_SpecializationInfo.GetTalentInfo`, so every class gets one `general`
+spec as on Forever and Core reads talents through `TRB.Flavor.ReadTalentRanks`. The probe below loads on this
+client too.
+
+The flavors share class names, so each manifest sets `classNamespace` and its class tables live under
+`TRB.Classes.Mainline`, `TRB.Classes.Forever`, or `TRB.Classes.Classic`; Core finds them with `TRB.Flavor.GetClassModule`.
+
+You can keep the checkout anywhere else instead (e.g. `C:\dev\TwintopInsanityBar`) and link every
+client with `dev-link.ps1 -Flavor mainline ...`, `-Flavor forever ...`, and `-Flavor classic ...`; nothing depends
+on the checkout living inside `_retail_`.
 
 ## 2. Optional: Lua 5.1 for the offline smoke tests
 
@@ -81,10 +99,10 @@ saved-variables replay and golden-snapshot options used to verify refactors.
 | Build every options tab and run the Textures, media, color, and range checks | `.\build\drivers.ps1 -Lua <lua5.1>` |
 | Type-check with LuaLS against the baseline | `.\build\luals-check.ps1` (finds the VS Code extensions; `-UpdateBaseline` rewrites it) |
 | Compare every bar text font with another build | `.\build\font-compare.ps1 -Lua <lua5.1> [-Ref main] [-Saved <file> -EdgeCases]` |
-| Build a release zip locally (into `dist\`) | `.\build\stage.ps1 -Flavor mainline` / `-Flavor forever` |
+| Build a release zip locally (into `dist\`) | `.\build\stage.ps1 -Flavor mainline` / `-Flavor forever` / `-Flavor classic` |
 | Same, stamping a version | `.\build\stage.ps1 -Flavor mainline -Version 12.1.0.11 -ReleaseType beta01` |
 | Link / unlink a client | `.\build\dev-link.ps1 -Flavor <f> -AddOnsPath <path> [-Remove]` |
-| Record Forever client facts (beta) | junction or copy `build\forever-probe\TRBForeverProbe` into the Forever AddOns folder, `/trbprobe` in game, Ctrl+A and Ctrl+C in the window that opens |
+| Record Forever or Classic client facts | junction or copy `build\forever-probe\TRBForeverProbe` into the client's AddOns folder, `/trbprobe` in game, Ctrl+A and Ctrl+C in the window that opens |
 
 ## 4. Releasing
 
@@ -97,19 +115,20 @@ exists (`CF_API_KEY`, `WAGO_API_TOKEN`, `WOWI_API_TOKEN`):
 
 - `12.1.0.11-release`, `12.1.0.11-beta01`, `12.1.0.11-alpha03` — mainline
 - `forever-1.60.1.0-release` — World of Warcraft: Forever
+- `classic-1.15.9.0-release` — World of Warcraft Classic
 
-Both tags may point at the same commit. A tag containing `alpha` or `beta` is a pre-release on GitHub,
+Any of the tags may point at the same commit. A tag containing `alpha` or `beta` is a pre-release on GitHub,
 CurseForge, and Wago, and skips WoWInterface, which has no pre-release channel. The changelog
 everywhere (GitHub release body, CurseForge, Wago, WoWInterface) is the newest `# <version>` section of that flavor's `News.lua`, extracted into `CHANGELOG.md` by the workflow with
 `(#NNN)` links pointed at GitHub issues and `(tab:...)` links flattened to text; touch up the site copy
 by hand if it reads oddly.
 
 The packager only reads the TOC at the repository root and the ids in its `X-Curse-Project-ID` /
-`X-WoWI-ID` / `X-Wago-ID` lines, so the workflow copies `Flavors\Forever\TwintopInsanityBar.toc` into
-place for a Forever tag and selects `.pkgmeta-forever` (which ignores `Flavors\Mainline`) instead of
-`.pkgmeta` (which ignores `Flavors\Forever`). CurseForge and Wago have a Forever game version and the
-packager maps the `16xxx` interface number to it; WoWInterface has none, and the packager skips that
-upload with a warning.
+`X-WoWI-ID` / `X-Wago-ID` lines, so the workflow copies `Flavors\<Flavor>\TwintopInsanityBar.toc` into
+place for a Forever or Classic tag and selects `.pkgmeta-forever` or `.pkgmeta-classic` (each ignores the other two
+flavors) instead of `.pkgmeta` (which ignores `Flavors\Forever` and `Flavors\Classic`). CurseForge and Wago have a
+Forever game version and the packager maps the `16xxx` interface number to it; WoWInterface has none, and the
+packager skips that upload with a warning. Classic's `115xx` maps to each site's Classic Era version.
 
 **Dry run.** Run the workflow by hand (workflow_dispatch) with a flavor: the packager builds the zip
 with `-d` (no uploads, no GitHub release) and the zip is attached to the run as the `packager-<flavor>`

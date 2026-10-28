@@ -1083,14 +1083,15 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 						otherText = string.format(L["EditModeAnchorOtherFrameDisplay"], customName)
 					end
 				end
-				return {
-					{ text = L["EditModeAnchorFreePosition"], value = "none" },
-					{ text = L["EditModeAnchorCDMEssential"], value = "cdm-essential" },
-					{ text = L["EditModeAnchorCDMTrackedBuffs"], value = "cdm-buffs" },
-					{ text = L["EditModeAnchorCDMUtilityCooldowns"], value = "cdm-utility" },
-					{ text = L["EditModeAnchorCDMTrackedBars"], value = "cdm-bars" },
-					{ text = otherText, value = "other" },
-				}
+				local values = { { text = L["EditModeAnchorFreePosition"], value = "none" } }
+				if TRB.Flavor.cooldownManager then
+					table.insert(values, { text = L["EditModeAnchorCDMEssential"], value = "cdm-essential" })
+					table.insert(values, { text = L["EditModeAnchorCDMTrackedBuffs"], value = "cdm-buffs" })
+					table.insert(values, { text = L["EditModeAnchorCDMUtilityCooldowns"], value = "cdm-utility" })
+					table.insert(values, { text = L["EditModeAnchorCDMTrackedBars"], value = "cdm-bars" })
+				end
+				table.insert(values, { text = otherText, value = "other" })
+				return values
 			end,
 			get = function(layoutName)
 				local frameKey = self:GetAnchorFrameKeyRaw(layoutName, rootBarKey)

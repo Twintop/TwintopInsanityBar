@@ -50,9 +50,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.Paladin.HolySpells
-	specCache.paladin_holy.spellsData.spells = TRB.Classes.Paladin.HolySpells:New()
-	local spells = specCache.paladin_holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+	---@type TRB.Classes.Mainline.Paladin.HolySpells
+	specCache.paladin_holy.spellsData.spells = TRB.Classes.Mainline.Paladin.HolySpells:New()
+	local spells = specCache.paladin_holy.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells]]
 
 	specCache.paladin_holy.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -81,9 +81,9 @@ local function FillSpecializationCache()
 		},
 	}
 	
-	---@type TRB.Classes.Paladin.ProtectionSpells
-	specCache.paladin_protection.spellsData.spells = TRB.Classes.Paladin.ProtectionSpells:New()
-	local spells = specCache.paladin_protection.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+	---@type TRB.Classes.Mainline.Paladin.ProtectionSpells
+	specCache.paladin_protection.spellsData.spells = TRB.Classes.Mainline.Paladin.ProtectionSpells:New()
+	local spells = specCache.paladin_protection.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.ProtectionSpells]]
 
 	specCache.paladin_protection.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -112,9 +112,9 @@ local function FillSpecializationCache()
 		},
 	}
 	
-	---@type TRB.Classes.Paladin.RetributionSpells
-	specCache.paladin_retribution.spellsData.spells = TRB.Classes.Paladin.RetributionSpells:New()
-	local spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+	---@type TRB.Classes.Mainline.Paladin.RetributionSpells
+	specCache.paladin_retribution.spellsData.spells = TRB.Classes.Mainline.Paladin.RetributionSpells:New()
+	local spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.RetributionSpells]]
 
 	specCache.paladin_retribution.snapshotData.attributes.manaRegen = 0
 	specCache.paladin_retribution.snapshotData.attributes.holyPowerAtLastUpdate = 0
@@ -140,16 +140,16 @@ local function Setup_Holy()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "paladin_holy" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(1, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Paladin.BarGroupsFactory:CreateForSpec(1, UIParent)
 	end
 end
 
 local function FillSpellData_Holy()
 	Setup_Holy()
 	specCache.paladin_holy.spellsData:FillSpellData()
-	local spells = specCache.paladin_holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+	local spells = specCache.paladin_holy.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells]]
 
-	TRB.Classes.Paladin.HolySpells.FillBarTextVariables(specCache.paladin_holy)
+	TRB.Classes.Mainline.Paladin.HolySpells.FillBarTextVariables(specCache.paladin_holy)
 end
 
 local function Setup_Protection()
@@ -158,16 +158,16 @@ local function Setup_Protection()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "paladin_protection" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(2, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Paladin.BarGroupsFactory:CreateForSpec(2, UIParent)
 	end
 end
 
 local function FillSpellData_Protection()
 	Setup_Protection()
 	specCache.paladin_protection.spellsData:FillSpellData()
-	local spells = specCache.paladin_protection.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+	local spells = specCache.paladin_protection.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.ProtectionSpells]]
 
-	TRB.Classes.Paladin.ProtectionSpells.FillBarTextVariables(specCache.paladin_protection)
+	TRB.Classes.Mainline.Paladin.ProtectionSpells.FillBarTextVariables(specCache.paladin_protection)
 end
 
 local function Setup_Retribution()
@@ -176,16 +176,16 @@ local function Setup_Retribution()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "paladin_retribution" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(3, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Paladin.BarGroupsFactory:CreateForSpec(3, UIParent)
 	end
 end
 
 local function FillSpellData_Retribution()
 	Setup_Retribution()
 	specCache.paladin_retribution.spellsData:FillSpellData()
-	local spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+	local spells = specCache.paladin_retribution.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.RetributionSpells]]
 
-	TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCache.paladin_retribution)
+	TRB.Classes.Mainline.Paladin.RetributionSpells.FillBarTextVariables(specCache.paladin_retribution)
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)
@@ -288,7 +288,7 @@ local function ConstructResourceBar(settings)
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
----@param spells TRB.Classes.Paladin.HolySpells?
+---@param spells TRB.Classes.Mainline.Paladin.HolySpells?
 ---@return number
 local function GetHolyCastingHolyPower(spells)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
@@ -307,7 +307,7 @@ end
 
 local function RefreshLookupData_Holy()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells]]
 	local sharedSettings = TRB.Data.specCache["paladin_holy"].settings
 	local castingHolyPower = GetHolyCastingHolyPower(spells)
 
@@ -417,7 +417,7 @@ end
 
 local function RefreshLookupData_Protection()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.ProtectionSpells]]
 	local sharedSettings = TRB.Data.specCache["paladin_protection"].settings
 
 	-- Side-effect: other systems depend on manaRegen being current
@@ -500,7 +500,7 @@ end
 
 local function RefreshLookupData_Retribution()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.RetributionSpells]]
 	local sharedSettings = TRB.Data.specCache["paladin_retribution"].settings
 
 	-- Side-effect: other systems depend on manaRegen being current
@@ -630,14 +630,14 @@ end
 --TODO: Remove?
 local function UpdateCastingResourceFinal_Holy()
 	-- Do nothing for now
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	-- Do nothing for now
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 end
 
 ---Starts the Avenging Wrath timer, recording which source granted it.
----@param spells TRB.Classes.Paladin.RetributionSpells
+---@param spells TRB.Classes.Mainline.Paladin.RetributionSpells
 ---@param source string # "cast" or "radiantGlory"
 local function StartAvengingWrath(spells, source)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -657,7 +657,7 @@ end
 ---@param spellId integer
 local function RetributionSpellCastSucceeded(spellId)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.RetributionSpells]]
 	local judgeJuryAndExecutioner = snapshotData.snapshots[spells.judgeJuryAndExecutioner.id]
 
 	if spellId == spells.executionSentence.id then
@@ -707,7 +707,7 @@ end
 
 ---Ages the event-driven Divine Purpose timer. The color indicator reads isActive directly, so the
 ---timer has to be aged here rather than in the bar text, which is skipped when no bar text uses it.
----@param spells TRB.Classes.Paladin.HolySpells|TRB.Classes.Paladin.ProtectionSpells|TRB.Classes.Paladin.RetributionSpells
+---@param spells TRB.Classes.Mainline.Paladin.HolySpells|TRB.Classes.Mainline.Paladin.ProtectionSpells|TRB.Classes.Mainline.Paladin.RetributionSpells
 ---@param currentTime number
 local function UpdateDivinePurpose(spells, currentTime)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -729,7 +729,7 @@ local function UpdateSnapshot_Holy()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells]]
 	spells.flashOfLight:GetCastTime()
 	UpdateDivinePurpose(spells, currentTime)
 end
@@ -738,7 +738,7 @@ local function UpdateSnapshot_Protection()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.ProtectionSpells]]
 	spells.flashOfLight:GetCastTime()
 	UpdateDivinePurpose(spells, currentTime)
 end
@@ -759,7 +759,7 @@ local function UpdateSnapshot_Retribution()
 	UpdateSnapshot()
 
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.RetributionSpells]]
 	UpdateDivinePurpose(spells, currentTime)
 	UpdateCustomTimer(snapshotData.snapshots[spells.executionSentence.id], currentTime)
 	UpdateCustomTimer(snapshotData.snapshots[spells.judgeJuryAndExecutioner.id], currentTime)
@@ -779,7 +779,7 @@ local function HandleSpellEvents(self, event, ...)
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local spellId = ...
 		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells|TRB.Classes.Paladin.ProtectionSpells|TRB.Classes.Paladin.RetributionSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells|TRB.Classes.Mainline.Paladin.ProtectionSpells|TRB.Classes.Mainline.Paladin.RetributionSpells]]
 			if spellId == spells.divinePurpose.spellId then
 				local currentTime = GetTime()
 				local divinePurposeSnapshot = snapshotData.snapshots[spells.divinePurpose.id]
@@ -802,7 +802,7 @@ local function HandleSpellEvents(self, event, ...)
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local spellId = ...
 		if TRB.Data.character.specId == 1 or TRB.Data.character.specId == 2 or TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells|TRB.Classes.Paladin.ProtectionSpells|TRB.Classes.Paladin.RetributionSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells|TRB.Classes.Mainline.Paladin.ProtectionSpells|TRB.Classes.Mainline.Paladin.RetributionSpells]]
 			if spellId == spells.divinePurpose.spellId then
 				local divinePurposeSnapshot = snapshotData.snapshots[spells.divinePurpose.id]
 				if divinePurposeSnapshot ~= nil then
@@ -970,7 +970,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.holy
 		local specCacheSettings = TRB.Data.specCache.paladin_holy.settings
 		UpdateSnapshot_Holy()
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells]]
 		local castingHolyPower = GetHolyCastingHolyPower(spells)
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
@@ -1028,7 +1028,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.protection
 		local specCacheSettings = TRB.Data.specCache.paladin_protection.settings
 		UpdateSnapshot_Protection()
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.ProtectionSpells]]
 		local infusionOfLightActive = spells.flashOfLight:IsInstant()
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
 		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
@@ -1083,7 +1083,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.retribution
 		local specCacheSettings = TRB.Data.specCache.paladin_retribution.settings
 		UpdateSnapshot_Retribution()
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.RetributionSpells]]
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
 		local divinePurposeActive = divinePurposeBuff ~= nil and divinePurposeBuff.buff.isActive
 		local executionSentenceActive = snapshotData.snapshots[spells.executionSentence.id].buff.isActive
@@ -1182,7 +1182,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.paladin_holy)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1207,7 +1207,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.paladin_protection)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.ProtectionSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1232,7 +1232,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.paladin_retribution)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.RetributionSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1302,7 +1302,7 @@ function TRB.Functions.Class:CheckCharacter()
 	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
 	local sharedSettings = nil
 	if TRB.Data.character.specId == 1 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells]]
 		TRB.Data.character.specName = "holy"
 		TRB.Data.character.compositeKey = "paladin_holy"
 		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings

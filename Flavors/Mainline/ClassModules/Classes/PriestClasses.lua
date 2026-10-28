@@ -1,24 +1,24 @@
 local _, TRB = ...
 
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Priest = TRB.Classes.Priest or {}
+TRB.Classes.Mainline.Priest = TRB.Classes.Mainline.Priest or {}
 
----@class TRB.Classes.Priest.HolyWordSpell : TRB.Classes.SpellBase
+---@class TRB.Classes.Mainline.Priest.HolyWordSpell : TRB.Classes.SpellBase
 ---@field public holyWordKey string? # Holy Word spell key that has its cooldown reduced on cast.
 ---@field public holyWordReduction number? # How much the associated Holy Word will have its cooldown reduced.
 ---@field public holyWordModifier number? # Modification of the reduction when included with related casts.
-TRB.Classes.Priest.HolyWordSpell = setmetatable({}, {__index = TRB.Classes.SpellBase})
-TRB.Classes.Priest.HolyWordSpell.__index = TRB.Classes.Priest.HolyWordSpell
+TRB.Classes.Mainline.Priest.HolyWordSpell = setmetatable({}, {__index = TRB.Classes.SpellBase})
+TRB.Classes.Mainline.Priest.HolyWordSpell.__index = TRB.Classes.Mainline.Priest.HolyWordSpell
 
 ---Creates a new HolyWordSpell object
 ---@param spellAttributes { [string]: any } # Attributes associated with the spell
----@return TRB.Classes.Priest.HolyWordSpell
-function TRB.Classes.Priest.HolyWordSpell:New(spellAttributes)
+---@return TRB.Classes.Mainline.Priest.HolyWordSpell
+function TRB.Classes.Mainline.Priest.HolyWordSpell:New(spellAttributes)
 	---@type TRB.Classes.SpellBase
 	local spellBase = TRB.Classes.SpellBase
-	self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.Priest.HolyWordSpell})
+	self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.Mainline.Priest.HolyWordSpell})
 
-	table.insert(self.classTypes, "TRB.Classes.Priest.HolyWordSpell")
+	table.insert(self.classTypes, "TRB.Classes.Mainline.Priest.HolyWordSpell")
 	
 	self.holyWordModifier = 1
 	self.holyWordReduction = 0
@@ -36,20 +36,20 @@ function TRB.Classes.Priest.HolyWordSpell:New(spellAttributes)
 end
 
 
----@class TRB.Classes.Priest.HealerSpells : TRB.Classes.Healer.HealerSpells
+---@class TRB.Classes.Mainline.Priest.HealerSpells : TRB.Classes.Mainline.Healer.HealerSpells
 ---@field public flashHeal TRB.Classes.SpellBase
 ---@field public surgeOfLight TRB.Classes.SpellBase
 ---@field public angelicFeather TRB.Classes.SpellBase
 ---@field public powerWordShield TRB.Classes.SpellBase
 ---@field public voidbinding TRB.Classes.SpellBase
 ---@field public prayerOfMending TRB.Classes.SpellBase
-TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
-TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
+TRB.Classes.Mainline.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Healer.HealerSpells})
+TRB.Classes.Mainline.Priest.HealerSpells.__index = TRB.Classes.Mainline.Priest.HealerSpells
 
-function TRB.Classes.Priest.HealerSpells:New()
-	---@type TRB.Classes.Healer.HealerSpells
-	local base = TRB.Classes.Healer.HealerSpells
-	self = setmetatable(base:New(), TRB.Classes.Priest.HealerSpells) --[[@as TRB.Classes.Priest.HealerSpells]]
+function TRB.Classes.Mainline.Priest.HealerSpells:New()
+	---@type TRB.Classes.Mainline.Healer.HealerSpells
+	local base = TRB.Classes.Mainline.Healer.HealerSpells
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Priest.HealerSpells) --[[@as TRB.Classes.Mainline.Priest.HealerSpells]]
 
 	-- Priest Class Baseline Abilities
 	-- attributes.baseManaCost is filled in at runtime; Surge of Light is detected from its cost reduction
@@ -101,20 +101,20 @@ function TRB.Classes.Priest.HealerSpells:New()
 end
 
 
----@class TRB.Classes.Priest.DisciplineSpells : TRB.Classes.Priest.HealerSpells
+---@class TRB.Classes.Mainline.Priest.DisciplineSpells : TRB.Classes.Mainline.Priest.HealerSpells
 ---@field public powerWordRadiance TRB.Classes.SpellBase
 ---@field public lightsPromise TRB.Classes.SpellBase
 ---@field public brightPupil TRB.Classes.SpellBase
 ---@field public evangelism TRB.Classes.SpellBase
 ---@field public harshDiscipline TRB.Classes.SpellBase
 ---@field public masterTheDarkness TRB.Classes.SpellBase
-TRB.Classes.Priest.DisciplineSpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
-TRB.Classes.Priest.DisciplineSpells.__index = TRB.Classes.Priest.DisciplineSpells
+TRB.Classes.Mainline.Priest.DisciplineSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Priest.HealerSpells})
+TRB.Classes.Mainline.Priest.DisciplineSpells.__index = TRB.Classes.Mainline.Priest.DisciplineSpells
 
-function TRB.Classes.Priest.DisciplineSpells:New()
-	---@type TRB.Classes.Priest.HealerSpells
-	local base = TRB.Classes.Priest.HealerSpells
-	self = setmetatable(base:New(), TRB.Classes.Priest.DisciplineSpells) --[[@as TRB.Classes.Priest.DisciplineSpells]]
+function TRB.Classes.Mainline.Priest.DisciplineSpells:New()
+	---@type TRB.Classes.Mainline.Priest.HealerSpells
+	local base = TRB.Classes.Mainline.Priest.HealerSpells
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Priest.DisciplineSpells) --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 
 	-- Priest Class Baseline Abilities
 	
@@ -165,13 +165,13 @@ end
 
 ---Fills barTextVariables for Discipline Priest options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Priest.DisciplineSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Priest.DisciplineSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Priest.DisciplineSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.DisciplineSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#pwRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = true },
@@ -229,7 +229,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Discipline, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Priest.DisciplineSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Priest.DisciplineSpells.GetCastbarTickProfiles()
 	return {
 		-- Penance: 3 bolts baseline over 2s; Castigation/Harsh Discipline bolts come from tick modifiers.
 		[47757] = { mode = "fixedCount", baseDuration = 2, tickCount = 3, firstTickAtStart = true },
@@ -242,7 +242,7 @@ end
 ---Gets built-in castbar tick modifiers for Discipline (talent/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
-function TRB.Classes.Priest.DisciplineSpells.GetCastbarTickModifiers()
+function TRB.Classes.Mainline.Priest.DisciplineSpells.GetCastbarTickModifiers()
 	return {
 		-- Penance
 		[47757] = {
@@ -261,17 +261,17 @@ function TRB.Classes.Priest.DisciplineSpells.GetCastbarTickModifiers()
 end
 
 
----@class TRB.Classes.Priest.HolySpells : TRB.Classes.Priest.HealerSpells
----@field public flashHeal TRB.Classes.Priest.HolyWordSpell
----@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
----@field public halo TRB.Classes.Priest.HolyWordSpell
----@field public apotheosis TRB.Classes.Priest.HolyWordSpell
----@field public prayerOfMending TRB.Classes.Priest.HolyWordSpell
----@field public smite TRB.Classes.Priest.HolyWordSpell
----@field public holyFire TRB.Classes.Priest.HolyWordSpell
----@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
----@field public energyCycle TRB.Classes.Priest.HolyWordSpell
----@field public benediction TRB.Classes.Priest.HolyWordSpell
+---@class TRB.Classes.Mainline.Priest.HolySpells : TRB.Classes.Mainline.Priest.HealerSpells
+---@field public flashHeal TRB.Classes.Mainline.Priest.HolyWordSpell
+---@field public prayerOfHealing TRB.Classes.Mainline.Priest.HolyWordSpell
+---@field public halo TRB.Classes.Mainline.Priest.HolyWordSpell
+---@field public apotheosis TRB.Classes.Mainline.Priest.HolyWordSpell
+---@field public prayerOfMending TRB.Classes.Mainline.Priest.HolyWordSpell
+---@field public smite TRB.Classes.Mainline.Priest.HolyWordSpell
+---@field public holyFire TRB.Classes.Mainline.Priest.HolyWordSpell
+---@field public lightOfTheNaaru TRB.Classes.Mainline.Priest.HolyWordSpell
+---@field public energyCycle TRB.Classes.Mainline.Priest.HolyWordSpell
+---@field public benediction TRB.Classes.Mainline.Priest.HolyWordSpell
 ---@field public holyWordSerenity TRB.Classes.SpellBase
 ---@field public holyWordChastise TRB.Classes.SpellBase
 ---@field public holyWordSanctify TRB.Classes.SpellBase
@@ -287,13 +287,13 @@ end
 ---@field public energyConservation TRB.Classes.SpellBase
 ---@field public sustainedPotency TRB.Classes.SpellBase
 ---@field public spiritwell TRB.Classes.SpellBase
-TRB.Classes.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
-TRB.Classes.Priest.HolySpells.__index = TRB.Classes.Priest.HolySpells
+TRB.Classes.Mainline.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Mainline.Priest.HealerSpells})
+TRB.Classes.Mainline.Priest.HolySpells.__index = TRB.Classes.Mainline.Priest.HolySpells
 
-function TRB.Classes.Priest.HolySpells:New()
-	---@type TRB.Classes.Priest.HealerSpells
-	local base = TRB.Classes.Priest.HealerSpells
-	self = setmetatable(base:New(), TRB.Classes.Priest.HolySpells) --[[@as TRB.Classes.Priest.HolySpells]]
+function TRB.Classes.Mainline.Priest.HolySpells:New()
+	---@type TRB.Classes.Mainline.Priest.HealerSpells
+	local base = TRB.Classes.Mainline.Priest.HealerSpells
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Priest.HolySpells) --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 
 	-- Holy Word: Chastise
 	self.holyWordChastise = TRB.Classes.SpellBase:New({
@@ -301,20 +301,20 @@ function TRB.Classes.Priest.HolySpells:New()
 		duration = 60,
 		isTalent = true
 	})
-	self.smite = TRB.Classes.Priest.HolyWordSpell:New({
+	self.smite = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 585,
 		holyWordKey = "holyWordChastise",
 		holyWordReduction = 4,
 		isTalent = false,
 		baseline = true
 	})
-	self.holyFire = TRB.Classes.Priest.HolyWordSpell:New({
+	self.holyFire = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 14914,
 		holyWordKey = "holyWordChastise",
 		holyWordReduction = 4, -- Per rank of Voice of Harmony
 		isTalent = true
 	})
-	self.holyNova = TRB.Classes.Priest.HolyWordSpell:New({
+	self.holyNova = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 132157,
 		holyWordKey = "holyWordChastise",
 		holyWordReduction = 4,
@@ -328,20 +328,20 @@ function TRB.Classes.Priest.HolySpells:New()
 		isTalent = true,
 		hasCharges = true
 	})
-	self.prayerOfHealing = TRB.Classes.Priest.HolyWordSpell:New({
+	self.prayerOfHealing = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 596,
 		holyWordKey = "holyWordSanctify",
 		holyWordReduction = 6,
 		isTalent = true
 	})
-	self.halo = TRB.Classes.Priest.HolyWordSpell:New({
+	self.halo = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 120517,
 		isTalent = true,
 		resource = 5,
 		holyWordKey = "holyWordSanctify",
 		holyWordReduction = 4,
 	})
-	self.energyCycle = TRB.Classes.Priest.HolyWordSpell:New({
+	self.energyCycle = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 453828,
 		holyWordKey = "holyWordSanctify",
 		holyWordReduction = 4,
@@ -359,7 +359,7 @@ function TRB.Classes.Priest.HolySpells:New()
 		hasCharges = true
 	})
 	-- attributes.baseManaCost is filled in at runtime; Surge of Light is detected from its cost reduction
-	self.flashHeal = TRB.Classes.Priest.HolyWordSpell:New({
+	self.flashHeal = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 2061,
 		holyWordKey = "holyWordSerenity",
 		holyWordReduction = 6,
@@ -367,12 +367,12 @@ function TRB.Classes.Priest.HolySpells:New()
 		baseline = true,
 		primaryResourceType = Enum.PowerType.Mana
 	})
-	self.prayerOfMending = TRB.Classes.Priest.HolyWordSpell:New({
+	self.prayerOfMending = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 33076,
 		holyWordKey = "holyWordSerenity",
 		holyWordReduction = 4, -- Per rank of Voice of Harmony
 	})
-	self.benediction = TRB.Classes.Priest.HolyWordSpell:New({
+	self.benediction = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 1262763,
 		talentId = 1262755,
 		isTalent = true,
@@ -402,7 +402,7 @@ function TRB.Classes.Priest.HolySpells:New()
 		isTalent = true,
 		durationMod = -5
 	})
-	self.lightOfTheNaaru = TRB.Classes.Priest.HolyWordSpell:New({
+	self.lightOfTheNaaru = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 196985,
 		holyWordModifier = 0.1, -- Per rank
 		isTalent = true
@@ -411,7 +411,7 @@ function TRB.Classes.Priest.HolySpells:New()
 		id = 390994,
 		isTalent = true
 	})
-	self.apotheosis = TRB.Classes.Priest.HolyWordSpell:New({
+	self.apotheosis = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 200183,
 		holyWordModifier = 3, -- 200% more
 		duration = 20,
@@ -466,13 +466,13 @@ end
 
 ---Fills barTextVariables for Holy Priest options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Priest.HolySpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Priest.HolySpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Priest.HolySpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#flashHeal", icon = spells.flashHeal.icon, description = spells.flashHeal.name, printInSettings = true },
@@ -544,7 +544,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Holy, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Priest.HolySpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Priest.HolySpells.GetCastbarTickProfiles()
 	return {
 		-- Divine Hymn
 		[64843] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, firstTickAtStart = true },
@@ -552,7 +552,7 @@ function TRB.Classes.Priest.HolySpells.GetCastbarTickProfiles()
 end
 
 
----@class TRB.Classes.Priest.ShadowSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Priest.ShadowSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public angelicFeather TRB.Classes.SpellBase
 ---@field public mindBlast TRB.Classes.SpellBase
 ---@field public mindFlay TRB.Classes.SpellBase
@@ -586,13 +586,13 @@ end
 ---@field public shadowWordMadness TRB.Classes.SpellThreshold
 ---@field public shadowWordMadness2 TRB.Classes.SpellThreshold
 ---@field public shadowWordMadness3 TRB.Classes.SpellThreshold
-TRB.Classes.Priest.ShadowSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Priest.ShadowSpells.__index = TRB.Classes.Priest.ShadowSpells
+TRB.Classes.Mainline.Priest.ShadowSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Priest.ShadowSpells.__index = TRB.Classes.Mainline.Priest.ShadowSpells
 
-function TRB.Classes.Priest.ShadowSpells:New()
+function TRB.Classes.Mainline.Priest.ShadowSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
-	self = setmetatable(base:New(), TRB.Classes.Priest.ShadowSpells) --[[@as TRB.Classes.Priest.ShadowSpells]]
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Priest.ShadowSpells) --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 	
 	-- Priest Class Talent Abilities
 	self.angelicFeather = TRB.Classes.SpellBase:New({
@@ -826,13 +826,13 @@ end
 
 ---Fills barTextVariables for Shadow Priest options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Priest.ShadowSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Priest.ShadowSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Priest.ShadowSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#swm", icon = spells.shadowWordMadness.icon, description = spells.shadowWordMadness.name, printInSettings = true },
@@ -918,7 +918,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Shadow, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Priest.ShadowSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Priest.ShadowSpells.GetCastbarTickProfiles()
 	return {
 		-- Mind Flay
 		[15407] = { mode = "fixedCount", baseDuration = 4.5, tickCount = 6, chains = true },
@@ -945,10 +945,10 @@ local function ShadowWordMadnessMulticast(line, maxResource)
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Priest.ShadowSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Priest.ShadowSpells.thresholdSnowflakes = {
 	spells = {
 		shadowWordMadness = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
 			local mindDevourer = line.state.snapshotData.snapshots[spells.mindDevourer.id].buff
 			if line.resourceAmount > TRB.Data.character.maxResource then
 				line:Hide()
@@ -977,15 +977,15 @@ TRB.Classes.Priest.ShadowSpells.thresholdSnowflakes = {
     Shadow: Primary bar (N=1) + Mana bar (N=1) + Utility Angelic Feather (N=3)
 ]]
 
----@class TRB.Classes.Priest.BarGroupsFactory
-TRB.Classes.Priest.BarGroupsFactory = {}
-TRB.Classes.Priest.BarGroupsFactory.__index = TRB.Classes.Priest.BarGroupsFactory
+---@class TRB.Classes.Mainline.Priest.BarGroupsFactory
+TRB.Classes.Mainline.Priest.BarGroupsFactory = {}
+TRB.Classes.Mainline.Priest.BarGroupsFactory.__index = TRB.Classes.Mainline.Priest.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Priest specialization
 ---@param specId integer # 1=Discipline, 2=Holy, 3=Shadow
 ---@param parentFrame Frame # The parent frame to attach bar groups to
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+function TRB.Classes.Mainline.Priest.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
     if specId == 1 then -- Discipline
@@ -1102,7 +1102,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Priest.BarGroupsFactory:GetSpecConfiguration(specId)
     if specId == 1 then -- Discipline
         return {
             primary = {
@@ -1181,7 +1181,7 @@ end
 
 -- Override the generic utility bar type with Angelic Feather-specific display name, node colors, and defaults
 ---@return table
-function TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors()
+function TRB.Classes.Mainline.Priest.DefaultAngelicFeatherUtilityBarColors()
 	return {
 		border = { color = "FFD6AA00" },
 		background = { color = "66000000" },
@@ -1206,33 +1206,33 @@ do
 			{ key = "angelicFeather3", displayName = L["AngelicFeatherCharge3"], hasEnabled = false }
 		}
 		utilityDef.defaultColorsFunc = function()
-			return TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors()
+			return TRB.Classes.Mainline.Priest.DefaultAngelicFeatherUtilityBarColors()
 		end
 	end
 end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["priest_holy"] = TRB.Classes.Priest.HolySpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["priest_shadow"] = TRB.Classes.Priest.ShadowSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["priest_discipline"] = TRB.Classes.Mainline.Priest.DisciplineSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["priest_holy"] = TRB.Classes.Mainline.Priest.HolySpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["priest_shadow"] = TRB.Classes.Mainline.Priest.ShadowSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["priest_shadow"] = TRB.Classes.Priest.ShadowSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["priest_holy"] = TRB.Classes.Priest.HolySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["priest_shadow"] = TRB.Classes.Mainline.Priest.ShadowSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["priest_discipline"] = TRB.Classes.Mainline.Priest.DisciplineSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["priest_holy"] = TRB.Classes.Mainline.Priest.HolySpells.GetCastbarTickProfiles
 
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
-TRB.Data.castbarTickModifiersRegistry["priest_discipline"] = TRB.Classes.Priest.DisciplineSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["priest_discipline"] = TRB.Classes.Mainline.Priest.DisciplineSpells.GetCastbarTickModifiers
 
 -- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
 -- every registered set once per gear change and caches it.
-TRB.Classes.Priest.ShadowSpells.midnightSeason2SetKey = "priest_shadow_midnightSeason2"
+TRB.Classes.Mainline.Priest.ShadowSpells.midnightSeason2SetKey = "priest_shadow_midnightSeason2"
 TRB.Data.itemSetRegistry = TRB.Data.itemSetRegistry or {}
 ---@type TRB.Classes.ItemSetDefinition
-TRB.Data.itemSetRegistry[TRB.Classes.Priest.ShadowSpells.midnightSeason2SetKey] = {
+TRB.Data.itemSetRegistry[TRB.Classes.Mainline.Priest.ShadowSpells.midnightSeason2SetKey] = {
 	headId = 271555,
 	shoulderId = 271553,
 	chestId = 271558,

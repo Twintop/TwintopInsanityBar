@@ -4,6 +4,7 @@ name: Release
 #   12.1.0.11-release           -> mainline (retail) build
 #   12.1.0.11-beta01            -> mainline pre-release
 #   forever-1.60.1.0-release    -> WoW Forever build
+#   classic-1.15.9.0-release    -> WoW Classic (Vanilla Era) build
 # The checks job runs checks.yml, the same offline checks every pull request runs. The stage job then builds the
 # flavor with build/stage.ps1 as a workflow artifact.
 # The publish job runs the BigWigs packager, which creates the GitHub release, attaches its zip, and
@@ -20,7 +21,7 @@ on:
   workflow_dispatch:
     inputs:
       flavor:
-        description: "Flavor to stage (mainline, forever)"
+        description: "Flavor to stage (mainline, forever, classic)"
         required: true
         default: "mainline"
       version:

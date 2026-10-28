@@ -1,21 +1,21 @@
 local _, TRB = ...
 
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Hunter = TRB.Classes.Hunter or {}
+TRB.Classes.Mainline.Hunter = TRB.Classes.Mainline.Hunter or {}
 
----@class TRB.Classes.Hunter.HunterBaseSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Hunter.HunterBaseSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public revivePet TRB.Classes.SpellThreshold
 ---@field public wingClip TRB.Classes.SpellThreshold
 ---@field public scareBeast TRB.Classes.SpellThreshold
-TRB.Classes.Hunter.HunterBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Hunter.HunterBaseSpells.__index = TRB.Classes.Hunter.HunterBaseSpells
+TRB.Classes.Mainline.Hunter.HunterBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Hunter.HunterBaseSpells.__index = TRB.Classes.Mainline.Hunter.HunterBaseSpells
 
 ---Creates a new HunterBaseSpells
----@return TRB.Classes.Hunter.HunterBaseSpells
-function TRB.Classes.Hunter.HunterBaseSpells:New()
+---@return TRB.Classes.Mainline.Hunter.HunterBaseSpells
+function TRB.Classes.Mainline.Hunter.HunterBaseSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Hunter.HunterBaseSpells) --[[@as TRB.Classes.Hunter.HunterBaseSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Hunter.HunterBaseSpells) --[[@as TRB.Classes.Mainline.Hunter.HunterBaseSpells]]
     
     -- Hunter Class Baseline Abilities
     self.revivePet = TRB.Classes.SpellThreshold:New({
@@ -44,7 +44,7 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
     return self
 end
 
----@class TRB.Classes.Hunter.BeastMasterySpells : TRB.Classes.Hunter.HunterBaseSpells
+---@class TRB.Classes.Mainline.Hunter.BeastMasterySpells : TRB.Classes.Mainline.Hunter.HunterBaseSpells
 ---@field public bestialWrath TRB.Classes.SpellBase
 ---@field public beastCleave TRB.Classes.SpellBase
 ---@field public cobraShot TRB.Classes.SpellThreshold
@@ -53,13 +53,13 @@ end
 ---@field public wildThrash TRB.Classes.SpellThreshold
 ---@field public wailingArrow TRB.Classes.SpellThreshold
 ---@field public direBeastHawk TRB.Classes.SpellThreshold
-TRB.Classes.Hunter.BeastMasterySpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
-TRB.Classes.Hunter.BeastMasterySpells.__index = TRB.Classes.Hunter.BeastMasterySpells
+TRB.Classes.Mainline.Hunter.BeastMasterySpells = setmetatable({}, {__index = TRB.Classes.Mainline.Hunter.HunterBaseSpells})
+TRB.Classes.Mainline.Hunter.BeastMasterySpells.__index = TRB.Classes.Mainline.Hunter.BeastMasterySpells
 
-function TRB.Classes.Hunter.BeastMasterySpells:New()
-    ---@type TRB.Classes.Hunter.HunterBaseSpells
-    local base = TRB.Classes.Hunter.HunterBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.Hunter.BeastMasterySpells) --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+function TRB.Classes.Mainline.Hunter.BeastMasterySpells:New()
+    ---@type TRB.Classes.Mainline.Hunter.HunterBaseSpells
+    local base = TRB.Classes.Mainline.Hunter.HunterBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Hunter.BeastMasterySpells) --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]
 
     -- Beast Mastery Spec Baseline Abilities
 
@@ -150,13 +150,13 @@ end
 
 ---Fills barTextVariables for Beast Mastery Hunter options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Hunter.BeastMasterySpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Hunter.BeastMasterySpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Hunter.BeastMasterySpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Hunter.BeastMasterySpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#beastCleave", icon = spells.beastCleave.icon, description = spells.beastCleave.name, printInSettings = true },
@@ -198,7 +198,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Beast Mastery, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Hunter.BeastMasterySpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Hunter.BeastMasterySpells.GetCastbarTickProfiles()
 	return AddPetChannelTickProfiles({})
 end
 
@@ -225,18 +225,18 @@ local function WailingArrow(line, buffSpell)
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Hunter.BeastMasterySpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Hunter.BeastMasterySpells.thresholdSnowflakes = {
 	spells = {
 		blackArrow = TRB.Classes.ThresholdLine.ColorByUsable,
 		killCommand = TRB.Classes.ThresholdLine.ColorByCooldown,
 		wailingArrow = function(line)
-			WailingArrow(line, (line.data.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]).bestialWrath)
+			WailingArrow(line, (line.data.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]).bestialWrath)
 		end,
 	},
 }
 
 
----@class TRB.Classes.Hunter.MarksmanshipSpells : TRB.Classes.Hunter.HunterBaseSpells
+---@class TRB.Classes.Mainline.Hunter.MarksmanshipSpells : TRB.Classes.Mainline.Hunter.HunterBaseSpells
 ---@field public steadyShot TRB.Classes.SpellBase
 ---@field public rapidFire TRB.Classes.SpellBase
 ---@field public quickDraw TRB.Classes.SpellBase
@@ -253,13 +253,13 @@ TRB.Classes.Hunter.BeastMasterySpells.thresholdSnowflakes = {
 ---@field public killShot TRB.Classes.SpellThreshold
 ---@field public wailingArrow TRB.Classes.SpellThreshold
 ---@field public explosiveShot TRB.Classes.SpellThreshold
-TRB.Classes.Hunter.MarksmanshipSpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
-TRB.Classes.Hunter.MarksmanshipSpells.__index = TRB.Classes.Hunter.MarksmanshipSpells
+TRB.Classes.Mainline.Hunter.MarksmanshipSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Hunter.HunterBaseSpells})
+TRB.Classes.Mainline.Hunter.MarksmanshipSpells.__index = TRB.Classes.Mainline.Hunter.MarksmanshipSpells
 
-function TRB.Classes.Hunter.MarksmanshipSpells:New()
-    ---@type TRB.Classes.Hunter.HunterBaseSpells
-    local base = TRB.Classes.Hunter.HunterBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.Hunter.MarksmanshipSpells) --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+function TRB.Classes.Mainline.Hunter.MarksmanshipSpells:New()
+    ---@type TRB.Classes.Mainline.Hunter.HunterBaseSpells
+    local base = TRB.Classes.Mainline.Hunter.HunterBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Hunter.MarksmanshipSpells) --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 
     -- Hunter Talent Abilities
 
@@ -398,13 +398,13 @@ end
 
 ---Fills barTextVariables for Marksmanship Hunter options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Hunter.MarksmanshipSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Hunter.MarksmanshipSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Hunter.MarksmanshipSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = spells.aimedShot.name, printInSettings = true },
@@ -438,7 +438,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Marksmanship, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Hunter.MarksmanshipSpells.GetCastbarTickProfiles()
 	return AddPetChannelTickProfiles({
 		-- Rapid Fire: 7 shots baseline over 2s, one on cast then every 1/3s; Quick Draw and Double Tap
 		-- shots come from tick modifiers.
@@ -449,7 +449,7 @@ end
 ---Gets built-in castbar tick modifiers for Marksmanship (talent/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
-function TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickModifiers()
+function TRB.Classes.Mainline.Hunter.MarksmanshipSpells.GetCastbarTickModifiers()
 	return {
 		-- Rapid Fire
 		[257044] = {
@@ -462,7 +462,7 @@ function TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickModifiers()
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Hunter.MarksmanshipSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Hunter.MarksmanshipSpells.thresholdSnowflakes = {
 	spells = {
 		aimedShot = function(line)
 			if line.snapshot ~= nil and line.snapshot.cooldown:IsUnusable() then
@@ -472,7 +472,7 @@ TRB.Classes.Hunter.MarksmanshipSpells.thresholdSnowflakes = {
 			end
 		end,
 		killShot = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 			if line.data.talents:IsTalentActive(spells.blackArrow) then
 				line:Hide()
 			else
@@ -481,13 +481,13 @@ TRB.Classes.Hunter.MarksmanshipSpells.thresholdSnowflakes = {
 		end,
 		blackArrow = UsableOrHidden,
 		wailingArrow = function(line)
-			WailingArrow(line, (line.data.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]).trueshot)
+			WailingArrow(line, (line.data.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]).trueshot)
 		end,
 	},
 }
 
 
----@class TRB.Classes.Hunter.SurvivalSpells : TRB.Classes.Hunter.HunterBaseSpells
+---@class TRB.Classes.Mainline.Hunter.SurvivalSpells : TRB.Classes.Mainline.Hunter.HunterBaseSpells
 ---@field public killCommand TRB.Classes.SpellBase
 ---@field public wildfireBomb TRB.Classes.SpellBase
 ---@field public takedown TRB.Classes.SpellBase
@@ -501,13 +501,13 @@ TRB.Classes.Hunter.MarksmanshipSpells.thresholdSnowflakes = {
 ---@field public raptorSwipeTalent2 TRB.Classes.SpellBase
 ---@field public raptorSwipeTalent3 TRB.Classes.SpellBase
 ---@field public flamefangPitch TRB.Classes.SpellThreshold
-TRB.Classes.Hunter.SurvivalSpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
-TRB.Classes.Hunter.SurvivalSpells.__index = TRB.Classes.Hunter.SurvivalSpells
+TRB.Classes.Mainline.Hunter.SurvivalSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Hunter.HunterBaseSpells})
+TRB.Classes.Mainline.Hunter.SurvivalSpells.__index = TRB.Classes.Mainline.Hunter.SurvivalSpells
 
-function TRB.Classes.Hunter.SurvivalSpells:New()
-    ---@type TRB.Classes.Hunter.HunterBaseSpells
-    local base = TRB.Classes.Hunter.HunterBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.Hunter.SurvivalSpells) --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+function TRB.Classes.Mainline.Hunter.SurvivalSpells:New()
+    ---@type TRB.Classes.Mainline.Hunter.HunterBaseSpells
+    local base = TRB.Classes.Mainline.Hunter.HunterBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Hunter.SurvivalSpells) --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
     
     -- Hunter Talent Abilities	
     self.killCommand = TRB.Classes.SpellBase:New({
@@ -604,13 +604,13 @@ end
 
 ---Fills barTextVariables for Survival Hunter options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Hunter.SurvivalSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Hunter.SurvivalSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Hunter.SurvivalSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#killCommand", icon = spells.killCommand.icon, description = spells.killCommand.name, printInSettings = true },
@@ -645,7 +645,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Survival, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Hunter.SurvivalSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Hunter.SurvivalSpells.GetCastbarTickProfiles()
 	return AddPetChannelTickProfiles({
         -- Mending Bandage
 		[212640] = { mode = "fixedCount", baseDuration = 6.0, tickCount = 6 },
@@ -655,7 +655,7 @@ function TRB.Classes.Hunter.SurvivalSpells.GetCastbarTickProfiles()
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Hunter.SurvivalSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Hunter.SurvivalSpells.thresholdSnowflakes = {
 	spells = {
 		raptorStrike = function(line)
 			if line.state.snapshotData.attributes.raptorStrikeOverride then
@@ -665,7 +665,7 @@ TRB.Classes.Hunter.SurvivalSpells.thresholdSnowflakes = {
 			end
 		end,
 		raptorSwipe = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 			local talentData = line.data.talents
 			local talented = talentData:IsTalentActive(spells.raptorSwipeTalent1) or talentData:IsTalentActive(spells.raptorSwipeTalent2) or talentData:IsTalentActive(spells.raptorSwipeTalent3)
 			if not talented or not line.state.snapshotData.attributes.raptorStrikeOverride then
@@ -687,15 +687,15 @@ TRB.Classes.Hunter.SurvivalSpells.thresholdSnowflakes = {
     Survival: Primary bar (N=1) + Secondary bar (N=3, Tip of the Spear stacks)
 ]]
 
----@class TRB.Classes.Hunter.BarGroupsFactory
-TRB.Classes.Hunter.BarGroupsFactory = {}
-TRB.Classes.Hunter.BarGroupsFactory.__index = TRB.Classes.Hunter.BarGroupsFactory
+---@class TRB.Classes.Mainline.Hunter.BarGroupsFactory
+TRB.Classes.Mainline.Hunter.BarGroupsFactory = {}
+TRB.Classes.Mainline.Hunter.BarGroupsFactory.__index = TRB.Classes.Mainline.Hunter.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Hunter specialization
 ---@param specId integer # 1=Beast Mastery, 2=Marksmanship, 3=Survival
 ---@param parentFrame Frame # The parent frame to attach bar groups to
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+function TRB.Classes.Mainline.Hunter.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
     -- Primary Focus bar (1 node)
@@ -730,7 +730,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Hunter.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Hunter.BarGroupsFactory:GetSpecConfiguration(specId)
     local config = {
         primary = {
             maxNodes = 1,
@@ -757,19 +757,19 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["hunter_beastMastery"] = TRB.Classes.Hunter.BeastMasterySpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["hunter_marksmanship"] = TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["hunter_survival"] = TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["hunter_beastMastery"] = TRB.Classes.Mainline.Hunter.BeastMasterySpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["hunter_marksmanship"] = TRB.Classes.Mainline.Hunter.MarksmanshipSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["hunter_survival"] = TRB.Classes.Mainline.Hunter.SurvivalSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["hunter_survival"] = TRB.Classes.Hunter.SurvivalSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["hunter_beastMastery"] = TRB.Classes.Hunter.BeastMasterySpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["hunter_marksmanship"] = TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["hunter_survival"] = TRB.Classes.Mainline.Hunter.SurvivalSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["hunter_beastMastery"] = TRB.Classes.Mainline.Hunter.BeastMasterySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["hunter_marksmanship"] = TRB.Classes.Mainline.Hunter.MarksmanshipSpells.GetCastbarTickProfiles
 
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
-TRB.Data.castbarTickModifiersRegistry["hunter_marksmanship"] = TRB.Classes.Hunter.MarksmanshipSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["hunter_marksmanship"] = TRB.Classes.Mainline.Hunter.MarksmanshipSpells.GetCastbarTickModifiers
 
 -- Register audio cue vocabularies
 do

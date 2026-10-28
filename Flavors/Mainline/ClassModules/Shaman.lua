@@ -90,9 +90,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.Shaman.ElementalSpells
-	specCache.shaman_elemental.spellsData.spells = TRB.Classes.Shaman.ElementalSpells:New()
-	local spells = specCache.shaman_elemental.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	---@type TRB.Classes.Mainline.Shaman.ElementalSpells
+	specCache.shaman_elemental.spellsData.spells = TRB.Classes.Mainline.Shaman.ElementalSpells:New()
+	local spells = specCache.shaman_elemental.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 	
 	---@type TRB.Classes.Snapshot
 	specCache.shaman_elemental.snapshotData.snapshots[spells.ascendance.id] = TRB.Classes.Snapshot:New(spells.ascendance)
@@ -142,9 +142,9 @@ local function FillSpecializationCache()
 		items = {}
 	}
 
-	---@type TRB.Classes.Shaman.EnhancementSpells
-	specCache.shaman_enhancement.spellsData.spells = TRB.Classes.Shaman.EnhancementSpells:New()
-	local spells = specCache.shaman_enhancement.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+	---@type TRB.Classes.Mainline.Shaman.EnhancementSpells
+	specCache.shaman_enhancement.spellsData.spells = TRB.Classes.Mainline.Shaman.EnhancementSpells:New()
+	local spells = specCache.shaman_enhancement.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.EnhancementSpells]]
 
 	specCache.shaman_enhancement.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -178,9 +178,9 @@ local function FillSpecializationCache()
 		}
 	}
 
-	---@type TRB.Classes.Shaman.RestorationSpells
-	specCache.shaman_restoration.spellsData.spells = TRB.Classes.Shaman.RestorationSpells:New()
-	local spells = specCache.shaman_restoration.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+	---@type TRB.Classes.Mainline.Shaman.RestorationSpells
+	specCache.shaman_restoration.spellsData.spells = TRB.Classes.Mainline.Shaman.RestorationSpells:New()
+	local spells = specCache.shaman_restoration.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.RestorationSpells]]
 
 	specCache.shaman_restoration.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -198,7 +198,7 @@ local function Setup_Elemental()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "shaman_elemental" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(1)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Shaman.BarGroupsFactory:CreateForSpec(1)
 	end
 end
 
@@ -208,7 +208,7 @@ local function Setup_Enhancement()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "shaman_enhancement" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(2)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Shaman.BarGroupsFactory:CreateForSpec(2)
 	end
 end
 
@@ -218,7 +218,7 @@ local function Setup_Restoration()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "shaman_restoration" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(3)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Shaman.BarGroupsFactory:CreateForSpec(3)
 	end
 end
 
@@ -226,21 +226,21 @@ local function FillSpellData_Elemental()
 	Setup_Elemental()
 	---@type TRB.Classes.SpellsData
 	specCache.shaman_elemental.spellsData:FillSpellData()
-	TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables(specCache.shaman_elemental)
+	TRB.Classes.Mainline.Shaman.ElementalSpells.FillBarTextVariables(specCache.shaman_elemental)
 end
 
 local function FillSpellData_Enhancement()
 	Setup_Enhancement()
 	---@type TRB.Classes.SpellsData
 	specCache.shaman_enhancement.spellsData:FillSpellData()
-	TRB.Classes.Shaman.EnhancementSpells.FillBarTextVariables(specCache.shaman_enhancement)
+	TRB.Classes.Mainline.Shaman.EnhancementSpells.FillBarTextVariables(specCache.shaman_enhancement)
 end
 
 local function FillSpellData_Restoration()
 	Setup_Restoration()
 	---@type TRB.Classes.SpellsData
 	specCache.shaman_restoration.spellsData:FillSpellData()
-	TRB.Classes.Shaman.RestorationSpells.FillBarTextVariables(specCache.shaman_restoration)
+	TRB.Classes.Mainline.Shaman.RestorationSpells.FillBarTextVariables(specCache.shaman_restoration)
 end
 
 local function RefreshTargetTracking()
@@ -318,9 +318,9 @@ end
 ---Stormkeeper's charge cap, raised by the Midnight Season 1 4pc.
 ---@return integer
 local function GetStormkeeperMaxStacks()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 	local maxStacks = spells.stormkeeper.maxStacks
-	if TRB.Functions.Item:HasSetBonus(TRB.Classes.Shaman.ElementalSpells.midnightSeason1SetKey, 4) then
+	if TRB.Functions.Item:HasSetBonus(TRB.Classes.Mainline.Shaman.ElementalSpells.midnightSeason1SetKey, 4) then
 		maxStacks = maxStacks + spells.midnightSeason1SetBonus.attributes.fourPieceMaxStacks
 	end
 	return maxStacks
@@ -328,7 +328,7 @@ end
 
 ---Refreshes Tempest's charges and time left. The override event says it is up; CDM's stack text, blank
 ---below two, separates one charge from two.
----@param spells TRB.Classes.Shaman.ElementalSpells|TRB.Classes.Shaman.EnhancementSpells
+---@param spells TRB.Classes.Mainline.Shaman.ElementalSpells|TRB.Classes.Mainline.Shaman.EnhancementSpells
 ---@param attributes table
 ---@param currentTime number
 local function UpdateTempest(spells, attributes, currentTime)
@@ -377,7 +377,7 @@ local function UpdateTempest(spells, attributes, currentTime)
 end
 
 ---Writes Tempest's bar text. Down is a known zero; up with nothing in CDM tracking it is unknown.
----@param spells TRB.Classes.Shaman.ElementalSpells|TRB.Classes.Shaman.EnhancementSpells
+---@param spells TRB.Classes.Mainline.Shaman.ElementalSpells|TRB.Classes.Mainline.Shaman.EnhancementSpells
 ---@param attributes table
 ---@param lookup table
 ---@param lookupLogic table
@@ -432,7 +432,7 @@ local tempestCues = {
 ---Fires the Tempest charge cues. Without CDM a charge still counts as one, so only the one charge cue can play.
 ---@param specSettings table
 ---@param snapshotData TRB.Classes.SnapshotData
----@param spells TRB.Classes.Shaman.ElementalSpells|TRB.Classes.Shaman.EnhancementSpells
+---@param spells TRB.Classes.Mainline.Shaman.ElementalSpells|TRB.Classes.Mainline.Shaman.EnhancementSpells
 local function FireTempestCues(specSettings, snapshotData, spells)
 	local attributes = snapshotData.attributes
 	local stacks = attributes.tempestStacks or (attributes.tempestActive and 1 or 0)
@@ -456,7 +456,7 @@ end
 local function RefreshLookupData_Elemental()
 	local specSettings = TRB.Data.settings.shaman.elemental
 	local sharedSettings = TRB.Data.specCache["shaman_elemental"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local currentTime = GetTime()
@@ -624,7 +624,7 @@ end
 
 local function RefreshLookupData_Enhancement()
 	local sharedSettings = TRB.Data.specCache["shaman_enhancement"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.EnhancementSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
@@ -707,7 +707,7 @@ end
 
 local function RefreshLookupData_Restoration()
 	local sharedSettings = TRB.Data.specCache["shaman_restoration"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.RestorationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
@@ -775,7 +775,7 @@ end
 
 local function FillSnapshotDataCasting(spell, resourceMod)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 
 	resourceMod = resourceMod or 0
 	local resourceMultMod = 1
@@ -800,7 +800,7 @@ end
 ---@param stacks integer
 ---@param currentTime number
 local function AddStormkeeperStacks(stacks, currentTime)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 	local buff = TRB.Data.snapshotData.snapshots[spells.stormkeeper.id].buff
 
 	buff:GetRemainingTime(currentTime)
@@ -817,7 +817,7 @@ end
 --TODO: Remove?
 local function UpdateCastingResourceFinal_Restoration()
 	-- Do nothing for now
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.RestorationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	-- Do nothing for now
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
@@ -835,7 +835,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local affectingCombat = TRB.Data.character.inCombat
 
 	if TRB.Data.character.specId == 1 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 		if event == "UNIT_SPELLCAST_START" then
 			if spellId == spells.lightningBolt.id then
 				FillSnapshotDataCasting(spells.lightningBolt)
@@ -891,7 +891,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshotData.snapshots[spells.ascendance.id].buff:InitializeCustom(duration, currentTime)
 			elseif spellId == spells.stormkeeper.id then
 				local stacks = spells.stormkeeper.attributes.stacks
-				if TRB.Functions.Item:HasSetBonus(TRB.Classes.Shaman.ElementalSpells.midnightSeason1SetKey, 4) then
+				if TRB.Functions.Item:HasSetBonus(TRB.Classes.Mainline.Shaman.ElementalSpells.midnightSeason1SetKey, 4) then
 					stacks = stacks + spells.midnightSeason1SetBonus.attributes.fourPieceStacks
 				end
 				AddStormkeeperStacks(stacks, currentTime)
@@ -910,7 +910,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Enhancement()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-			local spells = spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+			local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.EnhancementSpells]]
 			if spellId == spells.ascendance.castId then
 				snapshotData.snapshots[spells.ascendance.id].buff:InitializeCustom(spells.ascendance.duration, currentTime)
 			elseif spellId == spells.doomWinds.castId then
@@ -922,7 +922,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Restoration()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-			local spells = spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+			local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.RestorationSpells]]
 			if spellId == spells.ascendance.castId then
 				local duration = spells.ascendance.duration
 				if talents:IsTalentActive(spells.preeminence) then
@@ -935,7 +935,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 end
 
 local function UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells|TRB.Classes.Shaman.EnhancementSpells|TRB.Classes.Shaman.RestorationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells|TRB.Classes.Mainline.Shaman.EnhancementSpells|TRB.Classes.Mainline.Shaman.RestorationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local currentTime = GetTime()
@@ -978,7 +978,7 @@ end
 
 local function UpdateSnapshot_Elemental()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 	local snapshots = TRB.Data.snapshotData.snapshots
 
 	for _, node in pairs(elementalBlastBuffNodes) do
@@ -994,7 +994,7 @@ end
 local function UpdateSnapshot_Enhancement()
 	local currentTime = GetTime()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.EnhancementSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
@@ -1041,7 +1041,7 @@ local function UpdateElementalBlastBuffs(specSettings)
 		return
 	end
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local cdm = TRB.Functions.CooldownManager
 	local gradient = Color:GetResolvedGradient()
@@ -1119,7 +1119,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.elemental
 		local specCacheSettings = TRB.Data.specCache.shaman_elemental.settings
 		UpdateSnapshot_Elemental()
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 		local earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and spells.earthShock:IsUsable())
 			or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
 
@@ -1196,7 +1196,7 @@ local function UpdateResourceBar()
 				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 				thresholdState:Refresh(specCacheSettings)
 				thresholdData:Refresh(talents)
-				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Shaman.ElementalSpells.thresholdSnowflakes)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Shaman.ElementalSpells.thresholdSnowflakes)
 
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
@@ -1387,7 +1387,7 @@ local function UpdateResourceBar()
 		FireTempestCues(specSettings, snapshotData, spells)
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	elseif TRB.Data.character.specId == 2 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.EnhancementSpells]]
 		local specSettings = classSettings.enhancement
 		local specCacheSettings = TRB.Data.specCache.shaman_enhancement.settings
 		UpdateSnapshot_Enhancement()
@@ -1651,7 +1651,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Restoration()
 
 		if snapshotData.attributes.isTracking then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.RestorationSpells]]
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
 			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
@@ -1738,7 +1738,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.shaman_elemental)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1777,7 +1777,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.shaman_enhancement)
 			
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]		
-		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.EnhancementSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1806,7 +1806,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.shaman_restoration)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.RestorationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1893,7 +1893,7 @@ function TRB.Functions.Class:CheckCharacter()
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.RestorationSpells]]
 		TRB.Data.character.specName = "restoration"
 		TRB.Data.character.compositeKey = "shaman_restoration"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana, true)
@@ -1909,7 +1909,7 @@ local function HandleSpellEvents(_, event, ...)
 		end
 
 		local spellId, overrideSpellId = ...
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells|TRB.Classes.Shaman.EnhancementSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells|TRB.Classes.Mainline.Shaman.EnhancementSpells]]
 		if spellId ~= spells.lightningBolt.id then
 			return
 		end

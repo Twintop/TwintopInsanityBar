@@ -20,6 +20,7 @@ local addonName, TRB = ...
 TRB.Flavor = {
 	id = "forever",
 	nameKey = "FlavorForever",
+	classNamespace = "Forever",
 	-- Distinct from mainline's global so the two flavors never share a settings table, even if the
 	-- client ends up sharing an AddOns/WTF folder between them.
 	savedVariablesName = "TwintopInsanityBarForeverSettings",
@@ -32,6 +33,7 @@ TRB.Flavor = {
 	},
 	-- Blizzard_SwingTimer's PLAYER_SWING event; no other client has it.
 	swingTimers = true,
+	blizzardSwingTimer = true,
 	-- Ranked spells are learned one at a time, so a threshold's spell may not be known yet.
 	thresholdsRequireKnown = true,
 

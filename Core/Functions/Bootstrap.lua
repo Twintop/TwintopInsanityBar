@@ -25,6 +25,12 @@ TRB.Functions.Bootstrap = {}
 local registeredModule = nil
 local eventFrame = CreateFrame("Frame")
 
+-- A loading screen, a spec change, or a talent change re-runs SwitchSpec.
+local switchSpecEvents = { PLAYER_ENTERING_WORLD = true, PLAYER_SPECIALIZATION_CHANGED = true, TRAIT_CONFIG_UPDATED = true }
+for _, talentEvent in ipairs(TRB.Flavor.talentEvents) do
+	switchSpecEvents[talentEvent] = true
+end
+
 local SLASH_COMMANDS = { "/twintop", "/tt", "/tib", "/tit", "/ttib", "/ttit", "/trb", "/trt", "/ttrt", "/ttrb" }
 
 ---Loads, migrates and merges the saved variables into TRB.Data.settings for the registered class.
@@ -111,6 +117,7 @@ local function StartDeferredSetup(module, classEntry)
 			TRB.Data.barConstructedForSpec = nil
 			module.SwitchSpec()
 			TRB.Functions.CooldownManager:RelinkActiveConditions()
+			TRB.Functions.Aura:RefreshConditionSpells()
 
 			options.ConstructOptionsPanel(module.specCache)
 
@@ -173,7 +180,7 @@ local function OnEvent(_, event, arg1, ...)
 			StartDeferredSetup(module, classEntry)
 		end
 
-		if TRB.Details.addonData.optionsPanelFinished and (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED") then
+		if TRB.Details.addonData.optionsPanelFinished and switchSpecEvents[event] then
 			if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
 				TRB.Functions.Bar:QueueRenderTransition("eventPreSwitch", 0.8)
 			elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
@@ -183,6 +190,7 @@ local function OnEvent(_, event, arg1, ...)
 				C_Timer.After(0.1, function()
 					module.SwitchSpec()
 					TRB.Functions.CooldownManager:RelinkActiveConditions()
+					TRB.Functions.Aura:RefreshConditionSpells()
 				end)
 			end)
 		end
@@ -203,6 +211,9 @@ function TRB.Functions.Bootstrap:RegisterClassModule(module)
 	eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	eventFrame:RegisterEvent("PLAYER_LOGOUT") -- Fired when about to log out
+	for _, talentEvent in ipairs(TRB.Flavor.talentEvents) do
+		eventFrame:RegisterEvent(talentEvent)
+	end
 	for _, extraEvent in ipairs(module.extraEvents or {}) do
 		eventFrame:RegisterEvent(extraEvent)
 	end

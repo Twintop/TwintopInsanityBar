@@ -25,6 +25,7 @@ TRB.Flavor = {
 	id = "mainline",
 	-- Localization key for the flavor's display name; resolved once localization has loaded.
 	nameKey = "FlavorMainline",
+	classNamespace = "Mainline",
 	-- The global the TOC's SavedVariables line declares. Per-flavor so two flavors can never share a
 	-- settings table, even if a future client ends up sharing an AddOns/WTF folder between lineages.
 	savedVariablesName = "TwintopInsanityBarSettings",

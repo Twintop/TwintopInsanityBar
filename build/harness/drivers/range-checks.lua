@@ -300,6 +300,9 @@ function hooks.afterEvents(ctx)
 		Step(entry.compositeKey .. " after " .. change, "PLAYER_SPECIALIZATION_CHANGED", entry.compositeKey)
 		Step(entry.compositeKey .. " after a loading screen", "PLAYER_ENTERING_WORLD", entry.compositeKey)
 		Step(entry.compositeKey .. " after a talent change", "TRAIT_CONFIG_UPDATED:12345", entry.compositeKey)
+		for _, talentEvent in ipairs(TRB.Flavor.talentEvents) do
+			Step(entry.compositeKey .. " after " .. talentEvent, talentEvent, entry.compositeKey)
+		end
 	end
 
 	---Turns Use Global threshold colors off for the class's specs, with their own colors needing no range checks.

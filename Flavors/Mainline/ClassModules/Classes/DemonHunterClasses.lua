@@ -1,9 +1,9 @@
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
+TRB.Classes.Mainline.DemonHunter = TRB.Classes.Mainline.DemonHunter or {}
 
 
----@class TRB.Classes.DemonHunter.HavocSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.DemonHunter.HavocSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public demonic TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase
 ---@field public blindFury TRB.Classes.SpellBase
@@ -16,13 +16,13 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public eyeBeam TRB.Classes.SpellThreshold
 ---@field public abyssalGaze TRB.Classes.SpellThreshold
-TRB.Classes.DemonHunter.HavocSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.DemonHunter.HavocSpells.__index = TRB.Classes.DemonHunter.HavocSpells
+TRB.Classes.Mainline.DemonHunter.HavocSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.DemonHunter.HavocSpells.__index = TRB.Classes.Mainline.DemonHunter.HavocSpells
 
-function TRB.Classes.DemonHunter.HavocSpells:New()
+function TRB.Classes.Mainline.DemonHunter.HavocSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
-	self = setmetatable(base:New(), TRB.Classes.DemonHunter.HavocSpells) --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+	self = setmetatable(base:New(), TRB.Classes.Mainline.DemonHunter.HavocSpells) --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 	--Demon Hunter Class Baseline Abilities	
 	self.metamorphosis = TRB.Classes.SpellBase:New({
 		id = 162264,
@@ -150,13 +150,13 @@ end
 
 ---Fills barTextVariables for Havoc Demon Hunter options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.DemonHunter.HavocSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.DemonHunter.HavocSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.DemonHunter.HavocSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.DemonHunter.HavocSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#annihilation", icon = spells.annihilation.icon, description = spells.annihilation.name, printInSettings = true },
@@ -188,7 +188,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Havoc, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.DemonHunter.HavocSpells.GetCastbarTickProfiles()
 	return {
 		-- Eye Beam
 		[198013] = { mode = "fixedCount", baseDuration = 2, tickCount = 11, firstTickAtStart = true },
@@ -202,7 +202,7 @@ end
 ---Gets built-in castbar tick modifiers for Havoc (talent/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
-function TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickModifiers()
+function TRB.Classes.Mainline.DemonHunter.HavocSpells.GetCastbarTickModifiers()
 	-- Blind Fury: each rank lengthens the channel 10% at the same tick rate
 	local blindFury = { talentId = 203550, bonusTicks = { 1, 2 }, bonusDuration = { 0.2, 0.4 } }
 	return {
@@ -213,15 +213,15 @@ function TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickModifiers()
 	}
 end
 
----@class TRB.Classes.DemonHunter.ThresholdState : TRB.Classes.ThresholdState
+---@class TRB.Classes.Mainline.DemonHunter.ThresholdState : TRB.Classes.ThresholdState
 ---@field public metamorphosis boolean
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.DemonHunter.HavocSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.DemonHunter.HavocSpells.thresholdSnowflakes = {
 	-- Abilities replaced during Metamorphosis hide in the form they don't exist in.
 	before = function(line)
 		local demonForm = line.spell.attributes.demonForm
-		if demonForm ~= nil and demonForm ~= (line.state --[[@as TRB.Classes.DemonHunter.ThresholdState]]).metamorphosis then
+		if demonForm ~= nil and demonForm ~= (line.state --[[@as TRB.Classes.Mainline.DemonHunter.ThresholdState]]).metamorphosis then
 			line:Hide()
 			return true
 		end
@@ -249,7 +249,7 @@ TRB.Classes.DemonHunter.HavocSpells.thresholdSnowflakes = {
 }
 
 
----@class TRB.Classes.DemonHunter.VengeanceSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.DemonHunter.VengeanceSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public soulFragments TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase
 ---@field public vengefulBeast TRB.Classes.SpellBase
@@ -260,13 +260,13 @@ TRB.Classes.DemonHunter.HavocSpells.thresholdSnowflakes = {
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public felDevastation TRB.Classes.SpellThreshold
 ---@field public spiritBomb TRB.Classes.SpellThreshold
-TRB.Classes.DemonHunter.VengeanceSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.DemonHunter.VengeanceSpells.__index = TRB.Classes.DemonHunter.VengeanceSpells
+TRB.Classes.Mainline.DemonHunter.VengeanceSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.DemonHunter.VengeanceSpells.__index = TRB.Classes.Mainline.DemonHunter.VengeanceSpells
 
-function TRB.Classes.DemonHunter.VengeanceSpells:New()
+function TRB.Classes.Mainline.DemonHunter.VengeanceSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
-	self = setmetatable(base:New(), TRB.Classes.DemonHunter.VengeanceSpells) --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	self = setmetatable(base:New(), TRB.Classes.Mainline.DemonHunter.VengeanceSpells) --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 
 	--Resource
 	self.soulFragments = TRB.Classes.SpellBase:New({
@@ -357,13 +357,13 @@ end
 
 ---Fills barTextVariables for Vengeance Demon Hunter options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.DemonHunter.VengeanceSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.DemonHunter.VengeanceSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.DemonHunter.VengeanceSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.DemonHunter.VengeanceSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
@@ -393,7 +393,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Vengeance, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.DemonHunter.VengeanceSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.DemonHunter.VengeanceSpells.GetCastbarTickProfiles()
 	return {
 		-- Illidan's Grasp
 		[205630] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
@@ -403,7 +403,7 @@ function TRB.Classes.DemonHunter.VengeanceSpells.GetCastbarTickProfiles()
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.DemonHunter.VengeanceSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.DemonHunter.VengeanceSpells.thresholdSnowflakes = {
 	spells = {
 		soulCleave = TRB.Classes.ThresholdLine.ColorByUsable,
 		spiritBomb = TRB.Classes.ThresholdLine.ColorByUsable,
@@ -411,7 +411,7 @@ TRB.Classes.DemonHunter.VengeanceSpells.thresholdSnowflakes = {
 }
 
 
----@class TRB.Classes.DemonHunter.DevourerSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.DemonHunter.DevourerSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public consume TRB.Classes.SpellBase
 ---@field public predatorsThirst TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase -- Void Metamorphosis but keeping it simple naming to re-use existing code
@@ -423,13 +423,13 @@ TRB.Classes.DemonHunter.VengeanceSpells.thresholdSnowflakes = {
 ---@field public celestialEcoes TRB.Classes.SpellBase
 ---@field public collapsingStarThreshold TRB.Classes.SpellThreshold
 ---@field public voidRay TRB.Classes.SpellThreshold
-TRB.Classes.DemonHunter.DevourerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.DemonHunter.DevourerSpells.__index = TRB.Classes.DemonHunter.DevourerSpells
+TRB.Classes.Mainline.DemonHunter.DevourerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.DemonHunter.DevourerSpells.__index = TRB.Classes.Mainline.DemonHunter.DevourerSpells
 
-function TRB.Classes.DemonHunter.DevourerSpells:New()
+function TRB.Classes.Mainline.DemonHunter.DevourerSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
-	self = setmetatable(base:New(), TRB.Classes.DemonHunter.DevourerSpells) --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+	self = setmetatable(base:New(), TRB.Classes.Mainline.DemonHunter.DevourerSpells) --[[@as TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 	--Demon Hunter Class Baseline Abilities
 	self.consume = TRB.Classes.SpellBase:New({
 		id = 473662,
@@ -519,13 +519,13 @@ end
 
 ---Fills barTextVariables for Devourer Demon Hunter options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.DemonHunter.DevourerSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.DemonHunter.DevourerSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.DemonHunter.DevourerSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#collapsingStar", icon = spells.collapsingStar.icon, description = spells.collapsingStar.name, printInSettings = true },
@@ -564,7 +564,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Devourer, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.DemonHunter.DevourerSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.DemonHunter.DevourerSpells.GetCastbarTickProfiles()
 	return {
 		-- Void Ray
 		[473728] = { mode = "fixedCount", baseDuration = 3, tickCount = 20, firstTickAtStart = false },
@@ -572,10 +572,10 @@ function TRB.Classes.DemonHunter.DevourerSpells.GetCastbarTickProfiles()
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.DemonHunter.DevourerSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.DemonHunter.DevourerSpells.thresholdSnowflakes = {
 	spells = {
 		voidRay = function(line)
-			if (line.state --[[@as TRB.Classes.DemonHunter.ThresholdState]]).metamorphosis then
+			if (line.state --[[@as TRB.Classes.Mainline.DemonHunter.ThresholdState]]).metamorphosis then
 				line:Hide()
 				return
 			end
@@ -599,15 +599,15 @@ TRB.Classes.DemonHunter.DevourerSpells.thresholdSnowflakes = {
     Devourer (specId=3): Primary bar (N=1) + Soul Fragments (N=1, percentage-based from Blizzard UI)
 ]]
 
----@class TRB.Classes.DemonHunter.BarGroupsFactory
-TRB.Classes.DemonHunter.BarGroupsFactory = {}
-TRB.Classes.DemonHunter.BarGroupsFactory.__index = TRB.Classes.DemonHunter.BarGroupsFactory
+---@class TRB.Classes.Mainline.DemonHunter.BarGroupsFactory
+TRB.Classes.Mainline.DemonHunter.BarGroupsFactory = {}
+TRB.Classes.Mainline.DemonHunter.BarGroupsFactory.__index = TRB.Classes.Mainline.DemonHunter.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Demon Hunter specialization
 ---@param specId integer # 1=Havoc, 2=Vengeance, 3=Devourer
 ---@param parentFrame Frame # The parent frame to attach bar groups to
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+function TRB.Classes.Mainline.DemonHunter.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
     -- Primary bar groups are parented directly to UIParent for proper positioning
@@ -688,7 +688,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.DemonHunter.BarGroupsFactory:GetSpecConfiguration(specId)
     if specId == 1 then -- Havoc
         return {
             primary = {
@@ -752,19 +752,19 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["demonhunter_havoc"] = TRB.Classes.DemonHunter.HavocSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["demonhunter_vengeance"] = TRB.Classes.DemonHunter.VengeanceSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["demonhunter_devourer"] = TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["demonhunter_havoc"] = TRB.Classes.Mainline.DemonHunter.HavocSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["demonhunter_vengeance"] = TRB.Classes.Mainline.DemonHunter.VengeanceSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["demonhunter_devourer"] = TRB.Classes.Mainline.DemonHunter.DevourerSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["demonhunter_havoc"] = TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["demonhunter_vengeance"] = TRB.Classes.DemonHunter.VengeanceSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["demonhunter_devourer"] = TRB.Classes.DemonHunter.DevourerSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["demonhunter_havoc"] = TRB.Classes.Mainline.DemonHunter.HavocSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["demonhunter_vengeance"] = TRB.Classes.Mainline.DemonHunter.VengeanceSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["demonhunter_devourer"] = TRB.Classes.Mainline.DemonHunter.DevourerSpells.GetCastbarTickProfiles
 
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
-TRB.Data.castbarTickModifiersRegistry["demonhunter_havoc"] = TRB.Classes.DemonHunter.HavocSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["demonhunter_havoc"] = TRB.Classes.Mainline.DemonHunter.HavocSpells.GetCastbarTickModifiers
 
 -- Spec descriptors: the traits Core needs to know about these specs (see Core\Classes\SpecDescriptor.lua).
 -- Everything class-specific that shared code used to hard-code by class/spec id is declared here instead.

@@ -49,6 +49,9 @@ local function AuraUpdateEvent(self, event, unit, info)
 		if TRB.Functions.Class and TRB.Functions.Class.OnPlayerUnitAura then
 			TRB.Functions.Class:OnPlayerUnitAura(info)
 		end
+		if TRB.Flavor.playerAuras then
+			TRB.Functions.Aura:UpdateConditionAuras(info)
+		end
 		-- The payload below is secret, so treat every player aura change as a full update and
 		-- re-read the tracked buffs directly from the aura API.
 		TRB.Functions.Aura:RequestPlayerBuffRefresh()
@@ -189,6 +192,8 @@ unitAuraFrame:SetScript("OnEvent", AuraUpdateEvent)
 ---Registers the UNIT_AURA event so the addon begins processing aura updates for the player
 function TRB.Functions.Aura:EnableUnitAura()
 	unitAuraFrame:RegisterUnitEvent("UNIT_AURA", "player")
+	-- Buffs gained or lost while UNIT_AURA was off left the followed buffs stale.
+	self:RefreshConditionSpells()
 end
 
 ---Unregisters the UNIT_AURA event so the addon stops processing aura updates
@@ -289,6 +294,118 @@ function TRB.Functions.Aura:FindDebuffById(spellId, onWhom, byWhom)
 			return debuffData
 		end
 	end
+end
+
+-- Custom indicators and Buff Alerts following a player buff by spell ID where auras are never secret; matched by name, so any rank counts.
+TRB.Functions.Aura.CONDITION_SOURCE = "aura"
+
+---@enum TRB.AuraConditionState
+TRB.Functions.Aura.ConditionState = {
+	ACTIVE = "active",
+}
+
+-- The played spec's followed buffs: spell -> name, name -> whether it's up, aura instance -> name; kept current by UNIT_AURA.
+local conditionNames = {}
+local conditionActive = {}
+local conditionInstances = {}
+
+---@param conditions TRB.CustomIndicatorCondition[]?
+local function AddConditionSpells(conditions)
+	if conditions == nil then
+		return
+	end
+	for _, condition in ipairs(conditions) do
+		local spellId = condition.source == TRB.Functions.Aura.CONDITION_SOURCE and condition.spellID or nil
+		local name = spellId ~= nil and C_Spell.GetSpellName(spellId) or nil
+		if spellId ~= nil and name ~= nil then
+			conditionNames[spellId] = name
+			conditionActive[name] = false
+		end
+	end
+end
+
+---Re-reads whether the player has the named buff, recording the copy it found.
+---@param name string
+local function ReadConditionAura(name)
+	local aura = C_UnitAuras.GetAuraDataBySpellName("player", name, "HELPFUL")
+	conditionActive[name] = aura ~= nil
+	if aura ~= nil then
+		conditionInstances[aura.auraInstanceID] = name
+	end
+end
+
+---Rebuilds the buffs the played spec's custom indicators and Buff Alerts follow, and reads each once. Call
+---after a spec change, or after one is added, re-pointed, or removed.
+function TRB.Functions.Aura:RefreshConditionSpells()
+	wipe(conditionNames)
+	wipe(conditionActive)
+	wipe(conditionInstances)
+	local spec = TRB.Flavor.playerAuras and TRB.Functions.Character:GetActiveRawSpecSettings() or nil
+	if spec == nil then
+		return
+	end
+
+	local indicatorColors = spec.colors ~= nil and spec.colors.shared ~= nil and spec.colors.shared.indicatorColors or nil
+	if indicatorColors ~= nil then
+		for _, indicator in pairs(indicatorColors) do
+			AddConditionSpells(type(indicator) == "table" and indicator.custom ~= nil and indicator.custom.conditions or nil)
+		end
+	end
+	if spec.audio ~= nil then
+		for _, cue in pairs(spec.audio) do
+			AddConditionSpells(type(cue) == "table" and cue.kind == "buff" and cue.configuration ~= nil and cue.configuration.conditions or nil)
+		end
+	end
+	for name in pairs(conditionActive) do
+		ReadConditionAura(name)
+	end
+	TRB.Data.lookupDirty = true
+end
+
+---Keeps the followed buffs current from a player UNIT_AURA payload: a gain by name, a loss by aura instance.
+---@param info UnitAuraUpdateInfo?
+function TRB.Functions.Aura:UpdateConditionAuras(info)
+	if next(conditionActive) == nil then
+		return
+	end
+	if info == nil or info.isFullUpdate then
+		wipe(conditionInstances)
+		for name in pairs(conditionActive) do
+			ReadConditionAura(name)
+		end
+		return
+	end
+
+	if info.addedAuras ~= nil then
+		for _, aura in ipairs(info.addedAuras) do
+			local name = aura.isHelpful and aura.name or nil
+			if name ~= nil and conditionActive[name] ~= nil then
+				conditionActive[name] = true
+				conditionInstances[aura.auraInstanceID] = name
+			end
+		end
+	end
+	if info.removedAuraInstanceIDs ~= nil then
+		for _, auraInstanceId in ipairs(info.removedAuraInstanceIDs) do
+			local name = conditionInstances[auraInstanceId]
+			if name ~= nil then
+				conditionInstances[auraInstanceId] = nil
+				-- Another caster's copy, or another rank, can still be up.
+				ReadConditionAura(name)
+			end
+		end
+	end
+end
+
+---Whether a buff condition holds right now: the player has any rank of its spell.
+---@param condition TRB.CustomIndicatorCondition
+---@return boolean
+function TRB.Functions.Aura:IsConditionMet(condition)
+	if condition.state ~= TRB.Functions.Aura.ConditionState.ACTIVE then
+		return false
+	end
+	local name = conditionNames[condition.spellID]
+	return name ~= nil and conditionActive[name] == true
 end
 
 ---@alias trbAuraEventType

@@ -324,7 +324,7 @@ local function DisciplineLoadDefaultSettings(includeBarText, classic)
 				}
 			},
 			bars = {
-				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
+				utility = TRB.Classes.Mainline.Priest.DefaultAngelicFeatherUtilityBarColors(),
 			},
 			shared = {
 				nodeOrder = {
@@ -825,7 +825,7 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			bars = {
 				holyWords = TRB.Functions.Settings:DefaultHolyWordsBarColors(),
 				lightweaver = TRB.Functions.Settings:DefaultLightweaverBarColors(),
-				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
+				utility = TRB.Classes.Mainline.Priest.DefaultAngelicFeatherUtilityBarColors(),
 			},
 			shared = {
 				nodeOrder = { "benediction", "holyWordSerenity", "holyWordSanctify", "holyWordChastise", "apotheosisEnd", "apotheosis", "surgeOfLight2", "surgeOfLight", "lightweaver" },
@@ -1274,7 +1274,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			bars = {
 				mana = TRB.Functions.Settings:DefaultManaBarColors(),
-				utility = TRB.Classes.Priest.DefaultAngelicFeatherUtilityBarColors(),
+				utility = TRB.Classes.Mainline.Priest.DefaultAngelicFeatherUtilityBarColors(),
 			},
 		},
 		displayText={

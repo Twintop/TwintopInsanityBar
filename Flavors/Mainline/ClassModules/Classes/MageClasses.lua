@@ -1,10 +1,10 @@
 local _, TRB = ...
 
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Mage = TRB.Classes.Mage or {}
+TRB.Classes.Mainline.Mage = TRB.Classes.Mainline.Mage or {}
 
 
----@class TRB.Classes.Mage.ArcaneSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Mage.ArcaneSpells : TRB.Classes.SpecializationSpellsBase
 ---@field arcaneSurge TRB.Classes.SpellBase
 ---@field arcaneSalvo TRB.Classes.SpellBase
 ---@field spellfireSalvo TRB.Classes.SpellBase
@@ -12,13 +12,13 @@ TRB.Classes.Mage = TRB.Classes.Mage or {}
 ---@field improvedClearcasting TRB.Classes.SpellBase
 ---@field prismaticBolt TRB.Classes.SpellBase
 ---@field overpoweredMissiles TRB.Classes.SpellBase
-TRB.Classes.Mage.ArcaneSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Mage.ArcaneSpells.__index = TRB.Classes.Mage.ArcaneSpells
+TRB.Classes.Mainline.Mage.ArcaneSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Mage.ArcaneSpells.__index = TRB.Classes.Mainline.Mage.ArcaneSpells
 
-function TRB.Classes.Mage.ArcaneSpells:New()
+function TRB.Classes.Mainline.Mage.ArcaneSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Mage.ArcaneSpells) --[[@as TRB.Classes.Mage.ArcaneSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Mage.ArcaneSpells) --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
     -- Mage Class Baseline Abilities
 
     -- Arcane Baseline Abilities
@@ -74,13 +74,13 @@ end
 
 ---Fills barTextVariables for Arcane Mage options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Mage.ArcaneSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Mage.ArcaneSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Mage.ArcaneSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#arcaneSurge", icon = spells.arcaneSurge.icon, description = spells.arcaneSurge.name, printInSettings = true },
@@ -124,7 +124,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Arcane, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Mage.ArcaneSpells.GetCastbarTickProfiles()
 	return {
 		-- Arcane Missiles
 		[5143] = { mode = "fixedCount", baseDuration = 2, tickCount = 5, firstTickAtStart = true, chains = true },
@@ -143,7 +143,7 @@ local arcaneMidnightSeason2SetKey = "mage_arcane_midnightSeason2"
 ---Gets built-in castbar tick modifiers for Arcane (talent/set/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
-function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers()
+function TRB.Classes.Mainline.Mage.ArcaneSpells.GetCastbarTickModifiers()
 	return {
 		-- Arcane Missiles
 		[5143] = {
@@ -156,7 +156,7 @@ function TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers()
 end
 
 
----@class TRB.Classes.Mage.FireSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Mage.FireSpells : TRB.Classes.SpecializationSpellsBase
 ---@field fireBlast TRB.Classes.SpellBase
 ---@field flameOn TRB.Classes.SpellBase
 ---@field ferventFlickering TRB.Classes.SpellBase
@@ -166,13 +166,13 @@ end
 ---@field hotStreak TRB.Classes.SpellBase
 ---@field frostfireBolt TRB.Classes.SpellBase
 ---@field frostfireEmpowerment TRB.Classes.SpellBase
-TRB.Classes.Mage.FireSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Mage.FireSpells.__index = TRB.Classes.Mage.FireSpells
+TRB.Classes.Mainline.Mage.FireSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Mage.FireSpells.__index = TRB.Classes.Mainline.Mage.FireSpells
 
-function TRB.Classes.Mage.FireSpells:New()
+function TRB.Classes.Mainline.Mage.FireSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Mage.FireSpells) --[[@as TRB.Classes.Mage.FireSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Mage.FireSpells) --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
     
     self.fireBlast = TRB.Classes.SpellBase:New({
         id = 108853,
@@ -235,13 +235,13 @@ end
 
 ---Fills barTextVariables for Fire Mage options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Mage.FireSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Mage.FireSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Mage.FireSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#combustion", icon = spells.combustion.icon, description = spells.combustion.name, printInSettings = true },
@@ -276,12 +276,12 @@ end
 
 ---Gets built-in castbar channel tick profiles for Fire, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Mage.FireSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Mage.FireSpells.GetCastbarTickProfiles()
 	return {}
 end
 
 
----@class TRB.Classes.Mage.FrostSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Mage.FrostSpells : TRB.Classes.SpecializationSpellsBase
 ---@field icicles TRB.Classes.SpellBase
 ---@field shatter TRB.Classes.SpellBase
 ---@field iceLance TRB.Classes.SpellBase
@@ -294,13 +294,13 @@ end
 ---@field splinteringSorcery TRB.Classes.SpellBase
 ---@field frostfireBolt TRB.Classes.SpellBase
 ---@field frostfireEmpowerment TRB.Classes.SpellBase
-TRB.Classes.Mage.FrostSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Mage.FrostSpells.__index = TRB.Classes.Mage.FrostSpells
+TRB.Classes.Mainline.Mage.FrostSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Mage.FrostSpells.__index = TRB.Classes.Mainline.Mage.FrostSpells
 
-function TRB.Classes.Mage.FrostSpells:New()
+function TRB.Classes.Mainline.Mage.FrostSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Mage.FrostSpells) --[[@as TRB.Classes.Mage.FrostSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Mage.FrostSpells) --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 
     self.icicles = TRB.Classes.SpellBase:New({
         id = 205473,
@@ -362,13 +362,13 @@ end
 
 ---Fills barTextVariables for Frost Mage options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Mage.FrostSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Mage.FrostSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Mage.FrostSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#shatter", icon = spells.shatter.icon, description = spells.shatter.name, printInSettings = true },
@@ -409,7 +409,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Frost, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Mage.FrostSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Mage.FrostSpells.GetCastbarTickProfiles()
 	return {
 		-- Water Jet, the Water Elemental's channel on the Pet Cast Bar
 		[135029] = { mode = "fixedCount", baseDuration = 4, tickCount = 5, firstTickAtStart = true },
@@ -428,15 +428,15 @@ end
     Frost: Primary bar (N=1) + Icicles (N=5)
 ]]
 
----@class TRB.Classes.Mage.BarGroupsFactory
-TRB.Classes.Mage.BarGroupsFactory = {}
-TRB.Classes.Mage.BarGroupsFactory.__index = TRB.Classes.Mage.BarGroupsFactory
+---@class TRB.Classes.Mainline.Mage.BarGroupsFactory
+TRB.Classes.Mainline.Mage.BarGroupsFactory = {}
+TRB.Classes.Mainline.Mage.BarGroupsFactory.__index = TRB.Classes.Mainline.Mage.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Mage specialization
 ---@param specId integer # 1=Arcane, 2=Fire, 3=Frost
 ---@param parentFrame Frame # The parent frame to attach bar groups to
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+function TRB.Classes.Mainline.Mage.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
     if specId == 1 then -- Arcane
@@ -538,7 +538,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Mage.BarGroupsFactory:GetSpecConfiguration(specId)
     if specId == 1 then -- Arcane
         return {
             primary = {
@@ -616,19 +616,19 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["mage_fire"] = TRB.Classes.Mage.FireSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["mage_frost"] = TRB.Classes.Mage.FrostSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["mage_arcane"] = TRB.Classes.Mainline.Mage.ArcaneSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["mage_fire"] = TRB.Classes.Mainline.Mage.FireSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["mage_frost"] = TRB.Classes.Mainline.Mage.FrostSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["mage_fire"] = TRB.Classes.Mage.FireSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["mage_frost"] = TRB.Classes.Mage.FrostSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["mage_arcane"] = TRB.Classes.Mainline.Mage.ArcaneSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["mage_fire"] = TRB.Classes.Mainline.Mage.FireSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["mage_frost"] = TRB.Classes.Mainline.Mage.FrostSpells.GetCastbarTickProfiles
 
 -- Register built-in castbar tick modifiers (talent/set/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
-TRB.Data.castbarTickModifiersRegistry["mage_arcane"] = TRB.Classes.Mage.ArcaneSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["mage_arcane"] = TRB.Classes.Mainline.Mage.ArcaneSpells.GetCastbarTickModifiers
 
 -- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
 -- every registered set once per gear change and caches it.

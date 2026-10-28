@@ -300,24 +300,27 @@ local function ConstructMiscellaneousPanel(parent)
 
 	-- What a Cooldown Manager fed variable renders when the CDM holds no value for it: the ability was
 	-- never added to a viewer, or the viewer's group is hidden.
-	yCoord = yCoord - 40
-	controls.cdmUnknownDisplay = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, "TwintopResourceBar_DD_CdmUnknownDisplay", L["GlobalOptionsCdmUnknownDisplay"], {
-			{ value = "nothing", label = L["GlobalOptionsCdmUnknownDisplayNothing"] },
-			{ value = "questionMarks", label = L["GlobalOptionsCdmUnknownDisplayQuestionMarks"] },
-			{ value = "zero", label = L["GlobalOptionsCdmUnknownDisplayZero"] },
-		},
-		function() return TRB.Data.settings.core.cdmUnknownDisplay end,
-		function(value)
-			TRB.Data.settings.core.cdmUnknownDisplay = value
-			-- The lookup memoizes on the rendered string, so the new treatment only reaches the bar once
-			-- the cache is invalidated.
-			TRB.Data.lookupDirty = true
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
-		end, oUi.xCoord, yCoord)
+	if TRB.Flavor.cooldownManager then
+		yCoord = yCoord - 40
+		controls.cdmUnknownDisplay = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, "TwintopResourceBar_DD_CdmUnknownDisplay", L["GlobalOptionsCdmUnknownDisplay"], {
+				{ value = "nothing", label = L["GlobalOptionsCdmUnknownDisplayNothing"] },
+				{ value = "questionMarks", label = L["GlobalOptionsCdmUnknownDisplayQuestionMarks"] },
+				{ value = "zero", label = L["GlobalOptionsCdmUnknownDisplayZero"] },
+			},
+			function() return TRB.Data.settings.core.cdmUnknownDisplay end,
+			function(value)
+				TRB.Data.settings.core.cdmUnknownDisplay = value
+				-- The lookup memoizes on the rendered string, so the new treatment only reaches the bar once
+				-- the cache is invalidated.
+				TRB.Data.lookupDirty = true
+				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end
+			end, oUi.xCoord, yCoord)
+		yCoord = yCoord - 30
+	end
 
-	yCoord = yCoord - 70
+	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["TimerPrecision"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
@@ -412,27 +415,29 @@ local function ConstructMiscellaneousPanel(parent)
 		TRB.Data.settings.core.reactionTime = value
 	end)
 
-	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CooldownManagerSettings"], oUi.xCoord, yCoord)
+	if TRB.Flavor.cooldownManager then
+		yCoord = yCoord - 40
+		controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["CooldownManagerSettings"], oUi.xCoord, yCoord)
 
-	yCoord = yCoord - 50
+		yCoord = yCoord - 50
 
-	title = L["CooldownManagerGracePeriod"]
-	controls.cooldownManagerGracePeriod = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 60, TRB.Data.settings.core.cooldownManagerGracePeriod, 0.05, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.cooldownManagerGracePeriod:SetScript("OnValueChanged", function(self, value)
-		local min, max = self:GetMinMaxValues()
-		if value > max then
-			value = max
-		elseif value < min then
-			value = min
-		else
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-		end
+		title = L["CooldownManagerGracePeriod"]
+		controls.cooldownManagerGracePeriod = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 60, TRB.Data.settings.core.cooldownManagerGracePeriod, 0.05, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+		controls.cooldownManagerGracePeriod:SetScript("OnValueChanged", function(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value > max then
+				value = max
+			elseif value < min then
+				value = min
+			else
+				value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			end
 
-		self.EditBox:SetText(value)
-		TRB.Data.settings.core.cooldownManagerGracePeriod = value
-	end)
+			self.EditBox:SetText(value)
+			TRB.Data.settings.core.cooldownManagerGracePeriod = value
+		end)
+	end
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["FrameStrata"], oUi.xCoord, yCoord)
@@ -594,6 +599,8 @@ local function ConstructResetDefaultsPanel(parent)
 		button2 = L["No"],
 		OnAccept = function()
 			local newBarText = TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings()
+			-- The reset runs through the Bar Text tab's editor, which isn't built until that tab is first opened.
+			TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(interfaceSettingsFrame.optionsPanel, "barText")
 			controls.barTextFields.ResetTableValues(newBarText)
 		end,
 		timeout = 0,
@@ -871,6 +878,7 @@ local function BuildProfileClassCatalog()
 		for _, specEntry in ipairs(classEntry.specs) do
 			table.insert(classDef.specs, {
 				specId = specEntry.specId,
+				specGlobalId = specEntry.specGlobalId,
 				specName = specEntry.specName,
 				compositeKey = specEntry.compositeKey,
 				specLabel = L[specEntry.specLocaleKey],
@@ -1412,9 +1420,14 @@ local function ConstructImportExportPanel()
 			SetButtonTooltip(sExpBtn, string.format(L["ProfileManagerExportSpecTooltipFormat"], specLabel, classLabel))
 			SetButtonTooltip(sCb, string.format(L["ProfileManagerSelectSpecTooltipFormat"], specLabel, classLabel))
 			local sIcon = BuildIcon(specRow, SPEC_ICO_X, -2, 18)
-			local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, spec.specId)
-			if iconId then
-				sIcon:SetTexture(iconId)
+			-- A spec the client has no specialization for shows its class icon.
+			if spec.specGlobalId == nil then
+				sIcon:SetAtlas("classicon-" .. className, false)
+			else
+				local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, spec.specId)
+				if iconId then
+					sIcon:SetTexture(iconId)
+				end
 			end
 			local sLbl = BuildLabel(specRow, SPEC_LBL_X, -2,
 				IE_COL_W - SPEC_LBL_X - 4, specLabel)
@@ -2017,7 +2030,7 @@ local function ConstructProfileDefaultsPanel()
 
 	-- Global Options row (uses the TRB addon icon).
 	controls.dropDowns.core, yCoord = BuildProfileDefaultRow(
-		parent, yCoord, L["GlobalOptions"], "core", nil, nil, 1386550, false)
+		parent, yCoord, L["GlobalOptions"], "core", nil, nil, TRB.Details.addonIcon, false)
 	yCoord = yCoord - 10
 
 	-- Per-class section with one row per spec, ordered alphabetically by class name.
@@ -2028,11 +2041,15 @@ local function ConstructProfileDefaultsPanel()
 
 		controls.dropDowns[classDef.className] = controls.dropDowns[classDef.className] or {}
 		for _, specDef in ipairs(classDef.specs) do
-			local _, _, _, specIconId = GetSpecializationInfoForClassID(classDef.classId, specDef.specId)
+			-- A spec the client has no specialization for shows its class icon.
+			local specIcon, specIconIsAtlas = "classicon-" .. classDef.className, true
+			if specDef.specGlobalId ~= nil then
+				specIcon, specIconIsAtlas = select(4, GetSpecializationInfoForClassID(classDef.classId, specDef.specId)), false
+			end
 			controls.dropDowns[classDef.className][specDef.specName], yCoord = BuildProfileDefaultRow(
 				parent, yCoord, specDef.specFullLabel,
 				"spec", classDef.className, specDef.specName,
-				specIconId, false)
+				specIcon, specIconIsAtlas)
 		end
 		yCoord = yCoord - 10
 	end
@@ -2099,7 +2116,7 @@ function TRB.Options:ConstructOptionsPanel()
 	yCoord = yCoord - 40
 	interfaceSettingsFrame.controls.labels.infoReleased = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, L["Released"] .. ":", TRB.Details.addonReleaseDate, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
 	yCoord = yCoord - 40
-	interfaceSettingsFrame.controls.labels.infoSupport = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, L["SupportedSpecs"] .. ":", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 300)
+	interfaceSettingsFrame.controls.labels.infoSupport = TRB.Functions.OptionsUi.Primitives:BuildDisplayTextHelpEntry(parent, TRB.Details.supportedSpecsLabel .. ":", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 300)
 
 	local flagPathTemplate = "|TInterface\\AddOns\\TwintopInsanityBar\\Images\\Flags\\%s.tga:0|t   %s"
 	local localeText1 = string.format(flagPathTemplate, "deDE", "deDE")

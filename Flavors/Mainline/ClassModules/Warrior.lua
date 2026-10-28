@@ -73,9 +73,9 @@ local function FillSpecializationCache()
 		pandemicModifier = 0
 	}
 
-	---@type TRB.Classes.Warrior.ArmsSpells
-	specCache.warrior_arms.spellsData.spells = TRB.Classes.Warrior.ArmsSpells:New()
-	local spells = specCache.warrior_arms.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+	---@type TRB.Classes.Mainline.Warrior.ArmsSpells
+	specCache.warrior_arms.spellsData.spells = TRB.Classes.Mainline.Warrior.ArmsSpells:New()
+	local spells = specCache.warrior_arms.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 
 	--[[---@type TRB.Classes.Snapshot
 	specCache.warrior_arms.snapshotData.snapshots[spells.execute.id] = TRB.Classes.Snapshot:New(spells.execute)]]
@@ -121,9 +121,9 @@ local function FillSpecializationCache()
 		}
 	}
 
-	---@type TRB.Classes.Warrior.FurySpells
-	specCache.warrior_fury.spellsData.spells = TRB.Classes.Warrior.FurySpells:New()
-	local spells = specCache.warrior_fury.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+	---@type TRB.Classes.Mainline.Warrior.FurySpells
+	specCache.warrior_fury.spellsData.spells = TRB.Classes.Mainline.Warrior.FurySpells:New()
+	local spells = specCache.warrior_fury.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_fury.snapshotData.snapshots[spells.shieldBlock.id] = TRB.Classes.Snapshot:New(spells.shieldBlock)
@@ -161,9 +161,9 @@ local function FillSpecializationCache()
 		pandemicModifier = 0
 	}
 
-	---@type TRB.Classes.Warrior.ProtectionSpells
-	specCache.warrior_protection.spellsData.spells = TRB.Classes.Warrior.ProtectionSpells:New()
-	local spells = specCache.warrior_protection.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	---@type TRB.Classes.Mainline.Warrior.ProtectionSpells
+	specCache.warrior_protection.spellsData.spells = TRB.Classes.Mainline.Warrior.ProtectionSpells:New()
+	local spells = specCache.warrior_protection.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_protection.snapshotData.snapshots[spells.impendingVictory.id] = TRB.Classes.Snapshot:New(spells.impendingVictory)
@@ -187,16 +187,16 @@ local function Setup_Arms()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warrior_arms" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(1, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Warrior.BarGroupsFactory:CreateForSpec(1, UIParent)
 	end
 end
 
 local function FillSpellData_Arms()
 	Setup_Arms()
 	specCache.warrior_arms.spellsData:FillSpellData()
-	local spells = specCache.warrior_arms.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+	local spells = specCache.warrior_arms.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 
-	TRB.Classes.Warrior.ArmsSpells.FillBarTextVariables(specCache.warrior_arms)
+	TRB.Classes.Mainline.Warrior.ArmsSpells.FillBarTextVariables(specCache.warrior_arms)
 end
 
 local function Setup_Fury()
@@ -205,16 +205,16 @@ local function Setup_Fury()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warrior_fury" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(2, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Warrior.BarGroupsFactory:CreateForSpec(2, UIParent)
 	end
 end
 
 local function FillSpellData_Fury()
 	Setup_Fury()
 	specCache.warrior_fury.spellsData:FillSpellData()
-	local spells = specCache.warrior_fury.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+	local spells = specCache.warrior_fury.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 
-	TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCache.warrior_fury)
+	TRB.Classes.Mainline.Warrior.FurySpells.FillBarTextVariables(specCache.warrior_fury)
 end
 
 local function Setup_Protection()
@@ -223,21 +223,21 @@ local function Setup_Protection()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warrior_protection" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(3, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Warrior.BarGroupsFactory:CreateForSpec(3, UIParent)
 	end
 end
 
 local function FillSpellData_Protection()
 	Setup_Protection()
 	specCache.warrior_protection.spellsData:FillSpellData()
-	local spells = specCache.warrior_protection.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local spells = specCache.warrior_protection.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 
 	-- Populate the defensive spell lookup so UpdateDefensiveBuffs can resolve nodeOrder keys
 	defensiveSpellsByKey["ignorePain"] = spells.ignorePain
 	defensiveSpellsByKey["ignorePainAbsorb"] = spells.ignorePain
 	defensiveSpellsByKey["shieldBlock"] = spells.shieldBlock
 
-	TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables(specCache.warrior_protection)
+	TRB.Classes.Mainline.Warrior.ProtectionSpells.FillBarTextVariables(specCache.warrior_protection)
 end
 
 local function RefreshTargetTracking()
@@ -373,7 +373,7 @@ local function ConstructResourceBar(settings)
 end
 
 local function RefreshLookupData_Arms()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.warrior.arms
 	local sharedSettings = TRB.Data.specCache["warrior_arms"].settings
@@ -450,7 +450,7 @@ local function RefreshLookupData_Arms()
 end
 
 local function RefreshLookupData_Fury()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.warrior.fury
@@ -590,7 +590,7 @@ local function RefreshLookupData_Fury()
 end
 
 local function RefreshLookupData_Protection()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.warrior.protection
@@ -740,7 +740,7 @@ end
 --- -- millions of damage where the consumer wanted 0-100.
 ---@param currentTime number
 local function StartIgnorePainTimer(currentTime)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 	local ipBuff = TRB.Data.snapshotData.snapshots[spells.ignorePain.id].buff
 	ipBuff:InitializeCustom(spells.ignorePain.duration, currentTime)
 end
@@ -755,7 +755,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 	local currentTime = GetTime()
 
 	if TRB.Data.character.specId == 2 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 		local snapshots = snapshotData.snapshots
 		if event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if talents:IsTalentActive(spells.improvedWhirlwind) then
@@ -778,7 +778,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 		if event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.shieldBlock.castId then
 				local duration = spells.shieldBlock.duration + (spells.enduringDefenses.attributes.durationModPerRank * talents.talents[spells.enduringDefenses.id].currentRank)
@@ -826,7 +826,7 @@ local function HandleSpellEvents(self, event, ...)
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local spellId = ...
 		if TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 			if spellId == spells.shieldCharge.castId then
 				local currentTime = GetTime()
 				local duration = spells.shieldBlock.duration + (spells.enduringDefenses.attributes.durationModPerRank * talents.talents[spells.enduringDefenses.id].currentRank)
@@ -848,7 +848,7 @@ local function DetectViolentOutburst()
 	if TRB.Data.character.specId ~= 3 then
 		return
 	end
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 	if talents == nil or spells == nil or spells.violentOutburst == nil or spells.shieldSlam == nil then
 		return
 	end
@@ -913,7 +913,7 @@ local function UpdateSnapshot()
 	local currentTime = GetTime()
 	Character:UpdateSnapshot()
 	
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells|TRB.Classes.Warrior.FurySpells|TRB.Classes.Warrior.ProtectionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells|TRB.Classes.Mainline.Warrior.FurySpells|TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	--[[snapshots[spells.impendingVictory.id].cooldown:Refresh()]]
@@ -925,7 +925,7 @@ local function UpdateSnapshot_DPS()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 	
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells|TRB.Classes.Warrior.FurySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells|TRB.Classes.Mainline.Warrior.FurySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -936,7 +936,7 @@ local function UpdateSnapshot_Arms()
 	local currentTime = GetTime()
 	UpdateSnapshot_DPS()
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -949,7 +949,7 @@ local function UpdateSnapshot_Fury()
 	local currentTime = GetTime()
 	UpdateSnapshot_DPS()
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -1002,7 +1002,7 @@ local function UpdateSnapshot_Protection()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -1067,7 +1067,7 @@ local function UpdateDefensiveBuffs(specSettings, specCacheSettings, barColorMap
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 	local sharedColors = specSettings.colors.shared
 	local indicatorColors = sharedColors and sharedColors.indicatorColors
 	local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -1203,7 +1203,7 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings, flatColor
 
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 	local wwBuff = snapshots[spells.improvedWhirlwind.id] and snapshots[spells.improvedWhirlwind.id].buff
 	wwBuff:GetRemainingTime(currentTime) -- Force a refresh since this event is likely happening on a frame where we aren't in the main update loop
 	local stacks = (wwBuff and wwBuff.isActive and wwBuff.applications) or 0
@@ -1380,7 +1380,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1395,7 +1395,7 @@ local function UpdateResourceBar()
 				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 				thresholdState:Refresh(specCacheSettings)
 				thresholdData:Refresh(talents)
-				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Warrior.ArmsSpells.thresholdSnowflakes)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Warrior.ArmsSpells.thresholdSnowflakes)
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
 					for i = #gradientOrder, 1, -1 do
@@ -1455,7 +1455,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
 			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
@@ -1529,7 +1529,7 @@ local function UpdateResourceBar()
 				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 				thresholdState:Refresh(specCacheSettings)
 				thresholdData:Refresh(talents)
-				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Warrior.FurySpells.thresholdSnowflakes)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Warrior.FurySpells.thresholdSnowflakes)
 
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
@@ -1620,7 +1620,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
 			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
@@ -1676,7 +1676,7 @@ local function UpdateResourceBar()
 				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 				thresholdState:Refresh(specCacheSettings)
 				thresholdData:Refresh(talents)
-				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Warrior.ProtectionSpells.thresholdSnowflakes)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Warrior.ProtectionSpells.thresholdSnowflakes)
 				
 				local overcapIndicator = nil
 				if gradientOrder and indicatorColors then
@@ -1764,7 +1764,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.warrior_arms)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1799,7 +1799,7 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.warrior_fury.settings)
 		
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 		local lookup = TRB.Data.lookup or {}
 		lookup["#bladestorm"] = spells.bladestorm.icon
 		lookup["#enrage"] = spells.enrage.icon
@@ -1826,7 +1826,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.warrior_protection)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1916,7 +1916,7 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.Rage, false)
 
 	if TRB.Data.character.specId == 1 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 		TRB.Data.character.specName = "arms"
 		TRB.Data.character.compositeKey = "warrior_arms"
 
@@ -1927,7 +1927,7 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "fury"
 		TRB.Data.character.compositeKey = "warrior_fury"
 
-		local furySpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+		local furySpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 		local furyTalents = TRB.Data.specCache.warrior_fury and TRB.Data.specCache.warrior_fury.talents
 		local whirlwindCharges = 0
 		if furyTalents and furyTalents:IsTalentActive(furySpells.improvedWhirlwind) then

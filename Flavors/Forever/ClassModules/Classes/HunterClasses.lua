@@ -2,12 +2,12 @@ local _, TRB = ...
 
 -- Hunter (World of Warcraft: Forever): Mana; there is no Focus in this game.
 
----@class TRB.Classes.Hunter.GeneralSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Forever.Hunter.GeneralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public volley TRB.Classes.SpellBase
 ---@field public mendPet TRB.Classes.SpellBase
 
 ---Adds the Hunter's channeled abilities to a new spell set.
----@param spells TRB.Classes.Hunter.GeneralSpells
+---@param spells TRB.Classes.Forever.Hunter.GeneralSpells
 local function FillSpells(spells)
 	spells.volley = TRB.Classes.SpellBase:New({
 		id = 1510,

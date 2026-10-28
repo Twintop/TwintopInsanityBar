@@ -6,6 +6,9 @@ TRB.Functions.Talent = {}
 ---@return boolean active True if PvP talents are active (in PvP instance or any selected PvP talent spell is known)
 -- Source: https://www.wowinterface.com/forums/showpost.php?p=338665&postcount=5
 function TRB.Functions.Talent:ArePvpTalentsActive()
+	if not TRB.Flavor.pvpTalents then
+		return false
+	end
 	local inInstance, instanceType = IsInInstance()
 	if inInstance and (instanceType == "pvp" or instanceType == "arena") then
 		return true

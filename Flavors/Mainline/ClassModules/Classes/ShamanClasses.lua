@@ -1,22 +1,22 @@
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Shaman = TRB.Classes.Shaman or {}
+TRB.Classes.Mainline.Shaman = TRB.Classes.Mainline.Shaman or {}
 
 
----@class TRB.Classes.Shaman.OverloadSpell : TRB.Classes.SpellBase
+---@class TRB.Classes.Mainline.Shaman.OverloadSpell : TRB.Classes.SpellBase
 ---@field public overload number
-TRB.Classes.Shaman.OverloadSpell = setmetatable({}, {__index = TRB.Classes.SpellBase})
-TRB.Classes.Shaman.OverloadSpell.__index = TRB.Classes.Shaman.OverloadSpell
+TRB.Classes.Mainline.Shaman.OverloadSpell = setmetatable({}, {__index = TRB.Classes.SpellBase})
+TRB.Classes.Mainline.Shaman.OverloadSpell.__index = TRB.Classes.Mainline.Shaman.OverloadSpell
 
 ---Creates a new OverloadSpell object
 ---@param spellAttributes { [string]: any } # Attributes associated with the spell
----@return TRB.Classes.Shaman.OverloadSpell
-function TRB.Classes.Shaman.OverloadSpell:New(spellAttributes)
+---@return TRB.Classes.Mainline.Shaman.OverloadSpell
+function TRB.Classes.Mainline.Shaman.OverloadSpell:New(spellAttributes)
     ---@type TRB.Classes.SpellBase
     local base = TRB.Classes.SpellBase
-    self = setmetatable(base:New(spellAttributes), {__index = TRB.Classes.Shaman.OverloadSpell})
+    self = setmetatable(base:New(spellAttributes), {__index = TRB.Classes.Mainline.Shaman.OverloadSpell})
 
-    table.insert(self.classTypes, "TRB.Classes.Shaman.OverloadSpell")
+    table.insert(self.classTypes, "TRB.Classes.Mainline.Shaman.OverloadSpell")
 
     self.overload = 0
 
@@ -31,7 +31,7 @@ function TRB.Classes.Shaman.OverloadSpell:New(spellAttributes)
 end
 
 
----@class TRB.Classes.Shaman.ElementalSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Shaman.ElementalSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public frostShock TRB.Classes.SpellBase
 ---@field public hex TRB.Classes.SpellBase
 ---@field public inundate TRB.Classes.SpellBase
@@ -44,10 +44,10 @@ end
 ---@field public arcDischarge TRB.Classes.SpellBase
 ---@field public midnightSeason1SetBonus TRB.Classes.SpellBase
 ---@field public midnightSeason1SetKey string # Key the set's pieces are registered under in TRB.Data.itemSetRegistry
----@field public lightningBolt TRB.Classes.Shaman.OverloadSpell
----@field public lavaBurst TRB.Classes.Shaman.OverloadSpell
----@field public chainLightning TRB.Classes.Shaman.OverloadSpell
----@field public icefury TRB.Classes.Shaman.OverloadSpell
+---@field public lightningBolt TRB.Classes.Mainline.Shaman.OverloadSpell
+---@field public lavaBurst TRB.Classes.Mainline.Shaman.OverloadSpell
+---@field public chainLightning TRB.Classes.Mainline.Shaman.OverloadSpell
+---@field public icefury TRB.Classes.Mainline.Shaman.OverloadSpell
 ---@field public earthShock TRB.Classes.SpellThreshold
 ---@field public earthquake TRB.Classes.SpellThreshold
 ---@field public earthquakeTargeted TRB.Classes.SpellThreshold
@@ -55,16 +55,16 @@ end
 ---@field public elementalBlastCriticalStrike TRB.Classes.SpellBase
 ---@field public elementalBlastHaste TRB.Classes.SpellBase
 ---@field public elementalBlastMastery TRB.Classes.SpellBase
-TRB.Classes.Shaman.ElementalSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Shaman.ElementalSpells.__index = TRB.Classes.Shaman.ElementalSpells
+TRB.Classes.Mainline.Shaman.ElementalSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Shaman.ElementalSpells.__index = TRB.Classes.Mainline.Shaman.ElementalSpells
 
-function TRB.Classes.Shaman.ElementalSpells:New()
+function TRB.Classes.Mainline.Shaman.ElementalSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Shaman.ElementalSpells) --[[@as TRB.Classes.Shaman.ElementalSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Shaman.ElementalSpells) --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 
     -- Shaman Class Baseline Abilities
-    self.lightningBolt = TRB.Classes.Shaman.OverloadSpell:New({
+    self.lightningBolt = TRB.Classes.Mainline.Shaman.OverloadSpell:New({
         id = 188196,
         resource = 6,
         overload = 2,
@@ -80,14 +80,14 @@ function TRB.Classes.Shaman.ElementalSpells:New()
 
 
     -- Shaman Class Talent Abilities
-    self.lavaBurst = TRB.Classes.Shaman.OverloadSpell:New({
+    self.lavaBurst = TRB.Classes.Mainline.Shaman.OverloadSpell:New({
         id = 51505,
         resource = 8,
         overload = 3,
         isTalent = true,
         baseline = true
     })
-    self.chainLightning = TRB.Classes.Shaman.OverloadSpell:New({
+    self.chainLightning = TRB.Classes.Mainline.Shaman.OverloadSpell:New({
         id = 188443,
         resource = 2,
         overload = 1,
@@ -131,7 +131,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         isSnowflake = true,
         category = "offensive"
     })
-    self.icefury = TRB.Classes.Shaman.OverloadSpell:New({
+    self.icefury = TRB.Classes.Mainline.Shaman.OverloadSpell:New({
         id = 462818,
         resource = 10,
         isTalent = true
@@ -208,13 +208,13 @@ end
 
 ---Fills barTextVariables for Elemental Shaman options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Shaman.ElementalSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Shaman.ElementalSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Shaman.ElementalSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
@@ -265,7 +265,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Elemental, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Shaman.ElementalSpells.GetCastbarTickProfiles()
 	return {
 		-- Lightning Lasso
 		[305485] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, },
@@ -273,7 +273,7 @@ function TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles()
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Shaman.ElementalSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Shaman.ElementalSpells.thresholdSnowflakes = {
 	spells = {
 		earthquake = TRB.Classes.ThresholdLine.ColorByUsable,
 		earthquakeTargeted = TRB.Classes.ThresholdLine.ColorByUsable,
@@ -281,19 +281,19 @@ TRB.Classes.Shaman.ElementalSpells.thresholdSnowflakes = {
 }
 
 
----@class TRB.Classes.Shaman.EnhancementSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Shaman.EnhancementSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public maelstromWeapon TRB.Classes.SpellBase
 ---@field public doomWinds TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
 ---@field public tempest TRB.Classes.SpellBase
 ---@field public lightningBolt TRB.Classes.SpellBase
-TRB.Classes.Shaman.EnhancementSpells =setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Shaman.EnhancementSpells.__index = TRB.Classes.Shaman.EnhancementSpells
+TRB.Classes.Mainline.Shaman.EnhancementSpells =setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Shaman.EnhancementSpells.__index = TRB.Classes.Mainline.Shaman.EnhancementSpells
 
-function TRB.Classes.Shaman.EnhancementSpells:New()
+function TRB.Classes.Mainline.Shaman.EnhancementSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Shaman.EnhancementSpells) --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Shaman.EnhancementSpells) --[[@as TRB.Classes.Mainline.Shaman.EnhancementSpells]]
 
     self.maelstromWeapon = TRB.Classes.SpellBase:New({
         id = 344179,
@@ -333,13 +333,13 @@ end
 
 ---Fills barTextVariables for Enhancement Shaman options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Shaman.EnhancementSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Shaman.EnhancementSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Shaman.EnhancementSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Shaman.EnhancementSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.EnhancementSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
@@ -369,7 +369,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Enhancement, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Shaman.EnhancementSpells.GetCastbarTickProfiles()
 	return {
 		-- Lightning Lasso
 		[305485] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, },
@@ -377,16 +377,16 @@ function TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles()
 end
 
 
----@class TRB.Classes.Shaman.RestorationSpells : TRB.Classes.Healer.HealerSpells
+---@class TRB.Classes.Mainline.Shaman.RestorationSpells : TRB.Classes.Mainline.Healer.HealerSpells
 ---@field public ascendance TRB.Classes.SpellBase
 ---@field public preeminence TRB.Classes.SpellBase
-TRB.Classes.Shaman.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
-TRB.Classes.Shaman.RestorationSpells.__index = TRB.Classes.Shaman.RestorationSpells
+TRB.Classes.Mainline.Shaman.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Healer.HealerSpells})
+TRB.Classes.Mainline.Shaman.RestorationSpells.__index = TRB.Classes.Mainline.Shaman.RestorationSpells
 
-function TRB.Classes.Shaman.RestorationSpells:New()
-    ---@type TRB.Classes.Healer.HealerSpells
-    local base = TRB.Classes.Healer.HealerSpells
-    self = setmetatable(base:New(), TRB.Classes.Shaman.RestorationSpells) --[[@as TRB.Classes.Shaman.RestorationSpells]]
+function TRB.Classes.Mainline.Shaman.RestorationSpells:New()
+    ---@type TRB.Classes.Mainline.Healer.HealerSpells
+    local base = TRB.Classes.Mainline.Healer.HealerSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Shaman.RestorationSpells) --[[@as TRB.Classes.Mainline.Shaman.RestorationSpells]]
 
     self.ascendance = TRB.Classes.SpellBase:New({
         id = 114052,
@@ -405,13 +405,13 @@ end
 
 ---Fills barTextVariables for Restoration Shaman options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Shaman.RestorationSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Shaman.RestorationSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Shaman.RestorationSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Shaman.RestorationSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.RestorationSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
@@ -432,7 +432,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Restoration, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Shaman.RestorationSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Shaman.RestorationSpells.GetCastbarTickProfiles()
 	return {
 		-- Lightning Lasso
 		[305485] = { mode = "fixedCount", baseDuration = 5, tickCount = 5, },
@@ -449,14 +449,14 @@ end
     Restoration: Primary bar (N=1) only
 ]]
 
----@class TRB.Classes.Shaman.BarGroupsFactory
-TRB.Classes.Shaman.BarGroupsFactory = {}
-TRB.Classes.Shaman.BarGroupsFactory.__index = TRB.Classes.Shaman.BarGroupsFactory
+---@class TRB.Classes.Mainline.Shaman.BarGroupsFactory
+TRB.Classes.Mainline.Shaman.BarGroupsFactory = {}
+TRB.Classes.Mainline.Shaman.BarGroupsFactory.__index = TRB.Classes.Mainline.Shaman.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Shaman specialization
 ---@param specId integer # 1=Elemental, 2=Enhancement, 3=Restoration
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Shaman.BarGroupsFactory:CreateForSpec(specId)
+function TRB.Classes.Mainline.Shaman.BarGroupsFactory:CreateForSpec(specId)
     local barGroups = {}
 
     if specId == 1 then -- Elemental
@@ -541,7 +541,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Shaman.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Shaman.BarGroupsFactory:GetSpecConfiguration(specId)
     if specId == 1 then -- Elemental
         return {
             primary = {
@@ -599,22 +599,22 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["shaman_elemental"] = TRB.Classes.Shaman.ElementalSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["shaman_enhancement"] = TRB.Classes.Shaman.EnhancementSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["shaman_restoration"] = TRB.Classes.Shaman.RestorationSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["shaman_elemental"] = TRB.Classes.Mainline.Shaman.ElementalSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["shaman_enhancement"] = TRB.Classes.Mainline.Shaman.EnhancementSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["shaman_restoration"] = TRB.Classes.Mainline.Shaman.RestorationSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["shaman_elemental"] = TRB.Classes.Shaman.ElementalSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["shaman_enhancement"] = TRB.Classes.Shaman.EnhancementSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["shaman_restoration"] = TRB.Classes.Shaman.RestorationSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["shaman_elemental"] = TRB.Classes.Mainline.Shaman.ElementalSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["shaman_enhancement"] = TRB.Classes.Mainline.Shaman.EnhancementSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["shaman_restoration"] = TRB.Classes.Mainline.Shaman.RestorationSpells.GetCastbarTickProfiles
 
 -- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
 -- every registered set once per gear change and caches it.
-TRB.Classes.Shaman.ElementalSpells.midnightSeason1SetKey = "shaman_elemental_midnightSeason1"
+TRB.Classes.Mainline.Shaman.ElementalSpells.midnightSeason1SetKey = "shaman_elemental_midnightSeason1"
 TRB.Data.itemSetRegistry = TRB.Data.itemSetRegistry or {}
 ---@type TRB.Classes.ItemSetDefinition
-TRB.Data.itemSetRegistry[TRB.Classes.Shaman.ElementalSpells.midnightSeason1SetKey] = {
+TRB.Data.itemSetRegistry[TRB.Classes.Mainline.Shaman.ElementalSpells.midnightSeason1SetKey] = {
 	headId = 249979,
 	shoulderId = 249977,
 	chestId = 249982,

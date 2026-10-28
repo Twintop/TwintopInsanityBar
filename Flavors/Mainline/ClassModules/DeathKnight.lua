@@ -139,8 +139,8 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.DeathKnight.BloodSpells
-	specCache.deathknight_blood.spellsData.spells = TRB.Classes.DeathKnight.BloodSpells:New()
+	---@type TRB.Classes.Mainline.DeathKnight.BloodSpells
+	specCache.deathknight_blood.spellsData.spells = TRB.Classes.Mainline.DeathKnight.BloodSpells:New()
 
 	specCache.deathknight_blood.barTextVariables = {
 		icons = {},
@@ -171,9 +171,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.DeathKnight.FrostSpells
-	specCache.deathknight_frost.spellsData.spells = TRB.Classes.DeathKnight.FrostSpells:New()
-	local spells = specCache.deathknight_frost.spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
+	---@type TRB.Classes.Mainline.DeathKnight.FrostSpells
+	specCache.deathknight_frost.spellsData.spells = TRB.Classes.Mainline.DeathKnight.FrostSpells:New()
+	local spells = specCache.deathknight_frost.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.FrostSpells]]
 	---@type TRB.Classes.Snapshot
 	specCache.deathknight_frost.snapshotData.snapshots[spells.breathOfSindragosa.id] = TRB.Classes.Snapshot:New(spells.breathOfSindragosa)
 
@@ -207,10 +207,10 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.DeathKnight.UnholySpells
-	specCache.deathknight_unholy.spellsData.spells = TRB.Classes.DeathKnight.UnholySpells:New()
+	---@type TRB.Classes.Mainline.DeathKnight.UnholySpells
+	specCache.deathknight_unholy.spellsData.spells = TRB.Classes.Mainline.DeathKnight.UnholySpells:New()
 
-	local unholySpells = specCache.deathknight_unholy.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+	local unholySpells = specCache.deathknight_unholy.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.UnholySpells]]
 	---@type TRB.Classes.Snapshot
 	specCache.deathknight_unholy.snapshotData.snapshots[unholySpells.runicCorruption.id] = TRB.Classes.Snapshot:New(unholySpells.runicCorruption)
 
@@ -224,7 +224,7 @@ spellEventFrame:SetScript("OnEvent", function(self, event, spellId)
 	if event == "SPELL_UPDATE_USES" and TRB.Data.character.specId == 1 then
 		local spellsData = TRB.Data.spellsData
 		if spellsData and spellsData.spells then
-			local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+			local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 			if spells.marrowrend and spellId == spells.marrowrend.id then
 				local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 				snapshotData.attributes.boneShieldStacks = C_Spell.GetSpellCastCount(spells.marrowrend.id) or 0
@@ -233,7 +233,7 @@ spellEventFrame:SetScript("OnEvent", function(self, event, spellId)
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
 		local spellsData = TRB.Data.spellsData
 		if spellsData and spellsData.spells then
-			local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells|TRB.Classes.DeathKnight.UnholySpells]]
+			local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells|TRB.Classes.Mainline.DeathKnight.UnholySpells]]
 			if spells.vampiricStrike and spellId == spells.vampiricStrike.id then
 				-- A plain attribute, not a snapshot: the proc has no aura, and RefreshAllBuffs would
 				-- clear a custom buff that has no endTime on the next UNIT_AURA.
@@ -252,16 +252,16 @@ local function Setup_Blood()
 	-- (guards against redundant delayed SwitchSpec calls that would orphan initialized bars)
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "deathknight_blood" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(1, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.DeathKnight.BarGroupsFactory:CreateForSpec(1, UIParent)
 	end
 end
 
 local function FillSpellData_Blood()
 	Setup_Blood()
 	specCache.deathknight_blood.spellsData:FillSpellData()
-	local spells = specCache.deathknight_blood.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	local spells = specCache.deathknight_blood.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 
-	TRB.Classes.DeathKnight.BloodSpells.FillBarTextVariables(specCache.deathknight_blood)
+	TRB.Classes.Mainline.DeathKnight.BloodSpells.FillBarTextVariables(specCache.deathknight_blood)
 end
 
 local function Setup_Frost()
@@ -270,16 +270,16 @@ local function Setup_Frost()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "deathknight_frost" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(2, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.DeathKnight.BarGroupsFactory:CreateForSpec(2, UIParent)
 	end
 end
 
 local function FillSpellData_Frost()
 	Setup_Frost()
 	specCache.deathknight_frost.spellsData:FillSpellData()
-	local spells = specCache.deathknight_frost.spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
+	local spells = specCache.deathknight_frost.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.FrostSpells]]
 
-	TRB.Classes.DeathKnight.FrostSpells.FillBarTextVariables(specCache.deathknight_frost)
+	TRB.Classes.Mainline.DeathKnight.FrostSpells.FillBarTextVariables(specCache.deathknight_frost)
 end
 
 local function Setup_Unholy()
@@ -288,16 +288,16 @@ local function Setup_Unholy()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "deathknight_unholy" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.DeathKnight.BarGroupsFactory:CreateForSpec(3, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.DeathKnight.BarGroupsFactory:CreateForSpec(3, UIParent)
 	end
 end
 
 local function FillSpellData_Unholy()
 	Setup_Unholy()
 	specCache.deathknight_unholy.spellsData:FillSpellData()
-	local spells = specCache.deathknight_unholy.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+	local spells = specCache.deathknight_unholy.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.UnholySpells]]
 
-	TRB.Classes.DeathKnight.UnholySpells.FillBarTextVariables(specCache.deathknight_unholy)
+	TRB.Classes.Mainline.DeathKnight.UnholySpells.FillBarTextVariables(specCache.deathknight_unholy)
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)
@@ -470,7 +470,7 @@ local function RefreshLookupData_Blood()
 	-- Block D: Coagulating Blood ($coagulatingBloodStacks, $coagulatingBloodStacksMax)
 	if not activeVars or activeVars["$coagulatingBloodStacks"] or activeVars["$coagulatingBloodStacksMax"] then
 		local attributes = snapshotData.attributes
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 		local _coagulatingBloodStacksMax = Bar:GetCustomBarMaxValue(specSettings.bars and specSettings.bars.coagulatingBlood, spells.coagulatingBlood.maxStacks)
 
 		lookupLogic["$coagulatingBloodStacksMax"] = _coagulatingBloodStacksMax
@@ -663,7 +663,7 @@ local function RefreshLookupData_Unholy()
 
 	-- Block C: Runic Corruption ($runicCorruptionTime)
 	if not activeVars or activeVars["$runicCorruptionTime"] then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.UnholySpells]]
 		local snapshot = snapshotData.snapshots[spells.runicCorruption.id]
 		local buff = snapshot and snapshot.buff
 		local properties = buff and buff.customProperties
@@ -714,7 +714,7 @@ end
 --TODO: Remove?
 local function UpdateCastingResourceFinal_Blood()
 	-- Do nothing for now
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 end
@@ -766,7 +766,7 @@ end
 ---separates a buff that is down (known zero) from one the Cooldown Manager lacks (renders "??").
 local function RefreshCoagulatingBlood()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 	local attributes = snapshotData.attributes
 	local wasTracked = attributes.coagulatingBloodTracked == true
 	local wasActive = attributes.coagulatingBloodActive == true
@@ -799,7 +799,7 @@ end
 ---that is down (known zero) from one the Cooldown Manager lacks (renders "??").
 local function RefreshBoneShield()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 	local attributes = snapshotData.attributes
 	local wasTracked = attributes.boneShieldTracked == true
 	local wasActive = attributes.boneShieldActive == true
@@ -847,7 +847,7 @@ end
 
 ---Refreshes Runic Corruption from the Cooldown Manager, its only source: the rune regeneration rate
 ---it changes is unobservable whenever no rune is recharging, and refreshes never move it at all.
----@param spells TRB.Classes.DeathKnight.UnholySpells
+---@param spells TRB.Classes.Mainline.DeathKnight.UnholySpells
 local function UpdateRunicCorruption(spells)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local attributes = snapshotData.attributes
@@ -897,7 +897,7 @@ end
 
 local function UpdateSnapshot_Unholy()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.UnholySpells]]
 	UpdateRunicCorruption(spells)
 end
 
@@ -1119,7 +1119,7 @@ end
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
 local function UpdateBoneShield(specSettings, specCacheSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 	local boneShieldStacks = snapshotData.attributes.boneShieldStacks or 0
 	local maxBoneShield = TRB.Data.character.maxBoneShield or 10
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
@@ -1265,7 +1265,7 @@ end
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
 local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if not (barGroups and barGroups.coagulatingBlood) then
@@ -1529,7 +1529,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.deathknight_blood)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1560,7 +1560,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.deathknight_frost)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.FrostSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.FrostSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1582,7 +1582,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.deathknight_unholy)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.UnholySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.UnholySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1656,7 +1656,7 @@ function TRB.Functions.Class:CheckCharacter()
 		-- Determine max Bone Shield stacks based on Improved Bone Shield talent
 		local spellsData = TRB.Data.spellsData
 		if spellsData and spellsData.spells then
-			local spells = spellsData.spells --[[@as TRB.Classes.DeathKnight.BloodSpells]]
+			local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 			if spells.boneShield and spells.improvedBoneShield then
 				local maxBoneShield = spells.boneShield.maxStacks or 10
 				if talents and talents:IsTalentActive(spells.improvedBoneShield) then

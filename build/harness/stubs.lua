@@ -72,8 +72,16 @@ function frameMethods:HookScript(kind, fn)
 	self.__scripts[kind] = function(...) if prev then prev(...) end fn(...) end
 end
 function frameMethods:HasScript() return true end
-function frameMethods:RegisterEvent(ev) self.__events[ev] = true end
-function frameMethods:RegisterUnitEvent(ev) self.__events[ev] = true end
+-- Events the client under test doesn't know; registering one errors, as it does in game.
+local unknownEvents = {}
+function frameMethods:RegisterEvent(ev)
+	if unknownEvents[ev] then error("Attempt to register unknown event \"" .. tostring(ev) .. "\"", 2) end
+	self.__events[ev] = true
+end
+function frameMethods:RegisterUnitEvent(ev)
+	if unknownEvents[ev] then error("Attempt to register unknown event \"" .. tostring(ev) .. "\"", 2) end
+	self.__events[ev] = true
+end
 function frameMethods:UnregisterEvent(ev) self.__events[ev] = nil end
 function frameMethods:UnregisterAllEvents() self.__events = {} end
 function frameMethods:IsEventRegistered(ev) return self.__events[ev] == true end
@@ -465,6 +473,7 @@ function M.install(opts)
 	G.Enum = setmetatable({
 		PowerType = { HealthCost = -2, None = -1, Mana = 0, Rage = 1, Focus = 2, Energy = 3, ComboPoints = 4, Runes = 5, RunicPower = 6, SoulShards = 7, LunarPower = 8, HolyPower = 9, Alternate = 10, Maelstrom = 11, Chi = 12, Insanity = 13, Obsolete = 14, Obsolete2 = 15, ArcaneCharges = 16, Fury = 17, Pain = 18, Essence = 19, RuneBlood = 20, RuneFrost = 21, RuneUnholy = 22, AlternateMount = 23, AlternateQuest = 24, AlternateEncounter = 25, NumPowerTypes = 26 },
 		Damageclass = { Physical = 0, Holy = 1, Fire = 2, Nature = 3, Frost = 4, Shadow = 5, Arcane = 6 },
+		PlayerSwingType = { MainHand = 0, OffHand = 1, Ranged = 2 },
 		EditModeLayoutType = { Preset = 0, Account = 1, Character = 2 },
 		EditModeSettingDisplayType = { Dropdown = 0, Slider = 1, Checkbox = 2 },
 		CooldownViewerCategory = { Essential = 0, Utility = 1, TrackedBuff = 2, TrackedBar = 3 },
@@ -795,8 +804,8 @@ function M.install(opts)
 	-- Exactly the namespace live retail documents (no unknown-method fallback): neither client has GetSpecializationInfoForClassID
 	-- or GetSpecializationInfoForSpecID here; those are plain globals on both.
 	G.C_SpecializationInfo = { GetAllSelectedPvpTalentIDs = retEmpty, GetSpecialization = function() return 1 end, GetSpecializationInfo = G.GetSpecializationInfo, GetPvpTalentSlotInfo = retNil, GetSpecIDs = retEmpty, CanPlayerUseTalentSpecUI = retTrue, IsInitialized = retTrue, GetActiveSpecGroup = function() return 1 end, GetNumSpecializationsForClassID = G.GetNumSpecializationsForClassID, GetPvpTalentInfo = function(id) return { talentID = id, name = "PvpTalent", icon = 0, selected = false, available = false, spellID = id, unlocked = false, known = false, grantedByAura = false, dependenciesUnmet = false } end, GetTalentInfo = retNil, GetClassIDFromSpecID = retNil }
-	-- Forever registers a smaller global surface (per the beta probe): these read as nil instead of auto-stubbing for a
-	-- 1.x TOC, so a leftover call fails the way it does in that client.
+	-- Forever registers a smaller global surface (per the beta probe), assumed for Classic too: these read as nil instead
+	-- of auto-stubbing for a 1.x TOC, so a leftover call fails the way it does in that client.
 	local absentGlobals = {}
 	if interfaceVersion < 20000 then
 		for _, name in ipairs({ "GetSpecialization", "GetSpecializationInfo", "GetNumSpecializationsForClassID", "CombatLogGetCurrentEventInfo" }) do
@@ -806,6 +815,42 @@ function M.install(opts)
 	end
 	G.C_PetBattles = ns({ IsInBattle = retFalse })
 	G.C_PlayerInfo = ns({ GetGlidingInfo = function() return false, false, 0 end, IsPlayerNPERestricted = retFalse, GetPlayerCharacterData = retNil, UnitIsSameServer = retTrue, GetClass = function() return classId end, GetRace = function() return 1 end, GetSex = function() return 2 end, IsPlayerInGuildFromGUID = retFalse, GUIDIsPlayer = retTrue, GetContentDifficultyCreatureForPlayer = retNil, GetInstancedContentDifficulty = retNil, IsMercenary = retFalse, CanPlayerEnterChromieTime = retFalse, IsPlayerEligibleForNPE = retFalse, IsConnectionValid = retTrue })
+	-- Classic (a 115xx TOC) lacks these, per Blizzard's generated API docs and the client exe's strings for 1.15.9.
+	for event in pairs(unknownEvents) do unknownEvents[event] = nil end
+	if interfaceVersion >= 11300 and interfaceVersion < 16000 then
+		G.WOW_PROJECT_ID = G.WOW_PROJECT_CLASSIC
+		for _, name in ipairs({ "C_ClassTalents", "GetUnitChargedPowerPoints", "LocalizedClassList", "COMBO_POINTS_POWER" }) do
+			G[name] = nil
+			absentGlobals[name] = true
+		end
+		G.GetSpellCritChance = function(school)
+			if school == nil then error("Usage: GetSpellCritChance(school)", 2) end
+			return 0
+		end
+		G.C_SpecializationInfo.GetAllSelectedPvpTalentIDs = nil
+		G.C_SpecializationInfo.GetPvpTalentInfo = nil
+		-- Three talent tabs of two real talents each, so the talent-tab reader has something to walk. Like the client,
+		-- spellID is always 0.
+		G.GetNumTalentTabs = function() return 3 end
+		G.GetNumTalents = function() return 2 end
+		local talentIds = { 121, 123, 124, 125, 126, 127 }
+		G.C_SpecializationInfo.GetTalentInfo = function(query) return { talentID = talentIds[(query.specializationIndex - 1) * 2 + query.talentIndex], spellID = 0, rank = 1, maxRank = 5 } end
+		local playerInfo = G.C_PlayerInfo
+		playerInfo.GetGlidingInfo = nil
+		setmetatable(playerInfo, { __index = function(_, k) if k == "GetGlidingInfo" then return nil end return noop end })
+		for _, event in ipairs({ "PLAYER_SWING", "PLAYER_SWING_RANGE_UPDATE", "UNIT_POWER_POINT_CHARGE", "PLAYER_MAP_CHANGED" }) do
+			unknownEvents[event] = true
+		end
+		-- No PlayerSwingType enum either, which the autovivifying Enum would otherwise invent.
+		rawset(G.Enum, "PlayerSwingType", nil)
+		local enumMeta = getmetatable(G.Enum)
+		local enumIndex = enumMeta.__index
+		enumMeta.__index = function(t, k)
+			if k == "PlayerSwingType" then return nil end
+			return enumIndex(t, k)
+		end
+	end
+	G.C_EventUtils = ns({ IsEventValid = function(event) return not unknownEvents[event] end })
 	G.C_CooldownViewer = ns({ GetCooldownViewerCategorySet = retEmpty, GetCooldownViewerCooldownInfo = retNil, IsCooldownViewerAvailable = retTrue, GetCooldownViewerCooldownIDs = retEmpty, GetCooldownViewerCooldownList = retEmpty, GetCooldownInfoForSpellID = retNil, SetCooldownViewerCategorySet = noop })
 	G.C_Item = ns({ GetItemInfo = retNil, GetItemIconByID = function() return 134400 end, GetItemIcon = function() return 134400 end, GetDetailedItemLevelInfo = retZero, GetItemInfoInstant = retNil, GetItemNameByID = retNil, GetItemCount = retZero, GetItemCooldown = function() return 0, 0, 1 end, IsEquippedItem = retFalse, DoesItemExist = retFalse, GetItemLink = retNil, GetItemSpell = retNil, IsItemDataCachedByID = retTrue, RequestLoadItemDataByID = noop, GetItemQualityByID = retZero, GetItemInventoryTypeByID = retZero, GetItemClassInfo = retNil, GetItemSubClassInfo = retNil, GetItemSetInfo = retNil, GetItemSpecInfo = retEmpty, IsItemInRange = retNil, GetItemGem = retNil, GetItemStats = retEmpty })
 	-- Curves that evaluate their points: Step snaps to the point at or below x, the other types interpolate

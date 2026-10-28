@@ -1891,7 +1891,7 @@ local function RetributionConstructIndicatorColorsPanel(parent)
 
 	yCoord = yCoord - 30
 	controls.dropDown.avengingWrathIndicatorSource = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent,
-		"TwintopResourceBar_Paladin_Retribution_AvengingWrathIndicatorSource", nil, TRB.Classes.Paladin.AvengingWrathSourceOptions,
+		"TwintopResourceBar_Paladin_Retribution_AvengingWrathIndicatorSource", nil, TRB.Classes.Mainline.Paladin.AvengingWrathSourceOptions,
 		function() return spec.endOf.avengingWrath.indicatorSource end,
 		function(value) spec.endOf.avengingWrath.indicatorSource = value end,
 		oUi.xCoord, yCoord)

@@ -1,8 +1,8 @@
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Druid = TRB.Classes.Druid or {}
+TRB.Classes.Mainline.Druid = TRB.Classes.Mainline.Druid or {}
 
----@class TRB.Classes.Druid.DruidBaseSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Druid.DruidBaseSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public frenziedRegeneration TRB.Classes.SpellThreshold
 ---@field public ironfur TRB.Classes.SpellThreshold
 ---@field public ferociousBiteMinimum TRB.Classes.SpellComboPointThreshold
@@ -11,13 +11,13 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public rake TRB.Classes.SpellComboPointThreshold
 ---@field public rip TRB.Classes.SpellComboPointThreshold
 ---@field public maim TRB.Classes.SpellComboPointThreshold
-TRB.Classes.Druid.DruidBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Druid.DruidBaseSpells.__index = TRB.Classes.Druid.DruidBaseSpells
+TRB.Classes.Mainline.Druid.DruidBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Druid.DruidBaseSpells.__index = TRB.Classes.Mainline.Druid.DruidBaseSpells
 
-function TRB.Classes.Druid.DruidBaseSpells:New()
+function TRB.Classes.Mainline.Druid.DruidBaseSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), {__index = TRB.Classes.Druid.BalanceSpells})
+    self = setmetatable(base:New(), {__index = TRB.Classes.Mainline.Druid.BalanceSpells})
 
     -- Bear Form abilities
     self.frenziedRegeneration = TRB.Classes.SpellThreshold:New({
@@ -115,7 +115,7 @@ function TRB.Classes.Druid.DruidBaseSpells:New()
 end
 
 
----@class TRB.Classes.Druid.BalanceSpells : TRB.Classes.Druid.DruidBaseSpells
+---@class TRB.Classes.Mainline.Druid.BalanceSpells : TRB.Classes.Mainline.Druid.DruidBaseSpells
 ---@field public moonfire TRB.Classes.SpellBase
 ---@field public starfire TRB.Classes.SpellBase
 ---@field public sunfire TRB.Classes.SpellBase
@@ -138,13 +138,13 @@ end
 ---@field public starsurge3 TRB.Classes.SpellThreshold
 ---@field public starfall TRB.Classes.SpellThreshold
 ---@field public meteorStorm TRB.Classes.SpellBase
-TRB.Classes.Druid.BalanceSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
-TRB.Classes.Druid.BalanceSpells.__index = TRB.Classes.Druid.BalanceSpells
+TRB.Classes.Mainline.Druid.BalanceSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Druid.DruidBaseSpells})
+TRB.Classes.Mainline.Druid.BalanceSpells.__index = TRB.Classes.Mainline.Druid.BalanceSpells
 
-function TRB.Classes.Druid.BalanceSpells:New()
-    ---@type TRB.Classes.Druid.DruidBaseSpells
-    local base = TRB.Classes.Druid.DruidBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.Druid.BalanceSpells) --[[@as TRB.Classes.Druid.BalanceSpells]]
+function TRB.Classes.Mainline.Druid.BalanceSpells:New()
+    ---@type TRB.Classes.Mainline.Druid.DruidBaseSpells
+    local base = TRB.Classes.Mainline.Druid.DruidBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Druid.BalanceSpells) --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
     -- Druid Class Baseline Abilities
     self.moonfire = TRB.Classes.SpellBase:New({
         id = 164812,
@@ -312,13 +312,13 @@ end
 
 ---Fills barTextVariables for Balance Druid options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Druid.BalanceSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Druid.BalanceSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Druid.BalanceSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Druid.BalanceSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#wrath", icon = spells.wrath.icon, description = spells.wrath.name, printInSettings = true },
@@ -388,7 +388,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Balance, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Druid.BalanceSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Druid.BalanceSpells.GetCastbarTickProfiles()
 	return {
 		-- Convoke the Spirits: 16 spells over 4s; Cenarius' Guidance trims it to 12 over 3s (tick modifier)
 		[391528] = { mode = "fixedCount", baseDuration = 4, tickCount = 16 },
@@ -398,7 +398,7 @@ end
 ---Gets built-in castbar tick modifiers for Balance (talent/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
-function TRB.Classes.Druid.BalanceSpells.GetCastbarTickModifiers()
+function TRB.Classes.Mainline.Druid.BalanceSpells.GetCastbarTickModifiers()
 	return {
 		-- Convoke the Spirits
 		[391528] = {
@@ -425,7 +425,7 @@ local function StarsurgeMulticast(line)
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Druid.BalanceSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Druid.BalanceSpells.thresholdSnowflakes = {
 	spells = {
 		starsurge = function(line)
 			line:ColorByUsable()
@@ -439,7 +439,7 @@ TRB.Classes.Druid.BalanceSpells.thresholdSnowflakes = {
 }
 
 
----@class TRB.Classes.Druid.FeralSpells : TRB.Classes.Druid.DruidBaseSpells
+---@class TRB.Classes.Mainline.Druid.FeralSpells : TRB.Classes.Mainline.Druid.DruidBaseSpells
 ---@field public clearcasting TRB.Classes.SpellBase
 ---@field public lunarInspiration TRB.Classes.SpellBase
 ---@field public berserk TRB.Classes.SpellBase
@@ -458,13 +458,13 @@ TRB.Classes.Druid.BalanceSpells.thresholdSnowflakes = {
 ---@field public halazzisFury TRB.Classes.SpellBase
 ---@field public midnightSeason2SetBonus TRB.Classes.SpellBase
 ---@field public midnightSeason2SetKey string # Key the set's pieces are registered under in TRB.Data.itemSetRegistry
-TRB.Classes.Druid.FeralSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
-TRB.Classes.Druid.FeralSpells.__index = TRB.Classes.Druid.FeralSpells
+TRB.Classes.Mainline.Druid.FeralSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Druid.DruidBaseSpells})
+TRB.Classes.Mainline.Druid.FeralSpells.__index = TRB.Classes.Mainline.Druid.FeralSpells
 
-function TRB.Classes.Druid.FeralSpells:New()
-    ---@type TRB.Classes.Druid.DruidBaseSpells
-    local base = TRB.Classes.Druid.DruidBaseSpells
-    self = setmetatable(base:New(),  TRB.Classes.Druid.FeralSpells) --[[@as TRB.Classes.Druid.FeralSpells]]
+function TRB.Classes.Mainline.Druid.FeralSpells:New()
+    ---@type TRB.Classes.Mainline.Druid.DruidBaseSpells
+    local base = TRB.Classes.Mainline.Druid.DruidBaseSpells
+    self = setmetatable(base:New(),  TRB.Classes.Mainline.Druid.FeralSpells) --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 
     -- Feral Spec Baseline Abilities
     self.swipe = TRB.Classes.SpellComboPointThreshold:New({
@@ -611,13 +611,13 @@ end
 
 ---Fills barTextVariables for Feral Druid options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Druid.FeralSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Druid.FeralSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Druid.FeralSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Druid.FeralSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#apexPredatorsCraving", icon = spells.apexPredatorsCraving.icon, description = spells.apexPredatorsCraving.name, printInSettings = true },
@@ -671,7 +671,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Feral, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Druid.FeralSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Druid.FeralSpells.GetCastbarTickProfiles()
 	return {
 		-- Convoke the Spirits: 16 spells over 4s; Cenarius' Guidance trims it to 12 over 3s (tick modifier)
 		[391528] = { mode = "fixedCount", baseDuration = 4, tickCount = 16 },
@@ -681,7 +681,7 @@ end
 ---Gets built-in castbar tick modifiers for Feral (talent/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
-function TRB.Classes.Druid.FeralSpells.GetCastbarTickModifiers()
+function TRB.Classes.Mainline.Druid.FeralSpells.GetCastbarTickModifiers()
 	return {
 		-- Convoke the Spirits
 		[391528] = {
@@ -691,19 +691,19 @@ function TRB.Classes.Druid.FeralSpells.GetCastbarTickModifiers()
 	}
 end
 
----@class TRB.Classes.Druid.ThresholdState : TRB.Classes.ThresholdState
+---@class TRB.Classes.Mainline.Druid.ThresholdState : TRB.Classes.ThresholdState
 ---@field public apexPredatorsCraving boolean
 
 ---@param line TRB.Classes.ThresholdLine
 ---@return boolean
 local function IsRavageActive(line)
-	local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 	return line.state.snapshotData.snapshots[spells.ravageMinimum.id].buff.isActive == true
 end
 
 ---@param line TRB.Classes.ThresholdLine
 local function FinisherMinimum(line)
-	if line.isUsable or (line.state --[[@as TRB.Classes.Druid.ThresholdState]]).apexPredatorsCraving then
+	if line.isUsable or (line.state --[[@as TRB.Classes.Mainline.Druid.ThresholdState]]).apexPredatorsCraving then
 		line:Over()
 	else
 		line:Under()
@@ -713,7 +713,7 @@ end
 ---The maximum-cost line compares against secret Energy, so a curve colors it.
 ---@param line TRB.Classes.ThresholdLine
 local function FinisherMaximum(line)
-	if (line.state --[[@as TRB.Classes.Druid.ThresholdState]]).apexPredatorsCraving then
+	if (line.state --[[@as TRB.Classes.Mainline.Druid.ThresholdState]]).apexPredatorsCraving then
 		line:Over()
 	elseif line.isUsable then
 		local multiplier = line.spell.primaryResourceTypeMod
@@ -724,13 +724,13 @@ local function FinisherMaximum(line)
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Druid.FeralSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Druid.FeralSpells.thresholdSnowflakes = {
 	-- A Clearcasting-empowered ability keeps the over color and skips every other rule.
 	before = function(line)
 		if not line.spell.attributes.isClearcasting then
 			return false
 		end
-		local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+		local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 		local applications = line.state.snapshotData.snapshots[spells.clearcasting.id].buff.applications
 		return applications ~= nil and applications > 0
 	end,
@@ -764,7 +764,7 @@ TRB.Classes.Druid.FeralSpells.thresholdSnowflakes = {
 			end
 		end,
 		moonfire = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 			if not line.data.talents:IsTalentActive(spells.lunarInspiration) then
 				line:Hide()
 			else
@@ -773,7 +773,7 @@ TRB.Classes.Druid.FeralSpells.thresholdSnowflakes = {
 		end,
 		swipe = TRB.Classes.ThresholdLine.ColorByUsable,
 		frenziedRegeneration = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 			if not line.data.talents:IsTalentActive(spells.empoweredShapeshifting) then
 				line:Hide()
 			else
@@ -781,7 +781,7 @@ TRB.Classes.Druid.FeralSpells.thresholdSnowflakes = {
 			end
 		end,
 		feralFrenzy = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 			if line.data.talents:IsTalentActive(spells.franticFrenzy) then
 				line:Hide()
 			else
@@ -789,7 +789,7 @@ TRB.Classes.Druid.FeralSpells.thresholdSnowflakes = {
 			end
 		end,
 		franticFrenzy = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 			if not line.data.talents:IsTalentActive(spells.franticFrenzy) then
 				line:Hide()
 			else
@@ -800,7 +800,7 @@ TRB.Classes.Druid.FeralSpells.thresholdSnowflakes = {
 }
 
 
----@class TRB.Classes.Druid.GuardianSpells : TRB.Classes.Druid.DruidBaseSpells
+---@class TRB.Classes.Mainline.Druid.GuardianSpells : TRB.Classes.Mainline.Druid.DruidBaseSpells
 ---@field public berserk TRB.Classes.SpellBase
 ---@field public incarnationGuardianOfUrsoc TRB.Classes.SpellBase
 ---@field public harnessedRage TRB.Classes.SpellBase
@@ -814,13 +814,13 @@ TRB.Classes.Druid.FeralSpells.thresholdSnowflakes = {
 ---@field public raze TRB.Classes.SpellThreshold
 ---@field public razeKillingBlow TRB.Classes.SpellThreshold
 ---@field public razeHarnessedRage TRB.Classes.SpellThreshold
-TRB.Classes.Druid.GuardianSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
-TRB.Classes.Druid.GuardianSpells.__index = TRB.Classes.Druid.GuardianSpells
+TRB.Classes.Mainline.Druid.GuardianSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Druid.DruidBaseSpells})
+TRB.Classes.Mainline.Druid.GuardianSpells.__index = TRB.Classes.Mainline.Druid.GuardianSpells
 
-function TRB.Classes.Druid.GuardianSpells:New()
-    ---@type TRB.Classes.Druid.DruidBaseSpells
-    local base = TRB.Classes.Druid.DruidBaseSpells
-    self = setmetatable(base:New(), TRB.Classes.Druid.GuardianSpells) --[[@as TRB.Classes.Druid.GuardianSpells]]
+function TRB.Classes.Mainline.Druid.GuardianSpells:New()
+    ---@type TRB.Classes.Mainline.Druid.DruidBaseSpells
+    local base = TRB.Classes.Mainline.Druid.DruidBaseSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Druid.GuardianSpells) --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 
     self.maul = TRB.Classes.SpellThreshold:New({
         id = 6807,
@@ -924,13 +924,13 @@ end
 
 ---Fills barTextVariables for Guardian Druid options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Druid.GuardianSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Druid.GuardianSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Druid.GuardianSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Druid.GuardianSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
@@ -963,7 +963,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Guardian, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Druid.GuardianSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Druid.GuardianSpells.GetCastbarTickProfiles()
 	return {
 		-- Emerald Slumber: the data's 0.9s period fits 8 heals inside 8s; the tooltip shows them every second
 		[329042] = { mode = "fixedCount", baseDuration = 8, tickCount = 8 },
@@ -975,7 +975,7 @@ end
 ---Gets built-in castbar tick modifiers for Guardian (talent/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
-function TRB.Classes.Druid.GuardianSpells.GetCastbarTickModifiers()
+function TRB.Classes.Mainline.Druid.GuardianSpells.GetCastbarTickModifiers()
 	return {
 		-- Convoke the Spirits
 		[391528] = {
@@ -996,10 +996,10 @@ local function ModifiedRageCost(line, resourceAmount)
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Druid.GuardianSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Druid.GuardianSpells.thresholdSnowflakes = {
 	spells = {
 		maul = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 			local talentData = line.data.talents
 			if talentData:IsTalentActive(spells.raze) or not talentData:IsTalentActive(spells.maul) then
 				line:Hide()
@@ -1008,7 +1008,7 @@ TRB.Classes.Druid.GuardianSpells.thresholdSnowflakes = {
 			end
 		end,
 		maulKillingBlow = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 			local talentData = line.data.talents
 			if talentData:IsTalentActive(spells.raze) or not talentData:IsTalentActive(spells.maul) or not talentData:IsTalentActive(spells.killingBlow) then
 				line:Hide()
@@ -1017,7 +1017,7 @@ TRB.Classes.Druid.GuardianSpells.thresholdSnowflakes = {
 			end
 		end,
 		maulHarnessedRage = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 			local talentData = line.data.talents
 			if talentData:IsTalentActive(spells.raze) or not talentData:IsTalentActive(spells.maul) or not talentData:IsTalentActive(spells.harnessedRage) then
 				line:Hide()
@@ -1026,7 +1026,7 @@ TRB.Classes.Druid.GuardianSpells.thresholdSnowflakes = {
 			end
 		end,
 		razeKillingBlow = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 			local talentData = line.data.talents
 			if not talentData:IsTalentActive(spells.raze) or not talentData:IsTalentActive(spells.killingBlow) then
 				line:Hide()
@@ -1035,7 +1035,7 @@ TRB.Classes.Druid.GuardianSpells.thresholdSnowflakes = {
 			end
 		end,
 		razeHarnessedRage = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 			local talentData = line.data.talents
 			if not talentData:IsTalentActive(spells.raze) or not talentData:IsTalentActive(spells.harnessedRage) then
 				line:Hide()
@@ -1047,23 +1047,23 @@ TRB.Classes.Druid.GuardianSpells.thresholdSnowflakes = {
 }
 
 
----@class TRB.Classes.Druid.RestorationSpells : TRB.Classes.Healer.HealerSpells, TRB.Classes.Druid.DruidBaseSpells
+---@class TRB.Classes.Mainline.Druid.RestorationSpells : TRB.Classes.Mainline.Healer.HealerSpells, TRB.Classes.Mainline.Druid.DruidBaseSpells
 ---@field public efflorescence TRB.Classes.SpellBase
 ---@field public lifetreading TRB.Classes.SpellBase
 ---@field public lifebloom TRB.Classes.SpellBase
 ---@field public incarnationTreeOfLife TRB.Classes.SpellBase
 ---@field public cenariusGuidance TRB.Classes.SpellBase
 ---@field public clearcasting TRB.Classes.SpellBase
-TRB.Classes.Druid.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Druid.DruidBaseSpells})
-TRB.Classes.Druid.RestorationSpells.__index = TRB.Classes.Druid.RestorationSpells
+TRB.Classes.Mainline.Druid.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Druid.DruidBaseSpells})
+TRB.Classes.Mainline.Druid.RestorationSpells.__index = TRB.Classes.Mainline.Druid.RestorationSpells
 
-function TRB.Classes.Druid.RestorationSpells:New()
-    ---@type TRB.Classes.Druid.DruidBaseSpells
-    local druidBase = TRB.Classes.Druid.DruidBaseSpells
-    self = setmetatable(druidBase:New(), TRB.Classes.Druid.RestorationSpells) --[[@as TRB.Classes.Druid.RestorationSpells]]
+function TRB.Classes.Mainline.Druid.RestorationSpells:New()
+    ---@type TRB.Classes.Mainline.Druid.DruidBaseSpells
+    local druidBase = TRB.Classes.Mainline.Druid.DruidBaseSpells
+    self = setmetatable(druidBase:New(), TRB.Classes.Mainline.Druid.RestorationSpells) --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
     
     -- Mixin HealerSpells abilities
-    local healerSpells = TRB.Classes.Healer.HealerSpells:New()
+    local healerSpells = TRB.Classes.Mainline.Healer.HealerSpells:New()
     for k, v in pairs(healerSpells) do
         if self[k] == nil then -- Don't override DruidBaseSpells abilities
             self[k] = v
@@ -1105,13 +1105,13 @@ end
 
 ---Fills barTextVariables for Restoration Druid options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Druid.RestorationSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Druid.RestorationSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Druid.RestorationSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Druid.RestorationSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#efflorescence", icon = spells.efflorescence.icon, description = spells.efflorescence.name, printInSettings = true },
@@ -1145,7 +1145,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Restoration, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Druid.RestorationSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Druid.RestorationSpells.GetCastbarTickProfiles()
 	return {
 		-- Tranquility
 		[740] = { mode = "fixedCount", baseDuration = 6, tickCount = 7, firstTickAtStart = true },
@@ -1157,7 +1157,7 @@ end
 ---Gets built-in castbar tick modifiers for Restoration (talent/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
-function TRB.Classes.Druid.RestorationSpells.GetCastbarTickModifiers()
+function TRB.Classes.Mainline.Druid.RestorationSpells.GetCastbarTickModifiers()
 	return {
 		-- Convoke the Spirits
 		[391528] = {
@@ -1177,14 +1177,14 @@ end
     Restoration: Primary bar (N=1) only
 ]]
 
----@class TRB.Classes.Druid.BarGroupsFactory
-TRB.Classes.Druid.BarGroupsFactory = {}
-TRB.Classes.Druid.BarGroupsFactory.__index = TRB.Classes.Druid.BarGroupsFactory
+---@class TRB.Classes.Mainline.Druid.BarGroupsFactory
+TRB.Classes.Mainline.Druid.BarGroupsFactory = {}
+TRB.Classes.Mainline.Druid.BarGroupsFactory.__index = TRB.Classes.Mainline.Druid.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Druid specialization
 ---@param specId integer # 1=Balance, 2=Feral, 3=Guardian, 4=Restoration
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
+function TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(specId)
     local barGroups = {}
     
     -- Check if form switching is enabled for non-Feral specs
@@ -1337,7 +1337,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
     -- Per-form primary thresholds reuse the central max-resource registry (shared with the options
     -- panels) so form-resource maxes are never hardcoded. Each form maps to a form-spec's resource.
     local maxRes = TRB.Data.maxResource.druid
@@ -1458,31 +1458,31 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["druid_balance"] = TRB.Classes.Druid.BalanceSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["druid_feral"] = TRB.Classes.Druid.FeralSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["druid_guardian"] = TRB.Classes.Druid.GuardianSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["druid_restoration"] = TRB.Classes.Druid.RestorationSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["druid_balance"] = TRB.Classes.Mainline.Druid.BalanceSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["druid_feral"] = TRB.Classes.Mainline.Druid.FeralSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["druid_guardian"] = TRB.Classes.Mainline.Druid.GuardianSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["druid_restoration"] = TRB.Classes.Mainline.Druid.RestorationSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["druid_balance"] = TRB.Classes.Druid.BalanceSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["druid_feral"] = TRB.Classes.Druid.FeralSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["druid_guardian"] = TRB.Classes.Druid.GuardianSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["druid_restoration"] = TRB.Classes.Druid.RestorationSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["druid_balance"] = TRB.Classes.Mainline.Druid.BalanceSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["druid_feral"] = TRB.Classes.Mainline.Druid.FeralSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["druid_guardian"] = TRB.Classes.Mainline.Druid.GuardianSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["druid_restoration"] = TRB.Classes.Mainline.Druid.RestorationSpells.GetCastbarTickProfiles
 
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
-TRB.Data.castbarTickModifiersRegistry["druid_balance"] = TRB.Classes.Druid.BalanceSpells.GetCastbarTickModifiers
-TRB.Data.castbarTickModifiersRegistry["druid_feral"] = TRB.Classes.Druid.FeralSpells.GetCastbarTickModifiers
-TRB.Data.castbarTickModifiersRegistry["druid_guardian"] = TRB.Classes.Druid.GuardianSpells.GetCastbarTickModifiers
-TRB.Data.castbarTickModifiersRegistry["druid_restoration"] = TRB.Classes.Druid.RestorationSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["druid_balance"] = TRB.Classes.Mainline.Druid.BalanceSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["druid_feral"] = TRB.Classes.Mainline.Druid.FeralSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["druid_guardian"] = TRB.Classes.Mainline.Druid.GuardianSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["druid_restoration"] = TRB.Classes.Mainline.Druid.RestorationSpells.GetCastbarTickModifiers
 
 -- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
 -- every registered set once per gear change and caches it.
-TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey = "druid_feral_midnightSeason2"
+TRB.Classes.Mainline.Druid.FeralSpells.midnightSeason2SetKey = "druid_feral_midnightSeason2"
 TRB.Data.itemSetRegistry = TRB.Data.itemSetRegistry or {}
 ---@type TRB.Classes.ItemSetDefinition
-TRB.Data.itemSetRegistry[TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey] = {
+TRB.Data.itemSetRegistry[TRB.Classes.Mainline.Druid.FeralSpells.midnightSeason2SetKey] = {
 	headId = 271528,
 	shoulderId = 271526,
 	chestId = 271531,

@@ -2,7 +2,7 @@ local _, TRB = ...
 
 -- Priest (World of Warcraft: Forever): Mana; there is no Insanity in this game.
 
----@class TRB.Classes.Priest.GeneralSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Forever.Priest.GeneralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public mindFlay TRB.Classes.SpellBase
 ---@field public penance TRB.Classes.SpellBase
 ---@field public penanceDamage TRB.Classes.SpellBase
@@ -10,7 +10,7 @@ local _, TRB = ...
 ---@field public starshards TRB.Classes.SpellBase
 
 ---Adds the Priest's channeled abilities to a new spell set.
----@param spells TRB.Classes.Priest.GeneralSpells
+---@param spells TRB.Classes.Forever.Priest.GeneralSpells
 local function FillSpells(spells)
 	spells.mindFlay = TRB.Classes.SpellBase:New({
 		id = 15407,

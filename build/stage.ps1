@@ -11,7 +11,7 @@
 	Runs on Windows PowerShell 5.1 and PowerShell 7 (GitHub-hosted runners included).
 
 .PARAMETER Flavor
-	Flavor folder name under Flavors\ (case-insensitive): mainline or forever.
+	Flavor folder name under Flavors\ (case-insensitive): mainline, forever, or classic.
 
 .PARAMETER Version
 	Overrides the TOC's "## Version:" in the staged copy (e.g. from a release tag).

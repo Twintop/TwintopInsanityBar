@@ -40,6 +40,11 @@ local cachedHealthPercentFmt = nil
 local cachedHealthPercentPrecision = nil
 
 local function UpdateSkyridingState()
+	-- Only a skyriding client glides, and Classic has no GetGlidingInfo.
+	if TRB.Flavor.skyriding == nil then
+		TRB.Data.character.isSkyriding = false
+		return
+	end
 	local _, canGlide = C_PlayerInfo.GetGlidingInfo()
 	TRB.Data.character.isSkyriding = canGlide or false
 end
@@ -1038,7 +1043,7 @@ function TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	if className == nil then
 		return nil
 	end
-	local classModule = TRB.Classes and TRB.Classes[className]
+	local classModule = TRB.Flavor.GetClassModule(className)
 	if classModule == nil or classModule.BarGroupsFactory == nil or classModule.BarGroupsFactory.GetSpecConfiguration == nil then
 		return nil
 	end

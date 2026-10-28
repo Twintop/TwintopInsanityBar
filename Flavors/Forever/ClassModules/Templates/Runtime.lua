@@ -87,7 +87,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 		-- Only destroy and recreate bar groups when switching to this spec
 		if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= spec.entry.compositeKey then
 			Bar:DestroyBarGroups()
-			TRB.Frames.barGroups = TRB.Classes[classDef.classModuleName].BarGroupsFactory:CreateForSpec(spec.entry.specId)
+			TRB.Frames.barGroups = TRB.Classes.Forever[classDef.classModuleName].BarGroupsFactory:CreateForSpec(spec.entry.specId)
 		end
 	end
 
