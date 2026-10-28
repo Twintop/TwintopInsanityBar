@@ -506,6 +506,7 @@ local function CharacterChange(self, event, ...)
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
 	elseif event == "PLAYER_TARGET_CHANGED" then
+		TRB.Functions.Character:InvalidateSpellRanges()
 		TRB.Functions.BarVisibility:MarkDirty()
 	elseif event == "PLAYER_MOUNT_DISPLAY_CHANGED" then
 		local frame = self
@@ -801,6 +802,9 @@ function TRB.Functions.Character:StopFlightPolling()
 	lastKnownIsFlying = nil
 end
 
+-- The spells this addon turned range checks on for, so turning them off leaves other callers' alone.
+local rangeChecksOn = {}
+
 ---Handles SPELL_RANGE_CHECK_UPDATE events
 ---@param self any
 ---@param event string
@@ -808,28 +812,33 @@ end
 ---@param isInRange boolean
 ---@param checksRange boolean
 local function SpellRangeCheckUpdateEvent(self, event, spellIdentifier, isInRange, checksRange)
-	if type(spellIdentifier) == "number" then
-		if checksRange == true then
-			TRB.Data.cache.values.range[spellIdentifier] = isInRange
-			return
-		end
+	if not rangeChecksOn[spellIdentifier] then
+		return
 	end
-
-	if TRB.Data.specCache[TRB.Data.barConstructedForSpec] ~= nil then
-		local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
-		for _, v in pairs(specCache.spellsData.spells) do
-			if v:GetRankedId() == spellIdentifier then
-				v:UpdateIsSpellInRange()
-				return
-			end
-		end
+	-- No check means no target, or one the spell can't be used on.
+	if checksRange == true then
+		TRB.Data.cache.values.range[spellIdentifier] = isInRange
+	else
+		TRB.Data.cache.values.range[spellIdentifier] = TRB.Data.constants.rangeInvalid
 	end
 end
 
 local spellRangeCheckUpdateFrame = CreateFrame("Frame")
 spellRangeCheckUpdateFrame:SetScript("OnEvent", SpellRangeCheckUpdateEvent)
 
----Whether a spec needs range checks: its threshold lines show out of range, or a threshold Color Indicator reads range.
+---Drops every cached range result, so each line reads its range once against a new target.
+function TRB.Functions.Character:InvalidateSpellRanges()
+	TRB.Data.cache.values.range = {}
+end
+
+---Whether a spec's threshold lines read range: they show out of range, or hide with no valid target.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@return boolean
+local function LinesReadRange(settings)
+	return TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(settings) or TRB.Functions.Threshold:HidesAnyLineWithoutTarget(settings)
+end
+
+---Whether a spec needs range checks: its threshold lines read range, or a threshold Color Indicator does.
 ---For a class with shapeshift forms, every spec's settings count, since a form can draw the lines with another spec's.
 ---@param compositeKey string?
 ---@return boolean
@@ -838,7 +847,7 @@ local function NeedsSpellRangeChecks(compositeKey)
 	if specCache == nil then
 		return false
 	end
-	if TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(specCache.settings) then
+	if LinesReadRange(specCache.settings) then
 		return true
 	end
 	local registryEntry = TRB.Functions.Character:GetSpecRegistryEntry(compositeKey or "")
@@ -854,7 +863,7 @@ local function NeedsSpellRangeChecks(compositeKey)
 	end
 	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
 		local cache = TRB.Data.specCache[entry.compositeKey]
-		if entry.classId == registryEntry.classId and cache ~= nil and cache.settings ~= nil and TRB.Functions.Threshold:ShouldShowOutOfRangeThresholds(cache.settings) then
+		if entry.classId == registryEntry.classId and cache ~= nil and cache.settings ~= nil and LinesReadRange(cache.settings) then
 			return true
 		end
 	end
@@ -869,8 +878,10 @@ function TRB.Functions.Character:EnableSpellRangeCheckUpdate()
 
 	if NeedsSpellRangeChecks(compositeKey) then
 		for _, v in pairs(specCache.spellsData.spells) do
-			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
-				C_Spell.EnableSpellRangeCheck(v:GetRankedId(), true)
+			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true and v:HasRange() then
+				local rankedId = v:GetRankedId()
+				C_Spell.EnableSpellRangeCheck(rankedId, true)
+				rangeChecksOn[rankedId] = true
 				v:UpdateIsSpellInRange()
 			end
 		end
@@ -881,26 +892,16 @@ end
 
 ---Disables all spells that need to have range checks performed
 function TRB.Functions.Character:DisableSpellRangeCheckUpdate()
-	local specCache = TRB.Data.specCache[TRB.Data.barConstructedForSpec] ---@type TRB.Classes.SpecCache
-
 	spellRangeCheckUpdateFrame:UnregisterEvent("SPELL_RANGE_CHECK_UPDATE")
-	
-	-- Do two passes over this:
-	-- 1) spells that should be disabled based on the specCache
-	-- 2) any spells we might already have cached
-	if specCache ~= nil then
-		for _, v in pairs(specCache.spellsData.spells) do
-			if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
-				C_Spell.EnableSpellRangeCheck(v:GetRankedId(), false)
-			end
-		end
-	end
 
-	for k, _ in pairs(TRB.Data.cache.values.range) do
-		C_Spell.EnableSpellRangeCheck(k, false)
+	for id in pairs(rangeChecksOn) do
+		C_Spell.EnableSpellRangeCheck(id, false)
 	end
+	rangeChecksOn = {}
 
 	TRB.Data.cache.values.range = {}
+	-- A rank learned since the last read may answer differently.
+	TRB.Data.cache.values.rangeInfo = {}
 end
 
 ---Turns range checks on or off after a setting that decides whether the live spec needs them changes.

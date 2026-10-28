@@ -404,11 +404,12 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 	return yCoord - 30
 end
 
----Whether any of a spec's threshold lines has a cooldown, from its cached spell data.
+---Whether any of a spec's threshold lines passes a test, from its cached spell data.
 ---@param classId integer
 ---@param specId integer
+---@param test fun(spell: TRB.Classes.SpellThreshold): boolean
 ---@return boolean
-local function SpecHasCooldownLines(classId, specId)
+local function SpecHasLine(classId, specId, test)
 	local compositeKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
 	local specCache = compositeKey and TRB.Data.specCache[compositeKey] or nil
 	local spells = specCache and specCache.spellsData and specCache.spellsData.spells or nil
@@ -416,11 +417,19 @@ local function SpecHasCooldownLines(classId, specId)
 		return false
 	end
 	for _, spell in pairs(spells) do
-		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell.hasCooldown == true then
+		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and test(spell --[[@as TRB.Classes.SpellThreshold]]) then
 			return true
 		end
 	end
 	return false
+end
+
+local function HasCooldown(spell)
+	return spell.hasCooldown == true
+end
+
+local function NeedsTarget(spell)
+	return spell:NeedsTarget()
 end
 
 ---Generates the Threshold Line Behavior section. A spec's tab offers only the rows its lines can use and leaves
@@ -433,7 +442,10 @@ end
 ---@param yCoord number
 ---@return number
 function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(parent, controls, spec, classId, specId, yCoord)
-	if classId ~= nil and specId ~= nil and not SpecHasCooldownLines(classId, specId) then
+	local isGlobal = classId == nil or specId == nil
+	local hasCooldownRows = isGlobal or SpecHasLine(classId, specId, HasCooldown)
+	local hasTargetRows = isGlobal or SpecHasLine(classId, specId, NeedsTarget)
+	if not hasCooldownRows and not hasTargetRows then
 		return yCoord
 	end
 
@@ -449,10 +461,39 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions
 		-- A Druid form draws with another spec's settings, so any spec's change can reach the live bar.
 		onClick = function()
 			TRB.Functions.Threshold:RedrawThresholdLines()
+			TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
 		end,
 	})
 
 	yCoord = yCoord - 30
+	if hasCooldownRows then
+		yCoord = self:GenerateThresholdLineCooldownBehaviorOptions(parent, controls, spec, namePrefix, yCoord)
+	end
+
+	local coverY = yCoord - 40
+	if hasTargetRows then
+		if hasCooldownRows then
+			-- The last slider's value box sits below its row.
+			yCoord = yCoord - 50
+		end
+		yCoord = self:GenerateThresholdLineTargetBehaviorOptions(parent, controls, spec, namePrefix, yCoord)
+		-- Two rows are shorter than the cover's message and buttons.
+		coverY = yCoord - 50
+	end
+
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, coverY)
+
+	return yCoord - 30
+end
+
+---Generates the Threshold Line Behavior rows for lines with a cooldown: Track ability cooldowns and Hide while on cooldown.
+---@param parent Frame
+---@param controls table
+---@param spec table
+---@param namePrefix string
+---@param yCoord number
+---@return number # The last row's position
+function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineCooldownBehaviorOptions(parent, controls, spec, namePrefix, yCoord)
 	controls.checkBoxes.thresholdBehaviorTrackCooldowns = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdBehaviorTrackCooldowns",
 		L["ThresholdBehaviorTrackCooldowns"], L["ThresholdBehaviorTrackCooldownsTooltip"], yCoord,
 		function() return spec.thresholds.behavior.trackCooldowns end,
@@ -491,10 +532,46 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions
 	hideOnCooldownWindow:SetShown(true)
 	RefreshHideOnCooldownWindowState()
 
-	-- The last slider's value box sits below its row.
-	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, yCoord - 40)
+	return yCoord
+end
 
-	return yCoord - 30
+---Generates the Threshold Line Behavior rows for lines that need a target: Hide with no valid target and its
+---out-of-combat choice.
+---@param parent Frame
+---@param controls table
+---@param spec table
+---@param namePrefix string
+---@param yCoord number
+---@return number # The last row's position
+function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineTargetBehaviorOptions(parent, controls, spec, namePrefix, yCoord)
+	local function RefreshOutOfCombatState()
+		local reason = not spec.thresholds.behavior.hideNoTarget.enabled and L["ThresholdBehaviorHideNoTargetOffTooltip"] or nil
+		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.thresholdBehaviorHideNoTargetOutOfCombat, reason == nil)
+		TRB.Functions.OptionsUi.Primitives:SetDisabledReason(controls.checkBoxes.thresholdBehaviorHideNoTargetOutOfCombat, reason)
+	end
+
+	controls.checkBoxes.thresholdBehaviorHideNoTarget = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdBehaviorHideNoTarget",
+		L["ThresholdBehaviorHideNoTarget"], L["ThresholdBehaviorHideNoTargetTooltip"], yCoord,
+		function() return spec.thresholds.behavior.hideNoTarget.enabled end,
+		function(checked)
+			spec.thresholds.behavior.hideNoTarget.enabled = checked
+			RefreshOutOfCombatState()
+			TRB.Functions.Threshold:RedrawThresholdLines()
+			TRB.Functions.Character:RefreshSpellRangeCheckUpdate()
+		end)
+
+	yCoord = yCoord - 20
+	controls.checkBoxes.thresholdBehaviorHideNoTargetOutOfCombat = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdBehaviorHideNoTargetOutOfCombat",
+		L["ThresholdBehaviorHideNoTargetOutOfCombat"], L["ThresholdBehaviorHideNoTargetOutOfCombatTooltip"], yCoord,
+		function() return spec.thresholds.behavior.hideNoTarget.outOfCombat end,
+		function(checked)
+			spec.thresholds.behavior.hideNoTarget.outOfCombat = checked
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+	controls.checkBoxes.thresholdBehaviorHideNoTargetOutOfCombat:SetPoint("TOPLEFT", oUi.xCoord + 20, yCoord)
+	RefreshOutOfCombatState()
+
+	return yCoord
 end
 
 ---Generates Threshold Line color options for the specialization, including custom colors if provided.

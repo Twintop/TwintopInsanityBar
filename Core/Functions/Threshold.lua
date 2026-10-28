@@ -2819,6 +2819,7 @@ end
 
 local customThresholdSpellShims = {}
 local function CustomThresholdAlwaysInRange() return true end
+local function CustomThresholdNeverWithoutTarget() return false end
 
 ---Builds a lightweight spell-like shim so custom threshold lines can be rendered
 ---through the SAME canonical threshold functions (`AdjustThresholdDisplay` /
@@ -2837,6 +2838,7 @@ local function BuildCustomThresholdSpellShim(customThreshold, settingKey)
 			hasCooldown = false,
 			isSnowflake = false,
 			GetIsSpellInRange = CustomThresholdAlwaysInRange,
+			HasNoValidTarget = CustomThresholdNeverWithoutTarget,
 		}
 		customThresholdSpellShims[settingKey] = shim
 	end
@@ -3248,6 +3250,47 @@ function TRB.Functions.Threshold:GetCooldownHideWindow(behavior, dictEntry)
 	return nil
 end
 
+---Whether a threshold line hides while its ability has no valid target, right now: the line's own choice, or else
+---the shared setting.
+---@param behavior TRB.Classes.Settings.ThresholdBehavior? # The shared Threshold Line Behavior settings
+---@param dictEntry TRB.Classes.Settings.ThresholdDictionaryEntry?
+---@param inCombat boolean
+---@return boolean
+function TRB.Functions.Threshold:HidesWithoutTarget(behavior, dictEntry, inCombat)
+	local lineBehavior = dictEntry ~= nil and dictEntry.behavior or nil
+	local mode = lineBehavior ~= nil and lineBehavior.noTarget or nil
+	if mode == "show" then
+		return false
+	elseif mode == "hideCombat" then
+		return inCombat
+	elseif mode == "hideAlways" then
+		return true
+	end
+	local shared = behavior ~= nil and behavior.hideNoTarget or nil
+	return shared ~= nil and shared.enabled == true and (inCombat or shared.outOfCombat == true)
+end
+
+---Whether any of a spec's threshold lines can hide while its ability has no valid target, which needs range checks.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@return boolean
+function TRB.Functions.Threshold:HidesAnyLineWithoutTarget(settings)
+	local thresholds = settings.thresholds
+	if thresholds == nil then
+		return false
+	end
+	local shared = thresholds.behavior ~= nil and thresholds.behavior.hideNoTarget or nil
+	if shared ~= nil and shared.enabled then
+		return true
+	end
+	for _, dictEntry in pairs(thresholds.thresholdDictionary or {}) do
+		local mode = dictEntry.behavior ~= nil and dictEntry.behavior.noTarget or nil
+		if mode == "hideCombat" or mode == "hideAlways" then
+			return true
+		end
+	end
+	return false
+end
+
 ---Resolves the effective under/over threshold colors for a ColorCurve, accounting for per-threshold overrides.
 ---Call this BEFORE BuildThresholdCurve to bake override colors into the curve.
 ---For static mode, returns the static color for both under and over (curve becomes a flat line).
@@ -3462,6 +3505,12 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 
 	local dictEntry = spell.settingKey and settings.thresholds.thresholdDictionary[spell.settingKey]
 	if dictEntry and dictEntry.enabled and showThreshold then
+		-- No valid target hides the line before any other rule, in every color mode.
+		if self:HidesWithoutTarget(settings.thresholds.behavior, dictEntry, TRB.Data.character.inCombat) and spell:HasNoValidTarget() then
+			self:Hide(key, threshold)
+			return false
+		end
+
 		-- Hidden on cooldown until its window; with secret times the widget resolves that from an alpha curve, in every color mode.
 		local cooldown = spell.hasCooldown and snapshot ~= nil and snapshot.cooldown or nil
 		local gateCurve = nil

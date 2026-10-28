@@ -85,6 +85,8 @@ TRB.Data.constants = {
 	borderWidthFactor = 2,
 	-- Yards per second at 100% movement speed.
 	runSpeed = 7,
+	-- The range cache's value for a check with no answer: no target, or one the spell can't be used on.
+	rangeInvalid = "invalid",
 	defaultSettings = {
 		fonts = {}, -- This will get populated by Functions\Settings.lua
 		sounds = {
@@ -220,7 +222,8 @@ TRB.Data.cache.values = {
 	resource = {},
 	castTime = {},
 	frame = {},
-	range = {}
+	range = {},
+	rangeInfo = {}
 }
 ---@type TRB.Classes.SpellThreshold[]
 TRB.Data.cache.thresholdSpells = {}

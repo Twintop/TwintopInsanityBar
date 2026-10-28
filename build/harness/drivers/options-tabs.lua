@@ -1024,38 +1024,82 @@ function hooks.afterEvents(ctx)
 			check("every grouping strip ends Textures, Visibility, Bar Text (" .. table.concat(badOrder, "; ") .. ")", #badOrder == 0 and strips > 0)
 		end
 
-		-- The Threshold Line Behavior section is on a spec's tab only when one of its lines has a cooldown, and always on Global Options.
+		-- The Threshold Line Behavior section is on a spec's tab only with the rows its lines can use, and always on Global Options.
 		do
-			local wrong, withSection, withoutSection = {}, 0, {}
+			local wrong, withSection, withoutSection, cooldownOnly, targetOnly = {}, 0, {}, {}, {}
 			for _, panel in ipairs(drv.thresholdPanels) do
 				local compositeKey = TRB_.Functions.Character:GetCompositeKeyFromIds(panel.classId, panel.specId)
 				local specCache = compositeKey and TRB_.Data.specCache[compositeKey] or nil
 				local spells = specCache and specCache.spellsData and specCache.spellsData.spells or nil
 				if spells ~= nil then
-					local hasCooldownLine = false
+					local hasCooldownLine, hasTargetLine = false, false
 					for _, spell in pairs(spells) do
-						if type(spell) == "table" and spell.Is ~= nil and (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell.hasCooldown == true then
-							hasCooldownLine = true
+						if type(spell) == "table" and spell.Is ~= nil and (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) then
+							hasCooldownLine = hasCooldownLine or spell.hasCooldown == true
+							hasTargetLine = hasTargetLine or spell:NeedsTarget()
 						end
 					end
 					local className, specName = TRB_.Functions.Character:GetClassAndSpecializationNames(panel.classId, panel.specId)
 					local namePrefix = "TwintopResourceBar_" .. className .. "_" .. specName
 					local hasBox = rawget(G, namePrefix .. "_ThresholdBehaviorTrackCooldowns") ~= nil and rawget(G, namePrefix .. "_ThresholdBehaviorHideOnCooldown") ~= nil
 						and rawget(G, namePrefix .. "_ThresholdBehaviorHideOnCooldownWindow_ModeGCDs") ~= nil
+					local hasTargetBox = rawget(G, namePrefix .. "_ThresholdBehaviorHideNoTarget") ~= nil and rawget(G, namePrefix .. "_ThresholdBehaviorHideNoTargetOutOfCombat") ~= nil
 					local hasUseGlobal = rawget(G, namePrefix .. "_useGlobal_thresholdBehavior") ~= nil
-					if hasBox ~= hasCooldownLine or hasUseGlobal ~= hasCooldownLine then
-						wrong[#wrong + 1] = string.format("%s cooldownLines=%s box=%s useGlobal=%s", compositeKey, tostring(hasCooldownLine), tostring(hasBox), tostring(hasUseGlobal))
+					local hasSection = hasCooldownLine or hasTargetLine
+					if hasBox ~= hasCooldownLine or hasTargetBox ~= hasTargetLine or hasUseGlobal ~= hasSection then
+						wrong[#wrong + 1] = string.format("%s cooldownLines=%s box=%s targetLines=%s targetBox=%s useGlobal=%s", compositeKey, tostring(hasCooldownLine), tostring(hasBox),
+							tostring(hasTargetLine), tostring(hasTargetBox), tostring(hasUseGlobal))
 					end
-					if hasCooldownLine then withSection = withSection + 1 else withoutSection[#withoutSection + 1] = compositeKey end
+					if hasSection then withSection = withSection + 1 else withoutSection[#withoutSection + 1] = compositeKey end
+					if hasCooldownLine and not hasTargetLine then cooldownOnly[#cooldownOnly + 1] = compositeKey end
+					if hasTargetLine and not hasCooldownLine then targetOnly[#targetOnly + 1] = compositeKey end
 				end
 			end
 			table.sort(withoutSection)
-			print(string.format("INFO Threshold Line Behavior sections: %d specs with, without on %s", withSection, table.concat(withoutSection, ", ")))
+			table.sort(cooldownOnly)
+			table.sort(targetOnly)
+			print(string.format("INFO Threshold Line Behavior sections: %d specs with, without on %s; cooldown rows only on %s; target rows only on %s",
+				withSection, table.concat(withoutSection, ", "), table.concat(cooldownOnly, ", "), table.concat(targetOnly, ", ")))
 			table.sort(wrong)
-			check("a spec's tab has the Threshold Line Behavior section only with a cooldown line (" .. table.concat(wrong, ", ") .. ")", #wrong == 0 and withSection > 0)
+			check("a spec's tab has the Threshold Line Behavior section only with the rows its lines can use (" .. table.concat(wrong, ", ") .. ")", #wrong == 0 and withSection > 0)
 			check("Global Options has the Threshold Line Behavior section and its bulk Use Global box",
 				rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorTrackCooldowns") ~= nil and rawget(G, "TwintopResourceBar_Global_enableAll_thresholdBehavior") ~= nil
-				and rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorHideOnCooldown") ~= nil and rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorHideOnCooldownWindow_ModeTime") ~= nil)
+				and rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorHideOnCooldown") ~= nil and rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorHideOnCooldownWindow_ModeTime") ~= nil
+				and rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorHideNoTarget") ~= nil and rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorHideNoTargetOutOfCombat") ~= nil)
+		end
+
+		-- Global Options' Hide with no valid target: its out-of-combat box grays out while hiding is off, and both edit the shared setting.
+		do
+			local function named(suffix) return rawget(G, "TwintopResourceBar_Global__" .. suffix) end
+			local hideNoTarget = TRB_.Data.settings.core.thresholds.behavior.hideNoTarget
+			local hideBox, outOfCombatBox = named("ThresholdBehaviorHideNoTarget"), named("ThresholdBehaviorHideNoTargetOutOfCombat")
+			local problems = {}
+			if hideBox ~= nil and outOfCombatBox ~= nil then
+				local saved = { hideNoTarget.enabled, hideNoTarget.outOfCombat }
+				local refreshes = 0
+				local refreshRange = TRB_.Functions.Character.RefreshSpellRangeCheckUpdate
+				TRB_.Functions.Character.RefreshSpellRangeCheckUpdate = function(...)
+					refreshes = refreshes + 1
+					return refreshRange(...)
+				end
+				toggle(hideBox, false)
+				if outOfCombatBox.__enabled ~= false or outOfCombatBox.trbDisabledReason ~= L_["ThresholdBehaviorHideNoTargetOffTooltip"] then
+					problems[#problems + 1] = "hideOff:outOfCombat=" .. tostring(outOfCombatBox.trbDisabledReason)
+				end
+				toggle(hideBox, true)
+				if hideNoTarget.enabled ~= true or outOfCombatBox.__enabled == false or outOfCombatBox.trbDisabledReason ~= nil or refreshes < 2 then
+					problems[#problems + 1] = "hideOn:enabled=" .. tostring(hideNoTarget.enabled) .. " refreshes=" .. refreshes
+				end
+				toggle(outOfCombatBox, true)
+				if hideNoTarget.outOfCombat ~= true then
+					problems[#problems + 1] = "outOfCombat=" .. tostring(hideNoTarget.outOfCombat)
+				end
+				TRB_.Functions.Character.RefreshSpellRangeCheckUpdate = refreshRange
+				hideNoTarget.enabled, hideNoTarget.outOfCombat = saved[1], saved[2]
+			else
+				problems[#problems + 1] = "missing Global Options Hide with no valid target controls"
+			end
+			check("Global Options' Hide with no valid target grays out its out-of-combat box while off, and edits the shared setting (" .. table.concat(problems, ", ") .. ")", #problems == 0)
 		end
 
 		-- Every grayed-out shared threshold option says why, on Global Options' Threshold Lines tab.
@@ -1147,6 +1191,12 @@ function hooks.afterEvents(ctx)
 			local wrong, withCooldown, withoutCooldown, withCharges = {}, 0, 0, 0
 			local trackingWrong, unusableKept = {}, 0
 			local unusableHiddenGrayed, unusableHiddenLive, windowColorChecked = 0, 0, 0
+			local withTarget, rangeRefreshes = 0, 0
+			local refreshRange = TRB_.Functions.Character.RefreshSpellRangeCheckUpdate
+			TRB_.Functions.Character.RefreshSpellRangeCheckUpdate = function(...)
+				rangeRefreshes = rangeRefreshes + 1
+				return refreshRange(...)
+			end
 			for _, panel in ipairs(drv.thresholdPanels) do
 				local st = panel.st
 				local compositeKey = panel.classId and TRB_.Functions.Character:GetCompositeKeyFromIds(panel.classId, panel.specId) or nil
@@ -1197,6 +1247,27 @@ function hooks.afterEvents(ctx)
 								local trackingDropdown = rawget(G, prefix .. "CooldownTracking")
 								local unusableDropdown = rawget(G, prefix .. "ColorUnusableMode")
 								local problems = {}
+
+								-- A line that needs a target offers With No Valid Target, and a choice refreshes range checks.
+								local noTargetDropdown = rawget(G, prefix .. "NoTarget")
+								local needsTarget = spell:NeedsTarget()
+								if needsTarget then withTarget = withTarget + 1 end
+								if noTargetDropdown == nil or noTargetDropdown.__generator == nil or (noTargetDropdown.__shown == true) ~= needsTarget then
+									problems[#problems + 1] = "noTarget=" .. tostring(noTargetDropdown and noTargetDropdown.__shown)
+								elseif needsTarget then
+									local lineEntry = panel.spec.thresholds.thresholdDictionary[key]
+									local savedBehavior = lineEntry.behavior
+									local refreshes = rangeRefreshes
+									local root = drv.newDesc("root", "root")
+									noTargetDropdown.__generator(noTargetDropdown, root)
+									for _, c in ipairs(root.children) do
+										if c.data == "hideAlways" then c.setSelected(c.data) end
+									end
+									if lineEntry.behavior == nil or lineEntry.behavior.noTarget ~= "hideAlways" or rangeRefreshes == refreshes then
+										problems[#problems + 1] = "noTarget:choose=" .. tostring(lineEntry.behavior and lineEntry.behavior.noTarget)
+									end
+									lineEntry.behavior = savedBehavior
+								end
 								if trackingDropdown == nil or (trackingDropdown.__shown == true) ~= hasCooldown then
 									problems[#problems + 1] = "tracking=" .. tostring(trackingDropdown and trackingDropdown.__shown)
 								end
@@ -1329,12 +1400,14 @@ function hooks.afterEvents(ctx)
 			table.sort(wrong)
 			check("an icon override shows the cooldown options only for a line with a cooldown, and the recharge choice only with charges (" .. table.concat(wrong, ", ") .. ")",
 				#wrong == 0 and withCooldown > 0 and withoutCooldown > 0)
+			TRB_.Functions.Character.RefreshSpellRangeCheckUpdate = refreshRange
 			print(string.format("INFO untracked lines whose Unusable row stays live: %d", unusableKept))
 			print(string.format("INFO lines hidden while Unusable whose While on Cooldown grays out: %d, stays live: %d, live from a window color: %d",
 				unusableHiddenGrayed, unusableHiddenLive, windowColorChecked))
+			print(string.format("INFO lines offering With No Valid Target: %d", withTarget))
 			table.sort(trackingWrong)
 			check("a line with a cooldown offers Cooldown Tracking, and untracked, its cooldown-only options gray out with the reason (" .. table.concat(trackingWrong, "; ") .. ")",
-				#trackingWrong == 0 and withCooldown > 0 and unusableHiddenGrayed > 0)
+				#trackingWrong == 0 and withCooldown > 0 and unusableHiddenGrayed > 0 and withTarget > 0)
 		end
 
 		return errors

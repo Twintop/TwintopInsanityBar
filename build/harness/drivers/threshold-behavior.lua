@@ -109,6 +109,27 @@ function hooks.afterEvents(ctx)
 		Threshold:GetCooldownHideWindow(sharedOn, { behavior = { onCooldown = "hide", onCooldownWindow = lineWindow } }) == lineWindow)
 	check("Hiding: Hide with no window of its own uses the shared one", Threshold:GetCooldownHideWindow(sharedOff, { behavior = { onCooldown = "hide" } }) == sharedOff.hideOnCooldown)
 
+	-- A line's own With No Valid Target wins over the shared Hide with no valid target.
+	local targetDefaults = TRB.Functions.Settings:DefaultThresholdBehaviorSettings()
+	local targetCombat = { hideNoTarget = { enabled = true, outOfCombat = false } }
+	local targetAlways = { hideNoTarget = { enabled = true, outOfCombat = true } }
+	local function HidesWithoutTarget(behavior, noTarget, inCombat)
+		return Threshold:HidesWithoutTarget(behavior, { behavior = { noTarget = noTarget } }, inCombat)
+	end
+	check("No target: nothing hides by default", not Threshold:HidesWithoutTarget(nil, nil, true) and not HidesWithoutTarget(targetDefaults, nil, true)
+		and targetDefaults.hideNoTarget.enabled == false and targetDefaults.hideNoTarget.outOfCombat == false)
+	check("No target: the shared setting hides in combat only, unless also out of combat", HidesWithoutTarget(targetCombat, "shared", true)
+		and not HidesWithoutTarget(targetCombat, "shared", false) and HidesWithoutTarget(targetAlways, "shared", false))
+	check("No target: also out of combat does nothing with the shared setting off",
+		not HidesWithoutTarget({ hideNoTarget = { enabled = false, outOfCombat = true } }, "shared", false))
+	check("No target: Show wins over the shared setting", not HidesWithoutTarget(targetAlways, "show", true))
+	check("No target: Hide in Combat and Hide Always win over the shared setting off", HidesWithoutTarget(targetDefaults, "hideCombat", true)
+		and not HidesWithoutTarget(targetAlways, "hideCombat", false) and HidesWithoutTarget(targetDefaults, "hideAlways", false))
+	check("No target: a line's own hide needs range checks, as the shared setting does",
+		Threshold:HidesAnyLineWithoutTarget({ thresholds = { behavior = targetDefaults, thresholdDictionary = { a = { behavior = { noTarget = "hideAlways" } } } } })
+		and Threshold:HidesAnyLineWithoutTarget({ thresholds = { behavior = targetCombat, thresholdDictionary = {} } })
+		and not Threshold:HidesAnyLineWithoutTarget({ thresholds = { behavior = targetDefaults, thresholdDictionary = { a = { behavior = { noTarget = "show" } } } } }))
+
 	-- Every spec ships tracking cooldowns and following Global Options for it.
 	local badDefaults = {}
 	for _, entry in ipairs(TRB.Functions.Character:GetSpecRegistryEntriesOrdered()) do
@@ -180,6 +201,95 @@ function hooks.afterEvents(ctx)
 			TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData.spells, talents)
 		end
 		TRB.Functions.ThresholdCooldowns:Sync()
+	end
+
+	-- Hide with no valid target, on the first learned line whose ability needs one.
+	local targetKeys = {}
+	for key in pairs(TRB.Data.cache.thresholdSpellsByKey) do
+		targetKeys[#targetKeys + 1] = key
+	end
+	table.sort(targetKeys)
+	local targetSpell = nil
+	for _, key in ipairs(targetKeys) do
+		local spell = TRB.Data.cache.thresholdSpellsByKey[key]
+		if targetSpell == nil and spell:NeedsTarget() then
+			targetSpell = spell
+		end
+	end
+	if targetSpell ~= nil then
+		local key = targetSpell.settingKey
+		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		local dictEntry = settings.thresholds.thresholdDictionary[key]
+		local shared = settings.thresholds.behavior.hideNoTarget
+		local nodeFrame = G.CreateFrame("Frame")
+		local nodeThresholds = {}
+		local node = {
+			GetFrame = function() return nodeFrame end,
+			GetThresholds = function() return nodeThresholds end,
+			RegisterThreshold = function(_, frame) nodeThresholds[#nodeThresholds + 1] = frame end,
+		}
+		local bar = TRB.Classes.ThresholdBar:New(targetSpell.barTarget)
+		bar:Set(node, 1000000)
+		local state = TRB.Classes.ThresholdState:New()
+		state:Refresh(settings)
+		local data = { thresholdSpells = { targetSpell }, spells = TRB.Data.spellsData.spells, talents = TRB.Data.talents, requireKnown = false }
+		-- A cost on the bar, so the line draws.
+		local snowflakes = { before = function(line) line.resourceAmount = 1 return true end }
+		local inRange = nil
+		local saved = { G.C_Spell.IsSpellInRange, G.C_Spell.SpellHasRange, G.C_Spell.IsSpellHarmful, TRB.Data.character.inCombat, shared.enabled, shared.outOfCombat,
+			dictEntry.behavior, dictEntry.colors }
+		G.C_Spell.IsSpellInRange = function() return inRange end
+		-- Draws a tick with the target in range, out of range, or missing (nil), in or out of combat.
+		local function Drawn(range, inCombat)
+			inRange = range
+			TRB.Data.character.inCombat = inCombat
+			TRB.Functions.Character:InvalidateSpellRanges()
+			local ok = pcall(Threshold.UpdateSpellThresholds, Threshold, bar, state, data, snowflakes)
+			local frame = nodeThresholds[1]
+			return ok and frame ~= nil and frame:IsShown()
+		end
+		local function SetShared(enabled, outOfCombat)
+			shared.enabled, shared.outOfCombat = enabled, outOfCombat
+		end
+
+		SetShared(false, false)
+		dictEntry.behavior = nil
+		check(key .. ": with hiding off, a line with no target draws", Drawn(nil, true) and Drawn(nil, false))
+		SetShared(true, false)
+		check(key .. ": hiding hides a line with no target in combat", not Drawn(nil, true))
+		check(key .. ": it draws with a target in range or out of range", Drawn(true, true) and Drawn(false, true))
+		check(key .. ": out of combat, it draws with no target", Drawn(nil, false))
+		SetShared(true, true)
+		check(key .. ": also out of combat hides it there too", not Drawn(nil, false))
+		dictEntry.colors = { colorMode = "static", staticColor = { color = "FFFF0000" } }
+		check(key .. ": a Static color line hides too", not Drawn(nil, true))
+		dictEntry.colors = saved[8]
+		dictEntry.behavior = { noTarget = "show" }
+		check(key .. ": Show wins over the shared setting", Drawn(nil, true) and Drawn(nil, false))
+		SetShared(false, false)
+		dictEntry.behavior = { noTarget = "hideCombat" }
+		check(key .. ": Hide in Combat hides it in combat only, with the shared setting off", not Drawn(nil, true) and Drawn(nil, false))
+		dictEntry.behavior = { noTarget = "hideAlways" }
+		check(key .. ": Hide Always hides it out of combat too", not Drawn(nil, true) and not Drawn(nil, false))
+		targetSpell.rangeCheck = false
+		check(key .. ": a line without range checks never hides", Drawn(nil, true))
+		targetSpell.rangeCheck = true
+		G.C_Spell.IsSpellHarmful = function() return false end
+		TRB.Data.cache.values.rangeInfo = {}
+		check(key .. ": a line whose ability can't be cast on enemies never hides", Drawn(nil, true))
+		G.C_Spell.IsSpellHarmful = saved[3]
+		G.C_Spell.SpellHasRange = function() return false end
+		TRB.Data.cache.values.rangeInfo = {}
+		check(key .. ": a line whose ability has no range never hides, nor reads out of range", Drawn(nil, true) and targetSpell:GetIsSpellInRange())
+
+		G.C_Spell.IsSpellInRange, G.C_Spell.SpellHasRange = saved[1], saved[2]
+		TRB.Data.character.inCombat = saved[4]
+		SetShared(saved[5], saved[6])
+		dictEntry.behavior = saved[7]
+		TRB.Data.cache.values.rangeInfo = {}
+		TRB.Functions.Character:InvalidateSpellRanges()
+	else
+		print("INFO " .. tostring(TRB.Data.character.compositeKey) .. " has no threshold line that needs a target")
 	end
 
 	-- The tracked set, as the tracker builds it: learned cooldown lines plus the descriptor's cooldownSpells.
