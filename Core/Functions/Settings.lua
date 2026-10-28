@@ -2936,7 +2936,13 @@ end
 ---@return TRB.Classes.Settings.ThresholdBehavior
 function TRB.Functions.Settings:DefaultThresholdBehaviorSettings()
 	return {
-		trackCooldowns = true
+		trackCooldowns = true,
+		hideOnCooldown = {
+			enabled = false,
+			mode = "gcd",
+			gcdsMax = 2,
+			timeMax = 3
+		}
 	}
 end
 

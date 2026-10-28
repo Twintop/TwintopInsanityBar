@@ -130,6 +130,17 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public trbDisabledReasonHooked boolean?
 ---@field public trbDisabledReason string?
 
+---GCD and seconds radios, each with its slider, for a window of time left, from Primitives:BuildRemainingWindowControls.
+---@class TRB.Classes.OptionsUi.RemainingWindowControls
+---@field public gcdRadio CheckButton
+---@field public gcdSlider TRB.Classes.OptionsUi.Slider
+---@field public timeRadio CheckButton
+---@field public timeSlider TRB.Classes.OptionsUi.Slider
+---@field public Bind fun(self: TRB.Classes.OptionsUi.RemainingWindowControls, window: { mode: string, gcdsMax: number, timeMax: number }, onChanged: fun())
+---@field public SetPosition fun(self: TRB.Classes.OptionsUi.RemainingWindowControls, y: number): number # Places the rows from `y` down and returns the last row's
+---@field public SetShown fun(self: TRB.Classes.OptionsUi.RemainingWindowControls, shown: boolean)
+---@field public SetEnabled fun(self: TRB.Classes.OptionsUi.RemainingWindowControls, enabled: boolean, reason: string?) # `reason` is the tooltip while grayed out
+
 ---A color swatch button.
 ---@class TRB.Classes.OptionsUi.ColorSwatch : Button, BackdropTemplate
 ---@field public Texture Texture # The swatch fill

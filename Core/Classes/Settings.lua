@@ -109,6 +109,13 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class TRB.Classes.Settings.ThresholdDictionaryBehavior
 ---@field public cooldownTracking string? # "shared", "on", or "off"; nil follows the shared setting
+---@field public onCooldown string? # "shared", "show", or "hide"; nil follows the shared setting
+---@field public onCooldownWindow TRB.Classes.Settings.ThresholdCooldownWindow? # The line's own window while `onCooldown` is "hide"
+
+---@class TRB.Classes.Settings.ThresholdCooldownWindow
+---@field public mode string # "gcd" or "time"
+---@field public gcdsMax number # GCDs left when the line shows again; 0 keeps it hidden for the whole cooldown
+---@field public timeMax number # Seconds left when the line shows again; 0 keeps it hidden for the whole cooldown
 
 ---@class TRB.Classes.Settings.ThresholdDictionaryAudio
 ---@field public enabled boolean
@@ -171,6 +178,10 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class TRB.Classes.Settings.ThresholdBehavior
 ---@field public trackCooldowns boolean # Lines with a cooldown follow it unless a line says otherwise
+---@field public hideOnCooldown TRB.Classes.Settings.ThresholdHideOnCooldown # Lines hide while their ability is on cooldown, unless a line says otherwise
+
+---@class TRB.Classes.Settings.ThresholdHideOnCooldown : TRB.Classes.Settings.ThresholdCooldownWindow
+---@field public enabled boolean
 
 ---@class TRB.Classes.Settings.Precision
 ---@field public health integer

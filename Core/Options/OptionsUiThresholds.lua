@@ -461,10 +461,40 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions
 			TRB.Functions.Threshold:RedrawThresholdLines()
 		end)
 
-	-- One row is shorter than the cover's message and buttons, so the cover takes the room they need.
-	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, yCoord - 70)
+	-- Hiding stays live with tracking off, since a line set to Track still follows it.
+	local function RefreshHideOnCooldownWindowState()
+		local reason = not spec.thresholds.behavior.hideOnCooldown.enabled and L["ThresholdBehaviorHideOnCooldownOffTooltip"] or nil
+		controls.thresholdBehaviorHideOnCooldownWindow:SetEnabled(reason == nil, reason)
+	end
 
-	return yCoord
+	yCoord = yCoord - 20
+	controls.checkBoxes.thresholdBehaviorHideOnCooldown = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdBehaviorHideOnCooldown",
+		L["ThresholdBehaviorHideOnCooldown"], L["ThresholdBehaviorHideOnCooldownTooltip"], yCoord,
+		function() return spec.thresholds.behavior.hideOnCooldown.enabled end,
+		function(checked)
+			spec.thresholds.behavior.hideOnCooldown.enabled = checked
+			RefreshHideOnCooldownWindowState()
+			TRB.Functions.Threshold:RedrawThresholdLines()
+		end)
+
+	controls.thresholdBehaviorHideOnCooldownWindow = TRB.Functions.OptionsUi.Primitives:BuildRemainingWindowControls(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdBehaviorHideOnCooldownWindow", {
+		gcdRadio = L["ThresholdCooldownWindowGcds"],
+		gcdSlider = L["ThresholdCooldownWindowGcdsSlider"],
+		timeRadio = L["ThresholdCooldownWindowTime"],
+		timeSlider = L["ThresholdCooldownWindowTimeSlider"],
+	})
+	local hideOnCooldownWindow = controls.thresholdBehaviorHideOnCooldownWindow
+	hideOnCooldownWindow:Bind(spec.thresholds.behavior.hideOnCooldown, function()
+		TRB.Functions.Threshold:RedrawThresholdLines()
+	end)
+	yCoord = hideOnCooldownWindow:SetPosition(yCoord - 50)
+	hideOnCooldownWindow:SetShown(true)
+	RefreshHideOnCooldownWindowState()
+
+	-- The last slider's value box sits below its row.
+	TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(useGlobalCheckbox, sectionHeader, yCoord - 40)
+
+	return yCoord - 30
 end
 
 ---Generates Threshold Line color options for the specialization, including custom colors if provided.

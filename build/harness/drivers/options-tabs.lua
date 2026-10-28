@@ -22,6 +22,10 @@ function hooks.afterInstall(ctx)
 			frame.GetChecked = function(self) return self.__checked and true or false end
 			frame.SetChecked = function(self, value) self.__checked = value and true or false end
 		end
+		-- Kept so a check can pick from the menu.
+		if frameType == "DropdownButton" then
+			frame.SetupMenu = function(self, generator) self.__generator = generator end
+		end
 		return frame
 	end)
 
@@ -120,6 +124,11 @@ function hooks.afterLoad(ctx)
 		Prim.ToggleCheckboxEnabled = function(self, checkbox, enable)
 			checkbox.__enabled = enable and true or false
 			return origToggleCheckbox(self, checkbox, enable)
+		end
+		local origToggleSlider = Prim.ToggleSliderEnabled
+		Prim.ToggleSliderEnabled = function(self, slider, enable)
+			slider.__enabled = enable and true or false
+			return origToggleSlider(self, slider, enable)
 		end
 		drv.tri = {}
 		local GS = TRB_.Functions.OptionsUi.GlobalSettings
@@ -1031,7 +1040,8 @@ function hooks.afterEvents(ctx)
 					end
 					local className, specName = TRB_.Functions.Character:GetClassAndSpecializationNames(panel.classId, panel.specId)
 					local namePrefix = "TwintopResourceBar_" .. className .. "_" .. specName
-					local hasBox = rawget(G, namePrefix .. "_ThresholdBehaviorTrackCooldowns") ~= nil
+					local hasBox = rawget(G, namePrefix .. "_ThresholdBehaviorTrackCooldowns") ~= nil and rawget(G, namePrefix .. "_ThresholdBehaviorHideOnCooldown") ~= nil
+						and rawget(G, namePrefix .. "_ThresholdBehaviorHideOnCooldownWindow_ModeGCDs") ~= nil
 					local hasUseGlobal = rawget(G, namePrefix .. "_useGlobal_thresholdBehavior") ~= nil
 					if hasBox ~= hasCooldownLine or hasUseGlobal ~= hasCooldownLine then
 						wrong[#wrong + 1] = string.format("%s cooldownLines=%s box=%s useGlobal=%s", compositeKey, tostring(hasCooldownLine), tostring(hasBox), tostring(hasUseGlobal))
@@ -1044,7 +1054,8 @@ function hooks.afterEvents(ctx)
 			table.sort(wrong)
 			check("a spec's tab has the Threshold Line Behavior section only with a cooldown line (" .. table.concat(wrong, ", ") .. ")", #wrong == 0 and withSection > 0)
 			check("Global Options has the Threshold Line Behavior section and its bulk Use Global box",
-				rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorTrackCooldowns") ~= nil and rawget(G, "TwintopResourceBar_Global_enableAll_thresholdBehavior") ~= nil)
+				rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorTrackCooldowns") ~= nil and rawget(G, "TwintopResourceBar_Global_enableAll_thresholdBehavior") ~= nil
+				and rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorHideOnCooldown") ~= nil and rawget(G, "TwintopResourceBar_Global__ThresholdBehaviorHideOnCooldownWindow_ModeTime") ~= nil)
 		end
 
 		-- Every grayed-out shared threshold option says why, on Global Options' Threshold Lines tab.
@@ -1089,6 +1100,45 @@ function hooks.afterEvents(ctx)
 				wrongReasons[#wrongReasons + 1] = "missing Global Options threshold controls"
 			end
 			check("every grayed-out shared threshold option says why (" .. table.concat(wrongReasons, ", ") .. ")", #wrongReasons == 0)
+		end
+
+		-- Global Options' Hide while on cooldown: its window grays out while hiding is off, and edits the shared setting.
+		do
+			local function named(suffix) return rawget(G, "TwintopResourceBar_Global__" .. suffix) end
+			local behavior = TRB_.Data.settings.core.thresholds.behavior
+			local hideBox, trackBox = named("ThresholdBehaviorHideOnCooldown"), named("ThresholdBehaviorTrackCooldowns")
+			local window = TRB_.Frames.interfaceSettingsFrameContainer.controls.global.thresholdBehaviorHideOnCooldownWindow
+			local problems = {}
+			if hideBox ~= nil and trackBox ~= nil and window ~= nil then
+				local hide = behavior.hideOnCooldown
+				local saved = { behavior.trackCooldowns, hide.enabled, hide.mode, hide.timeMax }
+				local offReason = L_["ThresholdBehaviorHideOnCooldownOffTooltip"]
+				toggle(hideBox, false)
+				for label, control in pairs({ gcdRadio = window.gcdRadio, gcdSlider = window.gcdSlider, timeRadio = window.timeRadio, timeSlider = window.timeSlider }) do
+					if control.__enabled ~= false or control.trbDisabledReason ~= offReason then
+						problems[#problems + 1] = "hideOff:" .. label .. "=" .. tostring(control.trbDisabledReason)
+					end
+				end
+				toggle(hideBox, true)
+				if window.timeSlider.__enabled == false or window.timeSlider.trbDisabledReason ~= nil then
+					problems[#problems + 1] = "hideOn:window grayed"
+				end
+				-- A line set to Track still follows hiding, so tracking off leaves it live.
+				toggle(trackBox, false)
+				if hideBox.__enabled == false or hideBox.trbDisabledReason ~= nil then
+					problems[#problems + 1] = "trackOff:hide grayed"
+				end
+				toggle(trackBox, true)
+				window.timeRadio.__scripts.OnClick(window.timeRadio)
+				window.timeSlider.__scripts.OnValueChanged(window.timeSlider, 0.5)
+				if hide.mode ~= "time" or hide.timeMax ~= 0.5 or window.gcdRadio:GetChecked() or not window.timeRadio:GetChecked() then
+					problems[#problems + 1] = "edit:mode=" .. tostring(hide.mode) .. " timeMax=" .. tostring(hide.timeMax)
+				end
+				behavior.trackCooldowns, hide.enabled, hide.mode, hide.timeMax = saved[1], saved[2], saved[3], saved[4]
+			else
+				problems[#problems + 1] = "missing Global Options Hide while on cooldown controls"
+			end
+			check("Global Options' Hide while on cooldown window grays out while hiding is off, and edits the shared setting (" .. table.concat(problems, ", ") .. ")", #problems == 0)
 		end
 
 		-- With a line's icon override on, its cooldown options show only when its ability has a cooldown, and the recharge choice only with charges.
@@ -1178,6 +1228,43 @@ function hooks.afterEvents(ctx)
 									Expect("on", nil)
 									dictEntry.behavior, behavior.trackCooldowns = savedLine, savedShared
 									Expect("restored", nil)
+
+									-- While on Cooldown: Hide shows the line's own window, copied from the shared one; untracked, both gray out.
+									local onCooldownDropdown = rawget(G, prefix .. "OnCooldown")
+									local windowRadio = rawget(G, prefix .. "OnCooldownWindow_ModeGCDs")
+									local function Choose(value)
+										local root = drv.newDesc("root", "root")
+										onCooldownDropdown.__generator(onCooldownDropdown, root)
+										for _, c in ipairs(root.children) do
+											if c.data == value then c.setSelected(c.data) return true end
+										end
+										return false
+									end
+									if onCooldownDropdown == nil or windowRadio == nil or onCooldownDropdown.__generator == nil then
+										problems[#problems + 1] = "onCooldown missing"
+									elseif onCooldownDropdown.__shown ~= true or (windowRadio.__shown == true) ~= (savedLine ~= nil and savedLine.onCooldown == "hide") then
+										problems[#problems + 1] = "onCooldown=" .. tostring(onCooldownDropdown.__shown) .. " window=" .. tostring(windowRadio.__shown)
+									else
+										dictEntry.behavior = nil
+										local shared = behavior.hideOnCooldown
+										local own = Choose("hide") and dictEntry.behavior ~= nil and dictEntry.behavior.onCooldownWindow or nil
+										if own == nil or own == shared or own.mode ~= shared.mode or own.gcdsMax ~= shared.gcdsMax or own.timeMax ~= shared.timeMax or windowRadio.__shown ~= true then
+											problems[#problems + 1] = "hide:window=" .. tostring(own ~= nil) .. " shown=" .. tostring(windowRadio.__shown)
+										end
+										dictEntry.behavior.cooldownTracking = "off"
+										toggle(useSpecific, true)
+										local lineReason = L_["ThresholdDetailCooldownNotTrackedLineTooltip"]
+										if onCooldownDropdown.__enabled ~= false or onCooldownDropdown.trbDisabledReason ~= lineReason
+											or windowRadio.__enabled ~= false or windowRadio.trbDisabledReason ~= lineReason then
+											problems[#problems + 1] = "untracked:onCooldown=" .. tostring(onCooldownDropdown.__enabled) .. " window=" .. tostring(windowRadio.__enabled)
+										end
+										dictEntry.behavior.cooldownTracking = nil
+										if not Choose("show") or windowRadio.__shown == true or onCooldownDropdown.__enabled == false then
+											problems[#problems + 1] = "show:window=" .. tostring(windowRadio.__shown)
+										end
+										dictEntry.behavior = savedLine
+										toggle(useSpecific, true)
+									end
 
 									-- A hidden icon grays out its Desaturate box and cooldown options, saying so.
 									local iconShow, desaturate = rawget(G, prefix .. "IconShow"), rawget(G, prefix .. "IconDesaturated")

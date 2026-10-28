@@ -1097,6 +1097,15 @@ function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, setting
 	end
 end
 
+---Restores a line's alpha once no cooldown gate holds it.
+---@param threshold TRB.Classes.ThresholdFrame
+local function ClearCooldownGateAlpha(threshold)
+	if threshold.trbGateAlpha then
+		threshold.trbGateAlpha = nil
+		threshold:SetAlpha(1)
+	end
+end
+
 ---Resets a primary bar threshold line to its default size, texture, frame level, and icon configuration, hiding it until repositioned.
 ---@param threshold TRB.Classes.ThresholdFrame # The threshold frame to reset
 ---@param settings table # The spec settings containing bar dimensions, threshold properties, icon configuration, and color defaults
@@ -1129,6 +1138,7 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	threshold.texture.trbExtendLow = nil
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Hide()
+	ClearCooldownGateAlpha(threshold)
 	threshold.hasIcon = hasIcon
 
 	if hasIcon == true then
@@ -1197,6 +1207,7 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 	threshold.texture.trbExtendLow = nil
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Show()
+	ClearCooldownGateAlpha(threshold)
 	threshold.hasIcon = hasIcon
 
 	if hasIcon == true then
@@ -3216,6 +3227,27 @@ function TRB.Functions.Threshold:IsCooldownTracked(behavior, dictEntry)
 	return behavior == nil or behavior.trackCooldowns ~= false
 end
 
+---The window a threshold line shows again in while its ability is on cooldown, or nil when it doesn't hide: the
+---line's own choice, or else the shared setting.
+---@param behavior TRB.Classes.Settings.ThresholdBehavior? # The shared Threshold Line Behavior settings
+---@param dictEntry TRB.Classes.Settings.ThresholdDictionaryEntry?
+---@return TRB.Classes.Settings.ThresholdCooldownWindow?
+function TRB.Functions.Threshold:GetCooldownHideWindow(behavior, dictEntry)
+	local lineBehavior = dictEntry ~= nil and dictEntry.behavior or nil
+	local mode = lineBehavior ~= nil and lineBehavior.onCooldown or nil
+	local shared = behavior ~= nil and behavior.hideOnCooldown or nil
+	if mode == "show" then
+		return nil
+	elseif mode == "hide" then
+		-- A line set to hide before it had a window of its own uses the shared one.
+		return lineBehavior ~= nil and lineBehavior.onCooldownWindow or shared
+	end
+	if shared ~= nil and shared.enabled then
+		return shared
+	end
+	return nil
+end
+
 ---Resolves the effective under/over threshold colors for a ColorCurve, accounting for per-threshold overrides.
 ---Call this BEFORE BuildThresholdCurve to bake override colors into the curve.
 ---For static mode, returns the static color for both under and over (curve becomes a flat line).
@@ -3370,6 +3402,30 @@ function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thre
 	return true
 end
 
+---@param window TRB.Classes.Settings.ThresholdCooldownWindow
+---@return number
+local function GetCooldownWindowSeconds(window)
+	if window.mode == "time" then
+		return window.timeMax
+	end
+	return window.gcdsMax * TRB.Functions.Character:GetCurrentGCDTime()
+end
+
+---Hides a line until its cooldown's secret remaining time reaches the curve's window, by alpha the widget resolves.
+---@param threshold TRB.Classes.ThresholdFrame
+---@param durationObject any?
+---@param curve LuaColorCurveObject
+local function ApplyCooldownGateAlpha(threshold, durationObject, curve)
+	local result = durationObject ~= nil and durationObject:EvaluateRemainingDuration(curve) or nil
+	if result ~= nil and type(result.GetRGBA) == "function" then
+		local _, _, _, alpha = result:GetRGBA()
+		threshold:SetAlpha(alpha)
+	else
+		threshold:SetAlpha(1)
+	end
+	threshold.trbGateAlpha = true
+end
+
 ---Adjusts the display level, color, and cooldown status of a threshold and its icon.
 ---@param spell TRB.Classes.SpellThreshold
 ---@param key string
@@ -3406,6 +3462,23 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 
 	local dictEntry = spell.settingKey and settings.thresholds.thresholdDictionary[spell.settingKey]
 	if dictEntry and dictEntry.enabled and showThreshold then
+		-- Hidden on cooldown until its window; with secret times the widget resolves that from an alpha curve, in every color mode.
+		local cooldown = spell.hasCooldown and snapshot ~= nil and snapshot.cooldown or nil
+		local gateCurve = nil
+		local gateDuration = nil
+		if cooldown ~= nil and cooldown:IsUnusable() then
+			local window = self:GetCooldownHideWindow(settings.thresholds.behavior, dictEntry)
+			if window ~= nil then
+				local seconds = GetCooldownWindowSeconds(window)
+				if seconds <= 0 or (cooldown:HasPlainTiming() and cooldown.endsAt - GetTime() > seconds) then
+					self:Hide(key, threshold)
+					return false
+				elseif not cooldown:HasPlainTiming() then
+					gateCurve = TRB.Functions.Color:BuildRemainingTimeCurve(seconds, "FFFFFFFF", "00FFFFFF")
+					gateDuration = cooldown:GetDurationObject()
+				end
+			end
+		end
 		local frameLevel = currentFrameLevel
 		local outOfRange = not spell:GetIsSpellInRange()
 		local colorOverrides = thresholdOverrides and thresholdOverrides.colors
@@ -3543,6 +3616,11 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 			end
 			
 			TRB.Functions.Threshold:Show(key, threshold)
+			if gateCurve ~= nil then
+				ApplyCooldownGateAlpha(threshold, gateDuration, gateCurve)
+			else
+				ClearCooldownGateAlpha(threshold)
+			end
 
 			-- Only check this first one as if one is different then all will be different
 			if cache.frameLevel ~= frameLevel then
