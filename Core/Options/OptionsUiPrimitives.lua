@@ -848,6 +848,94 @@ function TRB.Functions.OptionsUi.Primitives:PopulateCdmPicker(rootDescription, c
 	end
 end
 
+---A buff's label for a spell ID: its icon, name, and the ID, or nil when no spell has that ID.
+---@param spellId integer?
+---@return string?
+function TRB.Functions.OptionsUi.Primitives:FormatAuraSpellLabel(spellId)
+	local name = spellId ~= nil and C_Spell.GetSpellName(spellId) or nil
+	if name == nil then
+		return nil
+	end
+	local icon = C_Spell.GetSpellTexture(spellId)
+	local text = string.format(L["AuraSpellLabelFormat"], name, spellId)
+	if icon ~= nil then
+		text = "|T" .. icon .. ":16:16:0:0|t " .. text
+	end
+	return text
+end
+
+---@param text string?
+---@return integer?
+local function ParseAuraSpellId(text)
+	local spellId = tonumber(text ~= nil and text:match("^%s*(%d+)%s*$") or nil)
+	if spellId == nil or C_Spell.GetSpellName(spellId) == nil then
+		return nil
+	end
+	return spellId
+end
+
+---Names the spell the prompt's text points at, and allows OK only once it points at one.
+---@param dialog table
+local function UpdateAuraSpellIdPrompt(dialog)
+	local text = dialog:GetEditBox():GetText()
+	local spellId = ParseAuraSpellId(text)
+	local message = L["AuraSpellIdPromptText"]
+	if spellId ~= nil then
+		message = message .. "\n\n" .. (TRB.Functions.OptionsUi.Primitives:FormatAuraSpellLabel(spellId) or "")
+	elseif text ~= nil and text:match("%S") then
+		message = message .. "\n\n" .. RED_FONT_COLOR:WrapTextInColorCode(L["AuraSpellIdPromptUnknown"])
+	end
+	dialog:SetFormattedText("%s", message)
+	dialog:GetButton1():SetEnabled(spellId ~= nil)
+	dialog:Resize()
+end
+
+-- Asks for a buff's spell ID; everything it needs arrives in the data payload.
+StaticPopupDialogs["TwintopResourceBar_AuraSpellId"] = {
+	text = "",
+	button1 = L["OK"],
+	button2 = L["Cancel"],
+	hasEditBox = true,
+	editBoxWidth = 120,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+	OnShow = function(self, data)
+		local editBox = self:GetEditBox()
+		editBox:SetText(data.spellId ~= nil and tostring(data.spellId) or "")
+		editBox:HighlightText()
+		editBox:SetFocus()
+		UpdateAuraSpellIdPrompt(self)
+	end,
+	EditBoxOnTextChanged = function(editBox)
+		UpdateAuraSpellIdPrompt(editBox:GetParent())
+	end,
+	EditBoxOnEnterPressed = function(editBox, data)
+		local spellId = ParseAuraSpellId(editBox:GetText())
+		if spellId ~= nil then
+			editBox:GetParent():Hide()
+			data.onAccept(spellId)
+		end
+	end,
+	EditBoxOnEscapePressed = function(editBox)
+		editBox:GetParent():Hide()
+	end,
+	OnAccept = function(self, data)
+		local spellId = ParseAuraSpellId(self:GetEditBox():GetText())
+		if spellId ~= nil then
+			data.onAccept(spellId)
+		end
+	end,
+}
+
+---Asks for the spell ID of a buff to follow, showing the spell it names as it's typed.
+---@param currentSpellId integer? # Pre-filled, when re-pointing
+---@param onAccept fun(spellId: integer) # Only called with an ID some spell has
+function TRB.Functions.OptionsUi.Primitives:ShowAuraSpellIdPrompt(currentSpellId, onAccept)
+	StaticPopup_Show("TwintopResourceBar_AuraSpellId", nil, nil, { spellId = currentSpellId, onAccept = onAccept })
+end
+
 ---Creates a two-part help entry: a right-aligned variable name and a left-aligned description below it.
 ---@param parent Frame # The parent frame
 ---@param var string # The variable name or label (displayed right-aligned)

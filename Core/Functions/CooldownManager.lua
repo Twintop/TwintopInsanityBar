@@ -215,7 +215,7 @@ end
 ---True when the Cooldown Manager addon is loaded and its frames exist.
 ---@return boolean
 function CDM:IsAvailable()
-	if C_CooldownViewer == nil or C_CooldownViewer.GetCooldownViewerCooldownInfo == nil then
+	if not TRB.Flavor.cooldownManager or C_CooldownViewer == nil or C_CooldownViewer.GetCooldownViewerCooldownInfo == nil then
 		return false
 	end
 	return _G["BuffBarCooldownViewer"] ~= nil
@@ -840,12 +840,12 @@ end
 
 ---A custom Color Indicator's or Buff Alert's condition: which source it reads and what must hold.
 ---@class TRB.CustomIndicatorCondition
----@field source string # CDM.CONDITION_SOURCE, or Threshold.CONDITION_SOURCE for a threshold line's state
+---@field source string # CDM.CONDITION_SOURCE, Threshold.CONDITION_SOURCE for a threshold line's state, or Aura.CONDITION_SOURCE for a player buff
 ---@field cooldownID integer? # CDM conditions only
 ---@field settingKey string? # Threshold conditions only: the line's `thresholdDictionary` key
----@field state string # A CDM.ConditionState or Threshold.ConditionState value
+---@field state string # A CDM.ConditionState, Threshold.ConditionState, or Aura.ConditionState value
 ---@field name string? # Display name, cached for panels shown while on another spec
----@field spellID integer? # The entry's spell, cached so a renumbered entry can be found again
+---@field spellID integer? # The entry's spell, cached so a renumbered entry can be found again; an aura condition's buff
 
 CDM.CONDITION_SOURCE = "cdm"
 
@@ -965,7 +965,7 @@ end
 ---@return TRB.CdmLayoutStatus
 ---@return string? # Blizzard's own reason when unavailable
 function CDM:GetLayoutStatus()
-	local availableApi = C_CooldownViewer ~= nil and C_CooldownViewer.IsCooldownViewerAvailable or nil
+	local availableApi = TRB.Flavor.cooldownManager and C_CooldownViewer ~= nil and C_CooldownViewer.IsCooldownViewerAvailable or nil
 	if availableApi == nil then
 		return CDM.LayoutStatus.UNAVAILABLE, nil
 	end
@@ -1243,6 +1243,9 @@ local dataChangedEvent = "CooldownViewerSettings.OnDataChanged"
 
 ---Starts watching for changes that invalidate the spellId index.
 function CDM:Enable()
+	if not TRB.Flavor.cooldownManager then
+		return
+	end
 	cdmFrame:RegisterEvent("COOLDOWN_VIEWER_DATA_LOADED")
 	cdmFrame:RegisterEvent("COOLDOWN_VIEWER_TABLE_HOTFIXED")
 	cdmFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")

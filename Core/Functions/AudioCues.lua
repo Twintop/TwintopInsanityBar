@@ -285,6 +285,7 @@ function TRB.Functions.AudioCues:InvalidateCache(specSettings)
 			buffCueCache[specSettings.audio] = BuildBuffCues(specSettings.audio)
 		end
 	end
+	TRB.Functions.Aura:RefreshConditionSpells()
 end
 
 ---Plays a cue once when `condition` becomes true and re-arms it when it goes false again.
@@ -561,7 +562,7 @@ function TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, sourc
 	end
 end
 
----Evaluates the played spec's Buff Alerts against the Cooldown Manager, on the shared update tick.
+---Evaluates the played spec's Buff Alerts against the Cooldown Manager or the player's auras, on the shared update tick.
 ---@param snapshotData TRB.Classes.SnapshotData
 function TRB.Functions.AudioCues:UpdateBuffCues(snapshotData)
 	local spec = TRB.Functions.Character:GetActiveRawSpecSettings()
@@ -571,6 +572,7 @@ function TRB.Functions.AudioCues:UpdateBuffCues(snapshotData)
 	end
 
 	local cdm = TRB.Functions.CooldownManager
+	local aura = TRB.Functions.Aura
 	local latches = EnsureLatches(snapshotData)
 	for i = 1, #cues do
 		local cue = cues[i]
@@ -578,7 +580,14 @@ function TRB.Functions.AudioCues:UpdateBuffCues(snapshotData)
 		---@type boolean?
 		local met = true
 		for c = 1, #conditions do
-			local state = cdm:ReadCondition(conditions[c])
+			local condition = conditions[c]
+			---@type boolean?
+			local state
+			if condition.source == aura.CONDITION_SOURCE then
+				state = aura:IsConditionMet(condition)
+			else
+				state = cdm:ReadCondition(condition)
+			end
 			if state == false then
 				met = false
 				break

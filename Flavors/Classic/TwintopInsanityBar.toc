@@ -21,7 +21,7 @@
 ## X-ReleaseType: alpha
 ## X-ReleaseDate: 2026-10-28
 ## SavedVariables: TwintopInsanityBarClassicSettings
-## IconTexture: 1386550
+## IconTexture: Interface\AddOns\TwintopInsanityBar\Images\Icon.blp
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar for World of Warcraft Classic, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
 ## Category-enUS: Combat

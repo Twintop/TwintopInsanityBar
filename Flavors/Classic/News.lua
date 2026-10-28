@@ -15,6 +15,14 @@ TRB.Flavor.newsContent = [====[
 - Hunters, Mages, Paladins, Priests, Shamans, and Warlocks use a Mana bar.
 - Bar text stat variables follow this game's stats.
 
+### Audio Cues
+
+- Buff Alerts follow one of your buffs by its spell ID, since this game has no Cooldown Manager. Any rank of that spell counts.
+
+### Color Indicators
+
+- Custom Color Indicators can follow one of your buffs by its spell ID, since this game has no Cooldown Manager. Any rank of that spell counts.
+
 ## Druid
 
 - Mana, Rage, Energy, and Combo Points are four separate bars, and the shapeshift form decides which show by default.

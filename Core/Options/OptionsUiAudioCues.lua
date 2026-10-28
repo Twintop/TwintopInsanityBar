@@ -10,6 +10,7 @@ local actionCellDimAlpha = 0.65
 local actionCellBrightAlpha = 1.0
 local deleteActionTextColor = { r = 1, g = 0.12, b = 0.12, a = 1 }
 local cdm = TRB.Functions.CooldownManager
+local aura = TRB.Functions.Aura
 
 ---@type TRB.Classes.OptionsUi.CdmPickerWording
 local pickerWording = {
@@ -141,6 +142,33 @@ local function GetBuffCondition(cue)
 	return conditions ~= nil and conditions[1] or nil
 end
 
+---Whether a Buff Alert follows a buff by spell ID: its chosen buff does, or none is chosen yet on a client that reads auras.
+---@param cue TRB.Classes.Settings.AudioCue
+---@return boolean
+local function UsesAuraSource(cue)
+	local condition = GetBuffCondition(cue)
+	if condition == nil then
+		return TRB.Flavor.playerAuras == true
+	end
+	return condition.source == aura.CONDITION_SOURCE
+end
+
+---Why a Buff Alert following a buff by spell ID can't play (nil when it can), refreshing its cached name.
+---@param condition TRB.CustomIndicatorCondition
+---@return string?
+local function GetAuraBuffStatus(condition)
+	local name = condition.spellID ~= nil and C_Spell.GetSpellName(condition.spellID) or nil
+	if name ~= nil then
+		condition.name = name
+	end
+	if not TRB.Flavor.playerAuras then
+		return L["AudioCueBuffAuraUnavailableTooltip"]
+	elseif name == nil then
+		return string.format(L["AudioCueBuffAuraUnknownSpellTooltip"], tostring(condition.spellID))
+	end
+	return nil
+end
+
 ---Formats a counter cue's threshold for the table's Trigger column.
 ---@param source TRB.Classes.AudioCueCounterSource
 ---@param value number?
@@ -219,6 +247,8 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		local condition = GetBuffCondition(cue)
 		if condition == nil then
 			return nil, nil
+		elseif condition.source == aura.CONDITION_SOURCE then
+			return GetAuraBuffStatus(condition), nil
 		elseif blockReason == nil then
 			local entry = cdm:ResolveCondition(condition)
 			if entry == nil then
@@ -392,6 +422,9 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		end
 	end)
 	buffDropdown:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	-- A buff followed by spell ID is entered in a prompt rather than picked from a list.
+	local buffSpellButton = TRB.Functions.OptionsUi.Primitives:BuildButton(editorContent, "", oUi.xCoord2, -55, oUi.sliderWidth, 25)
+	buffSpellButton:Hide()
 	local buffStatusText = BuildWrappedText(editorContent, oUi.sliderWidth)
 	buffStatusText:SetPoint("TOPLEFT", editorContent, "TOPLEFT", oUi.xCoord2 + 2, -90)
 	buffStatusText:SetTextColor(notTrackedR, notTrackedG, notTrackedB)
@@ -456,8 +489,12 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 				displayName = cue.name or L["AudioCueBuffAlertDefaultName"]
 				trigger = condition ~= nil and string.format(L["AudioCueTriggerBuffGained"], condition.name or L["CustomIndicatorUnknownEntry"])
 					or L["AudioCueTriggerBuffNone"]
-				description = L["AudioCueBuffAlertDescription"]
-				cdmDependency = TRB.Data.constants.cdmDependency.REQUIRED
+				if UsesAuraSource(cue) then
+					description = L["AudioCueBuffAlertAuraDescription"]
+				else
+					description = L["AudioCueBuffAlertDescription"]
+					cdmDependency = TRB.Data.constants.cdmDependency.REQUIRED
+				end
 			elseif isCounter then
 				displayName = cue.name or entry.source.defaultName
 				trigger = FormatTrigger(entry.source, cue.configuration and cue.configuration.thresholdValue,
@@ -589,6 +626,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 	end
 
 	local PickBuff
+	local PickAuraBuff
 
 	---@param cue TRB.Classes.Settings.AudioCue
 	local function RefreshSoundLabel(cue)
@@ -662,6 +700,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(triggerText, nil)
 		buffHeader:Hide()
 		buffDropdown:Hide()
+		buffSpellButton:Hide()
 		buffStatusText:Hide()
 
 		-- The two columns grow independently; the description sits below whichever runs longer.
@@ -712,21 +751,36 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 			local condition = GetBuffCondition(cue)
 			local blockReason, blockStatus = GetPickerBlock()
 			local notTracked, entry = GetBuffStatus(cue, blockReason, blockStatus)
-			local label = L["AudioCueBuffNone"]
-			if entry ~= nil then
-				label = TRB.Functions.OptionsUi.Primitives:FormatCdmEntryLabel(entry)
-			elseif condition ~= nil then
-				label = condition.name or L["CustomIndicatorUnknownEntry"]
-			end
-			buffDropdown:SetDefaultText(label)
-			buffDropdown:SetupMenu(function(_, rootDescription)
-				TRB.Functions.OptionsUi.Primitives:PopulateCdmPicker(rootDescription, condition and condition.cooldownID, pickerWording, function(picked)
-					PickBuff(cue, picked)
+			if UsesAuraSource(cue) then
+				local spellId = condition ~= nil and condition.spellID or nil
+				buffSpellButton:SetText(TRB.Functions.OptionsUi.Primitives:FormatAuraSpellLabel(spellId)
+					or (condition ~= nil and condition.name) or L["AudioCueBuffEnterSpellId"])
+				buffSpellButton:SetScript("OnClick", function()
+					TRB.Functions.OptionsUi.Primitives:ShowAuraSpellIdPrompt(spellId, function(picked)
+						PickAuraBuff(cue, picked)
+					end)
 				end)
-			end)
-			TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(buffDropdown, blockReason == nil)
+				buffSpellButton:SetEnabled(TRB.Flavor.playerAuras)
+				TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(buffHeader.font, nil)
+				buffSpellButton:Show()
+			else
+				local label = L["AudioCueBuffNone"]
+				if entry ~= nil then
+					label = TRB.Functions.OptionsUi.Primitives:FormatCdmEntryLabel(entry)
+				elseif condition ~= nil then
+					label = condition.name or L["CustomIndicatorUnknownEntry"]
+				end
+				buffDropdown:SetDefaultText(label)
+				buffDropdown:SetupMenu(function(_, rootDescription)
+					TRB.Functions.OptionsUi.Primitives:PopulateCdmPicker(rootDescription, condition and condition.cooldownID, pickerWording, function(picked)
+						PickBuff(cue, picked)
+					end)
+				end)
+				TRB.Functions.OptionsUi.Primitives:ToggleDropdownEnabled(buffDropdown, blockReason == nil)
+				TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(buffHeader.font, TRB.Data.constants.cdmDependency.REQUIRED)
+				buffDropdown:Show()
+			end
 			buffHeader:Show()
-			buffDropdown:Show()
 			rightBottom = editorY - 30
 			if notTracked ~= nil then
 				buffStatusText:SetText(notTracked)
@@ -799,7 +853,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		end
 
 		local description = (source ~= nil and source.description) or (builtIn ~= nil and builtIn.tooltip)
-			or (isBuff and L["AudioCueBuffAlertDescription"]) or nil
+			or (isBuff and (UsesAuraSource(cue) and L["AudioCueBuffAlertAuraDescription"] or L["AudioCueBuffAlertDescription"])) or nil
 		if description ~= nil then
 			local descriptionY = math.min(leftBottom, rightBottom) - 15
 			descriptionHeader:ClearAllPoints()
@@ -843,6 +897,30 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		C_Timer.After(0, function()
 			RefreshEditor(selectedId)
 		end)
+	end
+
+	---Points a Buff Alert at a buff by spell ID, renaming it while its name still follows its buff.
+	---@param cue TRB.Classes.Settings.AudioCue
+	---@param spellId integer
+	PickAuraBuff = function(cue, spellId)
+		cue.configuration = cue.configuration or {}
+		cue.configuration.conditions = cue.configuration.conditions or {}
+		local condition = cue.configuration.conditions[1]
+		local previousName = condition ~= nil and condition.name or nil
+		if condition == nil or condition.source ~= aura.CONDITION_SOURCE then
+			---@type TRB.CustomIndicatorCondition
+			condition = { source = aura.CONDITION_SOURCE, state = aura.ConditionState.ACTIVE }
+			cue.configuration.conditions[1] = condition
+		end
+		condition.spellID = spellId
+		condition.name = C_Spell.GetSpellName(spellId)
+		if condition.name ~= nil and (cue.name == nil or cue.name == "" or cue.name == L["AudioCueBuffAlertDefaultName"] or cue.name == previousName) then
+			cue.name = condition.name
+		end
+
+		RefreshRuntime()
+		SetTableValues()
+		RefreshEditor(selectedId)
 	end
 
 	playOutOfCombatCheckbox:SetScript("OnClick", function(self)
@@ -934,13 +1012,27 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 		RefreshEditor(id)
 	end
 
+	---Why a Buff Alert can't be added right now (nil when it can); only the Cooldown Manager can block one.
+	---@return string?
+	local function GetAddBuffBlock()
+		if TRB.Flavor.playerAuras then
+			return nil
+		end
+		return (GetPickerBlock())
+	end
+
 	-- With no threshold sources the button only makes Buff Alerts, so it greys out whenever they can't be made.
 	local function RefreshAddButton()
-		addButton:SetEnabled(#definition.counters > 0 or GetPickerBlock() == nil)
+		addButton:SetEnabled(#definition.counters > 0 or TRB.Flavor.playerAuras or (TRB.Flavor.cooldownManager and GetPickerBlock() == nil))
+	end
+
+	-- A client with neither the Cooldown Manager nor readable auras makes no Buff Alerts, so a spec without threshold sources has nothing to add.
+	if not TRB.Flavor.cooldownManager and not TRB.Flavor.playerAuras and #definition.counters == 0 then
+		addButton:Hide()
 	end
 
 	addButton:SetScript("OnEnter", function(self)
-		local reason = #definition.counters == 0 and GetPickerBlock() or nil
+		local reason = #definition.counters == 0 and GetAddBuffBlock() or nil
 		if reason ~= nil then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 			GameTooltip:SetText(reason, 1, 1, 1, 1, true)
@@ -951,7 +1043,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 	end)
 	addButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
 	addButton:SetScript("OnClick", function(self)
-		local reason = GetPickerBlock()
+		local reason = GetAddBuffBlock()
 		if #definition.counters == 0 then
 			-- The Cooldown Manager can change under an open panel; say why instead of doing nothing.
 			if reason ~= nil then
@@ -969,12 +1061,14 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 					AddCue(source)
 				end)
 			end
-			local buffButton = rootDescription:CreateButton(L["AudioCueAddBuffAlert"], AddBuffCue)
-			if reason ~= nil then
-				buffButton:SetEnabled(false)
-				buffButton:SetTooltip(function(tooltip)
-					tooltip:SetText(reason, 1, 1, 1, 1, true)
-				end)
+			if TRB.Flavor.cooldownManager or TRB.Flavor.playerAuras then
+				local buffButton = rootDescription:CreateButton(L["AudioCueAddBuffAlert"], AddBuffCue)
+				if reason ~= nil then
+					buffButton:SetEnabled(false)
+					buffButton:SetTooltip(function(tooltip)
+						tooltip:SetText(reason, 1, 1, 1, 1, true)
+					end)
+				end
 			end
 		end)
 	end)
@@ -990,7 +1084,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 	end
 
 	parent:HookScript("OnShow", RefreshCdmState)
-	if EventRegistry ~= nil then
+	if EventRegistry ~= nil and TRB.Flavor.cooldownManager then
 		local refreshQueued = false
 		EventRegistry:RegisterCallback("CooldownViewerSettings.OnDataChanged", function()
 			if refreshQueued or not parent:IsVisible() then return end

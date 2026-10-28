@@ -814,20 +814,26 @@ function M.install(opts)
 	end
 	G.C_PetBattles = ns({ IsInBattle = retFalse })
 	G.C_PlayerInfo = ns({ GetGlidingInfo = function() return false, false, 0 end, IsPlayerNPERestricted = retFalse, GetPlayerCharacterData = retNil, UnitIsSameServer = retTrue, GetClass = function() return classId end, GetRace = function() return 1 end, GetSex = function() return 2 end, IsPlayerInGuildFromGUID = retFalse, GUIDIsPlayer = retTrue, GetContentDifficultyCreatureForPlayer = retNil, GetInstancedContentDifficulty = retNil, IsMercenary = retFalse, CanPlayerEnterChromieTime = retFalse, IsPlayerEligibleForNPE = retFalse, IsConnectionValid = retTrue })
-	-- Classic (a 115xx TOC) lacks these, per Blizzard's generated API docs for 1.15.9.
+	-- Classic (a 115xx TOC) lacks these, per Blizzard's generated API docs and the client exe's strings for 1.15.9.
 	for event in pairs(unknownEvents) do unknownEvents[event] = nil end
 	if interfaceVersion >= 11300 and interfaceVersion < 16000 then
 		G.WOW_PROJECT_ID = G.WOW_PROJECT_CLASSIC
-		for _, name in ipairs({ "C_ClassTalents", "GetUnitChargedPowerPoints" }) do
+		for _, name in ipairs({ "C_ClassTalents", "GetUnitChargedPowerPoints", "LocalizedClassList", "COMBO_POINTS_POWER" }) do
 			G[name] = nil
 			absentGlobals[name] = true
 		end
+		G.GetSpellCritChance = function(school)
+			if school == nil then error("Usage: GetSpellCritChance(school)", 2) end
+			return 0
+		end
 		G.C_SpecializationInfo.GetAllSelectedPvpTalentIDs = nil
 		G.C_SpecializationInfo.GetPvpTalentInfo = nil
-		-- Three talent tabs of two talents each, so the talent-tab reader has something to walk.
+		-- Three talent tabs of two real talents each, so the talent-tab reader has something to walk. Like the client,
+		-- spellID is always 0.
 		G.GetNumTalentTabs = function() return 3 end
 		G.GetNumTalents = function() return 2 end
-		G.C_SpecializationInfo.GetTalentInfo = function(query) return { talentID = query.specializationIndex * 10 + query.talentIndex, spellID = 900000 + query.specializationIndex * 10 + query.talentIndex, rank = 0, maxRank = 5 } end
+		local talentIds = { 121, 123, 124, 125, 126, 127 }
+		G.C_SpecializationInfo.GetTalentInfo = function(query) return { talentID = talentIds[(query.specializationIndex - 1) * 2 + query.talentIndex], spellID = 0, rank = 1, maxRank = 5 } end
 		local playerInfo = G.C_PlayerInfo
 		playerInfo.GetGlidingInfo = nil
 		setmetatable(playerInfo, { __index = function(_, k) if k == "GetGlidingInfo" then return nil end return noop end })

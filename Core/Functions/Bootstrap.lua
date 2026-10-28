@@ -111,6 +111,7 @@ local function StartDeferredSetup(module, classEntry)
 			TRB.Data.barConstructedForSpec = nil
 			module.SwitchSpec()
 			TRB.Functions.CooldownManager:RelinkActiveConditions()
+			TRB.Functions.Aura:RefreshConditionSpells()
 
 			options.ConstructOptionsPanel(module.specCache)
 
@@ -183,6 +184,7 @@ local function OnEvent(_, event, arg1, ...)
 				C_Timer.After(0.1, function()
 					module.SwitchSpec()
 					TRB.Functions.CooldownManager:RelinkActiveConditions()
+					TRB.Functions.Aura:RefreshConditionSpells()
 				end)
 			end)
 		end

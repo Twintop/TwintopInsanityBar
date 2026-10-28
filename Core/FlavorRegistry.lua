@@ -67,6 +67,8 @@ local addonName, TRB = ...
 ---@field public ResolveSpellRankId (fun(spell: TRB.Classes.SpellBase): integer?)? # The rank of a `rankIds` spell to hand the client API; flavors without ranked spells leave it unset and get the spell's `id`
 ---@field public ReadTalentRanks (fun(): table<integer, TRB.Flavor.TalentRank>)? # Every talent's rank keyed by spell ID; defaults to the active trait config's trees
 ---@field public pvpTalents boolean? # The client has PvP talents (default true)
+---@field public cooldownManager boolean? # The client has Blizzard's Cooldown Manager, so it can feed tracking and anchor bars (default true)
+---@field public playerAuras boolean? # The player's aura data is never secret, so custom indicators and Buff Alerts can follow a buff by spell ID (default false)
 ---@field public DefaultCastbarTickProfiles (fun(): table<integer, TRB.Classes.Settings.CastbarTickProfile>)? # Channel tick profiles for every class (racials, consumables), keyed by spell ID; a fresh table per call, which the spec's own profiles overlay
 ---@field public newsContent string? # Markdown changelog shown by the News window's flavor tab; Core\News.lua holds the Core tab's
 
@@ -122,6 +124,12 @@ if TRB.Flavor.thresholdsRequireKnown == nil then
 end
 if TRB.Flavor.pvpTalents == nil then
 	TRB.Flavor.pvpTalents = true
+end
+if TRB.Flavor.cooldownManager == nil then
+	TRB.Flavor.cooldownManager = true
+end
+if TRB.Flavor.playerAuras == nil then
+	TRB.Flavor.playerAuras = false
 end
 
 -- Trait-tree talents (retail and Forever); a flavor with another talent system replaces it.

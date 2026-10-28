@@ -36,15 +36,16 @@ local function PerFiveSeconds(perSecond)
 	return math.floor(perSecond * 5)
 end
 
--- GetSpellBonusDamage takes the 1-based spell school index: 2 Holy, 3 Fire, 4 Nature, 5 Frost, 6 Shadow, 7 Arcane.
+-- GetSpellBonusDamage and GetSpellCritChance take the 1-based spell school index: 2 Holy, 3 Fire, 4 Nature, 5 Frost, 6 Shadow, 7 Arcane.
 local spellSchools = { holy = 2, fire = 3, nature = 4, frost = 5, shadow = 6, arcane = 7 }
 
----The bonus every school shares (the character sheet's Spell Power), or nil when any school is secret.
+---The value every school shares (the character sheet's Spell Power and Spell Crit), or nil when any school is secret.
+---@param read fun(school: integer): number
 ---@return number?
-local function SharedSpellPower()
+local function Shared(read)
 	local shared
 	for _, school in pairs(spellSchools) do
-		local value = GetSpellBonusDamage(school)
+		local value = read(school)
 		if issecretvalue(value) then
 			return nil
 		end
@@ -61,11 +62,11 @@ local function SchoolSpellPower(school)
 	return function() return (GetSpellBonusDamage(school)) end
 end
 
----UnitResistance's third value is the effective resistance the character sheet shows.
+---UnitResistance's second value is the resistance the Vanilla character sheet shows; the third is only the positive bonus.
 ---@param damageClassKey string # Enum.Damageclass key
 ---@return fun(): number?
 local function Resistance(damageClassKey)
-	return function() return (select(3, UnitResistance("player", Enum.Damageclass[damageClassKey]))) end
+	return function() return (select(2, UnitResistance("player", Enum.Damageclass[damageClassKey]))) end
 end
 
 ---@type TRB.Flavor.StatEvents
@@ -93,7 +94,7 @@ local stats = {
 	{ key = "rangedAttackPower", variables = { "$rap", "$rangedAttackPower" }, descriptionKey = "BarTextVariableRangedAttackPower", refresh = "secondary", format = "number", integer = true, read = function() return Sum(UnitRangedAttackPower("player")) end },
 	{ key = "crit", requires = "GetCritChance", variables = { "$crit", "$meleeCrit", "$critPercent" }, descriptionKey = "BarTextVariableMeleeCrit", refresh = "secondary", format = "percent", read = function() return (GetCritChance()) end },
 	{ key = "rangedCrit", requires = "GetRangedCritChance", variables = { "$rangedCrit" }, descriptionKey = "BarTextVariableRangedCrit", refresh = "secondary", format = "percent", read = function() return (GetRangedCritChance()) end },
-	{ key = "spellCrit", requires = "GetSpellCritChance", variables = { "$spellCrit" }, descriptionKey = "BarTextVariableSpellCrit", refresh = "secondary", format = "percent", read = function() return (GetSpellCritChance()) end },
+	{ key = "spellCrit", requires = "GetSpellCritChance", variables = { "$spellCrit" }, descriptionKey = "BarTextVariableSpellCrit", refresh = "secondary", format = "percent", read = function() return Shared(GetSpellCritChance) end },
 	{ key = "hit", requires = "GetHitModifier", variables = { "$hit", "$meleeHit" }, descriptionKey = "BarTextVariableMeleeHit", refresh = "secondary", format = "percent", read = function() return (GetHitModifier()) end },
 	{ key = "rangedHit", requires = "GetRangedHitModifier", variables = { "$rangedHit" }, descriptionKey = "BarTextVariableRangedHit", refresh = "secondary", format = "percent", read = function() return (GetRangedHitModifier()) end },
 	{ key = "spellHit", requires = "GetSpellHitModifier", variables = { "$spellHit" }, descriptionKey = "BarTextVariableSpellHit", refresh = "secondary", format = "percent", read = function() return (GetSpellHitModifier()) end },
@@ -104,7 +105,7 @@ local stats = {
 	{ key = "armorPenetration", requires = "GetArmorPenetration", variables = { "$armorPen", "$armorPenetration" }, descriptionKey = "BarTextVariableArmorPenetration", refresh = "secondary", format = "number", integer = true, read = function() return (GetArmorPenetration()) end },
 
 	-- Spell
-	{ key = "spellPower", requires = "GetSpellBonusDamage", variables = { "$spellPower", "$sp" }, descriptionKey = "BarTextVariableSpellPower", refresh = "secondary", format = "number", integer = true, read = SharedSpellPower },
+	{ key = "spellPower", requires = "GetSpellBonusDamage", variables = { "$spellPower", "$sp" }, descriptionKey = "BarTextVariableSpellPower", refresh = "secondary", format = "number", integer = true, read = function() return Shared(GetSpellBonusDamage) end },
 	{ key = "spellPowerHoly", requires = "GetSpellBonusDamage", variables = { "$spellPowerHoly" }, descriptionKey = "BarTextVariableSpellPowerHoly", refresh = "secondary", format = "number", integer = true, read = SchoolSpellPower(spellSchools.holy) },
 	{ key = "spellPowerFire", requires = "GetSpellBonusDamage", variables = { "$spellPowerFire" }, descriptionKey = "BarTextVariableSpellPowerFire", refresh = "secondary", format = "number", integer = true, read = SchoolSpellPower(spellSchools.fire) },
 	{ key = "spellPowerNature", requires = "GetSpellBonusDamage", variables = { "$spellPowerNature" }, descriptionKey = "BarTextVariableSpellPowerNature", refresh = "secondary", format = "number", integer = true, read = SchoolSpellPower(spellSchools.nature) },

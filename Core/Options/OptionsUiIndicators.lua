@@ -474,6 +474,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	end
 
 	local Threshold = TRB.Functions.Threshold
+	local Aura = TRB.Functions.Aura
 	local ColorPickers = TRB.Functions.OptionsUi.ColorPickers
 	local settingsClassName, settingsSpecName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
 	local thresholdLabels = config.thresholdLabels or {}
@@ -623,6 +624,43 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return nil
 	end
 
+	---@param indicator table?
+	---@return TRB.CustomIndicatorCondition?
+	local function GetAuraCondition(indicator)
+		local conditions = indicator ~= nil and indicator.custom ~= nil and indicator.custom.conditions or nil
+		local condition = conditions ~= nil and conditions[1] or nil
+		if condition ~= nil and condition.source == Aura.CONDITION_SOURCE then
+			return condition
+		end
+		return nil
+	end
+
+	---@param condition TRB.CustomIndicatorCondition
+	---@param spellId integer
+	local function PointAuraConditionAt(condition, spellId)
+		condition.spellID = spellId
+		condition.name = C_Spell.GetSpellName(spellId)
+	end
+
+	---Resolves a buff row's label and tracked state, refreshing its cached name.
+	---@param condition TRB.CustomIndicatorCondition
+	---@return string label
+	---@return boolean notTracked
+	---@return string badgeTooltip
+	local function ResolveAuraRow(condition)
+		local name = condition.spellID ~= nil and C_Spell.GetSpellName(condition.spellID) or nil
+		if name ~= nil then
+			condition.name = name
+		end
+		local label = string.format(L["CustomIndicatorActiveFormat"], condition.name or L["CustomIndicatorUnknownEntry"])
+		if not TRB.Flavor.playerAuras then
+			return label, true, L["AuraIndicatorUnavailableTooltip"]
+		elseif name == nil then
+			return label, true, string.format(L["AuraIndicatorUnknownSpellTooltip"], tostring(condition.spellID))
+		end
+		return label, false, string.format(L["AuraIndicatorBadgeTooltip"], condition.spellID)
+	end
+
 	---Refreshes range checks and tracked cooldowns after a threshold indicator is added, re-pointed, or removed.
 	local function RefreshThresholdTracking()
 		local character = TRB.Data.character
@@ -745,7 +783,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 	local function RefreshAddButton()
 		if addButton ~= nil then
-			addButton:SetEnabled(blockReason == nil or #thresholdSpells > 0)
+			addButton:SetEnabled(blockReason == nil or #thresholdSpells > 0 or TRB.Flavor.playerAuras)
 		end
 	end
 
@@ -765,6 +803,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 		local isCustom = def.custom == true
 		local thresholdCondition = isCustom and GetThresholdCondition(indicator) or nil
+		local auraCondition = isCustom and GetAuraCondition(indicator) or nil
 		local notTracked = false
 		local badgeTooltip = nil
 		local readOnlyTooltip = nil
@@ -772,6 +811,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			local name
 			def.colorLabel, notTracked, badgeTooltip, name = ResolveThresholdRow(thresholdCondition)
 			readOnlyTooltip = string.format(L["ThresholdIndicatorColorTooltip"], thresholdStateColorNames[thresholdCondition.state] or "", name)
+		elseif auraCondition ~= nil then
+			def.colorLabel, notTracked, badgeTooltip = ResolveAuraRow(auraCondition)
 		elseif isCustom then
 			def.colorLabel, notTracked, badgeTooltip = ResolveCustomRow(key)
 		end
@@ -814,8 +855,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		end
 		row.removeBtn:SetShown(isCustom)
 		row.editBtn:SetShown(isCustom)
-		-- Threshold lines are the spec's own data, so they can be re-picked on any spec.
-		row.editBtn:SetEnabled(thresholdCondition ~= nil or blockReason == nil)
+		-- Threshold lines and spell IDs are the spec's own data, so they can be re-picked on any spec.
+		row.editBtn:SetEnabled(thresholdCondition ~= nil or (auraCondition ~= nil and TRB.Flavor.playerAuras) or blockReason == nil)
 		-- Arrow enabled state
 		if row.upBtn then row.upBtn:SetEnabled(rowIndex > 1) end
 		if row.downBtn then row.downBtn:SetEnabled(rowIndex < #orderedKeys) end
@@ -896,6 +937,15 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				end)
 				return
 			end
+			if condition.source == Aura.CONDITION_SOURCE then
+				Primitives:ShowAuraSpellIdPrompt(condition.spellID, function(spellId)
+					PointAuraConditionAt(condition, spellId)
+					RefreshRow(capturedRowIdx)
+					Aura:RefreshConditionSpells()
+					RefreshRuntime()
+				end)
+				return
+			end
 			-- The Cooldown Manager or spec can change under an open panel; say why instead of doing nothing.
 			if GetPickerBlock() ~= nil then
 				RefreshAllRows()
@@ -913,8 +963,14 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			if not self:IsEnabled() and GetPickerBlock() == nil then
 				RefreshAllRows()
 			end
-			local isThreshold = GetThresholdCondition(indicatorColors[orderedKeys[capturedRowIdx]]) ~= nil
-			ShowRowButtonTooltip(self, isThreshold and L["ThresholdIndicatorEditTooltip"] or L["CustomIndicatorEditTooltip"])
+			local currentIndicator = indicatorColors[orderedKeys[capturedRowIdx]]
+			local tooltip = L["CustomIndicatorEditTooltip"]
+			if GetThresholdCondition(currentIndicator) ~= nil then
+				tooltip = L["ThresholdIndicatorEditTooltip"]
+			elseif GetAuraCondition(currentIndicator) ~= nil then
+				tooltip = L["AuraIndicatorEditTooltip"]
+			end
+			ShowRowButtonTooltip(self, tooltip)
 		end)
 		row.editBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
@@ -1153,6 +1209,15 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		AddIndicatorRow(condition)
 	end
 
+	---@param spellId integer
+	local function AddAuraIndicator(spellId)
+		---@type TRB.CustomIndicatorCondition
+		local condition = { source = Aura.CONDITION_SOURCE, state = Aura.ConditionState.ACTIVE }
+		PointAuraConditionAt(condition, spellId)
+		AddIndicatorRow(condition)
+		Aura:RefreshConditionSpells()
+	end
+
 	---@param spell TRB.Classes.SpellThreshold
 	---@param state string
 	local function AddThresholdIndicator(spell, state)
@@ -1162,22 +1227,31 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		RefreshThresholdTracking()
 	end
 
-	---Opens the Add menu: Cooldown Manager buffs, or a threshold line's state.
+	---Opens the Add menu: Cooldown Manager buffs or a buff by spell ID (whichever the client supports), or a threshold line's state.
 	---@param owner Frame
 	local function OpenAddMenu(owner)
 		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
-			local cdmLabel = CreateColor(Primitives:GetCdmBadgeColor()):WrapTextInColorCode(string.format("(%s)", L["CdmBadgeLabel"]))
-			local buffsButton = rootDescription:CreateButton(string.format(L["CustomIndicatorSourceBuffsFormat"], cdmLabel))
-			local reason = GetPickerBlock()
-			if reason ~= nil then
-				buffsButton:SetEnabled(false)
-				buffsButton:SetTooltip(function(tooltipFrame)
-					tooltipFrame:SetText(reason, 1, 1, 1, 1, true)
-				end)
-			else
-				Primitives:PopulateCdmPicker(buffsButton, nil, pickerWording, AddCustomIndicator)
+			if TRB.Flavor.cooldownManager then
+				local cdmLabel = CreateColor(Primitives:GetCdmBadgeColor()):WrapTextInColorCode(string.format("(%s)", L["CdmBadgeLabel"]))
+				local buffsButton = rootDescription:CreateButton(string.format(L["CustomIndicatorSourceBuffsFormat"], cdmLabel))
+				local reason = GetPickerBlock()
+				if reason ~= nil then
+					buffsButton:SetEnabled(false)
+					buffsButton:SetTooltip(function(tooltipFrame)
+						tooltipFrame:SetText(reason, 1, 1, 1, 1, true)
+					end)
+				else
+					Primitives:PopulateCdmPicker(buffsButton, nil, pickerWording, AddCustomIndicator)
+				end
 			end
-			PopulateThresholdPicker(rootDescription:CreateButton(L["CustomIndicatorSourceThresholds"]), nil, AddThresholdIndicator)
+			if TRB.Flavor.playerAuras then
+				rootDescription:CreateButton(L["CustomIndicatorSourceAuraSpellId"], function()
+					Primitives:ShowAuraSpellIdPrompt(nil, AddAuraIndicator)
+				end)
+			end
+			if #thresholdSpells > 0 then
+				PopulateThresholdPicker(rootDescription:CreateButton(L["CustomIndicatorSourceThresholds"]), nil, AddThresholdIndicator)
+			end
 		end)
 	end
 
@@ -1201,10 +1275,13 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			end
 		end
 		local wasThreshold = GetThresholdCondition(indicatorColors[key]) ~= nil
+		local wasAura = GetAuraCondition(indicatorColors[key]) ~= nil
 		indicatorColors[key] = nil
 		indicatorDefByKey[key] = nil
 		if wasThreshold then
 			RefreshThresholdTracking()
+		elseif wasAura then
+			Aura:RefreshConditionSpells()
 		end
 
 		local lastRow = rows[#orderedKeys + 1]
@@ -1232,8 +1309,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	addButton:SetDisabledFontObject(GameFontDisable)
 	addButton:SetMotionScriptsWhileDisabled(true)
 	addButton:SetScript("OnEnter", function(self)
-		-- With threshold lines to offer, the Add menu explains a Cooldown Manager block itself.
-		local reason = #thresholdSpells == 0 and GetPickerBlock() or nil
+		-- With threshold lines or spell IDs to offer, the Add menu explains a Cooldown Manager block itself.
+		local reason = #thresholdSpells == 0 and not TRB.Flavor.playerAuras and GetPickerBlock() or nil
 		if reason ~= nil then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 			GameTooltip:SetText(reason, 1, 1, 1, 1, true)
@@ -1243,7 +1320,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		end
 	end)
 	addButton:SetScript("OnClick", function(self)
-		if #thresholdSpells > 0 then
+		if #thresholdSpells > 0 or TRB.Flavor.playerAuras then
 			OpenAddMenu(self)
 			return
 		end

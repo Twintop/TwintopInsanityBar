@@ -12,7 +12,13 @@ end })
 --   L[specLocaleKey .. "Full"]  e.g. L["PriestShadowFull"]   -> "Shadow Priest"
 -- A spec without a resolvable global ID falls back to its settings key so the UI still has a label.
 do
-	local classList = LocalizedClassList()
+	-- Classic Era has no LocalizedClassList, only the older fill-a-table form.
+	local classList = {}
+	if LocalizedClassList ~= nil then
+		classList = LocalizedClassList()
+	else
+		FillLocalizedClassList(classList)
+	end
 	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
 		L[classEntry.classModuleName] = classList[classEntry.classToken] or classEntry.classModuleName
 	end
@@ -43,7 +49,8 @@ end
 
 L["ResourceFury"] = POWER_TYPE_FURY
 L["ResourceEnergy"] = POWER_TYPE_ENERGY
-L["ResourceComboPoints"] = COMBO_POINTS_POWER
+-- Classic Era has no COMBO_POINTS_POWER; its Rogue tutorial title is the same "Combo Points" string.
+L["ResourceComboPoints"] = COMBO_POINTS_POWER or TUTORIAL_TITLE61_ROGUE
 L["ResourceRage"] = POWER_TYPE_RED_POWER
 L["ResourceMana"] = POWER_TYPE_MANA
 L["ResourceInsanity"] = POWER_TYPE_INSANITY

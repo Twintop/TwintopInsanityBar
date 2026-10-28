@@ -176,6 +176,8 @@ local function Run()
 	for _, rule in ipairs({ "HardcoreRuleset", "PvPRuleset", "RPRuleset", "SelfFoundAllowed", "NoDebuffLimit" }) do
 		Probe("client", "IsGameRuleActive " .. rule, function() return Enum.GameRule[rule], C_GameRules.IsGameRuleActive(Enum.GameRule[rule]) end)
 	end
+	-- Classic Era's Hardcore and Season of Discovery realms run on the same client; the season tells them apart.
+	Probe("client", "C_Seasons.GetActiveSeason", function() return C_Seasons.GetActiveSeason(), C_Seasons.HasActiveSeason() end)
 	Probe("client", "GetGameRuleAsFloat VanillaRageGenerationModifier", function() return C_GameRules.GetGameRuleAsFloat(Enum.GameRule.VanillaRageGenerationModifier) end)
 	Probe("client", "GetCVar loadDeprecationFallbacks", function() return GetCVar("loadDeprecationFallbacks") end)
 	Probe("client", "GetAddOnInfo Blizzard_Deprecated", function() return C_AddOns.GetAddOnInfo("Blizzard_Deprecated") end)
@@ -373,7 +375,11 @@ local function Run()
 	Probe("power", "UnitHealth/Max", function() return UnitHealth("player"), UnitHealthMax("player") end)
 
 	-- Spell ranks and shapeshift forms (Druid): which "known" API sees ranks, what each rank costs, and the form ids.
+	-- The Rogue and Warrior attacks are known at level 1, so a new character of either class shows a known rank 1.
 	local rankedSpells = {
+		{ name = "Sinister Strike", ids = { 1752, 1757, 1758, 1759, 1760, 8621, 11293, 11294 } },
+		{ name = "Eviscerate", ids = { 2098, 6760, 6761, 6762, 8623, 8624, 11299, 11300, 31016 } },
+		{ name = "Heroic Strike", ids = { 78, 284, 285, 1608, 11564, 11565, 11566, 11567, 25286 } },
 		{ name = "Healing Touch", ids = { 5185, 5186, 5187, 5188, 5189, 6778, 8903, 9758, 9888, 9889, 25297 } },
 		{ name = "Rejuvenation", ids = { 774, 1058, 1430, 2090, 2091, 3627, 8910, 9839, 9840, 9841, 25299 } },
 		{ name = "Maul", ids = { 6807, 6808, 6809, 8972, 9745, 9880, 9881 } },

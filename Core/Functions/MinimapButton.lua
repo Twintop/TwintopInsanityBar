@@ -5,7 +5,7 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.MinimapButton = {}
 
 local ADDON_NAME = "TwintopResourceBar"
-local ICON_TEXTURE = 1386550 -- Same as ## IconTexture in TOC
+local ICON_TEXTURE = TRB.Details.addonIcon
 
 local ldb = LibStub("LibDataBroker-1.1")
 local icon = LibStub("LibDBIcon-1.0")
