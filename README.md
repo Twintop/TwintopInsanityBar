@@ -156,7 +156,7 @@ Classic support is in early development, and class-specific tracking is still be
 - Main hand, off hand, and ranged swing timer bars, with the ranged bar showing when movement delays your shot.
 - Abilities that use your highest known spell rank.
 - Bar text stat variables match the Classic character sheet, such as Spirit, spell power, defense, and resistances.
-- Color Indicators bassed on your own buffs.
+- Color Indicators based on your own buffs.
 
 ## Localization
 
