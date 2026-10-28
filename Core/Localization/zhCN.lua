@@ -4226,4 +4226,12 @@ if locale == "zhCN" then
 	L["ThresholdIconOverlapNotStaggerTooltip"] = "仅当阈值图标重叠处理选择分行错开排列时，该设置才生效。"
 	L["ThresholdOutOfRangeHiddenTooltip"] = "超出射程的阈值标线已隐藏，此设置不生效。"
 	L["ThresholdDetailIconHiddenTooltip"] = "该阈值标线的图标已隐藏，此设置不生效。"
+	L["ThresholdBehaviorHideNoTarget"] = "无有效目标时隐藏"
+	L["ThresholdBehaviorHideNoTargetTooltip"] = "勾选后，针对敌人施放的技能阈值标线，在战斗中没有目标、或目标无法对其使用该技能时隐藏。单条阈值标线可单独覆盖此设置。"
+	L["ThresholdBehaviorHideNoTargetOutOfCombat"] = "非战斗状态也生效"
+	L["ThresholdBehaviorHideNoTargetOutOfCombatTooltip"] = "勾选后，这类阈值标线在非战斗状态下，无有效目标时同样隐藏。"
+	L["ThresholdBehaviorHideNoTargetOffTooltip"] = "「无有效目标时隐藏」已关闭，此设置不生效。"
+	L["ThresholdDetailNoTargetPrefix"] = "无有效目标时"
+	L["ThresholdDetailNoTargetHideCombat"] = "仅战斗中隐藏"
+	L["ThresholdDetailNoTargetHideAlways"] = "始终隐藏"
 end
