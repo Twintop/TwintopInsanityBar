@@ -510,11 +510,17 @@ local chargedPointsChangedAt = 0
 -- now. The consuming update and CHANNEL_START arrive together; a GCD separates them from any earlier cast.
 local CHARGED_POINT_CONSUME_GRACE = 0.5
 
+-- Classic has no charged combo points, and registering an event the client doesn't know errors.
+local hasChargedPoints = C_EventUtils.IsEventValid("UNIT_POWER_POINT_CHARGE") == true
+
 ---Reads the player's charged combo point slot indices, dropping any the game hides.
 ---@return integer[]
 local function ReadChargedPoints()
-	local read = GetUnitChargedPowerPoints("player")
 	local indices = {}
+	if not hasChargedPoints then
+		return indices
+	end
+	local read = GetUnitChargedPowerPoints("player")
 	if read ~= nil then
 		for i = 1, #read do
 			local index = read[i]
@@ -527,8 +533,10 @@ local function ReadChargedPoints()
 end
 
 local chargedPointsFrame = CreateFrame("Frame")
-chargedPointsFrame:RegisterUnitEvent("UNIT_POWER_POINT_CHARGE", "player")
-chargedPointsFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+if hasChargedPoints then
+	chargedPointsFrame:RegisterUnitEvent("UNIT_POWER_POINT_CHARGE", "player")
+	chargedPointsFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+end
 chargedPointsFrame:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		-- Charge events only fire on a change, so seed from the live state: a reload mid-charge would

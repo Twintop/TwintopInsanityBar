@@ -1,9 +1,9 @@
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Monk = TRB.Classes.Monk or {}
+TRB.Classes.Mainline.Monk = TRB.Classes.Mainline.Monk or {}
 
 
----@class TRB.Classes.Monk.BrewmasterSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Monk.BrewmasterSpells : TRB.Classes.SpecializationSpellsBase
 --Baseline
 ---@field public cracklingJadeLightning TRB.Classes.SpellThreshold
 ---@field public expelHarm TRB.Classes.SpellThreshold
@@ -18,13 +18,13 @@ TRB.Classes.Monk = TRB.Classes.Monk or {}
 --Spec Talents
 ---@field public invokeNiuzao TRB.Classes.SpellBase
 ---@field public kegSmash TRB.Classes.SpellThreshold
-TRB.Classes.Monk.BrewmasterSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Monk.BrewmasterSpells.__index = TRB.Classes.Monk.BrewmasterSpells
+TRB.Classes.Mainline.Monk.BrewmasterSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Monk.BrewmasterSpells.__index = TRB.Classes.Mainline.Monk.BrewmasterSpells
 
-function TRB.Classes.Monk.BrewmasterSpells:New()
+function TRB.Classes.Mainline.Monk.BrewmasterSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
-	self = setmetatable(base:New(), TRB.Classes.Monk.BrewmasterSpells) --[[@as TRB.Classes.Monk.BrewmasterSpells]]
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Monk.BrewmasterSpells) --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
 
 	-- Baseline Abilities
 	self.cracklingJadeLightning = TRB.Classes.SpellThreshold:New({
@@ -139,13 +139,13 @@ end
 
 ---Fills barTextVariables for Brewmaster Monk options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Monk.BrewmasterSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Monk.BrewmasterSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Monk.BrewmasterSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Monk.BrewmasterSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Monk.BrewmasterSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#niuzao", icon = spells.invokeNiuzao.icon, description = L["MonkBrewmasterBarTextIcon_niuzao"], printInSettings = true },
@@ -167,7 +167,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Brewmaster, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Monk.BrewmasterSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Monk.BrewmasterSpells.GetCastbarTickProfiles()
 	return {
 		-- Soothing Mist
 		[115175] = { mode = "fixedCount", baseDuration = 8, tickCount = 8, chains = true },
@@ -179,7 +179,7 @@ function TRB.Classes.Monk.BrewmasterSpells.GetCastbarTickProfiles()
 end
 
 
----@class TRB.Classes.Monk.MistweaverSpells : TRB.Classes.Healer.HealerSpells
+---@class TRB.Classes.Mainline.Monk.MistweaverSpells : TRB.Classes.Mainline.Healer.HealerSpells
 ---@field public risingSunKick TRB.Classes.SpellBase
 ---@field public soothingMist TRB.Classes.SpellBase
 ---@field public vivaciousVivification TRB.Classes.SpellBase
@@ -189,13 +189,13 @@ end
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
 ---@field public rushingWindKick TRB.Classes.SpellBase
 ---@field public sheilunsGift TRB.Classes.SpellBase
-TRB.Classes.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
-TRB.Classes.Monk.MistweaverSpells.__index = TRB.Classes.Monk.MistweaverSpells
+TRB.Classes.Mainline.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Healer.HealerSpells})
+TRB.Classes.Mainline.Monk.MistweaverSpells.__index = TRB.Classes.Mainline.Monk.MistweaverSpells
 
-function TRB.Classes.Monk.MistweaverSpells:New()
-	---@type TRB.Classes.Healer.HealerSpells
-	local base = TRB.Classes.Healer.HealerSpells
-	self = setmetatable(base:New(), TRB.Classes.Monk.MistweaverSpells) --[[@as TRB.Classes.Monk.MistweaverSpells]]
+function TRB.Classes.Mainline.Monk.MistweaverSpells:New()
+	---@type TRB.Classes.Mainline.Healer.HealerSpells
+	local base = TRB.Classes.Mainline.Healer.HealerSpells
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Monk.MistweaverSpells) --[[@as TRB.Classes.Mainline.Monk.MistweaverSpells]]
 
 	self.risingSunKick = TRB.Classes.SpellBase:New({
 		id = 107428,
@@ -253,13 +253,13 @@ end
 
 ---Fills barTextVariables for Mistweaver Monk options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Monk.MistweaverSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Monk.MistweaverSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Monk.MistweaverSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Monk.MistweaverSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.MistweaverSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#hotjs", icon = spells.heartOfTheJadeSerpent.icon, description = spells.heartOfTheJadeSerpent.name, printInSettings = true },
@@ -278,7 +278,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Mistweaver, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Monk.MistweaverSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Monk.MistweaverSpells.GetCastbarTickProfiles()
 	return {
 		-- Spinning Crane Kick
 		[101546] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = true },
@@ -292,7 +292,7 @@ function TRB.Classes.Monk.MistweaverSpells.GetCastbarTickProfiles()
 end
 
 
----@class TRB.Classes.Monk.WindwalkerSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Monk.WindwalkerSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public ancientArts TRB.Classes.SpellBase
 ---@field public strikeOfTheWindlord TRB.Classes.SpellBase
 ---@field public danceOfChiJi TRB.Classes.SpellBase
@@ -315,13 +315,13 @@ end
 ---@field public soothingMist TRB.Classes.SpellThreshold
 ---@field public expelHarm TRB.Classes.SpellComboPointThreshold
 ---@field public tigerPalm TRB.Classes.SpellComboPointThreshold
-TRB.Classes.Monk.WindwalkerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Monk.WindwalkerSpells.__index = TRB.Classes.Monk.WindwalkerSpells
+TRB.Classes.Mainline.Monk.WindwalkerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Monk.WindwalkerSpells.__index = TRB.Classes.Mainline.Monk.WindwalkerSpells
 
-function TRB.Classes.Monk.WindwalkerSpells:New()
+function TRB.Classes.Mainline.Monk.WindwalkerSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
-	self = setmetatable(base:New(), TRB.Classes.Monk.WindwalkerSpells) --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Monk.WindwalkerSpells) --[[@as TRB.Classes.Mainline.Monk.WindwalkerSpells]]
 
 	-- Monk Class Baseline Abilities
 	self.blackoutKick = TRB.Classes.SpellComboPoint:New({
@@ -508,13 +508,13 @@ end
 
 ---Fills barTextVariables for Windwalker Monk options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Monk.WindwalkerSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Monk.WindwalkerSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Monk.WindwalkerSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Monk.WindwalkerSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.WindwalkerSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#blackoutKick", icon = spells.blackoutKick.icon, description = spells.blackoutKick.name, printInSettings = true },
@@ -557,7 +557,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Windwalker, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Monk.WindwalkerSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Monk.WindwalkerSpells.GetCastbarTickProfiles()
 	return {
 		-- Spinning Crane Kick
 		[101546] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = true },
@@ -573,10 +573,10 @@ function TRB.Classes.Monk.WindwalkerSpells.GetCastbarTickProfiles()
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Monk.WindwalkerSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Monk.WindwalkerSpells.thresholdSnowflakes = {
 	spells = {
 		expelHarm = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Monk.WindwalkerSpells]]
 			if line.data.talents:IsTalentActive(spells.combatWisdom) then
 				line:Hide()
 			else
@@ -597,14 +597,14 @@ TRB.Classes.Monk.WindwalkerSpells.thresholdSnowflakes = {
     Windwalker: Primary bar (N=1) + Chi (N=5-6)
 ]]
 
----@class TRB.Classes.Monk.BarGroupsFactory
-TRB.Classes.Monk.BarGroupsFactory = {}
-TRB.Classes.Monk.BarGroupsFactory.__index = TRB.Classes.Monk.BarGroupsFactory
+---@class TRB.Classes.Mainline.Monk.BarGroupsFactory
+TRB.Classes.Mainline.Monk.BarGroupsFactory = {}
+TRB.Classes.Mainline.Monk.BarGroupsFactory.__index = TRB.Classes.Mainline.Monk.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Monk specialization
 ---@param specId integer # 1=Brewmaster, 2=Mistweaver, 3=Windwalker
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Monk.BarGroupsFactory:CreateForSpec(specId)
+function TRB.Classes.Mainline.Monk.BarGroupsFactory:CreateForSpec(specId)
     local barGroups = {}
 
     if specId == 1 then -- Brewmaster
@@ -682,7 +682,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
     if specId == 1 then -- Brewmaster
         return {
             primary = {
@@ -740,15 +740,15 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["monk_brewmaster"] = TRB.Classes.Monk.BrewmasterSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["monk_mistweaver"] = TRB.Classes.Monk.MistweaverSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["monk_windwalker"] = TRB.Classes.Monk.WindwalkerSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["monk_brewmaster"] = TRB.Classes.Mainline.Monk.BrewmasterSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["monk_mistweaver"] = TRB.Classes.Mainline.Monk.MistweaverSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["monk_windwalker"] = TRB.Classes.Mainline.Monk.WindwalkerSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["monk_brewmaster"] = TRB.Classes.Monk.BrewmasterSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["monk_mistweaver"] = TRB.Classes.Monk.MistweaverSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["monk_windwalker"] = TRB.Classes.Monk.WindwalkerSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["monk_brewmaster"] = TRB.Classes.Mainline.Monk.BrewmasterSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["monk_mistweaver"] = TRB.Classes.Mainline.Monk.MistweaverSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["monk_windwalker"] = TRB.Classes.Mainline.Monk.WindwalkerSpells.GetCastbarTickProfiles
 
 -- Register audio cue vocabularies
 do

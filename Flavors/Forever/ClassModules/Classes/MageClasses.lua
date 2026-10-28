@@ -2,13 +2,13 @@ local _, TRB = ...
 
 -- Mage (World of Warcraft: Forever): Mana; there are no Arcane Charges in this game.
 
----@class TRB.Classes.Mage.GeneralSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Forever.Mage.GeneralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public arcaneMissiles TRB.Classes.SpellBase
 ---@field public blizzard TRB.Classes.SpellBase
 ---@field public evocation TRB.Classes.SpellBase
 
 ---Adds the Mage's channeled abilities to a new spell set.
----@param spells TRB.Classes.Mage.GeneralSpells
+---@param spells TRB.Classes.Forever.Mage.GeneralSpells
 local function FillSpells(spells)
 	-- Ranks 1 and 2 fire three and four missiles; every later rank fires five.
 	local fiveMissiles = { mode = "fixedCount", baseDuration = 5, tickCount = 5, firstTickAtStart = false }

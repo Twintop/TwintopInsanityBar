@@ -1766,7 +1766,7 @@ local function BalanceConstructBarVisibilityPanel(parent)
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
 			TRB.Functions.BarVisibility:MarkDirty()
-			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -1794,7 +1794,7 @@ local function BalanceConstructBarVisibilityPanel(parent)
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
 			TRB.Functions.BarVisibility:MarkDirty()
-			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			TRB.Functions.Bar:RefreshWrapperPositioning()
@@ -2357,7 +2357,7 @@ local function FeralConstructBarVisibilityPanel(parent)
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
 			TRB.Functions.BarVisibility:MarkDirty()
-			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -2385,7 +2385,7 @@ local function FeralConstructBarVisibilityPanel(parent)
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
 			TRB.Functions.BarVisibility:MarkDirty()
-			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			TRB.Functions.Bar:RefreshWrapperPositioning()
@@ -2873,7 +2873,7 @@ local function GuardianConstructBarVisibilityPanel(parent)
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
 			TRB.Functions.BarVisibility:MarkDirty()
-			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -2901,7 +2901,7 @@ local function GuardianConstructBarVisibilityPanel(parent)
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
 			TRB.Functions.BarVisibility:MarkDirty()
-			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			TRB.Functions.Bar:RefreshWrapperPositioning()
@@ -3330,7 +3330,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
 			TRB.Functions.BarVisibility:MarkDirty()
-			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
@@ -3358,7 +3358,7 @@ local function RestorationConstructBarVisibilityPanel(parent)
 			-- Destroy and recreate bar groups to add/remove secondary bar
 			TRB.Functions.Bar:DestroyBarGroups()
 			TRB.Functions.BarVisibility:MarkDirty()
-			TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+			TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 			TRB.Functions.Bar:RefreshWrapperPositioning()

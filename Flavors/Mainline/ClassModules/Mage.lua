@@ -51,9 +51,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.Mage.ArcaneSpells
-	specCache.mage_arcane.spellsData.spells = TRB.Classes.Mage.ArcaneSpells:New()
-	local spells = specCache.mage_arcane.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	---@type TRB.Classes.Mainline.Mage.ArcaneSpells
+	specCache.mage_arcane.spellsData.spells = TRB.Classes.Mainline.Mage.ArcaneSpells:New()
+	local spells = specCache.mage_arcane.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 
 	specCache.mage_arcane.snapshotData.attributes.manaRegen = 0
 
@@ -88,9 +88,9 @@ local function FillSpecializationCache()
 		},
 	}
 	
-	---@type TRB.Classes.Mage.FireSpells
-	specCache.mage_fire.spellsData.spells = TRB.Classes.Mage.FireSpells:New()
-	local fireSpells = specCache.mage_fire.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	---@type TRB.Classes.Mainline.Mage.FireSpells
+	specCache.mage_fire.spellsData.spells = TRB.Classes.Mainline.Mage.FireSpells:New()
+	local fireSpells = specCache.mage_fire.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 
 	specCache.mage_fire.snapshotData.attributes.manaRegen = 0
 
@@ -124,9 +124,9 @@ local function FillSpecializationCache()
 		},
 	}
 	
-	---@type TRB.Classes.Mage.FrostSpells
-	specCache.mage_frost.spellsData.spells = TRB.Classes.Mage.FrostSpells:New()
-	local frostSpells = specCache.mage_frost.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	---@type TRB.Classes.Mainline.Mage.FrostSpells
+	specCache.mage_frost.spellsData.spells = TRB.Classes.Mainline.Mage.FrostSpells:New()
+	local frostSpells = specCache.mage_frost.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 
 	specCache.mage_frost.snapshotData.attributes.manaRegen = 0
 
@@ -151,16 +151,16 @@ local function Setup_Arcane()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "mage_arcane" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(1, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Mage.BarGroupsFactory:CreateForSpec(1, UIParent)
 	end
 end
 
 local function FillSpellData_Arcane()
 	Setup_Arcane()
 	specCache.mage_arcane.spellsData:FillSpellData()
-	local spells = specCache.mage_arcane.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = specCache.mage_arcane.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 
-	TRB.Classes.Mage.ArcaneSpells.FillBarTextVariables(specCache.mage_arcane)
+	TRB.Classes.Mainline.Mage.ArcaneSpells.FillBarTextVariables(specCache.mage_arcane)
 end
 
 local function Setup_Fire()
@@ -169,19 +169,19 @@ local function Setup_Fire()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "mage_fire" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(2, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Mage.BarGroupsFactory:CreateForSpec(2, UIParent)
 	end
 end
 
 local function FillSpellData_Fire()
 	Setup_Fire()
 	specCache.mage_fire.spellsData:FillSpellData()
-	local spells = specCache.mage_fire.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	local spells = specCache.mage_fire.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 
 	-- Create snapshot for Fire Blast charge tracking
 	specCache.mage_fire.snapshotData.snapshots[spells.fireBlast.id] = TRB.Classes.Snapshot:New(spells.fireBlast)
 
-	TRB.Classes.Mage.FireSpells.FillBarTextVariables(specCache.mage_fire)
+	TRB.Classes.Mainline.Mage.FireSpells.FillBarTextVariables(specCache.mage_fire)
 end
 
 local function Setup_Frost()
@@ -190,16 +190,16 @@ local function Setup_Frost()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "mage_frost" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Mage.BarGroupsFactory:CreateForSpec(3, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Mage.BarGroupsFactory:CreateForSpec(3, UIParent)
 	end
 end
 
 local function FillSpellData_Frost()
 	Setup_Frost()
 	specCache.mage_frost.spellsData:FillSpellData()
-	local spells = specCache.mage_frost.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	local spells = specCache.mage_frost.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 
-	TRB.Classes.Mage.FrostSpells.FillBarTextVariables(specCache.mage_frost)
+	TRB.Classes.Mainline.Mage.FrostSpells.FillBarTextVariables(specCache.mage_frost)
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)
@@ -287,7 +287,7 @@ end
 local fireBlastSpendSmoothWindow = 0.5
 local fireBlastSpendSmoothUntil = 0
 
----@param spells TRB.Classes.Mage.FireSpells?
+---@param spells TRB.Classes.Mainline.Mage.FireSpells?
 ---@param refresh boolean?
 ---@return TRB.Classes.SnapshotCooldown?
 local function GetFireBlastCooldownSnapshot(spells, refresh)
@@ -476,7 +476,7 @@ local function ConstructResourceBar(settings)
 				)
 			end
 		elseif TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 			local maxIcicles = TRB.Data.character.maxResource2 or 0
 
 			if maxIcicles == 0 then
@@ -556,7 +556,7 @@ local function GetProcTimerRemaining(buff, currentTime)
 end
 
 local function RefreshLookupData_Arcane()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.arcane
@@ -698,7 +698,7 @@ local function RefreshLookupData_Arcane()
 end
 
 local function RefreshLookupData_Fire()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.fire
@@ -814,7 +814,7 @@ local function RefreshLookupData_Fire()
 end
 
 local function RefreshLookupData_Frost()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.frost
@@ -1006,7 +1006,7 @@ end
 
 ---Samples Arcane Surge's description duration into the running longest sample for the cast.
 local function SampleArcaneSurgeDuration()
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 	if spells == nil or spells.arcaneSurge == nil then
 		return
 	end
@@ -1036,7 +1036,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 
 	if TRB.Data.character.specId == 1 then
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 		if spells ~= nil and spells.arcaneSurge ~= nil and spellId == spells.arcaneSurge.id then
 			if event == "UNIT_SPELLCAST_START" then
 				arcaneSurgeCasting = true
@@ -1059,7 +1059,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 
 	if TRB.Data.character.specId == 2 and event == "UNIT_SPELLCAST_SUCCEEDED" then
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 		if spells ~= nil and spells.fireBlast ~= nil and spellId == spells.fireBlast.id then
 			fireBlastSpendSmoothUntil = GetTime() + fireBlastSpendSmoothWindow
 		elseif spells ~= nil and spells.combustion ~= nil and spellId == spells.combustion.id then
@@ -1073,7 +1073,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 
 	if TRB.Data.character.specId == 3 and event == "UNIT_SPELLCAST_SUCCEEDED" then
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 		if spells ~= nil and spells.iceLance ~= nil and spellId == spells.iceLance.id then
 			local snapshot = spells.fingersOfFrost and snapshotData.snapshots
 				and snapshotData.snapshots[spells.fingersOfFrost.id]
@@ -1108,7 +1108,7 @@ end
 ---combat, so it is stored raw and never compared.
 local function RefreshArcaneSalvoStacks()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 	if not (spells and spells.arcaneSalvo) then
 		return
 	end
@@ -1156,7 +1156,7 @@ end
 local function UpdateSnapshot_Arcane()
 	local currentTime = GetTime()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local arcaneSurge = snapshots[spells.arcaneSurge.id]
@@ -1175,7 +1175,7 @@ end
 local function UpdateSnapshot_Fire()
 	local currentTime = GetTime()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	if spells and spells.fireBlast and snapshots[spells.fireBlast.id] then
@@ -1191,7 +1191,7 @@ end
 ---`shatterTracked` separates a down debuff (known zero) from an untracked spell (renders "??").
 local function RefreshShatterStacks()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 	local attributes = snapshotData.attributes
 	local wasTracked = attributes.shatterTracked == true
 	local wasActive = attributes.shatterActive == true
@@ -1222,7 +1222,7 @@ end
 local function UpdateSnapshot_Frost()
 	local currentTime = GetTime()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
@@ -1260,7 +1260,7 @@ local shatterCustomIndicatorByStack = {}
 ---@param fillIndicated boolean? # An indicator owns the fill, overriding the threshold and custom indicator colors
 local function UpdateShatter(specSettings, specCacheSettings, barColors, fillIndicated)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if not (barGroups and barGroups.shatter) then
@@ -1330,7 +1330,7 @@ end
 ---@param fillIndicated boolean? # An indicator owns the fill, so the range recolor stands down
 local function UpdateArcaneSalvo(specSettings, specCacheSettings, barColors, fillIndicated)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
 	if not (barGroups and barGroups.arcaneSalvo) then
@@ -1474,7 +1474,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.mage_arcane.settings
 		UpdateSnapshot_Arcane()
 		if snapshotData.attributes.isTracking then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 			local snapshots = snapshotData.snapshots
 
 			-- Indicators resolve ahead of the bars' visibility guards: the health bar and cast bar have
@@ -1607,7 +1607,7 @@ local function UpdateResourceBar()
 
 		-- Audio cues (independent of bar visibility)
 		do
-			local arcaneSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+			local arcaneSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 			local arcaneSnapshots = snapshotData.snapshots
 			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "arcaneCharges", snapshotData.attributes.resource2)
 
@@ -1628,7 +1628,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.mage_fire.settings
 		UpdateSnapshot_Fire()
 		if snapshotData.attributes.isTracking then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 			local snapshots = snapshotData.snapshots
 
 			-- Indicators resolve ahead of the bars' visibility guards: the health bar and cast bar have
@@ -1759,7 +1759,7 @@ local function UpdateResourceBar()
 
 		-- Audio cues (independent of bar visibility)
 		do
-			local fireSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+			local fireSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 			local fireSnapshots = snapshotData.snapshots
 			TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "hotStreak",
 				fireSnapshots[fireSpells.hotStreak.id].buff.isActive == true)
@@ -1774,7 +1774,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.mage_frost.settings
 		UpdateSnapshot_Frost()
 		if snapshotData.attributes.isTracking then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 			local snapshots = snapshotData.snapshots
 
 			-- Indicators resolve ahead of the bars' visibility guards: the health bar and cast bar have
@@ -1892,7 +1892,7 @@ local function UpdateResourceBar()
 
 		-- Audio cues (independent of bar visibility)
 		do
-			local frostSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+			local frostSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 			local frostSnapshots = snapshotData.snapshots
 			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "icicles",
 				frostSnapshots[frostSpells.icicles.id].buff.applications or 0)
@@ -1939,7 +1939,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.mage_arcane)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
@@ -1982,7 +1982,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.mage_fire)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
@@ -2009,7 +2009,7 @@ local function SwitchSpec()
 
 		-- Sync Fire Blast node count from the snapshot cooldown after EventRegistration populates spell data.
 		do
-			local fireSpells = specCache.mage_fire.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+			local fireSpells = specCache.mage_fire.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 			local fireBlastCooldown = GetFireBlastCooldownSnapshot(fireSpells, true)
 			local maxCharges = GetFireBlastMaxCharges(fireBlastCooldown)
 			SyncFireBlastChargeNodes(maxCharges, specCache.mage_fire.settings)
@@ -2026,7 +2026,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.mage_frost)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
@@ -2102,7 +2102,7 @@ TRB.Functions.Bootstrap:RegisterClassModule({
 local function HandleFireBlastChargesEvent(spellId)
 	if TRB.Data.character.specId ~= 2 then return end
 
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 	if not (spells and spells.fireBlast) then return end
 
 	-- SPELL_UPDATE_CHARGES passes the spellId of the affected spell. Filter to Fire Blast.
@@ -2118,7 +2118,7 @@ end
 local function HandleFiredUpEvent(spellId)
 	if TRB.Data.character.specId ~= 2 then return end
 
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 	if not (spells and spells.firedUp and spells.combustion) then return end
 	if spellId ~= spells.firedUp.buffId then return end
 	if not talents:IsTalentActive(spells.firedUp) then return end
@@ -2139,7 +2139,7 @@ end
 local function HandleArcaneSalvoEvent(spellId)
 	if TRB.Data.character.specId ~= 1 then return end
 
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 	if not (spells and spells.arcaneSalvo) then return end
 	if spellId ~= spells.arcaneSalvo.id then return end
 
@@ -2155,7 +2155,7 @@ end
 local function HandleFingersOfFrostEvent(spellId)
 	if TRB.Data.character.specId ~= 3 then return end
 
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 	if not (spells and spells.iceLance and spells.fingersOfFrost) then return end
 	if spellId ~= spells.iceLance.id then return end
 
@@ -2175,7 +2175,7 @@ end
 local function ConfirmClearcastingLoss()
 	if TRB.Data.character.specId ~= 1 or next(clearcastingVisibleOverlays) ~= nil then return end
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 	local snapshot = TRB.Data.snapshotData.snapshots[spells.clearcasting.id]
 	if snapshot == nil or not snapshot.buff.isActive then return end
 
@@ -2188,7 +2188,7 @@ end
 ---@param spellId integer?
 ---@param isShow boolean
 local function HandleArcaneOverlayEvent(spellId, isShow)
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 	if not (spells and spells.clearcasting and spells.overpoweredMissiles) then return end
 
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -2245,7 +2245,7 @@ end
 ---@param spellId integer
 ---@param isShow boolean
 local function HandlePrismaticBoltGlowEvent(spellId, isShow)
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 	if not (spells and spells.prismaticBolt) then return end
 	if spellId ~= spells.prismaticBolt.id then return end
 
@@ -2271,7 +2271,7 @@ local function HandleFireOverlayEvent(spellId, isShow)
 	-- A hide-all carries no spell id and is always followed by a re-show of whatever is still up.
 	if spellId == nil then return end
 
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 	if not (spells and spells.heatingUp and spells.hotStreak) then return end
 
 	local duration
@@ -2302,7 +2302,7 @@ end
 ---@param spellId integer?
 ---@param isShow boolean
 local function HandleFrostfireEmpowermentGlowEvent(spellId, isShow)
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 	if not (spells and spells.frostfireBolt and spells.frostfireEmpowerment) then return end
 	if spellId ~= spells.frostfireBolt.id then return end
 
@@ -2352,7 +2352,7 @@ local function HandleSpellEvents(self, event, ...)
 		-- so only an explicit id match counts.
 		if spellId == nil then return end
 
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 		if not (spells and spells.brainFreeze and spells.fingersOfFrost) then return end
 
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -2407,7 +2407,7 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 
 	if TRB.Data.character.specId == 1 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 		TRB.Data.character.specName = "arcane"
 		TRB.Data.character.compositeKey = "mage_arcane"
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
@@ -2445,12 +2445,12 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif TRB.Data.character.specId == 2 then
 		TRB.Data.character.specName = "fire"
 		TRB.Data.character.compositeKey = "mage_fire"
-		local fireSpells2 = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+		local fireSpells2 = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 		local fireBlastCooldown = GetFireBlastCooldownSnapshot(fireSpells2, true)
 		local maxFBCharges = GetFireBlastMaxCharges(fireBlastCooldown)
 		TRB.Data.character.maxResource2 = maxFBCharges
 	elseif TRB.Data.character.specId == 3 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 		TRB.Data.character.specName = "frost"
 		TRB.Data.character.compositeKey = "mage_frost"
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
@@ -2535,7 +2535,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2Factor = 1
 		TRB.Functions.Class:EnableEvents()
 	elseif TRB.Data.character.specId == 3 and TRB.Data.settings.core.enabled.mage.frost then
-		local spells = TRB.Data.specCache["mage_frost"].spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		local spells = TRB.Data.specCache["mage_frost"].spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
@@ -2618,7 +2618,7 @@ do
 	arcane["$comboPointsMax"] = true
 	arcane["$arcaneChargesMax"] = true
 	arcane["$arcaneSurgeTime"] = function()
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 		local snapshot = spells and spells.arcaneSurge and TRB.Data.snapshotData.snapshots[spells.arcaneSurge.id]
 		return snapshot ~= nil and snapshot.buff.isActive == true
 	end
@@ -2629,24 +2629,24 @@ do
 	arcane["$arcaneSalvoStacks"] = arcaneSalvoTalentedFn
 	arcane["$arcaneSalvoStacksMax"] = arcaneSalvoTalentedFn
 	arcane["$clearcastingStacks"] = function()
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 		local snapshot = spells and spells.clearcasting and TRB.Data.snapshotData.snapshots[spells.clearcasting.id]
 		return snapshot ~= nil and snapshot.buff.isActive == true
 	end
 	arcane["$clearcastingStacksMax"] = true
 	-- Both go false the moment the time is unknown, matching the "??" the text renders.
 	arcane["$clearcastingTime"] = function()
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 		local snapshot = spells and spells.clearcasting and TRB.Data.snapshotData.snapshots[spells.clearcasting.id]
 		return snapshot ~= nil and IsProcTimeKnown(snapshot.buff)
 	end
 	arcane["$overpoweredMissilesTime"] = function()
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 		local snapshot = spells and spells.overpoweredMissiles and TRB.Data.snapshotData.snapshots[spells.overpoweredMissiles.id]
 		return snapshot ~= nil and IsProcTimeKnown(snapshot.buff)
 	end
 	arcane["$prismaticBoltTime"] = function()
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.ArcaneSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.ArcaneSpells]]
 		local snapshot = spells and spells.prismaticBolt and TRB.Data.snapshotData.snapshots[spells.prismaticBolt.id]
 		return snapshot ~= nil and snapshot.buff.isActive == true
 	end
@@ -2663,7 +2663,7 @@ do
 	end
 	frost["$shatterStacksMax"] = true
 	local fingersOfFrostActiveFn = function()
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 		local snapshot = spells and spells.fingersOfFrost and TRB.Data.snapshotData.snapshots[spells.fingersOfFrost.id]
 		return snapshot ~= nil and snapshot.buff.isActive == true
 	end
@@ -2672,7 +2672,7 @@ do
 	frost["$fingersOfFrostTime"] = fingersOfFrostActiveFn
 	-- Goes false the moment the time is unknown, matching the "??" the text renders.
 	frost["$brainFreezeTime"] = function()
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FrostSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 		local snapshot = spells and spells.brainFreeze and TRB.Data.snapshotData.snapshots[spells.brainFreeze.id]
 		return snapshot ~= nil and IsProcTimeKnown(snapshot.buff)
 	end
@@ -2683,7 +2683,7 @@ do
 		return maxCharges > 0
 	end
 	local fireBlastTimeFn = function()
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 		local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells, true)
 		return fireBlastCooldown ~= nil and fireBlastCooldown.isActive == true
 	end
@@ -2876,7 +2876,7 @@ function TRB.Functions.Class:HasActiveTimers()
 			return false
 		end
 
-		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mage.FireSpells]]
+		local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FireSpells]]
 		local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells, true)
 		return fireBlastCooldown ~= nil and fireBlastCooldown.isActive == true
 	elseif TRB.Data.character.specId == 3 then

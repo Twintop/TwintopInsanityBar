@@ -1,20 +1,20 @@
 local _, TRB = ...
 
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Paladin = TRB.Classes.Paladin or {}
+TRB.Classes.Mainline.Paladin = TRB.Classes.Mainline.Paladin or {}
 
 
----@class TRB.Classes.Paladin.HolySpells : TRB.Classes.Healer.HealerSpells
+---@class TRB.Classes.Mainline.Paladin.HolySpells : TRB.Classes.Mainline.Healer.HealerSpells
 ---@field flashOfLight TRB.Classes.SpellBase
 ---@field divinePurpose TRB.Classes.SpellBase
 ---@field holyLight TRB.Classes.SpellBase
-TRB.Classes.Paladin.HolySpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
-TRB.Classes.Paladin.HolySpells.__index = TRB.Classes.Paladin.HolySpells
+TRB.Classes.Mainline.Paladin.HolySpells = setmetatable({}, {__index = TRB.Classes.Mainline.Healer.HealerSpells})
+TRB.Classes.Mainline.Paladin.HolySpells.__index = TRB.Classes.Mainline.Paladin.HolySpells
 
-function TRB.Classes.Paladin.HolySpells:New()
-    ---@type TRB.Classes.Healer.HealerSpells
-    local base = TRB.Classes.Healer.HealerSpells
-    self = setmetatable(base:New(), TRB.Classes.Paladin.HolySpells) --[[@as TRB.Classes.Paladin.HolySpells]]
+function TRB.Classes.Mainline.Paladin.HolySpells:New()
+    ---@type TRB.Classes.Mainline.Healer.HealerSpells
+    local base = TRB.Classes.Mainline.Healer.HealerSpells
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Paladin.HolySpells) --[[@as TRB.Classes.Mainline.Paladin.HolySpells]]
 
     self.flashOfLight = TRB.Classes.SpellBase:New({
         id = 19750,
@@ -39,13 +39,13 @@ end
 
 ---Fills barTextVariables for Holy Paladin options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Paladin.HolySpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Paladin.HolySpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Paladin.HolySpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Paladin.HolySpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.HolySpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#flashOfLight", icon = spells.flashOfLight.icon, description = spells.flashOfLight.name, printInSettings = true },
@@ -74,21 +74,21 @@ end
 
 ---Gets built-in castbar channel tick profiles for Holy, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Paladin.HolySpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Paladin.HolySpells.GetCastbarTickProfiles()
 	return {}
 end
 
 
----@class TRB.Classes.Paladin.ProtectionSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Paladin.ProtectionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field flashOfLight TRB.Classes.SpellBase
 ---@field divinePurpose TRB.Classes.SpellBase
-TRB.Classes.Paladin.ProtectionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Paladin.ProtectionSpells.__index = TRB.Classes.Paladin.ProtectionSpells
+TRB.Classes.Mainline.Paladin.ProtectionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Paladin.ProtectionSpells.__index = TRB.Classes.Mainline.Paladin.ProtectionSpells
 
-function TRB.Classes.Paladin.ProtectionSpells:New()
+function TRB.Classes.Mainline.Paladin.ProtectionSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Paladin.ProtectionSpells) --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Paladin.ProtectionSpells) --[[@as TRB.Classes.Mainline.Paladin.ProtectionSpells]]
 
 	self.flashOfLight = TRB.Classes.SpellBase:New({
 		id = 19750,
@@ -107,13 +107,13 @@ end
 
 ---Fills barTextVariables for Protection Paladin options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Paladin.ProtectionSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Paladin.ProtectionSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Paladin.ProtectionSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Paladin.ProtectionSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Paladin.ProtectionSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.ProtectionSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
 	local varCategory = TRB.Functions.BarText.VariableCategory
@@ -136,12 +136,12 @@ end
 
 ---Gets built-in castbar channel tick profiles for Protection, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Paladin.ProtectionSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Paladin.ProtectionSpells.GetCastbarTickProfiles()
 	return {}
 end
 
 
----@class TRB.Classes.Paladin.RetributionSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Paladin.RetributionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field divinePurpose TRB.Classes.SpellBase
 ---@field executionSentence TRB.Classes.SpellBase
 ---@field judgeJuryAndExecutioner TRB.Classes.SpellBase
@@ -149,13 +149,13 @@ end
 ---@field radiantGlory TRB.Classes.SpellBase
 ---@field divineWrath TRB.Classes.SpellBase
 ---@field wakeOfAshes TRB.Classes.SpellBase
-TRB.Classes.Paladin.RetributionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Paladin.RetributionSpells.__index = TRB.Classes.Paladin.RetributionSpells
+TRB.Classes.Mainline.Paladin.RetributionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Paladin.RetributionSpells.__index = TRB.Classes.Mainline.Paladin.RetributionSpells
 
-function TRB.Classes.Paladin.RetributionSpells:New()
+function TRB.Classes.Mainline.Paladin.RetributionSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Paladin.RetributionSpells) --[[@as TRB.Classes.Paladin.RetributionSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Paladin.RetributionSpells) --[[@as TRB.Classes.Mainline.Paladin.RetributionSpells]]
 
     self.divinePurpose = TRB.Classes.SpellBase:New({
         id = 223819,
@@ -206,13 +206,13 @@ end
 
 ---Fills barTextVariables for Retribution Paladin options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Paladin.RetributionSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Paladin.RetributionSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Paladin.RetributionSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Paladin.RetributionSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.RetributionSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#es", icon = spells.executionSentence.icon, description = spells.executionSentence.name, printInSettings = true },
@@ -245,7 +245,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Retribution, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Paladin.RetributionSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Paladin.RetributionSpells.GetCastbarTickProfiles()
 	return {}
 end
 
@@ -259,15 +259,15 @@ end
     Retribution: Primary bar (N=1) + Holy Power (N=5)
 ]]
 
----@class TRB.Classes.Paladin.BarGroupsFactory
-TRB.Classes.Paladin.BarGroupsFactory = {}
-TRB.Classes.Paladin.BarGroupsFactory.__index = TRB.Classes.Paladin.BarGroupsFactory
+---@class TRB.Classes.Mainline.Paladin.BarGroupsFactory
+TRB.Classes.Mainline.Paladin.BarGroupsFactory = {}
+TRB.Classes.Mainline.Paladin.BarGroupsFactory.__index = TRB.Classes.Mainline.Paladin.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Paladin specialization
 ---@param specId integer # 1=Holy, 2=Protection, 3=Retribution
 ---@param parentFrame Frame # The parent frame to attach bar groups to
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Paladin.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+function TRB.Classes.Mainline.Paladin.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
     -- Primary mana bar (1 node) - all specs use mana
@@ -301,7 +301,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Paladin.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Paladin.BarGroupsFactory:GetSpecConfiguration(specId)
     return {
         primary = {
             maxNodes = 1,
@@ -323,15 +323,15 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["paladin_holy"] = TRB.Classes.Paladin.HolySpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["paladin_protection"] = TRB.Classes.Paladin.ProtectionSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["paladin_retribution"] = TRB.Classes.Paladin.RetributionSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["paladin_holy"] = TRB.Classes.Mainline.Paladin.HolySpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["paladin_protection"] = TRB.Classes.Mainline.Paladin.ProtectionSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["paladin_retribution"] = TRB.Classes.Mainline.Paladin.RetributionSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["paladin_holy"] = TRB.Classes.Paladin.HolySpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["paladin_protection"] = TRB.Classes.Paladin.ProtectionSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["paladin_retribution"] = TRB.Classes.Paladin.RetributionSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["paladin_holy"] = TRB.Classes.Mainline.Paladin.HolySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["paladin_protection"] = TRB.Classes.Mainline.Paladin.ProtectionSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["paladin_retribution"] = TRB.Classes.Mainline.Paladin.RetributionSpells.GetCastbarTickProfiles
 
 -- Register audio cue vocabularies
 do
@@ -406,7 +406,7 @@ do
 	})
 
 	-- Shared by the Avenging Wrath Source dropdowns on the Indicators and Audio tabs.
-	TRB.Classes.Paladin.AvengingWrathSourceOptions = {
+	TRB.Classes.Mainline.Paladin.AvengingWrathSourceOptions = {
 		{ value = "cast", label = L["PaladinRetributionAvengingWrathSourceCast"] },
 		{ value = "radiantGlory", label = L["PaladinRetributionAvengingWrathSourceRadiantGlory"] },
 		{ value = "both", label = L["PaladinRetributionAvengingWrathSourceBoth"] },
@@ -425,7 +425,7 @@ do
 						key = "source",
 						control = "dropdown",
 						label = L["PaladinRetributionAvengingWrathSource"],
-						options = TRB.Classes.Paladin.AvengingWrathSourceOptions,
+						options = TRB.Classes.Mainline.Paladin.AvengingWrathSourceOptions,
 						default = "both",
 					},
 				},

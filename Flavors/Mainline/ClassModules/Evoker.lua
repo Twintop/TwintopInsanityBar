@@ -52,9 +52,9 @@ local function FillSpecializationCache()
 		items = {}
 	}
 	
-	---@type TRB.Classes.Evoker.DevastationSpells
-	specCache.evoker_devastation.spellsData.spells = TRB.Classes.Evoker.DevastationSpells:New()
-	local spells = specCache.evoker_devastation.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+	---@type TRB.Classes.Mainline.Evoker.DevastationSpells
+	specCache.evoker_devastation.spellsData.spells = TRB.Classes.Mainline.Evoker.DevastationSpells:New()
+	local spells = specCache.evoker_devastation.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.DevastationSpells]]
 
 	specCache.evoker_devastation.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -90,9 +90,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.Evoker.PreservationSpells
-	specCache.evoker_preservation.spellsData.spells = TRB.Classes.Evoker.PreservationSpells:New()
-	local spells = specCache.evoker_preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	---@type TRB.Classes.Mainline.Evoker.PreservationSpells
+	specCache.evoker_preservation.spellsData.spells = TRB.Classes.Mainline.Evoker.PreservationSpells:New()
+	local spells = specCache.evoker_preservation.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.PreservationSpells]]
 
 	specCache.evoker_preservation.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -125,9 +125,9 @@ local function FillSpecializationCache()
 		items = {}
 	}
 	
-	---@type TRB.Classes.Evoker.AugmentationSpells
-	specCache.evoker_augmentation.spellsData.spells = TRB.Classes.Evoker.AugmentationSpells:New()
-	local spells = specCache.evoker_augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+	---@type TRB.Classes.Mainline.Evoker.AugmentationSpells
+	specCache.evoker_augmentation.spellsData.spells = TRB.Classes.Mainline.Evoker.AugmentationSpells:New()
+	local spells = specCache.evoker_augmentation.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.AugmentationSpells]]
 
 	specCache.evoker_augmentation.snapshotData.attributes.manaRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -147,14 +147,14 @@ local function Setup_Devastation()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "evoker_devastation" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(1)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Evoker.BarGroupsFactory:CreateForSpec(1)
 	end
 end
 
 local function FillSpellData_Devastation()
 	Setup_Devastation()
 	specCache.evoker_devastation.spellsData:FillSpellData()
-	TRB.Classes.Evoker.DevastationSpells.FillBarTextVariables(specCache.evoker_devastation)
+	TRB.Classes.Mainline.Evoker.DevastationSpells.FillBarTextVariables(specCache.evoker_devastation)
 end
 
 local function Setup_Preservation()
@@ -163,14 +163,14 @@ local function Setup_Preservation()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "evoker_preservation" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(2)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Evoker.BarGroupsFactory:CreateForSpec(2)
 	end
 end
 
 local function FillSpellData_Preservation()
 	Setup_Preservation()
 	specCache.evoker_preservation.spellsData:FillSpellData()
-	TRB.Classes.Evoker.PreservationSpells.FillBarTextVariables(specCache.evoker_preservation)
+	TRB.Classes.Mainline.Evoker.PreservationSpells.FillBarTextVariables(specCache.evoker_preservation)
 end
 
 local function Setup_Augmentation()
@@ -179,14 +179,14 @@ local function Setup_Augmentation()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "evoker_augmentation" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(3)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Evoker.BarGroupsFactory:CreateForSpec(3)
 	end
 end
 
 local function FillSpellData_Augmentation()
 	Setup_Augmentation()
 	specCache.evoker_augmentation.spellsData:FillSpellData()
-	TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables(specCache.evoker_augmentation)
+	TRB.Classes.Mainline.Evoker.AugmentationSpells.FillBarTextVariables(specCache.evoker_augmentation)
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)
@@ -343,7 +343,7 @@ local function ConstructResourceBar(settings)
 end
 
 local function RefreshLookupData_Devastation()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.DevastationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["evoker_devastation"].settings
 	UpdateEssenceTiming()
@@ -485,7 +485,7 @@ local function RefreshLookupData_Devastation()
 end
 
 local function RefreshLookupData_Preservation()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.PreservationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["evoker_preservation"].settings
 	UpdateEssenceTiming()
@@ -616,7 +616,7 @@ local function RefreshLookupData_Preservation()
 end
 
 local function RefreshLookupData_Augmentation()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.AugmentationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["evoker_augmentation"].settings
 	UpdateEssenceTiming()
@@ -782,7 +782,7 @@ end
 --TODO: Remove?
 local function UpdateCastingResourceFinal_Preservation()
 	-- Do nothing for now
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.PreservationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	-- Do nothing for now
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
@@ -803,7 +803,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 	local currentTime = GetTime()
 
 	if TRB.Data.character.specId == 1 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.DevastationSpells]]
 		local snapshots = snapshotData.snapshots
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START"  then
 			casting:SnapshotManaSpell()
@@ -827,7 +827,7 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.PreservationSpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" or event == "UNIT_SPELLCAST_EMPOWER_START" then
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Preservation()
@@ -846,7 +846,7 @@ end
 ---Updates data based on spell events
 local function HandleSpellEvents(self, event, ...)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local essenceBurstSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells|TRB.Classes.Evoker.PreservationSpells|TRB.Classes.Evoker.AugmentationSpells]]
+	local essenceBurstSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.DevastationSpells|TRB.Classes.Mainline.Evoker.PreservationSpells|TRB.Classes.Mainline.Evoker.AugmentationSpells]]
 	local essenceBurstSpell = essenceBurstSpells.essenceBurst
 	local essenceBurstDetectionId = essenceBurstSpell.id
 	local essenceBurstSnapshot = snapshotData.snapshots[essenceBurstDetectionId]
@@ -896,7 +896,7 @@ end
 
 ---Refreshes Essence Burst from the Cooldown Manager. All 3 specs share the proc under their own
 ---buff id, so the caller supplies its spell data.
----@param spells TRB.Classes.Evoker.DevastationSpells|TRB.Classes.Evoker.PreservationSpells|TRB.Classes.Evoker.AugmentationSpells
+---@param spells TRB.Classes.Mainline.Evoker.DevastationSpells|TRB.Classes.Mainline.Evoker.PreservationSpells|TRB.Classes.Mainline.Evoker.AugmentationSpells
 local function UpdateEssenceBurst(spells)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local essenceBurstBuff = snapshotData.snapshots[spells.essenceBurst.id].buff
@@ -948,7 +948,7 @@ end
 
 ---Refreshes Ebon Might from the Cooldown Manager. Its duration scales with Mastery and Sands of Time
 ---extends it per cast, so the live aura is the only place the real timing exists.
----@param spells TRB.Classes.Evoker.AugmentationSpells
+---@param spells TRB.Classes.Mainline.Evoker.AugmentationSpells
 local function UpdateEbonMight(spells)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local ebonMightBuff = snapshotData.snapshots[spells.ebonMight.id].buff
@@ -993,7 +993,7 @@ end
 
 local function UpdateSnapshot_Devastation()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.DevastationSpells]]
 
 	local currentTime = GetTime()
 
@@ -1003,7 +1003,7 @@ end
 local function UpdateSnapshot_Preservation()
 	local currentTime = GetTime()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.PreservationSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -1012,7 +1012,7 @@ end
 
 local function UpdateSnapshot_Augmentation()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.AugmentationSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -1142,7 +1142,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Devastation()
 
 		if snapshotData.attributes.isTracking then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.DevastationSpells]]
 			local barColor = specSettings.colors.bar.base
 			local barBorderColor = specSettings.colors.bar.border.color
 			local barBackgroundColor = specSettings.colors.bar.background.color
@@ -1261,7 +1261,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Preservation()
 
 		if snapshotData.attributes.isTracking then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.PreservationSpells]]
 			local barColor = specSettings.colors.bar.base
 			local barBorderColor = specSettings.colors.bar.border.color
 			local barBackgroundColor = specSettings.colors.bar.background.color
@@ -1326,7 +1326,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Augmentation()
 
 		if snapshotData.attributes.isTracking then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.AugmentationSpells]]
 			local barColor = specSettings.colors.bar.base
 			local barBorderColor = specSettings.colors.bar.border.color
 			local barBackgroundColor = specSettings.colors.bar.background.color
@@ -1460,7 +1460,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.evoker_devastation)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.DevastationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData		
@@ -1485,7 +1485,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.evoker_preservation)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.PreservationSpells]]
 
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
@@ -1509,7 +1509,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.evoker_augmentation)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.AugmentationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1581,7 +1581,7 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.compositeKey = "evoker_devastation"
 		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 	elseif TRB.Data.character.specId == 2 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.PreservationSpells]]
 		TRB.Data.character.specName = "preservation"
 		TRB.Data.character.compositeKey = "evoker_preservation"
 		sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings

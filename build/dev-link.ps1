@@ -13,7 +13,7 @@
 	mainline flavor does not strictly need this: the checkout works in place as a retail install.
 
 .PARAMETER Flavor
-	Flavor folder name under Flavors\ (case-insensitive): mainline or forever.
+	Flavor folder name under Flavors\ (case-insensitive): mainline, forever, or classic.
 
 .PARAMETER AddOnsPath
 	The client's Interface\AddOns folder, e.g. "C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns".

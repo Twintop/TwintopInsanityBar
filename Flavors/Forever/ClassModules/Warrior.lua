@@ -15,7 +15,7 @@ local stanceByIndex = { "battle", "defensive", "berserker" }
 ---@param spellId integer?
 ---@return string?
 local function GetStanceBySpellId(spellId)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.GeneralSpells?]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Forever.Warrior.GeneralSpells?]]
 	if spellId == nil or spells == nil or spells.battleStance == nil then
 		return nil
 	end

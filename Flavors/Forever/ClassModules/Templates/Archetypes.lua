@@ -159,7 +159,7 @@ TRB.Forever.Archetypes = {
 ---@class TRB.Forever.SpecDefinition
 ---@field public entry TRB.Data.SpecRegistryEntry
 ---@field public archetype TRB.Forever.Archetype
----@field public spellsClass table # TRB.Classes.<Class>.<Spec>Spells
+---@field public spellsClass table # TRB.Classes.Forever.<Class>.<Spec>Spells
 ---@field public specPascal string # e.g. "BeastMastery"
 ---@field public fillSpells fun(spells: TRB.Classes.SpecializationSpellsBase)? # adds the spec's abilities to a new spell set
 ---@field public icons string[]? # spell field names offered as #icon bar text variables
@@ -234,7 +234,7 @@ end
 
 ---Builds the spell-set class for one spec: a SpecializationSpellsBase derivative the spec's own
 ---spell builder fills, plus the FillBarTextVariables filler the options panel and cross-class views use.
----@param classModule table # TRB.Classes.<Class>
+---@param classModule table # TRB.Classes.Forever.<Class>
 ---@param spec TRB.Forever.SpecDefinition
 local function DefineSpellsClass(classModule, spec)
 	local base = TRB.Classes.SpecializationSpellsBase
@@ -303,7 +303,7 @@ local function DefineSpellsClass(classModule, spec)
 	spec.spellsClass = spellsClass
 end
 
----Builds the BarGroupsFactory Core expects on TRB.Classes.<Class>.
+---Builds the BarGroupsFactory Core expects on TRB.Classes.Forever.<Class>.
 ---@param classModule table
 ---@param classDef TRB.Forever.ClassDefinition
 local function DefineBarGroupsFactory(classModule, classDef)
@@ -350,7 +350,7 @@ local function DefineBarGroupsFactory(classModule, classDef)
 	classModule.BarGroupsFactory = factory
 end
 
----Declares a class: one archetype per spec. Generates TRB.Classes.<Class> (spell sets, BarGroupsFactory),
+---Declares a class: one archetype per spec. Generates TRB.Classes.Forever.<Class> (spell sets, BarGroupsFactory),
 ---registers the bar text variable fillers and declares the spec descriptors.
 ---@param className string # lowercase class key, e.g. "priest"
 ---@param specDeclarations table<string, string|TRB.Forever.SpecDeclaration> # specName -> archetype key or declaration
@@ -359,8 +359,8 @@ function TRB.Forever.Templates.Classes:DefineClass(className, specDeclarations)
 	local classEntry = TRB.Data.classRegistry[className]
 	assert(classEntry ~= nil, "TwintopInsanityBar: Forever DefineClass for unknown class '" .. tostring(className) .. "'")
 
-	local classModule = TRB.Classes[classEntry.classModuleName] or {}
-	TRB.Classes[classEntry.classModuleName] = classModule
+	local classModule = TRB.Classes.Forever[classEntry.classModuleName] or {}
+	TRB.Classes.Forever[classEntry.classModuleName] = classModule
 
 	---@type TRB.Forever.ClassDefinition
 	local classDef = {

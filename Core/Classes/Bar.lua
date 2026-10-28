@@ -2984,7 +2984,7 @@ function TRB.Classes.BarTypeRegistry:GetBarTypesForSpec(classId, specId)
 	end
 	
 	-- Get the factory for this class
-	local classModule = TRB.Classes[className]
+	local classModule = TRB.Flavor.GetClassModule(className)
 	if not classModule or not classModule.BarGroupsFactory or not classModule.BarGroupsFactory.GetSpecConfiguration then
 		return result
 	end

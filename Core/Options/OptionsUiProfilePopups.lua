@@ -168,8 +168,13 @@ local function EnsureProfilePopupsRegistered()
 
 		local specLabel
 		if classId ~= nil and specId ~= nil then
-			local _, localizedSpec = GetSpecializationInfoForClassID(classId, specId)
-			specLabel = localizedSpec
+			if TRB.Data.specRegistryByIds[classId][specId].specGlobalId == nil then
+				-- The client has no specialization to name, so the class name stands alone.
+				specLabel = ""
+			else
+				local _, localizedSpec = GetSpecializationInfoForClassID(classId, specId)
+				specLabel = localizedSpec
+			end
 		end
 		specLabel = specLabel or HumanizeInternalToken(specName)
 

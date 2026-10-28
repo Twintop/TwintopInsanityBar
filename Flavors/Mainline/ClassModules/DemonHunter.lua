@@ -20,7 +20,7 @@ local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 local talents --[[@as TRB.Classes.Talents]]
 
 local thresholdBar = TRB.Classes.ThresholdBar:New()
-local thresholdState = TRB.Classes.ThresholdState:New() --[[@as TRB.Classes.DemonHunter.ThresholdState]]
+local thresholdState = TRB.Classes.ThresholdState:New() --[[@as TRB.Classes.Mainline.DemonHunter.ThresholdState]]
 local thresholdData = TRB.Classes.ThresholdData:New()
 
 Global_TwintopResourceBar = {}
@@ -65,9 +65,9 @@ local function FillSpecializationCache()
 		}
 	}
 
-	---@type TRB.Classes.DemonHunter.HavocSpells
-	specCache.demonhunter_havoc.spellsData.spells = TRB.Classes.DemonHunter.HavocSpells:New()
-	local spells = specCache.demonhunter_havoc.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+	---@type TRB.Classes.Mainline.DemonHunter.HavocSpells
+	specCache.demonhunter_havoc.spellsData.spells = TRB.Classes.Mainline.DemonHunter.HavocSpells:New()
+	local spells = specCache.demonhunter_havoc.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_havoc.snapshotData.snapshots[spells.bladeDance.id] = TRB.Classes.Snapshot:New(spells.bladeDance)
@@ -113,9 +113,9 @@ local function FillSpecializationCache()
 		}
 	}
 
-	---@type TRB.Classes.DemonHunter.VengeanceSpells
-	specCache.demonhunter_vengeance.spellsData.spells = TRB.Classes.DemonHunter.VengeanceSpells:New()
-	local spells = specCache.demonhunter_vengeance.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	---@type TRB.Classes.Mainline.DemonHunter.VengeanceSpells
+	specCache.demonhunter_vengeance.spellsData.spells = TRB.Classes.Mainline.DemonHunter.VengeanceSpells:New()
+	local spells = specCache.demonhunter_vengeance.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.chaosNova.id] = TRB.Classes.Snapshot:New(spells.chaosNova)
@@ -147,9 +147,9 @@ local function FillSpecializationCache()
 		}
 	}
 
-	---@type TRB.Classes.DemonHunter.DevourerSpells
-	specCache.demonhunter_devourer.spellsData.spells = TRB.Classes.DemonHunter.DevourerSpells:New()
-	local spells = specCache.demonhunter_devourer.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+	---@type TRB.Classes.Mainline.DemonHunter.DevourerSpells
+	specCache.demonhunter_devourer.spellsData.spells = TRB.Classes.Mainline.DemonHunter.DevourerSpells:New()
+	local spells = specCache.demonhunter_devourer.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_devourer.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis, nil, "always")
@@ -171,16 +171,16 @@ local function Setup_Havoc()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "demonhunter_havoc" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(1, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.DemonHunter.BarGroupsFactory:CreateForSpec(1, UIParent)
 	end
 end
 
 local function FillSpellData_Havoc()
 	Setup_Havoc()
 	specCache.demonhunter_havoc.spellsData:FillSpellData()
-	local spells = specCache.demonhunter_havoc.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+	local spells = specCache.demonhunter_havoc.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 
-	TRB.Classes.DemonHunter.HavocSpells.FillBarTextVariables(specCache.demonhunter_havoc)
+	TRB.Classes.Mainline.DemonHunter.HavocSpells.FillBarTextVariables(specCache.demonhunter_havoc)
 end
 
 local function Setup_Vengeance()
@@ -189,16 +189,16 @@ local function Setup_Vengeance()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "demonhunter_vengeance" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(2, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.DemonHunter.BarGroupsFactory:CreateForSpec(2, UIParent)
 	end
 end
 
 local function FillSpellData_Vengeance()
 	Setup_Vengeance()
 	specCache.demonhunter_vengeance.spellsData:FillSpellData()
-	local spells = specCache.demonhunter_vengeance.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	local spells = specCache.demonhunter_vengeance.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 
-	TRB.Classes.DemonHunter.VengeanceSpells.FillBarTextVariables(specCache.demonhunter_vengeance)
+	TRB.Classes.Mainline.DemonHunter.VengeanceSpells.FillBarTextVariables(specCache.demonhunter_vengeance)
 end
 
 local function Setup_Devourer()
@@ -207,16 +207,16 @@ local function Setup_Devourer()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "demonhunter_devourer" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.DemonHunter.BarGroupsFactory:CreateForSpec(3, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.DemonHunter.BarGroupsFactory:CreateForSpec(3, UIParent)
 	end
 end
 
 local function FillSpellData_Devourer()
 	Setup_Devourer()
 	specCache.demonhunter_devourer.spellsData:FillSpellData()
-	local spells = specCache.demonhunter_devourer.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+	local spells = specCache.demonhunter_devourer.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 
-	TRB.Classes.DemonHunter.DevourerSpells.FillBarTextVariables(specCache.demonhunter_devourer)
+	TRB.Classes.Mainline.DemonHunter.DevourerSpells.FillBarTextVariables(specCache.demonhunter_devourer)
 end
 
 local function RefreshTargetTracking()
@@ -308,7 +308,7 @@ local function ConstructResourceBar(settings)
 end
 
 local function RefreshLookupData_Havoc()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.havoc
 	local sharedSettings = TRB.Data.specCache["demonhunter_havoc"].settings
@@ -399,7 +399,7 @@ local function RefreshLookupData_Havoc()
 end
 
 local function RefreshLookupData_Vengeance()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.vengeance
 	local sharedSettings = TRB.Data.specCache["demonhunter_vengeance"].settings
@@ -510,7 +510,7 @@ local function RefreshLookupData_Vengeance()
 end
 
 local function RefreshLookupData_Devourer()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.demonhunter.devourer
 	local sharedSettings = TRB.Data.specCache["demonhunter_devourer"].settings
@@ -680,7 +680,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local currentTime = GetTime()
 
 	if TRB.Data.character.specId == 1 then
-		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 		if event == "UNIT_SPELLCAST_CHANNEL_START" then
 			if casting.spellId ~= spells.eyeBeam.id and spellId == spells.eyeBeam.id then
 				if talents:IsTalentActive(spells.blindFury) then
@@ -766,7 +766,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
-		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 		if event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.metamorphosis.castId then
 				if snapshotData.attributes.untetheredRageActive then
@@ -782,7 +782,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
-		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 		if event == "UNIT_SPELLCAST_CHANNEL_START" then
 			if casting.spellId ~= spells.voidRay.id then
 				local _, _, _, currentChannelStartTime, currentChannelEndTime, _, _, _ = UnitChannelInfo("player")
@@ -820,7 +820,7 @@ local function DemonHunterEvent(self, event, ...)
 		if TRB.Data.character.specId == 2 then
 			local spellId, _ = ...
 			
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 			if spellId == spells.spiritBomb.id then
 				local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 				-- Get Soul Fragment count via Spirit Bomb's GetSpellCastCount (returns 0-6)
@@ -832,7 +832,7 @@ local function DemonHunterEvent(self, event, ...)
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local spellId = ...
 		if TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 			if spellId == spells.metamorphosis.id and talents:IsTalentActive(spells.untetheredRage) then -- Metamorphosis
 				snapshotData.attributes.untetheredRageActive = true
 			end
@@ -841,7 +841,7 @@ local function DemonHunterEvent(self, event, ...)
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local spellId = ...
 		if TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 			if spellId == spells.metamorphosis.id then -- Metamorphosis
 				snapshotData.attributes.untetheredRageActive = false
 			end
@@ -850,7 +850,7 @@ local function DemonHunterEvent(self, event, ...)
 		local spellId = ...
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		if TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 			if spellId == spells.uncontainedFel.id then -- Last Resort fires off Uncontained Fel
 				local duration = spells.metamorphosis.duration
 				if talents:IsTalentActive(spells.vengefulBeast) then
@@ -864,7 +864,7 @@ local function DemonHunterEvent(self, event, ...)
 		local spellId, rSpellId = ...
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		if TRB.Data.character.specId == 1 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 			if spellId == spells.eyeBeam.id then
 				if rSpellId == nil or rSpellId ~= spells.abyssalGaze.id then
 					snapshotData.attributes.eyeBeamOverride = false
@@ -881,7 +881,7 @@ spellEventFrame:SetScript("OnEvent", DemonHunterEvent)
 local function UpdateSnapshot()
 	Character:UpdateSnapshot()
 	local currentTime = GetTime()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells|TRB.Classes.DemonHunter.VengeanceSpells|TRB.Classes.DemonHunter.DevourerSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells|TRB.Classes.Mainline.DemonHunter.VengeanceSpells|TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 end
@@ -890,7 +890,7 @@ local function UpdateSnapshot_Havoc()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 	
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 	if (snapshotData.casting.spellId == spells.eyeBeam.id or snapshotData.casting.spellId == spells.abyssalGaze.id) and talents:IsTalentActive(spells.blindFury) then
@@ -906,14 +906,14 @@ end
 local function UpdateSnapshot_Vengeance()
 	UpdateSnapshot()
 	
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 end
 
 local function UpdateSnapshot_Devourer()
 	UpdateSnapshot()
 	
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 	local collapsingStarBuff = snapshotData.snapshots[spells.collapsingStar.id].buff
@@ -1030,7 +1030,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 			local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
@@ -1091,7 +1091,7 @@ local function UpdateResourceBar()
 					thresholdState:Refresh(specCacheSettings)
 					thresholdState.metamorphosis = metaTime > 0
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.DemonHunter.HavocSpells.thresholdSnowflakes)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.DemonHunter.HavocSpells.thresholdSnowflakes)
 					
 					-- Find active gradient indicators (separate priority group, always override flat colors when active)
 					local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -1177,7 +1177,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 			local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
@@ -1238,7 +1238,7 @@ local function UpdateResourceBar()
 					thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 					thresholdState:Refresh(specCacheSettings)
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.DemonHunter.VengeanceSpells.thresholdSnowflakes)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.DemonHunter.VengeanceSpells.thresholdSnowflakes)
 					
 					-- Find active gradient indicators (separate priority group, always override flat colors when active)
 					local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -1309,7 +1309,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 				-- Soul Fragments bar (Vengeance, 0-6 fragments, 6 independent nodes)
 				local soulFragments = snapshotData.attributes.resource2 or 0
 				local maxSoulFragments = TRB.Data.character.maxResource2 or 6
@@ -1451,7 +1451,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.devourer
 		local specCacheSettings = TRB.Data.specCache.demonhunter_devourer.settings
 		UpdateSnapshot_Devourer()
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 		local metaActive = snapshots[spells.metamorphosis.id].buff.isActive
 		local metaUsable = snapshotData.snapshots[spells.soulFragments.id].buff.applications >= snapshotData.attributes.maxResource2
 		local collapsingStarUsable = snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
@@ -1509,7 +1509,7 @@ local function UpdateResourceBar()
 					thresholdState:Refresh(specCacheSettings)
 					thresholdState.metamorphosis = metaActive
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.DemonHunter.DevourerSpells.thresholdSnowflakes)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.DemonHunter.DevourerSpells.thresholdSnowflakes)
 					
 					-- Find active gradient indicators (separate priority group, always override flat colors when active)
 					local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -1818,7 +1818,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.demonhunter_havoc)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1854,7 +1854,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.demonhunter_vengeance)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -1887,7 +1887,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.demonhunter_devourer)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		---@type TRB.Classes.TargetData
 		snapshotData.targetData = TRB.Classes.TargetData:New()
@@ -1970,11 +1970,11 @@ function TRB.Functions.Class:CheckCharacter()
 	local snapshots = TRB.Data.snapshotData.snapshots
 
 	if TRB.Data.character.specId == 1 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.HavocSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 		TRB.Data.character.specName = "havoc"
 		TRB.Data.character.compositeKey = "demonhunter_havoc"
 	elseif TRB.Data.character.specId == 2 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 		TRB.Data.character.specName = "vengeance"
 		TRB.Data.character.compositeKey = "demonhunter_vengeance"
 		
@@ -2013,7 +2013,7 @@ function TRB.Functions.Class:CheckCharacter()
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.DevourerSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.DevourerSpells]]
 		TRB.Data.character.specName = "devourer"
 		TRB.Data.character.compositeKey = "demonhunter_devourer"
 
@@ -2040,7 +2040,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2 = nil
 		TRB.Data.resource2Factor = nil
 	elseif TRB.Data.character.specId == 2 and TRB.Data.settings.core.enabled.demonhunter.vengeance == true then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.DemonHunter.VengeanceSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Fury
 		TRB.Data.resourceFactor = 1

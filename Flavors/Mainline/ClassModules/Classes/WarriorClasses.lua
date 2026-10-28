@@ -1,23 +1,23 @@
 local _, TRB = ...
 
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Warrior = TRB.Classes.Warrior or {}
+TRB.Classes.Mainline.Warrior = TRB.Classes.Mainline.Warrior or {}
 
----@class TRB.Classes.Warrior.WarriorBaseSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Warrior.WarriorBaseSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public executeMinimum TRB.Classes.SpellThreshold -- Implemented by specializations
 ---@field public executeMaximum TRB.Classes.SpellThreshold -- Implemented by specializations
 ---@field public hamstring TRB.Classes.SpellThreshold
 ---@field public impendingVictory TRB.Classes.SpellThreshold
 ---@field public shieldBlock TRB.Classes.SpellThreshold
-TRB.Classes.Warrior.WarriorBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Warrior.WarriorBaseSpells.__index = TRB.Classes.Warrior.WarriorBaseSpells
+TRB.Classes.Mainline.Warrior.WarriorBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Warrior.WarriorBaseSpells.__index = TRB.Classes.Mainline.Warrior.WarriorBaseSpells
 
 ---Creates a new WarriorBaseSpells
----@return TRB.Classes.Warrior.WarriorBaseSpells
-function TRB.Classes.Warrior.WarriorBaseSpells:New()
+---@return TRB.Classes.Mainline.Warrior.WarriorBaseSpells
+function TRB.Classes.Mainline.Warrior.WarriorBaseSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Warrior.WarriorBaseSpells) --[[@as TRB.Classes.Warrior.WarriorBaseSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Warrior.WarriorBaseSpells) --[[@as TRB.Classes.Mainline.Warrior.WarriorBaseSpells]]
 	
 	self.hamstring = TRB.Classes.SpellThreshold:New({
 		id = 1715,
@@ -52,7 +52,7 @@ function TRB.Classes.Warrior.WarriorBaseSpells:New()
     return self
 end
 
----@class TRB.Classes.Warrior.ArmsSpells : TRB.Classes.Warrior.WarriorBaseSpells
+---@class TRB.Classes.Mainline.Warrior.ArmsSpells : TRB.Classes.Mainline.Warrior.WarriorBaseSpells
 ---@field public improvedExecute TRB.Classes.SpellBase
 ---@field public slam TRB.Classes.SpellThreshold
 ---@field public whirlwind TRB.Classes.SpellThreshold
@@ -62,13 +62,13 @@ end
 ---@field public rend TRB.Classes.SpellThreshold
 ---@field public cleave TRB.Classes.SpellThreshold
 ---@field public ignorePain TRB.Classes.SpellThreshold
-TRB.Classes.Warrior.ArmsSpells = setmetatable({}, {__index = TRB.Classes.Warrior.WarriorBaseSpells})
-TRB.Classes.Warrior.ArmsSpells.__index = TRB.Classes.Warrior.ArmsSpells
+TRB.Classes.Mainline.Warrior.ArmsSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Warrior.WarriorBaseSpells})
+TRB.Classes.Mainline.Warrior.ArmsSpells.__index = TRB.Classes.Mainline.Warrior.ArmsSpells
 
-function TRB.Classes.Warrior.ArmsSpells:New()
-	---@type TRB.Classes.Warrior.WarriorBaseSpells
-	local base = TRB.Classes.Warrior.WarriorBaseSpells
-	self = setmetatable(base:New(), TRB.Classes.Warrior.ArmsSpells) --[[@as TRB.Classes.Warrior.ArmsSpells]]
+function TRB.Classes.Mainline.Warrior.ArmsSpells:New()
+	---@type TRB.Classes.Mainline.Warrior.WarriorBaseSpells
+	local base = TRB.Classes.Mainline.Warrior.WarriorBaseSpells
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Warrior.ArmsSpells) --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 	--Warrior Class Baseline Abilities
 	self.executeMinimum = TRB.Classes.SpellThreshold:New({
 		id = 163201,
@@ -185,13 +185,13 @@ end
 
 ---Fills barTextVariables for Arms Warrior options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Warrior.ArmsSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Warrior.ArmsSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Warrior.ArmsSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Warrior.ArmsSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#cleave", icon = spells.cleave.icon, description = spells.cleave.name, printInSettings = true },
@@ -213,7 +213,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Arms, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Warrior.ArmsSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Warrior.ArmsSpells.GetCastbarTickProfiles()
 	return {
 		-- Demolish: 3 hits landing on a 4-tick rhythm, skipping the 3rd. No tick at start, no chaining.
 		[436358] = { mode = "fixedCount", baseDuration = 2, tickCount = 4, skipTicks = { 3 } },
@@ -240,12 +240,12 @@ local function ExecuteMaximum(line)
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Warrior.ArmsSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Warrior.ArmsSpells.thresholdSnowflakes = {
 	spells = {
 		executeMinimum = ExecuteMinimum,
 		executeMaximum = ExecuteMaximum,
 		whirlwind = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 			if line.data.talents:IsTalentActive(spells.cleave) then
 				line:Hide()
 			else
@@ -253,7 +253,7 @@ TRB.Classes.Warrior.ArmsSpells.thresholdSnowflakes = {
 			end
 		end,
 		cleave = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 			if not line.data.talents:IsTalentActive(spells.cleave) then
 				line:Hide()
 			else
@@ -264,7 +264,7 @@ TRB.Classes.Warrior.ArmsSpells.thresholdSnowflakes = {
 }
 
 
----@class TRB.Classes.Warrior.FurySpells : TRB.Classes.Warrior.WarriorBaseSpells
+---@class TRB.Classes.Mainline.Warrior.FurySpells : TRB.Classes.Mainline.Warrior.WarriorBaseSpells
 ---@field public improvedWhirlwind TRB.Classes.SpellBase
 ---@field public unhinged TRB.Classes.SpellBase
 ---@field public enrage TRB.Classes.SpellBase
@@ -274,13 +274,13 @@ TRB.Classes.Warrior.ArmsSpells.thresholdSnowflakes = {
 ---@field public impendingVictory TRB.Classes.SpellThreshold
 ---@field public thunderClap TRB.Classes.SpellThreshold
 ---@field public rampage TRB.Classes.SpellThreshold
-TRB.Classes.Warrior.FurySpells = setmetatable({}, {__index = TRB.Classes.Warrior.WarriorBaseSpells})
-TRB.Classes.Warrior.FurySpells.__index = TRB.Classes.Warrior.FurySpells
+TRB.Classes.Mainline.Warrior.FurySpells = setmetatable({}, {__index = TRB.Classes.Mainline.Warrior.WarriorBaseSpells})
+TRB.Classes.Mainline.Warrior.FurySpells.__index = TRB.Classes.Mainline.Warrior.FurySpells
 
-function TRB.Classes.Warrior.FurySpells:New()
-	---@type TRB.Classes.Warrior.WarriorBaseSpells
-	local base = TRB.Classes.Warrior.WarriorBaseSpells
-	self = setmetatable(base:New(), TRB.Classes.Warrior.FurySpells) --[[@as TRB.Classes.Warrior.FurySpells]]
+function TRB.Classes.Mainline.Warrior.FurySpells:New()
+	---@type TRB.Classes.Mainline.Warrior.WarriorBaseSpells
+	local base = TRB.Classes.Mainline.Warrior.WarriorBaseSpells
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Warrior.FurySpells) --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 	--Warrior base abilities
 	self.execute = TRB.Classes.SpellThreshold:New({
 		id = 280735,
@@ -427,13 +427,13 @@ end
 
 ---Fills barTextVariables for Fury Warrior options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Warrior.FurySpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Warrior.FurySpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Warrior.FurySpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#bladestorm", icon = spells.bladestorm.icon, description = spells.bladestorm.name, printInSettings = true },
@@ -465,14 +465,14 @@ end
 
 ---Gets built-in castbar channel tick profiles for Fury, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Warrior.FurySpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Warrior.FurySpells.GetCastbarTickProfiles()
 	return {}
 end
 
 ---@param line TRB.Classes.ThresholdLine
 ---@return boolean
 local function HasImprovedExecute(line)
-	local spells = line.data.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+	local spells = line.data.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 	return line.data.talents:IsTalentActive(spells.improvedExecute)
 end
 
@@ -486,7 +486,7 @@ local function FuryExecute(line)
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Warrior.FurySpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Warrior.FurySpells.thresholdSnowflakes = {
 	spells = {
 		execute = FuryExecute,
 		executeMinimum = FuryExecute,
@@ -500,7 +500,7 @@ TRB.Classes.Warrior.FurySpells.thresholdSnowflakes = {
 			end
 		end,
 		thunderClap = function(line)
-			local spells = line.data.spells --[[@as TRB.Classes.Warrior.FurySpells]]
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 			if line.data.talents:IsTalentActive(spells.crashingThunder) then
 				line:Hide()
 			else
@@ -510,7 +510,7 @@ TRB.Classes.Warrior.FurySpells.thresholdSnowflakes = {
 	},
 }
 
----@class TRB.Classes.Warrior.ProtectionSpells : TRB.Classes.Warrior.WarriorBaseSpells
+---@class TRB.Classes.Mainline.Warrior.ProtectionSpells : TRB.Classes.Mainline.Warrior.WarriorBaseSpells
 ---@field public enduringDefenses TRB.Classes.SpellBase
 ---@field public shieldCharge TRB.Classes.SpellBase
 ---@field public heavyRepercussions TRB.Classes.SpellBase
@@ -521,13 +521,13 @@ TRB.Classes.Warrior.FurySpells.thresholdSnowflakes = {
 ---@field public revenge TRB.Classes.SpellThreshold
 ---@field public slam TRB.Classes.SpellThreshold
 ---@field public whirlwind TRB.Classes.SpellThreshold
-TRB.Classes.Warrior.ProtectionSpells = setmetatable({}, {__index = TRB.Classes.Warrior.WarriorBaseSpells})
-TRB.Classes.Warrior.ProtectionSpells.__index = TRB.Classes.Warrior.ProtectionSpells
+TRB.Classes.Mainline.Warrior.ProtectionSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Warrior.WarriorBaseSpells})
+TRB.Classes.Mainline.Warrior.ProtectionSpells.__index = TRB.Classes.Mainline.Warrior.ProtectionSpells
 
-function TRB.Classes.Warrior.ProtectionSpells:New()
-	---@type TRB.Classes.Warrior.WarriorBaseSpells
-	local base = TRB.Classes.Warrior.WarriorBaseSpells
-	self = setmetatable(base:New(), TRB.Classes.Warrior.ProtectionSpells) --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+function TRB.Classes.Mainline.Warrior.ProtectionSpells:New()
+	---@type TRB.Classes.Mainline.Warrior.WarriorBaseSpells
+	local base = TRB.Classes.Mainline.Warrior.WarriorBaseSpells
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Warrior.ProtectionSpells) --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 	--Warrior base abilities	
 
 	self.executeMinimum = TRB.Classes.SpellThreshold:New({
@@ -649,13 +649,13 @@ end
 
 ---Fills barTextVariables for Protection Warrior options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Warrior.ProtectionSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Warrior.ProtectionSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Warrior.ProtectionSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warrior.ProtectionSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ProtectionSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = spells.ignorePain.name, printInSettings = true },
@@ -689,7 +689,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Protection, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Warrior.ProtectionSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Warrior.ProtectionSpells.GetCastbarTickProfiles()
 	return {
 		-- Demolish: 3 hits landing on a 4-tick rhythm, skipping the 3rd. No tick at start, no chaining.
 		[436358] = { mode = "fixedCount", baseDuration = 2, tickCount = 4, skipTicks = { 3 } },
@@ -697,7 +697,7 @@ function TRB.Classes.Warrior.ProtectionSpells.GetCastbarTickProfiles()
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Warrior.ProtectionSpells.thresholdSnowflakes = {
+TRB.Classes.Mainline.Warrior.ProtectionSpells.thresholdSnowflakes = {
 	spells = {
 		executeMinimum = ExecuteMinimum,
 		executeMaximum = ExecuteMaximum,
@@ -714,15 +714,15 @@ TRB.Classes.Warrior.ProtectionSpells.thresholdSnowflakes = {
     Protection: Primary bar (N=1) + Defensive Buffs (N=2) for Shield Block and Ignore Pain
 ]]
 
----@class TRB.Classes.Warrior.BarGroupsFactory
-TRB.Classes.Warrior.BarGroupsFactory = {}
-TRB.Classes.Warrior.BarGroupsFactory.__index = TRB.Classes.Warrior.BarGroupsFactory
+---@class TRB.Classes.Mainline.Warrior.BarGroupsFactory
+TRB.Classes.Mainline.Warrior.BarGroupsFactory = {}
+TRB.Classes.Mainline.Warrior.BarGroupsFactory.__index = TRB.Classes.Mainline.Warrior.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Warrior specialization
 ---@param specId integer # 1=Arms, 2=Fury, 3=Protection
 ---@param parentFrame Frame # The parent frame to attach bar groups to
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Warrior.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+function TRB.Classes.Mainline.Warrior.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
     -- Primary Rage bar (1 node) - all specs
@@ -775,7 +775,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Warrior.BarGroupsFactory:GetSpecConfiguration(specId)
     if specId == 3 then -- Protection
         return {
             primary = {
@@ -831,15 +831,15 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["warrior_arms"] = TRB.Classes.Warrior.ArmsSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["warrior_fury"] = TRB.Classes.Warrior.FurySpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["warrior_protection"] = TRB.Classes.Warrior.ProtectionSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["warrior_arms"] = TRB.Classes.Mainline.Warrior.ArmsSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["warrior_fury"] = TRB.Classes.Mainline.Warrior.FurySpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["warrior_protection"] = TRB.Classes.Mainline.Warrior.ProtectionSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["warrior_arms"] = TRB.Classes.Warrior.ArmsSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["warrior_fury"] = TRB.Classes.Warrior.FurySpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["warrior_protection"] = TRB.Classes.Warrior.ProtectionSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warrior_arms"] = TRB.Classes.Mainline.Warrior.ArmsSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warrior_fury"] = TRB.Classes.Mainline.Warrior.FurySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warrior_protection"] = TRB.Classes.Mainline.Warrior.ProtectionSpells.GetCastbarTickProfiles
 
 -- Register audio cue vocabularies
 do

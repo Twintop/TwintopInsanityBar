@@ -23,10 +23,10 @@ local function CoupDeGraceEvent(self, event, ...)
 		local finisher
 		local coupDeGrace
 		if TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 			finisher, coupDeGrace = spells.dispatch, spells.coupDeGrace
 		elseif TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 			finisher, coupDeGrace = spells.eviscerate, spells.coupDeGrace
 		end
 		if finisher ~= nil and coupDeGrace ~= nil and baseSpellID == finisher.id then
@@ -43,7 +43,7 @@ coupDeGraceFrame:SetScript("OnEvent", CoupDeGraceEvent)
 local talents --[[@as TRB.Classes.Talents]]
 
 local thresholdBar = TRB.Classes.ThresholdBar:New()
-local thresholdState = TRB.Classes.ThresholdState:New() --[[@as TRB.Classes.Rogue.ThresholdState]]
+local thresholdState = TRB.Classes.ThresholdState:New() --[[@as TRB.Classes.Mainline.Rogue.ThresholdState]]
 local thresholdData = TRB.Classes.ThresholdData:New()
 
 Global_TwintopResourceBar = {}
@@ -78,9 +78,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.Rogue.AssassinationSpells
-	specCache.rogue_assassination.spellsData.spells = TRB.Classes.Rogue.AssassinationSpells:New()
-	local spells = specCache.rogue_assassination.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+	---@type TRB.Classes.Mainline.Rogue.AssassinationSpells
+	specCache.rogue_assassination.spellsData.spells = TRB.Classes.Mainline.Rogue.AssassinationSpells:New()
+	local spells = specCache.rogue_assassination.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 
 	specCache.rogue_assassination.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_assassination.snapshotData.attributes.comboPoints = 0
@@ -144,9 +144,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.Rogue.OutlawSpells
-	specCache.rogue_outlaw.spellsData.spells = TRB.Classes.Rogue.OutlawSpells:New()
-	local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+	---@type TRB.Classes.Mainline.Rogue.OutlawSpells
+	specCache.rogue_outlaw.spellsData.spells = TRB.Classes.Mainline.Rogue.OutlawSpells:New()
+	local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 
 	specCache.rogue_outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_outlaw.snapshotData.attributes.comboPoints = 0
@@ -236,9 +236,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.Rogue.SubtletySpells
-	specCache.rogue_subtlety.spellsData.spells = TRB.Classes.Rogue.SubtletySpells:New()
-	local spells = specCache.rogue_subtlety.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+	---@type TRB.Classes.Mainline.Rogue.SubtletySpells
+	specCache.rogue_subtlety.spellsData.spells = TRB.Classes.Mainline.Rogue.SubtletySpells:New()
+	local spells = specCache.rogue_subtlety.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 
 	specCache.rogue_subtlety.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_subtlety.snapshotData.attributes.comboPoints = 0
@@ -302,16 +302,16 @@ local function Setup_Assassination()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "rogue_assassination" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(1, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Rogue.BarGroupsFactory:CreateForSpec(1, UIParent)
 	end
 end
 
 local function FillSpellData_Assassination()
 	Setup_Assassination()
 	specCache.rogue_assassination.spellsData:FillSpellData()
-	local spells = specCache.rogue_assassination.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+	local spells = specCache.rogue_assassination.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 	
-	TRB.Classes.Rogue.AssassinationSpells.FillBarTextVariables(specCache.rogue_assassination)
+	TRB.Classes.Mainline.Rogue.AssassinationSpells.FillBarTextVariables(specCache.rogue_assassination)
 end
 
 local function Setup_Outlaw()
@@ -320,16 +320,16 @@ local function Setup_Outlaw()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "rogue_outlaw" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(2, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Rogue.BarGroupsFactory:CreateForSpec(2, UIParent)
 	end
 end
 
 local function FillSpellData_Outlaw()
 	Setup_Outlaw()
 	specCache.rogue_outlaw.spellsData:FillSpellData()
-	local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+	local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 
-	TRB.Classes.Rogue.OutlawSpells.FillBarTextVariables(specCache.rogue_outlaw)
+	TRB.Classes.Mainline.Rogue.OutlawSpells.FillBarTextVariables(specCache.rogue_outlaw)
 end
 
 local function Setup_Subtlety()
@@ -338,16 +338,16 @@ local function Setup_Subtlety()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "rogue_subtlety" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Rogue.BarGroupsFactory:CreateForSpec(3, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Rogue.BarGroupsFactory:CreateForSpec(3, UIParent)
 	end
 end
 
 local function FillSpellData_Subtlety()
 	Setup_Subtlety()
 	specCache.rogue_subtlety.spellsData:FillSpellData()
-	local spells = specCache.rogue_subtlety.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+	local spells = specCache.rogue_subtlety.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 
-	TRB.Classes.Rogue.SubtletySpells.FillBarTextVariables(specCache.rogue_subtlety)
+	TRB.Classes.Mainline.Rogue.SubtletySpells.FillBarTextVariables(specCache.rogue_subtlety)
 end
 
 local function UpdateCastingResourceFinal()
@@ -710,7 +710,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 end
 
 local function UpdateRollTheBones()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 	---@type TRB.Classes.Snapshot
 	local rollTheBones = TRB.Data.snapshotData.snapshots[spells.rollTheBones.id]
 	---@type table<integer, TRB.Classes.Snapshot>
@@ -740,7 +740,7 @@ end
 
 local function UpdateSnapshot()
 	Character:UpdateSnapshot()
-	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Rogue.RogueBaseSpells]
+	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Mainline.Rogue.RogueBaseSpells]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local currentTime = GetTime()]]
@@ -748,7 +748,7 @@ end
 
 local function UpdateSnapshot_Assassination()
 	UpdateSnapshot()
-	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Rogue.AssassinationSpells]
+	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local currentTime = GetTime()]]
@@ -757,14 +757,14 @@ end
 local function UpdateSnapshot_Outlaw()
 	UpdateSnapshot()
 	UpdateRollTheBones()
-	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Rogue.OutlawSpells]
+	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Mainline.Rogue.OutlawSpells]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots]]
 end
 
 local function UpdateSnapshot_Subtlety()
 	UpdateSnapshot()
-	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Rogue.SubtletySpells]
+	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Mainline.Rogue.SubtletySpells]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local currentTime = GetTime()]]
@@ -904,7 +904,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.assassination
 		local specCacheSettings = TRB.Data.specCache.rogue_assassination.settings
 		UpdateSnapshot_Assassination()
-		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 		local comboPointAffectingCombat = TRB.Data.character.inCombat
 		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive
 		local comboPointsColors = scratch.comboPointsColors1
@@ -927,7 +927,7 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -947,7 +947,7 @@ local function UpdateResourceBar()
 					thresholdState:Refresh(specCacheSettings)
 					thresholdState.stealthViaBuff = stealthViaBuff
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Rogue.AssassinationSpells.thresholdSnowflakes)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Rogue.AssassinationSpells.thresholdSnowflakes)
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -1100,7 +1100,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.outlaw
 		local specCacheSettings = TRB.Data.specCache.rogue_outlaw.settings
 		UpdateSnapshot_Outlaw()
-		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 		local comboPointAffectingCombat = TRB.Data.character.inCombat
 		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive
 		local comboPointsColors = scratch.comboPointsColors3
@@ -1123,7 +1123,7 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1143,7 +1143,7 @@ local function UpdateResourceBar()
 					thresholdState:Refresh(specCacheSettings)
 					thresholdState.stealthViaBuff = stealthViaBuff
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Rogue.OutlawSpells.thresholdSnowflakes)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Rogue.OutlawSpells.thresholdSnowflakes)
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -1295,7 +1295,7 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.subtlety
 		local specCacheSettings = TRB.Data.specCache.rogue_subtlety.settings
 		UpdateSnapshot_Subtlety()
-		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 		local comboPointAffectingCombat = TRB.Data.character.inCombat
 		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive or snapshots[comboPointSpells.shadowDance.id].buff.isActive
 		local comboPointsColors = scratch.comboPointsColors5
@@ -1318,7 +1318,7 @@ local function UpdateResourceBar()
 			if not specSettings.displayBar.primary.neverShow then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1338,7 +1338,7 @@ local function UpdateResourceBar()
 					thresholdState:Refresh(specCacheSettings)
 					thresholdState.stealthViaBuff = stealthViaBuff
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Rogue.SubtletySpells.thresholdSnowflakes)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Rogue.SubtletySpells.thresholdSnowflakes)
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -1399,7 +1399,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(comboPointsColors.background, true)
 				local comboPointBarOverrideActive = comboPointFlatTargets.bar or comboPointsOvercapCurves.bar ~= nil
 				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
@@ -1528,7 +1528,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.rogue_assassination)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1565,7 +1565,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.rogue_outlaw)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1614,7 +1614,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.rogue_subtlety)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData

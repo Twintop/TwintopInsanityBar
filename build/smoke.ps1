@@ -12,7 +12,7 @@
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Flavor
-	Restrict to one flavor (mainline, forever). Default: all.
+	Restrict to one flavor (mainline, forever, classic). Default: all.
 #>
 [CmdletBinding()]
 param(

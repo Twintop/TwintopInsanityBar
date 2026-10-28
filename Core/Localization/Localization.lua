@@ -19,7 +19,7 @@ do
 
 	for _, specEntry in ipairs(TRB.Data.specRegistryOrder) do
 		local specName = nil
-		if specEntry.classId ~= nil and specEntry.specId ~= nil then
+		if specEntry.specGlobalId ~= nil and specEntry.classId ~= nil and specEntry.specId ~= nil then
 			specName = select(2, GetSpecializationInfoForClassID(specEntry.classId, specEntry.specId))
 		end
 		if specName == nil or specName == "" then

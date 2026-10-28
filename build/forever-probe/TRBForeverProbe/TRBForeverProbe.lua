@@ -1,6 +1,6 @@
 ---@diagnostic disable: undefined-global, deprecated -- every probe targets APIs that may not exist on this client
--- TRB Forever Probe: a throwaway addon that records what the client exposes so the Forever flavor of
--- Twintop's Resource Bar can be built on facts instead of guesses. Install it alone in the Forever
+-- TRB Forever Probe: a throwaway addon that records what the client exposes so the Forever and Classic flavors
+-- of Twintop's Resource Bar can be built on facts instead of guesses. Install it alone in the Forever or Classic
 -- client's AddOns folder, log in on one character per class, and run /trbprobe. Results open in a
 -- window whose text can be copied (Ctrl+A, Ctrl+C) and are also saved in TRBForeverProbeResults
 -- (WTF\...\SavedVariables\TRBForeverProbe.lua) for when the beta can write saved variables again.
@@ -286,6 +286,21 @@ local function Run()
 	Probe("talents", "GetTalentInfo(1, 1)", function() return GetTalentInfo(1, 1) end)
 	Probe("talents", "GetTalentTierInfo(1, 1)", function() return GetTalentTierInfo(1, 1) end)
 	Probe("talents", "C_SpecializationInfo.GetTalentInfo({tier=1,column=1})", function() return C_SpecializationInfo.GetTalentInfo({ tier = 1, column = 1 }) end)
+	-- Classic's talent tabs: the query shape Blizzard's Vanilla talent frame uses, and which rank's spell each learned talent reports.
+	Probe("talents", "GetNumTalents(1..3)", function() return GetNumTalents(1), GetNumTalents(2), GetNumTalents(3) end)
+	Probe("talents", "C_SpecializationInfo.GetTalentInfo({specializationIndex=1,talentIndex=1})", function() return C_SpecializationInfo.GetTalentInfo({ specializationIndex = 1, talentIndex = 1 }) end)
+	Probe("talents", "learned talents (tab.index spellID rank/maxRank)", function()
+		local parts = {}
+		for tab = 1, GetNumTalentTabs() do
+			for index = 1, GetNumTalents(tab) do
+				local info = C_SpecializationInfo.GetTalentInfo({ specializationIndex = tab, talentIndex = index })
+				if info ~= nil and info.rank > 0 then
+					parts[#parts + 1] = string.format("%d.%d %s %d/%d", tab, index, tostring(info.spellID), info.rank, info.maxRank)
+				end
+			end
+		end
+		return #parts > 0 and table.concat(parts, ", ") or "none learned"
+	end)
 
 	-- Shape of every trait config we can reach: the active one and the Forever combat config.
 	local function SummarizeConfig(configId)
@@ -432,6 +447,13 @@ local function Run()
 		return table.concat(out, "/")
 	end)
 	Probe("systems", "GetShapeshiftForm()", function() return GetShapeshiftForm(), GetShapeshiftFormID(), GetNumShapeshiftForms() end)
+	Probe("systems", "C_EventUtils.IsEventValid (events Core gates)", function()
+		local parts = {}
+		for _, event in ipairs({ "PLAYER_SWING", "PLAYER_SWING_RANGE_UPDATE", "UNIT_POWER_POINT_CHARGE", "PLAYER_MAP_CHANGED", "PLAYER_IS_GLIDING_CHANGED" }) do
+			parts[#parts + 1] = event .. "=" .. tostring(C_EventUtils.IsEventValid(event))
+		end
+		return table.concat(parts, " ")
+	end)
 	Probe("systems", "GetMirrorTimerInfo(1..3)", function() return GetMirrorTimerInfo(1), GetMirrorTimerInfo(2), GetMirrorTimerInfo(3) end)
 	Probe("systems", "Settings.RegisterCanvasLayoutCategory type", function() return type(Settings.RegisterCanvasLayoutCategory) end)
 

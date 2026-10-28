@@ -1,4 +1,4 @@
-## Interface: 16001
+## Interface: 16001, 11509
 ## Title: TRB Forever Probe
 ## Notes: Dumps the client facts Twintop's Resource Bar needs to support this game lineage. Type /trbprobe.
 ## Author: Twintop

@@ -2,7 +2,7 @@ local _, TRB = ...
 
 -- Warlock (World of Warcraft: Forever): Mana; Soul Shards are items here, not a power type.
 
----@class TRB.Classes.Warlock.GeneralSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Forever.Warlock.GeneralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public drainLife TRB.Classes.SpellBase
 ---@field public drainMana TRB.Classes.SpellBase
 ---@field public drainSoul TRB.Classes.SpellBase
@@ -13,7 +13,7 @@ local _, TRB = ...
 ---@field public consumeShadows TRB.Classes.SpellBase
 
 ---Adds the Warlock's channeled abilities to a new spell set.
----@param spells TRB.Classes.Warlock.GeneralSpells
+---@param spells TRB.Classes.Forever.Warlock.GeneralSpells
 local function FillSpells(spells)
 	spells.drainLife = TRB.Classes.SpellBase:New({
 		id = 689,

@@ -10,7 +10,7 @@ local berserker = { berserker = true }
 local battleBerserker = { battle = true, berserker = true }
 local battleDefensive = { battle = true, defensive = true }
 
----@class TRB.Classes.Warrior.GeneralSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Forever.Warrior.GeneralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public heroicStrike TRB.Classes.SpellThreshold
 ---@field public cleave TRB.Classes.SpellThreshold
 ---@field public rend TRB.Classes.SpellThreshold
@@ -45,7 +45,7 @@ local battleDefensive = { battle = true, defensive = true }
 ---@field public berserkerStance TRB.Classes.SpellBase
 
 ---Adds the Warrior's Rage-spending abilities to a new spell set.
----@param spells TRB.Classes.Warrior.GeneralSpells
+---@param spells TRB.Classes.Forever.Warrior.GeneralSpells
 local function FillSpells(spells)
 	-- Stances, which Warrior.lua resolves the active one from.
 	spells.battleStance = TRB.Classes.SpellBase:New({

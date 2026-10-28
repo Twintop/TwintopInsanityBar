@@ -1,20 +1,20 @@
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Evoker = TRB.Classes.Evoker or {}
+TRB.Classes.Mainline.Evoker = TRB.Classes.Mainline.Evoker or {}
 
 
----@class TRB.Classes.Evoker.DevastationSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Evoker.DevastationSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public dragonrage TRB.Classes.SpellBase
 ---@field public animosity TRB.Classes.SpellBase
 ---@field public fireBreath TRB.Classes.SpellBase
 ---@field public eternitySurge TRB.Classes.SpellBase
-TRB.Classes.Evoker.DevastationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Evoker.DevastationSpells.__index = TRB.Classes.Evoker.DevastationSpells
+TRB.Classes.Mainline.Evoker.DevastationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Evoker.DevastationSpells.__index = TRB.Classes.Mainline.Evoker.DevastationSpells
 
-function TRB.Classes.Evoker.DevastationSpells:New()
+function TRB.Classes.Mainline.Evoker.DevastationSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
-	self = setmetatable(base:New(), TRB.Classes.Evoker.DevastationSpells) --[[@as TRB.Classes.Evoker.DevastationSpells]]
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Evoker.DevastationSpells) --[[@as TRB.Classes.Mainline.Evoker.DevastationSpells]]
     
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 359618,
@@ -54,13 +54,13 @@ end
 
 ---Fills barTextVariables for Devastation Evoker options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Evoker.DevastationSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Evoker.DevastationSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Evoker.DevastationSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Evoker.DevastationSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.DevastationSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#dragonrage", icon = spells.dragonrage.icon, description = spells.dragonrage.name, printInSettings = true },
@@ -90,7 +90,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Devastation, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Evoker.DevastationSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Evoker.DevastationSpells.GetCastbarTickProfiles()
 	return {
 		-- Disintegrate
 		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true, chains = true },
@@ -100,7 +100,7 @@ end
 ---Gets built-in castbar tick modifiers for Devastation (talent/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
-function TRB.Classes.Evoker.DevastationSpells.GetCastbarTickModifiers()
+function TRB.Classes.Mainline.Evoker.DevastationSpells.GetCastbarTickModifiers()
 	return {
 		-- Disintegrate
 		[356995] = {
@@ -111,14 +111,14 @@ function TRB.Classes.Evoker.DevastationSpells.GetCastbarTickModifiers()
 end
 
 
----@class TRB.Classes.Evoker.PreservationSpells : TRB.Classes.Healer.HealerSpells
-TRB.Classes.Evoker.PreservationSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
-TRB.Classes.Evoker.PreservationSpells.__index = TRB.Classes.Evoker.PreservationSpells
+---@class TRB.Classes.Mainline.Evoker.PreservationSpells : TRB.Classes.Mainline.Healer.HealerSpells
+TRB.Classes.Mainline.Evoker.PreservationSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Healer.HealerSpells})
+TRB.Classes.Mainline.Evoker.PreservationSpells.__index = TRB.Classes.Mainline.Evoker.PreservationSpells
 
-function TRB.Classes.Evoker.PreservationSpells:New()
-	---@type TRB.Classes.Healer.HealerSpells
-	local base = TRB.Classes.Healer.HealerSpells
-	self = setmetatable(base:New(), TRB.Classes.Evoker.PreservationSpells) --[[@as TRB.Classes.Evoker.PreservationSpells]]
+function TRB.Classes.Mainline.Evoker.PreservationSpells:New()
+	---@type TRB.Classes.Mainline.Healer.HealerSpells
+	local base = TRB.Classes.Mainline.Healer.HealerSpells
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Evoker.PreservationSpells) --[[@as TRB.Classes.Mainline.Evoker.PreservationSpells]]
     
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 369299,
@@ -145,13 +145,13 @@ end
 
 ---Fills barTextVariables for Preservation Evoker options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Evoker.PreservationSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Evoker.PreservationSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Evoker.PreservationSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Evoker.PreservationSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.PreservationSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons()
 	local varCategory = TRB.Functions.BarText.VariableCategory
@@ -178,7 +178,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Preservation, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Evoker.PreservationSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Evoker.PreservationSpells.GetCastbarTickProfiles()
 	return {
 		-- Disintegrate
 		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true, chains = true },
@@ -188,15 +188,15 @@ function TRB.Classes.Evoker.PreservationSpells.GetCastbarTickProfiles()
 end
 
 
----@class TRB.Classes.Evoker.AugmentationSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Evoker.AugmentationSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public ebonMight TRB.Classes.SpellBase
-TRB.Classes.Evoker.AugmentationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Evoker.AugmentationSpells.__index = TRB.Classes.Evoker.AugmentationSpells
+TRB.Classes.Mainline.Evoker.AugmentationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Evoker.AugmentationSpells.__index = TRB.Classes.Mainline.Evoker.AugmentationSpells
 
-function TRB.Classes.Evoker.AugmentationSpells:New()
+function TRB.Classes.Mainline.Evoker.AugmentationSpells:New()
 	---@type TRB.Classes.SpecializationSpellsBase
 	local base = TRB.Classes.SpecializationSpellsBase
-	self = setmetatable(base:New(), TRB.Classes.Evoker.AugmentationSpells) --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+	self = setmetatable(base:New(), TRB.Classes.Mainline.Evoker.AugmentationSpells) --[[@as TRB.Classes.Mainline.Evoker.AugmentationSpells]]
 
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 392268,
@@ -217,13 +217,13 @@ end
 
 ---Fills barTextVariables for Augmentation Evoker options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Evoker.AugmentationSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Evoker.AugmentationSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Evoker.AugmentationSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Evoker.AugmentationSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#ebonMight", icon = spells.ebonMight.icon, description = spells.ebonMight.name, printInSettings = true },
@@ -253,7 +253,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Augmentation, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Evoker.AugmentationSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Evoker.AugmentationSpells.GetCastbarTickProfiles()
 	return {
 		-- Disintegrate
 		[356995] = { mode = "fixedCount", baseDuration = 3.0, tickCount = 4, firstTickAtStart = true, chains = true },
@@ -271,14 +271,14 @@ end
     Augmentation: Primary bar (N=1) + Essence (N=5-6)
 ]]
 
----@class TRB.Classes.Evoker.BarGroupsFactory
-TRB.Classes.Evoker.BarGroupsFactory = {}
-TRB.Classes.Evoker.BarGroupsFactory.__index = TRB.Classes.Evoker.BarGroupsFactory
+---@class TRB.Classes.Mainline.Evoker.BarGroupsFactory
+TRB.Classes.Mainline.Evoker.BarGroupsFactory = {}
+TRB.Classes.Mainline.Evoker.BarGroupsFactory.__index = TRB.Classes.Mainline.Evoker.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Evoker specialization
 ---@param specId integer # 1=Devastation, 2=Preservation, 3=Augmentation
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Evoker.BarGroupsFactory:CreateForSpec(specId)
+function TRB.Classes.Mainline.Evoker.BarGroupsFactory:CreateForSpec(specId)
     local barGroups = {}
 
     -- All Evoker specs have the same bar structure:
@@ -336,7 +336,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Evoker.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Evoker.BarGroupsFactory:GetSpecConfiguration(specId)
     -- All Evoker specs have the same configuration
     return {
         primary = {
@@ -359,19 +359,19 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["evoker_devastation"] = TRB.Classes.Evoker.DevastationSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["evoker_preservation"] = TRB.Classes.Evoker.PreservationSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["evoker_augmentation"] = TRB.Classes.Evoker.AugmentationSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["evoker_devastation"] = TRB.Classes.Mainline.Evoker.DevastationSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["evoker_preservation"] = TRB.Classes.Mainline.Evoker.PreservationSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["evoker_augmentation"] = TRB.Classes.Mainline.Evoker.AugmentationSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["evoker_devastation"] = TRB.Classes.Evoker.DevastationSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["evoker_preservation"] = TRB.Classes.Evoker.PreservationSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["evoker_augmentation"] = TRB.Classes.Evoker.AugmentationSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["evoker_devastation"] = TRB.Classes.Mainline.Evoker.DevastationSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["evoker_preservation"] = TRB.Classes.Mainline.Evoker.PreservationSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["evoker_augmentation"] = TRB.Classes.Mainline.Evoker.AugmentationSpells.GetCastbarTickProfiles
 
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
-TRB.Data.castbarTickModifiersRegistry["evoker_devastation"] = TRB.Classes.Evoker.DevastationSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["evoker_devastation"] = TRB.Classes.Mainline.Evoker.DevastationSpells.GetCastbarTickModifiers
 
 -- Register audio cue vocabularies
 do

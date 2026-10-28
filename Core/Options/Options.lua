@@ -871,6 +871,7 @@ local function BuildProfileClassCatalog()
 		for _, specEntry in ipairs(classEntry.specs) do
 			table.insert(classDef.specs, {
 				specId = specEntry.specId,
+				specGlobalId = specEntry.specGlobalId,
 				specName = specEntry.specName,
 				compositeKey = specEntry.compositeKey,
 				specLabel = L[specEntry.specLocaleKey],
@@ -1412,9 +1413,14 @@ local function ConstructImportExportPanel()
 			SetButtonTooltip(sExpBtn, string.format(L["ProfileManagerExportSpecTooltipFormat"], specLabel, classLabel))
 			SetButtonTooltip(sCb, string.format(L["ProfileManagerSelectSpecTooltipFormat"], specLabel, classLabel))
 			local sIcon = BuildIcon(specRow, SPEC_ICO_X, -2, 18)
-			local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, spec.specId)
-			if iconId then
-				sIcon:SetTexture(iconId)
+			-- A spec the client has no specialization for shows its class icon.
+			if spec.specGlobalId == nil then
+				sIcon:SetAtlas("classicon-" .. className, false)
+			else
+				local _, _, _, iconId = GetSpecializationInfoForClassID(classDef.classId, spec.specId)
+				if iconId then
+					sIcon:SetTexture(iconId)
+				end
 			end
 			local sLbl = BuildLabel(specRow, SPEC_LBL_X, -2,
 				IE_COL_W - SPEC_LBL_X - 4, specLabel)
@@ -2028,11 +2034,15 @@ local function ConstructProfileDefaultsPanel()
 
 		controls.dropDowns[classDef.className] = controls.dropDowns[classDef.className] or {}
 		for _, specDef in ipairs(classDef.specs) do
-			local _, _, _, specIconId = GetSpecializationInfoForClassID(classDef.classId, specDef.specId)
+			-- A spec the client has no specialization for shows its class icon.
+			local specIcon, specIconIsAtlas = "classicon-" .. classDef.className, true
+			if specDef.specGlobalId ~= nil then
+				specIcon, specIconIsAtlas = select(4, GetSpecializationInfoForClassID(classDef.classId, specDef.specId)), false
+			end
 			controls.dropDowns[classDef.className][specDef.specName], yCoord = BuildProfileDefaultRow(
 				parent, yCoord, specDef.specFullLabel,
 				"spec", classDef.className, specDef.specName,
-				specIconId, false)
+				specIcon, specIconIsAtlas)
 		end
 		yCoord = yCoord - 10
 	end

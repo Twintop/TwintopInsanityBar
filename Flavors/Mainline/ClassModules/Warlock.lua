@@ -52,9 +52,9 @@ local function FillSpecializationCache()
 		items = {}
 	}
 	
-	---@type TRB.Classes.Warlock.AfflictionSpells
-	specCache.warlock_affliction.spellsData.spells = TRB.Classes.Warlock.AfflictionSpells:New()
-	local spells = specCache.warlock_affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+	---@type TRB.Classes.Mainline.Warlock.AfflictionSpells
+	specCache.warlock_affliction.spellsData.spells = TRB.Classes.Mainline.Warlock.AfflictionSpells:New()
+	local spells = specCache.warlock_affliction.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 
 	---@type TRB.Classes.Snapshot
 	-- Always simple: this buff never has a knowable endTime. Its remaining time is a secret we can
@@ -89,9 +89,9 @@ local function FillSpecializationCache()
 		items = {}
 	}
 	
-	---@type TRB.Classes.Warlock.DemonologySpells
-	specCache.warlock_demonology.spellsData.spells = TRB.Classes.Warlock.DemonologySpells:New()
-	local spells = specCache.warlock_demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	---@type TRB.Classes.Mainline.Warlock.DemonologySpells
+	specCache.warlock_demonology.spellsData.spells = TRB.Classes.Mainline.Warlock.DemonologySpells:New()
+	local spells = specCache.warlock_demonology.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_demonology.snapshotData.snapshots[spells.dominionOfArgus.id] = TRB.Classes.Snapshot:New(spells.dominionOfArgus)
@@ -132,9 +132,9 @@ local function FillSpecializationCache()
 		items = {}
 	}
 	
-	---@type TRB.Classes.Warlock.DestructionSpells
-	specCache.warlock_destruction.spellsData.spells = TRB.Classes.Warlock.DestructionSpells:New()
-	local spells = specCache.warlock_destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+	---@type TRB.Classes.Mainline.Warlock.DestructionSpells
+	specCache.warlock_destruction.spellsData.spells = TRB.Classes.Mainline.Warlock.DestructionSpells:New()
+	local spells = specCache.warlock_destruction.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 
 	---@type TRB.Classes.Snapshot
 	specCache.warlock_destruction.snapshotData.snapshots[spells.infernalBolt.id] = TRB.Classes.Snapshot:New(spells.infernalBolt)
@@ -153,16 +153,16 @@ local function Setup_Affliction()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warlock_affliction" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(1, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Warlock.BarGroupsFactory:CreateForSpec(1, UIParent)
 	end
 end
 
 local function FillSpellData_Affliction()
 	Setup_Affliction()
 	specCache.warlock_affliction.spellsData:FillSpellData()
-	local spells = specCache.warlock_affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+	local spells = specCache.warlock_affliction.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 
-	TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCache.warlock_affliction)
+	TRB.Classes.Mainline.Warlock.AfflictionSpells.FillBarTextVariables(specCache.warlock_affliction)
 end
 
 local function Setup_Demonology()
@@ -171,16 +171,16 @@ local function Setup_Demonology()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warlock_demonology" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(2, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Warlock.BarGroupsFactory:CreateForSpec(2, UIParent)
 	end
 end
 
 local function FillSpellData_Demonology()
 	Setup_Demonology()
 	specCache.warlock_demonology.spellsData:FillSpellData()
-	local spells = specCache.warlock_demonology.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	local spells = specCache.warlock_demonology.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 
-	TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCache.warlock_demonology)
+	TRB.Classes.Mainline.Warlock.DemonologySpells.FillBarTextVariables(specCache.warlock_demonology)
 end
 
 
@@ -191,16 +191,16 @@ local function Setup_Destruction()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "warlock_destruction" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(3, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Warlock.BarGroupsFactory:CreateForSpec(3, UIParent)
 	end
 end
 
 local function FillSpellData_Destruction()
 	Setup_Destruction()
 	specCache.warlock_destruction.spellsData:FillSpellData()
-	local spells = specCache.warlock_destruction.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+	local spells = specCache.warlock_destruction.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 
-	TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCache.warlock_destruction)
+	TRB.Classes.Mainline.Warlock.DestructionSpells.FillBarTextVariables(specCache.warlock_destruction)
 end
 
 local function RefreshTargetTracking()
@@ -378,7 +378,7 @@ local function RefreshLookupData_Affliction()
 
 	-- Block D: Shard Instability ($shardInstabilityTime, $shardInstabilityStacks, $shardInstabilityMaxStacks)
 	if not activeVars or activeVars["$shardInstabilityTime"] or activeVars["$shardInstabilityStacks"] or activeVars["$shardInstabilityMaxStacks"] then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 		local shardInstabilityBuff = snapshotData.snapshots[spells.shardInstability.id].buff
 		local _shardInstabilityActive = shardInstabilityBuff.isActive == true
 		local properties = shardInstabilityBuff.customProperties
@@ -460,7 +460,7 @@ end
 ---@param remainingText any # Secret in combat
 ---@param icon string? # Secret in combat
 local function SetDiabolistLookup(lookup, lookupLogic, prevState, timeKey, iconKey, tracked, active, remaining, remainingText, icon)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 	lookupLogic[timeKey] = active == true and (remaining ~= nil or remainingText ~= nil)
 
 	local timeDisplay
@@ -580,7 +580,7 @@ local function RefreshLookupData_Demonology()
 
 	-- Block D: Demonic Core ($demonicCoreTime, $demonicCoreStacks, $demonicCoreMaxStacks)
 	if not activeVars or activeVars["$demonicCoreTime"] or activeVars["$demonicCoreStacks"] or activeVars["$demonicCoreMaxStacks"] then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 		local demonicCoreBuff = snapshotData.snapshots[spells.demonicCore.id].buff
 		local _demonicCoreActive = demonicCoreBuff.isActive == true
 		local properties = demonicCoreBuff.customProperties
@@ -633,7 +633,7 @@ local function RefreshLookupData_Demonology()
 
 	-- Block E: Dominion of Argus ($doaTime)
 	if not activeVars or activeVars["$doaTime"] then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 		local currentTime = GetTime()
 		local doaBuff = snapshotData.snapshots[spells.dominionOfArgus.id]
 		local _doaActive = (doaBuff ~= nil and doaBuff.buff.isActive) or false
@@ -656,7 +656,7 @@ local function RefreshLookupData_Demonology()
 
 	-- Block F: Infernal Bolt ($infernalBoltTime) - 20s proc countdown set on glow detection
 	if not activeVars or activeVars["$infernalBoltTime"] then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 		local currentTime = GetTime()
 		local infernalBoltBuff = snapshotData.snapshots[spells.infernalBolt.id]
 		local _infernalBoltActive = (infernalBoltBuff ~= nil and infernalBoltBuff.buff.isActive) or false
@@ -677,7 +677,7 @@ local function RefreshLookupData_Demonology()
 
 	-- Block G: Ruination ($ruinationTime) - 20s proc countdown set on glow detection
 	if not activeVars or activeVars["$ruinationTime"] then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 		local currentTime = GetTime()
 		local ruinationBuff = snapshotData.snapshots[spells.ruination.id]
 		local _ruinationActive = (ruinationBuff ~= nil and ruinationBuff.buff.isActive) or false
@@ -824,7 +824,7 @@ local function RefreshLookupData_Destruction()
 
 	-- Block D: Infernal Bolt ($infernalBoltTime) - 20s proc countdown set on glow detection
 	if not activeVars or activeVars["$infernalBoltTime"] then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 		local currentTime = GetTime()
 		local infernalBoltBuff = snapshotData.snapshots[spells.infernalBolt.id]
 		local _infernalBoltActive = (infernalBoltBuff ~= nil and infernalBoltBuff.buff.isActive) or false
@@ -845,7 +845,7 @@ local function RefreshLookupData_Destruction()
 
 	-- Block E: Ruination ($ruinationTime) - 20s proc countdown set on glow detection
 	if not activeVars or activeVars["$ruinationTime"] then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 		local currentTime = GetTime()
 		local ruinationBuff = snapshotData.snapshots[spells.ruination.id]
 		local _ruinationActive = (ruinationBuff ~= nil and ruinationBuff.buff.isActive) or false
@@ -884,7 +884,7 @@ local function RefreshLookupData_Destruction()
 end
 
 local function UpdateCastingResourceFinal_Affliction()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
 	casting.resourceFinal = casting.resourceRaw
@@ -902,7 +902,7 @@ local function UpdateCastingResourceFinal_Affliction()
 end
 
 local function UpdateCastingResourceFinal_Demonology()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
 	casting.resourceFinal = casting.resourceRaw
@@ -946,7 +946,7 @@ local function UpdateCastingResourceFinal_Demonology()
 end
 
 local function UpdateCastingResourceFinal_Destruction()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
 	casting.resourceFinal = casting.resourceRaw
@@ -987,7 +987,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			UpdateCastingResourceFinal_Demonology()
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			 -- Handle instant-cast spells that generate resources on cast success rather than cast start
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 			if spellId == spells.summonDemonicTyrant.id then
 				if talents:IsTalentActive(spells.dominionOfArgus) or talents:IsTalentActive(spells.dominionOfArgus2) or talents:IsTalentActive(spells.dominionOfArgus3) then
 					local duration = spells.dominionOfArgus.duration
@@ -1013,7 +1013,7 @@ end
 
 local function UpdateSnapshot_Affliction()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local shardInstabilityBuff = snapshotData.snapshots[spells.shardInstability.id].buff
 
@@ -1100,7 +1100,7 @@ end
 
 ---Refreshes Demonic Art and Diabolic Ritual from the Cooldown Manager.
 local function RefreshDiabolist()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 	local attributes = TRB.Data.snapshotData.attributes
 	local cdm = TRB.Functions.CooldownManager
 	local wasArtTracked = attributes.demonicArtTracked
@@ -1122,7 +1122,7 @@ end
 local function UpdateSnapshot_Demonology()
 	local currentTime = GetTime()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.snapshots[spells.dominionOfArgus.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.infernalBolt.id].buff:GetRemainingTime(currentTime)
@@ -1183,7 +1183,7 @@ end
 local function UpdateSnapshot_Destruction()
 	local currentTime = GetTime()
 	UpdateSnapshot()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	snapshotData.snapshots[spells.infernalBolt.id].buff:GetRemainingTime(currentTime)
 	snapshotData.snapshots[spells.ruination.id].buff:GetRemainingTime(currentTime)
@@ -1203,7 +1203,7 @@ local function HandleSpellEvents(self, event, ...)
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local spellId = ...
 		if TRB.Data.character.specId == 1 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 			if spellId == spells.unstableAffliction.id then -- Shard Instability proc glows the Unstable Affliction button
 				local shardInstabilitySnapshot = snapshotData.snapshots[spells.shardInstability.id]
 				if shardInstabilitySnapshot ~= nil then
@@ -1212,7 +1212,7 @@ local function HandleSpellEvents(self, event, ...)
 				end
 			end
 		elseif TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 			if spellId == spells.demonbolt.id then -- Demonic Core
 				local demonicCoreSnapshot = snapshotData.snapshots[spells.demonicCore.id]
 				if demonicCoreSnapshot ~= nil then
@@ -1249,7 +1249,7 @@ local function HandleSpellEvents(self, event, ...)
 				end
 			end
 		elseif TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 			if spellId == spells.incinerate.id then -- Infernal Bolt proc glows the Incinerate button
 				local infernalBoltSnapshot = snapshotData.snapshots[spells.infernalBolt.id]
 				if infernalBoltSnapshot ~= nil then
@@ -1280,7 +1280,7 @@ local function HandleSpellEvents(self, event, ...)
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local spellId = ...
 		if TRB.Data.character.specId == 1 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 			if spellId == spells.unstableAffliction.id then -- Shard Instability proc ended
 				local shardInstabilitySnapshot = snapshotData.snapshots[spells.shardInstability.id]
 				if shardInstabilitySnapshot ~= nil then
@@ -1288,7 +1288,7 @@ local function HandleSpellEvents(self, event, ...)
 				end
 			end
 		elseif TRB.Data.character.specId == 2 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 			if spellId == spells.demonbolt.id then -- Demonic Core
 				local demonicCoreSnapshot = snapshotData.snapshots[spells.demonicCore.id]
 				if demonicCoreSnapshot ~= nil then
@@ -1317,7 +1317,7 @@ local function HandleSpellEvents(self, event, ...)
 				TRB.Functions.AudioCues:ResetLatch(snapshotData, "ruination")
 			end
 		elseif TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 			if spellId == spells.incinerate.id then -- Infernal Bolt proc ended
 				local infernalBoltSnapshot = snapshotData.snapshots[spells.infernalBolt.id]
 				if infernalBoltSnapshot ~= nil then
@@ -1618,7 +1618,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.warlock_affliction.settings
 		UpdateSnapshot_Affliction()
 		if snapshotData.attributes.isTracking then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 
 			-- Resolve indicator colors (shared system). manaBar uses default colors;
 			-- soulShardsBar overrides start as nil so the per-node Soul Shard coloring is
@@ -1683,7 +1683,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.warlock_demonology.settings
 		UpdateSnapshot_Demonology()
 		if snapshotData.attributes.isTracking then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 
 			-- Resolve indicator colors (shared system). manaBar uses default colors;
 			-- soulShardsBar overrides start as nil so the per-node Soul Shard coloring is
@@ -1766,7 +1766,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.warlock_destruction.settings
 		UpdateSnapshot_Destruction()
 		if snapshotData.attributes.isTracking then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 
 			-- Resolve indicator colors (shared system). manaBar uses default colors;
 			-- soulShardsBar overrides start as nil so the per-node Soul Shard coloring is
@@ -1853,7 +1853,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.warlock_affliction)
 		
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1883,7 +1883,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.warlock_demonology)
 		
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1921,7 +1921,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.warlock_destruction)
 		
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData

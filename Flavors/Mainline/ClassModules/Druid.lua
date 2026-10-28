@@ -61,9 +61,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.Druid.BalanceSpells
-	specCache.druid_balance.spellsData.spells = TRB.Classes.Druid.BalanceSpells:New()
-	local spells = specCache.druid_balance.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+	---@type TRB.Classes.Mainline.Druid.BalanceSpells
+	specCache.druid_balance.spellsData.spells = TRB.Classes.Mainline.Druid.BalanceSpells:New()
+	local spells = specCache.druid_balance.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 	
 	---@type TRB.Classes.Snapshot
 	specCache.druid_balance.snapshotData.snapshots[spells.eclipseSolar.id] = TRB.Classes.Snapshot:New(spells.eclipseSolar)
@@ -112,9 +112,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.Druid.FeralSpells
-	specCache.druid_feral.spellsData.spells = TRB.Classes.Druid.FeralSpells:New()
-	local spells = specCache.druid_feral.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	---@type TRB.Classes.Mainline.Druid.FeralSpells
+	specCache.druid_feral.spellsData.spells = TRB.Classes.Mainline.Druid.FeralSpells:New()
+	local spells = specCache.druid_feral.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 
 	specCache.druid_feral.snapshotData.attributes.resourceRegen = 0
 	specCache.druid_feral.snapshotData.attributes.comboPoints = 0
@@ -169,9 +169,9 @@ local function FillSpecializationCache()
 		items = {}
 	}
 	
-	---@type TRB.Classes.Druid.GuardianSpells
-	specCache.druid_guardian.spellsData.spells = TRB.Classes.Druid.GuardianSpells:New()
-	local spells = specCache.druid_guardian.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	---@type TRB.Classes.Mainline.Druid.GuardianSpells
+	specCache.druid_guardian.spellsData.spells = TRB.Classes.Mainline.Druid.GuardianSpells:New()
+	local spells = specCache.druid_guardian.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 	---@type TRB.Classes.Snapshot
 	specCache.druid_guardian.snapshotData.snapshots[spells.frenziedRegeneration.id] = TRB.Classes.Snapshot:New(spells.frenziedRegeneration)
 	---@type TRB.Classes.Snapshot
@@ -209,9 +209,9 @@ local function FillSpecializationCache()
 		}
 	}
 	
-	---@type TRB.Classes.Druid.RestorationSpells
-	specCache.druid_restoration.spellsData.spells = TRB.Classes.Druid.RestorationSpells:New()
-	local spells = specCache.druid_restoration.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+	---@type TRB.Classes.Mainline.Druid.RestorationSpells
+	specCache.druid_restoration.spellsData.spells = TRB.Classes.Mainline.Druid.RestorationSpells:New()
+	local spells = specCache.druid_restoration.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 
 	specCache.druid_restoration.snapshotData.attributes.manaRegen = 0
 	specCache.druid_restoration.snapshotData.attributes.clearcastingActive = false
@@ -239,15 +239,15 @@ local function Setup_Balance()
 	--Bar:DestroyBarGroups()
 	
 	-- Create bar groups for Balance using new OOP system
-	--TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(1)
+	--TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(1)
 end
 
 local function FillSpellData_Balance()
 	Setup_Balance()
 	specCache.druid_balance.spellsData:FillSpellData()
-	local spells = specCache.druid_balance.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+	local spells = specCache.druid_balance.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 
-	TRB.Classes.Druid.BalanceSpells.FillBarTextVariables(specCache.druid_balance)
+	TRB.Classes.Mainline.Druid.BalanceSpells.FillBarTextVariables(specCache.druid_balance)
 end
 
 local function Setup_Feral()
@@ -257,15 +257,15 @@ local function Setup_Feral()
 	--Bar:DestroyBarGroups()
 	
 	-- Create bar groups for Feral using new OOP system
-	--TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(2)
+	--TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(2)
 end
 
 local function FillSpellData_Feral()
 	Setup_Feral()
 	specCache.druid_feral.spellsData:FillSpellData()
-	local spells = specCache.druid_feral.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	local spells = specCache.druid_feral.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 
-	TRB.Classes.Druid.FeralSpells.FillBarTextVariables(specCache.druid_feral)
+	TRB.Classes.Mainline.Druid.FeralSpells.FillBarTextVariables(specCache.druid_feral)
 end
 
 local function Setup_Guardian()
@@ -275,15 +275,15 @@ local function Setup_Guardian()
 	--Bar:DestroyBarGroups()
 	
 	-- Create bar groups for Guardian using new OOP system
-	--TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(3)
+	--TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(3)
 end
 
 local function FillSpellData_Guardian()
 	Setup_Guardian()
 	specCache.druid_guardian.spellsData:FillSpellData()
-	local spells = specCache.druid_guardian.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	local spells = specCache.druid_guardian.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 
-	TRB.Classes.Druid.GuardianSpells.FillBarTextVariables(specCache.druid_guardian)
+	TRB.Classes.Mainline.Druid.GuardianSpells.FillBarTextVariables(specCache.druid_guardian)
 end
 
 local function Setup_Restoration()
@@ -293,15 +293,15 @@ local function Setup_Restoration()
 	--Bar:DestroyBarGroups()
 	
 	-- Create bar groups for Restoration using new OOP system
-	--TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(4)
+	--TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(4)
 end
 
 local function FillSpellData_Restoration()
 	Setup_Restoration()
 	specCache.druid_restoration.spellsData:FillSpellData()
-	local spells = specCache.druid_restoration.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+	local spells = specCache.druid_restoration.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 
-	TRB.Classes.Druid.RestorationSpells.FillBarTextVariables(specCache.druid_restoration)
+	TRB.Classes.Mainline.Druid.RestorationSpells.FillBarTextVariables(specCache.druid_restoration)
 end
 
 ---Updates all resource values for Druids (Energy, Rage, Mana, Astral Power, Combo Points)
@@ -597,7 +597,7 @@ shapeshiftFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 shapeshiftFrame:SetScript("OnEvent", UpdateShapeshiftForm)
 
 local function GetCurrentMoonSpell()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local moon = snapshotData.snapshots[spells.newMoon.id]
 	local currentTime = GetTime()
@@ -689,7 +689,7 @@ local function ConstructResourceBar(settings)
 		local ironfurNode = barGroups.ironfur:GetNode(1)
 		if ironfurNode then
 			ironfurNode:ClearThresholds()
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 			local ironfurSettings = settings.bars and settings.bars["ironfur"]
 			local ironfurColors = settings.colors and settings.colors.bars and settings.colors.bars.ironfur
 			local thresholdSize = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
@@ -714,7 +714,7 @@ local function ConstructResourceBar(settings)
 end
 
 local function GetBerserkRemainingTime()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 	local berserkSnapshotBuff = snapshotData.snapshots[spells.berserk.id].buff
@@ -727,7 +727,7 @@ local function GetBerserkRemainingTime()
 end
 
 local function GetEclipseRemainingTime()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local remainingTime = 0
 	local icon = nil
@@ -755,7 +755,7 @@ local function GetEclipseRemainingTime()
 end
 
 local function RefreshLookupData_Balance()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.druid.balance
 	local sharedSettings = TRB.Data.specCache["druid_balance"].settings
@@ -925,7 +925,7 @@ local function RefreshLookupData_Balance()
 end
 
 local function RefreshLookupData_Feral()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.druid.feral
 	local sharedSettings = TRB.Data.specCache["druid_feral"].settings
@@ -1068,7 +1068,7 @@ local function RefreshLookupData_Feral()
 end
 
 local function RefreshLookupData_Guardian()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local specSettings = TRB.Data.settings.druid.guardian
 	local sharedSettings = TRB.Data.specCache["druid_guardian"].settings
@@ -1170,7 +1170,7 @@ local function RefreshLookupData_Guardian()
 end
 
 local function RefreshLookupData_Restoration()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local sharedSettings = TRB.Data.specCache["druid_restoration"].settings
@@ -1425,7 +1425,7 @@ local function RefreshLookupData_Unified()
 end
 
 local function FillSnapshotDataCasting_Balance(spell)
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
 	local currentTime = GetTime()
@@ -1450,7 +1450,7 @@ end
 --TODO: Remove?
 local function UpdateCastingResourceFinal_Restoration()
 	-- Do nothing for now
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	-- Do nothing for now
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
@@ -1466,7 +1466,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local currentTime = GetTime()
 
 	if TRB.Data.character.specId == 1 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 		
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			if spellId == spells.wrath.id then
@@ -1522,11 +1522,11 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
-				local spells = spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+				local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-			local has4pc = TRB.Functions.Item:HasSetBonus(TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey, 4)
+			local has4pc = TRB.Functions.Item:HasSetBonus(TRB.Classes.Mainline.Druid.FeralSpells.midnightSeason2SetKey, 4)
 			local fourPieceBonus = has4pc and spells.midnightSeason2SetBonus.attributes.fourPieceDuration or 0
 			if spellId == spells.berserk.castId then
 				snapshotData.snapshots[spells.berserk.id].buff:InitializeCustom(spells.berserk.duration + fourPieceBonus, currentTime)
@@ -1537,7 +1537,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
@@ -1574,7 +1574,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 
 		end
 	elseif TRB.Data.character.specId == 4 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 		if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 			casting:SnapshotManaSpell()
 			UpdateCastingResourceFinal_Restoration()
@@ -1630,7 +1630,7 @@ local function CalculateIncomingComboPointsForEffect(spell, buffSnapshot, cpSnap
 end
 
 local function UpdateBerserkIncomingComboPoints()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 	local berserk = TRB.Data.snapshotData.snapshots[spells.berserk.id] --[[@as TRB.Classes.Snapshot]]
 	local incarnationAvatarOfAshamane = TRB.Data.snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id] --[[@as TRB.Classes.Snapshot]]
 	if incarnationAvatarOfAshamane.buff.isActive then
@@ -1643,7 +1643,7 @@ end
 ---Checks if Apex Predator's Craving is active by comparing its current energy cost to its base cost
 ---@return boolean # True if Apex Predator's Craving is active (energy cost is free)
 local function IsApexPredatorsCravingActive()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 	if spells == nil or spells.apexPredatorsCraving == nil then
 		return false
 	end
@@ -1665,7 +1665,7 @@ local function UpdateSnapshot_Balance()
 	UpdateSnapshot()
 	GetCurrentMoonSpell()
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 
@@ -1680,13 +1680,13 @@ local function UpdateSnapshot_Feral()
 	UpdateSnapshot()
 	UpdateBerserkIncomingComboPoints()
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 
 	-- Midnight S2 2pc: accumulate combo points spent during Berserk/Avatar of Ashamane and, when
 	-- the window ends, spawn halazzisFury for 1s per spent combo point (1301600, manually tracked).
-	if TRB.Functions.Item:HasSetBonus(TRB.Classes.Druid.FeralSpells.midnightSeason2SetKey, 2) then
+	if TRB.Functions.Item:HasSetBonus(TRB.Classes.Mainline.Druid.FeralSpells.midnightSeason2SetKey, 2) then
 		local windowActive = snapshotData.snapshots[spells.berserk.id].buff.isActive or snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive
 		local currentCp = snapshotData.attributes.comboPoints or 0
 		local previousCp = snapshotData.attributes.berserkPreviousComboPoints or currentCp
@@ -1724,7 +1724,7 @@ end
 local function UpdateSnapshot_Guardian()
 	UpdateSnapshot()
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 
@@ -1777,7 +1777,7 @@ local function UpdateIronfurBar(specSettings, ironfurColors)
 		return
 	end
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local buff = snapshotData.snapshots[spells.ironfur.id].buff
 	local barMax = snapshotData.attributes.ironfurBarMax or 0
@@ -1864,7 +1864,7 @@ local function UpdateIronfurBar(specSettings, ironfurColors)
 end
 
 local thresholdBar = TRB.Classes.ThresholdBar:New()
-local thresholdState = TRB.Classes.ThresholdState:New() --[[@as TRB.Classes.Druid.ThresholdState]]
+local thresholdState = TRB.Classes.ThresholdState:New() --[[@as TRB.Classes.Mainline.Druid.ThresholdState]]
 local thresholdData = TRB.Classes.ThresholdData:New()
 
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
@@ -2189,7 +2189,7 @@ local function UpdateResourceBar()
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 				local flashBar = false
 				local barBorderColor = specSettings.colors.bar.border.color
 
@@ -2209,7 +2209,7 @@ local function UpdateResourceBar()
 					thresholdBar:Set(primaryNode, maxPrimaryBarResource, displayResourceType)
 					thresholdState:Refresh(specCacheSettings)
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Druid.BalanceSpells.thresholdSnowflakes)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Druid.BalanceSpells.thresholdSnowflakes)
 					
 					if specSettings.colors.bar.flashEnabled and spells.starsurge:IsUsable() then-- currentResource >= spells.starsurge:GetPrimaryResourceCost() then
 						flashBar = true
@@ -2350,7 +2350,7 @@ local function UpdateResourceBar()
 		-- Threshold line sounds and the Starsurge and Starfall cues (independent of bar visibility). Line sounds
 		-- belong to the displayed form's Thresholds tab; the spec's own cues play in every form.
 		Threshold:UpdateSpellThresholdAudio(formSpecCacheSettings, snapshotData, displayResourceType)
-		local balanceSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+		local balanceSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "ssReady", balanceSpells.starsurge:IsUsable())
 		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "sfReady", balanceSpells.starfall:IsUsable())
 
@@ -2367,7 +2367,7 @@ local function UpdateResourceBar()
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
@@ -2391,7 +2391,7 @@ local function UpdateResourceBar()
 					thresholdState:Refresh(specCacheSettings)
 					thresholdState.apexPredatorsCraving = apcActive
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Druid.FeralSpells.thresholdSnowflakes)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Druid.FeralSpells.thresholdSnowflakes)
 
 					-- Indicator color system
 					barBorderColor = specSettings.colors.bar.border.color
@@ -2569,7 +2569,7 @@ local function UpdateResourceBar()
 			-- Visibility check reads from specCache so the "Use global settings" toggle is honored.
 			if (currentForm == "cat" or displaySpecId == 2) and IsFormBarVisible(formSpecCacheSettings, "secondary") then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				local berserkTotalCps = snapshots[spells.berserk.id].attributes.ticks
 				local berserkNextTick = snapshots[spells.berserk.id].attributes.tickRate - snapshots[spells.berserk.id].attributes.untilNextTick
@@ -2675,7 +2675,7 @@ local function UpdateResourceBar()
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
@@ -2696,7 +2696,7 @@ local function UpdateResourceBar()
 					thresholdBar:Set(primaryNode, maxPrimaryBarResource, displayResourceType)
 					thresholdState:Refresh(specCacheSettings)
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Druid.GuardianSpells.thresholdSnowflakes)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Druid.GuardianSpells.thresholdSnowflakes)
 				
 					if snapshots[spells.berserk.id].buff.isActive or snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive then
 						local snapshotBuff = snapshots[spells.berserk.id].buff
@@ -2819,7 +2819,7 @@ local function UpdateResourceBar()
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
 				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
@@ -2945,7 +2945,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.druid_balance)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -2991,7 +2991,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.druid_feral)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -3035,7 +3035,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.druid_guardian)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Druid.GuardianSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -3063,7 +3063,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.druid_restoration)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
@@ -3098,7 +3098,7 @@ local function SwitchSpec()
 		Bar:DestroyBarGroups()
 		
 		-- Create bar groups for Restoration using new OOP system
-		TRB.Frames.barGroups = TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Druid.BarGroupsFactory:CreateForSpec(TRB.Data.character.specId)
 	end
 	
 	TRB.Functions.Class:EventRegistration()
@@ -3154,7 +3154,7 @@ TRB.Functions.Bootstrap:RegisterClassModule({
 		if event ~= "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
 			return false
 		end
-		local feralSpells = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.spellsData and TRB.Data.specCache.druid_feral.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells?]]
+		local feralSpells = TRB.Data.specCache and TRB.Data.specCache.druid_feral and TRB.Data.specCache.druid_feral.spellsData and TRB.Data.specCache.druid_feral.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells?]]
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
 
 		if feralSpells ~= nil and snapshotData ~= nil and snapshotData.snapshots ~= nil and baseSpellId == feralSpells.ferociousBiteMinimum.id then
@@ -3267,7 +3267,7 @@ function TRB.Functions.Class:CheckCharacter()
 
 		SetupSharedSettingsForSpec()
 	elseif TRB.Data.character.specId == 2 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 		TRB.Data.character.specName = "feral"
 		TRB.Data.character.compositeKey = "druid_feral"
 		TRB.Data.character.maxResource = TRB.Data.character.maxEnergy
@@ -3288,7 +3288,7 @@ function TRB.Functions.Class:CheckCharacter()
 		
 		SetupSharedSettingsForSpec()
 	elseif TRB.Data.character.specId == 4 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 		TRB.Data.character.specName = "restoration"
 		TRB.Data.character.compositeKey = "druid_restoration"
 		TRB.Data.character.maxResource = TRB.Data.character.maxMana

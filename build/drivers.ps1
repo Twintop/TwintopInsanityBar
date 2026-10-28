@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-	Runs the harness's check drivers for both flavors and fails on any FAIL or error.
+	Runs the harness's check drivers for every flavor and fails on any FAIL or error.
 
 .DESCRIPTION
 	options-tabs builds every options tab for every class and runs the Textures tab checks; it runs once per flavor.
@@ -18,7 +18,7 @@
 	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks). Default: all.
 
 .PARAMETER Flavor
-	Restrict to one flavor (mainline, forever). Default: all.
+	Restrict to one flavor (mainline, forever, classic). Default: all.
 
 .PARAMETER AddonDir
 	The addon checkout to load. Defaults to this repository; point it at another checkout to run these drivers there.
@@ -65,7 +65,7 @@ Get-ChildItem (Join-Path $AddonDir "Flavors") -Directory | ForEach-Object {
 	$flavors += [pscustomobject]@{ Name = $name; Toc = $toc; ClassIds = $classIds }
 }
 if ($flavors.Count -eq 0) {
-	throw "Unknown flavor '$Flavor'. Valid: mainline, forever."
+	throw "Unknown flavor '$Flavor'. Valid: mainline, forever, classic."
 }
 
 $failed = $false

@@ -2,13 +2,13 @@ local _, TRB = ...
 local L = TRB.Localization
 
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Druid = TRB.Classes.Druid or {}
+TRB.Classes.Forever.Druid = TRB.Classes.Forever.Druid or {}
 
 -- Druid (World of Warcraft: Forever): Mana, Rage, Energy, and Combo Points are four separate bars that follow
 -- the shapeshift form. Loads in the Classes stage, before Core's Stage 2 Functions, so of TRB.Functions only the
 -- Stage 1 AudioCues registry is called here.
 
----@class TRB.Classes.Druid.GeneralSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Forever.Druid.GeneralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public maul TRB.Classes.SpellThreshold
 ---@field public primalBite TRB.Classes.SpellThreshold
 ---@field public demoralizingRoar TRB.Classes.SpellThreshold
@@ -34,12 +34,12 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public prowl TRB.Classes.SpellBase
 ---@field public tranquility TRB.Classes.SpellBase
 ---@field public hurricane TRB.Classes.SpellBase
-TRB.Classes.Druid.GeneralSpells = setmetatable({}, { __index = TRB.Classes.SpecializationSpellsBase })
-TRB.Classes.Druid.GeneralSpells.__index = TRB.Classes.Druid.GeneralSpells
+TRB.Classes.Forever.Druid.GeneralSpells = setmetatable({}, { __index = TRB.Classes.SpecializationSpellsBase })
+TRB.Classes.Forever.Druid.GeneralSpells.__index = TRB.Classes.Forever.Druid.GeneralSpells
 
-function TRB.Classes.Druid.GeneralSpells:New()
+function TRB.Classes.Forever.Druid.GeneralSpells:New()
 	local base = TRB.Classes.SpecializationSpellsBase
-	self = setmetatable(base:New(), TRB.Classes.Druid.GeneralSpells) --[[@as TRB.Classes.Druid.GeneralSpells]]
+	self = setmetatable(base:New(), TRB.Classes.Forever.Druid.GeneralSpells) --[[@as TRB.Classes.Forever.Druid.GeneralSpells]]
 
 	-- Bear Form and Dire Bear Form (Rage)
 	self.maul = TRB.Classes.SpellThreshold:New({
@@ -246,12 +246,12 @@ end
 
 ---Fills barTextVariables for the options panel display.
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Druid.GeneralSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Forever.Druid.GeneralSpells.FillBarTextVariables(specCacheEntry)
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Druid.GeneralSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Forever.Druid.GeneralSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Druid.GeneralSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Forever.Druid.GeneralSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#bearForm", icon = spells.bearForm.icon, description = spells.bearForm.name, printInSettings = true },
@@ -288,25 +288,25 @@ function TRB.Classes.Druid.GeneralSpells.FillBarTextVariables(specCacheEntry)
 end
 
 ---@type TRB.Classes.ThresholdSnowflakes
-TRB.Classes.Druid.GeneralSpells.thresholdSnowflakes = {
+TRB.Classes.Forever.Druid.GeneralSpells.thresholdSnowflakes = {
 	after = TRB.Classes.ThresholdLine.UnusableWithoutComboPoints,
 }
 
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["druid_general"] = TRB.Classes.Druid.GeneralSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["druid_general"] = TRB.Classes.Forever.Druid.GeneralSpells.FillBarTextVariables
 
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
 TRB.Data.castbarTickProfilesRegistry["druid_general"] = function()
-	return TRB.Forever.Templates.Classes:CastbarTickProfilesFromSpells(TRB.Classes.Druid.GeneralSpells:New())
+	return TRB.Forever.Templates.Classes:CastbarTickProfilesFromSpells(TRB.Classes.Forever.Druid.GeneralSpells:New())
 end
 
-TRB.Classes.Druid.BarGroupsFactory = {}
-TRB.Classes.Druid.BarGroupsFactory.__index = TRB.Classes.Druid.BarGroupsFactory
+TRB.Classes.Forever.Druid.BarGroupsFactory = {}
+TRB.Classes.Forever.Druid.BarGroupsFactory.__index = TRB.Classes.Forever.Druid.BarGroupsFactory
 
 ---Creates BarGroup instances: Mana is the primary bar, Rage and Energy are custom bars, Combo Points the secondary bar.
 ---@param specId integer
 ---@return table<string, TRB.Classes.BarGroup>
-function TRB.Classes.Druid.BarGroupsFactory:CreateForSpec(specId)
+function TRB.Classes.Forever.Druid.BarGroupsFactory:CreateForSpec(specId)
 	local barGroups = {}
 	if specId ~= 1 then
 		return barGroups
@@ -322,7 +322,7 @@ end
 ---Gets the bar group configuration for a spec.
 ---@param specId integer
 ---@return table
-function TRB.Classes.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Forever.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
 	if specId ~= 1 then
 		return {}
 	end

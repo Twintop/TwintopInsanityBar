@@ -112,7 +112,8 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 	end
 
 	local isFlying = IsFlying()
-	local isGliding = C_PlayerInfo.GetGlidingInfo() or false
+	-- Only a skyriding client glides, and Classic has no GetGlidingInfo.
+	local isGliding = TRB.Flavor.skyriding ~= nil and C_PlayerInfo.GetGlidingInfo() or false
 	local isMountedAny = TRB.Data.character.isMounted or false
 	local canSkyriding = TRB.Data.character.isSkyriding or false
 	local isMountedGround = isMountedAny and not isFlying and not isGliding
@@ -664,7 +665,7 @@ local function ReadUneventedInputs(into)
 	into.targetIsFriendly = hasTarget and UnitIsFriend("player", "target") == true
 	into.targetIsEnemy = hasTarget and UnitCanAttack("player", "target") == true
 	into.isFlying = IsFlying() == true
-	into.isGliding = (C_PlayerInfo.GetGlidingInfo()) == true
+	into.isGliding = TRB.Flavor.skyriding ~= nil and (C_PlayerInfo.GetGlidingInfo()) == true
 	into.isWarMode = C_PvP.IsWarModeDesired() == true
 end
 

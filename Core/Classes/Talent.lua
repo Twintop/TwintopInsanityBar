@@ -63,98 +63,23 @@ end
 ---Loads all of the talents for the current specialization.
 function TRB.Classes.Talents:GetTalents()
 	local talents = {}
-	local configId = C_ClassTalents.GetActiveConfigID()
-	if configId ~= nil then
-		local configInfo = C_Traits.GetConfigInfo(configId)
-		if configInfo ~= nil then
-			for _, treeId in pairs(configInfo.treeIDs) do
-				local nodes = C_Traits.GetTreeNodes(treeId)
-				for _, nodeId in pairs(nodes) do
-					local node = C_Traits.GetNodeInfo(configId, nodeId)
-					local entryId = nil
-					
-					if node.activeEntry ~= nil then
-						entryId = node.activeEntry.entryID
-					elseif node.nextEntry ~= nil then
-						entryId = node.nextEntry.entryID
-					elseif node.entryIDs ~= nil then
-						entryId = node.entryIDs[1]
-					end
-
-					if entryId ~= nil then
-						local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
-						
-						if entryInfo.definitionID ~= nil then
-							local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
-
-							if definitionInfo ~= nil then
-								local spellId = nil
-								if definitionInfo.spellID ~= nil then
-									spellId = definitionInfo.spellID
-								elseif definitionInfo.overriddenSpellID ~= nil then
-									spellId = definitionInfo.overriddenSpellID
-								end
-								if spellId ~= nil then
-									talents[spellId] = TRB.Classes.Talent:New(spellId, node.currentRank, node.maxRanks, node.subTreeActive)
-								end
-							end
-						end
-					end
-				end
-			end
-		end
+	for spellId, rank in pairs(TRB.Flavor.ReadTalentRanks()) do
+		talents[spellId] = TRB.Classes.Talent:New(spellId, rank.currentRank, rank.maxRank, rank.subTreeActive)
 	end
-
 	self.talents = talents
 end
 
 ---Checks if the current talent configuration has changed since the last GetTalents() call.
----Compares spellId+currentRank of every node without overwriting self.talents.
+---Compares spellId+currentRank of every talent without overwriting self.talents.
 ---@return boolean # True if talents have changed, false if they are the same.
 function TRB.Classes.Talents:HaveTalentsChanged()
 	local oldTalents = self.talents or {}
-	local newTalents = {}
-	local configId = C_ClassTalents.GetActiveConfigID()
-	if configId ~= nil then
-		local configInfo = C_Traits.GetConfigInfo(configId)
-		if configInfo ~= nil then
-			for _, treeId in pairs(configInfo.treeIDs) do
-				local nodes = C_Traits.GetTreeNodes(treeId)
-				for _, nodeId in pairs(nodes) do
-					local node = C_Traits.GetNodeInfo(configId, nodeId)
-					local entryId = nil
-
-					if node.activeEntry ~= nil then
-						entryId = node.activeEntry.entryID
-					elseif node.nextEntry ~= nil then
-						entryId = node.nextEntry.entryID
-					elseif node.entryIDs ~= nil then
-						entryId = node.entryIDs[1]
-					end
-
-					if entryId ~= nil then
-						local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
-
-						if entryInfo.definitionID ~= nil then
-							local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
-
-							if definitionInfo ~= nil then
-								local spellId = definitionInfo.spellID or definitionInfo.overriddenSpellID
-								if spellId ~= nil then
-									newTalents[spellId] = node.currentRank
-								end
-							end
-						end
-					end
-				end
-			end
-		end
-	end
+	local newTalents = TRB.Flavor.ReadTalentRanks()
 
 	-- Compare: check if any spellId has a different rank or is new/missing
 	for spellId, rank in pairs(newTalents) do
 		local oldTalent = oldTalents[spellId]
-		if oldTalent == nil or oldTalent.currentRank ~= rank then
+		if oldTalent == nil or oldTalent.currentRank ~= rank.currentRank then
 			return true
 		end
 	end

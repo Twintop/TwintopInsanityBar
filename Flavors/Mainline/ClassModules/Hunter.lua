@@ -51,9 +51,9 @@ local function FillSpecializationCache()
 		maxResource = 100
 	}
 	
-	---@type TRB.Classes.Hunter.BeastMasterySpells
-	specCache.hunter_beastMastery.spellsData.spells = TRB.Classes.Hunter.BeastMasterySpells:New()
-	local spells = specCache.hunter_beastMastery.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+	---@type TRB.Classes.Mainline.Hunter.BeastMasterySpells
+	specCache.hunter_beastMastery.spellsData.spells = TRB.Classes.Mainline.Hunter.BeastMasterySpells:New()
+	local spells = specCache.hunter_beastMastery.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]
 
 	specCache.hunter_beastMastery.snapshotData.attributes.resourceRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -95,9 +95,9 @@ local function FillSpecializationCache()
 		maxResource = 100
 	}
 	
-	---@type TRB.Classes.Hunter.MarksmanshipSpells
-	specCache.hunter_marksmanship.spellsData.spells = TRB.Classes.Hunter.MarksmanshipSpells:New()
-	local spells = specCache.hunter_marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+	---@type TRB.Classes.Mainline.Hunter.MarksmanshipSpells
+	specCache.hunter_marksmanship.spellsData.spells = TRB.Classes.Mainline.Hunter.MarksmanshipSpells:New()
+	local spells = specCache.hunter_marksmanship.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 
 	specCache.hunter_marksmanship.snapshotData.attributes.resourceRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -137,9 +137,9 @@ local function FillSpecializationCache()
 		maxResource2 = 3
 	}
 	
-	---@type TRB.Classes.Hunter.SurvivalSpells
-	specCache.hunter_survival.spellsData.spells = TRB.Classes.Hunter.SurvivalSpells:New()
-	local spells = specCache.hunter_survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	---@type TRB.Classes.Mainline.Hunter.SurvivalSpells
+	specCache.hunter_survival.spellsData.spells = TRB.Classes.Mainline.Hunter.SurvivalSpells:New()
+	local spells = specCache.hunter_survival.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 
 	specCache.hunter_survival.snapshotData.attributes.resourceRegen = 0
 	---@type TRB.Classes.Snapshot
@@ -166,16 +166,16 @@ local function Setup_BeastMastery()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "hunter_beastMastery" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(1, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Hunter.BarGroupsFactory:CreateForSpec(1, UIParent)
 	end
 end
 
 local function FillSpellData_BeastMastery()
 	Setup_BeastMastery()
 	specCache.hunter_beastMastery.spellsData:FillSpellData()
-	local spells = specCache.hunter_beastMastery.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+	local spells = specCache.hunter_beastMastery.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]
 
-	TRB.Classes.Hunter.BeastMasterySpells.FillBarTextVariables(specCache.hunter_beastMastery)
+	TRB.Classes.Mainline.Hunter.BeastMasterySpells.FillBarTextVariables(specCache.hunter_beastMastery)
 end
 
 local function Setup_Marksmanship()
@@ -184,16 +184,16 @@ local function Setup_Marksmanship()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "hunter_marksmanship" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(2, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Hunter.BarGroupsFactory:CreateForSpec(2, UIParent)
 	end
 end
 
 local function FillSpellData_Marksmanship()
 	Setup_Marksmanship()
 	specCache.hunter_marksmanship.spellsData:FillSpellData()
-	local spells = specCache.hunter_marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+	local spells = specCache.hunter_marksmanship.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 
-	TRB.Classes.Hunter.MarksmanshipSpells.FillBarTextVariables(specCache.hunter_marksmanship)
+	TRB.Classes.Mainline.Hunter.MarksmanshipSpells.FillBarTextVariables(specCache.hunter_marksmanship)
 end
 
 local function Setup_Survival()
@@ -202,16 +202,16 @@ local function Setup_Survival()
 	-- Only destroy and recreate bar groups when switching to this spec
 	if TRB.Frames.barGroups == nil or TRB.Data.barConstructedForSpec ~= "hunter_survival" then
 		Bar:DestroyBarGroups()
-		TRB.Frames.barGroups = TRB.Classes.Hunter.BarGroupsFactory:CreateForSpec(3, UIParent)
+		TRB.Frames.barGroups = TRB.Classes.Mainline.Hunter.BarGroupsFactory:CreateForSpec(3, UIParent)
 	end
 end
 
 local function FillSpellData_Survival()
 	Setup_Survival()
 	specCache.hunter_survival.spellsData:FillSpellData()
-	local spells = specCache.hunter_survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	local spells = specCache.hunter_survival.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 
-	TRB.Classes.Hunter.SurvivalSpells.FillBarTextVariables(specCache.hunter_survival)
+	TRB.Classes.Mainline.Hunter.SurvivalSpells.FillBarTextVariables(specCache.hunter_survival)
 end
 
 local function GetSurvivalTipOfTheSpearMaxStacks()
@@ -220,7 +220,7 @@ local function GetSurvivalTipOfTheSpearMaxStacks()
 		return 0
 	end
 
-	local spells = spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 	if talents:IsTalentActive(spells.tipOfTheSpear) then
 		return spells.tipOfTheSpear.maxStacks or 0
 	end
@@ -232,7 +232,7 @@ local function CalculateAbilityResourceValue(resource, threshold)
 	local modifier = 1.0
 	if TRB.Data.character.specId == 2 then
 		if resource > 0 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 			local trueshot = TRB.Data.snapshotData.snapshots[spells.trueshot.id] --[[@as TRB.Classes.Snapshot]]
 			if trueshot.buff.isActive and not threshold then
 				modifier = modifier * trueshot.spell.attributes.resourcePercent
@@ -312,7 +312,7 @@ end
 local function RefreshLookupData_BeastMastery()
 	local specSettings = TRB.Data.settings.hunter.beastMastery
 	local sharedSettings = TRB.Data.specCache["hunter_beastMastery"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
@@ -410,7 +410,7 @@ end
 local function RefreshLookupData_Marksmanship()
 	local specSettings = TRB.Data.settings.hunter.marksmanship
 	local sharedSettings = TRB.Data.specCache["hunter_marksmanship"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
@@ -509,7 +509,7 @@ end
 local function RefreshLookupData_Survival()
 	local specSettings = TRB.Data.settings.hunter.survival
 	local sharedSettings = TRB.Data.specCache["hunter_survival"].settings
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
@@ -646,7 +646,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	local currentTime = GetTime()
 
 	if TRB.Data.character.specId == 1 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]
 		if event == "UNIT_SPELLCAST_START" then
 			if spellId == spells.scareBeast.id then
 				FillSnapshotDataCasting(spells.scareBeast)
@@ -661,7 +661,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
-		local spells = spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 		if event == "UNIT_SPELLCAST_START" then
 			if spellId == spells.aimedShot.id then
 				FillSnapshotDataCasting(spells.aimedShot)
@@ -712,7 +712,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 		if event == "UNIT_SPELLCAST_START" then
 			if spellId == spells.scareBeast.id then
 				FillSnapshotDataCasting(spells.scareBeast)
@@ -738,7 +738,7 @@ local function HunterEvent(self, event, ...)
 		local spellId, rSpellId = ...
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		if TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 			if spellId == spells.raptorStrike.id then
 				if rSpellId == nil or rSpellId ~= spells.raptorSwipe.id then
 					snapshotData.attributes.raptorStrikeOverride = false
@@ -755,13 +755,13 @@ spellEventFrame:SetScript("OnEvent", HunterEvent)
 local function UpdateSnapshot()
 	Character:UpdateSnapshot()
 
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.HunterBaseSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.HunterBaseSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 end
 
 local function UpdateDarkRanger()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells|TRB.Classes.Hunter.MarksmanshipSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells|TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 end
@@ -771,7 +771,7 @@ local function UpdateSnapshot_BeastMastery()
 	UpdateDarkRanger()
 	
 	local currentTime = GetTime()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	
@@ -784,7 +784,7 @@ local function UpdateSnapshot_Marksmanship()
 
 	local currentTime = GetTime()
 	
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData
 	local snapshots = snapshotData.snapshots
@@ -805,7 +805,7 @@ local function UpdateSnapshot_Survival()
 	UpdateSnapshot()
 
 	local currentTime = GetTime()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -872,7 +872,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
 			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
@@ -921,7 +921,7 @@ local function UpdateResourceBar()
 				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 				thresholdState:Refresh(specCacheSettings)
 				thresholdData:Refresh(talents)
-				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Hunter.BeastMasterySpells.thresholdSnowflakes)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Hunter.BeastMasterySpells.thresholdSnowflakes)
 
 				local overcapCurves = scratch.overcapCurves1
 				wipe(overcapCurves)
@@ -996,7 +996,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
 			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
@@ -1045,7 +1045,7 @@ local function UpdateResourceBar()
 				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 				thresholdState:Refresh(specCacheSettings)
 				thresholdData:Refresh(talents)
-				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Hunter.MarksmanshipSpells.thresholdSnowflakes)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Hunter.MarksmanshipSpells.thresholdSnowflakes)
 
 				local overcapCurves = scratch.overcapCurves2
 				wipe(overcapCurves)
@@ -1111,7 +1111,7 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
@@ -1210,7 +1210,7 @@ local function UpdateResourceBar()
 				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 				thresholdState:Refresh(specCacheSettings)
 				thresholdData:Refresh(talents)
-				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Hunter.SurvivalSpells.thresholdSnowflakes)
+				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Hunter.SurvivalSpells.thresholdSnowflakes)
 
 				Bar:ClearPrimaryPulse(barGroups)
 				if focusOvercapCurves.border then
@@ -1310,7 +1310,7 @@ local function UpdateResourceBar()
 
 		-- Tip of the Spear threshold audio cues (independent of bar visibility)
 		do
-			local survivalSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			local survivalSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "tipOfTheSpear",
 				snapshots[survivalSpells.tipOfTheSpear.id].buff.applications or 0)
 		end
@@ -1352,7 +1352,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.hunter_beastMastery)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1384,7 +1384,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.hunter_marksmanship)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1420,7 +1420,7 @@ local function SwitchSpec()
 		Character:LoadFromSpecializationCache(specCache.hunter_survival)
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-		local spells = spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1548,7 +1548,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource2 = "SPELL"
 		local spellsData = TRB.Data.spellsData
 		if spellsData and spellsData.spells then
-			local spells = spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
+			local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 			TRB.Data.resource2Id = spells.tipOfTheSpear.id
 		end
 		TRB.Data.resource2Factor = 1

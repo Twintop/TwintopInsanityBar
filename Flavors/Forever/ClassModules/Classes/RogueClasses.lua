@@ -3,7 +3,7 @@ local _, TRB = ...
 -- Rogue (World of Warcraft: Forever): Energy plus Combo Points. Loads in the Classes stage, before
 -- Core's Functions, so nothing here calls TRB.Functions.
 
----@class TRB.Classes.Rogue.GeneralSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Forever.Rogue.GeneralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public sinisterStrike TRB.Classes.SpellComboPointThreshold
 ---@field public backstab TRB.Classes.SpellComboPointThreshold
 ---@field public mutilate TRB.Classes.SpellComboPointThreshold
@@ -28,7 +28,7 @@ local _, TRB = ...
 ---@field public bladeFlurry TRB.Classes.SpellThreshold
 
 ---Adds the Rogue's Energy-spending abilities to a new spell set.
----@param spells TRB.Classes.Rogue.GeneralSpells
+---@param spells TRB.Classes.Forever.Rogue.GeneralSpells
 local function FillSpells(spells)
 	-- Combo point generators
 	spells.sinisterStrike = TRB.Classes.SpellComboPointThreshold:New({

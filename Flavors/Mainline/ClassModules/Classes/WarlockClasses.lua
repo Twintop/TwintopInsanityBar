@@ -1,20 +1,20 @@
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
-TRB.Classes.Warlock = TRB.Classes.Warlock or {}
+TRB.Classes.Mainline.Warlock = TRB.Classes.Mainline.Warlock or {}
 
----@class TRB.Classes.Warlock.AfflictionSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Warlock.AfflictionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public seedOfCorruption TRB.Classes.SpellBase
 ---@field public unstableAffliction TRB.Classes.SpellBase
 ---@field public darkHarvest TRB.Classes.SpellBase
 ---@field public shadowOfDeath TRB.Classes.SpellBase
 ---@field public shardInstability TRB.Classes.SpellBase
-TRB.Classes.Warlock.AfflictionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Warlock.AfflictionSpells.__index = TRB.Classes.Warlock.AfflictionSpells
+TRB.Classes.Mainline.Warlock.AfflictionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Warlock.AfflictionSpells.__index = TRB.Classes.Mainline.Warlock.AfflictionSpells
 
-function TRB.Classes.Warlock.AfflictionSpells:New()
+function TRB.Classes.Mainline.Warlock.AfflictionSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Warlock.AfflictionSpells) --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Warlock.AfflictionSpells) --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 
     self.seedOfCorruption = TRB.Classes.SpellBase:New({
         id = 27243,
@@ -47,13 +47,13 @@ end
 
 ---Fills barTextVariables for Affliction Warlock options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Warlock.AfflictionSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Warlock.AfflictionSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Warlock.AfflictionSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.AfflictionSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#seedOfCorruption", icon = spells.seedOfCorruption.icon, description = spells.seedOfCorruption.name, printInSettings = true },
@@ -90,7 +90,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Affliction, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Warlock.AfflictionSpells.GetCastbarTickProfiles()
 	return {
 		-- Health Funnel
 		[755] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
@@ -105,7 +105,7 @@ function TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles()
     }
 end
 
----@class TRB.Classes.Warlock.DemonologySpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Warlock.DemonologySpells : TRB.Classes.SpecializationSpellsBase
 ---@field public shadowBolt TRB.Classes.SpellBase
 ---@field public demonbolt TRB.Classes.SpellBase
 ---@field public infernalBolt TRB.Classes.SpellBase
@@ -122,13 +122,13 @@ end
 ---@field public demonicCore TRB.Classes.SpellBase
 ---@field public diabolicRitual TRB.Classes.SpellBase
 ---@field public demonicArt TRB.Classes.SpellBase
-TRB.Classes.Warlock.DemonologySpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Warlock.DemonologySpells.__index = TRB.Classes.Warlock.DemonologySpells
+TRB.Classes.Mainline.Warlock.DemonologySpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Warlock.DemonologySpells.__index = TRB.Classes.Mainline.Warlock.DemonologySpells
 
-function TRB.Classes.Warlock.DemonologySpells:New()
+function TRB.Classes.Mainline.Warlock.DemonologySpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Warlock.DemonologySpells) --[[@as TRB.Classes.Warlock.DemonologySpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Warlock.DemonologySpells) --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 
     self.shadowBolt = TRB.Classes.SpellBase:New({
         id = 686,
@@ -227,13 +227,13 @@ end
 
 ---Fills barTextVariables for Demonology Warlock options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Warlock.DemonologySpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Warlock.DemonologySpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Warlock.DemonologySpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warlock.DemonologySpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#shadowBolt", icon = spells.shadowBolt.icon, description = spells.shadowBolt.name, printInSettings = true },
@@ -286,7 +286,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Demonology, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Warlock.DemonologySpells.GetCastbarTickProfiles()
 	return {
 		-- Health Funnel
 		[755] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
@@ -296,20 +296,20 @@ function TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles()
 end
 
 
----@class TRB.Classes.Warlock.DestructionSpells : TRB.Classes.SpecializationSpellsBase
+---@class TRB.Classes.Mainline.Warlock.DestructionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public incinerate TRB.Classes.SpellBase
 ---@field public diabolicEmbers TRB.Classes.SpellBase
 ---@field public soulFire TRB.Classes.SpellBase
 ---@field public infernalBolt TRB.Classes.SpellBase
 ---@field public chaosBolt TRB.Classes.SpellBase
 ---@field public ruination TRB.Classes.SpellBase
-TRB.Classes.Warlock.DestructionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
-TRB.Classes.Warlock.DestructionSpells.__index = TRB.Classes.Warlock.DestructionSpells
+TRB.Classes.Mainline.Warlock.DestructionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Mainline.Warlock.DestructionSpells.__index = TRB.Classes.Mainline.Warlock.DestructionSpells
 
-function TRB.Classes.Warlock.DestructionSpells:New()
+function TRB.Classes.Mainline.Warlock.DestructionSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Warlock.DestructionSpells) --[[@as TRB.Classes.Warlock.DestructionSpells]]
+    self = setmetatable(base:New(), TRB.Classes.Mainline.Warlock.DestructionSpells) --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 
     self.incinerate = TRB.Classes.SpellBase:New({
         id = 29722,
@@ -348,13 +348,13 @@ end
 
 ---Fills barTextVariables for Destruction Warlock options panel display
 ---@param specCacheEntry TRB.Classes.SpecCache
-function TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables(specCacheEntry)
+function TRB.Classes.Mainline.Warlock.DestructionSpells.FillBarTextVariables(specCacheEntry)
 	local L = TRB.Localization
 	if getmetatable(specCacheEntry.spellsData.spells) == TRB.Classes.SpecializationSpellsBase then
-		specCacheEntry.spellsData.spells = TRB.Classes.Warlock.DestructionSpells:New()
+		specCacheEntry.spellsData.spells = TRB.Classes.Mainline.Warlock.DestructionSpells:New()
 	end
 	specCacheEntry.spellsData:FillSpellData()
-	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Warlock.DestructionSpells]]
+	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#incinerate", icon = spells.incinerate.icon, description = spells.incinerate.name, printInSettings = true },
@@ -391,7 +391,7 @@ end
 
 ---Gets built-in castbar channel tick profiles for Destruction, keyed by spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.Settings.CastbarTickProfile>
-function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles()
+function TRB.Classes.Mainline.Warlock.DestructionSpells.GetCastbarTickProfiles()
 	return {
 		-- Health Funnel
 		[755] = { mode = "fixedCount", baseDuration = 5, tickCount = 5 },
@@ -405,7 +405,7 @@ end
 ---Gets built-in castbar tick modifiers for Discipline (talent/buff-conditional bonus ticks), keyed by
 ---channel spell id. Fresh tables each call.
 ---@return table<integer, TRB.Classes.CastbarTickModifier[]>
-function TRB.Classes.Warlock.DestructionSpells.GetCastbarTickModifiers()
+function TRB.Classes.Mainline.Warlock.DestructionSpells.GetCastbarTickModifiers()
 	return {
 		-- Channel Demonfire
 		[196447] = {
@@ -426,15 +426,15 @@ end
     Destruction: Primary bar (N=1) + Soul Shards (N=5) - percentage fill (partial shards)
 ]]
 
----@class TRB.Classes.Warlock.BarGroupsFactory
-TRB.Classes.Warlock.BarGroupsFactory = {}
-TRB.Classes.Warlock.BarGroupsFactory.__index = TRB.Classes.Warlock.BarGroupsFactory
+---@class TRB.Classes.Mainline.Warlock.BarGroupsFactory
+TRB.Classes.Mainline.Warlock.BarGroupsFactory = {}
+TRB.Classes.Mainline.Warlock.BarGroupsFactory.__index = TRB.Classes.Mainline.Warlock.BarGroupsFactory
 
 ---Creates BarGroup instances for the specified Warlock specialization
 ---@param specId integer # 1=Affliction, 2=Demonology, 3=Destruction
 ---@param parentFrame Frame # The parent frame to attach bar groups to
 ---@return table<string, TRB.Classes.BarGroup> # Table of bar groups keyed by name
-function TRB.Classes.Warlock.BarGroupsFactory:CreateForSpec(specId, parentFrame)
+function TRB.Classes.Mainline.Warlock.BarGroupsFactory:CreateForSpec(specId, parentFrame)
     local barGroups = {}
 
     -- Primary mana bar (1 node)
@@ -468,7 +468,7 @@ end
 ---Gets the bar group configuration for a spec
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
-function TRB.Classes.Warlock.BarGroupsFactory:GetSpecConfiguration(specId)
+function TRB.Classes.Mainline.Warlock.BarGroupsFactory:GetSpecConfiguration(specId)
     return {
         primary = {
             maxNodes = 1,
@@ -490,19 +490,19 @@ end
 
 -- Register barTextVariables fillers for cross-class options panel support
 TRB.Data.barTextVariablesRegistry = TRB.Data.barTextVariablesRegistry or {}
-TRB.Data.barTextVariablesRegistry["warlock_affliction"] = TRB.Classes.Warlock.AfflictionSpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["warlock_demonology"] = TRB.Classes.Warlock.DemonologySpells.FillBarTextVariables
-TRB.Data.barTextVariablesRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["warlock_affliction"] = TRB.Classes.Mainline.Warlock.AfflictionSpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["warlock_demonology"] = TRB.Classes.Mainline.Warlock.DemonologySpells.FillBarTextVariables
+TRB.Data.barTextVariablesRegistry["warlock_destruction"] = TRB.Classes.Mainline.Warlock.DestructionSpells.FillBarTextVariables
 
 -- Register built-in castbar channel tick profiles for spec default settings
 TRB.Data.castbarTickProfilesRegistry = TRB.Data.castbarTickProfilesRegistry or {}
-TRB.Data.castbarTickProfilesRegistry["warlock_affliction"] = TRB.Classes.Warlock.AfflictionSpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["warlock_demonology"] = TRB.Classes.Warlock.DemonologySpells.GetCastbarTickProfiles
-TRB.Data.castbarTickProfilesRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warlock_affliction"] = TRB.Classes.Mainline.Warlock.AfflictionSpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warlock_demonology"] = TRB.Classes.Mainline.Warlock.DemonologySpells.GetCastbarTickProfiles
+TRB.Data.castbarTickProfilesRegistry["warlock_destruction"] = TRB.Classes.Mainline.Warlock.DestructionSpells.GetCastbarTickProfiles
 
 -- Register built-in castbar tick modifiers (talent/buff-conditional bonus ticks)
 TRB.Data.castbarTickModifiersRegistry = TRB.Data.castbarTickModifiersRegistry or {}
-TRB.Data.castbarTickModifiersRegistry["warlock_destruction"] = TRB.Classes.Warlock.DestructionSpells.GetCastbarTickModifiers
+TRB.Data.castbarTickModifiersRegistry["warlock_destruction"] = TRB.Classes.Mainline.Warlock.DestructionSpells.GetCastbarTickModifiers
 
 -- Register audio cue vocabularies
 do
