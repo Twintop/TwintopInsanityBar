@@ -21,7 +21,7 @@ TRB.Details.coreNewsContent = [====[
 
 - [#279](#279) Fix threshold lines not using the unusable color while their ability is on cooldown.
 - [#279](#279) Fix threshold icons not showing their ability's cooldown, or the recharge of an ability with charges.
-- [#279](#279) Threshold lines for abilities with no range, such as Spinning Crane Kick (Brewmaster) and Black Powder, never use the out of range color.
+- [#279](#279) Threshold lines for abilities with no range, such as Spinning Crane Kick (Brewmaster) and Black Powder, are never out of range.
 - [#279](#279) Improve threshold line update performance for abilities with a cooldown.
 - [#279](#279) Improve threshold line update performance with no target.
 - [#279](#279) Add Show cooldown swipe on icons, Show cooldown time on icons, and While an Ability with Charges Recharges options, shared and to each threshold.

@@ -466,6 +466,10 @@ local function CharacterChange(self, event, ...)
 		TRB.Data.snapshotData.casting:RefreshCost()
 	elseif event == "SPELLS_CHANGED" then
 		TRB.Functions.Character:RefreshThresholdSpellsLearned()
+		-- A frame later, so a flavor's own SPELLS_CHANGED handler has resolved the new ranks first.
+		C_Timer.After(0, function()
+			TRB.Functions.Character:RefreshSpellRangeChecksForSpellbook()
+		end)
 	elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" then
 		local unitTarget = ...
 		if unitTarget == "player" then
@@ -902,6 +906,34 @@ function TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.cache.values.range = {}
 	-- A rank learned since the last read may answer differently.
 	TRB.Data.cache.values.rangeInfo = {}
+end
+
+---Turns range checks off and on again when the spellbook changed a range-checked spell: a new rank, or one that
+---now has a range.
+function TRB.Functions.Character:RefreshSpellRangeChecksForSpellbook()
+	local compositeKey = TRB.Data.character.compositeKey
+	local specCache = TRB.Data.specCache[compositeKey or ""] ---@type TRB.Classes.SpecCache?
+	if not TRB.Data.specSupported or specCache == nil or not NeedsSpellRangeChecks(compositeKey) then
+		return
+	end
+	-- A spell read before it was learned may answer differently now.
+	TRB.Data.cache.values.rangeInfo = {}
+	local current = {}
+	local changed = false
+	for _, v in pairs(specCache.spellsData.spells) do
+		if (v:Is("TRB.Classes.SpellThreshold") or v:Is("TRB.Classes.SpellComboPointThreshold")) and v:IsValid() and v.rangeCheck == true then
+			local rankedId = v:GetRankedId()
+			current[rankedId] = true
+			changed = changed or (not rangeChecksOn[rankedId] and v:HasRange())
+		end
+	end
+	for id in pairs(rangeChecksOn) do
+		changed = changed or not current[id]
+	end
+	if changed then
+		self:DisableSpellRangeCheckUpdate()
+		self:EnableSpellRangeCheckUpdate()
+	end
 end
 
 ---Turns range checks on or off after a setting that decides whether the live spec needs them changes.
@@ -1459,8 +1491,7 @@ function TRB.Functions.Character:ResetCaches()
 	TRB.Functions.CooldownManager:ResetCaches()
 	TRB.Functions.CooldownManager:MarkIndexDirty()
 	TRB.Functions.Character:ResetColorCaches()
-	-- We don't do range check cache reset here since we need to track what we've enabled and clean it up when we change specs
-	--TRB.Data.cache.values.range = {}
+	-- Range results are cleared by a target change and by turning range checks off, not here.
 	TRB.Functions.Character:GetThresholdSpells(TRB.Data.spellsData.spells, TRB.Data.talents)
 end
 

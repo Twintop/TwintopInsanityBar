@@ -1036,7 +1036,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 
 	-- ===== BEHAVIOR OVERRIDE SECTION =====
 	detailYCoord = detailYCoord - 40
-	local behaviorHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailBehaviorHeader"], oUi.xCoord, detailYCoord)
+	controls.thresholdDetailBehaviorHeader = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(detailScrollChild, L["ThresholdDetailBehaviorHeader"], oUi.xCoord, detailYCoord)
+	local behaviorHeader = controls.thresholdDetailBehaviorHeader
 	behaviorHeader.font:SetFontObject(GameFontNormalLarge)
 	behaviorHeader.font:SetTextColor(1, 1, 1)
 	behaviorHeader:Hide()
@@ -1390,7 +1391,8 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		end
 
 		local hasUnusable = spellObj ~= nil and spellObj.hasCooldown == true
-		local hasOutOfRange = spellObj ~= nil and spellObj.rangeCheck ~= false
+		-- A spell with no range is never out of range.
+		local hasOutOfRange = spellObj ~= nil and spellObj.rangeCheck ~= false and spellObj:HasRange()
 		detailHasUnusable = hasUnusable
 		detailHasCharges = spellObj ~= nil and spellObj.hasCooldown == true and spellObj.hasCharges == true
 		detailHasOutOfRange = hasOutOfRange

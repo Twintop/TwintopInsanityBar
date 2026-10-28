@@ -244,9 +244,14 @@ function hooks.afterEvents(ctx)
 			inRange = range
 			TRB.Data.character.inCombat = inCombat
 			TRB.Functions.Character:InvalidateSpellRanges()
-			local ok = pcall(Threshold.UpdateSpellThresholds, Threshold, bar, state, data, snowflakes)
+			local ok, err = pcall(Threshold.UpdateSpellThresholds, Threshold, bar, state, data, snowflakes)
+			-- An error isn't a hidden line.
+			if not ok then
+				check(key .. ": the line draws without an error", false, tostring(err))
+				return nil
+			end
 			local frame = nodeThresholds[1]
-			return ok and frame ~= nil and frame:IsShown()
+			return frame ~= nil and frame:IsShown()
 		end
 		local function SetShared(enabled, outOfCombat)
 			shared.enabled, shared.outOfCombat = enabled, outOfCombat
@@ -290,6 +295,68 @@ function hooks.afterEvents(ctx)
 		TRB.Functions.Character:InvalidateSpellRanges()
 	else
 		print("INFO " .. tostring(TRB.Data.character.compositeKey) .. " has no threshold line that needs a target")
+	end
+
+	-- A custom threshold line has no ability, so hiding with no valid target passes it by.
+	do
+		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		local guid = "trbDriverNoTarget"
+		local dictionaryKey = TRB.Functions.Settings:GetCustomThresholdDictionaryKey(guid)
+		local createdList = settings.thresholds.customThresholds == nil
+		settings.thresholds.customThresholds = settings.thresholds.customThresholds or {}
+		settings.thresholds.customThresholds[guid] = TRB.Functions.Settings:NormalizeCustomThresholdLine({ guid = guid, name = "Driver", barTarget = "primary", value = 1,
+			iconSourceType = "none", iconSourceId = 0 }, guid)
+		settings.thresholds.thresholdDictionary[dictionaryKey] = TRB.Functions.Settings:DefaultThresholdDictionaryEntry(true)
+		local shared = settings.thresholds.behavior.hideNoTarget
+		local saved = { shared.enabled, shared.outOfCombat, TRB.Data.character.inCombat, Threshold.AdjustThresholdDisplay }
+		local reached = 0
+		Threshold.AdjustThresholdDisplay = function(self, spell, ...)
+			if spell.settingKey == dictionaryKey then
+				reached = reached + 1
+			end
+			return saved[4](self, spell, ...)
+		end
+		local function Draw()
+			return pcall(Threshold.UpdateCustomThresholdLines, Threshold, settings, TRB.Frames.barGroups)
+		end
+		local baseOk, baseErr = Draw()
+		if baseOk and reached > 0 then
+			shared.enabled, shared.outOfCombat = true, true
+			TRB.Data.character.inCombat = true
+			local ok, err = Draw()
+			check("a custom threshold line draws with hiding with no valid target on", ok, tostring(err))
+		else
+			print("INFO no custom threshold line drew in the harness: " .. tostring(baseErr))
+		end
+		shared.enabled, shared.outOfCombat, TRB.Data.character.inCombat, Threshold.AdjustThresholdDisplay = saved[1], saved[2], saved[3], saved[4]
+		settings.thresholds.customThresholds[guid] = nil
+		settings.thresholds.thresholdDictionary[dictionaryKey] = nil
+		if createdList then
+			settings.thresholds.customThresholds = nil
+		end
+		Draw()
+	end
+
+	-- With no line castable on enemies, a spec's tab leaves out the no-target rows, and the whole section without a cooldown line.
+	do
+		local harmful = G.C_Spell.IsSpellHarmful
+		G.C_Spell.IsSpellHarmful = function() return false end
+		TRB.Data.cache.values.rangeInfo = {}
+		local entry = TRB.Functions.Character:GetSpecRegistryEntry(TRB.Data.character.compositeKey)
+		local hasCooldownLine = false
+		for _, spell in pairs(TRB.Data.specCache[TRB.Data.character.compositeKey].spellsData.spells) do
+			if type(spell) == "table" and spell.Is ~= nil and (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell.hasCooldown == true then
+				hasCooldownLine = true
+			end
+		end
+		local controls = { checkBoxes = {}, colors = {}, dropDown = {} }
+		local ok, y = pcall(TRB.Functions.OptionsUi.Thresholds.GenerateThresholdLineBehaviorOptions, TRB.Functions.OptionsUi.Thresholds, G.CreateFrame("Frame"), controls,
+			TRB.Data.settings[entry.className][entry.specName], entry.classId, entry.specId, -100)
+		check("with no line castable on enemies, the Threshold Line Behavior section offers no target rows",
+			ok and controls.checkBoxes.thresholdBehaviorHideNoTarget == nil and (controls.checkBoxes.thresholdBehaviorTrackCooldowns ~= nil) == hasCooldownLine
+			and (hasCooldownLine or y == -100), tostring(y))
+		G.C_Spell.IsSpellHarmful = harmful
+		TRB.Data.cache.values.rangeInfo = {}
 	end
 
 	-- The tracked set, as the tracker builds it: learned cooldown lines plus the descriptor's cooldownSpells.
@@ -851,9 +918,14 @@ function hooks.afterEvents(ctx)
 			if secondsLeft ~= nil then
 				now = cooldown.endsAt - secondsLeft
 			end
-			local tickOk = Tick()
+			local tickOk, tickErr = Tick()
+			-- An error isn't a hidden line.
+			if not tickOk then
+				check(key .. ": the line draws without an error", false, tickErr)
+				return nil
+			end
 			local frame = nodeThresholds[1]
-			return tickOk and frame ~= nil and frame:IsShown()
+			return frame ~= nil and frame:IsShown()
 		end
 		SetLine("behavior", nil)
 		StartCooldown(true)

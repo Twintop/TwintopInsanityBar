@@ -86,7 +86,7 @@ function hooks.afterLoad(ctx)
 		drv.thresholdPanels = {}
 		local origList = TL.GenerateThresholdListPanel
 		TL.GenerateThresholdListPanel = function(self, parent, controls, spec, classId_, specId_, ...)
-			thresholdCtx = { classId = classId_, specId = specId_, spec = spec }
+			thresholdCtx = { classId = classId_, specId = specId_, spec = spec, controls = controls }
 			drv.thresholdPanels[#drv.thresholdPanels + 1] = thresholdCtx
 			local r = { origList(self, parent, controls, spec, classId_, specId_, ...) }
 			thresholdCtx = nil
@@ -1191,7 +1191,8 @@ function hooks.afterEvents(ctx)
 			local wrong, withCooldown, withoutCooldown, withCharges = {}, 0, 0, 0
 			local trackingWrong, unusableKept = {}, 0
 			local unusableHiddenGrayed, unusableHiddenLive, windowColorChecked = 0, 0, 0
-			local withTarget, rangeRefreshes = 0, 0
+			local withTarget, targetOnly, rangeRefreshes = 0, 0, 0
+			local noRangeChecked = {}
 			local refreshRange = TRB_.Functions.Character.RefreshSpellRangeCheckUpdate
 			TRB_.Functions.Character.RefreshSpellRangeCheckUpdate = function(...)
 				rangeRefreshes = rangeRefreshes + 1
@@ -1252,6 +1253,31 @@ function hooks.afterEvents(ctx)
 								local noTargetDropdown = rawget(G, prefix .. "NoTarget")
 								local needsTarget = spell:NeedsTarget()
 								if needsTarget then withTarget = withTarget + 1 end
+								local behaviorHeader = panel.controls ~= nil and panel.controls.thresholdDetailBehaviorHeader or nil
+								if needsTarget and not hasCooldown then targetOnly = targetOnly + 1 end
+								if behaviorHeader == nil or (behaviorHeader.__shown == true) ~= (needsTarget or hasCooldown) then
+									problems[#problems + 1] = "behaviorHeader=" .. tostring(behaviorHeader and behaviorHeader.__shown)
+								end
+								-- A spell with no range offers no out-of-range settings.
+								local oorDropdown = rawget(G, prefix .. "ColorOorMode")
+								local hasRange = spell.rangeCheck ~= false and spell:HasRange()
+								if oorDropdown == nil or (oorDropdown.__shown == true) ~= hasRange then
+									problems[#problems + 1] = "outOfRange=" .. tostring(oorDropdown and oorDropdown.__shown)
+								elseif hasRange and compositeKey ~= nil and not noRangeChecked[compositeKey] then
+									-- Once per spec, the same line as if its spell had no range.
+									noRangeChecked[compositeKey] = true
+									local spellHasRange = G.C_Spell.SpellHasRange
+									local rankedId = spell:GetRankedId()
+									G.C_Spell.SpellHasRange = function(id) return id ~= rankedId end
+									TRB_.Data.cache.values.rangeInfo = {}
+									st.events.OnClick(nil, nil, st.rows, nil, index, index, 1, st, "LeftButton")
+									if oorDropdown.__shown == true then
+										problems[#problems + 1] = "noRange:outOfRange shown"
+									end
+									G.C_Spell.SpellHasRange = spellHasRange
+									TRB_.Data.cache.values.rangeInfo = {}
+									st.events.OnClick(nil, nil, st.rows, nil, index, index, 1, st, "LeftButton")
+								end
 								if noTargetDropdown == nil or noTargetDropdown.__generator == nil or (noTargetDropdown.__shown == true) ~= needsTarget then
 									problems[#problems + 1] = "noTarget=" .. tostring(noTargetDropdown and noTargetDropdown.__shown)
 								elseif needsTarget then
@@ -1404,7 +1430,9 @@ function hooks.afterEvents(ctx)
 			print(string.format("INFO untracked lines whose Unusable row stays live: %d", unusableKept))
 			print(string.format("INFO lines hidden while Unusable whose While on Cooldown grays out: %d, stays live: %d, live from a window color: %d",
 				unusableHiddenGrayed, unusableHiddenLive, windowColorChecked))
-			print(string.format("INFO lines offering With No Valid Target: %d", withTarget))
+			local noRangeSpecs = 0
+			for _ in pairs(noRangeChecked) do noRangeSpecs = noRangeSpecs + 1 end
+			print(string.format("INFO lines offering With No Valid Target: %d, %d of them without a cooldown; no-range lines checked on %d specs", withTarget, targetOnly, noRangeSpecs))
 			table.sort(trackingWrong)
 			check("a line with a cooldown offers Cooldown Tracking, and untracked, its cooldown-only options gray out with the reason (" .. table.concat(trackingWrong, "; ") .. ")",
 				#trackingWrong == 0 and withCooldown > 0 and unusableHiddenGrayed > 0 and withTarget > 0)

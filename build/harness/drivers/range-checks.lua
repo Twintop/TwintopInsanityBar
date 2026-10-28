@@ -254,8 +254,30 @@ function hooks.afterEvents(ctx)
 		check("a spell with no range gets no range checks, and is never out of range or without a target",
 			enabledIds[id] == nil and rangeSpell:GetIsSpellInRange() and not rangeSpell:HasNoValidTarget())
 		desktop.C_Spell.IsSpellInRange, desktop.C_Spell.SpellHasRange = isSpellInRange, spellHasRange
-		Character:DisableSpellRangeCheckUpdate()
-		Character:EnableSpellRangeCheckUpdate()
+		-- Read before it had a range, as a spell read before it's learned can be: a spellbook change catches it up.
+		stubs.fireEvents("SPELLS_CHANGED", ctx.addonName)
+		check("a spell that has a range after a spellbook change gets range checks", enabledIds[id] == true)
+
+		-- A new rank gets range checks on a spellbook change, and the old rank loses them.
+		local rankedSpell = nil
+		for _, spell in pairs(TRB.Data.specCache[TRB.Data.character.compositeKey].spellsData.spells) do
+			if rankedSpell == nil and type(spell) == "table" and spell.Is ~= nil and (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold"))
+				and spell.rankIds ~= nil and #spell.rankIds > 1 and enabledIds[spell:GetRankedId()] and spell:GetRankedId() ~= spell.rankIds[#spell.rankIds] then
+				rankedSpell = spell
+			end
+		end
+		if rankedSpell ~= nil then
+			local oldRank, newRank = rankedSpell:GetRankedId(), rankedSpell.rankIds[#rankedSpell.rankIds]
+			local isSpellKnown = desktop.C_SpellBook.IsSpellKnown
+			desktop.C_SpellBook.IsSpellKnown = function(spellId, ...) return spellId == newRank or isSpellKnown(spellId, ...) end
+			stubs.fireEvents("SPELLS_CHANGED", ctx.addonName)
+			check("a new rank gets range checks on a spellbook change, and the old rank loses them",
+				rankedSpell:GetRankedId() == newRank and enabledIds[newRank] == true and enabledIds[oldRank] == nil)
+			desktop.C_SpellBook.IsSpellKnown = isSpellKnown
+			stubs.fireEvents("SPELLS_CHANGED", ctx.addonName)
+		else
+			print("INFO " .. tostring(TRB.Data.character.compositeKey) .. " has no ranked line with range checks on")
+		end
 	else
 		print("INFO " .. tostring(TRB.Data.character.compositeKey) .. " has no line with range checks on")
 	end
@@ -404,6 +426,26 @@ function hooks.afterEvents(ctx)
 		CheckOn(live.compositeKey .. " with one line hiding with no valid target", live.compositeKey)
 		liveThresholds.thresholdDictionary[lineKey].behavior = savedBehavior
 	end
+
+	-- Unticking Use Global on Threshold Line Behavior moves the spec onto its own settings, which may hide lines with no valid target.
+	local liveSpec = TRB.Data.settings[live.className][live.specName]
+	local liveGlobal = TRB.Data.settings.core.global[live.className][live.specName]
+	local ownHide, usedGlobal = liveSpec.thresholds.behavior.hideNoTarget.enabled, liveGlobal.thresholdBehavior
+	liveGlobal.thresholdBehavior = true
+	liveSpec.thresholds.behavior.hideNoTarget.enabled = true
+	check(live.compositeKey .. " on Global's Threshold Line Behavior, its own hiding lines with no valid target: range checks are off", UseOwnColorsWithoutRangeChecks())
+	local behaviorControls = { colors = {}, checkBoxes = {}, dropDown = {} }
+	TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions(desktop.CreateFrame("Frame"), behaviorControls, liveSpec, live.classId, live.specId, 0)
+	local useGlobalBehavior = behaviorControls.checkBoxes.useGlobalThresholdBehavior
+	if useGlobalBehavior ~= nil then
+		useGlobalBehavior.GetChecked = function() return false end
+		useGlobalBehavior.__scripts.OnClick(useGlobalBehavior)
+		CheckOn(live.compositeKey .. " after unticking its Use Global Threshold Line Behavior box", live.compositeKey)
+	else
+		print("INFO " .. live.compositeKey .. " has no Threshold Line Behavior section")
+	end
+	liveSpec.thresholds.behavior.hideNoTarget.enabled, liveGlobal.thresholdBehavior = ownHide, usedGlobal
+	Character:FillSpecializationCacheSettings(live.className, live.specName)
 
 	check(live.compositeKey .. " with no settings needing range checks once more: range checks are off", UseOwnColorsWithoutRangeChecks())
 	for _, entry in ipairs(entries) do

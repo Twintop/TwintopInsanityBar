@@ -474,7 +474,7 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineBehaviorOptions
 	if hasTargetRows then
 		if hasCooldownRows then
 			-- The last slider's value box sits below its row.
-			yCoord = yCoord - 50
+			yCoord = yCoord - 40
 		end
 		yCoord = self:GenerateThresholdLineTargetBehaviorOptions(parent, controls, spec, namePrefix, yCoord)
 		-- Two rows are shorter than the cover's message and buttons.
