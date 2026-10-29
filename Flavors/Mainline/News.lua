@@ -103,7 +103,7 @@ TRB.Flavor.newsContent = [====[
 
 - [#279](#279) Fix the Cheap Shot threshold line not tracking Shot in the Dark's second charge.
 - [#279](#279) Fix the Goremaw's Bite threshold line using the wrong spell.
-- Remove the Shadow Techniques stored combo point color from the combo point bar.
+- [#909](#909) Remove the Shadow Techniques stored combo point color from the combo point bar.
 
 ## Warrior
 
