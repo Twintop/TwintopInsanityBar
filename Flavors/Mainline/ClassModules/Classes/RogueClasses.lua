@@ -422,6 +422,11 @@ TRB.Classes.Mainline.Rogue.AssassinationSpells.thresholdSnowflakes = {
 ---@class TRB.Classes.Mainline.Rogue.OutlawSpells : TRB.Classes.Mainline.Rogue.RogueBaseSpells
 ---@field public opportunity TRB.Classes.SpellBase
 ---@field public restlessBlades TRB.Classes.SpellBase
+---@field public oneOfAKind TRB.Classes.SpellBase
+---@field public doubleTrouble TRB.Classes.SpellBase
+---@field public tripleThreat TRB.Classes.SpellBase
+---@field public jackpot TRB.Classes.SpellBase
+---@field public dragonBoneDice TRB.Classes.SpellBase
 ---@field public bladeRush TRB.Classes.SpellBase
 ---@field public keepItRolling TRB.Classes.SpellBase
 ---@field public floatLikeAButterfly TRB.Classes.SpellBase
@@ -522,7 +527,8 @@ function TRB.Classes.Mainline.Rogue.OutlawSpells:New()
 
     self.restlessBlades = TRB.Classes.SpellBase:New({
         id = 79096,
-        isTalent = true
+        isTalent = true,
+        cooldownReductionPerComboPoint = 1
     })
     self.rollTheBones = TRB.Classes.SpellThreshold:New({
         id = 1214909,
@@ -534,6 +540,35 @@ function TRB.Classes.Mainline.Rogue.OutlawSpells:New()
         cooldownWindowColor = "restlessBlades",
         rangeCheck = false,
         category = "utility"
+    })
+
+    -- Roll the Bones outcomes
+    self.oneOfAKind = TRB.Classes.SpellBase:New({
+        id = 1214933,
+        duration = 30,
+        outcomeLevel = 1
+    })
+    self.doubleTrouble = TRB.Classes.SpellBase:New({
+        id = 1214934,
+        duration = 30,
+        outcomeLevel = 2
+    })
+    self.tripleThreat = TRB.Classes.SpellBase:New({
+        id = 1214935,
+        duration = 30,
+        outcomeLevel = 3,
+        restlessBladesBonus = 0.3
+    })
+    self.jackpot = TRB.Classes.SpellBase:New({
+        id = 1214937,
+        duration = 30,
+        outcomeLevel = 4,
+        restlessBladesBonus = 0.3
+    })
+    self.dragonBoneDice = TRB.Classes.SpellBase:New({
+        id = 1259481,
+        isTalent = true,
+        restlessBladesBonus = 0.1
     })
     self.bladeRush = TRB.Classes.SpellBase:New({
         id = 271877,
@@ -604,14 +639,20 @@ function TRB.Classes.Mainline.Rogue.OutlawSpells.FillBarTextVariables(specCacheE
 		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
 		{ variable = "#dispatch", icon = spells.dispatch.icon, description = spells.dispatch.name, printInSettings = true },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
+		{ variable = "#doubleTrouble", icon = spells.doubleTrouble.icon, description = spells.doubleTrouble.name, printInSettings = true },
+		{ variable = "#jackpot", icon = spells.jackpot.icon, description = spells.jackpot.name, printInSettings = true },
+		{ variable = "#oneOfAKind", icon = spells.oneOfAKind.icon, description = spells.oneOfAKind.name, printInSettings = true },
 		{ variable = "#opportunity", icon = spells.opportunity.icon, description = spells.opportunity.name, printInSettings = true },
 		{ variable = "#pistolShot", icon = spells.pistolShot.icon, description = spells.pistolShot.name, printInSettings = true },
 		{ variable = "#rollTheBones", icon = spells.rollTheBones.icon, description = spells.rollTheBones.name, printInSettings = true },
+		{ variable = "#rtbBuff", icon = spells.rollTheBones.icon, description = L["RogueOutlawBarTextIcon_rtbBuff"], printInSettings = true },
 		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
 		{ variable = "#sinisterStrike", icon = spells.sinisterStrike.icon, description = spells.sinisterStrike.name, printInSettings = true },
+		{ variable = "#tripleThreat", icon = spells.tripleThreat.icon, description = spells.tripleThreat.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
+	local logicTypes = TRB.Functions.BarText.VariableLogicType
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
 
@@ -624,6 +665,16 @@ function TRB.Classes.Mainline.Rogue.OutlawSpells.FillBarTextVariables(specCacheE
 		
 		{ variable = "$comboPoints", description = L["RogueOutlawBarTextVariable_comboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$comboPointsMax", description = L["RogueOutlawBarTextVariable_comboPointsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+
+		{ variable = "$rtbBuffTime", description = L["RogueOutlawBarTextVariable_rtbOutcomeTime"], printInSettings = true, color = false },
+		{ variable = "$rtbBuffName", description = L["RogueOutlawBarTextVariable_rtbOutcomeName"], printInSettings = true, color = false,
+			logicType = logicTypes.TEXT, booleanCheck = true, comparisonUsable = false },
+		{ variable = "$rtbBuffLevel", description = L["RogueOutlawBarTextVariable_rtbOutcomeLevel"], printInSettings = true, color = false,
+			logicType = logicTypes.INTEGER, booleanCheck = true },
+		{ variable = "$oneOfAKindTime", description = L["RogueOutlawBarTextVariable_oneOfAKindTime"], printInSettings = true, color = false },
+		{ variable = "$doubleTroubleTime", description = L["RogueOutlawBarTextVariable_doubleTroubleTime"], printInSettings = true, color = false },
+		{ variable = "$tripleThreatTime", description = L["RogueOutlawBarTextVariable_tripleThreatTime"], printInSettings = true, color = false },
+		{ variable = "$jackpotTime", description = L["RogueOutlawBarTextVariable_jackpotTime"], printInSettings = true, color = false },
 	})
 end
 
@@ -641,7 +692,14 @@ TRB.Classes.Mainline.Rogue.OutlawSpells.thresholdSnowflakes = {
 	before = StealthViaBuff,
 	spells = {
 		sinisterStrike = function(line)
-			if not EchoingReprimand(line) then
+			if EchoingReprimand(line) then
+				return
+			end
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
+			-- Double Trouble and every higher outcome add a combo point to each strike.
+			if line.state.settings.colors.threshold.special.enabled and line.state.snapshotData.attributes.rollTheBonesLevel >= spells.doubleTrouble.attributes.outcomeLevel then
+				line:Special("special")
+			else
 				line:ColorByUsable()
 			end
 		end,
@@ -664,21 +722,22 @@ TRB.Classes.Mainline.Rogue.OutlawSpells.thresholdSnowflakes = {
 		local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 		local attributes = line.spell.attributes
 		local snapshot = line.snapshot
-		-- Restless Blades: a finisher with the current Combo Points (1 sec each) would bring this ability off cooldown.
+		-- Restless Blades: a finisher with the current Combo Points would bring this ability off cooldown.
 		if line.show and line.state.settings.colors.threshold.restlessBlades.enabled and attributes.restlessBlades
 			and (attributes.floatLikeAButterfly == nil or (attributes.floatLikeAButterfly and line.data.talents:IsTalentActive(spells.floatLikeAButterfly)))
 			and snapshot ~= nil and snapshot.cooldown.onCooldown then
 			local cooldown = snapshot.cooldown
-			local comboPoints = line.state.snapshotData.attributes.resource2
+			local stateAttributes = line.state.snapshotData.attributes
+			local reduction = stateAttributes.resource2 * stateAttributes.restlessBladesSecondsPerComboPoint
 			local endsAt = cooldown.endsAt
 			if endsAt ~= nil then
 				-- Read from the tracked end: GetRemainingTime would mark the cooldown off behind the tracker's back.
 				local remaining = endsAt - line.state.currentTime
-				if remaining > 0 and remaining <= comboPoints then
+				if remaining > 0 and remaining <= reduction then
 					line:SetColor("restlessBlades", TRB.Data.constants.frameLevels.thresholdUnder)
 				end
-			elseif comboPoints > 0 then
-				line:ColorByRemainingCooldown(comboPoints, "restlessBlades")
+			elseif reduction > 0 then
+				line:ColorByRemainingCooldown(reduction, "restlessBlades")
 			end
 		end
 	end,
