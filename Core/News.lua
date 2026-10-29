@@ -25,6 +25,7 @@ TRB.Details.coreNewsContent = [====[
 - [#901 - @MOSS099](#901) Updated translations for Simplified Chinese (zhCN).
 - [#903 - @MOSS099](#903) Updated translations for Simplified Chinese (zhCN).
 - [#906 - @MOSS099](#906) Updated translations for Simplified Chinese (zhCN).
+- [#915 - @MOSS099](#915) Updated translations for Simplified Chinese (zhCN).
 
 ## Thresholds
 
