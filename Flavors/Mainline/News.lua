@@ -71,6 +71,11 @@ TRB.Flavor.newsContent = [====[
 - [#279](#279) The Boomstick threshold line follows Boomstick's range.
 - [#279](#279) Remove the Flamefang Pitch threshold line.
 
+## Mage
+### Arcane
+
+- Fix the Arcane Salvo bar staying full after switching back to Arcane from another spec.
+
 ## Monk
 ### Brewmaster
 

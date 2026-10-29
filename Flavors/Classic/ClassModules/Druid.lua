@@ -24,6 +24,9 @@ TRB.Data.specCache = specCache
 ---@type TRB.Classes.Talents?
 local talents = nil
 
+-- Max applied to each form bar's node, so SetMinMax only runs when it changes.
+local formBarAppliedMax = {}
+
 Global_TwintopResourceBar = {}
 
 -- The two form resource bars and the keys their values, indicators, thresholds, and text colors use. Energy's
@@ -116,6 +119,9 @@ local function ConstructResourceBar(settings)
 		end
 		Bar:ConstructBarGroups(settings, barGroups)
 	end
+
+	-- A rebuild makes fresh form bar nodes, so their ranges must be reapplied on the next update.
+	wipe(formBarAppliedMax)
 
 	-- Threshold lines are created on demand by the update loop, one per threshold spell of the bar.
 	for _, formBar in ipairs(formBars) do
@@ -277,7 +283,7 @@ local function UpdateSnapshot()
 end
 
 -- Reused per-tick scratch tables so UpdateResourceBar allocates nothing.
-local scratch = { conditionMap = {}, barColors = {}, barColorMap = {}, formBarColors = { rage = {}, energy = {} }, comboPointColors = {}, formBarMax = {}, claimed = { comboPointsBar = {} } }
+local scratch = { conditionMap = {}, barColors = {}, barColorMap = {}, formBarColors = { rage = {}, energy = {} }, comboPointColors = {}, claimed = { comboPointsBar = {} } }
 
 local thresholdBars = { rage = TRB.Classes.ThresholdBar:New("rage"), energy = TRB.Classes.ThresholdBar:New("energy") }
 local thresholdState = TRB.Classes.ThresholdState:New()
@@ -365,8 +371,8 @@ local function UpdateResourceBar()
 					maxPower = 100
 				end
 				local barMax = Bar:GetCustomBarMaxValue(specSettings.bars[formBar.key], maxPower)
-				if scratch.formBarMax[formBar.key] ~= barMax then
-					scratch.formBarMax[formBar.key] = barMax
+				if formBarAppliedMax[formBar.key] ~= barMax then
+					formBarAppliedMax[formBar.key] = barMax
 					node:SetMinMax(0, barMax)
 				end
 				Bar:SetBarNodeValue(specCacheSettings, formBar.key, node, UnitPower("player", formBar.powerType), barMax)

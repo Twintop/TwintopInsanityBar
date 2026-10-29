@@ -20,6 +20,10 @@ local spellEventFrame = CreateFrame("Frame")
 
 local talents --[[@as TRB.Classes.Talents]]
 
+-- Node min/max is the only place the Arcane Salvo scale can take effect, since the secret count is
+-- passed through unscaled. Tracked so it is only re-applied when it actually changes.
+local arcaneSalvoAppliedMax = nil
+
 Global_TwintopResourceBar = {}
 
 ---@type table<string, TRB.Classes.SpecCache>
@@ -496,6 +500,11 @@ local function ConstructResourceBar(settings)
 				barGroups.shatter:SetNodeCount(spells.shatter.maxStacks)
 			end
 		end
+	end
+
+	-- A spec switch rebuilds the Arcane Salvo node, so its range must be reapplied on the next update.
+	if barGroups and barGroups.arcaneSalvo and TRB.Data.character.specId == 1 then
+		arcaneSalvoAppliedMax = nil
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -1313,9 +1322,6 @@ local function UpdateShatter(specSettings, specCacheSettings, barColors, fillInd
 end
 
 
--- Node min/max is the only place the Arcane Salvo scale can take effect, since the secret count is
--- passed through unscaled. Tracked so it is only re-applied when it actually changes.
-local arcaneSalvoAppliedMax = nil
 -- Enabled range slots for the current tick, rebuilt in place and sorted by start value.
 local arcaneSalvoActiveRanges = {}
 local function ArcaneSalvoRangeSort(a, b)
