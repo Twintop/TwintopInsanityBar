@@ -100,6 +100,9 @@ TRB.Flavor.newsContent = [====[
 - [#279](#279) Fix the Roll the Bones threshold line and `#rollTheBones` icon using an old version of the ability.
 - [#895](#895) Remove Broadside, Buried Treasure, Grand Melee, Ruthless Precision, Skull and Crossbones, and True Bearing tracking and the `#broadside`, `#buriedTreasure`, `#grandMelee`, `#ruthlessPrecision`, `#skullAndCrossbones`, and `#trueBearing` icons.
 - [#895](#895) Remove the special ability threshold line color from Sinister Strike for Skull and Crossbones and from Between the Eyes for Ruthless Precision.
+- [#896](#896) Track Roll the Bones' One of a Kind, Double Trouble, Triple Threat, and Jackpot, with the `$rtbBuffTime`, `$rtbBuffName`, `$rtbBuffLevel`, `$oneOfAKindTime`, `$doubleTroubleTime`, `$tripleThreatTime`, and `$jackpotTime` bar text variables and the `#rtbBuff`, `#oneOfAKind`, `#doubleTrouble`, `#tripleThreat`, and `#jackpot` icons.
+- [#896](#896) The Restless Blades threshold line color includes Triple Threat, Jackpot, and Dragon-Bone Dice.
+- [#896](#896) Sinister Strike's threshold line uses the special ability color while Double Trouble or a higher Roll the Bones buff is up.
 
 ### Subtlety
 

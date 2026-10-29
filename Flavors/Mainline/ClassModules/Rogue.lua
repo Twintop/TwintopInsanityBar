@@ -153,6 +153,8 @@ local function FillSpecializationCache()
 	specCache.rogue_outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_outlaw.snapshotData.attributes.comboPoints = 0
 	specCache.rogue_outlaw.snapshotData.attributes.coupDeGraceActive = false
+	specCache.rogue_outlaw.snapshotData.attributes.rollTheBonesLevel = 0
+	specCache.rogue_outlaw.snapshotData.attributes.restlessBladesSecondsPerComboPoint = spells.restlessBlades.attributes.cooldownReductionPerComboPoint
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.cheapShot.id] = TRB.Classes.Snapshot:New(spells.cheapShot)
 	---@type TRB.Classes.Snapshot
@@ -187,6 +189,14 @@ local function FillSpecializationCache()
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.killingSpree.id] = TRB.Classes.Snapshot:New(spells.killingSpree)
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id] = TRB.Classes.Snapshot:New(spells.rollTheBones)
+	---@type TRB.Classes.Snapshot
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.oneOfAKind.id] = TRB.Classes.Snapshot:New(spells.oneOfAKind)
+	---@type TRB.Classes.Snapshot
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.doubleTrouble.id] = TRB.Classes.Snapshot:New(spells.doubleTrouble)
+	---@type TRB.Classes.Snapshot
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.tripleThreat.id] = TRB.Classes.Snapshot:New(spells.tripleThreat)
+	---@type TRB.Classes.Snapshot
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.jackpot.id] = TRB.Classes.Snapshot:New(spells.jackpot)
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
 
@@ -592,6 +602,43 @@ local function RefreshLookupData_Outlaw()
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 	end
 
+	-- Block C: Roll the Bones ($rtbBuffTime, $rtbBuffName, $rtbBuffLevel, #rtbBuff, and each outcome's time)
+	if not activeVars or activeVars["$rtbBuffTime"] or activeVars["$rtbBuffName"] or activeVars["$rtbBuffLevel"] or activeVars["#rtbBuff"]
+		or activeVars["$oneOfAKindTime"] or activeVars["$doubleTroubleTime"] or activeVars["$tripleThreatTime"] or activeVars["$jackpotTime"] then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
+		local snapshots = snapshotData.snapshots
+		local outcome = snapshotData.attributes.rollTheBonesOutcome --[[@as TRB.Classes.SpellBase?]]
+		local oneOfAKind = snapshots[spells.oneOfAKind.id].buff
+		local doubleTrouble = snapshots[spells.doubleTrouble.id].buff
+		local tripleThreat = snapshots[spells.tripleThreat.id].buff
+		local jackpot = snapshots[spells.jackpot.id].buff
+		local _oneOfAKindTime = oneOfAKind.isActive and oneOfAKind.remaining or 0
+		local _doubleTroubleTime = doubleTrouble.isActive and doubleTrouble.remaining or 0
+		local _tripleThreatTime = tripleThreat.isActive and tripleThreat.remaining or 0
+		local _jackpotTime = jackpot.isActive and jackpot.remaining or 0
+		local _rtbBuffTime = 0
+		if outcome ~= nil then
+			local buff = snapshots[outcome.id].buff
+			_rtbBuffTime = buff.isActive and buff.remaining or 0
+		end
+
+		lookupLogic["$rtbBuffTime"] = _rtbBuffTime
+		lookupLogic["$rtbBuffLevel"] = snapshotData.attributes.rollTheBonesLevel
+		lookupLogic["$oneOfAKindTime"] = _oneOfAKindTime
+		lookupLogic["$doubleTroubleTime"] = _doubleTroubleTime
+		lookupLogic["$tripleThreatTime"] = _tripleThreatTime
+		lookupLogic["$jackpotTime"] = _jackpotTime
+
+		lookup["$rtbBuffTime"] = TRB.Functions.BarText:TimerPrecision(_rtbBuffTime)
+		lookup["$rtbBuffName"] = outcome ~= nil and outcome.name or ""
+		lookup["$rtbBuffLevel"] = snapshotData.attributes.rollTheBonesLevel
+		lookup["#rtbBuff"] = outcome ~= nil and outcome.icon or ""
+		lookup["$oneOfAKindTime"] = TRB.Functions.BarText:TimerPrecision(_oneOfAKindTime)
+		lookup["$doubleTroubleTime"] = TRB.Functions.BarText:TimerPrecision(_doubleTroubleTime)
+		lookup["$tripleThreatTime"] = TRB.Functions.BarText:TimerPrecision(_tripleThreatTime)
+		lookup["$jackpotTime"] = TRB.Functions.BarText:TimerPrecision(_jackpotTime)
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -683,10 +730,129 @@ local function RefreshLookupData_Subtlety()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
+-- The outcome's SPELL_UPDATE_COOLDOWN and Roll the Bones' cast land in the same frame in either order.
+local rollTheBonesCastTime = nil
+---@type TRB.Classes.SpellBase?
+local pendingOutcome = nil
+local pendingOutcomeTime = nil
+
+---The Roll the Bones outcome a spell id names, or nil.
+---@param spellId integer
+---@return TRB.Classes.SpellBase?
+local function GetRollTheBonesOutcome(spellId)
+	local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
+	for _, outcome in ipairs({ spells.oneOfAKind, spells.doubleTrouble, spells.tripleThreat, spells.jackpot }) do
+		if outcome.id == spellId then
+			return outcome
+		end
+	end
+	return nil
+end
+
+---Sets the outcome values the Outlaw threshold lines read each tick.
+---@param outcome TRB.Classes.SpellBase?
+local function SetRollTheBonesAttributes(outcome)
+	local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
+	local attributes = specCache.rogue_outlaw.snapshotData.attributes
+	local bonus = 0
+	if outcome ~= nil and outcome.attributes.restlessBladesBonus ~= nil then
+		bonus = outcome.attributes.restlessBladesBonus
+		if specCache.rogue_outlaw.talents:IsTalentActive(spells.dragonBoneDice) then
+			bonus = bonus + spells.dragonBoneDice.attributes.restlessBladesBonus
+		end
+	end
+	attributes.rollTheBonesOutcome = outcome
+	attributes.rollTheBonesLevel = outcome ~= nil and outcome.attributes.outcomeLevel or 0
+	attributes.restlessBladesSecondsPerComboPoint = spells.restlessBlades.attributes.cooldownReductionPerComboPoint * (1 + bonus)
+	TRB.Data.lookupDirty = true
+end
+
+---Starts the rolled outcome's timer and clears the others; nil clears every outcome.
+---@param outcome TRB.Classes.SpellBase?
+local function ApplyRollTheBonesOutcome(outcome)
+	local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
+	local snapshots = specCache.rogue_outlaw.snapshotData.snapshots
+	for _, spell in ipairs({ spells.oneOfAKind, spells.doubleTrouble, spells.tripleThreat, spells.jackpot }) do
+		if spell == outcome then
+			snapshots[spell.id].buff:InitializeCustom(spell.duration)
+		else
+			snapshots[spell.id].buff:Reset()
+		end
+	end
+	SetRollTheBonesAttributes(outcome)
+end
+
+local function ExtendRollTheBonesOutcome()
+	local outcome = specCache.rogue_outlaw.snapshotData.attributes.rollTheBonesOutcome --[[@as TRB.Classes.SpellBase?]]
+	if outcome == nil then
+		return
+	end
+	local buff = specCache.rogue_outlaw.snapshotData.snapshots[outcome.id].buff
+	buff:GetRemainingTime()
+	if buff.isActive then
+		local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
+		buff:AddTimeOrInitializeCustom(spells.keepItRolling.duration)
+		TRB.Data.lookupDirty = true
+	end
+end
+
+local function RollTheBonesEvent(self, event, ...)
+	if TRB.Data.character.specId ~= 2 then
+		return
+	end
+
+	if event == "SPELL_UPDATE_COOLDOWN" then
+		local spellId = ...
+		local outcome = spellId ~= nil and GetRollTheBonesOutcome(spellId) or nil
+		if outcome == nil then
+			return
+		end
+		local currentTime = GetTime()
+		if rollTheBonesCastTime == currentTime then
+			ApplyRollTheBonesOutcome(outcome)
+		else
+			pendingOutcome = outcome
+			pendingOutcomeTime = currentTime
+			return
+		end
+	elseif event == "ENCOUNTER_END" then
+		-- The outcome drops at the end of a raid encounter only.
+		if select(2, IsInInstance()) ~= "raid" then
+			return
+		end
+		ApplyRollTheBonesOutcome(nil)
+	else
+		ApplyRollTheBonesOutcome(nil)
+	end
+	TRB.Functions.Class:TriggerResourceBarUpdates()
+end
+local rollTheBonesFrame = CreateFrame("Frame")
+rollTheBonesFrame:SetScript("OnEvent", RollTheBonesEvent)
+-- Rare events that remove the outcome stay registered; SPELL_UPDATE_COOLDOWN is registered only while Outlaw.
+rollTheBonesFrame:RegisterEvent("ENCOUNTER_END")
+rollTheBonesFrame:RegisterEvent("CHALLENGE_MODE_START")
+rollTheBonesFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
+
 ---Handles UNIT_SPELLCAST_ events for the class
 ---@param event trbSpellCastType
 ---@param spellId integer
 function TRB.Functions.Class:SpellCast(event, spellId)
+	if TRB.Data.character.specId ~= 2 or event ~= "UNIT_SPELLCAST_SUCCEEDED" then
+		return
+	end
+
+	local spells = specCache.rogue_outlaw.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
+	if spellId == spells.rollTheBones.id then
+		local currentTime = GetTime()
+		rollTheBonesCastTime = currentTime
+		if pendingOutcome ~= nil and pendingOutcomeTime == currentTime then
+			ApplyRollTheBonesOutcome(pendingOutcome)
+		end
+		pendingOutcome = nil
+		pendingOutcomeTime = nil
+	elseif spellId == spells.keepItRolling.id then
+		ExtendRollTheBonesOutcome()
+	end
 end
 
 local function UpdateSnapshot()
@@ -707,6 +873,15 @@ end
 
 local function UpdateSnapshot_Outlaw()
 	UpdateSnapshot()
+	local outcome = TRB.Data.snapshotData.attributes.rollTheBonesOutcome --[[@as TRB.Classes.SpellBase?]]
+	if outcome ~= nil then
+		local buff = TRB.Data.snapshotData.snapshots[outcome.id].buff
+		buff:GetRemainingTime()
+		-- Nothing fires at the outcome's natural end.
+		if not buff.isActive then
+			SetRollTheBonesAttributes(nil)
+		end
+	end
 	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Mainline.Rogue.OutlawSpells]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots]]
@@ -1459,6 +1634,7 @@ local function SwitchSpec()
 	Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
 	coupDeGraceFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
+	rollTheBonesFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 
 	if TRB.Data.character.specId == 1 then
 		specCache.rogue_assassination.talents:GetTalents()
@@ -1519,12 +1695,16 @@ local function SwitchSpec()
 		lookup["#deathFromAbove"] = spells.deathFromAbove.icon
 		lookup["#dispatch"] = spells.dispatch.icon
 		lookup["#dismantle"] = spells.dismantle.icon
+		lookup["#doubleTrouble"] = spells.doubleTrouble.icon
+		lookup["#jackpot"] = spells.jackpot.icon
+		lookup["#oneOfAKind"] = spells.oneOfAKind.icon
 		lookup["#opportunity"] = spells.opportunity.icon
 		lookup["#pistolShot"] = spells.pistolShot.icon
 		lookup["#rollTheBones"] = spells.rollTheBones.icon
 		lookup["#sad"] = spells.sliceAndDice.icon
 		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
 		lookup["#sinisterStrike"] = spells.sinisterStrike.icon
+		lookup["#tripleThreat"] = spells.tripleThreat.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1534,6 +1714,7 @@ local function SwitchSpec()
 		if specCache.rogue_outlaw.talents:IsTalentActive(spells.coupDeGrace) then
 			coupDeGraceFrame:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 		end
+		rollTheBonesFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 
 		if TRB.Data.barConstructedForSpec ~= "rogue_outlaw" then
 			talents = specCache.rogue_outlaw.talents
@@ -1731,6 +1912,37 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 	if snapshotData and snapshotData.attributes then
 		snapshotData.attributes.coupDeGraceActive = false
 	end
+	if TRB.Data.character.specId == 2 then
+		ApplyRollTheBonesOutcome(nil)
+	end
+end
+
+-- Outlaw timer variables, keyed to the outcome whose buff drives each one.
+local outlawTimerSpells = {
+	["$oneOfAKindTime"] = "oneOfAKind",
+	["$doubleTroubleTime"] = "doubleTrouble",
+	["$tripleThreatTime"] = "tripleThreat",
+	["$jackpotTime"] = "jackpot",
+}
+
+function TRB.Functions.Class:HasActiveTimers()
+	if TRB.Data.character.specId ~= 2 or TRB.Data.snapshotData.attributes.rollTheBonesOutcome == nil then
+		return false
+	end
+
+	local activeVars = TRB.Data.activeVariables
+	if activeVars == nil or activeVars["$rtbBuffTime"] then
+		return true
+	end
+
+	local spells = TRB.Data.spellsData.spells
+	local snapshots = TRB.Data.snapshotData.snapshots
+	for variable, spellKey in pairs(outlawTimerSpells) do
+		if activeVars[variable] and snapshots[spells[spellKey].id].buff.isActive then
+			return true
+		end
+	end
+	return false
 end
 
 local specValidVars
@@ -1748,7 +1960,27 @@ do
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}
-	specValidVars = { [1] = shared, [2] = shared, [3] = shared }
+	local function IsRollTheBonesActive()
+		return TRB.Data.snapshotData.attributes.rollTheBonesOutcome ~= nil
+	end
+	---@param spellKey string
+	---@return fun(): boolean
+	local function IsOutcomeActive(spellKey)
+		return function()
+			local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
+			local snapshot = spells and spells[spellKey] and TRB.Data.snapshotData.snapshots[spells[spellKey].id]
+			return snapshot ~= nil and snapshot.buff.isActive == true
+		end
+	end
+	local outlaw = {}
+	for k, v in pairs(shared) do outlaw[k] = v end
+	outlaw["$rtbBuffTime"] = IsRollTheBonesActive
+	outlaw["$rtbBuffName"] = IsRollTheBonesActive
+	outlaw["$rtbBuffLevel"] = IsRollTheBonesActive
+	for variable, spellKey in pairs(outlawTimerSpells) do
+		outlaw[variable] = IsOutcomeActive(spellKey)
+	end
+	specValidVars = { [1] = shared, [2] = outlaw, [3] = shared }
 end
 
 function TRB.Functions.Class:IsValidVariableForSpec(var)

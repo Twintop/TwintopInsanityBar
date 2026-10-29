@@ -551,5 +551,5 @@ if locale == "enGB" then
 	L["CopyMenuSection_thresholdBehavior"] = "Threshold Line Behaviour"
 	L["ThresholdBehaviorTrackCooldownsTooltip"] = "When checked, a threshold line for an ability with a cooldown shows the Unusable colour, and its icon shows the cooldown, while the ability is on cooldown. Each threshold line can override this."
 	L["ThresholdDetailBehaviorHeader"] = "Behaviour Override"
-	L["RogueOutlawColorPickerThresholdSpecialEnabledTooltip"] = "When checked, the threshold line colour of an ability that is being buffed by Opportunity or Coup de Grace."
+	L["RogueOutlawColorPickerThresholdSpecialEnabledTooltip"] = "When checked, the threshold line colour of an ability that is being buffed by Double Trouble or a higher Roll the Bones buff, Opportunity, or Coup de Grace."
 end
