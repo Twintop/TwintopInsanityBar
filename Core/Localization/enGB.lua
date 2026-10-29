@@ -116,7 +116,6 @@ if locale == "enGB" then
     L["RogueAssassinationColorPickerThresholdSpecialEnabled"] = "Change Garrote threshold line colour?"
     L["RogueAssassinationColorPickerThresholdSpecialEnabledTooltip"] = "When checked, the threshold line colour of Garrote will be changed when the Improved Garrote effect is active."
     L["RogueOutlawColorPickerThresholdSpecialEnabled"] = "Enable special ability threshold line colour?"
-    L["RogueOutlawColorPickerThresholdSpecialEnabledTooltip"] = "When checked, the threshold line colour of an ability that is being buffed by Skull and Crossbones, Ruthless Precision, or Opportunity."
     L["RogueSubtletyColorPickerThresholdSpecialEnabled"] = "Enable special ability threshold line colour?"
     L["RogueSubtletyColorPickerThresholdSpecialEnabledTooltip"] = "When checked, the threshold line colour of an ability that is being buffed by Finality, Silent Storm, or Coup de Grace."
     L["ThresholdOutOfRangeCheckbox"] = "Change colour when out of range?"
@@ -552,4 +551,5 @@ if locale == "enGB" then
 	L["CopyMenuSection_thresholdBehavior"] = "Threshold Line Behaviour"
 	L["ThresholdBehaviorTrackCooldownsTooltip"] = "When checked, a threshold line for an ability with a cooldown shows the Unusable colour, and its icon shows the cooldown, while the ability is on cooldown. Each threshold line can override this."
 	L["ThresholdDetailBehaviorHeader"] = "Behaviour Override"
+	L["RogueOutlawColorPickerThresholdSpecialEnabledTooltip"] = "When checked, the threshold line colour of an ability that is being buffed by Opportunity or Coup de Grace."
 end
