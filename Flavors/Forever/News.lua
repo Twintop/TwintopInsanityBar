@@ -14,6 +14,14 @@ TRB.Flavor.newsContent = [====[
 
 - [#279](#279) Remove the threshold lines' separate cooldown refresh.
 
+## Druid
+
+- [#279](#279) Remove the Frenzied Regeneration threshold line.
+
+## Rogue
+
+- [#279](#279) The Feint, Slice and Dice, and Venom threshold lines follow their range.
+
 ---
 
 # 1.60.1.14-release (2026-10-25)

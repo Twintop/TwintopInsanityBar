@@ -108,7 +108,6 @@ local function LoadDefaultSettings(includeBarText, classic)
 				demoralizingRoar = { enabled = true },
 				bash = { enabled = true },
 				challengingRoar = { enabled = false },
-				frenziedRegeneration = { enabled = true },
 				swipe = { enabled = true },
 				feralCharge = { enabled = false },
 				claw = { enabled = true },

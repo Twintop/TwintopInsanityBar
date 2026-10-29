@@ -470,6 +470,8 @@ local function CharacterChange(self, event, ...)
 		TRB.Classes.SpellBase.InvalidateSpellUsable()
 		TRB.Data.snapshotData.casting:RefreshCost()
 	elseif event == "SPELLS_CHANGED" then
+		-- PvP talents become known and unknown here, with War Mode and PvP zones.
+		TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 		TRB.Functions.Character:RefreshThresholdSpellsLearned()
 		-- A frame later, so a flavor's own SPELLS_CHANGED handler has resolved the new ranks first.
 		C_Timer.After(0, function()
@@ -2217,7 +2219,8 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) then
 			spell = spell --[[@as TRB.Classes.SpellThreshold]]
 			if spell:IsValid() then
-				if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+				-- PvP lines stay listed while inactive, since PvP talents turn on and off without a frame rebuild.
+				if spell.isTalent and not spell.isPvp and not talents:IsTalentActive(spell) then -- Talent not selected
 				else
 					thresholdId = thresholdId + 1
 					thresholdSpells[thresholdId] = spell

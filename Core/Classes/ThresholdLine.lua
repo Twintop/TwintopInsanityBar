@@ -39,7 +39,6 @@ end
 ---@field public snapshotData TRB.Classes.SnapshotData
 ---@field public isStealthed boolean # Gates spells with the `stealth` attribute
 ---@field public stance string? # Gates spells with a `stances` set
----@field public isPvp boolean
 ---@field public currentTime number
 TRB.Classes.ThresholdState = {}
 TRB.Classes.ThresholdState.__index = TRB.Classes.ThresholdState
@@ -55,7 +54,6 @@ function TRB.Classes.ThresholdState:Refresh(settings)
 	self.settings = settings
 	self.snapshotData = TRB.Data.snapshotData
 	self.isStealthed = IsStealthed()
-	self.isPvp = TRB.Data.character.isPvp
 	self.currentTime = GetTime()
 end
 

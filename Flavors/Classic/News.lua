@@ -31,7 +31,7 @@ TRB.Flavor.newsContent = [====[
 ## Druid
 
 - Mana, Rage, Energy, and Combo Points are four separate bars, and the shapeshift form decides which show by default.
-- Threshold lines for Maul, Demoralizing Roar, Bash, Challenging Roar, Frenzied Regeneration, Swipe, and Feral Charge on the Rage bar, and for Claw, Shred, Rake, Ravage, Pounce, Rip, Ferocious Bite, Cower, and Tiger's Fury on the Energy bar.
+- Threshold lines for Maul, Demoralizing Roar, Bash, Challenging Roar, Swipe, and Feral Charge on the Rage bar, and for Claw, Shred, Rake, Ravage, Pounce, Rip, Ferocious Bite, Cower, and Tiger's Fury on the Energy bar.
 
 ## Rogue
 

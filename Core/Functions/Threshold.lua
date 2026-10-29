@@ -3820,6 +3820,7 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 	local snapshotData = state.snapshotData
 	local snapshots = snapshotData.snapshots
 	local talents = data.talents
+	local learned = TRB.Data.cache.thresholdSpellsByKey
 	local node = bar.node
 	local nodeFrame = node:GetFrame()
 	local thresholds = node:GetThresholds()
@@ -3848,8 +3849,10 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 
 			local dictEntry = dictionary[spell.settingKey]
 			-- Cost and usability can reach the WoW API, so only a line that draws or has an audio cue reads them.
-			local isActive = dictEntry == nil or dictEntry.enabled == true
-				or (dictEntry.audio ~= nil and dictEntry.audio.enabled == true and dictEntry.audio.sound ~= nil)
+			-- A PvP line with its talent inactive is listed only to keep its frame.
+			local isActive = (dictEntry == nil or dictEntry.enabled == true
+				or (dictEntry.audio ~= nil and dictEntry.audio.enabled == true and dictEntry.audio.sound ~= nil))
+				and (not spell.isPvp or learned[spell.settingKey] ~= nil)
 			if bar.resourceType ~= nil and spell.primaryResourceType ~= bar.resourceType then
 				-- Hidden in place rather than skipped, so a form swap never hands this frame to another spell.
 				frame:Hide()
@@ -3888,9 +3891,7 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 						line:Hide()
 					elseif spell.attributes.stances ~= nil and not spell.attributes.stances[state.stance] then
 						line:Hide()
-					elseif spell.isTalent and not talents:IsTalentActive(spell) then
-						line:Hide()
-					elseif spell.isPvp and (not state.isPvp or not talents:IsTalentActive(spell)) then
+					elseif spell.isTalent and not spell.isPvp and not talents:IsTalentActive(spell) then
 						line:Hide()
 					elseif data.requireKnown and not spell:IsKnown() then
 						line:Hide()

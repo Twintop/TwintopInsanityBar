@@ -139,7 +139,6 @@ local function FillSpells(spells)
 		comboPoints = true,
 		settingKey = "sliceAndDice",
 		baseline = true,
-		rangeCheck = false,
 		category = "offensive",
 	})
 	spells.kidneyShot = TRB.Classes.SpellComboPointThreshold:New({
@@ -170,7 +169,6 @@ local function FillSpells(spells)
 		settingKey = "feint",
 		baseline = true,
 		hasCooldown = true,
-		rangeCheck = false,
 		category = "defensive",
 	})
 	spells.sap = TRB.Classes.SpellThreshold:New({

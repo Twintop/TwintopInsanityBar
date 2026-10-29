@@ -13,7 +13,6 @@ TRB.Classes.Classic.Druid = TRB.Classes.Classic.Druid or {}
 ---@field public demoralizingRoar TRB.Classes.SpellThreshold
 ---@field public bash TRB.Classes.SpellThreshold
 ---@field public challengingRoar TRB.Classes.SpellThreshold
----@field public frenziedRegeneration TRB.Classes.SpellThreshold
 ---@field public swipe TRB.Classes.SpellThreshold
 ---@field public feralCharge TRB.Classes.SpellThreshold
 ---@field public claw TRB.Classes.SpellComboPointThreshold
@@ -74,16 +73,6 @@ function TRB.Classes.Classic.Druid.GeneralSpells:New()
 		id = 5209,
 		primaryResourceType = Enum.PowerType.Rage,
 		settingKey = "challengingRoar",
-		baseline = true,
-		hasCooldown = true,
-		category = "defensive",
-		barTarget = "rage",
-	})
-	self.frenziedRegeneration = TRB.Classes.SpellThreshold:New({
-		id = 22842,
-		rankIds = { 22842, 22895, 22896 },
-		primaryResourceType = Enum.PowerType.Rage,
-		settingKey = "frenziedRegeneration",
 		baseline = true,
 		hasCooldown = true,
 		category = "defensive",

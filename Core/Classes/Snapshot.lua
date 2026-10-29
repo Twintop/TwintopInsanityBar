@@ -1618,7 +1618,8 @@ end
 ---@param ignoreGcd boolean? # Leave the GCD out of a single cooldown; defaults to the spell's ignoreGcdLock
 function TRB.Classes.SnapshotCooldown:RefreshDurationObject(ignoreGcd)
 	if self.parent.spell ~= nil and self.parent.spell.id ~= nil then
-		if self.parent.spell.hasCharges == true then
+		-- At one charge, the game reports the recharge as a plain cooldown and leaves the charge duration at zero.
+		if self.parent.spell.hasCharges == true and (issecretvalue(self.maxCharges) or self.maxCharges > 1) then
 			self.durationObject = C_Spell.GetSpellChargeDuration(self.parent.spell:GetRankedId())
 		else
 			if ignoreGcd == nil then

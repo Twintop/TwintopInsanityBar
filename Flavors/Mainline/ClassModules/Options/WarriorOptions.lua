@@ -85,9 +85,6 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 				},
 				cleave = {
 					enabled = true,
-				},
-				ignorePain = {
-					enabled = false,
 				}
 			},
 			customThresholds = {}
@@ -737,9 +734,6 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 				impendingVictory = {
 					enabled = true,
 				},
-				rend = {
-					enabled = false,
-				},
 				revenge = {
 					enabled = true,
 				},
@@ -1059,7 +1053,6 @@ local armsThresholdLabels = {
 	cleave = L["WarriorArmsThresholdCleave"],
 	whirlwind = L["WarriorArmsThresholdWhirlwind"],
 	hamstring = L["WarriorArmsThresholdHamstring"],
-	ignorePain = L["WarriorArmsThresholdIgnorePain"],
 	impendingVictory = L["WarriorArmsThresholdImpendingVictory"],
 	mortalStrike = L["WarriorArmsThresholdMortalStrike"],
 	rend = L["WarriorArmsThresholdRend"],
@@ -1165,7 +1158,6 @@ local function ArmsConstructThresholdListPanel(parent)
 			executeMinimum = L["WarriorArmsThresholdExecuteMinimumTooltip"],
 			executeMaximum = L["WarriorArmsThresholdExecuteMaximumTooltip"],
 			hamstring = L["WarriorArmsThresholdHamstringTooltip"],
-			ignorePain = L["WarriorArmsThresholdIgnorePainTooltip"],
 			impendingVictory = L["WarriorArmsThresholdImpendingVictoryTooltip"],
 			mortalStrike = L["WarriorArmsThresholdMortalStrikeTooltip"],
 			rend = L["WarriorArmsThresholdRendTooltip"],
@@ -1940,7 +1932,6 @@ local protectionThresholdLabels = {
 	hamstring = L["WarriorProtectionThresholdHamstring"],
 	ignorePain = L["WarriorProtectionThresholdIgnorePain"],
 	impendingVictory = L["WarriorProtectionThresholdImpendingVictory"],
-	rend = L["WarriorProtectionThresholdRend"],
 	revenge = L["WarriorProtectionThresholdRevenge"],
 	shieldBlock = L["WarriorProtectionThresholdShieldBlock"],
 	slam = L["WarriorProtectionThresholdSlam"],
@@ -2076,7 +2067,6 @@ local function ProtectionConstructThresholdListPanel(parent)
 			hamstring = L["WarriorProtectionThresholdHamstringTooltip"],
 			ignorePain = L["WarriorProtectionThresholdIgnorePainTooltip"],
 			impendingVictory = L["WarriorProtectionThresholdImpendingVictoryTooltip"],
-			rend = L["WarriorProtectionThresholdRendTooltip"],
 			revenge = L["WarriorProtectionThresholdRevengeTooltip"],
 			shieldBlock = L["WarriorProtectionThresholdShieldBlockTooltip"],
 			slam = L["WarriorProtectionThresholdSlamTooltip"],

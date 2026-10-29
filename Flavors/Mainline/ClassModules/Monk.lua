@@ -1163,7 +1163,7 @@ local function UpdateResourceBar()
 					thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 					thresholdState:Refresh(specCacheSettings)
 					thresholdData:Refresh(talents)
-					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData)
+					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Monk.BrewmasterSpells.thresholdSnowflakes)
 
 					local overcapIndicator = nil
 					if gradientOrder and indicatorColors then

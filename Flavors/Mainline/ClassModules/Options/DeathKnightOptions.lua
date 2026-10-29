@@ -561,7 +561,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					enabled = true
 				},
 				glacialAdvance = {
-					enabled = false
+					enabled = true
 				}
 			},
 			customThresholds = {}

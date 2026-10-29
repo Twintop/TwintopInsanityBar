@@ -77,8 +77,9 @@ local function FillSpecializationCache()
 	specCache.warrior_arms.spellsData.spells = TRB.Classes.Mainline.Warrior.ArmsSpells:New()
 	local spells = specCache.warrior_arms.spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.ArmsSpells]]
 
-	--[[---@type TRB.Classes.Snapshot
-	specCache.warrior_arms.snapshotData.snapshots[spells.execute.id] = TRB.Classes.Snapshot:New(spells.execute)]]
+	-- Both Execute lines use one spell id, so one snapshot serves both.
+	---@type TRB.Classes.Snapshot
+	specCache.warrior_arms.snapshotData.snapshots[spells.executeMinimum.id] = TRB.Classes.Snapshot:New(spells.executeMinimum)
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_arms.snapshotData.snapshots[spells.shieldBlock.id] = TRB.Classes.Snapshot:New(spells.shieldBlock)
 	---@type TRB.Classes.Snapshot
@@ -89,8 +90,6 @@ local function FillSpecializationCache()
 	specCache.warrior_arms.snapshotData.snapshots[spells.mortalStrike.id] = TRB.Classes.Snapshot:New(spells.mortalStrike)
 	---@type TRB.Classes.Snapshot
 	specCache.warrior_arms.snapshotData.snapshots[spells.cleave.id] = TRB.Classes.Snapshot:New(spells.cleave)
-	---@type TRB.Classes.Snapshot
-	specCache.warrior_arms.snapshotData.snapshots[spells.ignorePain.id] = TRB.Classes.Snapshot:New(spells.ignorePain)
 	--[[---@type TRB.Classes.Snapshot
 	specCache.warrior_arms.snapshotData.snapshots[spells.suddenDeath.id] = TRB.Classes.Snapshot:New(spells.suddenDeath)
 	---@type TRB.Classes.Snapshot
@@ -753,6 +752,13 @@ function TRB.Functions.Class:SpellCast(event, spellId, ...)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
 	local currentTime = GetTime()
+
+	-- Execute reads unusable for a whole channel, such as Demolish, so its lines need to know one is running.
+	if event == "UNIT_SPELLCAST_CHANNEL_START" then
+		snapshotData.attributes.isChanneling = true
+	elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+		snapshotData.attributes.isChanneling = false
+	end
 
 	if TRB.Data.character.specId == 2 then
 		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]

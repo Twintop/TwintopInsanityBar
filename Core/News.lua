@@ -45,6 +45,7 @@ TRB.Details.coreNewsContent = [====[
 - [#890](#890) Fix custom threshold icons on a vertical bar other than the main resource bar being placed as if the bar were horizontal.
 - Fix threshold lines getting stuck in or out of range after switching from a specialization that Twintop's Resource Bar isn't enabled for.
 - Fix threshold lines getting stuck in or out of range after checking or unchecking use global settings for Threshold Line Colors.
+- Fix PvP talent threshold lines not showing when you pick the talent or PvP talents turn on after logging in.
 
 ---
 
