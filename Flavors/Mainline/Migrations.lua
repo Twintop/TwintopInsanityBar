@@ -412,7 +412,8 @@ function TRB.Flavor.PortForwardSettings(settings)
 					local specLength = TRB.Functions.Table:Length(classValue)
 					if specLength > 0 then
 						for spec, specValue in pairs(classValue) do
-							if specValue.displayText ~= nil and specValue.displayText.fontSizeLock ~= nil then
+							-- 12.1.5.4 saved a boolean under manualUpdateChecks.
+							if type(specValue) == "table" and specValue.displayText ~= nil and specValue.displayText.fontSizeLock ~= nil then
 								specValue.displayText.default = {
 									fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace,
 									fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName,
@@ -1188,8 +1189,9 @@ function TRB.Flavor.PortForwardSettings(settings)
 					local specLength = TRB.Functions.Table:Length(classValue)
 					if specLength > 0 then
 						for spec, specValue in pairs(classValue) do
+							-- 12.1.5.4 saved a boolean under manualUpdateChecks, so the checks below confirm a table.
 							-- Global color settings refactor
-							if specValue ~= nil and
+							if type(specValue) == "table" and
 							specValue.colors ~= nil and
 							specValue.colors.text ~= nil and
 							specValue.colors.text.current ~= nil and
@@ -1264,7 +1266,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 							end
 
 							-- Change to new bar text format
-							if specValue.hastePrecision ~= nil or specValue.resourcePrecision ~= nil then
+							if type(specValue) == "table" and (specValue.hastePrecision ~= nil or specValue.resourcePrecision ~= nil) then
 								specValue.precision = {
 									health = 1,
 									secondary = specValue.hastePrecision or 0,
@@ -1275,7 +1277,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 							end
 							
 							-- Move bar settings for global settings
-							if specValue ~= nil and
+							if type(specValue) == "table" and
 							specValue.bar ~= nil and
 							(specValue.bar.showPassive ~= nil or specValue.bar.showCasting ~= nil) then
 								specValue.colors = specValue.colors or {}
@@ -1305,7 +1307,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 							end
 							
 							-- Move combo point settings for global settings
-							if specValue ~= nil and
+							if type(specValue) == "table" and
 							specValue.comboPoints ~= nil and
 							specValue.comboPoints.consistentUnfilledColor ~= nil then
 								specValue.colors = specValue.colors or {}
@@ -1343,7 +1345,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 							end
 
 							-- Adjust threshold object for global bar settings
-							if specValue.thresholds ~= nil
+							if type(specValue) == "table" and specValue.thresholds ~= nil
 							and specValue.thresholds.width ~= nil then
 								specValue.thresholds.properties = {
 									width = specValue.thresholds.width,
@@ -1380,7 +1382,8 @@ function TRB.Flavor.PortForwardSettings(settings)
 							end
 
 							-- Clean up threshold colors
-							if specValue.colors ~= nil and
+							if type(specValue) == "table" and
+							specValue.colors ~= nil and
 							specValue.colors.threshold ~= nil then
 								for colorName, colorValue in pairs(specValue.colors.threshold) do
 									if colorValue ~= nil and type(colorValue) == "string" then
@@ -1392,7 +1395,8 @@ function TRB.Flavor.PortForwardSettings(settings)
 							end
 
 							-- Move out of range enable/disable to be under colors
-							if specValue.thresholds ~= nil and
+							if type(specValue) == "table" and
+							specValue.thresholds ~= nil and
 							specValue.thresholds.properties ~= nil and
 							specValue.thresholds.properties.outOfRange ~= nil and
 							specValue.colors ~= nil and
@@ -1402,7 +1406,8 @@ function TRB.Flavor.PortForwardSettings(settings)
 								specValue.thresholds.properties.outOfRange = nil
 							end
 
-							if specValue.thresholds ~= nil and
+							if type(specValue) == "table" and
+							specValue.thresholds ~= nil and
 							specValue.thresholds.thresholdDictionary == nil then
 								specValue.thresholds.thresholdDictionary = {}
 								for thresholdName, value in pairs(specValue.thresholds) do
