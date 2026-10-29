@@ -6,7 +6,7 @@ TRB started life as Twintop's Insanity Bar WeakAura set for Shadow Priests durin
 
 [![Mainline release](https://img.shields.io/github/v/release/Twintop/TwintopInsanityBar?filter=1*&label=Mainline&color=F8B700)](https://github.com/Twintop/TwintopInsanityBar/releases)
 [![Forever release](https://img.shields.io/github/v/release/Twintop/TwintopInsanityBar?filter=forever-*&label=Forever&color=1D8DCD)](https://github.com/Twintop/TwintopInsanityBar/releases?q=forever-)
-[![Classic release](https://img.shields.io/github/v/release/Twintop/TwintopInsanityBar?filter=classic-*&label=Classic&include_prereleases&color=9482C9)](https://github.com/Twintop/TwintopInsanityBar/releases?q=classic-)
+[![Classic release](https://img.shields.io/github/v/release/Twintop/TwintopInsanityBar?filter=classic-*&label=Classic&color=fef2c0)](https://github.com/Twintop/TwintopInsanityBar/releases?q=classic-)
 
 [![Issues](https://img.shields.io/github/issues-raw/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/issues)
 [![Issues](https://img.shields.io/github/issues-closed-raw/Twintop/TwintopInsanityBar?color=00CC00)](https://github.com/Twintop/TwintopInsanityBar/issues?q=is%3Aissue+is%3Aclosed)
