@@ -206,3 +206,5 @@ jobs:
           name: packager-${{ needs.stage.outputs.flavor }}
           path: .release/*.zip
           if-no-files-found: error
+          # .release is a hidden folder, which upload-artifact skips by default.
+          include-hidden-files: true
