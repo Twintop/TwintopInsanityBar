@@ -35,6 +35,7 @@ function TRB.Classes.Mainline.Rogue.RogueBaseSpells:New()
         comboPointsGenerated = 1,
         stealth = true,
         settingKey = "cheapShot",
+        hasCooldown = true,
         baseline = true,
         isSnowflake = true,
         category = "offensive"
@@ -188,8 +189,7 @@ function TRB.Classes.Mainline.Rogue.AssassinationSpells:New()
         category = "offensive"
     })
     self.shiv.baseline = true
-    self.shiv.hasCharges = true
-    
+
     -- Assassination Baseline Abilities
     self.envenom = TRB.Classes.SpellComboPointThreshold:New({
         id = 32645,
@@ -753,6 +753,9 @@ function TRB.Classes.Mainline.Rogue.SubtletySpells:New()
     local base = TRB.Classes.Mainline.Rogue.RogueBaseSpells
     self = setmetatable(base:New(), TRB.Classes.Mainline.Rogue.SubtletySpells) --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 
+    -- Shot in the Dark gives Subtlety a second charge while it lasts.
+    self.cheapShot.hasCharges = true
+
     self.eviscerate = TRB.Classes.SpellComboPointThreshold:New({ -- This is technically a Rogue ability but is missing from the other specs
         id = 196819,
         primaryResourceType = Enum.PowerType.Energy,
@@ -845,8 +848,8 @@ function TRB.Classes.Mainline.Rogue.SubtletySpells:New()
         category = "offensive"
     })
     self.goremawsBite = TRB.Classes.SpellComboPointThreshold:New({
-        id = 426593,
-        talentId = 426591,
+        id = 426591,
+        buffId = 426593,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 3,
         settingKey = "goremawsBite",
@@ -958,7 +961,7 @@ TRB.Classes.Mainline.Rogue.SubtletySpells.thresholdSnowflakes = {
 			if line.state.snapshotData.snapshots[spells.shotInTheDark.id].buff.isActive then
 				line:Special("over")
 			else
-				line:ColorByUsable()
+				line:ColorByCooldown()
 			end
 		end,
 		shurikenStorm = function(line)

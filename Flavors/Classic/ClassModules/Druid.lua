@@ -70,7 +70,7 @@ local function FillSpecializationCache()
 	local spells = cache.spellsData.spells --[[@as TRB.Classes.Classic.Druid.GeneralSpells]]
 	local snapshots = cache.snapshotData.snapshots
 	cache.snapshotData.attributes.resource2 = 0
-	for _, spell in ipairs({ spells.bash, spells.challengingRoar, spells.frenziedRegeneration, spells.feralCharge, spells.cower }) do
+	for _, spell in ipairs({ spells.bash, spells.challengingRoar, spells.feralCharge, spells.cower }) do
 		snapshots[spell.id] = TRB.Classes.Snapshot:New(spell)
 	end
 	cache.barTextVariables = { icons = {}, values = {} }

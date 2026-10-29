@@ -18,6 +18,7 @@ TRB.Classes.Mainline.Monk = TRB.Classes.Mainline.Monk or {}
 --Spec Talents
 ---@field public invokeNiuzao TRB.Classes.SpellBase
 ---@field public kegSmash TRB.Classes.SpellThreshold
+---@field public pressTheAdvantage TRB.Classes.SpellBase
 TRB.Classes.Mainline.Monk.BrewmasterSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mainline.Monk.BrewmasterSpells.__index = TRB.Classes.Mainline.Monk.BrewmasterSpells
 
@@ -63,7 +64,7 @@ function TRB.Classes.Mainline.Monk.BrewmasterSpells:New()
 		settingKey = "tigerPalm",
 		isTalent = false,
 		baseline = true,
-		rangeCheck = false,
+		isSnowflake = true,
 		category = "offensive"
 	})
 	self.vivify = TRB.Classes.SpellThreshold:New({
@@ -133,6 +134,10 @@ function TRB.Classes.Mainline.Monk.BrewmasterSpells:New()
 		isTalent = true,
 		category = "offensive"
 	})
+	self.pressTheAdvantage = TRB.Classes.SpellBase:New({
+		id = 418359,
+		isTalent = true
+	})
 
 	return self
 end
@@ -177,6 +182,21 @@ function TRB.Classes.Mainline.Monk.BrewmasterSpells.GetCastbarTickProfiles()
 		[322729] = { mode = "fixedCount", baseDuration = 1.5, tickCount = 4, firstTickAtStart = true },
 	}
 end
+
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Mainline.Monk.BrewmasterSpells.thresholdSnowflakes = {
+	spells = {
+		tigerPalm = function(line)
+			local spells = line.data.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
+			-- Press the Advantage is passive and replaces Tiger Palm, so there's nothing left to cast.
+			if line.data.talents:IsTalentActive(spells.pressTheAdvantage) then
+				line:Hide()
+			else
+				line:ColorByUsable()
+			end
+		end,
+	},
+}
 
 
 ---@class TRB.Classes.Mainline.Monk.MistweaverSpells : TRB.Classes.Mainline.Healer.HealerSpells

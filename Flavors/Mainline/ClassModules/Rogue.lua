@@ -85,6 +85,8 @@ local function FillSpecializationCache()
 	specCache.rogue_assassination.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_assassination.snapshotData.attributes.comboPoints = 0
 	---@type TRB.Classes.Snapshot
+	specCache.rogue_assassination.snapshotData.snapshots[spells.cheapShot.id] = TRB.Classes.Snapshot:New(spells.cheapShot)
+	---@type TRB.Classes.Snapshot
 	specCache.rogue_assassination.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_assassination.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
@@ -151,6 +153,8 @@ local function FillSpecializationCache()
 	specCache.rogue_outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_outlaw.snapshotData.attributes.comboPoints = 0
 	specCache.rogue_outlaw.snapshotData.attributes.coupDeGraceActive = false
+	---@type TRB.Classes.Snapshot
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.cheapShot.id] = TRB.Classes.Snapshot:New(spells.cheapShot)
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
@@ -243,6 +247,8 @@ local function FillSpecializationCache()
 	specCache.rogue_subtlety.snapshotData.attributes.resourceRegen = 0
 	specCache.rogue_subtlety.snapshotData.attributes.comboPoints = 0
 	specCache.rogue_subtlety.snapshotData.attributes.coupDeGraceActive = false
+	---@type TRB.Classes.Snapshot
+	specCache.rogue_subtlety.snapshotData.snapshots[spells.cheapShot.id] = TRB.Classes.Snapshot:New(spells.cheapShot)
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_subtlety.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot

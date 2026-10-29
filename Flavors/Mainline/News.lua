@@ -15,24 +15,69 @@ TRB.Flavor.newsContent = [====[
 - [#905](#905) Fix the Skyriding bars turning back on after answering No to the Skyriding bars prompt, in profiles that are reset, made with Use Baseline, or imported from strings exported before 12.1.5.4-release.
 
 ## Death Knight
+### Blood
+
+- [#279](#279) Fix the Raise Ally threshold line not showing its cooldown.
+
 ### Frost
 
+- [#279](#279) The Glacial Advance threshold line is on by default and is never out of range.
 - [#279](#279) Remove the Breath of Sindragosa threshold line's separate cooldown timer.
+
+### Unholy
+
+- [#279](#279) Fix the Raise Ally and Zombify threshold lines not showing their cooldowns.
+- [#279](#279) The Epidemic threshold line is never out of range.
+- [#279](#279) Remove unused Unholy Assault spell data.
+
+## Demon Hunter
+### Vengeance
+
+- [#279](#279) Fix the Spirit Bomb threshold line not showing its cooldown.
+
+### Devourer
+
+- [#279](#279) Fix the Collapsing Star threshold line using the wrong spell.
 
 ## Druid
 
 - Fix Balance, Guardian, and Restoration threshold lines getting stuck in or out of range in Cat Form when only Feral is set to recolor or hide out of range lines.
 
+### Feral
+
+- [#279](#279) The Primal Wrath threshold line is never out of range.
+
+### Guardian
+
+- [#279](#279) Fix the Frenzied Regeneration threshold line not tracking Innate Resolve's second charge.
+
+### Restoration
+
+- [#279](#279) Fix the Frenzied Regeneration threshold line not tracking Call of the Elder Druid's second charge.
+
 ## Hunter
+### Beast Mastery
+
+- [#279](#279) Fix the Kill Command threshold line not tracking Alpha Predator's second charge.
+- [#279](#279) The Dire Beast: Hawk threshold line is never out of range.
+
 ### Marksmanship
 
+- [#279](#279) Fix the Black Arrow and Kill Shot threshold lines not tracking Deadeye's second charge.
 - [#279](#279) Remove the Explosive Shot threshold line's separate cooldown timer.
+
+### Survival
+
+- [#279](#279) The Boomstick threshold line follows Boomstick's range.
+- [#279](#279) Remove the Flamefang Pitch threshold line.
 
 ## Monk
 ### Brewmaster
 
 - [#279](#279) Fix the Detox threshold line showing a cooldown after a cast that dispels nothing.
 - [#279](#279) Fix the Keg Smash threshold line not showing its cooldown.
+- [#279](#279) The Tiger Palm threshold line follows Tiger Palm's range.
+- [#279](#279) The Tiger Palm threshold line hides with Press the Advantage, which replaces Tiger Palm.
 - [#279](#279) Remove the Crackling Jade Lightning, Detox, Expel Harm, and Paralysis threshold lines' separate cooldown timers.
 - [#279](#279) Remove unused Ancient Arts and Jade Flash spell data.
 - Fix threshold lines getting stuck in or out of range after a loading screen, talent change, or specialization change.
@@ -42,14 +87,43 @@ TRB.Flavor.newsContent = [====[
 - Fix threshold lines getting stuck in or out of range after a loading screen, talent change, or specialization change.
 
 ## Rogue
+
+- [#279](#279) Fix the Cheap Shot threshold line not showing its cooldown.
+
+### Assassination
+
+- [#279](#279) Remove the Shiv threshold line's charge tracking.
+
 ### Outlaw
 
 - [#279](#279) Fix the Restless Blades threshold line color not showing.
 - [#279](#279) Fix the Roll the Bones threshold line and `#rollTheBones` icon using an old version of the ability.
 
+### Subtlety
+
+- [#279](#279) Fix the Cheap Shot threshold line not tracking Shot in the Dark's second charge.
+- [#279](#279) Fix the Goremaw's Bite threshold line using the wrong spell.
+
 ## Warrior
 
 - [#279](#279) Remove Shield Block's separate cooldown refresh.
+
+### Arms
+
+- [#279](#279) Fix the Execute threshold lines not tracking Execute's cooldown without Improved Execute.
+- [#279](#279) The Whirlwind threshold line is never out of range.
+- [#279](#279) Remove the Ignore Pain threshold line.
+- Fix the Execute threshold lines hiding while you're short on Rage or channeling, such as Demolish.
+
+### Fury
+
+- [#279](#279) Fix the Execute threshold lines using Massacre's version of the ability.
+- Fix the Execute (Maximum) threshold line never showing with Improved Execute.
+
+### Protection
+
+- [#279](#279) Remove the Rend threshold line and `#rend` icon.
+- Fix the Execute threshold lines hiding while you're short on Rage or channeling, such as Demolish.
 
 ---
 

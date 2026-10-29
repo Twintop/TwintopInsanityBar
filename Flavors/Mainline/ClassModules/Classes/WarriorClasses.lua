@@ -61,7 +61,6 @@ end
 ---@field public mortalStrike TRB.Classes.SpellThreshold
 ---@field public rend TRB.Classes.SpellThreshold
 ---@field public cleave TRB.Classes.SpellThreshold
----@field public ignorePain TRB.Classes.SpellThreshold
 TRB.Classes.Mainline.Warrior.ArmsSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Warrior.WarriorBaseSpells})
 TRB.Classes.Mainline.Warrior.ArmsSpells.__index = TRB.Classes.Mainline.Warrior.ArmsSpells
 
@@ -79,7 +78,7 @@ function TRB.Classes.Mainline.Warrior.ArmsSpells:New()
 		category = "execute",
 		isTalent = false,
 		baseline = true,
-		hasCooldown = false,
+		hasCooldown = true,
 		isSnowflake = true
 	})
 	self.executeMaximum = TRB.Classes.SpellThreshold:New({
@@ -91,7 +90,7 @@ function TRB.Classes.Mainline.Warrior.ArmsSpells:New()
 		category = "execute",
 		isTalent = false,
 		baseline = true,
-		hasCooldown = false,
+		hasCooldown = true,
 		isSnowflake = true,
 		canHaveAudioCue = false
 	})
@@ -111,7 +110,8 @@ function TRB.Classes.Mainline.Warrior.ArmsSpells:New()
 		category = "offensive",
 		isTalent = false,
 		baseline = true,
-		isSnowflake = true
+		isSnowflake = true,
+		rangeCheck = false
 	})
 
 	-- Arms Baseline Abilities
@@ -169,16 +169,6 @@ function TRB.Classes.Mainline.Warrior.ArmsSpells:New()
 		isSnowflake = true,
 		rangeCheck = false
 	})
-	self.ignorePain = TRB.Classes.SpellThreshold:New({
-		id = 190456,
-		primaryResourceType = Enum.PowerType.Rage,
-		settingKey = "ignorePain",
-		category = "defensive",
-		isTalent = true,
-		hasCooldown = true,
-		duration = 11,
-		rangeCheck = false
-	})
 
 	return self
 end
@@ -220,10 +210,27 @@ function TRB.Classes.Mainline.Warrior.ArmsSpells.GetCastbarTickProfiles()
 	}
 end
 
+-- Whether each Execute line was in range before the current channel, which reads Execute as unusable throughout.
+local executeInRange = {}
+
+---Execute is in range when usable or only short on Rage; a channel keeps the answer from before it began.
+---@param line TRB.Classes.ThresholdLine
+---@return boolean
+local function IsExecuteInRange(line)
+	if not line.state.snapshotData.attributes.isChanneling then
+		executeInRange[line.spell.settingKey] = line.isUsable or line.spell:InsufficientPower()
+	end
+	return executeInRange[line.spell.settingKey] == true
+end
+
+---Short on Rage still draws the line; only an unusable Execute for another reason, such as the target's health, hides it.
 ---@param line TRB.Classes.ThresholdLine
 local function ExecuteMinimum(line)
+	local inRange = IsExecuteInRange(line)
 	if line.isUsable then
 		line:Over()
+	elseif inRange then
+		line:Under()
 	else
 		line:Hide()
 	end
@@ -232,8 +239,11 @@ end
 ---Execute's maximum-cost line compares against secret Rage, so a curve colors it.
 ---@param line TRB.Classes.ThresholdLine
 local function ExecuteMaximum(line)
+	local inRange = IsExecuteInRange(line)
 	if line.isUsable then
 		line:ApplyCostCurve(1, line.resourceAmount)
+	elseif inRange then
+		line:Under()
 	else
 		line:Hide()
 	end
@@ -283,7 +293,8 @@ function TRB.Classes.Mainline.Warrior.FurySpells:New()
 	self = setmetatable(base:New(), TRB.Classes.Mainline.Warrior.FurySpells) --[[@as TRB.Classes.Mainline.Warrior.FurySpells]]
 	--Warrior base abilities
 	self.execute = TRB.Classes.SpellThreshold:New({
-		id = 280735,
+		id = 5308,
+		castId = 280735,
 		healthMinimum = 0.2,
 		primaryResourceType = Enum.PowerType.Rage,
 		primaryResourceTypeProperty = "minCost",
@@ -295,7 +306,8 @@ function TRB.Classes.Mainline.Warrior.FurySpells:New()
 		isSnowflake = true
 	})
 	self.executeMinimum = TRB.Classes.SpellThreshold:New({
-		id = 280735,
+		id = 5308,
+		castId = 280735,
 		healthMinimum = 0.2,
 		primaryResourceType = Enum.PowerType.Rage,
 		primaryResourceTypeProperty = "minCost",
@@ -307,7 +319,8 @@ function TRB.Classes.Mainline.Warrior.FurySpells:New()
 		isSnowflake = true
 	})
 	self.executeMaximum = TRB.Classes.SpellThreshold:New({
-		id = 280735,
+		id = 5308,
+		castId = 280735,
 		healthMinimum = 0.2,
 		primaryResourceType = Enum.PowerType.Rage,
 		primaryResourceTypeProperty = "cost",
@@ -490,11 +503,12 @@ TRB.Classes.Mainline.Warrior.FurySpells.thresholdSnowflakes = {
 	spells = {
 		execute = FuryExecute,
 		executeMinimum = FuryExecute,
+		-- Improved Execute frees Execute's base cost but not the extra Rage it spends, so only this line stays, while Execute is usable.
 		executeMaximum = function(line)
-			if HasImprovedExecute(line) then
-				line:Hide()
-			elseif line.isUsable then
+			if line.isUsable then
 				line:ApplyCostCurve(1, line.resourceAmount)
+			elseif HasImprovedExecute(line) then
+				line:Hide()
 			else
 				line:Under()
 			end
@@ -517,7 +531,6 @@ TRB.Classes.Mainline.Warrior.FurySpells.thresholdSnowflakes = {
 ---@field public shieldSlam TRB.Classes.SpellBase
 ---@field public violentOutburst TRB.Classes.SpellBase
 ---@field public ignorePain TRB.Classes.SpellThreshold
----@field public rend TRB.Classes.SpellThreshold
 ---@field public revenge TRB.Classes.SpellThreshold
 ---@field public slam TRB.Classes.SpellThreshold
 ---@field public whirlwind TRB.Classes.SpellThreshold
@@ -616,17 +629,6 @@ function TRB.Classes.Mainline.Warrior.ProtectionSpells:New()
 			TRB.Classes.BuffCustomProperty:New(1, "number", "absorb", 1)
 		}
 	})
-	self.rend = TRB.Classes.SpellThreshold:New({
-		id = 388539,
-		talentId = 394062,
-		debuffId = 388539,
-		primaryResourceType = Enum.PowerType.Rage,
-		settingKey = "rend",
-		category = "offensive",
-		isTalent = true,
-		baseDuration = 15,
-		pandemic = true
-	})
 	self.revenge = TRB.Classes.SpellThreshold:New({
 		id = 6572,
 		primaryResourceType = Enum.PowerType.Rage,
@@ -660,7 +662,6 @@ function TRB.Classes.Mainline.Warrior.ProtectionSpells.FillBarTextVariables(spec
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
 		{ variable = "#ignorePain", icon = spells.ignorePain.icon, description = spells.ignorePain.name, printInSettings = true },
 		{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
-		{ variable = "#rend", icon = spells.rend.icon, description = spells.rend.name, printInSettings = true },
 		{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
 		{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
 		{ variable = "#suddenDeath", icon = spells.suddenDeath.icon, description = spells.suddenDeath.name, printInSettings = true },

@@ -328,6 +328,7 @@ function TRB.Classes.Mainline.DemonHunter.VengeanceSpells:New()
 		category = "offensive",
 		comboPoints = true,
 		isTalent = true,
+		hasCooldown = true,
 		isSnowflake = true,
 		rangeCheck = false
 	})
@@ -406,7 +407,7 @@ end
 TRB.Classes.Mainline.DemonHunter.VengeanceSpells.thresholdSnowflakes = {
 	spells = {
 		soulCleave = TRB.Classes.ThresholdLine.ColorByUsable,
-		spiritBomb = TRB.Classes.ThresholdLine.ColorByUsable,
+		spiritBomb = TRB.Classes.ThresholdLine.ColorByCooldown,
 	},
 }
 
@@ -482,7 +483,7 @@ function TRB.Classes.Mainline.DemonHunter.DevourerSpells:New()
 		maxResource = 40,
 	})
 	self.collapsingStarThreshold = TRB.Classes.SpellThreshold:New({
-		id = 1227750,
+		id = 1221150,
 		buffId = 1227702,
 		talentId = 1221167,
 		primaryResourceType = Enum.PowerType.Fury,

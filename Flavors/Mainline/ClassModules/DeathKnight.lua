@@ -141,6 +141,9 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Mainline.DeathKnight.BloodSpells
 	specCache.deathknight_blood.spellsData.spells = TRB.Classes.Mainline.DeathKnight.BloodSpells:New()
+	local bloodSpells = specCache.deathknight_blood.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
+	---@type TRB.Classes.Snapshot
+	specCache.deathknight_blood.snapshotData.snapshots[bloodSpells.raiseAlly.id] = TRB.Classes.Snapshot:New(bloodSpells.raiseAlly)
 
 	specCache.deathknight_blood.barTextVariables = {
 		icons = {},
@@ -213,6 +216,10 @@ local function FillSpecializationCache()
 	local unholySpells = specCache.deathknight_unholy.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.UnholySpells]]
 	---@type TRB.Classes.Snapshot
 	specCache.deathknight_unholy.snapshotData.snapshots[unholySpells.runicCorruption.id] = TRB.Classes.Snapshot:New(unholySpells.runicCorruption)
+	---@type TRB.Classes.Snapshot
+	specCache.deathknight_unholy.snapshotData.snapshots[unholySpells.raiseAlly.id] = TRB.Classes.Snapshot:New(unholySpells.raiseAlly)
+	---@type TRB.Classes.Snapshot
+	specCache.deathknight_unholy.snapshotData.snapshots[unholySpells.zombify.id] = TRB.Classes.Snapshot:New(unholySpells.zombify)
 
 	specCache.deathknight_unholy.barTextVariables = {
 		icons = {},

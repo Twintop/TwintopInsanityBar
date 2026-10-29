@@ -125,6 +125,8 @@ local function FillSpecializationCache()
 	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.metamorphosis.id] = TRB.Classes.Snapshot:New(spells.metamorphosis)
 	---@type TRB.Classes.Snapshot
 	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.artOfTheGlaive.id] = TRB.Classes.Snapshot:New(spells.artOfTheGlaive)
+	---@type TRB.Classes.Snapshot
+	specCache.demonhunter_vengeance.snapshotData.snapshots[spells.spiritBomb.id] = TRB.Classes.Snapshot:New(spells.spiritBomb)
 	
 	-- Devourer
 	specCache.demonhunter_devourer.Global_TwintopResourceBar = {

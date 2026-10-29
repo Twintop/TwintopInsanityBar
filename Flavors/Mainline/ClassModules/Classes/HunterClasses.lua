@@ -90,6 +90,7 @@ function TRB.Classes.Mainline.Hunter.BeastMasterySpells:New()
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "killCommand",
         hasCooldown = true,
+        hasCharges = true,
         isTalent = true,
         baseline = false,
         isSnowflake = true,
@@ -142,6 +143,7 @@ function TRB.Classes.Mainline.Hunter.BeastMasterySpells:New()
         hasCooldown = true,
         cooldown = 30,
         isPvp = true,
+        rangeCheck = false,
         category = "offensive"
     })
 
@@ -335,6 +337,7 @@ function TRB.Classes.Mainline.Hunter.MarksmanshipSpells:New()
         settingKey = "killShot",
         healthMinimum = 0.2,
         hasCooldown = true,
+        hasCharges = true,
         isSnowflake = true,
         category = "execute"
     })
@@ -362,6 +365,7 @@ function TRB.Classes.Mainline.Hunter.MarksmanshipSpells:New()
         healthMinimum = 0.2,
         healthMaximum = 0.8,
         hasCooldown = true,
+        hasCharges = true,
         isTalent = true,
         isSnowflake = true,
         baseline = false, -- When subTreeActive = true
@@ -500,7 +504,6 @@ TRB.Classes.Mainline.Hunter.MarksmanshipSpells.thresholdSnowflakes = {
 ---@field public raptorSwipeTalent1 TRB.Classes.SpellBase
 ---@field public raptorSwipeTalent2 TRB.Classes.SpellBase
 ---@field public raptorSwipeTalent3 TRB.Classes.SpellBase
----@field public flamefangPitch TRB.Classes.SpellThreshold
 TRB.Classes.Mainline.Hunter.SurvivalSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Hunter.HunterBaseSpells})
 TRB.Classes.Mainline.Hunter.SurvivalSpells.__index = TRB.Classes.Mainline.Hunter.SurvivalSpells
 
@@ -529,7 +532,6 @@ function TRB.Classes.Mainline.Hunter.SurvivalSpells:New()
         isTalent = true,
         hasCooldown = true,
         cooldown = 45,
-        rangeCheck = false,
         category = "offensive"
     })
     -- TODO: Implement Boomstick cooldown to also incorporate Lethal Calibration
@@ -564,14 +566,6 @@ function TRB.Classes.Mainline.Hunter.SurvivalSpells:New()
     })
     self.raptorSwipeTalent3 = TRB.Classes.SpellBase:New({
         talentId = 1259019,
-    })
-    self.flamefangPitch = TRB.Classes.SpellThreshold:New({
-        id = 1251592,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "flamefangPitch",
-        isTalent = true,
-        category = "offensive",
-        rangeCheck = false,
     })
     self.wildfireBomb = TRB.Classes.SpellThreshold:New({
         id = 259495,

@@ -57,7 +57,8 @@ function TRB.Classes.Mainline.DeathKnight.BloodSpells:New()
         settingKey = "raiseAlly",
         category = "utility",
         isTalent = false,
-        baseline = true
+        baseline = true,
+        hasCooldown = true
     })
 
     self.boneShield = TRB.Classes.SpellBase:New({
@@ -186,7 +187,8 @@ function TRB.Classes.Mainline.DeathKnight.FrostSpells:New()
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "glacialAdvance",
         category = "offensive",
-        baseline = true
+        baseline = true,
+        rangeCheck = false
     })
 
     return self
@@ -254,7 +256,8 @@ function TRB.Classes.Mainline.DeathKnight.UnholySpells:New()
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "epidemic",
         category = "offensive",
-        baseline = true
+        baseline = true,
+        rangeCheck = false
     })
 
     self.raiseAlly = TRB.Classes.SpellThreshold:New({
@@ -263,17 +266,19 @@ function TRB.Classes.Mainline.DeathKnight.UnholySpells:New()
         settingKey = "raiseAlly",
         category = "utility",
         isTalent = false,
-        baseline = true
+        baseline = true,
+        hasCooldown = true
     })
 
     self.zombify = TRB.Classes.SpellThreshold:New({
         id = 210128,
-        talentId = 207289,
         primaryResourceType = Enum.PowerType.RunicPower,
         settingKey = "zombify",
         isPvp = true,
         category = "pvp",
-        isTalent = true
+        isTalent = true,
+        hasCooldown = true,
+        hasCharges = true
     })
 
     self.runicCorruption = TRB.Classes.SpellBase:New({

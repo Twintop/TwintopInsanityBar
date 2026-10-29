@@ -489,6 +489,7 @@ function TRB.Classes.Mainline.Druid.FeralSpells:New()
         comboPoints = true,
         settingKey = "primalWrath",
         isTalent = true,
+        rangeCheck = false,
         category = "offensive"
     })
     self.lunarInspiration = TRB.Classes.SpellBase:New({
@@ -822,6 +823,9 @@ function TRB.Classes.Mainline.Druid.GuardianSpells:New()
     local base = TRB.Classes.Mainline.Druid.DruidBaseSpells
     self = setmetatable(base:New(), TRB.Classes.Mainline.Druid.GuardianSpells) --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 
+    -- Innate Resolve gives Guardian a second charge.
+    self.frenziedRegeneration.hasCharges = true
+
     self.maul = TRB.Classes.SpellThreshold:New({
         id = 6807,
         isTalent = true,
@@ -1061,7 +1065,10 @@ function TRB.Classes.Mainline.Druid.RestorationSpells:New()
     ---@type TRB.Classes.Mainline.Druid.DruidBaseSpells
     local druidBase = TRB.Classes.Mainline.Druid.DruidBaseSpells
     self = setmetatable(druidBase:New(), TRB.Classes.Mainline.Druid.RestorationSpells) --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
-    
+
+    -- Call of the Elder Druid gives Restoration a second charge while it lasts.
+    self.frenziedRegeneration.hasCharges = true
+
     -- Mixin HealerSpells abilities
     local healerSpells = TRB.Classes.Mainline.Healer.HealerSpells:New()
     for k, v in pairs(healerSpells) do

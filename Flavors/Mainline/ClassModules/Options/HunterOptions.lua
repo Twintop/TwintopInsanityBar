@@ -502,9 +502,6 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 				boomstick = {
 					enabled = true,
 				},
-				flamefangPitch = {
-					enabled = true,
-				},
 				hatchetToss = {
 					enabled = true,
 				},
