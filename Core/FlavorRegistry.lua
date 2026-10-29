@@ -81,6 +81,7 @@ local addonName, TRB = ...
 ---@field public secretValues boolean? # The client hands out secret values, so bar text marks the variables that may hold one (default true)
 ---@field public DefaultCastbarTickProfiles (fun(): table<integer, TRB.Classes.Settings.CastbarTickProfile>)? # Channel tick profiles for every class (racials, consumables), keyed by spell ID; a fresh table per call, which the spec's own profiles overlay
 ---@field public newsContent string? # Markdown changelog shown by the News window's flavor tab; Core\News.lua holds the Core tab's
+---@field public coreNewsLabel string? # The flavor's name in Core\News.lua titles, such as "Live"; the Core tab titles each section with that release alone and drops sections without it. Unset shows every title as written
 
 assert(type(TRB.Flavor) == "table", "TwintopInsanityBar: no flavor manifest loaded before Core. Check the TOC.")
 assert(type(TRB.Flavor.id) == "string" and TRB.Flavor.id ~= "", "TwintopInsanityBar: flavor manifest has no id.")

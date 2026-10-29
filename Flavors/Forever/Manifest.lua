@@ -20,6 +20,7 @@ local addonName, TRB = ...
 TRB.Flavor = {
 	id = "forever",
 	nameKey = "FlavorForever",
+	coreNewsLabel = "Forever",
 	classNamespace = "Forever",
 	-- Distinct from mainline's global so the two flavors never share a settings table, even if the
 	-- client ends up sharing an AddOns/WTF folder between them.
