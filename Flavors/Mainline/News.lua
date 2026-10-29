@@ -98,6 +98,8 @@ TRB.Flavor.newsContent = [====[
 
 - [#279](#279) Fix the Restless Blades threshold line color not showing.
 - [#279](#279) Fix the Roll the Bones threshold line and `#rollTheBones` icon using an old version of the ability.
+- [#895](#895) Remove Broadside, Buried Treasure, Grand Melee, Ruthless Precision, Skull and Crossbones, and True Bearing tracking and the `#broadside`, `#buriedTreasure`, `#grandMelee`, `#ruthlessPrecision`, `#skullAndCrossbones`, and `#trueBearing` icons.
+- [#895](#895) Remove the special ability threshold line color from Sinister Strike for Skull and Crossbones and from Between the Eyes for Ruthless Precision.
 
 ### Subtlety
 

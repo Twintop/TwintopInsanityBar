@@ -422,12 +422,6 @@ TRB.Classes.Mainline.Rogue.AssassinationSpells.thresholdSnowflakes = {
 ---@class TRB.Classes.Mainline.Rogue.OutlawSpells : TRB.Classes.Mainline.Rogue.RogueBaseSpells
 ---@field public opportunity TRB.Classes.SpellBase
 ---@field public restlessBlades TRB.Classes.SpellBase
----@field public broadside TRB.Classes.SpellBase
----@field public buriedTreasure TRB.Classes.SpellBase
----@field public grandMelee TRB.Classes.SpellBase
----@field public ruthlessPrecision TRB.Classes.SpellBase
----@field public skullAndCrossbones TRB.Classes.SpellBase
----@field public trueBearing TRB.Classes.SpellBase
 ---@field public bladeRush TRB.Classes.SpellBase
 ---@field public keepItRolling TRB.Classes.SpellBase
 ---@field public floatLikeAButterfly TRB.Classes.SpellBase
@@ -541,26 +535,6 @@ function TRB.Classes.Mainline.Rogue.OutlawSpells:New()
         rangeCheck = false,
         category = "utility"
     })
-
-    -- Roll the Bones
-    self.broadside = TRB.Classes.SpellBase:New({
-        id = 193356,
-    })
-    self.buriedTreasure = TRB.Classes.SpellBase:New({
-        id = 199600,
-    })
-    self.grandMelee = TRB.Classes.SpellBase:New({
-        id = 193358,
-    })
-    self.ruthlessPrecision = TRB.Classes.SpellBase:New({
-        id = 193357,
-    })
-    self.skullAndCrossbones = TRB.Classes.SpellBase:New({
-        id = 199603,
-    })
-    self.trueBearing = TRB.Classes.SpellBase:New({
-        id = 193359,
-    })
     self.bladeRush = TRB.Classes.SpellBase:New({
         id = 271877,
         isTalent = true,
@@ -627,21 +601,15 @@ function TRB.Classes.Mainline.Rogue.OutlawSpells.FillBarTextVariables(specCacheE
 		{ variable = "#betweenTheEyes", icon = spells.betweenTheEyes.icon, description = spells.betweenTheEyes.name, printInSettings = true },
 		{ variable = "#bladeFlurry", icon = spells.bladeFlurry.icon, description = spells.bladeFlurry.name, printInSettings = true },
 		{ variable = "#bladeRush", icon = spells.bladeRush.icon, description = spells.bladeRush.name, printInSettings = true },
-		{ variable = "#broadside", icon = spells.broadside.icon, description = spells.broadside.name, printInSettings = true },
-		{ variable = "#buriedTreasure", icon = spells.buriedTreasure.icon, description = spells.buriedTreasure.name, printInSettings = true },
 		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
 		{ variable = "#dispatch", icon = spells.dispatch.icon, description = spells.dispatch.name, printInSettings = true },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
-		{ variable = "#grandMelee", icon = spells.grandMelee.icon, description = spells.grandMelee.name, printInSettings = true },
 		{ variable = "#opportunity", icon = spells.opportunity.icon, description = spells.opportunity.name, printInSettings = true },
 		{ variable = "#pistolShot", icon = spells.pistolShot.icon, description = spells.pistolShot.name, printInSettings = true },
 		{ variable = "#rollTheBones", icon = spells.rollTheBones.icon, description = spells.rollTheBones.name, printInSettings = true },
-		{ variable = "#ruthlessPrecision", icon = spells.ruthlessPrecision.icon, description = spells.ruthlessPrecision.name, printInSettings = true },
 		{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 		{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
 		{ variable = "#sinisterStrike", icon = spells.sinisterStrike.icon, description = spells.sinisterStrike.name, printInSettings = true },
-		{ variable = "#skullAndCrossbones", icon = spells.skullAndCrossbones.icon, description = spells.skullAndCrossbones.name, printInSettings = true },
-		{ variable = "#trueBearing", icon = spells.trueBearing.icon, description = spells.trueBearing.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -674,19 +642,13 @@ TRB.Classes.Mainline.Rogue.OutlawSpells.thresholdSnowflakes = {
 	spells = {
 		sinisterStrike = function(line)
 			if not EchoingReprimand(line) then
-				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]).skullAndCrossbones)
+				line:ColorByUsable()
 			end
 		end,
 		pistolShot = function(line)
 			SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]).opportunity)
 		end,
-		betweenTheEyes = function(line)
-			if line.snapshot ~= nil and line.snapshot.cooldown:IsUnusable() then
-				line:Unusable()
-			else
-				SpecialWhileBuffed(line, (line.data.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]).ruthlessPrecision)
-			end
-		end,
+		betweenTheEyes = TRB.Classes.ThresholdLine.ColorByCooldown,
 		sliceAndDice = TRB.Classes.ThresholdLine.ColorByUsable,
 		dispatch = function(line)
 			if line.state.snapshotData.attributes.coupDeGraceActive then

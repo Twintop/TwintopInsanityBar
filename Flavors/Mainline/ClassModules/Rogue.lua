@@ -186,31 +186,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.killingSpree.id] = TRB.Classes.Snapshot:New(spells.killingSpree)
 	---@type TRB.Classes.Snapshot
-	specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id] = TRB.Classes.Snapshot:New(spells.rollTheBones, {
-		---@type table<integer, TRB.Classes.Snapshot>
-		buffs = {
-			[spells.broadside.id] = TRB.Classes.Snapshot:New(spells.broadside),
-			[spells.buriedTreasure.id] = TRB.Classes.Snapshot:New(spells.buriedTreasure),
-			[spells.grandMelee.id] = TRB.Classes.Snapshot:New(spells.grandMelee),
-			[spells.ruthlessPrecision.id] = TRB.Classes.Snapshot:New(spells.ruthlessPrecision),
-			[spells.skullAndCrossbones.id] = TRB.Classes.Snapshot:New(spells.skullAndCrossbones),
-			[spells.trueBearing.id] =TRB.Classes.Snapshot:New(spells.trueBearing)
-		},
-		count = 0,
-		goodBuffs = false
-	})
-	---@type TRB.Classes.Snapshot
-	specCache.rogue_outlaw.snapshotData.snapshots[spells.broadside.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.broadside.id]
-	---@type TRB.Classes.Snapshot
-	specCache.rogue_outlaw.snapshotData.snapshots[spells.buriedTreasure.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.buriedTreasure.id]
-	---@type TRB.Classes.Snapshot
-	specCache.rogue_outlaw.snapshotData.snapshots[spells.grandMelee.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.grandMelee.id]
-	---@type TRB.Classes.Snapshot
-	specCache.rogue_outlaw.snapshotData.snapshots[spells.ruthlessPrecision.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.ruthlessPrecision.id]
-	---@type TRB.Classes.Snapshot
-	specCache.rogue_outlaw.snapshotData.snapshots[spells.skullAndCrossbones.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.skullAndCrossbones.id]
-	---@type TRB.Classes.Snapshot
-	specCache.rogue_outlaw.snapshotData.snapshots[spells.trueBearing.id] = specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.trueBearing.id]
+	specCache.rogue_outlaw.snapshotData.snapshots[spells.rollTheBones.id] = TRB.Classes.Snapshot:New(spells.rollTheBones)
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_outlaw.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand)
 
@@ -713,35 +689,6 @@ end
 function TRB.Functions.Class:SpellCast(event, spellId)
 end
 
-local function UpdateRollTheBones()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
-	---@type TRB.Classes.Snapshot
-	local rollTheBones = TRB.Data.snapshotData.snapshots[spells.rollTheBones.id]
-	---@type table<integer, TRB.Classes.Snapshot>
-	local buffs = rollTheBones.attributes.buffs
-	local currentTime = GetTime()
-			
-	local rollTheBonesCount = 0
-	local highestRemaining = 0
-	for _, v in pairs(buffs) do
-		local remaining = v.buff:GetRemainingTime(currentTime)
-		if v.buff.isActive then
-			rollTheBonesCount = rollTheBonesCount + 1
-			if remaining > highestRemaining then
-				highestRemaining = remaining
-			end
-		end
-	end
-	rollTheBones.attributes.count = rollTheBonesCount
-	rollTheBones.attributes.remaining = highestRemaining
-
-	if rollTheBones.attributes.count >= 2 or buffs[spells.broadside.id].buff.isActive or buffs[spells.trueBearing.id].buff.isActive then
-		rollTheBones.attributes.goodBuffs = true
-	else
-		rollTheBones.attributes.goodBuffs = false
-	end
-end
-
 local function UpdateSnapshot()
 	Character:UpdateSnapshot()
 	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Mainline.Rogue.RogueBaseSpells]
@@ -760,7 +707,6 @@ end
 
 local function UpdateSnapshot_Outlaw()
 	UpdateSnapshot()
-	UpdateRollTheBones()
 	--[[local spells = TRB.Data.spellsData.spells --[@as TRB.Classes.Mainline.Rogue.OutlawSpells]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots]]
@@ -1570,21 +1516,15 @@ local function SwitchSpec()
 		lookup["#betweenTheEyes"] = spells.betweenTheEyes.icon
 		lookup["#bladeFlurry"] = spells.bladeFlurry.icon
 		lookup["#bladeRush"] = spells.bladeRush.icon
-		lookup["#broadside"] = spells.broadside.icon
-		lookup["#buriedTreasure"] = spells.buriedTreasure.icon
 		lookup["#deathFromAbove"] = spells.deathFromAbove.icon
 		lookup["#dispatch"] = spells.dispatch.icon
 		lookup["#dismantle"] = spells.dismantle.icon
-		lookup["#grandMelee"] = spells.grandMelee.icon
 		lookup["#opportunity"] = spells.opportunity.icon
 		lookup["#pistolShot"] = spells.pistolShot.icon
 		lookup["#rollTheBones"] = spells.rollTheBones.icon
-		lookup["#ruthlessPrecision"] = spells.ruthlessPrecision.icon
 		lookup["#sad"] = spells.sliceAndDice.icon
 		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
 		lookup["#sinisterStrike"] = spells.sinisterStrike.icon
-		lookup["#skullAndCrossbones"] = spells.skullAndCrossbones.icon
-		lookup["#trueBearing"] = spells.trueBearing.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
