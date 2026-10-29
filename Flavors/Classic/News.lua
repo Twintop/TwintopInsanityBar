@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 1.15.9.0-alpha (2026-10-28)
+# 1.15.9.0-release (2026-10-29)
 ## General
 
 - First build for World of Warcraft Classic, with every class's primary resource bar plus the health, cast, Global Cooldown, mirror timer, and pet bars.

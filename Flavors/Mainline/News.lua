@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.5.8-release (2026-10-26)
+# 12.1.5.8-release (2026-10-29)
 ## General
 ### Skyriding
 

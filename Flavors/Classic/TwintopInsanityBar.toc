@@ -18,8 +18,8 @@
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 1.15.9.0
-## X-ReleaseType: alpha
-## X-ReleaseDate: 2026-10-28
+## X-ReleaseType: release
+## X-ReleaseDate: 2026-10-29
 ## SavedVariables: TwintopInsanityBarClassicSettings
 ## IconTexture: Interface\AddOns\TwintopInsanityBar\Images\Icon.blp
 ## DefaultState: enabled

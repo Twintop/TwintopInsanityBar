@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 1.60.1.15-release (2026-10-26)
+# 1.60.1.15-release (2026-10-29)
 ## General
 ### Thresholds
 
