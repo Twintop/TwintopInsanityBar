@@ -74,7 +74,7 @@ TRB.Flavor.newsContent = [====[
 ## Mage
 ### Arcane
 
-- Fix the Arcane Salvo bar staying full after switching back to Arcane from another spec.
+- [#913](#913) Fix the Arcane Salvo bar staying full after switching back to Arcane from another spec.
 
 ## Monk
 ### Brewmaster
