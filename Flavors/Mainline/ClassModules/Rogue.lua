@@ -282,8 +282,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_subtlety.snapshotData.snapshots[spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(spells.shotInTheDark, nil, "always")
 	---@type TRB.Classes.Snapshot
-	specCache.rogue_subtlety.snapshotData.snapshots[spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(spells.shadowTechniques, nil, "always")
-	---@type TRB.Classes.Snapshot
 	specCache.rogue_subtlety.snapshotData.snapshots[spells.flagellation.id] = TRB.Classes.Snapshot:New(spells.flagellation)
 	---@type TRB.Classes.Snapshot
 	specCache.rogue_subtlety.snapshotData.snapshots[spells.silentStorm.id] = TRB.Classes.Snapshot:New(spells.silentStorm, nil, "always")
@@ -1405,7 +1403,6 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(comboPointsColors.background, true)
 				local comboPointBarOverrideActive = comboPointFlatTargets.bar or comboPointsOvercapCurves.bar ~= nil
 				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
@@ -1442,7 +1439,6 @@ local function UpdateResourceBar()
 								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
 							end
 						
-							local isCharged = false
 							if charged ~= nil then
 								for y = 1, #charged do
 									if charged[y] == x then
@@ -1456,20 +1452,10 @@ local function UpdateResourceBar()
 										if not comboPointBackgroundOverrideActive then
 											cpBR, cpBG, cpBB, _ = Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand.color, true)
 										end
-										isCharged = true
 									end
 								end
 							end
 
-							if not isCharged and x > snapshotData.attributes.resource2 and (snapshots[spells.shadowTechniques.id].buff.applications + snapshotData.attributes.resource2) >= x then
-								if not comboPointBorderOverrideActive then
-									cpBorderColor = specSettings.colors.comboPoints.shadowTechniques.color
-								end
-								if not comboPointBackgroundOverrideActive then
-									cpBR, cpBG, cpBB, _ = Color:GetRGBAFromString(specSettings.colors.comboPoints.shadowTechniques.color, true)
-								end
-							end
-							
 							if comboPointsOvercapCurves.border ~= nil then
 								cpNode:SetBorderColorCurve(EvaluateOvercapCurve(comboPointsOvercapCurves.border), Color:EvaluateEndCapCurve(cpNode, comboPointsOvercapCurves.border))
 							else

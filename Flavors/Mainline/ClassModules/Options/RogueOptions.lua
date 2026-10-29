@@ -793,11 +793,6 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					color2 = "FF68CCEF",
 					gradientDirection = "disabled"
 				},
-				shadowTechniques = {
-					color = "FF431863",
-					color2 = "FF431863",
-					gradientDirection = "disabled"
-				},
 				sameColor = false,
 			},
 			threshold = {
@@ -2238,12 +2233,6 @@ local function SubtletyConstructComboPointsBarPanel(parent)
 	f.Swatch2:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, spec.colors.comboPoints.final, self)
 	end)
-
-	--[[controls.colors.comboPoints.shadowTechniques = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["RogueSubtletyColorPickerShadowTechniques"], spec.colors.comboPoints.shadowTechniques, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-	f = controls.colors.comboPoints.shadowTechniques
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "shadowTechniques")
-	end)]]
 
 	controls.checkBoxes.fiveComboPointOverride = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_fiveComboPointOverride", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.fiveComboPointOverride
