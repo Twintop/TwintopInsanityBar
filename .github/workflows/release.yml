@@ -146,7 +146,8 @@ jobs:
           newest() { tr -d '\r' < "$1" | awk '/^# /{n++} n==2||/^\]====\]/{exit} n==1 && !/^---$/{ if ($0 ~ /^[[:space:]]*$/) { blank++ } else { for (; blank > 0; blank--) print ""; print } }'; }
           FLAVOR_NEWS="$(newest "$FLAVOR_DIR/News.lua")"
           if [ -z "$FLAVOR_NEWS" ]; then echo "No release section found in $FLAVOR_DIR/News.lua"; exit 1; fi
-          # Core titles name both releases, e.g. "# Live 12.1.0.18-release / Forever 1.60.1.6-release (2026-10-09)".
+          # Core titles name each flavor's release, e.g. "# Live 12.1.5.8-release / Forever 1.60.1.15-release (2026-10-29)".
+          # These labels match each manifest's coreNewsLabel.
           if [ "$FLAVOR" = "mainline" ]; then CORE_LABEL="Live"; else CORE_LABEL="$(basename "$FLAVOR_DIR")"; fi
           RELEASE="$(echo "$FLAVOR_NEWS" | head -n 1 | awk '{print $2}')"
           CORE_NEWS="$(newest Core/News.lua)"

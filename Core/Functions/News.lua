@@ -6,7 +6,7 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 -- Two changelogs, one tab each: the flavor's (Flavors\<Flavor>\News.lua) and Core's (Core\News.lua). This
--- file only renders them.
+-- file renders them, retitling Core's sections for the running flavor.
 
 -- Tab keys. A changelog links to a tab as tab:<key>, which is how a Core-only release points readers on.
 local TAB_FLAVOR = "flavor"
@@ -43,6 +43,42 @@ local function OnHyperlinkClick(_, link, text)
 		local titleText = string.format(L["NewsHyperlinkViewIssueOnGitHub"], link)
 		StaticPopup_Show("LIBMARKDOWNDEMOFRAME_URL", nil, nil, { title = titleText, url = url })
 	end
+end
+
+---Retitles Core's "# Live X / Forever Y / Classic Z (date)" sections to the flavor's "# Y (date)" and drops
+---the sections that don't name it. A title that doesn't parse is kept as written.
+---@param markdown string
+---@param label string? # The flavor's name in Core titles (TRB.Flavor.coreNewsLabel); nil keeps every title
+---@return string
+local function FilterCoreNews(markdown, label)
+	if label == nil then
+		return markdown
+	end
+
+	local lines = {}
+	local keep = true
+	for line in (markdown .. "\n"):gmatch("([^\n]*)\n") do
+		if line:match("^# ") then
+			local releases, date = line:match("^# (.-) (%(%d+%-%d+%-%d+%))%s*$")
+			keep = true
+			if releases ~= nil and (releases .. " / "):gsub("%a+ %d[%w%.%-]* / ", "") == "" then
+				local version
+				for name, release in (releases .. " / "):gmatch("(%a+) (%S+) / ") do
+					if name == label then
+						version = release
+					end
+				end
+				keep = version ~= nil
+				if version ~= nil then
+					line = "# " .. version .. " " .. date
+				end
+			end
+		end
+		if keep then
+			lines[#lines + 1] = line
+		end
+	end
+	return table.concat(lines, "\n")
 end
 
 ---Builds one tab's reader: the markdown rendered as HTML with the shared fonts and link handling.
@@ -138,7 +174,7 @@ function TRB.Functions.News:BuildNewsPopup()
 			BuildReader(scrollChild, "TRB_News_HTML_Frame", TRB.Flavor.newsContent or "")
 		end },
 		{ TAB_CORE, L["NewsTabCore"], oUi.tabWidth.large, function(scrollChild)
-			BuildReader(scrollChild, "TRB_News_Core_HTML_Frame", TRB.Details.coreNewsContent or "")
+			BuildReader(scrollChild, "TRB_News_Core_HTML_Frame", FilterCoreNews(TRB.Details.coreNewsContent or "", TRB.Flavor.coreNewsLabel))
 		end },
 	}, 0)
 	for _, tabsheet in pairs(tabContainer.tabsheets) do

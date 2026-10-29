@@ -80,6 +80,7 @@ local talentSpellIds = {
 TRB.Flavor = {
 	id = "classic",
 	nameKey = "FlavorClassic",
+	coreNewsLabel = "Classic",
 	classNamespace = "Classic",
 	-- Distinct from the other flavors' globals so no two flavors ever share a settings table.
 	savedVariablesName = "TwintopInsanityBarClassicSettings",

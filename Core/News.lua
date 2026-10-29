@@ -1,12 +1,13 @@
 local _, TRB = ...
 
 -- Core changelog shown by the News window's Core tab (Core\Functions\News.lua renders it). Markdown; newest
--- first. Each section names the Live and Forever releases that carry it.
+-- first. Titles name the Live, Forever, and Classic releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
 # Live 12.1.5.8-release / Forever 1.60.1.15-release / Classic 1.15.9.0-release (2026-10-29)
 ## General
 
+- [#914](#914) The News window's Core tab titles each release with this game's version alone, and leaves out releases from before this game was supported.
 - Fix the End Cap still leaving a sliver of the bar showing past it during long channels such as Fishing.
 - Fix the End Cap narrowing as the Target and Focus Cast Bars near full.
 
