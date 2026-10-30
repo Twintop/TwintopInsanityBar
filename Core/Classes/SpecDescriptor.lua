@@ -25,6 +25,9 @@ TRB.Classes = TRB.Classes or {}
 ---@field label string # Localized name shown in the bar text "relative to" dropdown
 ---@field frame string # Frame key the entry resolves to (e.g. "ComboPoint_3", "EnrageBar")
 
+---@class TRB.Classes.SpecDescriptor.Totems
+---@field placement "spec"|"otherBars" # Where the Totems bar's options live: a top-level tab of the spec's own, or an Other Bars tab
+
 ---@class TRB.Classes.SpecDescriptor.Pet
 ---@field power "FOCUS"|"ENERGY"|"MANA" # Power token of the spec's pet; picks the Pet Resource bar's default colors
 
@@ -43,6 +46,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field useGlobalDefaults table<string, boolean>? # "Use global settings" toggles seeded differently from the shipped defaults (key -> value), for a spec whose layout the global options cannot describe
 ---@field formIndependentBars string[]? # Custom bar keys that keep this spec's own layout and visibility while a shapeshift form lays out with another spec's settings
 ---@field pet TRB.Classes.SpecDescriptor.Pet? # The spec can hold a permanent pet, so it gets the Pet bars
+---@field totems TRB.Classes.SpecDescriptor.Totems? # The spec summons into totem slots, so it gets the Totems bar
 ---@field rangedAttack boolean? # The class auto-shoots a ranged weapon or wand, so the Ranged Swing bar offers its movement shading
 
 TRB.Classes.SpecDescriptor = {}

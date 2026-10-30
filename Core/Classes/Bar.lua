@@ -989,7 +989,7 @@ end
 ---Sets the side ability icon's border color directly from an ARGB string, independent of the node's
 ---border cache. Used at construction to seed the icon with the bar's base border color so it doesn't
 ---show the BackdropTemplate default (white) before any render/appearance pass populates the cache.
----@param colorString string # ARGB hex color string
+---@param colorString string? # ARGB hex color string; nil leaves the icon alone
 function TRB.Classes.BarNode:SetIconBorderColorString(colorString)
 	if self.icon == nil or colorString == nil then
 		return
@@ -1012,7 +1012,7 @@ end
 
 ---Sets the side ability icon's background color directly from an ARGB string, independent of the node's
 ---backdrop cache. Seeds the icon at construction, like SetIconBorderColorString.
----@param colorString string # ARGB hex color string
+---@param colorString string? # ARGB hex color string; nil leaves the icon alone
 function TRB.Classes.BarNode:SetIconBackgroundColorString(colorString)
 	if self.icon == nil or colorString == nil then
 		return
@@ -2278,6 +2278,7 @@ end
 ---@field public isCastbar boolean # Player, target, or focus cast bar, whose name already ends in "Cast Bar"
 ---@field public classScoped boolean # Other Bar offered only to classes whose spec descriptors claim it
 ---@field public liveNodeCountFunc (fun(): integer?)? # Self-driven multi-node bar whose node count follows live game data; nil from it keeps maxNodes
+---@field public onLayout (fun(group: TRB.Classes.BarGroup, groupSettings: table, colors: table?))? # Runs after each layout pass of the bar, for a bar that positions its own nodes
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -2353,6 +2354,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.classScoped = config.classScoped or false -- Other Bar offered only to classes whose spec descriptors claim it (otherBars)
 	self.environmentShowConditions = config.environmentShowConditions or false
 	self.liveNodeCountFunc = config.liveNodeCountFunc
+	self.onLayout = config.onLayout
 
 	return self
 end
@@ -2889,6 +2891,9 @@ function TRB.Classes.BarTypeRegistry:IsBarInScope(barKey, classId, specId)
 			return classId == nil or self:SpecHasPet(classId, specId)
 		end
 	end
+	if self:IsTotemBar(barKey) then
+		return classId == nil or self:SpecHasTotems(classId, specId)
+	end
 	local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get(barKey)
 	if definition ~= nil and definition.classScoped then
 		return ClassClaimsOtherBar(classId, barKey)
@@ -2942,6 +2947,91 @@ end
 ---@param includeAllScopes boolean? # Ignore the scope and append every pet bar
 function TRB.Classes.BarTypeRegistry:AppendPetBars(list, classId, specId, includeAllScopes)
 	local keys = includeAllScopes and self.petScopeKeys or self:GetPetScopeKeys(classId, specId)
+	for _, key in ipairs(keys) do
+		local def = self.definitions[key]
+		if def ~= nil then
+			local exists = false
+			for _, d in ipairs(list) do
+				if d.key == key then
+					exists = true
+					break
+				end
+			end
+			if not exists then
+				list[#list + 1] = def
+			end
+		end
+	end
+end
+
+---The Totems bar's keys. One bar, whose nodes are the client's totem slots.
+TRB.Classes.BarTypeRegistry.totemBarKeys = { "totems" }
+
+---The Totems trait a spec declares through its descriptor, or nil for a spec without totems.
+---@param classId integer?
+---@param specId integer?
+---@return TRB.Classes.SpecDescriptor.Totems?
+function TRB.Classes.BarTypeRegistry:GetTotemSpecInfo(classId, specId)
+	local descriptor = TRB.Classes.SpecDescriptor:Get(classId, specId)
+	return descriptor and descriptor.totems or nil
+end
+
+---Whether a spec summons into totem slots, and so gets the Totems bar at all.
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:SpecHasTotems(classId, specId)
+	return self:GetTotemSpecInfo(classId, specId) ~= nil
+end
+
+---Where a spec's Totems bar options live: "spec" for a top-level tab, "otherBars" for an Other Bars tab. Nil for a
+---spec without totems.
+---@param classId integer?
+---@param specId integer?
+---@return "spec"|"otherBars"|nil
+function TRB.Classes.BarTypeRegistry:GetTotemPlacement(classId, specId)
+	local info = self:GetTotemSpecInfo(classId, specId)
+	return info and info.placement or nil
+end
+
+---Returns the Totems bar keys for a spec. Empty for a spec without totems.
+---@param classId integer?
+---@param specId integer?
+---@return string[]
+function TRB.Classes.BarTypeRegistry:GetTotemBarKeys(classId, specId)
+	if not self:SpecHasTotems(classId, specId) then
+		return {}
+	end
+	local keys = {}
+	for _, key in ipairs(self.totemBarKeys) do
+		keys[#keys + 1] = key
+	end
+	return keys
+end
+
+---Whether a bar key is the Totems bar.
+---@param key string?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsTotemBar(key)
+	if key == nil then
+		return false
+	end
+	for _, totemKey in ipairs(self.totemBarKeys) do
+		if totemKey == key then
+			return true
+		end
+	end
+	return false
+end
+
+---Appends the Totems bar definition to a customBars list if registered and not already present.
+---Mirrors AppendPetBars.
+---@param list TRB.Classes.BarTypeDefinition[]
+---@param classId integer? # The scope; a spec without totems appends nothing
+---@param specId integer?
+---@param includeAllScopes boolean? # Ignore the scope and append the bar
+function TRB.Classes.BarTypeRegistry:AppendTotemBars(list, classId, specId, includeAllScopes)
+	local keys = includeAllScopes and self.totemBarKeys or self:GetTotemBarKeys(classId, specId)
 	for _, key in ipairs(keys) do
 		local def = self.definitions[key]
 		if def ~= nil then
@@ -3015,6 +3105,13 @@ function TRB.Classes.BarTypeRegistry:GetBarTypesForSpec(classId, specId)
 
 	-- Pet bars are likewise not declared per-spec; add them for the specs that can hold a pet.
 	for _, key in ipairs(self:GetPetScopeKeys(classId, specId)) do
+		if self.definitions[key] then
+			result[key] = self.definitions[key]
+		end
+	end
+
+	-- The Totems bar goes with the specs that summon totems.
+	for _, key in ipairs(self:GetTotemBarKeys(classId, specId)) do
 		if self.definitions[key] then
 			result[key] = self.definitions[key]
 		end
@@ -3353,6 +3450,48 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end,
 		defaultColorsFunc = function()
 			return TRB.Functions.Settings:DefaultPetCastbarBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Totems bar: one node per totem slot, filled from the slot's engine duration, which stays drawable while it is
+	-- secret. Forever and Classic slots are the four elements, shown in Blizzard's order and reorderable.
+	local totemElements = TRB.Flavor.totemElements and {
+		{ key = "earth", displayName = L["TotemElementEarth"] },
+		{ key = "fire", displayName = L["TotemElementFire"] },
+		{ key = "water", displayName = L["TotemElementWater"] },
+		{ key = "air", displayName = L["TotemElementAir"] },
+	} or nil
+	-- Eight slots on Mainline. At least four, so the bar always has room for its fewest visible nodes.
+	local totemSlots = TRB.Flavor.totemElements and 4 or math.max(math.min(GetNumTotemSlots() or 0, 8), 4)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "totems",
+		displayName = L["ResourceTotems"],
+		isMultiNode = true,
+		maxNodes = totemSlots,
+		hasSameColor = false,
+		minMaxMode = "custom",
+		hasSpacing = true,
+		hasThresholds = false,
+		hasCustomThresholds = false,
+		colorCurveType = nil,
+		nodeColors = totemElements,
+		hasOrdering = totemElements ~= nil,
+		orderUpTooltip = L["TotemElementMoveUp"],
+		orderDownTooltip = L["TotemElementMoveDown"],
+		visibilityKey = "totems",
+		timerDrivenFill = true,
+		endCapMode = "all",
+		onLayout = function(group, groupSettings, colors)
+			TRB.Functions.Totems:LayoutGroup(group, groupSettings, colors)
+		end,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultTotemBarSettings(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultTotemBarColors()
 		end,
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()

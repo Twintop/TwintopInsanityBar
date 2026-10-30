@@ -694,6 +694,11 @@ function M.install(opts)
 	G.GetSpellCooldown = function() return 0, 0, 1, 1 end
 	G.GetSpellCharges = function() return 0, 0, 0, 0, 1 end
 	G.GetSpellCount = retZero
+	-- Every totem slot empty: no duration object, and haveTotem false.
+	G.GetNumTotemSlots = function() return 8 end
+	G.GetTotemInfo = function() return false, "", 0, 0, 0, 1, 0 end
+	G.GetTotemDuration = retNil
+	G.GetTotemTimeLeft = retZero
 	G.GetPvpTalentInfoByID = function(id) return id, "PvpTalent", 0, false, false, id end
 	G.GetTalentInfo = retNil
 	G.GetNumTalentTabs = retZero

@@ -74,9 +74,10 @@ function hooks.afterLoad(ctx)
 		drv.groups = {}
 		local origBuild = Tabs.BuildTabGroup
 		Tabs.BuildTabGroup = function(self, parent, namePrefix, defs, y, tabContext)
+			local r = origBuild(self, parent, namePrefix, defs, y, tabContext)
+			-- Read after the build, which injects the all-spec tabs into defs.
 			local keys = {}
 			for _, d in ipairs(defs) do keys[#keys + 1] = d[1] end
-			local r = origBuild(self, parent, namePrefix, defs, y, tabContext)
 			drv.groups[#drv.groups + 1] = { parent = parent, prefix = namePrefix, keys = keys }
 			return r
 		end
@@ -248,6 +249,7 @@ function hooks.afterEvents(ctx)
 
 		local i = 1
 		local drained = 0
+		local totemsDrained = 0
 		while i <= #groups do
 			local g = groups[i]
 			if g.parent.tabConstructors then
@@ -257,6 +259,9 @@ function hooks.afterEvents(ctx)
 				for _, key in ipairs(keys) do
 					try(g.prefix .. ":" .. key, function() Tabs:EnsureTabConstructed(g.parent, key) end)
 					drained = drained + 1
+					if key == "totems" then
+						totemsDrained = totemsDrained + 1
+					end
 				end
 			end
 			i = i + 1
@@ -360,6 +365,47 @@ function hooks.afterEvents(ctx)
 			end
 		end
 		check("every spec has all its grouping tabs (" .. table.concat(missing, ", ") .. ")", #missing == 0)
+
+		-- ===== Totems tab checks =====
+		do
+			local registry = TRB_.Classes.BarTypeRegistry
+			local misplaced = {}
+			local totemSpecs = 0
+			for _, classEntry in ipairs(TRB_.Data.classRegistryOrder) do
+				for _, specEntry in ipairs(classEntry.specs) do
+					local placement = registry:GetTotemPlacement(specEntry.classId, specEntry.specId)
+					local cName, sName = TRB_.Functions.Character:GetClassAndSpecializationNames(specEntry.classId, specEntry.specId)
+					local keys = stripKeys(cName .. "_" .. sName)
+					if keys ~= nil then
+						local list = "," .. keys .. ","
+						local totemsAt = list:find(",totems,", 1, true)
+						local healthAt = list:find(",healthBar,", 1, true)
+						if placement == "spec" then
+							totemSpecs = totemSpecs + 1
+							if totemsAt == nil or (healthAt ~= nil and totemsAt > healthAt) then
+								misplaced[#misplaced + 1] = cName .. "_" .. sName .. "(" .. keys .. ")"
+							end
+						elseif totemsAt ~= nil then
+							misplaced[#misplaced + 1] = cName .. "_" .. sName .. " has a Totems tab"
+						end
+					end
+				end
+			end
+			print("INFO specs with a top-level Totems tab: " .. totemSpecs .. "; Totems tabs constructed: " .. totemsDrained)
+			check("a Totems tab sits just before Health on every spec with totems, and nowhere else (" .. table.concat(misplaced, "; ") .. ")", #misplaced == 0 and totemSpecs > 0)
+			check("Global Options has a Totems home", stripKeys("Totems") == "totems")
+		end
+		-- A Use Global link opens its category's strip by GetGroupInnerPrefix, so every category's Global prefix must name a built strip.
+		do
+			local unresolved = {}
+			local navKeys = { "castbar", "otherBars", "petBars", "totems" }
+			if #TRB_.Classes.BarTypeRegistry.skyridingBarKeys > 0 then navKeys[#navKeys + 1] = "skyriding" end
+			for _, navKey in ipairs(navKeys) do
+				local prefix = TRB_.Functions.OptionsUi.Tabs:GetGroupInnerPrefix(navKey)
+				if prefix == nil or stripKeys(prefix) == nil then unresolved[#unresolved + 1] = navKey .. "=" .. tostring(prefix) end
+			end
+			check("every Global category's link resolves to its tab strip (" .. table.concat(unresolved, ", ") .. ")", #unresolved == 0)
+		end
 		local empty = {}
 		for _, e in ipairs(drv.editors) do
 			if e.st == nil or #e.st.rows == 0 then empty[#empty + 1] = tostring(e.classId) .. "_" .. tostring(e.specId) .. "/" .. e.groupKey end

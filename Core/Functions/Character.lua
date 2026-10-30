@@ -703,6 +703,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 	end
 	characterChangeFrame:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player")
+	TRB.Functions.Totems:SetEnabled(TRB.Classes.BarTypeRegistry:SpecHasTotems(TRB.Data.character.classId, TRB.Data.character.specId))
 	characterChangeFrame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", "player")
 	characterChangeFrame:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", "player")
 	for event in pairs(TRB.Data.statEventBuckets) do
@@ -741,6 +742,7 @@ end
 
 ---Unregisters all character-change events from the characterChangeFrame and stops flight polling.
 function TRB.Functions.Character:DisableCharacterChange()
+	TRB.Functions.Totems:SetEnabled(false)
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	characterChangeFrame:UnregisterEvent("UNIT_MAXPOWER")
@@ -1965,8 +1967,16 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		end
 	end
 
-	-- Pet tables hold nothing spec-only, so each section swaps the whole table; a spec without its own entry has no pet.
+	-- Pet and Totems tables hold nothing spec-only, so each section swaps the whole table; a spec without its own entry
+	-- has neither.
+	local sharedKeys = {}
 	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.petBarKeys) do
+		sharedKeys[#sharedKeys + 1] = barKey
+	end
+	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.totemBarKeys) do
+		sharedKeys[#sharedKeys + 1] = barKey
+	end
+	for _, barKey in ipairs(sharedKeys) do
 		local coreBar = core.bars and core.bars[barKey]
 		local currentBars = specCache.settings.bars
 		if coreBar and currentBars and currentBars[barKey] and s[barKey .. "Dimensions"] then
@@ -2091,6 +2101,7 @@ function TRB.Functions.Character:EnsureSpecSettings(className)
 			-- Only specs declaring a pet get these, which keeps the bars off every other spec's tabs, anchors, and targets.
 			local specEntry = TRB.Functions.Character:GetSpecRegistryEntry(className .. "_" .. specName)
 			TRB.Functions.Settings:InjectPetBarsDefaults(specDefaults, specEntry and specEntry.classId, specEntry and specEntry.specId)
+			TRB.Functions.Settings:InjectTotemBarsDefaults(specDefaults, specEntry and specEntry.classId, specEntry and specEntry.specId)
 
 			TRB.Functions.Settings:InjectSkyridingDefaults(specDefaults)
 

@@ -2,6 +2,18 @@ local _, TRB = ...
 
 -- World of Warcraft: Forever saved-variable migrations; every step runs on every login, so each must be idempotent.
 
+---Seeds settings.manualUpdateChecks for a fresh settings table.
+---@return table
+function TRB.Flavor.DefaultManualUpdateChecks()
+	return {
+		-- Fresh installs show the Totems bar; PortForwardSettings marks existing saves to be asked.
+		totemBarsPrompt = {
+			answered = true,
+			hidden = false
+		}
+	}
+end
+
 ---Applies every settings migration to a saved-variables shaped table.
 ---@param settings table? # Defaults to the live saved variables
 function TRB.Flavor.PortForwardSettings(settings)
@@ -27,4 +39,13 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Threshold icons: the cooldown time option starts off where the cooldown swipe was off.
 	TRB.Functions.Settings:MigrateThresholdIconCooldownText(savedSettings)
+
+	-- Totems bar: existing saves get asked on their first Shaman login. The bar's defaults keep it hidden until then.
+	-- Live saves only, so profiles and imports never carry the flag.
+	if savedSettings == TRB.Flavor.GetSavedVariables() then
+		savedSettings.manualUpdateChecks = savedSettings.manualUpdateChecks or {}
+		if savedSettings.manualUpdateChecks.totemBarsPrompt == nil then
+			savedSettings.manualUpdateChecks.totemBarsPrompt = { answered = false }
+		end
+	end
 end

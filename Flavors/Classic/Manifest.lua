@@ -101,6 +101,8 @@ TRB.Flavor = {
 	-- Buffs are read straight from the player's auras, and no value this client hands out is a secret.
 	playerAuras = true,
 	secretValues = false,
+	-- Each totem slot is one element.
+	totemElements = true,
 	-- No Blizzard swing timer or PLAYER_SWING here, so swings come from the combat log and these casts.
 	swingTimers = true,
 	swingSpells = {

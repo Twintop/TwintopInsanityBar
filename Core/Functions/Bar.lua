@@ -829,6 +829,19 @@ local function EnsurePetBarGroups(barGroups)
 	end
 end
 
+---Guarantees the Totems bar's group wherever the castbar group is ensured, on the active spec only when it has totems.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsureTotemBarGroups(barGroups)
+	local character = TRB.Data.character
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	for _, key in ipairs(TRB.Classes.BarTypeRegistry.totemBarKeys) do
+		if barGroups[key] == nil and TRB.Classes.BarTypeRegistry:IsBarInScope(key, character.classId, character.specId) then
+			local frameName = "TwintopResourceBarFrame_" .. key:gsub("^%l", string.upper)
+			barGroups[key] = TRB.Classes.BarGroup:New(UIParent, frameName, registry:Get(key).maxNodes, false)
+		end
+	end
+end
+
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
@@ -873,6 +886,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
 	EnsureOtherBarGroups(settings, barGroups)
 	EnsurePetBarGroups(barGroups)
+	EnsureTotemBarGroups(barGroups)
 	EnsureSkyridingBarGroups(settings, barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
@@ -925,6 +939,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	EnsureTargetCastbarBarGroups(barGroups)
 	EnsureOtherBarGroups(settings, barGroups)
 	EnsurePetBarGroups(barGroups)
+	EnsureTotemBarGroups(barGroups)
 	EnsureSkyridingBarGroups(settings, barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
@@ -2232,6 +2247,19 @@ function TRB.Functions.Bar:UpdatePetBars(barGroups, snapshotData, settings)
 	end
 
 	return rendered
+end
+
+---Renders the Totems bar from the cached totem slots. Does nothing on a spec without totems.
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+---@param snapshotData TRB.Classes.SnapshotData
+---@param settings table # The spec cache settings (specCacheSettings)
+---@return boolean # Whether the Totems bar needs its bar text refreshed
+function TRB.Functions.Bar:UpdateTotemBars(barGroups, snapshotData, settings)
+	local character = TRB.Data.character
+	if barGroups == nil or not TRB.Classes.BarTypeRegistry:SpecHasTotems(character.classId, character.specId) then
+		return false
+	end
+	return TRB.Functions.Totems:Render(barGroups, settings)
 end
 
 ---Applies the per-node Color Indicator effects: Border Glow, and the end cap color (flat or gradient),
@@ -4365,6 +4393,9 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 	config.shouldInitiallyShow = shouldInitiallyShow
 
 	self:ConstructAnchoredBarGroup(settings, anchorGroup, barGroup, config, applyAppearance)
+	if barTypeDef.onLayout ~= nil then
+		barTypeDef.onLayout(barGroup, effectiveSettings, colorSettings)
+	end
 
 	if not barIsVisible then
 		barGroup:Hide()

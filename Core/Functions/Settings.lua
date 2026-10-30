@@ -121,6 +121,16 @@ local function NewSpecPetGlobalDefaults()
 	}
 end
 
+---The Totems bar's "use global" toggles, which only a spec with totems gets. Colors stay per spec: Shaman elements and
+---other classes' summons want different ones.
+---@return table<string, boolean>
+local function NewSpecTotemGlobalDefaults()
+	return {
+		totemsDimensions = true,
+		totemsColors = false
+	}
+end
+
 ---Loads the default settings structure
 ---@param classic boolean?
 ---@return table
@@ -362,6 +372,11 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					globalClass[specEntry.specName][key] = value
 				end
 			end
+			if specEntry.descriptor ~= nil and specEntry.descriptor.totems ~= nil then
+				for key, value in pairs(NewSpecTotemGlobalDefaults()) do
+					globalClass[specEntry.specName][key] = value
+				end
+			end
 			for key, value in pairs(specEntry.descriptor and specEntry.descriptor.useGlobalDefaults or {}) do
 				globalClass[specEntry.specName][key] = value
 			end
@@ -388,6 +403,9 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	-- Pet bars too. Core has no one spec, so it takes every pet bar regardless of scope: it is the source
 	-- the pet specs' "Use Global" toggles read from.
 	self:InjectPetBarsDefaults(settings.core, nil, nil, classic, true)
+
+	-- The Totems bar too, for the specs with totems to follow.
+	self:InjectTotemBarsDefaults(settings.core, nil, nil, classic, true)
 
 	self:InjectSkyridingDefaults(settings.core, classic)
 
@@ -461,6 +479,7 @@ function TRB.Functions.Settings:DefaultVisibilityPresets()
 	Add("trb-visibility-target-castbar", L["VisibilityPresetTargetCastbar"], "targetCastbar", self:DefaultTargetCastbarVisibility())
 	Add("trb-visibility-pet-castbar", L["VisibilityPresetPetCastbar"], "petCastbar", self:DefaultPetCastbarVisibility())
 	Add("trb-visibility-pet-bars", L["VisibilityPresetPetBars"], "petBar", self:DefaultPetBarVisibility())
+	Add("trb-visibility-totems", L["VisibilityPresetTotems"], "totemBar", self:DefaultTotemBarVisibility(true))
 	Add("trb-visibility-skyriding", L["VisibilityPresetSkyridingBars"], "skyriding", self:DefaultSkyridingBarVisibility("skyridingCharges"))
 	Add("trb-visibility-skyriding-speed", L["VisibilityPresetSkyridingSpeed"], "skyriding", self:DefaultSkyridingBarVisibility("skyridingSpeed"))
 	Add("trb-visibility-timers", L["VisibilityPresetMirrorTimers"], "timerBar", self:DefaultOtherBarVisibility("fatigue"))
@@ -2211,6 +2230,106 @@ function TRB.Functions.Settings:InjectPetBarsDefaults(specDefaults, classId, spe
 			else
 				specDefaults.displayBar[key] = self:DefaultPetBarVisibility()
 			end
+		end
+		local barTex = key .. "Bar"
+		if specDefaults.textures[barTex] == nil then
+			local tex = self:DefaultCustomBarTextures()
+			specDefaults.textures[barTex] = tex.bar
+			specDefaults.textures[key .. "BarName"] = tex.barName
+			specDefaults.textures[key .. "Border"] = tex.border
+			specDefaults.textures[key .. "BorderName"] = tex.borderName
+			specDefaults.textures[key .. "Background"] = tex.background
+			specDefaults.textures[key .. "BackgroundName"] = tex.backgroundName
+		end
+	end
+end
+
+---Default Totems bar settings: a freestanding screen-rooted bar 300px below center, under the main stack's -200, whose
+---nodes share its width.
+---@param classic boolean?
+---@return TRB.Classes.Settings.TotemBar
+function TRB.Functions.Settings:DefaultTotemBarSettings(classic)
+	local settings = self:DefaultOtherBarDimensions(classic) --[[@as TRB.Classes.Settings.TotemBar]]
+	settings.anchor.yOffset = -300
+	settings.showAllSlots = false
+	settings.icon = self:DefaultBarIconSettings()
+	settings.icon.spacing = 0
+	settings.icon.collapseBorderWidth = true
+	return settings
+end
+
+---Default Totems bar colors. Where slots are elements, each element has its own fill.
+---@return table
+function TRB.Functions.Settings:DefaultTotemBarColors()
+	local colors = {
+		bar = { color = "FF0070DD", color2 = "FF0070DD", gradientDirection = "disabled" },
+		border = { color = "FF000000" },
+		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry(),
+		ending = { color = "FFFF0000", enabled = true, mode = "time", timeMax = 3, gcdsMax = 2 }
+	}
+	if TRB.Flavor.totemElements then
+		colors.nodeColors = {
+			earth = { color = "FF9C7A3C", color2 = "FF9C7A3C", gradientDirection = "disabled" },
+			fire = { color = "FFFF5A1F", color2 = "FFFF5A1F", gradientDirection = "disabled" },
+			water = { color = "FF2E86FF", color2 = "FF2E86FF", gradientDirection = "disabled" },
+			air = { color = "FFB8E6FF", color2 = "FFB8E6FF", gradientDirection = "disabled" }
+		}
+	end
+	return colors
+end
+
+---Default Totems bar visibility: shown while a totem is up. Never Show until an existing install answers the enable
+---prompt, and after a No.
+---@param forPreset boolean? # The visibility preset, which carries no Never Show of its own
+---@return trbBarVisibilitySetting
+function TRB.Functions.Settings:DefaultTotemBarVisibility(forPreset)
+	return {
+		neverShow = not forPreset and TRB.Functions.Totems:AreBarsDeclined(),
+		alwaysShow = false,
+		conditions = { isTotemActive = true, isTotemMissing = false },
+		hideConditions = self:LoadDefaultBarVisibilityHideConditions(),
+		activeAlpha = 100,
+		inactiveAlpha = 0,
+		fadeDuration = 0.5,
+		fadeDelay = 0,
+		resourceConditionType = "none",
+		resourceConditionOperator = ">=",
+		resourceConditionValue = 0
+	}
+end
+
+---Adds the Totems bar's defaults to a spec's default settings so Table:Merge carries them into saves. Idempotent; a
+---spec without totems gets nothing, which keeps the bar off its tabs and target lists.
+---@param specDefaults table
+---@param classId integer?
+---@param specId integer?
+---@param classic boolean?
+---@param includeAllScopes boolean? # For the core scope, which owns the bar's global defaults
+function TRB.Functions.Settings:InjectTotemBarsDefaults(specDefaults, classId, specId, classic, includeAllScopes)
+	if type(specDefaults) ~= "table" then
+		return
+	end
+	local keys = includeAllScopes and TRB.Classes.BarTypeRegistry.totemBarKeys
+		or TRB.Classes.BarTypeRegistry:GetTotemBarKeys(classId, specId)
+	if #keys == 0 then
+		return
+	end
+	specDefaults.bars = specDefaults.bars or {}
+	specDefaults.colors = specDefaults.colors or {}
+	specDefaults.colors.bars = specDefaults.colors.bars or {}
+	specDefaults.displayBar = specDefaults.displayBar or {}
+	specDefaults.textures = specDefaults.textures or {}
+
+	for _, key in ipairs(keys) do
+		if specDefaults.bars[key] == nil then
+			specDefaults.bars[key] = self:DefaultTotemBarSettings(classic)
+		end
+		if specDefaults.colors.bars[key] == nil then
+			specDefaults.colors.bars[key] = self:DefaultTotemBarColors()
+		end
+		if specDefaults.displayBar[key] == nil then
+			specDefaults.displayBar[key] = self:DefaultTotemBarVisibility()
 		end
 		local barTex = key .. "Bar"
 		if specDefaults.textures[barTex] == nil then

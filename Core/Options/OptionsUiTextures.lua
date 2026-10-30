@@ -186,6 +186,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	barRegistry:AppendOtherBars(customBars, classId)
 	-- Pet bars, scoped so they only appear on the specs that can hold a permanent pet.
 	barRegistry:AppendPetBars(customBars, classId, specId)
+	-- The Totems bar, scoped so it only appears on the specs with totems.
+	barRegistry:AppendTotemBars(customBars, classId, specId)
 	barRegistry:AppendSkyridingBars(customBars)
 
 	if secondaryResourceString == nil then

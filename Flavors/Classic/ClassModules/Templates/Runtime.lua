@@ -386,6 +386,7 @@ function TRB.Classic.Templates.Runtime:Install(className)
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
 			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Threshold line sounds (independent of bar visibility)
@@ -551,6 +552,7 @@ function TRB.Classic.Templates.Runtime:Install(className)
 			TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil)
 			TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil)
 			TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
+			TRB.Functions.BarVisibility:AppendTotemEntries(entries, barGroups, sharedSettings)
 			if sharedSettings ~= nil then
 				local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
 				TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, sharedSettings)
