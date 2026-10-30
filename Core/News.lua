@@ -17,7 +17,7 @@ TRB.Details.coreNewsContent = [====[
 
 ## Totems
 
-- [#527](#527) Add a new Totems bar on every Shaman specialization, showing each totem's icon and time left while a totem is up. New installs show it; existing installs are asked the first time they log in on a Shaman.
+- [#527](#527) Add a new Totems bar, showing each totem's icon and time left while a totem is up. New installs show it; existing installs are asked the first time they log in on a specialization that has it.
 - [#527](#527) Live shows four nodes, growing to eight as more totems are up. Forever and Classic show one node per element, each in its own color. A totem turns the Ending color as it is about to expire.
 - [#527](#527) The Totems bar has no Smooth option and no threshold lines.
 
