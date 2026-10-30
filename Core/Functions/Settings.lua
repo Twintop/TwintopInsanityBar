@@ -1137,11 +1137,13 @@ function TRB.Functions.Settings:DefaultCastbarBarColors()
 		uninterruptibleBorder = { color = "FF222222" },
 		border = { color = "FF000000" },
 		background = { color = "66000000" },
+		useClassColor = false,
 		latency = { color = "80FF0000", enabled = true },
 		pushback = { color = "80FF00FF", enabled = true },
 		tick = { color = "FFFFFFFF", enabled = true },
 		endCap = self:DefaultEndCapColorEntry(),
 		empowerStages = {
+			useClassColor = false,
 			base = { color = "FFC8B0FF" },
 			level1 = { color = "FFFFCC00" },
 			level2 = { color = "FFFFAA00" },

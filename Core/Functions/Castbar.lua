@@ -885,13 +885,28 @@ local function GetTargetClassColor(barSettings)
 	return select(4, GetClassColor(classFilename))
 end
 
----Shows or hides the segmented empower fill; a target class color replaces it with one fill color.
+---Shows or hides the segmented empower fill; a class color replaces it with one fill color.
 ---@param pool table
 ---@param shown boolean
 local function SetEmpowerSegmentsShown(pool, shown)
 	if pool.segmentClip then
 		pool.segmentClip:SetShown(shown)
 	end
+end
+
+---The one color an empowered cast fills with in place of its level colors: the target's class color, then the player's.
+---@param colors table?
+---@param targetColor string? # From GetTargetClassColor
+---@return string?
+local function GetEmpowerClassColor(colors, targetColor)
+	if targetColor ~= nil then
+		return targetColor
+	end
+	local stageColors = colors and colors.empowerStages
+	if stageColors ~= nil and stageColors.useClassColor == true then
+		return TRB.Functions.Color:GetPlayerClassColor()
+	end
+	return nil
 end
 
 ---Applies the fill color for the current cast state (and empower stage), honoring uninterruptible.
@@ -914,9 +929,10 @@ local function ApplyStateFillColor(node, colors, model, barSettings, indicatorKe
 	-- is the point of the bar, so it should never be flattened to a plain "can't interrupt" color. For the
 	-- same reason indicators don't claim the empower fill either.
 	if model.state == "empower" then
-		-- Target class color overrides the stage colors entirely; the segment clip hides so it shows alone.
-		if classColor ~= nil then
-			Color:ApplyFillColor(node, classColor)
+		-- A class color overrides the stage colors entirely; the segment clip hides so it shows alone.
+		local empowerClassColor = GetEmpowerClassColor(colors, classColor)
+		if empowerClassColor ~= nil then
+			Color:ApplyFillColor(node, empowerClassColor)
 			return
 		end
 		-- Segmented fill: blank the fill. Its texture still carries the edge the segment clip and the end cap follow.
@@ -947,6 +963,10 @@ local function ApplyStateFillColor(node, colors, model, barSettings, indicatorKe
 	-- Target class color sits below an active indicator but above the uninterruptible/configured colors.
 	if entry == nil and classColor ~= nil then
 		entry = classColor
+	end
+	-- Like the target class color, the player's class color also replaces the uninterruptible color.
+	if entry == nil and colors.useClassColor == true then
+		entry = Color:GetPlayerClassColor()
 	end
 	if entry == nil and model.notInterruptible then
 		entry = colors.uninterruptible
@@ -1146,7 +1166,7 @@ function CastbarRenderer:SetupOverlays(model)
 	-- Laid out once per setup; the fill texture's clip reveals it as the cast charges.
 	if model.state == "empower" and barSettings and barSettings.empowerSegmentedFill then
 		LayoutEmpowerSegments(pool, node, colors, model)
-		SetEmpowerSegmentsShown(pool, GetTargetClassColor(barSettings) == nil)
+		SetEmpowerSegmentsShown(pool, GetEmpowerClassColor(colors, GetTargetClassColor(barSettings)) == nil)
 	end
 end
 
@@ -1214,7 +1234,7 @@ function CastbarRenderer:ApplyVisibleState(group, node, colors, model, barSettin
 		end
 		if self._renderedTargetColor ~= targetColor then
 			self._renderedTargetColor = targetColor
-			SetEmpowerSegmentsShown(pool, targetColor == nil)
+			SetEmpowerSegmentsShown(pool, GetEmpowerClassColor(colors, targetColor) == nil)
 		end
 		-- Re-asserts the blank, or the class color, after an appearance pass repaints the fill.
 		ApplyStateFillColor(node, colors, model, barSettings, self.barKey)

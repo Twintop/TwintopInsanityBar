@@ -552,4 +552,9 @@ if locale == "enGB" then
 	L["ThresholdBehaviorTrackCooldownsTooltip"] = "When checked, a threshold line for an ability with a cooldown shows the Unusable colour, and its icon shows the cooldown, while the ability is on cooldown. Each threshold line can override this."
 	L["ThresholdDetailBehaviorHeader"] = "Behaviour Override"
 	L["RogueOutlawColorPickerThresholdSpecialEnabledTooltip"] = "When checked, the threshold line colour of an ability that is being buffed by Double Trouble or a higher Roll the Bones buff, Opportunity, or Coup de Grace."
+	L["CastbarUseClassColor"] = "Use class colour"
+	L["CastbarUseClassColorTooltip"] = "When checked, the cast bar fill uses your class colour for casts, channels, and uninterruptible casts. The target class colour and an active colour indicator still take priority."
+	L["CastbarEmpowerUseClassColor"] = "Use class colour"
+	L["CastbarEmpowerUseClassColorTooltip"] = "When checked, empowered casts fill with your class colour in place of the empower level colours. The target class colour still takes priority."
+	L["CastbarEmpowerClassColorOnTooltip"] = "Use class colour is checked, so this setting has no effect."
 end
