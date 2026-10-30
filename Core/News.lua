@@ -7,13 +7,13 @@ TRB.Details.coreNewsContent = [====[
 # Live 12.1.5.9-release / Forever 1.60.1.16-release / Classic 1.15.9.1-release (2026-10-30)
 ## General
 
-- Add a Use class color option to the Cast Bar, coloring casts, channels, and uninterruptible casts with your class color.
-- Add a Use class color option to the Cast Bar's Empower Level Colors, coloring empowered casts with your class color.
+- [#916](#916) Add a Use class color option to the Cast Bar, coloring casts, channels, and uninterruptible casts with your class color.
+- [#916](#916) Add a Use class color option to the Cast Bar's Empower Level Colors, coloring empowered casts with your class color.
 
 ## Pet Bars
 
-- Add a Use class color option to the Pet Cast Bar, coloring its casts, channels, and uninterruptible casts with your class color.
-- Add a Single (Class Color) color type to Pet Health.
+- [#916](#916) Add a Use class color option to the Pet Cast Bar, coloring its casts, channels, and uninterruptible casts with your class color.
+- [#916](#916) Add a Single (Class Color) color type to Pet Health.
 
 ---
 
