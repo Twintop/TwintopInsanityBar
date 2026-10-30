@@ -3319,6 +3319,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		colorTypeStepLabel = L["ColorTypeStep"],
 		colorTypeLinearLabel = L["ColorTypeLinear"],
 		colorTypeNoneLabel = L["ColorTypeNone"],
+		colorTypeClassColorLabel = L["HealthBarColorTypeClassColor"],
 		visibilityKey = "petHealth",
 		usesSecretValue = true,
 		defaultDimensionsFunc = function(classic)

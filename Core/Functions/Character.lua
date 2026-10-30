@@ -1768,6 +1768,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				colorOverrides.border = coreColors.border
 				colorOverrides.background = coreColors.background
 				colorOverrides.endCap = coreColors.endCap
+				colorOverrides.useClassColor = coreColors.useClassColor
 			end
 			if s.castbarOverlays then
 				colorOverrides.latency = coreColors.latency
@@ -1891,6 +1892,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 			colorOverrides.border = corePetColors.border
 			colorOverrides.background = corePetColors.background
 			colorOverrides.endCap = corePetColors.endCap
+			colorOverrides.useClassColor = corePetColors.useClassColor
 		end
 		if s.petCastbarOverlays then
 			colorOverrides.pushback = corePetColors.pushback

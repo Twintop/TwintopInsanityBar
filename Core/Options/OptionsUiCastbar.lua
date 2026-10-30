@@ -175,11 +175,25 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 	local colorsCheckbox
 	yCoord, colorsCheckbox = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, barKey .. "Colors", yCoord)
 	yCoord = yCoord - 30
+	local function RefreshClassColorFillStates()
+		local enabled = colors.useClassColor ~= true
+		TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(cc.fill.bar, enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(cc.fill.channel, enabled)
+		TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(cc.fill.uninterruptible, enabled)
+	end
+	TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_useClassColor", L["CastbarUseClassColor"], L["CastbarUseClassColorTooltip"], yCoord,
+		function() return colors.useClassColor end,
+		function(v)
+			colors.useClassColor = v
+			RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+			RefreshClassColorFillStates()
+		end)
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "bar", L["CastbarColorCast"], yCoord, classId, specId)
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "channel", L["CastbarColorChannel"], yCoord, classId, specId)
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "uninterruptible", L["CastbarColorUninterruptible"], yCoord, classId, specId)
+	RefreshClassColorFillStates()
 	yCoord = yCoord - 30
 	TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.fill, colors, "uninterruptibleBorder", L["CastbarColorUninterruptibleBorder"], yCoord, classId, specId)
 	yCoord = yCoord - 30
@@ -248,7 +262,7 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 		local empowerCheckbox
 		yCoord, empowerCheckbox = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent, controls, classId, specId, "castbarEmpower", yCoord)
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_empowerSegmentedFill", L["CastbarEmpowerSegmentedFill"], L["CastbarEmpowerSegmentedFillTooltip"], yCoord,
+		local segmentedFillCb = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_empowerSegmentedFill", L["CastbarEmpowerSegmentedFill"], L["CastbarEmpowerSegmentedFillTooltip"], yCoord,
 			function() return barSettings.empowerSegmentedFill end,
 			function(v)
 				barSettings.empowerSegmentedFill = v
@@ -257,6 +271,22 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 		colors.empowerStages = colors.empowerStages
 		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "base", L["CastbarColorEmpowerBase"], yCoord, classId, specId)
 		yCoord = yCoord - 30
+		local function RefreshEmpowerClassColorStates()
+			local Primitives = TRB.Functions.OptionsUi.Primitives
+			local enabled = colors.empowerStages.useClassColor ~= true
+			Primitives:ToggleCheckboxEnabled(segmentedFillCb, enabled)
+			Primitives:SetDisabledReason(segmentedFillCb, not enabled and L["CastbarEmpowerClassColorOnTooltip"] or nil)
+			for _, key in ipairs({ "base", "level1", "level2", "level3", "level4" }) do
+				Primitives:ToggleColorPickerEnabled(cc.empower[key], enabled)
+			end
+		end
+		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_empowerUseClassColor", L["CastbarEmpowerUseClassColor"], L["CastbarEmpowerUseClassColorTooltip"], yCoord,
+			function() return colors.empowerStages.useClassColor end,
+			function(v)
+				colors.empowerStages.useClassColor = v
+				RefreshActiveSpecCacheForGlobalEdit(isGlobalPanel)
+				RefreshEmpowerClassColorStates()
+			end)
 		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level1", L["CastbarColorEmpowerLevel1"], yCoord, classId, specId)
 		yCoord = yCoord - 30
 		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level2", L["CastbarColorEmpowerLevel2"], yCoord, classId, specId)
@@ -264,6 +294,7 @@ function TRB.Functions.OptionsUi.Castbar:ConstructPanel(parent, classId, specId,
 		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level3", L["CastbarColorEmpowerLevel3"], yCoord, classId, specId)
 		yCoord = yCoord - 30
 		TRB.Functions.OptionsUi.ColorPickers:BuildColorRow(parent, cc.empower, colors.empowerStages, "level4", L["CastbarColorEmpowerLevel4"], yCoord, classId, specId)
+		RefreshEmpowerClassColorStates()
 		yCoord = yCoord - 40
 		TRB.Functions.OptionsUi.GlobalSettings:AttachUseGlobalCover(empowerCheckbox, controls.castbarEmpowerSection, yCoord)
 	end
