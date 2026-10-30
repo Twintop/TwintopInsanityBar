@@ -30,6 +30,8 @@ local activeVersion = 0
 -- What each node was last given, and each group's layout count; weak, so rebuilt bars drop theirs.
 local appliedByNode = setmetatable({}, { __mode = "k" })
 local layoutVersions = setmetatable({}, { __mode = "k" })
+-- Slot -> the node index showing it, as the last render drew it; where slots are elements the order is the user's.
+local nodeIndexBySlot = {}
 
 local function OnActiveChanged()
 	activeVersion = activeVersion + 1
@@ -185,6 +187,19 @@ function Totems:IsSlotActive(slot)
 	return record ~= nil and IsActive(record)
 end
 
+---A slot's totem for bar text, any part of which may be secret; nil when the slot is empty or its totem ran out.
+---@param slot integer
+---@return any name
+---@return any icon # Texture id
+---@return any duration # The duration object
+function Totems:GetSlotDisplay(slot)
+	local record = slots[slot]
+	if record == nil or not IsActive(record) then
+		return nil, nil, nil
+	end
+	return record.name, record.icon, record.duration
+end
+
 ---The active spec's Totems colors, which hold the element order.
 ---@return table?
 local function GetActiveColors()
@@ -192,6 +207,13 @@ local function GetActiveColors()
 	local specCache = character ~= nil and TRB.Data.specCache[character.compositeKey] or nil
 	local colorBars = specCache ~= nil and specCache.settings.colors and specCache.settings.colors.bars
 	return colorBars and colorBars.totems or nil
+end
+
+---The node index showing a slot, for bar text anchored to it.
+---@param slot integer
+---@return integer
+function Totems:GetSlotNodeIndex(slot)
+	return nodeIndexBySlot[slot] or slot
 end
 
 ---The slot whose totem a node's icon tooltip shows, or nil when that slot holds none. Read at hover time, so it
@@ -418,6 +440,7 @@ function Totems:Render(barGroups, settings)
 		local node = group.nodes[i]
 		local slot = self:GetNodeSlot(i, colors)
 		local record = slots[slot]
+		nodeIndexBySlot[slot] = i
 		if node ~= nil and record ~= nil then
 			local active = IsActive(record)
 			-- Keyed on the frame too, so a rebuilt bar rebinds.

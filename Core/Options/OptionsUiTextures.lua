@@ -427,6 +427,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		sectionTitle = L["BarTexturesHeaderOtherBars"]
 	elseif groupKey == "petBars" then
 		sectionTitle = L["BarTexturesHeaderPetBars"]
+	elseif groupKey == "totems" then
+		sectionTitle = L["BarTexturesHeaderTotems"]
 	elseif groupKey == "skyriding" then
 		sectionTitle = L["BarTexturesHeaderSkyriding"]
 	end

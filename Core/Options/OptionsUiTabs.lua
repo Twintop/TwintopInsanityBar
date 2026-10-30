@@ -340,12 +340,11 @@ TRB.Functions.OptionsUi.Tabs.TabKeys = {
 	VisibilityPresets = "presets",
 }
 
--- Totems has a Global screen but no grouping strip on a spec panel, so it has no inner stem.
 local groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", totems = "Totems", skyriding = "Skyriding" }
-local groupInnerPrefixStem = { castbar = "CastbarInner_", otherBars = "OtherBarsInner_", petBars = "PetBarsInner_", skyriding = "SkyridingInner_" }
+local groupInnerPrefixStem = { castbar = "CastbarInner_", otherBars = "OtherBarsInner_", petBars = "PetBarsInner_", totems = "TotemsInner_", skyriding = "SkyridingInner_" }
 
 ---The tab group name prefix of a shared grouping's strip: the Global screen's own, or the spec panel's inner one.
----@param groupKey string # castbar, otherBars, petBars, or skyriding; totems in the global scope only
+---@param groupKey string # castbar, otherBars, petBars, totems, or skyriding
 ---@param classId integer? # nil is the global scope
 ---@param specId integer?
 ---@return string
@@ -362,10 +361,11 @@ end
 ---@param tabDefinitions table[] # The strip's tab definitions
 ---@param classId integer? # nil is the global scope
 ---@param specId integer?
----@param groupKey string # castbar, otherBars, petBars, or skyriding
+---@param groupKey string # castbar, otherBars, petBars, totems, or skyriding
 function TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, classId, specId, groupKey)
-	-- Pet bar textures are each specialization's own (Global's were never read), so Global Options has none to set.
-	if groupKey ~= "petBars" or TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId) then
+	-- Pet and Totems bar textures are each specialization's own (Global's were never read), so Global Options has none to set.
+	if (groupKey ~= "petBars" or TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId))
+		and (groupKey ~= "totems" or TRB.Classes.BarTypeRegistry:SpecHasTotems(classId, specId)) then
 		tabDefinitions[#tabDefinitions + 1] = {
 			TRB.Functions.OptionsUi.Tabs.TabKeys.BarTextures,
 			TRB.Localization["TabTextures"],
@@ -522,6 +522,25 @@ function TRB.Functions.OptionsUi.Tabs:BuildPetBarsInnerTabGroup(parent, classId,
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
 end
 
+---Builds the nested Totems sub-tab group inside a spec's Totems tab: the bar, then its Textures, Visibility, and Bar Text.
+---Only built for the specs with the Totems bar.
+---@param parent Frame # The Totems tab's manual container frame
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.OptionsUi.Tabs:BuildTotemsInnerTabGroup(parent, classId, specId)
+	if parent == nil then
+		return
+	end
+	local namePrefix = TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("totems", classId, specId)
+	local innerTabs = {
+		{ "totems", TRB.Localization["ResourceTotems"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.Totems:ConstructPanel(scrollChild, classId, specId)
+		end, visibilityKey = "totems" },
+	}
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "totems")
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
+end
+
 ---Builds the nested Skyriding sub-tab group inside a spec's Skyriding tab, one sub-tab per Skyriding bar.
 ---@param parent Frame # The Skyriding tab's manual container frame
 ---@param classId integer?
@@ -631,9 +650,9 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 				TRB.Localization["ResourceTotems"],
 				oUi.tabWidth.small,
 				function(scrollChild)
-					TRB.Functions.OptionsUi.Totems:ConstructPanel(scrollChild, cId, sId)
+					TRB.Functions.OptionsUi.Tabs:BuildTotemsInnerTabGroup(scrollChild, cId, sId)
 				end,
-				visibilityKey = "totems",
+				true -- manual container: the inner sub-tabs provide their own scroll frames
 			})
 		end
 

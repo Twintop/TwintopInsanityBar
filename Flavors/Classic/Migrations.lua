@@ -13,6 +13,9 @@ function TRB.Flavor.PortForwardSettings(settings)
 	-- Pet bars: seed their default text into the global list; barText is an array the defaults merge cannot backfill.
 	TRB.Functions.Settings:SeedPetBarsText(savedSettings.core)
 
+	-- Totems bar: seed its default text into the global list, the same way.
+	TRB.Functions.Settings:SeedTotemBarsText(savedSettings.core)
+
 	-- Visibility presets: seed every table and link stored profiles; the live settings are linked after the defaults merge.
 	TRB.Functions.Settings:SeedVisibilityPresets(savedSettings)
 	if settings ~= nil then

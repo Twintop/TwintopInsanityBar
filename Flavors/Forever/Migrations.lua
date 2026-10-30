@@ -16,6 +16,9 @@ function TRB.Flavor.PortForwardSettings(settings)
 	-- Swing timer bars: same, for their remaining-time text.
 	TRB.Functions.Settings:SeedSwingTimersText(savedSettings.core)
 
+	-- Totems bar: same, for each slot's name and time.
+	TRB.Functions.Settings:SeedTotemBarsText(savedSettings.core)
+
 	-- Visibility presets: seed every table and link stored profiles; the live settings are linked after the defaults merge.
 	TRB.Functions.Settings:SeedVisibilityPresets(savedSettings)
 	if settings ~= nil then
