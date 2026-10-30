@@ -688,7 +688,9 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 		SetCursor(nil)
 		GameTooltip:Hide()
 	end)
-	local barGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(visibilityKey)
+	local barGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(visibilityKey, classId, specId)
+	-- The Totems bar's grouping on a spec can differ from its Global Options home.
+	local globalBarGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(visibilityKey)
 
 	---Switches to the Visibility tab that lists this bar and selects its row. SwitchTab builds a deferred
 	---tab first, so its table API exists by the time the row is selected.
@@ -726,7 +728,7 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 	end)
 
 	-- Shown instead of the Configure link when Global Options owns this bar.
-	local globalLink = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility, barGroup ~= "spec" and barGroup or nil)
+	local globalLink = TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility, globalBarGroup ~= "spec" and globalBarGroup or nil)
 
 	-- Right-aligned summary. Word wrap is off, so the FontString ellipsizes anything wider than the
 	-- width applied below; the untruncated text stays reachable through the hitbox tooltip.
@@ -1962,7 +1964,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			barEntries[index] = nil
 		end
 		for _, entry in ipairs(allBarEntries) do
-			if TRB.Classes.BarTypeRegistry:IsBarInGroupScope(entry.displayBarKey, groupKey, includeAllGroups[scopeKey]) then
+			if TRB.Classes.BarTypeRegistry:IsBarInGroupScope(entry.displayBarKey, groupKey, includeAllGroups[scopeKey], classId, specId) then
 				barEntries[#barEntries + 1] = entry
 			end
 		end

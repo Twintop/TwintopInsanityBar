@@ -8,6 +8,18 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.9-release (2026-10-30)
+## Priest
+### Discipline
+
+- [#527](#527) Add the Totems bar under Other Bars, tracking Mindbender, Shadowfiend, Entropic Rift, and Voidwraith. It starts set to Never Show.
+
+### Shadow
+
+- [#527](#527) Add the Totems bar under Other Bars, tracking Mindbender, Shadowfiend, Entropic Rift, and Voidwraith. It starts set to Never Show.
+
+---
+
 # 12.1.5.8-release (2026-10-29)
 ## General
 ### Skyriding

@@ -127,7 +127,16 @@ function hooks.afterEvents(ctx)
 	TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local group = barGroups and barGroups.totems
 	check("the Totems bar is built", group ~= nil)
-	check("a fresh install shows it", settings.displayBar.totems ~= nil and settings.displayBar.totems.neverShow == false)
+	local optIn = registry:GetTotemPlacement(character.classId, character.specId) == "otherBars"
+	local savedEntry = TRB.Data.settings[character.className][character.specName].displayBar.totems
+	if optIn then
+		check("an Other Bars spec starts Never Show on its own settings", settings.displayBar.totems ~= nil and settings.displayBar.totems.neverShow == true
+			and savedEntry ~= nil and savedEntry.useGlobal == false)
+		-- The checks below draw the bar.
+		settings.displayBar.totems.neverShow = false
+	else
+		check("a fresh install shows it", settings.displayBar.totems ~= nil and settings.displayBar.totems.neverShow == false)
+	end
 	local builtIn = registry:IsTotemBarBuiltIn(character.classId, character.specId)
 	check("only Forever and Classic Shaman's bar comes with the spec", builtIn == (TRB.Flavor.totemElements == true))
 	if builtIn then
@@ -267,10 +276,13 @@ function hooks.afterEvents(ctx)
 
 	-- Bar text: each slot's variables, their bare checks, and the anchor on the node showing the slot.
 	check("totem slot anchors are offered on a spec with totems", HasAnchor(BarText:GetAnchorCatalog(character.classId, character.specId), "TotemSlot1"))
-	-- Its own grouping, so its Textures, Visibility, and Bar Text rows list on the Totems tab and not the spec's own.
-	check("the Totems bar is its own options grouping", registry:GetBarGroup("totems") == "totems"
-		and registry:IsBarInGroupScope("totems", "totems") and not registry:IsBarInGroupScope("totems", "spec"))
-	check("totem slot text lists on the Totems tab", BarText:GetAnchorCatalog(character.classId, character.specId).groupByFrame["TotemSlot1"] == "totems")
+	-- Its rows list on the spec's Totems tab, or Other Bars where the spec puts it, and never on the spec's own tabs.
+	local home = optIn and "otherBars" or "totems"
+	local classId, specId = character.classId, character.specId
+	check("the Totems bar groups by the spec's placement, and as Totems on Global Options", registry:GetBarGroup("totems") == "totems"
+		and registry:GetBarGroup("totems", classId, specId) == home and registry:IsBarInGroupScope("totems", home, false, classId, specId)
+		and not registry:IsBarInGroupScope("totems", "spec", false, classId, specId))
+	check("totem slot text lists under that grouping", BarText:GetAnchorCatalog(classId, specId).groupByFrame["TotemSlot1"] == home)
 	check("totem slot text is in scope on a spec with totems", BarText:IsEntryInScope(slotOneEntry, character.classId, character.specId))
 	BarText:RefreshTotemLookupData()
 	local lookup = TRB.Data.lookup
@@ -366,7 +378,7 @@ function hooks.afterEvents(ctx)
 	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
 		for _, specEntry in ipairs(classEntry.specs) do
 			local spec = TRB.Data.settings[classEntry.className] and TRB.Data.settings[classEntry.className][specEntry.specName]
-			if registry:SpecHasTotems(specEntry.classId, specEntry.specId) and spec ~= nil and spec.displayBar ~= nil then
+			if registry:GetTotemPlacement(specEntry.classId, specEntry.specId) == "spec" and spec ~= nil and spec.displayBar ~= nil then
 				local hiddenHere = spec.displayBar.totems ~= nil and spec.displayBar.totems.neverShow == true
 				allHidden = allHidden and (hiddenHere ~= registry:IsTotemBarBuiltIn(specEntry.classId, specEntry.specId))
 			end
@@ -374,11 +386,14 @@ function hooks.afterEvents(ctx)
 	end
 	check("a No hides the bar on every spec the prompt asks for, never a built-in one, and in Global Options only where it has one", allHidden)
 	TRB.Functions.Totems:SetBarsHidden(TRB.Data.settings, false)
-	local shownAgain = TRB.Data.settings[character.className][character.specName].displayBar.totems.neverShow == false
+	local shownAgain = TRB.Data.settings[character.className][character.specName].displayBar.totems.neverShow == false or optIn
 	if hasGlobal then
 		shownAgain = shownAgain and TRB.Data.settings.core.displayBar.totems.neverShow == false
 	end
 	check("a Yes shows it again", shownAgain)
+	if optIn then
+		check("the answer leaves an Other Bars spec at Never Show", savedEntry.neverShow == true)
+	end
 
 	BarNode.SetTimerDuration = setTimer
 	print(string.format("DRIVER totems: %d failures", errors))

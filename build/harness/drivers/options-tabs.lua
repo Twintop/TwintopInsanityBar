@@ -358,7 +358,7 @@ function hooks.afterEvents(ctx)
 			if e.classId ~= nil and e.groupKey == "spec" then
 				local want = { "castbar", "otherBars" }
 				if TRB_.Classes.BarTypeRegistry:SpecHasPet(e.classId, e.specId) then want[#want + 1] = "petBars" end
-				if TRB_.Classes.BarTypeRegistry:SpecHasTotems(e.classId, e.specId) then want[#want + 1] = "totems" end
+				if TRB_.Classes.BarTypeRegistry:GetTotemPlacement(e.classId, e.specId) == "spec" then want[#want + 1] = "totems" end
 				if #TRB_.Classes.BarTypeRegistry.skyridingBarKeys > 0 then want[#want + 1] = "skyriding" end
 				for _, g in ipairs(want) do
 					if find(e.classId, e.specId, g) == nil then missing[#missing + 1] = e.classId .. "_" .. e.specId .. "/" .. g end
@@ -409,6 +409,19 @@ function hooks.afterEvents(ctx)
 				end
 			end
 			check("every spec's Totems tab holds the bar, Textures, Visibility, and Bar Text (" .. table.concat(badInner, "; ") .. ")", innerStrips == totemSpecs and #badInner == 0)
+			-- A spec that places its Totems bar under Other Bars gets it there, and no other spec does.
+			local otherBarsTotems, wrongOtherBars = 0, {}
+			for _, classEntry in ipairs(TRB_.Data.classRegistryOrder) do
+				for _, specEntry in ipairs(classEntry.specs) do
+					local keys = stripKeys(TRB_.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("otherBars", specEntry.classId, specEntry.specId))
+					local hasTotems = keys ~= nil and ("," .. keys .. ","):find(",totems,", 1, true) ~= nil
+					local wants = registry:GetTotemPlacement(specEntry.classId, specEntry.specId) == "otherBars"
+					if wants then otherBarsTotems = otherBarsTotems + 1 end
+					if hasTotems ~= wants then wrongOtherBars[#wrongOtherBars + 1] = specEntry.classId .. "_" .. specEntry.specId .. "=" .. tostring(keys) end
+				end
+			end
+			print("INFO specs with Totems under Other Bars: " .. otherBarsTotems)
+			check("a Totems tab sits under Other Bars on exactly the specs that place it there (" .. table.concat(wrongOtherBars, "; ") .. ")", #wrongOtherBars == 0)
 		end
 		-- A Use Global link opens its category's strip by GetGroupInnerPrefix, so every category's Global prefix must name a built strip.
 		do
