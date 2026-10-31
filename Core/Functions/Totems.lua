@@ -444,6 +444,10 @@ function Totems:Render(barGroups, settings)
 
 	local endingSeconds = GetEndingSeconds(colors.ending)
 	local layoutVersion = layoutVersions[group] or 0
+	local Color = TRB.Functions.Color
+	local indicators = Color:GetResolvedIndicators("totemsBar")
+	local borderColor = (indicators and indicators.border) or colors.border.color
+	local backgroundColor = (indicators and indicators.background) or colors.background.color
 	for i = 1, group.nodeCount do
 		local node = group.nodes[i]
 		local slot = self:GetNodeSlot(i, colors)
@@ -482,11 +486,15 @@ function Totems:Render(barGroups, settings)
 
 			local baseColor = GetSlotColor(colors, slot)
 			if active and endingSeconds ~= nil and record.duration ~= nil then
-				local curve = TRB.Functions.Color:BuildRemainingTimeCurve(endingSeconds, colors.ending.color, baseColor)
+				local curve = Color:BuildRemainingTimeCurve(endingSeconds, colors.ending.color, baseColor)
 				node:SetColorCurve(record.duration:EvaluateRemainingDuration(curve))
 			else
 				node:SetColor(baseColor)
 			end
+			Color:ApplyResolvedBorderOrBackground(node, "totemsBar", "border", borderColor)
+			Color:ApplyResolvedBorderOrBackground(node, "totemsBar", "background", backgroundColor)
+			Color:ApplyResolvedEndCap(node, "totemsBar")
+			TRB.Functions.Glow:ApplyIndicatorGlow(node, "totemsBar")
 		end
 	end
 	return false
