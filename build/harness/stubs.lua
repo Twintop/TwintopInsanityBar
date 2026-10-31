@@ -819,7 +819,7 @@ function M.install(opts)
 	for event in pairs(unknownEvents) do unknownEvents[event] = nil end
 	if interfaceVersion >= 11300 and interfaceVersion < 16000 then
 		G.WOW_PROJECT_ID = G.WOW_PROJECT_CLASSIC
-		for _, name in ipairs({ "C_ClassTalents", "GetUnitChargedPowerPoints", "LocalizedClassList", "COMBO_POINTS_POWER" }) do
+		for _, name in ipairs({ "C_ClassTalents", "GetUnitChargedPowerPoints", "LocalizedClassList", "COMBO_POINTS_POWER", "MirrorTimerContainer" }) do
 			G[name] = nil
 			absentGlobals[name] = true
 		end

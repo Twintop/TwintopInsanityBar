@@ -1161,14 +1161,78 @@ local function ShouldSuppressBlizzardTimer(timerName)
 	return barSettings ~= nil and barSettings.disableBlizzardBar == true and IsEnabled(visibility)
 end
 
+-- Classic Era has no container: its frames are the globals MirrorTimer1-3, shown through MirrorTimer_Show, with no
+-- shown-state check of their own. The types hidden there are kept, so only those are ever re-shown.
+local classicSuppressedTimers = {}
+
+---Whether a mirror timer type is still running, so a frame hidden for it can come back.
+---@param timerName string
+---@return boolean
+local function IsMirrorTimerRunning(timerName)
+	for i = 1, MIRROR_TIMER_COUNT do
+		if GetMirrorTimerInfo(i) == timerName then
+			return true
+		end
+	end
+	return false
+end
+
+---Blizzard's mirror timer frames: the pooled container's on Mainline and Forever, else Classic Era's globals.
+---@return table[]?
+---@return boolean pooled # The frames have their own UpdateShownState
+local function GetBlizzardMirrorTimerFrames()
+	local container = MirrorTimerContainer
+	if container ~= nil and container.mirrorTimers ~= nil then
+		return container.mirrorTimers, true
+	end
+	if MirrorTimer_Show == nil then
+		return nil, false
+	end
+	local frames = {}
+	for index = 1, MIRROR_TIMER_COUNT do
+		frames[#frames + 1] = _G["MirrorTimer" .. index]
+	end
+	return frames, false
+end
+
+---Hides Classic Era's frames showing a type we have taken over.
+---@param frames table[]
+local function SuppressClassicMirrorTimers(frames)
+	for _, frame in ipairs(frames) do
+		-- Shown only: a hidden frame keeps the type of a timer that has since stopped.
+		if frame:IsShown() and frame.timer ~= nil and ShouldSuppressBlizzardTimer(frame.timer) then
+			frame:Hide()
+			classicSuppressedTimers[frame.timer] = true
+		end
+	end
+end
+
 ---Re-evaluates every Blizzard mirror timer frame against the current settings. Restoring calls the
 ---frame's own UpdateShownState so Blizzard stays authoritative over whether it should be up at all.
 function TRB.Functions.OtherBars:UpdateBlizzardMirrorTimerVisibility()
-	local container = MirrorTimerContainer
-	if container == nil or container.mirrorTimers == nil then
+	local frames, pooled = GetBlizzardMirrorTimerFrames()
+	if frames == nil then
 		return
 	end
-	for _, frame in ipairs(container.mirrorTimers) do
+	if not pooled then
+		SuppressClassicMirrorTimers(frames)
+		-- Restored through Blizzard's own show, and only while running: a hidden frame never sees its timer stop.
+		for timerName in pairs(classicSuppressedTimers) do
+			if not ShouldSuppressBlizzardTimer(timerName) then
+				classicSuppressedTimers[timerName] = nil
+				for i = 1, MIRROR_TIMER_COUNT do
+					local timer, value, maxValue, scale, paused, label = GetMirrorTimerInfo(i)
+					if timer == timerName then
+						MirrorTimer_Show(timer, value, maxValue, scale, paused, label)
+					end
+				end
+			elseif not IsMirrorTimerRunning(timerName) then
+				classicSuppressedTimers[timerName] = nil
+			end
+		end
+		return
+	end
+	for _, frame in ipairs(frames) do
 		if ShouldSuppressBlizzardTimer(frame.timer) then
 			frame:Hide()
 		elseif frame.UpdateShownState ~= nil then
@@ -1178,22 +1242,28 @@ function TRB.Functions.OtherBars:UpdateBlizzardMirrorTimerVisibility()
 end
 
 ---Post-hooks each pooled Blizzard mirror timer frame so a type we have taken over stays hidden even
----after Blizzard re-shows it (a new timer starting, an Edit Mode relayout).
+---after Blizzard re-shows it (a new timer starting, an Edit Mode relayout). On Classic Era, hooks MirrorTimer_Show.
 local function InstallMirrorTimerHooks()
 	if mirrorHooksInstalled then
 		return
 	end
-	local container = MirrorTimerContainer
-	if container == nil or container.mirrorTimers == nil then
+	local frames, pooled = GetBlizzardMirrorTimerFrames()
+	if frames == nil then
 		return
 	end
-	for _, frame in ipairs(container.mirrorTimers) do
-		if frame.UpdateShownState ~= nil then
-			hooksecurefunc(frame, "UpdateShownState", function(self)
-				if ShouldSuppressBlizzardTimer(self.timer) then
-					self:Hide()
-				end
-			end)
+	if not pooled then
+		hooksecurefunc("MirrorTimer_Show", function()
+			SuppressClassicMirrorTimers(frames)
+		end)
+	else
+		for _, frame in ipairs(frames) do
+			if frame.UpdateShownState ~= nil then
+				hooksecurefunc(frame, "UpdateShownState", function(self)
+					if ShouldSuppressBlizzardTimer(self.timer) then
+						self:Hide()
+					end
+				end)
+			end
 		end
 	end
 	mirrorHooksInstalled = true
@@ -1498,7 +1568,7 @@ function TRB.Functions.OtherBars:PrintDiagnostics()
 		end
 	end
 	local container = MirrorTimerContainer
-	print("  MirrorTimerContainer=" .. tostring(container ~= nil) .. " mirrorTimers=" .. tostring(container and container.mirrorTimers ~= nil) .. " hooks=" .. tostring(mirrorHooksInstalled) .. " registered=" .. tostring(eventFrame:IsEventRegistered("MIRROR_TIMER_START")))
+	print("  MirrorTimerContainer=" .. tostring(container ~= nil) .. " mirrorTimers=" .. tostring(container and container.mirrorTimers ~= nil) .. " MirrorTimer_Show=" .. tostring(MirrorTimer_Show ~= nil) .. " hooks=" .. tostring(mirrorHooksInstalled) .. " registered=" .. tostring(eventFrame:IsEventRegistered("MIRROR_TIMER_START")))
 	local function describe(v)
 		return issecretvalue(v) and ("<secret " .. type(v) .. ">") or tostring(v)
 	end

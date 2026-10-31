@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.15.9.1-release (2026-10-31)
+## General
+### Other Bars
+
+- [#924](#924) Fix Hide Blizzard's bar not hiding Blizzard's Breath, Fatigue, and Feign Death bars.
+
+---
+
 # 1.15.9.0-release (2026-10-29)
 ## General
 

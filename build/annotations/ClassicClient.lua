@@ -36,3 +36,12 @@ function GetNumTalents(tabIndex, isInspect, isPet) end
 ---@return number destRaidFlags
 ---@return any ...
 function CombatLogGetCurrentEventInfo() end
+
+---Classic Era's MirrorTimer.lua: shows a mirror timer on MirrorTimer1-3, reusing the frame already showing that type.
+---@param timer string # "BREATH", "EXHAUSTION", or "FEIGNDEATH"
+---@param value number # Milliseconds left
+---@param maxvalue number # Milliseconds in all
+---@param scale number # Change per second; negative while it drains
+---@param paused number
+---@param label string
+function MirrorTimer_Show(timer, value, maxvalue, scale, paused, label) end
