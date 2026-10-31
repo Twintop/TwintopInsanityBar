@@ -12,7 +12,7 @@ TRB.Details.coreNewsContent = [====[
 
 ## Other Bars
 
-- Fix Hide Blizzard's bar not hiding Blizzard's Breath, Fatigue, and Feign Death bars on Classic.
+- [#924](#924) Fix Hide Blizzard's bar not hiding Blizzard's Breath, Fatigue, and Feign Death bars on Classic.
 
 ## Pet Bars
 
