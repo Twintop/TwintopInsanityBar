@@ -525,6 +525,7 @@ local function SwitchSpec()
 		lookup["#catForm"] = spells.catForm.icon
 		lookup["#claw"] = spells.claw.icon
 		lookup["#ferociousBite"] = spells.ferociousBite.icon
+		lookup["#lacerate"] = spells.lacerate.icon
 		lookup["#maul"] = spells.maul.icon
 		lookup["#primalBite"] = spells.primalBite.icon
 		lookup["#prowl"] = spells.prowl.icon

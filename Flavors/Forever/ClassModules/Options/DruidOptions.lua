@@ -105,6 +105,7 @@ local function LoadDefaultSettings(includeBarText, classic)
 			thresholdDictionary = {
 				maul = { enabled = true },
 				primalBite = { enabled = true },
+				lacerate = { enabled = true },
 				demoralizingRoar = { enabled = true },
 				bash = { enabled = true },
 				challengingRoar = { enabled = false },

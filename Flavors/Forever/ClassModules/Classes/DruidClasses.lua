@@ -11,6 +11,7 @@ TRB.Classes.Forever.Druid = TRB.Classes.Forever.Druid or {}
 ---@class TRB.Classes.Forever.Druid.GeneralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public maul TRB.Classes.SpellThreshold
 ---@field public primalBite TRB.Classes.SpellThreshold
+---@field public lacerate TRB.Classes.SpellThreshold
 ---@field public demoralizingRoar TRB.Classes.SpellThreshold
 ---@field public bash TRB.Classes.SpellThreshold
 ---@field public challengingRoar TRB.Classes.SpellThreshold
@@ -57,6 +58,15 @@ function TRB.Classes.Forever.Druid.GeneralSpells:New()
 		settingKey = "primalBite",
 		isTalent = true,
 		hasCooldown = true,
+		category = "offensive",
+		barTarget = "rage",
+	})
+	self.lacerate = TRB.Classes.SpellThreshold:New({
+		id = 1328617,
+		rankIds = { 1328617, 1235826, 1235827 },
+		primaryResourceType = Enum.PowerType.Rage,
+		settingKey = "lacerate",
+		isTalent = true,
 		category = "offensive",
 		barTarget = "rage",
 	})
@@ -248,6 +258,7 @@ function TRB.Classes.Forever.Druid.GeneralSpells.FillBarTextVariables(specCacheE
 		{ variable = "#catForm", icon = spells.catForm.icon, description = spells.catForm.name, printInSettings = true },
 		{ variable = "#claw", icon = spells.claw.icon, description = spells.claw.name, printInSettings = true },
 		{ variable = "#ferociousBite", icon = spells.ferociousBite.icon, description = spells.ferociousBite.name, printInSettings = true },
+		{ variable = "#lacerate", icon = spells.lacerate.icon, description = spells.lacerate.name, printInSettings = true },
 		{ variable = "#maul", icon = spells.maul.icon, description = spells.maul.name, printInSettings = true },
 		{ variable = "#primalBite", icon = spells.primalBite.icon, description = spells.primalBite.name, printInSettings = true },
 		{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
