@@ -852,6 +852,7 @@ local function ConstructTotemsOptionsPanel()
 			visibilityKey = "totems",
 		},
 	}
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, nil, nil, "totems")
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("totems"), tabDefinitions, -37)
 end
 

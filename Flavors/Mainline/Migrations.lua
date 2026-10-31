@@ -8800,6 +8800,11 @@ function TRB.Flavor.PortForwardSettings(settings)
 		TRB.Functions.Settings:SeedSkyridingBarsText(TwintopInsanityBarSettings.core)
 	end
 
+	-- Totems bar: seed its default text into the global list, the same way.
+	if TwintopInsanityBarSettings ~= nil then
+		TRB.Functions.Settings:SeedTotemBarsText(TwintopInsanityBarSettings)
+	end
+
 	-- Skyriding bars: existing saves get asked whether to keep them, hidden until they answer Yes. Live saves only,
 	-- so profiles and imports never carry the flag.
 	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings == TRB.Flavor.GetSavedVariables() then

@@ -1337,9 +1337,10 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		castbar = L["TabCastbars"],
 		otherBars = L["TabOtherBars"],
 		petBars = L["TabPetBars"],
+		totems = L["ResourceTotems"],
 		skyriding = L["TabSkyriding"],
 	}
-	local moveGroupOrder = { "spec", "castbar", "otherBars", "petBars", "skyriding" }
+	local moveGroupOrder = { "spec", "castbar", "otherBars", "petBars", "totems", "skyriding" }
 
 	---Binds an entry to another bar, then redraws the lists and text the move changes.
 	---@param entry TRB.Classes.Settings.DisplayTextEntry
@@ -1787,6 +1788,8 @@ function TRB.Functions.OptionsUi.BarText:ConstructGroupPanel(parent, classId, sp
 		sectionTitle = L["BarDisplayTextCustomizationHeaderOtherBars"]
 	elseif groupKey == "petBars" then
 		sectionTitle = L["BarDisplayTextCustomizationHeaderPetBars"]
+	elseif groupKey == "totems" then
+		sectionTitle = L["BarDisplayTextCustomizationHeaderTotems"]
 	elseif groupKey == "skyriding" then
 		sectionTitle = L["BarDisplayTextCustomizationHeaderSkyriding"]
 	end
