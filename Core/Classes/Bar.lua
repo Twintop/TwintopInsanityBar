@@ -2916,11 +2916,13 @@ end
 
 local castbarGroupKeySet = { castbar = true, targetCastbar = true, focusCastbar = true, petCastbar = true }
 
----The grouping a bar's options live under. The Pet Cast Bar sits with the cast bars; anything unlisted is the spec's own.
----A shared grouping's key is also its spec-panel tab key and its Global Options nav category.
+---The grouping a bar's options live under, also the shared grouping's tab key and nav category; anything unlisted is the
+---spec's own. The Totems bar follows the spec's placement, and Global Options' Totems screen without a spec.
 ---@param barKey string?
+---@param classId integer? # The scope; nil is Global Options
+---@param specId integer?
 ---@return "spec"|"castbar"|"otherBars"|"petBars"|"totems"|"skyriding"
-function TRB.Classes.BarTypeRegistry:GetBarGroup(barKey)
+function TRB.Classes.BarTypeRegistry:GetBarGroup(barKey, classId, specId)
 	if castbarGroupKeySet[barKey] then
 		return "castbar"
 	end
@@ -2933,6 +2935,9 @@ function TRB.Classes.BarTypeRegistry:GetBarGroup(barKey)
 		return "petBars"
 	end
 	if self:IsTotemBar(barKey) then
+		if classId ~= nil and self:GetTotemPlacement(classId, specId) == "otherBars" then
+			return "otherBars"
+		end
 		return "totems"
 	end
 	if self:IsSkyridingBar(barKey) then
@@ -2946,9 +2951,11 @@ end
 ---@param barKey string
 ---@param groupKey string? # nil or "spec" for the spec tab
 ---@param includeAllGroups boolean?
+---@param classId integer? # The tab's scope; nil is Global Options
+---@param specId integer?
 ---@return boolean
-function TRB.Classes.BarTypeRegistry:IsBarInGroupScope(barKey, groupKey, includeAllGroups)
-	local barGroup = self:GetBarGroup(barKey)
+function TRB.Classes.BarTypeRegistry:IsBarInGroupScope(barKey, groupKey, includeAllGroups, classId, specId)
+	local barGroup = self:GetBarGroup(barKey, classId, specId)
 	if groupKey == nil or groupKey == "spec" then
 		return includeAllGroups == true or barGroup == "spec"
 	end

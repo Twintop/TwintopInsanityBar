@@ -2491,6 +2491,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 
 			-- Update utility bar (Angelic Feather charges)
 			if displaySettings.utility ~= nil and not displaySettings.utility.neverShow and barGroups and barGroups.utility then
@@ -3084,6 +3085,7 @@ local function UpdateResourceBar()
 			refreshText = true
 			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 		end
+		refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 
 		-- Update mana bar (Shadow only)
 		if specSettings.displayBar.mana ~= nil and not specSettings.displayBar.mana.neverShow then
@@ -3696,6 +3698,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.utility, utilityVisSettings, hasUtility, utilityNodes, nil)
+		TRB.Functions.BarVisibility:AppendTotemEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
 			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)

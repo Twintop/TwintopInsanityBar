@@ -290,7 +290,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 			listedRows[index] = nil
 		end
 		for _, row in ipairs(allRows) do
-			if TRB.Classes.BarTypeRegistry:IsBarInGroupScope(row.key, groupKey, includeAllGroups[scopeKey]) then
+			if TRB.Classes.BarTypeRegistry:IsBarInGroupScope(row.key, groupKey, includeAllGroups[scopeKey], classId, specId) then
 				listedRows[#listedRows + 1] = row
 			end
 		end

@@ -520,8 +520,8 @@ function Totems:AreBarsDeclined()
 	return prompt.answered ~= true or prompt.hidden == true
 end
 
----Sets the Totems bar to Never Show, or shown, on every spec with totems that doesn't come with it, and in Global
----Options where it has one, in the live settings and every profile.
+---Sets the Totems bar to Never Show, or shown, on every spec the enable prompt asks for (its own tab, not built in) and
+---in Global Options where it has one, in the live settings and every profile.
 ---@param settings table # Shaped like the saved variables
 ---@param hidden boolean
 function Totems:SetBarsHidden(settings, hidden)
@@ -544,7 +544,7 @@ function Totems:SetBarsHidden(settings, hidden)
 			if type(classPiece) == "table" then
 				for _, specEntry in ipairs(classEntry.specs) do
 					local info = specEntry.descriptor ~= nil and specEntry.descriptor.totems or nil
-					if info ~= nil and not info.builtIn then
+					if info ~= nil and info.placement == "spec" and not info.builtIn then
 						SetIn(classPiece[specEntry.specName])
 					end
 				end
