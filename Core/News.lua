@@ -10,10 +10,6 @@ TRB.Details.coreNewsContent = [====[
 - [#916](#916) Add a Use class color option to the Cast Bar, coloring casts, channels, and uninterruptible casts with your class color.
 - [#916](#916) Add a Use class color option to the Cast Bar's Empower Level Colors, coloring empowered casts with your class color.
 
-## Other Bars
-
-- [#924](#924) Fix Hide Blizzard's bar not hiding Blizzard's Breath, Fatigue, and Feign Death bars on Classic.
-
 ## Pet Bars
 
 - [#916](#916) Add a Use class color option to the Pet Cast Bar, coloring its casts, channels, and uninterruptible casts with your class color.
