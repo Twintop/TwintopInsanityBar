@@ -344,7 +344,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					petBarsText = true,
 					swingTimersText = true,
 					skyridingBarText = true,
-					totemBarText = true
+					totemBarText = true,
+					totemSpecBarText = true
 				}
 			},
 			-- Per-class/spec "use global" toggles; populated from the class/spec registry below.
@@ -1599,29 +1600,61 @@ function TRB.Functions.Settings:LoadDefaultTotemBarTextSettings()
 	return entries
 end
 
----Seeds the Totems bar's default text into saved global bar text, from each flavor's PortForwardSettings.
----Flagged so deleted entries stay deleted; the scan skips any totem slot that already has text.
----@param core table? # The saved core settings
-function TRB.Functions.Settings:SeedTotemBarsText(core)
-	local displayText = core ~= nil and core.displayText or nil
+---Adds the Totems bar's default text to a bar text list, skipping any totem slot that already has text.
+---@param barText TRB.Classes.Settings.DisplayTextEntry[]
+function TRB.Functions.Settings:AppendTotemBarText(barText)
+	local anchoredFrames = {}
+	for _, entry in ipairs(barText) do
+		if entry.position ~= nil and entry.position.relativeToFrame ~= nil then
+			anchoredFrames[entry.position.relativeToFrame] = true
+		end
+	end
+	for _, entry in ipairs(self:LoadDefaultTotemBarTextSettings()) do
+		if not anchoredFrames[entry.position.relativeToFrame] then
+			table.insert(barText, entry)
+		end
+	end
+end
+
+---Seeds the Totems bar's default text, from each flavor's PortForwardSettings: into the global list, or without a
+---global scope into each spec with the bar. Flagged so deleted entries stay deleted.
+---@param settings table # Shaped like the saved variables
+function TRB.Functions.Settings:SeedTotemBarsText(settings)
+	local displayText = settings.core ~= nil and settings.core.displayText or nil
 	if displayText == nil or type(displayText.barText) ~= "table" then
 		return
 	end
 	displayText.migrations = displayText.migrations or {}
-	if not displayText.migrations.totemBarText then
-		local anchoredFrames = {}
-		for _, entry in ipairs(displayText.barText) do
-			if entry.position ~= nil and entry.position.relativeToFrame ~= nil then
-				anchoredFrames[entry.position.relativeToFrame] = true
+	local migrations = displayText.migrations
+	if TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
+		if not migrations.totemBarText then
+			self:AppendTotemBarText(displayText.barText)
+		end
+		migrations.totemBarText = true
+		return
+	end
+
+	if not migrations.totemSpecBarText then
+		-- Unreleased test builds seeded the global list here, where the specs would draw it twice.
+		for i = #displayText.barText, 1, -1 do
+			local position = displayText.barText[i].position
+			if position ~= nil and TRB.Functions.BarText:GetAnchorBarKey(position.relativeToFrame) == "totems" then
+				table.remove(displayText.barText, i)
 			end
 		end
-		for _, entry in ipairs(self:LoadDefaultTotemBarTextSettings()) do
-			if not anchoredFrames[entry.position.relativeToFrame] then
-				table.insert(displayText.barText, entry)
+		for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+			local classSettings = settings[classEntry.className]
+			for _, specEntry in ipairs(classEntry.specs) do
+				local spec = type(classSettings) == "table" and classSettings[specEntry.specName] or nil
+				if TRB.Classes.BarTypeRegistry:SpecHasTotems(specEntry.classId, specEntry.specId)
+					and type(spec) == "table" and spec.displayText ~= nil and type(spec.displayText.barText) == "table" then
+					self:AppendTotemBarText(spec.displayText.barText)
+				end
 			end
 		end
 	end
-	displayText.migrations.totemBarText = true
+	migrations.totemBarText = true
+	migrations.totemSpecBarText = true
 end
 
 ---Gets the default Target/Focus Cast Bar colors. `bar` is the standard-cast fill, `channel` recolors a
@@ -3854,9 +3887,11 @@ function TRB.Functions.Settings:LoadDefaultGlobalBarTextSettings(classic)
 		table.insert(textSettings, entry)
 	end
 
-	-- Existing users get these through SeedTotemBarsText.
-	for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultTotemBarTextSettings()) do
-		table.insert(textSettings, entry)
+	-- Existing users get these through SeedTotemBarsText. Without a global scope the specs carry their own.
+	if TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
+		for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultTotemBarTextSettings()) do
+			table.insert(textSettings, entry)
+		end
 	end
 
 	textSettings = TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)

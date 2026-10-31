@@ -30,8 +30,6 @@ local activeVersion = 0
 -- What each node was last given, and each group's layout count; weak, so rebuilt bars drop theirs.
 local appliedByNode = setmetatable({}, { __mode = "k" })
 local layoutVersions = setmetatable({}, { __mode = "k" })
--- Slot -> the node index showing it, as the last render drew it; where slots are elements the order is the user's.
-local nodeIndexBySlot = {}
 
 local function OnActiveChanged()
 	activeVersion = activeVersion + 1
@@ -209,11 +207,21 @@ local function GetActiveColors()
 	return colorBars and colorBars.totems or nil
 end
 
----The node index showing a slot, for bar text anchored to it.
+---The node index showing a slot, for bar text anchored to it. Read from the node order, since text anchors before the
+---first render.
 ---@param slot integer
 ---@return integer
 function Totems:GetSlotNodeIndex(slot)
-	return nodeIndexBySlot[slot] or slot
+	if not TRB.Flavor.totemElements then
+		return slot
+	end
+	local colors = GetActiveColors()
+	for nodeIndex = 1, self:GetSlotCount() do
+		if self:GetNodeSlot(nodeIndex, colors) == slot then
+			return nodeIndex
+		end
+	end
+	return slot
 end
 
 ---The slot whose totem a node's icon tooltip shows, or nil when that slot holds none. Read at hover time, so it
@@ -440,7 +448,6 @@ function Totems:Render(barGroups, settings)
 		local node = group.nodes[i]
 		local slot = self:GetNodeSlot(i, colors)
 		local record = slots[slot]
-		nodeIndexBySlot[slot] = i
 		if node ~= nil and record ~= nil then
 			local active = IsActive(record)
 			-- Keyed on the frame too, so a rebuilt bar rebinds.

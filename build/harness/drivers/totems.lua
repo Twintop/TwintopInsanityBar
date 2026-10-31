@@ -97,10 +97,10 @@ function hooks.afterEvents(ctx)
 		return false
 	end
 	local slotOneEntry = { position = { relativeToFrame = "TotemSlot1" } }
-	check("Global Options offers the totem slot anchors", HasAnchor(BarText:GetAnchorCatalog(nil, nil), "TotemSlot1"))
 	-- Live's specs can follow Global Options; Forever's and Classic's own the bar outright.
 	local hasGlobal = registry:HasGlobalTotems()
 	check("only Live has a global Totems bar", hasGlobal == not TRB.Flavor.totemElements)
+	check("Global Options offers the totem slot anchors only with a global scope", HasAnchor(BarText:GetAnchorCatalog(nil, nil), "TotemSlot1") == hasGlobal)
 	local core = TRB.Data.settings.core
 	if not hasGlobal then
 		check("Global Options holds no Totems bar", core.bars.totems == nil and core.colors.bars.totems == nil and core.displayBar.totems == nil
@@ -179,6 +179,8 @@ function hooks.afterEvents(ctx)
 	end
 
 	check("an empty bar shows four nodes", group.nodeCount == 4)
+	-- Bar text anchors before the bar's first render, so the slot's node can't come from one.
+	check("a slot's node is known before any render", Totems:GetSlotNodeIndex(2) == (elements and 1 or 2))
 
 	if elements then
 		-- Fire and Earth up: Blizzard's order puts Earth first.
@@ -300,11 +302,15 @@ function hooks.afterEvents(ctx)
 	check("a slot's anchor is the node showing it", anchorKnown == true and anchorFrame ~= nil and anchorFrame == expectedNode.frame
 		and (not elements or Totems:GetSlotNodeIndex(firstSlot) == 1))
 
-	-- Default text lives in the global list, seeded once, and a deleted entry stays deleted.
-	local core = TRB.Data.settings.core
-	local function CountTotemText()
+	-- Default text lives in the global list, or the spec's own without a global scope; seeded once, and a deleted entry
+	-- stays deleted.
+	local specText = TRB.Data.settings[character.className][character.specName].displayText
+	local textHome = hasGlobal and core.displayText or specText
+	local migrations = core.displayText.migrations
+	local seedFlag = hasGlobal and "totemBarText" or "totemSpecBarText"
+	local function CountTotemText(list)
 		local count = 0
-		for _, entry in ipairs(core.displayText.barText) do
+		for _, entry in ipairs(list) do
 			if entry.position ~= nil and BarText:GetAnchorBarKey(entry.position.relativeToFrame) == "totems" then
 				count = count + 1
 			end
@@ -312,21 +318,34 @@ function hooks.afterEvents(ctx)
 		return count
 	end
 	local expected = Totems:GetSlotCount() * 2
-	check("a fresh install has a name and a time on every slot", CountTotemText() == expected and core.displayText.migrations.totemBarText == true)
+	check("a fresh install has a name and a time on every slot", CountTotemText(textHome.barText) == expected and migrations[seedFlag] == true)
+	if not hasGlobal then
+		check("a fresh install's global list has no totem text", CountTotemText(core.displayText.barText) == 0)
+	end
 	local kept = {}
-	for _, entry in ipairs(core.displayText.barText) do
+	for _, entry in ipairs(textHome.barText) do
 		if entry.position == nil or BarText:GetAnchorBarKey(entry.position.relativeToFrame) ~= "totems" then
 			kept[#kept + 1] = entry
 		end
 	end
-	local savedText = core.displayText.barText
-	core.displayText.barText = kept
-	TRB.Functions.Settings:SeedTotemBarsText(core)
-	check("a deleted entry stays deleted once seeded", CountTotemText() == 0)
-	core.displayText.migrations.totemBarText = nil
-	TRB.Functions.Settings:SeedTotemBarsText(core)
-	check("an existing save gets the text once", CountTotemText() == expected and core.displayText.migrations.totemBarText == true)
-	core.displayText.barText = savedText
+	local savedText = textHome.barText
+	local savedCoreText = core.displayText.barText
+	textHome.barText = kept
+	TRB.Functions.Settings:SeedTotemBarsText(TRB.Data.settings)
+	check("a deleted entry stays deleted once seeded", CountTotemText(textHome.barText) == 0)
+	migrations[seedFlag] = nil
+	if not hasGlobal then
+		-- Unreleased builds seeded the global list; the spec seed takes those back out.
+		core.displayText.barText = {}
+		TRB.Functions.Settings:AppendTotemBarText(core.displayText.barText)
+	end
+	TRB.Functions.Settings:SeedTotemBarsText(TRB.Data.settings)
+	check("an existing save gets the text once", CountTotemText(textHome.barText) == expected and migrations[seedFlag] == true)
+	if not hasGlobal then
+		check("the spec seed clears totem text from the global list", CountTotemText(core.displayText.barText) == 0)
+	end
+	textHome.barText = savedText
+	core.displayText.barText = savedCoreText
 
 	-- The visibility context follows the slots.
 	local context = TRB.Classes.BarVisibilityContext:NewFromGameState(false, nil)

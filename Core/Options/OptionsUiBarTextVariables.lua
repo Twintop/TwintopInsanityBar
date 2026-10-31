@@ -396,7 +396,7 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 		local grouped = {}
 		-- The Global panel lists the pet and totem variables too, since those specs merge its bar text.
 		local showPet = classId == nil or TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId)
-		local showTotems = classId == nil or TRB.Classes.BarTypeRegistry:SpecHasTotems(classId, specId)
+		local showTotems = TRB.Classes.BarTypeRegistry:IsBarInScope("totems", classId, specId)
 		for _, sectionKey in ipairs({ "values", "icons", "pipe" }) do
 			local sectionEntries = barTextVariables[sectionKey]
 			if sectionEntries then

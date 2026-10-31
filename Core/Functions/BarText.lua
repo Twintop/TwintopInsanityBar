@@ -394,8 +394,8 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 		AddAnchorFrame("petCastbar", L["ResourcePetCastbarIcon"], "PetCastBarIcon")
 	end
 
-	-- Totem slots reach the Global panel and the specs with the Totems bar, one anchor per slot's node.
-	if classId == nil or registry:SpecHasTotems(classId, specId) then
+	-- Totem slots reach the specs with the Totems bar, and the Global panel where it has one; one anchor per slot's node.
+	if registry:IsBarInScope("totems", classId, specId) then
 		for slot = 1, TRB.Functions.Totems:GetSlotCount() do
 			AddAnchorFrame("totems", self:GetTotemSlotAnchorLabel(slot), "TotemSlot" .. slot)
 		end
