@@ -274,6 +274,28 @@ function hooks.afterEvents(ctx)
 	TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	check("turning the tooltip off clears it", group.nodes[1].icon.tooltipProvider == nil)
 
+	-- A Color Indicator's border and background reach every node, and the bar's own colors return once it ends.
+	local resolved = TRB.Data.resolvedIndicators
+	local function NodeColors(cacheKey, colorString)
+		for i = 1, group.nodeCount do
+			local node = group.nodes[i]
+			local entry = TRB.Data.cache.colors[cacheKey][cacheKey == "border" and node.borderKey or node.backgroundKey]
+			if entry == nil or entry.source ~= colorString then
+				return false
+			end
+		end
+		return true
+	end
+	resolved.compositeKey = character.compositeKey
+	resolved.totemsBar.border = "FFFF0000"
+	resolved.totemsBar.background = "FF00FF00"
+	Render()
+	check("an indicator recolors every node's border and background", NodeColors("border", "FFFF0000") and NodeColors("backdrop", "FF00FF00"))
+	wipe(resolved.totemsBar)
+	Render()
+	local barColors = settings.colors.bars.totems
+	check("the bar's own colors return when it ends", NodeColors("border", barColors.border.color) and NodeColors("backdrop", barColors.background.color))
+
 	-- Bar text: each slot's variables, their bare checks, and the anchor on the node showing the slot.
 	check("totem slot anchors are offered on a spec with totems", HasAnchor(BarText:GetAnchorCatalog(character.classId, character.specId), "TotemSlot1"))
 	-- Its rows list on the spec's Totems tab, or Other Bars where the spec puts it, and never on the spec's own tabs.

@@ -1112,6 +1112,9 @@ TRB.Data.resolvedIndicators = {
 	petHealthBar = {},
 	---@type table<string, string|table>
 	petPowerBar = {},
+	-- The Totems bar: border, background, and endCap only; its fill is per totem.
+	---@type table<string, string|table>
+	totemsBar = {},
 	-- The active gradient (secret-value) indicator, or nil. Its color isn't resolved here like the flat ones:
 	-- a gradient is a curve from whatever color the element would otherwise use up to the indicator's color,
 	-- and only the render path knows that base color. So the indicator itself is parked and the consumer
@@ -1192,7 +1195,7 @@ end
 -- Shared bars whose resolved colors live in TRB.Data.resolvedIndicators under their own bar key.
 local sharedIndicatorBars = {
 	healthBar = true, castbar = true, targetCastbar = true, focusCastbar = true,
-	petCastbar = true, petHealthBar = true, petPowerBar = true,
+	petCastbar = true, petHealthBar = true, petPowerBar = true, totemsBar = true,
 }
 
 ---Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
@@ -1217,6 +1220,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 	local petCastbar = resolved.petCastbar
 	local petHealthBar = resolved.petHealthBar
 	local petPowerBar = resolved.petPowerBar
+	local totemsBar = resolved.totemsBar
 	wipe(healthBar)
 	wipe(castbar)
 	wipe(targetCastbar)
@@ -1224,6 +1228,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 	wipe(petCastbar)
 	wipe(petHealthBar)
 	wipe(petPowerBar)
+	wipe(totemsBar)
 
 	local character = TRB.Data.character
 	resolved.compositeKey = character.compositeKey
