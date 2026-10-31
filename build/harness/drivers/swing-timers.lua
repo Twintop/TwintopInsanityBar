@@ -17,6 +17,45 @@ local drv = { now = 1000, mainSpeed = 2, offSpeed = 2, rangedAttackSpeed = 3.3, 
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
 	local G = desktop
+	-- Classic Era's mirror timers: three global frames, shown through MirrorTimer_Show. The stubs leave out the container.
+	if ctx.tocRel:find("Classic", 1, true) then
+		drv.classicMirror = true
+		drv.mirrorTimers = {}
+		for index = 1, 3 do
+			local frame = G.CreateFrame("Frame", "MirrorTimer" .. index)
+			frame:Hide()
+			G["MirrorTimer" .. index] = frame
+		end
+		G.GetMirrorTimerInfo = function(index)
+			local timer = drv.mirrorTimers[index]
+			if timer == nil then
+				return "UNKNOWN", 0, 0, 0, 0, ""
+			end
+			return timer, 30000, 60000, -1, 0, timer
+		end
+		-- Blizzard's pick: the shown frame of that type, else a free one.
+		G.MirrorTimer_Show = function(timer)
+			local dialog = nil
+			for index = 1, 3 do
+				local frame = G["MirrorTimer" .. index]
+				if frame:IsShown() and frame.timer == timer then
+					dialog = frame
+					break
+				end
+			end
+			for index = 1, 3 do
+				local frame = G["MirrorTimer" .. index]
+				if dialog == nil and not frame:IsShown() then
+					dialog = frame
+				end
+			end
+			if dialog ~= nil then
+				dialog.timer = timer
+				dialog:Show()
+			end
+			return dialog
+		end
+	end
 	local innerCreate = G.CreateFrame
 	G.CreateFrame = function(...)
 		local frame = innerCreate(...)
@@ -157,6 +196,42 @@ function hooks.afterEvents(ctx)
 		SetEnabled(false, false, false)
 		check("no swing bar enabled unregisters PLAYER_SWING", not Registered("PLAYER_SWING"))
 	else
+		if drv.classicMirror then
+			---Whether any of Blizzard's frames shows the timer type.
+			local function BlizzardShows(timer)
+				for index = 1, 3 do
+					local frame = desktop["MirrorTimer" .. index]
+					if frame:IsShown() and frame.timer == timer then
+						return true
+					end
+				end
+				return false
+			end
+			local breath = settings.bars.breath
+			local breathVisibility = settings.displayBar.breath
+			local savedHide, savedNever, savedAlways = breath.disableBlizzardBar, breathVisibility.neverShow, breathVisibility.alwaysShow
+			breathVisibility.neverShow = false
+			breathVisibility.alwaysShow = true
+			breath.disableBlizzardBar = true
+			Fire("PLAYER_ENTERING_WORLD")
+			drv.mirrorTimers[1] = "BREATH"
+			try("MirrorTimer_Show", function() desktop.MirrorTimer_Show("BREATH", 30000, 60000, -1, 0, "Breath") end)
+			Fire("MIRROR_TIMER_START", "BREATH", 30000, 60000, -1, 0, "Breath")
+			check("Classic Era hides Blizzard's Breath bar", not BlizzardShows("BREATH"))
+			breath.disableBlizzardBar = false
+			try("RefreshVisibility", function() OtherBars:RefreshVisibility() end)
+			check("unticking it brings a running Breath bar back", BlizzardShows("BREATH"))
+			breath.disableBlizzardBar = true
+			try("RefreshVisibility", function() OtherBars:RefreshVisibility() end)
+			check("ticking it again hides it", not BlizzardShows("BREATH"))
+			drv.mirrorTimers[1] = nil
+			Fire("MIRROR_TIMER_STOP", "BREATH")
+			breath.disableBlizzardBar = false
+			try("RefreshVisibility", function() OtherBars:RefreshVisibility() end)
+			check("a Breath timer that stopped while hidden stays gone", not BlizzardShows("BREATH"))
+			breath.disableBlizzardBar, breathVisibility.neverShow, breathVisibility.alwaysShow = savedHide, savedNever, savedAlways
+			try("RefreshVisibility", function() OtherBars:RefreshVisibility() end)
+		end
 		check("Classic has no Hide Blizzard swing timers setting", settings.bars.mainHandSwing.disableBlizzardBar == nil)
 		try("SyncSwingEvents", function() OtherBars:SyncSwingEvents() end)
 		check("with every swing bar off, nothing is registered", not Registered("COMBAT_LOG_EVENT_UNFILTERED") and not Registered("UNIT_SPELLCAST_SUCCEEDED"))
