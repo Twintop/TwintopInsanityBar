@@ -340,11 +340,12 @@ TRB.Functions.OptionsUi.Tabs.TabKeys = {
 	VisibilityPresets = "presets",
 }
 
-local groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", skyriding = "Skyriding" }
+-- Totems has a Global screen but no grouping strip on a spec panel, so it has no inner stem.
+local groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", totems = "Totems", skyriding = "Skyriding" }
 local groupInnerPrefixStem = { castbar = "CastbarInner_", otherBars = "OtherBarsInner_", petBars = "PetBarsInner_", skyriding = "SkyridingInner_" }
 
 ---The tab group name prefix of a shared grouping's strip: the Global screen's own, or the spec panel's inner one.
----@param groupKey string # castbar, otherBars, petBars, or skyriding
+---@param groupKey string # castbar, otherBars, petBars, or skyriding; totems in the global scope only
 ---@param classId integer? # nil is the global scope
 ---@param specId integer?
 ---@return string
@@ -605,6 +606,34 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 					TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(scrollChild, cId, sId)
 				end,
 				true -- manual container: the inner sub-tabs provide their own scroll frames
+			})
+		end
+
+		-- Totems sits just before Health on a spec whose Totems bar is its own, where every spec bar's tab sits.
+		local hasTotemsTab = false
+		for _, def in ipairs(tabDefinitions) do
+			if def[1] == "totems" then
+				hasTotemsTab = true
+				break
+			end
+		end
+		if not hasTotemsTab and TRB.Classes.BarTypeRegistry:GetTotemPlacement(castbarSpec.classId, castbarSpec.specId) == "spec" then
+			local cId, sId = castbarSpec.classId, castbarSpec.specId
+			local insertIndex = #tabDefinitions + 1
+			for i, def in ipairs(tabDefinitions) do
+				if def[1] == "healthBar" then
+					insertIndex = i
+					break
+				end
+			end
+			table.insert(tabDefinitions, insertIndex, {
+				"totems",
+				TRB.Localization["ResourceTotems"],
+				oUi.tabWidth.small,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.Totems:ConstructPanel(scrollChild, cId, sId)
+				end,
+				visibilityKey = "totems",
 			})
 		end
 

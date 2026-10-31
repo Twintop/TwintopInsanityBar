@@ -818,6 +818,43 @@ local function ConstructPetBarsOptionsPanel()
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("petBars"), tabDefinitions, -37)
 end
 
+---Constructs the top-level Totems panel: Global Options' Totems bar, which the specs with totems can follow. Only a
+---flavor where the bar has a global scope gets it.
+local function ConstructTotemsOptionsPanel()
+	if not TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
+		return
+	end
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.core or {}
+	interfaceSettingsFrame.controls.core = controls
+	controls.colors = controls.colors or {}
+	controls.checkBoxes = controls.checkBoxes or {}
+	controls.buttons = controls.buttons or {}
+
+	interfaceSettingsFrame.totemsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_TotemsPanel")
+	TRB.Options.OptionsFrame:RegisterCategory("totems", L["ResourceTotems"], interfaceSettingsFrame.totemsPanel)
+
+	local parent = interfaceSettingsFrame.totemsPanel
+
+	controls.totemsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["TotemsGlobalOptionsHeader"], oUi.xCoord, -5)
+
+	-- Core-scope profile dropdown, same position as on Global Options.
+	controls.totemsProfileDropdown = TRB.Functions.OptionsUi.Profiles:BuildProfileDropdown(parent, -10, "core", nil, nil, L["GlobalOptions"], "_Totems")
+
+	local tabDefinitions = {
+		{
+			"totems",
+			L["ResourceTotems"],
+			oUi.tabWidth.small,
+			function(scrollChild)
+				TRB.Functions.OptionsUi.Totems:ConstructPanel(scrollChild, nil, nil)
+			end,
+			visibilityKey = "totems",
+		},
+	}
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("totems"), tabDefinitions, -37)
+end
+
 ---Constructs the top-level Skyriding panel: global settings for the Skyriding bars, tabbed like Other Bars. Only
 ---a flavor with skyriding gets it.
 local function ConstructSkyridingOptionsPanel()
@@ -2214,6 +2251,7 @@ function TRB.Options:ConstructOptionsPanel()
 	ConstructCastbarOptionsPanel()
 	ConstructOtherBarsOptionsPanel()
 	ConstructPetBarsOptionsPanel()
+	ConstructTotemsOptionsPanel()
 	ConstructSkyridingOptionsPanel()
 	ConstructImportExportPanel()
 	ConstructProfileDefaultsPanel()

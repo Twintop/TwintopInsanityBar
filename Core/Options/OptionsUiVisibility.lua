@@ -27,6 +27,8 @@ local TIMER_CONDITION_KEYS = { "whenActive" }
 local RANGED_TIMER_CONDITION_KEYS = { "heldByMovement" }
 -- Pet bars' pet states, offered in both the show and hide lists.
 local PET_CONDITION_KEYS = { "isPetAlive", "isPetDead", "isPetMissing" }
+-- The Totems bar's own conditions, offered in both lists.
+local TOTEM_CONDITION_KEYS = { "isTotemActive", "isTotemMissing" }
 -- Skyriding bars' own condition beside the standard Skyriding pair, offered in both lists.
 local SKYRIDING_CONDITION_KEYS = { "isNotSkyriding" }
 local STANDARD_HIDE_CONDITION_KEYS ={ "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
@@ -75,6 +77,8 @@ local CONDITION_LABELS = {
 	isPetAlive = L["ShowBarVisibilityConditionPetAlive"],
 	isPetDead = L["ShowBarVisibilityConditionPetDead"],
 	isPetMissing = L["ShowBarVisibilityConditionPetMissing"],
+	isTotemActive = L["ShowBarVisibilityConditionTotemActive"],
+	isTotemMissing = L["ShowBarVisibilityConditionTotemMissing"],
 	isItemMissing = L["ShowBarVisibilityConditionItemMissing"],
 }
 
@@ -97,6 +101,9 @@ for _, key in ipairs(RANGED_TIMER_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
 for _, key in ipairs(PET_CONDITION_KEYS) do
+	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
+end
+for _, key in ipairs(TOTEM_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
 for _, key in ipairs(SKYRIDING_CONDITION_KEYS) do
@@ -527,9 +534,10 @@ local presetKindLabels = {
 	rangedSwing = L["BarVisibilityProfile_rangedSwing"],
 	mainHandSwing = L["BarVisibilityProfile_mainHandSwing"],
 	petBar = L["BarVisibilityProfile_petBar"],
+	totemBar = L["BarVisibilityProfile_totemBar"],
 	skyriding = L["BarVisibilityProfile_skyriding"],
 }
-local presetKindOrder = { "standard", "castbar", "targetCastbar", "petCastbar", "timerBar", "timerEnvironment", "petBar", "skyriding" }
+local presetKindOrder = { "standard", "castbar", "targetCastbar", "petCastbar", "timerBar", "timerEnvironment", "petBar", "totemBar", "skyriding" }
 if TRB.Flavor.swingTimers then
 	presetKindOrder[#presetKindOrder + 1] = "mainHandSwing"
 	presetKindOrder[#presetKindOrder + 1] = "rangedSwing"
@@ -1291,6 +1299,19 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		supportsThresholds = true,
 		thresholdDefinitions = petThresholdTypeDefinitions,
 	}
+	-- Totems bar: the standard lists and thresholds, each list closed by a Totems group.
+	local totemShowKeys, totemShowGroups = AppendGroup(conditionKeys, conditionGroups, L["ShowBarVisibilityGroupTotems"], CopyKeys(TOTEM_CONDITION_KEYS))
+	local totemHideKeys, totemHideGroups = AppendGroup(hideConditionKeys, hideConditionGroups, L["ShowBarVisibilityGroupTotems"], CopyKeys(TOTEM_CONDITION_KEYS))
+	local totemBarProfile = {
+		showKeys = totemShowKeys,
+		showLabels = LabelsFor(totemShowKeys),
+		showGroups = totemShowGroups,
+		hideKeys = totemHideKeys,
+		hideLabels = LabelsFor(totemHideKeys),
+		hideGroups = totemHideGroups,
+		supportsThresholds = true,
+		thresholdDefinitions = thresholdTypeDefinitions,
+	}
 	local standardProfile = {
 		showKeys = conditionKeys,
 		showLabels = conditionLabels,
@@ -1328,6 +1349,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		rangedSwing = rangedSwingProfile or timerEnvironmentProfile,
 		mainHandSwing = mainHandSwingProfile,
 		petBar = petBarProfile,
+		totemBar = totemBarProfile,
 		skyriding = skyridingProfile,
 	}
 
@@ -1891,6 +1913,25 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				isCastbar = isCastbar,
 				isPetBar = not isCastbar,
 				isGlobal = (classId ~= nil and coreDisplayBar[petBarKey] ~= nil),
+			})
+		end
+	end
+
+	-- The Totems bar, only on the specs that have its settings. Its fill runs on a timer, so it has no Smooth.
+	local totemBarKeysForPanel = (classId == nil) and TRB.Classes.BarTypeRegistry.totemBarKeys
+		or TRB.Classes.BarTypeRegistry:GetTotemBarKeys(classId, specId)
+	for _, totemBarKey in ipairs(totemBarKeysForPanel) do
+		if spec.displayBar and spec.displayBar[totemBarKey] ~= nil and TRB.Classes.BarTypeRegistry:IsBarInScope(totemBarKey, classId, specId) then
+			local totemBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(totemBarKey)
+			local totemBarLabel = totemBarDef and totemBarDef.displayName or totemBarKey
+			table.insert(allBarEntries, {
+				key = totemBarKey,
+				displayBarKey = totemBarKey,
+				label = totemBarLabel,
+				globalLabel = totemBarLabel,
+				isCustomBar = false,
+				hidesSmooth = true,
+				isGlobal = (classId ~= nil and coreDisplayBar[totemBarKey] ~= nil and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(totemBarKey)),
 			})
 		end
 	end

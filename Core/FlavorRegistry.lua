@@ -62,6 +62,8 @@ local addonName, TRB = ...
 ---@field public blizzardSwingTimer boolean? # The client has Blizzard's swing timer: it fires PLAYER_SWING and draws bars this addon can hide. Without it, swings come from the combat log and `swingSpells` (default false)
 ---@field public swingSpells TRB.Flavor.SwingSpells? # Required with swingTimers when blizzardSwingTimer is off
 ---@field public skyriding TRB.Flavor.Skyriding? # The client has skyriding, so the Skyriding bars exist
+---@field public totemElements boolean? # Totem slots are the four elements (1 Fire, 2 Earth, 3 Water, 4 Air), so the Totems bar shows four fixed element nodes (default false)
+---@field public specOwnedTotems boolean? # Each spec owns its Totems bar outright, so Global Options has none for specs to follow (default false)
 ---@field public IsClientMatch fun(): boolean
 ---@field public GetSpecializationIndex fun(): integer? # Active specialization index in specs[] order, or nil when the client reports none
 ---@field public classes TRB.Flavor.ClassEntry[]
@@ -132,6 +134,12 @@ if TRB.Flavor.swingTimers == nil then
 end
 if TRB.Flavor.blizzardSwingTimer == nil then
 	TRB.Flavor.blizzardSwingTimer = false
+end
+if TRB.Flavor.totemElements == nil then
+	TRB.Flavor.totemElements = false
+end
+if TRB.Flavor.specOwnedTotems == nil then
+	TRB.Flavor.specOwnedTotems = false
 end
 assert(not TRB.Flavor.swingTimers or TRB.Flavor.blizzardSwingTimer or type(TRB.Flavor.swingSpells) == "table", "TwintopInsanityBar: a flavor with swing timers but no Blizzard swing timer needs swingSpells.")
 if TRB.Flavor.thresholdsRequireKnown == nil then

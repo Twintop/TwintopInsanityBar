@@ -15,7 +15,8 @@ local barNodeCounter = 0
 ---A bar's side ability icon: a bordered backdrop frame wrapping a single texture.
 ---@class TRB.Classes.BarNode.Icon : Frame, BackdropTemplate
 ---@field public texture Texture
----@field public tooltipProvider fun():any, integer?|nil # Supplies the hovered spell id and its invalidation token; nil disables the tooltip
+---@field public tooltipProvider fun():any, integer?|nil # Supplies the hovered value and its invalidation token; nil disables the tooltip
+---@field public tooltipSetter (fun(tooltip: GameTooltip, value: any))? # Fills the tooltip from the value; the spell by id when nil
 ---@field public tooltipToken integer? # Token the currently-shown tooltip was built from
 ---@field public tooltipElapsed number? # Throttle accumulator for the hover refresh
 
@@ -726,6 +727,7 @@ function TRB.Classes.BarNode:Destroy()
 			GameTooltip:Hide()
 		end
 		self.icon.tooltipProvider = nil
+		self.icon.tooltipSetter = nil
 		self.icon:Hide()
 		self.icon:SetParent(nil)
 		self.icon:ClearAllPoints()
@@ -989,7 +991,7 @@ end
 ---Sets the side ability icon's border color directly from an ARGB string, independent of the node's
 ---border cache. Used at construction to seed the icon with the bar's base border color so it doesn't
 ---show the BackdropTemplate default (white) before any render/appearance pass populates the cache.
----@param colorString string # ARGB hex color string
+---@param colorString string? # ARGB hex color string; nil leaves the icon alone
 function TRB.Classes.BarNode:SetIconBorderColorString(colorString)
 	if self.icon == nil or colorString == nil then
 		return
@@ -1012,7 +1014,7 @@ end
 
 ---Sets the side ability icon's background color directly from an ARGB string, independent of the node's
 ---backdrop cache. Seeds the icon at construction, like SetIconBorderColorString.
----@param colorString string # ARGB hex color string
+---@param colorString string? # ARGB hex color string; nil leaves the icon alone
 function TRB.Classes.BarNode:SetIconBackgroundColorString(colorString)
 	if self.icon == nil or colorString == nil then
 		return
@@ -1086,24 +1088,28 @@ local ICON_TOOLTIP_REFRESH_INTERVAL = 0.1
 ---@param icon TRB.Classes.BarNode.Icon
 local function RefreshIconTooltip(icon)
 	local provider = icon.tooltipProvider
-	local spellId, token
+	local value, token
 	if provider ~= nil then
-		spellId, token = provider()
+		value, token = provider()
 	end
-	if spellId == nil then
+	if value == nil then
 		if GameTooltip:IsOwned(icon) then
 			GameTooltip:Hide()
 		end
 		icon.tooltipToken = nil
 		return
 	end
-	-- No token means the id is secret and so uncomparable; rebuild every refresh rather than go stale.
+	-- No token means the value is secret or changes as it shows; rebuild every refresh rather than go stale.
 	if token ~= nil and token == icon.tooltipToken and GameTooltip:IsOwned(icon) then
 		return
 	end
 	GameTooltip:SetOwner(icon, "ANCHOR_RIGHT")
-	-- The id may be secret. SetSpellByID is a terminal display sink, so it renders one all the same.
-	GameTooltip:SetSpellByID(spellId)
+	if icon.tooltipSetter ~= nil then
+		icon.tooltipSetter(GameTooltip, value)
+	else
+		-- The id may be secret. SetSpellByID is a terminal display sink, so it renders one all the same.
+		GameTooltip:SetSpellByID(value)
+	end
 	icon.tooltipToken = token
 end
 
@@ -1130,14 +1136,16 @@ end
 
 ---Wires the hover tooltip on the side ability icon, or removes it when `provider` is nil. The icon takes
 ---mouse motion but not clicks, so clicks still pass through to whatever sits beneath the bar.
----@param provider fun():any, integer?|nil # Returns the spell id to show and a plain token; nil disables the tooltip
-function TRB.Classes.BarNode:SetIconTooltipProvider(provider)
+---@param provider fun():any, integer?|nil # Returns the value to show and a plain token; nil disables the tooltip
+---@param setTooltip (fun(tooltip: GameTooltip, value: any))? # Fills the tooltip from the value; the spell by id when nil
+function TRB.Classes.BarNode:SetIconTooltipProvider(provider, setTooltip)
 	local icon = (provider ~= nil) and self:EnsureIcon() or self.icon
 	if icon == nil then
 		return
 	end
 
 	icon.tooltipProvider = provider
+	icon.tooltipSetter = setTooltip
 	if provider == nil then
 		HideIconTooltip(icon)
 		icon:SetScript("OnEnter", nil)
@@ -2278,6 +2286,7 @@ end
 ---@field public isCastbar boolean # Player, target, or focus cast bar, whose name already ends in "Cast Bar"
 ---@field public classScoped boolean # Other Bar offered only to classes whose spec descriptors claim it
 ---@field public liveNodeCountFunc (fun(): integer?)? # Self-driven multi-node bar whose node count follows live game data; nil from it keeps maxNodes
+---@field public onLayout (fun(group: TRB.Classes.BarGroup, groupSettings: table, colors: table?))? # Runs after each layout pass of the bar, for a bar that positions its own nodes
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -2353,6 +2362,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.classScoped = config.classScoped or false -- Other Bar offered only to classes whose spec descriptors claim it (otherBars)
 	self.environmentShowConditions = config.environmentShowConditions or false
 	self.liveNodeCountFunc = config.liveNodeCountFunc
+	self.onLayout = config.onLayout
 
 	return self
 end
@@ -2718,14 +2728,16 @@ function TRB.Classes.BarTypeRegistry:GetOtherBarKeys(classId)
 	return keys
 end
 
----Whether a bar key takes part in the global (core) scope at all. Only the class-scoped Other Bars are
----excluded; everything else is globally shared. Callers use this so a stale core entry left behind by an
----older build can never mark a spec-owned bar as globally controlled.
+---Whether a bar key takes part in the global (core) scope: not the class-scoped Other Bars, nor the Totems bar where the
+---flavor's specs own it. Callers use this so a stale core entry can never mark a spec-owned bar as globally controlled.
 ---@param key string?
 ---@return boolean
 function TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(key)
 	if key == nil then
 		return true
+	end
+	if self:IsTotemBar(key) then
+		return self:HasGlobalTotems()
 	end
 	local isOtherBar = false
 	for _, otherKey in ipairs(self.otherBarKeys) do
@@ -2889,6 +2901,12 @@ function TRB.Classes.BarTypeRegistry:IsBarInScope(barKey, classId, specId)
 			return classId == nil or self:SpecHasPet(classId, specId)
 		end
 	end
+	if self:IsTotemBar(barKey) then
+		if classId == nil then
+			return self:HasGlobalTotems()
+		end
+		return self:SpecHasTotems(classId, specId)
+	end
 	local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get(barKey)
 	if definition ~= nil and definition.classScoped then
 		return ClassClaimsOtherBar(classId, barKey)
@@ -2942,6 +2960,107 @@ end
 ---@param includeAllScopes boolean? # Ignore the scope and append every pet bar
 function TRB.Classes.BarTypeRegistry:AppendPetBars(list, classId, specId, includeAllScopes)
 	local keys = includeAllScopes and self.petScopeKeys or self:GetPetScopeKeys(classId, specId)
+	for _, key in ipairs(keys) do
+		local def = self.definitions[key]
+		if def ~= nil then
+			local exists = false
+			for _, d in ipairs(list) do
+				if d.key == key then
+					exists = true
+					break
+				end
+			end
+			if not exists then
+				list[#list + 1] = def
+			end
+		end
+	end
+end
+
+---The Totems bar's keys. One bar, whose nodes are the client's totem slots.
+TRB.Classes.BarTypeRegistry.totemBarKeys = { "totems" }
+
+---The Totems trait a spec declares through its descriptor, or nil for a spec without totems.
+---@param classId integer?
+---@param specId integer?
+---@return TRB.Classes.SpecDescriptor.Totems?
+function TRB.Classes.BarTypeRegistry:GetTotemSpecInfo(classId, specId)
+	local descriptor = TRB.Classes.SpecDescriptor:Get(classId, specId)
+	return descriptor and descriptor.totems or nil
+end
+
+---Whether a spec summons into totem slots, and so gets the Totems bar at all.
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:SpecHasTotems(classId, specId)
+	return self:GetTotemSpecInfo(classId, specId) ~= nil
+end
+
+---Where a spec's Totems bar options live: "spec" for a top-level tab, "otherBars" for an Other Bars tab. Nil for a
+---spec without totems.
+---@param classId integer?
+---@param specId integer?
+---@return "spec"|"otherBars"|nil
+function TRB.Classes.BarTypeRegistry:GetTotemPlacement(classId, specId)
+	local info = self:GetTotemSpecInfo(classId, specId)
+	return info and info.placement or nil
+end
+
+---Whether a spec's Totems bar comes with it: Always Show above the main bar, with no enable prompt.
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsTotemBarBuiltIn(classId, specId)
+	local info = self:GetTotemSpecInfo(classId, specId)
+	return info ~= nil and info.builtIn == true
+end
+
+---Whether Global Options has a Totems bar for specs to follow. A flavor whose specs own the bar outright, like Feign
+---Death, has none.
+---@return boolean
+function TRB.Classes.BarTypeRegistry:HasGlobalTotems()
+	return not TRB.Flavor.specOwnedTotems
+end
+
+---Returns the Totems bar keys for a spec. Empty for a spec without totems.
+---@param classId integer?
+---@param specId integer?
+---@return string[]
+function TRB.Classes.BarTypeRegistry:GetTotemBarKeys(classId, specId)
+	if not self:SpecHasTotems(classId, specId) then
+		return {}
+	end
+	local keys = {}
+	for _, key in ipairs(self.totemBarKeys) do
+		keys[#keys + 1] = key
+	end
+	return keys
+end
+
+---Whether a bar key is the Totems bar.
+---@param key string?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsTotemBar(key)
+	if key == nil then
+		return false
+	end
+	for _, totemKey in ipairs(self.totemBarKeys) do
+		if totemKey == key then
+			return true
+		end
+	end
+	return false
+end
+
+---Appends the Totems bar definition to a customBars list if registered and not already present.
+---Mirrors AppendPetBars.
+---@param list TRB.Classes.BarTypeDefinition[]
+---@param classId integer? # The scope; a spec without totems appends nothing
+---@param specId integer?
+---@param includeAllScopes boolean? # Ignore the scope and append the bar
+function TRB.Classes.BarTypeRegistry:AppendTotemBars(list, classId, specId, includeAllScopes)
+	local keys = includeAllScopes and self.totemBarKeys or self:GetTotemBarKeys(classId, specId)
 	for _, key in ipairs(keys) do
 		local def = self.definitions[key]
 		if def ~= nil then
@@ -3015,6 +3134,13 @@ function TRB.Classes.BarTypeRegistry:GetBarTypesForSpec(classId, specId)
 
 	-- Pet bars are likewise not declared per-spec; add them for the specs that can hold a pet.
 	for _, key in ipairs(self:GetPetScopeKeys(classId, specId)) do
+		if self.definitions[key] then
+			result[key] = self.definitions[key]
+		end
+	end
+
+	-- The Totems bar goes with the specs that summon totems.
+	for _, key in ipairs(self:GetTotemBarKeys(classId, specId)) do
 		if self.definitions[key] then
 			result[key] = self.definitions[key]
 		end
@@ -3353,6 +3479,48 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 		end,
 		defaultColorsFunc = function()
 			return TRB.Functions.Settings:DefaultPetCastbarBarColors()
+		end,
+		defaultTexturesFunc = function()
+			return TRB.Functions.Settings:DefaultCustomBarTextures()
+		end
+	}))
+
+	-- Totems bar: one node per totem slot, filled from the slot's engine duration, which stays drawable while it is
+	-- secret. Forever and Classic slots are the four elements, shown in Blizzard's order and reorderable.
+	local totemElements = TRB.Flavor.totemElements and {
+		{ key = "earth", displayName = L["TotemElementEarth"] },
+		{ key = "fire", displayName = L["TotemElementFire"] },
+		{ key = "water", displayName = L["TotemElementWater"] },
+		{ key = "air", displayName = L["TotemElementAir"] },
+	} or nil
+	-- Eight slots on Mainline. At least four, so the bar always has room for its fewest visible nodes.
+	local totemSlots = TRB.Flavor.totemElements and 4 or math.max(math.min(GetNumTotemSlots() or 0, 8), 4)
+	self:Register(TRB.Classes.BarTypeDefinition:New({
+		key = "totems",
+		displayName = L["ResourceTotems"],
+		isMultiNode = true,
+		maxNodes = totemSlots,
+		hasSameColor = false,
+		minMaxMode = "custom",
+		hasSpacing = true,
+		hasThresholds = false,
+		hasCustomThresholds = false,
+		colorCurveType = nil,
+		nodeColors = totemElements,
+		hasOrdering = totemElements ~= nil,
+		orderUpTooltip = L["TotemElementMoveUp"],
+		orderDownTooltip = L["TotemElementMoveDown"],
+		visibilityKey = "totems",
+		timerDrivenFill = true,
+		endCapMode = "all",
+		onLayout = function(group, groupSettings, colors)
+			TRB.Functions.Totems:LayoutGroup(group, groupSettings, colors)
+		end,
+		defaultDimensionsFunc = function(classic)
+			return TRB.Functions.Settings:DefaultTotemBarSettings(classic)
+		end,
+		defaultColorsFunc = function()
+			return TRB.Functions.Settings:DefaultTotemBarColors()
 		end,
 		defaultTexturesFunc = function()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()

@@ -1269,6 +1269,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 
 			-- Mana bar update (Elemental only)
 			if specSettings.displayBar.mana ~= nil and not specSettings.displayBar.mana.neverShow then
@@ -1639,6 +1640,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "maelstromWeapon", snapshots[spells.maelstromWeapon.id].buff.applications or 0)
@@ -1707,6 +1709,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 	end
@@ -2017,6 +2020,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, healthVisSettings, true, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.elementalBlastBuffs, elementalBlastBuffsVisSettings, elementalBlastBuffNodeCount > 0, elementalBlastBuffNodeCount, nil)
+		TRB.Functions.BarVisibility:AppendTotemEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
 			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
