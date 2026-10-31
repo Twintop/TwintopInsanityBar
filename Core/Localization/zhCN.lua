@@ -4255,4 +4255,9 @@ if locale == "zhCN" then
 	L["RogueOutlawBarTextVariable_jackpotTime"] = "头奖！（命运骨骰）剩余时间"
 	L["RogueOutlawColorPickerThresholdSpecial"] = "双重麻烦及以上、可乘之机或是致命一击效果生效时"
 	L["RogueOutlawColorPickerThresholdSpecialEnabledTooltip"] = "勾选后，当技能受到双重麻烦或更高等级命运骨骰增益、可乘之机、致命一击加成时，该技能阈值标线使用此颜色。"
+	L["CastbarUseClassColor"] = "使用职业颜色"
+	L["CastbarUseClassColorTooltip"] = "勾选后，施法条填充色将使用你的职业颜色，包含普通施法、引导施法以及不可打断施法。目标职业颜色和生效的颜色指示器优先级更高。"
+	L["CastbarEmpowerUseClassColor"] = "使用职业颜色"
+	L["CastbarEmpowerUseClassColorTooltip"] = "勾选后，蓄力施法将使用职业颜色填充，不再使用蓄力等级颜色。目标职业颜色优先级更高。"
+	L["CastbarEmpowerClassColorOnTooltip"] = "已勾选使用职业颜色，此设置不生效。"
 end
