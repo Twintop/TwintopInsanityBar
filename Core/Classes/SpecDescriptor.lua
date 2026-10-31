@@ -27,6 +27,7 @@ TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.SpecDescriptor.Totems
 ---@field placement "spec"|"otherBars" # Where the Totems bar's options live: a top-level tab of the spec's own, or an Other Bars tab
+---@field builtIn boolean? # The bar comes with the spec: Always Show above the main bar from the start, with no enable prompt
 
 ---@class TRB.Classes.SpecDescriptor.Pet
 ---@field power "FOCUS"|"ENERGY"|"MANA" # Power token of the spec's pet; picks the Pet Resource bar's default colors

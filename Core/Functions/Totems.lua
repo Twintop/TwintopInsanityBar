@@ -185,6 +185,34 @@ function Totems:IsSlotActive(slot)
 	return record ~= nil and IsActive(record)
 end
 
+---The active spec's Totems colors, which hold the element order.
+---@return table?
+local function GetActiveColors()
+	local character = TRB.Data.character
+	local specCache = character ~= nil and TRB.Data.specCache[character.compositeKey] or nil
+	local colorBars = specCache ~= nil and specCache.settings.colors and specCache.settings.colors.bars
+	return colorBars and colorBars.totems or nil
+end
+
+---The slot whose totem a node's icon tooltip shows, or nil when that slot holds none. Read at hover time, so it
+---follows the element order without a relayout.
+---@param nodeIndex integer
+---@return integer?
+function Totems:GetNodeTooltipSlot(nodeIndex)
+	local slot = self:GetNodeSlot(nodeIndex, GetActiveColors())
+	if self:IsSlotActive(slot) then
+		return slot
+	end
+	return nil
+end
+
+---Fills the tooltip with a slot's totem, the way Blizzard's totem buttons do.
+---@param tooltip GameTooltip
+---@param slot integer
+local function SetTotemTooltip(tooltip, slot)
+	tooltip:SetTotem(slot)
+end
+
 ---How many slots hold a totem that hasn't run out.
 ---@return integer
 function Totems:GetActiveCount()
@@ -314,10 +342,21 @@ function Totems:LayoutGroup(group, groupSettings, colors)
 				else
 					node:SetIconVisible(false)
 				end
+				-- Opt-in, since a hoverable icon blocks world mouseover over its square. No token: the tooltip's
+				-- remaining time changes as it shows, so it rebuilds on every hover refresh.
+				if side ~= nil and icon.showTooltip then
+					local nodeIndex = i
+					node:SetIconTooltipProvider(function()
+						return self:GetNodeTooltipSlot(nodeIndex), nil
+					end, SetTotemTooltip)
+				else
+					node:SetIconTooltipProvider(nil)
+				end
 				node:Show()
 			else
 				node:Hide()
 				node:SetIconVisible(false)
+				node:SetIconTooltipProvider(nil)
 			end
 		end
 	end
@@ -451,8 +490,8 @@ function Totems:AreBarsDeclined()
 	return prompt.answered ~= true or prompt.hidden == true
 end
 
----Sets the Totems bar to Never Show, or shown, on every spec with totems and in Global Options, in the live settings
----and every profile.
+---Sets the Totems bar to Never Show, or shown, on every spec with totems that doesn't come with it, and in Global
+---Options where it has one, in the live settings and every profile.
 ---@param settings table # Shaped like the saved variables
 ---@param hidden boolean
 function Totems:SetBarsHidden(settings, hidden)
@@ -467,12 +506,15 @@ function Totems:SetBarsHidden(settings, hidden)
 	end
 
 	local function SetInScopes(scopes)
-		SetIn(scopes.core)
+		if TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
+			SetIn(scopes.core)
+		end
 		for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
 			local classPiece = scopes[classEntry.className]
 			if type(classPiece) == "table" then
 				for _, specEntry in ipairs(classEntry.specs) do
-					if specEntry.descriptor ~= nil and specEntry.descriptor.totems ~= nil then
+					local info = specEntry.descriptor ~= nil and specEntry.descriptor.totems or nil
+					if info ~= nil and not info.builtIn then
 						SetIn(classPiece[specEntry.specName])
 					end
 				end
@@ -497,7 +539,8 @@ function Totems:ShowEnablePrompt()
 		return
 	end
 	local character = TRB.Data.character
-	if TRB.Classes.BarTypeRegistry:GetTotemPlacement(character.classId, character.specId) ~= "spec" then
+	local registry = TRB.Classes.BarTypeRegistry
+	if registry:GetTotemPlacement(character.classId, character.specId) ~= "spec" or registry:IsTotemBarBuiltIn(character.classId, character.specId) then
 		return
 	end
 

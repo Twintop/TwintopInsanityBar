@@ -289,6 +289,7 @@ function M.install(opts)
 	G.GameTooltip.AddDoubleLine = noop
 	G.GameTooltip.SetSpellByID = noop
 	G.GameTooltip.SetItemByID = noop
+	G.GameTooltip.SetTotem = noop
 	G.GameTooltip.NumLines = retZero
 	G.SettingsTooltip = G.GameTooltip
 	G.ColorPickerFrame = newFrame("Frame", "ColorPickerFrame")

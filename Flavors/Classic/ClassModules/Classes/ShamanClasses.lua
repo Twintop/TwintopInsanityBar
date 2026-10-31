@@ -7,4 +7,4 @@ TRB.Classic.Templates.Classes:DefineClass("shaman", {
 	general = "mana",
 })
 
-TRB.Classes.SpecDescriptor:DeclareForClass("shaman", { totems = { placement = "spec" } })
+TRB.Classes.SpecDescriptor:DeclareForClass("shaman", { totems = { placement = "spec", builtIn = true } })

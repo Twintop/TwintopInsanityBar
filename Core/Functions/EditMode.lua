@@ -186,7 +186,7 @@ function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
 		-- to the screen. Park it just under the main stack's default spot when that happens.
 		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -260)
 	elseif rootBarKey == "totems" then
-		-- Freestanding below the main stack's default spot.
+		-- Freestanding below the main stack's default spot; a bar that comes with its spec hangs above the main bar instead.
 		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -300)
 	elseif rootBarKey == "skyridingSpeed" then
 		-- Root of the Skyriding stack, above screen center and clear of the main stack.

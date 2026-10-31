@@ -818,8 +818,12 @@ local function ConstructPetBarsOptionsPanel()
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("petBars"), tabDefinitions, -37)
 end
 
----Constructs the top-level Totems panel: Global Options' Totems bar, which the specs with totems can follow.
+---Constructs the top-level Totems panel: Global Options' Totems bar, which the specs with totems can follow. Only a
+---flavor where the bar has a global scope gets it.
 local function ConstructTotemsOptionsPanel()
+	if not TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
+		return
+	end
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.core or {}
 	interfaceSettingsFrame.controls.core = controls

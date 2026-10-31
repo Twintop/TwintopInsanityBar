@@ -53,8 +53,10 @@ function TRB.Functions.OptionsUi.Totems:ConstructPanel(parent, classId, specId)
 	end
 
 	local yCoord = 5
+	-- Without a global scope the specs own the bar outright, so it has no Use Global rows.
+	local hasGlobalScope = TRB.Classes.BarTypeRegistry:IsGlobalScopeBar("totems")
 
-	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, barDef, barDef.displayName, "totemsDimensions")
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, barDef, barDef.displayName, hasGlobalScope and "totemsDimensions" or nil)
 	yCoord = yCoord - 60
 
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls, spec, classId, specId, yCoord, barDef)
@@ -95,7 +97,7 @@ function TRB.Functions.OptionsUi.Totems:ConstructPanel(parent, classId, specId)
 		controls.totemsEndingWindow:SetShown(true)
 		controls.totemsEndingWindow:SetEnabled(ending.enabled == true, L["TotemsEndingDisabledReason"])
 		return colorYCoord - 60
-	end, "totemsColors")
+	end, hasGlobalScope and "totemsColors" or nil)
 	yCoord = yCoord - 30
 
 	return yCoord

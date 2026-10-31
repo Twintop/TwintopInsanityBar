@@ -1974,7 +1974,9 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		sharedKeys[#sharedKeys + 1] = barKey
 	end
 	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.totemBarKeys) do
-		sharedKeys[#sharedKeys + 1] = barKey
+		if TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(barKey) then
+			sharedKeys[#sharedKeys + 1] = barKey
+		end
 	end
 	for _, barKey in ipairs(sharedKeys) do
 		local coreBar = core.bars and core.bars[barKey]

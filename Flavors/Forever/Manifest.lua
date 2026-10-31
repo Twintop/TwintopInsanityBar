@@ -37,6 +37,8 @@ TRB.Flavor = {
 	blizzardSwingTimer = true,
 	-- Each totem slot is one element.
 	totemElements = true,
+	-- Each spec owns its Totems bar, with none in Global Options.
+	specOwnedTotems = true,
 	-- Ranked spells are learned one at a time, so a threshold's spell may not be known yet.
 	thresholdsRequireKnown = true,
 

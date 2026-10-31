@@ -1921,7 +1921,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local totemBarKeysForPanel = (classId == nil) and TRB.Classes.BarTypeRegistry.totemBarKeys
 		or TRB.Classes.BarTypeRegistry:GetTotemBarKeys(classId, specId)
 	for _, totemBarKey in ipairs(totemBarKeysForPanel) do
-		if spec.displayBar and spec.displayBar[totemBarKey] ~= nil then
+		if spec.displayBar and spec.displayBar[totemBarKey] ~= nil and TRB.Classes.BarTypeRegistry:IsBarInScope(totemBarKey, classId, specId) then
 			local totemBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(totemBarKey)
 			local totemBarLabel = totemBarDef and totemBarDef.displayName or totemBarKey
 			table.insert(allBarEntries, {
@@ -1931,7 +1931,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				globalLabel = totemBarLabel,
 				isCustomBar = false,
 				hidesSmooth = true,
-				isGlobal = (classId ~= nil and coreDisplayBar[totemBarKey] ~= nil),
+				isGlobal = (classId ~= nil and coreDisplayBar[totemBarKey] ~= nil and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(totemBarKey)),
 			})
 		end
 	end

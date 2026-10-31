@@ -61,10 +61,22 @@ function hooks.afterEvents(ctx)
 	local character = TRB.Data.character
 	local hasTotems = registry:SpecHasTotems(character.classId, character.specId)
 
-	-- The enable prompt's answer decides the default, for every class.
+	-- The enable prompt's answer decides the default, for every class. A flavor asks only if some spec's bar is its own tab
+	-- and doesn't come with it.
+	local prompts = false
+	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+		for _, specEntry in ipairs(classEntry.specs) do
+			local info = registry:GetTotemSpecInfo(specEntry.classId, specEntry.specId)
+			prompts = prompts or (info ~= nil and info.placement == "spec" and not info.builtIn)
+		end
+	end
 	local checks = TRB.Data.settings.manualUpdateChecks
 	local saved = checks.totemBarsPrompt
-	check("a fresh install is seeded as answered", type(saved) == "table" and saved.answered == true and saved.hidden == false)
+	if prompts then
+		check("a fresh install is seeded as answered", type(saved) == "table" and saved.answered == true and saved.hidden == false)
+	else
+		check("a flavor whose Totems bars all come with their specs never seeds the prompt", saved == nil)
+	end
 	checks.totemBarsPrompt = { answered = false }
 	check("an unanswered prompt hides the bar by default", TRB.Functions.Settings:DefaultTotemBarVisibility().neverShow == true)
 	checks.totemBarsPrompt = { answered = true, hidden = true }
@@ -73,6 +85,15 @@ function hooks.afterEvents(ctx)
 	check("a Yes shows the bar by default", TRB.Functions.Settings:DefaultTotemBarVisibility().neverShow == false)
 	check("the preset never carries Never Show", TRB.Functions.Settings:DefaultTotemBarVisibility(true).neverShow == false)
 	checks.totemBarsPrompt = saved
+
+	-- Live's specs can follow Global Options; Forever's and Classic's own the bar outright.
+	local hasGlobal = registry:HasGlobalTotems()
+	check("only Live has a global Totems bar", hasGlobal == not TRB.Flavor.totemElements)
+	local core = TRB.Data.settings.core
+	if not hasGlobal then
+		check("Global Options holds no Totems bar", core.bars.totems == nil and core.colors.bars.totems == nil and core.displayBar.totems == nil
+			and not registry:IsGlobalScopeBar("totems") and not registry:IsBarInScope("totems", nil, nil))
+	end
 
 	if not hasTotems then
 		local groups = TRB.Frames.barGroups
@@ -93,6 +114,31 @@ function hooks.afterEvents(ctx)
 	local group = barGroups and barGroups.totems
 	check("the Totems bar is built", group ~= nil)
 	check("a fresh install shows it", settings.displayBar.totems ~= nil and settings.displayBar.totems.neverShow == false)
+	local builtIn = registry:IsTotemBarBuiltIn(character.classId, character.specId)
+	check("only Forever and Classic Shaman's bar comes with the spec", builtIn == (TRB.Flavor.totemElements == true))
+	if builtIn then
+		local anchor = settings.bars.totems.anchor
+		check("a bar that comes with its spec is Always Show, above the main bar", settings.displayBar.totems.alwaysShow == true
+			and anchor.barKey == "primary" and anchor.anchorPoint == "TOP" and anchor.attachPoint == "BOTTOM")
+		local primary = barGroups.primary
+		check("it lays out at the main bar's width", group ~= nil and primary ~= nil and (group.layoutWidth or 0) > 0
+			and math.abs(group.layoutWidth - (primary.layoutWidth or primary.containerFrame:GetWidth())) < 1)
+	end
+	if not hasGlobal then
+		-- A stale Global entry, as unreleased builds left, is never followed.
+		local flags = core.global[character.className][character.specName]
+		core.displayBar.totems = TRB.Functions.Settings:DefaultTotemBarVisibility()
+		core.displayBar.totems.neverShow = true
+		flags.displayBar = true
+		TRB.Functions.Character:FillSpecializationCacheSettings(character.className, character.specName)
+		local followed = TRB.Data.specCache[key].settings.displayBar.totems
+		check("the spec has no Totems Use Global flags and never follows a Global entry", flags.totemsDimensions == nil and flags.totemsColors == nil
+			and not TRB.Functions.BarVisibility:IsEntryGlobal("totems", core.displayBar, TRB.Data.settings[character.className][character.specName].displayBar, true)
+			and followed ~= nil and followed.neverShow == false)
+		core.displayBar.totems = nil
+		TRB.Functions.Character:FillSpecializationCacheSettings(character.className, character.specName)
+		settings = TRB.Data.specCache[key].settings
+	end
 	if group == nil then
 		print(string.format("DRIVER totems: %d failures", errors))
 		return
@@ -185,6 +231,24 @@ function hooks.afterEvents(ctx)
 	local shownOn, uncolored = IconStates()
 	check("turning the icon on shows every node's icon in the bar's colors, not white", shownOn == group.nodeCount and uncolored == 0)
 
+	-- Show tooltip on hover gives each icon the totem tooltip of its node's slot, and nothing over an empty slot.
+	iconSettings.showTooltip = true
+	TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
+	local tooltipSlot = nil
+	local tooltip = desktop.GameTooltip
+	local setTotem = tooltip.SetTotem
+	tooltip.SetTotem = function(_, slot) tooltipSlot = slot end
+	local liveIcon, emptyIcon = group.nodes[1].icon, group.nodes[group.nodeCount].icon
+	liveIcon:GetScript("OnEnter")(liveIcon)
+	local liveSlot = tooltipSlot
+	tooltipSlot = nil
+	emptyIcon:GetScript("OnEnter")(emptyIcon)
+	tooltip.SetTotem = setTotem
+	check("an icon's hover shows its node's totem, and none over an empty slot", liveSlot == Totems:GetNodeSlot(1, settings.colors.bars.totems) and tooltipSlot == nil)
+	iconSettings.showTooltip = false
+	TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
+	check("turning the tooltip off clears it", group.nodes[1].icon.tooltipProvider == nil)
+
 	-- The visibility context follows the slots.
 	local context = TRB.Classes.BarVisibilityContext:NewFromGameState(false, nil)
 	check("a totem up reads as Totem Active", context.isTotemActive == true and context.isTotemMissing == false)
@@ -197,20 +261,26 @@ function hooks.afterEvents(ctx)
 	context = TRB.Classes.BarVisibilityContext:NewFromGameState(false, nil)
 	check("no totem reads as No Totem", context.isTotemActive == false and context.isTotemMissing == true)
 
-	-- Yes and No reach every spec with totems and Global Options.
+	-- Yes and No reach every spec the prompt asks for, and Global Options where it has the bar; a built-in bar keeps showing.
 	TRB.Functions.Totems:SetBarsHidden(TRB.Data.settings, true)
-	local allHidden = TRB.Data.settings.core.displayBar.totems.neverShow == true
+	local coreEntry = TRB.Data.settings.core.displayBar.totems
+	local allHidden = hasGlobal and (coreEntry ~= nil and coreEntry.neverShow == true) or (not hasGlobal and coreEntry == nil)
 	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
 		for _, specEntry in ipairs(classEntry.specs) do
 			local spec = TRB.Data.settings[classEntry.className] and TRB.Data.settings[classEntry.className][specEntry.specName]
 			if registry:SpecHasTotems(specEntry.classId, specEntry.specId) and spec ~= nil and spec.displayBar ~= nil then
-				allHidden = allHidden and spec.displayBar.totems ~= nil and spec.displayBar.totems.neverShow == true
+				local hiddenHere = spec.displayBar.totems ~= nil and spec.displayBar.totems.neverShow == true
+				allHidden = allHidden and (hiddenHere ~= registry:IsTotemBarBuiltIn(specEntry.classId, specEntry.specId))
 			end
 		end
 	end
-	check("a No hides the bar on every spec with totems and in Global Options", allHidden)
+	check("a No hides the bar on every spec the prompt asks for, never a built-in one, and in Global Options only where it has one", allHidden)
 	TRB.Functions.Totems:SetBarsHidden(TRB.Data.settings, false)
-	check("a Yes shows it again", TRB.Data.settings.core.displayBar.totems.neverShow == false)
+	local shownAgain = TRB.Data.settings[character.className][character.specName].displayBar.totems.neverShow == false
+	if hasGlobal then
+		shownAgain = shownAgain and TRB.Data.settings.core.displayBar.totems.neverShow == false
+	end
+	check("a Yes shows it again", shownAgain)
 
 	BarNode.SetTimerDuration = setTimer
 	print(string.format("DRIVER totems: %d failures", errors))

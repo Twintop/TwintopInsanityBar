@@ -103,6 +103,8 @@ TRB.Flavor = {
 	secretValues = false,
 	-- Each totem slot is one element.
 	totemElements = true,
+	-- Each spec owns its Totems bar, with none in Global Options.
+	specOwnedTotems = true,
 	-- No Blizzard swing timer or PLAYER_SWING here, so swings come from the combat log and these casts.
 	swingTimers = true,
 	swingSpells = {

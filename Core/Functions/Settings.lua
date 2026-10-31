@@ -372,7 +372,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					globalClass[specEntry.specName][key] = value
 				end
 			end
-			if specEntry.descriptor ~= nil and specEntry.descriptor.totems ~= nil then
+			if specEntry.descriptor ~= nil and specEntry.descriptor.totems ~= nil and TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
 				for key, value in pairs(NewSpecTotemGlobalDefaults()) do
 					globalClass[specEntry.specName][key] = value
 				end
@@ -404,8 +404,10 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 	-- the pet specs' "Use Global" toggles read from.
 	self:InjectPetBarsDefaults(settings.core, nil, nil, classic, true)
 
-	-- The Totems bar too, for the specs with totems to follow.
-	self:InjectTotemBarsDefaults(settings.core, nil, nil, classic, true)
+	-- The Totems bar too, for the specs with totems to follow, where it has a global scope.
+	if TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
+		self:InjectTotemBarsDefaults(settings.core, nil, nil, classic, true)
+	end
 
 	self:InjectSkyridingDefaults(settings.core, classic)
 
@@ -2245,12 +2247,18 @@ function TRB.Functions.Settings:InjectPetBarsDefaults(specDefaults, classId, spe
 end
 
 ---Default Totems bar settings: a freestanding screen-rooted bar 300px below center, under the main stack's -200, whose
----nodes share its width.
+---nodes share its width. A bar that comes with the spec sits above the main bar instead, like the spec's own bars.
 ---@param classic boolean?
+---@param builtIn boolean?
 ---@return TRB.Classes.Settings.TotemBar
-function TRB.Functions.Settings:DefaultTotemBarSettings(classic)
-	local settings = self:DefaultOtherBarDimensions(classic) --[[@as TRB.Classes.Settings.TotemBar]]
-	settings.anchor.yOffset = -300
+function TRB.Functions.Settings:DefaultTotemBarSettings(classic, builtIn)
+	local settings
+	if builtIn then
+		settings = self:DefaultCustomBarDimensions(classic) --[[@as TRB.Classes.Settings.TotemBar]]
+	else
+		settings = self:DefaultOtherBarDimensions(classic) --[[@as TRB.Classes.Settings.TotemBar]]
+		settings.anchor.yOffset = -300
+	end
 	settings.showAllSlots = false
 	settings.icon = self:DefaultBarIconSettings()
 	settings.icon.spacing = 0
@@ -2280,13 +2288,15 @@ function TRB.Functions.Settings:DefaultTotemBarColors()
 end
 
 ---Default Totems bar visibility: shown while a totem is up. Never Show until an existing install answers the enable
----prompt, and after a No.
+---prompt, and after a No. A spec whose bar comes with it starts Always Show.
 ---@param forPreset boolean? # The visibility preset, which carries no Never Show of its own
+---@param totemInfo TRB.Classes.SpecDescriptor.Totems? # The spec's Totems trait; nil for Global Options
 ---@return trbBarVisibilitySetting
-function TRB.Functions.Settings:DefaultTotemBarVisibility(forPreset)
+function TRB.Functions.Settings:DefaultTotemBarVisibility(forPreset, totemInfo)
+	local builtIn = totemInfo ~= nil and totemInfo.builtIn == true
 	return {
-		neverShow = not forPreset and TRB.Functions.Totems:AreBarsDeclined(),
-		alwaysShow = false,
+		neverShow = not forPreset and not builtIn and TRB.Functions.Totems:AreBarsDeclined(),
+		alwaysShow = builtIn,
 		conditions = { isTotemActive = true, isTotemMissing = false },
 		hideConditions = self:LoadDefaultBarVisibilityHideConditions(),
 		activeAlpha = 100,
@@ -2321,15 +2331,16 @@ function TRB.Functions.Settings:InjectTotemBarsDefaults(specDefaults, classId, s
 	specDefaults.displayBar = specDefaults.displayBar or {}
 	specDefaults.textures = specDefaults.textures or {}
 
+	local totemInfo = TRB.Classes.BarTypeRegistry:GetTotemSpecInfo(classId, specId)
 	for _, key in ipairs(keys) do
 		if specDefaults.bars[key] == nil then
-			specDefaults.bars[key] = self:DefaultTotemBarSettings(classic)
+			specDefaults.bars[key] = self:DefaultTotemBarSettings(classic, totemInfo ~= nil and totemInfo.builtIn)
 		end
 		if specDefaults.colors.bars[key] == nil then
 			specDefaults.colors.bars[key] = self:DefaultTotemBarColors()
 		end
 		if specDefaults.displayBar[key] == nil then
-			specDefaults.displayBar[key] = self:DefaultTotemBarVisibility()
+			specDefaults.displayBar[key] = self:DefaultTotemBarVisibility(false, totemInfo)
 		end
 		local barTex = key .. "Bar"
 		if specDefaults.textures[barTex] == nil then

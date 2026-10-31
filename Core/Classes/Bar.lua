@@ -15,7 +15,8 @@ local barNodeCounter = 0
 ---A bar's side ability icon: a bordered backdrop frame wrapping a single texture.
 ---@class TRB.Classes.BarNode.Icon : Frame, BackdropTemplate
 ---@field public texture Texture
----@field public tooltipProvider fun():any, integer?|nil # Supplies the hovered spell id and its invalidation token; nil disables the tooltip
+---@field public tooltipProvider fun():any, integer?|nil # Supplies the hovered value and its invalidation token; nil disables the tooltip
+---@field public tooltipSetter (fun(tooltip: GameTooltip, value: any))? # Fills the tooltip from the value; the spell by id when nil
 ---@field public tooltipToken integer? # Token the currently-shown tooltip was built from
 ---@field public tooltipElapsed number? # Throttle accumulator for the hover refresh
 
@@ -726,6 +727,7 @@ function TRB.Classes.BarNode:Destroy()
 			GameTooltip:Hide()
 		end
 		self.icon.tooltipProvider = nil
+		self.icon.tooltipSetter = nil
 		self.icon:Hide()
 		self.icon:SetParent(nil)
 		self.icon:ClearAllPoints()
@@ -1086,24 +1088,28 @@ local ICON_TOOLTIP_REFRESH_INTERVAL = 0.1
 ---@param icon TRB.Classes.BarNode.Icon
 local function RefreshIconTooltip(icon)
 	local provider = icon.tooltipProvider
-	local spellId, token
+	local value, token
 	if provider ~= nil then
-		spellId, token = provider()
+		value, token = provider()
 	end
-	if spellId == nil then
+	if value == nil then
 		if GameTooltip:IsOwned(icon) then
 			GameTooltip:Hide()
 		end
 		icon.tooltipToken = nil
 		return
 	end
-	-- No token means the id is secret and so uncomparable; rebuild every refresh rather than go stale.
+	-- No token means the value is secret or changes as it shows; rebuild every refresh rather than go stale.
 	if token ~= nil and token == icon.tooltipToken and GameTooltip:IsOwned(icon) then
 		return
 	end
 	GameTooltip:SetOwner(icon, "ANCHOR_RIGHT")
-	-- The id may be secret. SetSpellByID is a terminal display sink, so it renders one all the same.
-	GameTooltip:SetSpellByID(spellId)
+	if icon.tooltipSetter ~= nil then
+		icon.tooltipSetter(GameTooltip, value)
+	else
+		-- The id may be secret. SetSpellByID is a terminal display sink, so it renders one all the same.
+		GameTooltip:SetSpellByID(value)
+	end
 	icon.tooltipToken = token
 end
 
@@ -1130,14 +1136,16 @@ end
 
 ---Wires the hover tooltip on the side ability icon, or removes it when `provider` is nil. The icon takes
 ---mouse motion but not clicks, so clicks still pass through to whatever sits beneath the bar.
----@param provider fun():any, integer?|nil # Returns the spell id to show and a plain token; nil disables the tooltip
-function TRB.Classes.BarNode:SetIconTooltipProvider(provider)
+---@param provider fun():any, integer?|nil # Returns the value to show and a plain token; nil disables the tooltip
+---@param setTooltip (fun(tooltip: GameTooltip, value: any))? # Fills the tooltip from the value; the spell by id when nil
+function TRB.Classes.BarNode:SetIconTooltipProvider(provider, setTooltip)
 	local icon = (provider ~= nil) and self:EnsureIcon() or self.icon
 	if icon == nil then
 		return
 	end
 
 	icon.tooltipProvider = provider
+	icon.tooltipSetter = setTooltip
 	if provider == nil then
 		HideIconTooltip(icon)
 		icon:SetScript("OnEnter", nil)
@@ -2720,14 +2728,16 @@ function TRB.Classes.BarTypeRegistry:GetOtherBarKeys(classId)
 	return keys
 end
 
----Whether a bar key takes part in the global (core) scope at all. Only the class-scoped Other Bars are
----excluded; everything else is globally shared. Callers use this so a stale core entry left behind by an
----older build can never mark a spec-owned bar as globally controlled.
+---Whether a bar key takes part in the global (core) scope: not the class-scoped Other Bars, nor the Totems bar where the
+---flavor's specs own it. Callers use this so a stale core entry can never mark a spec-owned bar as globally controlled.
 ---@param key string?
 ---@return boolean
 function TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(key)
 	if key == nil then
 		return true
+	end
+	if self:IsTotemBar(key) then
+		return self:HasGlobalTotems()
 	end
 	local isOtherBar = false
 	for _, otherKey in ipairs(self.otherBarKeys) do
@@ -2892,7 +2902,10 @@ function TRB.Classes.BarTypeRegistry:IsBarInScope(barKey, classId, specId)
 		end
 	end
 	if self:IsTotemBar(barKey) then
-		return classId == nil or self:SpecHasTotems(classId, specId)
+		if classId == nil then
+			return self:HasGlobalTotems()
+		end
+		return self:SpecHasTotems(classId, specId)
 	end
 	local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get(barKey)
 	if definition ~= nil and definition.classScoped then
@@ -2992,6 +3005,22 @@ end
 function TRB.Classes.BarTypeRegistry:GetTotemPlacement(classId, specId)
 	local info = self:GetTotemSpecInfo(classId, specId)
 	return info and info.placement or nil
+end
+
+---Whether a spec's Totems bar comes with it: Always Show above the main bar, with no enable prompt.
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsTotemBarBuiltIn(classId, specId)
+	local info = self:GetTotemSpecInfo(classId, specId)
+	return info ~= nil and info.builtIn == true
+end
+
+---Whether Global Options has a Totems bar for specs to follow. A flavor whose specs own the bar outright, like Feign
+---Death, has none.
+---@return boolean
+function TRB.Classes.BarTypeRegistry:HasGlobalTotems()
+	return not TRB.Flavor.specOwnedTotems
 end
 
 ---Returns the Totems bar keys for a spec. Empty for a spec without totems.

@@ -393,12 +393,18 @@ function hooks.afterEvents(ctx)
 			end
 			print("INFO specs with a top-level Totems tab: " .. totemSpecs .. "; Totems tabs constructed: " .. totemsDrained)
 			check("a Totems tab sits just before Health on every spec with totems, and nowhere else (" .. table.concat(misplaced, "; ") .. ")", #misplaced == 0 and totemSpecs > 0)
-			check("Global Options has a Totems home", stripKeys("Totems") == "totems")
+			-- Where the specs own the bar, Global Options has no Totems home.
+			if registry:HasGlobalTotems() then
+				check("Global Options has a Totems home", stripKeys("Totems") == "totems")
+			else
+				check("Global Options has no Totems home without a global scope", stripKeys("Totems") == nil)
+			end
 		end
 		-- A Use Global link opens its category's strip by GetGroupInnerPrefix, so every category's Global prefix must name a built strip.
 		do
 			local unresolved = {}
-			local navKeys = { "castbar", "otherBars", "petBars", "totems" }
+			local navKeys = { "castbar", "otherBars", "petBars" }
+			if TRB_.Classes.BarTypeRegistry:HasGlobalTotems() then navKeys[#navKeys + 1] = "totems" end
 			if #TRB_.Classes.BarTypeRegistry.skyridingBarKeys > 0 then navKeys[#navKeys + 1] = "skyriding" end
 			for _, navKey in ipairs(navKeys) do
 				local prefix = TRB_.Functions.OptionsUi.Tabs:GetGroupInnerPrefix(navKey)
