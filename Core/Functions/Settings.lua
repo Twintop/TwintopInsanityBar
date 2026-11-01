@@ -374,7 +374,7 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 					globalClass[specEntry.specName][key] = value
 				end
 			end
-			if specEntry.descriptor ~= nil and specEntry.descriptor.totems ~= nil and TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
+			if TRB.Classes.BarTypeRegistry:SpecHasTotems(specEntry.classId, specEntry.specId) and TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
 				for key, value in pairs(NewSpecTotemGlobalDefaults()) do
 					globalClass[specEntry.specName][key] = value
 				end

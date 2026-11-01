@@ -1403,6 +1403,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 
 			if specSettings.displayBar.boneShield and not specSettings.displayBar.boneShield.neverShow then
 				refreshText = true
@@ -1454,6 +1455,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Threshold line sounds (independent of bar visibility)
@@ -1495,6 +1497,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
@@ -1738,6 +1741,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.boneShield, sharedSettings and sharedSettings.displayBar.boneShield, TRB.Data.character.specId == 1, TRB.Data.character.maxBoneShield, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.coagulatingBlood, sharedSettings and sharedSettings.displayBar.coagulatingBlood, TRB.Data.character.specId == 1, 1, nil)
 		TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
+		TRB.Functions.BarVisibility:AppendTotemEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
 			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)

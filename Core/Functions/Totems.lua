@@ -551,7 +551,7 @@ function Totems:SetBarsHidden(settings, hidden)
 			local classPiece = scopes[classEntry.className]
 			if type(classPiece) == "table" then
 				for _, specEntry in ipairs(classEntry.specs) do
-					local info = specEntry.descriptor ~= nil and specEntry.descriptor.totems or nil
+					local info = TRB.Classes.BarTypeRegistry:GetTotemSpecInfo(specEntry.classId, specEntry.specId)
 					if info ~= nil and info.placement == "spec" and not info.builtIn then
 						SetIn(classPiece[specEntry.specName])
 					end

@@ -2327,6 +2327,7 @@ local function UpdateResourceBar()
 			refreshText = refreshText or refreshTextFromComboPoints
 
 			refreshText = UpdateHealthBarGeneric(formSpecCacheSettings, barGroups, snapshotData, isInEditMode) or refreshText
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 
 			-- Mana bar update (Balance only, when primary bar is Astral Power — not when primary is already mana)
 			if displaySpecId == 1 and IsFormBarVisible(formSpecCacheSettings, "mana") then
@@ -2651,6 +2652,7 @@ local function UpdateResourceBar()
 			end
 
 			refreshText = UpdateHealthBarGeneric(formSpecCacheSettings, barGroups, snapshotData, isInEditMode) or refreshText
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Threshold line sounds and the Apex Predator's Craving cue (independent of bar visibility)
@@ -2801,6 +2803,7 @@ local function UpdateResourceBar()
 			refreshText = refreshText or refreshTextFromComboPoints
 
 			refreshText = UpdateHealthBarGeneric(formSpecCacheSettings, barGroups, snapshotData, isInEditMode) or refreshText
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 			UpdateIronfurBar(specSettings, ironfurColors)
 		end
 
@@ -2905,6 +2908,7 @@ local function UpdateResourceBar()
 			refreshText = refreshText or refreshTextFromComboPoints
 
 			refreshText = UpdateHealthBarGeneric(formSpecCacheSettings, barGroups, snapshotData, isInEditMode) or refreshText
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Threshold line sounds in other forms (independent of bar visibility)
@@ -3441,6 +3445,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedDisplayBar and sharedDisplayBar.health, true, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.mana, manaVisSettings, hasMana, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.ironfur, ironfurVisSettings, hasIronfur, 1, nil)
+		TRB.Functions.BarVisibility:AppendTotemEntries(entries, barGroups, activeSettings)
 
 		if sharedSettings ~= nil and sharedDisplayBar ~= nil then
 			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
