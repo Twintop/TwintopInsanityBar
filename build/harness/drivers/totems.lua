@@ -29,6 +29,11 @@ function hooks.afterInstall(ctx)
 	-- Brewmaster's and Evoker's ticks read these before they reach the Totems bar.
 	desktop.UnitStagger = function() return 0 end
 	desktop.UnitPartialPower = function() return 0 end
+	-- Blizzard's totem frame under the player frame, counting its own updates.
+	local totemFrame = desktop.CreateFrame("Frame", "TotemFrame", desktop.PlayerFrame)
+	totemFrame.updates = 0
+	totemFrame.Update = function(self) self.updates = self.updates + 1 end
+	desktop.TotemFrame = totemFrame
 end
 
 -- The News popup needs UI the stubs lack, and its error would stop the deferred setup before optionsPanelFinished.
@@ -213,6 +218,31 @@ function hooks.afterEvents(ctx)
 	TRB.Functions.Bar.UpdateTotemBars = updateTotemBars
 	totemVisibility.alwaysShow = wasAlwaysShow
 	check("the class module shows the bar and draws it each tick", listed and renders > 0)
+
+	-- Blizzard's totem frame hides only with the option on and the bar enabled, and comes back under the player frame.
+	local totemFrame = desktop.TotemFrame
+	local frameHome = totemFrame:GetParent()
+	local liveBar = settings.bars.totems
+	Totems:UpdateBlizzardFrameVisibility()
+	check("Blizzard's totem frame stays put by default", liveBar.disableBlizzardBar == false and totemFrame:GetParent() == frameHome)
+	liveBar.disableBlizzardBar = true
+	Totems:UpdateBlizzardFrameVisibility()
+	local parked = totemFrame:GetParent()
+	if TRB.Flavor.blizzardTotemFrame then
+		check("the option hides Blizzard's totem frame", parked ~= frameHome and parked ~= nil and not parked:IsVisible())
+		totemFrame:SetParent(frameHome)
+		check("Blizzard's totem frame stays hidden when Blizzard re-parents it", totemFrame:GetParent() == parked)
+		local updatesBefore = totemFrame.updates
+		settings.displayBar.totems.neverShow = true
+		Totems:UpdateBlizzardFrameVisibility()
+		check("a Never Show bar gives Blizzard's totem frame back", totemFrame:GetParent() == frameHome and totemFrame.updates > updatesBefore)
+		settings.displayBar.totems.neverShow = false
+	else
+		check("a client without Blizzard's totem frame leaves it alone", parked == frameHome)
+	end
+	liveBar.disableBlizzardBar = false
+	Totems:UpdateBlizzardFrameVisibility()
+	check("turning the option off gives Blizzard's totem frame back", totemFrame:GetParent() == frameHome)
 
 	local elements = TRB.Flavor.totemElements
 	local bindCounts = {}

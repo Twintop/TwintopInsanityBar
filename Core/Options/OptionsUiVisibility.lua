@@ -333,6 +333,8 @@ function TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specI
 	-- Same for the Other Bars, which also re-arms the GCD events and Blizzard Duration Bar suppression.
 	TRB.Functions.OtherBars:SyncGcdEvents()
 	TRB.Functions.OtherBars:RefreshVisibility()
+	-- And whether Blizzard's totem frame is hidden, which needs the Totems bar enabled.
+	TRB.Functions.Totems:UpdateBlizzardFrameVisibility()
 end
 
 -- ============================================================================

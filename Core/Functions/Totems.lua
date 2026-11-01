@@ -160,6 +160,78 @@ function Totems:SetEnabled(active)
 		eventFrame:UnregisterAllEvents()
 		ClearAllSlots()
 	end
+	self:UpdateBlizzardFrameVisibility()
+end
+
+-- Blizzard's TotemFrame, detached like its swing bars: reparented under a hidden holder, the original parent kept for
+-- restoring. Its managed-frame OnHide drops it from the player frame's layout, so nothing leaves a gap.
+local blizzardHolder = nil
+local blizzardOriginalParent = nil
+-- Set while we drive SetParent ourselves, so the SetParent hook ignores our own calls.
+local blizzardReparenting = false
+local blizzardHooked = false
+
+---Whether another addon already parks Blizzard's TotemFrame under an anonymous hidden parent of its own.
+---@param frame Frame
+---@return boolean
+local function IsBlizzardFrameExternallyManaged(frame)
+	local parent = frame:GetParent()
+	if parent == nil or parent == blizzardHolder then
+		return false
+	end
+	return parent:GetName() == nil and not parent:IsVisible()
+end
+
+---Whether Blizzard's TotemFrame should be detached: the active spec has the Totems bar, enabled, with its option on.
+---@return boolean
+local function ShouldDetachBlizzardFrame()
+	local character = TRB.Data.character
+	if not enabled or character == nil then
+		return false
+	end
+	-- The character spec's own settings, which a Druid form keeps for this bar.
+	local settings = TRB.Functions.Character:GetSpecSettingsByKey(character.compositeKey)
+	local barSettings = settings and settings.bars and settings.bars.totems
+	local visibility = settings and settings.displayBar and settings.displayBar.totems
+	return barSettings ~= nil and barSettings.disableBlizzardBar == true and TRB.Functions.OtherBars:IsEnabled(visibility)
+end
+
+---Detaches or restores Blizzard's TotemFrame to match the active spec's settings.
+function Totems:UpdateBlizzardFrameVisibility()
+	local frame = TRB.Flavor.blizzardTotemFrame and TotemFrame or nil
+	if frame == nil then
+		return
+	end
+	local shouldDisable = ShouldDetachBlizzardFrame()
+	local currentlyDisabled = blizzardHolder ~= nil and frame:GetParent() == blizzardHolder
+	if shouldDisable and not currentlyDisabled and not IsBlizzardFrameExternallyManaged(frame) then
+		if blizzardHolder == nil then
+			blizzardHolder = CreateFrame("Frame")
+			blizzardHolder:Hide()
+		end
+		blizzardOriginalParent = frame:GetParent()
+		blizzardReparenting = true
+		frame:SetParent(blizzardHolder)
+		blizzardReparenting = false
+		if not blizzardHooked then
+			blizzardHooked = true
+			-- Re-park in the same call if Blizzard re-parents it back, before it can render a frame.
+			hooksecurefunc(frame, "SetParent", function(hookedFrame)
+				if blizzardReparenting or blizzardHolder == nil or hookedFrame:GetParent() == blizzardHolder then
+					return
+				end
+				Totems:UpdateBlizzardFrameVisibility()
+			end)
+		end
+	elseif not shouldDisable and currentlyDisabled then
+		blizzardReparenting = true
+		frame:SetParent(blizzardOriginalParent or PlayerFrame or UIParent)
+		blizzardReparenting = false
+		-- Lays it back out under the player frame, and shows it if a totem is up.
+		if frame.Update ~= nil then
+			frame:Update()
+		end
+	end
 end
 
 ---The slot a node shows: the node's own index on Mainline, and the element in that position of the node order where

@@ -39,6 +39,8 @@ TRB.Flavor = {
 	totemElements = true,
 	-- Each spec owns its Totems bar, with none in Global Options.
 	specOwnedTotems = true,
+	-- Blizzard's TotemFrame under the player frame, which the Totems bar can hide.
+	blizzardTotemFrame = true,
 	-- Ranked spells are learned one at a time, so a threshold's spell may not be known yet.
 	thresholdsRequireKnown = true,
 

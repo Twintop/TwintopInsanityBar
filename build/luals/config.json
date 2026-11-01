@@ -202,6 +202,8 @@
             "ProfessionsFrame_LoadUI",
             "ProfessionsFrame",
             "PlayerCastingBarFrame",
+            "TotemFrame",
+            "PlayerFrame",
             "StaticPopup_EscapePressed",
             "ToggleTextToSpeechFrame",
             "TextToSpeech_GetSelectedVoice",

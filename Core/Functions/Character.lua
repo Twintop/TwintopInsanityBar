@@ -2034,6 +2034,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		TRB.Functions.OtherBars:SyncEnabledState()
 		TRB.Functions.Skyriding:SyncEnabledState()
 	end
+	-- The Totems bar keeps the character spec's own settings in every form, so its Blizzard frame follows that spec.
+	if TRB.Data.character ~= nil and TRB.Data.character.compositeKey == compositeKey then
+		TRB.Functions.Totems:UpdateBlizzardFrameVisibility()
+	end
 end
 
 -- Tracks which classes have had their defaults merged into TRB.Data.settings.

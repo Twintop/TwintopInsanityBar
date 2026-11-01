@@ -423,7 +423,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class TRB.Classes.Settings.OtherBar : TRB.Classes.Settings.SecondaryBar
 ---@field public durationPrecision integer? # GCD and swing bars only: decimal places (0-3) for their duration text. The mirror timers render mm:ss instead
 ---@field public timerDirection string? # GCD and swing bars only: "deplete" (drain a full bar) or "fill" (grow an empty one)
----@field public disableBlizzardBar boolean? # Mirror timers and Main Hand Swing only: hide Blizzard's own frame for this timer type, all three swing timers for Main Hand Swing
+---@field public disableBlizzardBar boolean? # Mirror timers, Main Hand Swing, and Totems only: hide Blizzard's own frame for this timer type, all three swing timers for Main Hand Swing, and its TotemFrame for Totems
 
 ---@class TRB.Classes.Settings.TotemBar : TRB.Classes.Settings.OtherBar
 ---@field public showAllSlots boolean? # Mainline: show a node for every totem slot, not just up to the highest one in use

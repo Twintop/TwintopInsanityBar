@@ -2351,6 +2351,7 @@ function TRB.Functions.Settings:DefaultTotemBarSettings(classic, builtIn)
 		settings.anchor.yOffset = -300
 	end
 	settings.showAllSlots = false
+	settings.disableBlizzardBar = false
 	settings.icon = self:DefaultBarIconSettings()
 	settings.icon.spacing = 0
 	settings.icon.collapseBorderWidth = true
