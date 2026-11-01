@@ -1087,36 +1087,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	end)
 
 	local function ScrollBarTextTableToRow(realrow)
-		local scrollFrame = barTextTable and barTextTable.scrollframe
-		if realrow == nil or scrollFrame == nil then
-			return
-		end
-
-		local displayIndex = realrow
-		local filteredRows = barTextTable.filtered
-		local totalRows = #(barTextTable.data or {})
-		if filteredRows ~= nil then
-			totalRows = #filteredRows
-			for i = 1, totalRows do
-				if filteredRows[i] == realrow then
-					displayIndex = i
-					break
-				end
-			end
-		end
-
-		local displayRows = barTextTable.displayRows or 0
-		if displayRows <= 0 then
-			return
-		end
-
-		local offset = math.max(0, displayIndex - displayRows)
-		offset = math.min(offset, math.max(0, totalRows - displayRows))
-		if FauxScrollFrame_SetOffset ~= nil then
-			FauxScrollFrame_SetOffset(scrollFrame, offset)
-		end
-		scrollFrame:SetVerticalScroll(offset * (barTextTable.rowHeight or 15))
-		barTextTable:Refresh()
+		TRB.Functions.OptionsUi.Primitives:ScrollTableToRow(barTextTable, realrow)
 	end
 
 	local function ClearBarTextRuntimeCaches()

@@ -382,7 +382,7 @@ function TRB.Functions.OptionsUi.Visibility:ResolveBarVisibilityEntry(classId, s
 	-- Only keys present in core.displayBar are shared globally; custom bars stay spec-owned. IsEntryGlobal
 	-- also asks IsGlobalScopeBar, so a stale core entry for a class-scoped bar can't take its spec row
 	-- hostage (it would go read-only against a global entry with no UI behind it).
-	if barVisibility:IsEntryGlobal(visibilityKey, core.displayBar, spec and spec.displayBar, barVisibility:SpecFollowsGlobal(core, className, specName, "displayBar")) then
+	if barVisibility:IsEntryGlobal(visibilityKey, core.displayBar, spec and spec.displayBar, barVisibility:SpecFollowsGlobal(core, className, specName, "displayBar"), className, specName) then
 		return barVisibility:ComposeEntry(globalEntry), true, globalEntry
 	end
 	return specEntry and barVisibility:ComposeEntry(specEntry), false, specEntry
@@ -920,7 +920,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	---@return boolean
 	local function IsRowControlledByGlobal(entry)
 		return classId ~= nil and entry.isGlobal and barVisibility:IsEntryGlobal(entry.displayBarKey, coreDisplayBar, spec.displayBar,
-			barVisibility:SpecFollowsGlobal(TRB.Data.settings.core, settingsClassName, specName, "displayBar"))
+			barVisibility:SpecFollowsGlobal(TRB.Data.settings.core, settingsClassName, specName, "displayBar"), settingsClassName, specName)
 	end
 
 	---Whether all, none, or some of the listed bars that could follow Global Options do.
@@ -955,9 +955,13 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				local specFollowsGlobal = barVisibility:SpecFollowsGlobal(core, specRegistryEntry.className, specRegistryEntry.specName, "displayBar")
 				for _, entry in ipairs(barEntries) do
 					local specEntry = piece.displayBar[entry.displayBarKey]
+					-- A spec that owns its Totems visibility outright has no Global Options to put it on.
 					if type(specEntry) == "table" and coreDisplayBar[entry.displayBarKey] ~= nil
-						and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(entry.displayBarKey) then
-						fn(specEntry, barVisibility:IsEntryGlobal(entry.displayBarKey, coreDisplayBar, piece.displayBar, specFollowsGlobal))
+						and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(entry.displayBarKey)
+						and (not TRB.Classes.BarTypeRegistry:IsTotemBar(entry.displayBarKey)
+							or TRB.Classes.BarTypeRegistry:CanTotemVisibilityFollowGlobal(specRegistryEntry.classId, specRegistryEntry.specId)) then
+						fn(specEntry, barVisibility:IsEntryGlobal(entry.displayBarKey, coreDisplayBar, piece.displayBar, specFollowsGlobal,
+							specRegistryEntry.className, specRegistryEntry.specName))
 					end
 				end
 			end
@@ -1935,7 +1939,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 				globalLabel = totemBarLabel,
 				isCustomBar = false,
 				hidesSmooth = true,
-				isGlobal = (classId ~= nil and coreDisplayBar[totemBarKey] ~= nil and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(totemBarKey)),
+				isGlobal = (classId ~= nil and coreDisplayBar[totemBarKey] ~= nil and TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(totemBarKey)
+					and TRB.Classes.BarTypeRegistry:CanTotemVisibilityFollowGlobal(classId, specId)),
 			})
 		end
 	end
@@ -3238,6 +3243,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		SelectByDisplayBarKey = function(displayBarKey)
 			for i, e in ipairs(barEntries) do
 				if e.displayBarKey == displayBarKey then
+					-- The row can sit below the table's visible rows.
+					TRB.Functions.OptionsUi.Primitives:ScrollTableToRow(barVisibilityTable, i)
 					barVisibilityTable:SetSelection(i)
 					FillDetailPanel(e.key)
 					return

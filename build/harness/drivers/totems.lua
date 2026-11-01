@@ -132,10 +132,20 @@ function hooks.afterEvents(ctx)
 	if optIn then
 		check("an Other Bars spec starts Never Show on its own settings", settings.displayBar.totems ~= nil and settings.displayBar.totems.neverShow == true
 			and savedEntry ~= nil and savedEntry.useGlobal == false)
+		-- Only its visibility is its own: the other sections keep their Use Global flags.
+		local specDisplayBar = TRB.Data.settings[character.className][character.specName].displayBar
+		savedEntry.useGlobal = true
+		check("an Other Bars spec owns its visibility outright", not registry:CanTotemVisibilityFollowGlobal(character.classId, character.specId)
+			and not TRB.Functions.BarVisibility:IsEntryGlobal("totems", core.displayBar, specDisplayBar, true, character.className, character.specName))
+		savedEntry.useGlobal = false
+		local flags = core.global[character.className][character.specName]
+		check("an Other Bars spec keeps the other Totems Use Global flags", flags.totemsDimensions ~= nil and flags.totemsColors ~= nil)
 		-- The checks below draw the bar.
 		settings.displayBar.totems.neverShow = false
 	else
 		check("a fresh install shows it", settings.displayBar.totems ~= nil and settings.displayBar.totems.neverShow == false)
+		check("a spec with its own Totems tab can follow Global visibility wherever Global has the bar",
+			registry:CanTotemVisibilityFollowGlobal(character.classId, character.specId) == registry:HasGlobalTotems())
 	end
 	local builtIn = registry:IsTotemBarBuiltIn(character.classId, character.specId)
 	check("only Forever and Classic Shaman's bar comes with the spec", builtIn == (TRB.Flavor.totemElements == true))

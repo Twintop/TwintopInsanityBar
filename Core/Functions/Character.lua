@@ -2000,7 +2000,7 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		local specDisplayBar = spec.displayBar or {}
 		for k, v in pairs(specDisplayBar) do
 			if type(v) == "table" then
-				displayBar[k] = barVisibility:ComposeEntry(barVisibility:IsEntryGlobal(k, core.displayBar, specDisplayBar, s.displayBar) and core.displayBar[k] or v)
+				displayBar[k] = barVisibility:ComposeEntry(barVisibility:IsEntryGlobal(k, core.displayBar, specDisplayBar, s.displayBar, className, specName) and core.displayBar[k] or v)
 			else
 				-- Flags such as enableFormSwitching and showComboPoints.
 				displayBar[k] = v

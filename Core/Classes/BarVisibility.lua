@@ -285,10 +285,19 @@ end
 ---@param coreDisplayBar table? # Global Options' displayBar
 ---@param specDisplayBar table? # The specialization's displayBar
 ---@param specFollowsGlobal boolean? # The specialization's flag, from SpecFollowsGlobal
+---@param className string? # The specialization's class, whose Totems visibility may be its own outright
+---@param specName string?
 ---@return boolean
-function TRB.Functions.BarVisibility:IsEntryGlobal(key, coreDisplayBar, specDisplayBar, specFollowsGlobal)
-	if coreDisplayBar == nil or coreDisplayBar[key] == nil or not TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(key) then
+function TRB.Functions.BarVisibility:IsEntryGlobal(key, coreDisplayBar, specDisplayBar, specFollowsGlobal, className, specName)
+	local registry = TRB.Classes.BarTypeRegistry
+	if coreDisplayBar == nil or coreDisplayBar[key] == nil or not registry:IsGlobalScopeBar(key) then
 		return false
+	end
+	if registry:IsTotemBar(key) and className ~= nil and specName ~= nil then
+		local registryEntry = TRB.Functions.Character:GetSpecRegistryEntry(TRB.Functions.Character:GetCompositeKey(className, specName))
+		if registryEntry ~= nil and not registry:CanTotemVisibilityFollowGlobal(registryEntry.classId, registryEntry.specId) then
+			return false
+		end
 	end
 	local specEntry = specDisplayBar and specDisplayBar[key]
 	if type(specEntry) == "table" and specEntry.useGlobal ~= nil then
@@ -568,7 +577,7 @@ function TRB.Functions.BarVisibility:CountAllPresetUses()
 	local coreDisplayBar = core and core.displayBar or {}
 	self:ForEachEntryOfAllProfiles(function(entry, key, displayBar, isCore, className, specName)
 		local read = entry
-		if not isCore and self:IsEntryGlobal(key, coreDisplayBar, displayBar, self:SpecFollowsGlobal(core, className, specName, "displayBar")) then
+		if not isCore and self:IsEntryGlobal(key, coreDisplayBar, displayBar, self:SpecFollowsGlobal(core, className, specName, "displayBar"), className, specName) then
 			read = coreDisplayBar[key]
 		end
 		if read.presetId ~= nil then

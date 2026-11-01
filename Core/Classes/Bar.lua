@@ -3033,6 +3033,15 @@ function TRB.Classes.BarTypeRegistry:HasGlobalTotems()
 	return not TRB.Flavor.specOwnedTotems
 end
 
+---Whether a spec's Totems visibility can follow Global Options. Only a spec where the bar has its own tab: under Other
+---Bars the spec owns its visibility outright, while its other Totems sections can still follow Global Options.
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:CanTotemVisibilityFollowGlobal(classId, specId)
+	return self:HasGlobalTotems() and self:GetTotemPlacement(classId, specId) == "spec"
+end
+
 ---Returns the Totems bar keys for a spec. Empty for a spec without totems.
 ---@param classId integer?
 ---@param specId integer?
