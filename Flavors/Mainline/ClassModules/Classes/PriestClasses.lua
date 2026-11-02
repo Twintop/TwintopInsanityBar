@@ -1435,6 +1435,7 @@ do
 	})
 	SpecDescriptor:Declare("priest_discipline", {
 		manaBar = true,
+		totems = { placement = "otherBars" },
 		secondary = { exportable = true },
 		talentGatedBars = { utility = "angelicFeather" },
 		customBars = { "utility" },
@@ -1464,6 +1465,7 @@ do
 	})
 	SpecDescriptor:Declare("priest_shadow", {
 		manaBar = true,
+		totems = { placement = "otherBars" },
 		talentGatedBars = { utility = "angelicFeather" },
 		customBars = { "mana", "utility" },
 		exportExtras = { "hasteApproachingThreshold", "hasteThreshold" },

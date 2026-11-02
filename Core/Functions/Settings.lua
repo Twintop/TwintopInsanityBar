@@ -2378,15 +2378,16 @@ function TRB.Functions.Settings:DefaultTotemBarColors()
 	return colors
 end
 
----Default Totems bar visibility: shown while a totem is up. Never Show until an existing install answers the enable
----prompt, and after a No. A spec whose bar comes with it starts Always Show.
+---Default Totems bar visibility: shown while a totem is up, Never Show until the enable prompt's Yes. Other Bars specs
+---start Never Show on their own settings; a spec whose bar comes with it starts Always Show.
 ---@param forPreset boolean? # The visibility preset, which carries no Never Show of its own
 ---@param totemInfo TRB.Classes.SpecDescriptor.Totems? # The spec's Totems trait; nil for Global Options
 ---@return trbBarVisibilitySetting
 function TRB.Functions.Settings:DefaultTotemBarVisibility(forPreset, totemInfo)
+	local optIn = totemInfo ~= nil and totemInfo.placement == "otherBars"
 	local builtIn = totemInfo ~= nil and totemInfo.builtIn == true
-	return {
-		neverShow = not forPreset and not builtIn and TRB.Functions.Totems:AreBarsDeclined(),
+	local visibility = {
+		neverShow = optIn or (not forPreset and not builtIn and TRB.Functions.Totems:AreBarsDeclined()),
 		alwaysShow = builtIn,
 		conditions = { isTotemActive = true, isTotemMissing = false },
 		hideConditions = self:LoadDefaultBarVisibilityHideConditions(),
@@ -2398,6 +2399,11 @@ function TRB.Functions.Settings:DefaultTotemBarVisibility(forPreset, totemInfo)
 		resourceConditionOperator = ">=",
 		resourceConditionValue = 0
 	}
+	-- Global Options' copy follows the Shaman answer, so an opt-in spec keeps its own.
+	if optIn then
+		visibility.useGlobal = false
+	end
+	return visibility
 end
 
 ---Adds the Totems bar's defaults to a spec's default settings so Table:Merge carries them into saves. Idempotent; a

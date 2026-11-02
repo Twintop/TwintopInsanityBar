@@ -422,7 +422,7 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 	end)
 	local catalog = { entries = {}, primaryLabel = primaryLabel, frameByLabel = frameByLabel, labelByFrame = {}, groupByFrame = {}, groups = {} }
 	for _, group in ipairs(sortedAnchorGroups) do
-		local groupKey = group.barKey == "screen" and "screen" or registry:GetBarGroup(group.barKey)
+		local groupKey = group.barKey == "screen" and "screen" or registry:GetBarGroup(group.barKey, classId, specId)
 		for _, label in ipairs(group.labels) do
 			local frame = frameByLabel[label]
 			catalog.entries[#catalog.entries + 1] = { barKey = group.barKey, groupKey = groupKey, label = label, frame = frame }

@@ -481,6 +481,12 @@ function TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(parent, classI
 			}
 		end
 	end
+	-- A spec that keeps its Totems bar here gets it after the Other Bars.
+	if TRB.Classes.BarTypeRegistry:GetTotemPlacement(classId, specId) == "otherBars" then
+		innerTabs[#innerTabs + 1] = { "totems", TRB.Localization["ResourceTotems"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.Totems:ConstructPanel(scrollChild, classId, specId)
+		end, visibilityKey = "totems" }
+	end
 	if #innerTabs == 0 then
 		return
 	end

@@ -707,6 +707,42 @@ function TRB.Functions.OptionsUi.Primitives:LimitMenuRows(rootDescription, rowCo
 	end
 end
 
+---Scrolls a LibScrollingTable just far enough to show a row.
+---@param scrollingTable table?
+---@param realrow integer? # The row's index in the table's data
+function TRB.Functions.OptionsUi.Primitives:ScrollTableToRow(scrollingTable, realrow)
+	if scrollingTable == nil or realrow == nil or scrollingTable.scrollframe == nil then
+		return
+	end
+	local scrollFrame = scrollingTable.scrollframe
+
+	local displayIndex = realrow
+	local filteredRows = scrollingTable.filtered
+	local totalRows = #(scrollingTable.data or {})
+	if filteredRows ~= nil then
+		totalRows = #filteredRows
+		for i = 1, totalRows do
+			if filteredRows[i] == realrow then
+				displayIndex = i
+				break
+			end
+		end
+	end
+
+	local displayRows = scrollingTable.displayRows or 0
+	if displayRows <= 0 then
+		return
+	end
+
+	local offset = math.max(0, displayIndex - displayRows)
+	offset = math.min(offset, math.max(0, totalRows - displayRows))
+	if FauxScrollFrame_SetOffset ~= nil then
+		FauxScrollFrame_SetOffset(scrollFrame, offset)
+	end
+	scrollFrame:SetVerticalScroll(offset * (scrollingTable.rowHeight or 15))
+	scrollingTable:Refresh()
+end
+
 local cdmPickerHeadings = {
 	{ group = cdm.LayoutGroup.DISPLAYED, label = L["CustomIndicatorPickerDisplayed"] },
 	{ group = cdm.LayoutGroup.INACTIVE, label = L["CustomIndicatorPickerInactive"] },
