@@ -35,6 +35,10 @@ TRB.Flavor = {
 	-- Blizzard_SwingTimer's PLAYER_SWING event; no other client has it.
 	swingTimers = true,
 	blizzardSwingTimer = true,
+	-- Each totem slot is one element.
+	totemElements = true,
+	-- Each spec owns its Totems bar, with none in Global Options.
+	specOwnedTotems = true,
 	-- Ranked spells are learned one at a time, so a threshold's spell may not be known yet.
 	thresholdsRequireKnown = true,
 

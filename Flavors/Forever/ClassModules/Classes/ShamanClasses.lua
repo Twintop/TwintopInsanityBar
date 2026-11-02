@@ -6,3 +6,5 @@ local _, TRB = ...
 TRB.Forever.Templates.Classes:DefineClass("shaman", {
 	general = "mana",
 })
+
+TRB.Classes.SpecDescriptor:DeclareForClass("shaman", { totems = { placement = "spec", builtIn = true } })

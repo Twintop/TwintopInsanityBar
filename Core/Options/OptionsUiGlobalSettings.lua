@@ -84,6 +84,11 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "petHealth"} } },
 	petHealthColors      = { checkboxSuffix = "petHealthColors",      tabKey = "petHealth",  categoryKey = "petBars", barKey = "petHealth", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petHealthColors"],
 		paths = { {"colors", "bars", "petHealth"} } },
+	-- The Totems bar's sections live on the top-level "Totems" nav category. Whole tables, as for the pet bars.
+	totemsDimensions     = { checkboxSuffix = "totemsDimensions",     tabKey = "totems",     categoryKey = "totems", barKey = "totems", useGlobalLabel = L["CheckboxUseGlobalTotems"], sectionLabel = L["CopyMenuSection_totemsDimensions"],
+		paths = { {"bars", "totems"} } },
+	totemsColors         = { checkboxSuffix = "totemsColors",         tabKey = "totems",     categoryKey = "totems", barKey = "totems", useGlobalLabel = L["CheckboxUseGlobalTotems"], sectionLabel = L["CopyMenuSection_totemsColors"],
+		paths = { {"colors", "bars", "totems"} } },
 	-- The Pet Cast Bar takes the player Cast Bar's sections, less Empower and the player-only overlays.
 	petCastbarDimensions    = { checkboxSuffix = "petCastbarDimensions",    tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarDimensions"],
 		paths = { {"bars", "petCastbar", "width"}, {"bars", "petCastbar", "height"}, {"bars", "petCastbar", "border"}, {"bars", "petCastbar", "xPos"}, {"bars", "petCastbar", "yPos"}, {"bars", "petCastbar", "anchor"}, {"bars", "petCastbar", "fillDirection"}, {"bars", "petCastbar", "icon"} } },
@@ -566,6 +571,10 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		linkText = L["OpenGlobalPetBarsSettings"]
 		linkTooltip = L["OpenGlobalPetBarsSettingsTooltip"]
 		coverButtonText = L["OpenGlobalPetBarsSettings"]
+	elseif navKey == "totems" then
+		linkText = L["OpenGlobalTotemsSettings"]
+		linkTooltip = L["OpenGlobalTotemsSettingsTooltip"]
+		coverButtonText = L["OpenGlobalTotemsSettings"]
 	elseif navKey == "skyriding" then
 		linkText = L["OpenGlobalSkyridingSettings"]
 		linkTooltip = L["OpenGlobalSkyridingSettingsTooltip"]

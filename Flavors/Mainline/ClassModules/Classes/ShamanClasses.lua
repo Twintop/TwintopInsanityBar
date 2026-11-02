@@ -728,6 +728,7 @@ do
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
 	SpecDescriptor:Declare("shaman_elemental", {
 		manaBar = true,
+		totems = { placement = "spec" },
 		talentGatedBars = { elementalBlastBuffs = "elementalBlast" },
 		customBars = { "mana", "elementalBlastBuffs" },
 		barTextAnchorFrames = {
@@ -739,6 +740,7 @@ do
 	})
 	SpecDescriptor:Declare("shaman_enhancement", {
 		manaBar = true,
+		totems = { placement = "spec" },
 		secondary = { exportable = true },
 		barTextAnchorFrames = {
 			secondary = {
@@ -750,5 +752,6 @@ do
 	})
 	SpecDescriptor:Declare("shaman_restoration", {
 		manaBar = true,
+		totems = { placement = "spec" },
 	})
 end

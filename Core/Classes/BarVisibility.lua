@@ -46,6 +46,8 @@ TRB.Functions = TRB.Functions or {}
 ---@field isPetAlive boolean # Whether the player's pet is out and alive
 ---@field isPetDead boolean # Whether the player's pet is out and dead
 ---@field isPetMissing boolean # Whether the player has no pet out
+---@field isTotemActive boolean # Whether any totem slot holds a totem that hasn't run out
+---@field isTotemMissing boolean # Whether no totem slot does
 TRB.Classes.BarVisibilityContext = {}
 TRB.Classes.BarVisibilityContext.__index = TRB.Classes.BarVisibilityContext
 
@@ -95,6 +97,8 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.isPetAlive = params.isPetAlive or false
 	self.isPetDead = params.isPetDead or false
 	self.isPetMissing = params.isPetMissing or false
+	self.isTotemActive = params.isTotemActive or false
+	self.isTotemMissing = params.isTotemMissing or false
 	return self
 end
 
@@ -196,6 +200,9 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 	target.isPetAlive = petState == "alive"
 	target.isPetDead = petState == "dead"
 	target.isPetMissing = petState == "none"
+	local totemActive = TRB.Functions.Totems:GetActiveCount() > 0
+	target.isTotemActive = totemActive
+	target.isTotemMissing = not totemActive
 	return target
 end
 
@@ -303,7 +310,7 @@ local castbarProfileKeys = { castbar = "castbar", targetCastbar = "targetCastbar
 
 ---Which family of condition lists a bar offers, which is also the kind of preset it can use.
 ---@param barKey string # The displayBar key
----@return "standard"|"castbar"|"targetCastbar"|"petCastbar"|"timerBar"|"timerEnvironment"|"rangedSwing"|"mainHandSwing"|"petBar"|"skyriding"
+---@return "standard"|"castbar"|"targetCastbar"|"petCastbar"|"timerBar"|"timerEnvironment"|"rangedSwing"|"mainHandSwing"|"petBar"|"totemBar"|"skyriding"
 function TRB.Functions.BarVisibility:GetProfileKeyForBar(barKey)
 	local registry = TRB.Classes.BarTypeRegistry
 	if castbarProfileKeys[barKey] ~= nil then
@@ -311,6 +318,9 @@ function TRB.Functions.BarVisibility:GetProfileKeyForBar(barKey)
 	end
 	if registry:IsPetBar(barKey) then
 		return "petBar"
+	end
+	if registry:IsTotemBar(barKey) then
+		return "totemBar"
 	end
 	if registry:IsSkyridingBar(barKey) then
 		return "skyriding"
@@ -713,6 +723,18 @@ local function HasMatchingPetCondition(conditions, context)
 	return false
 end
 
+-- Only the Totems bar offers these, in both its show and hide lists.
+local TOTEM_VISIBILITY_KEYS = { "isTotemActive", "isTotemMissing" }
+
+local function HasMatchingTotemCondition(conditions, context)
+	for _, key in ipairs(TOTEM_VISIBILITY_KEYS) do
+		if conditions[key] == true and context[key] == true then
+			return true
+		end
+	end
+	return false
+end
+
 ---Marks visibility state as dirty, forcing the next ProcessBars call to re-evaluate.
 ---Call this whenever any input to visibility evaluation changes:
 ---  inCombat, inVehicle, inPetBattle, onTaxi, specSupported,
@@ -905,6 +927,9 @@ function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
 	if HasMatchingPetCondition(conditions, context) then
 		return true
 	end
+	if HasMatchingTotemCondition(conditions, context) then
+		return true
+	end
 
 	return false
 end
@@ -1035,6 +1060,9 @@ function TRB.Functions.BarVisibility:MatchesShowConditions(context, conditions)
 		return true
 	end
 	if HasMatchingPetCondition(conditions, context) then
+		return true
+	end
+	if HasMatchingTotemCondition(conditions, context) then
 		return true
 	end
 
@@ -1514,6 +1542,23 @@ function TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, settin
 	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.petBarKeys) do
 		self:AddEntry(entries, barGroups and barGroups[barKey], displayBar and displayBar[barKey],
 			not TRB.Functions.Bar:IsBarTalentGatedHidden(barKey), 1, nil)
+	end
+end
+
+---Appends the Totems bar's entry on a spec with totems, and nothing on any other spec.
+---@param entries TRB.Classes.BarVisibilityEntry[]
+---@param barGroups table<string, TRB.Classes.BarGroup>?
+---@param settings table? # The spec cache settings
+function TRB.Functions.BarVisibility:AppendTotemEntries(entries, barGroups, settings)
+	local character = TRB.Data.character
+	if not TRB.Classes.BarTypeRegistry:SpecHasTotems(character.classId, character.specId) then
+		return
+	end
+	local displayBar = settings and settings.displayBar
+	local bars = settings and settings.bars
+	for _, barKey in ipairs(TRB.Classes.BarTypeRegistry.totemBarKeys) do
+		local nodeCount = TRB.Functions.Totems:GetVisibleNodeCount(bars and bars[barKey])
+		self:AddEntry(entries, barGroups and barGroups[barKey], displayBar and displayBar[barKey], true, nodeCount, nil)
 	end
 end
 

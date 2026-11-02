@@ -130,6 +130,7 @@ local function StartDeferredSetup(module, classEntry)
 			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.News:Init()
 			TRB.Functions.Skyriding:ShowEnablePrompt()
+			TRB.Functions.Totems:ShowEnablePrompt()
 			TRB.Details.addonData.optionsPanelFinished = true
 		end)
 	end)

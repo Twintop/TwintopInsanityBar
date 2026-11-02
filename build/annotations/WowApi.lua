@@ -66,3 +66,9 @@ function GameTooltip:SetText(text, colorR, colorG, colorB, alpha, wrap) end
 ---@param ignoreGCD boolean?
 ---@return LuaDurationObject duration
 function C_Spell.GetSpellCooldownDuration(spellIdentifier, ignoreGCD) end
+
+---In the 12.1.5 docs (Totem system); the bundled annotations lack it. Returns nil for an empty slot, in or out of
+---combat, though the docs say non-nilable (docs/totem-tracker-plan.md, Appendix C).
+---@param slot integer
+---@return LuaDurationObject? duration
+function GetTotemDuration(slot) end

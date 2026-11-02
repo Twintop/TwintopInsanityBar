@@ -425,6 +425,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public timerDirection string? # GCD and swing bars only: "deplete" (drain a full bar) or "fill" (grow an empty one)
 ---@field public disableBlizzardBar boolean? # Mirror timers and Main Hand Swing only: hide Blizzard's own frame for this timer type, all three swing timers for Main Hand Swing
 
+---@class TRB.Classes.Settings.TotemBar : TRB.Classes.Settings.OtherBar
+---@field public showAllSlots boolean? # Mainline: show a node for every totem slot, not just up to the highest one in use
+
 ---Skyriding bar colors. `bar` is the Speed bar's fill, a charge bar's full charges, and Whirling Surge while it recharges.
 ---@class TRB.Classes.Settings.SkyridingBarColors
 ---@field public bar TRB.Classes.Settings.ColorGradientEntry
@@ -556,6 +559,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isPetAlive boolean? # Pet bars only: show while the pet is out and alive
 ---@field public isPetDead boolean? # Pet bars only: show while the pet is dead
 ---@field public isPetMissing boolean? # Pet bars only: show while there is no pet
+---@field public isTotemActive boolean? # Totems bar only: show while a totem is up
+---@field public isTotemMissing boolean? # Totems bar only: show while no totem is up
 ---@field public casting boolean? # Cast bars only: show while casting
 ---@field public channeling boolean? # Cast bars only: show while channeling
 ---@field public empowered boolean? # Cast bars only: show while empowering
@@ -587,6 +592,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isPetAlive boolean? # Pet bars only: hide while the pet is out and alive
 ---@field public isPetDead boolean? # Pet bars only: hide while the pet is dead
 ---@field public isPetMissing boolean? # Pet bars only: hide while there is no pet
+---@field public isTotemActive boolean? # Totems bar only: hide while a totem is up
+---@field public isTotemMissing boolean? # Totems bar only: hide while no totem is up
 ---@field public isItemMissing boolean? # Main Hand Swing only: hide while its slot holds no weapon
 
 ---@class trbBarVisibilitySetting

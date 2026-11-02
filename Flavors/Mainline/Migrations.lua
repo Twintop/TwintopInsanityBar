@@ -34,6 +34,11 @@ function TRB.Flavor.DefaultManualUpdateChecks()
 		skyridingBarsReprompt = {
 			answered = true,
 			hidden = false
+		},
+		-- Fresh installs show the Totems bar; PortForwardSettings marks existing saves to be asked.
+		totemBarsPrompt = {
+			answered = true,
+			hidden = false
 		}
 	}
 end
@@ -8841,6 +8846,15 @@ function TRB.Flavor.PortForwardSettings(settings)
 		local reprompt = checks ~= nil and checks.skyridingBarsReprompt or nil
 		if type(reprompt) == "table" and reprompt.answered == true and reprompt.hidden == nil then
 			reprompt.hidden = TRB.Functions.Skyriding:InferBarsDeclined(TwintopInsanityBarSettings)
+		end
+	end
+
+	-- Totems bar: existing saves get asked on their first login on a spec with its own Totems tab. The bar's defaults
+	-- keep it hidden until then. Live saves only, so profiles and imports never carry the flag.
+	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings == TRB.Flavor.GetSavedVariables() then
+		TwintopInsanityBarSettings.manualUpdateChecks = TwintopInsanityBarSettings.manualUpdateChecks or {}
+		if TwintopInsanityBarSettings.manualUpdateChecks.totemBarsPrompt == nil then
+			TwintopInsanityBarSettings.manualUpdateChecks.totemBarsPrompt = { answered = false }
 		end
 	end
 end

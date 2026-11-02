@@ -557,4 +557,8 @@ if locale == "enGB" then
 	L["CastbarEmpowerUseClassColor"] = "Use class colour"
 	L["CastbarEmpowerUseClassColorTooltip"] = "When checked, empowered casts fill with your class colour in place of the empower level colours. The target class colour still takes priority."
 	L["CastbarEmpowerClassColorOnTooltip"] = "Use class colour is checked, so this setting has no effect."
+	L["TotemsEndingEnabled"] = "Change colour when ending"
+	L["TotemsEndingEnabledTooltip"] = "When checked, a totem's fill changes to the Ending colour when it has this much time left."
+	L["TotemsEndingDisabledReason"] = "Change colour when ending is unchecked."
+	L["CopyMenuSection_totemsColors"] = "Totems Bar - Colours"
 end

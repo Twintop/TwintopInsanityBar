@@ -24,6 +24,7 @@
 	<Script file="Functions\TargetCastbar.lua"/>
 	<Script file="Functions\OtherBars.lua"/>
 	<Script file="Functions\Skyriding.lua"/>
+	<Script file="Functions\Totems.lua"/>
 	<Script file="Functions\String.lua"/>
 	<Script file="Functions\Talent.lua"/>
 	<Script file="Functions\Threshold.lua"/>
@@ -57,6 +58,7 @@
 	<Script file="Options\OptionsUiTargetCastbar.lua"/>
 	<Script file="Options\OptionsUiOtherBars.lua"/>
 	<Script file="Options\OptionsUiPetBars.lua"/>
+	<Script file="Options\OptionsUiTotems.lua"/>
 	<Script file="Options\OptionsUiSkyriding.lua"/>
 	<Script file="Options\OptionsUiTabs.lua"/>
 	<Script file="Options\OptionsFrame.lua"/>

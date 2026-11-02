@@ -5,6 +5,9 @@ TRB.Functions.OptionsUi.CustomBarColors = TRB.Functions.OptionsUi.CustomBarColor
 local oUi = TRB.Data.constants.optionsUi
 local L = TRB.Localization
 
+-- Horizontal space the up/down reorder arrows take at the start of a node color row.
+local ORDER_ARROWS_WIDTH = 46
+
 local gradientDirectionCycle = { "disabled", "horizontal", "vertical" }
 local gradientDirectionAbbrevLabels = {
 	disabled = L["GradientDirectionDisabledAbbrev"],
@@ -323,6 +326,11 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, "bar", nil, nil, classId, specId)
 			end)
 		end
+		-- The reorderable node rows below name their node beside the arrows, so this row names itself there too.
+		if barTypeDef.hasOrdering then
+			local labelX = oUi.xCoord + ORDER_ARROWS_WIDTH
+			TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, string.format(L["CustomBarColorBar"], displayName), labelX, yCoord, oUi.xCoord2 - labelX - 10, 20, GameFontHighlight)
+		end
 		yCoord = yCoord - 30
 	end
 
@@ -544,7 +552,7 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 					downBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 					row.downBtn = downBtn
 
-					arrowXOffset = arrowXOffset + 46
+					arrowXOffset = arrowXOffset + ORDER_ARROWS_WIDTH
 				end
 
 				if nodeConfig.hasEnabled then
@@ -634,6 +642,9 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 							colorSettings.sameColor = self:GetChecked()
 						end)
 						sameColorPlacedInline = true
+					elseif barTypeDef.hasOrdering then
+						-- Without a checkbox the arrows would point at nothing; RefreshRow relabels it on a swap.
+						row.label = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, nodeDisplayName, arrowXOffset, yCoord, oUi.xCoord2 - arrowXOffset - 10, 20, GameFontHighlight).font
 					end
 
 					-- Simple color picker without enable checkbox (dereference via orderedKeys at click-time for

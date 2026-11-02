@@ -2145,6 +2145,9 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarIconOptions(parent, controls,
 			iconSettings.showTooltip = v
 			ApplyIconChange()
 		end)
+	-- Indented under the box that gates it.
+	iconSubControls.tooltip:ClearAllPoints()
+	iconSubControls.tooltip:SetPoint("TOPLEFT", oUi.xCoord + 20, yCoord)
 	controls[barTypeDef.key .. "IconShowTooltip"] = iconSubControls.tooltip
 	yCoord = yCoord - 20
 
