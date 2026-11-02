@@ -323,6 +323,10 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 			for _, entry in ipairs(globalTextSettings) do
 				textSettings[#textSettings + 1] = entry
 			end
+			-- Only Shaman has the Totems bar here, so its text is the spec's own rather than the global list's.
+			if TRB.Classes.BarTypeRegistry:SpecHasTotems(spec.entry.classId, specId) and not TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
+				TRB.Functions.Settings:AppendTotemBarText(textSettings)
+			end
 			return TRB.Functions.Settings:ApplySharedFontDefaultsToBarTextEntries(textSettings)
 		end
 		options[spec.specPascal .. "LoadDefaultBarTextSettings"] = loadDefaultBarText

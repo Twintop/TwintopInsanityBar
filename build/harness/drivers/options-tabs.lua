@@ -358,6 +358,7 @@ function hooks.afterEvents(ctx)
 			if e.classId ~= nil and e.groupKey == "spec" then
 				local want = { "castbar", "otherBars" }
 				if TRB_.Classes.BarTypeRegistry:SpecHasPet(e.classId, e.specId) then want[#want + 1] = "petBars" end
+				if TRB_.Classes.BarTypeRegistry:SpecHasTotems(e.classId, e.specId) then want[#want + 1] = "totems" end
 				if #TRB_.Classes.BarTypeRegistry.skyridingBarKeys > 0 then want[#want + 1] = "skyriding" end
 				for _, g in ipairs(want) do
 					if find(e.classId, e.specId, g) == nil then missing[#missing + 1] = e.classId .. "_" .. e.specId .. "/" .. g end
@@ -393,12 +394,21 @@ function hooks.afterEvents(ctx)
 			end
 			print("INFO specs with a top-level Totems tab: " .. totemSpecs .. "; Totems tabs constructed: " .. totemsDrained)
 			check("a Totems tab sits just before Health on every spec with totems, and nowhere else (" .. table.concat(misplaced, "; ") .. ")", #misplaced == 0 and totemSpecs > 0)
+			-- Totems textures are each spec's own, as the pet bars' are, so the Global strip has no Textures tab.
 			-- Where the specs own the bar, Global Options has no Totems home.
 			if registry:HasGlobalTotems() then
-				check("Global Options has a Totems home", stripKeys("Totems") == "totems")
+				check("Global Options has a Totems home with its own Visibility and Bar Text", stripKeys("Totems") == "totems,barVisibility,barText")
 			else
 				check("Global Options has no Totems home without a global scope", stripKeys("Totems") == nil)
 			end
+			local innerStrips, badInner = 0, {}
+			for _, g in ipairs(drv.groups) do
+				if g.prefix:find("^TotemsInner_") then
+					innerStrips = innerStrips + 1
+					if table.concat(g.keys, ",") ~= "totems,barTextures,barVisibility,barText" then badInner[#badInner + 1] = g.prefix .. "=" .. table.concat(g.keys, ",") end
+				end
+			end
+			check("every spec's Totems tab holds the bar, Textures, Visibility, and Bar Text (" .. table.concat(badInner, "; ") .. ")", innerStrips == totemSpecs and #badInner == 0)
 		end
 		-- A Use Global link opens its category's strip by GetGroupInnerPrefix, so every category's Global prefix must name a built strip.
 		do
@@ -1060,7 +1070,7 @@ function hooks.afterEvents(ctx)
 
 		-- Each grouping's Textures tab names its grouping, and a grouping's strip orders its tabs as the spec's own do.
 		do
-			local wanted = { castbar = "BarTexturesHeaderCastbar", otherBars = "BarTexturesHeaderOtherBars", petBars = "BarTexturesHeaderPetBars", skyriding = "BarTexturesHeaderSkyriding" }
+			local wanted = { castbar = "BarTexturesHeaderCastbar", otherBars = "BarTexturesHeaderOtherBars", petBars = "BarTexturesHeaderPetBars", totems = "BarTexturesHeaderTotems", skyriding = "BarTexturesHeaderSkyriding" }
 			local wrong, seen = {}, 0
 			for _, e in ipairs(drv.editors) do
 				local headers = drv.headersByParent[e.parent] or {}
@@ -1076,7 +1086,7 @@ function hooks.afterEvents(ctx)
 
 			local badOrder, strips = {}, 0
 			local groupingPrefix = {}
-			for _, gk in ipairs({ "castbar", "otherBars", "petBars", "skyriding" }) do groupingPrefix[TRB_.Functions.OptionsUi.Tabs:GetGroupInnerPrefix(gk)] = true end
+			for _, gk in ipairs({ "castbar", "otherBars", "petBars", "totems", "skyriding" }) do groupingPrefix[TRB_.Functions.OptionsUi.Tabs:GetGroupInnerPrefix(gk)] = true end
 			for _, g in ipairs(drv.groups) do
 				local at = {}
 				for index, key in ipairs(g.keys) do at[key] = index end

@@ -561,4 +561,5 @@ if locale == "enGB" then
 	L["TotemsEndingEnabledTooltip"] = "When checked, a totem's fill changes to the Ending colour when it has this much time left."
 	L["TotemsEndingDisabledReason"] = "Change colour when ending is unchecked."
 	L["CopyMenuSection_totemsColors"] = "Totems Bar - Colours"
+	L["BarDisplayTextCustomizationHeaderTotems"] = "Totems Bar Display Text Customisation"
 end

@@ -124,13 +124,14 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 	-- =============================================
 	local allData = {}     -- flat array for LibScrollingTable
 	-- Fixed group order. Sorting reorders a group's contents but never the groups themselves.
-	local groupOrder = { "resources", "abilities", "stats", "castBar", "pet", "other", "icons" }
+	local groupOrder = { "resources", "abilities", "stats", "castBar", "pet", "totems", "other", "icons" }
 	local groupLabels = {
 		resources = L["BarTextVariablesSectionResources"],
 		abilities = L["BarTextVariablesSectionAbilities"],
 		stats = L["BarTextVariablesSectionStats"],
 		castBar = L["BarTextVariablesSectionCastBars"],
 		pet = L["BarTextVariablesSectionPet"],
+		totems = L["ResourceTotems"],
 		other = L["BarTextVariablesSectionOther"],
 		icons = L["BarTextVariablesSectionIcons"],
 	}
@@ -393,13 +394,14 @@ function TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(paren
 	---@return table<string, table[]> # Map of group key to a list of { entry, sectionKey } records
 	local function GroupVariableEntries(barTextVariables)
 		local grouped = {}
-		-- The Global panel lists the pet variables too, since pet specs merge its bar text.
+		-- The Global panel lists the pet and totem variables too, since those specs merge its bar text.
 		local showPet = classId == nil or TRB.Classes.BarTypeRegistry:SpecHasPet(classId, specId)
+		local showTotems = TRB.Classes.BarTypeRegistry:IsBarInScope("totems", classId, specId)
 		for _, sectionKey in ipairs({ "values", "icons", "pipe" }) do
 			local sectionEntries = barTextVariables[sectionKey]
 			if sectionEntries then
 				for _, entry in ipairs(sectionEntries) do
-					if entry.printInSettings and (showPet or not entry.pet) then
+					if entry.printInSettings and (showPet or not entry.pet) and (showTotems or not entry.totem) then
 						local groupKey = TRB.Functions.BarText:GetVariableCategory(entry, sectionKey)
 						-- An unrecognized category would otherwise drop the entry from the panel entirely.
 						if not validGroupKeys[groupKey] then

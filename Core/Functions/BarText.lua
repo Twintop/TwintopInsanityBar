@@ -69,6 +69,65 @@ local castbarIconAnchors = {
 	PetCastBarIcon = true,
 }
 
+-- Bar text anchors on the Totems bar: TotemSlot1 and up, each the node showing that slot.
+local TOTEM_SLOT_ANCHOR_PATTERN = "^TotemSlot(%d+)$"
+-- Per totem slot, its name, time, and icon variables. Where slots are elements, each also answers to its element's
+-- name, and those lead so the options list them (the slot names stay as unlisted aliases).
+local totemElementLabels = {}
+local totemElementStems = {}
+if TRB.Flavor.totemElements then
+	totemElementStems = { "fire", "earth", "water", "air" }
+	totemElementLabels = { L["TotemElementFire"], L["TotemElementEarth"], L["TotemElementWater"], L["TotemElementAir"] }
+end
+local totemSlotVars = {}
+-- Variable -> its slot, for the bare checks.
+local totemVars = {}
+for slot = 1, TRB.Flavor.totemElements and 4 or 8 do
+	local vars = { names = {}, times = {}, icons = {} }
+	local stem = totemElementStems[slot]
+	if stem ~= nil then
+		vars.names[1] = "$" .. stem .. "TotemName"
+		vars.times[1] = "$" .. stem .. "TotemTime"
+		vars.icons[1] = "#" .. stem .. "Totem"
+	end
+	table.insert(vars.names, "$totem" .. slot .. "Name")
+	table.insert(vars.times, "$totem" .. slot .. "Time")
+	table.insert(vars.icons, "#totem" .. slot)
+	for _, group in ipairs({ vars.names, vars.times, vars.icons }) do
+		for _, var in ipairs(group) do
+			totemVars[var] = slot
+		end
+	end
+	totemSlotVars[slot] = vars
+end
+
+---A totem slot's variables, the listed name of each first.
+---@param slot integer
+---@return { names: string[], times: string[], icons: string[] }?
+function TRB.Functions.BarText:GetTotemSlotVariables(slot)
+	return totemSlotVars[slot]
+end
+
+---What a totem slot's variables describe: its element where slots are elements, else its number.
+---@param slot integer
+---@param elementFormat string # Localized format taking the element's name
+---@param slotFormat string # Localized format taking the slot number
+---@return string
+local function DescribeTotemSlot(slot, elementFormat, slotFormat)
+	local element = totemElementLabels[slot]
+	if element ~= nil then
+		return string.format(elementFormat, element)
+	end
+	return string.format(slotFormat, slot)
+end
+
+---The name of a totem slot's bar text anchor, as the anchor list shows it.
+---@param slot integer
+---@return string
+function TRB.Functions.BarText:GetTotemSlotAnchorLabel(slot)
+	return DescribeTotemSlot(slot, L["BarTextAnchorTotemElement"], L["BarTextAnchorTotemSlot"])
+end
+
 ---Is this cast bar or Other Bar finishing its fade? Text anchored to it then holds its last value.
 ---@param groupKey string # A castbarAnchorGroupKeys value
 ---@return boolean
@@ -165,6 +224,9 @@ local function GetSharedAnchorBarGroupKey(relativeToFrame)
 	local groupKey = castbarAnchorGroupKeys[relativeToFrame]
 	if groupKey ~= nil then
 		return groupKey
+	end
+	if TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, TOTEM_SLOT_ANCHOR_PATTERN) then
+		return "totems"
 	end
 	local normalized = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame)
 	groupKey = sharedAnchorGroupKeys[normalized]
@@ -332,6 +394,13 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 		AddAnchorFrame("petCastbar", L["ResourcePetCastbarIcon"], "PetCastBarIcon")
 	end
 
+	-- Totem slots reach the specs with the Totems bar, and the Global panel where it has one; one anchor per slot's node.
+	if registry:IsBarInScope("totems", classId, specId) then
+		for slot = 1, TRB.Functions.Totems:GetSlotCount() do
+			AddAnchorFrame("totems", self:GetTotemSlotAnchorLabel(slot), "TotemSlot" .. slot)
+		end
+	end
+
 	for _, skyridingKey in ipairs(registry.skyridingBarKeys) do
 		local skyridingDef = barRegistry:Get(skyridingKey)
 		if skyridingDef ~= nil then
@@ -389,6 +458,17 @@ function TRB.Functions.BarText:GetAnchorFrame(relativeToFrame, classId, specId)
 
 	if relativeToFrame == "UIParent" then
 		return UIParent, true, true
+	end
+
+	local totemSlot = self:MatchAnchorKey(relativeToFrame, TOTEM_SLOT_ANCHOR_PATTERN)
+	if totemSlot ~= nil then
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+		local barGroup = barGroups and barGroups.totems
+		local node = barGroup and barGroup:GetNode(TRB.Functions.Totems:GetSlotNodeIndex(tonumber(totemSlot) --[[@as integer]]))
+		if node ~= nil then
+			return node:GetFrame(), true, barGroup.isVisible == true and node.isVisible == true
+		end
+		return nil, true, false
 	end
 
 	-- Castbar is an all-spec bar not handled by any class's per-spec GetBarTextFrame; resolve it here
@@ -651,6 +731,13 @@ function TRB.Functions.BarText:GetCommonIcons(additionalIcons)
 			table.insert(icons, v)
 		end
 	end
+	-- Totem icons, each slot's first name listed and the rest aliases.
+	for slot = 1, TRB.Functions.Totems:GetSlotCount() do
+		local description = DescribeTotemSlot(slot, L["BarTextIconTotemElement"], L["BarTextIconTotemSlot"])
+		for i, var in ipairs(totemSlotVars[slot].icons) do
+			table.insert(icons, { variable = var, icon = "", description = description, printInSettings = i == 1, totem = true })
+		end
+	end
 	if additionalIcons then
 		for _, v in ipairs(additionalIcons) do
 			table.insert(icons, v)
@@ -683,6 +770,7 @@ TRB.Functions.BarText.VariableCategory = {
 	ABILITIES = "abilities",
 	CAST_BAR = "castBar",
 	PET = "pet",
+	TOTEMS = "totems",
 	OTHER = "other",
 	ICONS = "icons",
 }
@@ -962,6 +1050,21 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$petResourceName", description = L["BarTextVariablePetResourceName"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.PET,
 			logicType = logicTypes.TEXT, booleanCheck = true },
 	}
+	-- Totems, after the pet. Names and times are secret in combat on Mainline and Forever, so they are display-only; a
+	-- bare check on one resolves to "is that slot's totem up?" instead. Each slot's first name is listed, the rest aliases.
+	for slot = 1, TRB.Functions.Totems:GetSlotCount() do
+		local vars = totemSlotVars[slot]
+		local nameDescription = DescribeTotemSlot(slot, L["BarTextVariableTotemElementName"], L["BarTextVariableTotemSlotName"])
+		local timeDescription = DescribeTotemSlot(slot, L["BarTextVariableTotemElementTime"], L["BarTextVariableTotemSlotTime"])
+		for i, var in ipairs(vars.names) do
+			table.insert(values, { variable = var, description = nameDescription, printInSettings = i == 1, totem = true, color = false, secret = true,
+				category = self.VariableCategory.TOTEMS, logicType = logicTypes.TEXT, booleanCheck = true })
+		end
+		for i, var in ipairs(vars.times) do
+			table.insert(values, { variable = var, description = timeDescription, printInSettings = i == 1, totem = true, color = false, secret = true,
+				category = self.VariableCategory.TOTEMS, booleanCheck = true })
+		end
+	end
 	-- Swing bars follow Breath, where the flavor has them. Plain seconds, so they can be compared.
 	if TRB.Flavor.swingTimers then
 		local swingValues = {
@@ -1718,9 +1821,10 @@ end
 ---@return table
 local function AddToBarTextCache(input)
 	local barTextVariables = TRB.Data.barTextVariables
-	-- A spec without a pet leaves the pet variables as plain text, like any other spec's variable.
+	-- A spec without a pet leaves the pet variables as plain text, like any other spec's variable; likewise totems.
 	local character = TRB.Data.character
 	local hasPet = TRB.Classes.BarTypeRegistry:SpecHasPet(character.classId, character.specId)
+	local hasTotems = TRB.Classes.BarTypeRegistry:SpecHasTotems(character.classId, character.specId)
 	local iconEntries = #barTextVariables.icons
 	local valueEntries = #barTextVariables.values
 	local pipeEntries = #barTextVariables.pipe
@@ -1792,7 +1896,7 @@ local function AddToBarTextCache(input)
 			else
 				for x = 1, iconEntries do
 					z, z1 = string.find(input, barTextIconsVars[x].variable, a-1)
-					if z ~= nil and z == a and (hasPet or not barTextIconsVars[x].pet) then
+					if z ~= nil and z == a and (hasPet or not barTextIconsVars[x].pet) and (hasTotems or not barTextIconsVars[x].totem) then
 						match = true
 						if p ~= a then
 							returnText = returnText .. string.sub(input, p, a-1)
@@ -1809,7 +1913,7 @@ local function AddToBarTextCache(input)
 		elseif b ~= nil and (c == nil or b < c) and (d == nil or b < d) then
 			for x = 1, valueEntries do
 				z, z1 = string.find(input, barTextValuesVars[x].variable, b-1)
-				if z ~= nil and z == b and (hasPet or not barTextValuesVars[x].pet) then
+				if z ~= nil and z == b and (hasPet or not barTextValuesVars[x].pet) and (hasTotems or not barTextValuesVars[x].totem) then
 					match = true
 					if p ~= b then
 						returnText = returnText .. string.sub(input, p, b-1)
@@ -2235,6 +2339,7 @@ local castbarLookupUnits = {
 local targetCastbarLookupWasActive = true
 local otherBarsLookupWasActive = true
 local petLookupWasActive = true
+local totemLookupWasActive = true
 local skyridingLookupWasActive = true
 -- The latches assume their idle writes are still present, but SwitchSpec replaces lookupLogic
 -- wholesale. Tracked here so RefreshLookupDataBase can re-arm them on a rebuild.
@@ -2505,6 +2610,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		targetCastbarLookupWasActive = true
 		otherBarsLookupWasActive = true
 		petLookupWasActive = true
+		totemLookupWasActive = true
 		skyridingLookupWasActive = true
 	end
 
@@ -2514,6 +2620,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
 	TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 	TRB.Functions.BarText:RefreshPetLookupData(settings)
+	TRB.Functions.BarText:RefreshTotemLookupData()
 	TRB.Functions.BarText:RefreshSkyridingLookupData()
 
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
@@ -2565,6 +2672,42 @@ function TRB.Functions.BarText:RefreshPetLookupData(settings)
 		lookup["$petResourceMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petPowerMax)
 		lookup["$petResourcePercent"] = string.format(GetPrecisionFormat((precision and precision.mana) or 1), attributes.petPowerPercent)
 		lookup["$petResourceName"] = attributes.petPowerName or ""
+	end
+end
+
+---Refreshes the totem variables from the slots. Names, times, and icons may be secret, so they reach only `lookup`,
+---through nil tests and string.format; an empty slot renders empty.
+function TRB.Functions.BarText:RefreshTotemLookupData()
+	local totems = TRB.Functions.Totems
+	local isActive = totems:GetActiveCount() > 0
+	if not isActive and not totemLookupWasActive then
+		return
+	end
+	totemLookupWasActive = isActive
+	TRB.Data.lookup = TRB.Data.lookup or {}
+	local lookup = TRB.Data.lookup
+
+	for slot, vars in ipairs(totemSlotVars) do
+		local name, icon, duration = totems:GetSlotDisplay(slot)
+		local nameText, timeText, iconText = "", "", ""
+		if name ~= nil then
+			nameText = name
+		end
+		if duration ~= nil then
+			timeText = self:TimerPrecision(duration:GetRemainingDuration())
+		end
+		if icon ~= nil then
+			iconText = string.format("|T%s:0|t", icon)
+		end
+		for _, var in ipairs(vars.names) do
+			lookup[var] = nameText
+		end
+		for _, var in ipairs(vars.times) do
+			lookup[var] = timeText
+		end
+		for _, var in ipairs(vars.icons) do
+			lookup[var] = iconText
+		end
 	end
 end
 
@@ -2932,6 +3075,10 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	if petVars[var] then
 		return (TRB.Data.snapshotData.attributes.petState or "none") ~= "none"
 	end
+	local totemSlot = totemVars[var]
+	if totemSlot ~= nil then
+		return TRB.Functions.Totems:IsSlotActive(totemSlot)
+	end
 	local skyridingCheck = skyridingValidVars[var]
 	if skyridingCheck ~= nil then
 		return skyridingCheck()
@@ -2979,6 +3126,10 @@ end
 for var in pairs(speedVariables) do
 	selfDrivenBarVariables[var] = true
 end
+-- Totem variables (see RefreshTotemLookupData), whose times count down with nothing else changing.
+for var in pairs(totemVars) do
+	selfDrivenBarVariables[var] = true
+end
 
 ---Whether any running self-driven bar (the player/target/focus cast bars, or an Other Bars timer)
 ---drives a variable that an enabled bar text entry actually references. This is what justifies
@@ -3000,6 +3151,7 @@ local function HasActiveSelfDrivenBarVariableInUse()
 		or TRB.Functions.OtherBars:IsAnyFadingOut()
 		or IsSkyridingTextLive()
 		or speedTextOffBar
+		or TRB.Functions.Totems:GetActiveCount() > 0
 	if not anyActive then
 		return false
 	end

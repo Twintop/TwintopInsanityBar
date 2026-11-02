@@ -2919,7 +2919,7 @@ local castbarGroupKeySet = { castbar = true, targetCastbar = true, focusCastbar 
 ---The grouping a bar's options live under. The Pet Cast Bar sits with the cast bars; anything unlisted is the spec's own.
 ---A shared grouping's key is also its spec-panel tab key and its Global Options nav category.
 ---@param barKey string?
----@return "spec"|"castbar"|"otherBars"|"petBars"|"skyriding"
+---@return "spec"|"castbar"|"otherBars"|"petBars"|"totems"|"skyriding"
 function TRB.Classes.BarTypeRegistry:GetBarGroup(barKey)
 	if castbarGroupKeySet[barKey] then
 		return "castbar"
@@ -2931,6 +2931,9 @@ function TRB.Classes.BarTypeRegistry:GetBarGroup(barKey)
 	end
 	if self:IsPetBar(barKey) then
 		return "petBars"
+	end
+	if self:IsTotemBar(barKey) then
+		return "totems"
 	end
 	if self:IsSkyridingBar(barKey) then
 		return "skyriding"

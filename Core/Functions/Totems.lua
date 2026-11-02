@@ -185,6 +185,19 @@ function Totems:IsSlotActive(slot)
 	return record ~= nil and IsActive(record)
 end
 
+---A slot's totem for bar text, any part of which may be secret; nil when the slot is empty or its totem ran out.
+---@param slot integer
+---@return any name
+---@return any icon # Texture id
+---@return any duration # The duration object
+function Totems:GetSlotDisplay(slot)
+	local record = slots[slot]
+	if record == nil or not IsActive(record) then
+		return nil, nil, nil
+	end
+	return record.name, record.icon, record.duration
+end
+
 ---The active spec's Totems colors, which hold the element order.
 ---@return table?
 local function GetActiveColors()
@@ -192,6 +205,23 @@ local function GetActiveColors()
 	local specCache = character ~= nil and TRB.Data.specCache[character.compositeKey] or nil
 	local colorBars = specCache ~= nil and specCache.settings.colors and specCache.settings.colors.bars
 	return colorBars and colorBars.totems or nil
+end
+
+---The node index showing a slot, for bar text anchored to it. Read from the node order, since text anchors before the
+---first render.
+---@param slot integer
+---@return integer
+function Totems:GetSlotNodeIndex(slot)
+	if not TRB.Flavor.totemElements then
+		return slot
+	end
+	local colors = GetActiveColors()
+	for nodeIndex = 1, self:GetSlotCount() do
+		if self:GetNodeSlot(nodeIndex, colors) == slot then
+			return nodeIndex
+		end
+	end
+	return slot
 end
 
 ---The slot whose totem a node's icon tooltip shows, or nil when that slot holds none. Read at hover time, so it

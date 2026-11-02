@@ -1008,6 +1008,8 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		sectionTitle = L["BarDisplayHeaderOtherBars"]
 	elseif groupKey == "petBars" then
 		sectionTitle = L["BarDisplayHeaderPetBars"]
+	elseif groupKey == "totems" then
+		sectionTitle = L["BarDisplayHeaderTotems"]
 	elseif groupKey == "skyriding" then
 		sectionTitle = L["BarDisplayHeaderSkyriding"]
 	end
@@ -3266,7 +3268,7 @@ end
 ---@param parent Frame # The tab's scroll child
 ---@param classId integer? # nil edits core (global) scope
 ---@param specId integer?
----@param groupKey string # castbar, otherBars, petBars, or skyriding; "presets" builds Global Options' Manage Presets tab
+---@param groupKey string # castbar, otherBars, petBars, totems, or skyriding; "presets" builds Global Options' Manage Presets tab
 function TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(parent, classId, specId, groupKey)
 	if parent == nil then
 		return
