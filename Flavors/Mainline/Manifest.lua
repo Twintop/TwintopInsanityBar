@@ -42,6 +42,8 @@ TRB.Flavor = {
 		-- Dragon Isles UiMap ids, matched against the player's map and its parents.
 		dragonIslesMapIds = { 1978, 2057, 2107, 2131, 2241 },
 	},
+	-- Blizzard's TotemFrame under the player frame, which the Totems bar can hide.
+	blizzardTotemFrame = true,
 
 	---True when the running client is this flavor's game. Checked by the version gate when the TOC
 	---sets X-FlavorCheck to enabled. An unreadable project ID or interface number is not evidence of a

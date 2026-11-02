@@ -72,7 +72,18 @@ function TRB.Functions.OptionsUi.Totems:ConstructPanel(parent, classId, specId)
 			end)
 		yCoord = yCoord - 30
 	end
-	-- The icon and Show all totem slots live in the bar's settings table, so they follow the Dimensions box.
+	-- Where Blizzard draws its own totem icons under the player frame.
+	if TRB.Flavor.blizzardTotemFrame then
+		controls.totemsDisableBlizzardBar = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_disableBlizzardBar", L["TotemsDisableBlizzard"], L["TotemsDisableBlizzardTooltip"], yCoord,
+			function() return barSettings.disableBlizzardBar end,
+			function(checked)
+				barSettings.disableBlizzardBar = checked
+				ApplyLayoutChange()
+				TRB.Functions.Totems:UpdateBlizzardFrameVisibility()
+			end)
+		yCoord = yCoord - 30
+	end
+	-- The icon and these options live in the bar's settings table, so they follow the Dimensions box.
 	TRB.Functions.OptionsUi.GlobalSettings:AttachLinkedUseGlobalCover(controls.checkBoxes.useGlobalTotemsDimensions, controls.totemsDimensionsSection, controls.totemsIconSection, yCoord)
 	yCoord = yCoord - 10
 
