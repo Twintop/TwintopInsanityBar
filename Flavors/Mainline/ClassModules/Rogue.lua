@@ -1212,6 +1212,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Threshold line sounds (independent of bar visibility)
@@ -1407,6 +1408,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Threshold line sounds (independent of bar visibility)
@@ -1602,6 +1604,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Threshold line sounds (independent of bar visibility)
@@ -1895,6 +1898,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, true, TRB.Data.character.maxResource2, TRB.Data.character.maxResource2)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, healthVisSettings, true, 1, nil)
+		TRB.Functions.BarVisibility:AppendTotemEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
 			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)

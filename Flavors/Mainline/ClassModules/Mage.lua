@@ -1609,6 +1609,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
 		-- Audio cues (independent of bar visibility)
@@ -1710,6 +1711,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 
 			-- Fire Blast Charges secondary bar
 			if not specSettings.displayBar.secondary.neverShow then
@@ -1893,6 +1895,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
@@ -2581,6 +2584,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.shatter, sharedSettings and sharedSettings.displayBar.shatter, TRB.Data.character.specId == 3, barGroups and barGroups.shatter and barGroups.shatter.maxNodes, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.arcaneSalvo, sharedSettings and sharedSettings.displayBar.arcaneSalvo, TRB.Data.character.specId == 1 and TRB.Data.character.arcaneSalvoTalented == true, 1, nil)
 		TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
+		TRB.Functions.BarVisibility:AppendTotemEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
 			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)

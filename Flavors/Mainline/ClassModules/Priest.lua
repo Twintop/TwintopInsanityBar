@@ -2762,6 +2762,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 
 			-- Update utility bar (Angelic Feather charges)
 			if displaySettings.utility ~= nil and not displaySettings.utility.neverShow and barGroups and barGroups.utility then

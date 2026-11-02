@@ -3110,7 +3110,7 @@ function TRB.Functions.Bar:ResolveSharedSecondarySettings(settings, layoutOnly, 
 end
 
 ---Returns `settings` with the active spec's own layout and visibility swapped in for each descriptor
----`formIndependentBars` key it lacks, as when a Druid form lays out with another spec's settings.
+---`formIndependentBars` key, as when a Druid form lays out with another spec's settings.
 ---@param settings table
 ---@return table effectiveSettings
 function TRB.Functions.Bar:ResolveFormIndependentBarSettings(settings)
@@ -3127,7 +3127,7 @@ function TRB.Functions.Bar:ResolveFormIndependentBarSettings(settings)
 	local effective
 	for _, barKey in ipairs(barKeys) do
 		local ownBar = ownSettings.bars[barKey]
-		if ownBar ~= nil and (settings.bars == nil or settings.bars[barKey] == nil) then
+		if ownBar ~= nil and (settings.bars == nil or settings.bars[barKey] ~= ownBar) then
 			if effective == nil then
 				-- New nested tables, not shared references, so the form spec's own settings stay untouched.
 				effective = {}

@@ -2990,16 +2990,31 @@ end
 ---The Totems bar's keys. One bar, whose nodes are the client's totem slots.
 TRB.Classes.BarTypeRegistry.totemBarKeys = { "totems" }
 
----The Totems trait a spec declares through its descriptor, or nil for a spec without totems.
+-- On Live an item or toy can fill a totem slot on any spec, so one that declares no Totems trait keeps the bar under
+-- Other Bars. On Forever and Classic only Shaman has totems.
+---@type TRB.Classes.SpecDescriptor.Totems
+local undeclaredTotemSpecInfo = { placement = "otherBars" }
+
+---The Totems trait a spec declares through its descriptor, the Other Bars default where it declares none on Live, or
+---nil for an unknown spec or one without totems.
 ---@param classId integer?
 ---@param specId integer?
 ---@return TRB.Classes.SpecDescriptor.Totems?
 function TRB.Classes.BarTypeRegistry:GetTotemSpecInfo(classId, specId)
-	local descriptor = TRB.Classes.SpecDescriptor:Get(classId, specId)
-	return descriptor and descriptor.totems or nil
+	local byClass = classId ~= nil and TRB.Data.specRegistryByIds[classId] or nil
+	local entry = byClass ~= nil and specId ~= nil and byClass[specId] or nil
+	if entry == nil then
+		return nil
+	end
+	---@type TRB.Classes.SpecDescriptor.Totems?
+	local declared = entry.descriptor and entry.descriptor.totems or nil
+	if declared == nil and not TRB.Flavor.specOwnedTotems then
+		return undeclaredTotemSpecInfo
+	end
+	return declared
 end
 
----Whether a spec summons into totem slots, and so gets the Totems bar at all.
+---Whether a spec gets the Totems bar at all: every known spec on Live, only Shaman on Forever and Classic.
 ---@param classId integer?
 ---@param specId integer?
 ---@return boolean

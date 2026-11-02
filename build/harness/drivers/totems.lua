@@ -26,6 +26,9 @@ function hooks.afterInstall(ctx)
 			GetRemainingDuration = function() return totem.duration - 0.5 end,
 		}
 	end
+	-- Brewmaster's and Evoker's ticks read these before they reach the Totems bar.
+	desktop.UnitStagger = function() return 0 end
+	desktop.UnitPartialPower = function() return 0 end
 end
 
 -- The News popup needs UI the stubs lack, and its error would stop the deferred setup before optionsPanelFinished.
@@ -53,6 +56,7 @@ function hooks.afterEvents(ctx)
 	end
 
 	TRB.Functions.Bar.UpdateHealthBar = function() end
+	local triggerUpdates = TRB.Functions.Class.TriggerResourceBarUpdates
 	TRB.Functions.Class.TriggerResourceBarUpdates = function() end
 	stubs.fireEvents(parity.releaseEvent, ctx.addonName)
 	Drain("SETUP")
@@ -109,6 +113,7 @@ function hooks.afterEvents(ctx)
 
 	if not hasTotems then
 		local groups = TRB.Frames.barGroups
+		check("only Shaman has the Totems bar on Forever and Classic", TRB.Flavor.specOwnedTotems == true and character.className ~= "shaman")
 		check("no Totems bar on a spec without totems", groups == nil or groups.totems == nil)
 		check("no totem slot anchors on a spec without totems", not HasAnchor(BarText:GetAnchorCatalog(character.classId, character.specId), "TotemSlot1"))
 		check("totem slot text stays off a spec without totems", not BarText:IsEntryInScope(slotOneEntry, character.classId, character.specId))
@@ -118,6 +123,17 @@ function hooks.afterEvents(ctx)
 		occupied[1] = nil
 		print(string.format("DRIVER totems: %d failures", errors))
 		return
+	end
+
+	if not TRB.Flavor.specOwnedTotems then
+		-- An item or toy can fill a slot on any Live spec, so every spec has the bar.
+		local everySpec = true
+		for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+			for _, specEntry in ipairs(classEntry.specs) do
+				everySpec = everySpec and registry:SpecHasTotems(specEntry.classId, specEntry.specId)
+			end
+		end
+		check("every Live spec has the Totems bar", everySpec and not registry:SpecHasTotems(character.classId, 99))
 	end
 
 	local key = character.compositeKey
@@ -176,6 +192,27 @@ function hooks.afterEvents(ctx)
 		print(string.format("DRIVER totems: %d failures", errors))
 		return
 	end
+
+	-- The class module lists the bar for visibility and draws it each tick.
+	local renders = 0
+	local updateTotemBars = TRB.Functions.Bar.UpdateTotemBars
+	TRB.Functions.Bar.UpdateTotemBars = function(...)
+		renders = renders + 1
+		return updateTotemBars(...)
+	end
+	local totemVisibility = settings.displayBar.totems
+	local wasAlwaysShow = totemVisibility.alwaysShow
+	totemVisibility.alwaysShow = true
+	TRB.Functions.BarVisibility:MarkDirty()
+	TRB.Functions.Class:HideResourceBar()
+	local listed = group.isVisible == true
+	local skipUpdates = TRB.Functions.Class.TriggerResourceBarUpdates
+	TRB.Functions.Class.TriggerResourceBarUpdates = triggerUpdates
+	TRB.Functions.Class:TriggerResourceBarUpdates()
+	TRB.Functions.Class.TriggerResourceBarUpdates = skipUpdates
+	TRB.Functions.Bar.UpdateTotemBars = updateTotemBars
+	totemVisibility.alwaysShow = wasAlwaysShow
+	check("the class module shows the bar and draws it each tick", listed and renders > 0)
 
 	local elements = TRB.Flavor.totemElements
 	local bindCounts = {}

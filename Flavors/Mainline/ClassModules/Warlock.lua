@@ -1671,6 +1671,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
@@ -1753,6 +1754,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
@@ -1817,6 +1819,7 @@ local function UpdateResourceBar()
 				refreshText = true
 				Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
 			end
+			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 			refreshText = Bar:UpdatePetBars(barGroups, snapshotData, specCacheSettings) or refreshText
 		end
 
@@ -2073,6 +2076,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, true, TRB.Data.character.maxResource2, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil)
 		TRB.Functions.BarVisibility:AppendPetEntries(entries, barGroups, sharedSettings)
+		TRB.Functions.BarVisibility:AppendTotemEntries(entries, barGroups, sharedSettings)
 
 		if sharedSettings ~= nil then
 			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
