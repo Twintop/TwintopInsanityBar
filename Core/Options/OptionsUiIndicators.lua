@@ -271,6 +271,19 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		}
 	end
 
+	-- The Totems bar on specs with it. Its fill is per slot (element colors and Ending), so it offers no Bar element.
+	if TRB.Classes.BarTypeRegistry:SpecHasTotems(classId, specId) then
+		defs[#defs + 1] = {
+			key = "totemsBar",
+			label = L["ResourceTotems"],
+			elements = {
+				{ key = "border", label = L["BarElementBorder"] },
+				{ key = "background", label = L["BarElementBackground"] },
+				{ key = "endCap", label = L["EndCap"] },
+			}
+		}
+	end
+
 	return defs
 end
 
