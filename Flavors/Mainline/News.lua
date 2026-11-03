@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.5.9-release (2026-10-30)
+# 12.1.5.9-release (2026-11-03)
 ## Priest
 ### Discipline
 

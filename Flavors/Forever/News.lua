@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 1.60.1.16-release (2026-10-31)
+# 1.60.1.16-release (2026-11-03)
 ## Druid
 
 - [#921](#921) Add a Lacerate threshold line on the Rage bar and the `#lacerate` bar text variable.
