@@ -2,14 +2,14 @@
 -- LibSimpleHTMLMarkdown: a fork of LibMarkdown-1.0 (Oraibi-MoonGuard, https://github.com/endurantgames/WoW-LibMarkdown)
 -- lua implementation of markdown originally from https://github.com/mpeterv/markdown
 
-local  MARKDOWN10 = "LibSimpleHTMLMarkdown-1.0";
-local  MARKDOWN10_MINOR = 1;
-if not LibStub then error(MARKDOWN10 .. " requires LibStub."); end;
-local  LibMarkdown = LibStub:NewLibrary(MARKDOWN10, MARKDOWN10_MINOR);
-if not LibMarkdown then return; end;
+local  MARKDOWN10 = "LibSimpleHTMLMarkdown-1.0"
+local  MARKDOWN10_MINOR = 1
+if not LibStub then error(MARKDOWN10 .. " requires LibStub.") end
+local  LibMarkdown = LibStub:NewLibrary(MARKDOWN10, MARKDOWN10_MINOR)
+if not LibMarkdown then return end
 
 LibMarkdown.name = MARKDOWN10
-LibMarkdown.minor = MARKDOWN10_MINOR;
+LibMarkdown.minor = MARKDOWN10_MINOR
 
 LibMarkdown.config = {
   [ 'rt1'             ] = '|TInterface\\TARGETINGFRAME\\UI-RAIDTARGETINGICON_1.PNG:0|t',
@@ -60,9 +60,9 @@ LibMarkdown.config = {
   ['/body'            ] = '</body>',
   [ 'figcaption'      ] = 'Caption: |cffbbbb00',
   ['/figcaption'      ] = '|r',
-}; -- beep
+} -- beep
 
-LibMarkdown.entities_list = { "emsp", "ensp", "em13", "nbsp", "em14", "thinsp", };
+LibMarkdown.entities_list = { "emsp", "ensp", "em13", "nbsp", "em14", "thinsp", }
 
 LibMarkdown.rt_list = { 
   rt1 = { "Star",           },
@@ -73,7 +73,7 @@ LibMarkdown.rt_list = {
   rt6 = { "Square",         },
   rt7 = { "Cross", "X",     },
   rt8 = { "Skull",          }, 
-};
+}
 
 -- returns the result of mapping the values in table t through the function f
 function LibMarkdown.map(t, f, self)
@@ -81,8 +81,8 @@ function LibMarkdown.map(t, f, self)
    for k,v in pairs(t) 
    do if   self 
       then out[k] = f(self, v, k) 
-      else out[k] = f(k, v);
-      end;
+      else out[k] = f(k, v)
+      end
    end
    return out
 end
@@ -152,7 +152,7 @@ end
 
 function LibMarkdown.strip_paragraph_tags(s)
   return s:gsub("</?p.->",""):gsub("<br />%s*$", ""):gsub("^%s*<br />","")
-end;
+end
 
 -- outdents the text one step.
 function LibMarkdown.outdent(text)
@@ -372,16 +372,16 @@ function LibMarkdown.classify(self, line)
    if line:match("^```") then
       info.type = "backticks"
       info.outdented = ""
-      self.inACodeblock = not(self.inACodeblock or false);
+      self.inACodeblock = not(self.inACodeblock or false)
       return info
-   end;
+   end
 
 
    if self.inACodeblock then
       info.type = "indented"
       info.outdented = line
-      return info;
-   end;
+      return info
+   end
 
    if line:match("^    ") then
       info.type = "indented"
@@ -405,7 +405,7 @@ function LibMarkdown.classify(self, line)
    if line:match("^(#+)[ \t]*(.-)[ \t]*#*[ \t]*$") then
       local m1, m2 = line:match("^(#+)[ \t]*(.-)[ \t]*#*[ \t]*$")
       info.type = "header"
-      info.level = math.min(m1:len(), 3);
+      info.level = math.min(m1:len(), 3)
       info.text = m2
       return info
    end
@@ -426,7 +426,7 @@ function LibMarkdown.classify(self, line)
       info.number = number
       info.text = text
       return info
-   end;
+   end
 
    if                      line:match("^ ? ? ?(%a)[%.%)][ \t]+(.*)") then
       local number, text = line:match("^ ? ? ?(%a)[%.%)][ \t]*(.*)")
@@ -435,7 +435,7 @@ function LibMarkdown.classify(self, line)
       info.number = number 
       info.text = text
        return info
-    end;
+    end
 
    if line:match("^ ? ? ?([%*%+%-])[ \t]+(.+)") then
       local bullet, text = line:match("^ ? ? ?([%*%+%-])[ \t]+(.+)")
@@ -561,14 +561,14 @@ function LibMarkdown.lists(self, array, sublist)
                    (number and (number .. ".") or self.config["list_marker"]) ..  
                    self.config["ensp"]  ..
                    itemtext ..
-                   self.config["/li"];
-         end;
+                   self.config["/li"]
+         end
           
          if block then
             itemtext = self:block_transform(itemtext, true)
             -- if not itemtext:find("<pre>") then itemtext = LibMarkdown.indent(itemtext) end
             -- return "    <li>" .. itemtext .. "</li>"
-            return format_item(number, itemtext);
+            return format_item(number, itemtext)
          else
             local lines = LibMarkdown.split(itemtext)
             lines = LibMarkdown.map(lines, self.classify, self)
@@ -577,7 +577,7 @@ function LibMarkdown.lists(self, array, sublist)
             itemtext = table.concat(lines, "\n")
             -- if not itemtext:find("<pre>") then itemtext = LibMarkdown.indent(itemtext) end
             -- return "    <li>" .. itemtext .. "</li>"
-            return format_item(number, itemtext);
+            return format_item(number, itemtext)
          end
       end
 
@@ -590,7 +590,7 @@ function LibMarkdown.lists(self, array, sublist)
       -- end
 
       for i, item in ipairs(items) do
-         out = out .. process_list_item(item, block_list, arr[i].number) .. "\n";
+         out = out .. process_list_item(item, block_list, arr[i].number) .. "\n"
       end
 
       if arr[1].list_type == "numeric" or arr[1].list_type == "alphanumeric" or
@@ -631,7 +631,7 @@ function LibMarkdown.lists(self, array, sublist)
          local pos = #array
          for i = start, #array-1 do
             if array[i].type == "eob"
-               then return i-1;
+               then return i-1
             elseif 
                array[i].type == "blank" and array[i+1].type ~= "list_item"
                and array[i+1].type ~= "indented" and array[i+1].type ~= "blank" then
@@ -703,8 +703,8 @@ function LibMarkdown.blockquotes(self, lines)
       local bt = self:block_transform(raw)
       -- if not bt:find("<pre>") then bt = LibMarkdown.indent(bt) end
       -- return "<blockquote>\n    " .. bt ..  "\n</blockquote>"
-      -- return self.config.blockquote .. raw .. self.config["/blockquote"];
-      return self.config.blockquote .. LibMarkdown.strip_paragraph_tags(bt) .. self.config["/blockquote"];
+      -- return self.config.blockquote .. raw .. self.config["/blockquote"]
+      return self.config.blockquote .. LibMarkdown.strip_paragraph_tags(bt) .. self.config["/blockquote"]
    end
 
    while true do
@@ -726,7 +726,7 @@ function LibMarkdown.codeblocks(self, lines)
    local function find_codeblock(lines)
       local start
       for i,line in ipairs(lines) do
-         if line.type == "backticks" then start = i; break;
+         if line.type == "backticks" then start = i break
          elseif line.type == "indented" then start = i
          break end
       end
@@ -734,7 +734,7 @@ function LibMarkdown.codeblocks(self, lines)
 
       local stop = #lines
       for i = start+1, #lines do
-         if     lines[i+1] ~= nil and lines[i+1].type == "backticks" then return start, i+1;
+         if     lines[i+1] ~= nil and lines[i+1].type == "backticks" then return start, i+1
          elseif lines[i].type ~= "indented" and lines[i].type ~= "blank" then
             stop = i-1
             break
@@ -756,8 +756,8 @@ function LibMarkdown.codeblocks(self, lines)
    while true do
       local start, stop = find_codeblock(lines)
       if not start then break end
-      local text = process_codeblock(LibMarkdown.splice(lines, start, stop));
-      text = LibMarkdown.strip_paragraph_tags(text:gsub("```","")):gsub("  ", self.config.emsp);
+      local text = process_codeblock(LibMarkdown.splice(lines, start, stop))
+      text = LibMarkdown.strip_paragraph_tags(text:gsub("```","")):gsub("  ", self.config.emsp)
       text = self.config.pre .. text .. self.config["/pre"]
       local info = {
          line = text,
@@ -785,15 +785,15 @@ function LibMarkdown.block_transform(self, text, sublist)
 end
 
 function LibMarkdown.last_minute_lmd_fixes(text) --
-   text = text:gsub("([^<>\n]+)(<img.->)","<p>%1</p>\n%2");
-   text = text:gsub("(<img.->)([^<>]+)","%1<p>%2</p>");
-   text = text:gsub("<p>(<img.->)</p>", "%1");
-   text = text:gsub("<p([^>]*)>%s*<p>(.-)</p>%s*</p>", "<p%1>%2</p>");
-   text = text:gsub("<p[^>]*>%s*</p>", "");
-   text = text:gsub("<br />%s*<br />", "<br />");
+   text = text:gsub("([^<>\n]+)(<img.->)","<p>%1</p>\n%2")
+   text = text:gsub("(<img.->)([^<>]+)","%1<p>%2</p>")
+   text = text:gsub("<p>(<img.->)</p>", "%1")
+   text = text:gsub("<p([^>]*)>%s*<p>(.-)</p>%s*</p>", "<p%1>%2</p>")
+   text = text:gsub("<p[^>]*>%s*</p>", "")
+   text = text:gsub("<br />%s*<br />", "<br />")
       
-   return text;
-end;
+   return text
+end
 
 ----------------------------------------------------------------------
 -- span transform
@@ -895,7 +895,7 @@ function LibMarkdown.code_spans(self, s)
          code = code:gsub("[ \t]+$", "")
          code = code:gsub(self.escape_table["\\"], self.escape_table["\\"] .. self.escape_table["\\"])
          code = code:gsub(self.escape_table["`"], self.escape_table["\\"] .. self.escape_table["`"])
-         code = self.config.code .. self:encode_code(code) .. self.config["/code"];
+         code = self.config.code .. self:encode_code(code) .. self.config["/code"]
          code = self:add_escape(code)
          s = s:sub(1, start-1) .. code .. s:sub(estop+1)
          pos = start + code:len()
@@ -941,24 +941,24 @@ function LibMarkdown.images(self, text)
       url = url or link:match("%(<?(.-)>?[%s%)]")
       url = self:encode_alt(url)
 
-      local attrs = {};
+      local attrs = {}
       title = self:encode_alt(title)
 
-      attrs.src   = url or nil;
-      attrs.align = link:match(" (left)") or link:match(" (right)") or link:match(" (center)") or nil;
+      attrs.src   = url or nil
+      attrs.align = link:match(" (left)") or link:match(" (right)") or link:match(" (center)") or nil
       attrs.width, attrs.height = link:match(' (%d+)[x,./: -]+(%d+)')
-      attrs.alt    = nil; -- alt or nil;
+      attrs.alt    = nil -- alt or nil
 
       title = title and ('<p' .. (attrs.align and ' align="' .. attrs.align .. '">' or ">") .. 
-              self.config.figcaption .. title .. self.config["/figcaption"] .. '</p>\n') or "";
+              self.config.figcaption .. title .. self.config["/figcaption"] .. '</p>\n') or ""
 
-      local tag = "<img";
+      local tag = "<img"
 
-      for k, v in pairs(attrs) do tag = tag .. ' ' .. k .. '="' .. v .. '"'; end;
+      for k, v in pairs(attrs) do tag = tag .. ' ' .. k .. '="' .. v .. '"' end
 
-      tag = tag .. ' />';
+      tag = tag .. ' />'
 
-      return self:add_escape(tag) .. title;
+      return self:add_escape(tag) .. title
    end
 
    text = text:gsub("!(%b[])[ \t]*\n?[ \t]*(%b[])", reference_link)
@@ -1069,21 +1069,21 @@ end
 function LibMarkdown.entities(self, text)
    -- LMD: added this
    for _, k in ipairs(self.entities_list)
-   do text = text:gsub("&" .. k .. ";", self.config[k]);
-   end;
+   do text = text:gsub("&" .. k .. ";", self.config[k])
+   end
 
    for rt, aliases in pairs(self.rt_list)
-   do text = text:gsub('{' .. rt .. '}', self.config[rt]);
-      text = text:gsub('{' .. rt:upper() .. '}', self.config[rt]);
+   do text = text:gsub('{' .. rt .. '}', self.config[rt])
+      text = text:gsub('{' .. rt:upper() .. '}', self.config[rt])
       for _, aka in ipairs(aliases)
-      do  text = text:gsub('{' .. aka .. '}', self.config[rt]);
-          text = text:gsub('{' .. aka:lower() .. '}', self.config[rt]);
-          text = text:gsub('{' .. aka:upper() .. '}', self.config[rt]);
-      end;
-   end;
+      do  text = text:gsub('{' .. aka .. '}', self.config[rt])
+          text = text:gsub('{' .. aka:lower() .. '}', self.config[rt])
+          text = text:gsub('{' .. aka:upper() .. '}', self.config[rt])
+      end
+   end
 
-   return text;
-end;
+   return text
+end
 
 -- handles line break markers in the text.
 function LibMarkdown.line_breaks(self, text)
@@ -1167,42 +1167,42 @@ function LibMarkdown.markdown(self, text)
 end
 
 function LibMarkdown.ToHTML(self, param)
-     local ERRMESSAGE = "[" .. MARKDOWN10 .. "]: " .. ":ToHTML() requires a string or list of strings.";
-     local param_type = type(param);
+     local ERRMESSAGE = "[" .. MARKDOWN10 .. "]: " .. ":ToHTML() requires a string or list of strings."
+     local param_type = type(param)
 
      if     param_type == "string" 
      then   return self.config.html .. 
                      self.config.body .. 
                        self:markdown(param) ..
                      self.config["/body"] .. 
-                   self.config["/html"];
+                   self.config["/html"]
      elseif param_type == "table"
-            then local all_strings = true;
+            then local all_strings = true
 
                  for _, item in ipairs(param)
-                 do if type(item) ~= "string" then all_strings = false; break; end;
-                 end;
+                 do if type(item) ~= "string" then all_strings = false break end
+                 end
 
                  if all_strings 
                  then return self.config.html .. 
                                self.config.body .. 
                                  self:markdown(table.concat(param, "\n")) ..
                                self.config["/body"] .. 
-                             self.config["/html"];
-                 else print(ERRMESSAGE);
-                      return "";
-                 end;
-     else print(ERRMESSAGE);
-          return "";
-     end;
+                             self.config["/html"]
+                 else print(ERRMESSAGE)
+                      return ""
+                 end
+     else print(ERRMESSAGE)
+          return ""
+     end
   end
 
 function LibMarkdown.ShowConfig(self)
-    print("LMD.config = {");
+    print("LMD.config = {")
     for k, v in pairs(self.config)
-    do print(self.config.nbsp .. "['" .. k .. "'] = '" .. v .. "',");
-    end;
-    print("}");
-  end;
+    do print(self.config.nbsp .. "['" .. k .. "'] = '" .. v .. "',")
+    end
+    print("}")
+  end
 
-LibMarkdown.ToHtml = LibMarkdown.ToHTML;
+LibMarkdown.ToHtml = LibMarkdown.ToHTML
