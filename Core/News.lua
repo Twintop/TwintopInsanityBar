@@ -9,6 +9,7 @@ TRB.Details.coreNewsContent = [====[
 
 - [#916](#916) Add a Use class color option to the Cast Bar, coloring casts, channels, and uninterruptible casts with your class color.
 - [#916](#916) Add a Use class color option to the Cast Bar's Empower Level Colors, coloring empowered casts with your class color.
+- Replace the LibMarkdown library with LibSimpleHTMLMarkdown.
 
 ## Pet Bars
 
