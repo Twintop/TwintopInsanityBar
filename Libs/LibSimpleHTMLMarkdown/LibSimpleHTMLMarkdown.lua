@@ -1,10 +1,15 @@
 ---@diagnostic disable: inject-field
+-- LibSimpleHTMLMarkdown: a fork of LibMarkdown-1.0 (Oraibi-MoonGuard, https://github.com/endurantgames/WoW-LibMarkdown)
 -- lua implementation of markdown originally from https://github.com/mpeterv/markdown
 
-local  MARKDOWN10 = "LibMarkdown-1.0";
-local  MARKDOWN10_MINOR = 5;
+local  MARKDOWN10 = "LibSimpleHTMLMarkdown-1.0";
+local  MARKDOWN10_MINOR = 1;
 if not LibStub then error(MARKDOWN10 .. " requires LibStub."); end;
 local  LibMarkdown = LibStub:NewLibrary(MARKDOWN10, MARKDOWN10_MINOR);
+if not LibMarkdown then return; end;
+
+LibMarkdown.name = MARKDOWN10
+LibMarkdown.minor = MARKDOWN10_MINOR;
 
 LibMarkdown.config = {
   [ 'rt1'             ] = '|TInterface\\TARGETINGFRAME\\UI-RAIDTARGETINGICON_1.PNG:0|t',
@@ -32,11 +37,12 @@ LibMarkdown.config = {
   [ 'li'              ] = '',
   ['/li'              ] = '<br />',
   -- ['list_marker'      ] = '|TInterface\\MINIMAP\\TempleofKotmogu_ball_purple.PNG:0|t',
-  ['list_marker'     ] = '*',
+  ['list_marker'      ] = '*',
   [ 'pre'             ] = '<p>|cff66bbbb',
   ['/pre'             ] = '|r</p><br />',
   [ 'code'            ] = '|cff66bbbb',
   ['/code'            ] = '|r',
+  ['br'               ] = '<br />',
   [ 'blockquote'      ] = '<hr width="100"/><p align="center">|cffbbbb00"',
   ['/blockquote'      ] = '"|r</p><br /><hr width="100"/><br />',
   [ 'blockquote_quot' ] = '',
@@ -47,7 +53,7 @@ LibMarkdown.config = {
   [ 'h3'              ] = '<h3>',
   ['/h3'              ] = '</h3><br />',
   [ 'p'               ] = '<p>',
-  ['/p'               ] = '</p><br />',
+  ['/p'               ] = '</p>',
   [ 'html'            ] = '<html>',
   ['/html'            ] = '</html>',
   [ 'body'            ] = '<body>',
@@ -690,10 +696,8 @@ function LibMarkdown.blockquotes(self, lines)
    end
 
    local function process_blockquote(lines)
-      print(lines[1].text);
       local raw = self:escape_special_chars(lines[1].text)
       for i = 2,#lines do
-         print(lines[i].text);
          raw = raw .. self:escape_special_chars(lines[i].text) .. (lines[i].text == "" and "<br /> " .. self.config.nbsp .. ' <br />"' or '')
       end
       local bt = self:block_transform(raw)
@@ -1007,7 +1011,7 @@ function LibMarkdown.auto_links(self, text)
    end
    local function mail(s)
       s = self:unescape_special_chars(s)
-      local address = "mailto:" .. s--encode_email_address("mailto:" .. s)
+      local address = "mailto:" .. s
       return self:add_escape("<a href=\"" .. address .. "\">") .. s .. "</a>"
    end
    -- links
@@ -1172,17 +1176,17 @@ function LibMarkdown.ToHTML(self, param)
                        self:markdown(param) ..
                      self.config["/body"] .. 
                    self.config["/html"];
-     elseif param_type == "list"
+     elseif param_type == "table"
             then local all_strings = true;
 
                  for _, item in ipairs(param)
-                 do if type(item) ~= "string" then all_strings = true; break; end;
+                 do if type(item) ~= "string" then all_strings = false; break; end;
                  end;
 
                  if all_strings 
                  then return self.config.html .. 
                                self.config.body .. 
-                                 self:markdown(param) ..
+                                 self:markdown(table.concat(param, "\n")) ..
                                self.config["/body"] .. 
                              self.config["/html"];
                  else print(ERRMESSAGE);
@@ -1201,3 +1205,4 @@ function LibMarkdown.ShowConfig(self)
     print("}");
   end;
 
+LibMarkdown.ToHtml = LibMarkdown.ToHTML;

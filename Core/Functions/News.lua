@@ -2,7 +2,7 @@ local _, TRB = ...
 local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.News = {}
-local LMD = LibStub("LibMarkdown-1.0")
+local LMD = LibStub("LibSimpleHTMLMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 -- Two changelogs, one tab each: the flavor's (Flavors\<Flavor>\News.lua) and Core's (Core\News.lua). This
@@ -36,12 +36,12 @@ local function OnHyperlinkClick(_, link, text)
 	elseif link:match("^tab:") then
 		TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(TAB_GROUP_PREFIX, link:sub(5))
 	elseif link:match("https?://") then
-		StaticPopup_Show("LIBMARKDOWNDEMOFRAME_URL", nil, nil, { title = text, url = link })
+		StaticPopup_Show("TwintopResourceBar_NewsLink", nil, nil, { title = text, url = link })
 	elseif link:match("^#%d+$") then
 		local issueId = string.sub(link, 2)
 		local url = "https://github.com/Twintop/TwintopInsanityBar/issues/" .. issueId
 		local titleText = string.format(L["NewsHyperlinkViewIssueOnGitHub"], link)
-		StaticPopup_Show("LIBMARKDOWNDEMOFRAME_URL", nil, nil, { title = titleText, url = url })
+		StaticPopup_Show("TwintopResourceBar_NewsLink", nil, nil, { title = titleText, url = url })
 	end
 end
 
@@ -155,7 +155,7 @@ function TRB.Functions.News:BuildNewsPopup()
 		TRB.Data.settings.core.news.enabled = self:GetChecked()
 	end)
 
-	-- Override LibMarkdown inline color escapes for a cleaner palette
+	-- Override LibSimpleHTMLMarkdown inline color escapes for a cleaner palette, and keep the gap after paragraphs
 	LMD.config["strong"]  = "|cffffcc00"
 	LMD.config["/strong"] = "|r"
 	LMD.config["em"]      = "|cffff9966"
@@ -163,7 +163,7 @@ function TRB.Functions.News:BuildNewsPopup()
 	LMD.config["code"]    = "|cffaaaadd"
 	LMD.config["/code"]   = "|r"
 	LMD.config["pre"]     = "<p>|cffaaaadd"
-	LMD.config["/pre"]    = "|r</p><br />"
+	LMD.config["/pre"]    = "|r</p>"
 
 	-- The tab row and both readers share a container that stops short of the bottom controls.
 	local tabContainer = CreateFrame("Frame", "TRB_News_Frame_Tabs", newsFrame)
@@ -182,7 +182,7 @@ function TRB.Functions.News:BuildNewsPopup()
 	end
 
 	-- ... and this is the popup the URL links open.
-	StaticPopupDialogs["LIBMARKDOWNDEMOFRAME_URL"] = {
+	StaticPopupDialogs["TwintopResourceBar_NewsLink"] = {
 		OnShow = function(self, data)
 			self:SetWidth(450)
 			self:SetFormattedText(string.format(L["NewsHyperlinkGeneric"], data.title))
