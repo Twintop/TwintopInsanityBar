@@ -163,8 +163,7 @@ function TRB.Functions.News:BuildNewsPopup()
 	LMD.config["code"]    = "|cffaaaadd"
 	LMD.config["/code"]   = "|r"
 	LMD.config["pre"]     = "<p>|cffaaaadd"
-	LMD.config["/pre"]    = "|r</p><br />"
-	LMD.config["/p"]      = "</p><br />"
+	LMD.config["/pre"]    = "|r</p>"
 
 	-- The tab row and both readers share a container that stops short of the bottom controls.
 	local tabContainer = CreateFrame("Frame", "TRB_News_Frame_Tabs", newsFrame)
