@@ -4,6 +4,14 @@ local _, TRB = ...
 -- first. Titles name the Live, Forever, and Classic releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.10-release / Forever 1.60.1.17-release / Classic 1.15.9.2-release (2026-11-04)
+## Color Indicators
+
+- [#831](#831) Built-in Color Indicators can be removed, and added back with a new Add Built-in Color Indicator button.
+- [#831](#831) Add Built-in Color Indicator can also add more copies of a built-in Color Indicator, each with its own color, targets, and priority.
+
+---
+
 # Live 12.1.5.9-release / Forever 1.60.1.16-release / Classic 1.15.9.1-release (2026-11-03)
 ## General
 

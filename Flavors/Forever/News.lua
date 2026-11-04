@@ -8,6 +8,15 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.17-release (2026-11-04)
+## General
+### Color Indicators
+
+- [#831](#831) Built-in gradient colors can be removed, and added back or copied with a new Add Built-in Gradient Color button.
+- [#831](#831) Where two gradient colors target the same bar element, the higher one in the list is used.
+
+---
+
 # 1.60.1.16-release (2026-11-03)
 ## Druid
 

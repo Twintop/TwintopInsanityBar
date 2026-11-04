@@ -13,13 +13,14 @@
 	once per class. swing-timers checks the swing bars: the combat log tracker on Classic and PLAYER_SWING on Forever; it
 	runs once per class. classic-overcap checks Classic's flat Overcap indicators and their text color; it runs once per
 	class. totems checks the Totems bar's slot events, node count, binding, expiry, and enable prompt defaults; it runs once
-	per class. See build\harness\README.md.
+	per class. indicator-copies checks built-in Color Indicator copies and deletions in settings, the options, and every
+	specialization's render; it runs once per class. See build\harness\README.md.
 
 .PARAMETER Lua
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, classic-overcap, totems). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, classic-overcap, totems, indicator-copies). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic). Default: all.
@@ -54,7 +55,8 @@ $drivers = @(
 	[pscustomobject]@{ Name = "aura-conditions"; EveryClass = $true },
 	[pscustomobject]@{ Name = "swing-timers"; EveryClass = $true },
 	[pscustomobject]@{ Name = "classic-overcap"; EveryClass = $true },
-	[pscustomobject]@{ Name = "totems"; EveryClass = $true }
+	[pscustomobject]@{ Name = "totems"; EveryClass = $true },
+	[pscustomobject]@{ Name = "indicator-copies"; EveryClass = $true }
 )
 $known = $drivers | ForEach-Object { $_.Name }
 if ($Driver -ne "" -and $known -notcontains $Driver) {
