@@ -1030,6 +1030,8 @@ local scratch = {
 	manaBarColors3 = {},
 	barColorMap4 = {},
 	elementalBlastBuffColors1 = { criticalStrike = {}, haste = {}, mastery = {} },
+	maelstromGradients1 = {},
+	manaGradients1 = {},
 }
 
 ---Renders each enabled Elemental Blast buff on its node, in the user's order.
@@ -1044,7 +1046,6 @@ local function UpdateElementalBlastBuffs(specSettings)
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local cdm = TRB.Functions.CooldownManager
-	local gradient = Color:GetResolvedGradient()
 	local mappingChanged = MapElementalBlastBuffNodes(specSettings.colors.bars.elementalBlastBuffs)
 
 	for key, nodeIndex in pairs(elementalBlastBuffNodeMapping) do
@@ -1053,18 +1054,18 @@ local function UpdateElementalBlastBuffs(specSettings)
 			local nodeInfo = elementalBlastBuffNodes[key]
 			local spellId = spells[nodeInfo.spellKey].id
 			local colors = scratch.elementalBlastBuffColors1[key]
-			local gradientTargets = gradient and gradient.targets and gradient.targets[nodeInfo.targetKey]
+			local gradientTargets = Color:GetResolvedGradients(nodeInfo.targetKey)
 
 			-- Colors first: the engine fill mirrors this node's art, so it would otherwise trail a color change by a frame.
 			Color:ApplyFillColor(buffNode, colors.bar)
 			if gradientTargets and gradientTargets.border then
-				local borderCurve = Color:BuildResourceThresholdCurve(specSettings, colors.border, gradient.color)
+				local borderCurve = Color:BuildResourceThresholdCurve(specSettings, colors.border, gradientTargets.border.color)
 				buffNode:SetBorderColorCurve(UnitPowerPercent("player", TRB.Data.resource, true, borderCurve), Color:EvaluateEndCapCurve(buffNode, borderCurve))
 			else
 				buffNode:SetBorderColor(colors.border)
 			end
 			if gradientTargets and gradientTargets.background then
-				local backgroundCurve = Color:BuildResourceThresholdCurve(specSettings, colors.background, gradient.color)
+				local backgroundCurve = Color:BuildResourceThresholdCurve(specSettings, colors.background, gradientTargets.background.color)
 				buffNode:SetBackgroundColorCurve(UnitPowerPercent("player", TRB.Data.resource, true, backgroundCurve))
 			else
 				buffNode:SetBackgroundColorFromString(colors.background)
@@ -1135,8 +1136,6 @@ local function UpdateResourceBar()
 			local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
 				or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
 			local sharedColors = specSettings.colors.shared
-			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local gradientOrder = sharedColors and sharedColors.gradientOrder
 			local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
 			local ascendanceEndMet = false
 
@@ -1198,17 +1197,7 @@ local function UpdateResourceBar()
 				thresholdData:Refresh(talents)
 				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Shaman.ElementalSpells.thresholdSnowflakes)
 
-				local overcapIndicator = nil
-				if gradientOrder and indicatorColors then
-					for i = #gradientOrder, 1, -1 do
-						local key = gradientOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-							overcapIndicator = indicator
-							break
-						end
-					end
-				end
+				local maelstromGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "maelstromBar", scratch.maelstromGradients1)
 
 				barColor = maelstromBarColors.bar
 				barBorderColor = maelstromBarColors.border
@@ -1216,19 +1205,14 @@ local function UpdateResourceBar()
 
 				local overcapCurves = scratch.overcapCurves1
 				wipe(overcapCurves)
-				if overcapIndicator and overcapIndicator.targets then
-					local maelstromTargets = overcapIndicator.targets.maelstromBar
-					if maelstromTargets then
-						if maelstromTargets.border then
-							overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
-						end
-						if maelstromTargets.bar then
-							overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
-						end
-						if maelstromTargets.background then
-							overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
-						end
-					end
+				if maelstromGradients.border then
+					overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, maelstromGradients.border.color)
+				end
+				if maelstromGradients.bar then
+					overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, maelstromGradients.bar.color)
+				end
+				if maelstromGradients.background then
+					overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, maelstromGradients.background.color)
 				end
 
 				-- Flash is tied to Earth Shock / Elemental Blast only
@@ -1282,8 +1266,6 @@ local function UpdateResourceBar()
 					local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
 						or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
 					local sharedColors = specSettings.colors.shared
-					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local gradientOrder = sharedColors and sharedColors.gradientOrder
 					local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
 					local ascendanceEndMet = false
 
@@ -1319,17 +1301,7 @@ local function UpdateResourceBar()
 
 					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
-					local overcapIndicator = nil
-					if gradientOrder and indicatorColors then
-						for i = #gradientOrder, 1, -1 do
-							local key = gradientOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-								overcapIndicator = indicator
-								break
-							end
-						end
-					end
+					local manaGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "manaBar", scratch.manaGradients1)
 
 					manaNode:SetMinMax(0, maxMana)
 					manaNode:SetValue(currentMana)
@@ -1337,19 +1309,14 @@ local function UpdateResourceBar()
 
 					local manaOvercapCurves = scratch.manaOvercapCurves1
 					wipe(manaOvercapCurves)
-					if overcapIndicator and overcapIndicator.targets then
-						local manaTargets = overcapIndicator.targets.manaBar
-						if manaTargets then
-							if manaTargets.border then
-								manaOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, manaBarColors.border, overcapIndicator.color)
-							end
-							if manaTargets.bar then
-								manaOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, manaBarColors.bar, overcapIndicator.color)
-							end
-							if manaTargets.background then
-								manaOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, manaBarColors.background, overcapIndicator.color)
-							end
-						end
+					if manaGradients.border then
+						manaOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, manaBarColors.border, manaGradients.border.color)
+					end
+					if manaGradients.bar then
+						manaOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, manaBarColors.bar, manaGradients.bar.color)
+					end
+					if manaGradients.background then
+						manaOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, manaBarColors.background, manaGradients.background.color)
 					end
 
 					if manaOvercapCurves.border then

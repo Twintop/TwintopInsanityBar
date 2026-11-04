@@ -287,23 +287,22 @@ local function UpdateSnapshot()
 end
 
 -- Reused per-tick scratch tables so UpdateResourceBar allocates nothing.
-local scratch = { conditionMap = {}, barColors = {}, barColorMap = {}, formBarColors = { rage = {}, energy = {} }, comboPointColors = {}, claimed = { comboPointsBar = {} } }
+local scratch = { conditionMap = {}, barColors = {}, barColorMap = {}, formBarColors = { rage = {}, energy = {} }, comboPointColors = {}, claimed = { comboPointsBar = {} }, formConditionMap = {}, formBarGradients = { rage = {}, energy = {} } }
 
----A form bar's own Overcap gradient while its condition holds, or nil. These gradients stay out of the shared
----resolver, which measures every gradient against the primary resource: Mana here.
+---A form bar's own Overcap gradients per element while their condition holds, or nil. These gradients stay out
+---of the shared resolver, which measures every gradient against the primary resource: Mana here.
 ---@param formBar table
 ---@param sharedColors table
 ---@param isStealthed boolean
----@return table?
-local function ActiveFormBarGradient(formBar, sharedColors, isStealthed)
+---@return table<string, table>?
+local function ActiveFormBarGradients(formBar, sharedColors, isStealthed)
 	if not TRB.Data.character.inCombat or (formBar.overcapPausedInStealth and isStealthed) then
 		return nil
 	end
-	local indicator = sharedColors.indicatorColors[formBar.overcapIndicator]
-	if indicator ~= nil and indicator.enabled and indicator.isGradient then
-		return indicator
-	end
-	return nil
+	local formConditionMap = scratch.formConditionMap
+	wipe(formConditionMap)
+	formConditionMap[formBar.overcapIndicator] = true
+	return Color:ResolveGradientTargets(sharedColors, formConditionMap, formBar.indicator, scratch.formBarGradients[formBar.key])
 end
 
 local thresholdBars = { rage = TRB.Classes.ThresholdBar:New("rage"), energy = TRB.Classes.ThresholdBar:New("energy") }
@@ -402,12 +401,12 @@ local function UpdateResourceBar()
 				Bar:SetBarNodeValue(specCacheSettings, formBar.key, node, UnitPower("player", formBar.powerType), barMax)
 				Bar:ApplyNodeIndicators(node, formBar.indicator)
 				-- A secret maximum leaves no threshold to step the gradient at.
-				local gradient = not issecretvalue(maxPower) and ActiveFormBarGradient(formBar, sharedColors, isStealthed) or nil
+				local gradients = not issecretvalue(maxPower) and ActiveFormBarGradients(formBar, sharedColors, isStealthed) or nil
 				local overcap = specSettings.bars[formBar.key].overcap
-				Color:ApplyNodeGradientColors(node, formBar.indicator, barColorMap[formBar.indicator], gradient, formBar.powerType, overcap, maxPower)
-				local gradientTargets = gradient ~= nil and gradient.targets and gradient.targets[formBar.indicator] or nil
-				if gradient ~= nil and gradientTargets ~= nil and gradientTargets.endCap and node.endCapConfig ~= nil then
-					local curve = Color:BuildResourceThresholdCurve(nil, node.endCapConfig.color, gradient.color, overcap, maxPower)
+				Color:ApplyNodeGradientColors(node, barColorMap[formBar.indicator], gradients, formBar.powerType, overcap, maxPower)
+				local endCapGradient = gradients and gradients.endCap
+				if endCapGradient ~= nil and node.endCapConfig ~= nil then
+					local curve = Color:BuildResourceThresholdCurve(nil, node.endCapConfig.color, endCapGradient.color, overcap, maxPower)
 					if curve ~= nil then
 						node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", formBar.powerType, true, curve))
 					end

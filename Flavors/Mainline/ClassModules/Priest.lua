@@ -2352,6 +2352,8 @@ local scratch = {
 	barColorMap3 = {},
 	overcapCurvesInsanity1 = {},
 	overcapCurvesMana1 = {},
+	insanityGradients1 = {},
+	manaGradients1 = {},
 	serenityCues = {
 		{ id = "holyWordSerenityCharge1", condition = false },
 		{ id = "holyWordSerenityCharge2", condition = false },
@@ -2988,18 +2990,8 @@ local function UpdateResourceBar()
 				local isCasting = snapshotData.casting.resourceFinal ~= 0
 
 				-- Find active gradient indicators (separate priority group, always override flat colors when active)
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				local overcapIndicator = nil
-				if gradientOrder and indicatorColors then
-					for i = #gradientOrder, 1, -1 do
-						local key = gradientOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-							overcapIndicator = indicator
-							break
-						end
-					end
-				end
+				local insanityGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "insanityBar", scratch.insanityGradients1)
+				local manaGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "manaBar", scratch.manaGradients1)
 
 				-- Resolve final insanity bar colors from the map
 				barColor = insanityBarColors.bar
@@ -3014,31 +3006,23 @@ local function UpdateResourceBar()
 				-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
 				local overcapCurvesInsanity = scratch.overcapCurvesInsanity1
 				wipe(overcapCurvesInsanity)
-				if overcapIndicator and overcapIndicator.targets then
-					local insanityTargets = overcapIndicator.targets.insanityBar
-					if insanityTargets then
-						if insanityTargets.border then
-							overcapCurvesInsanity.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
-						end
-						if insanityTargets.bar then
-							overcapCurvesInsanity.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
-						end
-						if insanityTargets.background then
-							overcapCurvesInsanity.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
-						end
-					end
-					local manaTargets = overcapIndicator.targets.manaBar
-					if manaTargets then
-						if manaTargets.border then
-							overcapCurvesMana.border = Color:BuildResourceThresholdCurve(specSettings, manaBorderColor, overcapIndicator.color)
-						end
-						if manaTargets.bar then
-							overcapCurvesMana.bar = Color:BuildResourceThresholdCurve(specSettings, manaBarColor, overcapIndicator.color)
-						end
-						if manaTargets.background then
-							overcapCurvesMana.background = Color:BuildResourceThresholdCurve(specSettings, manaBackgroundColor, overcapIndicator.color)
-						end
-					end
+				if insanityGradients.border then
+					overcapCurvesInsanity.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, insanityGradients.border.color)
+				end
+				if insanityGradients.bar then
+					overcapCurvesInsanity.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, insanityGradients.bar.color)
+				end
+				if insanityGradients.background then
+					overcapCurvesInsanity.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, insanityGradients.background.color)
+				end
+				if manaGradients.border then
+					overcapCurvesMana.border = Color:BuildResourceThresholdCurve(specSettings, manaBorderColor, manaGradients.border.color)
+				end
+				if manaGradients.bar then
+					overcapCurvesMana.bar = Color:BuildResourceThresholdCurve(specSettings, manaBarColor, manaGradients.bar.color)
+				end
+				if manaGradients.background then
+					overcapCurvesMana.background = Color:BuildResourceThresholdCurve(specSettings, manaBackgroundColor, manaGradients.background.color)
 				end
 
 				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)

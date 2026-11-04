@@ -1888,6 +1888,12 @@ local scratch = {
 	manaBarColors1 = {},
 	comboPointColors4 = {},
 	barColorMap4 = {},
+	astralPowerGradients1 = {},
+	maxBiteEnergyGradients1 = {},
+	overcapEnergyGradients1 = {},
+	maxBiteComboPointGradients1 = {},
+	overcapComboPointGradients1 = {},
+	rageGradients1 = {},
 }
 
 -- Feral's per-element curve cache and result keys, built once so the per-tick color pass builds no strings.
@@ -2268,34 +2274,24 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 				-- Find active gradient indicators
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				if gradientOrder and indicatorColors then
-					for _, key in ipairs(gradientOrder) do
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient and indicator.targets then
-							local astralTargets = indicator.targets.astralPowerBar
-							if astralTargets then
-								if astralTargets.border then
-									local curve = Color:BuildResourceThresholdCurve(specSettings, astralPowerBarColors.border, indicator.color)
-									local result = UnitPowerPercent("player", displayResourceType, true, curve)
-									primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
-									astralPowerBarColors.border = nil -- mark as applied
-								end
-								if astralTargets.bar then
-									local curve = Color:BuildResourceThresholdCurve(specSettings, astralPowerBarColors.bar, indicator.color)
-									local result = UnitPowerPercent("player", displayResourceType, true, curve)
-									primaryNode:SetColorCurve(result)
-									astralPowerBarColors.bar = nil
-								end
-								if astralTargets.background then
-									local curve = Color:BuildResourceThresholdCurve(specSettings, astralPowerBarColors.background, indicator.color)
-									local result = UnitPowerPercent("player", displayResourceType, true, curve)
-									primaryNode:SetBackgroundColorCurve(result)
-									astralPowerBarColors.background = nil
-								end
-							end
-						end
-					end
+				local astralGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "astralPowerBar", scratch.astralPowerGradients1)
+				if astralGradients.border then
+					local curve = Color:BuildResourceThresholdCurve(specSettings, astralPowerBarColors.border, astralGradients.border.color)
+					local result = UnitPowerPercent("player", displayResourceType, true, curve)
+					primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
+					astralPowerBarColors.border = nil -- mark as applied
+				end
+				if astralGradients.bar then
+					local curve = Color:BuildResourceThresholdCurve(specSettings, astralPowerBarColors.bar, astralGradients.bar.color)
+					local result = UnitPowerPercent("player", displayResourceType, true, curve)
+					primaryNode:SetColorCurve(result)
+					astralPowerBarColors.bar = nil
+				end
+				if astralGradients.background then
+					local curve = Color:BuildResourceThresholdCurve(specSettings, astralPowerBarColors.background, astralGradients.background.color)
+					local result = UnitPowerPercent("player", displayResourceType, true, curve)
+					primaryNode:SetBackgroundColorCurve(result)
+					astralPowerBarColors.background = nil
 				end
 
 				-- Read final colors from the color map (after flat indicator overrides)
@@ -2428,13 +2424,14 @@ local function UpdateResourceBar()
 					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 					-- Apply gradient indicators
-					local gradientOrder = sharedColors and sharedColors.gradientOrder
-					if gradientOrder and indicatorColors then
-						-- Pre-resolve both gradient indicators to detect overlap
-						local maxBiteInd = indicatorColors.maxBite
-						local overcapInd = indicatorColors.borderOvercap
-						local maxBiteActive = maxBiteInd and maxBiteInd.enabled and conditionMap.maxBite and maxBiteInd.isGradient
-						local overcapActive = overcapInd and overcapInd.enabled and conditionMap.borderOvercap and overcapInd.isGradient
+					do
+						-- Pre-resolve both gradient kinds per element to detect overlap
+						local maxBiteEnergyTargets = Color:ResolveGradientTargets(sharedColors, conditionMap, "energyBar", scratch.maxBiteEnergyGradients1, "maxBite")
+						local overcapEnergyTargets = Color:ResolveGradientTargets(sharedColors, conditionMap, "energyBar", scratch.overcapEnergyGradients1, "borderOvercap")
+						local maxBiteCpTargets = Color:ResolveGradientTargets(sharedColors, conditionMap, "comboPoints", scratch.maxBiteComboPointGradients1, "maxBite")
+						local overcapCpTargets = Color:ResolveGradientTargets(sharedColors, conditionMap, "comboPoints", scratch.overcapComboPointGradients1, "borderOvercap")
+						local maxBiteActive = next(maxBiteEnergyTargets) ~= nil or next(maxBiteCpTargets) ~= nil
+						local overcapActive = next(overcapEnergyTargets) ~= nil or next(overcapCpTargets) ~= nil
 
 						-- Compute thresholds once
 						local maxBitePercent, overcapPercent
@@ -2457,11 +2454,9 @@ local function UpdateResourceBar()
 						end
 
 						-- Process energy bar elements
-						local maxBiteEnergyTargets = maxBiteActive and maxBiteInd.targets and maxBiteInd.targets.energyBar
-						local overcapEnergyTargets = overcapActive and overcapInd.targets and overcapInd.targets.energyBar
 						for _, elem in ipairs(FERAL_ELEMENTS) do
-							local mbTargets = maxBiteEnergyTargets and maxBiteEnergyTargets[elem]
-							local ocTargets = overcapEnergyTargets and overcapEnergyTargets[elem]
+							local mbTargets = maxBiteEnergyTargets[elem]
+							local ocTargets = overcapEnergyTargets[elem]
 							local baseColor = energyBarColors[elem]
 							if type(baseColor) == "table" then
 								baseColor = baseColor.color
@@ -2469,7 +2464,7 @@ local function UpdateResourceBar()
 							if baseColor then
 								if mbTargets and ocTargets then
 									-- Combined 3-point curve
-									local curve = BuildFeralCombinedCurve(feralCurveKeys.combinedEnergy[elem], baseColor, maxBiteInd.color, overcapInd.color, maxBitePercent, overcapPercent)
+									local curve = BuildFeralCombinedCurve(feralCurveKeys.combinedEnergy[elem], baseColor, mbTargets.color, ocTargets.color, maxBitePercent, overcapPercent)
 									local result = UnitPowerPercent("player", displayResourceType, true, curve)
 									if elem == "bar" then
 										barColorCurveResult = result
@@ -2480,7 +2475,7 @@ local function UpdateResourceBar()
 									end
 									energyBarColors[elem] = nil
 								elseif mbTargets then
-									local curve = Color:GetStepColorCurve(feralCurveKeys.maxBite[elem], baseColor, maxBiteInd.color, maxBitePercent)
+									local curve = Color:GetStepColorCurve(feralCurveKeys.maxBite[elem], baseColor, mbTargets.color, maxBitePercent)
 									local result = UnitPowerPercent("player", displayResourceType, true, curve)
 									if elem == "bar" then
 										barColorCurveResult = result
@@ -2491,7 +2486,7 @@ local function UpdateResourceBar()
 									end
 									energyBarColors[elem] = nil
 								elseif ocTargets then
-									local curve = Color:BuildResourceThresholdCurve(specSettings, baseColor, overcapInd.color)
+									local curve = Color:BuildResourceThresholdCurve(specSettings, baseColor, ocTargets.color)
 									local result = UnitPowerPercent("player", displayResourceType, true, curve)
 									if elem == "bar" then
 										primaryNode:SetColorCurve(result)
@@ -2506,27 +2501,25 @@ local function UpdateResourceBar()
 						end
 
 						-- Process combo point elements
-						local maxBiteCpTargets = maxBiteActive and maxBiteInd.targets and maxBiteInd.targets.comboPoints
-						local overcapCpTargets = overcapActive and overcapInd.targets and overcapInd.targets.comboPoints
 						local cpBaseColors = scratch.cpBaseColors1
 						wipe(cpBaseColors)
 						cpBaseColors.bar = specSettings.colors.comboPoints.base
 						cpBaseColors.border = specSettings.colors.comboPoints.border.color
 						cpBaseColors.background = specSettings.colors.comboPoints.background.color
 						for _, elem in ipairs(FERAL_ELEMENTS) do
-							local mbTargets = maxBiteCpTargets and maxBiteCpTargets[elem]
-							local ocTargets = overcapCpTargets and overcapCpTargets[elem]
+							local mbTargets = maxBiteCpTargets[elem]
+							local ocTargets = overcapCpTargets[elem]
 							local cpBase = cpBaseColors[elem]
 							if type(cpBase) == "table" then
 								cpBase = cpBase.color
 							end
 							local curve = nil
 							if mbTargets and ocTargets then
-								curve = BuildFeralCombinedCurve(feralCurveKeys.combinedCp[elem], cpBase, maxBiteInd.color, overcapInd.color, maxBitePercent, overcapPercent)
+								curve = BuildFeralCombinedCurve(feralCurveKeys.combinedCp[elem], cpBase, mbTargets.color, ocTargets.color, maxBitePercent, overcapPercent)
 							elseif mbTargets then
-								curve = Color:GetStepColorCurve(feralCurveKeys.maxBiteCp[elem], cpBase, maxBiteInd.color, maxBitePercent)
+								curve = Color:GetStepColorCurve(feralCurveKeys.maxBiteCp[elem], cpBase, mbTargets.color, maxBitePercent)
 							elseif ocTargets then
-								curve = Color:BuildResourceThresholdCurve(specSettings, cpBase, overcapInd.color)
+								curve = Color:BuildResourceThresholdCurve(specSettings, cpBase, ocTargets.color)
 							end
 							if curve then
 								comboPointColors[feralCurveKeys.result[elem]] = UnitPowerPercent("player", displayResourceType, true, curve)
@@ -2748,34 +2741,24 @@ local function UpdateResourceBar()
 				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 				-- Apply gradient indicators
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				if gradientOrder and indicatorColors then
-					for _, key in ipairs(gradientOrder) do
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient and indicator.targets then
-							local rageTargets = indicator.targets.rageBar
-							if rageTargets then
-								if rageTargets.border then
-									local curve = Color:BuildResourceThresholdCurve(specSettings, rageBarColors.border, indicator.color)
-									local result = UnitPowerPercent("player", displayResourceType, true, curve)
-									primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
-									rageBarColors.border = nil
-								end
-								if rageTargets.bar then
-									local curve = Color:BuildResourceThresholdCurve(specSettings, rageBarColors.bar, indicator.color)
-									local result = UnitPowerPercent("player", displayResourceType, true, curve)
-									primaryNode:SetColorCurve(result)
-									rageBarColors.bar = nil
-								end
-								if rageTargets.background then
-									local curve = Color:BuildResourceThresholdCurve(specSettings, rageBarColors.background, indicator.color)
-									local result = UnitPowerPercent("player", displayResourceType, true, curve)
-									primaryNode:SetBackgroundColorCurve(result)
-									rageBarColors.background = nil
-								end
-							end
-						end
-					end
+				local rageGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "rageBar", scratch.rageGradients1)
+				if rageGradients.border then
+					local curve = Color:BuildResourceThresholdCurve(specSettings, rageBarColors.border, rageGradients.border.color)
+					local result = UnitPowerPercent("player", displayResourceType, true, curve)
+					primaryNode:SetBorderColorCurve(result, Color:EvaluateEndCapCurve(primaryNode, curve, displayResourceType))
+					rageBarColors.border = nil
+				end
+				if rageGradients.bar then
+					local curve = Color:BuildResourceThresholdCurve(specSettings, rageBarColors.bar, rageGradients.bar.color)
+					local result = UnitPowerPercent("player", displayResourceType, true, curve)
+					primaryNode:SetColorCurve(result)
+					rageBarColors.bar = nil
+				end
+				if rageGradients.background then
+					local curve = Color:BuildResourceThresholdCurve(specSettings, rageBarColors.background, rageGradients.background.color)
+					local result = UnitPowerPercent("player", displayResourceType, true, curve)
+					primaryNode:SetBackgroundColorCurve(result)
+					rageBarColors.background = nil
 				end
 
 				-- Read final colors

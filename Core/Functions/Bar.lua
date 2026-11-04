@@ -2239,7 +2239,7 @@ function TRB.Functions.Bar:UpdatePetBars(barGroups, snapshotData, settings)
 		petPowerColors.border = (indicators and indicators.border) or configured.border.color
 		petPowerColors.background = (indicators and indicators.background) or configured.background.color
 		local specSettings = TRB.Data.resolvedIndicators.specSettings
-		Color:ApplyNodeGradientColors(powerNode, "petPowerBar", petPowerColors, Color:GetResolvedGradient(), TRB.Data.resource,
+		Color:ApplyNodeGradientColors(powerNode, petPowerColors, Color:GetResolvedGradients("petPowerBar"), TRB.Data.resource,
 			specSettings and specSettings.overcap)
 		-- ApplyNodeIndicators reads only a spec bar's flat end cap; a shared bar's lives with its other resolved colors.
 		Color:ApplyResolvedEndCap(powerNode, "petPowerBar")
@@ -2276,15 +2276,13 @@ function TRB.Functions.Bar:ApplyNodeIndicators(node, barKey, endCapElement, endC
 	end
 	local Color = TRB.Functions.Color
 
-	local gradient = Color:GetResolvedGradient()
+	local gradients = Color:GetResolvedGradients(barKey)
+	local gradient = gradients and gradients[endCapElement or "endCap"]
 	if gradient ~= nil and TRB.Data.resource ~= nil then
-		local targets = gradient.targets and gradient.targets[barKey]
-		if targets and targets[endCapElement or "endCap"] then
-			local curve = Color:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, node.endCapConfig.color, gradient.color)
-			if curve ~= nil then
-				node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", TRB.Data.resource, true, curve))
-				return
-			end
+		local curve = Color:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, node.endCapConfig.color, gradient.color)
+		if curve ~= nil then
+			node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", TRB.Data.resource, true, curve))
+			return
 		end
 	end
 
