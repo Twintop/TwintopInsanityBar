@@ -2407,6 +2407,12 @@ local function UpdateResourceBar()
 					conditionMap.halazzisFury = snapshots[spells.halazzisFury.id].buff.isActive
 					conditionMap.maxBite = snapshotData.attributes.resource2 == 5 and not apcActive
 					conditionMap.borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId
+					-- The shared bars and End Caps step Max Bite at its cost, not at the overcap threshold.
+					local maxBitePercent = nil
+					if conditionMap.maxBite then
+						maxBitePercent = spells.ferociousBiteMaximum:GetPrimaryResourceCost() / (TRB.Data.character.maxEnergy or 100)
+						Color:SetGradientStep("maxBite", maxBitePercent)
+					end
 
 					local energyBarColors = scratch.energyBarColors1
 					wipe(energyBarColors)
@@ -2430,16 +2436,10 @@ local function UpdateResourceBar()
 						local overcapEnergyTargets = Color:ResolveGradientTargets(sharedColors, conditionMap, "energyBar", scratch.overcapEnergyGradients1, "borderOvercap")
 						local maxBiteCpTargets = Color:ResolveGradientTargets(sharedColors, conditionMap, "comboPoints", scratch.maxBiteComboPointGradients1, "maxBite")
 						local overcapCpTargets = Color:ResolveGradientTargets(sharedColors, conditionMap, "comboPoints", scratch.overcapComboPointGradients1, "borderOvercap")
-						local maxBiteActive = next(maxBiteEnergyTargets) ~= nil or next(maxBiteCpTargets) ~= nil
 						local overcapActive = next(overcapEnergyTargets) ~= nil or next(overcapCpTargets) ~= nil
 
-						-- Compute thresholds once
-						local maxBitePercent, overcapPercent
-						if maxBiteActive then
-							local maxBiteCost = spells.ferociousBiteMaximum:GetPrimaryResourceCost()
-							local maxEnergy = TRB.Data.character.maxEnergy or 100
-							maxBitePercent = maxBiteCost / maxEnergy
-						end
+						-- Compute the overcap threshold once; Max Bite's was published above
+						local overcapPercent
 						if overcapActive then
 							local maxResource = TRB.Data.character.maxResourceUnmodified or 100
 							local thresholdValue = maxResource

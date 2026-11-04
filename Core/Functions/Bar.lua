@@ -2279,7 +2279,7 @@ function TRB.Functions.Bar:ApplyNodeIndicators(node, barKey, endCapElement, endC
 	local gradients = Color:GetResolvedGradients(barKey)
 	local gradient = gradients and gradients[endCapElement or "endCap"]
 	if gradient ~= nil and TRB.Data.resource ~= nil then
-		local curve = Color:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, node.endCapConfig.color, gradient.color)
+		local curve = Color:BuildResolvedGradientCurve(gradient, node.endCapConfig.color)
 		if curve ~= nil then
 			node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", TRB.Data.resource, true, curve))
 			return

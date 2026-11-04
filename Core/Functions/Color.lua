@@ -1118,6 +1118,15 @@ TRB.Data.resolvedIndicators = {
 	-- barKey -> element -> active gradient indicator; only the render path knows the curve's base color.
 	---@type table<string, table<string, table>>
 	gradients = {},
+	-- Each resolved gradient indicator's built-in key, so its published step can be found.
+	---@type table<table, string>
+	gradientKeys = setmetatable({}, { __mode = "k" }),
+	-- builtInKey -> where a gradient steps as a fraction of the resource, published by a spec whose gradient isn't
+	-- measured at the overcap threshold; stamped with the compositeKey that published it.
+	---@type table<string, number>
+	gradientSteps = {},
+	---@type string?
+	gradientStepsKey = nil,
 	-- The active spec's RAW settings. A gradient curve steps at the resource's overcap threshold, which lives
 	-- on the settings root -- and the composed spec-cache settings the render paths carry don't include it.
 	-- Parking it here is what lets the shared bars step at the same threshold the spec's own bars do.
@@ -1243,6 +1252,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 
 	-- Same per-element selection ResolveGradientTargets makes for a spec's own bars, for every bar at once.
 	local gradients = resolved.gradients
+	local gradientKeys = resolved.gradientKeys
 	for _, barGradients in pairs(gradients) do
 		wipe(barGradients)
 	end
@@ -1251,6 +1261,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 			local key = gradientOrder[i]
 			local indicator = indicatorColors[key]
 			if indicator and indicator.enabled and indicator.isGradient and indicator.targets and conditionMap[indicator.copyOf or key] then
+				gradientKeys[indicator] = indicator.copyOf or key
 				for barKey, elements in pairs(indicator.targets) do
 					local barGradients = gradients[barKey]
 					if barGradients == nil then
@@ -1397,6 +1408,44 @@ function TRB.Functions.Color:GetResolvedGradients(barKey)
 	return resolved.gradients[barKey]
 end
 
+---Publishes where a gradient built-in steps on the shared bars and End Caps, as a fraction of the resource, for one
+---not measured at the overcap threshold. nil clears it.
+---@param builtInKey string
+---@param step number?
+function TRB.Functions.Color:SetGradientStep(builtInKey, step)
+	local resolved = TRB.Data.resolvedIndicators
+	local compositeKey = TRB.Data.character.compositeKey
+	if resolved.gradientStepsKey ~= compositeKey then
+		wipe(resolved.gradientSteps)
+		resolved.gradientStepsKey = compositeKey
+	end
+	resolved.gradientSteps[builtInKey] = step
+end
+
+---A resolved gradient's step curve from baseColor up to its color: at the step its spec published, else at the
+---overcap threshold of the raw spec settings, which the composed settings render paths carry don't include.
+---@param gradient table # An indicator from GetResolvedGradients
+---@param baseColor string|table?
+---@return table?
+function TRB.Functions.Color:BuildResolvedGradientCurve(gradient, baseColor)
+	local resolved = TRB.Data.resolvedIndicators
+	local step = nil
+	if resolved.gradientStepsKey == TRB.Data.character.compositeKey then
+		local builtInKey = resolved.gradientKeys[gradient]
+		step = builtInKey ~= nil and resolved.gradientSteps[builtInKey] or nil
+	end
+	if step == nil then
+		return self:BuildResourceThresholdCurve(resolved.specSettings, baseColor, gradient.color)
+	end
+	if type(baseColor) == "table" then
+		baseColor = baseColor.color
+	end
+	if type(baseColor) ~= "string" then
+		return nil
+	end
+	return self:GetStepColorCurve("resolvedGradient", baseColor, gradient.color, step)
+end
+
 ---Fills `out` with each element of a bar's top-priority gradient indicator that is on and met, for a spec
 ---resolving its own bars against its own condition map.
 ---@param sharedColors table? # spec.colors.shared
@@ -1446,8 +1495,7 @@ function TRB.Functions.Color:ApplyResolvedBorderOrBackground(node, barKey, eleme
 	local gradients = self:GetResolvedGradients(barKey)
 	local gradient = gradients and gradients[element]
 	if gradient ~= nil and baseColor ~= nil and TRB.Data.resource ~= nil then
-		-- The raw spec settings, not the composed ones the caller carries: only they hold the overcap threshold.
-		curve = self:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, baseColor, gradient.color)
+		curve = self:BuildResolvedGradientCurve(gradient, baseColor)
 	end
 
 	if curve ~= nil then
@@ -1481,7 +1529,7 @@ function TRB.Functions.Color:ApplyResolvedEndCap(node, barKey)
 	local gradients = self:GetResolvedGradients(barKey)
 	local gradient = gradients and gradients.endCap
 	if gradient ~= nil and TRB.Data.resource ~= nil then
-		local curve = self:BuildResourceThresholdCurve(TRB.Data.resolvedIndicators.specSettings, config.color, gradient.color)
+		local curve = self:BuildResolvedGradientCurve(gradient, config.color)
 		if curve ~= nil then
 			node:ApplyEndCapIndicator(nil, UnitPowerPercent("player", TRB.Data.resource, true, curve))
 			return

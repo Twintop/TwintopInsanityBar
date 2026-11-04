@@ -15,6 +15,11 @@ TRB.Flavor.newsContent = [====[
 - [#831](#831) Built-in gradient colors can be removed, and added back or copied with a new Add Built-in Gradient Color button.
 - [#831](#831) Where two gradient colors target the same bar element, the higher one in the list is used.
 
+## Druid
+### Feral
+
+- [#929](#929) Fix the Max Bite gradient color on the Health bar, the cast bars, and End Caps changing at the overcap threshold instead of at Ferocious Bite's maximum cost.
+
 ---
 
 # 12.1.5.9-release (2026-11-03)
