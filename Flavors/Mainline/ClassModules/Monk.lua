@@ -1114,10 +1114,9 @@ local function UpdateResourceBar()
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local gradientOrder = sharedColors and sharedColors.gradientOrder
 			local invokeNiuzaoActive = snapshots[spells.invokeNiuzao.id].buff.isActive
-			local invokeNiuzaoEndIndicator = indicatorColors and indicatorColors.invokeNiuzaoEnd
 			local invokeNiuzaoEndMet = false
 
-			if invokeNiuzaoActive and invokeNiuzaoEndIndicator and invokeNiuzaoEndIndicator.enabled then
+			if invokeNiuzaoActive then
 				local niuzaoTimeLeft = snapshots[spells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
 				local timeThreshold = 0
 				if specSettings.endOf.invokeNiuzao.mode == "gcd" then
@@ -1270,9 +1269,8 @@ local function UpdateResourceBar()
 						if stNodeOrder and stIndicatorColors then
 							local stSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
 							local invokeNiuzaoActive = snapshots[stSpells.invokeNiuzao.id].buff.isActive
-							local stInvokeNiuzaoEndIndicator = stIndicatorColors.invokeNiuzaoEnd
 							local invokeNiuzaoEndMet = false
-							if invokeNiuzaoActive and stInvokeNiuzaoEndIndicator and stInvokeNiuzaoEndIndicator.enabled then
+							if invokeNiuzaoActive then
 								local niuzaoTimeLeft = snapshots[stSpells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
 								local timeThreshold = 0
 								if specSettings.endOf.invokeNiuzao.mode == "gcd" then

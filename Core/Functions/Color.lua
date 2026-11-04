@@ -1150,10 +1150,10 @@ local castbarElements = { "bar", "channel", "border", "background", "tick", "end
 local previousCastbar = {}
 local previousPetCastbar = {}
 
----Writes each custom indicator's condition into a condition map. ApplyIndicatorColors does this itself;
----a spec walking nodeOrder against a condition map of its own calls it first.
+---Writes each custom indicator's condition, and each built-in copy's built-in condition, into a condition
+---map. ApplyIndicatorColors does this itself; a spec walking nodeOrder against a map of its own calls it first.
 ---@param sharedColors table? # spec.colors.shared
----@param conditionMap table<string, boolean>
+---@param conditionMap table<string, boolean> # Already holding the spec's built-in conditions
 function TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
 	local indicatorColors = sharedColors and sharedColors.indicatorColors
 	local nodeOrder = sharedColors and sharedColors.nodeOrder
@@ -1169,8 +1169,11 @@ function TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, condit
 	for i = 1, #nodeOrder do
 		local key = nodeOrder[i]
 		local indicator = indicatorColors[key]
+		local copyOf = indicator and indicator.copyOf
 		local conditions = indicator and indicator.custom and indicator.custom.conditions
-		if conditions ~= nil then
+		if copyOf ~= nil then
+			conditionMap[key] = conditionMap[copyOf]
+		elseif conditions ~= nil then
 			local met = #conditions > 0
 			for c = 1, #conditions do
 				local condition = conditions[c]
