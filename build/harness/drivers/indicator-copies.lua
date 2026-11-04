@@ -359,6 +359,39 @@ function hooks.afterEvents(ctx)
 			local _, _, _, _, y = frame:GetPoint(1)
 			return y
 		end
+		---An entry's targeted elements as sorted "bar.element" strings.
+		local function TargetString(entry)
+			local found = {}
+			for barKey, elements in pairs(entry ~= nil and entry.targets or {}) do
+				for elemKey, isTargeted in pairs(elements) do
+					if isTargeted == true then found[#found + 1] = barKey .. "." .. elemKey end
+				end
+			end
+			table.sort(found)
+			return table.concat(found, ",")
+		end
+		---What an entry targets after the next login's merge of the save over the defaults.
+		local function TargetsAfterLogin(key)
+			local merged = Table:Merge({ colors = { shared = Table:DeepCopy(defaults or {}) } }, { colors = { shared = Table:DeepCopy(shared) } })
+			return TargetString(merged.colors.shared.indicatorColors[key])
+		end
+		---Ticks one element the built-in doesn't target by default, as its targets menu does.
+		local function TargetNonDefault(key)
+			local defaultEntry = defaults ~= nil and defaults.indicatorColors[key] or nil
+			local defaultTargets = defaultEntry ~= nil and defaultEntry.targets or {}
+			local entry = shared.indicatorColors[key]
+			for _, barDef in ipairs(panel.config.barTargetDefs) do
+				for _, elemKey in ipairs({ "background", "border", "bar" }) do
+					if not (defaultTargets[barDef.key] and defaultTargets[barDef.key][elemKey]) then
+						entry.targets[barDef.key] = entry.targets[barDef.key] or {}
+						entry.targets[barDef.key][elemKey] = true
+						entry.enabled = true
+						return barDef.key .. "." .. elemKey
+					end
+				end
+			end
+			return nil
+		end
 
 		local addBuiltIn = FindButton(panel, L["BuiltInIndicatorAddButton"])
 		if #defs == 0 then
@@ -377,17 +410,21 @@ function hooks.afterEvents(ctx)
 			check(loginEntry.compositeKey .. ": picking a listed built-in adds a copy at the bottom", copyKey:match("^copy_%d+$") ~= nil and copy ~= nil and copy.copyOf == key)
 			local defaultColor = defaults ~= nil and defaults.indicatorColors[key] ~= nil and defaults.indicatorColors[key].color or nil
 			check(loginEntry.compositeKey .. ": the copy starts off, untargeted, in the built-in's default color", copy ~= nil and copy.enabled == false
-				and next(copy.targets) == nil and copy.color == defaultColor)
+				and TargetString(copy) == "" and copy.color == defaultColor)
 
 			check(loginEntry.compositeKey .. ": deleting a built-in asks first", Delete(key))
 			check(loginEntry.compositeKey .. ": a deleted built-in leaves the list, off and recorded", IndexOf(shared.nodeOrder, key) == nil
 				and shared.removed ~= nil and shared.removed[key] == true and shared.indicatorColors[key].enabled == false)
 			check(loginEntry.compositeKey .. ": its copy stays", IndexOf(shared.nodeOrder, copyKey) ~= nil)
+			check(loginEntry.compositeKey .. ": a deleted built-in stays untargeted through a login", TargetsAfterLogin(key) == "")
 
 			menu = OpenMenu(addBuiltIn)
 			try("re-add " .. key, function() menu.children[1].fn() end)
 			check(loginEntry.compositeKey .. ": adding a deleted built-in restores its own key at the bottom", shared.nodeOrder[#shared.nodeOrder] == key
 				and (shared.removed == nil or shared.removed[key] == nil) and shared.indicatorColors[key].copyOf == nil)
+			check(loginEntry.compositeKey .. ": a restored built-in stays untargeted through a login", TargetsAfterLogin(key) == "")
+			local picked = TargetNonDefault(key)
+			check(loginEntry.compositeKey .. ": a restored built-in keeps only the target picked through a login", picked ~= nil and TargetsAfterLogin(key) == picked)
 
 			check(loginEntry.compositeKey .. ": deleting a copy asks first", Delete(copyKey))
 			check(loginEntry.compositeKey .. ": a deleted copy is gone", shared.indicatorColors[copyKey] == nil and IndexOf(shared.nodeOrder, copyKey) == nil)
@@ -410,7 +447,7 @@ function hooks.afterEvents(ctx)
 			local copyKey = shared.gradientOrder[#shared.gradientOrder]
 			local copy = shared.indicatorColors[copyKey]
 			check(loginEntry.compositeKey .. ": picking a listed gradient adds a gradient copy at the bottom", copyKey:match("^copy_%d+$") ~= nil and copy ~= nil
-				and copy.copyOf == key and copy.isGradient == true and copy.enabled == false and next(copy.targets) == nil)
+				and copy.copyOf == key and copy.isGradient == true and copy.enabled == false and TargetString(copy) == "")
 			local copyButton = DeleteButton(copyKey, "gradientOrder")
 			check(loginEntry.compositeKey .. ": the new gradient row takes the Add button's place and the button moves down",
 				copyButton ~= nil and PointY(copyButton) == buttonY and PointY(addGradient) == buttonY - 30)
@@ -432,6 +469,9 @@ function hooks.afterEvents(ctx)
 			check(loginEntry.compositeKey .. ": re-adding a deleted gradient restores its own key", shared.gradientOrder[1] == key
 				and (shared.removed == nil or shared.removed[key] == nil) and shared.indicatorColors[key].copyOf == nil)
 			check(loginEntry.compositeKey .. ": in the emptied list's first slot", restoredButton ~= nil and PointY(restoredButton) == buttonY)
+			check(loginEntry.compositeKey .. ": a restored gradient stays untargeted through a login", TargetsAfterLogin(key) == "")
+			local picked = TargetNonDefault(key)
+			check(loginEntry.compositeKey .. ": a restored gradient keeps only the target picked through a login", picked ~= nil and TargetsAfterLogin(key) == picked)
 
 			-- The priority list growing above moves the gradient section with it.
 			if addBuiltIn ~= nil then
