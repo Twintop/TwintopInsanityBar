@@ -6,7 +6,7 @@ local parity = desktop.require("drivers.parity")
 
 local hooks = {}
 -- Colors painted and curved during a draw, the condition forced on, and what the options built.
-local drv = { borders = {}, fills = {}, curveColors = {}, force = nil, groups = {}, panels = {}, menus = {}, popups = {}, deleteButtons = {} }
+local drv = { borders = {}, fills = {}, curveColors = {}, stepCurves = {}, force = nil, groups = {}, panels = {}, menus = {}, popups = {}, deleteButtons = {} }
 
 ---A menu description that records what it was asked to draw.
 local function newDesc(label, kind)
@@ -85,6 +85,11 @@ function hooks.afterLoad(ctx)
 		if color ~= nil then drv.fills[color] = true end
 		return applyFill(self, node, colorEntry, ...)
 	end
+	local getStepCurve = Color.GetStepColorCurve
+	Color.GetStepColorCurve = function(self, cacheKey, belowColor, aboveColor, thresholdPercent, ...)
+		drv.stepCurves[#drv.stepCurves + 1] = { key = cacheKey, above = aboveColor, step = thresholdPercent }
+		return getStepCurve(self, cacheKey, belowColor, aboveColor, thresholdPercent, ...)
+	end
 	local buildCurve = Color.BuildResourceThresholdCurve
 	Color.BuildResourceThresholdCurve = function(self, specSettings, belowColor, aboveColor, ...)
 		if aboveColor ~= nil then drv.curveColors[aboveColor] = true end
@@ -141,6 +146,7 @@ function hooks.afterEvents(ctx)
 	local stubs = ctx.stubs
 	local L = TRB.Localization
 	local Settings = TRB.Functions.Settings
+	local Color = TRB.Functions.Color
 	local Table = TRB.Functions.Table
 	local Character = TRB.Functions.Character
 	local errors = 0
@@ -504,6 +510,8 @@ function hooks.afterEvents(ctx)
 	local ORIGINAL, COPY, LOWER = "FF0A0B01", "FF0A0B02", "FF0A0B03"
 	-- Each live Druid specialization draws its own bars only in its form.
 	local druidForms = { druid_balance = { 31, "moonkin" }, druid_feral = { 1, "cat" }, druid_guardian = { 5, "bear" }, druid_restoration = { 0, "humanoid" } }
+	-- Gradient built-ins whose spec publishes where they step, rather than stepping at the overcap threshold.
+	local steppedGradients = { druid_feral = "maxBite" }
 
 	for _, entry in ipairs(entries) do
 		local label = entry.compositeKey
@@ -593,6 +601,45 @@ function hooks.afterEvents(ctx)
 			check(label .. ": with Overcap deleted, the next copy takes the border", drv.curveColors[LOWER] == true and not drv.curveColors[ORIGINAL] and drv.curveColors[COPY] == true)
 			TRB.Data.character.inCombat = false
 			Restore(shared, backup)
+		end
+
+		-- A gradient published to step elsewhere than the overcap threshold steps there on the shared bars too.
+		local gradientKey = TRB.Flavor.id == "mainline" and steppedGradients[entry.compositeKey] or nil
+		do
+			local gradient = gradientKey ~= nil and shared.indicatorColors[gradientKey] or nil
+			if gradient ~= nil then
+				TRB.Data.character.inCombat = true
+				gradient.enabled, gradient.color, gradient.targets = true, COPY, { healthBar = { border = true, endCap = true } }
+				drv.force = gradientKey
+				-- Feral publishes Max Bite's step only while its own condition, five combo points, holds.
+				local unitPower = desktop.UnitPower
+				desktop.UnitPower = function(unit, powerType, ...)
+					if powerType == desktop.Enum.PowerType.ComboPoints then return 5 end
+					return unitPower(unit, powerType, ...)
+				end
+				Draw()
+				desktop.UnitPower = unitPower
+				drv.force = nil
+				local resolved = TRB.Data.resolvedIndicators
+				local step = resolved.gradientStepsKey == entry.compositeKey and resolved.gradientSteps[gradientKey] or nil
+				check(label .. ": " .. gradientKey .. " publishes where it steps", step ~= nil)
+				wipe(drv.curveColors)
+				wipe(drv.stepCurves)
+				local node = { endCapConfig = { color = "FF222222" } }
+				function node:SetBorderColorCurve() end
+				function node:SetBorderColor() end
+				function node:ApplyEndCapIndicator() end
+				try("shared border", function() Color:ApplyResolvedBorderOrBackground(node, "healthBar", "border", "FF111111") end)
+				try("shared end cap", function() Color:ApplyResolvedEndCap(node, "healthBar") end)
+				local atStep = 0
+				for _, curve in ipairs(drv.stepCurves) do
+					if curve.above == COPY and curve.step == step then atStep = atStep + 1 end
+				end
+				check(label .. ": the Health bar's border and End Cap step " .. gradientKey .. " there, not at the overcap threshold",
+					step ~= nil and atStep == 2 and not drv.curveColors[COPY])
+				TRB.Data.character.inCombat = false
+				Restore(shared, backup)
+			end
 		end
 	end
 
