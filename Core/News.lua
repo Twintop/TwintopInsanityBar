@@ -1,10 +1,10 @@
 local _, TRB = ...
 
 -- Core changelog shown by the News window's Core tab (Core\Functions\News.lua renders it). Markdown; newest
--- first. Titles name the Live, Forever, and Classic releases; the tab keeps only the running flavor's.
+-- first. Titles name the Live, Forever, Classic, and TBC releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
-# Live 12.1.5.10-release / Forever 1.60.1.17-release / Classic 1.15.9.2-release (2026-11-04)
+# Live 12.1.5.10-release / Forever 1.60.1.17-release / Classic 1.15.9.2-release / TBC 2.5.6.0-release (2026-11-04)
 ## Color Indicators
 
 - [#831](#831) Built-in Color Indicators can be removed, and added back with a new Add Built-in Color Indicator button.

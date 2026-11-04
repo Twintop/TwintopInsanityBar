@@ -210,7 +210,7 @@ if TRB.Flavor.ReadTalentRanks == nil then
 	end
 end
 
--- Placeholder rank resolution: a flavor with ranked spells (Forever and Classic) replaces it.
+-- Placeholder rank resolution: a flavor with ranked spells (Forever, Classic, and TBC) replaces it.
 if TRB.Flavor.ResolveSpellRankId == nil then
 	---@param spell TRB.Classes.SpellBase
 	---@return integer

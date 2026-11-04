@@ -23,7 +23,7 @@
 	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, classic-overcap, totems, indicator-copies). Default: all.
 
 .PARAMETER Flavor
-	Restrict to one flavor (mainline, forever, classic). Default: all.
+	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
 
 .PARAMETER AddonDir
 	The addon checkout to load. Defaults to this repository; point it at another checkout to run these drivers there.
@@ -75,7 +75,7 @@ Get-ChildItem (Join-Path $AddonDir "Flavors") -Directory | ForEach-Object {
 	$flavors += [pscustomobject]@{ Name = $name; Toc = $toc; ClassIds = $classIds }
 }
 if ($flavors.Count -eq 0) {
-	throw "Unknown flavor '$Flavor'. Valid: mainline, forever, classic."
+	throw "Unknown flavor '$Flavor'. Valid: mainline, forever, classic, tbc."
 }
 
 $failed = $false

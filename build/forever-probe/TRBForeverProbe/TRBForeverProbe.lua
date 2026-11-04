@@ -1,6 +1,6 @@
 ---@diagnostic disable: undefined-global, deprecated -- every probe targets APIs that may not exist on this client
--- TRB Forever Probe: a throwaway addon that records what the client exposes so the Forever and Classic flavors
--- of Twintop's Resource Bar can be built on facts instead of guesses. Install it alone in the Forever or Classic
+-- TRB Forever Probe: a throwaway addon that records what the client exposes so the Forever, Classic, and TBC flavors
+-- of Twintop's Resource Bar can be built on facts instead of guesses. Install it alone in the Forever, Classic, or TBC
 -- client's AddOns folder, log in on one character per class, and run /trbprobe. Results open in a
 -- window whose text can be copied (Ctrl+A, Ctrl+C) and are also saved in TRBForeverProbeResults
 -- (WTF\...\SavedVariables\TRBForeverProbe.lua) for when the beta can write saved variables again.

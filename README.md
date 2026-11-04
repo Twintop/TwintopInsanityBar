@@ -1,12 +1,13 @@
 # Twintop's Resource Bar
 
-A fully customizable resource bar for every class in World of Warcraft, World of Warcraft: Forever, and World of Warcraft Classic. Track your resources, ability costs, casts, health, and cooldowns in one place, with colors, text, and sounds that react to what is happening in combat.
+A fully customizable resource bar for every class in World of Warcraft, World of Warcraft: Forever, World of Warcraft Classic, and The Burning Crusade Classic. Track your resources, ability costs, casts, health, and cooldowns in one place, with colors, text, and sounds that react to what is happening in combat.
 
 TRB started life as Twintop's Insanity Bar WeakAura set for Shadow Priests during the Legion expansion.
 
 [![Mainline release](https://img.shields.io/github/v/release/Twintop/TwintopInsanityBar?filter=1*&label=Mainline&color=F8B700)](https://github.com/Twintop/TwintopInsanityBar/releases)
 [![Forever release](https://img.shields.io/github/v/release/Twintop/TwintopInsanityBar?filter=forever-*&label=Forever&color=1D8DCD)](https://github.com/Twintop/TwintopInsanityBar/releases?q=forever-)
 [![Classic release](https://img.shields.io/github/v/release/Twintop/TwintopInsanityBar?filter=classic-*&label=Classic&color=fef2c0)](https://github.com/Twintop/TwintopInsanityBar/releases?q=classic-)
+[![TBC release](https://img.shields.io/github/v/release/Twintop/TwintopInsanityBar?filter=tbc-*&label=TBC&color=6BAF3F)](https://github.com/Twintop/TwintopInsanityBar/releases?q=tbc-)
 
 [![Issues](https://img.shields.io/github/issues-raw/Twintop/TwintopInsanityBar)](https://github.com/Twintop/TwintopInsanityBar/issues)
 [![Issues](https://img.shields.io/github/issues-closed-raw/Twintop/TwintopInsanityBar?color=00CC00)](https://github.com/Twintop/TwintopInsanityBar/issues?q=is%3Aissue+is%3Aclosed)
@@ -62,6 +63,19 @@ TRB started life as Twintop's Insanity Bar WeakAura set for Shadow Priests durin
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Warlock?color=8788EE&label=Warlock)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Warlock)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Vanilla-Warrior?color=C69B6D&label=Warrior)](https://github.com/Twintop/TwintopInsanityBar/labels/Vanilla-Warrior)
 
+### The Burning Crusade Classic
+
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/TBC%20Classic?color=6BAF3F&label=TBC)](https://github.com/Twintop/TwintopInsanityBar/labels/TBC%20Classic)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/TBC-Druid?color=FF7C0A&label=Druid)](https://github.com/Twintop/TwintopInsanityBar/labels/TBC-Druid)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/TBC-Hunter?color=AAD372&label=Hunter)](https://github.com/Twintop/TwintopInsanityBar/labels/TBC-Hunter)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/TBC-Mage?color=3FC7EB&label=Mage)](https://github.com/Twintop/TwintopInsanityBar/labels/TBC-Mage)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/TBC-Paladin?color=F48CBA&label=Paladin)](https://github.com/Twintop/TwintopInsanityBar/labels/TBC-Paladin)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/TBC-Priest?color=FFFFFF&label=Priest)](https://github.com/Twintop/TwintopInsanityBar/labels/TBC-Priest)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/TBC-Rogue?color=FFF468&label=Rogue)](https://github.com/Twintop/TwintopInsanityBar/labels/TBC-Rogue)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/TBC-Shaman?color=0070DD&label=Shaman)](https://github.com/Twintop/TwintopInsanityBar/labels/TBC-Shaman)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/TBC-Warlock?color=8788EE&label=Warlock)](https://github.com/Twintop/TwintopInsanityBar/labels/TBC-Warlock)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/TBC-Warrior?color=C69B6D&label=Warrior)](https://github.com/Twintop/TwintopInsanityBar/labels/TBC-Warrior)
+
 ## Supported Game Versions
 
 | Game | Classes | Status |
@@ -69,6 +83,7 @@ TRB started life as Twintop's Insanity Bar WeakAura set for Shadow Priests durin
 | World of Warcraft (Midnight) | All 13 classes and 40 specializations | Full support |
 | World of Warcraft: Forever | All 9 classes | Early development |
 | World of Warcraft Classic | All 9 classes | Early development |
+| The Burning Crusade Classic | All 9 classes | Early development |
 
 Every version is built on the same core, so everything under Features is available in each. What differs is listed under Differences Between Versions.
 
@@ -158,6 +173,16 @@ Classic support is in early development, and class-specific tracking is still be
 - Bar text stat variables match the Classic character sheet, such as Spirit, spell power, defense, and resistances.
 - Color Indicators based on your own buffs.
 
+### The Burning Crusade Classic
+
+TBC support is in early development, and class-specific tracking is still being added. Like Classic, TBC has:
+
+- Main hand, off hand, and ranged swing timer bars, with the ranged bar showing when movement delays your shot.
+- Abilities that use your highest known spell rank.
+- Bar text stat variables match the TBC character sheet, such as hit, haste, expertise, defense, and resistances.
+- Color Indicators based on your own buffs.
+- Flying and Druid Flight Form bar visibility conditions.
+
 ## Localization
 
 TRB is being translated into Simplified Chinese (nearly complete), German (partial), and French (started). If you would like to help translate, [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know.
@@ -168,7 +193,7 @@ Report issues on [GitHub](https://github.com/Twintop/TwintopInsanityBar/issues) 
 
 ## Development
 
-One Core serves every game version, and each version (a *flavor*) brings its own class modules. Mainline's TOC is `TwintopInsanityBar.toc` at the repository root, so a checkout works in place as a `_retail_` install. Forever's and Classic's TOCs are `Flavors/Forever/TwintopInsanityBar.toc` and `Flavors/Classic/TwintopInsanityBar.toc`, and each packaged zip puts its flavor's TOC at the addon root.
+One Core serves every game version, and each version (a *flavor*) brings its own class modules. Mainline's TOC is `TwintopInsanityBar.toc` at the repository root, so a checkout works in place as a `_retail_` install. Forever's, Classic's, and TBC's TOCs are `Flavors/Forever/TwintopInsanityBar.toc`, `Flavors/Classic/TwintopInsanityBar.toc`, and `Flavors/TBC/TwintopInsanityBar.toc`, and each packaged zip puts its flavor's TOC at the addon root.
 
 ```
 Core/              Class-agnostic engine. Nothing here may name a class, spec, or class bar (build/lint-core.ps1).

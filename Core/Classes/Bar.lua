@@ -2991,7 +2991,7 @@ end
 TRB.Classes.BarTypeRegistry.totemBarKeys = { "totems" }
 
 -- On Live an item or toy can fill a totem slot on any spec, so one that declares no Totems trait keeps the bar under
--- Other Bars. On Forever and Classic only Shaman has totems.
+-- Other Bars. On Forever, Classic, and TBC only Shaman has totems.
 ---@type TRB.Classes.SpecDescriptor.Totems
 local undeclaredTotemSpecInfo = { placement = "otherBars" }
 
@@ -3014,7 +3014,7 @@ function TRB.Classes.BarTypeRegistry:GetTotemSpecInfo(classId, specId)
 	return declared
 end
 
----Whether a spec gets the Totems bar at all: every known spec on Live, only Shaman on Forever and Classic.
+---Whether a spec gets the Totems bar at all: every known spec on Live, only Shaman on Forever, Classic, and TBC.
 ---@param classId integer?
 ---@param specId integer?
 ---@return boolean
@@ -3520,7 +3520,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 	}))
 
 	-- Totems bar: one node per totem slot, filled from the slot's engine duration, which stays drawable while it is
-	-- secret. Forever and Classic slots are the four elements, shown in Blizzard's order and reorderable.
+	-- secret. Forever, Classic, and TBC slots are the four elements, shown in Blizzard's order and reorderable.
 	local totemElements = TRB.Flavor.totemElements and {
 		{ key = "earth", displayName = L["TotemElementEarth"] },
 		{ key = "fire", displayName = L["TotemElementFire"] },

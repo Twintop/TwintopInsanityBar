@@ -467,6 +467,7 @@ function M.install(opts)
 	G.WOW_PROJECT_ID = 1
 	G.WOW_PROJECT_MAINLINE = 1
 	G.WOW_PROJECT_CLASSIC = 2
+	G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC = 5
 	G.LE_LFG_CATEGORY_LFD, G.LE_LFG_CATEGORY_RF, G.LE_LFG_CATEGORY_SCENARIO, G.LE_LFG_CATEGORY_LFR, G.LE_LFG_CATEGORY_FLEXRAID, G.LE_LFG_CATEGORY_WORLDPVP, G.LE_LFG_CATEGORY_BATTLEFIELD = 1, 2, 3, 4, 5, 6, 7
 	G.RATED_SOLO_SHUFFLE_SIZE = 6
 	G.NUM_CHAT_WINDOWS = 10
@@ -810,10 +811,10 @@ function M.install(opts)
 	-- Exactly the namespace live retail documents (no unknown-method fallback): neither client has GetSpecializationInfoForClassID
 	-- or GetSpecializationInfoForSpecID here; those are plain globals on both.
 	G.C_SpecializationInfo = { GetAllSelectedPvpTalentIDs = retEmpty, GetSpecialization = function() return 1 end, GetSpecializationInfo = G.GetSpecializationInfo, GetPvpTalentSlotInfo = retNil, GetSpecIDs = retEmpty, CanPlayerUseTalentSpecUI = retTrue, IsInitialized = retTrue, GetActiveSpecGroup = function() return 1 end, GetNumSpecializationsForClassID = G.GetNumSpecializationsForClassID, GetPvpTalentInfo = function(id) return { talentID = id, name = "PvpTalent", icon = 0, selected = false, available = false, spellID = id, unlocked = false, known = false, grantedByAura = false, dependenciesUnmet = false } end, GetTalentInfo = retNil, GetClassIDFromSpecID = retNil }
-	-- Forever registers a smaller global surface (per the beta probe), assumed for Classic too: these read as nil instead
-	-- of auto-stubbing for a 1.x TOC, so a leftover call fails the way it does in that client.
+	-- Forever registers a smaller global surface (per the beta probe), assumed for Classic and TBC too: these read as nil
+	-- instead of auto-stubbing for a 1.x or 2.x TOC, so a leftover call fails the way it does in that client.
 	local absentGlobals = {}
-	if interfaceVersion < 20000 then
+	if interfaceVersion < 30000 then
 		for _, name in ipairs({ "GetSpecialization", "GetSpecializationInfo", "GetNumSpecializationsForClassID", "CombatLogGetCurrentEventInfo" }) do
 			G[name] = nil
 			absentGlobals[name] = true
@@ -821,10 +822,12 @@ function M.install(opts)
 	end
 	G.C_PetBattles = ns({ IsInBattle = retFalse })
 	G.C_PlayerInfo = ns({ GetGlidingInfo = function() return false, false, 0 end, IsPlayerNPERestricted = retFalse, GetPlayerCharacterData = retNil, UnitIsSameServer = retTrue, GetClass = function() return classId end, GetRace = function() return 1 end, GetSex = function() return 2 end, IsPlayerInGuildFromGUID = retFalse, GUIDIsPlayer = retTrue, GetContentDifficultyCreatureForPlayer = retNil, GetInstancedContentDifficulty = retNil, IsMercenary = retFalse, CanPlayerEnterChromieTime = retFalse, IsPlayerEligibleForNPE = retFalse, IsConnectionValid = retTrue })
-	-- Classic (a 115xx TOC) lacks these, per Blizzard's generated API docs and the client exe's strings for 1.15.9.
+	-- Classic (a 115xx TOC) and TBC (205xx) lack these, per Blizzard's generated API docs (the same on both) and the 1.15.9
+	-- client exe's strings.
 	for event in pairs(unknownEvents) do unknownEvents[event] = nil end
-	if interfaceVersion >= 11300 and interfaceVersion < 16000 then
-		G.WOW_PROJECT_ID = G.WOW_PROJECT_CLASSIC
+	local isTbc = interfaceVersion >= 20000 and interfaceVersion < 30000
+	if (interfaceVersion >= 11300 and interfaceVersion < 16000) or isTbc then
+		G.WOW_PROJECT_ID = isTbc and G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC or G.WOW_PROJECT_CLASSIC
 		for _, name in ipairs({ "C_ClassTalents", "GetUnitChargedPowerPoints", "LocalizedClassList", "COMBO_POINTS_POWER", "MirrorTimerContainer" }) do
 			G[name] = nil
 			absentGlobals[name] = true

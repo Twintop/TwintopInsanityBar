@@ -138,7 +138,7 @@ eventFrame:SetScript("OnEvent", function(_, event, slot)
 	end
 end)
 
----How many totem slots the bar has nodes for: four elements on Forever and Classic, eight on Mainline.
+---How many totem slots the bar has nodes for: four elements on Forever, Classic, and TBC, eight on Mainline.
 ---@return integer
 function Totems:GetSlotCount()
 	local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get("totems")
