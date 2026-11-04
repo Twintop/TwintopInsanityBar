@@ -4331,3 +4331,5 @@ L["TotemsDisableBlizzardTooltip"] = "Hides Blizzard's totem icons under the play
 L["BuiltInIndicatorAddButton"] = "Add Built-in Color Indicator"
 L["IndicatorRemoveTooltip"] = "Remove this indicator."
 L["BuiltInIndicatorDeleteConfirmation"] = "Remove the Color Indicator \"%s\"? Add Built-in Color Indicator can add it back."
+L["BuiltInGradientAddButton"] = "Add Built-in Gradient Color"
+L["BuiltInGradientDeleteConfirmation"] = "Remove the gradient color \"%s\"? Add Built-in Gradient Color can add it back."

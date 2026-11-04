@@ -407,6 +407,24 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return prefix .. n
 	end
 
+	---The key and entry for adding a built-in: its own key back when it was deleted, else a new copy.
+	---@param builtInKey string
+	---@return string? key
+	---@return table? entry
+	local function PrepareBuiltInRow(builtInKey)
+		local entry = NewBuiltInEntry(builtInKey)
+		if entry == nil then
+			return nil, nil
+		end
+		local removed = sharedSettings.removed
+		if removed ~= nil and removed[builtInKey] then
+			removed[builtInKey] = nil
+			return builtInKey, entry
+		end
+		entry.copyOf = builtInKey
+		return NextIndicatorKey("copy_"), entry
+	end
+
 	---Takes a row out of its list: a custom indicator or copy is deleted, and a built-in is recorded as removed
 	---so the settings reconcile doesn't add it back.
 	---@param key string
@@ -980,8 +998,20 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		RefreshAddButton()
 	end
 
-	-- Everything from the Add button down moves when a row is added or removed.
-	local belowTopY = nil
+	-- Each list's Add button row, the top of everything that moves when its list grows or shrinks.
+	local layout = { flatBelowY = 0, gradientBelowY = nil }
+
+	---Moves every control at or below topY, and every tracked row Y with them.
+	---@param topY number
+	---@param deltaY number
+	local function ShiftBelow(topY, deltaY)
+		Primitives:ShiftControlsBelow(parent, topY, deltaY)
+		for name, y in pairs(layout) do
+			if y <= topY then
+				layout[name] = y + deltaY
+			end
+		end
+	end
 
 	local RemoveIndicator
 
@@ -1259,8 +1289,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		indicatorDefByKey[key] = def
 		orderedKeys[#orderedKeys + 1] = key
 
-		Primitives:ShiftControlsBelow(parent, belowTopY, -30)
-		belowTopY = belowTopY - 30
+		ShiftBelow(layout.flatBelowY, -30)
 
 		local rowIndex = #orderedKeys
 		if rows[rowIndex] == nil then
@@ -1297,15 +1326,9 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	---Adds a built-in to the priority list: back under its own key when it was deleted, else as a copy.
 	---@param builtInKey string
 	local function AddBuiltInIndicator(builtInKey)
-		local entry = NewBuiltInEntry(builtInKey)
-		if entry == nil then return end
-		local removed = sharedSettings.removed
-		if removed ~= nil and removed[builtInKey] then
-			removed[builtInKey] = nil
-			InsertIndicatorRow(builtInKey, entry, indicatorDefByKey[builtInKey])
-		else
-			entry.copyOf = builtInKey
-			InsertIndicatorRow(NextIndicatorKey("copy_"), entry, indicatorDefByKey[builtInKey])
+		local key, entry = PrepareBuiltInRow(builtInKey)
+		if key ~= nil then
+			InsertIndicatorRow(key, entry, indicatorDefByKey[builtInKey])
 		end
 	end
 
@@ -1409,8 +1432,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		if lastRow ~= nil then
 			SetRowShown(lastRow, false)
 		end
-		Primitives:ShiftControlsBelow(parent, belowTopY, 30)
-		belowTopY = belowTopY + 30
+		ShiftBelow(layout.flatBelowY, 30)
 
 		UpdatePickerBlock()
 		for i = math.max(removeIndex - 1, 1), #orderedKeys do
@@ -1461,7 +1483,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			OpenBuiltInMenu(self, sortedIndicatorDefs, AddBuiltInIndicator)
 		end)
 	end
-	belowTopY = yCoord
+	layout.flatBelowY = yCoord
 	yCoord = yCoord - 30
 
 	RefreshAllRows()
@@ -1503,6 +1525,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 		local gradientRows = {}
 		controls.indicatorColors.gradientRows = controls.indicatorColors.gradientRows or {}
+		-- Gradient rows hang above their Add button, so they follow it when either list resizes.
+		layout.gradientBelowY = yCoord - (#orderedGradientKeys * 30)
 
 		local function RefreshGradientRow(rowIndex)
 			local row = gradientRows[rowIndex]
@@ -1536,146 +1560,245 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			RefreshGradientRow(indexB)
 		end
 
-		for gradIdx, gradKey in ipairs(orderedGradientKeys) do
-			local gradDef = indicatorDefByKey[gradKey]
-			local gradIndicator = indicatorColors[gradKey]
-			if gradDef and gradIndicator then
-				local capturedGradIdx = gradIdx
-				local gradRow = {}
-				gradientRows[gradIdx] = gradRow
+		---Re-anchors a gradient row's widgets to its slot, so a pooled row can be reused at any index.
+		---@param row table
+		---@param rowIndex number
+		local function PositionGradientRow(row, rowIndex)
+			local rowY = layout.gradientBelowY + ((#orderedGradientKeys - rowIndex + 1) * 30)
+			local xOffset = oUi.xCoord
+			row.removeBtn:ClearAllPoints()
+			row.removeBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset, rowY)
+			xOffset = xOffset + customColumnWidth
+			row.upBtn:ClearAllPoints()
+			row.upBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset, rowY)
+			row.downBtn:ClearAllPoints()
+			row.downBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset + 22, rowY)
+			row.dropdown:ClearAllPoints()
+			row.dropdown:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset + 46, rowY)
+			row.colorPicker:ClearAllPoints()
+			row.colorPicker:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord2, rowY)
+		end
 
-				local xOffset = oUi.xCoord + customColumnWidth
+		---@param row table
+		---@param shown boolean
+		local function SetGradientRowShown(row, shown)
+			row.removeBtn:SetShown(shown)
+			row.upBtn:SetShown(shown)
+			row.downBtn:SetShown(shown)
+			row.dropdown:SetShown(shown)
+			row.colorPicker:SetShown(shown)
+		end
 
-				-- Up arrow
-				local upBtn = CreateFrame("Button", nil, parent)
-				upBtn:SetSize(20, 20)
-				upBtn:SetPoint("TOPLEFT", xOffset, yCoord)
-				upBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
-				upBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
-				upBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled")
-				upBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-				upBtn:SetEnabled(gradIdx > 1)
-				upBtn:SetScript("OnClick", function()
-					SwapGradientNodes(capturedGradIdx - 1, capturedGradIdx)
-				end)
-				upBtn:SetScript("OnEnter", function(self)
+		local RemoveGradientIndicator
+
+		---Builds the widgets for one gradient row slot, which read whichever key sits at that index when used.
+		---@param gradIdx number
+		local function BuildGradientRow(gradIdx)
+			local capturedGradIdx = gradIdx
+			local gradRow = {}
+			gradientRows[gradIdx] = gradRow
+
+			gradRow.removeBtn = Primitives:BuildDeleteIconButton(parent, 0, 0)
+			gradRow.removeBtn:SetScript("OnClick", function()
+				local currentKey = orderedGradientKeys[capturedGradIdx]
+				local currentDef = indicatorDefByKey[currentKey]
+				if currentDef == nil then return end
+				StaticPopup_Show("TwintopResourceBar_ConfirmDeleteCustomIndicator",
+					string.format(L["BuiltInGradientDeleteConfirmation"], currentDef.colorLabel or currentKey), nil, {
+						remove = function()
+							RemoveGradientIndicator(currentKey)
+						end,
+					})
+			end)
+			gradRow.removeBtn:SetScript("OnEnter", function(self)
+				ShowRowButtonTooltip(self, L["IndicatorRemoveTooltip"])
+			end)
+			gradRow.removeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+			-- Up arrow
+			local upBtn = CreateFrame("Button", nil, parent)
+			upBtn:SetSize(20, 20)
+			upBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
+			upBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
+			upBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled")
+			upBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+			upBtn:SetScript("OnClick", function()
+				SwapGradientNodes(capturedGradIdx - 1, capturedGradIdx)
+			end)
+			upBtn:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText(L["NodeOrderMoveUp"], 1, 1, 1)
+				GameTooltip:Show()
+			end)
+			upBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			gradRow.upBtn = upBtn
+
+			-- Down arrow
+			local downBtn = CreateFrame("Button", nil, parent)
+			downBtn:SetSize(20, 20)
+			downBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+			downBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+			downBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled")
+			downBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+			downBtn:SetScript("OnClick", function()
+				SwapGradientNodes(capturedGradIdx, capturedGradIdx + 1)
+			end)
+			downBtn:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText(L["NodeOrderMoveDown"], 1, 1, 1)
+				GameTooltip:Show()
+			end)
+			downBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			gradRow.downBtn = downBtn
+
+			-- Targets dropdown
+			local ddName = ddNamePrefix .. "_Gradient_Row" .. gradIdx .. "_Targets"
+			local dd = CreateFrame("DropdownButton", ddName, parent, "WowStyle1DropdownTemplate")
+			dd:SetWidth(targetsDropdownWidth)
+			dd:SetScript("OnEnter", function(self)
+				local currentDef = indicatorDefByKey[orderedGradientKeys[capturedGradIdx]]
+				if currentDef and currentDef.tooltip then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-					GameTooltip:SetText(L["NodeOrderMoveUp"], 1, 1, 1)
+					GameTooltip:SetText(currentDef.tooltip, 1, 1, 1, 1, true)
 					GameTooltip:Show()
-				end)
-				upBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-				gradRow.upBtn = upBtn
-
-				-- Down arrow
-				local downBtn = CreateFrame("Button", nil, parent)
-				downBtn:SetSize(20, 20)
-				downBtn:SetPoint("TOPLEFT", xOffset + 22, yCoord)
-				downBtn:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
-				downBtn:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
-				downBtn:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled")
-				downBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-				downBtn:SetEnabled(gradIdx < #orderedGradientKeys)
-				downBtn:SetScript("OnClick", function()
-					SwapGradientNodes(capturedGradIdx, capturedGradIdx + 1)
-				end)
-				downBtn:SetScript("OnEnter", function(self)
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-					GameTooltip:SetText(L["NodeOrderMoveDown"], 1, 1, 1)
-					GameTooltip:Show()
-				end)
-				downBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-				gradRow.downBtn = downBtn
-
-				xOffset = xOffset + 46
-
-				-- Targets dropdown
-				local ddName = ddNamePrefix .. "_Gradient_" .. gradKey .. "_Targets"
-				local dd = CreateFrame("DropdownButton", ddName, parent, "WowStyle1DropdownTemplate")
-				dd:SetWidth(targetsDropdownWidth)
-				dd:SetPoint("TOPLEFT", xOffset, yCoord)
-				dd:SetScript("OnEnter", function(self)
-					if gradDef.tooltip then
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-						GameTooltip:SetText(gradDef.tooltip, 1, 1, 1, 1, true)
-						GameTooltip:Show()
-					end
-				end)
-				dd:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-				local originalSetText = dd.SetText
-				dd.SetText = function(self, text)
-					originalSetText(self, GetSummaryText(orderedGradientKeys[capturedGradIdx]))
 				end
+			end)
+			dd:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-				dd:SetupMenu(function(dropdown, rootDescription)
-					local ck = orderedGradientKeys[capturedGradIdx]
-					local ci = indicatorColors[ck]
-					if not ci then return end
-					ci.targets = ci.targets or {}
+			local originalSetText = dd.SetText
+			dd.SetText = function(self, text)
+				originalSetText(self, GetSummaryText(orderedGradientKeys[capturedGradIdx]))
+			end
 
-					local rowBarTargetDefs = GetBarTargetDefsFor(indicatorDefByKey[ck])
-					ApplyTargetMenuScrollMode(rootDescription, rowBarTargetDefs, IsGradientExcluded)
+			dd:SetupMenu(function(dropdown, rootDescription)
+				local ck = orderedGradientKeys[capturedGradIdx]
+				local ci = indicatorColors[ck]
+				if not ci then return end
+				ci.targets = ci.targets or {}
 
-					local firstBar = true
-					for _, barDef in ipairs(rowBarTargetDefs) do
-						local barElementDefs = barDef.elements or defaultElementDefs
-						local allExcluded = true
+				local rowBarTargetDefs = GetBarTargetDefsFor(indicatorDefByKey[ck])
+				ApplyTargetMenuScrollMode(rootDescription, rowBarTargetDefs, IsGradientExcluded)
+
+				local firstBar = true
+				for _, barDef in ipairs(rowBarTargetDefs) do
+					local barElementDefs = barDef.elements or defaultElementDefs
+					local allExcluded = true
+					for _, elemDef in ipairs(barElementDefs) do
+						if not IsGradientExcluded(barDef, elemDef.key) then
+							allExcluded = false
+							break
+						end
+					end
+					if not allExcluded then
+						if not firstBar then
+							rootDescription:CreateDivider()
+						end
+						firstBar = false
+						rootDescription:CreateTitle(barDef.label)
+						ci.targets[barDef.key] = ci.targets[barDef.key] or {}
+
 						for _, elemDef in ipairs(barElementDefs) do
 							if not IsGradientExcluded(barDef, elemDef.key) then
-								allExcluded = false
-								break
-							end
-						end
-						if not allExcluded then
-							if not firstBar then
-								rootDescription:CreateDivider()
-							end
-							firstBar = false
-							rootDescription:CreateTitle(barDef.label)
-							ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-
-							for _, elemDef in ipairs(barElementDefs) do
-								if not IsGradientExcluded(barDef, elemDef.key) then
-									rootDescription:CreateCheckbox(
-										elemDef.label,
-										function()
-											local gk = orderedGradientKeys[capturedGradIdx]
-											local indicator = indicatorColors[gk]
-											return indicator and indicator.targets and indicator.targets[barDef.key] and indicator.targets[barDef.key][elemDef.key] or false
-										end,
-										function()
-											local gk = orderedGradientKeys[capturedGradIdx]
-											local indicator = indicatorColors[gk]
-											if not indicator then return end
-											indicator.targets = indicator.targets or {}
-											indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
-											indicator.targets[barDef.key][elemDef.key] = not indicator.targets[barDef.key][elemDef.key]
-											SyncEnabled(indicator, gradRow.colorPicker)
-										end
-									)
-								end
+								rootDescription:CreateCheckbox(
+									elemDef.label,
+									function()
+										local gk = orderedGradientKeys[capturedGradIdx]
+										local indicator = indicatorColors[gk]
+										return indicator and indicator.targets and indicator.targets[barDef.key] and indicator.targets[barDef.key][elemDef.key] or false
+									end,
+									function()
+										local gk = orderedGradientKeys[capturedGradIdx]
+										local indicator = indicatorColors[gk]
+										if not indicator then return end
+										indicator.targets = indicator.targets or {}
+										indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
+										indicator.targets[barDef.key][elemDef.key] = not indicator.targets[barDef.key][elemDef.key]
+										SyncEnabled(indicator, gradRow.colorPicker)
+									end
+								)
 							end
 						end
 					end
-				end)
+				end
+			end)
 
-				dd:SetText(GetSummaryText(gradKey))
-				gradRow.dropdown = dd
+			gradRow.dropdown = dd
 
-				-- Color picker
-				local cp = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, gradDef.colorLabel, gradIndicator.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
-				cp:SetScript("OnMouseDown", function(self, button)
-					local gk = orderedGradientKeys[capturedGradIdx]
-					TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicatorColors, { [gk] = gradRow.colorPicker }, gk)
-				end)
-				TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(cp, gradIndicator.enabled)
-				gradRow.colorPicker = cp
+			-- Color picker
+			local cp = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, "", indicatorColors[orderedGradientKeys[gradIdx]].color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, 0)
+			cp:SetScript("OnMouseDown", function(self, button)
+				local gk = orderedGradientKeys[capturedGradIdx]
+				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, indicatorColors, { [gk] = gradRow.colorPicker }, gk)
+			end)
+			gradRow.colorPicker = cp
 
-				controls.indicatorColors.gradientRows[gradIdx] = gradRow
+			controls.indicatorColors.gradientRows[gradIdx] = gradRow
 
-				yCoord = yCoord - 30
-			end
+			PositionGradientRow(gradRow, gradIdx)
 		end
+
+		---Adds a built-in to the gradient list at the lowest priority and grows the list by one row.
+		---@param builtInKey string
+		local function AddBuiltInGradient(builtInKey)
+			local key, entry = PrepareBuiltInRow(builtInKey)
+			if key == nil then return end
+			indicatorColors[key] = entry
+			table.insert(sharedSettings.gradientOrder, key)
+			indicatorDefByKey[key] = indicatorDefByKey[builtInKey]
+			orderedGradientKeys[#orderedGradientKeys + 1] = key
+
+			ShiftBelow(layout.gradientBelowY, -30)
+			local rowIndex = #orderedGradientKeys
+			if gradientRows[rowIndex] == nil then
+				BuildGradientRow(rowIndex)
+			else
+				PositionGradientRow(gradientRows[rowIndex], rowIndex)
+				SetGradientRowShown(gradientRows[rowIndex], true)
+			end
+			RefreshGradientRow(rowIndex)
+			if rowIndex > 1 then
+				RefreshGradientRow(rowIndex - 1)
+			end
+			RefreshRuntime()
+		end
+
+		---Deletes a gradient row and shrinks the list by one row.
+		---@param key string
+		RemoveGradientIndicator = function(key)
+			local removeIndex = nil
+			for i, k in ipairs(orderedGradientKeys) do
+				if k == key then
+					removeIndex = i
+					break
+				end
+			end
+			if removeIndex == nil then return end
+
+			table.remove(orderedGradientKeys, removeIndex)
+			DeleteIndicatorEntry(key, sharedSettings.gradientOrder)
+			local lastRow = gradientRows[#orderedGradientKeys + 1]
+			if lastRow ~= nil then
+				SetGradientRowShown(lastRow, false)
+			end
+			ShiftBelow(layout.gradientBelowY, 30)
+			for i = math.max(removeIndex - 1, 1), #orderedGradientKeys do
+				RefreshGradientRow(i)
+			end
+			RefreshRuntime()
+		end
+
+		for gradIdx = 1, #orderedGradientKeys do
+			BuildGradientRow(gradIdx)
+			RefreshGradientRow(gradIdx)
+			yCoord = yCoord - 30
+		end
+
+		local sortedGradientDefs = SortDefsByLabel(gradientDefs)
+		local addGradientButton = Primitives:BuildButton(parent, L["BuiltInGradientAddButton"], oUi.xCoord + customColumnWidth + 46, yCoord, 250, 25)
+		addGradientButton:SetScript("OnClick", function(self)
+			OpenBuiltInMenu(self, sortedGradientDefs, AddBuiltInGradient)
+		end)
+		yCoord = yCoord - 30
 	end
 
 	-- Optional EndOf configuration sections

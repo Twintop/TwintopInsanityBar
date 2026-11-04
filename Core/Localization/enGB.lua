@@ -564,4 +564,6 @@ if locale == "enGB" then
 	L["BarDisplayTextCustomizationHeaderTotems"] = "Totems Bar Display Text Customisation"
 	L["BuiltInIndicatorAddButton"] = "Add Built-in Colour Indicator"
 	L["BuiltInIndicatorDeleteConfirmation"] = "Remove the Colour Indicator \"%s\"? Add Built-in Colour Indicator can add it back."
+	L["BuiltInGradientAddButton"] = "Add Built-in Gradient Colour"
+	L["BuiltInGradientDeleteConfirmation"] = "Remove the gradient colour \"%s\"? Add Built-in Gradient Colour can add it back."
 end
