@@ -380,17 +380,42 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 	local defaultShared = TRB.Functions.Settings:GetDefaultSharedIndicators(TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId))
 
+	---A built-in's default entry, or nil when it has none.
+	---@param builtInKey string
+	---@return table?
+	local function GetDefaultEntry(builtInKey)
+		return defaultShared ~= nil and defaultShared.indicatorColors ~= nil and defaultShared.indicatorColors[builtInKey] or nil
+	end
+
+	---Targets with every element a built-in targets by default set false, so the login's merge over the defaults
+	---can't turn them back on.
+	---@param builtInKey string
+	---@return table
+	local function UntargetedBuiltIn(builtInKey)
+		local targets = {}
+		local defaultEntry = GetDefaultEntry(builtInKey)
+		for barKey, elements in pairs(defaultEntry ~= nil and defaultEntry.targets or {}) do
+			targets[barKey] = {}
+			for elemKey, isTargeted in pairs(elements) do
+				if type(isTargeted) == "boolean" then
+					targets[barKey][elemKey] = false
+				end
+			end
+		end
+		return targets
+	end
+
 	---A built-in's default entry, untargeted and off, for a restored built-in or a copy; nil when it has none.
 	---@param builtInKey string
 	---@return table?
 	local function NewBuiltInEntry(builtInKey)
-		local source = defaultShared ~= nil and defaultShared.indicatorColors ~= nil and defaultShared.indicatorColors[builtInKey] or indicatorColors[builtInKey]
+		local source = GetDefaultEntry(builtInKey) or indicatorColors[builtInKey]
 		if source == nil then
 			return nil
 		end
 		local entry = TRB.Functions.Table:DeepCopy(source)
 		entry.enabled = false
-		entry.targets = {}
+		entry.targets = UntargetedBuiltIn(builtInKey)
 		entry.color2 = entry.color2 or entry.color
 		entry.gradientDirection = entry.gradientDirection or "disabled"
 		return entry
@@ -447,7 +472,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			sharedSettings.removed = sharedSettings.removed or {}
 			sharedSettings.removed[key] = true
 			indicator.enabled = false
-			indicator.targets = {}
+			indicator.targets = UntargetedBuiltIn(key)
 		end
 	end
 
