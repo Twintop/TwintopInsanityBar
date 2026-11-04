@@ -12,6 +12,7 @@ manual-changelog:
 ignore:
     - Flavors/Mainline
     - Flavors/Forever
+    - Flavors/TBC
     - Flavors/Classic/TwintopInsanityBar.toc
     - CHANGELOG.md
     - build
@@ -26,5 +27,6 @@ ignore:
     - .pkgmeta
     - .pkgmeta-forever
     - .pkgmeta-classic
+    - .pkgmeta-tbc
     - TwintopInsanityBar.wowproj
     - TwintopInsanityBar.wowsln

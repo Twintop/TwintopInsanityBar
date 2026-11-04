@@ -1161,7 +1161,7 @@ local function ShouldSuppressBlizzardTimer(timerName)
 	return barSettings ~= nil and barSettings.disableBlizzardBar == true and IsEnabled(visibility)
 end
 
--- Classic Era has no container: its frames are the globals MirrorTimer1-3, shown through MirrorTimer_Show, with no
+-- Classic Era and TBC have no container: their frames are the globals MirrorTimer1-3, shown through MirrorTimer_Show, with no
 -- shown-state check of their own. The types hidden there are kept, so only those are ever re-shown.
 local classicSuppressedTimers = {}
 
@@ -1177,7 +1177,7 @@ local function IsMirrorTimerRunning(timerName)
 	return false
 end
 
----Blizzard's mirror timer frames: the pooled container's on Mainline and Forever, else Classic Era's globals.
+---Blizzard's mirror timer frames: the pooled container's on Mainline and Forever, else Classic Era's and TBC's globals.
 ---@return table[]?
 ---@return boolean pooled # The frames have their own UpdateShownState
 local function GetBlizzardMirrorTimerFrames()
@@ -1195,7 +1195,7 @@ local function GetBlizzardMirrorTimerFrames()
 	return frames, false
 end
 
----Hides Classic Era's frames showing a type we have taken over.
+---Hides Classic Era's and TBC's frames showing a type we have taken over.
 ---@param frames table[]
 local function SuppressClassicMirrorTimers(frames)
 	for _, frame in ipairs(frames) do
@@ -1242,7 +1242,7 @@ function TRB.Functions.OtherBars:UpdateBlizzardMirrorTimerVisibility()
 end
 
 ---Post-hooks each pooled Blizzard mirror timer frame so a type we have taken over stays hidden even
----after Blizzard re-shows it (a new timer starting, an Edit Mode relayout). On Classic Era, hooks MirrorTimer_Show.
+---after Blizzard re-shows it (a new timer starting, an Edit Mode relayout). On Classic Era and TBC, hooks MirrorTimer_Show.
 local function InstallMirrorTimerHooks()
 	if mirrorHooksInstalled then
 		return

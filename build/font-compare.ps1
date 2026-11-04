@@ -22,7 +22,7 @@
 	and all three mixed. Needs -Saved.
 
 .PARAMETER Flavor
-	Restrict to one flavor (mainline, forever, classic). Default: all.
+	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
 #>
 [CmdletBinding()]
 param(
@@ -75,7 +75,7 @@ Get-ChildItem (Join-Path $root "Flavors") -Directory | ForEach-Object {
 	$flavors += [pscustomobject]@{ Name = $name; Toc = $toc; Logins = $logins }
 }
 if ($flavors.Count -eq 0) {
-	throw "Unknown flavor '$Flavor'. Valid: mainline, forever, classic."
+	throw "Unknown flavor '$Flavor'. Valid: mainline, forever, classic, tbc."
 }
 
 $work = Join-Path ([System.IO.Path]::GetTempPath()) ("trb-font-compare-" + [guid]::NewGuid().ToString("N").Substring(0, 8))

@@ -17,8 +17,8 @@ local drv = { now = 1000, mainSpeed = 2, offSpeed = 2, rangedAttackSpeed = 3.3, 
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
 	local G = desktop
-	-- Classic Era's mirror timers: three global frames, shown through MirrorTimer_Show. The stubs leave out the container.
-	if ctx.tocRel:find("Classic", 1, true) then
+	-- Classic Era's and TBC's mirror timers: three global frames, shown through MirrorTimer_Show. The stubs leave out the container.
+	if ctx.tocRel:find("Classic", 1, true) or ctx.tocRel:find("TBC", 1, true) then
 		drv.classicMirror = true
 		drv.mirrorTimers = {}
 		for index = 1, 3 do

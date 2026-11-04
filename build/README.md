@@ -69,12 +69,27 @@ no `C_ClassTalents`, PvP talents, `C_PlayerInfo.GetGlidingInfo`, charged combo p
 spec as on Forever and Core reads talents through `TRB.Flavor.ReadTalentRanks`. The probe below loads on this
 client too.
 
+**The Burning Crusade Classic — the same command.** The Anniversary client installs as `_anniversary_`:
+
+```
+.\build\dev-link.ps1 -Flavor tbc -AddOnsPath "C:\Program Files (x86)\World of Warcraft\_anniversary_\Interface\AddOns"
+```
+
+**TBC client facts (2.5.6).** The TOC interface number is 20506 and the TOC game type is `tbc` (the packager calls it
+`bcc`); the manifest expects `WOW_PROJECT_ID` to be `WOW_PROJECT_BURNING_CRUSADE_CLASSIC` (5). Blizzard's generated
+API docs are identical to Classic Era 1.15.9's, so it has the same gaps, and the harness stubs remove them for a 205xx
+TOC as well. Its own UI differs: Blizzard's `TotemFrame` exists, the character sheet reads hit and haste from combat
+ratings and Defense from `UnitDefense`, and flying mounts and Druid Flight Form exist, though skyriding does not.
+Talents are three tabs per class as on Classic, with TBC's own talent IDs in the manifest. The probe below loads on
+this client too.
+
 The flavors share class names, so each manifest sets `classNamespace` and its class tables live under
-`TRB.Classes.Mainline`, `TRB.Classes.Forever`, or `TRB.Classes.Classic`; Core finds them with `TRB.Flavor.GetClassModule`.
+`TRB.Classes.Mainline`, `TRB.Classes.Forever`, `TRB.Classes.Classic`, or `TRB.Classes.TBC`; Core finds them with
+`TRB.Flavor.GetClassModule`.
 
 You can keep the checkout anywhere else instead (e.g. `C:\dev\TwintopInsanityBar`) and link every
-client with `dev-link.ps1 -Flavor mainline ...`, `-Flavor forever ...`, and `-Flavor classic ...`; nothing depends
-on the checkout living inside `_retail_`.
+client with `dev-link.ps1 -Flavor mainline ...`, `-Flavor forever ...`, `-Flavor classic ...`, and `-Flavor tbc ...`;
+nothing depends on the checkout living inside `_retail_`.
 
 ## 2. Optional: Lua 5.1 for the offline smoke tests
 
@@ -95,14 +110,14 @@ saved-variables replay and golden-snapshot options used to verify refactors.
 | Task | Command |
 | --- | --- |
 | Check that Core has no class/spec leakage | `.\build\lint-core.ps1` |
-| Smoke-load both flavors for every class | `.\build\smoke.ps1 -Lua <lua5.1>` |
+| Smoke-load every flavor for every class | `.\build\smoke.ps1 -Lua <lua5.1>` |
 | Build every options tab and run the Textures, media, color, and range checks | `.\build\drivers.ps1 -Lua <lua5.1>` |
 | Type-check with LuaLS against the baseline | `.\build\luals-check.ps1` (finds the VS Code extensions; `-UpdateBaseline` rewrites it) |
 | Compare every bar text font with another build | `.\build\font-compare.ps1 -Lua <lua5.1> [-Ref main] [-Saved <file> -EdgeCases]` |
-| Build a release zip locally (into `dist\`) | `.\build\stage.ps1 -Flavor mainline` / `-Flavor forever` / `-Flavor classic` |
+| Build a release zip locally (into `dist\`) | `.\build\stage.ps1 -Flavor mainline` / `-Flavor forever` / `-Flavor classic` / `-Flavor tbc` |
 | Same, stamping a version | `.\build\stage.ps1 -Flavor mainline -Version 12.1.0.11 -ReleaseType beta01` |
 | Link / unlink a client | `.\build\dev-link.ps1 -Flavor <f> -AddOnsPath <path> [-Remove]` |
-| Record Forever or Classic client facts | junction or copy `build\forever-probe\TRBForeverProbe` into the client's AddOns folder, `/trbprobe` in game, Ctrl+A and Ctrl+C in the window that opens |
+| Record Forever, Classic, or TBC client facts | junction or copy `build\forever-probe\TRBForeverProbe` into the client's AddOns folder, `/trbprobe` in game, Ctrl+A and Ctrl+C in the window that opens |
 
 ## 4. Releasing
 
@@ -116,6 +131,7 @@ exists (`CF_API_KEY`, `WAGO_API_TOKEN`, `WOWI_API_TOKEN`):
 - `12.1.0.11-release`, `12.1.0.11-beta01`, `12.1.0.11-alpha03` — mainline
 - `forever-1.60.1.0-release` — World of Warcraft: Forever
 - `classic-1.15.9.0-release` — World of Warcraft Classic
+- `tbc-2.5.6.0-release` — The Burning Crusade Classic
 
 Any of the tags may point at the same commit. A tag containing `alpha` or `beta` is a pre-release on GitHub,
 CurseForge, and Wago, and skips WoWInterface, which has no pre-release channel. The changelog
@@ -125,10 +141,11 @@ by hand if it reads oddly.
 
 The packager only reads the TOC at the repository root and the ids in its `X-Curse-Project-ID` /
 `X-WoWI-ID` / `X-Wago-ID` lines, so the workflow copies `Flavors\<Flavor>\TwintopInsanityBar.toc` into
-place for a Forever or Classic tag and selects `.pkgmeta-forever` or `.pkgmeta-classic` (each ignores the other two
-flavors) instead of `.pkgmeta` (which ignores `Flavors\Forever` and `Flavors\Classic`). CurseForge and Wago have a
-Forever game version and the packager maps the `16xxx` interface number to it; WoWInterface has none, and the
-packager skips that upload with a warning. Classic's `115xx` maps to each site's Classic Era version.
+place for a Forever, Classic, or TBC tag and selects `.pkgmeta-forever`, `.pkgmeta-classic`, or `.pkgmeta-tbc` (each
+ignores the other three flavors) instead of `.pkgmeta` (which ignores `Flavors\Forever`, `Flavors\Classic`, and
+`Flavors\TBC`). CurseForge and Wago have a Forever game version and the packager maps the `16xxx` interface number to
+it; WoWInterface has none, and the packager skips that upload with a warning. Classic's `115xx` maps to each site's
+Classic Era version, and TBC's `205xx` to its TBC Classic version, with the workflow passing `-g bcc`.
 
 **Dry run.** Run the workflow by hand (workflow_dispatch) with a flavor: the packager builds the zip
 with `-d` (no uploads, no GitHub release) and the zip is attached to the run as the `packager-<flavor>`
