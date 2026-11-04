@@ -832,6 +832,10 @@ local scratch = {
 	barColorMap3 = {},
 	focusOvercapCurves1 = {},
 	tipOfTheSpearOvercapCurves1 = {},
+	focusGradients1 = {},
+	focusGradients2 = {},
+	focusGradients3 = {},
+	tipOfTheSpearGradients1 = {},
 }
 
 local function UpdateResourceBar()
@@ -881,8 +885,6 @@ local function UpdateResourceBar()
 			local barBackgroundColor = specSettings.colors.bar.background.color
 
 			local sharedColors = specSettings.colors.shared
-			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local gradientOrder = sharedColors and sharedColors.gradientOrder
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
 			conditionMap.bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
@@ -925,26 +927,15 @@ local function UpdateResourceBar()
 
 				local overcapCurves = scratch.overcapCurves1
 				wipe(overcapCurves)
-				if gradientOrder and indicatorColors then
-					for i = #gradientOrder, 1, -1 do
-						local key = gradientOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient and indicator.targets then
-							local fbTargets = indicator.targets.focusBar
-							if fbTargets then
-								if fbTargets.border then
-									overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.border, indicator.color)
-								end
-								if fbTargets.bar then
-									overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.bar, indicator.color)
-								end
-								if fbTargets.background then
-									overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.background, indicator.color)
-								end
-							end
-							break
-						end
-					end
+				local focusGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "focusBar", scratch.focusGradients1)
+				if focusGradients.border then
+					overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.border, focusGradients.border.color)
+				end
+				if focusGradients.bar then
+					overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.bar, focusGradients.bar.color)
+				end
+				if focusGradients.background then
+					overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.background, focusGradients.background.color)
 				end
 
 				if spells.bestialWrath:IsUsable() then
@@ -1006,8 +997,6 @@ local function UpdateResourceBar()
 			local barBackgroundColor = specSettings.colors.bar.background.color
 
 			local sharedColors = specSettings.colors.shared
-			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local gradientOrder = sharedColors and sharedColors.gradientOrder
 			local conditionMap = scratch.conditionMap2
 			wipe(conditionMap)
 			conditionMap.trueshot = snapshots[spells.trueshot.id].buff.isActive
@@ -1050,26 +1039,15 @@ local function UpdateResourceBar()
 
 				local overcapCurves = scratch.overcapCurves2
 				wipe(overcapCurves)
-				if gradientOrder and indicatorColors then
-					for i = #gradientOrder, 1, -1 do
-						local key = gradientOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient and indicator.targets then
-							local fbTargets = indicator.targets.focusBar
-							if fbTargets then
-								if fbTargets.border then
-									overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.border, indicator.color)
-								end
-								if fbTargets.bar then
-									overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.bar, indicator.color)
-								end
-								if fbTargets.background then
-									overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.background, indicator.color)
-								end
-							end
-							break
-						end
-					end
+				local focusGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "focusBar", scratch.focusGradients2)
+				if focusGradients.border then
+					overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.border, focusGradients.border.color)
+				end
+				if focusGradients.bar then
+					overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.bar, focusGradients.bar.color)
+				end
+				if focusGradients.background then
+					overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.background, focusGradients.background.color)
 				end
 
 				Bar:ClearPrimaryPulse(barGroups)
@@ -1115,8 +1093,6 @@ local function UpdateResourceBar()
 			local affectingCombat = TRB.Data.character.inCombat
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 			local sharedColors = specSettings.colors.shared
-			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local gradientOrder = sharedColors and sharedColors.gradientOrder
 			local conditionMap = scratch.conditionMap3
 			wipe(conditionMap)
 			conditionMap.takedown = snapshots[spells.takedown.id].buff.isActive
@@ -1150,48 +1126,30 @@ local function UpdateResourceBar()
 			indicatorTargets.tipOfTheSpearBar = tipOfTheSpearOverrides
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
 
-			local overcapIndicator = nil
-			if gradientOrder and indicatorColors then
-				for i = #gradientOrder, 1, -1 do
-					local key = gradientOrder[i]
-					local indicator = indicatorColors[key]
-					if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-						overcapIndicator = indicator
-						break
-					end
-				end
-			end
+			local focusGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "focusBar", scratch.focusGradients3)
+			local tipOfTheSpearGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "tipOfTheSpearBar", scratch.tipOfTheSpearGradients1)
 
 			local focusOvercapCurves = scratch.focusOvercapCurves1
 			wipe(focusOvercapCurves)
 			local tipOfTheSpearOvercapCurves = scratch.tipOfTheSpearOvercapCurves1
 			wipe(tipOfTheSpearOvercapCurves)
-			if overcapIndicator and overcapIndicator.targets then
-				local focusTargets = overcapIndicator.targets.focusBar
-				if focusTargets then
-					if focusTargets.border then
-						focusOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.border, overcapIndicator.color)
-					end
-					if focusTargets.bar then
-						focusOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.bar, overcapIndicator.color)
-					end
-					if focusTargets.background then
-						focusOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.background, overcapIndicator.color)
-					end
-				end
-
-				local tipTargets = overcapIndicator.targets.tipOfTheSpearBar
-				if tipTargets then
-					if tipTargets.border then
-						tipOfTheSpearOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, tipOfTheSpearBarColors.border, overcapIndicator.color)
-					end
-					if tipTargets.bar then
-						tipOfTheSpearOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, tipOfTheSpearBarColors.bar, overcapIndicator.color)
-					end
-					if tipTargets.background then
-						tipOfTheSpearOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, tipOfTheSpearBarColors.background, overcapIndicator.color)
-					end
-				end
+			if focusGradients.border then
+				focusOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.border, focusGradients.border.color)
+			end
+			if focusGradients.bar then
+				focusOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.bar, focusGradients.bar.color)
+			end
+			if focusGradients.background then
+				focusOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, focusBarColors.background, focusGradients.background.color)
+			end
+			if tipOfTheSpearGradients.border then
+				tipOfTheSpearOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, tipOfTheSpearBarColors.border, tipOfTheSpearGradients.border.color)
+			end
+			if tipOfTheSpearGradients.bar then
+				tipOfTheSpearOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, tipOfTheSpearBarColors.bar, tipOfTheSpearGradients.bar.color)
+			end
+			if tipOfTheSpearGradients.background then
+				tipOfTheSpearOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, tipOfTheSpearBarColors.background, tipOfTheSpearGradients.background.color)
 			end
 
 			if not specSettings.displayBar.primary.neverShow then

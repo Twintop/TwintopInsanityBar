@@ -25,6 +25,8 @@ local thresholdData = TRB.Classes.ThresholdData:New()
 
 -- Per-tick scratch tables, reused so the color resolution path allocates nothing.
 local scratch = {
+	-- Consumed within the call that fills it.
+	barGradients1 = {},
 	runicPowerBarColors1 = {},
 	barColorMap1 = {},
 	runeBarColors1 = {},
@@ -921,9 +923,6 @@ end
 
 local function GetDeathKnightIndicatorState(specSettings)
 	local sharedColors = specSettings.colors.shared
-	local indicatorColors = sharedColors and sharedColors.indicatorColors
-	local nodeOrder = sharedColors and sharedColors.nodeOrder
-	local gradientOrder = sharedColors and sharedColors.gradientOrder
 	local runesOnCooldown = CountRunesOnCooldown()
 	-- Talent-gated as well as glow-gated, so an untalented swap cannot strand a stale glow flag.
 	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells
@@ -937,42 +936,22 @@ local function GetDeathKnightIndicatorState(specSettings)
 	conditionMap.runicCorruption = TRB.Data.character.specId == 3 and TRB.Data.snapshotData.attributes.runicCorruptionActive == true
 	conditionMap.vampiricStrike = vampiricStrikeTalented and TRB.Data.snapshotData.attributes.vampiricStrikeActive == true
 
-	return indicatorColors, nodeOrder, gradientOrder, conditionMap, sharedColors
+	return conditionMap, sharedColors
 end
 
-local function GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
-	if not (indicatorColors and gradientOrder and conditionMap) then
-		return nil
-	end
-
-	for i = #gradientOrder, 1, -1 do
-		local key = gradientOrder[i]
-		local indicator = indicatorColors[key]
-		if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-			return indicator
-		end
-	end
-
-	return nil
-end
-
----Fills a caller's scratch table with the gradient indicator's per-element curves for one bar.
+---Fills a caller's scratch table with each gradient-targeted element's curve for one bar.
 ---@param curves table # Scratch table, wiped first
-local function BuildGradientCurves(specSettings, barKey, currentColors, gradientIndicator, curves)
+local function BuildGradientCurves(specSettings, sharedColors, conditionMap, barKey, currentColors, curves)
 	wipe(curves)
-	if gradientIndicator and gradientIndicator.targets then
-		local targets = gradientIndicator.targets[barKey]
-		if targets then
-			if targets.border then
-				curves.border = Color:BuildResourceThresholdCurve(specSettings, currentColors.border, gradientIndicator.color)
-			end
-			if targets.bar then
-				curves.bar = Color:BuildResourceThresholdCurve(specSettings, currentColors.bar, gradientIndicator.color)
-			end
-			if targets.background then
-				curves.background = Color:BuildResourceThresholdCurve(specSettings, currentColors.background, gradientIndicator.color)
-			end
-		end
+	local gradients = Color:ResolveGradientTargets(sharedColors, conditionMap, barKey, scratch.barGradients1)
+	if gradients.border then
+		curves.border = Color:BuildResourceThresholdCurve(specSettings, currentColors.border, gradients.border.color)
+	end
+	if gradients.bar then
+		curves.bar = Color:BuildResourceThresholdCurve(specSettings, currentColors.bar, gradients.bar.color)
+	end
+	if gradients.background then
+		curves.background = Color:BuildResourceThresholdCurve(specSettings, currentColors.background, gradients.background.color)
 	end
 	return curves
 end
@@ -992,7 +971,7 @@ local function EvaluateGradientResults(curves, results)
 end
 
 local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
-	local indicatorColors, _, gradientOrder, conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
+	local conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
 	local runicPowerBarColors = scratch.runicPowerBarColors1
 	wipe(runicPowerBarColors)
 	runicPowerBarColors.bar = specSettings.colors.bar.base
@@ -1004,8 +983,7 @@ local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
 
 	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
-	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
-	local overcapCurves = BuildGradientCurves(specSettings, "runicPowerBar", runicPowerBarColors, gradientIndicator, scratch.runicPowerBarCurves1)
+	local overcapCurves = BuildGradientCurves(specSettings, sharedColors, conditionMap, "runicPowerBar", runicPowerBarColors, scratch.runicPowerBarCurves1)
 
 	if overcapCurves.border then
 		local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)
@@ -1042,7 +1020,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 
 	local runes = TRB.Data.character.runes
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-	local indicatorColors, _, gradientOrder, conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
+	local conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
 
 	-- "Rune (Off Cooldown)" and "Rune (Regenerating)" partition the runes, so each resolves its own colors and gradient.
 	local runeReadyColors = scratch.runeBarColors1
@@ -1065,9 +1043,8 @@ local function UpdateRunes(specSettings, specCacheSettings)
 	-- An indicator claiming the regenerating fill outranks the per-rune cooldown color.
 	local regenBarIndicated = runeRegenColors.bar ~= cpBaseColor
 
-	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
-	local readyGradientCurves = BuildGradientCurves(specSettings, "runesBar", runeReadyColors, gradientIndicator, scratch.runeReadyCurves1)
-	local regenGradientCurves = BuildGradientCurves(specSettings, "runesBarRegenerating", runeRegenColors, gradientIndicator, scratch.runeRegenCurves1)
+	local readyGradientCurves = BuildGradientCurves(specSettings, sharedColors, conditionMap, "runesBar", runeReadyColors, scratch.runeReadyCurves1)
+	local regenGradientCurves = BuildGradientCurves(specSettings, sharedColors, conditionMap, "runesBarRegenerating", runeRegenColors, scratch.runeRegenCurves1)
 	local readyGradientResults = EvaluateGradientResults(readyGradientCurves, scratch.runeGradientResults1)
 	local regenGradientResults = EvaluateGradientResults(regenGradientCurves, scratch.runeGradientResults2)
 
@@ -1171,7 +1148,7 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 	local nodeOrder = sharedColors and sharedColors.nodeOrder
 
 	if nodeOrder and indicatorColors then
-		local _, _, _, conditionMap = GetDeathKnightIndicatorState(specSettings)
+		local conditionMap = GetDeathKnightIndicatorState(specSettings)
 		TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
 
 		-- Apply flat indicators to bone shield targets (reverse iteration, last writer wins)
@@ -1192,24 +1169,14 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 	-- Build gradient curves for bone shield targets (border/background, uses runic power scale)
 	local bsOvercapCurves = scratch.boneShieldCurves1
 	wipe(bsOvercapCurves)
-	local gradientOrder = sharedColors and sharedColors.gradientOrder
-	if gradientOrder and indicatorColors then
-		local _, _, _, conditionMap = GetDeathKnightIndicatorState(specSettings)
-		for i = #gradientOrder, 1, -1 do
-			local key = gradientOrder[i]
-			local indicator = indicatorColors[key]
-			if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-				local bsTargets = indicator.targets and indicator.targets.boneShield
-				if bsTargets then
-					if bsTargets.border then
-						bsOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, bsBorderOverride or cpBorderColor, indicator.color)
-					end
-					if bsTargets.background then
-						bsOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, bsBackgroundOverride or cpBackgroundColor, indicator.color)
-					end
-				end
-				break
-			end
+	do
+		local conditionMap = GetDeathKnightIndicatorState(specSettings)
+		local bsGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "boneShield", scratch.barGradients1)
+		if bsGradients.border then
+			bsOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, bsBorderOverride or cpBorderColor, bsGradients.border.color)
+		end
+		if bsGradients.background then
+			bsOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, bsBackgroundOverride or cpBackgroundColor, bsGradients.background.color)
 		end
 	end
 
@@ -1302,7 +1269,7 @@ local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
 
 	-- Same color resolution as the primary bar. Unlike Bone Shield the fill has no positional scheme
 	-- of its own, so the gradient can target it too.
-	local indicatorColors, _, gradientOrder, conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
+	local conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
 	local coagulatingBloodColors = scratch.coagulatingBloodColors1
 	wipe(coagulatingBloodColors)
 	coagulatingBloodColors.bar = colors.bar
@@ -1314,8 +1281,7 @@ local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
 
 	Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
-	local gradientIndicator = GetActiveGradientIndicator(indicatorColors, gradientOrder, conditionMap)
-	local overcapCurves = BuildGradientCurves(specSettings, "coagulatingBlood", coagulatingBloodColors, gradientIndicator, scratch.coagulatingBloodCurves1)
+	local overcapCurves = BuildGradientCurves(specSettings, sharedColors, conditionMap, "coagulatingBlood", coagulatingBloodColors, scratch.coagulatingBloodCurves1)
 
 	if overcapCurves.border then
 		local borderColorResult = UnitPowerPercent("player", TRB.Data.resource, true, overcapCurves.border)

@@ -3531,11 +3531,25 @@ local function IsCustomIndicatorKey(key)
 	return type(key) == "string" and key:match("^custom_%d+$") ~= nil
 end
 
----Drops a spec's custom indicators before a piece carrying its own indicators merges over it, since the
----same `custom_<n>` key names a different indicator in each.
+---Whether an indicator key names a copy of a built-in, as the options panel numbers them.
+---@param key any
+---@return boolean
+local function IsCopyIndicatorKey(key)
+	return type(key) == "string" and key:match("^copy_%d+$") ~= nil
+end
+
+---Whether an indicator key names a row the user added: a custom indicator or a copy of a built-in.
+---@param key any
+---@return boolean
+local function IsAddedIndicatorKey(key)
+	return IsCustomIndicatorKey(key) or IsCopyIndicatorKey(key)
+end
+
+---Drops a spec's custom indicators, built-in copies, and deleted built-ins before a piece carrying its own
+---indicators merges over it, since the same `custom_<n>` or `copy_<n>` key names a different row in each.
 ---@param spec table? # The spec settings being merged into
 ---@param incoming table? # The spec piece merging over it
-function TRB.Functions.Settings:ClearCustomIndicatorsForMerge(spec, incoming)
+function TRB.Functions.Settings:ClearUserIndicatorsForMerge(spec, incoming)
 	local incomingShared = type(incoming) == "table" and type(incoming.colors) == "table" and incoming.colors.shared or nil
 	local shared = type(spec) == "table" and type(spec.colors) == "table" and spec.colors.shared or nil
 	if type(incomingShared) ~= "table" or type(incomingShared.indicatorColors) ~= "table" or type(shared) ~= "table" or type(shared.indicatorColors) ~= "table" then
@@ -3543,21 +3557,26 @@ function TRB.Functions.Settings:ClearCustomIndicatorsForMerge(spec, incoming)
 	end
 
 	for key, indicator in pairs(shared.indicatorColors) do
-		if type(indicator) == "table" and indicator.custom ~= nil then
+		if type(indicator) == "table" and (indicator.custom ~= nil or indicator.copyOf ~= nil) then
 			shared.indicatorColors[key] = nil
 		end
 	end
-	if type(shared.nodeOrder) == "table" then
-		for i = #shared.nodeOrder, 1, -1 do
-			if IsCustomIndicatorKey(shared.nodeOrder[i]) then
-				table.remove(shared.nodeOrder, i)
+	for _, listName in ipairs({ "nodeOrder", "gradientOrder" }) do
+		local list = shared[listName]
+		if type(list) == "table" then
+			for i = #list, 1, -1 do
+				if IsAddedIndicatorKey(list[i]) then
+					table.remove(list, i)
+				end
 			end
 		end
 	end
+	shared.removed = nil
 end
 
 ---Repairs a spec's `colors.shared` order lists after merges that overlay them by index: keys move to their
----default list, duplicates collapse, missing defaults and lost custom indicators append, and dead customs drop.
+---default list, duplicates collapse, missing defaults and lost custom indicators and copies append, deleted
+---built-ins stay out, and dead customs and copies drop.
 ---@param spec table? # A single spec's settings table
 ---@param defaultShared table? # That spec's default `colors.shared` (nodeOrder, gradientOrder, indicatorColors)
 function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
@@ -3585,18 +3604,21 @@ function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
 	local result = { nodeOrder = {}, gradientOrder = {} } ---@type table<string, string[]>
 	shared.indicatorColors = shared.indicatorColors or {}
 	local indicatorColors = shared.indicatorColors
+	local removed = type(shared.removed) == "table" and shared.removed or {}
 
-	---Copies a saved list's not-yet-seen keys into the list the defaults assign them to; a key the
-	---defaults don't know stays in the list it was saved in.
+	---Copies a saved list's not-yet-seen keys into the list the defaults assign them (or a copy's built-in)
+	---to; a key the defaults don't know stays in the list it was saved in.
 	---@param listName string
 	local function Take(listName)
 		if type(shared[listName]) ~= "table" then
 			return
 		end
 		for _, key in ipairs(shared[listName]) do
-			if not seen[key] and not (indicatorColors[key] == nil and IsCustomIndicatorKey(key)) then
+			local indicator = indicatorColors[key]
+			if not seen[key] and not removed[key] and not (indicator == nil and IsAddedIndicatorKey(key)) then
 				seen[key] = true
-				table.insert(result[listFor[key] or listName], key)
+				local copyOf = type(indicator) == "table" and indicator.copyOf or nil
+				table.insert(result[listFor[copyOf or key] or listName], key)
 			end
 		end
 	end
@@ -3609,7 +3631,7 @@ function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
 	---@param target string
 	local function Append(defaultList, target)
 		for _, key in ipairs(defaultList) do
-			if not seen[key] then
+			if not seen[key] and not removed[key] then
 				seen[key] = true
 				table.insert(result[target], key)
 				if shared.indicatorColors[key] == nil and defaultIndicatorColors[key] ~= nil then
@@ -3624,13 +3646,20 @@ function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
 
 	local orphans = {}
 	for key, indicator in pairs(indicatorColors) do
-		if not seen[key] and type(indicator) == "table" and indicator.custom ~= nil and IsCustomIndicatorKey(key) then
+		if not seen[key] and type(indicator) == "table"
+			and ((indicator.custom ~= nil and IsCustomIndicatorKey(key)) or (indicator.copyOf ~= nil and IsCopyIndicatorKey(key))) then
 			orphans[#orphans + 1] = key
 		end
 	end
-	table.sort(orphans, function(a, b) return tonumber(a:match("%d+$")) < tonumber(b:match("%d+$")) end)
+	table.sort(orphans, function(a, b)
+		local aNumber, bNumber = tonumber(a:match("%d+$")), tonumber(b:match("%d+$"))
+		if aNumber == bNumber then
+			return a < b
+		end
+		return aNumber < bNumber
+	end)
 	for _, key in ipairs(orphans) do
-		table.insert(result.nodeOrder, key)
+		table.insert(result[listFor[indicatorColors[key].copyOf] or "nodeOrder"], key)
 	end
 
 	-- Refill in place: the options panel and spec caches hold on to these tables.
@@ -3677,6 +3706,17 @@ local function GetSharedIndicatorDefaults(entry)
 	end
 
 	return sharedIndicatorDefaults[entry.compositeKey] or nil
+end
+
+---A spec's default `colors.shared`, shared across callers: deep copy anything written into settings.
+---@param compositeKey string
+---@return table?
+function TRB.Functions.Settings:GetDefaultSharedIndicators(compositeKey)
+	local entry = TRB.Data.specRegistry[compositeKey]
+	if entry == nil then
+		return nil
+	end
+	return GetSharedIndicatorDefaults(entry)
 end
 
 ---Runs ReconcileSharedIndicators across every spec in a settings table.

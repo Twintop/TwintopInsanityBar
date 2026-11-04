@@ -2340,6 +2340,11 @@ local scratch = {
 	manaBarColors2 = {},
 	holyWordsBarColors1 = {},
 	lightweaverBarColors1 = {},
+	holyWordNodeColors1 = {
+		holyWordSerenity = {},
+		holyWordSanctify = {},
+		holyWordChastise = {},
+	},
 	barColorMap2 = {},
 	conditionMap3 = {},
 	insanityBarColors1 = {},
@@ -2347,6 +2352,8 @@ local scratch = {
 	barColorMap3 = {},
 	overcapCurvesInsanity1 = {},
 	overcapCurvesMana1 = {},
+	insanityGradients1 = {},
+	manaGradients1 = {},
 	serenityCues = {
 		{ id = "holyWordSerenityCharge1", condition = false },
 		{ id = "holyWordSerenityCharge2", condition = false },
@@ -2635,22 +2642,34 @@ local function UpdateResourceBar()
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
 
 			-- Apply flat indicator colors (priority order, last writer wins)
+			local holyWordNodeColors = scratch.holyWordNodeColors1
+			for _, nodeColors in pairs(holyWordNodeColors) do
+				wipe(nodeColors)
+			end
+			local benedictionLightweaverBackground = nil
 			if nodeOrder and indicatorColors then
 				for i = #nodeOrder, 1, -1 do
 					local key = nodeOrder[i]
 					local indicator = indicatorColors[key]
 					if indicator and indicator.enabled and conditionMap[key] then
 						if indicator.targets then
+							local indicatorKey = indicator.copyOf or key
+							local holyWordColors = holyWordNodeColors[indicatorKey]
 							for barKey, elements in pairs(indicator.targets) do
 								local targetColors = barColorMap[barKey]
 								if targetColors and elements then
 									for elemKey, isTargeted in pairs(elements) do
 										-- Benediction on lightweaverBar.background is node-specific (next empty node only)
 										-- Per-HW indicators' fill, border, and background on holyWordsBar are node-specific (recharging node only)
-										if isTargeted
-											and not (key == "benediction" and barKey == "lightweaverBar" and elemKey == "background")
-											and not ((key == "holyWordSerenity" or key == "holyWordSanctify" or key == "holyWordChastise") and barKey == "holyWordsBar" and not isHolyWordEndCapElement[elemKey]) then
-											targetColors[elemKey] = (elemKey == "bar") and indicator or indicator.color
+										if isTargeted then
+											local color = (elemKey == "bar") and indicator or indicator.color
+											if indicatorKey == "benediction" and barKey == "lightweaverBar" and elemKey == "background" then
+												benedictionLightweaverBackground = color
+											elseif holyWordColors ~= nil and barKey == "holyWordsBar" and not isHolyWordEndCapElement[elemKey] then
+												holyWordColors[elemKey] = color
+											else
+												targetColors[elemKey] = color
+											end
 										end
 									end
 								end
@@ -2707,11 +2726,8 @@ local function UpdateResourceBar()
 							local maxCharges = cooldown.manualMaxCharges or 1
 							local baseColor = nodeColorEntry.color or "FFFFFFFF"
 
-							-- Read per-HW indicator for node-specific coloring on the recharging node
-							local hwIndicator = indicatorColors and indicatorColors[hwDef.key]
-							local hwIndTargets = hwIndicator and hwIndicator.enabled
-								and conditionMap[hwDef.key]
-								and hwIndicator.targets and hwIndicator.targets.holyWordsBar
+							-- Per-HW indicator colors for node-specific coloring on the recharging node
+							local hwNodeColors = holyWordNodeColors[hwDef.key]
 
 							for chargeIndex = 1, maxCharges do
 								if barGroups and barGroups.holyWords then
@@ -2738,10 +2754,10 @@ local function UpdateResourceBar()
 											Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
 										end
 										-- Per-HW indicator: node-specific coloring on the recharging node only
-										if hwIndTargets and chargeIndex == charges + 1 then
-											if hwIndTargets.bar then cpColor = hwIndicator end
-											if hwIndTargets.border then nodeBorderColor = hwIndicator.color end
-											if hwIndTargets.background then nodeBgR, nodeBgG, nodeBgB, nodeBgA = Color:GetRGBAFromString(hwIndicator.color, true) end
+										if chargeIndex == charges + 1 then
+											if hwNodeColors.bar then cpColor = hwNodeColors.bar end
+											if hwNodeColors.border then nodeBorderColor = hwNodeColors.border end
+											if hwNodeColors.background then nodeBgR, nodeBgG, nodeBgB, nodeBgA = Color:GetRGBAFromString(hwNodeColors.background, true) end
 										end
 										TRB.Functions.Color:ApplyFillColor(cpNode, cpColor)
 										cpNode:SetBorderColor(nodeBorderColor)
@@ -2836,12 +2852,8 @@ local function UpdateResourceBar()
 							lwNode:SetBorderColor(lightweaverBarColors.border or lightweaverColors.border.color)
 							local lwBgColor = lightweaverBarColors.background or lightweaverColors.background.color
 							-- Benediction on lightweaver background is node-specific: only the next empty node
-							local benIndicator = indicatorColors and indicatorColors.benediction
-							if benIndicator and benIndicator.enabled and conditionMap.benediction
-								and benIndicator.targets and benIndicator.targets.lightweaverBar
-								and benIndicator.targets.lightweaverBar.background
-								and chargeIndex == lwStacks + 1 then
-								lwBgColor = benIndicator.color
+							if benedictionLightweaverBackground ~= nil and chargeIndex == lwStacks + 1 then
+								lwBgColor = benedictionLightweaverBackground
 							end
 							lwNode:SetBackgroundColorFromString(lwBgColor)
 							Bar:ApplyNodeIndicators(lwNode, "lightweaverBar")
@@ -2978,18 +2990,8 @@ local function UpdateResourceBar()
 				local isCasting = snapshotData.casting.resourceFinal ~= 0
 
 				-- Find active gradient indicators (separate priority group, always override flat colors when active)
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				local overcapIndicator = nil
-				if gradientOrder and indicatorColors then
-					for i = #gradientOrder, 1, -1 do
-						local key = gradientOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-							overcapIndicator = indicator
-							break
-						end
-					end
-				end
+				local insanityGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "insanityBar", scratch.insanityGradients1)
+				local manaGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "manaBar", scratch.manaGradients1)
 
 				-- Resolve final insanity bar colors from the map
 				barColor = insanityBarColors.bar
@@ -3004,31 +3006,23 @@ local function UpdateResourceBar()
 				-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
 				local overcapCurvesInsanity = scratch.overcapCurvesInsanity1
 				wipe(overcapCurvesInsanity)
-				if overcapIndicator and overcapIndicator.targets then
-					local insanityTargets = overcapIndicator.targets.insanityBar
-					if insanityTargets then
-						if insanityTargets.border then
-							overcapCurvesInsanity.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
-						end
-						if insanityTargets.bar then
-							overcapCurvesInsanity.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
-						end
-						if insanityTargets.background then
-							overcapCurvesInsanity.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
-						end
-					end
-					local manaTargets = overcapIndicator.targets.manaBar
-					if manaTargets then
-						if manaTargets.border then
-							overcapCurvesMana.border = Color:BuildResourceThresholdCurve(specSettings, manaBorderColor, overcapIndicator.color)
-						end
-						if manaTargets.bar then
-							overcapCurvesMana.bar = Color:BuildResourceThresholdCurve(specSettings, manaBarColor, overcapIndicator.color)
-						end
-						if manaTargets.background then
-							overcapCurvesMana.background = Color:BuildResourceThresholdCurve(specSettings, manaBackgroundColor, overcapIndicator.color)
-						end
-					end
+				if insanityGradients.border then
+					overcapCurvesInsanity.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, insanityGradients.border.color)
+				end
+				if insanityGradients.bar then
+					overcapCurvesInsanity.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, insanityGradients.bar.color)
+				end
+				if insanityGradients.background then
+					overcapCurvesInsanity.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, insanityGradients.background.color)
+				end
+				if manaGradients.border then
+					overcapCurvesMana.border = Color:BuildResourceThresholdCurve(specSettings, manaBorderColor, manaGradients.border.color)
+				end
+				if manaGradients.bar then
+					overcapCurvesMana.bar = Color:BuildResourceThresholdCurve(specSettings, manaBarColor, manaGradients.bar.color)
+				end
+				if manaGradients.background then
+					overcapCurvesMana.background = Color:BuildResourceThresholdCurve(specSettings, manaBackgroundColor, manaGradients.background.color)
 				end
 
 				thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)

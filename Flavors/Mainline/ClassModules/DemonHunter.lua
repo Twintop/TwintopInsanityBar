@@ -991,6 +991,8 @@ local scratch = {
 	sfConditionMap1 = {},
 	sfOvercapCurves2 = {},
 	sfGradientConditionMap1 = {},
+	-- Consumed right after each resolve.
+	barGradients1 = {},
 }
 
 -- Kept at module scope so UpdateResourceBar creates no closures each tick.
@@ -1096,18 +1098,7 @@ local function UpdateResourceBar()
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.DemonHunter.HavocSpells.thresholdSnowflakes)
 					
 					-- Find active gradient indicators (separate priority group, always override flat colors when active)
-					local gradientOrder = sharedColors and sharedColors.gradientOrder
-					local overcapIndicator = nil
-					if gradientOrder and indicatorColors then
-						for i = #gradientOrder, 1, -1 do
-							local key = gradientOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-								overcapIndicator = indicator
-								break
-							end
-						end
-					end
+					local furyGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "furyBar", scratch.barGradients1)
 
 					-- Read final colors from the color map (after flat indicator overrides)
 					barColor = furyBarColors.bar
@@ -1119,19 +1110,14 @@ local function UpdateResourceBar()
 					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
 					local overcapCurves = scratch.overcapCurves1
 					wipe(overcapCurves)
-					if overcapIndicator and overcapIndicator.targets then
-						local furyTargets = overcapIndicator.targets.furyBar
-						if furyTargets then
-							if furyTargets.border then
-								overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
-							end
-							if furyTargets.bar then
-								overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
-							end
-							if furyTargets.background then
-								overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
-							end
-						end
+					if furyGradients.border then
+						overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, furyGradients.border.color)
+					end
+					if furyGradients.bar then
+						overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, furyGradients.bar.color)
+					end
+					if furyGradients.background then
+						overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, furyGradients.background.color)
 					end
 
 					-- Apply border
@@ -1244,18 +1230,7 @@ local function UpdateResourceBar()
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.DemonHunter.VengeanceSpells.thresholdSnowflakes)
 					
 					-- Find active gradient indicators (separate priority group, always override flat colors when active)
-					local gradientOrder = sharedColors and sharedColors.gradientOrder
-					local overcapIndicator = nil
-					if gradientOrder and indicatorColors then
-						for i = #gradientOrder, 1, -1 do
-							local key = gradientOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-								overcapIndicator = indicator
-								break
-							end
-						end
-					end
+					local furyGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "furyBar", scratch.barGradients1)
 
 					-- Read final colors from the color map (after flat indicator overrides)
 					barColor = furyBarColors.bar
@@ -1267,19 +1242,14 @@ local function UpdateResourceBar()
 					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
 					local overcapCurves = scratch.overcapCurves2
 					wipe(overcapCurves)
-					if overcapIndicator and overcapIndicator.targets then
-						local furyTargets = overcapIndicator.targets.furyBar
-						if furyTargets then
-							if furyTargets.border then
-								overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
-							end
-							if furyTargets.bar then
-								overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
-							end
-							if furyTargets.background then
-								overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
-							end
-						end
+					if furyGradients.border then
+						overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, furyGradients.border.color)
+					end
+					if furyGradients.bar then
+						overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, furyGradients.bar.color)
+					end
+					if furyGradients.background then
+						overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, furyGradients.background.color)
 					end
 
 					-- Apply border
@@ -1367,30 +1337,17 @@ local function UpdateResourceBar()
 				-- Build gradient curves for soul fragment targets (border/background only, uses fury scale)
 				local sfOvercapCurves = scratch.sfOvercapCurves1
 				wipe(sfOvercapCurves)
-				local gradientOrder = sharedColors and sharedColors.gradientOrder
-				if gradientOrder and indicatorColors then
-					local affectingCombat = TRB.Data.character.inCombat
-					local gradientConditionMap = scratch.gradientConditionMap1
-					wipe(gradientConditionMap)
-					gradientConditionMap.borderOvercap = affectingCombat
-					for i = #gradientOrder, 1, -1 do
-						local key = gradientOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and gradientConditionMap[key] and indicator.isGradient then
-							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
-							if sfTargets then
-								-- Gradient uses fury percentage (primary resource), not soul fragment count
-								-- Bar fill gradient not supported (different scale: stepped 1-6 vs fury 0-120)
-								if sfTargets.border then
-									sfOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, sfBorderOverride or cpBorderColor, indicator.color)
-								end
-								if sfTargets.background then
-									sfOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, sfBackgroundOverride or cpBackgroundColor, indicator.color)
-								end
-							end
-							break
-						end
-					end
+				local gradientConditionMap = scratch.gradientConditionMap1
+				wipe(gradientConditionMap)
+				gradientConditionMap.borderOvercap = TRB.Data.character.inCombat
+				local sfGradients = Color:ResolveGradientTargets(sharedColors, gradientConditionMap, "soulFragmentsBar", scratch.barGradients1)
+				-- Gradient uses fury percentage (primary resource), not soul fragment count
+				-- Bar fill gradient not supported (different scale: stepped 1-6 vs fury 0-120)
+				if sfGradients.border then
+					sfOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, sfBorderOverride or cpBorderColor, sfGradients.border.color)
+				end
+				if sfGradients.background then
+					sfOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, sfBackgroundOverride or cpBackgroundColor, sfGradients.background.color)
 				end
 
 				-- Update all 6 Soul Fragment nodes with positional coloring + indicator overrides
@@ -1516,18 +1473,7 @@ local function UpdateResourceBar()
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.DemonHunter.DevourerSpells.thresholdSnowflakes)
 					
 					-- Find active gradient indicators (separate priority group, always override flat colors when active)
-					local gradientOrder = sharedColors and sharedColors.gradientOrder
-					local overcapIndicator = nil
-					if gradientOrder and indicatorColors then
-						for i = #gradientOrder, 1, -1 do
-							local key = gradientOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-								overcapIndicator = indicator
-								break
-							end
-						end
-					end
+					local furyGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "furyBar", scratch.barGradients1)
 
 					-- Read final colors from the color map (after flat indicator overrides)
 					barColor = furyBarColors.bar
@@ -1539,19 +1485,14 @@ local function UpdateResourceBar()
 					-- Build gradient curves for targeted elements (gradient always wins over flat indicators)
 					local overcapCurves = scratch.overcapCurves3
 					wipe(overcapCurves)
-					if overcapIndicator and overcapIndicator.targets then
-						local furyTargets = overcapIndicator.targets.furyBar
-						if furyTargets then
-							if furyTargets.border then
-								overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
-							end
-							if furyTargets.bar then
-								overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
-							end
-							if furyTargets.background then
-								overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
-							end
-						end
+					if furyGradients.border then
+						overcapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, furyGradients.border.color)
+					end
+					if furyGradients.bar then
+						overcapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, furyGradients.bar.color)
+					end
+					if furyGradients.background then
+						overcapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, furyGradients.background.color)
 					end
 
 					-- Apply border
@@ -1636,28 +1577,15 @@ local function UpdateResourceBar()
 				-- Build gradient curves for soul fragment targets (border/background only, uses fury scale)
 				local sfOvercapCurves = scratch.sfOvercapCurves2
 				wipe(sfOvercapCurves)
-				local sfGradientOrder = sfSharedColors and sfSharedColors.gradientOrder
-				local sfAffectingCombat = TRB.Data.character.inCombat
-				if sfGradientOrder and sfIndicatorColors then
-					local sfGradientConditionMap = scratch.sfGradientConditionMap1
-					wipe(sfGradientConditionMap)
-					sfGradientConditionMap.borderOvercap = sfAffectingCombat
-					for i = #sfGradientOrder, 1, -1 do
-						local key = sfGradientOrder[i]
-						local indicator = sfIndicatorColors[key]
-						if indicator and indicator.enabled and sfGradientConditionMap[key] and indicator.isGradient then
-							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
-							if sfTargets then
-								if sfTargets.border then
-									sfOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, sfBorderOverride or cpBorderColor, indicator.color)
-								end
-								if sfTargets.background then
-									sfOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, sfBackgroundOverride or specSettings.colors.comboPoints.background.color, indicator.color)
-								end
-							end
-							break
-						end
-					end
+				local sfGradientConditionMap = scratch.sfGradientConditionMap1
+				wipe(sfGradientConditionMap)
+				sfGradientConditionMap.borderOvercap = TRB.Data.character.inCombat
+				local sfGradients = Color:ResolveGradientTargets(sfSharedColors, sfGradientConditionMap, "soulFragmentsBar", scratch.barGradients1)
+				if sfGradients.border then
+					sfOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, sfBorderOverride or cpBorderColor, sfGradients.border.color)
+				end
+				if sfGradients.background then
+					sfOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, sfBackgroundOverride or specSettings.colors.comboPoints.background.color, sfGradients.background.color)
 				end
 
 				-- Apply final fill color (indicator > contextual base > default)

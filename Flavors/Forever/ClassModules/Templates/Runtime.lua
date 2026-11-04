@@ -322,14 +322,13 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			wipe(claimed.comboPointsBar)
 
 			Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, claimed)
-			local gradient = Color:GetResolvedGradient()
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				-- The bar's range is raw units (maxResource); threshold costs are in displayed units.
 				Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, snapshotData.attributes.resource)
 				Bar:ApplyNodeIndicators(primaryNode, "resourceBar")
-				Color:ApplyNodeGradientColors(primaryNode, "resourceBar", barColors, gradient, powerType, specSettings.overcap)
+				Color:ApplyNodeGradientColors(primaryNode, barColors, Color:GetResolvedGradients("resourceBar"), powerType, specSettings.overcap)
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
 				local thresholdMax = TRB.Data.character.maxResourceUnmodified
 				-- A secret maximum leaves nothing to place the lines against.
@@ -351,7 +350,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				local current = snapshotData.attributes.resource2 or 0
 				local max = TRB.Data.character.maxResource2 or spec.archetype.secondary.maxNodes
 				-- An element an indicator owns keeps the indicator's color over the per-point colors.
-				local gradientTargets = gradient ~= nil and gradient.targets and gradient.targets.comboPointsBar or nil
+				local gradientTargets = Color:GetResolvedGradients("comboPointsBar")
 				local fillClaimed = claimed.comboPointsBar.bar or (gradientTargets ~= nil and gradientTargets.bar)
 				local borderClaimed = claimed.comboPointsBar.border or (gradientTargets ~= nil and gradientTargets.border)
 				local backgroundClaimed = claimed.comboPointsBar.background or (gradientTargets ~= nil and gradientTargets.background)
@@ -396,7 +395,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 							end
 						end
 						Bar:ApplyNodeIndicators(node, "comboPointsBar")
-						Color:ApplyNodeGradientColors(node, "comboPointsBar", nodeColors, gradient, powerType, specSettings.overcap)
+						Color:ApplyNodeGradientColors(node, nodeColors, gradientTargets, powerType, specSettings.overcap)
 					end
 				end
 			end

@@ -1072,6 +1072,10 @@ local scratch = {
 	barColorMap3 = {},
 	energyOvercapCurves2 = {},
 	chiOvercapCurves1 = {},
+	energyGradients1 = {},
+	staggerGradients1 = {},
+	energyGradients2 = {},
+	chiGradients1 = {},
 }
 
 local function UpdateResourceBar()
@@ -1111,13 +1115,10 @@ local function UpdateResourceBar()
 			local barColor = specSettings.colors.bar.base
 			local barBackgroundColor = specSettings.colors.bar.background.color
 			local sharedColors = specSettings.colors.shared
-			local indicatorColors = sharedColors and sharedColors.indicatorColors
-			local gradientOrder = sharedColors and sharedColors.gradientOrder
 			local invokeNiuzaoActive = snapshots[spells.invokeNiuzao.id].buff.isActive
-			local invokeNiuzaoEndIndicator = indicatorColors and indicatorColors.invokeNiuzaoEnd
 			local invokeNiuzaoEndMet = false
 
-			if invokeNiuzaoActive and invokeNiuzaoEndIndicator and invokeNiuzaoEndIndicator.enabled then
+			if invokeNiuzaoActive then
 				local niuzaoTimeLeft = snapshots[spells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
 				local timeThreshold = 0
 				if specSettings.endOf.invokeNiuzao.mode == "gcd" then
@@ -1165,17 +1166,7 @@ local function UpdateResourceBar()
 					thresholdData:Refresh(talents)
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Monk.BrewmasterSpells.thresholdSnowflakes)
 
-					local overcapIndicator = nil
-					if gradientOrder and indicatorColors then
-						for i = #gradientOrder, 1, -1 do
-							local key = gradientOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-								overcapIndicator = indicator
-								break
-							end
-						end
-					end
+					local energyGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "energyBar", scratch.energyGradients1)
 
 					barColor = energyBarColors.bar
 					barBorderColor = energyBarColors.border
@@ -1183,19 +1174,14 @@ local function UpdateResourceBar()
 
 					local energyOvercapCurves = scratch.energyOvercapCurves1
 					wipe(energyOvercapCurves)
-					if overcapIndicator and overcapIndicator.targets then
-						local energyTargets = overcapIndicator.targets.energyBar
-						if energyTargets then
-							if energyTargets.border then
-								energyOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, overcapIndicator.color)
-							end
-							if energyTargets.bar then
-								energyOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, overcapIndicator.color)
-							end
-							if energyTargets.background then
-								energyOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, overcapIndicator.color)
-							end
-						end
+					if energyGradients.border then
+						energyOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, barBorderColor, energyGradients.border.color)
+					end
+					if energyGradients.bar then
+						energyOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, barColor, energyGradients.bar.color)
+					end
+					if energyGradients.background then
+						energyOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, barBackgroundColor, energyGradients.background.color)
 					end
 
 					Bar:ClearPrimaryPulse(barGroups)
@@ -1270,9 +1256,8 @@ local function UpdateResourceBar()
 						if stNodeOrder and stIndicatorColors then
 							local stSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
 							local invokeNiuzaoActive = snapshots[stSpells.invokeNiuzao.id].buff.isActive
-							local stInvokeNiuzaoEndIndicator = stIndicatorColors.invokeNiuzaoEnd
 							local invokeNiuzaoEndMet = false
-							if invokeNiuzaoActive and stInvokeNiuzaoEndIndicator and stInvokeNiuzaoEndIndicator.enabled then
+							if invokeNiuzaoActive then
 								local niuzaoTimeLeft = snapshots[stSpells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
 								local timeThreshold = 0
 								if specSettings.endOf.invokeNiuzao.mode == "gcd" then
@@ -1306,28 +1291,15 @@ local function UpdateResourceBar()
 						-- Build gradient curves for stagger targets (border/background only, uses energy scale)
 						local stOvercapCurves = scratch.stOvercapCurves1
 						wipe(stOvercapCurves)
-						local stGradientOrder = stSharedColors and stSharedColors.gradientOrder
-						local stAffectingCombat = TRB.Data.character.inCombat
-						if stGradientOrder and stIndicatorColors then
-							local stGradientConditionMap = scratch.stGradientConditionMap1
-							wipe(stGradientConditionMap)
-							stGradientConditionMap.borderOvercap = stAffectingCombat
-							for i = #stGradientOrder, 1, -1 do
-								local key = stGradientOrder[i]
-								local indicator = stIndicatorColors[key]
-								if indicator and indicator.enabled and stGradientConditionMap[key] and indicator.isGradient then
-									local stTargets = indicator.targets and indicator.targets.staggerBar
-									if stTargets then
-										if stTargets.border then
-											stOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, stBorderOverride or cpBorderColor, indicator.color)
-										end
-										if stTargets.background then
-											stOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, stBackgroundOverride or cpBackgroundColor, indicator.color)
-										end
-									end
-									break
-								end
-							end
+						local stGradientConditionMap = scratch.stGradientConditionMap1
+						wipe(stGradientConditionMap)
+						stGradientConditionMap.borderOvercap = TRB.Data.character.inCombat
+						local staggerGradients = Color:ResolveGradientTargets(stSharedColors, stGradientConditionMap, "staggerBar", scratch.staggerGradients1)
+						if staggerGradients.border then
+							stOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, stBorderOverride or cpBorderColor, staggerGradients.border.color)
+						end
+						if staggerGradients.background then
+							stOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, stBackgroundOverride or cpBackgroundColor, staggerGradients.background.color)
 						end
 
 						-- Use ColorCurve for stagger bar fill color
@@ -1471,8 +1443,6 @@ local function UpdateResourceBar()
 		local heartOfTheJadeSerpentActive = snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive
 		local danceOfChiJiActive = snapshotData.attributes.danceOfChiJiActive == true
 		local sharedColors = specSettings.colors.shared
-		local indicatorColors = sharedColors and sharedColors.indicatorColors
-		local gradientOrder = sharedColors and sharedColors.gradientOrder
 		local conditionMap = scratch.conditionMap3
 		wipe(conditionMap)
 		conditionMap.heartOfTheJadeSerpentReady = heartOfTheJadeSerpentReady
@@ -1504,48 +1474,30 @@ local function UpdateResourceBar()
 		indicatorTargets.chiBar = chiBarOverrides
 		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
 
-		local overcapIndicator = nil
-		if gradientOrder and indicatorColors then
-			for i = #gradientOrder, 1, -1 do
-				local key = gradientOrder[i]
-				local indicator = indicatorColors[key]
-				if indicator and indicator.enabled and conditionMap[key] and indicator.isGradient then
-					overcapIndicator = indicator
-					break
-				end
-			end
-		end
+		local energyGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "energyBar", scratch.energyGradients2)
+		local chiGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "chiBar", scratch.chiGradients1)
 
 		local energyOvercapCurves = scratch.energyOvercapCurves2
 		wipe(energyOvercapCurves)
 		local chiOvercapCurves = scratch.chiOvercapCurves1
 		wipe(chiOvercapCurves)
-		if overcapIndicator and overcapIndicator.targets then
-			local energyTargets = overcapIndicator.targets.energyBar
-			if energyTargets then
-				if energyTargets.border then
-					energyOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, energyBarColors.border, overcapIndicator.color)
-				end
-				if energyTargets.bar then
-					energyOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, energyBarColors.bar, overcapIndicator.color)
-				end
-				if energyTargets.background then
-					energyOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, energyBarColors.background, overcapIndicator.color)
-				end
-			end
-
-			local chiTargets = overcapIndicator.targets.chiBar
-			if chiTargets then
-				if chiTargets.border then
-					chiOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, chiBarColors.border, overcapIndicator.color)
-				end
-				if chiTargets.bar then
-					chiOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, chiBarColors.bar, overcapIndicator.color)
-				end
-				if chiTargets.background then
-					chiOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, chiBarColors.background, overcapIndicator.color)
-				end
-			end
+		if energyGradients.border then
+			energyOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, energyBarColors.border, energyGradients.border.color)
+		end
+		if energyGradients.bar then
+			energyOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, energyBarColors.bar, energyGradients.bar.color)
+		end
+		if energyGradients.background then
+			energyOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, energyBarColors.background, energyGradients.background.color)
+		end
+		if chiGradients.border then
+			chiOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, chiBarColors.border, chiGradients.border.color)
+		end
+		if chiGradients.bar then
+			chiOvercapCurves.bar = Color:BuildResourceThresholdCurve(specSettings, chiBarColors.bar, chiGradients.bar.color)
+		end
+		if chiGradients.background then
+			chiOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, chiBarColors.background, chiGradients.background.color)
 		end
 
 		if snapshotData.attributes.isTracking then
