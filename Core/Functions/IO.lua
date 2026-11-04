@@ -506,7 +506,7 @@ local function HandleImport(input)
 						newBarText[className.."_"..specName] = spec.displayText.barText
 						spec.displayText.barText = {}
 					end
-					TRB.Functions.Settings:ClearCustomIndicatorsForMerge(existing[className] and existing[className][specName], spec)
+					TRB.Functions.Settings:ClearUserIndicatorsForMerge(existing[className] and existing[className][specName], spec)
 					for key, entry in pairs(type(spec.displayBar) == "table" and spec.displayBar or {}) do
 						if type(entry) == "table" then
 							importedVisibility[#importedVisibility + 1] = { className = className, specName = specName, key = key, entry = entry }
