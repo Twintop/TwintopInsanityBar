@@ -12,6 +12,8 @@ TRB.Flavor.newsContent = [====[
 ## Death Knight
 
 - [#951](#951) Improve rune bar update performance while all runes are ready.
+- [#953](#953) Improve Color Indicator performance.
+- [#953](#953) Fix the health bar's and cast bar's Color Indicators not updating while the Runic Power, rune, Bone Shield, and Coagulating Blood bars are all set to Never Show.
 
 ## Druid
 
