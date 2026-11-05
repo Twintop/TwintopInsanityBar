@@ -930,6 +930,12 @@ function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
 	if conditions.isDead == true and context.isDead then
 		return true
 	end
+	if conditions.inCombat == true and context.inCombat then
+		return true
+	end
+	if conditions.outOfCombat == true and not context.inCombat then
+		return true
+	end
 	if HasMatchingDruidFormCondition(conditions, context) then
 		return true
 	end
@@ -1003,6 +1009,9 @@ end
 function TRB.Functions.BarVisibility:MatchesShowConditions(context, conditions)
 	-- OR-evaluate: if ANY enabled condition matches the current context, show the bar
 	if conditions.inCombat and context.inCombat then
+		return true
+	end
+	if conditions.outOfCombat and not context.inCombat then
 		return true
 	end
 	if conditions.inVehicle and context.inVehicle then

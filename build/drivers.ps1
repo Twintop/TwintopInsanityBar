@@ -20,7 +20,7 @@
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, classic-overcap, totems, indicator-copies). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, indicator-copies). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
@@ -55,6 +55,7 @@ $drivers = @(
 	[pscustomobject]@{ Name = "aura-conditions"; EveryClass = $true },
 	[pscustomobject]@{ Name = "swing-timers"; EveryClass = $true },
 	[pscustomobject]@{ Name = "five-second-rule"; EveryClass = $true },
+	[pscustomobject]@{ Name = "combat-conditions"; EveryClass = $false },
 	[pscustomobject]@{ Name = "classic-overcap"; EveryClass = $true },
 	[pscustomobject]@{ Name = "totems"; EveryClass = $true },
 	[pscustomobject]@{ Name = "indicator-copies"; EveryClass = $true }

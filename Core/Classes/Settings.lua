@@ -529,6 +529,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class trbBarVisibilityConditions
 ---@field public inCombat boolean? # Show when the player is in combat
+---@field public outOfCombat boolean? # Show when the player is out of combat
 ---@field public inVehicle boolean? # Show when the player is in a vehicle
 ---@field public hasFriendlyTarget boolean? # Show when the player has a friendly target
 ---@field public hasUnfriendlyTarget boolean? # Show when the player has an unfriendly target
@@ -591,6 +592,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public inPetBattle boolean? # Hide when the player is in a pet battle
 ---@field public onTaxi boolean? # Hide when the player is on a flight path
 ---@field public isDead boolean? # Hide when the player is dead or a ghost
+---@field public inCombat boolean? # Hide when the player is in combat
+---@field public outOfCombat boolean? # Hide when the player is out of combat
 ---@field public isPetAlive boolean? # Pet bars only: hide while the pet is out and alive
 ---@field public isPetDead boolean? # Pet bars only: hide while the pet is dead
 ---@field public isPetMissing boolean? # Pet bars only: hide while there is no pet

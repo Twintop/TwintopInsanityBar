@@ -44,6 +44,8 @@ function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
 		inPetBattle = true,
 		onTaxi = true,
 		isDead = false,
+		inCombat = false,
+		outOfCombat = false,
 	}
 	for key in pairs(TRB.Flavor.unavailableVisibilityConditions) do
 		conditions[key] = nil
