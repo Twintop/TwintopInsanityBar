@@ -4720,38 +4720,23 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 	end
 	local valueIsSecret = issecretvalue(value)
 	local maxResourceIsSecret = maxResource and issecretvalue(maxResource) or false
-	local frameIsSynced = false
+	local inputsArePlain = not valueIsSecret and not maxResourceIsSecret
 
-	if node ~= nil and not valueIsSecret and not maxResourceIsSecret then
-		local frame = node:GetFrame()
-		if frame ~= nil and frame.GetValue ~= nil then
-			local _, currentMax = node:GetMinMax()
-			-- Guard: frame min/max or value can be tainted if a secret was previously
-			-- passed through SetValue(). Skip the sync check in that case; Phase 2
-			-- below already handles secrets correctly via its own issecretvalue() check.
-			if not issecretvalue(currentMax) then
-				local safeMaxResource = maxResource or 1
-				if safeMaxResource == 0 then
-					safeMaxResource = 1
-				end
-				local expectedValue = math.min((value or 0) * (currentMax / safeMaxResource), currentMax)
-				local actualValue = frame:GetValue() or 0
-				if not issecretvalue(actualValue) then
-					frameIsSynced = math.abs(actualValue - expectedValue) < 0.01
-				end
-			end
-		end
-	end
-
-	-- frameIsSynced is only true for plain values, so it leads and spares a mismatch the secret checks.
-	if frameIsSynced and not valueIsSecret and not maxResourceIsSecret and
-	   not issecretvalue(cache.value) and cache.value == value and cache.maxResource == maxResource then
+	-- The same plain inputs skip while nothing else has written the frame since (BarNode.valueEpoch).
+	-- The cache holds the inputs as passed, and nil after a secret, so no compare touches a secret.
+	if inputsArePlain and node ~= nil and cache.epoch == node.valueEpoch and cache.value == value
+		and cache.maxResource == maxResource then
 		return
 	end
 
 	if settings ~= nil and settings.bar ~= nil and node ~= nil then
-		local _, max = node:GetMinMax()
+		local max = node.rangeMax
+		if max == nil then
+			local _
+			_, max = node:GetMinMax()
+		end
 		local barMaxValueIsSecret = issecretvalue(max)
+		local inputValue, inputMaxResource = value, maxResource
 
 		if barMaxValueIsSecret or valueIsSecret or maxResourceIsSecret then
 			node:SetValue(value)
@@ -4771,8 +4756,15 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 			end
 		end
 
-		cache.value = value
-		cache.maxResource = maxResource
+		if inputsArePlain then
+			cache.value = inputValue
+			cache.maxResource = inputMaxResource
+			cache.epoch = node.valueEpoch
+		else
+			cache.value = nil
+			cache.maxResource = nil
+			cache.epoch = nil
+		end
 
 		UpdateGroupEndCapVisibility(node)
 	end
@@ -4824,7 +4816,11 @@ function TRB.Functions.Bar:SetBarNodePrimaryValue(settings, key, node, value)
 		end
 		-- Layout ranges the node once, so a max that changes afterward must re-range it here.
 		if node ~= nil then
-			local _, nodeMax = node:GetMinMax()
+			local nodeMax = node.rangeMax
+			if nodeMax == nil then
+				local _
+				_, nodeMax = node:GetMinMax()
+			end
 			if not issecretvalue(nodeMax) and nodeMax ~= maxResource then
 				node:SetMinMax(0, maxResource)
 			end

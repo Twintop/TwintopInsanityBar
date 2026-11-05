@@ -2474,12 +2474,10 @@ local function UpdateResourceBar()
 									-- Currently recharging: manual timer-based progress
 									cpNode:ClearTimerDuration()
 									local progress = cooldown:GetManualCooldownProgress(currentTime)
-									TRB.Data.cache.values.bar[cpKey] = nil
 									Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, progress, 1)
 								else
 									-- Empty charge (not yet recharging)
 									cpNode:ClearTimerDuration()
-									TRB.Data.cache.values.bar[cpKey] = nil
 									Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
 								end
 								TRB.Functions.Color:ApplyFillColor(cpNode, powerWordsBarColors.bar)
@@ -2526,11 +2524,9 @@ local function UpdateResourceBar()
 							elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
 								utilNode:ClearTimerDuration()
 								local progress = cooldown:GetManualCooldownProgress(currentTime)
-								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, progress, 1)
 							else
 								utilNode:ClearTimerDuration()
-								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 							end
 							TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)
@@ -2745,8 +2741,6 @@ local function UpdateResourceBar()
 											-- Currently recharging: manual timer-based progress
 											cpNode:ClearTimerDuration()
 											local progress = cooldown:GetManualCooldownProgress(currentTime)
-											-- Invalidate cache so continuously changing progress always renders
-											TRB.Data.cache.values.bar[cpKey] = nil
 											Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, progress, 1)
 										else
 											-- Empty charge (not yet recharging)
@@ -2806,11 +2800,9 @@ local function UpdateResourceBar()
 							elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
 								utilNode:ClearTimerDuration()
 								local progress = cooldown:GetManualCooldownProgress(currentTime)
-								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, progress, 1)
 							else
 								utilNode:ClearTimerDuration()
-								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 							end
 							TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)
@@ -2845,7 +2837,6 @@ local function UpdateResourceBar()
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 1, 1)
 							else
 								lwNode:ClearTimerDuration()
-								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 0, 1)
 							end
 							TRB.Functions.Color:ApplyFillColor(lwNode, lightweaverBarColors.bar or nodeColor)
@@ -3139,11 +3130,9 @@ local function UpdateResourceBar()
 						elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
 							utilNode:ClearTimerDuration()
 							local progress = cooldown:GetManualCooldownProgress(currentTime)
-							TRB.Data.cache.values.bar[nodeKey] = nil
 							Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, progress, 1)
 						else
 							utilNode:ClearTimerDuration()
-							TRB.Data.cache.values.bar[nodeKey] = nil
 							Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 						end
 						TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)

@@ -768,6 +768,7 @@ local function FreezeFill(groupKey, model)
 	node.frame:SetMinMaxValues(0, total)
 	node.frame:SetValue(value)
 	node.hasTimerDuration = false
+	node:MarkFrameWritten()
 end
 
 ---Applies the idle (no active cast) empty-bar state at idleAlpha: empty fill, no icon/stage lines, normal

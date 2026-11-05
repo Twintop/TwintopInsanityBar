@@ -116,8 +116,18 @@ local barNodeCounter = 0
 ---@field public markerFrame Frame? # Topmost overlay frame for tick and stage lines (lazily created by GetMarkerFrame)
 ---@field public fillWrites integer # Bumped by fill writes that leave no color cache entry (curve, gradient, texture)
 ---@field public borderWrites integer # Bumped by border writes that leave no color cache entry (curve, texture, border size)
+---@field public valueEpoch integer # A fresh number on every write to the frame's value, range, timer, or texture
+---@field public rangeMax number? # The frame's max as last set when plain; nil when secret or unknown
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
+
+-- Shared across nodes, so an epoch read from one node never matches another's.
+local valueEpochCounter = 0
+---@return integer
+local function NextValueEpoch()
+	valueEpochCounter = valueEpochCounter + 1
+	return valueEpochCounter
+end
 
 ---Creates a new BarNode
 ---@param parent Frame # The parent frame to attach this node to
@@ -168,6 +178,7 @@ function TRB.Classes.BarNode:New(parent, name, index)
 
 	-- Initialize the frame's thresholds array for compatibility
 	self.frame.thresholds = self.thresholds
+	self.valueEpoch = NextValueEpoch()
 
 	return self
 end
@@ -205,6 +216,13 @@ function TRB.Classes.BarNode:SetValue(value, smooth)
 	else
 		self.frame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 	end
+	self.valueEpoch = NextValueEpoch()
+end
+
+---Records a write to the frame's value or range made without these methods.
+function TRB.Classes.BarNode:MarkFrameWritten()
+	self.valueEpoch = NextValueEpoch()
+	self.rangeMax = nil
 end
 
 ---True while the aura engine owns this node's fill. Its fill texture is a forbidden object, so
@@ -225,6 +243,7 @@ function TRB.Classes.BarNode:SetTimerDuration(durationObject, interpolation, dir
 	direction = direction or Enum.StatusBarTimerDirection.ElapsedTime
 	self.frame:SetTimerDuration(durationObject, interpolation, direction)
 	self.hasTimerDuration = true
+	self:MarkFrameWritten()
 end
 
 ---Clears any active DurationObject-driven animation, restoring normal SetValue behavior.
@@ -239,6 +258,8 @@ function TRB.Classes.BarNode:ClearTimerDuration()
 			self.frame:Show()
 		end
 		self.hasTimerDuration = false
+		self.valueEpoch = NextValueEpoch()
+		self.rangeMax = 1
 	end
 end
 
@@ -247,6 +268,12 @@ end
 ---@param max number
 function TRB.Classes.BarNode:SetMinMax(min, max)
 	self.frame:SetMinMaxValues(min, max)
+	self.valueEpoch = NextValueEpoch()
+	if issecretvalue(min) or issecretvalue(max) then
+		self.rangeMax = nil
+	else
+		self.rangeMax = max
+	end
 end
 
 ---Gets the current min/max values
@@ -526,6 +553,7 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 
 	-- Set resource bar (StatusBar fill) texture
 	self.frame:SetStatusBarTexture(resourceTexture)
+	self.valueEpoch = NextValueEpoch()
 	self.fillWrites = self.fillWrites + 1
 	self.borderWrites = self.borderWrites + 1
 	-- Lower the fill texture to BORDER,-1 so it draws above the backdrop background
