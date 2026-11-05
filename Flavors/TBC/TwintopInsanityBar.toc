@@ -19,7 +19,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 2.5.6.0
 ## X-ReleaseType: release
-## X-ReleaseDate: 2026-11-04
+## X-ReleaseDate: 2026-11-05
 ## SavedVariables: TwintopInsanityBarTBCSettings
 ## IconTexture: Interface\AddOns\TwintopInsanityBar\Images\Icon.blp
 ## DefaultState: enabled

@@ -4,15 +4,20 @@ local _, TRB = ...
 -- first. Titles name the Live, Forever, Classic, and TBC releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
-# Live 12.1.5.10-release / Forever 1.60.1.17-release / Classic 1.15.9.2-release / TBC 2.5.6.0-release (2026-11-04)
+# Live 12.1.5.10-release / Forever 1.60.1.17-release / Classic 1.15.9.2-release / TBC 2.5.6.0-release (2026-11-05)
 ## Bar Visibility
 
-- Add Out of Combat to Show Bar When, and In Combat and Out of Combat to Always Hide Bar When, on every bar except the cast bars and Skyriding bars.
+- [#932](#932) Add Out of Combat to Show Bar When, and In Combat and Out of Combat to Always Hide Bar When, on every bar except the cast bars and Skyriding bars.
 
 ## Color Indicators
 
 - [#831](#831) Built-in Color Indicators can be removed, and added back with a new Add Built-in Color Indicator button.
 - [#831](#831) Add Built-in Color Indicator can also add more copies of a built-in Color Indicator, each with its own color, targets, and priority.
+
+## Localization
+
+- [#928 - @MOSS099](#928) Updated translations for Simplified Chinese (zhCN).
+- [#931 - @MOSS099](#931) Updated translations for Simplified Chinese (zhCN).
 
 ---
 
