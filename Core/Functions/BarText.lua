@@ -460,6 +460,153 @@ function TRB.Functions.BarText:GetEntryGroupKey(entry, catalog)
 	return TRB.Classes.BarTypeRegistry:GetBarGroup(self:GetAnchorBarKey(relativeToFrame))
 end
 
+-- Whether a spec offers a bar's container as an anchor, by class, spec, and bar group. Spec bar group
+-- configurations are code data, so each answer holds for the session.
+local containerAnchorValid = {}
+
+---@param classId integer?
+---@param specId integer?
+---@param barGroupKey string
+---@return boolean
+local function HasContainerAnchor(classId, specId, barGroupKey)
+	if classId == nil or specId == nil then
+		return false
+	end
+	local bySpec = containerAnchorValid[classId]
+	if bySpec == nil then
+		bySpec = {}
+		containerAnchorValid[classId] = bySpec
+	end
+	local byGroup = bySpec[specId]
+	if byGroup == nil then
+		byGroup = {}
+		bySpec[specId] = byGroup
+	end
+	local valid = byGroup[barGroupKey]
+	if valid == nil then
+		valid = GetContainerAnchorDefinition(classId, specId, barGroupKey) ~= nil
+		byGroup[barGroupKey] = valid
+	end
+	return valid
+end
+
+-- How an anchor name resolves. Every input comes from the name alone, so a plan never goes stale:
+-- the bar groups, their nodes, and their visibility are read live on every resolve.
+local ANCHOR_SCREEN = 1
+local ANCHOR_TOTEM_SLOT = 2
+local ANCHOR_RECHARGE = 3
+local ANCHOR_SELF_DRIVEN = 4
+local ANCHOR_CONTAINER = 5
+local ANCHOR_CLASS = 6
+
+---@class TRB.Classes.BarTextAnchorPlan
+---@field public kind integer # One of the ANCHOR_ kinds
+---@field public groupKey string? # The bar group every kind but screen and class rides
+---@field public slot integer? # The totem slot a totem slot anchor rides
+---@field public wantsIcon boolean? # A self-driven anchor on the bar's side icon instead of the bar
+---@field public fadeKey string? # The self-driven bar whose fade-out holds this anchor's text
+
+---@type table<string, TRB.Classes.BarTextAnchorPlan>
+local anchorPlans = {}
+
+---@param relativeToFrame string
+---@return TRB.Classes.BarTextAnchorPlan
+local function GetAnchorPlan(relativeToFrame)
+	local plan = anchorPlans[relativeToFrame]
+	if plan ~= nil then
+		return plan
+	end
+
+	local selfDrivenKey = castbarAnchorGroupKeys[relativeToFrame]
+	if relativeToFrame == "UIParent" then
+		plan = { kind = ANCHOR_SCREEN }
+	else
+		local totemSlot = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, TOTEM_SLOT_ANCHOR_PATTERN)
+		if totemSlot ~= nil then
+			plan = { kind = ANCHOR_TOTEM_SLOT, groupKey = "totems", slot = tonumber(totemSlot) }
+		elseif selfDrivenKey ~= nil then
+			-- Castbar is an all-spec bar not handled by any class's per-spec GetBarTextFrame; resolve it here
+			-- centrally so bar text can anchor to it (or its side icon) regardless of class/spec.
+			plan = {
+				kind = chargeRechargeAnchors[relativeToFrame] ~= nil and ANCHOR_RECHARGE or ANCHOR_SELF_DRIVEN,
+				groupKey = selfDrivenKey,
+				wantsIcon = castbarIconAnchors[relativeToFrame],
+			}
+		else
+			local barGroupKey = GetContainerAnchorBarGroupKey(relativeToFrame)
+			if barGroupKey ~= nil then
+				plan = { kind = ANCHOR_CONTAINER, groupKey = barGroupKey }
+			else
+				plan = { kind = ANCHOR_CLASS }
+			end
+		end
+	end
+	plan.fadeKey = selfDrivenKey
+	anchorPlans[relativeToFrame] = plan
+	return plan
+end
+
+---Resolves an anchor plan against the live bars.
+---@param plan TRB.Classes.BarTextAnchorPlan
+---@param relativeToFrame string
+---@param classId integer?
+---@param specId integer?
+---@return Frame|nil, boolean, boolean
+local function ResolveAnchorPlan(plan, relativeToFrame, classId, specId)
+	local kind = plan.kind
+	if kind == ANCHOR_SCREEN then
+		return UIParent, true, true
+	elseif kind == ANCHOR_CLASS then
+		return TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+	end
+
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local barGroup = barGroups and barGroups[plan.groupKey]
+	if kind == ANCHOR_TOTEM_SLOT then
+		local node = barGroup and barGroup:GetNode(TRB.Functions.Totems:GetSlotNodeIndex(plan.slot --[[@as integer]]))
+		if node ~= nil then
+			return node:GetFrame(), true, barGroup.isVisible == true and node.isVisible == true
+		end
+		return nil, true, false
+	end
+
+	if kind == ANCHOR_CONTAINER then
+		if not HasContainerAnchor(classId, specId, plan.groupKey --[[@as string]]) then
+			return nil, false, false
+		end
+		if barGroup ~= nil then
+			return barGroup:GetContainerFrame(), true, barGroup.isVisible
+		end
+		return nil, true, false
+	end
+
+	if barGroup == nil then
+		return nil, true, false
+	end
+	if kind == ANCHOR_RECHARGE then
+		local rechargeFrame = barGroup:GetChargeRechargeFrame()
+		if rechargeFrame ~= nil then
+			-- Shown only while a charge is actually refilling, which is what hides the text.
+			return rechargeFrame, true, barGroup.isVisible and rechargeFrame:IsShown()
+		end
+		return nil, true, false
+	end
+	if barGroup.maxNodes > 1 then
+		return barGroup:GetContainerFrame(), true, barGroup.isVisible
+	end
+	local node = barGroup:GetNode(1)
+	if node == nil then
+		return nil, true, false
+	end
+	if plan.wantsIcon then
+		local iconFrame = node:GetIconFrame()
+		-- The icon only shows while a spell is casting; track its live shown state, not just the group's.
+		local isVisible = barGroup.isVisible and node.isVisible and iconFrame ~= nil and iconFrame:IsShown()
+		return iconFrame, true, isVisible == true
+	end
+	return node:GetFrame(), true, barGroup.isVisible and node.isVisible
+end
+
 ---@param relativeToFrame string
 ---@param classId integer?
 ---@param specId integer?
@@ -467,73 +614,45 @@ end
 function TRB.Functions.BarText:GetAnchorFrame(relativeToFrame, classId, specId)
 	classId = classId or TRB.Data.character.classId
 	specId = specId or TRB.Data.character.specId
+	return ResolveAnchorPlan(anchorPlans[relativeToFrame] or GetAnchorPlan(relativeToFrame), relativeToFrame, classId, specId)
+end
 
-	if relativeToFrame == "UIParent" then
-		return UIParent, true, true
-	end
-
-	local totemSlot = self:MatchAnchorKey(relativeToFrame, TOTEM_SLOT_ANCHOR_PATTERN)
-	if totemSlot ~= nil then
+---Whether the active spec's anchor is enabled and visible, as GetAnchorFrame reports it.
+---@param relativeToFrame string
+---@return boolean
+local function IsAnchorShown(relativeToFrame)
+	local plan = anchorPlans[relativeToFrame] or GetAnchorPlan(relativeToFrame)
+	local kind = plan.kind
+	if kind == ANCHOR_SCREEN then
+		return true
+	elseif kind ~= ANCHOR_CLASS then
+		-- Every bar group kind resolves hidden while its group is missing or hidden.
 		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-		local barGroup = barGroups and barGroups.totems
-		local node = barGroup and barGroup:GetNode(TRB.Functions.Totems:GetSlotNodeIndex(tonumber(totemSlot) --[[@as integer]]))
-		if node ~= nil then
-			return node:GetFrame(), true, barGroup.isVisible == true and node.isVisible == true
+		local barGroup = barGroups and barGroups[plan.groupKey]
+		if barGroup == nil or not barGroup.isVisible then
+			return false
 		end
-		return nil, true, false
 	end
+	local character = TRB.Data.character
+	local _, isEnabled, isVisible = ResolveAnchorPlan(plan, relativeToFrame, character.classId, character.specId)
+	return (isEnabled and isVisible) and true or false
+end
 
-	-- Castbar is an all-spec bar not handled by any class's per-spec GetBarTextFrame; resolve it here
-	-- centrally so bar text can anchor to it (or its side icon) regardless of class/spec.
-	local castbarGroupKey = castbarAnchorGroupKeys[relativeToFrame]
-	if castbarGroupKey ~= nil then
-		local wantsIcon = castbarIconAnchors[relativeToFrame]
-		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-		local barGroup = barGroups and barGroups[castbarGroupKey]
-		if barGroup ~= nil and chargeRechargeAnchors[relativeToFrame] ~= nil then
-			local rechargeFrame = barGroup:GetChargeRechargeFrame()
-			if rechargeFrame ~= nil then
-				-- Shown only while a charge is actually refilling, which is what hides the text.
-				return rechargeFrame, true, barGroup.isVisible and rechargeFrame:IsShown()
-			end
-			return nil, true, false
-		end
-		if barGroup ~= nil and barGroup.maxNodes > 1 then
-			return barGroup:GetContainerFrame(), true, barGroup.isVisible
-		end
-		if barGroup ~= nil then
-			local node = barGroup:GetNode(1)
-			if node ~= nil then
-				if wantsIcon then
-					local iconFrame = node:GetIconFrame()
-					-- The icon only shows while a spell is casting; track its live shown state, not just the group's.
-					local isVisible = barGroup.isVisible and node.isVisible and iconFrame ~= nil and iconFrame:IsShown()
-					return iconFrame, true, isVisible == true
-				end
-				local isVisible = barGroup.isVisible and node.isVisible
-				return node:GetFrame(), true, isVisible
-			end
-		end
-		return nil, true, false
+-- What one bar text pass does with an anchor's entries: hold their text while the bar fades out, blank it while
+-- the anchor is hidden, or render it.
+local ANCHOR_STATE_FADING = 1
+local ANCHOR_STATE_HIDDEN = 2
+local ANCHOR_STATE_SHOWN = 3
+
+---@param relativeToFrame string
+---@return integer # One of the ANCHOR_STATE_ values
+local function ResolveAnchorState(relativeToFrame)
+	-- Only cast bar and Other Bars anchors can be fading.
+	local fadeKey = (anchorPlans[relativeToFrame] or GetAnchorPlan(relativeToFrame)).fadeKey
+	if fadeKey ~= nil and IsSelfDrivenBarFading(fadeKey) then
+		return ANCHOR_STATE_FADING
 	end
-
-	local barGroupKey = GetContainerAnchorBarGroupKey(relativeToFrame)
-	if barGroupKey ~= nil then
-		local definition = GetContainerAnchorDefinition(classId, specId, barGroupKey)
-		if definition == nil then
-			return nil, false, false
-		end
-
-		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-		local barGroup = barGroups and barGroups[barGroupKey]
-		if barGroup ~= nil then
-			return barGroup:GetContainerFrame(), true, barGroup.isVisible
-		end
-
-		return nil, true, false
-	end
-
-	return TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+	return IsAnchorShown(relativeToFrame) and ANCHOR_STATE_SHOWN or ANCHOR_STATE_HIDDEN
 end
 
 ---@param frame Frame?
@@ -3317,10 +3436,10 @@ end
 -- Previous tick's HasActiveSelfDrivenBarVariableInUse result, for detecting the tick a cast/timer ends on.
 local selfDrivenBarWasInUse = false
 
--- Reused per-call caches for GetBarTextFrame results, split into parallel maps so caching a
--- frame's state allocates nothing. Presence is keyed on showFrameEnabled.
-local showFrameEnabled = {}
-local showFrameVisible = {}
+-- Reused per-call caches by anchor name: UpdateResourceBarText's ANCHOR_STATE_ values, and whether Show finds the
+-- anchor enabled and visible.
+local anchorStates = {}
+local anchorsShown = {}
 
 -- Reusable table for passing to GetReturnText (avoids per-entry table allocation)
 local barTextBuffer = { text = "", color = "" }
@@ -3393,9 +3512,8 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 
 	--Only parse bar text if we need to refresh the text (or if there are Screen-bound entries)
 	if settings ~= nil and settings.displayText ~= nil then
-		-- Clear the per-call frame cache so entries get fresh visibility data
-		wipe(showFrameEnabled)
-		wipe(showFrameVisible)
+		-- Clear the per-call anchor states so entries get fresh visibility data
+		wipe(anchorStates)
 
 		---@type TRB.Classes.BarTextFrame[]
 		local textFrames = TRB.Frames.textFrames
@@ -3430,26 +3548,15 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 
 				-- Screen-bound text is always processed; other text only when refreshText is true. Text on a
 				-- fading self-driven bar is skipped regardless, which holds its last value on screen.
-				-- Only cast bar and Other Bars anchors can be fading, so other entries skip the call.
-				local selfDrivenKey = castbarAnchorGroupKeys[relativeToFrame]
-				if (refreshText or isScreenText or visibilityRefresh)
-					and not (selfDrivenKey ~= nil and IsSelfDrivenBarFading(selfDrivenKey)) then
-					-- Check if the target frame is visible before doing expensive text processing
-					-- Use per-call cache to avoid redundant GetBarTextFrame calls for entries sharing a frame
-					local frameKey = relativeToFrame
-					local isEnabled, isVisible
-					if showFrameEnabled[frameKey] ~= nil then
-						isEnabled = showFrameEnabled[frameKey]
-						isVisible = showFrameVisible[frameKey]
-					else
-						_, isEnabled, isVisible = TRB.Functions.BarText:GetAnchorFrame(frameKey)
-						if isScreenText then
-							isVisible = true
-						end
-						showFrameEnabled[frameKey] = isEnabled == true
-						showFrameVisible[frameKey] = isVisible == true
+				local anchorState
+				if refreshText or isScreenText or visibilityRefresh then
+					anchorState = anchorStates[relativeToFrame]
+					if anchorState == nil then
+						anchorState = ResolveAnchorState(relativeToFrame)
+						anchorStates[relativeToFrame] = anchorState
 					end
-
+				end
+				if anchorState ~= nil and anchorState ~= ANCHOR_STATE_FADING then
 					local tfKey = textFrameKeys[i] or GetTextFrameKey(i)
 					local frameCache = frameCaches[tfKey]
 					if frameCache == nil then
@@ -3458,7 +3565,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 					end
 
 					-- Skip expensive text processing if the target bar is not visible
-					if not isEnabled or not isVisible then
+					if anchorState == ANCHOR_STATE_HIDDEN then
 						frameCache.text = ""
 					else
 						local color = e.color and e.color.color
@@ -3902,28 +4009,24 @@ function TRB.Functions.BarText:Show(settings)
 	local entries = #displayText.barText
 	if entries > 0 then
 		-- Per-call cache: entries sharing the same relativeToFrame skip redundant GetBarTextFrame calls
-		wipe(showFrameEnabled)
-		wipe(showFrameVisible)
+		wipe(anchorsShown)
 
 		local anyBecameVisible = false
 		local isTransition = TRB.Functions.Bar:IsRenderTransitionActive()
 		for i = 1, entries do
 			local e = displayText.barText[i]
 			local key = e.position.relativeToFrame
-			local isEnabled, isVisible
-			if showFrameEnabled[key] ~= nil then
-				isEnabled = showFrameEnabled[key]
-				isVisible = showFrameVisible[key]
-			else
-				_, isEnabled, isVisible = TRB.Functions.BarText:GetAnchorFrame(key)
-				if key == "UIParent" then
-					isVisible = true
+			-- A disabled entry hides whatever its anchor, so only enabled entries resolve one.
+			local anchorShown = false
+			if e.enabled then
+				anchorShown = anchorsShown[key]
+				if anchorShown == nil then
+					anchorShown = IsAnchorShown(key)
+					anchorsShown[key] = anchorShown
 				end
-				showFrameEnabled[key] = isEnabled == true
-				showFrameVisible[key] = isVisible == true
 			end
 
-			if e.enabled and isEnabled and isVisible and textFrames[i] ~= nil then
+			if anchorShown and textFrames[i] ~= nil then
 				if isTransition then
 					textFrames[i]:Hide()
 					textFrames[i].font:Hide()
