@@ -1038,7 +1038,7 @@ local scratch = {
 	conditionMap3 = {},
 	manaBarColors2 = {},
 	barColorMap3 = {},
-	conditionMap4 = {},
+	maelstromWeaponIndicated1 = {},
 	conditionMap5 = {},
 	manaBarColors3 = {},
 	barColorMap4 = {},
@@ -1381,6 +1381,10 @@ local function UpdateResourceBar()
 			local barColorMap = scratch.barColorMap3
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors
+			-- Seeded empty, so an element holds a color only when an indicator claimed it.
+			local maelstromWeaponIndicated = scratch.maelstromWeaponIndicated1
+			wipe(maelstromWeaponIndicated)
+			barColorMap.maelstromWeaponBar = maelstromWeaponIndicated
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -1413,52 +1417,9 @@ local function UpdateResourceBar()
 					local currentStacks = snapshots[spells.maelstromWeapon.id].buff.applications
 					local compressedView = specSettings.colors.comboPoints.compressedView
 					local displayNodes = compressedView and math.ceil(maxStacks / 2) or maxStacks
-					local sharedColors = specSettings.colors.shared
-					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
-					local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
-					local ascendanceEndMet = false
-
-					if ascendanceActive then
-						local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-						local timeThreshold = 0
-						if specSettings.endOf.ascendance.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
-						elseif specSettings.endOf.ascendance.mode == "time" then
-							timeThreshold = specSettings.endOf.ascendance.timeMax
-						end
-						ascendanceEndMet = timeLeft <= timeThreshold
-					end
-
-					local conditionMap = scratch.conditionMap4
-					wipe(conditionMap)
-					conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
-					conditionMap.ascendance = ascendanceActive
-					conditionMap.tempest = snapshotData.attributes.tempestActive == true
-					conditionMap.tempest2 = snapshotData.attributes.tempestStacks == spells.tempest.maxStacks
-					TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
-					local mwBarOverride = nil
-					local mwBorderOverride = nil
-					local mwBackgroundOverride = nil
-					local mwEndCapOverride = nil
-
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] then
-								local mwTargets = indicator.targets and indicator.targets.maelstromWeaponBar
-								if mwTargets then
-									if mwTargets.bar then mwBarOverride = indicator end
-									if mwTargets.border then mwBorderOverride = indicator.color end
-									if mwTargets.background then mwBackgroundOverride = indicator.color end
-									if mwTargets.endCap then mwEndCapOverride = indicator.color end
-								end
-							end
-						end
-					end
-					Color:SetResolvedEndCap("maelstromWeaponBar", mwEndCapOverride)
+					local mwBarOverride = maelstromWeaponIndicated.bar
+					local mwBorderOverride = maelstromWeaponIndicated.border
+					local mwBackgroundOverride = maelstromWeaponIndicated.background
 
 					local cpBackgroundColor = mwBackgroundOverride or specSettings.colors.comboPoints.background.color
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)

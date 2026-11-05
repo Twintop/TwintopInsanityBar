@@ -1060,9 +1060,7 @@ local scratch = {
 	energyBarColors1 = {},
 	barColorMap1 = {},
 	energyOvercapCurves1 = {},
-	stConditionMap1 = {},
 	stOvercapCurves1 = {},
-	stGradientConditionMap1 = {},
 	conditionMap2 = {},
 	manaBarColors1 = {},
 	barColorMap2 = {},
@@ -1143,10 +1141,10 @@ local function UpdateResourceBar()
 			energyBarColors.bar = barColor
 			energyBarColors.border = barBorderColor
 			energyBarColors.background = barBackgroundColor
-			-- Stagger border/background are colored bespoke below; this entry routes flat indicator end cap colors
 			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.energyBar = energyBarColors
+			-- Seeded empty, so a Stagger element holds a color only when an indicator claimed it.
 			local staggerBarColors = scratch.staggerBarColors1
 			wipe(staggerBarColors)
 			barColorMap.staggerBar = staggerBarColors
@@ -1252,54 +1250,14 @@ local function UpdateResourceBar()
 						local cpBorderColor = staggerColors.border
 						if type(cpBorderColor) == "table" then cpBorderColor = cpBorderColor.color end
 
-						-- Compute indicator overrides for stagger border/background
-						local stBorderOverride, stBackgroundOverride = nil, nil
-						local stSharedColors = specSettings.colors.shared
-						local stIndicatorColors = stSharedColors and stSharedColors.indicatorColors
-						local stNodeOrder = stSharedColors and stSharedColors.nodeOrder
-
-						if stNodeOrder and stIndicatorColors then
-							local stSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
-							local invokeNiuzaoActive = snapshots[stSpells.invokeNiuzao.id].buff.isActive
-							local invokeNiuzaoEndMet = false
-							if invokeNiuzaoActive then
-								local niuzaoTimeLeft = snapshots[stSpells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
-								local timeThreshold = 0
-								if specSettings.endOf.invokeNiuzao.mode == "gcd" then
-									local gcd = Character:GetCurrentGCDTime()
-									timeThreshold = gcd * specSettings.endOf.invokeNiuzao.gcdsMax
-								elseif specSettings.endOf.invokeNiuzao.mode == "time" then
-									timeThreshold = specSettings.endOf.invokeNiuzao.timeMax
-								end
-								invokeNiuzaoEndMet = niuzaoTimeLeft <= timeThreshold
-							end
-
-							local stConditionMap = scratch.stConditionMap1
-							wipe(stConditionMap)
-							stConditionMap.invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet
-							stConditionMap.invokeNiuzao = invokeNiuzaoActive
-							TRB.Functions.Color:ApplyCustomIndicatorConditions(stSharedColors, stConditionMap)
-
-							for i = #stNodeOrder, 1, -1 do
-								local key = stNodeOrder[i]
-								local indicator = stIndicatorColors[key]
-								if indicator and indicator.enabled and stConditionMap[key] then
-									local stTargets = indicator.targets and indicator.targets.staggerBar
-									if stTargets then
-										if stTargets.border then stBorderOverride = indicator.color end
-										if stTargets.background then stBackgroundOverride = indicator.color end
-									end
-								end
-							end
-						end
+						-- Flat indicator overrides for stagger border/background (nil = use default)
+						local stBorderOverride = staggerBarColors.border
+						local stBackgroundOverride = staggerBarColors.background
 
 						-- Build gradient curves for stagger targets (border/background only, uses energy scale)
 						local stOvercapCurves = scratch.stOvercapCurves1
 						wipe(stOvercapCurves)
-						local stGradientConditionMap = scratch.stGradientConditionMap1
-						wipe(stGradientConditionMap)
-						stGradientConditionMap.borderOvercap = TRB.Data.character.inCombat
-						local staggerGradients = Color:ResolveGradientTargets(stSharedColors, stGradientConditionMap, "staggerBar", scratch.staggerGradients1)
+						local staggerGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "staggerBar", scratch.staggerGradients1)
 						if staggerGradients.border then
 							stOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, stBorderOverride or cpBorderColor, staggerGradients.border.color)
 						end

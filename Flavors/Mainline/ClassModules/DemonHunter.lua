@@ -979,16 +979,14 @@ local scratch = {
 	furyBarColors2 = {},
 	barColorMap2 = {},
 	overcapCurves2 = {},
-	conditionMap3 = {},
+	soulFragmentsIndicated2 = {},
 	sfOvercapCurves1 = {},
-	gradientConditionMap1 = {},
 	conditionMap4 = {},
 	furyBarColors3 = {},
 	barColorMap3 = {},
 	overcapCurves3 = {},
-	sfConditionMap1 = {},
+	soulFragmentsIndicated3 = {},
 	sfOvercapCurves2 = {},
-	sfGradientConditionMap1 = {},
 	-- Consumed right after each resolve.
 	barGradients1 = {},
 }
@@ -1206,6 +1204,10 @@ local function UpdateResourceBar()
 			local barColorMap = scratch.barColorMap2
 			wipe(barColorMap)
 			barColorMap.furyBar = furyBarColors
+			-- Seeded empty, so an element holds a color only when an indicator claimed it.
+			local soulFragmentsIndicated = scratch.soulFragmentsIndicated2
+			wipe(soulFragmentsIndicated)
+			barColorMap.soulFragmentsBar = soulFragmentsIndicated
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1280,7 +1282,6 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 				-- Soul Fragments bar (Vengeance, 0-6 fragments, 6 independent nodes)
 				local soulFragments = snapshotData.attributes.resource2 or 0
 				local maxSoulFragments = TRB.Data.character.maxResource2 or 6
@@ -1289,56 +1290,15 @@ local function UpdateResourceBar()
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border.color
 
-				-- Compute indicator overrides for soul fragment elements (nil = use default)
-				local sfBarOverride, sfBorderOverride, sfBackgroundOverride = nil, nil, nil
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
-
-				if nodeOrder and indicatorColors then
-					-- Compute conditions (same logic as primary bar)
-					local metamorphosisActive = snapshots[spells.metamorphosis.id].buff.isActive
-					local metamorphosisEndMet = false
-					if metamorphosisActive then
-						local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
-						local timeThreshold = 0
-						if specSettings.endOf.metamorphosis.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.metamorphosis.gcdsMax
-						elseif specSettings.endOf.metamorphosis.mode == "time" then
-							timeThreshold = specSettings.endOf.metamorphosis.timeMax
-						end
-						metamorphosisEndMet = metaTime <= timeThreshold
-					end
-
-					local conditionMap = scratch.conditionMap3
-					wipe(conditionMap)
-					conditionMap.metamorphosisEnd = metamorphosisActive and metamorphosisEndMet
-					conditionMap.metamorphosis = metamorphosisActive
-					TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
-
-					-- Apply flat indicators to soul fragment targets (reverse iteration, last writer wins)
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] then
-							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
-							if sfTargets then
-								if sfTargets.bar then sfBarOverride = indicator end
-								if sfTargets.border then sfBorderOverride = indicator.color end
-								if sfTargets.background then sfBackgroundOverride = indicator.color end
-							end
-						end
-					end
-				end
+				-- Flat indicator overrides for soul fragment elements (nil = use default)
+				local sfBarOverride = soulFragmentsIndicated.bar
+				local sfBorderOverride = soulFragmentsIndicated.border
+				local sfBackgroundOverride = soulFragmentsIndicated.background
 
 				-- Build gradient curves for soul fragment targets (border/background only, uses fury scale)
 				local sfOvercapCurves = scratch.sfOvercapCurves1
 				wipe(sfOvercapCurves)
-				local gradientConditionMap = scratch.gradientConditionMap1
-				wipe(gradientConditionMap)
-				gradientConditionMap.borderOvercap = TRB.Data.character.inCombat
-				local sfGradients = Color:ResolveGradientTargets(sharedColors, gradientConditionMap, "soulFragmentsBar", scratch.barGradients1)
+				local sfGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "soulFragmentsBar", scratch.barGradients1)
 				-- Gradient uses fury percentage (primary resource), not soul fragment count
 				-- Bar fill gradient not supported (different scale: stepped 1-6 vs fury 0-120)
 				if sfGradients.border then
@@ -1447,6 +1407,10 @@ local function UpdateResourceBar()
 			local barColorMap = scratch.barColorMap3
 			wipe(barColorMap)
 			barColorMap.furyBar = furyBarColors
+			-- Seeded empty, so an element holds a color only when an indicator claimed it.
+			local soulFragmentsIndicated = scratch.soulFragmentsIndicated3
+			wipe(soulFragmentsIndicated)
+			barColorMap.soulFragmentsBar = soulFragmentsIndicated
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1541,44 +1505,15 @@ local function UpdateResourceBar()
 					cpColor = specSettings.colors.comboPoints.collapsingStar
 				end
 
-				-- Compute indicator overrides for soul fragment elements
-				local sfBarOverride, sfBorderOverride, sfBackgroundOverride, sfEndCapOverride = nil, nil, nil, nil
-				local sfSharedColors = specSettings.colors.shared
-				local sfIndicatorColors = sfSharedColors and sfSharedColors.indicatorColors
-				local sfNodeOrder = sfSharedColors and sfSharedColors.nodeOrder
-
-				if sfNodeOrder and sfIndicatorColors then
-					local sfConditionMap = scratch.sfConditionMap1
-					wipe(sfConditionMap)
-					sfConditionMap.voidMetamorphosisReady = metaUsable
-					sfConditionMap.collapsingStarReady = collapsingStarUsable
-					sfConditionMap.voidMetamorphosis = metaActive
-					sfConditionMap.voidRayReady = (not metaActive) and spells.voidRay:IsUsable()
-					TRB.Functions.Color:ApplyCustomIndicatorConditions(sfSharedColors, sfConditionMap)
-
-					for i = #sfNodeOrder, 1, -1 do
-						local key = sfNodeOrder[i]
-						local indicator = sfIndicatorColors[key]
-						if indicator and indicator.enabled and sfConditionMap[key] then
-							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
-							if sfTargets then
-								if sfTargets.bar then sfBarOverride = indicator end
-								if sfTargets.border then sfBorderOverride = indicator.color end
-								if sfTargets.background then sfBackgroundOverride = indicator.color end
-								if sfTargets.endCap then sfEndCapOverride = indicator.color end
-							end
-						end
-					end
-				end
-				Color:SetResolvedEndCap("soulFragmentsBar", sfEndCapOverride)
+				-- Flat indicator overrides for soul fragment elements (nil = use default)
+				local sfBarOverride = soulFragmentsIndicated.bar
+				local sfBorderOverride = soulFragmentsIndicated.border
+				local sfBackgroundOverride = soulFragmentsIndicated.background
 
 				-- Build gradient curves for soul fragment targets (border/background only, uses fury scale)
 				local sfOvercapCurves = scratch.sfOvercapCurves2
 				wipe(sfOvercapCurves)
-				local sfGradientConditionMap = scratch.sfGradientConditionMap1
-				wipe(sfGradientConditionMap)
-				sfGradientConditionMap.borderOvercap = TRB.Data.character.inCombat
-				local sfGradients = Color:ResolveGradientTargets(sfSharedColors, sfGradientConditionMap, "soulFragmentsBar", scratch.barGradients1)
+				local sfGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "soulFragmentsBar", scratch.barGradients1)
 				if sfGradients.border then
 					sfOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, sfBorderOverride or cpBorderColor, sfGradients.border.color)
 				end
