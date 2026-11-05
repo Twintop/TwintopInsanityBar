@@ -13,6 +13,7 @@ TRB.Details.coreNewsContent = [====[
 - [#937](#937) Fix bar text keeping its old format after a Timer Precision or Number Abbreviation change until its value next changed.
 - [#938](#938) Improve bar update performance, primarily around bars with multiple nodes, End Caps, and overlays.
 - [#939](#939) Improve bar text update performance, primarily for bar text on bars that aren't showing.
+- [#941](#941) Improve update performance of the cast bars, Other Bars, Skyriding bars, and bars fading in or out.
 
 ## Color Indicators
 
