@@ -4305,4 +4305,10 @@ if locale == "zhCN" then
 	L["BarDisplayTextCustomizationHeaderTotems"] = "图腾条文字自定义"
 	L["TotemsDisableBlizzard"] = "隐藏原生图腾框架"
 	L["TotemsDisableBlizzardTooltip"] = "图腾条启用时，隐藏玩家框下方暴雪自带的图腾图标。"
+	L["BuiltInIndicatorAddButton"] = "添加内置颜色指示器"
+	L["IndicatorRemoveTooltip"] = "移除此指示器。"
+	L["BuiltInIndicatorDeleteConfirmation"] = "要移除颜色指示器「%s」吗？可通过「添加内置颜色指示器」重新添加。"
+	L["BuiltInGradientAddButton"] = "添加内置渐变颜色"
+	L["BuiltInGradientDeleteConfirmation"] = "要移除渐变颜色「%s」吗？可通过「添加内置渐变颜色」重新添加。"
+	L["FlavorTBC"] = "魔兽世界：燃烧的远征周年纪念服"
 end
