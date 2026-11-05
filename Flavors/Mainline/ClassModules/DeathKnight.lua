@@ -36,9 +36,8 @@ local scratch = {
 	runeBarColors2 = {},
 	runeGradientResults1 = {},
 	runeGradientResults2 = {},
-	barColorMap2 = {},
 	coagulatingBloodColors1 = {},
-	barColorMap3 = {},
+	boneShieldIndicated1 = {},
 	conditionMap1 = {},
 	runicPowerBarCurves1 = {},
 	runeReadyCurves1 = {},
@@ -1003,19 +1002,64 @@ local function EvaluateGradientResults(curves, results)
 	return results
 end
 
-local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
+---Resolves the Color Indicators for every Death Knight bar in one pass. Each bar's scratch color table starts
+---with its unindicated colors, and the render helpers read what the indicators left in it.
+---@param specSettings table
+---@param bloodBars boolean # Also resolve Bone Shield and Coagulating Blood
+---@return table<string, boolean> conditionMap
+---@return table sharedColors
+local function ResolveIndicatorColors(specSettings, bloodBars)
 	local conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
-	local runicPowerBarColors = scratch.runicPowerBarColors1
-	wipe(runicPowerBarColors)
-	runicPowerBarColors.bar = specSettings.colors.bar.base
-	runicPowerBarColors.border = specSettings.colors.bar.border.color
-	runicPowerBarColors.background = specSettings.colors.bar.background.color
+	local colors = specSettings.colors
 	local barColorMap = scratch.barColorMap1
 	wipe(barColorMap)
+
+	local runicPowerBarColors = scratch.runicPowerBarColors1
+	wipe(runicPowerBarColors)
+	runicPowerBarColors.bar = colors.bar.base
+	runicPowerBarColors.border = colors.bar.border.color
+	runicPowerBarColors.background = colors.bar.background.color
 	barColorMap.runicPowerBar = runicPowerBarColors
 
-	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+	-- "Rune (Off Cooldown)" and "Rune (Regenerating)" partition the runes, so each resolves its own colors and gradient.
+	local runeColors = colors.comboPoints
+	local runeReadyColors = scratch.runeBarColors1
+	wipe(runeReadyColors)
+	runeReadyColors.bar = runeColors.base
+	runeReadyColors.border = runeColors.border.color
+	runeReadyColors.background = runeColors.background.color
+	barColorMap.runesBar = runeReadyColors
+	local runeRegenColors = scratch.runeBarColors2
+	wipe(runeRegenColors)
+	runeRegenColors.bar = runeColors.base
+	runeRegenColors.border = runeColors.border.color
+	runeRegenColors.background = runeColors.background.color
+	barColorMap.runesBarRegenerating = runeRegenColors
 
+	if bloodBars then
+		-- Seeded empty, so an element holds a color only when an indicator claimed it.
+		local boneShieldIndicated = scratch.boneShieldIndicated1
+		wipe(boneShieldIndicated)
+		barColorMap.boneShield = boneShieldIndicated
+
+		local coagulatingBlood = colors.bars and colors.bars.coagulatingBlood
+		if coagulatingBlood ~= nil then
+			local coagulatingBloodColors = scratch.coagulatingBloodColors1
+			wipe(coagulatingBloodColors)
+			coagulatingBloodColors.bar = coagulatingBlood.bar
+			coagulatingBloodColors.border = coagulatingBlood.border.color
+			coagulatingBloodColors.background = coagulatingBlood.background.color
+			barColorMap.coagulatingBlood = coagulatingBloodColors
+		end
+	end
+
+	Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
+	return conditionMap, sharedColors
+end
+
+local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode, conditionMap, sharedColors)
+	local runicPowerBarColors = scratch.runicPowerBarColors1
 	local overcapCurves = BuildGradientCurves(specSettings, sharedColors, conditionMap, "runicPowerBar", runicPowerBarColors, scratch.runicPowerBarCurves1)
 
 	if overcapCurves.border then
@@ -1043,35 +1087,19 @@ end
 ---Updates the rune display
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
-local function UpdateRunes(specSettings, specCacheSettings)
+---@param conditionMap table<string, boolean>
+---@param sharedColors table
+local function UpdateRunes(specSettings, specCacheSettings, conditionMap, sharedColors)
 	local cpBackgroundColor = specSettings.colors.comboPoints.background.color
 	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
-	local cpBorderColor = specSettings.colors.comboPoints.border.color
 	local cpBaseColor = specSettings.colors.comboPoints.base
 	local cpCooldownColor = specSettings.colors.comboPoints.cooldown
 	local cpCooldownEnabled = specSettings.colors.comboPoints.cooldownEnabled
 
 	local runes = TRB.Data.character.runes
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-	local conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
-
-	-- "Rune (Off Cooldown)" and "Rune (Regenerating)" partition the runes, so each resolves its own colors and gradient.
 	local runeReadyColors = scratch.runeBarColors1
-	wipe(runeReadyColors)
-	runeReadyColors.bar = cpBaseColor
-	runeReadyColors.border = cpBorderColor
-	runeReadyColors.background = cpBackgroundColor
 	local runeRegenColors = scratch.runeBarColors2
-	wipe(runeRegenColors)
-	runeRegenColors.bar = cpBaseColor
-	runeRegenColors.border = cpBorderColor
-	runeRegenColors.background = cpBackgroundColor
-	local barColorMap = scratch.barColorMap2
-	wipe(barColorMap)
-	barColorMap.runesBar = runeReadyColors
-	barColorMap.runesBarRegenerating = runeRegenColors
-
-	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 	-- An indicator claiming the regenerating fill outranks the per-rune cooldown color.
 	local regenBarIndicated = runeRegenColors.bar ~= cpBaseColor
@@ -1134,7 +1162,9 @@ end
 ---that cannot be compared directly.
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
-local function UpdateBoneShield(specSettings, specCacheSettings)
+---@param conditionMap table<string, boolean>
+---@param sharedColors table
+local function UpdateBoneShield(specSettings, specCacheSettings, conditionMap, sharedColors)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 	local boneShieldStacks = snapshotData.attributes.boneShieldStacks or 0
@@ -1174,43 +1204,21 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 		ossuaryThresholdEnabled = boneShieldColors.ossuaryThreshold and boneShieldColors.ossuaryThreshold.enabled or false
 	end
 
-	-- Compute indicator overrides for bone shield elements (nil = use default)
-	local bsBarOverride, bsBorderOverride, bsBackgroundOverride = nil, nil, nil
-	local sharedColors = specSettings.colors.shared
-	local indicatorColors = sharedColors and sharedColors.indicatorColors
-	local nodeOrder = sharedColors and sharedColors.nodeOrder
-
-	if nodeOrder and indicatorColors then
-		local conditionMap = GetDeathKnightIndicatorState(specSettings)
-		TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
-
-		-- Apply flat indicators to bone shield targets (reverse iteration, last writer wins)
-		for i = #nodeOrder, 1, -1 do
-			local key = nodeOrder[i]
-			local indicator = indicatorColors[key]
-			if indicator and indicator.enabled and conditionMap[key] then
-				local bsTargets = indicator.targets and indicator.targets.boneShield
-				if bsTargets then
-					if bsTargets.bar then bsBarOverride = indicator end
-					if bsTargets.border then bsBorderOverride = indicator.color end
-					if bsTargets.background then bsBackgroundOverride = indicator.color end
-				end
-			end
-		end
-	end
+	-- Flat indicator overrides for bone shield elements (nil = use default)
+	local boneShieldIndicated = scratch.boneShieldIndicated1
+	local bsBarOverride = boneShieldIndicated.bar
+	local bsBorderOverride = boneShieldIndicated.border
+	local bsBackgroundOverride = boneShieldIndicated.background
 
 	-- Build gradient curves for bone shield targets (border/background, uses runic power scale)
 	local bsOvercapCurves = scratch.boneShieldCurves1
 	wipe(bsOvercapCurves)
-	do
-		local conditionMap = GetDeathKnightIndicatorState(specSettings)
-		local bsGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "boneShield", scratch.barGradients1)
-		if bsGradients.border then
-			bsOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, bsBorderOverride or cpBorderColor, bsGradients.border.color)
-		end
-		if bsGradients.background then
-			bsOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, bsBackgroundOverride or cpBackgroundColor, bsGradients.background.color)
-		end
+	local bsGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "boneShield", scratch.barGradients1)
+	if bsGradients.border then
+		bsOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, bsBorderOverride or cpBorderColor, bsGradients.border.color)
+	end
+	if bsGradients.background then
+		bsOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, bsBackgroundOverride or cpBackgroundColor, bsGradients.background.color)
 	end
 
 	-- Update all Bone Shield nodes with positional coloring + indicator overrides
@@ -1270,7 +1278,9 @@ end
 ---0-100 and takes the raw secret count straight from the Cooldown Manager; the StatusBar scales it.
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
-local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
+---@param conditionMap table<string, boolean>
+---@param sharedColors table
+local function UpdateCoagulatingBlood(specSettings, specCacheSettings, conditionMap, sharedColors)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
@@ -1302,18 +1312,7 @@ local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
 
 	-- Same color resolution as the primary bar. Unlike Bone Shield the fill has no positional scheme
 	-- of its own, so the gradient can target it too.
-	local conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
 	local coagulatingBloodColors = scratch.coagulatingBloodColors1
-	wipe(coagulatingBloodColors)
-	coagulatingBloodColors.bar = colors.bar
-	coagulatingBloodColors.border = colors.border.color
-	coagulatingBloodColors.background = colors.background.color
-	local barColorMap = scratch.barColorMap3
-	wipe(barColorMap)
-	barColorMap.coagulatingBlood = coagulatingBloodColors
-
-	Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
-
 	local overcapCurves = BuildGradientCurves(specSettings, sharedColors, conditionMap, "coagulatingBlood", coagulatingBloodColors, scratch.coagulatingBloodCurves1)
 
 	if overcapCurves.border then
@@ -1372,10 +1371,11 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.deathknight_blood.settings
 		UpdateSnapshot_Blood()
 		if snapshotData.attributes.isTracking then
+			local conditionMap, sharedColors = ResolveIndicatorColors(specSettings, true)
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
-				ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
+				ApplyPrimaryRunicPowerColors(specSettings, primaryNode, conditionMap, sharedColors)
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -1395,7 +1395,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateRunes(specSettings, specCacheSettings)
+				UpdateRunes(specSettings, specCacheSettings, conditionMap, sharedColors)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1406,12 +1406,12 @@ local function UpdateResourceBar()
 
 			if specSettings.displayBar.boneShield and not specSettings.displayBar.boneShield.neverShow then
 				refreshText = true
-				UpdateBoneShield(specSettings, specCacheSettings)
+				UpdateBoneShield(specSettings, specCacheSettings, conditionMap, sharedColors)
 			end
 
 			if specSettings.displayBar.coagulatingBlood and not specSettings.displayBar.coagulatingBlood.neverShow then
 				refreshText = true
-				UpdateCoagulatingBlood(specSettings, specCacheSettings)
+				UpdateCoagulatingBlood(specSettings, specCacheSettings, conditionMap, sharedColors)
 			end
 		end
 
@@ -1424,10 +1424,11 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.deathknight_frost.settings
 		UpdateSnapshot_Frost()
 		if snapshotData.attributes.isTracking then
+			local conditionMap, sharedColors = ResolveIndicatorColors(specSettings, false)
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
-				ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
+				ApplyPrimaryRunicPowerColors(specSettings, primaryNode, conditionMap, sharedColors)
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -1447,7 +1448,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateRunes(specSettings, specCacheSettings)
+				UpdateRunes(specSettings, specCacheSettings, conditionMap, sharedColors)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1466,10 +1467,11 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.deathknight_unholy.settings
 		UpdateSnapshot_Unholy()
 		if snapshotData.attributes.isTracking then
+			local conditionMap, sharedColors = ResolveIndicatorColors(specSettings, false)
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
-				ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
+				ApplyPrimaryRunicPowerColors(specSettings, primaryNode, conditionMap, sharedColors)
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -1489,7 +1491,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateRunes(specSettings, specCacheSettings)
+				UpdateRunes(specSettings, specCacheSettings, conditionMap, sharedColors)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
