@@ -42,6 +42,10 @@ TRB.Flavor.newsContent = [====[
 
 - [#936](#936) Remove unused mana regeneration code.
 
+## Rogue
+
+- [#948](#948) Improve combo point bar update performance.
+
 ## Warlock
 ### Demonology
 
