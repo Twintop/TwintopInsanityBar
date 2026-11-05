@@ -1877,12 +1877,15 @@ local function ResolveConditionalValues(compiledExpr)
 	end
 	for i = 1, compiledExpr.varCount do
 		local info = compiledExpr.varInfos[i]
-		local val = TRB.Functions.Class:IsValidVariableForSpec(info.variable)
-		if info.useLookupLogic and TRB.Data.lookupLogic[info.variable] then
-			val = TRB.Data.lookupLogic[info.variable]
-			if issecretvalue(val) then
-				val = false
-			end
+		local val
+		-- A logic value wins when it is set, so the validator only answers when there is none.
+		local logicValue = info.useLookupLogic and TRB.Data.lookupLogic[info.variable] or nil
+		if issecretvalue(logicValue) then
+			val = false
+		elseif logicValue then
+			val = logicValue
+		else
+			val = TRB.Functions.Class:IsValidVariableForSpec(info.variable)
 		end
 		args[i] = val
 	end
@@ -2284,11 +2287,15 @@ local function EmitTreeSignatureSource(tree, out, preamble, indent, k)
 					local info = varInfos[i]
 					local an = "a" .. k .. "_" .. i
 					argNames[i] = an
-					out[#out + 1] = indent .. "local " .. an .. " = Class:IsValidVariableForSpec(" .. string.format("%q", info.variable) .. ")"
+					local validatorCall = "Class:IsValidVariableForSpec(" .. string.format("%q", info.variable) .. ")"
 					if info.useLookupLogic then
+						-- A logic value wins when it is set, so the validator only runs when there is none.
 						local ln = "l" .. k .. "_" .. i
 						out[#out + 1] = indent .. "local " .. ln .. " = logic[" .. string.format("%q", info.variable) .. "]"
-						out[#out + 1] = indent .. "if " .. ln .. " then " .. an .. " = " .. ln .. " if issecretvalue(" .. an .. ") then " .. an .. " = false end end"
+						out[#out + 1] = indent .. "local " .. an
+						out[#out + 1] = indent .. "if issecretvalue(" .. ln .. ") then " .. an .. " = false elseif " .. ln .. " then " .. an .. " = " .. ln .. " else " .. an .. " = " .. validatorCall .. " end"
+					else
+						out[#out + 1] = indent .. "local " .. an .. " = " .. validatorCall
 					end
 				end
 				-- Pure boolean expressions cannot raise, so they inline without pcall.
@@ -2377,7 +2384,8 @@ end
 ---@param text string The entry's raw bar text
 ---@param colorCode string The "|cAARRGGBB" default color prefix
 ---@param force boolean True bypasses the unchanged-skip
----@return string|nil output The formatted text, or nil when unchanged and not forced
+---@return boolean rendered False when unchanged and not forced
+---@return string? output The formatted text, which can be secret
 local function RenderBarTextEntry(state, text, colorCode, force)
 	local signature
 	-- State is keyed by entry index but sigFn/plan are compiled from the text. Drop them when the
@@ -2430,17 +2438,36 @@ local function RenderBarTextEntry(state, text, colorCode, force)
 		lastArgs = {}
 		state.args = lastArgs
 	end
+	-- Whether each stored value was secret, so a steady pass tests only the new value.
+	local argSecret = state.argSecret
+	if argSecret == nil then
+		argSecret = {}
+		state.argSecret = argSecret
+	end
 
 	local changed = force or state.plan ~= plan or state.colorCode ~= colorCode
 	for i = 1, varCount do
-		local value = lookup[vars[i]]
-		if not changed and (issecretvalue(value) or issecretvalue(lastArgs[i]) or lastArgs[i] ~= value) then
-			changed = true
+		local var = vars[i]
+		local value = lookup[var]
+		if changed then
+			-- Stored untested; the next pass tests it.
+			argSecret[i] = nil
+		elseif var ~= "color" then
+			-- The color slot always holds colorCode, compared above.
+			local secret = issecretvalue(value)
+			local lastSecret = argSecret[i]
+			if lastSecret == nil then
+				lastSecret = issecretvalue(lastArgs[i])
+			end
+			if secret or lastSecret or lastArgs[i] ~= value then
+				changed = true
+			end
+			argSecret[i] = secret
 		end
 		lastArgs[i] = value
 	end
 	if not changed then
-		return nil
+		return false
 	end
 	state.plan = plan
 	state.colorCode = colorCode
@@ -2454,7 +2481,7 @@ local function RenderBarTextEntry(state, text, colorCode, force)
 	else
 		outputText = ""
 	end
-	return colorCode .. outputText
+	return true, colorCode .. outputText
 end
 
 -- $inCombat's text by combat state; anything else falls back to tostring, as before.
@@ -3258,73 +3285,121 @@ local castbarInterruptVars = {
 	["$petCastUninterruptible"] = { modelKey = "petCastbar", interruptible = false },
 }
 
----Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
+-- Each base variable's bare check: true, or a function that answers it. Filled in the order the checks once
+-- ran as a chain, and a name keeps the first check that claims it, so every answer matches that chain.
+local baseVariableResolvers = {}
+
 ---@param var string
----@return boolean
-function TRB.Functions.BarText:IsValidVariableBase(var)
-	if validBaseVars[var] then
-		return true
+---@param resolver true|fun(): any
+local function AddBaseResolver(var, resolver)
+	if baseVariableResolvers[var] == nil then
+		baseVariableResolvers[var] = resolver
 	end
-	if speedVariables[var] then
-		return select(2, TRB.Functions.Character:GetMovementSpeed()) ~= nil
+end
+
+---A check that a cast bar model is casting.
+---@param modelKey string
+---@return fun(): any
+local function ModelActiveResolver(modelKey)
+	return function()
+		local model = TRB.Data[modelKey]
+		return model ~= nil and model:IsActive()
 	end
-	if var == "$inCombat" or var == "$inCombatTime" then
-		return TRB.Data.character.inCombat == true
+end
+
+for var, valid in pairs(validBaseVars) do
+	if valid then
+		AddBaseResolver(var, true)
 	end
-	local timerModelKey = castbarTimerVars[var]
-	if timerModelKey ~= nil then
-		local castbar = TRB.Data[timerModelKey]
-		return castbar ~= nil and castbar:IsActive()
+end
+local function SpeedKnown()
+	return select(2, TRB.Functions.Character:GetMovementSpeed()) ~= nil
+end
+for var, isSpeed in pairs(speedVariables) do
+	if isSpeed then
+		AddBaseResolver(var, SpeedKnown)
 	end
-	-- These are already booleans that read false when nothing is casting, so they answer for
-	-- themselves rather than gating on the cast the way the timers above do.
-	local interruptVar = castbarInterruptVars[var]
-	if interruptVar ~= nil then
+end
+local function InCombat()
+	return TRB.Data.character.inCombat == true
+end
+AddBaseResolver("$inCombat", InCombat)
+AddBaseResolver("$inCombatTime", InCombat)
+local modelResolvers = {}
+for var, modelKey in pairs(castbarTimerVars) do
+	modelResolvers[modelKey] = modelResolvers[modelKey] or ModelActiveResolver(modelKey)
+	AddBaseResolver(var, modelResolvers[modelKey])
+end
+-- These are already booleans that read false when nothing is casting, so they answer for themselves.
+for var, interruptVar in pairs(castbarInterruptVars) do
+	AddBaseResolver(var, function()
 		local castbar = TRB.Data[interruptVar.modelKey]
 		if castbar == nil or not castbar:IsActive() then
 			return false
 		end
 		return (castbar.notInterruptible ~= true) == interruptVar.interruptible
+	end)
+end
+-- Target and Focus cast variables are secret on screen, but in logic they ask whether that unit is casting.
+for _, modelKey in ipairs({ "targetCastbar", "focusCastbar" }) do
+	local prefix = modelKey == "targetCastbar" and "$target" or "$focus"
+	modelResolvers[modelKey] = modelResolvers[modelKey] or ModelActiveResolver(modelKey)
+	for _, suffix in ipairs({ "CastingSpellName", "CastTime", "CastTimeRemaining" }) do
+		AddBaseResolver(prefix .. suffix, modelResolvers[modelKey])
 	end
-	-- Target/Focus cast bar variables are secret in display, but in bar text LOGIC they resolve to a
-	-- plain boolean: "is that unit currently casting?" So {$targetCastTimeRemaining}[...] gates on the cast.
-	-- Read via computed key (as elsewhere) so the model field isn't flagged undefined-field.
-	local castbarModelKey
-	if var == "$targetCastingSpellName" or var == "$targetCastTime" or var == "$targetCastTimeRemaining" then
-		castbarModelKey = "targetCastbar"
-	elseif var == "$focusCastingSpellName" or var == "$focusCastTime" or var == "$focusCastTimeRemaining" then
-		castbarModelKey = "focusCastbar"
-	end
-	if castbarModelKey ~= nil then
-		local model = TRB.Data[castbarModelKey]
-		return model ~= nil and model:IsActive()
-	end
-	-- Other Bars timers resolve, in bar text LOGIC, to "is that bar's timer running", so a bare
-	-- {$breathDurationRemaining}[...] gates on the timer the same way a cast variable gates on a cast.
-	-- The mirror timers additionally reach lookupLogic, so they can be compared as well.
-	if var == RANGED_READY_VAR then
-		return TRB.Functions.OtherBars:IsRangedShotPending()
-	end
-	local otherBarKey = otherBarsVars[var]
-	if otherBarKey ~= nil then
-		-- The pause runs before its bar's Show Below window opens.
-		if otherBarKey == "fiveSecondRule" then
-			return TRB.Functions.OtherBars:IsFiveSecondRuleRunning()
+end
+-- Other Bars timers ask whether that bar's timer runs; the mirror timers also reach lookupLogic for comparisons.
+AddBaseResolver(RANGED_READY_VAR, function()
+	return TRB.Functions.OtherBars:IsRangedShotPending()
+end)
+local otherBarResolvers = {}
+for var, barKey in pairs(otherBarsVars) do
+	if otherBarResolvers[barKey] == nil then
+		if barKey == "fiveSecondRule" then
+			-- The pause runs before its bar's Show Below window opens.
+			otherBarResolvers[barKey] = function()
+				return TRB.Functions.OtherBars:IsFiveSecondRuleRunning()
+			end
+		else
+			otherBarResolvers[barKey] = function()
+				return TRB.Functions.OtherBars:IsBarActive(barKey)
+			end
 		end
-		return TRB.Functions.OtherBars:IsBarActive(otherBarKey)
 	end
-	if petVars[var] then
-		return (TRB.Data.snapshotData.attributes.petState or "none") ~= "none"
+	AddBaseResolver(var, otherBarResolvers[barKey])
+end
+local function HasPet()
+	return (TRB.Data.snapshotData.attributes.petState or "none") ~= "none"
+end
+for var, isPetVar in pairs(petVars) do
+	if isPetVar then
+		AddBaseResolver(var, HasPet)
 	end
-	local totemSlot = totemVars[var]
-	if totemSlot ~= nil then
-		return TRB.Functions.Totems:IsSlotActive(totemSlot)
+end
+local totemResolvers = {}
+for var, slot in pairs(totemVars) do
+	if totemResolvers[slot] == nil then
+		totemResolvers[slot] = function()
+			return TRB.Functions.Totems:IsSlotActive(slot)
+		end
 	end
-	local skyridingCheck = skyridingValidVars[var]
-	if skyridingCheck ~= nil then
-		return skyridingCheck()
+	AddBaseResolver(var, totemResolvers[slot])
+end
+for var, check in pairs(skyridingValidVars) do
+	AddBaseResolver(var, check)
+end
+
+---Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
+---@param var string
+---@return boolean
+function TRB.Functions.BarText:IsValidVariableBase(var)
+	local resolver = baseVariableResolvers[var]
+	if resolver == nil then
+		return false
+	elseif resolver == true then
+		return true
 	end
-	return false
+	return resolver()
 end
 
 -- Bar text variables whose values come from a self-driven bar: the cast bars (player $cast* / #casting
@@ -3566,7 +3641,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 
 					-- Skip expensive text processing if the target bar is not visible
 					if anchorState == ANCHOR_STATE_HIDDEN then
-						frameCache.text = ""
+						frameCache.written = false
 					else
 						local color = e.color and e.color.color
 						
@@ -3592,20 +3667,17 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 							entryState = {}
 							barTextEntryStates[i] = entryState
 						end
-						-- Empty frameCache.text means the frame was hidden or never written; the font
-						-- string may hold stale text, so bypass the unchanged-skip. Secret text cannot be
-						-- compared but is never empty (it carries the color prefix), so it never forces.
-						local prevText = frameCache.text
-						local forceWrite = visibilityRefresh or (not issecretvalue(prevText) and (prevText == nil or prevText == ""))
+						-- A frame hidden or never written may hold stale text, so it bypasses the unchanged-skip.
+						local forceWrite = visibilityRefresh or not frameCache.written
 						-- An entry that keeps throwing latches to legacy so it stops paying for both paths
 						-- every tick; the latch clears whenever entry state is wiped.
 						local engineFailures = entryState.engineFailures or 0
 						if engineFailures > 0 and entryState.sigText ~= e.text then
 							engineFailures = 0
 						end
-						local renderOk, returnText = false, nil
+						local renderOk, rendered, returnText = false, false, nil
 						if engineFailures < maxEngineFailures then
-							renderOk, returnText = pcall(RenderBarTextEntry, entryState, e.text, colorCode, forceWrite)
+							renderOk, rendered, returnText = pcall(RenderBarTextEntry, entryState, e.text, colorCode, forceWrite)
 							if not renderOk then
 								entryState.engineFailures = engineFailures + 1
 							elseif engineFailures > 0 then
@@ -3616,9 +3688,10 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 							barTextBuffer.text = e.text
 							barTextBuffer.color = colorCode
 							returnText = GetReturnText(barTextBuffer)
+							rendered = true
 						end
 
-						if issecretvalue(returnText) or returnText ~= nil then
+						if rendered then
 							if textFrames ~= nil and textFrames[i] ~= nil then
 								pcall(TryUpdateText, textFrames[i],  returnText)
 							else
@@ -3629,7 +3702,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 									pcall(TryUpdateText, textFrames[i],  returnText)
 								end
 							end
-							frameCache.text = returnText
+							frameCache.written = true
 						end
 					end
 					
@@ -4057,7 +4130,7 @@ function TRB.Functions.BarText:Show(settings)
 		-- If any text frame just became visible (was hidden, now shown), force a
 		-- full bar text refresh so that UpdateResourceBarText populates content
 		-- into the newly-visible frames. Without this, the text stays empty
-		-- because the early-out / per-entry skip wrote frameCache.text = "" when
+		-- because the early-out / per-entry skip wrote frameCache.written = false when
 		-- the frame was hidden, and no flag was set to reprocess it.
 		if anyBecameVisible and not isTransition then
 			self:InvalidateLookupMemoization()

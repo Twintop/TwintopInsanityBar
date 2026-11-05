@@ -185,6 +185,16 @@ function hooks.afterEvents(ctx)
 		local ok, out = pcall(GetReturnText, { text = text, color = colorCode })
 		return ok, out
 	end
+	---The engine's output, or nil when it skipped; it returns rendered, output, where an older one returned the output or nil.
+	local function Engine(state, text, colorCode, force)
+		local ok, first, second = pcall(RenderBarTextEntry, state, text, colorCode, force)
+		if not ok then
+			return false, first
+		elseif type(first) == "boolean" then
+			return true, first and second or nil
+		end
+		return true, first
+	end
 
 	for _, text in ipairs(ordered) do
 		local vars = {}
@@ -212,14 +222,14 @@ function hooks.afterEvents(ctx)
 			end
 
 			local okL, outL = Legacy(text, colorCode)
-			local okE, outE = pcall(RenderBarTextEntry, state, text, colorCode, true)
+			local okE, outE = Engine(state, text, colorCode, true)
 			renders = renders + 1
 			if okL ~= okE or (okL and outL ~= outE) then
 				mismatches = mismatches + 1
 				Report("mismatch", text, string.format("draw %d legacy=%s engine=%s", draw, tostring(outL), tostring(outE)))
 			elseif okE then
 				-- Nothing changed, so an unforced render skips.
-				local okS, outS = pcall(RenderBarTextEntry, state, text, colorCode, false)
+				local okS, outS = Engine(state, text, colorCode, false)
 				if not okS or (outS ~= nil and not holdsSecret) or (outS ~= nil and outS ~= outE) then
 					skipFailures = skipFailures + 1
 					Report("unchanged render", text, string.format("draw %d returned %s", draw, tostring(outS)))
@@ -234,7 +244,7 @@ function hooks.afterEvents(ctx)
 					end
 					lookup[var] = after
 					local okL2, outL2 = Legacy(text, colorCode)
-					local okE2, outE2 = pcall(RenderBarTextEntry, state, text, colorCode, false)
+					local okE2, outE2 = Engine(state, text, colorCode, false)
 					if okL2 and okE2 and outL2 ~= outL and outE2 ~= outL2 then
 						staleFailures = staleFailures + 1
 						Report("stale render", text, string.format("draw %d legacy=%s engine=%s", draw, tostring(outL2), tostring(outE2)))
