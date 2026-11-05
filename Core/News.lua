@@ -5,6 +5,10 @@ local _, TRB = ...
 TRB.Details.coreNewsContent = [====[
 
 # Live 12.1.5.11-release / Forever 1.60.1.18-release / Classic 1.15.9.3-release / TBC 2.5.6.1-release (2026-11-05)
+## General
+
+- [#935](#935) Improve bar text update performance, primarily out of combat and during casts.
+
 ## Color Indicators
 
 - [#942](#942) Fix a Color Indicator that turns on mid-cast not recoloring the Target and Focus Cast Bars' border until the next cast.
