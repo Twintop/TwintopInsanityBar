@@ -458,12 +458,6 @@ function SlashCmdList.TWINTOP(msg)
 		TRB.Functions.AuraEngine:PrintDiagnostics()
 	elseif cmd == "otherbars" then
 		TRB.Functions.OtherBars:PrintDiagnostics()
-	elseif cmd == "fsr" then
-		if subcmd ~= nil and subcmd ~= "" then
-			print("|cFFFF8800TRB 5SR:|r Unknown argument '" .. subcmd .. "'. Usage: /trb fsr")
-		else
-			TRB.Functions.OtherBars:ToggleFiveSecondRuleProbe()
-		end
 	elseif cmd == "skyriding" then
 		if subcmd ~= nil and subcmd ~= "" then
 			print("|cFFFF8800TRB Skyriding:|r Unknown argument '" .. subcmd .. "'. Usage: /trb skyriding")

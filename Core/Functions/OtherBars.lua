@@ -119,20 +119,11 @@ local rangedHoldsPastEnd = false
 local swingHeldPastEnd = {}
 -- Five Second Rule: GetTime() the regen pause ends, or nil. The bar only goes active once inside its Show Below window.
 local fsrExpiry = nil
--- TEMPORARY DIAGNOSTIC (/trb fsr): casts the Five Second Rule has seen.
-local fsrCastEvents = 0
 -- TEMPORARY DIAGNOSTIC (/trb otherbars): echo every GCD start/stop decision to chat.
 local echoGcd = false
 local function GcdEcho(fmt, ...)
 	if echoGcd then
 		print("|cFFFF8800TRB GCD:|r " .. string.format(fmt, ...))
-	end
-end
--- TEMPORARY DIAGNOSTIC (/trb fsr): one line per Five Second Rule decision.
-local echoFsr = false
-local function FsrEcho(fmt, ...)
-	if echoFsr then
-		print("|cFFFF8800TRB 5SR:|r " .. string.format(fmt, ...))
 	end
 end
 
@@ -685,7 +676,6 @@ local function StopTimer(entry)
 		swingHeldPastEnd[entry.key] = nil
 	elseif entry.kind == "fiveSecondRule" then
 		fsrExpiry = nil
-		FsrEcho("pause ended, regen %s", DescribeRegen())
 		local _, node = GetGroupNode(entry.key)
 		if node ~= nil then
 			UpdateFiveSecondRuleFill(node, cachedBarSettings[entry.key])
@@ -1177,20 +1167,8 @@ local function IsInFiveSecondRuleWindow(barSettings, now)
 	return window == nil or fsrExpiry - now <= window
 end
 
----TEMPORARY DIAGNOSTIC: GetPowerRegen's two rates, to learn whether either reports the pause.
----@return string
-local function DescribeRegen()
-	if GetPowerRegen == nil then
-		return "n/a"
-	end
-	local base, casting = GetPowerRegen()
-	return string.format("%s/%s", tostring(base), tostring(casting))
-end
-
 ---Starts or restarts the pause from a mana spend made just now.
----@param spellId integer
----@param cost number
-local function StartFiveSecondRule(spellId, cost)
+local function StartFiveSecondRule()
 	local entry = BAR_BY_KEY.fiveSecondRule
 	local barSettings, _, visibility = GetBarConfig(entry.key)
 	if not IsEnabled(visibility) then
@@ -1198,10 +1176,7 @@ local function StartFiveSecondRule(spellId, cost)
 	end
 	local now = GetTime()
 	fsrExpiry = now + TRB.Flavor.fiveSecondRule.duration
-	local inWindow = IsInFiveSecondRuleWindow(barSettings, now)
-	FsrEcho("spell %s costs %s mana: pause started, bar %s, regen %s", tostring(spellId), tostring(cost),
-		inWindow and "shown" or "waiting for Show Below", DescribeRegen())
-	if inWindow then
+	if IsInFiveSecondRuleWindow(barSettings, now) then
 		active[entry.key] = true
 		BeginRender(entry)
 		return
@@ -1240,12 +1215,8 @@ end
 local fsrFrame = CreateFrame("Frame")
 -- A finished cast or a started channel spends the spell's mana.
 fsrFrame:SetScript("OnEvent", function(_, _, _, _, spellId)
-	fsrCastEvents = fsrCastEvents + 1
-	local cost = GetSpellManaCost(spellId)
-	if cost > 0 then
-		StartFiveSecondRule(spellId, cost)
-	else
-		FsrEcho("spell %s costs no mana: no pause", tostring(spellId))
+	if GetSpellManaCost(spellId) > 0 then
+		StartFiveSecondRule()
 	end
 end)
 
@@ -1470,7 +1441,6 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			needsUpdater = true
 			if now >= fsrExpiry then
 				fsrExpiry = nil
-				FsrEcho("pause ended before Show Below opened, regen %s", DescribeRegen())
 			elseif throttleTick and IsInFiveSecondRuleWindow(cachedBarSettings[barKey], now) then
 				active[barKey] = true
 				BeginRender(entry)
@@ -1782,43 +1752,6 @@ function TRB.Functions.OtherBars:PrintDiagnostics()
 		end
 	end
 	print("  MIRROR_TIMER_*, PLAYER_SWING, and GCD echo " .. (echoMirrorEvents and "ON: cast something, swing at something, or swim underwater, then paste the lines it prints" or "OFF"))
-end
-
--- TEMPORARY DIAGNOSTIC (/trb fsr): prints where the Five Second Rule bar is and what it shows, and toggles its decision lines.
-function TRB.Functions.OtherBars:ToggleFiveSecondRuleProbe()
-	local prefix = "|cFFFF8800TRB 5SR:|r "
-	if TRB.Flavor.fiveSecondRule == nil then
-		print(prefix .. "this flavor has no Five Second Rule bar.")
-		return
-	end
-	local barSettings, _, visibility = GetBarConfig("fiveSecondRule")
-	if barSettings == nil then
-		print(prefix .. "this spec has no Five Second Rule bar.")
-		return
-	end
-	local a = barSettings.anchor or {}
-	print(string.format("%senabled=%s events=%s (casts %d) running=%s | %sx%s border %s, %s %s of %s %s (%s,%s), match width %s, inside border %s",
-		prefix, tostring(IsEnabled(visibility)), tostring(fsrFrame:IsEventRegistered("UNIT_SPELLCAST_SUCCEEDED")), fsrCastEvents, tostring(fsrExpiry ~= nil),
-		tostring(barSettings.width), tostring(barSettings.height), tostring(barSettings.border), tostring(a.attachPoint), "to", tostring(a.barKey),
-		tostring(a.anchorPoint), tostring(a.xOffset), tostring(a.yOffset), tostring(a.matchWidth), tostring(barSettings.insideAnchorBorder)))
-	local group, node = GetGroupNode("fiveSecondRule")
-	local _, primaryNode = GetGroupNode("primary")
-	local container = group ~= nil and group.containerFrame or nil
-	if container == nil or node == nil then
-		print(prefix .. "no bar frame was built.")
-	else
-		local point, relativeTo, relativePoint, x, y = container:GetPoint(1)
-		local frame = node:GetFrame()
-		local _, maxValue = frame:GetMinMaxValues()
-		local primaryFrame = primaryNode ~= nil and primaryNode:GetFrame() or nil
-		print(string.format("%sframe %s, alpha %.2f, %.0fx%.0f, level %d over Mana's %s, %s %s %s (%.0f,%.0f), fill %s/%s",
-			prefix, container:IsVisible() and "visible" or (container:IsShown() and "shown but hidden by a parent" or "hidden"), container:GetAlpha(),
-			container:GetWidth(), container:GetHeight(), frame:GetFrameLevel(), tostring(primaryFrame and primaryFrame:GetFrameLevel()),
-			tostring(point), tostring(relativeTo and relativeTo.GetName and relativeTo:GetName()), tostring(relativePoint), x or 0, y or 0,
-			tostring(frame:GetValue()), tostring(maxValue)))
-	end
-	echoFsr = not echoFsr
-	print(prefix .. (echoFsr and "decision lines ON: cast a mana spell, then /trb fsr again" or "decision lines OFF"))
 end
 
 ---Registers the events these bars need, then resolves the initial display. The GCD events are the only
