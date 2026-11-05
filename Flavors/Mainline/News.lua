@@ -42,6 +42,15 @@ TRB.Flavor.newsContent = [====[
 
 - [#936](#936) Remove unused mana regeneration code.
 
+## Priest
+### Discipline
+
+- [#950](#950) Improve update performance outside Mythic+ keystones.
+
+### Holy
+
+- [#950](#950) Improve update performance outside Mythic+ keystones.
+
 ## Rogue
 
 - [#948](#948) Improve combo point bar update performance.
