@@ -11,6 +11,7 @@ TRB.Flavor.newsContent = [====[
 # 12.1.5.11-release (2026-11-05)
 ## Druid
 
+- [#947](#947) Improve performance when any of your resources change.
 - [#963](#963) Fix the Ferocious Bite maximum threshold line showing as usable at Ferocious Bite's minimum cost in Cat Form for Balance, Guardian, and Restoration.
 
 ### Balance
