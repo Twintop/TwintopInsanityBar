@@ -19,6 +19,20 @@ local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 local talents --[[@as TRB.Classes.Talents]]
 
+-- Elemental's talent choices for the usability checks, resolved in SwitchSpec right after the talents refresh.
+local elementalTalentGates = { earthShockOnly = false, elementalBlast = false, earthquake = false, earthquakeTargeted = false }
+
+---Resolves which Earth Shock and Earthquake spells Elemental's talents allow; Elemental Blast replaces Earth Shock.
+---@param specTalents TRB.Classes.Talents
+---@param spells TRB.Classes.Mainline.Shaman.ElementalSpells
+local function ResolveElementalTalentGates(specTalents, spells)
+	local elementalBlast = specTalents:IsTalentActive(spells.elementalBlast)
+	elementalTalentGates.earthShockOnly = specTalents:IsTalentActive(spells.earthShock) and not elementalBlast
+	elementalTalentGates.elementalBlast = elementalBlast
+	elementalTalentGates.earthquake = specTalents:IsTalentActive(spells.earthquake)
+	elementalTalentGates.earthquakeTargeted = specTalents:IsTalentActive(spells.earthquakeTargeted)
+end
+
 local thresholdBar = TRB.Classes.ThresholdBar:New()
 local thresholdState = TRB.Classes.ThresholdState:New()
 local thresholdData = TRB.Classes.ThresholdData:New()
@@ -477,8 +491,8 @@ local function RefreshLookupData_Elemental()
 		local castingMaelstromColor = sharedSettings.colors.text.casting.color
 
 		-- $earthShockUsable, $elementalBlastUsable (synonyms), $earthquakeUsable
-		local _earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
-		local _earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (talents:IsTalentActive(spells.earthquakeTargeted) and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
+		local _earthShockUsable = (elementalTalentGates.earthShockOnly and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (elementalTalentGates.elementalBlast and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
+		local _earthquakeUsable = (elementalTalentGates.earthquake and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (elementalTalentGates.earthquakeTargeted and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
 
 		if TRB.Data.character.inCombat then
 			if sharedSettings.colors.text.overThreshold.enabled and _earthShockUsable then
@@ -1122,8 +1136,8 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.shaman_elemental.settings
 		UpdateSnapshot_Elemental()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
-		local earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and spells.earthShock:IsUsable())
-			or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
+		local earthShockUsable = (elementalTalentGates.earthShockOnly and spells.earthShock:IsUsable())
+			or (elementalTalentGates.elementalBlast and spells.elementalBlast:IsUsable())
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
@@ -1134,8 +1148,8 @@ local function UpdateResourceBar()
 			local barColor = specSettings.colors.bar.base
 			local barBackgroundColor = specSettings.colors.bar.background.color
 
-			local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
-				or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
+			local earthquakeUsable = (elementalTalentGates.earthquake and spells.earthquake:IsUsable())
+				or (elementalTalentGates.earthquakeTargeted and spells.earthquakeTargeted:IsUsable())
 			local sharedColors = specSettings.colors.shared
 			local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
 			local ascendanceEndMet = false
@@ -1342,7 +1356,7 @@ local function UpdateResourceBar()
 			end
 
 			if specSettings.displayBar.elementalBlastBuffs ~= nil and not specSettings.displayBar.elementalBlastBuffs.neverShow
-				and talents:IsTalentActive(spells.elementalBlast) then
+				and elementalTalentGates.elementalBlast then
 				refreshText = true
 				UpdateElementalBlastBuffs(specSettings)
 			end
@@ -1708,6 +1722,7 @@ local function SwitchSpec()
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
+		ResolveElementalTalentGates(specCache.shaman_elemental.talents, spells)
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -2012,7 +2027,7 @@ do
 	-- Elemental
 	local earthShockFn = function()
 		local spells = TRB.Data.spellsData.spells
-		return (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
+		return (elementalTalentGates.earthShockOnly and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (elementalTalentGates.elementalBlast and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
 	end
 	local stormkeeperFn = function()
 		local spells = TRB.Data.spellsData.spells
@@ -2046,7 +2061,7 @@ do
 		["$elementalBlastUsable"] = earthShockFn,
 		["$earthquakeUsable"] = function()
 			local spells = TRB.Data.spellsData.spells
-			return (talents:IsTalentActive(spells.earthquake) and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (talents:IsTalentActive(spells.earthquakeTargeted) and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
+			return (elementalTalentGates.earthquake and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (elementalTalentGates.earthquakeTargeted and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
 		end,
 		-- Mana override: Elemental has mana bar visible
 		["$mana"] = true, ["$manaMax"] = true, ["$manaPercent"] = true,
