@@ -11,6 +11,7 @@ TRB.Details.coreNewsContent = [====[
 - [#936](#936) Improve update performance of bars with multiple nodes, custom threshold lines, and bar text.
 - [#937](#937) Improve bar text update performance, primarily for timers, totems, pets, stats, and health.
 - [#937](#937) Fix bar text keeping its old format after a Timer Precision or Number Abbreviation change until its value next changed.
+- [#938](#938) Improve bar update performance, primarily around bars with multiple nodes, End Caps, and overlays.
 
 ## Color Indicators
 
