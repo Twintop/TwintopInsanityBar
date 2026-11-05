@@ -711,6 +711,11 @@ local function IsInVoidbindingKeyRange()
 	return activeKeystoneLevel ~= nil and activeKeystoneLevel >= 2 and activeKeystoneLevel <= 11
 end
 
+-- A key's level never changes mid-key, so the keystone is re-read once a second.
+local VOIDBINDING_KEY_CHECK_INTERVAL = 1
+local inVoidbindingKeyRange = false
+local nextVoidbindingKeyCheckAt = 0
+
 ---Applies or reverses Voidbinding CDR on a single manual-tracked cooldown.
 ---@param cooldown TRB.Classes.SnapshotCooldown
 ---@param cdrPercent number # e.g. 0.3 for 30% CDR
@@ -2187,7 +2192,12 @@ local function UpdateSnapshot_Healers()
 		end
 	end
 
-	if IsInVoidbindingKeyRange() then
+	local currentTime = GetTime()
+	if currentTime >= nextVoidbindingKeyCheckAt then
+		nextVoidbindingKeyCheckAt = currentTime + VOIDBINDING_KEY_CHECK_INTERVAL
+		inVoidbindingKeyRange = IsInVoidbindingKeyRange()
+	end
+	if inVoidbindingKeyRange then
 		-- 1. Capture last known good offensive vers (before it becomes secret).
 		local liveVers = GetCombatRatingBonus(29)
 		if not issecretvalue(liveVers) and type(liveVers) == "number" and liveVers > 0 then
