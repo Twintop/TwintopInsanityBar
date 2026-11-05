@@ -1052,14 +1052,26 @@ local resourceTypeNames = {
 	Castbar = TRB.Localization["ResourceCastbar"],
 }
 
+-- Spec bar group configs by class id, then spec id. Every factory returns load-time constants.
+local specBarGroupConfigs = {}
+
 ---Reads a spec's bar-group configuration (GetSpecConfiguration) without requiring it to be
----the active spec. Shared by the BarText, IO, and Threshold modules.
+---the active spec. Shared by the BarText, IO, and Threshold modules. Callers must not modify it.
 ---@param classId integer?
 ---@param specId integer?
 ---@return table?
 function TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	if classId == nil or specId == nil then
 		return nil
+	end
+	local classConfigs = specBarGroupConfigs[classId]
+	if classConfigs == nil then
+		classConfigs = {}
+		specBarGroupConfigs[classId] = classConfigs
+	end
+	local memo = classConfigs[specId]
+	if memo ~= nil then
+		return memo
 	end
 	local className = self:GetClassModuleName(classId)
 	if className == nil then
@@ -1070,15 +1082,23 @@ function TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 		return nil
 	end
 	local config = classModule.BarGroupsFactory:GetSpecConfiguration(specId)
+	if type(config) ~= "table" then
+		return config
+	end
+	-- An empty config may be a class whose specs aren't defined yet, so it isn't kept.
+	local defined = next(config) ~= nil
 	-- Castbar is an all-spec bar not declared per-spec; expose it so it is a valid anchor target and
 	-- bar-text container for every spec. Copy so we never mutate a class factory's returned table.
-	if type(config) == "table" and config.castbar == nil then
+	if config.castbar == nil then
 		local merged = {}
 		for k, v in pairs(config) do
 			merged[k] = v
 		end
 		merged.castbar = { maxNodes = 1, isPrimary = false, resourceType = "Castbar" }
-		return merged
+		config = merged
+	end
+	if defined then
+		classConfigs[specId] = config
 	end
 	return config
 end
@@ -2259,6 +2279,7 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 	---@type TRB.Classes.SpellThreshold[]
 	local thresholdSpells = {}
 	local thresholdId = 0
+	local stealthGated = false
 	for _, v in pairs(spells) do
 		local spell = v --[[@as TRB.Classes.SpellBase]]
 		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) then
@@ -2269,11 +2290,14 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 				else
 					thresholdId = thresholdId + 1
 					thresholdSpells[thresholdId] = spell
+					stealthGated = stealthGated or spell.attributes.stealth == true
 				end
 			end
 		end
 	end
 	TRB.Data.cache.thresholdSpells = thresholdSpells
+	-- The threshold pass reads stealth only for these lines, so a spec without one skips the API call.
+	TRB.Data.cache.thresholdStealthGated = stealthGated
 	TRB.Functions.Character:RefreshThresholdSpellsLearned()
 	TRB.Functions.Threshold:RefreshThresholdAudio()
 	TRB.Functions.Threshold:RefreshThresholdIconPriorities()

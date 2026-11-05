@@ -322,9 +322,11 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		end
 
 		TRB.Functions.CurveMemo:SetActive(true)
+		TRB.Classes.SpellBase.SetTickTime(GetTime())
 		TRB.Functions.Character:FlushHealthValues()
 		TRB.Functions.AudioCues:UpdateBuffCues(TRB.Data.snapshotData)
 		TRB.Functions.Class:TriggerResourceBarUpdates()
+		TRB.Classes.SpellBase.SetTickTime(nil)
 		TRB.Functions.CurveMemo:SetActive(false)
 		self.sinceLastUpdate = 0
 	end

@@ -35,6 +35,7 @@ local barNodeCounter = 0
 
 ---@class TRB.Classes.ThresholdFrame.IconTexture : Texture
 ---@field public trbVertexWhite boolean? # Whether the last vertex color written was white, so repeat writes are skipped
+---@field public trbDesaturated boolean? # Desaturation last written, so repeat writes are skipped
 
 ---@class TRB.Classes.ThresholdFrame.Cooldown : Cooldown
 ---@field public trbStart number? # Swipe last written, so repeat writes are skipped
@@ -63,6 +64,9 @@ local barNodeCounter = 0
 ---@field public trbColorIcon boolean? # Whether the icon border was painted with it; nil forces the next write
 ---@field public trbIconLayout table? # Its icon's entry in the parent's overlap layout
 ---@field public trbGateAlpha boolean? # Whether a cooldown gate wrote its alpha, so the alpha is restored once the gate lifts
+---@field public trbShown boolean? # Its own shown state last written, so repeat writes are skipped; nil forces the next write
+---@field public trbCurveLevel integer? # Level a color curve last wrote, so repeat writes are skipped; nil forces the next write
+---@field public trbCurveIconLevel integer? # Overlap layout level that curve write used for the icon
 
 ---The node's StatusBar, plus what other modules hang on it.
 ---@class TRB.Classes.BarNode.Frame : StatusBar, BackdropTemplate, TRB.Classes.GlowTarget
@@ -1228,6 +1232,7 @@ function TRB.Classes.BarNode:ClearThresholds()
 	for i, threshold in pairs(self.thresholds) do
 		if threshold and type(threshold) ~= "number" and threshold.Hide then
 			threshold:Hide()
+			threshold.trbShown = false
 		end
 	end
 	self.thresholds = {}
