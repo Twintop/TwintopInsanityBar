@@ -2285,6 +2285,7 @@ end
 ---@field public thresholdDecimals integer?
 ---@field public isCastbar boolean # Player, target, or focus cast bar, whose name already ends in "Cast Bar"
 ---@field public classScoped boolean # Other Bar offered only to classes whose spec descriptors claim it
+---@field public globalScope boolean # A class-scoped Other Bar that still has Global Options for its specs to follow
 ---@field public liveNodeCountFunc (fun(): integer?)? # Self-driven multi-node bar whose node count follows live game data; nil from it keeps maxNodes
 ---@field public onLayout (fun(group: TRB.Classes.BarGroup, groupSettings: table, colors: table?))? # Runs after each layout pass of the bar, for a bar that positions its own nodes
 TRB.Classes.BarTypeDefinition = {}
@@ -2360,6 +2361,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.timerDrivenFill = config.timerDrivenFill or false -- Fill comes from a DurationObject, so the Smooth setting has nothing to act on
 	self.endCapMode = config.endCapMode -- "all" for independent-node bars; nil/"highest" shows the cap only on the highest progressed node
 	self.classScoped = config.classScoped or false -- Other Bar offered only to classes whose spec descriptors claim it (otherBars)
+	self.globalScope = config.globalScope or false
 	self.environmentShowConditions = config.environmentShowConditions or false
 	self.liveNodeCountFunc = config.liveNodeCountFunc
 	self.onLayout = config.onLayout
@@ -2686,6 +2688,15 @@ TRB.Classes.BarTypeRegistry.swingBarKeys = TRB.Flavor.swingTimers and { "mainHan
 for index, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 	table.insert(TRB.Classes.BarTypeRegistry.otherBarKeys, index, key)
 end
+-- Follows the GCD bar: both count down from a cast.
+if TRB.Flavor.fiveSecondRule ~= nil then
+	for index, key in ipairs(TRB.Classes.BarTypeRegistry.otherBarKeys) do
+		if key == "gcd" then
+			table.insert(TRB.Classes.BarTypeRegistry.otherBarKeys, index + 1, "fiveSecondRule")
+			break
+		end
+	end
+end
 
 ---Whether a class claims a class-scoped Other Bar (a spec descriptor lists it under `otherBars`).
 ---@param classId integer?
@@ -2712,7 +2723,8 @@ end
 ---Returns the Other Bars keys that apply to a scope, in tab order. A class-scoped bar (definition
 ---`classScoped`, e.g. Feign Death) only applies to classes that claim it through a spec descriptor and
 ---is deliberately absent from the global (nil classId) scope too: with one class able to use it, a
----global copy would just be a setting nobody could reach, so that class's specs own it outright.
+---global copy would just be a setting nobody could reach, so that class's specs own it outright. One flagged
+---`globalScope` (Five Second Rule, for every mana class) keeps its global copy.
 ---@param classId integer? # nil is the global (core) scope
 ---@return string[]
 function TRB.Classes.BarTypeRegistry:GetOtherBarKeys(classId)
@@ -2721,7 +2733,8 @@ function TRB.Classes.BarTypeRegistry:GetOtherBarKeys(classId)
 	local keys = {}
 	for _, key in ipairs(self.otherBarKeys) do
 		local definition = registry:Get(key)
-		if definition == nil or not definition.classScoped or ClassClaimsOtherBar(classId, key) then
+		if definition == nil or not definition.classScoped or ClassClaimsOtherBar(classId, key)
+			or (classId == nil and definition.globalScope) then
 			keys[#keys + 1] = key
 		end
 	end
@@ -2909,7 +2922,7 @@ function TRB.Classes.BarTypeRegistry:IsBarInScope(barKey, classId, specId)
 	end
 	local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get(barKey)
 	if definition ~= nil and definition.classScoped then
-		return ClassClaimsOtherBar(classId, barKey)
+		return ClassClaimsOtherBar(classId, barKey) or (classId == nil and definition.globalScope)
 	end
 	return true
 end
@@ -3328,6 +3341,36 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 			return TRB.Functions.Settings:DefaultCustomBarTextures()
 		end
 	}))
+
+	-- Five Second Rule bar (mana specs on flavors with the rule, hidden by default): the pause in mana regen after a
+	-- mana spend, filled by hand from the time of the spend.
+	if TRB.Flavor.fiveSecondRule ~= nil then
+		self:Register(TRB.Classes.BarTypeDefinition:New({
+			key = "fiveSecondRule",
+			displayName = L["ResourceFiveSecondRule"],
+			isMultiNode = false,
+			maxNodes = 1,
+			hasSameColor = false,
+			minMaxMode = "custom",
+			hasSpacing = false,
+			hasThresholds = false,
+			colorCurveType = nil,
+			visibilityKey = "fiveSecondRule",
+			isSelfDriven = true,
+			environmentShowConditions = true,
+			classScoped = true,
+			globalScope = true,
+			defaultDimensionsFunc = function(classic)
+				return TRB.Functions.Settings:DefaultFiveSecondRuleBarSettings(classic)
+			end,
+			defaultColorsFunc = function()
+				return TRB.Functions.Settings:DefaultFiveSecondRuleBarColors()
+			end,
+			defaultTexturesFunc = function()
+				return TRB.Functions.Settings:DefaultCustomBarTextures()
+			end
+		}))
+	end
 
 	-- Mirror timer bars (all specs, hidden by default): the timers Blizzard groups under Edit Mode's
 	-- "Duration Bars". Values come from GetMirrorTimerInfo / GetMirrorTimerProgress, which are NOT secret,

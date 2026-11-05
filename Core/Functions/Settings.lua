@@ -44,6 +44,8 @@ function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
 		inPetBattle = true,
 		onTaxi = true,
 		isDead = false,
+		inCombat = false,
+		outOfCombat = false,
 	}
 	for key in pairs(TRB.Flavor.unavailableVisibilityConditions) do
 		conditions[key] = nil
@@ -96,6 +98,10 @@ local function NewSpecGlobalDefaults()
 	for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 		defaults[key .. "Dimensions"] = true
 		defaults[key .. "Colors"] = true
+	end
+	if TRB.Flavor.fiveSecondRule ~= nil then
+		defaults.fiveSecondRuleDimensions = true
+		defaults.fiveSecondRuleColors = true
 	end
 	for _, key in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
 		defaults[key .. "Dimensions"] = true
@@ -1763,7 +1769,8 @@ function TRB.Functions.Settings:DefaultOtherBarVisibility(barKey)
 	-- The GCD recycles every ~1.5s, so any fade tail leaves it on screen most of the time and reads as a
 	-- bar that never goes away. The mirror timers fire once in a while and fade out normally.
 	local fadeDuration = 0.5
-	if barKey == "gcd" then
+	-- The Five Second Rule restarts with nearly every cast, just as often.
+	if barKey == "gcd" or barKey == "fiveSecondRule" then
 		fadeDuration = 0
 	end
 	-- The full standard hide set: these timers run in exactly the situations people suppress bars for.
@@ -1824,6 +1831,42 @@ function TRB.Functions.Settings:DefaultGcdBarColors()
 		bar = { color = "FFFFFFFF", color2 = "FFFFFFFF", gradientDirection = "disabled" },
 		border = { color = "FF000000" },
 		background = { color = "66000000" },
+		endCap = self:DefaultEndCapColorEntry()
+	}
+end
+
+---Gets the default Five Second Rule bar settings: a thin borderless strip along the inside bottom of the Mana bar.
+---@param classic boolean?
+---@return TRB.Classes.Settings.OtherBar
+function TRB.Functions.Settings:DefaultFiveSecondRuleBarSettings(classic)
+	local settings = self:DefaultOtherBarDimensions(classic) --[[@as TRB.Classes.Settings.OtherBar]]
+	local primary = self:DefaultBarDimensions(classic)
+	settings.width = primary.width
+	settings.height = 4
+	settings.border = 0
+	settings.timerDirection = "deplete"
+	settings.durationPrecision = 1
+	settings.insideAnchorBorder = true
+	settings.showBelow = { enabled = false, mode = "time", gcdsMax = 2, timeMax = 3 }
+
+	settings.relativeTo = "BOTTOM"
+	settings.relativeToName = L["PositionBelowMiddle"]
+	settings.anchor.barKey = "primary"
+	settings.anchor.anchorPoint = "BOTTOM"
+	settings.anchor.attachPoint = "BOTTOM"
+	settings.anchor.xOffset = 0
+	settings.anchor.yOffset = 0
+	settings.anchor.matchWidth = true
+	return settings
+end
+
+---Gets the default Five Second Rule bar colors: a lighter blue than the Mana bar it sits on.
+---@return table
+function TRB.Functions.Settings:DefaultFiveSecondRuleBarColors()
+	return {
+		bar = { color = "FF66B3FF", color2 = "FF66B3FF", gradientDirection = "disabled" },
+		border = { color = "FF000000" },
+		background = { color = "00000000" },
 		endCap = self:DefaultEndCapColorEntry()
 	}
 end
@@ -1977,6 +2020,8 @@ function TRB.Functions.Settings:InjectOtherBarsDefaults(specDefaults, classId, c
 		if specDefaults.bars[key] == nil then
 			if key == "gcd" then
 				specDefaults.bars[key] = self:DefaultGcdBarSettings(classic)
+			elseif key == "fiveSecondRule" then
+				specDefaults.bars[key] = self:DefaultFiveSecondRuleBarSettings(classic)
 			elseif isSwingKey[key] then
 				specDefaults.bars[key] = self:DefaultSwingTimerBarSettings(classic, key)
 			else
@@ -1986,6 +2031,8 @@ function TRB.Functions.Settings:InjectOtherBarsDefaults(specDefaults, classId, c
 		if specDefaults.colors.bars[key] == nil then
 			if key == "gcd" then
 				specDefaults.colors.bars[key] = self:DefaultGcdBarColors()
+			elseif key == "fiveSecondRule" then
+				specDefaults.colors.bars[key] = self:DefaultFiveSecondRuleBarColors()
 			elseif isSwingKey[key] then
 				specDefaults.colors.bars[key] = self:DefaultSwingTimerBarColors(key)
 			else

@@ -5,6 +5,10 @@ local _, TRB = ...
 TRB.Details.coreNewsContent = [====[
 
 # Live 12.1.5.10-release / Forever 1.60.1.17-release / Classic 1.15.9.2-release / TBC 2.5.6.0-release (2026-11-04)
+## Bar Visibility
+
+- Add Out of Combat to Show Bar When, and In Combat and Out of Combat to Always Hide Bar When, on every bar except the cast bars and Skyriding bars.
+
 ## Color Indicators
 
 - [#831](#831) Built-in Color Indicators can be removed, and added back with a new Add Built-in Color Indicator button.

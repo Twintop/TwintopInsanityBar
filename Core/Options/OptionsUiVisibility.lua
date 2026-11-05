@@ -18,7 +18,7 @@ local deleteActionTextColor = { r = 1, g = 0.12, b = 0.12, a = 1 }
 -- always list their conditions in the same sequence.
 -- ============================================================================
 
-local STANDARD_CONDITION_KEYS = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isSteadyFlight", "isSteadyFlightFlying", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
+local STANDARD_CONDITION_KEYS = { "inCombat", "outOfCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isSteadyFlight", "isSteadyFlightFlying", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
 local DRUID_FORM_CONDITION_KEYS = { "isDruidHumanoidForm", "isDruidTravelFormAny", "isDruidStagForm", "isDruidFlightForm", "isDruidSwiftFlightForm", "isDruidAquaticForm", "isDruidCatForm", "isDruidBearForm", "isDruidMoonkinForm" }
 local CASTBAR_CONDITION_KEYS = { "casting", "channeling", "empowered" }
 -- Other Bars' own show state: their timer is running.
@@ -31,11 +31,12 @@ local PET_CONDITION_KEYS = { "isPetAlive", "isPetDead", "isPetMissing" }
 local TOTEM_CONDITION_KEYS = { "isTotemActive", "isTotemMissing" }
 -- Skyriding bars' own condition beside the standard Skyriding pair, offered in both lists.
 local SKYRIDING_CONDITION_KEYS = { "isNotSkyriding" }
-local STANDARD_HIDE_CONDITION_KEYS ={ "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
+local STANDARD_HIDE_CONDITION_KEYS ={ "isMountedAny", "isMountedGround", "isMountedFlying", "isSteadyFlightFlying", "isSkyriding", "isSkyridingFlying", "inCombat", "outOfCombat", "inVehicle", "inPetBattle", "onTaxi", "isDead" }
 
 -- Every condition key the addon can store, show-side and hide-side alike.
 local CONDITION_LABELS = {
 	inCombat = L["ShowBarVisibilityConditionInCombat"],
+	outOfCombat = L["ShowBarVisibilityConditionOutOfCombat"],
 	inVehicle = L["ShowBarVisibilityConditionInVehicle"],
 	hasFriendlyTarget = L["ShowBarVisibilityConditionFriendlyTarget"],
 	hasUnfriendlyTarget = L["ShowBarVisibilityConditionUnfriendlyTarget"],
@@ -1104,7 +1105,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local conditionGroups = {
 		{
 			title = L["ShowBarVisibilityGroupGeneral"],
-			keys = { "inCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget" },
+			keys = { "inCombat", "outOfCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget" },
 		},
 		{
 			title = L["ShowBarVisibilityGroupMounting"],
@@ -1140,7 +1141,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local hideConditionGroups = {
 		{
 			title = L["ShowBarVisibilityGroupGeneral"],
-			keys = { "inVehicle", "inPetBattle", "onTaxi", "isDead" },
+			keys = { "inCombat", "outOfCombat", "inVehicle", "inPetBattle", "onTaxi", "isDead" },
 		},
 		{
 			title = L["ShowBarVisibilityGroupMounting"],

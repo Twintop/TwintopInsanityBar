@@ -1932,6 +1932,8 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				barOverrides.timerDirection = coreBar.timerDirection
 				barOverrides.disableBlizzardBar = coreBar.disableBlizzardBar
 				barOverrides.durationPrecision = coreBar.durationPrecision
+				barOverrides.showBelow = coreBar.showBelow
+				barOverrides.insideAnchorBorder = coreBar.insideAnchorBorder
 			end
 			specCache.settings.bars = OverlayOn(currentBars, { [barKey] = OverlayOn(specBar, barOverrides) })
 		end
@@ -2006,10 +2008,13 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 				displayBar[k] = v
 			end
 		end
-		-- A bar the spec has no entry for comes from Global Options only under the spec's flag, as it always has.
+		-- A bar the spec has no entry for comes from Global Options only under the spec's flag, as it always has, and
+		-- never one the spec can't have (Five Second Rule without mana).
 		if s.displayBar then
+			local scopeEntry = TRB.Functions.Character:GetSpecRegistryEntry(compositeKey)
 			for k, v in pairs(core.displayBar) do
-				if displayBar[k] == nil and type(v) == "table" and registry:IsGlobalScopeBar(k) then
+				if displayBar[k] == nil and type(v) == "table" and registry:IsGlobalScopeBar(k)
+					and (scopeEntry == nil or registry:IsBarInScope(k, scopeEntry.classId, scopeEntry.specId)) then
 					displayBar[k] = barVisibility:ComposeEntry(v)
 				end
 			end

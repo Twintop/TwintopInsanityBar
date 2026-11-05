@@ -392,6 +392,7 @@ do
 	-- Forms drive the per-bar hide conditions only; every bar's visibility is its own settings.
 	SpecDescriptor:Declare("druid_general", {
 		manaBar = true,
+		otherBars = { "fiveSecondRule" },
 		forms = {},
 		secondary = { exportable = true },
 		customBars = { "rage", "energy" },

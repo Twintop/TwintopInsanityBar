@@ -102,6 +102,14 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "petCastbar", "uninterruptibleShield"} } },
 }
 
+-- Five Second Rule sections, shaped like the GCD's; Colors also carries Show Below and Inside Anchor Border.
+if TRB.Flavor.fiveSecondRule ~= nil then
+	globalSettingDefinitions.fiveSecondRuleDimensions = { checkboxSuffix = "fiveSecondRuleDimensions", tabKey = "fiveSecondRule", categoryKey = "otherBars", barKey = "fiveSecondRule", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_fiveSecondRuleDimensions"],
+		paths = { {"bars", "fiveSecondRule", "width"}, {"bars", "fiveSecondRule", "height"}, {"bars", "fiveSecondRule", "border"}, {"bars", "fiveSecondRule", "xPos"}, {"bars", "fiveSecondRule", "yPos"}, {"bars", "fiveSecondRule", "anchor"}, {"bars", "fiveSecondRule", "fillDirection"} } }
+	globalSettingDefinitions.fiveSecondRuleColors = { checkboxSuffix = "fiveSecondRuleColors", tabKey = "fiveSecondRule", categoryKey = "otherBars", barKey = "fiveSecondRule", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_fiveSecondRuleColors"],
+		paths = { {"colors", "bars", "fiveSecondRule", "bar"}, {"colors", "bars", "fiveSecondRule", "border"}, {"colors", "bars", "fiveSecondRule", "background"}, {"colors", "bars", "fiveSecondRule", "endCap"}, {"bars", "fiveSecondRule", "durationPrecision"}, {"bars", "fiveSecondRule", "timerDirection"}, {"bars", "fiveSecondRule", "showBelow"}, {"bars", "fiveSecondRule", "insideAnchorBorder"} } }
+end
+
 -- Swing bar sections, shaped like the GCD's; only where the flavor has swing bars.
 local swingSectionLabels = {
 	mainHandSwingDimensions = L["CopyMenuSection_mainHandSwingDimensions"],

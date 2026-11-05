@@ -424,6 +424,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public durationPrecision integer? # GCD and swing bars only: decimal places (0-3) for their duration text. The mirror timers render mm:ss instead
 ---@field public timerDirection string? # GCD and swing bars only: "deplete" (drain a full bar) or "fill" (grow an empty one)
 ---@field public disableBlizzardBar boolean? # Mirror timers, Main Hand Swing, and Totems only: hide Blizzard's own frame for this timer type, all three swing timers for Main Hand Swing, and its TotemFrame for Totems
+---@field public showBelow { enabled: boolean, mode: string, gcdsMax: number, timeMax: number }? # Five Second Rule only: show the bar only once the pause has this much left
+---@field public insideAnchorBorder boolean? # Five Second Rule only: sit inside the anchor bar's border rather than over it
 
 ---@class TRB.Classes.Settings.TotemBar : TRB.Classes.Settings.OtherBar
 ---@field public showAllSlots boolean? # Mainline: show a node for every totem slot, not just up to the highest one in use
@@ -527,6 +529,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 
 ---@class trbBarVisibilityConditions
 ---@field public inCombat boolean? # Show when the player is in combat
+---@field public outOfCombat boolean? # Show when the player is out of combat
 ---@field public inVehicle boolean? # Show when the player is in a vehicle
 ---@field public hasFriendlyTarget boolean? # Show when the player has a friendly target
 ---@field public hasUnfriendlyTarget boolean? # Show when the player has an unfriendly target
@@ -589,6 +592,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public inPetBattle boolean? # Hide when the player is in a pet battle
 ---@field public onTaxi boolean? # Hide when the player is on a flight path
 ---@field public isDead boolean? # Hide when the player is dead or a ghost
+---@field public inCombat boolean? # Hide when the player is in combat
+---@field public outOfCombat boolean? # Hide when the player is out of combat
 ---@field public isPetAlive boolean? # Pet bars only: hide while the pet is out and alive
 ---@field public isPetDead boolean? # Pet bars only: hide while the pet is dead
 ---@field public isPetMissing boolean? # Pet bars only: hide while there is no pet

@@ -406,6 +406,10 @@ function TRB.Classic.Templates.Classes:DefineClass(className, specDeclarations)
 		-- Descriptor: every Classic spec shows mana precision when mana is its resource; combo point
 		-- specs export their secondary bar, offer its nodes as bar text anchors, and get combo point audio cues.
 		local descriptor = { manaBar = archetype.key == "mana" }
+		-- Mana specs get the Five Second Rule bar.
+		if archetype.key == "mana" and TRB.Flavor.fiveSecondRule ~= nil then
+			descriptor.otherBars = { "fiveSecondRule" }
+		end
 		if archetype.secondary ~= nil then
 			descriptor.secondary = { exportable = true }
 			local anchors = {}

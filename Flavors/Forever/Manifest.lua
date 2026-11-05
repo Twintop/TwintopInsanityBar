@@ -33,6 +33,8 @@ TRB.Flavor = {
 		isDruidFlightForm = true, isDruidSwiftFlightForm = true,
 	},
 	-- Blizzard_SwingTimer's PLAYER_SWING event; no other client has it.
+	-- Mana regen pauses this long after each mana spend: the Five Second Rule bar.
+	fiveSecondRule = { duration = 5 },
 	swingTimers = true,
 	blizzardSwingTimer = true,
 	-- Each totem slot is one element.
