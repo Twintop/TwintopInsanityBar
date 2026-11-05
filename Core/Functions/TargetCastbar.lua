@@ -571,7 +571,8 @@ local function ApplyVisibleState(groupKey, model)
 	end
 
 	-- Side icon (secret-safe). Its border tracks the bar's border via ApplyBorderColor below.
-	if barSettings and barSettings.icon and barSettings.icon.enabled ~= false then
+	local iconEnabled = barSettings ~= nil and barSettings.icon ~= nil and barSettings.icon.enabled ~= false
+	if iconEnabled then
 		SetIconRaw(node, model.spellIconId)
 	else
 		node:SetIconVisible(false)
@@ -627,6 +628,10 @@ local function ApplyVisibleState(groupKey, model)
 	node:Show()
 	group.containerFrame:SetAlpha(activeAlpha)
 	group.healedHideVersion = group.hideVersion
+	if drawn ~= nil then
+		drawn.hideVersion = group.hideVersion
+		drawn.iconEnabled = iconEnabled
+	end
 end
 
 -- Per-groupKey cache of the last throttle tick's resolved activeAlpha, so between-tick frames can do the
@@ -650,10 +655,11 @@ local function ReassertVisibility(groupKey, model)
 		return
 	end
 	local _, barSettings, colors, visibility = GetBarConfig(groupKey)
+	local drawn, unchanged
 	if colors ~= nil then
 		local classHex = GetUnitClassColor(model.unit, barSettings)
 		local hostile = UnitExists(model.unit) and UnitCanAttack("player", model.unit) or false
-		local drawn, unchanged = GetDrawnCastColors(groupKey, node, model, colors, barSettings, classHex, hostile)
+		drawn, unchanged = GetDrawnCastColors(groupKey, node, model, colors, barSettings, classHex, hostile)
 		local colorCache = TRB.Data.cache.colors
 		if not (unchanged and drawn.fillCurve and drawn.fillWrites == node.fillWrites and colorCache.bar[node.resourceKey] == nil) then
 			drawn.fillCurve = ApplyFillColor(node, model, colors, barSettings, classHex, hostile)
@@ -665,29 +671,37 @@ local function ReassertVisibility(groupKey, model)
 		end
 		ApplyBackgroundColor(node, colors, groupKey)
 	end
-	-- Re-assert the icon every tick, not just at cast start: a render transition hides all bar groups
-	-- (icon included) and ProcessBars restores only its entries -- not these bars -- so without this the icon
-	-- vanishes mid-cast and never returns (the fill/color self-heal here but the icon didn't). Mirrors the
-	-- player bar's per-tick ApplyVisibleState icon re-assert.
-	if barSettings and barSettings.icon and barSettings.icon.enabled ~= false then
-		SetIconRaw(node, model.spellIconId)
-	else
-		node:SetIconVisible(false)
+	local iconEnabled = barSettings ~= nil and barSettings.icon ~= nil and barSettings.icon.enabled ~= false
+	-- The icon and stage lines only change with a new cast, a rebuilt frame, settings, or a layout pass hiding the group.
+	local steady = drawn ~= nil and unchanged and drawn.hideVersion == group.hideVersion and drawn.iconEnabled == iconEnabled
+	if not steady then
+		if iconEnabled then
+			SetIconRaw(node, model.spellIconId)
+		else
+			node:SetIconVisible(false)
+		end
 	end
-	-- Re-draw the stage lines each frame so they self-heal after render transitions and pick up live
-	-- settings changes (positions are static per cast, so this is cheap).
-	DrawEmpowerStageLines(node, model, colors, barSettings)
+	-- An empower's lines follow live line settings; any other cast's only stay hidden.
+	if not steady or model.state == "empower" then
+		DrawEmpowerStageLines(node, model, colors, barSettings)
+	end
 	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
-	cachedActiveAlpha[groupKey] = activeAlpha
-	group.targetAlpha = activeAlpha
-	group.currentAlpha = activeAlpha
-	if not group.isVisible then
-		group:Show()
-		TRB.Functions.BarVisibility:MarkDirty()
+	if not steady or group.healedHideVersion ~= group.hideVersion or cachedActiveAlpha[groupKey] ~= activeAlpha then
+		group.targetAlpha = activeAlpha
+		group.currentAlpha = activeAlpha
+		if not group.isVisible then
+			group:Show()
+			TRB.Functions.BarVisibility:MarkDirty()
+		end
+		node:Show()
+		group.containerFrame:SetAlpha(activeAlpha)
+		group.healedHideVersion = group.hideVersion
 	end
-	node:Show()
-	group.containerFrame:SetAlpha(activeAlpha)
-	group.healedHideVersion = group.hideVersion
+	cachedActiveAlpha[groupKey] = activeAlpha
+	if drawn ~= nil then
+		drawn.hideVersion = group.hideVersion
+		drawn.iconEnabled = iconEnabled
+	end
 end
 
 ---Cheap between-tick self-heal: re-asserts only alpha/visibility from the cached activeAlpha, no settings

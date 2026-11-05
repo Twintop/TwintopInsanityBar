@@ -89,6 +89,9 @@ local TRADESKILL_RESUME_GRACE = 1.0
 -- Craft-boundary tick lines get unreadably dense on large queues; skip drawing them past this count.
 local TRADESKILL_MAX_TICKS = 40
 
+-- Fill fraction slack that counts an empower stage as reached a hair early, absorbing float error at the boundary.
+local EMPOWER_STAGE_EPSILON = 0.0001
+
 ---Banks the leftover tick phase of the model's active chainable channel into chainCarries so the next
 ---channel of the same spell (within the grace window) starts with the carried partial tick. Anchored to
 ---the channel's first-tick offset, which itself may have been carried in (chain of chains).
@@ -912,9 +915,20 @@ function TRB.Classes.Castbar:GetCurrentEmpowerStage(now)
 	local _, _, _, fill = self:GetProgress(now)
 	local stage = 0
 	for i = 1, #self.empowerStageFractions do
-		if fill >= self.empowerStageFractions[i] - 0.0001 then
+		if fill >= self.empowerStageFractions[i] - EMPOWER_STAGE_EPSILON then
 			stage = i
 		end
 	end
 	return stage
+end
+
+---When the next empower stage is reached, on the GetTime() clock; nil once the last one is.
+---@param now number?
+---@return number?
+function TRB.Classes.Castbar:GetNextEmpowerStageTime(now)
+	local fraction = self.empowerStageFractions[self:GetCurrentEmpowerStage(now) + 1]
+	if fraction == nil then
+		return nil
+	end
+	return self.startTime + (fraction - EMPOWER_STAGE_EPSILON) * self.duration
 end

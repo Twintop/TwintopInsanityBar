@@ -22,12 +22,19 @@ TRB.Functions = TRB.Functions or {}
 ---@field private _cachedBarSettings TRB.Classes.Settings.CastbarBar? # Settings resolved by the last visibility pass
 ---@field private _cachedColors table?
 ---@field private _cachedVisibility trbBarVisibilitySetting?
+---@field private _cachedEnabled boolean? # IsEnabled from the last visibility pass
+---@field private _cachedForceHidden boolean? # IsForceHidden from the last visibility pass
+---@field private _cachedIdleAlpha number? # Resting alpha from the last idle visibility pass
 ---@field private _castForceHidden boolean? # Whether the last visibility pass hid the bar
 ---@field private _renderedFrame StatusBar? # Node frame the current cast was drawn on, so a rebuilt group redraws
 ---@field private _renderedIndicatorVersion integer?
 ---@field private _renderedTargetColor string?
 ---@field private _renderedDurationVersion integer?
 ---@field private _renderedSegmented boolean? # Whether the current cast was set up with the segmented empower fill
+---@field private _renderedHideVersion integer? # Group hideVersion when the icon and shield were last asserted
+---@field private _renderedBarSettings table? # Settings the icon and shield were last asserted from
+---@field private _renderedActiveAlpha number?
+---@field private _nextStageTime number? # GetTime() a single-color empower next changes stage color
 local CastbarRenderer = {}
 CastbarRenderer.__index = CastbarRenderer
 
@@ -1212,6 +1219,8 @@ function CastbarRenderer:ApplyVisibleState(group, node, colors, model, barSettin
 	-- Segmented empower is laid out once per setup, so switching it mid-cast takes the full rebuild.
 	local segmented = model.state == "empower" and barSettings ~= nil and barSettings.empowerSegmentedFill == true
 	local frameChanged = self._renderedFrame ~= node.frame
+	-- The icon and shield only change with a new cast, a rebuilt frame, settings, or a layout pass hiding the group.
+	local steady = not frameChanged and self._renderedHideVersion == group.hideVersion and self._renderedBarSettings == barSettings
 	if frameChanged or self._renderedIndicatorVersion ~= indicatorVersion or self._renderedSegmented ~= segmented then
 		self._renderedFrame = node.frame
 		self._renderedIndicatorVersion = indicatorVersion
@@ -1238,13 +1247,20 @@ function CastbarRenderer:ApplyVisibleState(group, node, colors, model, barSettin
 		end
 		-- Re-asserts the blank, or the class color, after an appearance pass repaints the fill.
 		ApplyStateFillColor(node, colors, model, barSettings, self.barKey)
-	elseif self._renderedTargetColor ~= targetColor then
-		-- Target (and so its class color) changed mid-cast: re-apply just the fill. Single-color empower
-		-- re-applies ApplyStateFillColor every frame from the updater, so it needs no handling here.
+	elseif model.state == "empower" then
+		-- Re-asserts the stage color after a target change, an options change, or an appearance pass repaints the fill.
 		self._renderedTargetColor = targetColor
-		if model.state ~= "empower" then
-			ApplyStateFillColor(node, colors, model, barSettings, self.barKey)
-		end
+		ApplyStateFillColor(node, colors, model, barSettings, self.barKey)
+	elseif self._renderedTargetColor ~= targetColor then
+		-- Target (and so its class color) changed mid-cast: re-apply just the fill.
+		self._renderedTargetColor = targetColor
+		ApplyStateFillColor(node, colors, model, barSettings, self.barKey)
+	end
+	-- Between ticks the updater recolors a single-color empower only once this time passes.
+	if model.state == "empower" and not segmented then
+		self._nextStageTime = model:GetNextEmpowerStageTime()
+	else
+		self._nextStageTime = nil
 	end
 	-- Native fill: bind the DurationObject to the StatusBar so WoW animates the fill C-side, replacing the
 	-- per-frame GetProgress + SetValue the updater used to run. Re-bound only when the node frame changed
@@ -1259,11 +1275,8 @@ function CastbarRenderer:ApplyVisibleState(group, node, colors, model, barSettin
 	-- Not version-gated: a gradient indicator is a curve over a secret resource value, so its color moves
 	-- with the resource, not with the indicator flipping on and off.
 	ApplyBorderAndBackgroundColor(node, colors, model, self.barKey)
-	-- Track the casting spell's icon every frame so a chained cast swapping spells mid-render updates it.
-	-- Prefer the resolved spell's icon (plain int, memoized cheap). When the spell id was secret so it never
-	-- resolved, fall back to the cast texture from UnitCastingInfo/UnitChannelInfo (present even for secret
-	-- casts) via the raw setter, since a secret texture can't go through SetIconTexture's ~= comparison.
-	if barSettings ~= nil and barSettings.icon ~= nil and barSettings.icon.enabled then
+	-- A secret spell id never resolves, so its cast texture goes through the raw setter, which skips the ~= memo.
+	if not steady and barSettings ~= nil and barSettings.icon ~= nil and barSettings.icon.enabled then
 		if model.spell ~= nil then
 			node:SetIconTexture(model.spell.iconId)
 			node:SetIconVisible(true)
@@ -1296,25 +1309,28 @@ function CastbarRenderer:ApplyVisibleState(group, node, colors, model, barSettin
 				end
 			end
 			node:SetShieldVisible(true, r, g, b, alpha)
-		else
+		elseif not steady then
 			node:SetShieldVisible(false)
 		end
 	end
 	local activeAlpha = ((visibility and visibility.activeAlpha) or 100) / 100
-	-- Keep the shared fade fields synced so anything that consults them stays consistent, but we
-	-- drive the actual container alpha directly rather than through UpdateFade.
-	group.targetAlpha = activeAlpha
-	group.currentAlpha = activeAlpha
-	if not group.isVisible then
-		group:Show()
-		-- The group just transitioned hidden->visible (fresh cast, or after a render transition /
-		-- reconstruction hid it). Mark visibility dirty so the next ProcessBars re-runs BarText:Show and
-		-- reveals this castbar's anchored text frames (whose isVisible tracks this group's isVisible).
-		TRB.Functions.BarVisibility:MarkDirty()
+	-- Only after a new cast, something hid the group or a node or set its alpha, or the alpha setting moved.
+	if frameChanged or group.healedHideVersion ~= group.hideVersion or self._renderedActiveAlpha ~= activeAlpha then
+		-- The container alpha is set directly, not through UpdateFade; the fade fields only stay in sync.
+		group.targetAlpha = activeAlpha
+		group.currentAlpha = activeAlpha
+		if not group.isVisible then
+			group:Show()
+			-- Hidden to visible: the next ProcessBars runs BarText:Show for this bar's anchored text.
+			TRB.Functions.BarVisibility:MarkDirty()
+		end
+		node:Show()
+		group.containerFrame:SetAlpha(activeAlpha)
+		group.healedHideVersion = group.hideVersion
+		self._renderedActiveAlpha = activeAlpha
 	end
-	node:Show()
-	group.containerFrame:SetAlpha(activeAlpha)
-	group.healedHideVersion = group.hideVersion
+	self._renderedHideVersion = group.hideVersion
+	self._renderedBarSettings = barSettings
 end
 
 ---Cheap per-frame self-heal for an active cast: re-asserts only the group's alpha/visibility so the bar
@@ -1551,6 +1567,8 @@ function CastbarRenderer:BeginFadeOut()
 	end
 	-- The per-frame updater's idle branch drives the hold, fade, and final resting state.
 	self.fadeOutStart = GetTime()
+	-- Its first frame re-reads the conditions the idle branch caches.
+	self.visibilitySinceLastUpdate = VISIBILITY_THROTTLE
 	self.isRunning = true
 	self.frame:Show()
 	-- The cast is over: re-evaluate isTracking (and with it bar text) against the post-cast state.
@@ -1570,6 +1588,8 @@ function CastbarRenderer:EnsureIdleState()
 	end
 	local visibility = self:GetVisibilitySettings(nil)
 	if self:GetIdleAlpha(visibility) > 0 then
+		-- The cached conditions may be from long ago; re-read them on the first frame.
+		self.visibilitySinceLastUpdate = VISIBILITY_THROTTLE
 		self.isRunning = true
 		self.frame:Show()
 	end
@@ -1591,19 +1611,18 @@ function CastbarRenderer:OnFrameUpdate(sinceLastUpdate)
 	end
 	local node = group:GetNode(1)
 
-	-- 20Hz throttle for the expensive visibility work. Resolving settings (GetActiveSettings) and evaluating
-	-- the show/hide conditions (IsEnabled/IsForceHidden, which hit UnitInVehicle/UnitIsDeadOrGhost) every
-	-- frame was the remaining per-frame cost. Do it at the shared 20Hz cadence instead; the native fill
-	-- animates on its own and the cheap self-heal below runs each frame, so the bar never visibly lags. The
-	-- resolved settings/visibility are cached so between-tick frames can still self-heal and recolor single-color empower.
+	-- Settings and the show/hide conditions resolve at 20Hz; frames between ticks, active or idle, read the cache.
 	self.visibilitySinceLastUpdate = self.visibilitySinceLastUpdate + (sinceLastUpdate or 0)
 	local throttleTick = self.visibilitySinceLastUpdate >= VISIBILITY_THROTTLE
 	if throttleTick then
 		self.visibilitySinceLastUpdate = 0
 		local settings, barSettings, colors = self:GetActiveSettings()
+		local tickVisibility = self:GetVisibilitySettings(settings)
 		self._cachedBarSettings = barSettings
 		self._cachedColors = colors
-		self._cachedVisibility = self:GetVisibilitySettings(settings)
+		self._cachedVisibility = tickVisibility
+		self._cachedEnabled = self:IsEnabled(tickVisibility)
+		self._cachedForceHidden = self:IsForceHidden(tickVisibility)
 	end
 	local barSettings = self._cachedBarSettings
 	local colors = self._cachedColors
@@ -1640,13 +1659,13 @@ function CastbarRenderer:OnFrameUpdate(sinceLastUpdate)
 		if not TRB.Functions.Bar:IsRenderTransitionActive() then
 			if throttleTick then
 				-- 20Hz: full visibility re-evaluation (conditions) + color/overlay/icon re-assert.
-				if not self:IsEnabled(visibility) then
+				if not self._cachedEnabled then
 					-- Never Show flipped mid-cast: stop tracking entirely.
 					model:Stop()
 					self:EndRender()
 					return
 				end
-				if self:IsForceHidden(visibility) then
+				if self._cachedForceHidden then
 					self._castForceHidden = true
 					ApplyHiddenState(group)
 				else
@@ -1670,22 +1689,26 @@ function CastbarRenderer:OnFrameUpdate(sinceLastUpdate)
 				end
 
 				-- Single-color empower recolors the fill as each stage is reached; the segmented fill's clip follows the native fill.
-				if model.state == "empower" and not self._renderedSegmented then
+				local nextStageTime = self._nextStageTime
+				if nextStageTime ~= nil and now >= nextStageTime and model.state == "empower" and not self._renderedSegmented then
 					ApplyStateFillColor(node, colors, model, barSettings, self.barKey)
+					self._nextStageTime = model:GetNextEmpowerStageTime(now)
 				end
 			end
 		end
 	elseif node then
 		-- Idle: hold/fade out after a cast ends, then rest at the idle alpha (Always Show / inactive
 		-- alpha) or fully hide and stop the updater until the next cast.
-		local idleAlpha = self:GetIdleAlpha(visibility)
-		if self:IsForceHidden(visibility) then
-			idleAlpha = 0
+		if throttleTick then
+			self._cachedIdleAlpha = self._cachedForceHidden and 0 or self:GetIdleAlpha(visibility)
+		end
+		local idleAlpha = self._cachedIdleAlpha or 0
+		if self._cachedForceHidden then
 			self.fadeOutStart = nil
 			self.fillComplete = nil
 		end
 
-		if self.fadeOutStart ~= nil and self:IsEnabled(visibility) then
+		if self.fadeOutStart ~= nil and self._cachedEnabled then
 			local delay = (visibility and visibility.fadeDelay) or 0
 			local duration = (visibility and visibility.fadeDuration) or 0
 			local elapsed = GetTime() - self.fadeOutStart

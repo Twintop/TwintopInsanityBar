@@ -915,8 +915,8 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 					if throttleTick then
 						RenderBar(barKey, group, colors, settings, visibility, now)
 					end
-					-- Between ticks, only after something hid the group or a node, or while the alpha moves.
-					if throttleTick or appliedAlpha[barKey] ~= alpha or group.healedHideVersion ~= group.hideVersion then
+					-- Only after something hid the group or a node, or set its alpha, or while the alpha moves.
+					if appliedAlpha[barKey] ~= alpha or group.healedHideVersion ~= group.hideVersion then
 						ShowAt(group, alpha)
 					end
 				elseif group.isVisible or appliedAlpha[barKey] ~= 0 then

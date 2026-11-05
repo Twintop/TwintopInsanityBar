@@ -440,11 +440,9 @@ end
 ---@param node TRB.Classes.BarNode
 ---@param entry table # The BARS entry
 local function UpdateMirrorFill(node, entry)
-	local max = mirrorMax[entry.key]
-	if max == nil then
+	if mirrorMax[entry.key] == nil then
 		return
 	end
-	node:SetMinMax(0, max)
 	local progress = GetMirrorTimerProgress(entry.timerName)
 	if progress == nil then
 		return
@@ -456,17 +454,17 @@ end
 ---@param node TRB.Classes.BarNode
 ---@param entry table # The BARS entry
 ---@param barSettings table?
-local function UpdateSwingFill(node, entry, barSettings)
+---@param now number?
+local function UpdateSwingFill(node, entry, barSettings, now)
 	local length = swingLength[entry.key]
 	if length == nil then
 		return
 	end
-	node:SetMinMax(0, length)
 	if swingHeldPastEnd[entry.key] then
 		node:SetValue(0)
 		return
 	end
-	local elapsed = math.min(GetTime() - swingStart[entry.key], length)
+	local elapsed = math.min((now or GetTime()) - swingStart[entry.key], length)
 	if barSettings ~= nil and barSettings.timerDirection == "deplete" then
 		node:SetValue(length - elapsed)
 	else
@@ -477,10 +475,10 @@ end
 ---Writes the Five Second Rule's progress into its node, always on the full pause's scale.
 ---@param node TRB.Classes.BarNode
 ---@param barSettings table?
-local function UpdateFiveSecondRuleFill(node, barSettings)
+---@param now number?
+local function UpdateFiveSecondRuleFill(node, barSettings, now)
 	local length = TRB.Flavor.fiveSecondRule.duration
-	node:SetMinMax(0, length)
-	local remaining = fsrExpiry ~= nil and math.max(fsrExpiry - GetTime(), 0) or 0
+	local remaining = fsrExpiry ~= nil and math.max(fsrExpiry - (now or GetTime()), 0) or 0
 	if barSettings ~= nil and barSettings.timerDirection == "fill" then
 		node:SetValue(length - remaining)
 	else
@@ -492,13 +490,31 @@ end
 ---@param node TRB.Classes.BarNode
 ---@param entry table # The BARS entry
 ---@param barSettings table?
-local function UpdateManualFill(node, entry, barSettings)
+---@param now number?
+local function UpdateManualFill(node, entry, barSettings, now)
 	if entry.kind == "swing" then
-		UpdateSwingFill(node, entry, barSettings)
+		UpdateSwingFill(node, entry, barSettings, now)
 	elseif entry.kind == "fiveSecondRule" then
-		UpdateFiveSecondRuleFill(node, barSettings)
+		UpdateFiveSecondRuleFill(node, barSettings, now)
 	else
 		UpdateMirrorFill(node, entry)
+	end
+end
+
+---Sets the scale a hand-written fill runs on. It holds for the whole timer, so the per-frame fill skips it.
+---@param node TRB.Classes.BarNode
+---@param entry table # The BARS entry
+local function ApplyManualRange(node, entry)
+	local max
+	if entry.kind == "swing" then
+		max = swingLength[entry.key]
+	elseif entry.kind == "fiveSecondRule" then
+		max = TRB.Flavor.fiveSecondRule.duration
+	else
+		max = mirrorMax[entry.key]
+	end
+	if max ~= nil then
+		node:SetMinMax(0, max)
 	end
 end
 
@@ -514,6 +530,7 @@ local function ApplyVisibleState(entry)
 	if entry.kind == "gcd" then
 		BindGcdFill(node, barSettings)
 	else
+		ApplyManualRange(node, entry)
 		UpdateManualFill(node, entry, barSettings)
 	end
 	ApplyColors(node, colors, IsHeldByMovement(entry))
@@ -531,6 +548,8 @@ local function ReassertVisibility(entry)
 	end
 	local barSettings, colors, visibility = GetBarConfig(entry.key)
 	if entry.kind ~= "gcd" then
+		-- A layout pass rewrites the range, and hides the group until this re-shows it.
+		ApplyManualRange(node, entry)
 		UpdateManualFill(node, entry, barSettings)
 	end
 	ApplyColors(node, colors, IsHeldByMovement(entry))
@@ -669,6 +688,7 @@ local function StopTimer(entry)
 		-- Rest the fade-out on the swing's end state rather than the last frame's.
 		local _, node = GetGroupNode(entry.key)
 		if node ~= nil then
+			ApplyManualRange(node, entry)
 			UpdateSwingFill(node, entry, cachedBarSettings[entry.key])
 		end
 		swingStart[entry.key] = nil
@@ -678,6 +698,7 @@ local function StopTimer(entry)
 		fsrExpiry = nil
 		local _, node = GetGroupNode(entry.key)
 		if node ~= nil then
+			ApplyManualRange(node, entry)
 			UpdateFiveSecondRuleFill(node, cachedBarSettings[entry.key])
 		end
 	else
@@ -692,13 +713,13 @@ end
 
 ---Whether a swing bar's swing is still running, from the start and length recorded by PLAYER_SWING.
 ---@param barKey string
+---@param now number
 ---@return boolean
-local function IsSwingStillRunning(barKey)
+local function IsSwingStillRunning(barKey, now)
 	local start = swingStart[barKey]
 	if start == nil then
 		return false
 	end
-	local now = GetTime()
 	if now < start + swingLength[barKey] then
 		return true
 	end
@@ -854,6 +875,10 @@ local function RescaleMeleeSwings()
 			local remaining = (swingStart[entry.key] + length - now) * speed / length
 			swingStart[entry.key] = now + remaining - speed
 			swingLength[entry.key] = speed
+			local _, node = GetGroupNode(entry.key)
+			if node ~= nil then
+				ApplyManualRange(node, entry)
+			end
 		end
 	end
 end
@@ -1450,7 +1475,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 		if active[barKey] then
 			-- Nothing announces the end of a GCD, a swing, or the pause, so they need an expiry check -- a timestamp compare.
 			if (throttleTick and entry.kind == "gcd" and not IsGcdStillRunning())
-				or (entry.kind == "swing" and not IsSwingStillRunning(barKey))
+				or (entry.kind == "swing" and not IsSwingStillRunning(barKey, now))
 				or (entry.kind == "fiveSecondRule" and (fsrExpiry == nil or now >= fsrExpiry)) then
 				StopTimer(entry)
 			else
@@ -1473,7 +1498,7 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 					-- Between ticks a mirror or swing bar still advances its own fill; the GCD's is native.
 					local _, node = GetGroupNode(barKey)
 					if node ~= nil then
-						UpdateManualFill(node, entry, cachedBarSettings[barKey])
+						UpdateManualFill(node, entry, cachedBarSettings[barKey], now)
 					end
 				end
 			end
