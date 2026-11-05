@@ -684,6 +684,14 @@ function TRB.Functions.Character:GetMovementSpeed()
 	return state.speed, state.percent, state.isGliding
 end
 
+---Whether the player is standing still and last read 0, so speed text can't change until they move. The read keeps
+---GetMovementSpeed's 4Hz idle re-read, which catches movement no event announced.
+---@return boolean
+function TRB.Functions.Character:IsSpeedSettled()
+	local _, percent = self:GetMovementSpeed()
+	return movementSpeed.stopped and percent == 0
+end
+
 ---Registers all character-change events (power updates, health, stats, mounting, zone changes, etc.) on the characterChangeFrame.
 function TRB.Functions.Character:EnableCharacterChange()
 	-- Runs on every spec change, so re-registering replaces the last spec's unit filters.

@@ -63,6 +63,12 @@ if TRB.Flavor.skyriding ~= nil then
 	speedVariables["$skyridingSpeed"] = true
 end
 local speedTextOffBar = false
+-- Filled below beside the tables they come from: the self-driven bar variables, and each satellite refresher's variables.
+local selfDrivenBarVariables = {}
+local refresherGroupOf = {}
+-- Set by BuildActiveVariableSet: whether an enabled entry uses a self-driven variable, and per refresher group, one of its own.
+local selfDrivenVarInUse = true
+local refresherGroupsInUse = nil
 
 -- Which of the above keys target the side icon frame rather than the bar itself.
 local castbarIconAnchors = {
@@ -668,6 +674,8 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	local activeVars = {}
+	local groupsInUse = {}
+	local selfDrivenInUse = false
 	local offBar = false
 	local speedOffBar = false
 	-- Per Skyriding variable, the Skyriding bars its entries ride, or "" for anywhere else.
@@ -703,6 +711,15 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 			end
 		end
 	end
+	for var in pairs(activeVars) do
+		local group = refresherGroupOf[var]
+		if group ~= nil then
+			groupsInUse[group] = true
+		end
+		selfDrivenInUse = selfDrivenInUse or selfDrivenBarVariables[var] == true
+	end
+	refresherGroupsInUse = groupsInUse
+	selfDrivenVarInUse = selfDrivenInUse
 	TRB.Data.activeVariables = activeVars
 	skyridingTextOffBar = offBar
 	speedTextOffBar = speedOffBar
@@ -2360,11 +2377,22 @@ local skyridingLookupWasActive = true
 -- wholesale. Tracked here so RefreshLookupDataBase can re-arm them on a rebuild.
 local lastLookupLogicTable = nil
 
+---Whether an enabled entry uses one of a satellite refresher's variables, or the active set isn't built yet. A skipped
+---refresher leaves its latch alone, so its idle values stay accurate for when an entry uses them again.
+---@param group string # A refresherGroupOf value
+---@return boolean
+local function IsRefresherInUse(group)
+	return TRB.Data.activeVariables == nil or refresherGroupsInUse == nil or refresherGroupsInUse[group] == true
+end
+
 ---Refreshes one cast bar's lookup variables from its model. Its pushback formats with latencyPrecision when
 ---the bar has latency, and with durationPrecision when it does not.
 ---@param unit table # A castbarLookupUnits entry
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
 local function RefreshCastbarUnitLookupData(unit, settings)
+	if not IsRefresherInUse(unit.modelKey) then
+		return
+	end
 	local castbar = TRB.Data[unit.modelKey]
 	local isActive = castbar ~= nil and castbar:IsActive()
 	if not isActive and not unit.wasActive then
@@ -2459,6 +2487,9 @@ end
 ---arithmetic/comparison conditional engine.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
 function TRB.Functions.BarText:RefreshTargetCastbarLookupData(settings)
+	if not IsRefresherInUse("targetCastbar") then
+		return
+	end
 	local isActive = false
 	for _, u in ipairs(targetCastbarLookupUnits) do
 		local m = TRB.Data[u.modelKey]
@@ -2655,6 +2686,9 @@ local petVars = {
 ---as formatted strings, and with no pet every one renders empty.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
 function TRB.Functions.BarText:RefreshPetLookupData(settings)
+	if not IsRefresherInUse("pet") then
+		return
+	end
 	local attributes = TRB.Data.snapshotData.attributes
 	local state = attributes.petState or "none"
 	local hasPet = state ~= "none"
@@ -2693,6 +2727,9 @@ end
 ---Refreshes the totem variables from the slots. Names, times, and icons may be secret, so they reach only `lookup`,
 ---through nil tests and string.format; an empty slot renders empty.
 function TRB.Functions.BarText:RefreshTotemLookupData()
+	if not IsRefresherInUse("totems") then
+		return
+	end
 	local totems = TRB.Functions.Totems
 	local isActive = totems:GetActiveCount() > 0
 	if not isActive and not totemLookupWasActive then
@@ -2789,6 +2826,9 @@ end
 ---for the mirror timers. An idle bar reads 0 in its own format, but a bare {$var}[...] gate still hides.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase?
 function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
+	if not IsRefresherInUse("otherBars") then
+		return
+	end
 	TRB.Data.lookup = TRB.Data.lookup or {}
 	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
 	local lookup = TRB.Data.lookup
@@ -3114,7 +3154,7 @@ end
 -- bars only need to force a per-frame bar text refresh when one of THESE is actually referenced by an
 -- enabled entry -- otherwise a running timer changes nothing the bar text shows and the normal early-out
 -- applies. Keyed by variable/icon name.
-local selfDrivenBarVariables = {
+for var, isSelfDriven in pairs({
 	-- Player cast bar (see RefreshCastbarLookupData)
 	["$castTime"] = true, ["$castTimeRemaining"] = true, ["$castLatency"] = true, ["$castLatencyMs"] = true,
 	["$castPushback"] = true, ["$castSpellName"] = true, ["$castSpellId"] = true,
@@ -3133,7 +3173,9 @@ local selfDrivenBarVariables = {
 	["$fatigueDuration"] = true, ["$fatigueDurationRemaining"] = true,
 	["$breathDuration"] = true, ["$breathDurationRemaining"] = true,
 	["$feignDeathDuration"] = true, ["$feignDeathDurationRemaining"] = true,
-}
+}) do
+	selfDrivenBarVariables[var] = isSelfDriven
+end
 for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 	selfDrivenBarVariables["$" .. swingKey .. "Duration"] = true
 	selfDrivenBarVariables["$" .. swingKey .. "DurationRemaining"] = true
@@ -3158,6 +3200,35 @@ for var in pairs(totemVars) do
 	selfDrivenBarVariables[var] = true
 end
 
+-- Each satellite refresher's variables, by the group IsRefresherInUse checks.
+for _, unit in ipairs(castbarLookupUnits) do
+	for field, var in pairs(unit) do
+		if field ~= "modelKey" and type(var) == "string" then
+			refresherGroupOf[var] = unit.modelKey
+		end
+	end
+end
+refresherGroupOf["#casting"] = "castbar"
+for _, unit in ipairs(targetCastbarLookupUnits) do
+	for _, var in ipairs({ unit.nameVar, unit.timeVar, unit.remVar, unit.iconVar }) do
+		refresherGroupOf[var] = "targetCastbar"
+	end
+end
+for var in pairs(otherBarsVars) do
+	refresherGroupOf[var] = "otherBars"
+end
+for var in pairs(swingLocaleVars) do
+	refresherGroupOf[var] = "otherBars"
+end
+refresherGroupOf[RANGED_READY_VAR] = "otherBars"
+for var in pairs(petVars) do
+	refresherGroupOf[var] = "pet"
+end
+refresherGroupOf["$petState"] = "pet"
+for var in pairs(totemVars) do
+	refresherGroupOf[var] = "totems"
+end
+
 ---Whether any running self-driven bar (the player/target/focus cast bars, or an Other Bars timer)
 ---drives a variable that an enabled bar text entry actually references. This is what justifies
 ---bypassing the early-out for a live cast or timer: if nothing on screen shows one of those values, it
@@ -3165,8 +3236,11 @@ end
 ---invalidated), returns true so the caller refreshes and rebuilds it rather than skipping a frame.
 ---@return boolean
 local function HasActiveSelfDrivenBarVariableInUse()
+	if TRB.Data.activeVariables ~= nil and not selfDrivenVarInUse then
+		return false
+	end
 	-- A fading bar counts as in use, so the final pass that blanks its variables lands when it leaves the screen.
-	local anyActive = (TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive())
+	return (TRB.Data.castbar ~= nil and TRB.Data.castbar:IsActive())
 		or TRB.Functions.Castbar:IsFadingOut()
 		or (TRB.Data.targetCastbar ~= nil and TRB.Data.targetCastbar:IsActive())
 		or TRB.Functions.TargetCastbar:IsFadingOut("targetCastbar")
@@ -3177,21 +3251,8 @@ local function HasActiveSelfDrivenBarVariableInUse()
 		or TRB.Functions.OtherBars:HasActiveTimer()
 		or TRB.Functions.OtherBars:IsAnyFadingOut()
 		or IsSkyridingTextLive()
-		or speedTextOffBar
+		or (speedTextOffBar and not TRB.Functions.Character:IsSpeedSettled())
 		or TRB.Functions.Totems:GetActiveCount() > 0
-	if not anyActive then
-		return false
-	end
-	local activeVars = TRB.Data.activeVariables
-	if activeVars == nil then
-		return true
-	end
-	for var in pairs(selfDrivenBarVariables) do
-		if activeVars[var] then
-			return true
-		end
-	end
-	return false
 end
 
 -- Previous tick's HasActiveSelfDrivenBarVariableInUse result, for detecting the tick a cast/timer ends on.
