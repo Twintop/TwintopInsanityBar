@@ -15,6 +15,15 @@ TRB.Flavor.newsContent = [====[
 - [#953](#953) Improve Color Indicator performance.
 - [#953](#953) Fix the health bar's and cast bar's Color Indicators not updating while the Runic Power, rune, Bone Shield, and Coagulating Blood bars are all set to Never Show.
 
+## Demon Hunter
+### Vengeance
+
+- [#955](#955) Improve Soul Fragments bar Color Indicator performance.
+
+### Devourer
+
+- [#955](#955) Improve Soul Fragments bar Color Indicator performance.
+
 ## Druid
 
 - [#947](#947) Improve performance when any of your resources change.
@@ -44,6 +53,11 @@ TRB.Flavor.newsContent = [====[
 
 - [#936](#936) Remove unused mana regeneration code.
 
+## Monk
+### Brewmaster
+
+- [#955](#955) Improve Stagger bar Color Indicator performance.
+
 ## Paladin
 
 - [#936](#936) Remove unused mana regeneration code.
@@ -67,6 +81,10 @@ TRB.Flavor.newsContent = [====[
 
 - [#949](#949) Improve update performance of Earth Shock, Elemental Blast, and Earthquake tracking.
 - [#954](#954) Improve mana bar Color Indicator performance.
+
+### Enhancement
+
+- [#955](#955) Improve Maelstrom Weapon bar Color Indicator performance.
 
 ## Warlock
 ### Demonology
