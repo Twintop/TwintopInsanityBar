@@ -13,14 +13,42 @@ TRB.Flavor.newsContent = [====[
 
 - [#963](#963) Fix the Ferocious Bite maximum threshold line showing as usable at Ferocious Bite's minimum cost in Cat Form for Balance, Guardian, and Restoration.
 
+### Balance
+
+- [#936](#936) Remove unused moon cycle tracking code.
+
 ### Guardian
 
 - [#961](#961) Fix the Ironfur bar's application lines disappearing after a loading screen, a talent change, or a specialization change.
 
+### Restoration
+
+- [#936](#936) Remove unused mana regeneration code.
+
 ## Evoker
+
+- [#936](#936) Remove unused mana regeneration code.
+
 ### Preservation
 
 - [#960](#960) Fix bar text conditions comparing `$essenceMax` with your maximum mana instead of your maximum Essence.
+
+## Mage
+
+- [#936](#936) Remove unused mana regeneration code.
+
+## Paladin
+
+- [#936](#936) Remove unused mana regeneration code.
+
+## Warlock
+### Demonology
+
+- [#936](#936) Remove unused mana regeneration code.
+
+### Destruction
+
+- [#936](#936) Remove unused mana regeneration code.
 
 ---
 

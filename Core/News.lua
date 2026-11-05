@@ -8,6 +8,7 @@ TRB.Details.coreNewsContent = [====[
 ## General
 
 - [#935](#935) Improve bar text update performance, primarily out of combat and during casts.
+- [#936](#936) Improve update performance of bars with multiple nodes, custom threshold lines, and bar text.
 
 ## Color Indicators
 
