@@ -640,6 +640,34 @@ function TRB.Functions.Color:GetOvercapThreshold(overcap, maxResource)
 	return overcap.fixed or maxResource
 end
 
+-- Resource curves by below color, above color, then threshold, kept inside the curve cache so a clear drops them too.
+local RESOURCE_CURVE_ROOT = {}
+
+---Records a resource curve under its raw inputs, for BuildResourceThresholdCurve's per-tick lookup.
+---@param cache table
+---@param belowColor string
+---@param aboveColor string
+---@param thresholdPercent number
+---@param curve table
+local function StoreResourceCurve(cache, belowColor, aboveColor, thresholdPercent, curve)
+	local byBelow = cache[RESOURCE_CURVE_ROOT]
+	if byBelow == nil then
+		byBelow = {}
+		cache[RESOURCE_CURVE_ROOT] = byBelow
+	end
+	local byAbove = byBelow[belowColor]
+	if byAbove == nil then
+		byAbove = {}
+		byBelow[belowColor] = byAbove
+	end
+	local byThreshold = byAbove[aboveColor]
+	if byThreshold == nil then
+		byThreshold = {}
+		byAbove[aboveColor] = byThreshold
+	end
+	byThreshold[thresholdPercent] = curve
+end
+
 ---Builds a resource threshold ColorCurve for use with UnitPowerPercent (e.g., overcap border/text color)
 ---@param specSettings table? The spec-specific settings table (e.g., specSettings.overcap)
 ---@param belowColor string The color hex string for below threshold (e.g., "FF00FF00")
@@ -669,14 +697,17 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 
 	-- Check cache first
 	local cache = TRB.Data.cache.stepColorCurves
-	local fastCurve = self:GetFastCurve(cache, "resource", belowColor, aboveColor, thresholdPercent)
+	local byBelow = cache[RESOURCE_CURVE_ROOT]
+	local byAbove = byBelow and byBelow[belowColor]
+	local byThreshold = byAbove and byAbove[aboveColor]
+	local fastCurve = byThreshold and byThreshold[thresholdPercent]
 	if fastCurve ~= nil then
 		return fastCurve
 	end
 	local cacheKey = belowColor .. "_" .. aboveColor .. "_" .. tostring(thresholdPercent)
 
 	if cache[cacheKey] then
-		self:SetFastCurve(cache, cache[cacheKey], "resource", belowColor, aboveColor, thresholdPercent)
+		StoreResourceCurve(cache, belowColor, aboveColor, thresholdPercent, cache[cacheKey])
 		return cache[cacheKey]
 	end
 
@@ -693,7 +724,7 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 
 	self:SetCurveThresholdMeta(colorCurve, belowColor, { { x = thresholdPercent, color = aboveColor } })
 	cache[cacheKey] = colorCurve
-	self:SetFastCurve(cache, colorCurve, "resource", belowColor, aboveColor, thresholdPercent)
+	StoreResourceCurve(cache, belowColor, aboveColor, thresholdPercent, colorCurve)
 	return colorCurve
 end
 
@@ -947,9 +978,10 @@ end
 ---@param node TRB.Classes.BarNode # The BarNode to color
 ---@param colorEntry string|TRB.Classes.Settings.ColorGradientEntry # Color string or gradient entry table
 function TRB.Functions.Color:ApplyFillColor(node, colorEntry)
-	if type(colorEntry) == "string" then
+	local entryType = type(colorEntry)
+	if entryType == "string" then
 		node:SetColor(colorEntry)
-	elseif type(colorEntry) == "table" then
+	elseif entryType == "table" then
 		if colorEntry.gradientDirection and colorEntry.gradientDirection ~= "disabled" and colorEntry.color2 then
 			node:SetColorGradient(colorEntry.color, colorEntry.color2, colorEntry.gradientDirection)
 		else

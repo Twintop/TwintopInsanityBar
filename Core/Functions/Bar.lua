@@ -2188,9 +2188,17 @@ function TRB.Functions.Bar:UpdateHealthBar(barGroups, snapshotData, settings)
 		local Color = TRB.Functions.Color
 		local healthColors = settings.colors.healthBar
 		local indicators = Color:GetResolvedIndicators("healthBar")
-		healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-		healthNode:SetValue(snapshotData.attributes.health or 0)
-		healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+		-- Health changes only on a read, which bumps the version; any other write to the fill moves the node's stamps.
+		local version = TRB.Functions.Character.healthValuesVersion
+		if healthNode.appliedValuesVersion ~= version or healthNode.appliedValueEpoch ~= healthNode.valueEpoch
+			or healthNode.appliedFillWrites ~= healthNode.fillWrites then
+			healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+			healthNode:SetValue(snapshotData.attributes.health or 0)
+			healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+			healthNode.appliedValuesVersion = version
+			healthNode.appliedValueEpoch = healthNode.valueEpoch
+			healthNode.appliedFillWrites = healthNode.fillWrites
+		end
 		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "border",
 			(indicators and indicators.border) or healthColors.border.color)
 		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "background",
@@ -2219,16 +2227,24 @@ function TRB.Functions.Bar:UpdatePetBars(barGroups, snapshotData, settings)
 	local Color = TRB.Functions.Color
 	local attributes = snapshotData.attributes
 	local rendered = false
+	-- Pet values change only on a read, which bumps the version; any other write to a fill moves its node's stamps.
+	local version = TRB.Functions.Character.petValuesVersion
 
 	local healthNode = barGroups.petHealth and barGroups.petHealth:GetNode(1)
 	if healthNode ~= nil and not settings.displayBar.petHealth.neverShow then
 		rendered = true
 		local healthColors = settings.colors.bars.petHealth
 		local indicators = Color:GetResolvedIndicators("petHealthBar")
-		healthNode:SetMinMax(0, attributes.petHealthMax or 1)
-		healthNode:SetValue(attributes.petHealth or 0)
-		if attributes.petHealthColor ~= nil then
-			healthNode:SetColorCurve(attributes.petHealthColor)
+		if healthNode.appliedValuesVersion ~= version or healthNode.appliedValueEpoch ~= healthNode.valueEpoch
+			or healthNode.appliedFillWrites ~= healthNode.fillWrites then
+			healthNode:SetMinMax(0, attributes.petHealthMax or 1)
+			healthNode:SetValue(attributes.petHealth or 0)
+			if attributes.petHealthColor ~= nil then
+				healthNode:SetColorCurve(attributes.petHealthColor)
+			end
+			healthNode.appliedValuesVersion = version
+			healthNode.appliedValueEpoch = healthNode.valueEpoch
+			healthNode.appliedFillWrites = healthNode.fillWrites
 		end
 		Color:ApplyResolvedBorderOrBackground(healthNode, "petHealthBar", "border",
 			(indicators and indicators.border) or healthColors.border.color)
@@ -2241,13 +2257,17 @@ function TRB.Functions.Bar:UpdatePetBars(barGroups, snapshotData, settings)
 	local powerNode = barGroups.petPower and barGroups.petPower:GetNode(1)
 	if powerNode ~= nil and not settings.displayBar.petPower.neverShow then
 		rendered = true
-		-- A pet with no power gets an empty bar.
-		if attributes.petPowerType == nil then
-			powerNode:SetMinMax(0, 1)
-			powerNode:SetValue(0)
-		else
-			powerNode:SetMinMax(0, attributes.petPowerMax)
-			powerNode:SetValue(attributes.petPower)
+		if powerNode.appliedValuesVersion ~= version or powerNode.appliedValueEpoch ~= powerNode.valueEpoch then
+			-- A pet with no power gets an empty bar.
+			if attributes.petPowerType == nil then
+				powerNode:SetMinMax(0, 1)
+				powerNode:SetValue(0)
+			else
+				powerNode:SetMinMax(0, attributes.petPowerMax)
+				powerNode:SetValue(attributes.petPower)
+			end
+			powerNode.appliedValuesVersion = version
+			powerNode.appliedValueEpoch = powerNode.valueEpoch
 		end
 		local configured = settings.colors.bars.petPower
 		local indicators = Color:GetResolvedIndicators("petPowerBar")

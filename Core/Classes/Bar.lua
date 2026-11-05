@@ -120,6 +120,10 @@ local barNodeCounter = 0
 ---@field public markerFrame Frame? # Topmost overlay frame for tick and stage lines (lazily created by GetMarkerFrame)
 ---@field public fillWrites integer # Bumped by fill writes that leave no color cache entry (curve, gradient, texture)
 ---@field public borderWrites integer # Bumped by border writes that leave no color cache entry (curve, texture, border size)
+---@field public appearanceVersion integer # Bumped by writes to the fill's texture, direction, flat color, gradient, or border width
+---@field public appliedValuesVersion integer? # Health or pet values version its fill was last drawn from
+---@field public appliedValueEpoch integer? # valueEpoch right after that draw
+---@field public appliedFillWrites integer? # fillWrites right after that draw
 ---@field public valueEpoch integer # A fresh number on every write to the frame's value, range, timer, or texture
 ---@field public rangeMax number? # The frame's max as last set when plain; nil when secret or unknown
 TRB.Classes.BarNode = {}
@@ -156,6 +160,7 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.gradientKey = self.name .. "_gradient"
 	self.fillWrites = 0
 	self.borderWrites = 0
+	self.appearanceVersion = 0
 
 	-- Append a monotonic counter to guarantee a globally unique frame name.
 	-- Without this, CreateFrame can return a stale frame object from _G when
@@ -290,8 +295,16 @@ end
 ---Sets the color of the resource bar (flat color). Clears any active gradient.
 ---@param colorString string # ARGB hex color string (e.g., "FFFF0000" for red)
 function TRB.Classes.BarNode:SetColor(colorString)
-	self:ClearGradient()
+	if self.gradientActive then
+		self:ClearGradient()
+	end
+	-- The setter's own cache check, inlined: an unchanged color, the usual per-tick case, makes no call.
+	local cached = TRB.Data.cache.colors.bar[self.resourceKey]
+	if cached ~= nil and colorString ~= nil and cached.source == colorString then
+		return
+	end
 	TRB.Functions.Color:SetStatusBarColorFromRGBAString(self.frame, self.resourceKey, colorString)
+	self.appearanceVersion = self.appearanceVersion + 1
 end
 
 ---Sets the color of the resource bar from a ColorCurve result. Clears any active gradient.
@@ -329,6 +342,7 @@ function TRB.Classes.BarNode:SetColorGradient(color1String, color2String, direct
 	-- Set vertex color to white so gradient colors are not tinted
 	TRB.Data.cache.colors.bar[self.resourceKey] = nil
 	self.fillWrites = self.fillWrites + 1
+	self.appearanceVersion = self.appearanceVersion + 1
 	self.frame:SetStatusBarColor(1, 1, 1, 1)
 
 	local texture = self.frame:GetStatusBarTexture()
@@ -357,15 +371,22 @@ function TRB.Classes.BarNode:ClearGradient()
 	end
 	self.gradientActive = false
 	TRB.Data.cache.colors.gradient[self.gradientKey] = nil
+	self.appearanceVersion = self.appearanceVersion + 1
 end
 
 ---Sets the border color
 ---@param colorString string # ARGB hex color string
 function TRB.Classes.BarNode:SetBorderColor(colorString)
-	TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.frame, self.borderKey, colorString)
+	-- The setter's own cache check, inlined: an unchanged color, the usual per-tick case, makes no call.
+	local cached = TRB.Data.cache.colors.border[self.borderKey]
+	if cached == nil or colorString == nil or cached.source ~= colorString then
+		TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.frame, self.borderKey, colorString)
+	end
 
 	-- The side ability icon's border is part of the same bar, so it tracks every border recolor
-	self:ApplyIconBorderColor()
+	if self.icon ~= nil then
+		self:ApplyIconBorderColor()
+	end
 
 	-- End cap border-follow: track the live border color, except when it is at the
 	-- configured default and useBorderColorExceptDefault asks to keep the cap's own color.
@@ -453,7 +474,9 @@ end
 function TRB.Classes.BarNode:SetBackgroundColorFromString(colorString)
 	local cached = TRB.Data.cache.colors.backdrop[self.backgroundKey]
 	if cached ~= nil and colorString ~= nil and cached.source == colorString then
-		self:ApplyIconBackgroundColor()
+		if self.icon ~= nil then
+			self:ApplyIconBackgroundColor()
+		end
 		return
 	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
@@ -471,6 +494,9 @@ function TRB.Classes.BarNode:SetDimensions(width, height, border)
 	local borderChanged = border ~= nil and border ~= self.border
 	if border then
 		self.border = border
+	end
+	if borderChanged then
+		self.appearanceVersion = self.appearanceVersion + 1
 	end
 
 	-- Single frame uses outer dimensions
@@ -514,6 +540,9 @@ end
 ---Sets the border size
 ---@param size number
 function TRB.Classes.BarNode:SetBorderSize(size)
+	if self.border ~= size then
+		self.appearanceVersion = self.appearanceVersion + 1
+	end
 	self.border = size
 	self:SetDimensions(self.width, self.height, size)
 end
@@ -529,6 +558,7 @@ function TRB.Classes.BarNode:SetFillDirection(fillDirection)
 		return
 	end
 	self.fillDirection = fillDirection
+	self.appearanceVersion = self.appearanceVersion + 1
 
 	local Bar = TRB.Functions.Bar
 	local orientation = Bar:GetOrientationFromFillDirection(fillDirection)
@@ -560,6 +590,7 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 	self.valueEpoch = NextValueEpoch()
 	self.fillWrites = self.fillWrites + 1
 	self.borderWrites = self.borderWrites + 1
+	self.appearanceVersion = self.appearanceVersion + 1
 	-- Lower the fill texture to BORDER,-1 so it draws above the backdrop background
 	-- (BACKGROUND,0) but below the backdrop edge/border (BORDER,0).
 	local fillTexture = self.frame:GetStatusBarTexture()
