@@ -1033,9 +1033,7 @@ local scratch = {
 	maelstromBarColors1 = {},
 	barColorMap1 = {},
 	overcapCurves1 = {},
-	conditionMap2 = {},
 	manaBarColors1 = {},
-	barColorMap2 = {},
 	manaOvercapCurves1 = {},
 	conditionMap3 = {},
 	manaBarColors2 = {},
@@ -1183,6 +1181,16 @@ local function UpdateResourceBar()
 			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.maelstromBar = maelstromBarColors
+			local showMana = specSettings.displayBar.mana ~= nil and not specSettings.displayBar.mana.neverShow
+			local manaBarColors = scratch.manaBarColors1
+			if showMana then
+				local manaColors = specSettings.colors.bars.mana
+				wipe(manaBarColors)
+				manaBarColors.bar = manaColors.bar.color
+				manaBarColors.border = manaColors.border.color
+				manaBarColors.background = manaColors.background.color
+				barColorMap.manaBar = manaBarColors
+			end
 			local elementalBlastBuffColors = specSettings.colors.bars.elementalBlastBuffs
 			for key, node in pairs(elementalBlastBuffNodes) do
 				local nodeColors = scratch.elementalBlastBuffColors1[key]
@@ -1271,49 +1279,12 @@ local function UpdateResourceBar()
 			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 
 			-- Mana bar update (Elemental only)
-			if specSettings.displayBar.mana ~= nil and not specSettings.displayBar.mana.neverShow then
+			if showMana then
 				refreshText = true
 				local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 				if manaNode then
 					local currentMana = snapshotData.attributes.mana or UnitPower("player", Enum.PowerType.Mana) or 0
 					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
-					local affectingCombat = TRB.Data.character.inCombat
-					local sharedColors = specSettings.colors.shared
-					local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
-					local ascendanceEndMet = false
-
-					if ascendanceActive then
-						local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-						local timeThreshold = 0
-						if specSettings.endOf.ascendance.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
-						elseif specSettings.endOf.ascendance.mode == "time" then
-							timeThreshold = specSettings.endOf.ascendance.timeMax
-						end
-						ascendanceEndMet = timeLeft <= timeThreshold
-					end
-
-					local conditionMap = scratch.conditionMap2
-					wipe(conditionMap)
-					conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
-					conditionMap.earthShock = earthShockUsable
-					conditionMap.earthquake = earthquakeUsable
-					conditionMap.ascendance = ascendanceActive
-					conditionMap.borderOvercap = affectingCombat
-					conditionMap.tempest = snapshotData.attributes.tempestActive == true
-					conditionMap.tempest2 = snapshotData.attributes.tempestStacks == spells.tempest.maxStacks
-					local manaBarColors = scratch.manaBarColors1
-					wipe(manaBarColors)
-					manaBarColors.bar = specSettings.colors.bars.mana.bar.color
-					manaBarColors.border = specSettings.colors.bars.mana.border.color
-					manaBarColors.background = specSettings.colors.bars.mana.background.color
-					local barColorMap = scratch.barColorMap2
-					wipe(barColorMap)
-					barColorMap.manaBar = manaBarColors
-
-					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
-
 					local manaGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "manaBar", scratch.manaGradients1)
 
 					manaNode:SetMinMax(0, maxMana)

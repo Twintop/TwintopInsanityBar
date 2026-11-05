@@ -1246,10 +1246,7 @@ local sharedIndicatorBars = {
 ---written back into barColorMap in place; the shared bars are parked in TRB.Data.resolvedIndicators.
 ---Pass a nil barColorMap when the spec colors its own bars itself and only needs the shared ones.
 ---
----The shared bars are recomputed from scratch on every call, so a spec that calls this more than once in a
----frame (Elemental Shaman does, once per bar it owns) MUST pass an equivalent conditionMap
----each time -- the last call decides what the health bar and cast bar see. Deriving conditionMap from live
----state, as every spec does, satisfies that on its own.
+---Every call recomputes the shared bars, so more than one call a frame needs equivalent conditionMaps.
 ---@param sharedColors table? # spec.colors.shared -- indicatorColors + nodeOrder
 ---@param conditionMap table<string, boolean> # Indicator key -> whether its condition is met right now; custom indicator keys are written into it
 ---@param barColorMap table<string, table>? # barKey -> { bar =, border =, background = }, seeded with the spec's unindicated colors
