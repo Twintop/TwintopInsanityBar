@@ -434,14 +434,15 @@ local function RefreshLookupData_Brewmaster()
 		lookupLogic["$stagger"] = _stagger
 		lookupLogic["$staggerPercent"] = _staggerPercent
 
-		if lookupChanged(prevState, "$stagger", _stagger, staggerColor, true) then
+		-- UpdateSnapshot_Brewmaster replaces a secret stagger with 0, so both values memoize.
+		if lookupChanged(prevState, "$stagger", _stagger, staggerColor) then
 			if staggerColor then
 				lookup["$stagger"] = string.format("|c%s%s|r", staggerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger))
 			else
 				lookup["$stagger"] = TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger)
 			end
 		end
-		if lookupChanged(prevState, "$staggerPercent", _staggerPercent, staggerColor, true) then
+		if lookupChanged(prevState, "$staggerPercent", _staggerPercent, staggerColor) then
 			if staggerColor then
 				lookup["$staggerPercent"] = string.format("|c%s%.1f|r", staggerColor, _staggerPercent * 100)
 			else

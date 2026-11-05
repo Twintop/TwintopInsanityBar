@@ -462,14 +462,14 @@ local function RefreshLookupData_Devastation()
 
 		local timeDisplay
 		if not _essenceBurstActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _essenceBurstTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
 		elseif _essenceBurstTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _essenceBurstTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then
@@ -592,14 +592,14 @@ local function RefreshLookupData_Preservation()
 
 		local timeDisplay
 		if not _essenceBurstActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _essenceBurstTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
 		elseif _essenceBurstTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _essenceBurstTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then
@@ -708,14 +708,14 @@ local function RefreshLookupData_Augmentation()
 
 		local timeDisplay
 		if not _ebonMightActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _ebonMightTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_ebonMightTime)
 		elseif _ebonMightTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _ebonMightTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$ebonMightTime", timeDisplay) then
@@ -750,14 +750,14 @@ local function RefreshLookupData_Augmentation()
 
 		local timeDisplay
 		if not _essenceBurstActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _essenceBurstTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
 		elseif _essenceBurstTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _essenceBurstTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then

@@ -18,6 +18,7 @@ local ELEMENT_SLOTS = { fire = 1, earth = 2, water = 3, air = 4 }
 ---@field duration any? # The engine duration object; may hold secrets
 ---@field icon any? # Texture id; may be secret
 ---@field name any? # Totem name; may be secret
+---@field iconText any? # The icon as a bar text texture string, built on each read; may be secret
 ---@field version integer # Bumped on every read, so the bar rebinds the node showing the slot
 ---@field endWidget any # Hidden Cooldown frame whose OnCooldownDone is the slot's true end
 
@@ -27,19 +28,28 @@ local enabled = false
 local eventFrame = CreateFrame("Frame")
 -- Bumped whenever which slots are active changes.
 local activeVersion = 0
+-- How many slots hold a totem that hasn't run out, recounted on each of those changes.
+local activeCount = 0
 -- What each node was last given, and each group's layout count; weak, so rebuilt bars drop theirs.
 local appliedByNode = setmetatable({}, { __mode = "k" })
 local layoutVersions = setmetatable({}, { __mode = "k" })
-
-local function OnActiveChanged()
-	activeVersion = activeVersion + 1
-	TRB.Functions.BarVisibility:MarkDirty()
-end
 
 ---@param record TRB.Functions.Totems.Slot
 ---@return boolean
 local function IsActive(record)
 	return record.occupied and not record.ended
+end
+
+local function OnActiveChanged()
+	activeVersion = activeVersion + 1
+	local count = 0
+	for _, record in pairs(slots) do
+		if IsActive(record) then
+			count = count + 1
+		end
+	end
+	activeCount = count
+	TRB.Functions.BarVisibility:MarkDirty()
 end
 
 ---@param slot integer
@@ -63,6 +73,7 @@ local function GetRecord(slot)
 	widget:SetScript("OnCooldownDone", function()
 		if record.occupied and not record.ended then
 			record.ended = true
+			record.version = record.version + 1
 			OnActiveChanged()
 		end
 	end)
@@ -89,6 +100,10 @@ local function ReadSlot(slot)
 	record.duration = occupied and duration or nil
 	record.icon = occupied and icon or nil
 	record.name = occupied and name or nil
+	record.iconText = nil
+	if occupied and icon ~= nil then
+		record.iconText = string.format("|T%s:0|t", icon)
+	end
 	record.version = record.version + 1
 
 	local widget = record.endWidget
@@ -123,6 +138,7 @@ local function ClearAllSlots()
 		record.duration = nil
 		record.icon = nil
 		record.name = nil
+		record.iconText = nil
 		record.version = record.version + 1
 	end
 	OnActiveChanged()
@@ -260,14 +276,17 @@ end
 ---A slot's totem for bar text, any part of which may be secret; nil when the slot is empty or its totem ran out.
 ---@param slot integer
 ---@return any name
----@return any icon # Texture id
+---@return any iconText # The icon as a bar text texture string
 ---@return any duration # The duration object
+---@return integer version # Changes whenever the slot does
 function Totems:GetSlotDisplay(slot)
 	local record = slots[slot]
-	if record == nil or not IsActive(record) then
-		return nil, nil, nil
+	if record == nil then
+		return nil, nil, nil, 0
+	elseif not IsActive(record) then
+		return nil, nil, nil, record.version
 	end
-	return record.name, record.icon, record.duration
+	return record.name, record.iconText, record.duration, record.version
 end
 
 ---The active spec's Totems colors, which hold the element order.
@@ -318,13 +337,7 @@ end
 ---How many slots hold a totem that hasn't run out.
 ---@return integer
 function Totems:GetActiveCount()
-	local count = 0
-	for _, record in pairs(slots) do
-		if IsActive(record) then
-			count = count + 1
-		end
-	end
-	return count
+	return activeCount
 end
 
 ---Changes whenever a slot starts or stops being active.

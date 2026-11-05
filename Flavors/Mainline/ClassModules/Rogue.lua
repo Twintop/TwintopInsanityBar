@@ -630,14 +630,24 @@ local function RefreshLookupData_Outlaw()
 		lookupLogic["$tripleThreatTime"] = _tripleThreatTime
 		lookupLogic["$jackpotTime"] = _jackpotTime
 
-		lookup["$rtbBuffTime"] = TRB.Functions.BarText:TimerPrecision(_rtbBuffTime)
+		if lookupChanged(prevState, "$rtbBuffTime", _rtbBuffTime) then
+			lookup["$rtbBuffTime"] = TRB.Functions.BarText:TimerPrecision(_rtbBuffTime)
+		end
 		lookup["$rtbBuffName"] = outcome ~= nil and outcome.name or ""
 		lookup["$rtbBuffLevel"] = snapshotData.attributes.rollTheBonesLevel
 		lookup["#rtbBuff"] = outcome ~= nil and outcome.icon or ""
-		lookup["$oneOfAKindTime"] = TRB.Functions.BarText:TimerPrecision(_oneOfAKindTime)
-		lookup["$doubleTroubleTime"] = TRB.Functions.BarText:TimerPrecision(_doubleTroubleTime)
-		lookup["$tripleThreatTime"] = TRB.Functions.BarText:TimerPrecision(_tripleThreatTime)
-		lookup["$jackpotTime"] = TRB.Functions.BarText:TimerPrecision(_jackpotTime)
+		if lookupChanged(prevState, "$oneOfAKindTime", _oneOfAKindTime) then
+			lookup["$oneOfAKindTime"] = TRB.Functions.BarText:TimerPrecision(_oneOfAKindTime)
+		end
+		if lookupChanged(prevState, "$doubleTroubleTime", _doubleTroubleTime) then
+			lookup["$doubleTroubleTime"] = TRB.Functions.BarText:TimerPrecision(_doubleTroubleTime)
+		end
+		if lookupChanged(prevState, "$tripleThreatTime", _tripleThreatTime) then
+			lookup["$tripleThreatTime"] = TRB.Functions.BarText:TimerPrecision(_tripleThreatTime)
+		end
+		if lookupChanged(prevState, "$jackpotTime", _jackpotTime) then
+			lookup["$jackpotTime"] = TRB.Functions.BarText:TimerPrecision(_jackpotTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup

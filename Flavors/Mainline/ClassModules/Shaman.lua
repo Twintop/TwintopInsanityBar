@@ -410,14 +410,14 @@ local function RefreshTempestLookup(spells, attributes, lookup, lookupLogic, pre
 
 	local timeDisplay
 	if not isActive then
-		timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 	elseif remaining ~= nil then
 		timeDisplay = TRB.Functions.BarText:TimerPrecision(remaining)
 	elseif remainingText ~= nil then
 		-- Already formatted, to the viewer's precision rather than ours.
 		timeDisplay = remainingText
 	else
-		timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 	end
 	if lookupChanged(prevState, "$tempestTime", timeDisplay) then
 		lookup["$tempestTime"] = timeDisplay
@@ -577,14 +577,14 @@ local function RefreshLookupData_Elemental()
 
 			local timeDisplay
 			if not isActive then
-				timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+				timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 			elseif remaining ~= nil then
 				timeDisplay = TRB.Functions.BarText:TimerPrecision(remaining)
 			elseif remainingText ~= nil then
 				-- Already formatted, to the viewer's precision rather than ours.
 				timeDisplay = remainingText
 			else
-				timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+				timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 			end
 
 			if lookupChanged(prevState, variable, timeDisplay) then

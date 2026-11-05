@@ -569,14 +569,14 @@ local function RefreshLookupData_Fury()
 		-- string, since both are nil underneath.
 		local timeDisplay
 		if not _enrageActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _enrageTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_enrageTime)
 		elseif _enrageTimeText ~= nil then
 			-- Already formatted, to the viewer's precision rather than ours.
 			timeDisplay = _enrageTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$enrageTime", timeDisplay) then

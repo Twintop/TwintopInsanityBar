@@ -517,15 +517,15 @@ local function RefreshLookupData_Blood()
 
 		local timeDisplay
 		if not attributes.boneShieldTracked then
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		elseif not _boneShieldActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _boneShieldTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_boneShieldTime)
 		elseif _boneShieldTimeText ~= nil then
 			timeDisplay = _boneShieldTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$boneShieldTime", timeDisplay) then
@@ -689,16 +689,16 @@ local function RefreshLookupData_Unholy()
 
 		local timeDisplay
 		if not snapshotData.attributes.runicCorruptionTracked then
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		elseif not _runicCorruptionActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _runicCorruptionTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_runicCorruptionTime)
 		elseif _runicCorruptionTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _runicCorruptionTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$runicCorruptionTime", timeDisplay) then

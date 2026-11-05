@@ -89,6 +89,9 @@ if TRB.Flavor.totemElements then
 	totemElementLabels = { L["TotemElementFire"], L["TotemElementEarth"], L["TotemElementWater"], L["TotemElementAir"] }
 end
 local totemSlotVars = {}
+-- Each slot's version as last written into which lookup table, so names and icons are rewritten only on a change.
+local totemWrittenVersions = {}
+local totemWrittenLookup = nil
 -- Variable -> its slot, for the bare checks.
 local totemVars = {}
 for slot = 1, TRB.Flavor.totemElements and 4 or 8 do
@@ -652,9 +655,13 @@ end
 
 ---Clears the lookup memoization state, forcing all variables to be recomputed on next tick.
 ---Also marks lookup data as dirty.
+-- The pet values version last formatted into the lookup tables; nil formats again, as after a settings edit.
+local petWrittenVersion = nil
+
 function TRB.Functions.BarText:InvalidateLookupMemoization()
 	TRB.Data.prevLookupState = TRB.Data.prevLookupState or {}
 	wipe(TRB.Data.prevLookupState)
+	petWrittenVersion = nil
 	TRB.Data.lookupDirty = true
 end
 
@@ -2333,6 +2340,8 @@ end
 
 -- $inCombat's text by combat state; anything else falls back to tostring, as before.
 local inCombatTexts = { [true] = "true", [false] = "false" }
+-- The stats and health versions last copied into which lookup tables.
+local baseWritten = { lookup = nil, lookupLogic = nil, stats = nil, health = nil }
 
 -- "%.Nf" strings memoized by precision so per-tick refreshes skip rebuilding them.
 local precisionFormatCache = {}
@@ -2562,40 +2571,54 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	end
 
+	-- Stats and health change only when Character reads them, which bumps their versions; a spec switch can also
+	-- replace the lookup tables.
+	local character = TRB.Functions.Character
+	local written = baseWritten
+	if written.lookup ~= lookup or written.lookupLogic ~= lookupLogic then
+		written.lookup, written.lookupLogic = lookup, lookupLogic
+		written.stats, written.health = nil, nil
+	end
+
 	-- Stats: pre-formatted strings from UpdateStatsSnapshot for display, raw values for the logic side.
 	local formatted = snapshotData.formatted
-	for _, stat in ipairs(TRB.Flavor.stats) do
-		local statText = formatted[stat.key] or ""
-		local statValue = snapshotData.attributes[stat.key]
-		for _, variable in ipairs(stat.variables) do
-			lookup[variable] = statText
-			lookupLogic[variable] = statValue
+	if written.stats ~= character.statsValuesVersion then
+		written.stats = character.statsValuesVersion
+		for _, stat in ipairs(TRB.Flavor.stats) do
+			local statText = formatted[stat.key] or ""
+			local statValue = attributes[stat.key]
+			for _, variable in ipairs(stat.variables) do
+				lookup[variable] = statText
+				lookupLogic[variable] = statValue
+			end
 		end
 	end
 
-	--$health, $healthMax, $healthPercent
-	-- Raw secret values for lookupLogic (conditionals use arithmetic, not equality)
-	lookupLogic["$health"] = snapshotData.attributes.health
-	lookupLogic["$healthMax"] = snapshotData.attributes.healthMax
-	lookupLogic["$healthPercent"] = snapshotData.attributes.healthPercent
+	if written.health ~= character.healthValuesVersion then
+		written.health = character.healthValuesVersion
+		--$health, $healthMax, $healthPercent
+		-- Raw secret values for lookupLogic (conditionals use arithmetic, not equality)
+		lookupLogic["$health"] = attributes.health
+		lookupLogic["$healthMax"] = attributes.healthMax
+		lookupLogic["$healthPercent"] = attributes.healthPercent
 
-	-- Use pre-formatted strings from event time (see UpdateHealthValues)
-	local formatted = snapshotData.formatted
-	lookup["$health"] = formatted.health or ""
-	lookup["$healthMax"] = formatted.healthMax or ""
-	lookup["$healthPercent"] = formatted.healthPercent or ""
+		-- Use pre-formatted strings from event time (see UpdateHealthValues)
+		lookup["$health"] = formatted.health or ""
+		lookup["$healthMax"] = formatted.healthMax or ""
+		lookup["$healthPercent"] = formatted.healthPercent or ""
 
-	--$absorb
-	lookupLogic["$absorb"] = snapshotData.attributes.absorb
-	lookup["$absorb"] = formatted.absorb or ""
+		--$absorb
+		lookupLogic["$absorb"] = attributes.absorb
+		lookup["$absorb"] = formatted.absorb or ""
 
-	--$incomingHeal
-	lookupLogic["$incomingHeal"] = snapshotData.attributes.incomingHeal or 0
-	lookup["$incomingHeal"] = formatted.incomingHeal or ""
+		--$incomingHeal
+		lookupLogic["$incomingHeal"] = attributes.incomingHeal or 0
+		lookup["$incomingHeal"] = formatted.incomingHeal or ""
 
-	--$healAbsorb
-	lookupLogic["$healAbsorb"] = snapshotData.attributes.healAbsorb
-	lookup["$healAbsorb"] = formatted.healAbsorb or ""
+		--$healAbsorb
+		lookupLogic["$healAbsorb"] = attributes.healAbsorb
+		lookup["$healAbsorb"] = formatted.healAbsorb or ""
+	end
 
 	-- Speed has no event, so it is read on every refresh that shows it. A secret speed can't be made a percent, so its text is empty.
 	local activeVars = TRB.Data.activeVariables
@@ -2675,6 +2698,10 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	Global_TwintopResourceBar.resource.casting = castingAmount
 end
 
+-- The lookup tables the pet text was last written into.
+local petWrittenLookup = nil
+local petWrittenLookupLogic = nil
+
 -- Pet bar variables, all of which gate on "is a pet out?" in bar text logic.
 local petVars = {
 	["$petName"] = true, ["$petHealth"] = true, ["$petHealthMax"] = true, ["$petHealthPercent"] = true,
@@ -2698,6 +2725,14 @@ function TRB.Functions.BarText:RefreshPetLookupData(settings)
 	TRB.Data.lookup = TRB.Data.lookup or {}
 	TRB.Data.lookupLogic = TRB.Data.lookupLogic or {}
 	local lookup = TRB.Data.lookup
+	-- Pet values only change on a pet read; a spec switch can also replace the tables.
+	local version = TRB.Functions.Character.petValuesVersion
+	if version == petWrittenVersion and lookup == petWrittenLookup and TRB.Data.lookupLogic == petWrittenLookupLogic then
+		return
+	end
+	petWrittenVersion = version
+	petWrittenLookup = lookup
+	petWrittenLookupLogic = TRB.Data.lookupLogic
 
 	for var in pairs(petVars) do
 		lookup[var] = ""
@@ -2737,27 +2772,41 @@ function TRB.Functions.BarText:RefreshTotemLookupData()
 	totemLookupWasActive = isActive
 	TRB.Data.lookup = TRB.Data.lookup or {}
 	local lookup = TRB.Data.lookup
+	-- A spec switch replaces the table, so every slot is written again.
+	if totemWrittenLookup ~= lookup then
+		totemWrittenLookup = lookup
+		wipe(totemWrittenVersions)
+	end
 
 	for slot, vars in ipairs(totemSlotVars) do
-		local name, icon, duration = totems:GetSlotDisplay(slot)
-		local nameText, timeText, iconText = "", "", ""
-		if name ~= nil then
-			nameText = name
+		local name, iconText, duration, version = totems:GetSlotDisplay(slot)
+		if version ~= totemWrittenVersions[slot] then
+			totemWrittenVersions[slot] = version
+			local nameText = ""
+			if name ~= nil then
+				nameText = name
+			end
+			for _, var in ipairs(vars.names) do
+				lookup[var] = nameText
+			end
+			local iconOut = ""
+			if iconText ~= nil then
+				iconOut = iconText
+			end
+			for _, var in ipairs(vars.icons) do
+				lookup[var] = iconOut
+			end
+			if duration == nil then
+				for _, var in ipairs(vars.times) do
+					lookup[var] = ""
+				end
+			end
 		end
 		if duration ~= nil then
-			timeText = self:TimerPrecision(duration:GetRemainingDuration())
-		end
-		if icon ~= nil then
-			iconText = string.format("|T%s:0|t", icon)
-		end
-		for _, var in ipairs(vars.names) do
-			lookup[var] = nameText
-		end
-		for _, var in ipairs(vars.times) do
-			lookup[var] = timeText
-		end
-		for _, var in ipairs(vars.icons) do
-			lookup[var] = iconText
+			local timeText = self:TimerPrecision(duration:GetRemainingDuration())
+			for _, var in ipairs(vars.times) do
+				lookup[var] = timeText
+			end
 		end
 	end
 end
@@ -2808,6 +2857,10 @@ local function FormatMinutesSeconds(seconds)
 	local minutes = math.floor(wholeSeconds / 60)
 	return string.format("%02d:%02d", minutes, wholeSeconds - (minutes * 60))
 end
+
+-- Idle Other Bars text: the mirror timers' zero, and string.format(fmt, 0) by format.
+local MIRROR_IDLE_TEXT = FormatMinutesSeconds(0)
+local otherBarsIdleTexts = {}
 
 -- Per-bar "$<key>Duration"/"$<key>DurationRemaining" names, built once (the bar key set is static).
 local otherBarsVarNamesByKey = {}
@@ -2863,7 +2916,14 @@ function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 
 			-- Default to an idle 0, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
 			-- which is blocked; only nil-checks and string.format are allowed on secrets.
-			local idleText = isMirror and FormatMinutesSeconds(0) or string.format(fmt, 0)
+			local idleText = MIRROR_IDLE_TEXT
+			if not isMirror then
+				idleText = otherBarsIdleTexts[fmt]
+				if idleText == nil then
+					idleText = string.format(fmt, 0)
+					otherBarsIdleTexts[fmt] = idleText
+				end
+			end
 			lookup[totalVar] = idleText
 			lookup[remVar] = idleText
 			if not isSecret then
@@ -2970,12 +3030,12 @@ function TRB.Functions.BarText:RefreshSkyridingLookupData()
 			lookupLogic[vars.charges] = (charges ~= nil and not issecretvalue(charges)) and charges or nil
 			lookupLogic[vars.chargesMax] = chargesMax
 		end
-		lookup[vars.time] = TRB.Functions.BarText:TimerPrecision(remaining or 0)
+		lookup[vars.time] = remaining ~= nil and TRB.Functions.BarText:TimerPrecision(remaining) or TRB.Functions.BarText:ZeroTimerText()
 		lookupLogic[vars.time] = SkyridingTimeLogic(remaining)
 	end
 
 	local cooldownRemaining = skyriding:GetCooldownRemaining()
-	lookup["$whirlingSurgeTime"] = TRB.Functions.BarText:TimerPrecision(cooldownRemaining or 0)
+	lookup["$whirlingSurgeTime"] = cooldownRemaining ~= nil and TRB.Functions.BarText:TimerPrecision(cooldownRemaining) or TRB.Functions.BarText:ZeroTimerText()
 	lookupLogic["$whirlingSurgeTime"] = SkyridingTimeLogic(cooldownRemaining)
 
 	-- Stored as strings, matching how $inCombat feeds the conditional engine.
@@ -3000,7 +3060,7 @@ function TRB.Functions.BarText:RefreshSkyridingLookupData()
 		lookup["$staticChargeStacks"] = string.format("%d", staticChargeStacks)
 		lookupLogic["$staticChargeStacks"] = staticChargeStacks
 	end
-	lookup["$staticChargeTime"] = TRB.Functions.BarText:TimerPrecision(staticChargeRemaining or 0)
+	lookup["$staticChargeTime"] = staticChargeRemaining ~= nil and TRB.Functions.BarText:TimerPrecision(staticChargeRemaining) or TRB.Functions.BarText:ZeroTimerText()
 	lookupLogic["$staticChargeTime"] = staticChargeRemaining or 0
 end
 
@@ -3775,6 +3835,31 @@ function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
 	else
 		return string.format(GetPrecisionFormat(TRB.Data.settings.core.timers.precisionLow), value)
 	end
+end
+
+-- TimerPrecision(0) by precision, so idle timers skip string.format; a precision edit just picks another entry.
+local zeroTimerTexts = {}
+
+---Returns TimerPrecision(0) without formatting it again.
+---@return string
+function TRB.Functions.BarText:ZeroTimerText()
+	local timers = TRB.Data.settings.core.timers
+	local precision = 0 >= timers.precisionThreshold and timers.precisionHigh or timers.precisionLow
+	local text = zeroTimerTexts[precision]
+	if text == nil then
+		text = string.format(GetPrecisionFormat(precision), 0)
+		zeroTimerTexts[precision] = text
+	end
+	return text
+end
+
+---Returns UnknownValue for a timer, looking up its zero text only when the "zero" treatment shows it.
+---@return string
+function TRB.Functions.BarText:UnknownTimerValue()
+	if TRB.Data.settings.core.cdmUnknownDisplay == "zero" then
+		return self:ZeroTimerText()
+	end
+	return self:UnknownValue()
 end
 
 ---Hides all bar text, except UIParent-bound ("Screen") entries which remain visible

@@ -529,14 +529,14 @@ end
 local function GetProcTimeDisplay(buff)
 	local properties = buff.customProperties
 	if buff.isActive ~= true then
-		return TRB.Functions.BarText:TimerPrecision(0)
+		return TRB.Functions.BarText:ZeroTimerText()
 	elseif properties.remaining ~= nil then
 		return TRB.Functions.BarText:TimerPrecision(properties.remaining)
 	elseif properties.remainingText ~= nil then
 		-- Already formatted, to the viewer's precision rather than ours.
 		return properties.remainingText
 	end
-	return TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+	return TRB.Functions.BarText:UnknownTimerValue()
 end
 
 ---Starts an overlay-tracked proc's manual timer. The overlay alone decides when the proc ends, so a
@@ -638,7 +638,9 @@ local function RefreshLookupData_Arcane()
 		local _arcaneSurgeTime = buff.isActive and buff.remaining or 0
 
 		lookupLogic["$arcaneSurgeTime"] = _arcaneSurgeTime
-		lookup["$arcaneSurgeTime"] = TRB.Functions.BarText:TimerPrecision(_arcaneSurgeTime)
+		if lookupChanged(prevState, "$arcaneSurgeTime", _arcaneSurgeTime) then
+			lookup["$arcaneSurgeTime"] = TRB.Functions.BarText:TimerPrecision(_arcaneSurgeTime)
+		end
 	end
 
 	-- Block D: Arcane Salvo ($arcaneSalvoStacks, $arcaneSalvoStacksMax)
@@ -685,7 +687,9 @@ local function RefreshLookupData_Arcane()
 		local _prismaticBoltTime = buff.isActive and buff.remaining or 0
 
 		lookupLogic["$prismaticBoltTime"] = _prismaticBoltTime
-		lookup["$prismaticBoltTime"] = TRB.Functions.BarText:TimerPrecision(_prismaticBoltTime)
+		if lookupChanged(prevState, "$prismaticBoltTime", _prismaticBoltTime) then
+			lookup["$prismaticBoltTime"] = TRB.Functions.BarText:TimerPrecision(_prismaticBoltTime)
+		end
 	end
 
 	-- Block G: Overpowered Missiles ($overpoweredMissilesTime)
@@ -793,7 +797,9 @@ local function RefreshLookupData_Fire()
 		local _combustionTime = buff.isActive and buff.remaining or 0
 
 		lookupLogic["$combustionTime"] = _combustionTime
-		lookup["$combustionTime"] = TRB.Functions.BarText:TimerPrecision(_combustionTime)
+		if lookupChanged(prevState, "$combustionTime", _combustionTime) then
+			lookup["$combustionTime"] = TRB.Functions.BarText:TimerPrecision(_combustionTime)
+		end
 	end
 
 	-- Block D: Overlay procs ($heatingUpTime, $hotStreakTime, $frostfireEmpowermentTime)
@@ -808,9 +814,15 @@ local function RefreshLookupData_Fire()
 		lookupLogic["$hotStreakTime"] = _hotStreakTime
 		lookupLogic["$frostfireEmpowermentTime"] = _frostfireEmpowermentTime
 
-		lookup["$heatingUpTime"] = TRB.Functions.BarText:TimerPrecision(_heatingUpTime)
-		lookup["$hotStreakTime"] = TRB.Functions.BarText:TimerPrecision(_hotStreakTime)
-		lookup["$frostfireEmpowermentTime"] = TRB.Functions.BarText:TimerPrecision(_frostfireEmpowermentTime)
+		if lookupChanged(prevState, "$heatingUpTime", _heatingUpTime) then
+			lookup["$heatingUpTime"] = TRB.Functions.BarText:TimerPrecision(_heatingUpTime)
+		end
+		if lookupChanged(prevState, "$hotStreakTime", _hotStreakTime) then
+			lookup["$hotStreakTime"] = TRB.Functions.BarText:TimerPrecision(_hotStreakTime)
+		end
+		if lookupChanged(prevState, "$frostfireEmpowermentTime", _frostfireEmpowermentTime) then
+			lookup["$frostfireEmpowermentTime"] = TRB.Functions.BarText:TimerPrecision(_frostfireEmpowermentTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -927,7 +939,9 @@ local function RefreshLookupData_Frost()
 
 		lookup["$fingersOfFrostStacks"] = _fingersOfFrostStacks
 		lookup["$fingersOfFrostStacksMax"] = _fingersOfFrostStacksMax
-		lookup["$fingersOfFrostTime"] = TRB.Functions.BarText:TimerPrecision(_fingersOfFrostTime)
+		if lookupChanged(prevState, "$fingersOfFrostTime", _fingersOfFrostTime) then
+			lookup["$fingersOfFrostTime"] = TRB.Functions.BarText:TimerPrecision(_fingersOfFrostTime)
+		end
 	end
 
 	-- Block E: Brain Freeze ($brainFreezeTime)
@@ -950,7 +964,9 @@ local function RefreshLookupData_Frost()
 		local _frostfireEmpowermentTime = GetProcTimerRemaining(snapshots[spells.frostfireEmpowerment.id].buff, GetTime())
 
 		lookupLogic["$frostfireEmpowermentTime"] = _frostfireEmpowermentTime
-		lookup["$frostfireEmpowermentTime"] = TRB.Functions.BarText:TimerPrecision(_frostfireEmpowermentTime)
+		if lookupChanged(prevState, "$frostfireEmpowermentTime", _frostfireEmpowermentTime) then
+			lookup["$frostfireEmpowermentTime"] = TRB.Functions.BarText:TimerPrecision(_frostfireEmpowermentTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup

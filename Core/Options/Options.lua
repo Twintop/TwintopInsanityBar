@@ -293,6 +293,7 @@ local function ConstructMiscellaneousPanel(parent)
 	f:SetChecked(TRB.Data.settings.core.numberAbbreviation)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.numberAbbreviation = self:GetChecked()
+		TRB.Functions.Character:RecomputeFormattedValues()
 		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
@@ -338,6 +339,7 @@ local function ConstructMiscellaneousPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		TRB.Data.settings.core.timers.precisionLow = value
+		TRB.Functions.BarText:InvalidateLookupMemoization()
 	end)
 	
 	title = L["TimerAbovePrecision"]
@@ -354,6 +356,7 @@ local function ConstructMiscellaneousPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		TRB.Data.settings.core.timers.precisionHigh = value
+		TRB.Functions.BarText:InvalidateLookupMemoization()
 	end)
 
 
@@ -372,6 +375,7 @@ local function ConstructMiscellaneousPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		TRB.Data.settings.core.timers.precisionThreshold = value
+		TRB.Functions.BarText:InvalidateLookupMemoization()
 	end)
 
 

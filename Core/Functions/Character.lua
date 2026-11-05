@@ -221,6 +221,10 @@ end
 
 -- Bumped on every health read; the values can be secret, so health overlays compare this instead.
 TRB.Functions.Character.healthValuesVersion = 0
+-- Bumped on every pet read, so pet bar text formats only after one.
+TRB.Functions.Character.petValuesVersion = 0
+-- Bumped on every stats read, so bar text copies the stats only after one.
+TRB.Functions.Character.statsValuesVersion = 0
 
 -- Health pieces changed by an event and not yet read back. Every reader runs in the tick or in
 -- BarText:RenderNow, which flush first, so a burst of events between renders costs one read per piece.
@@ -396,6 +400,8 @@ function TRB.Functions.Character:UpdatePetValues()
 			attributes.petPowerPercent = UnitPowerPercent("pet", powerType, true, CurveConstants.ScaleTo100)
 		end
 	end
+
+	TRB.Functions.Character.petValuesVersion = TRB.Functions.Character.petValuesVersion + 1
 
 	if state ~= previousState then
 		TRB.Functions.BarVisibility:MarkDirty()
@@ -1378,6 +1384,7 @@ local function UpdateStatsSnapshot(bucket)
 
 	attributes.cacheRefresh = true
 	attributes[bucket .. "Refresh"] = false
+	TRB.Functions.Character.statsValuesVersion = TRB.Functions.Character.statsValuesVersion + 1
 end
 
 ---Reads the primary stat bucket (UNIT_STATS).
@@ -1462,8 +1469,10 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 		-- A returning spec missed its procs' end events while inactive, so they read as ended, as after a death.
 		TRB.Functions.Class:ResetProcsOnDeath()
 	end
-	-- A different snapshot means different health values, so health overlays must redraw.
+	-- A different snapshot means different health, pet, and stats values, so health overlays and bar text must redraw.
 	TRB.Functions.Character.healthValuesVersion = TRB.Functions.Character.healthValuesVersion + 1
+	TRB.Functions.Character.petValuesVersion = TRB.Functions.Character.petValuesVersion + 1
+	TRB.Functions.Character.statsValuesVersion = TRB.Functions.Character.statsValuesVersion + 1
 	TRB.Functions.Character:ResetCaches()
 	TRB.Functions.BarVisibility:MarkDirty()
 	-- The single point where a spec's composed settings become active (login, spec switch, talent

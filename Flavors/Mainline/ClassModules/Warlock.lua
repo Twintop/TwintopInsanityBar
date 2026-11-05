@@ -409,14 +409,14 @@ local function RefreshLookupData_Affliction()
 
 		local timeDisplay
 		if not _shardInstabilityActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _shardInstabilityTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_shardInstabilityTime)
 		elseif _shardInstabilityTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _shardInstabilityTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$shardInstabilityStacks", stacksDisplay) then
@@ -466,15 +466,15 @@ local function SetDiabolistLookup(lookup, lookupLogic, prevState, timeKey, iconK
 
 	local timeDisplay
 	if not tracked then
-		timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 	elseif not active then
-		timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 	elseif remaining ~= nil then
 		timeDisplay = TRB.Functions.BarText:TimerPrecision(remaining)
 	elseif remainingText ~= nil then
 		timeDisplay = remainingText
 	else
-		timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 	end
 
 	if lookupChanged(prevState, timeKey, timeDisplay) then
@@ -609,14 +609,14 @@ local function RefreshLookupData_Demonology()
 
 		local timeDisplay
 		if not _demonicCoreActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _demonicCoreTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_demonicCoreTime)
 		elseif _demonicCoreTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _demonicCoreTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$demonicCoreStacks", stacksDisplay) then
@@ -647,7 +647,7 @@ local function RefreshLookupData_Demonology()
 			-- When Dominion of Argus is not active, display a zeroed default that
 			-- respects the user's timer precision setting ("0.0" by default).
 			if lookupChanged(prevState, "$doaTime", 0) then
-				lookup["$doaTime"] = TRB.Functions.BarText:TimerPrecision(0)
+				lookup["$doaTime"] = TRB.Functions.BarText:ZeroTimerText()
 			end
 		end
 	end
@@ -667,7 +667,7 @@ local function RefreshLookupData_Demonology()
 			end
 		else
 			if lookupChanged(prevState, "$infernalBoltTime", 0) then
-				lookup["$infernalBoltTime"] = TRB.Functions.BarText:TimerPrecision(0)
+				lookup["$infernalBoltTime"] = TRB.Functions.BarText:ZeroTimerText()
 			end
 		end
 	end
@@ -687,7 +687,7 @@ local function RefreshLookupData_Demonology()
 			end
 		else
 			if lookupChanged(prevState, "$ruinationTime", 0) then
-				lookup["$ruinationTime"] = TRB.Functions.BarText:TimerPrecision(0)
+				lookup["$ruinationTime"] = TRB.Functions.BarText:ZeroTimerText()
 			end
 		end
 	end
@@ -831,7 +831,7 @@ local function RefreshLookupData_Destruction()
 			end
 		else
 			if lookupChanged(prevState, "$infernalBoltTime", 0) then
-				lookup["$infernalBoltTime"] = TRB.Functions.BarText:TimerPrecision(0)
+				lookup["$infernalBoltTime"] = TRB.Functions.BarText:ZeroTimerText()
 			end
 		end
 	end
@@ -851,7 +851,7 @@ local function RefreshLookupData_Destruction()
 			end
 		else
 			if lookupChanged(prevState, "$ruinationTime", 0) then
-				lookup["$ruinationTime"] = TRB.Functions.BarText:TimerPrecision(0)
+				lookup["$ruinationTime"] = TRB.Functions.BarText:ZeroTimerText()
 			end
 		end
 	end
