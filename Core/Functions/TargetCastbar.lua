@@ -494,9 +494,11 @@ local function GetDrawnCastColors(groupKey, node, model, colors, barSettings, cl
 	local channelBase = (colors.channel and colors.channel.color) or nil
 	local barBase = (colors.bar and colors.bar.color) or nil
 	local interruptColor = barSettings and barSettings.interruptColor
-	local indicatorVersion = TRB.Functions.Color:GetResolvedIndicatorVersion()
+	-- The resolved indicator version only tracks the player and pet cast bars, so read this bar's border claim directly.
+	local indicators = TRB.Functions.Color:GetResolvedIndicators(groupKey)
+	local borderIndicator = indicators and indicators.border
 	local unchanged = drawn.frame == node.frame and drawn.generation == model.castGeneration and drawn.state == model.state
-		and drawn.classHex == classHex and drawn.hostile == hostile and drawn.indicatorVersion == indicatorVersion
+		and drawn.classHex == classHex and drawn.hostile == hostile and drawn.borderIndicator == borderIndicator
 		and drawn.interruptColor == interruptColor and drawn.fillLocked == fillLocked and drawn.borderNormal == borderNormal
 		and drawn.borderLocked == borderLocked and drawn.empowerBase == empowerBase and drawn.channelBase == channelBase
 		and drawn.barBase == barBase
@@ -506,7 +508,7 @@ local function GetDrawnCastColors(groupKey, node, model, colors, barSettings, cl
 		drawn.state = model.state
 		drawn.classHex = classHex
 		drawn.hostile = hostile
-		drawn.indicatorVersion = indicatorVersion
+		drawn.borderIndicator = borderIndicator
 		drawn.interruptColor = interruptColor
 		drawn.fillLocked = fillLocked
 		drawn.borderNormal = borderNormal
