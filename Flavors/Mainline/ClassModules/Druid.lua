@@ -344,6 +344,38 @@ local function UpdateResourceValues()
 	end
 end
 
+-- Each form power's attributes by event token, so a power event re-reads only the power it names.
+local druidPowerReads = {
+	ENERGY = { powerType = Enum.PowerType.Energy, raw = "energy", modified = "energyModified" },
+	RAGE = { powerType = Enum.PowerType.Rage, raw = "rage", modified = "rageModified" },
+	MANA = { powerType = Enum.PowerType.Mana, raw = "mana", modified = "manaModified" },
+	LUNAR_POWER = { powerType = Enum.PowerType.LunarPower, raw = "astralPower", modified = "astralPowerModified" },
+}
+
+---Re-reads the power one event names; any other event re-reads them all.
+---@param powerToken string?
+local function UpdateResourceValue(powerToken)
+	local attributes = TRB.Data.snapshotData.attributes
+	local read = powerToken ~= nil and druidPowerReads[powerToken] or nil
+	if read ~= nil then
+		attributes[read.raw] = UnitPower("player", read.powerType, true)
+		attributes[read.modified] = UnitPower("player", read.powerType, false)
+		-- Character's handler for this same event writes the spec resource's percent.
+		if read.powerType == TRB.Data.resource then
+			attributes.resource = attributes[read.raw]
+			attributes.resourceModified = attributes[read.modified]
+		end
+	elseif powerToken == "COMBO_POINTS" then
+		attributes.comboPoints = UnitPower("player", Enum.PowerType.ComboPoints, false)
+	else
+		UpdateResourceValues()
+		return
+	end
+	-- Every power event rewrote resource2 from combo points, after Character's handler may have written it; keep that.
+	attributes.resource2 = attributes.comboPoints
+	attributes.resource2Modified = attributes.comboPoints
+end
+
 -- Unified bar mana formatting: power events set the dirty flags; RefreshLookupData_Unified
 -- re-derives the abbreviations at most once per tick.
 local unifiedManaDirty = true
@@ -355,8 +387,8 @@ local unifiedManaPercentPrecision = nil
 
 local function DruidPowerEvent(self, event, ...)
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
-		UpdateResourceValues()
 		local _, powerType = ...
+		UpdateResourceValue(powerType)
 		if powerType == "MANA" then
 			unifiedManaDirty = true
 		end
