@@ -46,6 +46,11 @@ TRB.Flavor.newsContent = [====[
 
 - [#948](#948) Improve combo point bar update performance.
 
+## Shaman
+### Elemental
+
+- [#949](#949) Improve update performance of Earth Shock, Elemental Blast, and Earthquake tracking.
+
 ## Warlock
 ### Demonology
 
