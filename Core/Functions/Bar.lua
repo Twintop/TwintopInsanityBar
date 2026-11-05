@@ -3920,6 +3920,30 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 		groupHeight = config.rootEffectiveHeight
 	end
 
+	-- Inside Anchor Border: shrink the matched sides and nudge off the anchored edges by the anchor bar's border.
+	if groupSettings.insideAnchorBorder and anchor.barKey ~= "screen" and anchorGroup ~= nil and anchorGroup.GetNode ~= nil then
+		local anchorNode = anchorGroup:GetNode(1)
+		local inset = anchorNode ~= nil and anchorNode.border or 0
+		if inset > 0 then
+			if anchor.matchWidth then
+				groupWidth = groupWidth - (inset * 2)
+			end
+			if anchor.matchHeight then
+				groupHeight = groupHeight - (inset * 2)
+			end
+			if string.find(anchorPoint, "LEFT", 1, true) then
+				xPos = xPos + inset
+			elseif string.find(anchorPoint, "RIGHT", 1, true) then
+				xPos = xPos - inset
+			end
+			if string.find(anchorPoint, "BOTTOM", 1, true) then
+				yPos = yPos + inset
+			elseif string.find(anchorPoint, "TOP", 1, true) then
+				yPos = yPos - inset
+			end
+		end
+	end
+
 	if config.useApplyLayout then
 		local nodeSpacing = self:GetEffectiveSpacing(groupSettings)
 		local activeNodeCount = targetGroup.nodeCount or nodes or 1

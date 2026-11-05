@@ -18,6 +18,9 @@ TRB.Functions.OtherBars = {}
 	  * Main Hand / Off Hand / Ranged Swing -- filled by hand from PLAYER_SWING's plain length, or else from the combat
 	    log and the player's casts at the weapon's speed. Off Hand and Ranged only show while their slot holds a weapon.
 
+	  * Five Second Rule -- the pause in mana regen after a mana spend, filled by hand. No API reports it, and the
+	    player's mana can be secret, so a spend is a finished cast or started channel of a spell that costs mana.
+
 	Like the cast bars these are NOT in BarVisibility:ProcessBars, so the updater re-asserts
 	alpha/visibility while a bar is on screen to self-heal after render transitions.
 ]]
@@ -47,6 +50,14 @@ if TRB.Flavor.swingTimers then
 			entry.blizzardFrame = "SwingTimer" .. entry.hand .. "Frame"
 		end
 		table.insert(BARS, index, entry)
+	end
+end
+if TRB.Flavor.fiveSecondRule ~= nil then
+	for index, b in ipairs(BARS) do
+		if b.key == "gcd" then
+			table.insert(BARS, index + 1, { key = "fiveSecondRule", kind = "fiveSecondRule" })
+			break
+		end
 	end
 end
 local BAR_BY_TIMER_NAME = {}
@@ -106,11 +117,22 @@ local rangedSwingEnd = nil
 local rangedHoldsPastEnd = false
 -- Swing bars kept up, emptied, after their swing ended because movement still holds the shot.
 local swingHeldPastEnd = {}
+-- Five Second Rule: GetTime() the regen pause ends, or nil. The bar only goes active once inside its Show Below window.
+local fsrExpiry = nil
+-- TEMPORARY DIAGNOSTIC (/trb fsr): casts the Five Second Rule has seen.
+local fsrCastEvents = 0
 -- TEMPORARY DIAGNOSTIC (/trb otherbars): echo every GCD start/stop decision to chat.
 local echoGcd = false
 local function GcdEcho(fmt, ...)
 	if echoGcd then
 		print("|cFFFF8800TRB GCD:|r " .. string.format(fmt, ...))
+	end
+end
+-- TEMPORARY DIAGNOSTIC (/trb fsr): one line per Five Second Rule decision.
+local echoFsr = false
+local function FsrEcho(fmt, ...)
+	if echoFsr then
+		print("|cFFFF8800TRB 5SR:|r " .. string.format(fmt, ...))
 	end
 end
 
@@ -461,13 +483,29 @@ local function UpdateSwingFill(node, entry, barSettings)
 	end
 end
 
----Advances a bar whose fill is written by hand: a mirror timer or a swing bar.
+---Writes the Five Second Rule's progress into its node, always on the full pause's scale.
+---@param node TRB.Classes.BarNode
+---@param barSettings table?
+local function UpdateFiveSecondRuleFill(node, barSettings)
+	local length = TRB.Flavor.fiveSecondRule.duration
+	node:SetMinMax(0, length)
+	local remaining = fsrExpiry ~= nil and math.max(fsrExpiry - GetTime(), 0) or 0
+	if barSettings ~= nil and barSettings.timerDirection == "fill" then
+		node:SetValue(length - remaining)
+	else
+		node:SetValue(remaining)
+	end
+end
+
+---Advances a bar whose fill is written by hand: a mirror timer, a swing bar, or the Five Second Rule.
 ---@param node TRB.Classes.BarNode
 ---@param entry table # The BARS entry
 ---@param barSettings table?
 local function UpdateManualFill(node, entry, barSettings)
 	if entry.kind == "swing" then
 		UpdateSwingFill(node, entry, barSettings)
+	elseif entry.kind == "fiveSecondRule" then
+		UpdateFiveSecondRuleFill(node, barSettings)
 	else
 		UpdateMirrorFill(node, entry)
 	end
@@ -556,6 +594,9 @@ end
 ---mounting would shut it down and dismounting would never bring the bar back.
 ---@return boolean
 local function NeedsUpdater()
+	if fsrExpiry ~= nil then
+		return true
+	end
 	for _, entry in ipairs(BARS) do
 		if active[entry.key] or fadeStart[entry.key] ~= nil then
 			return true
@@ -642,6 +683,13 @@ local function StopTimer(entry)
 		swingStart[entry.key] = nil
 		swingLength[entry.key] = nil
 		swingHeldPastEnd[entry.key] = nil
+	elseif entry.kind == "fiveSecondRule" then
+		fsrExpiry = nil
+		FsrEcho("pause ended, regen %s", DescribeRegen())
+		local _, node = GetGroupNode(entry.key)
+		if node ~= nil then
+			UpdateFiveSecondRuleFill(node, cachedBarSettings[entry.key])
+		end
 	else
 		mirrorMax[entry.key] = nil
 	end
@@ -1100,6 +1148,127 @@ local function CheckGcdStop()
 end
 
 -- ============================================================================
+-- Five Second Rule
+-- ============================================================================
+
+---Seconds before the pause ends that the bar appears, or nil when Show Below is off and the whole pause shows.
+---@param barSettings table?
+---@return number?
+local function GetFiveSecondRuleWindow(barSettings)
+	local showBelow = barSettings ~= nil and barSettings.showBelow or nil
+	if showBelow == nil or not showBelow.enabled then
+		return nil
+	end
+	if showBelow.mode == "gcd" then
+		return (showBelow.gcdsMax or 0) * TRB.Functions.Character:GetCurrentGCDTime()
+	end
+	return showBelow.timeMax or 0
+end
+
+---Whether the pause is running and inside the bar's Show Below window.
+---@param barSettings table?
+---@param now number
+---@return boolean
+local function IsInFiveSecondRuleWindow(barSettings, now)
+	if fsrExpiry == nil or now >= fsrExpiry then
+		return false
+	end
+	local window = GetFiveSecondRuleWindow(barSettings)
+	return window == nil or fsrExpiry - now <= window
+end
+
+---TEMPORARY DIAGNOSTIC: GetPowerRegen's two rates, to learn whether either reports the pause.
+---@return string
+local function DescribeRegen()
+	if GetPowerRegen == nil then
+		return "n/a"
+	end
+	local base, casting = GetPowerRegen()
+	return string.format("%s/%s", tostring(base), tostring(casting))
+end
+
+---Starts or restarts the pause from a mana spend made just now.
+---@param spellId integer
+---@param cost number
+local function StartFiveSecondRule(spellId, cost)
+	local entry = BAR_BY_KEY.fiveSecondRule
+	local barSettings, _, visibility = GetBarConfig(entry.key)
+	if not IsEnabled(visibility) then
+		return
+	end
+	local now = GetTime()
+	fsrExpiry = now + TRB.Flavor.fiveSecondRule.duration
+	local inWindow = IsInFiveSecondRuleWindow(barSettings, now)
+	FsrEcho("spell %s costs %s mana: pause started, bar %s, regen %s", tostring(spellId), tostring(cost),
+		inWindow and "shown" or "waiting for Show Below", DescribeRegen())
+	if inWindow then
+		active[entry.key] = true
+		BeginRender(entry)
+		return
+	end
+	-- A fresh pause outside the window takes a running bar back down until the window opens again.
+	if active[entry.key] then
+		active[entry.key] = false
+		fadeStart[entry.key] = nil
+		forceHidden[entry.key] = nil
+		ApplyInactiveState(entry.key)
+		TRB.Functions.BarVisibility:MarkDirty()
+	end
+	SyncUpdater()
+end
+
+---A spell's mana cost from its spell data, which stays readable where the player's mana is secret; 0 when it costs none.
+---@param spellId integer?
+---@return number
+local function GetSpellManaCost(spellId)
+	if spellId == nil then
+		return 0
+	end
+	local costs = C_Spell.GetSpellPowerCost(spellId)
+	if costs == nil then
+		return 0
+	end
+	for _, info in ipairs(costs) do
+		if info.type == Enum.PowerType.Mana and not issecretvalue(info.cost) and info.cost > 0 then
+			return info.cost
+		end
+	end
+	return 0
+end
+
+-- Its own frame: the GCD bar registers and drops UNIT_SPELLCAST_SUCCEEDED on the shared one.
+local fsrFrame = CreateFrame("Frame")
+-- A finished cast or a started channel spends the spell's mana.
+fsrFrame:SetScript("OnEvent", function(_, _, _, _, spellId)
+	fsrCastEvents = fsrCastEvents + 1
+	local cost = GetSpellManaCost(spellId)
+	if cost > 0 then
+		StartFiveSecondRule(spellId, cost)
+	else
+		FsrEcho("spell %s costs no mana: no pause", tostring(spellId))
+	end
+end)
+
+---Registers the player's casts only while the Five Second Rule bar is enabled.
+local function SyncFiveSecondRuleEvents()
+	if TRB.Flavor.fiveSecondRule == nil then
+		return
+	end
+	local _, _, visibility = GetBarConfig("fiveSecondRule")
+	local enable = IsEnabled(visibility)
+	if enable == fsrFrame:IsEventRegistered("UNIT_SPELLCAST_SUCCEEDED") then
+		return
+	end
+	if enable then
+		fsrFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+		fsrFrame:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "player")
+	else
+		fsrExpiry = nil
+		fsrFrame:UnregisterAllEvents()
+	end
+end
+
+-- ============================================================================
 -- Mirror timers (Fatigue / Breath / Feign Death)
 -- ============================================================================
 
@@ -1296,10 +1465,23 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 			visibility = cachedVisibility[barKey]
 		end
 
+		-- A pause waiting on its Show Below window keeps the updater up, and starts the bar once inside it.
+		if entry.kind == "fiveSecondRule" and fsrExpiry ~= nil and not active[barKey] then
+			needsUpdater = true
+			if now >= fsrExpiry then
+				fsrExpiry = nil
+				FsrEcho("pause ended before Show Below opened, regen %s", DescribeRegen())
+			elseif throttleTick and IsInFiveSecondRuleWindow(cachedBarSettings[barKey], now) then
+				active[barKey] = true
+				BeginRender(entry)
+			end
+		end
+
 		if active[barKey] then
-			-- Nothing announces the end of a GCD or a swing, so they need an expiry check -- a timestamp compare.
+			-- Nothing announces the end of a GCD, a swing, or the pause, so they need an expiry check -- a timestamp compare.
 			if (throttleTick and entry.kind == "gcd" and not IsGcdStillRunning())
-				or (entry.kind == "swing" and not IsSwingStillRunning(barKey)) then
+				or (entry.kind == "swing" and not IsSwingStillRunning(barKey))
+				or (entry.kind == "fiveSecondRule" and (fsrExpiry == nil or now >= fsrExpiry)) then
 				StopTimer(entry)
 			else
 				needsUpdater = true
@@ -1508,9 +1690,10 @@ function TRB.Functions.OtherBars:SyncSwingEvents()
 	SyncMovementEvents(tracksMovement)
 end
 
----Applies an enabled-state change from recomposed settings: the swing event and Blizzard swing bar suppression.
+---Applies an enabled-state change from recomposed settings: the swing and Five Second Rule events, and Blizzard swing bar suppression.
 function TRB.Functions.OtherBars:SyncEnabledState()
 	self:SyncSwingEvents()
+	SyncFiveSecondRuleEvents()
 	self:UpdateBlizzardSwingTimerVisibility()
 end
 
@@ -1601,6 +1784,43 @@ function TRB.Functions.OtherBars:PrintDiagnostics()
 	print("  MIRROR_TIMER_*, PLAYER_SWING, and GCD echo " .. (echoMirrorEvents and "ON: cast something, swing at something, or swim underwater, then paste the lines it prints" or "OFF"))
 end
 
+-- TEMPORARY DIAGNOSTIC (/trb fsr): prints where the Five Second Rule bar is and what it shows, and toggles its decision lines.
+function TRB.Functions.OtherBars:ToggleFiveSecondRuleProbe()
+	local prefix = "|cFFFF8800TRB 5SR:|r "
+	if TRB.Flavor.fiveSecondRule == nil then
+		print(prefix .. "this flavor has no Five Second Rule bar.")
+		return
+	end
+	local barSettings, _, visibility = GetBarConfig("fiveSecondRule")
+	if barSettings == nil then
+		print(prefix .. "this spec has no Five Second Rule bar.")
+		return
+	end
+	local a = barSettings.anchor or {}
+	print(string.format("%senabled=%s events=%s (casts %d) running=%s | %sx%s border %s, %s %s of %s %s (%s,%s), match width %s, inside border %s",
+		prefix, tostring(IsEnabled(visibility)), tostring(fsrFrame:IsEventRegistered("UNIT_SPELLCAST_SUCCEEDED")), fsrCastEvents, tostring(fsrExpiry ~= nil),
+		tostring(barSettings.width), tostring(barSettings.height), tostring(barSettings.border), tostring(a.attachPoint), "to", tostring(a.barKey),
+		tostring(a.anchorPoint), tostring(a.xOffset), tostring(a.yOffset), tostring(a.matchWidth), tostring(barSettings.insideAnchorBorder)))
+	local group, node = GetGroupNode("fiveSecondRule")
+	local _, primaryNode = GetGroupNode("primary")
+	local container = group ~= nil and group.containerFrame or nil
+	if container == nil or node == nil then
+		print(prefix .. "no bar frame was built.")
+	else
+		local point, relativeTo, relativePoint, x, y = container:GetPoint(1)
+		local frame = node:GetFrame()
+		local _, maxValue = frame:GetMinMaxValues()
+		local primaryFrame = primaryNode ~= nil and primaryNode:GetFrame() or nil
+		print(string.format("%sframe %s, alpha %.2f, %.0fx%.0f, level %d over Mana's %s, %s %s %s (%.0f,%.0f), fill %s/%s",
+			prefix, container:IsVisible() and "visible" or (container:IsShown() and "shown but hidden by a parent" or "hidden"), container:GetAlpha(),
+			container:GetWidth(), container:GetHeight(), frame:GetFrameLevel(), tostring(primaryFrame and primaryFrame:GetFrameLevel()),
+			tostring(point), tostring(relativeTo and relativeTo.GetName and relativeTo:GetName()), tostring(relativePoint), x or 0, y or 0,
+			tostring(frame:GetValue()), tostring(maxValue)))
+	end
+	echoFsr = not echoFsr
+	print(prefix .. (echoFsr and "decision lines ON: cast a mana spell, then /trb fsr again" or "decision lines OFF"))
+end
+
 ---Registers the events these bars need, then resolves the initial display. The GCD events are the only
 ---high-frequency ones, so they are registered only while that bar is enabled.
 function TRB.Functions.OtherBars:Enable()
@@ -1655,6 +1875,8 @@ function TRB.Functions.OtherBars:Disable()
 	end
 	gcdDuration = nil
 	gcdExpiry = nil
+	fsrFrame:UnregisterAllEvents()
+	fsrExpiry = nil
 	updaterFrame:Hide()
 	self:UpdateBlizzardMirrorTimerVisibility()
 	self:UpdateBlizzardSwingTimerVisibility()
@@ -1671,6 +1893,12 @@ end
 ---@return boolean
 function TRB.Functions.OtherBars:IsBarActive(barKey)
 	return active[barKey] == true
+end
+
+---Whether mana regen is paused by a recent mana spend, whether or not the bar is up yet.
+---@return boolean
+function TRB.Functions.OtherBars:IsFiveSecondRuleRunning()
+	return fsrExpiry ~= nil and GetTime() < fsrExpiry
 end
 
 ---Whether a bar is fading out after its timer ended.
@@ -1719,6 +1947,9 @@ end
 ---is worth doing at all.
 ---@return boolean
 function TRB.Functions.OtherBars:HasActiveTimer()
+	if fsrExpiry ~= nil then
+		return true
+	end
 	for _, entry in ipairs(BARS) do
 		if active[entry.key] then
 			return true
@@ -1745,6 +1976,13 @@ end
 ---@param barKey string
 ---@return any? remaining, any? total
 function TRB.Functions.OtherBars:GetTimerValues(barKey)
+	-- The pause counts down before its Show Below window opens too.
+	if barKey == "fiveSecondRule" then
+		if fsrExpiry == nil then
+			return nil, nil
+		end
+		return math.max(0, fsrExpiry - GetTime()), TRB.Flavor.fiveSecondRule.duration
+	end
 	if not active[barKey] then
 		return nil, nil
 	end

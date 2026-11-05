@@ -106,6 +106,8 @@ TRB.Flavor = {
 	-- Each spec owns its Totems bar, with none in Global Options.
 	specOwnedTotems = true,
 	-- No Blizzard swing timer or PLAYER_SWING here, so swings come from the combat log and these casts.
+	-- Mana regen pauses this long after each mana spend: the Five Second Rule bar.
+	fiveSecondRule = { duration = 5 },
 	swingTimers = true,
 	swingSpells = {
 		meleeResets = {

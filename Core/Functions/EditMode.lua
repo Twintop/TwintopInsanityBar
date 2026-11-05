@@ -185,6 +185,9 @@ function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
 		-- The GCD bar hangs off the Cast Bar by default, so it is only a root once the user re-anchors it
 		-- to the screen. Park it just under the main stack's default spot when that happens.
 		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -260)
+	elseif rootBarKey == "fiveSecondRule" then
+		-- Sits inside the Mana bar by default, so it is only a root once re-anchored to the screen.
+		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -280)
 	elseif rootBarKey == "totems" then
 		-- Freestanding below the main stack's default spot; a bar that comes with its spec hangs above the main bar instead.
 		wrapperFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -300)

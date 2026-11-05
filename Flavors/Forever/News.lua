@@ -15,6 +15,11 @@ TRB.Flavor.newsContent = [====[
 - [#831](#831) Built-in gradient colors can be removed, and added back or copied with a new Add Built-in Gradient Color button.
 - [#831](#831) Where two gradient colors target the same bar element, the higher one in the list is used.
 
+### Other Bars
+
+- Add a new Five Second Rule bar for every class that uses mana, tracking the pause in mana regeneration after you spend mana, with `$fiveSecondRuleDuration` and `$fiveSecondRuleDurationRemaining` bar text, set to Never Show by default.
+- It sits along the inside bottom of the Mana bar, drains over the full five seconds, and can wait to appear until a set number of GCDs or seconds remain.
+
 ---
 
 # 1.60.1.16-release (2026-11-03)

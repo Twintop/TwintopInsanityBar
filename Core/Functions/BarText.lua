@@ -35,6 +35,9 @@ local castbarAnchorGroupKeys = {
 for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 	castbarAnchorGroupKeys[swingKey:gsub("^%l", string.upper) .. "Bar"] = swingKey
 end
+if TRB.Flavor.fiveSecondRule ~= nil then
+	castbarAnchorGroupKeys.FiveSecondRuleBar = "fiveSecondRule"
+end
 for _, skyridingKey in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
 	castbarAnchorGroupKeys[skyridingKey:gsub("^%l", string.upper) .. "Bar"] = skyridingKey
 end
@@ -1089,6 +1092,18 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		for offset, v in ipairs(swingValues) do
 			table.insert(values, insertAt + offset - 1, v)
 		end
+	end
+	-- The Five Second Rule follows the GCD. Plain seconds, so they can be compared.
+	if TRB.Flavor.fiveSecondRule ~= nil then
+		local insertAt = #values + 1
+		for index, v in ipairs(values) do
+			if v.variable == "$gcdDurationRemaining" then
+				insertAt = index + 1
+				break
+			end
+		end
+		table.insert(values, insertAt, { variable = "$fiveSecondRuleDuration", description = L["BarTextVariableFiveSecondRuleDuration"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true })
+		table.insert(values, insertAt + 1, { variable = "$fiveSecondRuleDurationRemaining", description = L["BarTextVariableFiveSecondRuleDurationRemaining"], printInSettings = true, color = false, category = self.VariableCategory.OTHER, booleanCheck = true })
 	end
 	-- Skyriding bars, where the flavor has them. A bare check on a time asks whether it is running.
 	if TRB.Flavor.skyriding ~= nil then
@@ -2722,6 +2737,10 @@ for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 	otherBarsVars["$" .. swingKey .. "Duration"] = swingKey
 	otherBarsVars["$" .. swingKey .. "DurationRemaining"] = swingKey
 end
+if TRB.Flavor.fiveSecondRule ~= nil then
+	otherBarsVars["$fiveSecondRuleDuration"] = "fiveSecondRule"
+	otherBarsVars["$fiveSecondRuleDurationRemaining"] = "fiveSecondRule"
+end
 
 -- Seconds until the ranged shot can fire, movement included; it outlives the swing, so it has its own gate.
 local RANGED_READY_VAR = "$rangedSwingReadyRemaining"
@@ -3070,6 +3089,10 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	end
 	local otherBarKey = otherBarsVars[var]
 	if otherBarKey ~= nil then
+		-- The pause runs before its bar's Show Below window opens.
+		if otherBarKey == "fiveSecondRule" then
+			return TRB.Functions.OtherBars:IsFiveSecondRuleRunning()
+		end
 		return TRB.Functions.OtherBars:IsBarActive(otherBarKey)
 	end
 	if petVars[var] then
@@ -3114,6 +3137,10 @@ local selfDrivenBarVariables = {
 for _, swingKey in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 	selfDrivenBarVariables["$" .. swingKey .. "Duration"] = true
 	selfDrivenBarVariables["$" .. swingKey .. "DurationRemaining"] = true
+end
+if TRB.Flavor.fiveSecondRule ~= nil then
+	selfDrivenBarVariables["$fiveSecondRuleDuration"] = true
+	selfDrivenBarVariables["$fiveSecondRuleDurationRemaining"] = true
 end
 if TRB.Flavor.swingTimers then
 	selfDrivenBarVariables[RANGED_READY_VAR] = true

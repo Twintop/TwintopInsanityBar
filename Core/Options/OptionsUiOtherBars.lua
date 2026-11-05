@@ -50,7 +50,7 @@ end
 ---@param parent Frame # The tab's scroll child
 ---@param classId integer? # nil edits core (global) scope
 ---@param specId integer?
----@param barKey string # "gcd", "fatigue", "breath", "feignDeath", "mainHandSwing", "offHandSwing" or "rangedSwing"
+---@param barKey string # "gcd", "fiveSecondRule", "fatigue", "breath", "feignDeath", "mainHandSwing", "offHandSwing" or "rangedSwing"
 function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specId, barKey)
 	if parent == nil then
 		return
@@ -146,6 +146,41 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 				barSettings.timerDirection = v and "fill" or "deplete"
 				ReapplyBars()
 			end)
+	elseif barKey == "fiveSecondRule" then
+		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_timerDirection", L["GcdBarGrowInstead"], L["FiveSecondRuleGrowInsteadTooltip"], yCoord,
+			function() return barSettings.timerDirection == "fill" end,
+			function(v)
+				barSettings.timerDirection = v and "fill" or "deplete"
+				ReapplyBars()
+			end)
+		yCoord = yCoord - 20
+		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_insideAnchorBorder", L["FiveSecondRuleInsideAnchorBorder"], L["FiveSecondRuleInsideAnchorBorderTooltip"], yCoord,
+			function() return barSettings.insideAnchorBorder == true end,
+			function(v)
+				barSettings.insideAnchorBorder = v
+				ReapplyBars()
+			end)
+		yCoord = yCoord - 20
+		local showBelow = barSettings.showBelow
+		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_showBelowEnabled", L["FiveSecondRuleShowBelow"], L["FiveSecondRuleShowBelowTooltip"], yCoord,
+			function() return showBelow.enabled == true end,
+			function(v)
+				showBelow.enabled = v
+				cc.showBelowWindow:SetEnabled(v, L["FiveSecondRuleShowBelowDisabledReason"])
+				ReapplyBars()
+			end)
+		yCoord = yCoord - 40
+		cc.showBelowWindow = TRB.Functions.OptionsUi.Primitives:BuildRemainingWindowControls(parent, namePrefix .. "_showBelowWindow", {
+			gcdRadio = L["FiveSecondRuleShowBelowModeGCDs"],
+			gcdSlider = L["FiveSecondRuleShowBelowGCDs"],
+			timeRadio = L["FiveSecondRuleShowBelowModeTime"],
+			timeSlider = L["FiveSecondRuleShowBelowTime"],
+		})
+		cc.showBelowWindow:Bind(showBelow, ReapplyBars)
+		yCoord = cc.showBelowWindow:SetPosition(yCoord)
+		cc.showBelowWindow:SetShown(true)
+		cc.showBelowWindow:SetEnabled(showBelow.enabled == true, L["FiveSecondRuleShowBelowDisabledReason"])
+		yCoord = yCoord - 20
 	else
 		TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, namePrefix .. "_disableBlizzardBar", L["MirrorTimerDisableBlizzard"], L["MirrorTimerDisableBlizzardTooltip"], yCoord,
 			function() return barSettings.disableBlizzardBar end,
@@ -159,7 +194,7 @@ function TRB.Functions.OptionsUi.OtherBars:ConstructPanel(parent, classId, specI
 
 	-- Decimal places for the GCD's and swing bars' duration bar text variables. The mirror timers run for
 	-- minutes and render as mm:ss, so they have no decimals to configure.
-	if barKey == "gcd" or isSwing then
+	if barKey == "gcd" or barKey == "fiveSecondRule" or isSwing then
 		cc.durationPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, L["OtherBarsDurationPrecision"], 0, 3, barSettings.durationPrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		cc.durationPrecision:SetScript("OnValueChanged", function(sliderFrame, value)
