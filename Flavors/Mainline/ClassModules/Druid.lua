@@ -13,6 +13,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -74,12 +75,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.druid_balance.snapshotData.snapshots[spells.incarnationChosenOfElune.id] = TRB.Classes.Snapshot:New(spells.incarnationChosenOfElune)
 	---@type TRB.Classes.Snapshot
-	specCache.druid_balance.snapshotData.snapshots[spells.newMoon.id] = TRB.Classes.Snapshot:New(spells.newMoon, {
-		currentSpellId = nil,
-		currentIcon = "",
-		currentKey = "",
-		checkAfter = nil
-	})
+	specCache.druid_balance.snapshotData.snapshots[spells.newMoon.id] = TRB.Classes.Snapshot:New(spells.newMoon)
 	---@type TRB.Classes.Snapshot
 	specCache.druid_balance.snapshotData.snapshots[spells.starfall.id] = TRB.Classes.Snapshot:New(spells.starfall)
 	specCache.druid_balance.snapshotData.snapshots[spells.starfall.id].buff:InitializeIndependentStacks()
@@ -596,33 +592,6 @@ local shapeshiftFrame = CreateFrame("Frame")
 shapeshiftFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 shapeshiftFrame:SetScript("OnEvent", UpdateShapeshiftForm)
 
-local function GetCurrentMoonSpell()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	local moon = snapshotData.snapshots[spells.newMoon.id]
-	local currentTime = GetTime()
-	if talents:IsTalentActive(spells.newMoon) and (moon.attributes.checkAfter == nil or currentTime >= moon.attributes.checkAfter) then
-		local spellInfo = C_Spell.GetSpellInfo(spells.newMoon.name) --[[@as SpellInfo]]
-		moon.attributes.currentSpellId = spellInfo.spellID
-
-		if moon.attributes.currentSpellId == spells.newMoon.id then
-			moon.attributes.currentKey = "newMoon"
-		elseif moon.attributes.currentSpellId == spells.halfMoon.id then
-			moon.attributes.currentKey = "halfMoon"
-		elseif moon.attributes.currentSpellId == spells.fullMoon.id then
-			moon.attributes.currentKey = "fullMoon"
-		else
-			moon.attributes.currentKey = "newMoon"
-		end
-		moon.attributes.checkAfter = nil
-		moon.attributes.currentIcon = spells[moon.attributes.currentKey].icon
-	else
-		moon.attributes.currentSpellId = spells.newMoon.id
-		moon.attributes.currentKey = "newMoon"
-		moon.attributes.checkAfter = nil
-	end
-end
-
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -813,7 +782,6 @@ local function RefreshLookupData_Balance()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local _currentAstralPower = normalizedAstralPower
 
 		lookupLogic["$resource"] = normalizedAstralPower
@@ -829,6 +797,7 @@ local function RefreshLookupData_Balance()
 		local resourceChanged = lookupChanged(prevState, "$astralPower", resourceFormatted, currentAstralPowerColor)
 		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingAstralPowerColor)
 		if resourceChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentAstralPower
 			local castingAstralPower
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -989,7 +958,6 @@ local function RefreshLookupData_Feral()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local isStealthed = IsStealthed()
 		local ravageActive = snapshotData.snapshots[spells.ravageMinimum.id].buff.isActive
 
@@ -1005,6 +973,7 @@ local function RefreshLookupData_Feral()
 		local energyChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
 		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingEnergyColor)
 		if energyChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentEnergy
 			local castingEnergy
 			if not isStealthed and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -1099,6 +1068,7 @@ local function RefreshLookupData_Guardian()
 	local specSettings = TRB.Data.settings.druid.guardian
 	local sharedSettings = TRB.Data.specCache["druid_guardian"].settings
 
+	local currentTime = GetTime()
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -1150,7 +1120,6 @@ local function RefreshLookupData_Guardian()
 
 	-- Block B: Berserk ($berserkTime, $incarnationTime)
 	if not activeVars or activeVars["$berserkTime"] or activeVars["$incarnationTime"] then
-		local currentTime = GetTime()
 		local berserkSnapshotBuff = snapshotData.snapshots[spells.berserk.id].buff
 
 		if not berserkSnapshotBuff.isActive then
@@ -1174,7 +1143,7 @@ local function RefreshLookupData_Guardian()
 		or activeVars["$ironfurNextStackTime"] then
 		local buff = snapshotData.snapshots[spells.ironfur.id].buff
 		-- Prune here too: a self-driven bar text refresh can land without UpdateSnapshot_Guardian running first
-		local _ironfurStacks = buff:UpdateIndependentStacks(GetTime())
+		local _ironfurStacks = buff:UpdateIndependentStacks(currentTime)
 		local _ironfurTime = buff.remaining
 		local _ironfurNextStackTime = buff.nextStackRemaining
 
@@ -1201,9 +1170,7 @@ local function RefreshLookupData_Restoration()
 	local snapshots = snapshotData.snapshots
 	local sharedSettings = TRB.Data.specCache["druid_restoration"].settings
 
-	-- Side-effect: must remain ungated
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-
+	local currentTime = GetTime()
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -1251,7 +1218,6 @@ local function RefreshLookupData_Restoration()
 
 	-- Block B: Efflorescence ($efflorescenceTime)
 	if not activeVars or activeVars["$efflorescenceTime"] then
-		local currentTime = GetTime()
 		local _efflorescenceTime = snapshots[spells.efflorescence.id].buff:GetRemainingTime(currentTime)
 
 		lookupLogic["$efflorescenceTime"] = _efflorescenceTime
@@ -1263,7 +1229,6 @@ local function RefreshLookupData_Restoration()
 
 	-- Block C: Incarnation ($incarnationTime)
 	if not activeVars or activeVars["$incarnationTime"] then
-		local currentTime = GetTime()
 		local _incarnationTime = snapshots[spells.incarnationTreeOfLife.id].buff:GetRemainingTime(currentTime)
 
 		lookupLogic["$incarnationTime"] = _incarnationTime
@@ -1689,7 +1654,6 @@ end
 
 local function UpdateSnapshot_Balance()
 	UpdateSnapshot()
-	GetCurrentMoonSpell()
 
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -2063,7 +2027,7 @@ local function ConstructComboPointsGeneric(formSpecCacheSettings, barGroups, sna
 				local cpNode = barGroups.secondary:GetNode(x)
 				if cpNode then
 					if (snapshotData.attributes.comboPoints or 0) >= x then
-						Bar:SetBarNodeValue(formSpecCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
+						Bar:SetBarNodeValue(formSpecCacheSettings, nodeKeys.comboPoint[x], cpNode, 1, 1)
 						if not barOverrideActive then
 							if (cpSettings.comboPoints.sameColor and snapshotData.attributes.comboPoints == (TRB.Data.character.maxComboPoints - 1)) or (not cpSettings.comboPoints.sameColor and x == (TRB.Data.character.maxComboPoints - 1)) then
 								cpColor = cpSettings.colors.comboPoints.penultimate
@@ -2072,7 +2036,7 @@ local function ConstructComboPointsGeneric(formSpecCacheSettings, barGroups, sna
 							end
 						end
 					else
-						Bar:SetBarNodeValue(formSpecCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
+						Bar:SetBarNodeValue(formSpecCacheSettings, nodeKeys.comboPoint[x], cpNode, 0, 1)
 					end
 					
 					cpNode:SetBorderColor(cpBorderColor)
@@ -2616,7 +2580,7 @@ local function UpdateResourceBar()
 						local cpNode = barGroups.secondary:GetNode(x)
 						if cpNode then
 							if snapshotData.attributes.resource2 >= x then
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 1, 1)
 								if not barOverrideActive then
 									if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 										cpColor = specSettings.colors.comboPoints.penultimate
@@ -2626,7 +2590,7 @@ local function UpdateResourceBar()
 								end
 							else
 								if specSettings.colors.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 then
-									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, berserkNextTick * 1000, spells.berserk:GetTickRate() * 1000)
+									Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, berserkNextTick * 1000, spells.berserk:GetTickRate() * 1000)
 									berserkTickShown = 1
 
 									if not barOverrideActive then
@@ -2639,7 +2603,7 @@ local function UpdateResourceBar()
 										end
 									end
 								else
-									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
+									Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 0, 1)
 								end
 							end
 							
@@ -3279,7 +3243,6 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.maxResource = TRB.Data.character.maxAstralPower
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", Enum.PowerType.LunarPower, false)
 		TRB.Data.character.maxResource2 = TRB.Data.character.maxComboPoints
-		pcall(GetCurrentMoonSpell)
 
 		SetupSharedSettingsForSpec()
 	elseif TRB.Data.character.specId == 2 then

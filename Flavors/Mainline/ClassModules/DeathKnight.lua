@@ -8,6 +8,9 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
+local RUNE_TIME_KEYS = { "$rune1Time", "$rune2Time", "$rune3Time", "$rune4Time", "$rune5Time", "$rune6Time" }
+local RUNE_READY_KEYS = { "$rune1Ready", "$rune2Ready", "$rune3Ready", "$rune4Ready", "$rune5Ready", "$rune6Ready" }
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -446,12 +449,12 @@ local function RefreshLookupData_Blood()
 		local runes = TRB.Data.character.runes
 		for i = 1, 6 do
 			local rawTime = runes[i].remaining
-			local timeKey = "$rune" .. i .. "Time"
+			local timeKey = RUNE_TIME_KEYS[i]
 			lookupLogic[timeKey] = rawTime
 			if lookupChanged(prevState, timeKey, rawTime) then
 				lookup[timeKey] = TRB.Functions.BarText:TimerPrecision(rawTime)
 			end
-			local readyKey = "$rune" .. i .. "Ready"
+			local readyKey = RUNE_READY_KEYS[i]
 			lookupLogic[readyKey] = runes[i].ready
 			lookup[readyKey] = ""
 		end
@@ -488,11 +491,11 @@ local function RefreshLookupData_Blood()
 		-- Memoized on the rendered string, since both are nil underneath.
 		local stacksDisplay
 		if not attributes.coagulatingBloodTracked then
-			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
+			stacksDisplay = TRB.Functions.BarText:UnknownValue("0")
 		elseif attributes.coagulatingBloodStacks ~= nil then
 			stacksDisplay = string.format("%s", attributes.coagulatingBloodStacks)
 		else
-			stacksDisplay = string.format("%.0f", 0)
+			stacksDisplay = "0"
 		end
 
 		if lookupChanged(prevState, "$coagulatingBloodStacks", stacksDisplay) then
@@ -584,12 +587,12 @@ local function RefreshLookupData_Frost()
 		local runes = TRB.Data.character.runes
 		for i = 1, 6 do
 			local rawTime = runes[i].remaining
-			local timeKey = "$rune" .. i .. "Time"
+			local timeKey = RUNE_TIME_KEYS[i]
 			lookupLogic[timeKey] = rawTime
 			if lookupChanged(prevState, timeKey, rawTime) then
 				lookup[timeKey] = TRB.Functions.BarText:TimerPrecision(rawTime)
 			end
-			local readyKey = "$rune" .. i .. "Ready"
+			local readyKey = RUNE_READY_KEYS[i]
 			lookupLogic[readyKey] = runes[i].ready
 			lookup[readyKey] = ""
 		end
@@ -654,12 +657,12 @@ local function RefreshLookupData_Unholy()
 		local runes = TRB.Data.character.runes
 		for i = 1, 6 do
 			local rawTime = runes[i].remaining
-			local timeKey = "$rune" .. i .. "Time"
+			local timeKey = RUNE_TIME_KEYS[i]
 			lookupLogic[timeKey] = rawTime
 			if lookupChanged(prevState, timeKey, rawTime) then
 				lookup[timeKey] = TRB.Functions.BarText:TimerPrecision(rawTime)
 			end
-			local readyKey = "$rune" .. i .. "Ready"
+			local readyKey = RUNE_READY_KEYS[i]
 			lookupLogic[readyKey] = runes[i].ready
 			lookup[readyKey] = ""
 		end
@@ -741,6 +744,14 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 end
 
+---Orders ready runes first, then by fill, high to low.
+local function RuneSortComparator(a, b)
+	if a.ready ~= b.ready then
+		return a.ready
+	end
+	return a.percentage > b.percentage
+end
+
 local function UpdateSnapshot()
 	Character:UpdateSnapshot()
 	--local currentTime = GetTime()
@@ -752,13 +763,7 @@ local function UpdateSnapshot()
 	local specSettings = TRB.Data.settings.deathknight[TRB.Data.character.specName]
 	local runes = TRB.Data.character.runes
 	if specSettings.colors.comboPoints.sortRunes == true then
-		-- Sort: ready runes first, then by percentage (high to low)
-		table.sort(runes, function(a, b)
-			if a.ready ~= b.ready then
-				return a.ready -- true comes before false
-			end
-			return a.percentage > b.percentage
-		end)
+		table.sort(runes, RuneSortComparator)
 	end
 
 	-- Plain count of complete (ready) runes ($runesReadyCount) for Runes custom thresholds.
@@ -1070,7 +1075,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 		if barGroups and barGroups.secondary then
 			local runeNode = barGroups.secondary:GetNode(x)
 			if runeNode then
-				Bar:SetBarNodeValue(specCacheSettings, "rune" .. x, runeNode, runeValue, 1)
+				Bar:SetBarNodeValue(specCacheSettings, nodeKeys.rune[x], runeNode, runeValue, 1)
 				if runeGradientResults.border then
 					runeNode:SetBorderColorCurve(runeGradientResults.border, Color:EvaluateEndCapCurve(runeNode, runeGradientCurves.border))
 				else
@@ -1186,7 +1191,7 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 		if boneShieldNode then
 			-- All nodes get the same raw secret value; each node's stepped
 			-- SetMinMax(x-1, x) handles fill via StatusBar clamping
-			Bar:SetBarNodeValue(specCacheSettings, "boneShield" .. x, boneShieldNode, boneShieldStacks)
+			Bar:SetBarNodeValue(specCacheSettings, nodeKeys.boneShield[x], boneShieldNode, boneShieldStacks)
 
 			-- Positional coloring:
 			-- Nodes 1 through threshold: ossuary color (if enabled)

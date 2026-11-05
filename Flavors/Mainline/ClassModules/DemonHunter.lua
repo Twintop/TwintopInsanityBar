@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -345,8 +346,6 @@ local function RefreshLookupData_Havoc()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-
 		lookupLogic["$resource"] = normalizedResource
 		lookupLogic["$fury"] = normalizedResource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -357,6 +356,7 @@ local function RefreshLookupData_Havoc()
 		local resourceChanged = lookupChanged(prevState, "$fury", resourceFormatted, currentFuryColor)
 		local castingChanged = lookupChanged(prevState, "$casting", _castingFury, castingFuryColor)
 		if resourceChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentFury
 			local castingFury
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -436,8 +436,6 @@ local function RefreshLookupData_Vengeance()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-
 		lookupLogic["$resource"] = normalizedResource
 		lookupLogic["$fury"] = normalizedResource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -448,6 +446,7 @@ local function RefreshLookupData_Vengeance()
 		local resourceChanged = lookupChanged(prevState, "$fury", resourceFormatted, currentFuryColor)
 		local castingChanged = lookupChanged(prevState, "$casting", _castingFury, castingFuryColor)
 		if resourceChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentFury
 			local castingFury
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -547,8 +546,6 @@ local function RefreshLookupData_Devourer()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-
 		lookupLogic["$resource"] = normalizedResource
 		lookupLogic["$fury"] = normalizedResource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -559,6 +556,7 @@ local function RefreshLookupData_Devourer()
 		local resourceChanged = lookupChanged(prevState, "$fury", resourceFormatted, currentFuryColor)
 		local castingChanged = lookupChanged(prevState, "$casting", _castingFury, castingFuryColor)
 		if resourceChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentFury
 			local castingFury
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -1357,7 +1355,7 @@ local function UpdateResourceBar()
 						if cpNode then
 							-- All nodes get the same raw secret value; each node's stepped
 							-- SetMinMax(x-1, x) handles fill via StatusBar clamping
-							Bar:SetBarNodeValue(specCacheSettings, "soulFragment" .. x, cpNode, soulFragments)
+							Bar:SetBarNodeValue(specCacheSettings, nodeKeys.soulFragment[x], cpNode, soulFragments)
 
 							-- Positional coloring: base for 1-4, penultimate for 5, final for 6
 							local cpColor = specSettings.colors.comboPoints.base

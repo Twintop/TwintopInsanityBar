@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -553,7 +554,6 @@ local function RefreshLookupData_Windwalker()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local _castingEnergy = snapshotData.casting.resourceFinal
 
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -566,6 +566,7 @@ local function RefreshLookupData_Windwalker()
 		local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
 		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
 		if resourceChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentEnergy
 			local castingEnergy
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -1076,6 +1077,7 @@ local scratch = {
 	staggerGradients1 = {},
 	energyGradients2 = {},
 	chiGradients1 = {},
+	staggerBarColors1 = {},
 }
 
 local function UpdateResourceBar()
@@ -1144,7 +1146,9 @@ local function UpdateResourceBar()
 			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.energyBar = energyBarColors
-			barColorMap.staggerBar = {}
+			local staggerBarColors = scratch.staggerBarColors1
+			wipe(staggerBarColors)
+			barColorMap.staggerBar = staggerBarColors
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -1559,14 +1563,14 @@ local function UpdateResourceBar()
 						local chiNode = barGroups.secondary:GetNode(x)
 						if chiNode then
 							if snapshotData.attributes.resource2 >= x then
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 1, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], chiNode, 1, 1)
 								if not chiBarOverrides.bar and not chiOvercapCurves.bar and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))) then
 									cpColor = specSettings.colors.comboPoints.penultimate
 								elseif not chiBarOverrides.bar and not chiOvercapCurves.bar and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2) then
 									cpColor = specSettings.colors.comboPoints.final
 								end
 							else
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 0, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], chiNode, 0, 1)
 							end
 
 							if chiOvercapCurves.border then

@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -311,9 +312,6 @@ local function RefreshLookupData_Holy()
 	local sharedSettings = TRB.Data.specCache["paladin_holy"].settings
 	local castingHolyPower = GetHolyCastingHolyPower(spells)
 
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -420,9 +418,6 @@ local function RefreshLookupData_Protection()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.ProtectionSpells]]
 	local sharedSettings = TRB.Data.specCache["paladin_protection"].settings
 
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -503,9 +498,7 @@ local function RefreshLookupData_Retribution()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Paladin.RetributionSpells]]
 	local sharedSettings = TRB.Data.specCache["paladin_retribution"].settings
 
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-
+	local currentTime = GetTime()
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -568,7 +561,6 @@ local function RefreshLookupData_Retribution()
 
 	-- Block C: Buff state ($divinePurposeTime)
 	if not activeVars or activeVars["$divinePurposeTime"] then
-		local currentTime = GetTime()
 		local divinePurposeBuff = snapshotData.snapshots[spells.divinePurpose.id]
 		local _divinePurposeTime = (divinePurposeBuff ~= nil and divinePurposeBuff.buff:GetRemainingTime(currentTime)) or 0
 		lookupLogic["$divinePurposeTime"] = _divinePurposeTime
@@ -579,7 +571,6 @@ local function RefreshLookupData_Retribution()
 
 	-- Block D: Execution Sentence ($esTime)
 	if not activeVars or activeVars["$esTime"] then
-		local currentTime = GetTime()
 		local executionSentence = snapshotData.snapshots[spells.executionSentence.id]
 		local _esTime = (executionSentence ~= nil and executionSentence.buff:GetRemainingTime(currentTime)) or 0
 		lookupLogic["$esTime"] = _esTime
@@ -590,7 +581,6 @@ local function RefreshLookupData_Retribution()
 
 	-- Block E: Judge, Jury and Executioner ($jjeTime)
 	if not activeVars or activeVars["$jjeTime"] then
-		local currentTime = GetTime()
 		local judgeJuryAndExecutioner = snapshotData.snapshots[spells.judgeJuryAndExecutioner.id]
 		local _jjeTime = (judgeJuryAndExecutioner ~= nil and judgeJuryAndExecutioner.buff:GetRemainingTime(currentTime)) or 0
 		lookupLogic["$jjeTime"] = _jjeTime
@@ -601,7 +591,6 @@ local function RefreshLookupData_Retribution()
 
 	-- Block F: Avenging Wrath ($awTime)
 	if not activeVars or activeVars["$awTime"] then
-		local currentTime = GetTime()
 		local avengingWrath = snapshotData.snapshots[spells.avengingWrath.id]
 		local _awTime = (avengingWrath ~= nil and avengingWrath.buff:GetRemainingTime(currentTime)) or 0
 		lookupLogic["$awTime"] = _awTime
@@ -896,7 +885,7 @@ local function UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors,
 		if barGroups and barGroups.secondary then
 			local holyPowerNode = barGroups.secondary:GetNode(x)
 			if holyPowerNode then
-				Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, holyPowerNode, filled and 1 or 0, 1)
+				Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], holyPowerNode, filled and 1 or 0, 1)
 				holyPowerNode:SetBorderColor(cpBorderColor)
 				TRB.Functions.Color:ApplyFillColor(holyPowerNode, cpColor)
 				holyPowerNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)

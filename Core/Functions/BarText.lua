@@ -2331,12 +2331,8 @@ local function RenderBarTextEntry(state, text, colorCode, force)
 	return colorCode .. outputText
 end
 
----Whether a stat bucket has not been read since it was last invalidated (or ever).
----@param bucket "primary"|"secondary"
----@return boolean
-local function AreStatsStale(bucket)
-	return TRB.Data.snapshotData.attributes[bucket .. "Refresh"] ~= false
-end
+-- $inCombat's text by combat state; anything else falls back to tostring, as before.
+local inCombatTexts = { [true] = "true", [false] = "false" }
 
 -- "%.Nf" strings memoized by precision so per-tick refreshes skip rebuilding them.
 local precisionFormatCache = {}
@@ -2557,11 +2553,12 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local prevState = TRB.Data.prevLookupState
 	local lookupChanged = TRB.Functions.BarText.LookupChanged
 
-	-- Ensure stats are populated if this is the first call
-	if AreStatsStale("primary") then
+	-- Read each stat bucket that hasn't been read since it was last invalidated (or ever).
+	local attributes = snapshotData.attributes
+	if attributes.primaryRefresh ~= false then
 		TRB.Functions.Character:UpdatePrimaryStatsSnapshot()
 	end
-	if AreStatsStale("secondary") then
+	if attributes.secondaryRefresh ~= false then
 		TRB.Functions.Character:UpdateSecondaryStatsSnapshot()
 	end
 
@@ -2641,10 +2638,12 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local castingIcon = snapshotData.casting.icon or ""
 	local castingAmount = snapshotData.casting.resourceFinal or 0
 
-	lookup["$inCombat"] = tostring(TRB.Data.character.inCombat)
+	local inCombat = TRB.Data.character.inCombat
+	local inCombatText = inCombatTexts[inCombat] or tostring(inCombat)
+	lookup["$inCombat"] = inCombatText
 	lookup["#casting"] = castingIcon
 
-	lookupLogic["$inCombat"] = tostring(TRB.Data.character.inCombat)
+	lookupLogic["$inCombat"] = inCombatText
 
 	-- A spec change replaces lookupLogic wholesale, stranding the idle latches. Re-arm on identity
 	-- change rather than depending on SwitchSpec call order.

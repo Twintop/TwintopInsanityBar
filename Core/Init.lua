@@ -295,7 +295,6 @@ TRB.Frames.timerFrame.sinceLastUpdate = 0
 TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
 function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
-	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
 

@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -411,8 +412,6 @@ local function RefreshLookupData_Arms()
 			castingRageColor = sharedSettings.colors.text.spending.color
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-
 		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = normalizedRage
@@ -424,6 +423,7 @@ local function RefreshLookupData_Arms()
 		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingRageColor)
 
 		if rageChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentRage
 			local castingRage
 			-- Apply overcap color if enabled (takes precedence over overThreshold)
@@ -491,7 +491,6 @@ local function RefreshLookupData_Fury()
 			castingRageColor = sharedSettings.colors.text.spending.color
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local _currentRage = normalizedRage
 
 		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
@@ -504,6 +503,7 @@ local function RefreshLookupData_Fury()
 		local rageChanged = lookupChanged(prevState, "$rage", resourceFormatted, currentRageColor)
 		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingRageColor)
 		if rageChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentRage
 			local castingRage
 			-- Apply overcap color if enabled (takes precedence over overThreshold)
@@ -595,6 +595,7 @@ local function RefreshLookupData_Protection()
 	local specSettings = TRB.Data.settings.warrior.protection
 	local sharedSettings = TRB.Data.specCache["warrior_protection"].settings
 
+	local currentTime = GetTime()
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -625,8 +626,6 @@ local function RefreshLookupData_Protection()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-
 		lookupLogic["$resource"] = normalizedRage
 		lookupLogic["$rage"] = normalizedRage
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -638,6 +637,7 @@ local function RefreshLookupData_Protection()
 		local castingChanged = lookupChanged(prevState, "$casting", snapshotData.casting.resourceFinal, castingRageColor)
 
 		if rageChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentRage
 			local castingRage
 			-- Apply overcap color if enabled (takes precedence over overThreshold)
@@ -660,7 +660,6 @@ local function RefreshLookupData_Protection()
 
 	-- Block B: Ignore Pain ($ignorePainAbsorb, $ignorePainTime)
 	if not activeVars or activeVars["$ignorePainAbsorb"] or activeVars["$ignorePainTime"] then
-		local currentTime = GetTime()
 		local ipBuff = snapshots[spells.ignorePain.id].buff
 		-- GetRemainingTime updates isActive, so call it first
 		local _ignorePainTime = ipBuff:GetRemainingTime(currentTime)
@@ -697,7 +696,6 @@ local function RefreshLookupData_Protection()
 	-- Block C: Shield Block ($shieldBlockTime, $shieldBlockCharges, $shieldBlockMaxCharges)
 	if not activeVars or activeVars["$shieldBlockTime"] or activeVars["$shieldBlockCharges"]
 		or activeVars["$shieldBlockMaxCharges"] then
-		local currentTime = GetTime()
 		local _shieldBlockTime = snapshots[spells.shieldBlock.id].buff:GetRemainingTime(currentTime)
 		local shieldBlockCharges = snapshots[spells.shieldBlock.id].cooldown.charges or 0
 		local shieldBlockMaxCharges = snapshots[spells.shieldBlock.id].cooldown.maxCharges or 0
@@ -715,7 +713,6 @@ local function RefreshLookupData_Protection()
 
 	-- Block D: Violent Outburst ($voTime, $violentOutburstTime)
 	if not activeVars or activeVars["$voTime"] or activeVars["$violentOutburstTime"] then
-		local currentTime = GetTime()
 		local _voTime = snapshots[spells.violentOutburst.id].buff:GetRemainingTime(currentTime)
 
 		lookupLogic["$voTime"] = _voTime
@@ -864,7 +861,9 @@ local function DetectViolentOutburst()
 
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snap = snapshotData.snapshots[spells.violentOutburst.id]
-	if snap == nil then
+	-- Only (re)establish the floor while the proc isn't active, so the inflated proc
+	-- value can never become the baseline.
+	if snap == nil or snap.buff.isActive then
 		return
 	end
 
@@ -873,20 +872,16 @@ local function DetectViolentOutburst()
 		return
 	end
 
-	-- Only (re)establish the floor while the proc isn't active, so the inflated proc
-	-- value can never become the baseline.
-	if not snap.buff.isActive then
-		if protectionShieldSlamBaselineRage == nil or currentRage < protectionShieldSlamBaselineRage then
-			protectionShieldSlamBaselineRage = currentRage
-		end
+	if protectionShieldSlamBaselineRage == nil or currentRage < protectionShieldSlamBaselineRage then
+		protectionShieldSlamBaselineRage = currentRage
+	end
 
-		-- Tolerant 50% check: integer Rage means a 15 base reads as 22 (1.467x), not 1.5x.
-		if protectionShieldSlamBaselineRage ~= nil and currentRage >= protectionShieldSlamBaselineRage * 1.4 then
-			snap.buff:InitializeCustom(spells.violentOutburst.duration, GetTime())
-			TRB.Data.lookupDirty = true
+	-- Tolerant 50% check: integer Rage means a 15 base reads as 22 (1.467x), not 1.5x.
+	if protectionShieldSlamBaselineRage ~= nil and currentRage >= protectionShieldSlamBaselineRage * 1.4 then
+		snap.buff:InitializeCustom(spells.violentOutburst.duration, GetTime())
+		TRB.Data.lookupDirty = true
 
-			TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warrior.protection, snapshotData, "violentOutburst")
-		end
+		TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.warrior.protection, snapshotData, "violentOutburst")
 	end
 end
 
@@ -1068,6 +1063,7 @@ local defensiveGradients = {}
 local noDefensiveGradients = {}
 local whirlwindGradientConditions = {}
 local whirlwindGradients = {}
+local whirlwindBarResults = {}
 
 ---Updates the defensive buff secondary bar nodes for Protection
 ---@param specSettings table
@@ -1221,7 +1217,8 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings, flatColor
 	local overcapBorderColorResult = nil
 	local overcapBorderCurve = nil
 	local overcapBackgroundColorResult = nil
-	local overcapBarColorResults = {}
+	local overcapBarColorResults = whirlwindBarResults
+	wipe(overcapBarColorResults)
 	local borderBaseColor = flatColors.border
 	local backgroundBaseColor = flatColors.background
 	if whirlwindTargets.border then
@@ -1251,7 +1248,7 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings, flatColor
 
 		local node = barGroups.secondary:GetNode(x)
 		if node then
-			Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, filled and 1 or 0, 1)
+			Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], node, filled and 1 or 0, 1)
 			if overcapBorderColorResult then
 				node:SetBorderColorCurve(overcapBorderColorResult, Color:EvaluateEndCapCurve(node, overcapBorderCurve))
 			else

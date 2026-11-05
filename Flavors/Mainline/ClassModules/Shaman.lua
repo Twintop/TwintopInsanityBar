@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -1263,8 +1264,6 @@ local function UpdateResourceBar()
 					local currentMana = snapshotData.attributes.mana or UnitPower("player", Enum.PowerType.Mana) or 0
 					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
 					local affectingCombat = TRB.Data.character.inCombat
-					local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
-						or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
 					local sharedColors = specSettings.colors.shared
 					local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
 					local ascendanceEndMet = false
@@ -1536,9 +1535,9 @@ local function UpdateResourceBar()
 								end
 								
 								if isFilled then
-									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. nodeIndex, stackNode, 1, 1)
+									Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[nodeIndex], stackNode, 1, 1)
 								else
-									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. nodeIndex, stackNode, 0, 1)
+									Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[nodeIndex], stackNode, 0, 1)
 								end
 								
 								stackNode:SetBorderColor(cpBorderColor)
@@ -1559,7 +1558,7 @@ local function UpdateResourceBar()
 							local stackNode = barGroups.secondary:GetNode(x)
 							if stackNode then
 								if isFilled then
-									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 1, 1)
+									Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], stackNode, 1, 1)
 									
 									-- Determine color based on position and sameColor setting
 									if not barOverrideActive and specSettings.comboPoints.sameColor then
@@ -1590,7 +1589,7 @@ local function UpdateResourceBar()
 										end
 									end
 								else
-									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 0, 1)
+									Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], stackNode, 0, 1)
 								end
 								
 								stackNode:SetBorderColor(cpBorderColor)

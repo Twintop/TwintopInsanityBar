@@ -681,7 +681,7 @@ local function RenderPassiveLine(node, colors, settings)
 		drawn.color, drawn.width, drawn.height, drawn.thickness = color, width, height, thickness
 	end
 	TRB.Functions.Threshold:RepositionThresholdCustomBar("skyridingPassiveSpeed", passiveLine, show, frame, speedCaps.passive, speedCaps.max,
-		frame:GetWidth(), barSettings and barSettings.border, nil, fillDirection, thickness, false)
+		nil, barSettings and barSettings.border, nil, fillDirection, thickness, false)
 end
 
 ---Sets the speed each tick; the rest redraws only in full or when the buffs coloring the fill change.

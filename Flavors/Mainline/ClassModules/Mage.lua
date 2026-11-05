@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -343,7 +344,7 @@ local function GetFireBlastRechargeColors(fireBlastColors, nodeCount)
 		if useRegenerating then
 			fireBlastRechargeColors[i] = regenerating
 		else
-			fireBlastRechargeColors[i] = nodeColors and nodeColors["charge" .. i]
+			fireBlastRechargeColors[i] = nodeColors and nodeColors[nodeKeys.charge[i]]
 		end
 	end
 
@@ -465,7 +466,7 @@ local function ConstructResourceBar(settings)
 						if fireBlastColors then
 							node:SetBorderColor(fireBlastColors.border.color)
 							node:SetBackgroundColorFromString(fireBlastColors.background.color)
-							local chargeKey = "charge" .. i
+							local chargeKey = nodeKeys.charge[i]
 							if fireBlastColors.nodeColors and fireBlastColors.nodeColors[chargeKey] then
 								TRB.Functions.Color:ApplyFillColor(node, fireBlastColors.nodeColors[chargeKey])
 							end
@@ -570,9 +571,6 @@ local function RefreshLookupData_Arcane()
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.arcane
 	local sharedSettings = TRB.Data.specCache["mage_arcane"].settings
-
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -713,9 +711,6 @@ local function RefreshLookupData_Fire()
 	local specSettings = TRB.Data.settings.mage.fire
 	local sharedSettings = TRB.Data.specCache["mage_fire"].settings
 
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -829,9 +824,6 @@ local function RefreshLookupData_Frost()
 	local specSettings = TRB.Data.settings.mage.frost
 	local sharedSettings = TRB.Data.specCache["mage_frost"].settings
 
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -906,11 +898,11 @@ local function RefreshLookupData_Frost()
 		-- Memoized on the rendered string, since both are nil underneath.
 		local stacksDisplay
 		if not attributes.shatterTracked then
-			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
+			stacksDisplay = TRB.Functions.BarText:UnknownValue("0")
 		elseif attributes.shatterStacks ~= nil then
 			stacksDisplay = string.format("%s", attributes.shatterStacks)
 		else
-			stacksDisplay = string.format("%.0f", 0)
+			stacksDisplay = "0"
 		end
 
 		if lookupChanged(prevState, "$shatterStacks", stacksDisplay) then
@@ -1303,7 +1295,7 @@ local function UpdateShatter(specSettings, specCacheSettings, barColors, fillInd
 	for x = 1, maxShatter do
 		local shatterNode = barGroups.shatter:GetNode(x)
 		if shatterNode then
-			Bar:SetBarNodeValue(specCacheSettings, "shatter" .. x, shatterNode, shatterStacks)
+			Bar:SetBarNodeValue(specCacheSettings, nodeKeys.shatter[x], shatterNode, shatterStacks)
 
 			local fillColor = barColors.bar
 			if shatterCustomIndicatorByStack[x] ~= nil then
@@ -1590,7 +1582,7 @@ local function UpdateResourceBar()
 					if barGroups and barGroups.secondary then
 						local chargeNode = barGroups.secondary:GetNode(x)
 						if chargeNode then
-							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chargeNode, filled and 1 or 0, 1)
+							Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], chargeNode, filled and 1 or 0, 1)
 							Bar:ApplyNodeIndicators(chargeNode, "arcaneChargesBar")
 							chargeNode:SetBorderColor(arcaneChargesBarColors.border)
 							TRB.Functions.Color:ApplyFillColor(chargeNode, cpColor)
@@ -1743,7 +1735,7 @@ local function UpdateResourceBar()
 					for x = 1, fireBlastNodeCount do
 						local chargeNode = barGroups.secondary:GetNode(x)
 						if chargeNode then
-							local cpKey = "comboPoint" .. x
+							local cpKey = nodeKeys.comboPoint[x]
 							chargeNode:ClearTimerDuration()
 							chargeNode:SetMinMax(x - 1, x)
 							TRB.Data.cache.values.bar[cpKey] = nil
@@ -1751,7 +1743,7 @@ local function UpdateResourceBar()
 							if fireBlastColors then
 								-- An indicator on the fill wins over each charge's own color.
 								local fillColor = fireBlastBarTargets.bar and fireBlastBarColors.bar
-									or (fireBlastColors.nodeColors and fireBlastColors.nodeColors["charge" .. x])
+									or (fireBlastColors.nodeColors and fireBlastColors.nodeColors[nodeKeys.charge[x]])
 								if fillColor then
 									TRB.Functions.Color:ApplyFillColor(chargeNode, fillColor)
 								end
@@ -1876,7 +1868,7 @@ local function UpdateResourceBar()
 					if barGroups and barGroups.secondary then
 						local icicleNode = barGroups.secondary:GetNode(x)
 						if icicleNode then
-							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, icicleNode, filled and 1 or 0, 1)
+							Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], icicleNode, filled and 1 or 0, 1)
 							Bar:ApplyNodeIndicators(icicleNode, "iciclesBar")
 							icicleNode:SetBorderColor(iciclesBarColors.border)
 							TRB.Functions.Color:ApplyFillColor(icicleNode, cpColor)

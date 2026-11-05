@@ -80,6 +80,20 @@ local function SetIconDesaturated(texture, desaturated)
 	end
 end
 
+---Evaluates a curve against a custom threshold target's secret-safe percent API, or nil when it has none.
+---@param targetInfo table
+---@param curve table
+---@return table?
+local function EvaluateTargetCurve(targetInfo, curve)
+	if targetInfo.key == "health" then
+		return UnitHealthPercent("player", true, curve)
+	elseif type(targetInfo.resourceType) == "number" then
+		-- String sentinels like "CUSTOM" (Devourer Soul Fragments/Collapsing Star) have no power API.
+		return UnitPowerPercent("player", targetInfo.resourceType, true, curve)
+	end
+	return nil
+end
+
 ---@param frame Frame
 ---@param level integer
 local function SetLevelIfChanged(frame, level)
@@ -1341,7 +1355,7 @@ end
 ---@param parentFrame Frame # The parent frame to anchor to
 ---@param value number # The value at which to position the threshold
 ---@param maxResource number # The maximum resource value
----@param barWidth number # The width of the bar
+---@param barWidth number? # Unused; the line sizes to its parent frame
 ---@param barBorder number # The border size of the bar
 ---@param growRight boolean? # Whether the bar grows right (default true); ignored when fillDirection is present
 ---@param fillDirection trbFillDirection? # The fill direction of the bar (nil defaults to leftRight/rightLeft based on growRight)
@@ -2767,25 +2781,7 @@ function TRB.Functions.Threshold:ApplyCustomThresholdCurveColor(threshold, targe
 		return false
 	end
 
-	-- Pick the secret-safe percent API for this bar target. UnitPowerPercent handles
-	-- every power-type resource (primary, secondary, mana custom bar); UnitHealthPercent
-	-- handles the health bar. Both evaluate the curve against the secret value natively.
-	local function EvaluateCurve(curve)
-		if curve == nil then
-			return nil
-		end
-		if targetInfo.key == "health" then
-			return UnitHealthPercent("player", true, curve)
-		elseif type(targetInfo.resourceType) == "number" then
-			-- Only real PowerType enums (numbers) can be evaluated by UnitPowerPercent. String
-			-- sentinels like "CUSTOM" (Devourer Soul Fragments/Collapsing Star) have no power API,
-			-- so return nil and let the caller fall back to the static under color.
-			return UnitPowerPercent("player", targetInfo.resourceType, true, curve)
-		end
-		return nil
-	end
-
-	local colorResult = EvaluateCurve(thresholdCurve)
+	local colorResult = EvaluateTargetCurve(targetInfo, thresholdCurve)
 	if colorResult == nil then
 		return false
 	end
@@ -2803,7 +2799,7 @@ function TRB.Functions.Threshold:ApplyCustomThresholdCurveColor(threshold, targe
 		-- Never use SetDesaturated for curve-driven thresholds; it can't read secret values.
 		SetIconDesaturated(threshold.icon.texture, false)
 		if effectiveDesaturated == true and iconCurve ~= nil then
-			local iconColorResult = EvaluateCurve(iconCurve)
+			local iconColorResult = EvaluateTargetCurve(targetInfo, iconCurve)
 			if iconColorResult ~= nil then
 				TRB.Functions.Color:SetIconVertexColorFromCurve(threshold, iconColorResult)
 			else
@@ -3100,7 +3096,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					targetInfo.parentFrame,
 					positionValue,
 					positionMax,
-					targetInfo.parentFrame:GetWidth(),
+					nil,
 					targetInfo.border,
 					true,
 					targetInfo.fillDirection,

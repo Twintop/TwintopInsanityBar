@@ -4,6 +4,22 @@ local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Bar = {}
 
+-- Node keys by prefix and index (nodeKeys.comboPoint[3] is "comboPoint3"), so tick loops read a string instead of building one.
+---@type table<string, table<integer, string>>
+TRB.Functions.Bar.nodeKeys = setmetatable({}, {
+	__index = function(byPrefix, prefix)
+		local keys = setmetatable({}, {
+			__index = function(byIndex, index)
+				local key = prefix .. index
+				byIndex[index] = key
+				return key
+			end
+		})
+		byPrefix[prefix] = keys
+		return keys
+	end
+})
+
 local renderTransitionState = {
 	active = true,
 	token = 0,

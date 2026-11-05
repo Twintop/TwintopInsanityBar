@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -471,7 +472,6 @@ local function RefreshLookupData_Assassination()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local isStealthed = IsStealthed()
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -486,6 +486,7 @@ local function RefreshLookupData_Assassination()
 		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
 		local stealthChanged = lookupChanged(prevState, "$_stealth", isStealthed)
 		if resourceChanged or castingChanged or stealthChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentEnergy
 			local castingEnergy
 			if not isStealthed and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -558,7 +559,6 @@ local function RefreshLookupData_Outlaw()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local isStealthed = IsStealthed()
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -573,6 +573,7 @@ local function RefreshLookupData_Outlaw()
 		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
 		local stealthChanged = lookupChanged(prevState, "$_stealth", isStealthed)
 		if resourceChanged or castingChanged or stealthChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentEnergy
 			local castingEnergy
 			if not isStealthed and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -682,7 +683,6 @@ local function RefreshLookupData_Subtlety()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local isStealthed = IsStealthed()
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -697,6 +697,7 @@ local function RefreshLookupData_Subtlety()
 		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
 		local stealthChanged = lookupChanged(prevState, "$_stealth", isStealthed)
 		if resourceChanged or castingChanged or stealthChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentEnergy
 			local castingEnergy
 			if not isStealthed and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -1134,7 +1135,7 @@ local function UpdateResourceBar()
 						local cpNode = barGroups.secondary:GetNode(x)
 						if cpNode then
 							if snapshotData.attributes.resource2 >= x then
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 1, 1)
 								if not comboPointBarOverrideActive then
 									local cpFive = specSettings.colors.comboPoints.fiveComboPoints
 									local penultimateActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))
@@ -1149,7 +1150,7 @@ local function UpdateResourceBar()
 									end
 								end
 							else
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 0, 1)
 							end
 
 							if charged ~= nil then
@@ -1331,7 +1332,7 @@ local function UpdateResourceBar()
 						local cpNode = barGroups.secondary:GetNode(x)
 						if cpNode then
 							if snapshotData.attributes.resource2 >= x then
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 1, 1)
 								if not comboPointBarOverrideActive then
 									local cpFive = specSettings.colors.comboPoints.fiveComboPoints
 									local penultimateActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))
@@ -1346,7 +1347,7 @@ local function UpdateResourceBar()
 									end
 								end
 							else
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 0, 1)
 							end
 
 							if charged ~= nil then
@@ -1527,7 +1528,7 @@ local function UpdateResourceBar()
 						local cpNode = barGroups.secondary:GetNode(x)
 						if cpNode then
 							if snapshotData.attributes.resource2 >= x then
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 1, 1)
 								if not comboPointBarOverrideActive then
 									local cpFive = specSettings.colors.comboPoints.fiveComboPoints
 									local penultimateActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))
@@ -1542,7 +1543,7 @@ local function UpdateResourceBar()
 									end
 								end
 							else
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 0, 1)
 							end
 						
 							if charged ~= nil then
