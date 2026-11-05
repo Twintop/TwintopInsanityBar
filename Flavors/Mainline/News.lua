@@ -58,6 +58,7 @@ TRB.Flavor.newsContent = [====[
 ## Rogue
 
 - [#948](#948) Improve combo point bar update performance.
+- [#952](#952) Improve Color Indicator performance.
 
 ## Shaman
 ### Elemental
