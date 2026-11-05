@@ -14,6 +14,7 @@ TRB.Details.coreNewsContent = [====[
 - [#938](#938) Improve bar update performance, primarily around bars with multiple nodes, End Caps, and overlays.
 - [#939](#939) Improve bar text update performance, primarily for bar text on bars that aren't showing.
 - [#941](#941) Improve update performance of the cast bars, Other Bars, Skyriding bars, and bars fading in or out.
+- [#943](#943) Improve update performance of threshold lines, primarily custom threshold lines.
 
 ## Color Indicators
 
