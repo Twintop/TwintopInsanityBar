@@ -1833,15 +1833,14 @@ function TRB.Functions.Settings:DefaultGcdBarColors()
 	}
 end
 
----Gets the default Five Second Rule bar settings: a borderless strip along the inside bottom of the Mana bar,
----about a quarter of its height.
+---Gets the default Five Second Rule bar settings: a thin borderless strip along the inside bottom of the Mana bar.
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.OtherBar
 function TRB.Functions.Settings:DefaultFiveSecondRuleBarSettings(classic)
 	local settings = self:DefaultOtherBarDimensions(classic) --[[@as TRB.Classes.Settings.OtherBar]]
 	local primary = self:DefaultBarDimensions(classic)
 	settings.width = primary.width
-	settings.height = math.ceil((primary.height - (primary.border * 2)) / 4)
+	settings.height = 4
 	settings.border = 0
 	settings.timerDirection = "deplete"
 	settings.durationPrecision = 1
