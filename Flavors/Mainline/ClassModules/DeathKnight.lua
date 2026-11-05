@@ -81,15 +81,16 @@ local function CreateRune()
 	return rune
 end
 
+---@return boolean read # False when a refresh had to bail out on a secret
 local function UpdateRune(runeIndex, refresh)
 	local rune = TRB.Data.character.runes[runeIndex]
 
 	if refresh == true then
 		local startTime, duration, ready = GetRuneCooldown(runeIndex)
-		
+
 		-- Sometimes these values come back as secrets when they shouldn't be -- bail out and try again next frame to prevent Lua errors
 		if issecretvalue(startTime) or issecretvalue(duration) or issecretvalue(ready) then
-			return
+			return false
 		end
 
 		rune.startTime = startTime or 0
@@ -117,7 +118,17 @@ local function UpdateRune(runeIndex, refresh)
 			end
 		end
 	end
+	return true
 end
+
+-- A spent or recharged rune fires RUNE_POWER_UPDATE, so with every rune ready and no event since, the reads would match.
+local runesDirty = true
+local runeEventFrame = CreateFrame("Frame")
+runeEventFrame:RegisterEvent("RUNE_POWER_UPDATE")
+runeEventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+runeEventFrame:SetScript("OnEvent", function()
+	runesDirty = true
+end)
 
 local function FillSpecializationCache()
 	-- Blood
@@ -756,14 +767,31 @@ local function UpdateSnapshot()
 	Character:UpdateSnapshot()
 	--local currentTime = GetTime()
 
-	for x = 1, TRB.Data.character.maxResource2 do
-		UpdateRune(x, true)
-	end
-	
-	local specSettings = TRB.Data.settings.deathknight[TRB.Data.character.specName]
 	local runes = TRB.Data.character.runes
-	if specSettings.colors.comboPoints.sortRunes == true then
-		table.sort(runes, RuneSortComparator)
+	local maxRunes = TRB.Data.character.maxResource2
+	local pollRunes = runesDirty
+	if not pollRunes then
+		for x = 1, maxRunes do
+			if not runes[x].ready then
+				pollRunes = true
+				break
+			end
+		end
+	end
+	if pollRunes then
+		-- A read that bails out on a secret leaves the runes dirty, so the next tick tries again.
+		local allRead = true
+		for x = 1, maxRunes do
+			if not UpdateRune(x, true) then
+				allRead = false
+			end
+		end
+		runesDirty = not allRead
+
+		local specSettings = TRB.Data.settings.deathknight[TRB.Data.character.specName]
+		if specSettings.colors.comboPoints.sortRunes == true then
+			table.sort(runes, RuneSortComparator)
+		end
 	end
 
 	-- Plain count of complete (ready) runes ($runesReadyCount) for Runes custom thresholds.
@@ -1498,6 +1526,8 @@ local function SwitchSpec()
 	end
 	Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
+	-- Each spec keeps its own rune table, last read whenever that spec was last active.
+	runesDirty = true
 
 	-- Unregister spec-specific events before switching
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
