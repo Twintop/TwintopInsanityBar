@@ -66,6 +66,7 @@ TRB.Flavor.newsContent = [====[
 ### Elemental
 
 - [#949](#949) Improve update performance of Earth Shock, Elemental Blast, and Earthquake tracking.
+- [#954](#954) Improve mana bar Color Indicator performance.
 
 ## Warlock
 ### Demonology
