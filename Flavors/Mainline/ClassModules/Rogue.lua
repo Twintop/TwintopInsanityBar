@@ -1026,6 +1026,8 @@ local function UpdateResourceBar()
 		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 		local comboPointAffectingCombat = TRB.Data.character.inCombat
 		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive
+		-- Stealth can't change within a tick, so one read serves the whole branch.
+		local isStealthed = IsStealthed()
 		local comboPointsColors = scratch.comboPointsColors1
 		wipe(comboPointsColors)
 		comboPointsColors.bar = specSettings.colors.comboPoints.base
@@ -1033,8 +1035,8 @@ local function UpdateResourceBar()
 		comboPointsColors.background = specSettings.colors.comboPoints.background.color
 		local comboPointConditionMap = scratch.comboPointConditionMap1
 		wipe(comboPointConditionMap)
-		comboPointConditionMap.borderStealth = IsStealthed() or comboPointStealthViaBuff
-		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (IsStealthed() or comboPointStealthViaBuff)
+		comboPointConditionMap.borderStealth = isStealthed or comboPointStealthViaBuff
+		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (isStealthed or comboPointStealthViaBuff)
 		local comboPointBarColorMap = scratch.comboPointBarColorMap1
 		wipe(comboPointBarColorMap)
 		comboPointBarColorMap.comboPointsBar = comboPointsColors
@@ -1072,7 +1074,7 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
-				local stealthActive = IsStealthed() or stealthViaBuff
+				local stealthActive = isStealthed or stealthViaBuff
 				local sharedColors = specSettings.colors.shared
 				local conditionMap = scratch.conditionMap1
 				wipe(conditionMap)
@@ -1132,7 +1134,7 @@ local function UpdateResourceBar()
 				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
 				local comboPointBackgroundOverrideActive = comboPointFlatTargets.background or comboPointsOvercapCurves.background ~= nil
 
-				local charged = GetUnitChargedPowerPoints("player")
+				local charged = TRB.Functions.Castbar:GetChargedPoints()
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = comboPointsColors.border
 					local cpColor = comboPointBarOverrideActive and comboPointsColors.bar or specSettings.colors.comboPoints.base
@@ -1223,6 +1225,8 @@ local function UpdateResourceBar()
 		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 		local comboPointAffectingCombat = TRB.Data.character.inCombat
 		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive
+		-- Stealth can't change within a tick, so one read serves the whole branch.
+		local isStealthed = IsStealthed()
 		local comboPointsColors = scratch.comboPointsColors3
 		wipe(comboPointsColors)
 		comboPointsColors.bar = specSettings.colors.comboPoints.base
@@ -1230,8 +1234,8 @@ local function UpdateResourceBar()
 		comboPointsColors.background = specSettings.colors.comboPoints.background.color
 		local comboPointConditionMap = scratch.comboPointConditionMap2
 		wipe(comboPointConditionMap)
-		comboPointConditionMap.borderStealth = IsStealthed() or comboPointStealthViaBuff
-		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (IsStealthed() or comboPointStealthViaBuff)
+		comboPointConditionMap.borderStealth = isStealthed or comboPointStealthViaBuff
+		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (isStealthed or comboPointStealthViaBuff)
 		local comboPointBarColorMap = scratch.comboPointBarColorMap2
 		wipe(comboPointBarColorMap)
 		comboPointBarColorMap.comboPointsBar = comboPointsColors
@@ -1269,7 +1273,7 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
-				local stealthActive = IsStealthed() or stealthViaBuff
+				local stealthActive = isStealthed or stealthViaBuff
 				local sharedColors = specSettings.colors.shared
 				local conditionMap = scratch.conditionMap2
 				wipe(conditionMap)
@@ -1329,7 +1333,7 @@ local function UpdateResourceBar()
 				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
 				local comboPointBackgroundOverrideActive = comboPointFlatTargets.background or comboPointsOvercapCurves.background ~= nil
 
-				local charged = GetUnitChargedPowerPoints("player")
+				local charged = TRB.Functions.Castbar:GetChargedPoints()
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = comboPointsColors.border
@@ -1419,6 +1423,8 @@ local function UpdateResourceBar()
 		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 		local comboPointAffectingCombat = TRB.Data.character.inCombat
 		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive or snapshots[comboPointSpells.shadowDance.id].buff.isActive
+		-- Stealth can't change within a tick, so one read serves the whole branch.
+		local isStealthed = IsStealthed()
 		local comboPointsColors = scratch.comboPointsColors5
 		wipe(comboPointsColors)
 		comboPointsColors.bar = specSettings.colors.comboPoints.base
@@ -1426,8 +1432,8 @@ local function UpdateResourceBar()
 		comboPointsColors.background = specSettings.colors.comboPoints.background.color
 		local comboPointConditionMap = scratch.comboPointConditionMap3
 		wipe(comboPointConditionMap)
-		comboPointConditionMap.borderStealth = comboPointStealthViaBuff or IsStealthed()
-		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (comboPointStealthViaBuff or IsStealthed())
+		comboPointConditionMap.borderStealth = comboPointStealthViaBuff or isStealthed
+		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (comboPointStealthViaBuff or isStealthed)
 		local comboPointBarColorMap = scratch.comboPointBarColorMap3
 		wipe(comboPointBarColorMap)
 		comboPointBarColorMap.comboPointsBar = comboPointsColors
@@ -1465,7 +1471,7 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 				local barBorderColor = specSettings.colors.bar.border.color
 				local barBackgroundColor = specSettings.colors.bar.background.color
-				local stealthActive = stealthViaBuff or IsStealthed()
+				local stealthActive = stealthViaBuff or isStealthed
 				local sharedColors = specSettings.colors.shared
 				local conditionMap = scratch.conditionMap3
 				wipe(conditionMap)
@@ -1525,7 +1531,7 @@ local function UpdateResourceBar()
 				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
 				local comboPointBackgroundOverrideActive = comboPointFlatTargets.background or comboPointsOvercapCurves.background ~= nil
 
-				local charged = GetUnitChargedPowerPoints("player")
+				local charged = TRB.Functions.Castbar:GetChargedPoints()
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = comboPointsColors.border

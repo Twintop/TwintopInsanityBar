@@ -1955,7 +1955,17 @@ function CastbarRenderer:OnSpellCastEvent(event, spellId)
 	end
 end
 
+---The player's renderer, plus the charged combo points it tracks.
+---@class TRB.Functions.PlayerCastbarRenderer : TRB.Functions.CastbarRenderer
 TRB.Functions.Castbar = CastbarRenderer:New("player", "castbar")
+
+---The player's charged combo point slots as the last charge event left them, with hidden slots dropped. A charge
+---event replaces the table, so read it again each tick, and never modify it.
+---@return integer[]
+function TRB.Functions.Castbar:GetChargedPoints()
+	return chargedPoints
+end
+
 ---The pet's renderer, plus the event plumbing the player's gets from Functions/SpellCast.lua.
 ---@class TRB.Functions.PetCastbarRenderer : TRB.Functions.CastbarRenderer
 TRB.Functions.PetCastbar = CastbarRenderer:New("pet", "petCastbar")
