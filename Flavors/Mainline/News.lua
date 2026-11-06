@@ -10,6 +10,9 @@ TRB.Flavor.newsContent = [====[
 
 # 12.1.5.11-release (2026-11-05)
 ## Druid
+
+- [#963](#963) Fix the Ferocious Bite maximum threshold line showing as usable at Ferocious Bite's minimum cost in Cat Form for Balance, Guardian, and Restoration.
+
 ### Guardian
 
 - [#961](#961) Fix the Ironfur bar's application lines disappearing after a loading screen, a talent change, or a specialization change.
