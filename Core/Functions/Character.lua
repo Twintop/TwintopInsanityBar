@@ -486,7 +486,8 @@ local function CharacterChange(self, event, ...)
 			TRB.Functions.Character:UpdatePetValues()
 			TRB.Data.lookupDirty = true
 		end
-	elseif event == "UNIT_PET" or event == "UNIT_DISPLAYPOWER" then
+	elseif event == "UNIT_PET" or event == "UNIT_DISPLAYPOWER" or event == "UNIT_NAME_UPDATE" then
+		-- A new pet's name can read "Unknown" until UNIT_NAME_UPDATE.
 		TRB.Functions.Character:UpdatePetValues()
 		TRB.Data.lookupDirty = true
 	elseif TRB.Data.statEventBuckets[event] ~= nil then
@@ -692,6 +693,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 		characterChangeFrame:RegisterUnitEvent("UNIT_HEALTH", "player", "pet")
 		characterChangeFrame:RegisterUnitEvent("UNIT_MAXHEALTH", "player", "pet")
 		characterChangeFrame:RegisterUnitEvent("UNIT_DISPLAYPOWER", "pet")
+		characterChangeFrame:RegisterUnitEvent("UNIT_NAME_UPDATE", "pet")
 		characterChangeFrame:RegisterUnitEvent("UNIT_PET", "player")
 	else
 		characterChangeFrame:RegisterUnitEvent("UNIT_POWER_UPDATE", "player")
@@ -699,6 +701,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 		characterChangeFrame:RegisterUnitEvent("UNIT_HEALTH", "player")
 		characterChangeFrame:RegisterUnitEvent("UNIT_MAXHEALTH", "player")
 		characterChangeFrame:UnregisterEvent("UNIT_DISPLAYPOWER")
+		characterChangeFrame:UnregisterEvent("UNIT_NAME_UPDATE")
 		characterChangeFrame:UnregisterEvent("UNIT_PET")
 	end
 	characterChangeFrame:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
@@ -749,6 +752,7 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("UNIT_HEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_MAXHEALTH")
 	characterChangeFrame:UnregisterEvent("UNIT_DISPLAYPOWER")
+	characterChangeFrame:UnregisterEvent("UNIT_NAME_UPDATE")
 	characterChangeFrame:UnregisterEvent("UNIT_PET")
 	characterChangeFrame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
 	characterChangeFrame:UnregisterEvent("UNIT_HEAL_PREDICTION")
