@@ -401,7 +401,7 @@ local function RefreshLookupData_Devastation()
 	if not activeVars or activeVars["$essence"] or activeVars["$comboPoints"]
 		or activeVars["$essenceRegenTime"]
 		or activeVars["$essenceMax"] or activeVars["$comboPointsMax"] then
-		local _latency = (select(4, GetNetStats()) or 0) / 1000
+		local _latency = TRB.Data.character.latency or 0
 		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen - _latency
 		if _essenceRegenTime < 0 then _essenceRegenTime = 0 end
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -543,7 +543,7 @@ local function RefreshLookupData_Preservation()
 	if not activeVars or activeVars["$essence"] or activeVars["$comboPoints"]
 		or activeVars["$essenceRegenTime"]
 		or activeVars["$essenceMax"] or activeVars["$comboPointsMax"] then
-		local _latency = (select(4, GetNetStats()) or 0) / 1000
+		local _latency = TRB.Data.character.latency or 0
 		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen - _latency
 		if _essenceRegenTime < 0 then _essenceRegenTime = 0 end
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -672,7 +672,7 @@ local function RefreshLookupData_Augmentation()
 	if not activeVars or activeVars["$essence"] or activeVars["$comboPoints"]
 		or activeVars["$essenceRegenTime"]
 		or activeVars["$essenceMax"] or activeVars["$comboPointsMax"] then
-		local _latency = (select(4, GetNetStats()) or 0) / 1000
+		local _latency = TRB.Data.character.latency or 0
 		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen - _latency
 		if _essenceRegenTime < 0 then _essenceRegenTime = 0 end
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
