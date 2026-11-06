@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -316,6 +317,7 @@ local function RefreshLookupData_BeastMastery()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
+	local currentTime = GetTime()
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -381,7 +383,6 @@ local function RefreshLookupData_BeastMastery()
 
 	-- Block B: Beast Cleave ($beastCleaveTime)
 	if not activeVars or activeVars["$beastCleaveTime"] then
-		local currentTime = GetTime()
 		local _beastCleaveTime = snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
 
 		lookupLogic["$beastCleaveTime"] = _beastCleaveTime
@@ -393,7 +394,6 @@ local function RefreshLookupData_BeastMastery()
 
 	-- Block C: Bestial Wrath ($bestialWrathTime)
 	if not activeVars or activeVars["$bestialWrathTime"] then
-		local currentTime = GetTime()
 		local _bestialWrathTime = snapshots[spells.bestialWrath.id].buff:GetRemainingTime(currentTime)
 
 		lookupLogic["$bestialWrathTime"] = _bestialWrathTime
@@ -414,6 +414,7 @@ local function RefreshLookupData_Marksmanship()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
+	local currentTime = GetTime()
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -480,7 +481,6 @@ local function RefreshLookupData_Marksmanship()
 
 	-- Block B: Trueshot ($trueshotTime)
 	if not activeVars or activeVars["$trueshotTime"] then
-		local currentTime = GetTime()
 		local _trueshotTime = snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)
 
 		lookupLogic["$trueshotTime"] = _trueshotTime
@@ -492,7 +492,6 @@ local function RefreshLookupData_Marksmanship()
 
 	-- Block C: Double Tap ($doubleTapTime)
 	if not activeVars or activeVars["$doubleTapTime"] then
-		local currentTime = GetTime()
 		local _doubleTapTime = snapshots[spells.doubleTap.id].buff:GetRemainingTime(currentTime)
 
 		lookupLogic["$doubleTapTime"] = _doubleTapTime
@@ -513,6 +512,7 @@ local function RefreshLookupData_Survival()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
+	local currentTime = GetTime()
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -581,7 +581,6 @@ local function RefreshLookupData_Survival()
 	if not activeVars or activeVars["$tipOfTheSpear"] or activeVars["$comboPoints"]
 		or activeVars["$tipOfTheSpearMax"] or activeVars["$comboPointsMax"]
 		or activeVars["$totsTime"] then
-		local currentTime = GetTime()
 		local _tipOfTheSpear = snapshots[spells.tipOfTheSpear.id].buff.applications or 0
 		local _tipOfTheSpearMax = spells.tipOfTheSpear.maxStacks
 		local _totsTime = snapshots[spells.tipOfTheSpear.id].buff:GetRemainingTime(currentTime)
@@ -604,7 +603,6 @@ local function RefreshLookupData_Survival()
 
 	-- Block C: Takedown ($takedownTime)
 	if not activeVars or activeVars["$takedownTime"] then
-		local currentTime = GetTime()
 		local _takedownTime = snapshots[spells.takedown.id].buff:GetRemainingTime(currentTime)
 
 		lookupLogic["$takedownTime"] = _takedownTime
@@ -796,8 +794,13 @@ local function UpdateSnapshot_Marksmanship()
 		local duration = casting.endTime - casting.startTime
 		local remainingTime = casting.endTime - currentTime
 		local ticksRemaining = math.ceil(remainingTime / (duration / (spells.rapidFire.attributes.shots - 1)))
+		local previousFinal = casting.resourceFinal
 		casting.resourceRaw = math.max(ticksRemaining * spells.rapidFire.resource, 0)
 		casting.resourceFinal = CalculateAbilityResourceValue(casting.resourceRaw)
+		-- The count drops with time, not on an event.
+		if casting.resourceFinal ~= previousFinal then
+			TRB.Data.lookupDirty = true
+		end
 	end
 end
 
@@ -1212,7 +1215,7 @@ local function UpdateResourceBar()
 						local stackNode = barGroups.secondary:GetNode(x)
 						if stackNode then
 							if isFilled then
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 1, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], stackNode, 1, 1)
 
 								-- Determine color based on position and sameColor setting
 								if not tipOfTheSpearOverrides.bar and not tipOfTheSpearOvercapCurves.bar and specSettings.colors.comboPoints.sameColor then
@@ -1235,7 +1238,7 @@ local function UpdateResourceBar()
 									end
 								end
 							else
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 0, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], stackNode, 0, 1)
 							end
 
 							if tipOfTheSpearOvercapCurves.border then

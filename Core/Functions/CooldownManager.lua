@@ -816,7 +816,9 @@ function CDM:ApplyToBarNode(node, spellId)
 		return false
 	end
 
-	return (pcall(ApplyBarValues, node:GetFrame(), duration, remaining))
+	local applied = pcall(ApplyBarValues, node:GetFrame(), duration, remaining)
+	node:MarkFrameWritten()
+	return applied
 end
 
 ---True while the aura a buff viewer entry tracks is up, false while it's down, nil when no usable buff

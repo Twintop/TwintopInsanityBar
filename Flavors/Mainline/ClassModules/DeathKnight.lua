@@ -8,6 +8,9 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
+local RUNE_TIME_KEYS = { "$rune1Time", "$rune2Time", "$rune3Time", "$rune4Time", "$rune5Time", "$rune6Time" }
+local RUNE_READY_KEYS = { "$rune1Ready", "$rune2Ready", "$rune3Ready", "$rune4Ready", "$rune5Ready", "$rune6Ready" }
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -33,9 +36,8 @@ local scratch = {
 	runeBarColors2 = {},
 	runeGradientResults1 = {},
 	runeGradientResults2 = {},
-	barColorMap2 = {},
 	coagulatingBloodColors1 = {},
-	barColorMap3 = {},
+	boneShieldIndicated1 = {},
 	conditionMap1 = {},
 	runicPowerBarCurves1 = {},
 	runeReadyCurves1 = {},
@@ -78,15 +80,16 @@ local function CreateRune()
 	return rune
 end
 
+---@return boolean read # False when a refresh had to bail out on a secret
 local function UpdateRune(runeIndex, refresh)
 	local rune = TRB.Data.character.runes[runeIndex]
 
 	if refresh == true then
 		local startTime, duration, ready = GetRuneCooldown(runeIndex)
-		
+
 		-- Sometimes these values come back as secrets when they shouldn't be -- bail out and try again next frame to prevent Lua errors
 		if issecretvalue(startTime) or issecretvalue(duration) or issecretvalue(ready) then
-			return
+			return false
 		end
 
 		rune.startTime = startTime or 0
@@ -114,7 +117,17 @@ local function UpdateRune(runeIndex, refresh)
 			end
 		end
 	end
+	return true
 end
+
+-- A spent or recharged rune fires RUNE_POWER_UPDATE, so with every rune ready and no event since, the reads would match.
+local runesDirty = true
+local runeEventFrame = CreateFrame("Frame")
+runeEventFrame:RegisterEvent("RUNE_POWER_UPDATE")
+runeEventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+runeEventFrame:SetScript("OnEvent", function()
+	runesDirty = true
+end)
 
 local function FillSpecializationCache()
 	-- Blood
@@ -237,6 +250,8 @@ spellEventFrame:SetScript("OnEvent", function(self, event, spellId)
 			if spells.marrowrend and spellId == spells.marrowrend.id then
 				local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 				snapshotData.attributes.boneShieldStacks = C_Spell.GetSpellCastCount(spells.marrowrend.id) or 0
+				-- The count can be secret, so it can't be compared to the last one.
+				TRB.Data.lookupDirty = true
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
@@ -446,12 +461,12 @@ local function RefreshLookupData_Blood()
 		local runes = TRB.Data.character.runes
 		for i = 1, 6 do
 			local rawTime = runes[i].remaining
-			local timeKey = "$rune" .. i .. "Time"
+			local timeKey = RUNE_TIME_KEYS[i]
 			lookupLogic[timeKey] = rawTime
 			if lookupChanged(prevState, timeKey, rawTime) then
 				lookup[timeKey] = TRB.Functions.BarText:TimerPrecision(rawTime)
 			end
-			local readyKey = "$rune" .. i .. "Ready"
+			local readyKey = RUNE_READY_KEYS[i]
 			lookupLogic[readyKey] = runes[i].ready
 			lookup[readyKey] = ""
 		end
@@ -488,11 +503,11 @@ local function RefreshLookupData_Blood()
 		-- Memoized on the rendered string, since both are nil underneath.
 		local stacksDisplay
 		if not attributes.coagulatingBloodTracked then
-			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
+			stacksDisplay = TRB.Functions.BarText:UnknownValue("0")
 		elseif attributes.coagulatingBloodStacks ~= nil then
 			stacksDisplay = string.format("%s", attributes.coagulatingBloodStacks)
 		else
-			stacksDisplay = string.format("%.0f", 0)
+			stacksDisplay = "0"
 		end
 
 		if lookupChanged(prevState, "$coagulatingBloodStacks", stacksDisplay) then
@@ -514,15 +529,15 @@ local function RefreshLookupData_Blood()
 
 		local timeDisplay
 		if not attributes.boneShieldTracked then
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		elseif not _boneShieldActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _boneShieldTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_boneShieldTime)
 		elseif _boneShieldTimeText ~= nil then
 			timeDisplay = _boneShieldTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$boneShieldTime", timeDisplay) then
@@ -584,12 +599,12 @@ local function RefreshLookupData_Frost()
 		local runes = TRB.Data.character.runes
 		for i = 1, 6 do
 			local rawTime = runes[i].remaining
-			local timeKey = "$rune" .. i .. "Time"
+			local timeKey = RUNE_TIME_KEYS[i]
 			lookupLogic[timeKey] = rawTime
 			if lookupChanged(prevState, timeKey, rawTime) then
 				lookup[timeKey] = TRB.Functions.BarText:TimerPrecision(rawTime)
 			end
-			local readyKey = "$rune" .. i .. "Ready"
+			local readyKey = RUNE_READY_KEYS[i]
 			lookupLogic[readyKey] = runes[i].ready
 			lookup[readyKey] = ""
 		end
@@ -654,12 +669,12 @@ local function RefreshLookupData_Unholy()
 		local runes = TRB.Data.character.runes
 		for i = 1, 6 do
 			local rawTime = runes[i].remaining
-			local timeKey = "$rune" .. i .. "Time"
+			local timeKey = RUNE_TIME_KEYS[i]
 			lookupLogic[timeKey] = rawTime
 			if lookupChanged(prevState, timeKey, rawTime) then
 				lookup[timeKey] = TRB.Functions.BarText:TimerPrecision(rawTime)
 			end
-			local readyKey = "$rune" .. i .. "Ready"
+			local readyKey = RUNE_READY_KEYS[i]
 			lookupLogic[readyKey] = runes[i].ready
 			lookup[readyKey] = ""
 		end
@@ -686,16 +701,16 @@ local function RefreshLookupData_Unholy()
 
 		local timeDisplay
 		if not snapshotData.attributes.runicCorruptionTracked then
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		elseif not _runicCorruptionActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _runicCorruptionTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_runicCorruptionTime)
 		elseif _runicCorruptionTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _runicCorruptionTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$runicCorruptionTime", timeDisplay) then
@@ -741,24 +756,43 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	end
 end
 
+---Orders ready runes first, then by fill, high to low.
+local function RuneSortComparator(a, b)
+	if a.ready ~= b.ready then
+		return a.ready
+	end
+	return a.percentage > b.percentage
+end
+
 local function UpdateSnapshot()
 	Character:UpdateSnapshot()
 	--local currentTime = GetTime()
 
-	for x = 1, TRB.Data.character.maxResource2 do
-		UpdateRune(x, true)
-	end
-	
-	local specSettings = TRB.Data.settings.deathknight[TRB.Data.character.specName]
 	local runes = TRB.Data.character.runes
-	if specSettings.colors.comboPoints.sortRunes == true then
-		-- Sort: ready runes first, then by percentage (high to low)
-		table.sort(runes, function(a, b)
-			if a.ready ~= b.ready then
-				return a.ready -- true comes before false
+	local maxRunes = TRB.Data.character.maxResource2
+	local pollRunes = runesDirty
+	if not pollRunes then
+		for x = 1, maxRunes do
+			if not runes[x].ready then
+				pollRunes = true
+				break
 			end
-			return a.percentage > b.percentage
-		end)
+		end
+	end
+	if pollRunes then
+		-- A read that bails out on a secret leaves the runes dirty, so the next tick tries again.
+		local allRead = true
+		for x = 1, maxRunes do
+			if not UpdateRune(x, true) then
+				allRead = false
+			end
+		end
+		runesDirty = not allRead
+
+		local specSettings = TRB.Data.settings.deathknight[TRB.Data.character.specName]
+		if specSettings.colors.comboPoints.sortRunes == true then
+			table.sort(runes, RuneSortComparator)
+		end
 	end
 
 	-- Plain count of complete (ready) runes ($runesReadyCount) for Runes custom thresholds.
@@ -970,19 +1004,64 @@ local function EvaluateGradientResults(curves, results)
 	return results
 end
 
-local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
+---Resolves the Color Indicators for every Death Knight bar in one pass. Each bar's scratch color table starts
+---with its unindicated colors, and the render helpers read what the indicators left in it.
+---@param specSettings table
+---@param bloodBars boolean # Also resolve Bone Shield and Coagulating Blood
+---@return table<string, boolean> conditionMap
+---@return table sharedColors
+local function ResolveIndicatorColors(specSettings, bloodBars)
 	local conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
-	local runicPowerBarColors = scratch.runicPowerBarColors1
-	wipe(runicPowerBarColors)
-	runicPowerBarColors.bar = specSettings.colors.bar.base
-	runicPowerBarColors.border = specSettings.colors.bar.border.color
-	runicPowerBarColors.background = specSettings.colors.bar.background.color
+	local colors = specSettings.colors
 	local barColorMap = scratch.barColorMap1
 	wipe(barColorMap)
+
+	local runicPowerBarColors = scratch.runicPowerBarColors1
+	wipe(runicPowerBarColors)
+	runicPowerBarColors.bar = colors.bar.base
+	runicPowerBarColors.border = colors.bar.border.color
+	runicPowerBarColors.background = colors.bar.background.color
 	barColorMap.runicPowerBar = runicPowerBarColors
 
-	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+	-- "Rune (Off Cooldown)" and "Rune (Regenerating)" partition the runes, so each resolves its own colors and gradient.
+	local runeColors = colors.comboPoints
+	local runeReadyColors = scratch.runeBarColors1
+	wipe(runeReadyColors)
+	runeReadyColors.bar = runeColors.base
+	runeReadyColors.border = runeColors.border.color
+	runeReadyColors.background = runeColors.background.color
+	barColorMap.runesBar = runeReadyColors
+	local runeRegenColors = scratch.runeBarColors2
+	wipe(runeRegenColors)
+	runeRegenColors.bar = runeColors.base
+	runeRegenColors.border = runeColors.border.color
+	runeRegenColors.background = runeColors.background.color
+	barColorMap.runesBarRegenerating = runeRegenColors
 
+	if bloodBars then
+		-- Seeded empty, so an element holds a color only when an indicator claimed it.
+		local boneShieldIndicated = scratch.boneShieldIndicated1
+		wipe(boneShieldIndicated)
+		barColorMap.boneShield = boneShieldIndicated
+
+		local coagulatingBlood = colors.bars and colors.bars.coagulatingBlood
+		if coagulatingBlood ~= nil then
+			local coagulatingBloodColors = scratch.coagulatingBloodColors1
+			wipe(coagulatingBloodColors)
+			coagulatingBloodColors.bar = coagulatingBlood.bar
+			coagulatingBloodColors.border = coagulatingBlood.border.color
+			coagulatingBloodColors.background = coagulatingBlood.background.color
+			barColorMap.coagulatingBlood = coagulatingBloodColors
+		end
+	end
+
+	Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+
+	return conditionMap, sharedColors
+end
+
+local function ApplyPrimaryRunicPowerColors(specSettings, primaryNode, conditionMap, sharedColors)
+	local runicPowerBarColors = scratch.runicPowerBarColors1
 	local overcapCurves = BuildGradientCurves(specSettings, sharedColors, conditionMap, "runicPowerBar", runicPowerBarColors, scratch.runicPowerBarCurves1)
 
 	if overcapCurves.border then
@@ -1010,35 +1089,19 @@ end
 ---Updates the rune display
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
-local function UpdateRunes(specSettings, specCacheSettings)
+---@param conditionMap table<string, boolean>
+---@param sharedColors table
+local function UpdateRunes(specSettings, specCacheSettings, conditionMap, sharedColors)
 	local cpBackgroundColor = specSettings.colors.comboPoints.background.color
 	local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
-	local cpBorderColor = specSettings.colors.comboPoints.border.color
 	local cpBaseColor = specSettings.colors.comboPoints.base
 	local cpCooldownColor = specSettings.colors.comboPoints.cooldown
 	local cpCooldownEnabled = specSettings.colors.comboPoints.cooldownEnabled
 
 	local runes = TRB.Data.character.runes
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-	local conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
-
-	-- "Rune (Off Cooldown)" and "Rune (Regenerating)" partition the runes, so each resolves its own colors and gradient.
 	local runeReadyColors = scratch.runeBarColors1
-	wipe(runeReadyColors)
-	runeReadyColors.bar = cpBaseColor
-	runeReadyColors.border = cpBorderColor
-	runeReadyColors.background = cpBackgroundColor
 	local runeRegenColors = scratch.runeBarColors2
-	wipe(runeRegenColors)
-	runeRegenColors.bar = cpBaseColor
-	runeRegenColors.border = cpBorderColor
-	runeRegenColors.background = cpBackgroundColor
-	local barColorMap = scratch.barColorMap2
-	wipe(barColorMap)
-	barColorMap.runesBar = runeReadyColors
-	barColorMap.runesBarRegenerating = runeRegenColors
-
-	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 	-- An indicator claiming the regenerating fill outranks the per-rune cooldown color.
 	local regenBarIndicated = runeRegenColors.bar ~= cpBaseColor
@@ -1070,7 +1133,7 @@ local function UpdateRunes(specSettings, specCacheSettings)
 		if barGroups and barGroups.secondary then
 			local runeNode = barGroups.secondary:GetNode(x)
 			if runeNode then
-				Bar:SetBarNodeValue(specCacheSettings, "rune" .. x, runeNode, runeValue, 1)
+				Bar:SetBarNodeValue(specCacheSettings, nodeKeys.rune[x], runeNode, runeValue, 1)
 				if runeGradientResults.border then
 					runeNode:SetBorderColorCurve(runeGradientResults.border, Color:EvaluateEndCapCurve(runeNode, runeGradientCurves.border))
 				else
@@ -1101,7 +1164,9 @@ end
 ---that cannot be compared directly.
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
-local function UpdateBoneShield(specSettings, specCacheSettings)
+---@param conditionMap table<string, boolean>
+---@param sharedColors table
+local function UpdateBoneShield(specSettings, specCacheSettings, conditionMap, sharedColors)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 	local boneShieldStacks = snapshotData.attributes.boneShieldStacks or 0
@@ -1141,43 +1206,21 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 		ossuaryThresholdEnabled = boneShieldColors.ossuaryThreshold and boneShieldColors.ossuaryThreshold.enabled or false
 	end
 
-	-- Compute indicator overrides for bone shield elements (nil = use default)
-	local bsBarOverride, bsBorderOverride, bsBackgroundOverride = nil, nil, nil
-	local sharedColors = specSettings.colors.shared
-	local indicatorColors = sharedColors and sharedColors.indicatorColors
-	local nodeOrder = sharedColors and sharedColors.nodeOrder
-
-	if nodeOrder and indicatorColors then
-		local conditionMap = GetDeathKnightIndicatorState(specSettings)
-		TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
-
-		-- Apply flat indicators to bone shield targets (reverse iteration, last writer wins)
-		for i = #nodeOrder, 1, -1 do
-			local key = nodeOrder[i]
-			local indicator = indicatorColors[key]
-			if indicator and indicator.enabled and conditionMap[key] then
-				local bsTargets = indicator.targets and indicator.targets.boneShield
-				if bsTargets then
-					if bsTargets.bar then bsBarOverride = indicator end
-					if bsTargets.border then bsBorderOverride = indicator.color end
-					if bsTargets.background then bsBackgroundOverride = indicator.color end
-				end
-			end
-		end
-	end
+	-- Flat indicator overrides for bone shield elements (nil = use default)
+	local boneShieldIndicated = scratch.boneShieldIndicated1
+	local bsBarOverride = boneShieldIndicated.bar
+	local bsBorderOverride = boneShieldIndicated.border
+	local bsBackgroundOverride = boneShieldIndicated.background
 
 	-- Build gradient curves for bone shield targets (border/background, uses runic power scale)
 	local bsOvercapCurves = scratch.boneShieldCurves1
 	wipe(bsOvercapCurves)
-	do
-		local conditionMap = GetDeathKnightIndicatorState(specSettings)
-		local bsGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "boneShield", scratch.barGradients1)
-		if bsGradients.border then
-			bsOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, bsBorderOverride or cpBorderColor, bsGradients.border.color)
-		end
-		if bsGradients.background then
-			bsOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, bsBackgroundOverride or cpBackgroundColor, bsGradients.background.color)
-		end
+	local bsGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "boneShield", scratch.barGradients1)
+	if bsGradients.border then
+		bsOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, bsBorderOverride or cpBorderColor, bsGradients.border.color)
+	end
+	if bsGradients.background then
+		bsOvercapCurves.background = Color:BuildResourceThresholdCurve(specSettings, bsBackgroundOverride or cpBackgroundColor, bsGradients.background.color)
 	end
 
 	-- Update all Bone Shield nodes with positional coloring + indicator overrides
@@ -1186,7 +1229,7 @@ local function UpdateBoneShield(specSettings, specCacheSettings)
 		if boneShieldNode then
 			-- All nodes get the same raw secret value; each node's stepped
 			-- SetMinMax(x-1, x) handles fill via StatusBar clamping
-			Bar:SetBarNodeValue(specCacheSettings, "boneShield" .. x, boneShieldNode, boneShieldStacks)
+			Bar:SetBarNodeValue(specCacheSettings, nodeKeys.boneShield[x], boneShieldNode, boneShieldStacks)
 
 			-- Positional coloring:
 			-- Nodes 1 through threshold: ossuary color (if enabled)
@@ -1237,7 +1280,9 @@ end
 ---0-100 and takes the raw secret count straight from the Cooldown Manager; the StatusBar scales it.
 ---@param specSettings table
 ---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
-local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
+---@param conditionMap table<string, boolean>
+---@param sharedColors table
+local function UpdateCoagulatingBlood(specSettings, specCacheSettings, conditionMap, sharedColors)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DeathKnight.BloodSpells]]
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
@@ -1269,18 +1314,7 @@ local function UpdateCoagulatingBlood(specSettings, specCacheSettings)
 
 	-- Same color resolution as the primary bar. Unlike Bone Shield the fill has no positional scheme
 	-- of its own, so the gradient can target it too.
-	local conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
 	local coagulatingBloodColors = scratch.coagulatingBloodColors1
-	wipe(coagulatingBloodColors)
-	coagulatingBloodColors.bar = colors.bar
-	coagulatingBloodColors.border = colors.border.color
-	coagulatingBloodColors.background = colors.background.color
-	local barColorMap = scratch.barColorMap3
-	wipe(barColorMap)
-	barColorMap.coagulatingBlood = coagulatingBloodColors
-
-	Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
-
 	local overcapCurves = BuildGradientCurves(specSettings, sharedColors, conditionMap, "coagulatingBlood", coagulatingBloodColors, scratch.coagulatingBloodCurves1)
 
 	if overcapCurves.border then
@@ -1339,10 +1373,11 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.deathknight_blood.settings
 		UpdateSnapshot_Blood()
 		if snapshotData.attributes.isTracking then
+			local conditionMap, sharedColors = ResolveIndicatorColors(specSettings, true)
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
-				ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
+				ApplyPrimaryRunicPowerColors(specSettings, primaryNode, conditionMap, sharedColors)
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -1362,7 +1397,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateRunes(specSettings, specCacheSettings)
+				UpdateRunes(specSettings, specCacheSettings, conditionMap, sharedColors)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1373,12 +1408,12 @@ local function UpdateResourceBar()
 
 			if specSettings.displayBar.boneShield and not specSettings.displayBar.boneShield.neverShow then
 				refreshText = true
-				UpdateBoneShield(specSettings, specCacheSettings)
+				UpdateBoneShield(specSettings, specCacheSettings, conditionMap, sharedColors)
 			end
 
 			if specSettings.displayBar.coagulatingBlood and not specSettings.displayBar.coagulatingBlood.neverShow then
 				refreshText = true
-				UpdateCoagulatingBlood(specSettings, specCacheSettings)
+				UpdateCoagulatingBlood(specSettings, specCacheSettings, conditionMap, sharedColors)
 			end
 		end
 
@@ -1391,10 +1426,11 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.deathknight_frost.settings
 		UpdateSnapshot_Frost()
 		if snapshotData.attributes.isTracking then
+			local conditionMap, sharedColors = ResolveIndicatorColors(specSettings, false)
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
-				ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
+				ApplyPrimaryRunicPowerColors(specSettings, primaryNode, conditionMap, sharedColors)
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -1414,7 +1450,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateRunes(specSettings, specCacheSettings)
+				UpdateRunes(specSettings, specCacheSettings, conditionMap, sharedColors)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1433,10 +1469,11 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.deathknight_unholy.settings
 		UpdateSnapshot_Unholy()
 		if snapshotData.attributes.isTracking then
+			local conditionMap, sharedColors = ResolveIndicatorColors(specSettings, false)
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
 				local currentResource = snapshotData.attributes.resource
-				ApplyPrimaryRunicPowerColors(specSettings, primaryNode)
+				ApplyPrimaryRunicPowerColors(specSettings, primaryNode, conditionMap, sharedColors)
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
 				if specCacheSettings.maxResource ~= nil and specCacheSettings.maxResource.enabled == true and specCacheSettings.maxResource.value > 0 then
@@ -1456,7 +1493,7 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				UpdateRunes(specSettings, specCacheSettings)
+				UpdateRunes(specSettings, specCacheSettings, conditionMap, sharedColors)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1493,6 +1530,8 @@ local function SwitchSpec()
 	end
 	Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
+	-- Each spec keeps its own rune table, last read whenever that spec was last active.
+	runesDirty = true
 
 	-- Unregister spec-specific events before switching
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")

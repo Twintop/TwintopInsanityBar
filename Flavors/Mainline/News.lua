@@ -9,18 +9,96 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.11-release (2026-11-05)
+## Death Knight
+
+- [#951](#951) Improve rune bar update performance while all runes are ready.
+- [#953](#953) Improve Color Indicator performance.
+- [#953](#953) Fix the health bar's and cast bar's Color Indicators not updating while the Runic Power, rune, Bone Shield, and Coagulating Blood bars are all set to Never Show.
+
+## Demon Hunter
+### Vengeance
+
+- [#955](#955) Improve Soul Fragments bar Color Indicator performance.
+
+### Devourer
+
+- [#955](#955) Improve Soul Fragments bar Color Indicator performance.
+
 ## Druid
 
+- [#947](#947) Improve performance when any of your resources change.
 - [#963](#963) Fix the Ferocious Bite maximum threshold line showing as usable at Ferocious Bite's minimum cost in Cat Form for Balance, Guardian, and Restoration.
+
+### Balance
+
+- [#936](#936) Remove unused moon cycle tracking code.
 
 ### Guardian
 
 - [#961](#961) Fix the Ironfur bar's application lines disappearing after a loading screen, a talent change, or a specialization change.
 
+### Restoration
+
+- [#936](#936) Remove unused mana regeneration code.
+
 ## Evoker
+
+- [#936](#936) Remove unused mana regeneration code.
+- [#957](#957) Improve Essence bar text update performance.
+
 ### Preservation
 
 - [#960](#960) Fix bar text conditions comparing `$essenceMax` with your maximum mana instead of your maximum Essence.
+
+## Mage
+
+- [#936](#936) Remove unused mana regeneration code.
+
+## Monk
+### Brewmaster
+
+- [#955](#955) Improve Stagger bar Color Indicator performance.
+
+## Paladin
+
+- [#936](#936) Remove unused mana regeneration code.
+
+## Priest
+### Discipline
+
+- [#950](#950) Improve update performance outside Mythic+ keystones.
+
+### Holy
+
+- [#950](#950) Improve update performance outside Mythic+ keystones.
+
+### Shadow
+
+- [#958](#958) Improve bar text update performance in combat.
+
+## Rogue
+
+- [#948](#948) Improve combo point bar update performance.
+- [#952](#952) Improve Color Indicator performance.
+
+## Shaman
+### Elemental
+
+- [#949](#949) Improve update performance of Earth Shock, Elemental Blast, and Earthquake tracking.
+- [#954](#954) Improve mana bar Color Indicator performance.
+
+### Enhancement
+
+- [#955](#955) Improve Maelstrom Weapon bar Color Indicator performance.
+
+## Warlock
+### Demonology
+
+- [#936](#936) Remove unused mana regeneration code.
+
+### Destruction
+
+- [#936](#936) Remove unused mana regeneration code.
 
 ---
 

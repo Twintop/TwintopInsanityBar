@@ -640,6 +640,34 @@ function TRB.Functions.Color:GetOvercapThreshold(overcap, maxResource)
 	return overcap.fixed or maxResource
 end
 
+-- Resource curves by below color, above color, then threshold, kept inside the curve cache so a clear drops them too.
+local RESOURCE_CURVE_ROOT = {}
+
+---Records a resource curve under its raw inputs, for BuildResourceThresholdCurve's per-tick lookup.
+---@param cache table
+---@param belowColor string
+---@param aboveColor string
+---@param thresholdPercent number
+---@param curve table
+local function StoreResourceCurve(cache, belowColor, aboveColor, thresholdPercent, curve)
+	local byBelow = cache[RESOURCE_CURVE_ROOT]
+	if byBelow == nil then
+		byBelow = {}
+		cache[RESOURCE_CURVE_ROOT] = byBelow
+	end
+	local byAbove = byBelow[belowColor]
+	if byAbove == nil then
+		byAbove = {}
+		byBelow[belowColor] = byAbove
+	end
+	local byThreshold = byAbove[aboveColor]
+	if byThreshold == nil then
+		byThreshold = {}
+		byAbove[aboveColor] = byThreshold
+	end
+	byThreshold[thresholdPercent] = curve
+end
+
 ---Builds a resource threshold ColorCurve for use with UnitPowerPercent (e.g., overcap border/text color)
 ---@param specSettings table? The spec-specific settings table (e.g., specSettings.overcap)
 ---@param belowColor string The color hex string for below threshold (e.g., "FF00FF00")
@@ -669,14 +697,17 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 
 	-- Check cache first
 	local cache = TRB.Data.cache.stepColorCurves
-	local fastCurve = self:GetFastCurve(cache, "resource", belowColor, aboveColor, thresholdPercent)
+	local byBelow = cache[RESOURCE_CURVE_ROOT]
+	local byAbove = byBelow and byBelow[belowColor]
+	local byThreshold = byAbove and byAbove[aboveColor]
+	local fastCurve = byThreshold and byThreshold[thresholdPercent]
 	if fastCurve ~= nil then
 		return fastCurve
 	end
 	local cacheKey = belowColor .. "_" .. aboveColor .. "_" .. tostring(thresholdPercent)
 
 	if cache[cacheKey] then
-		self:SetFastCurve(cache, cache[cacheKey], "resource", belowColor, aboveColor, thresholdPercent)
+		StoreResourceCurve(cache, belowColor, aboveColor, thresholdPercent, cache[cacheKey])
 		return cache[cacheKey]
 	end
 
@@ -693,7 +724,7 @@ function TRB.Functions.Color:BuildResourceThresholdCurve(specSettings, belowColo
 
 	self:SetCurveThresholdMeta(colorCurve, belowColor, { { x = thresholdPercent, color = aboveColor } })
 	cache[cacheKey] = colorCurve
-	self:SetFastCurve(cache, colorCurve, "resource", belowColor, aboveColor, thresholdPercent)
+	StoreResourceCurve(cache, belowColor, aboveColor, thresholdPercent, colorCurve)
 	return colorCurve
 end
 
@@ -947,9 +978,10 @@ end
 ---@param node TRB.Classes.BarNode # The BarNode to color
 ---@param colorEntry string|TRB.Classes.Settings.ColorGradientEntry # Color string or gradient entry table
 function TRB.Functions.Color:ApplyFillColor(node, colorEntry)
-	if type(colorEntry) == "string" then
+	local entryType = type(colorEntry)
+	if entryType == "string" then
 		node:SetColor(colorEntry)
-	elseif type(colorEntry) == "table" then
+	elseif entryType == "table" then
 		if colorEntry.gradientDirection and colorEntry.gradientDirection ~= "disabled" and colorEntry.color2 then
 			node:SetColorGradient(colorEntry.color, colorEntry.color2, colorEntry.gradientDirection)
 		else
@@ -1209,37 +1241,36 @@ local sharedIndicatorBars = {
 	petCastbar = true, petHealthBar = true, petPowerBar = true, totemsBar = true,
 }
 
+-- Only ApplyIndicatorColors writes these resolved tables, so a pass that wrote none leaves nothing to wipe.
+local sharedBarsWritten = true
+local gradientsWritten = true
+local glowsWritten = true
+
 ---Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
 ---nodeOrder back to front so earlier (higher-priority) entries overwrite later ones. The spec's bars are
 ---written back into barColorMap in place; the shared bars are parked in TRB.Data.resolvedIndicators.
 ---Pass a nil barColorMap when the spec colors its own bars itself and only needs the shared ones.
 ---
----The shared bars are recomputed from scratch on every call, so a spec that calls this more than once in a
----frame (Death Knight and Elemental Shaman do, once per bar they own) MUST pass an equivalent conditionMap
----each time -- the last call decides what the health bar and cast bar see. Deriving conditionMap from live
----state, as every spec does, satisfies that on its own.
+---Every call recomputes the shared bars, so more than one call a frame needs equivalent conditionMaps.
 ---@param sharedColors table? # spec.colors.shared -- indicatorColors + nodeOrder
 ---@param conditionMap table<string, boolean> # Indicator key -> whether its condition is met right now; custom indicator keys are written into it
 ---@param barColorMap table<string, table>? # barKey -> { bar =, border =, background = }, seeded with the spec's unindicated colors
 ---@param overrides table<string, table<string, boolean>>? # Optional: for each barKey the caller seeds here, records which elements an indicator claimed (specs that render an element differently once an indicator owns it)
 function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
 	local resolved = TRB.Data.resolvedIndicators
-	local healthBar = resolved.healthBar
 	local castbar = resolved.castbar
-	local targetCastbar = resolved.targetCastbar
-	local focusCastbar = resolved.focusCastbar
 	local petCastbar = resolved.petCastbar
-	local petHealthBar = resolved.petHealthBar
-	local petPowerBar = resolved.petPowerBar
-	local totemsBar = resolved.totemsBar
-	wipe(healthBar)
-	wipe(castbar)
-	wipe(targetCastbar)
-	wipe(focusCastbar)
-	wipe(petCastbar)
-	wipe(petHealthBar)
-	wipe(petPowerBar)
-	wipe(totemsBar)
+	if sharedBarsWritten then
+		wipe(resolved.healthBar)
+		wipe(castbar)
+		wipe(resolved.targetCastbar)
+		wipe(resolved.focusCastbar)
+		wipe(petCastbar)
+		wipe(resolved.petHealthBar)
+		wipe(resolved.petPowerBar)
+		wipe(resolved.totemsBar)
+		sharedBarsWritten = false
+	end
 
 	local character = TRB.Data.character
 	resolved.compositeKey = character.compositeKey
@@ -1255,8 +1286,11 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 	-- Same per-element selection ResolveGradientTargets makes for a spec's own bars, for every bar at once.
 	local gradients = resolved.gradients
 	local gradientKeys = resolved.gradientKeys
-	for _, barGradients in pairs(gradients) do
-		wipe(barGradients)
+	if gradientsWritten then
+		for _, barGradients in pairs(gradients) do
+			wipe(barGradients)
+		end
+		gradientsWritten = false
 	end
 	if indicatorColors and gradientOrder then
 		for i = 1, #gradientOrder do
@@ -1264,6 +1298,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 			local indicator = indicatorColors[key]
 			if indicator and indicator.enabled and indicator.isGradient and indicator.targets and conditionMap[indicator.copyOf or key] then
 				gradientKeys[indicator] = indicator.copyOf or key
+				gradientsWritten = true
 				for barKey, elements in pairs(indicator.targets) do
 					local barGradients = gradients[barKey]
 					if barGradients == nil then
@@ -1281,7 +1316,10 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 	end
 
 	local barGlows = resolved.barGlows
-	wipe(barGlows)
+	if glowsWritten then
+		wipe(barGlows)
+		glowsWritten = false
+	end
 
 	if indicatorColors and nodeOrder then
 		for i = #nodeOrder, 1, -1 do
@@ -1299,11 +1337,13 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 						end
 						glowEntry.glows = elements.glows
 						glowEntry.color = indicator.color
+						glowsWritten = true
 					end
 
 					local targetColors
 					if sharedIndicatorBars[barKey] then
 						targetColors = resolved[barKey]
+						sharedBarsWritten = true
 					else
 						targetColors = barColorMap and barColorMap[barKey]
 					end

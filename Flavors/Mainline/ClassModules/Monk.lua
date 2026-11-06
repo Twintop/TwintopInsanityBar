@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -433,14 +434,15 @@ local function RefreshLookupData_Brewmaster()
 		lookupLogic["$stagger"] = _stagger
 		lookupLogic["$staggerPercent"] = _staggerPercent
 
-		if lookupChanged(prevState, "$stagger", _stagger, staggerColor, true) then
+		-- UpdateSnapshot_Brewmaster replaces a secret stagger with 0, so both values memoize.
+		if lookupChanged(prevState, "$stagger", _stagger, staggerColor) then
 			if staggerColor then
 				lookup["$stagger"] = string.format("|c%s%s|r", staggerColor, TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger))
 			else
 				lookup["$stagger"] = TRB.Functions.String:ConvertToAbbreviatedNumber(_stagger)
 			end
 		end
-		if lookupChanged(prevState, "$staggerPercent", _staggerPercent, staggerColor, true) then
+		if lookupChanged(prevState, "$staggerPercent", _staggerPercent, staggerColor) then
 			if staggerColor then
 				lookup["$staggerPercent"] = string.format("|c%s%.1f|r", staggerColor, _staggerPercent * 100)
 			else
@@ -553,7 +555,6 @@ local function RefreshLookupData_Windwalker()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local _castingEnergy = snapshotData.casting.resourceFinal
 
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -566,6 +567,7 @@ local function RefreshLookupData_Windwalker()
 		local resourceChanged = lookupChanged(prevState, "$energy", resourceFormatted, currentEnergyColor)
 		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
 		if resourceChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentEnergy
 			local castingEnergy
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -1010,11 +1012,16 @@ local function UpdateSnapshot_Brewmaster()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	UpdateSnapshot()
 
+	local previousStagger = snapshotData.attributes.stagger
 	snapshotData.attributes.stagger = UnitStagger("player")
 
 	if issecretvalue(snapshotData.attributes.stagger) then
 		snapshotData.attributes.stagger = 0
 	else
+		-- Stagger has no event; it's polled here every tick.
+		if snapshotData.attributes.stagger ~= previousStagger then
+			TRB.Data.lookupDirty = true
+		end
 		snapshotData.attributes.staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.healthMax
 	end
 	UpdateStaggerColor()
@@ -1058,9 +1065,7 @@ local scratch = {
 	energyBarColors1 = {},
 	barColorMap1 = {},
 	energyOvercapCurves1 = {},
-	stConditionMap1 = {},
 	stOvercapCurves1 = {},
-	stGradientConditionMap1 = {},
 	conditionMap2 = {},
 	manaBarColors1 = {},
 	barColorMap2 = {},
@@ -1076,6 +1081,7 @@ local scratch = {
 	staggerGradients1 = {},
 	energyGradients2 = {},
 	chiGradients1 = {},
+	staggerBarColors1 = {},
 }
 
 local function UpdateResourceBar()
@@ -1140,11 +1146,13 @@ local function UpdateResourceBar()
 			energyBarColors.bar = barColor
 			energyBarColors.border = barBorderColor
 			energyBarColors.background = barBackgroundColor
-			-- Stagger border/background are colored bespoke below; this entry routes flat indicator end cap colors
 			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.energyBar = energyBarColors
-			barColorMap.staggerBar = {}
+			-- Seeded empty, so a Stagger element holds a color only when an indicator claimed it.
+			local staggerBarColors = scratch.staggerBarColors1
+			wipe(staggerBarColors)
+			barColorMap.staggerBar = staggerBarColors
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -1247,54 +1255,14 @@ local function UpdateResourceBar()
 						local cpBorderColor = staggerColors.border
 						if type(cpBorderColor) == "table" then cpBorderColor = cpBorderColor.color end
 
-						-- Compute indicator overrides for stagger border/background
-						local stBorderOverride, stBackgroundOverride = nil, nil
-						local stSharedColors = specSettings.colors.shared
-						local stIndicatorColors = stSharedColors and stSharedColors.indicatorColors
-						local stNodeOrder = stSharedColors and stSharedColors.nodeOrder
-
-						if stNodeOrder and stIndicatorColors then
-							local stSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
-							local invokeNiuzaoActive = snapshots[stSpells.invokeNiuzao.id].buff.isActive
-							local invokeNiuzaoEndMet = false
-							if invokeNiuzaoActive then
-								local niuzaoTimeLeft = snapshots[stSpells.invokeNiuzao.id].buff:GetRemainingTime(currentTime)
-								local timeThreshold = 0
-								if specSettings.endOf.invokeNiuzao.mode == "gcd" then
-									local gcd = Character:GetCurrentGCDTime()
-									timeThreshold = gcd * specSettings.endOf.invokeNiuzao.gcdsMax
-								elseif specSettings.endOf.invokeNiuzao.mode == "time" then
-									timeThreshold = specSettings.endOf.invokeNiuzao.timeMax
-								end
-								invokeNiuzaoEndMet = niuzaoTimeLeft <= timeThreshold
-							end
-
-							local stConditionMap = scratch.stConditionMap1
-							wipe(stConditionMap)
-							stConditionMap.invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet
-							stConditionMap.invokeNiuzao = invokeNiuzaoActive
-							TRB.Functions.Color:ApplyCustomIndicatorConditions(stSharedColors, stConditionMap)
-
-							for i = #stNodeOrder, 1, -1 do
-								local key = stNodeOrder[i]
-								local indicator = stIndicatorColors[key]
-								if indicator and indicator.enabled and stConditionMap[key] then
-									local stTargets = indicator.targets and indicator.targets.staggerBar
-									if stTargets then
-										if stTargets.border then stBorderOverride = indicator.color end
-										if stTargets.background then stBackgroundOverride = indicator.color end
-									end
-								end
-							end
-						end
+						-- Flat indicator overrides for stagger border/background (nil = use default)
+						local stBorderOverride = staggerBarColors.border
+						local stBackgroundOverride = staggerBarColors.background
 
 						-- Build gradient curves for stagger targets (border/background only, uses energy scale)
 						local stOvercapCurves = scratch.stOvercapCurves1
 						wipe(stOvercapCurves)
-						local stGradientConditionMap = scratch.stGradientConditionMap1
-						wipe(stGradientConditionMap)
-						stGradientConditionMap.borderOvercap = TRB.Data.character.inCombat
-						local staggerGradients = Color:ResolveGradientTargets(stSharedColors, stGradientConditionMap, "staggerBar", scratch.staggerGradients1)
+						local staggerGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "staggerBar", scratch.staggerGradients1)
 						if staggerGradients.border then
 							stOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, stBorderOverride or cpBorderColor, staggerGradients.border.color)
 						end
@@ -1559,14 +1527,14 @@ local function UpdateResourceBar()
 						local chiNode = barGroups.secondary:GetNode(x)
 						if chiNode then
 							if snapshotData.attributes.resource2 >= x then
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 1, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], chiNode, 1, 1)
 								if not chiBarOverrides.bar and not chiOvercapCurves.bar and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))) then
 									cpColor = specSettings.colors.comboPoints.penultimate
 								elseif not chiBarOverrides.bar and not chiOvercapCurves.bar and ((specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2) then
 									cpColor = specSettings.colors.comboPoints.final
 								end
 							else
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chiNode, 0, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], chiNode, 0, 1)
 							end
 
 							if chiOvercapCurves.border then

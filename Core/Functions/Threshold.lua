@@ -40,7 +40,7 @@ local function IsVerticalFillDirection(fillDirection)
 	return fillDirection == "bottomTop" or fillDirection == "topBottom"
 end
 
--- Widget writes skip a repeat: recorded values for writes only this file makes, live reads for levels and desaturation.
+-- Widget writes skip a repeat: recorded values for writes only this file makes, live reads for icon layout levels.
 
 ---@param frame TRB.Classes.ThresholdFrame
 ---@param width number
@@ -72,12 +72,41 @@ local function SetIconVertexWhite(texture)
 	end
 end
 
----@param texture Texture
+---@param texture TRB.Classes.ThresholdFrame.IconTexture
 ---@param desaturated boolean
 local function SetIconDesaturated(texture, desaturated)
-	if texture:IsDesaturated() ~= desaturated then
+	if texture.trbDesaturated ~= desaturated then
 		texture:SetDesaturated(desaturated)
+		texture.trbDesaturated = desaturated
 	end
+end
+
+---Shows or hides a line frame itself, recording the state so the per-tick callers skip a repeat.
+---@param frame TRB.Classes.ThresholdFrame
+---@param shown boolean
+local function SetLineShown(frame, shown)
+	if frame.trbShown ~= shown then
+		if shown then
+			frame:Show()
+		else
+			frame:Hide()
+		end
+		frame.trbShown = shown
+	end
+end
+
+---Evaluates a curve against a custom threshold target's secret-safe percent API, or nil when it has none.
+---@param targetInfo table
+---@param curve table
+---@return table?
+local function EvaluateTargetCurve(targetInfo, curve)
+	if targetInfo.key == "health" then
+		return UnitHealthPercent("player", true, curve)
+	elseif type(targetInfo.resourceType) == "number" then
+		-- String sentinels like "CUSTOM" (Devourer Soul Fragments/Collapsing Star) have no power API.
+		return UnitPowerPercent("player", targetInfo.resourceType, true, curve)
+	end
+	return nil
 end
 
 ---@param frame Frame
@@ -354,12 +383,17 @@ end
 ---computation). The range is `0 - current max`, where the current max comes from the live
 ---game value and is only capped by the optional `maxResource.value` override when it is enabled.
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
----@param fallback number
+---@param fallback number?
+---@param fallbackFrame StatusBar? # Read for the fallback only when the live maximum is unknown
 ---@return number barMax # The shown range, capped by the override
 ---@return number resourceMax # The live maximum, ignoring the override
-local function GetPrimaryBarMaxValue(settings, fallback)
+local function GetPrimaryBarMaxValue(settings, fallback, fallbackFrame)
 	local maxResource = TRB.Data.character and TRB.Data.character.maxResourceUnmodified
 	if maxResource == nil or maxResource <= 0 then
+		if fallbackFrame ~= nil and type(fallbackFrame.GetMinMaxValues) == "function" then
+			local _, frameMax = fallbackFrame:GetMinMaxValues()
+			fallback = GetPositivePlainNumber(frameMax, 100)
+		end
 		maxResource = GetPositivePlainNumber(fallback, 100)
 	end
 	local resourceMax = GetPositivePlainNumber(maxResource, 100)
@@ -429,7 +463,8 @@ end
 ---@param key string
 ---@param drawn boolean
 ---@param iconSettings TRB.Classes.Settings.ThresholdDictionaryIcon? # The line's per-threshold icon settings
-local function TrackIconLayout(threshold, parentFrame, key, drawn, iconSettings)
+---@param cache table? # The key's display cache, when the caller already has it
+local function TrackIconLayout(threshold, parentFrame, key, drawn, iconSettings, cache)
 	if threshold.icon == nil then
 		return
 	end
@@ -470,7 +505,7 @@ local function TrackIconLayout(threshold, parentFrame, key, drawn, iconSettings)
 	-- Edits to these settings redraw, which dirties every layout.
 	entry.icon = iconSettings
 
-	local cache = GetThresholdCache(key)
+	cache = cache or GetThresholdCache(key)
 	-- The key's live line owns it; a line discarded by ClearThresholds keeps its entry until the next solve prunes it.
 	if cache.layoutEntry ~= entry then
 		cache.layoutEntry = entry
@@ -654,6 +689,8 @@ local function ApplyIconLayoutLevel(entry, level)
 	end
 
 	cache.iconLayoutLevel = level
+	-- A color curve on this line re-asserts its levels next pass.
+	entry.frame.trbCurveLevel = nil
 	if level == nil then
 		-- AdjustThresholdDisplay rewrites the bucket levels on its next pass.
 		cache.frameLevel = nil
@@ -894,7 +931,10 @@ end
 ---@param maxResource number? # The maximum resource value (defaults to character's maxResource or 100)
 ---@param growRight boolean? # Whether the bar grows left-to-right (default true); ignored when fillDirection is present
 ---@param barSettings table? # Dimension block of the bar hosting the line (a custom bar's `bars.<key>`); defaults to `settings.bar`
-function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight, barSettings)
+---@param parentWidth number? # The parent node's size as SetDimensions last set it, saving the frame reads
+---@param parentHeight number?
+---@param cache table? # The key's display cache, when the caller already has it
+function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLine, showThreshold, parentFrame, value, maxResource, growRight, barSettings, parentWidth, parentHeight, cache)
 	if not showThreshold or settings == nil or thresholdLine == nil then
 		return
 	end
@@ -919,11 +959,11 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, key, thresholdLin
 		fillDirection = growRight and "leftRight" or "rightLeft"
 	end
 
-	local cache = GetThresholdCache(key)
+	cache = cache or GetThresholdCache(key)
 
 	-- Derive effective dimensions from the parent frame's actual rendered size.
-	local effectiveWidth = parentFrame:GetWidth()
-	local effectiveHeight = parentFrame:GetHeight()
+	local effectiveWidth = parentWidth or parentFrame:GetWidth()
+	local effectiveHeight = parentHeight or parentFrame:GetHeight()
 	local lineThickness = cache.lineThickness or settings.thresholds.properties.width
 	local overlapBorder = cache.overlapBorder
 	if overlapBorder == nil then
@@ -970,13 +1010,14 @@ end
 ---@param thresholdOverrides table? Per-threshold overrides from thresholdDictionary (optional)
 ---@param barSettings table? # Dimension block of the bar hosting the line; defaults to `settings.bar`
 ---@param fillDirection trbFillDirection? # The host bar's resolved direction, for lines with no dimension block of their own
-function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides, barSettings, fillDirection)
+---@param cache table? # The key's display cache, when the caller already has it
+function TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides, barSettings, fillDirection, cache)
 	if threshold == nil or threshold.icon == nil then
 		return
 	end
 	fillDirection = fillDirection or (barSettings or settings.bar).fillDirection
 
-	local cache = GetThresholdCache(key)
+	cache = cache or GetThresholdCache(key)
 
 	if cache.texture ~= spell.texture then
 		threshold.icon.texture:SetTexture(spell.texture)
@@ -1138,6 +1179,8 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 	threshold.texture.trbExtendLow = nil
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Hide()
+	threshold.trbShown = false
+	threshold.trbCurveLevel = nil
 	ClearCooldownGateAlpha(threshold)
 	threshold.hasIcon = hasIcon
 
@@ -1207,6 +1250,7 @@ function TRB.Functions.Threshold:ResetThresholdLineComboPoint(threshold, setting
 	threshold.texture.trbExtendLow = nil
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Show()
+	threshold.trbShown = true
 	ClearCooldownGateAlpha(threshold)
 	threshold.hasIcon = hasIcon
 
@@ -1266,8 +1310,9 @@ function TRB.Functions.Threshold:ResetThresholdLineCustomBar(threshold, width, h
 	threshold.texture.trbExtendLow = nil
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Show()
+	threshold.trbShown = true
 	threshold.hasIcon = false
-	
+
 	TRB.Functions.Color:SetThresholdColor(threshold, borderColor, true)
 end
 
@@ -1286,12 +1331,14 @@ function TRB.Functions.Threshold:RepositionThresholdComboPoint(settings, key, th
 		-- Hide the threshold line if showThreshold is false
 		if thresholdLine and not showThreshold then
 			thresholdLine:Hide()
+			thresholdLine.trbShown = false
 		end
 		return
 	end
 
 	-- Show the threshold line since showThreshold is true
 	thresholdLine:Show()
+	thresholdLine.trbShown = true
 
 	if growRight == nil then
 		growRight = true
@@ -1341,7 +1388,7 @@ end
 ---@param parentFrame Frame # The parent frame to anchor to
 ---@param value number # The value at which to position the threshold
 ---@param maxResource number # The maximum resource value
----@param barWidth number # The width of the bar
+---@param barWidth number? # Unused; the line sizes to its parent frame
 ---@param barBorder number # The border size of the bar
 ---@param growRight boolean? # Whether the bar grows right (default true); ignored when fillDirection is present
 ---@param fillDirection trbFillDirection? # The fill direction of the bar (nil defaults to leftRight/rightLeft based on growRight)
@@ -1351,13 +1398,13 @@ function TRB.Functions.Threshold:RepositionThresholdCustomBar(key, thresholdLine
 	if not showThreshold or thresholdLine == nil then
 		-- Hide the threshold line if showThreshold is false
 		if thresholdLine and not showThreshold then
-			thresholdLine:Hide()
+			SetLineShown(thresholdLine, false)
 		end
 		return
 	end
 
 	-- Show the threshold line since showThreshold is true
-	thresholdLine:Show()
+	SetLineShown(thresholdLine, true)
 
 	if growRight == nil then
 		growRight = true
@@ -1537,19 +1584,21 @@ end
 ---@param frame Frame|StatusBar?
 ---@return number currentValue
 ---@return number maxValue
+---@return any rawValue # As read, possibly secret; nil when the frame has no value
+---@return any rawMax
 local function GetStatusBarValues(frame)
 	if frame == nil or type(frame.GetValue) ~= "function" then
 		return 0, 100
 	end
 
-	local currentValue = GetPlainNumber(frame:GetValue(), 0)
-	local maxValue = 100
+	local rawValue = frame:GetValue()
+	local rawMax = nil
 	if type(frame.GetMinMaxValues) == "function" then
 		local _, frameMax = frame:GetMinMaxValues()
-		maxValue = GetPositivePlainNumber(frameMax, 100)
+		rawMax = frameMax
 	end
 
-	return currentValue, maxValue
+	return GetPlainNumber(rawValue, 0), GetPositivePlainNumber(rawMax, 100), rawValue, rawMax
 end
 
 ---Returns the registered BarTypeDefinition for a bar key, or nil for non-registry bars.
@@ -2125,10 +2174,17 @@ end
 ---@param barTarget string
 ---@param classId integer?
 ---@param specId integer?
+---@param pass integer? # UpdateCustomThresholdLines' pass, so lines sharing a target resolve it once
 ---@return table?
-function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroups, barTarget, classId, specId)
+function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroups, barTarget, classId, specId, pass)
 	if settings == nil or barGroups == nil or barTarget == nil then
 		return nil
+	end
+	if pass ~= nil then
+		local resolved = targetInfoByTarget[barTarget]
+		if resolved ~= nil and resolved.pass == pass then
+			return resolved
+		end
 	end
 
 	if classId == nil and TRB.Data.character ~= nil then
@@ -2159,7 +2215,10 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		return nil
 	end
 
-	local currentValue, maxValue = GetStatusBarValues(valueFrame)
+	-- The status bar's own value and max are fallbacks, read only by the branches that use them.
+	local currentValue, maxValue = 0, 100
+	local rawBarValue, rawBarMax = nil, nil
+	local barRead = false
 	local fillDirection = group.growthDirection or "leftRight"
 	local border = 0
 	local resourceType = nil
@@ -2184,12 +2243,10 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	-- An amalgamation sub-target measured in seconds into its recharging node (thresholdRechargeFunc).
 	local rechargeScaled = false
 
-	if baseKey == "primary" and FindContextSubTarget(classId, specId, "primary", nodeKey, settings) ~= nil then
-		-- Druid form sub-target (e.g. "primary:energy"): the primary bar shows a different
-		-- resource per shapeshift form. Each form's resource is a real power type, so coloring
-		-- uses the secret-safe ColorCurve path (no comparison needed). The unified Mana target
-		-- renders on the dedicated mana bar in Moonkin (altBarKey) and the primary bar otherwise.
-		local sub = FindContextSubTarget(classId, specId, "primary", nodeKey, settings) --[[@as table]] -- We already know this is not-nil from the conditional above.
+	local primarySub = baseKey == "primary" and FindContextSubTarget(classId, specId, "primary", nodeKey, settings) or nil
+	if primarySub ~= nil then
+		-- A Druid form's power type colors by curve; the Mana target sits on the mana bar in Moonkin (altBarKey).
+		local sub = primarySub
 		contextActive = IsContextSubTargetActive(sub)
 
 		local resolvedKey = "primary"
@@ -2254,9 +2311,9 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		if rawCurrentValue ~= nil and not IsSecretValue(rawCurrentValue) and type(rawCurrentValue) == "number" then
 			currentValue = rawCurrentValue
 		else
-			currentValue = GetPlainNumber(currentValue, 0)
+			currentValue = GetStatusBarValues(valueFrame)
 		end
-		maxValue, resourceMaxValue = GetPrimaryBarMaxValue(settings, maxValue)
+		maxValue, resourceMaxValue = GetPrimaryBarMaxValue(settings, nil, valueFrame)
 		fillDirection = settings.bar and settings.bar.fillDirection or fillDirection
 		border = settings.bar and settings.bar.border or 0
 		resourceType = TRB.Data.resource
@@ -2303,7 +2360,14 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			-- granularity than the node count (e.g. Destruction Warlock Soul Shards track 50
 			-- fragments across 5 nodes, so a value of 3.5 lands halfway through node 4).
 			nodeCount = GetGroupNodeCount(group)
-			maxValue = GetPositivePlainNumber(nodeCount, GetPositivePlainNumber(group.maxNodes, maxValue))
+			if GetPlainNumber(nodeCount, 0) > 0 then
+				maxValue = nodeCount
+			elseif GetPlainNumber(group.maxNodes, 0) > 0 then
+				maxValue = group.maxNodes
+			else
+				local _, barMax = GetStatusBarValues(valueFrame)
+				maxValue = barMax
+			end
 			local liveMax = GetPositivePlainNumber(TRB.Data.character and TRB.Data.character.maxResource2, maxValue)
 			local rawResource2 = GetPlainNumber(attributes.resource2, 0)
 			if liveMax > 0 then
@@ -2379,6 +2443,8 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 		local barSettings = settings.bars and settings.bars[baseKey]
 		fillDirection = (barSettings and barSettings.fillDirection) or fillDirection
 		border = (barSettings and barSettings.border) or 0
+		currentValue, maxValue, rawBarValue, rawBarMax = GetStatusBarValues(valueFrame)
+		barRead = true
 
 		local barTypeDef = GetBarTypeDefinition(baseKey)
 		if barTypeDef ~= nil then
@@ -2514,16 +2580,13 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	-- color, and multi-node/health/power-type bars are handled by their own paths above.
 	if not supportsValueComparison and not isNodeMapped and baseKey ~= "health"
 		and type(resourceType) ~= "number" and valueFrame ~= nil and type(valueFrame.GetValue) == "function" then
-		local rawValue = valueFrame:GetValue()
+		if not barRead then
+			_, _, rawBarValue, rawBarMax = GetStatusBarValues(valueFrame)
+		end
+		local rawValue = rawBarValue
 		if rawValue ~= nil and not IsSecretValue(rawValue) and type(rawValue) == "number" then
-			local rawMax = nil
-			if type(valueFrame.GetMinMaxValues) == "function" then
-				local _, fm = valueFrame:GetMinMaxValues()
-				if fm ~= nil and not IsSecretValue(fm) and type(fm) == "number" and fm > 0 then
-					rawMax = fm
-				end
-			end
-			if rawMax ~= nil then
+			local rawMax = rawBarMax
+			if rawMax ~= nil and not IsSecretValue(rawMax) and type(rawMax) == "number" and rawMax > 0 then
 				currentValue = (rawValue / rawMax) * maxValue
 				supportsValueComparison = true
 			end
@@ -2558,6 +2621,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	info.compressedOverlap = compressedOverlap
 	info.compressedSplit = compressedSplit
 	info.compressedActive = compressedActive
+	info.pass = pass
 	return info
 end
 
@@ -2684,6 +2748,7 @@ function TRB.Functions.Threshold:ResetCustomThresholdLine(threshold, settings, t
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase - TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:SetFrameStrata(TRB.Data.settings.core.strata.level)
 	threshold:Hide()
+	threshold.trbShown = false
 	threshold.hasIcon = true
 
 	threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
@@ -2700,6 +2765,9 @@ function TRB.Functions.Threshold:ResetCustomThresholdLine(threshold, settings, t
 	SetThresholdIconSizeAndPosition(settings, threshold, targetInfo.fillDirection)
 	TRB.Functions.Color:SetThresholdColor(threshold, settings.colors.threshold.over.color, true)
 end
+
+-- inv-misc-questionmark, for a custom line whose icon is unset or doesn't resolve.
+local missingIconTexture = 134400
 
 ---@param customThreshold TRB.Classes.Settings.CustomThresholdLine
 ---@return string|number?
@@ -2722,7 +2790,7 @@ function TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold)
 		-- A non-"none" source type with an unset/zero ID still wants an icon shown: fall back to
 		-- the "missing icon" question mark rather than hiding it. Only "none" (handled above)
 		-- suppresses the icon entirely.
-		return 134400 -- inv-misc-questionmark
+		return missingIconTexture
 	end
 
 	local texture = nil
@@ -2739,7 +2807,7 @@ function TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold)
 	-- ID doesn't exist). Fall back to the "missing icon" question mark so the user still sees
 	-- an icon for an enabled threshold instead of an empty box.
 	if texture == nil then
-		texture = 134400 -- inv-misc-questionmark
+		texture = missingIconTexture
 	end
 
 	return texture
@@ -2767,25 +2835,7 @@ function TRB.Functions.Threshold:ApplyCustomThresholdCurveColor(threshold, targe
 		return false
 	end
 
-	-- Pick the secret-safe percent API for this bar target. UnitPowerPercent handles
-	-- every power-type resource (primary, secondary, mana custom bar); UnitHealthPercent
-	-- handles the health bar. Both evaluate the curve against the secret value natively.
-	local function EvaluateCurve(curve)
-		if curve == nil then
-			return nil
-		end
-		if targetInfo.key == "health" then
-			return UnitHealthPercent("player", true, curve)
-		elseif type(targetInfo.resourceType) == "number" then
-			-- Only real PowerType enums (numbers) can be evaluated by UnitPowerPercent. String
-			-- sentinels like "CUSTOM" (Devourer Soul Fragments/Collapsing Star) have no power API,
-			-- so return nil and let the caller fall back to the static under color.
-			return UnitPowerPercent("player", targetInfo.resourceType, true, curve)
-		end
-		return nil
-	end
-
-	local colorResult = EvaluateCurve(thresholdCurve)
+	local colorResult = EvaluateTargetCurve(targetInfo, thresholdCurve)
 	if colorResult == nil then
 		return false
 	end
@@ -2803,7 +2853,7 @@ function TRB.Functions.Threshold:ApplyCustomThresholdCurveColor(threshold, targe
 		-- Never use SetDesaturated for curve-driven thresholds; it can't read secret values.
 		SetIconDesaturated(threshold.icon.texture, false)
 		if effectiveDesaturated == true and iconCurve ~= nil then
-			local iconColorResult = EvaluateCurve(iconCurve)
+			local iconColorResult = EvaluateTargetCurve(targetInfo, iconCurve)
 			if iconColorResult ~= nil then
 				TRB.Functions.Color:SetIconVertexColorFromCurve(threshold, iconColorResult)
 			else
@@ -2842,7 +2892,20 @@ local function BuildCustomThresholdSpellShim(customThreshold, settingKey)
 		}
 		customThresholdSpellShims[settingKey] = shim
 	end
-	shim.texture = TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold)
+	-- The options panel edits the line table in place, so its icon fields are the texture's only inputs.
+	local sourceType = customThreshold.iconSourceType
+	local sourceId = customThreshold.iconSourceId
+	local iconTexture = customThreshold.iconTexture
+	if shim.textureResolved ~= true or shim.textureSourceType ~= sourceType or shim.textureSourceId ~= sourceId
+		or shim.textureOverride ~= iconTexture then
+		local texture = TRB.Functions.Threshold:GetCustomThresholdIconTexture(customThreshold)
+		shim.texture = texture
+		shim.textureSourceType = sourceType
+		shim.textureSourceId = sourceId
+		shim.textureOverride = iconTexture
+		-- The question mark may stand in for a texture the client hasn't loaded yet, so it resolves again next tick.
+		shim.textureResolved = texture ~= missingIconTexture
+	end
 	return shim
 end
 
@@ -2895,7 +2958,7 @@ function TRB.Functions.Threshold:HideInactiveCustomThresholdFrames(activeFrameKe
 
 	for frameKey, threshold in pairs(TRB.Frames.customThresholds) do
 		if not activeFrameKeys[frameKey] and threshold ~= nil then
-			threshold:Hide()
+			SetLineShown(threshold, false)
 			if threshold.icon then
 				threshold.icon:Hide()
 				-- Keep the icon-shown cache in sync with the manual Hide above. Without this,
@@ -2918,12 +2981,15 @@ local activeFrameKeysScratch = {}
 local customThresholdKeyByGuid = {}
 -- Target key -> dictionary key -> frame key, so the concatenation runs once per pair.
 local customThresholdFrameKeys = {}
+-- Stamps each UpdateCustomThresholdLines run, so lines on one target share its resolve.
+local customThresholdPass = 0
 
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>?
 function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 	local activeFrameKeys = activeFrameKeysScratch
 	wipe(activeFrameKeys)
+	customThresholdPass = customThresholdPass + 1
 	if settings == nil or settings.thresholds == nil or settings.thresholds.customThresholds == nil or barGroups == nil then
 		TRB.Functions.Threshold:HideInactiveCustomThresholdFrames(activeFrameKeys)
 		return
@@ -2939,7 +3005,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 		end
 		local thresholdOverrides = settings.thresholds.thresholdDictionary and settings.thresholds.thresholdDictionary[customThresholdKey]
 		if thresholdOverrides ~= nil and thresholdOverrides.enabled == true then
-			local targetInfo = TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroups, customThreshold.barTarget or "primary")
+			local targetInfo = TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroups, customThreshold.barTarget or "primary", nil, nil, customThresholdPass)
 			-- contextActive == false: a context sub-target whose game-state context isn't live
 			-- right now (e.g. Soul Fragments threshold while Collapsing Star is active). Skip it so
 			-- HideInactiveCustomThresholdFrames hides the line until its context returns.
@@ -2972,6 +3038,8 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					end
 				end
 				customThreshold.value = thresholdValue
+				-- Other lines on this target share its record, so a node-mapped line restores the parent once done.
+				local targetParent = targetInfo.parentFrame
 
 				-- Position value/frame default to the bar-wide value across the whole target
 				-- frame. For node-mapped bars (combo points, soul shards, amalgamation sub-types)
@@ -3100,7 +3168,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					targetInfo.parentFrame,
 					positionValue,
 					positionMax,
-					targetInfo.parentFrame:GetWidth(),
+					nil,
 					targetInfo.border,
 					true,
 					targetInfo.fillDirection,
@@ -3113,6 +3181,7 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 					ReleaseIconLayout(threshold)
 				end
 				customThreshold.value = configuredValue
+				targetInfo.parentFrame = targetParent
 			end
 		end
 	end
@@ -3183,6 +3252,7 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 	end
 
 	TRB.Data.cache.values.threshold = {}
+	wipe(customThresholdSpellShims)
 	TRB.Functions.Threshold:RefreshThresholdIconPriorities()
 	TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 
@@ -3342,8 +3412,9 @@ end
 ---@param pairOffset integer # Offset for stacking multiple thresholds
 ---@param isUsable boolean # Whether the base (1x) threshold is usable (has enough resources)
 ---@param durationObject any? # Evaluates the curve over this cooldown's remaining time instead of the resource
+---@param cache table? # The line's display cache, when the caller already has it
 ---@return boolean # True if curve color was applied, false if caller should use normal color handling
-function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thresholdCurve, resourceType, settings, iconCurve, currentFrameLevel, pairOffset, isUsable, durationObject)
+function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thresholdCurve, resourceType, settings, iconCurve, currentFrameLevel, pairOffset, isUsable, durationObject, cache)
 	if not threshold or not thresholdCurve then
 		return false
 	end
@@ -3374,21 +3445,19 @@ function TRB.Functions.Threshold:ApplyThresholdCurveColor(spell, threshold, thre
 		frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
 	end
 	local effectiveLevel = frameLevel - pairOffset
-	local thresholdFrameLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetLine
-	local thresholdIconLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetIcon
-	local thresholdIconCooldownLevel = effectiveLevel - TRB.Data.constants.frameLevels.thresholdOffsetCooldown
-	local iconLayoutLevel = GetThresholdCache(spell.settingKey).iconLayoutLevel
-	if iconLayoutLevel ~= nil then
-		thresholdIconLevel = iconLayoutLevel
-		thresholdIconCooldownLevel = iconLayoutLevel + 1
-	end
-
-	SetLevelIfChanged(threshold, thresholdFrameLevel)
-	if threshold.icon then
-		SetLevelIfChanged(threshold.icon, thresholdIconLevel)
-		if threshold.icon.cooldown then
-			SetLevelIfChanged(threshold.icon.cooldown, thresholdIconCooldownLevel)
+	local iconLayoutLevel = (cache or GetThresholdCache(spell.settingKey)).iconLayoutLevel
+	-- Every other level writer on this line clears the record, so a match means the levels still stand.
+	if threshold.trbCurveLevel ~= effectiveLevel or threshold.trbCurveIconLevel ~= iconLayoutLevel then
+		local frameLevels = TRB.Data.constants.frameLevels
+		threshold:SetFrameLevel(effectiveLevel - frameLevels.thresholdOffsetLine)
+		if threshold.icon then
+			threshold.icon:SetFrameLevel(iconLayoutLevel or (effectiveLevel - frameLevels.thresholdOffsetIcon))
+			if threshold.icon.cooldown then
+				threshold.icon.cooldown:SetFrameLevel(iconLayoutLevel and iconLayoutLevel + 1 or (effectiveLevel - frameLevels.thresholdOffsetCooldown))
+			end
 		end
+		threshold.trbCurveLevel = effectiveLevel
+		threshold.trbCurveIconLevel = iconLayoutLevel
 	end
 
 	-- Handle desaturation and icon vertex color
@@ -3483,8 +3552,8 @@ end
 ---@param barSettings table? # Dimension block of the bar hosting the line (a custom bar's `bars.<key>`); defaults to `settings.bar`
 ---@param fillDirection trbFillDirection? # The host bar's resolved direction, for lines with no dimension block of their own
 ---@return boolean
-function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings, thresholdOverrides, barSettings, fillDirection)
-	local cache = GetThresholdCache(key)
+function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings, thresholdOverrides, barSettings, fillDirection, lineCache)
+	local cache = lineCache or GetThresholdCache(key)
 	-- The cache records writes to one frame, so a line rebuilt under the same key starts clean and gets them all again.
 	if cache.frame ~= threshold then
 		if cache.frame ~= nil then
@@ -3515,9 +3584,10 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 		local cooldown = spell.hasCooldown and snapshot ~= nil and snapshot.cooldown or nil
 		local gateCurve = nil
 		local gateDuration = nil
-		if cooldown ~= nil and cooldown:IsUnusable() then
+		if cooldown ~= nil then
+			-- The window is plain settings, so it goes first and skips the cooldown check for lines that never hide.
 			local window = self:GetCooldownHideWindow(settings.thresholds.behavior, dictEntry)
-			if window ~= nil then
+			if window ~= nil and cooldown:IsUnusable() then
 				local seconds = GetCooldownWindowSeconds(window)
 				if seconds <= 0 or (cooldown:HasPlainTiming() and cooldown.endsAt - GetTime() > seconds) then
 					self:Hide(key, threshold)
@@ -3632,7 +3702,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, true, barSettings)
 			end
 
-			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides, barSettings, fillDirection)
+			TRB.Functions.Threshold:SetThresholdIcon(spell, key, threshold, settings, thresholdOverrides, barSettings, fillDirection, cache)
 
 			-- Per-threshold line width override (thickness of the line)
 			local lineThickness = settings.thresholds.properties.width
@@ -3685,6 +3755,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 				threshold.icon.cooldown:SetFrameLevel(iconLayoutLevel and iconLayoutLevel + 1 or thresholdIconCooldownLevel)
 
 				cache.frameLevel = frameLevel
+				threshold.trbCurveLevel = nil
 			end
 
 			-- Only apply color if thresholdColor is provided (nil means color is handled externally via curve)
@@ -3709,11 +3780,13 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 					if cache.desaturated ~= (not thresholdUsable or outOfRange) then
 						threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
 						cache.desaturated = not thresholdUsable or outOfRange
+						threshold.icon.texture.trbDesaturated = cache.desaturated
 					end
 				else
 					if cache.desaturated ~= false then
 						threshold.icon.texture:SetDesaturated(false)
 						cache.desaturated = false
+						threshold.icon.texture.trbDesaturated = false
 					end
 				end
 			end
@@ -3768,39 +3841,20 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, key, threshold, s
 	return true
 end
 
----Hides a threshold frame if it is currently visible.
+---Hides a threshold frame unless that was its last write.
 ---@param key string # Cache key for the threshold (reserved for future cache invalidation)
 ---@param threshold TRB.Classes.ThresholdFrame? # The threshold frame to hide; safely ignored if nil
 function TRB.Functions.Threshold:Hide(key, threshold)
-	--[[
-	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-
-	if TRB.Data.cache.values.threshold[key].shown ~= false then
-		threshold:Hide()
-		TRB.Data.cache.values.threshold[key].shown = false
-	end
-	]]
-	
-	if threshold and threshold:IsVisible() then
-		threshold:Hide()
+	if threshold ~= nil then
+		SetLineShown(threshold, false)
 	end
 end
 
----Shows a threshold frame if it is not currently visible.
+---Shows a threshold frame unless that was its last write.
 ---@param key string # Cache key for the threshold (reserved for future cache invalidation)
 ---@param threshold TRB.Classes.ThresholdFrame # The threshold frame to show
 function TRB.Functions.Threshold:Show(key, threshold)
-	--[[
-	TRB.Data.cache.values.threshold[key] = TRB.Data.cache.values.threshold[key] or {}
-	if TRB.Data.cache.values.threshold[key].shown ~= true then
-		threshold:Show()
-		TRB.Data.cache.values.threshold[key].shown = true
-	end
-	]]
-
-	if not threshold:IsVisible() then
-		threshold:Show()
-	end
+	SetLineShown(threshold, true)
 end
 
 -- One record serves every line, so a tick allocates nothing.
@@ -3855,7 +3909,7 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 				and (not spell.isPvp or learned[spell.settingKey] ~= nil)
 			if bar.resourceType ~= nil and spell.primaryResourceType ~= bar.resourceType then
 				-- Hidden in place rather than skipped, so a form swap never hands this frame to another spell.
-				frame:Hide()
+				SetLineShown(frame, false)
 				if layoutActive then
 					TrackIconLayout(frame, nodeFrame, spell.settingKey, false, dictEntry and dictEntry.icon)
 				elseif frame.trbIconLayout ~= nil then
@@ -3870,8 +3924,10 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 					ReleaseIconLayout(frame)
 				end
 			else
+				local cache = GetThresholdCache(spell.settingKey)
 				line.spell = spell
 				line.frame = frame
+				line.cache = cache
 				line.pairOffset = pairOffsets ~= nil and pairOffsets[spell.settingKey] or (index - 1) * 3
 				line.dictEntry = dictEntry
 				-- An untracked line has no snapshot, so no rule, color, or swipe sees its cooldown.
@@ -3914,10 +3970,10 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 					after(line)
 				end
 
-				local isDrawn = self:AdjustThresholdDisplay(spell, spell.settingKey, frame, line.show, line.frameLevel, line.pairOffset, line.color, line.snapshot, settings, dictEntry, bar.barSettings)
-				self:RepositionThreshold(settings, spell.settingKey, frame, line.show and isDrawn, nodeFrame, line.resourceAmount, bar.maxResource, nil, bar.barSettings)
+				local isDrawn = self:AdjustThresholdDisplay(spell, spell.settingKey, frame, line.show, line.frameLevel, line.pairOffset, line.color, line.snapshot, settings, dictEntry, bar.barSettings, nil, cache)
+				self:RepositionThreshold(settings, spell.settingKey, frame, line.show and isDrawn, nodeFrame, line.resourceAmount, bar.maxResource, nil, bar.barSettings, node.width, node.height, cache)
 				if layoutActive then
-					TrackIconLayout(frame, nodeFrame, spell.settingKey, line.show and isDrawn, dictEntry and dictEntry.icon)
+					TrackIconLayout(frame, nodeFrame, spell.settingKey, line.show and isDrawn, dictEntry and dictEntry.icon, cache)
 				elseif frame.trbIconLayout ~= nil then
 					ReleaseIconLayout(frame)
 				end

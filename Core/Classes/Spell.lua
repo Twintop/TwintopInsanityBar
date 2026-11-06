@@ -325,6 +325,15 @@ function TRB.Classes.SpellBase:FillSpellData()
 	end
 end
 
+-- The 20Hz tick's GetTime(), which holds for its whole frame; nil outside the tick, so event handlers read the clock.
+local tickTime = nil
+
+---Sets the time the tick's spell reads use, or nil once the tick ends.
+---@param now number?
+function TRB.Classes.SpellBase.SetTickTime(now)
+	tickTime = now
+end
+
 local primaryResourceCostEmbargoTimespan = 0.05
 
 ---Gets the current primary resource cost of the spell.
@@ -332,7 +341,7 @@ local primaryResourceCostEmbargoTimespan = 0.05
 ---@param indirectCall boolean? # Is this call indirect?
 ---@return number # Primary resource cost of the spell.
 function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero, indirectCall)
-	local currentTime = GetTime()
+	local currentTime = tickTime or GetTime()
 	if self.primaryResourceType ~= nil and self.primaryResourceTypeProperty ~= "custom" then
 		if (self._lastPrimaryResourceValueCheck or 0) + primaryResourceCostEmbargoTimespan > currentTime then
 			self._lastPrimaryResourceValueCheck = currentTime
@@ -406,7 +415,7 @@ local castTimeEmbargoTimespan = 0.05
 ---Gets the current cast time of the spell in seconds.
 ---@return number # Cast time of the spell in seconds (0 = instant).
 function TRB.Classes.SpellBase:GetCastTime()
-	local currentTime = GetTime()
+	local currentTime = tickTime or GetTime()
 	if (self._lastCastTimeCheck or 0) + castTimeEmbargoTimespan > currentTime then
 		self._lastCastTimeCheck = currentTime
 		return self._lastCastTimeValue
@@ -512,7 +521,7 @@ end
 
 ---Updates IsSpellUsable cache.
 function TRB.Classes.SpellBase:UpdateIsSpellUsable()
-	local currentTime = GetTime()
+	local currentTime = tickTime or GetTime()
 	-- A cache hit must not re-stamp _lastSpellUsableCheck, or the floor never expires.
 	if self._spellUsableGeneration == spellUsableGeneration
 		and (self._lastSpellUsableCheck or 0) + spellUsableFloorTimespan > currentTime then
@@ -520,6 +529,11 @@ function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 	end
 
 	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self:GetRankedId())
+	-- Not every usability change fires SPELL_UPDATE_USABLE (Execute, Overpower on Classic Era), so a re-read that differs repaints bar text.
+	if not issecretvalue(isUsable) and not issecretvalue(insufficientPower)
+		and (isUsable ~= self._isUsable or insufficientPower ~= self._insufficientPower) then
+		TRB.Data.lookupDirty = true
+	end
 	--We previously only cared about insufficient power, but since we are not doing a check based on just primary and secondary resources we might as well use the full usability.
 	self._isUsable = isUsable
 	self._insufficientPower = insufficientPower

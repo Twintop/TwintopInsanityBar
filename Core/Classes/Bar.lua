@@ -35,6 +35,7 @@ local barNodeCounter = 0
 
 ---@class TRB.Classes.ThresholdFrame.IconTexture : Texture
 ---@field public trbVertexWhite boolean? # Whether the last vertex color written was white, so repeat writes are skipped
+---@field public trbDesaturated boolean? # Desaturation last written, so repeat writes are skipped
 
 ---@class TRB.Classes.ThresholdFrame.Cooldown : Cooldown
 ---@field public trbStart number? # Swipe last written, so repeat writes are skipped
@@ -63,6 +64,9 @@ local barNodeCounter = 0
 ---@field public trbColorIcon boolean? # Whether the icon border was painted with it; nil forces the next write
 ---@field public trbIconLayout table? # Its icon's entry in the parent's overlap layout
 ---@field public trbGateAlpha boolean? # Whether a cooldown gate wrote its alpha, so the alpha is restored once the gate lifts
+---@field public trbShown boolean? # Its own shown state last written, so repeat writes are skipped; nil forces the next write
+---@field public trbCurveLevel integer? # Level a color curve last wrote, so repeat writes are skipped; nil forces the next write
+---@field public trbCurveIconLevel integer? # Overlap layout level that curve write used for the icon
 
 ---The node's StatusBar, plus what other modules hang on it.
 ---@class TRB.Classes.BarNode.Frame : StatusBar, BackdropTemplate, TRB.Classes.GlowTarget
@@ -116,8 +120,22 @@ local barNodeCounter = 0
 ---@field public markerFrame Frame? # Topmost overlay frame for tick and stage lines (lazily created by GetMarkerFrame)
 ---@field public fillWrites integer # Bumped by fill writes that leave no color cache entry (curve, gradient, texture)
 ---@field public borderWrites integer # Bumped by border writes that leave no color cache entry (curve, texture, border size)
+---@field public appearanceVersion integer # Bumped by writes to the fill's texture, direction, flat color, gradient, or border width
+---@field public appliedValuesVersion integer? # Health or pet values version its fill was last drawn from
+---@field public appliedValueEpoch integer? # valueEpoch right after that draw
+---@field public appliedFillWrites integer? # fillWrites right after that draw
+---@field public valueEpoch integer # A fresh number on every write to the frame's value, range, timer, or texture
+---@field public rangeMax number? # The frame's max as last set when plain; nil when secret or unknown
 TRB.Classes.BarNode = {}
 TRB.Classes.BarNode.__index = TRB.Classes.BarNode
+
+-- Shared across nodes, so an epoch read from one node never matches another's.
+local valueEpochCounter = 0
+---@return integer
+local function NextValueEpoch()
+	valueEpochCounter = valueEpochCounter + 1
+	return valueEpochCounter
+end
 
 ---Creates a new BarNode
 ---@param parent Frame # The parent frame to attach this node to
@@ -142,6 +160,7 @@ function TRB.Classes.BarNode:New(parent, name, index)
 	self.gradientKey = self.name .. "_gradient"
 	self.fillWrites = 0
 	self.borderWrites = 0
+	self.appearanceVersion = 0
 
 	-- Append a monotonic counter to guarantee a globally unique frame name.
 	-- Without this, CreateFrame can return a stale frame object from _G when
@@ -168,6 +187,7 @@ function TRB.Classes.BarNode:New(parent, name, index)
 
 	-- Initialize the frame's thresholds array for compatibility
 	self.frame.thresholds = self.thresholds
+	self.valueEpoch = NextValueEpoch()
 
 	return self
 end
@@ -205,6 +225,13 @@ function TRB.Classes.BarNode:SetValue(value, smooth)
 	else
 		self.frame:SetValue(value, Enum.StatusBarInterpolation.Immediate)
 	end
+	self.valueEpoch = NextValueEpoch()
+end
+
+---Records a write to the frame's value or range made without these methods.
+function TRB.Classes.BarNode:MarkFrameWritten()
+	self.valueEpoch = NextValueEpoch()
+	self.rangeMax = nil
 end
 
 ---True while the aura engine owns this node's fill. Its fill texture is a forbidden object, so
@@ -225,6 +252,7 @@ function TRB.Classes.BarNode:SetTimerDuration(durationObject, interpolation, dir
 	direction = direction or Enum.StatusBarTimerDirection.ElapsedTime
 	self.frame:SetTimerDuration(durationObject, interpolation, direction)
 	self.hasTimerDuration = true
+	self:MarkFrameWritten()
 end
 
 ---Clears any active DurationObject-driven animation, restoring normal SetValue behavior.
@@ -239,6 +267,8 @@ function TRB.Classes.BarNode:ClearTimerDuration()
 			self.frame:Show()
 		end
 		self.hasTimerDuration = false
+		self.valueEpoch = NextValueEpoch()
+		self.rangeMax = 1
 	end
 end
 
@@ -247,6 +277,12 @@ end
 ---@param max number
 function TRB.Classes.BarNode:SetMinMax(min, max)
 	self.frame:SetMinMaxValues(min, max)
+	self.valueEpoch = NextValueEpoch()
+	if issecretvalue(min) or issecretvalue(max) then
+		self.rangeMax = nil
+	else
+		self.rangeMax = max
+	end
 end
 
 ---Gets the current min/max values
@@ -259,8 +295,16 @@ end
 ---Sets the color of the resource bar (flat color). Clears any active gradient.
 ---@param colorString string # ARGB hex color string (e.g., "FFFF0000" for red)
 function TRB.Classes.BarNode:SetColor(colorString)
-	self:ClearGradient()
+	if self.gradientActive then
+		self:ClearGradient()
+	end
+	-- The setter's own cache check, inlined: an unchanged color, the usual per-tick case, makes no call.
+	local cached = TRB.Data.cache.colors.bar[self.resourceKey]
+	if cached ~= nil and colorString ~= nil and cached.source == colorString then
+		return
+	end
 	TRB.Functions.Color:SetStatusBarColorFromRGBAString(self.frame, self.resourceKey, colorString)
+	self.appearanceVersion = self.appearanceVersion + 1
 end
 
 ---Sets the color of the resource bar from a ColorCurve result. Clears any active gradient.
@@ -298,6 +342,7 @@ function TRB.Classes.BarNode:SetColorGradient(color1String, color2String, direct
 	-- Set vertex color to white so gradient colors are not tinted
 	TRB.Data.cache.colors.bar[self.resourceKey] = nil
 	self.fillWrites = self.fillWrites + 1
+	self.appearanceVersion = self.appearanceVersion + 1
 	self.frame:SetStatusBarColor(1, 1, 1, 1)
 
 	local texture = self.frame:GetStatusBarTexture()
@@ -326,15 +371,22 @@ function TRB.Classes.BarNode:ClearGradient()
 	end
 	self.gradientActive = false
 	TRB.Data.cache.colors.gradient[self.gradientKey] = nil
+	self.appearanceVersion = self.appearanceVersion + 1
 end
 
 ---Sets the border color
 ---@param colorString string # ARGB hex color string
 function TRB.Classes.BarNode:SetBorderColor(colorString)
-	TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.frame, self.borderKey, colorString)
+	-- The setter's own cache check, inlined: an unchanged color, the usual per-tick case, makes no call.
+	local cached = TRB.Data.cache.colors.border[self.borderKey]
+	if cached == nil or colorString == nil or cached.source ~= colorString then
+		TRB.Functions.Color:SetBackdropBorderColorFromRGBAString(self.frame, self.borderKey, colorString)
+	end
 
 	-- The side ability icon's border is part of the same bar, so it tracks every border recolor
-	self:ApplyIconBorderColor()
+	if self.icon ~= nil then
+		self:ApplyIconBorderColor()
+	end
 
 	-- End cap border-follow: track the live border color, except when it is at the
 	-- configured default and useBorderColorExceptDefault asks to keep the cap's own color.
@@ -422,7 +474,9 @@ end
 function TRB.Classes.BarNode:SetBackgroundColorFromString(colorString)
 	local cached = TRB.Data.cache.colors.backdrop[self.backgroundKey]
 	if cached ~= nil and colorString ~= nil and cached.source == colorString then
-		self:ApplyIconBackgroundColor()
+		if self.icon ~= nil then
+			self:ApplyIconBackgroundColor()
+		end
 		return
 	end
 	local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorString, true)
@@ -440,6 +494,9 @@ function TRB.Classes.BarNode:SetDimensions(width, height, border)
 	local borderChanged = border ~= nil and border ~= self.border
 	if border then
 		self.border = border
+	end
+	if borderChanged then
+		self.appearanceVersion = self.appearanceVersion + 1
 	end
 
 	-- Single frame uses outer dimensions
@@ -483,6 +540,9 @@ end
 ---Sets the border size
 ---@param size number
 function TRB.Classes.BarNode:SetBorderSize(size)
+	if self.border ~= size then
+		self.appearanceVersion = self.appearanceVersion + 1
+	end
 	self.border = size
 	self:SetDimensions(self.width, self.height, size)
 end
@@ -498,6 +558,7 @@ function TRB.Classes.BarNode:SetFillDirection(fillDirection)
 		return
 	end
 	self.fillDirection = fillDirection
+	self.appearanceVersion = self.appearanceVersion + 1
 
 	local Bar = TRB.Functions.Bar
 	local orientation = Bar:GetOrientationFromFillDirection(fillDirection)
@@ -526,8 +587,10 @@ function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgro
 
 	-- Set resource bar (StatusBar fill) texture
 	self.frame:SetStatusBarTexture(resourceTexture)
+	self.valueEpoch = NextValueEpoch()
 	self.fillWrites = self.fillWrites + 1
 	self.borderWrites = self.borderWrites + 1
+	self.appearanceVersion = self.appearanceVersion + 1
 	-- Lower the fill texture to BORDER,-1 so it draws above the backdrop background
 	-- (BACKGROUND,0) but below the backdrop edge/border (BORDER,0).
 	local fillTexture = self.frame:GetStatusBarTexture()
@@ -1200,6 +1263,7 @@ function TRB.Classes.BarNode:ClearThresholds()
 	for i, threshold in pairs(self.thresholds) do
 		if threshold and type(threshold) ~= "number" and threshold.Hide then
 			threshold:Hide()
+			threshold.trbShown = false
 		end
 	end
 	self.thresholds = {}

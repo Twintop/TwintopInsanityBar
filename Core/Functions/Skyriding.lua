@@ -681,7 +681,7 @@ local function RenderPassiveLine(node, colors, settings)
 		drawn.color, drawn.width, drawn.height, drawn.thickness = color, width, height, thickness
 	end
 	TRB.Functions.Threshold:RepositionThresholdCustomBar("skyridingPassiveSpeed", passiveLine, show, frame, speedCaps.passive, speedCaps.max,
-		frame:GetWidth(), barSettings and barSettings.border, nil, fillDirection, thickness, false)
+		nil, barSettings and barSettings.border, nil, fillDirection, thickness, false)
 end
 
 ---Sets the speed each tick; the rest redraws only in full or when the buffs coloring the fill change.
@@ -915,8 +915,8 @@ updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
 					if throttleTick then
 						RenderBar(barKey, group, colors, settings, visibility, now)
 					end
-					-- Between ticks, only after something hid the group or a node, or while the alpha moves.
-					if throttleTick or appliedAlpha[barKey] ~= alpha or group.healedHideVersion ~= group.hideVersion then
+					-- Only after something hid the group or a node, or set its alpha, or while the alpha moves.
+					if appliedAlpha[barKey] ~= alpha or group.healedHideVersion ~= group.hideVersion then
 						ShowAt(group, alpha)
 					end
 				elseif group.isVisible or appliedAlpha[barKey] ~= 0 then

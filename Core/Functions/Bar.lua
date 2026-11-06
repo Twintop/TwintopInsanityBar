@@ -4,6 +4,22 @@ local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Bar = {}
 
+-- Node keys by prefix and index (nodeKeys.comboPoint[3] is "comboPoint3"), so tick loops read a string instead of building one.
+---@type table<string, table<integer, string>>
+TRB.Functions.Bar.nodeKeys = setmetatable({}, {
+	__index = function(byPrefix, prefix)
+		local keys = setmetatable({}, {
+			__index = function(byIndex, index)
+				local key = prefix .. index
+				byIndex[index] = key
+				return key
+			end
+		})
+		byPrefix[prefix] = keys
+		return keys
+	end
+})
+
 local renderTransitionState = {
 	active = true,
 	token = 0,
@@ -2172,9 +2188,17 @@ function TRB.Functions.Bar:UpdateHealthBar(barGroups, snapshotData, settings)
 		local Color = TRB.Functions.Color
 		local healthColors = settings.colors.healthBar
 		local indicators = Color:GetResolvedIndicators("healthBar")
-		healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
-		healthNode:SetValue(snapshotData.attributes.health or 0)
-		healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+		-- Health changes only on a read, which bumps the version; any other write to the fill moves the node's stamps.
+		local version = TRB.Functions.Character.healthValuesVersion
+		if healthNode.appliedValuesVersion ~= version or healthNode.appliedValueEpoch ~= healthNode.valueEpoch
+			or healthNode.appliedFillWrites ~= healthNode.fillWrites then
+			healthNode:SetMinMax(0, snapshotData.attributes.healthMax or 1)
+			healthNode:SetValue(snapshotData.attributes.health or 0)
+			healthNode:SetColorCurve(snapshotData.attributes.healthColor)
+			healthNode.appliedValuesVersion = version
+			healthNode.appliedValueEpoch = healthNode.valueEpoch
+			healthNode.appliedFillWrites = healthNode.fillWrites
+		end
 		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "border",
 			(indicators and indicators.border) or healthColors.border.color)
 		Color:ApplyResolvedBorderOrBackground(healthNode, "healthBar", "background",
@@ -2203,16 +2227,24 @@ function TRB.Functions.Bar:UpdatePetBars(barGroups, snapshotData, settings)
 	local Color = TRB.Functions.Color
 	local attributes = snapshotData.attributes
 	local rendered = false
+	-- Pet values change only on a read, which bumps the version; any other write to a fill moves its node's stamps.
+	local version = TRB.Functions.Character.petValuesVersion
 
 	local healthNode = barGroups.petHealth and barGroups.petHealth:GetNode(1)
 	if healthNode ~= nil and not settings.displayBar.petHealth.neverShow then
 		rendered = true
 		local healthColors = settings.colors.bars.petHealth
 		local indicators = Color:GetResolvedIndicators("petHealthBar")
-		healthNode:SetMinMax(0, attributes.petHealthMax or 1)
-		healthNode:SetValue(attributes.petHealth or 0)
-		if attributes.petHealthColor ~= nil then
-			healthNode:SetColorCurve(attributes.petHealthColor)
+		if healthNode.appliedValuesVersion ~= version or healthNode.appliedValueEpoch ~= healthNode.valueEpoch
+			or healthNode.appliedFillWrites ~= healthNode.fillWrites then
+			healthNode:SetMinMax(0, attributes.petHealthMax or 1)
+			healthNode:SetValue(attributes.petHealth or 0)
+			if attributes.petHealthColor ~= nil then
+				healthNode:SetColorCurve(attributes.petHealthColor)
+			end
+			healthNode.appliedValuesVersion = version
+			healthNode.appliedValueEpoch = healthNode.valueEpoch
+			healthNode.appliedFillWrites = healthNode.fillWrites
 		end
 		Color:ApplyResolvedBorderOrBackground(healthNode, "petHealthBar", "border",
 			(indicators and indicators.border) or healthColors.border.color)
@@ -2225,13 +2257,17 @@ function TRB.Functions.Bar:UpdatePetBars(barGroups, snapshotData, settings)
 	local powerNode = barGroups.petPower and barGroups.petPower:GetNode(1)
 	if powerNode ~= nil and not settings.displayBar.petPower.neverShow then
 		rendered = true
-		-- A pet with no power gets an empty bar.
-		if attributes.petPowerType == nil then
-			powerNode:SetMinMax(0, 1)
-			powerNode:SetValue(0)
-		else
-			powerNode:SetMinMax(0, attributes.petPowerMax)
-			powerNode:SetValue(attributes.petPower)
+		if powerNode.appliedValuesVersion ~= version or powerNode.appliedValueEpoch ~= powerNode.valueEpoch then
+			-- A pet with no power gets an empty bar.
+			if attributes.petPowerType == nil then
+				powerNode:SetMinMax(0, 1)
+				powerNode:SetValue(0)
+			else
+				powerNode:SetMinMax(0, attributes.petPowerMax)
+				powerNode:SetValue(attributes.petPower)
+			end
+			powerNode.appliedValuesVersion = version
+			powerNode.appliedValueEpoch = powerNode.valueEpoch
 		end
 		local configured = settings.colors.bars.petPower
 		local indicators = Color:GetResolvedIndicators("petPowerBar")
@@ -4704,38 +4740,23 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 	end
 	local valueIsSecret = issecretvalue(value)
 	local maxResourceIsSecret = maxResource and issecretvalue(maxResource) or false
-	local frameIsSynced = false
+	local inputsArePlain = not valueIsSecret and not maxResourceIsSecret
 
-	if node ~= nil and not valueIsSecret and not maxResourceIsSecret then
-		local frame = node:GetFrame()
-		if frame ~= nil and frame.GetValue ~= nil then
-			local _, currentMax = node:GetMinMax()
-			-- Guard: frame min/max or value can be tainted if a secret was previously
-			-- passed through SetValue(). Skip the sync check in that case; Phase 2
-			-- below already handles secrets correctly via its own issecretvalue() check.
-			if not issecretvalue(currentMax) then
-				local safeMaxResource = maxResource or 1
-				if safeMaxResource == 0 then
-					safeMaxResource = 1
-				end
-				local expectedValue = math.min((value or 0) * (currentMax / safeMaxResource), currentMax)
-				local actualValue = frame:GetValue() or 0
-				if not issecretvalue(actualValue) then
-					frameIsSynced = math.abs(actualValue - expectedValue) < 0.01
-				end
-			end
-		end
-	end
-
-	-- frameIsSynced is only true for plain values, so it leads and spares a mismatch the secret checks.
-	if frameIsSynced and not valueIsSecret and not maxResourceIsSecret and
-	   not issecretvalue(cache.value) and cache.value == value and cache.maxResource == maxResource then
+	-- The same plain inputs skip while nothing else has written the frame since (BarNode.valueEpoch).
+	-- The cache holds the inputs as passed, and nil after a secret, so no compare touches a secret.
+	if inputsArePlain and node ~= nil and cache.epoch == node.valueEpoch and cache.value == value
+		and cache.maxResource == maxResource then
 		return
 	end
 
 	if settings ~= nil and settings.bar ~= nil and node ~= nil then
-		local _, max = node:GetMinMax()
+		local max = node.rangeMax
+		if max == nil then
+			local _
+			_, max = node:GetMinMax()
+		end
 		local barMaxValueIsSecret = issecretvalue(max)
+		local inputValue, inputMaxResource = value, maxResource
 
 		if barMaxValueIsSecret or valueIsSecret or maxResourceIsSecret then
 			node:SetValue(value)
@@ -4755,8 +4776,15 @@ function TRB.Functions.Bar:SetBarNodeValue(settings, key, node, value, maxResour
 			end
 		end
 
-		cache.value = value
-		cache.maxResource = maxResource
+		if inputsArePlain then
+			cache.value = inputValue
+			cache.maxResource = inputMaxResource
+			cache.epoch = node.valueEpoch
+		else
+			cache.value = nil
+			cache.maxResource = nil
+			cache.epoch = nil
+		end
 
 		UpdateGroupEndCapVisibility(node)
 	end
@@ -4808,7 +4836,11 @@ function TRB.Functions.Bar:SetBarNodePrimaryValue(settings, key, node, value)
 		end
 		-- Layout ranges the node once, so a max that changes afterward must re-range it here.
 		if node ~= nil then
-			local _, nodeMax = node:GetMinMax()
+			local nodeMax = node.rangeMax
+			if nodeMax == nil then
+				local _
+				_, nodeMax = node:GetMinMax()
+			end
 			if not issecretvalue(nodeMax) and nodeMax ~= maxResource then
 				node:SetMinMax(0, maxResource)
 			end

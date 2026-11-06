@@ -5,6 +5,22 @@ local _, TRB = ...
 TRB.Details.coreNewsContent = [====[
 
 # Live 12.1.5.11-release / Forever 1.60.1.18-release / Classic 1.15.9.3-release / TBC 2.5.6.1-release (2026-11-05)
+## General
+
+- [#935](#935) Improve bar text update performance, primarily out of combat and during casts.
+- [#936](#936) Improve update performance of bars with multiple nodes, custom threshold lines, and bar text.
+- [#937](#937) Improve bar text update performance, primarily for timers, totems, pets, stats, and health.
+- [#937](#937) Fix bar text keeping its old format after a Timer Precision or Number Abbreviation change until its value next changed.
+- [#938](#938) Improve bar update performance, primarily around bars with multiple nodes, End Caps, and overlays.
+- [#939](#939) Improve bar text update performance, primarily for bar text on bars that aren't showing.
+- [#941](#941) Improve update performance of the cast bars, Other Bars, Skyriding bars, and bars fading in or out.
+- [#943](#943) Improve update performance of threshold lines, primarily custom threshold lines.
+- [#944](#944) Improve update performance of bar colors, the health and pet bars, and bars filled by a buff's duration.
+- [#946](#946) Improve bar text update performance, primarily for bar text with conditions.
+- [#956](#956) Improve Color Indicator performance.
+- [#959](#959) Improve bar text update performance in combat.
+- [#959](#959) Fix a buff or proc's bar text timer sometimes staying on screen after it ended, until something else changed.
+
 ## Color Indicators
 
 - [#942](#942) Fix a Color Indicator that turns on mid-cast not recoloring the Target and Focus Cast Bars' border until the next cast.

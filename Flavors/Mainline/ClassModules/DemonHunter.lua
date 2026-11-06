@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -345,8 +346,6 @@ local function RefreshLookupData_Havoc()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-
 		lookupLogic["$resource"] = normalizedResource
 		lookupLogic["$fury"] = normalizedResource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -357,6 +356,7 @@ local function RefreshLookupData_Havoc()
 		local resourceChanged = lookupChanged(prevState, "$fury", resourceFormatted, currentFuryColor)
 		local castingChanged = lookupChanged(prevState, "$casting", _castingFury, castingFuryColor)
 		if resourceChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentFury
 			local castingFury
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -436,8 +436,6 @@ local function RefreshLookupData_Vengeance()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-
 		lookupLogic["$resource"] = normalizedResource
 		lookupLogic["$fury"] = normalizedResource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -448,6 +446,7 @@ local function RefreshLookupData_Vengeance()
 		local resourceChanged = lookupChanged(prevState, "$fury", resourceFormatted, currentFuryColor)
 		local castingChanged = lookupChanged(prevState, "$casting", _castingFury, castingFuryColor)
 		if resourceChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentFury
 			local castingFury
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -547,8 +546,6 @@ local function RefreshLookupData_Devourer()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
-
 		lookupLogic["$resource"] = normalizedResource
 		lookupLogic["$fury"] = normalizedResource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -559,6 +556,7 @@ local function RefreshLookupData_Devourer()
 		local resourceChanged = lookupChanged(prevState, "$fury", resourceFormatted, currentFuryColor)
 		local castingChanged = lookupChanged(prevState, "$casting", _castingFury, castingFuryColor)
 		if resourceChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentFury
 			local castingFury
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -828,6 +826,8 @@ local function DemonHunterEvent(self, event, ...)
 				-- Get Soul Fragment count via Spirit Bomb's GetSpellCastCount (returns 0-6)
 				local soulFragments = C_Spell.GetSpellCastCount(spells.spiritBomb.id) or 0
 				snapshotData.attributes.resource2 = soulFragments
+				-- Fragments spawn and expire without a cast, and the count can be secret.
+				TRB.Data.lookupDirty = true
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
@@ -899,8 +899,12 @@ local function UpdateSnapshot_Havoc()
 		local casting = snapshotData.casting
 		local remainingTime = casting.endTime - currentTime
 		local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury:GetTickRate()), 0, "ceil", true)
-		local resource = ticks * spells.blindFury.resource * talents.talents[spells.blindFury.id].currentRank
-		casting.resourceRaw = math.max(resource, 0)
+		local resource = math.max(ticks * spells.blindFury.resource * talents.talents[spells.blindFury.id].currentRank, 0)
+		-- The count drops with time, not on an event.
+		if casting.resourceRaw ~= resource then
+			TRB.Data.lookupDirty = true
+		end
+		casting.resourceRaw = resource
 		casting.resourceFinal = casting.resourceRaw
 	end
 end
@@ -920,6 +924,7 @@ local function UpdateSnapshot_Devourer()
 	local currentTime = GetTime()
 	local collapsingStarBuff = snapshotData.snapshots[spells.collapsingStar.id].buff
 	local soulFragmentsBuff = snapshotData.snapshots[spells.soulFragments.id].buff
+	local previousResource2 = snapshotData.attributes.resource2
 
 	-- Context flag for custom thresholds: secondary bar shows Collapsing Star stacks while active,
 	-- Soul Fragments otherwise. Read by the custom-threshold sub-target visibility gate.
@@ -967,6 +972,11 @@ local function UpdateSnapshot_Devourer()
 		snapshotData.attributes.maxResource2 = maxResource2
 	end
 
+	-- The last-known and transition holds end with time, not on an event.
+	local resource2 = snapshotData.attributes.resource2
+	if issecretvalue(resource2) or issecretvalue(previousResource2) or resource2 ~= previousResource2 then
+		TRB.Data.lookupDirty = true
+	end
 end
 
 
@@ -981,16 +991,14 @@ local scratch = {
 	furyBarColors2 = {},
 	barColorMap2 = {},
 	overcapCurves2 = {},
-	conditionMap3 = {},
+	soulFragmentsIndicated2 = {},
 	sfOvercapCurves1 = {},
-	gradientConditionMap1 = {},
 	conditionMap4 = {},
 	furyBarColors3 = {},
 	barColorMap3 = {},
 	overcapCurves3 = {},
-	sfConditionMap1 = {},
+	soulFragmentsIndicated3 = {},
 	sfOvercapCurves2 = {},
-	sfGradientConditionMap1 = {},
 	-- Consumed right after each resolve.
 	barGradients1 = {},
 }
@@ -1208,6 +1216,10 @@ local function UpdateResourceBar()
 			local barColorMap = scratch.barColorMap2
 			wipe(barColorMap)
 			barColorMap.furyBar = furyBarColors
+			-- Seeded empty, so an element holds a color only when an indicator claimed it.
+			local soulFragmentsIndicated = scratch.soulFragmentsIndicated2
+			wipe(soulFragmentsIndicated)
+			barColorMap.soulFragmentsBar = soulFragmentsIndicated
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1282,7 +1294,6 @@ local function UpdateResourceBar()
 
 			if not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 				-- Soul Fragments bar (Vengeance, 0-6 fragments, 6 independent nodes)
 				local soulFragments = snapshotData.attributes.resource2 or 0
 				local maxSoulFragments = TRB.Data.character.maxResource2 or 6
@@ -1291,56 +1302,15 @@ local function UpdateResourceBar()
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
 				local cpBorderColor = specSettings.colors.comboPoints.border.color
 
-				-- Compute indicator overrides for soul fragment elements (nil = use default)
-				local sfBarOverride, sfBorderOverride, sfBackgroundOverride = nil, nil, nil
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-				local nodeOrder = sharedColors and sharedColors.nodeOrder
-
-				if nodeOrder and indicatorColors then
-					-- Compute conditions (same logic as primary bar)
-					local metamorphosisActive = snapshots[spells.metamorphosis.id].buff.isActive
-					local metamorphosisEndMet = false
-					if metamorphosisActive then
-						local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
-						local timeThreshold = 0
-						if specSettings.endOf.metamorphosis.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.metamorphosis.gcdsMax
-						elseif specSettings.endOf.metamorphosis.mode == "time" then
-							timeThreshold = specSettings.endOf.metamorphosis.timeMax
-						end
-						metamorphosisEndMet = metaTime <= timeThreshold
-					end
-
-					local conditionMap = scratch.conditionMap3
-					wipe(conditionMap)
-					conditionMap.metamorphosisEnd = metamorphosisActive and metamorphosisEndMet
-					conditionMap.metamorphosis = metamorphosisActive
-					TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
-
-					-- Apply flat indicators to soul fragment targets (reverse iteration, last writer wins)
-					for i = #nodeOrder, 1, -1 do
-						local key = nodeOrder[i]
-						local indicator = indicatorColors[key]
-						if indicator and indicator.enabled and conditionMap[key] then
-							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
-							if sfTargets then
-								if sfTargets.bar then sfBarOverride = indicator end
-								if sfTargets.border then sfBorderOverride = indicator.color end
-								if sfTargets.background then sfBackgroundOverride = indicator.color end
-							end
-						end
-					end
-				end
+				-- Flat indicator overrides for soul fragment elements (nil = use default)
+				local sfBarOverride = soulFragmentsIndicated.bar
+				local sfBorderOverride = soulFragmentsIndicated.border
+				local sfBackgroundOverride = soulFragmentsIndicated.background
 
 				-- Build gradient curves for soul fragment targets (border/background only, uses fury scale)
 				local sfOvercapCurves = scratch.sfOvercapCurves1
 				wipe(sfOvercapCurves)
-				local gradientConditionMap = scratch.gradientConditionMap1
-				wipe(gradientConditionMap)
-				gradientConditionMap.borderOvercap = TRB.Data.character.inCombat
-				local sfGradients = Color:ResolveGradientTargets(sharedColors, gradientConditionMap, "soulFragmentsBar", scratch.barGradients1)
+				local sfGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "soulFragmentsBar", scratch.barGradients1)
 				-- Gradient uses fury percentage (primary resource), not soul fragment count
 				-- Bar fill gradient not supported (different scale: stepped 1-6 vs fury 0-120)
 				if sfGradients.border then
@@ -1357,7 +1327,7 @@ local function UpdateResourceBar()
 						if cpNode then
 							-- All nodes get the same raw secret value; each node's stepped
 							-- SetMinMax(x-1, x) handles fill via StatusBar clamping
-							Bar:SetBarNodeValue(specCacheSettings, "soulFragment" .. x, cpNode, soulFragments)
+							Bar:SetBarNodeValue(specCacheSettings, nodeKeys.soulFragment[x], cpNode, soulFragments)
 
 							-- Positional coloring: base for 1-4, penultimate for 5, final for 6
 							local cpColor = specSettings.colors.comboPoints.base
@@ -1449,6 +1419,10 @@ local function UpdateResourceBar()
 			local barColorMap = scratch.barColorMap3
 			wipe(barColorMap)
 			barColorMap.furyBar = furyBarColors
+			-- Seeded empty, so an element holds a color only when an indicator claimed it.
+			local soulFragmentsIndicated = scratch.soulFragmentsIndicated3
+			wipe(soulFragmentsIndicated)
+			barColorMap.soulFragmentsBar = soulFragmentsIndicated
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
@@ -1543,44 +1517,15 @@ local function UpdateResourceBar()
 					cpColor = specSettings.colors.comboPoints.collapsingStar
 				end
 
-				-- Compute indicator overrides for soul fragment elements
-				local sfBarOverride, sfBorderOverride, sfBackgroundOverride, sfEndCapOverride = nil, nil, nil, nil
-				local sfSharedColors = specSettings.colors.shared
-				local sfIndicatorColors = sfSharedColors and sfSharedColors.indicatorColors
-				local sfNodeOrder = sfSharedColors and sfSharedColors.nodeOrder
-
-				if sfNodeOrder and sfIndicatorColors then
-					local sfConditionMap = scratch.sfConditionMap1
-					wipe(sfConditionMap)
-					sfConditionMap.voidMetamorphosisReady = metaUsable
-					sfConditionMap.collapsingStarReady = collapsingStarUsable
-					sfConditionMap.voidMetamorphosis = metaActive
-					sfConditionMap.voidRayReady = (not metaActive) and spells.voidRay:IsUsable()
-					TRB.Functions.Color:ApplyCustomIndicatorConditions(sfSharedColors, sfConditionMap)
-
-					for i = #sfNodeOrder, 1, -1 do
-						local key = sfNodeOrder[i]
-						local indicator = sfIndicatorColors[key]
-						if indicator and indicator.enabled and sfConditionMap[key] then
-							local sfTargets = indicator.targets and indicator.targets.soulFragmentsBar
-							if sfTargets then
-								if sfTargets.bar then sfBarOverride = indicator end
-								if sfTargets.border then sfBorderOverride = indicator.color end
-								if sfTargets.background then sfBackgroundOverride = indicator.color end
-								if sfTargets.endCap then sfEndCapOverride = indicator.color end
-							end
-						end
-					end
-				end
-				Color:SetResolvedEndCap("soulFragmentsBar", sfEndCapOverride)
+				-- Flat indicator overrides for soul fragment elements (nil = use default)
+				local sfBarOverride = soulFragmentsIndicated.bar
+				local sfBorderOverride = soulFragmentsIndicated.border
+				local sfBackgroundOverride = soulFragmentsIndicated.background
 
 				-- Build gradient curves for soul fragment targets (border/background only, uses fury scale)
 				local sfOvercapCurves = scratch.sfOvercapCurves2
 				wipe(sfOvercapCurves)
-				local sfGradientConditionMap = scratch.sfGradientConditionMap1
-				wipe(sfGradientConditionMap)
-				sfGradientConditionMap.borderOvercap = TRB.Data.character.inCombat
-				local sfGradients = Color:ResolveGradientTargets(sfSharedColors, sfGradientConditionMap, "soulFragmentsBar", scratch.barGradients1)
+				local sfGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "soulFragmentsBar", scratch.barGradients1)
 				if sfGradients.border then
 					sfOvercapCurves.border = Color:BuildResourceThresholdCurve(specSettings, sfBorderOverride or cpBorderColor, sfGradients.border.color)
 				end

@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -399,23 +400,23 @@ local function RefreshLookupData_Affliction()
 		-- one becomes the other.
 		local stacksDisplay
 		if not _shardInstabilityActive then
-			stacksDisplay = string.format("%.0f", 0)
+			stacksDisplay = "0"
 		elseif _shardInstabilityStacks ~= nil then
 			stacksDisplay = string.format("%.0f", _shardInstabilityStacks)
 		else
-			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
+			stacksDisplay = TRB.Functions.BarText:UnknownValue("0")
 		end
 
 		local timeDisplay
 		if not _shardInstabilityActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _shardInstabilityTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_shardInstabilityTime)
 		elseif _shardInstabilityTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _shardInstabilityTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$shardInstabilityStacks", stacksDisplay) then
@@ -465,15 +466,15 @@ local function SetDiabolistLookup(lookup, lookupLogic, prevState, timeKey, iconK
 
 	local timeDisplay
 	if not tracked then
-		timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 	elseif not active then
-		timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 	elseif remaining ~= nil then
 		timeDisplay = TRB.Functions.BarText:TimerPrecision(remaining)
 	elseif remainingText ~= nil then
 		timeDisplay = remainingText
 	else
-		timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 	end
 
 	if lookupChanged(prevState, timeKey, timeDisplay) then
@@ -491,9 +492,7 @@ local function RefreshLookupData_Demonology()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local sharedSettings = TRB.Data.specCache["warlock_demonology"].settings
 
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-
+	local currentTime = GetTime()
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -601,23 +600,23 @@ local function RefreshLookupData_Demonology()
 		-- one becomes the other.
 		local stacksDisplay
 		if not _demonicCoreActive then
-			stacksDisplay = string.format("%.0f", 0)
+			stacksDisplay = "0"
 		elseif _demonicCoreStacks ~= nil then
 			stacksDisplay = string.format("%.0f", _demonicCoreStacks)
 		else
-			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
+			stacksDisplay = TRB.Functions.BarText:UnknownValue("0")
 		end
 
 		local timeDisplay
 		if not _demonicCoreActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _demonicCoreTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_demonicCoreTime)
 		elseif _demonicCoreTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _demonicCoreTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$demonicCoreStacks", stacksDisplay) then
@@ -634,7 +633,6 @@ local function RefreshLookupData_Demonology()
 	-- Block E: Dominion of Argus ($doaTime)
 	if not activeVars or activeVars["$doaTime"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
-		local currentTime = GetTime()
 		local doaBuff = snapshotData.snapshots[spells.dominionOfArgus.id]
 		local _doaActive = (doaBuff ~= nil and doaBuff.buff.isActive) or false
 
@@ -649,7 +647,7 @@ local function RefreshLookupData_Demonology()
 			-- When Dominion of Argus is not active, display a zeroed default that
 			-- respects the user's timer precision setting ("0.0" by default).
 			if lookupChanged(prevState, "$doaTime", 0) then
-				lookup["$doaTime"] = TRB.Functions.BarText:TimerPrecision(0)
+				lookup["$doaTime"] = TRB.Functions.BarText:ZeroTimerText()
 			end
 		end
 	end
@@ -657,7 +655,6 @@ local function RefreshLookupData_Demonology()
 	-- Block F: Infernal Bolt ($infernalBoltTime) - 20s proc countdown set on glow detection
 	if not activeVars or activeVars["$infernalBoltTime"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
-		local currentTime = GetTime()
 		local infernalBoltBuff = snapshotData.snapshots[spells.infernalBolt.id]
 		local _infernalBoltActive = (infernalBoltBuff ~= nil and infernalBoltBuff.buff.isActive) or false
 
@@ -670,7 +667,7 @@ local function RefreshLookupData_Demonology()
 			end
 		else
 			if lookupChanged(prevState, "$infernalBoltTime", 0) then
-				lookup["$infernalBoltTime"] = TRB.Functions.BarText:TimerPrecision(0)
+				lookup["$infernalBoltTime"] = TRB.Functions.BarText:ZeroTimerText()
 			end
 		end
 	end
@@ -678,7 +675,6 @@ local function RefreshLookupData_Demonology()
 	-- Block G: Ruination ($ruinationTime) - 20s proc countdown set on glow detection
 	if not activeVars or activeVars["$ruinationTime"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DemonologySpells]]
-		local currentTime = GetTime()
 		local ruinationBuff = snapshotData.snapshots[spells.ruination.id]
 		local _ruinationActive = (ruinationBuff ~= nil and ruinationBuff.buff.isActive) or false
 
@@ -691,7 +687,7 @@ local function RefreshLookupData_Demonology()
 			end
 		else
 			if lookupChanged(prevState, "$ruinationTime", 0) then
-				lookup["$ruinationTime"] = TRB.Functions.BarText:TimerPrecision(0)
+				lookup["$ruinationTime"] = TRB.Functions.BarText:ZeroTimerText()
 			end
 		end
 	end
@@ -734,9 +730,7 @@ local function RefreshLookupData_Destruction()
 	local sharedSettings = TRB.Data.specCache["warlock_destruction"].settings
 	local castingFragments = (snapshotData.casting.resource2Casting or 0) + (snapshotData.casting.resource2Spending or 0)
 
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
-
+	local currentTime = GetTime()
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -825,7 +819,6 @@ local function RefreshLookupData_Destruction()
 	-- Block D: Infernal Bolt ($infernalBoltTime) - 20s proc countdown set on glow detection
 	if not activeVars or activeVars["$infernalBoltTime"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
-		local currentTime = GetTime()
 		local infernalBoltBuff = snapshotData.snapshots[spells.infernalBolt.id]
 		local _infernalBoltActive = (infernalBoltBuff ~= nil and infernalBoltBuff.buff.isActive) or false
 
@@ -838,7 +831,7 @@ local function RefreshLookupData_Destruction()
 			end
 		else
 			if lookupChanged(prevState, "$infernalBoltTime", 0) then
-				lookup["$infernalBoltTime"] = TRB.Functions.BarText:TimerPrecision(0)
+				lookup["$infernalBoltTime"] = TRB.Functions.BarText:ZeroTimerText()
 			end
 		end
 	end
@@ -846,7 +839,6 @@ local function RefreshLookupData_Destruction()
 	-- Block E: Ruination ($ruinationTime) - 20s proc countdown set on glow detection
 	if not activeVars or activeVars["$ruinationTime"] then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Warlock.DestructionSpells]]
-		local currentTime = GetTime()
 		local ruinationBuff = snapshotData.snapshots[spells.ruination.id]
 		local _ruinationActive = (ruinationBuff ~= nil and ruinationBuff.buff.isActive) or false
 
@@ -859,7 +851,7 @@ local function RefreshLookupData_Destruction()
 			end
 		else
 			if lookupChanged(prevState, "$ruinationTime", 0) then
-				lookup["$ruinationTime"] = TRB.Functions.BarText:TimerPrecision(0)
+				lookup["$ruinationTime"] = TRB.Functions.BarText:ZeroTimerText()
 			end
 		end
 	end
@@ -1332,6 +1324,8 @@ local function HandleSpellEvents(self, event, ...)
 				TRB.Functions.AudioCues:ResetLatch(snapshotData, "ruination")
 			end
 		end
+		-- A proc spent early ends here, possibly before its cast or aura event lands.
+		TRB.Data.lookupDirty = true
 	end
 end
 
@@ -1461,7 +1455,7 @@ local function UpdateSoulShardsDemonology(specSettings, specCacheSettings, norma
 		if barGroups and barGroups.secondary then
 			local shardNode = barGroups.secondary:GetNode(x)
 			if shardNode then
-				Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, filled and 1 or 0, 1)
+				Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], shardNode, filled and 1 or 0, 1)
 				shardNode:SetBorderColor(cpBorderColor)
 				TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 				shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
@@ -1515,7 +1509,7 @@ local function UpdateSoulShardsAffliction(specSettings, specCacheSettings, norma
 		if barGroups and barGroups.secondary then
 			local shardNode = barGroups.secondary:GetNode(x)
 			if shardNode then
-				Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, filled and 1 or 0, 1)
+				Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], shardNode, filled and 1 or 0, 1)
 				shardNode:SetBorderColor(cpBorderColor)
 				TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 				shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
@@ -1570,7 +1564,7 @@ local function UpdateSoulShardsDestruction(specSettings, specCacheSettings, norm
 		if barGroups and barGroups.secondary then
 			local shardNode = barGroups.secondary:GetNode(x)
 			if shardNode then
-				Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, shardNode, fillValue, 1)
+				Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], shardNode, fillValue, 1)
 				shardNode:SetBorderColor(cpBorderColor)
 				TRB.Functions.Color:ApplyFillColor(shardNode, cpColor)
 				shardNode:SetBackgroundColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)

@@ -221,6 +221,10 @@ end
 
 -- Bumped on every health read; the values can be secret, so health overlays compare this instead.
 TRB.Functions.Character.healthValuesVersion = 0
+-- Bumped on every pet read, so pet bar text formats only after one.
+TRB.Functions.Character.petValuesVersion = 0
+-- Bumped on every stats read, so bar text copies the stats only after one.
+TRB.Functions.Character.statsValuesVersion = 0
 
 -- Health pieces changed by an event and not yet read back. Every reader runs in the tick or in
 -- BarText:RenderNow, which flush first, so a burst of events between renders costs one read per piece.
@@ -397,6 +401,8 @@ function TRB.Functions.Character:UpdatePetValues()
 		end
 	end
 
+	TRB.Functions.Character.petValuesVersion = TRB.Functions.Character.petValuesVersion + 1
+
 	if state ~= previousState then
 		TRB.Functions.BarVisibility:MarkDirty()
 	elseif TRB.Functions.BarVisibility.hasResourceCurve then
@@ -469,6 +475,8 @@ local function CharacterChange(self, event, ...)
 	elseif event == "SPELL_UPDATE_USABLE" then
 		TRB.Classes.SpellBase.InvalidateSpellUsable()
 		TRB.Data.snapshotData.casting:RefreshCost()
+		-- Bar text reads usability; this is the only signal it changed.
+		TRB.Data.lookupDirty = true
 	elseif event == "SPELLS_CHANGED" then
 		-- PvP talents become known and unknown here, with War Mode and PvP zones.
 		TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
@@ -520,6 +528,7 @@ local function CharacterChange(self, event, ...)
 	elseif event == "PLAYER_TARGET_CHANGED" then
 		TRB.Functions.Character:InvalidateSpellRanges()
 		TRB.Functions.BarVisibility:MarkDirty()
+		TRB.Data.lookupDirty = true
 	elseif event == "PLAYER_MOUNT_DISPLAY_CHANGED" then
 		local frame = self
 		C_Timer.After(0, function()
@@ -684,6 +693,14 @@ function TRB.Functions.Character:GetMovementSpeed()
 	return state.speed, state.percent, state.isGliding
 end
 
+---Whether the player is standing still and last read 0, so speed text can't change until they move. The read keeps
+---GetMovementSpeed's 4Hz idle re-read, which catches movement no event announced.
+---@return boolean
+function TRB.Functions.Character:IsSpeedSettled()
+	local _, percent = self:GetMovementSpeed()
+	return movementSpeed.stopped and percent == 0
+end
+
 ---Registers all character-change events (power updates, health, stats, mounting, zone changes, etc.) on the characterChangeFrame.
 function TRB.Functions.Character:EnableCharacterChange()
 	-- Runs on every spec change, so re-registering replaces the last spec's unit filters.
@@ -833,10 +850,14 @@ local function SpellRangeCheckUpdateEvent(self, event, spellIdentifier, isInRang
 		return
 	end
 	-- No check means no target, or one the spell can't be used on.
+	local range = TRB.Data.cache.values.range
+	local value = TRB.Data.constants.rangeInvalid
 	if checksRange == true then
-		TRB.Data.cache.values.range[spellIdentifier] = isInRange
-	else
-		TRB.Data.cache.values.range[spellIdentifier] = TRB.Data.constants.rangeInvalid
+		value = isInRange
+	end
+	if range[spellIdentifier] ~= value then
+		range[spellIdentifier] = value
+		TRB.Data.lookupDirty = true
 	end
 end
 
@@ -1038,14 +1059,26 @@ local resourceTypeNames = {
 	Castbar = TRB.Localization["ResourceCastbar"],
 }
 
+-- Spec bar group configs by class id, then spec id. Every factory returns load-time constants.
+local specBarGroupConfigs = {}
+
 ---Reads a spec's bar-group configuration (GetSpecConfiguration) without requiring it to be
----the active spec. Shared by the BarText, IO, and Threshold modules.
+---the active spec. Shared by the BarText, IO, and Threshold modules. Callers must not modify it.
 ---@param classId integer?
 ---@param specId integer?
 ---@return table?
 function TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	if classId == nil or specId == nil then
 		return nil
+	end
+	local classConfigs = specBarGroupConfigs[classId]
+	if classConfigs == nil then
+		classConfigs = {}
+		specBarGroupConfigs[classId] = classConfigs
+	end
+	local memo = classConfigs[specId]
+	if memo ~= nil then
+		return memo
 	end
 	local className = self:GetClassModuleName(classId)
 	if className == nil then
@@ -1056,15 +1089,23 @@ function TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 		return nil
 	end
 	local config = classModule.BarGroupsFactory:GetSpecConfiguration(specId)
+	if type(config) ~= "table" then
+		return config
+	end
+	-- An empty config may be a class whose specs aren't defined yet, so it isn't kept.
+	local defined = next(config) ~= nil
 	-- Castbar is an all-spec bar not declared per-spec; expose it so it is a valid anchor target and
 	-- bar-text container for every spec. Copy so we never mutate a class factory's returned table.
-	if type(config) == "table" and config.castbar == nil then
+	if config.castbar == nil then
 		local merged = {}
 		for k, v in pairs(config) do
 			merged[k] = v
 		end
 		merged.castbar = { maxNodes = 1, isPrimary = false, resourceType = "Castbar" }
-		return merged
+		config = merged
+	end
+	if defined then
+		classConfigs[specId] = config
 	end
 	return config
 end
@@ -1370,6 +1411,7 @@ local function UpdateStatsSnapshot(bucket)
 
 	attributes.cacheRefresh = true
 	attributes[bucket .. "Refresh"] = false
+	TRB.Functions.Character.statsValuesVersion = TRB.Functions.Character.statsValuesVersion + 1
 end
 
 ---Reads the primary stat bucket (UNIT_STATS).
@@ -1454,8 +1496,10 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 		-- A returning spec missed its procs' end events while inactive, so they read as ended, as after a death.
 		TRB.Functions.Class:ResetProcsOnDeath()
 	end
-	-- A different snapshot means different health values, so health overlays must redraw.
+	-- A different snapshot means different health, pet, and stats values, so health overlays and bar text must redraw.
 	TRB.Functions.Character.healthValuesVersion = TRB.Functions.Character.healthValuesVersion + 1
+	TRB.Functions.Character.petValuesVersion = TRB.Functions.Character.petValuesVersion + 1
+	TRB.Functions.Character.statsValuesVersion = TRB.Functions.Character.statsValuesVersion + 1
 	TRB.Functions.Character:ResetCaches()
 	TRB.Functions.BarVisibility:MarkDirty()
 	-- The single point where a spec's composed settings become active (login, spec switch, talent
@@ -2242,6 +2286,7 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 	---@type TRB.Classes.SpellThreshold[]
 	local thresholdSpells = {}
 	local thresholdId = 0
+	local stealthGated = false
 	for _, v in pairs(spells) do
 		local spell = v --[[@as TRB.Classes.SpellBase]]
 		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) then
@@ -2252,11 +2297,14 @@ function TRB.Functions.Character:GetThresholdSpells(spells, talents)
 				else
 					thresholdId = thresholdId + 1
 					thresholdSpells[thresholdId] = spell
+					stealthGated = stealthGated or spell.attributes.stealth == true
 				end
 			end
 		end
 	end
 	TRB.Data.cache.thresholdSpells = thresholdSpells
+	-- The threshold pass reads stealth only for these lines, so a spec without one skips the API call.
+	TRB.Data.cache.thresholdStealthGated = stealthGated
 	TRB.Functions.Character:RefreshThresholdSpellsLearned()
 	TRB.Functions.Threshold:RefreshThresholdAudio()
 	TRB.Functions.Threshold:RefreshThresholdIconPriorities()

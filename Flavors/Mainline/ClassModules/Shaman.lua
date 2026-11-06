@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -17,6 +18,20 @@ local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 
 local talents --[[@as TRB.Classes.Talents]]
+
+-- Elemental's talent choices for the usability checks, resolved in SwitchSpec right after the talents refresh.
+local elementalTalentGates = { earthShockOnly = false, elementalBlast = false, earthquake = false, earthquakeTargeted = false }
+
+---Resolves which Earth Shock and Earthquake spells Elemental's talents allow; Elemental Blast replaces Earth Shock.
+---@param specTalents TRB.Classes.Talents
+---@param spells TRB.Classes.Mainline.Shaman.ElementalSpells
+local function ResolveElementalTalentGates(specTalents, spells)
+	local elementalBlast = specTalents:IsTalentActive(spells.elementalBlast)
+	elementalTalentGates.earthShockOnly = specTalents:IsTalentActive(spells.earthShock) and not elementalBlast
+	elementalTalentGates.elementalBlast = elementalBlast
+	elementalTalentGates.earthquake = specTalents:IsTalentActive(spells.earthquake)
+	elementalTalentGates.earthquakeTargeted = specTalents:IsTalentActive(spells.earthquakeTargeted)
+end
 
 local thresholdBar = TRB.Classes.ThresholdBar:New()
 local thresholdState = TRB.Classes.ThresholdState:New()
@@ -409,14 +424,14 @@ local function RefreshTempestLookup(spells, attributes, lookup, lookupLogic, pre
 
 	local timeDisplay
 	if not isActive then
-		timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+		timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 	elseif remaining ~= nil then
 		timeDisplay = TRB.Functions.BarText:TimerPrecision(remaining)
 	elseif remainingText ~= nil then
 		-- Already formatted, to the viewer's precision rather than ours.
 		timeDisplay = remainingText
 	else
-		timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+		timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 	end
 	if lookupChanged(prevState, "$tempestTime", timeDisplay) then
 		lookup["$tempestTime"] = timeDisplay
@@ -476,8 +491,8 @@ local function RefreshLookupData_Elemental()
 		local castingMaelstromColor = sharedSettings.colors.text.casting.color
 
 		-- $earthShockUsable, $elementalBlastUsable (synonyms), $earthquakeUsable
-		local _earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
-		local _earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (talents:IsTalentActive(spells.earthquakeTargeted) and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
+		local _earthShockUsable = (elementalTalentGates.earthShockOnly and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (elementalTalentGates.elementalBlast and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
+		local _earthquakeUsable = (elementalTalentGates.earthquake and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (elementalTalentGates.earthquakeTargeted and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
 
 		if TRB.Data.character.inCombat then
 			if sharedSettings.colors.text.overThreshold.enabled and _earthShockUsable then
@@ -576,14 +591,14 @@ local function RefreshLookupData_Elemental()
 
 			local timeDisplay
 			if not isActive then
-				timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+				timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 			elseif remaining ~= nil then
 				timeDisplay = TRB.Functions.BarText:TimerPrecision(remaining)
 			elseif remainingText ~= nil then
 				-- Already formatted, to the viewer's precision rather than ours.
 				timeDisplay = remainingText
 			else
-				timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+				timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 			end
 
 			if lookupChanged(prevState, variable, timeDisplay) then
@@ -1018,14 +1033,12 @@ local scratch = {
 	maelstromBarColors1 = {},
 	barColorMap1 = {},
 	overcapCurves1 = {},
-	conditionMap2 = {},
 	manaBarColors1 = {},
-	barColorMap2 = {},
 	manaOvercapCurves1 = {},
 	conditionMap3 = {},
 	manaBarColors2 = {},
 	barColorMap3 = {},
-	conditionMap4 = {},
+	maelstromWeaponIndicated1 = {},
 	conditionMap5 = {},
 	manaBarColors3 = {},
 	barColorMap4 = {},
@@ -1121,8 +1134,8 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.shaman_elemental.settings
 		UpdateSnapshot_Elemental()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
-		local earthShockUsable = (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and spells.earthShock:IsUsable())
-			or (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:IsUsable())
+		local earthShockUsable = (elementalTalentGates.earthShockOnly and spells.earthShock:IsUsable())
+			or (elementalTalentGates.elementalBlast and spells.elementalBlast:IsUsable())
 
 		if snapshotData.attributes.isTracking then
 			local affectingCombat = TRB.Data.character.inCombat
@@ -1133,8 +1146,8 @@ local function UpdateResourceBar()
 			local barColor = specSettings.colors.bar.base
 			local barBackgroundColor = specSettings.colors.bar.background.color
 
-			local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
-				or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
+			local earthquakeUsable = (elementalTalentGates.earthquake and spells.earthquake:IsUsable())
+				or (elementalTalentGates.earthquakeTargeted and spells.earthquakeTargeted:IsUsable())
 			local sharedColors = specSettings.colors.shared
 			local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
 			local ascendanceEndMet = false
@@ -1168,6 +1181,16 @@ local function UpdateResourceBar()
 			local barColorMap = scratch.barColorMap1
 			wipe(barColorMap)
 			barColorMap.maelstromBar = maelstromBarColors
+			local showMana = specSettings.displayBar.mana ~= nil and not specSettings.displayBar.mana.neverShow
+			local manaBarColors = scratch.manaBarColors1
+			if showMana then
+				local manaColors = specSettings.colors.bars.mana
+				wipe(manaBarColors)
+				manaBarColors.bar = manaColors.bar.color
+				manaBarColors.border = manaColors.border.color
+				manaBarColors.background = manaColors.background.color
+				barColorMap.manaBar = manaBarColors
+			end
 			local elementalBlastBuffColors = specSettings.colors.bars.elementalBlastBuffs
 			for key, node in pairs(elementalBlastBuffNodes) do
 				local nodeColors = scratch.elementalBlastBuffColors1[key]
@@ -1256,51 +1279,12 @@ local function UpdateResourceBar()
 			refreshText = Bar:UpdateTotemBars(barGroups, snapshotData, specCacheSettings) or refreshText
 
 			-- Mana bar update (Elemental only)
-			if specSettings.displayBar.mana ~= nil and not specSettings.displayBar.mana.neverShow then
+			if showMana then
 				refreshText = true
 				local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 				if manaNode then
 					local currentMana = snapshotData.attributes.mana or UnitPower("player", Enum.PowerType.Mana) or 0
 					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
-					local affectingCombat = TRB.Data.character.inCombat
-					local earthquakeUsable = (talents:IsTalentActive(spells.earthquake) and spells.earthquake:IsUsable())
-						or (talents:IsTalentActive(spells.earthquakeTargeted) and spells.earthquakeTargeted:IsUsable())
-					local sharedColors = specSettings.colors.shared
-					local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
-					local ascendanceEndMet = false
-
-					if ascendanceActive then
-						local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-						local timeThreshold = 0
-						if specSettings.endOf.ascendance.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
-						elseif specSettings.endOf.ascendance.mode == "time" then
-							timeThreshold = specSettings.endOf.ascendance.timeMax
-						end
-						ascendanceEndMet = timeLeft <= timeThreshold
-					end
-
-					local conditionMap = scratch.conditionMap2
-					wipe(conditionMap)
-					conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
-					conditionMap.earthShock = earthShockUsable
-					conditionMap.earthquake = earthquakeUsable
-					conditionMap.ascendance = ascendanceActive
-					conditionMap.borderOvercap = affectingCombat
-					conditionMap.tempest = snapshotData.attributes.tempestActive == true
-					conditionMap.tempest2 = snapshotData.attributes.tempestStacks == spells.tempest.maxStacks
-					local manaBarColors = scratch.manaBarColors1
-					wipe(manaBarColors)
-					manaBarColors.bar = specSettings.colors.bars.mana.bar.color
-					manaBarColors.border = specSettings.colors.bars.mana.border.color
-					manaBarColors.background = specSettings.colors.bars.mana.background.color
-					local barColorMap = scratch.barColorMap2
-					wipe(barColorMap)
-					barColorMap.manaBar = manaBarColors
-
-					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
-
 					local manaGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "manaBar", scratch.manaGradients1)
 
 					manaNode:SetMinMax(0, maxMana)
@@ -1343,7 +1327,7 @@ local function UpdateResourceBar()
 			end
 
 			if specSettings.displayBar.elementalBlastBuffs ~= nil and not specSettings.displayBar.elementalBlastBuffs.neverShow
-				and talents:IsTalentActive(spells.elementalBlast) then
+				and elementalTalentGates.elementalBlast then
 				refreshText = true
 				UpdateElementalBlastBuffs(specSettings)
 			end
@@ -1397,6 +1381,10 @@ local function UpdateResourceBar()
 			local barColorMap = scratch.barColorMap3
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors
+			-- Seeded empty, so an element holds a color only when an indicator claimed it.
+			local maelstromWeaponIndicated = scratch.maelstromWeaponIndicated1
+			wipe(maelstromWeaponIndicated)
+			barColorMap.maelstromWeaponBar = maelstromWeaponIndicated
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -1429,52 +1417,9 @@ local function UpdateResourceBar()
 					local currentStacks = snapshots[spells.maelstromWeapon.id].buff.applications
 					local compressedView = specSettings.colors.comboPoints.compressedView
 					local displayNodes = compressedView and math.ceil(maxStacks / 2) or maxStacks
-					local sharedColors = specSettings.colors.shared
-					local indicatorColors = sharedColors and sharedColors.indicatorColors
-					local nodeOrder = sharedColors and sharedColors.nodeOrder
-					local ascendanceActive = snapshots[spells.ascendance.id].buff.isActive
-					local ascendanceEndMet = false
-
-					if ascendanceActive then
-						local timeLeft = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-						local timeThreshold = 0
-						if specSettings.endOf.ascendance.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.ascendance.gcdsMax
-						elseif specSettings.endOf.ascendance.mode == "time" then
-							timeThreshold = specSettings.endOf.ascendance.timeMax
-						end
-						ascendanceEndMet = timeLeft <= timeThreshold
-					end
-
-					local conditionMap = scratch.conditionMap4
-					wipe(conditionMap)
-					conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
-					conditionMap.ascendance = ascendanceActive
-					conditionMap.tempest = snapshotData.attributes.tempestActive == true
-					conditionMap.tempest2 = snapshotData.attributes.tempestStacks == spells.tempest.maxStacks
-					TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
-					local mwBarOverride = nil
-					local mwBorderOverride = nil
-					local mwBackgroundOverride = nil
-					local mwEndCapOverride = nil
-
-					if nodeOrder and indicatorColors then
-						for i = #nodeOrder, 1, -1 do
-							local key = nodeOrder[i]
-							local indicator = indicatorColors[key]
-							if indicator and indicator.enabled and conditionMap[key] then
-								local mwTargets = indicator.targets and indicator.targets.maelstromWeaponBar
-								if mwTargets then
-									if mwTargets.bar then mwBarOverride = indicator end
-									if mwTargets.border then mwBorderOverride = indicator.color end
-									if mwTargets.background then mwBackgroundOverride = indicator.color end
-									if mwTargets.endCap then mwEndCapOverride = indicator.color end
-								end
-							end
-						end
-					end
-					Color:SetResolvedEndCap("maelstromWeaponBar", mwEndCapOverride)
+					local mwBarOverride = maelstromWeaponIndicated.bar
+					local mwBorderOverride = maelstromWeaponIndicated.border
+					local mwBackgroundOverride = maelstromWeaponIndicated.background
 
 					local cpBackgroundColor = mwBackgroundOverride or specSettings.colors.comboPoints.background.color
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(cpBackgroundColor, true)
@@ -1536,9 +1481,9 @@ local function UpdateResourceBar()
 								end
 								
 								if isFilled then
-									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. nodeIndex, stackNode, 1, 1)
+									Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[nodeIndex], stackNode, 1, 1)
 								else
-									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. nodeIndex, stackNode, 0, 1)
+									Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[nodeIndex], stackNode, 0, 1)
 								end
 								
 								stackNode:SetBorderColor(cpBorderColor)
@@ -1559,7 +1504,7 @@ local function UpdateResourceBar()
 							local stackNode = barGroups.secondary:GetNode(x)
 							if stackNode then
 								if isFilled then
-									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 1, 1)
+									Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], stackNode, 1, 1)
 									
 									-- Determine color based on position and sameColor setting
 									if not barOverrideActive and specSettings.comboPoints.sameColor then
@@ -1590,7 +1535,7 @@ local function UpdateResourceBar()
 										end
 									end
 								else
-									Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, stackNode, 0, 1)
+									Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], stackNode, 0, 1)
 								end
 								
 								stackNode:SetBorderColor(cpBorderColor)
@@ -1709,6 +1654,7 @@ local function SwitchSpec()
 
 		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 		local spells = spellsData.spells --[[@as TRB.Classes.Mainline.Shaman.ElementalSpells]]
+		ResolveElementalTalentGates(specCache.shaman_elemental.talents, spells)
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -2013,7 +1959,7 @@ do
 	-- Elemental
 	local earthShockFn = function()
 		local spells = TRB.Data.spellsData.spells
-		return (talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (talents:IsTalentActive(spells.elementalBlast) and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
+		return (elementalTalentGates.earthShockOnly and (spells.earthShock:IsUsable() or spells.earthShock:IsFree())) or (elementalTalentGates.elementalBlast and (spells.elementalBlast:IsUsable() or spells.elementalBlast:IsFree()))
 	end
 	local stormkeeperFn = function()
 		local spells = TRB.Data.spellsData.spells
@@ -2047,7 +1993,7 @@ do
 		["$elementalBlastUsable"] = earthShockFn,
 		["$earthquakeUsable"] = function()
 			local spells = TRB.Data.spellsData.spells
-			return (talents:IsTalentActive(spells.earthquake) and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (talents:IsTalentActive(spells.earthquakeTargeted) and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
+			return (elementalTalentGates.earthquake and (spells.earthquake:IsUsable() or spells.earthquake:IsFree())) or (elementalTalentGates.earthquakeTargeted and (spells.earthquakeTargeted:IsUsable() or spells.earthquakeTargeted:IsFree()))
 		end,
 		-- Mana override: Elemental has mana bar visible
 		["$mana"] = true, ["$manaMax"] = true, ["$manaPercent"] = true,

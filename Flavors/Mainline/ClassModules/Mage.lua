@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -343,7 +344,7 @@ local function GetFireBlastRechargeColors(fireBlastColors, nodeCount)
 		if useRegenerating then
 			fireBlastRechargeColors[i] = regenerating
 		else
-			fireBlastRechargeColors[i] = nodeColors and nodeColors["charge" .. i]
+			fireBlastRechargeColors[i] = nodeColors and nodeColors[nodeKeys.charge[i]]
 		end
 	end
 
@@ -465,7 +466,7 @@ local function ConstructResourceBar(settings)
 						if fireBlastColors then
 							node:SetBorderColor(fireBlastColors.border.color)
 							node:SetBackgroundColorFromString(fireBlastColors.background.color)
-							local chargeKey = "charge" .. i
+							local chargeKey = nodeKeys.charge[i]
 							if fireBlastColors.nodeColors and fireBlastColors.nodeColors[chargeKey] then
 								TRB.Functions.Color:ApplyFillColor(node, fireBlastColors.nodeColors[chargeKey])
 							end
@@ -528,14 +529,14 @@ end
 local function GetProcTimeDisplay(buff)
 	local properties = buff.customProperties
 	if buff.isActive ~= true then
-		return TRB.Functions.BarText:TimerPrecision(0)
+		return TRB.Functions.BarText:ZeroTimerText()
 	elseif properties.remaining ~= nil then
 		return TRB.Functions.BarText:TimerPrecision(properties.remaining)
 	elseif properties.remainingText ~= nil then
 		-- Already formatted, to the viewer's precision rather than ours.
 		return properties.remainingText
 	end
-	return TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+	return TRB.Functions.BarText:UnknownTimerValue()
 end
 
 ---Starts an overlay-tracked proc's manual timer. The overlay alone decides when the proc ends, so a
@@ -570,9 +571,6 @@ local function RefreshLookupData_Arcane()
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.arcane
 	local sharedSettings = TRB.Data.specCache["mage_arcane"].settings
-
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -640,7 +638,9 @@ local function RefreshLookupData_Arcane()
 		local _arcaneSurgeTime = buff.isActive and buff.remaining or 0
 
 		lookupLogic["$arcaneSurgeTime"] = _arcaneSurgeTime
-		lookup["$arcaneSurgeTime"] = TRB.Functions.BarText:TimerPrecision(_arcaneSurgeTime)
+		if lookupChanged(prevState, "$arcaneSurgeTime", _arcaneSurgeTime) then
+			lookup["$arcaneSurgeTime"] = TRB.Functions.BarText:TimerPrecision(_arcaneSurgeTime)
+		end
 	end
 
 	-- Block D: Arcane Salvo ($arcaneSalvoStacks, $arcaneSalvoStacksMax)
@@ -687,7 +687,9 @@ local function RefreshLookupData_Arcane()
 		local _prismaticBoltTime = buff.isActive and buff.remaining or 0
 
 		lookupLogic["$prismaticBoltTime"] = _prismaticBoltTime
-		lookup["$prismaticBoltTime"] = TRB.Functions.BarText:TimerPrecision(_prismaticBoltTime)
+		if lookupChanged(prevState, "$prismaticBoltTime", _prismaticBoltTime) then
+			lookup["$prismaticBoltTime"] = TRB.Functions.BarText:TimerPrecision(_prismaticBoltTime)
+		end
 	end
 
 	-- Block G: Overpowered Missiles ($overpoweredMissilesTime)
@@ -712,9 +714,6 @@ local function RefreshLookupData_Fire()
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.fire
 	local sharedSettings = TRB.Data.specCache["mage_fire"].settings
-
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -798,7 +797,9 @@ local function RefreshLookupData_Fire()
 		local _combustionTime = buff.isActive and buff.remaining or 0
 
 		lookupLogic["$combustionTime"] = _combustionTime
-		lookup["$combustionTime"] = TRB.Functions.BarText:TimerPrecision(_combustionTime)
+		if lookupChanged(prevState, "$combustionTime", _combustionTime) then
+			lookup["$combustionTime"] = TRB.Functions.BarText:TimerPrecision(_combustionTime)
+		end
 	end
 
 	-- Block D: Overlay procs ($heatingUpTime, $hotStreakTime, $frostfireEmpowermentTime)
@@ -813,9 +814,15 @@ local function RefreshLookupData_Fire()
 		lookupLogic["$hotStreakTime"] = _hotStreakTime
 		lookupLogic["$frostfireEmpowermentTime"] = _frostfireEmpowermentTime
 
-		lookup["$heatingUpTime"] = TRB.Functions.BarText:TimerPrecision(_heatingUpTime)
-		lookup["$hotStreakTime"] = TRB.Functions.BarText:TimerPrecision(_hotStreakTime)
-		lookup["$frostfireEmpowermentTime"] = TRB.Functions.BarText:TimerPrecision(_frostfireEmpowermentTime)
+		if lookupChanged(prevState, "$heatingUpTime", _heatingUpTime) then
+			lookup["$heatingUpTime"] = TRB.Functions.BarText:TimerPrecision(_heatingUpTime)
+		end
+		if lookupChanged(prevState, "$hotStreakTime", _hotStreakTime) then
+			lookup["$hotStreakTime"] = TRB.Functions.BarText:TimerPrecision(_hotStreakTime)
+		end
+		if lookupChanged(prevState, "$frostfireEmpowermentTime", _frostfireEmpowermentTime) then
+			lookup["$frostfireEmpowermentTime"] = TRB.Functions.BarText:TimerPrecision(_frostfireEmpowermentTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -828,9 +835,6 @@ local function RefreshLookupData_Frost()
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.mage.frost
 	local sharedSettings = TRB.Data.specCache["mage_frost"].settings
-
-	-- Side-effect: other systems depend on manaRegen being current
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
@@ -906,11 +910,11 @@ local function RefreshLookupData_Frost()
 		-- Memoized on the rendered string, since both are nil underneath.
 		local stacksDisplay
 		if not attributes.shatterTracked then
-			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
+			stacksDisplay = TRB.Functions.BarText:UnknownValue("0")
 		elseif attributes.shatterStacks ~= nil then
 			stacksDisplay = string.format("%s", attributes.shatterStacks)
 		else
-			stacksDisplay = string.format("%.0f", 0)
+			stacksDisplay = "0"
 		end
 
 		if lookupChanged(prevState, "$shatterStacks", stacksDisplay) then
@@ -935,7 +939,9 @@ local function RefreshLookupData_Frost()
 
 		lookup["$fingersOfFrostStacks"] = _fingersOfFrostStacks
 		lookup["$fingersOfFrostStacksMax"] = _fingersOfFrostStacksMax
-		lookup["$fingersOfFrostTime"] = TRB.Functions.BarText:TimerPrecision(_fingersOfFrostTime)
+		if lookupChanged(prevState, "$fingersOfFrostTime", _fingersOfFrostTime) then
+			lookup["$fingersOfFrostTime"] = TRB.Functions.BarText:TimerPrecision(_fingersOfFrostTime)
+		end
 	end
 
 	-- Block E: Brain Freeze ($brainFreezeTime)
@@ -958,7 +964,9 @@ local function RefreshLookupData_Frost()
 		local _frostfireEmpowermentTime = GetProcTimerRemaining(snapshots[spells.frostfireEmpowerment.id].buff, GetTime())
 
 		lookupLogic["$frostfireEmpowermentTime"] = _frostfireEmpowermentTime
-		lookup["$frostfireEmpowermentTime"] = TRB.Functions.BarText:TimerPrecision(_frostfireEmpowermentTime)
+		if lookupChanged(prevState, "$frostfireEmpowermentTime", _frostfireEmpowermentTime) then
+			lookup["$frostfireEmpowermentTime"] = TRB.Functions.BarText:TimerPrecision(_frostfireEmpowermentTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -1303,7 +1311,7 @@ local function UpdateShatter(specSettings, specCacheSettings, barColors, fillInd
 	for x = 1, maxShatter do
 		local shatterNode = barGroups.shatter:GetNode(x)
 		if shatterNode then
-			Bar:SetBarNodeValue(specCacheSettings, "shatter" .. x, shatterNode, shatterStacks)
+			Bar:SetBarNodeValue(specCacheSettings, nodeKeys.shatter[x], shatterNode, shatterStacks)
 
 			local fillColor = barColors.bar
 			if shatterCustomIndicatorByStack[x] ~= nil then
@@ -1590,7 +1598,7 @@ local function UpdateResourceBar()
 					if barGroups and barGroups.secondary then
 						local chargeNode = barGroups.secondary:GetNode(x)
 						if chargeNode then
-							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, chargeNode, filled and 1 or 0, 1)
+							Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], chargeNode, filled and 1 or 0, 1)
 							Bar:ApplyNodeIndicators(chargeNode, "arcaneChargesBar")
 							chargeNode:SetBorderColor(arcaneChargesBarColors.border)
 							TRB.Functions.Color:ApplyFillColor(chargeNode, cpColor)
@@ -1743,7 +1751,7 @@ local function UpdateResourceBar()
 					for x = 1, fireBlastNodeCount do
 						local chargeNode = barGroups.secondary:GetNode(x)
 						if chargeNode then
-							local cpKey = "comboPoint" .. x
+							local cpKey = nodeKeys.comboPoint[x]
 							chargeNode:ClearTimerDuration()
 							chargeNode:SetMinMax(x - 1, x)
 							TRB.Data.cache.values.bar[cpKey] = nil
@@ -1751,7 +1759,7 @@ local function UpdateResourceBar()
 							if fireBlastColors then
 								-- An indicator on the fill wins over each charge's own color.
 								local fillColor = fireBlastBarTargets.bar and fireBlastBarColors.bar
-									or (fireBlastColors.nodeColors and fireBlastColors.nodeColors["charge" .. x])
+									or (fireBlastColors.nodeColors and fireBlastColors.nodeColors[nodeKeys.charge[x]])
 								if fillColor then
 									TRB.Functions.Color:ApplyFillColor(chargeNode, fillColor)
 								end
@@ -1876,7 +1884,7 @@ local function UpdateResourceBar()
 					if barGroups and barGroups.secondary then
 						local icicleNode = barGroups.secondary:GetNode(x)
 						if icicleNode then
-							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, icicleNode, filled and 1 or 0, 1)
+							Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], icicleNode, filled and 1 or 0, 1)
 							Bar:ApplyNodeIndicators(icicleNode, "iciclesBar")
 							icicleNode:SetBorderColor(iciclesBarColors.border)
 							TRB.Functions.Color:ApplyFillColor(icicleNode, cpColor)
@@ -2890,6 +2898,11 @@ function TRB.Functions.Class:HasActiveTimers()
 		local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells, true)
 		return fireBlastCooldown ~= nil and fireBlastCooldown.isActive == true
 	elseif TRB.Data.character.specId == 3 then
+		-- Shatter's stack count is secret, so its changes can't mark the lookup dirty.
+		local activeVars = TRB.Data.activeVariables
+		if TRB.Data.snapshotData.attributes.shatterActive and (activeVars == nil or activeVars["$shatterStacks"]) then
+			return true
+		end
 		return IsTimerBuffActive(frostTimerSpells)
 	end
 

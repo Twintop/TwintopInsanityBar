@@ -23,14 +23,22 @@ TRB.Classes = TRB.Classes or {}
 ---@field public appendedClipFrame Frame? # Clip container for the appended overlay
 ---@field public appendedOverlayFrame StatusBar? # StatusBar inside clip, anchored to fill's RIGHT edge
 ---@field public appendedOverlayReady boolean? # One-frame readiness guard for appended overlay
----@field private _appendedAnchorSig string? # Geometry the appended clip was anchored with
+---@field private _appendedAnchored boolean? # Whether the _ap* fields hold the geometry the appended clip was anchored with
+---@field private _appendedValue number? # The appended overlay's plain value as last written
+---@field private _appendedMin number?
+---@field private _appendedMax number?
 ---@field private _appendedTexturePath string?
 ---@field private _appendedColor TRB.Classes.OverlaySlot.ColorRecord
 ---@field private _appendedGradientActive boolean?
 ---@field public insetClipFrame Frame? # Clip container for the inset overlay
 ---@field public insetOverlayFrame StatusBar? # Reverse-fill StatusBar inside clip
 ---@field public insetOverlayReady boolean? # One-frame readiness guard for inset overlay
----@field private _insetAnchorSig string? # Geometry the inset clip was anchored with
+---@field private _insetAnchored boolean? # Whether the _in* fields hold the geometry the inset clip was anchored with
+---@field private _insetValue number? # The inset overlay's plain value as last written
+---@field private _insetMin number?
+---@field private _insetMax number?
+---@field private _endCapShownClip Frame? # The end cap clip _endCapShown was written to
+---@field private _endCapShown boolean?
 ---@field private _insetTexturePath string?
 ---@field private _insetColor TRB.Classes.OverlaySlot.ColorRecord
 ---@field private _insetGradientActive boolean?
@@ -389,13 +397,16 @@ function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay(force)
 	local fillTexture = parent.frame:GetStatusBarTexture()
 	local fillRatio = self:GetParentFillRatio()
 	local isEmpty = fillRatio ~= nil and fillRatio <= 0
-	local sig = string.format("%s|%s|%s|%s|%s|%s|%s",
-		tostring(parent.border), tostring(parent.width), tostring(parent.height),
-		fillDirection, tostring(self.fullHeight), tostring(fillTexture), tostring(isEmpty))
-	if force ~= true and self.appendedOverlayReady and self._appendedAnchorSig == sig then
+	local border, width, height, fullHeight = parent.border, parent.width, parent.height, self.fullHeight
+	if force ~= true and self.appendedOverlayReady and self._appendedAnchored
+		and self._apBorder == border and self._apWidth == width and self._apHeight == height
+		and self._apDirection == fillDirection and self._apFullHeight == fullHeight
+		and self._apTexture == fillTexture and self._apEmpty == isEmpty then
 		return
 	end
-	self._appendedAnchorSig = sig
+	self._appendedAnchored = true
+	self._apBorder, self._apWidth, self._apHeight = border, width, height
+	self._apDirection, self._apFullHeight, self._apTexture, self._apEmpty = fillDirection, fullHeight, fillTexture, isEmpty
 
 	-- Re-anchor clip frame: it constrains only the FILL axis (so the appended bar can't draw past the
 	-- bar ends). The cross axis is left full -- the explicit overlay size below handles the side borders.
@@ -518,8 +529,9 @@ function TRB.Classes.OverlaySlot:CreateAppendedOverlay()
 	self.appendedClipFrame = clip
 	self.appendedOverlayFrame = overlayBar
 	self.appendedOverlayReady = false
-	-- Reset memoized state so the freshly-created frame re-applies anchor/texture/color.
-	self._appendedAnchorSig = nil
+	-- Reset memoized state so the freshly-created frame re-applies anchor/texture/color/value.
+	self._appendedAnchored = nil
+	self._appendedValue, self._appendedMin, self._appendedMax = nil, nil, nil
 	self._appendedTexturePath = nil
 	self._appendedColor.set = false
 
@@ -537,6 +549,14 @@ end
 ---@param value number
 function TRB.Classes.OverlaySlot:SetAppendedOverlayValue(value)
 	if not self.appendedOverlayFrame then return end
+	-- Callers resend the same value every tick; a plain repeat skips the write.
+	if issecretvalue(value) then
+		self._appendedValue = nil
+	elseif self._appendedValue == value then
+		return
+	else
+		self._appendedValue = value
+	end
 	self.appendedOverlayFrame:SetValue(value)
 end
 
@@ -545,7 +565,16 @@ end
 ---@param max number
 function TRB.Classes.OverlaySlot:SetAppendedOverlayMinMax(min, max)
 	if not self.appendedOverlayFrame then return end
+	if issecretvalue(min) or issecretvalue(max) then
+		self._appendedMin, self._appendedMax = nil, nil
+	elseif self._appendedMin == min and self._appendedMax == max then
+		return
+	else
+		self._appendedMin, self._appendedMax = min, max
+	end
 	self.appendedOverlayFrame:SetMinMaxValues(min, max)
+	-- A new range can clamp the value, so the next value write must go through.
+	self._appendedValue = nil
 end
 
 ---Enables or disables clipping on the appended overlay's clip frame.
@@ -663,7 +692,7 @@ function TRB.Classes.OverlaySlot:ReanchorInsetOverlay(force)
 	if parent:IsEngineDriven() then
 		self.insetClipFrame:Hide()
 		self.insetOverlayReady = false
-		self._insetAnchorSig = nil
+		self._insetAnchored = nil
 		return
 	end
 
@@ -678,14 +707,19 @@ function TRB.Classes.OverlaySlot:ReanchorInsetOverlay(force)
 	-- against a live, interpolating fill texture causes visible flicker.
 	local fillTexture = parent.frame:GetStatusBarTexture()
 	local fillEdgeXOffset, fillEdgeYOffset = self:GetFillEdgeAnchorOffsets(fillDirection)
-	local sig = string.format("%s|%s|%s|%s|%s|%s|%d|%d",
-		tostring(parent.border), tostring(parent.width), tostring(parent.height),
-		fillDirection, tostring(self.fullHeight), tostring(fillTexture),
-		math.floor((fillEdgeXOffset or 0) + 0.5), math.floor((fillEdgeYOffset or 0) + 0.5))
-	if force ~= true and self.insetOverlayReady and self._insetAnchorSig == sig then
+	local edgeX = math.floor((fillEdgeXOffset or 0) + 0.5)
+	local edgeY = math.floor((fillEdgeYOffset or 0) + 0.5)
+	local border, width, height, fullHeight = parent.border, parent.width, parent.height, self.fullHeight
+	if force ~= true and self.insetOverlayReady and self._insetAnchored
+		and self._inBorder == border and self._inWidth == width and self._inHeight == height
+		and self._inDirection == fillDirection and self._inFullHeight == fullHeight
+		and self._inTexture == fillTexture and self._inEdgeX == edgeX and self._inEdgeY == edgeY then
 		return
 	end
-	self._insetAnchorSig = sig
+	self._insetAnchored = true
+	self._inBorder, self._inWidth, self._inHeight = border, width, height
+	self._inDirection, self._inFullHeight, self._inTexture = fillDirection, fullHeight, fillTexture
+	self._inEdgeX, self._inEdgeY = edgeX, edgeY
 
 	-- Re-anchor clip frame: it constrains only the FILL axis (so the inset can't draw past the bar
 	-- ends). The cross axis is left full -- the explicit overlay size below handles the side borders.
@@ -801,8 +835,9 @@ function TRB.Classes.OverlaySlot:CreateInsetOverlay()
 	self.insetClipFrame = clip
 	self.insetOverlayFrame = overlayBar
 	self.insetOverlayReady = false
-	-- Reset memoized state so the freshly-created frame re-applies anchor/texture/color.
-	self._insetAnchorSig = nil
+	-- Reset memoized state so the freshly-created frame re-applies anchor/texture/color/value.
+	self._insetAnchored = nil
+	self._insetValue, self._insetMin, self._insetMax = nil, nil, nil
 	self._insetTexturePath = nil
 	self._insetColor.set = false
 
@@ -824,6 +859,14 @@ end
 ---@param value number
 function TRB.Classes.OverlaySlot:SetInsetOverlayValue(value)
 	if not self.insetOverlayFrame then return end
+	-- Callers resend the same value every tick; a plain repeat skips the write.
+	if issecretvalue(value) then
+		self._insetValue = nil
+	elseif self._insetValue == value then
+		return
+	else
+		self._insetValue = value
+	end
 	self.insetOverlayFrame:SetValue(value)
 end
 
@@ -832,7 +875,16 @@ end
 ---@param max number
 function TRB.Classes.OverlaySlot:SetInsetOverlayMinMax(min, max)
 	if not self.insetOverlayFrame then return end
+	if issecretvalue(min) or issecretvalue(max) then
+		self._insetMin, self._insetMax = nil, nil
+	elseif self._insetMin == min and self._insetMax == max then
+		return
+	else
+		self._insetMin, self._insetMax = min, max
+	end
 	self.insetOverlayFrame:SetMinMaxValues(min, max)
+	-- A new range can clamp the value, so the next value write must go through.
+	self._insetValue = nil
 end
 
 ---Sets the inset overlay StatusBar fill texture. No-op if not created.
@@ -1309,7 +1361,7 @@ function TRB.Classes.OverlaySlot:ReanchorEndCap()
 	-- The engine's fill texture is forbidden: SetPoint against it errors. A cap on an engine-driven
 	-- bar would have to be a region the engine's own button owns.
 	if parent:IsEngineDriven() then
-		clip:Hide()
+		self:HideEndCap()
 		self.endCapReady = false
 		return
 	end
@@ -1472,8 +1524,13 @@ end
 ---Shows or hides the end cap. No-op if not created.
 ---@param shown boolean
 function TRB.Classes.OverlaySlot:SetEndCapShown(shown)
-	if not self.endCapClipFrame then return end
-	self.endCapClipFrame:SetShown(shown)
+	local clip = self.endCapClipFrame
+	if not clip then return end
+	-- The group pass re-asserts every cap on each value write; skip a repeat on the same frame.
+	if self._endCapShownClip == clip and self._endCapShown == shown then return end
+	clip:SetShown(shown)
+	self._endCapShownClip = clip
+	self._endCapShown = shown
 end
 
 ---Shows the end cap. No-op if not created.
@@ -1485,6 +1542,8 @@ end
 function TRB.Classes.OverlaySlot:HideEndCap()
 	if not self.endCapClipFrame then return end
 	self.endCapClipFrame:Hide()
+	self._endCapShownClip = self.endCapClipFrame
+	self._endCapShown = false
 end
 
 ---Returns the end cap band frame, or nil if not created.

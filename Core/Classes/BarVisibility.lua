@@ -633,6 +633,7 @@ end
 local pooledEntries = {}
 local entryPool = {}
 local pooledContext = setmetatable({}, TRB.Classes.BarVisibilityContext)
+local pooledContextFilled = false
 local recheckScratch = {}
 
 ---Returns the shared entry list, emptied, for one HideResourceBar pass. Its entries are only valid until the next call.
@@ -673,6 +674,12 @@ end
 ---@param force boolean # Force-hide flag from the caller
 ---@return TRB.Classes.BarVisibilityContext
 function TRB.Functions.BarVisibility:GetGameStateContext(force)
+	-- A fade-only pass reads nothing from the context but force.
+	if not force and pooledContextFilled and self.dirtyToken == self.lastAppliedToken then
+		pooledContext.force = false
+		return pooledContext
+	end
+	pooledContextFilled = true
 	return TRB.Classes.BarVisibilityContext:FillFromGameState(pooledContext, force)
 end
 

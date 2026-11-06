@@ -37,6 +37,7 @@ local MAX_CONTAINERS_PER_NODE = 32 -- Frames are never reclaimed, so a churning 
 ---@field unit string
 ---@field filter string
 ---@field appearance TRB.AuraEngineAppearance # The look this container's button was painted with
+---@field appearanceVersion integer? # The node's appearanceVersion when that look last matched its fill
 ---@field active boolean # False while parked: hidden, disabled and filtered to match nothing
 ---@field fillBar StatusBar? # The button's own bar, set once its initialize window has run
 ---@field fillTexture Texture? # The engine bar's texture object, needed to paint gradients
@@ -76,7 +77,7 @@ local function SourceGradient(node)
 	if not node.gradientActive then
 		return nil
 	end
-	return TRB.Data.cache.colors.gradient[node.name .. "_gradient"]
+	return TRB.Data.cache.colors.gradient[node.gradientKey]
 end
 
 ---Everything about the node's fill that the engine bakes in when its button is built.
@@ -399,11 +400,22 @@ function AuraEngine:Attach(node, unit, filter, ...)
 		records[node] = record
 	end
 
-	local appearance = ReadAppearance(node, scratchAppearance)
 	local active = record.active
+	local appearance = nil
+	local unchanged = false
+	if active ~= nil and active.unit == unit and active.filter == filter then
+		-- The node's fill setters bump its version, so a match skips reading the look back off the widgets.
+		unchanged = active.appearanceVersion == node.appearanceVersion
+		if not unchanged then
+			appearance = ReadAppearance(node, scratchAppearance)
+			unchanged = AppearanceEquals(active.appearance, appearance)
+			if unchanged then
+				active.appearanceVersion = node.appearanceVersion
+			end
+		end
+	end
 
-	if active ~= nil and active.unit == unit and active.filter == filter
-		and AppearanceEquals(active.appearance, appearance) then
+	if unchanged and active ~= nil then
 		if not SameIds(record, ...) then
 			-- Candidate filters are data-only, so a changed ID set never needs a new container.
 			StoreIds(record, ...)
@@ -412,6 +424,7 @@ function AuraEngine:Attach(node, unit, filter, ...)
 		return active.wireError == nil
 	end
 
+	appearance = appearance or ReadAppearance(node, scratchAppearance)
 	StoreIds(record, ...)
 
 	local signature = SignatureOf(unit, filter, appearance)
@@ -434,6 +447,7 @@ function AuraEngine:Attach(node, unit, filter, ...)
 		Deactivate(active)
 	end
 	record.active = entry
+	entry.appearanceVersion = node.appearanceVersion
 	node.engineDriven = true
 	Activate(record, entry)
 

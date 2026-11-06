@@ -16,6 +16,7 @@ TRB.Forever.Templates.Runtime = {}
 
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -363,7 +364,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 						nodeColors.border = comboPointColors.border
 						nodeColors.background = comboPointColors.background
 						if current >= x then
-							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, 1, 1)
+							Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], node, 1, 1)
 							if not fillClaimed then
 								local penultimateActive = (specSettings.comboPoints.sameColor and current == max - 1) or (not specSettings.comboPoints.sameColor and x == max - 1)
 								local finalActive = (specSettings.comboPoints.sameColor and current == max) or x == max
@@ -374,7 +375,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 								end
 							end
 						else
-							Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, node, 0, 1)
+							Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], node, 0, 1)
 						end
 						if charged ~= nil then
 							for _, chargedIndex in ipairs(charged) do

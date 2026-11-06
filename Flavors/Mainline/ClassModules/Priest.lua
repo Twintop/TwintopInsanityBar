@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -110,7 +111,7 @@ local function BuildHolyWordNodeMapping()
 						maxCharges = 2
 					end
 					for chargeIndex = 1, maxCharges do
-						nodeMapping[nodeKey .. chargeIndex] = currentNode
+						nodeMapping[nodeKeys[nodeKey][chargeIndex]] = currentNode
 						currentNode = currentNode + 1
 					end
 					if segmentEnds ~= nil then
@@ -594,7 +595,7 @@ local function ConstructResourceBar(settings)
 			if node then
 				node:SetMinMax(0, 1)
 				-- Per-node charge color (sameColor uses highest filled charge's color)
-				local chargeKey = "charge" .. i
+				local chargeKey = nodeKeys.charge[i]
 				local nodeColor = lightweaverColors and lightweaverColors.nodeColors and lightweaverColors.nodeColors[chargeKey]
 				TRB.Functions.Color:ApplyFillColor(node, nodeColor)
 				node:SetFrameLevel(TRB.Functions.Bar:GetBarFrameLevel("lightweaver"))
@@ -709,6 +710,11 @@ local function IsInVoidbindingKeyRange()
 	local activeKeystoneLevel = C_ChallengeMode.GetActiveKeystoneInfo()
 	return activeKeystoneLevel ~= nil and activeKeystoneLevel >= 2 and activeKeystoneLevel <= 11
 end
+
+-- A key's level never changes mid-key, so the keystone is re-read once a second.
+local VOIDBINDING_KEY_CHECK_INTERVAL = 1
+local inVoidbindingKeyRange = false
+local nextVoidbindingKeyCheckAt = 0
 
 ---Applies or reverses Voidbinding CDR on a single manual-tracked cooldown.
 ---@param cooldown TRB.Classes.SnapshotCooldown
@@ -1002,6 +1008,7 @@ local function RefreshLookupData_Holy()
 	local snapshots = snapshotData.snapshots
 	local sharedSettings = TRB.Data.specCache["priest_holy"].settings
 
+	local currentTime = GetTime()
 	local lookup = TRB.Data.lookup or {}
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	local prevState = TRB.Data.prevLookupState or {}
@@ -1115,7 +1122,6 @@ local function RefreshLookupData_Holy()
 
 	-- Block C: Apotheosis ($apotheosisTime)
 	if not activeVars or activeVars["$apotheosisTime"] then
-		local currentTime = GetTime()
 		local _apotheosisTime = snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
 
 		lookupLogic["$apotheosisTime"] = _apotheosisTime
@@ -1127,7 +1133,6 @@ local function RefreshLookupData_Holy()
 
 	-- Block D: Lightweaver ($lightweaverStacks, $lightweaverTime)
 	if not activeVars or activeVars["$lightweaverStacks"] or activeVars["$lightweaverTime"] then
-		local currentTime = GetTime()
 		local _lightweaverStacks = snapshots[spells.lightweaver.id].buff.applications or 0
 		local _lightweaverTime = snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime) or 0
 
@@ -1238,7 +1243,6 @@ local function RefreshLookupData_Shadow()
 			end
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local _castingInsanity = snapshotData.casting.resourceFinal
 
 		lookupLogic["$insanityMax"] = TRB.Data.character.maxResource
@@ -1256,6 +1260,7 @@ local function RefreshLookupData_Shadow()
 		local insanityChanged = lookupChanged(prevState, "$insanity", insanityFormatted, currentInsanityColor)
 		local castingChanged = lookupChanged(prevState, "$casting", _castingInsanity, castingInsanityColor)
 		if insanityChanged or castingChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentInsanity
 			local castingInsanity
 			if sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -2187,7 +2192,12 @@ local function UpdateSnapshot_Healers()
 		end
 	end
 
-	if IsInVoidbindingKeyRange() then
+	local currentTime = GetTime()
+	if currentTime >= nextVoidbindingKeyCheckAt then
+		nextVoidbindingKeyCheckAt = currentTime + VOIDBINDING_KEY_CHECK_INTERVAL
+		inVoidbindingKeyRange = IsInVoidbindingKeyRange()
+	end
+	if inVoidbindingKeyRange then
 		-- 1. Capture last known good offensive vers (before it becomes secret).
 		local liveVers = GetCombatRatingBonus(29)
 		if not issecretvalue(liveVers) and type(liveVers) == "number" and liveVers > 0 then
@@ -2465,7 +2475,7 @@ local function UpdateResourceBar()
 							local cpNode = barGroups.secondary:GetNode(currentCp)
 							if cpNode then
 								local cpColor = specSettings.colors.comboPoints.powerWordRadiance
-								local cpKey = "comboPoint" .. currentCp
+								local cpKey = nodeKeys.comboPoint[currentCp]
 								if chargeIndex <= charges then
 									-- Available charge: full bar
 									cpNode:ClearTimerDuration()
@@ -2474,12 +2484,10 @@ local function UpdateResourceBar()
 									-- Currently recharging: manual timer-based progress
 									cpNode:ClearTimerDuration()
 									local progress = cooldown:GetManualCooldownProgress(currentTime)
-									TRB.Data.cache.values.bar[cpKey] = nil
 									Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, progress, 1)
 								else
 									-- Empty charge (not yet recharging)
 									cpNode:ClearTimerDuration()
-									TRB.Data.cache.values.bar[cpKey] = nil
 									Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, 0, 1)
 								end
 								TRB.Functions.Color:ApplyFillColor(cpNode, powerWordsBarColors.bar)
@@ -2512,12 +2520,12 @@ local function UpdateResourceBar()
 					for chargeIndex = 1, maxCharges do
 						local utilNode = barGroups.utility:GetNode(chargeIndex)
 						if utilNode then
-							local nodeKey = "utility" .. chargeIndex
-							local nodeColorKey = "angelicFeather" .. chargeIndex
+							local nodeKey = nodeKeys.utility[chargeIndex]
+							local nodeColorKey = nodeKeys.angelicFeather[chargeIndex]
 							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] or "FFFFD700"
 							-- sameColor: use highest filled charge's color for all filled nodes
 							if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
-								local highestKey = "angelicFeather" .. charges
+								local highestKey = nodeKeys.angelicFeather[charges]
 								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] or nodeColor
 							end
 							if chargeIndex <= charges then
@@ -2526,11 +2534,9 @@ local function UpdateResourceBar()
 							elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
 								utilNode:ClearTimerDuration()
 								local progress = cooldown:GetManualCooldownProgress(currentTime)
-								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, progress, 1)
 							else
 								utilNode:ClearTimerDuration()
-								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 							end
 							TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)
@@ -2736,7 +2742,7 @@ local function UpdateResourceBar()
 										local cpColor = holyWordsBarColors.bar or baseColor
 										local nodeBorderColor = cpBorderColor
 										local nodeBgR, nodeBgG, nodeBgB, nodeBgA = cpBR, cpBG, cpBB, cpBA
-										local cpKey = "comboPoint" .. currentCp
+										local cpKey = nodeKeys.comboPoint[currentCp]
 										if chargeIndex <= charges then
 											-- Available charge: full bar
 											cpNode:ClearTimerDuration()
@@ -2745,8 +2751,6 @@ local function UpdateResourceBar()
 											-- Currently recharging: manual timer-based progress
 											cpNode:ClearTimerDuration()
 											local progress = cooldown:GetManualCooldownProgress(currentTime)
-											-- Invalidate cache so continuously changing progress always renders
-											TRB.Data.cache.values.bar[cpKey] = nil
 											Bar:SetBarNodeValue(specCacheSettings, cpKey, cpNode, progress, 1)
 										else
 											-- Empty charge (not yet recharging)
@@ -2792,12 +2796,12 @@ local function UpdateResourceBar()
 					for chargeIndex = 1, maxCharges do
 						local utilNode = barGroups.utility:GetNode(chargeIndex)
 						if utilNode then
-							local nodeKey = "utility" .. chargeIndex
-							local nodeColorKey = "angelicFeather" .. chargeIndex
+							local nodeKey = nodeKeys.utility[chargeIndex]
+							local nodeColorKey = nodeKeys.angelicFeather[chargeIndex]
 							local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] or "FFFFD700"
 							-- sameColor: use highest filled charge's color for all filled nodes
 							if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
-								local highestKey = "angelicFeather" .. charges
+								local highestKey = nodeKeys.angelicFeather[charges]
 								nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] or nodeColor
 							end
 							if chargeIndex <= charges then
@@ -2806,11 +2810,9 @@ local function UpdateResourceBar()
 							elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
 								utilNode:ClearTimerDuration()
 								local progress = cooldown:GetManualCooldownProgress(currentTime)
-								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, progress, 1)
 							else
 								utilNode:ClearTimerDuration()
-								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 							end
 							TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)
@@ -2832,12 +2834,12 @@ local function UpdateResourceBar()
 					for chargeIndex = 1, barGroups.lightweaver.maxNodes or 4 do
 						local lwNode = barGroups.lightweaver:GetNode(chargeIndex)
 						if lwNode then
-							local nodeKey = "lightweaver" .. chargeIndex
-							local chargeKey = "charge" .. chargeIndex
+							local nodeKey = nodeKeys.lightweaver[chargeIndex]
+							local chargeKey = nodeKeys.charge[chargeIndex]
 							-- When sameColor is enabled, all filled nodes use the highest filled charge's color
 							local colorKey = chargeKey
 							if lightweaverColors.sameColor and lwStacks > 0 and chargeIndex <= lwStacks then
-								colorKey = "charge" .. lwStacks
+								colorKey = nodeKeys.charge[lwStacks]
 							end
 							local nodeColor = lightweaverColors.nodeColors and lightweaverColors.nodeColors[colorKey]
 							if chargeIndex <= lwStacks then
@@ -2845,7 +2847,6 @@ local function UpdateResourceBar()
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 1, 1)
 							else
 								lwNode:ClearTimerDuration()
-								TRB.Data.cache.values.bar[nodeKey] = nil
 								Bar:SetBarNodeValue(specCacheSettings, nodeKey, lwNode, 0, 1)
 							end
 							TRB.Functions.Color:ApplyFillColor(lwNode, lightweaverBarColors.bar or nodeColor)
@@ -3125,12 +3126,12 @@ local function UpdateResourceBar()
 				for chargeIndex = 1, maxCharges do
 					local utilNode = barGroups.utility:GetNode(chargeIndex)
 					if utilNode then
-						local nodeKey = "utility" .. chargeIndex
-						local nodeColorKey = "angelicFeather" .. chargeIndex
+						local nodeKey = nodeKeys.utility[chargeIndex]
+						local nodeColorKey = nodeKeys.angelicFeather[chargeIndex]
 						local nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[nodeColorKey] or "FFFFD700"
 						-- sameColor: use highest filled charge's color for all filled nodes
 						if utilityColors.sameColor and chargeIndex <= charges and charges > 0 then
-							local highestKey = "angelicFeather" .. charges
+							local highestKey = nodeKeys.angelicFeather[charges]
 							nodeColor = utilityColors.nodeColors and utilityColors.nodeColors[highestKey] or nodeColor
 						end
 						if chargeIndex <= charges then
@@ -3139,11 +3140,9 @@ local function UpdateResourceBar()
 						elseif chargeIndex == charges + 1 and cooldown:IsRechargingManual() and cooldown.manualCooldownExpires ~= nil then
 							utilNode:ClearTimerDuration()
 							local progress = cooldown:GetManualCooldownProgress(currentTime)
-							TRB.Data.cache.values.bar[nodeKey] = nil
 							Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, progress, 1)
 						else
 							utilNode:ClearTimerDuration()
-							TRB.Data.cache.values.bar[nodeKey] = nil
 							Bar:SetBarNodeValue(specCacheSettings, nodeKey, utilNode, 0, 1)
 						end
 						TRB.Functions.Color:ApplyFillColor(utilNode, nodeColor)

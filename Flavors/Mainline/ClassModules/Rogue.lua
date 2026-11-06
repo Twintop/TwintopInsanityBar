@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -471,7 +472,6 @@ local function RefreshLookupData_Assassination()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local isStealthed = IsStealthed()
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -486,6 +486,7 @@ local function RefreshLookupData_Assassination()
 		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
 		local stealthChanged = lookupChanged(prevState, "$_stealth", isStealthed)
 		if resourceChanged or castingChanged or stealthChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentEnergy
 			local castingEnergy
 			if not isStealthed and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -558,7 +559,6 @@ local function RefreshLookupData_Outlaw()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local isStealthed = IsStealthed()
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -573,6 +573,7 @@ local function RefreshLookupData_Outlaw()
 		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
 		local stealthChanged = lookupChanged(prevState, "$_stealth", isStealthed)
 		if resourceChanged or castingChanged or stealthChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentEnergy
 			local castingEnergy
 			if not isStealthed and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -629,14 +630,24 @@ local function RefreshLookupData_Outlaw()
 		lookupLogic["$tripleThreatTime"] = _tripleThreatTime
 		lookupLogic["$jackpotTime"] = _jackpotTime
 
-		lookup["$rtbBuffTime"] = TRB.Functions.BarText:TimerPrecision(_rtbBuffTime)
+		if lookupChanged(prevState, "$rtbBuffTime", _rtbBuffTime) then
+			lookup["$rtbBuffTime"] = TRB.Functions.BarText:TimerPrecision(_rtbBuffTime)
+		end
 		lookup["$rtbBuffName"] = outcome ~= nil and outcome.name or ""
 		lookup["$rtbBuffLevel"] = snapshotData.attributes.rollTheBonesLevel
 		lookup["#rtbBuff"] = outcome ~= nil and outcome.icon or ""
-		lookup["$oneOfAKindTime"] = TRB.Functions.BarText:TimerPrecision(_oneOfAKindTime)
-		lookup["$doubleTroubleTime"] = TRB.Functions.BarText:TimerPrecision(_doubleTroubleTime)
-		lookup["$tripleThreatTime"] = TRB.Functions.BarText:TimerPrecision(_tripleThreatTime)
-		lookup["$jackpotTime"] = TRB.Functions.BarText:TimerPrecision(_jackpotTime)
+		if lookupChanged(prevState, "$oneOfAKindTime", _oneOfAKindTime) then
+			lookup["$oneOfAKindTime"] = TRB.Functions.BarText:TimerPrecision(_oneOfAKindTime)
+		end
+		if lookupChanged(prevState, "$doubleTroubleTime", _doubleTroubleTime) then
+			lookup["$doubleTroubleTime"] = TRB.Functions.BarText:TimerPrecision(_doubleTroubleTime)
+		end
+		if lookupChanged(prevState, "$tripleThreatTime", _tripleThreatTime) then
+			lookup["$tripleThreatTime"] = TRB.Functions.BarText:TimerPrecision(_tripleThreatTime)
+		end
+		if lookupChanged(prevState, "$jackpotTime", _jackpotTime) then
+			lookup["$jackpotTime"] = TRB.Functions.BarText:TimerPrecision(_jackpotTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -682,7 +693,6 @@ local function RefreshLookupData_Subtlety()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 		local isStealthed = IsStealthed()
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -697,6 +707,7 @@ local function RefreshLookupData_Subtlety()
 		local castingChanged = lookupChanged(prevState, "$casting", _castingEnergy, castingEnergyColor)
 		local stealthChanged = lookupChanged(prevState, "$_stealth", isStealthed)
 		if resourceChanged or castingChanged or stealthChanged then
+			local resourcePrecision = math.min(sharedSettings.precision.resource, math.log10(TRB.Data.resourceFactor or 1))
 			local currentEnergy
 			local castingEnergy
 			if not isStealthed and sharedSettings.colors.text.overcap and sharedSettings.colors.text.overcap.enabled and TRB.Data.character.inCombat then
@@ -955,35 +966,14 @@ end
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
-	comboPointsColors1 = {},
-	comboPointConditionMap1 = {},
-	comboPointBarColorMap1 = {},
-	conditionMap1 = {},
-	energyBarColors1 = {},
-	comboPointsColors2 = {},
-	barColorMap1 = {},
-	comboPointsColors3 = {},
-	comboPointConditionMap2 = {},
-	comboPointBarColorMap2 = {},
-	conditionMap2 = {},
-	energyBarColors2 = {},
-	comboPointsColors4 = {},
-	barColorMap2 = {},
-	comboPointsColors5 = {},
-	comboPointConditionMap3 = {},
-	comboPointBarColorMap3 = {},
-	conditionMap3 = {},
-	energyBarColors3 = {},
-	comboPointsColors6 = {},
-	barColorMap3 = {},
-	comboPointIndicatorTargets1 = {}, comboPointTargetFlags1 = {},
-	comboPointIndicatorTargets2 = {}, comboPointTargetFlags2 = {},
-	comboPointIndicatorTargets3 = {}, comboPointTargetFlags3 = {},
-	flatIndicatorTargets1 = {}, flatTargetFlags1 = {},
-	flatIndicatorTargets2 = {}, flatTargetFlags2 = {},
-	flatIndicatorTargets3 = {}, flatTargetFlags3 = {},
+	energyBarColors1 = {}, comboPointsColors1 = {}, conditionMap1 = {}, barColorMap1 = {},
+	energyBarColors2 = {}, comboPointsColors2 = {}, conditionMap2 = {}, barColorMap2 = {},
+	energyBarColors3 = {}, comboPointsColors3 = {}, conditionMap3 = {}, barColorMap3 = {},
+	indicatorTargets1 = {}, targetFlags1 = {},
+	indicatorTargets2 = {}, targetFlags2 = {},
+	indicatorTargets3 = {}, targetFlags3 = {},
 	-- One per BuildBarElementOvercapCurves call site; the specs never run in the same tick.
-	comboPointOvercapCurves1 = {}, energyBarOvercapCurves1 = {}, comboPointOvercapCurves2 = {},
+	comboPointOvercapCurves = {}, energyBarOvercapCurves = {},
 }
 
 local function UpdateResourceBar()
@@ -1012,30 +1002,35 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.assassination
 		local specCacheSettings = TRB.Data.specCache.rogue_assassination.settings
 		UpdateSnapshot_Assassination()
-		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
-		local comboPointAffectingCombat = TRB.Data.character.inCombat
-		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
+		local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
+		local stealthActive = IsStealthed() or stealthViaBuff
+		local sharedColors = specSettings.colors.shared
+		local energyBarColors = scratch.energyBarColors1
+		wipe(energyBarColors)
+		energyBarColors.bar = specSettings.colors.bar.base
+		energyBarColors.border = specSettings.colors.bar.border.color
+		energyBarColors.background = specSettings.colors.bar.background.color
 		local comboPointsColors = scratch.comboPointsColors1
 		wipe(comboPointsColors)
 		comboPointsColors.bar = specSettings.colors.comboPoints.base
 		comboPointsColors.border = specSettings.colors.comboPoints.border.color
 		comboPointsColors.background = specSettings.colors.comboPoints.background.color
-		local comboPointConditionMap = scratch.comboPointConditionMap1
-		wipe(comboPointConditionMap)
-		comboPointConditionMap.borderStealth = IsStealthed() or comboPointStealthViaBuff
-		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (IsStealthed() or comboPointStealthViaBuff)
-		local comboPointBarColorMap = scratch.comboPointBarColorMap1
-		wipe(comboPointBarColorMap)
-		comboPointBarColorMap.comboPointsBar = comboPointsColors
-		local comboPointIndicatorTargets = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap, scratch.comboPointIndicatorTargets1, scratch.comboPointTargetFlags1)
-		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, specSettings.colors.shared, comboPointConditionMap, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves1)
-		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or emptyIndicatorFlags
+		local conditionMap = scratch.conditionMap1
+		wipe(conditionMap)
+		conditionMap.borderStealth = stealthActive
+		conditionMap.borderOvercap = TRB.Data.character.inCombat and not stealthActive
+		local barColorMap = scratch.barColorMap1
+		wipe(barColorMap)
+		barColorMap.energyBar = energyBarColors
+		barColorMap.comboPointsBar = comboPointsColors
+		local indicatorTargets = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap, scratch.indicatorTargets1, scratch.targetFlags1)
+		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves)
+		local comboPointFlatTargets = indicatorTargets.comboPointsBar or emptyIndicatorFlags
 
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1047,8 +1042,6 @@ local function UpdateResourceBar()
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 					Bar:ApplyNodeIndicators(primaryNode, "energyBar")
 				end
-				
-				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
 
 				if primaryNode then
 					thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
@@ -1058,37 +1051,10 @@ local function UpdateResourceBar()
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Rogue.AssassinationSpells.thresholdSnowflakes)
 				end
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local stealthActive = IsStealthed() or stealthViaBuff
-				local sharedColors = specSettings.colors.shared
-				local conditionMap = scratch.conditionMap1
-				wipe(conditionMap)
-				conditionMap.borderStealth = stealthActive
-				conditionMap.borderOvercap = affectingCombat and not stealthActive
-				local energyBarColors = scratch.energyBarColors1
-				wipe(energyBarColors)
-				energyBarColors.bar = barColor
-				energyBarColors.border = barBorderColor
-				energyBarColors.background = barBackgroundColor
-				local comboPointsColors = scratch.comboPointsColors2
-				wipe(comboPointsColors)
-				comboPointsColors.bar = specSettings.colors.comboPoints.base
-				comboPointsColors.border = specSettings.colors.comboPoints.border.color
-				comboPointsColors.background = specSettings.colors.comboPoints.background.color
-				local barColorMap = scratch.barColorMap1
-				wipe(barColorMap)
-				barColorMap.energyBar = energyBarColors
-				barColorMap.comboPointsBar = comboPointsColors
-				local flatIndicatorTargets = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap, scratch.flatIndicatorTargets1, scratch.flatTargetFlags1)
-				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "energyBar", energyBarColors, scratch.energyBarOvercapCurves1)
-				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves2)
-				local comboPointFlatTargets = flatIndicatorTargets.comboPointsBar or emptyIndicatorFlags
-
-				barColor = energyBarColors.bar
-				barBorderColor = energyBarColors.border
-				barBackgroundColor = energyBarColors.background
+				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "energyBar", energyBarColors, scratch.energyBarOvercapCurves)
+				local barColor = energyBarColors.bar
+				local barBorderColor = energyBarColors.border
+				local barBackgroundColor = energyBarColors.background
 
 				if barGroups and barGroups.primary then
 					Bar:ClearPrimaryPulse(barGroups)
@@ -1121,7 +1087,7 @@ local function UpdateResourceBar()
 				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
 				local comboPointBackgroundOverrideActive = comboPointFlatTargets.background or comboPointsOvercapCurves.background ~= nil
 
-				local charged = GetUnitChargedPowerPoints("player")
+				local charged = TRB.Functions.Castbar:GetChargedPoints()
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = comboPointsColors.border
 					local cpColor = comboPointBarOverrideActive and comboPointsColors.bar or specSettings.colors.comboPoints.base
@@ -1134,7 +1100,7 @@ local function UpdateResourceBar()
 						local cpNode = barGroups.secondary:GetNode(x)
 						if cpNode then
 							if snapshotData.attributes.resource2 >= x then
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 1, 1)
 								if not comboPointBarOverrideActive then
 									local cpFive = specSettings.colors.comboPoints.fiveComboPoints
 									local penultimateActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))
@@ -1149,7 +1115,7 @@ local function UpdateResourceBar()
 									end
 								end
 							else
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 0, 1)
 							end
 
 							if charged ~= nil then
@@ -1209,30 +1175,35 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.outlaw
 		local specCacheSettings = TRB.Data.specCache.rogue_outlaw.settings
 		UpdateSnapshot_Outlaw()
-		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
-		local comboPointAffectingCombat = TRB.Data.character.inCombat
-		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive
-		local comboPointsColors = scratch.comboPointsColors3
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
+		local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
+		local stealthActive = IsStealthed() or stealthViaBuff
+		local sharedColors = specSettings.colors.shared
+		local energyBarColors = scratch.energyBarColors2
+		wipe(energyBarColors)
+		energyBarColors.bar = specSettings.colors.bar.base
+		energyBarColors.border = specSettings.colors.bar.border.color
+		energyBarColors.background = specSettings.colors.bar.background.color
+		local comboPointsColors = scratch.comboPointsColors2
 		wipe(comboPointsColors)
 		comboPointsColors.bar = specSettings.colors.comboPoints.base
 		comboPointsColors.border = specSettings.colors.comboPoints.border.color
 		comboPointsColors.background = specSettings.colors.comboPoints.background.color
-		local comboPointConditionMap = scratch.comboPointConditionMap2
-		wipe(comboPointConditionMap)
-		comboPointConditionMap.borderStealth = IsStealthed() or comboPointStealthViaBuff
-		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (IsStealthed() or comboPointStealthViaBuff)
-		local comboPointBarColorMap = scratch.comboPointBarColorMap2
-		wipe(comboPointBarColorMap)
-		comboPointBarColorMap.comboPointsBar = comboPointsColors
-		local comboPointIndicatorTargets = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap, scratch.comboPointIndicatorTargets2, scratch.comboPointTargetFlags2)
-		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, specSettings.colors.shared, comboPointConditionMap, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves1)
-		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or emptyIndicatorFlags
+		local conditionMap = scratch.conditionMap2
+		wipe(conditionMap)
+		conditionMap.borderStealth = stealthActive
+		conditionMap.borderOvercap = TRB.Data.character.inCombat and not stealthActive
+		local barColorMap = scratch.barColorMap2
+		wipe(barColorMap)
+		barColorMap.energyBar = energyBarColors
+		barColorMap.comboPointsBar = comboPointsColors
+		local indicatorTargets = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap, scratch.indicatorTargets2, scratch.targetFlags2)
+		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves)
+		local comboPointFlatTargets = indicatorTargets.comboPointsBar or emptyIndicatorFlags
 
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1244,8 +1215,6 @@ local function UpdateResourceBar()
 					Bar:SetBarNodePrimaryValue(specCacheSettings, "resource", primaryNode, currentResource)
 					Bar:ApplyNodeIndicators(primaryNode, "energyBar")
 				end
-				
-				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
 
 				if primaryNode then
 					thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
@@ -1255,37 +1224,10 @@ local function UpdateResourceBar()
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Rogue.OutlawSpells.thresholdSnowflakes)
 				end
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local stealthActive = IsStealthed() or stealthViaBuff
-				local sharedColors = specSettings.colors.shared
-				local conditionMap = scratch.conditionMap2
-				wipe(conditionMap)
-				conditionMap.borderStealth = stealthActive
-				conditionMap.borderOvercap = affectingCombat and not stealthActive
-				local energyBarColors = scratch.energyBarColors2
-				wipe(energyBarColors)
-				energyBarColors.bar = barColor
-				energyBarColors.border = barBorderColor
-				energyBarColors.background = barBackgroundColor
-				local comboPointsColors = scratch.comboPointsColors4
-				wipe(comboPointsColors)
-				comboPointsColors.bar = specSettings.colors.comboPoints.base
-				comboPointsColors.border = specSettings.colors.comboPoints.border.color
-				comboPointsColors.background = specSettings.colors.comboPoints.background.color
-				local barColorMap = scratch.barColorMap2
-				wipe(barColorMap)
-				barColorMap.energyBar = energyBarColors
-				barColorMap.comboPointsBar = comboPointsColors
-				local flatIndicatorTargets = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap, scratch.flatIndicatorTargets2, scratch.flatTargetFlags2)
-				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "energyBar", energyBarColors, scratch.energyBarOvercapCurves1)
-				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves2)
-				local comboPointFlatTargets = flatIndicatorTargets.comboPointsBar or emptyIndicatorFlags
-
-				barColor = energyBarColors.bar
-				barBorderColor = energyBarColors.border
-				barBackgroundColor = energyBarColors.background
+				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "energyBar", energyBarColors, scratch.energyBarOvercapCurves)
+				local barColor = energyBarColors.bar
+				local barBorderColor = energyBarColors.border
+				local barBackgroundColor = energyBarColors.background
 
 				if barGroups and barGroups.primary then
 					Bar:ClearPrimaryPulse(barGroups)
@@ -1318,7 +1260,7 @@ local function UpdateResourceBar()
 				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
 				local comboPointBackgroundOverrideActive = comboPointFlatTargets.background or comboPointsOvercapCurves.background ~= nil
 
-				local charged = GetUnitChargedPowerPoints("player")
+				local charged = TRB.Functions.Castbar:GetChargedPoints()
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = comboPointsColors.border
@@ -1331,7 +1273,7 @@ local function UpdateResourceBar()
 						local cpNode = barGroups.secondary:GetNode(x)
 						if cpNode then
 							if snapshotData.attributes.resource2 >= x then
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 1, 1)
 								if not comboPointBarOverrideActive then
 									local cpFive = specSettings.colors.comboPoints.fiveComboPoints
 									local penultimateActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))
@@ -1346,7 +1288,7 @@ local function UpdateResourceBar()
 									end
 								end
 							else
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 0, 1)
 							end
 
 							if charged ~= nil then
@@ -1405,30 +1347,35 @@ local function UpdateResourceBar()
 		local specSettings = classSettings.subtlety
 		local specCacheSettings = TRB.Data.specCache.rogue_subtlety.settings
 		UpdateSnapshot_Subtlety()
-		local comboPointSpells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
-		local comboPointAffectingCombat = TRB.Data.character.inCombat
-		local comboPointStealthViaBuff = snapshots[comboPointSpells.subterfuge.id].buff.isActive or snapshots[comboPointSpells.shadowDance.id].buff.isActive
-		local comboPointsColors = scratch.comboPointsColors5
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
+		local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
+		local stealthActive = stealthViaBuff or IsStealthed()
+		local sharedColors = specSettings.colors.shared
+		local energyBarColors = scratch.energyBarColors3
+		wipe(energyBarColors)
+		energyBarColors.bar = specSettings.colors.bar.base
+		energyBarColors.border = specSettings.colors.bar.border.color
+		energyBarColors.background = specSettings.colors.bar.background.color
+		local comboPointsColors = scratch.comboPointsColors3
 		wipe(comboPointsColors)
 		comboPointsColors.bar = specSettings.colors.comboPoints.base
 		comboPointsColors.border = specSettings.colors.comboPoints.border.color
 		comboPointsColors.background = specSettings.colors.comboPoints.background.color
-		local comboPointConditionMap = scratch.comboPointConditionMap3
-		wipe(comboPointConditionMap)
-		comboPointConditionMap.borderStealth = comboPointStealthViaBuff or IsStealthed()
-		comboPointConditionMap.borderOvercap = comboPointAffectingCombat and not (comboPointStealthViaBuff or IsStealthed())
-		local comboPointBarColorMap = scratch.comboPointBarColorMap3
-		wipe(comboPointBarColorMap)
-		comboPointBarColorMap.comboPointsBar = comboPointsColors
-		local comboPointIndicatorTargets = ApplyIndicatorColorsToBarMap(comboPointBarColorMap, specSettings.colors.shared, comboPointConditionMap, scratch.comboPointIndicatorTargets3, scratch.comboPointTargetFlags3)
-		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, specSettings.colors.shared, comboPointConditionMap, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves1)
-		local comboPointFlatTargets = comboPointIndicatorTargets.comboPointsBar or emptyIndicatorFlags
+		local conditionMap = scratch.conditionMap3
+		wipe(conditionMap)
+		conditionMap.borderStealth = stealthActive
+		conditionMap.borderOvercap = TRB.Data.character.inCombat and not stealthActive
+		local barColorMap = scratch.barColorMap3
+		wipe(barColorMap)
+		barColorMap.energyBar = energyBarColors
+		barColorMap.comboPointsBar = comboPointsColors
+		local indicatorTargets = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap, scratch.indicatorTargets3, scratch.targetFlags3)
+		local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves)
+		local comboPointFlatTargets = indicatorTargets.comboPointsBar or emptyIndicatorFlags
 
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 				local currentResource = snapshotData.attributes.resource
 
 				local maxPrimaryBarResourceUnnormalized = TRB.Data.character.maxResourceUnmodified
@@ -1441,8 +1388,6 @@ local function UpdateResourceBar()
 					Bar:ApplyNodeIndicators(primaryNode, "energyBar")
 				end
 
-				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
-
 				if primaryNode then
 					thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized)
 					thresholdState:Refresh(specCacheSettings)
@@ -1451,37 +1396,10 @@ local function UpdateResourceBar()
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Rogue.SubtletySpells.thresholdSnowflakes)
 				end
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local stealthActive = stealthViaBuff or IsStealthed()
-				local sharedColors = specSettings.colors.shared
-				local conditionMap = scratch.conditionMap3
-				wipe(conditionMap)
-				conditionMap.borderStealth = stealthActive
-				conditionMap.borderOvercap = affectingCombat and not stealthActive
-				local energyBarColors = scratch.energyBarColors3
-				wipe(energyBarColors)
-				energyBarColors.bar = barColor
-				energyBarColors.border = barBorderColor
-				energyBarColors.background = barBackgroundColor
-				local comboPointsColors = scratch.comboPointsColors6
-				wipe(comboPointsColors)
-				comboPointsColors.bar = specSettings.colors.comboPoints.base
-				comboPointsColors.border = specSettings.colors.comboPoints.border.color
-				comboPointsColors.background = specSettings.colors.comboPoints.background.color
-				local barColorMap = scratch.barColorMap3
-				wipe(barColorMap)
-				barColorMap.energyBar = energyBarColors
-				barColorMap.comboPointsBar = comboPointsColors
-				local flatIndicatorTargets = ApplyIndicatorColorsToBarMap(barColorMap, sharedColors, conditionMap, scratch.flatIndicatorTargets3, scratch.flatTargetFlags3)
-				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "energyBar", energyBarColors, scratch.energyBarOvercapCurves1)
-				local comboPointsOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "comboPointsBar", comboPointsColors, scratch.comboPointOvercapCurves2)
-				local comboPointFlatTargets = flatIndicatorTargets.comboPointsBar or emptyIndicatorFlags
-
-				barColor = energyBarColors.bar
-				barBorderColor = energyBarColors.border
-				barBackgroundColor = energyBarColors.background
+				local energyBarOvercapCurves = BuildBarElementOvercapCurves(specSettings, sharedColors, conditionMap, "energyBar", energyBarColors, scratch.energyBarOvercapCurves)
+				local barColor = energyBarColors.bar
+				local barBorderColor = energyBarColors.border
+				local barBackgroundColor = energyBarColors.background
 				
 				if barGroups and barGroups.primary then
 					Bar:ClearPrimaryPulse(barGroups)
@@ -1514,7 +1432,7 @@ local function UpdateResourceBar()
 				local comboPointBorderOverrideActive = comboPointFlatTargets.border or comboPointsOvercapCurves.border ~= nil
 				local comboPointBackgroundOverrideActive = comboPointFlatTargets.background or comboPointsOvercapCurves.background ~= nil
 
-				local charged = GetUnitChargedPowerPoints("player")
+				local charged = TRB.Functions.Castbar:GetChargedPoints()
 
 				for x = 1, TRB.Data.character.maxResource2 do
 					local cpBorderColor = comboPointsColors.border
@@ -1527,7 +1445,7 @@ local function UpdateResourceBar()
 						local cpNode = barGroups.secondary:GetNode(x)
 						if cpNode then
 							if snapshotData.attributes.resource2 >= x then
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 1, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 1, 1)
 								if not comboPointBarOverrideActive then
 									local cpFive = specSettings.colors.comboPoints.fiveComboPoints
 									local penultimateActive = (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1))
@@ -1542,7 +1460,7 @@ local function UpdateResourceBar()
 									end
 								end
 							else
-								Bar:SetBarNodeValue(specCacheSettings, "comboPoint" .. x, cpNode, 0, 1)
+								Bar:SetBarNodeValue(specCacheSettings, nodeKeys.comboPoint[x], cpNode, 0, 1)
 							end
 						
 							if charged ~= nil then

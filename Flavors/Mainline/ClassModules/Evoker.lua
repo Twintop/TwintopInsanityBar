@@ -8,6 +8,7 @@ TRB.Functions.Class = TRB.Functions.Class or {}
 local lookupChanged = TRB.Functions.BarText.LookupChanged
 local Threshold = TRB.Functions.Threshold
 local Bar = TRB.Functions.Bar
+local nodeKeys = Bar.nodeKeys
 local Color = TRB.Functions.Color
 local Character = TRB.Functions.Character
 -- Inside the 20Hz tick these reuse player/pet curve results until the next power or health event (CurveMemo.lua).
@@ -349,7 +350,6 @@ local function RefreshLookupData_Devastation()
 	UpdateEssenceTiming()
 
 	-- Side-effects: must remain ungated
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 	snapshotData.attributes.essenceRegen = essenceTiming.duration
 	-- essencePartial is set by UpdateEssenceTiming above (with carry-over applied).
 
@@ -401,7 +401,7 @@ local function RefreshLookupData_Devastation()
 	if not activeVars or activeVars["$essence"] or activeVars["$comboPoints"]
 		or activeVars["$essenceRegenTime"]
 		or activeVars["$essenceMax"] or activeVars["$comboPointsMax"] then
-		local _latency = (select(4, GetNetStats()) or 0) / 1000
+		local _latency = TRB.Data.character.latency or 0
 		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen - _latency
 		if _essenceRegenTime < 0 then _essenceRegenTime = 0 end
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -453,23 +453,23 @@ local function RefreshLookupData_Devastation()
 		-- Memoized on the rendered string, so those two -- both nil underneath -- still repaint.
 		local stacksDisplay
 		if not _essenceBurstActive then
-			stacksDisplay = string.format("%.0f", 0)
+			stacksDisplay = "0"
 		elseif _essenceBurstStacks ~= nil then
 			stacksDisplay = string.format("%.0f", _essenceBurstStacks)
 		else
-			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
+			stacksDisplay = TRB.Functions.BarText:UnknownValue("0")
 		end
 
 		local timeDisplay
 		if not _essenceBurstActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _essenceBurstTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
 		elseif _essenceBurstTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _essenceBurstTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then
@@ -491,7 +491,6 @@ local function RefreshLookupData_Preservation()
 	UpdateEssenceTiming()
 
 	-- Side-effects: must remain ungated
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 	snapshotData.attributes.essenceRegen = essenceTiming.duration
 	-- essencePartial is set by UpdateEssenceTiming above (with carry-over applied).
 
@@ -544,7 +543,7 @@ local function RefreshLookupData_Preservation()
 	if not activeVars or activeVars["$essence"] or activeVars["$comboPoints"]
 		or activeVars["$essenceRegenTime"]
 		or activeVars["$essenceMax"] or activeVars["$comboPointsMax"] then
-		local _latency = (select(4, GetNetStats()) or 0) / 1000
+		local _latency = TRB.Data.character.latency or 0
 		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen - _latency
 		if _essenceRegenTime < 0 then _essenceRegenTime = 0 end
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -584,23 +583,23 @@ local function RefreshLookupData_Preservation()
 		-- Memoized on the rendered string, so those two -- both nil underneath -- still repaint.
 		local stacksDisplay
 		if not _essenceBurstActive then
-			stacksDisplay = string.format("%.0f", 0)
+			stacksDisplay = "0"
 		elseif _essenceBurstStacks ~= nil then
 			stacksDisplay = string.format("%.0f", _essenceBurstStacks)
 		else
-			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
+			stacksDisplay = TRB.Functions.BarText:UnknownValue("0")
 		end
 
 		local timeDisplay
 		if not _essenceBurstActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _essenceBurstTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
 		elseif _essenceBurstTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _essenceBurstTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then
@@ -622,7 +621,6 @@ local function RefreshLookupData_Augmentation()
 	UpdateEssenceTiming()
 
 	-- Side-effects: must remain ungated
-	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 	snapshotData.attributes.essenceRegen = essenceTiming.duration
 	-- essencePartial is set by UpdateEssenceTiming above (with carry-over applied).
 
@@ -674,7 +672,7 @@ local function RefreshLookupData_Augmentation()
 	if not activeVars or activeVars["$essence"] or activeVars["$comboPoints"]
 		or activeVars["$essenceRegenTime"]
 		or activeVars["$essenceMax"] or activeVars["$comboPointsMax"] then
-		local _latency = (select(4, GetNetStats()) or 0) / 1000
+		local _latency = TRB.Data.character.latency or 0
 		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen - _latency
 		if _essenceRegenTime < 0 then _essenceRegenTime = 0 end
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -710,14 +708,14 @@ local function RefreshLookupData_Augmentation()
 
 		local timeDisplay
 		if not _ebonMightActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _ebonMightTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_ebonMightTime)
 		elseif _ebonMightTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _ebonMightTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$ebonMightTime", timeDisplay) then
@@ -743,23 +741,23 @@ local function RefreshLookupData_Augmentation()
 		-- Memoized on the rendered string, so those two -- both nil underneath -- still repaint.
 		local stacksDisplay
 		if not _essenceBurstActive then
-			stacksDisplay = string.format("%.0f", 0)
+			stacksDisplay = "0"
 		elseif _essenceBurstStacks ~= nil then
 			stacksDisplay = string.format("%.0f", _essenceBurstStacks)
 		else
-			stacksDisplay = TRB.Functions.BarText:UnknownValue(string.format("%.0f", 0))
+			stacksDisplay = TRB.Functions.BarText:UnknownValue("0")
 		end
 
 		local timeDisplay
 		if not _essenceBurstActive then
-			timeDisplay = TRB.Functions.BarText:TimerPrecision(0)
+			timeDisplay = TRB.Functions.BarText:ZeroTimerText()
 		elseif _essenceBurstTime ~= nil then
 			timeDisplay = TRB.Functions.BarText:TimerPrecision(_essenceBurstTime)
 		elseif _essenceBurstTimeText ~= nil then
 			-- Already formatted for us, and to the viewer's precision rather than ours.
 			timeDisplay = _essenceBurstTimeText
 		else
-			timeDisplay = TRB.Functions.BarText:UnknownValue(TRB.Functions.BarText:TimerPrecision(0))
+			timeDisplay = TRB.Functions.BarText:UnknownTimerValue()
 		end
 
 		if lookupChanged(prevState, "$essenceBurstStacks", stacksDisplay) then
@@ -862,6 +860,7 @@ local function HandleSpellEvents(self, event, ...)
 
 				-- No stacks or duration knowable from an overlay; active until HIDE.
 				essenceBurstSnapshot.buff:InitializeCustomSimple(true)
+				TRB.Data.lookupDirty = true
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
@@ -869,6 +868,7 @@ local function HandleSpellEvents(self, event, ...)
 		if spellId == essenceBurstDetectionId then -- Essence Burst
 			if essenceBurstSnapshot ~= nil then
 				essenceBurstSnapshot.buff:Reset()
+				TRB.Data.lookupDirty = true
 			end
 			TRB.Functions.AudioCues:ResetLatch(snapshotData, "essenceBurst")
 		end
@@ -1072,7 +1072,7 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 		if barGroups and barGroups.secondary then
 			local essenceNode = barGroups.secondary:GetNode(x)
 			if essenceNode then
-				Bar:SetBarNodeValue(specCacheSettings, "essence" .. x, essenceNode, essenceValue, 1000)
+				Bar:SetBarNodeValue(specCacheSettings, nodeKeys.essence[x], essenceNode, essenceValue, 1000)
 				essenceNode:SetBorderColor(cpBorderColor)
 				TRB.Functions.Color:ApplyFillColor(essenceNode, cpColor)
 				essenceNode:SetBackgroundColor(cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha)

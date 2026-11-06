@@ -56,7 +56,8 @@ end
 function TRB.Classes.ThresholdState:Refresh(settings)
 	self.settings = settings
 	self.snapshotData = TRB.Data.snapshotData
-	self.isStealthed = IsStealthed()
+	-- Only stealth-gated spells read it; nil means GetThresholdSpells hasn't said whether the spec has any.
+	self.isStealthed = TRB.Data.cache.thresholdStealthGated ~= false and IsStealthed()
 	self.currentTime = GetTime()
 end
 
@@ -97,6 +98,7 @@ end
 ---@class TRB.Classes.ThresholdLine
 ---@field public spell TRB.Classes.SpellThreshold|TRB.Classes.SpellComboPointThreshold
 ---@field public frame Frame
+---@field public cache table # The line's display cache, resolved once per pass
 ---@field public pairOffset integer
 ---@field public dictEntry table?
 ---@field public snapshot TRB.Classes.Snapshot?
@@ -180,7 +182,7 @@ function TRB.Classes.ThresholdLine:ColorByRemainingCooldown(seconds, colorKey)
 	end
 	local settings = self.state.settings
 	local curve = TRB.Functions.Color:BuildRemainingTimeCurve(seconds, settings.colors.threshold[colorKey].color, beyondColor)
-	if TRB.Functions.Threshold:ApplyThresholdCurveColor(self.spell, self.frame, curve, nil, settings, nil, self.frameLevel, self.pairOffset, false, durationObject) then
+	if TRB.Functions.Threshold:ApplyThresholdCurveColor(self.spell, self.frame, curve, nil, settings, nil, self.frameLevel, self.pairOffset, false, durationObject, self.cache) then
 		self.color = nil
 	end
 end
@@ -211,7 +213,7 @@ function TRB.Classes.ThresholdLine:ApplyCostCurve(multiplier, baseCost)
 	local thresholdCurve = Color:BuildThresholdCurve(multiplier, baseCost, underColor, overColor, curveMaxResource)
 	local iconCurve = Color:BuildIconVertexColorCurve(multiplier, baseCost, curveMaxResource)
 	local resourceType = self.bar.resourceType or TRB.Data.resource
-	if Threshold:ApplyThresholdCurveColor(self.spell, self.frame, thresholdCurve, resourceType, settings, iconCurve, self.frameLevel, self.pairOffset, self.isUsable) then
+	if Threshold:ApplyThresholdCurveColor(self.spell, self.frame, thresholdCurve, resourceType, settings, iconCurve, self.frameLevel, self.pairOffset, self.isUsable, nil, self.cache) then
 		self.color = nil
 	else
 		self.color = underColor

@@ -82,6 +82,12 @@ function TRB.Functions.Class:HasActiveTimers()
 	return false
 end
 
+---Whether every in-combat bar text input but $inCombatTime marks the lookup dirty; a class module can opt a spec out.
+---@return boolean
+function TRB.Functions.Class:HasEventDrivenCombatText()
+	return true
+end
+
 -- Working data. The root table, the class/spec registries and TRB.Data.maxResource were created by
 -- Core\FlavorRegistry.lua from the flavor manifest; everything else on TRB.Data is set up here.
 TRB.Data = TRB.Data or {}
@@ -295,7 +301,6 @@ TRB.Frames.timerFrame.sinceLastUpdate = 0
 TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
 function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
-	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
 
@@ -323,9 +328,11 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		end
 
 		TRB.Functions.CurveMemo:SetActive(true)
+		TRB.Classes.SpellBase.SetTickTime(GetTime())
 		TRB.Functions.Character:FlushHealthValues()
 		TRB.Functions.AudioCues:UpdateBuffCues(TRB.Data.snapshotData)
 		TRB.Functions.Class:TriggerResourceBarUpdates()
+		TRB.Classes.SpellBase.SetTickTime(nil)
 		TRB.Functions.CurveMemo:SetActive(false)
 		self.sinceLastUpdate = 0
 	end
@@ -338,12 +345,15 @@ TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFra
 TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_REGEN_DISABLED" then
 		TRB.Data.character.inCombat = true
+		-- $inCombat and the combat-only text colors change here.
+		TRB.Data.lookupDirty = true
 		-- Keep an existing start time so a battle rez mid-fight continues the timer rather than restarting.
 		if TRB.Data.character.combatStartTime == nil then
 			TRB.Data.character.combatStartTime = GetTime()
 		end
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		TRB.Data.character.inCombat = false
+		TRB.Data.lookupDirty = true
 		-- Dying drops combat but the fight may continue, so only reset when leaving combat while alive and not in an encounter.
 		if not UnitIsDeadOrGhost("player") and not inEncounter then
 			TRB.Data.character.combatStartTime = nil
