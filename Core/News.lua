@@ -9,6 +9,10 @@ TRB.Details.coreNewsContent = [====[
 
 - [#942](#942) Fix a Color Indicator that turns on mid-cast not recoloring the Target and Focus Cast Bars' border until the next cast.
 
+## Pet Bars
+
+- [#962](#962) Fix `$petName` showing Unknown for a newly summoned pet.
+
 ---
 
 # Live 12.1.5.10-release / Forever 1.60.1.17-release / Classic 1.15.9.2-release / TBC 2.5.6.0-release (2026-11-05)
