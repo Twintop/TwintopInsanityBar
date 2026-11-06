@@ -25,6 +25,8 @@ TRB.Details.coreNewsContent = [====[
 ## Color Indicators
 
 - [#942](#942) Fix a Color Indicator that turns on mid-cast not recoloring the Target and Focus Cast Bars' border until the next cast.
+- [#965](#965) Built-in Color Indicators and gradient colors get an Edit button, whose Change Source switches the row to another built-in and keeps its color and targets.
+- [#965](#965) Add a Not Active option to the Edit button, turning a Color Indicator on while its condition is not met.
 
 ## Pet Bars
 
