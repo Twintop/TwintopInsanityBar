@@ -1241,6 +1241,11 @@ local sharedIndicatorBars = {
 	petCastbar = true, petHealthBar = true, petPowerBar = true, totemsBar = true,
 }
 
+-- Only ApplyIndicatorColors writes these resolved tables, so a pass that wrote none leaves nothing to wipe.
+local sharedBarsWritten = true
+local gradientsWritten = true
+local glowsWritten = true
+
 ---Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
 ---nodeOrder back to front so earlier (higher-priority) entries overwrite later ones. The spec's bars are
 ---written back into barColorMap in place; the shared bars are parked in TRB.Data.resolvedIndicators.
@@ -1253,22 +1258,19 @@ local sharedIndicatorBars = {
 ---@param overrides table<string, table<string, boolean>>? # Optional: for each barKey the caller seeds here, records which elements an indicator claimed (specs that render an element differently once an indicator owns it)
 function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
 	local resolved = TRB.Data.resolvedIndicators
-	local healthBar = resolved.healthBar
 	local castbar = resolved.castbar
-	local targetCastbar = resolved.targetCastbar
-	local focusCastbar = resolved.focusCastbar
 	local petCastbar = resolved.petCastbar
-	local petHealthBar = resolved.petHealthBar
-	local petPowerBar = resolved.petPowerBar
-	local totemsBar = resolved.totemsBar
-	wipe(healthBar)
-	wipe(castbar)
-	wipe(targetCastbar)
-	wipe(focusCastbar)
-	wipe(petCastbar)
-	wipe(petHealthBar)
-	wipe(petPowerBar)
-	wipe(totemsBar)
+	if sharedBarsWritten then
+		wipe(resolved.healthBar)
+		wipe(castbar)
+		wipe(resolved.targetCastbar)
+		wipe(resolved.focusCastbar)
+		wipe(petCastbar)
+		wipe(resolved.petHealthBar)
+		wipe(resolved.petPowerBar)
+		wipe(resolved.totemsBar)
+		sharedBarsWritten = false
+	end
 
 	local character = TRB.Data.character
 	resolved.compositeKey = character.compositeKey
@@ -1284,8 +1286,11 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 	-- Same per-element selection ResolveGradientTargets makes for a spec's own bars, for every bar at once.
 	local gradients = resolved.gradients
 	local gradientKeys = resolved.gradientKeys
-	for _, barGradients in pairs(gradients) do
-		wipe(barGradients)
+	if gradientsWritten then
+		for _, barGradients in pairs(gradients) do
+			wipe(barGradients)
+		end
+		gradientsWritten = false
 	end
 	if indicatorColors and gradientOrder then
 		for i = 1, #gradientOrder do
@@ -1293,6 +1298,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 			local indicator = indicatorColors[key]
 			if indicator and indicator.enabled and indicator.isGradient and indicator.targets and conditionMap[indicator.copyOf or key] then
 				gradientKeys[indicator] = indicator.copyOf or key
+				gradientsWritten = true
 				for barKey, elements in pairs(indicator.targets) do
 					local barGradients = gradients[barKey]
 					if barGradients == nil then
@@ -1310,7 +1316,10 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 	end
 
 	local barGlows = resolved.barGlows
-	wipe(barGlows)
+	if glowsWritten then
+		wipe(barGlows)
+		glowsWritten = false
+	end
 
 	if indicatorColors and nodeOrder then
 		for i = #nodeOrder, 1, -1 do
@@ -1328,11 +1337,13 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 						end
 						glowEntry.glows = elements.glows
 						glowEntry.color = indicator.color
+						glowsWritten = true
 					end
 
 					local targetColors
 					if sharedIndicatorBars[barKey] then
 						targetColors = resolved[barKey]
+						sharedBarsWritten = true
 					else
 						targetColors = barColorMap and barColorMap[barKey]
 					end
