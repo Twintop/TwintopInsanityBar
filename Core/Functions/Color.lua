@@ -1193,7 +1193,7 @@ local previousPetCastbar = {}
 ---Writes each custom indicator's condition, and each built-in copy's built-in condition, into a condition
 ---map. ApplyIndicatorColors does this itself; a spec walking nodeOrder against a map of its own calls it first.
 ---@param sharedColors table? # spec.colors.shared
----@param conditionMap table<string, boolean> # Already holding the spec's built-in conditions
+---@param conditionMap table<string, boolean?> # Already holding the spec's built-in conditions
 function TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, conditionMap)
 	local indicatorColors = sharedColors and sharedColors.indicatorColors
 	local nodeOrder = sharedColors and sharedColors.nodeOrder
@@ -1214,25 +1214,57 @@ function TRB.Functions.Color:ApplyCustomIndicatorConditions(sharedColors, condit
 		if copyOf ~= nil then
 			conditionMap[key] = conditionMap[copyOf]
 		elseif conditions ~= nil then
+			-- nil while a condition can't be read and none is unmet, so Not Active can keep an unknown row off.
+			---@type boolean?
 			local met = #conditions > 0
 			for c = 1, #conditions do
 				local condition = conditions[c]
 				local conditionMet
 				if condition.source == thresholdSource then
-					conditionMet = threshold:IsConditionMet(condition)
+					conditionMet = threshold:ReadCondition(condition)
 				elseif condition.source == auraSource then
-					conditionMet = aura:IsConditionMet(condition)
+					conditionMet = aura:ReadCondition(condition)
 				else
-					conditionMet = cdm:IsConditionMet(condition)
+					conditionMet = cdm:ReadCondition(condition)
 				end
-				if not conditionMet then
+				if conditionMet == false then
 					met = false
 					break
+				elseif conditionMet == nil then
+					met = nil
 				end
 			end
 			conditionMap[key] = met
 		end
 	end
+end
+
+---A Color Indicator row's modifiers, saved as `indicatorColors[key].modifiers`.
+---@class TRB.IndicatorModifiers
+---@field notActive boolean? # The row is on while its condition is not met
+
+---Whether a flat row is on right now: its condition, flipped by Not Active. A custom source that can't be read
+---stays off either way; a built-in condition the spec left unset counts as not met.
+---@param conditionMap table<string, boolean?>
+---@param key string
+---@param indicator table # An indicatorColors entry; `modifiers` is a TRB.IndicatorModifiers
+---@return boolean?
+local function IsIndicatorMet(conditionMap, key, indicator)
+	local met = conditionMap[key]
+	local modifiers = indicator.modifiers
+	if modifiers ~= nil and modifiers.notActive then
+		return not met and (met ~= nil or indicator.custom == nil)
+	end
+	return met
+end
+
+---Whether a flat row is on right now, for a spec walking nodeOrder against its own condition map.
+---@param conditionMap table<string, boolean?> # After ApplyCustomIndicatorConditions
+---@param key string
+---@param indicator table
+---@return boolean?
+function TRB.Functions.Color:IsIndicatorMet(conditionMap, key, indicator)
+	return IsIndicatorMet(conditionMap, key, indicator)
 end
 
 -- Shared bars whose resolved colors live in TRB.Data.resolvedIndicators under their own bar key.
@@ -1325,7 +1357,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 		for i = #nodeOrder, 1, -1 do
 			local key = nodeOrder[i]
 			local indicator = indicatorColors[key]
-			if indicator and indicator.enabled and conditionMap[key] and indicator.targets then
+			if indicator and indicator.enabled and indicator.targets and IsIndicatorMet(conditionMap, key, indicator) then
 				for barKey, elements in pairs(indicator.targets) do
 					-- Glows resolve for every bar, not just the ones in this caller's color map: the nodes
 					-- they land on are found from the bar's own render path, well after this runs.

@@ -4087,14 +4087,14 @@ local conditionStateColorKeys = {
 	[ConditionState.IN_RANGE] = "over",
 }
 
----Whether a threshold line's state holds right now, from the same reads its line uses. Out of combat a
----spell is never out of range, as on the line.
+---Whether a threshold line's state holds right now, from the same reads its line uses, or nil when the line isn't
+---learned or its color mode changed. Out of combat a spell is never out of range, as on the line.
 ---@param condition TRB.CustomIndicatorCondition
----@return boolean
-function TRB.Functions.Threshold:IsConditionMet(condition)
+---@return boolean?
+function TRB.Functions.Threshold:ReadCondition(condition)
 	local spell = TRB.Data.cache.thresholdSpellsByKey[condition.settingKey]
 	if spell == nil or colorModeMismatches[condition] then
-		return false
+		return nil
 	end
 
 	local state = condition.state

@@ -182,6 +182,13 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public barKeys string[]? The only bars its target menu offers; every bar when nil
 ---@field public custom boolean? A user-defined indicator, built from colors.shared rather than spec code
 
+---What an indicator row's Edit menu offers under Change Source.
+---@class TRB.Classes.OptionsUi.IndicatorEditSource
+---@field public populate fun(description: table)? Fills Change Source as a submenu
+---@field public click fun()? Runs when Change Source is clicked, for a source picked in a prompt
+---@field public block string? Why Change Source can't be used right now
+---@field public tooltip string? What Change Source does
+
 ---An element of a bar that an indicator can recolor.
 ---@class TRB.Classes.OptionsUi.BarElementDef
 ---@field public key string Element key, matching the key in that bar's color settings (e.g. "bar", "border", "channel", "tick")

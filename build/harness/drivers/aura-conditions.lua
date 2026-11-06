@@ -25,6 +25,11 @@ local function newDesc(label, kind)
 		c.isSelected, c.setSelected, c.data = isSelected, setSelected, data
 		return c
 	end
+	function d:CreateCheckbox(text, isSelected, setSelected)
+		local c = add(newDesc(text, "checkbox"))
+		c.isSelected, c.setSelected = isSelected, setSelected
+		return c
+	end
 	function d:SetEnabled(enabled) self.disabled = not enabled end
 	function d:SetTooltip() end
 	function d:SetScrollMode() end
@@ -486,11 +491,17 @@ function hooks.afterEvents(ctx)
 
 	local rowIndex = #(drv.editButtons[panel.parent] or {})
 	local editButton = drv.editButtons[panel.parent] ~= nil and drv.editButtons[panel.parent][rowIndex] or nil
+	local menusBeforeEdit = #drv.menus
 	if editButton ~= nil then
 		try("Edit", function() editButton.__scripts.OnClick(editButton) end)
 	end
+	local changeSource = #drv.menus > menusBeforeEdit and FindEntry(drv.menus[#drv.menus], L["IndicatorEditChangeSource"]) or nil
+	check("Edit offers Change Source", changeSource ~= nil and changeSource.fn ~= nil and not changeSource.disabled)
+	if changeSource ~= nil and changeSource.fn ~= nil then
+		try("Change Source", function() changeSource.fn() end)
+	end
 	prompt = LastPopup("TwintopResourceBar_AuraSpellId")
-	check("Edit asks again, filled with the current ID", prompt ~= nil and prompt.spellId == ADRENALINE_RUSH)
+	check("Change Source asks again, filled with the current ID", prompt ~= nil and prompt.spellId == ADRENALINE_RUSH)
 	if prompt ~= nil then
 		try("re-point", function() prompt.onAccept(SPRINT) end)
 	end

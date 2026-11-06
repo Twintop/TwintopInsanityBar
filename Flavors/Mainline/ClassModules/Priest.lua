@@ -2657,7 +2657,7 @@ local function UpdateResourceBar()
 				for i = #nodeOrder, 1, -1 do
 					local key = nodeOrder[i]
 					local indicator = indicatorColors[key]
-					if indicator and indicator.enabled and conditionMap[key] then
+					if indicator and indicator.enabled and Color:IsIndicatorMet(conditionMap, key, indicator) then
 						if indicator.targets then
 							local indicatorKey = indicator.copyOf or key
 							local holyWordColors = holyWordNodeColors[indicatorKey]
