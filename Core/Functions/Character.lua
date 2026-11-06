@@ -475,6 +475,7 @@ local function CharacterChange(self, event, ...)
 	elseif event == "SPELL_UPDATE_USABLE" then
 		TRB.Classes.SpellBase.InvalidateSpellUsable()
 		TRB.Data.snapshotData.casting:RefreshCost()
+		TRB.Functions.Class:OnSpellUsableUpdate()
 	elseif event == "SPELLS_CHANGED" then
 		-- PvP talents become known and unknown here, with War Mode and PvP zones.
 		TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()

@@ -82,6 +82,16 @@ function TRB.Functions.Class:HasActiveTimers()
 	return false
 end
 
+---Whether every in-combat bar text input but $inCombatTime marks the lookup dirty; class modules opt specs in.
+---@return boolean
+function TRB.Functions.Class:HasEventDrivenCombatText()
+	return false
+end
+
+---Runs on SPELL_UPDATE_USABLE, after spell usability is invalidated.
+function TRB.Functions.Class:OnSpellUsableUpdate()
+end
+
 -- Working data. The root table, the class/spec registries and TRB.Data.maxResource were created by
 -- Core\FlavorRegistry.lua from the flavor manifest; everything else on TRB.Data is set up here.
 TRB.Data = TRB.Data or {}
@@ -339,12 +349,15 @@ TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFra
 TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_REGEN_DISABLED" then
 		TRB.Data.character.inCombat = true
+		-- $inCombat and the combat-only text colors change here.
+		TRB.Data.lookupDirty = true
 		-- Keep an existing start time so a battle rez mid-fight continues the timer rather than restarting.
 		if TRB.Data.character.combatStartTime == nil then
 			TRB.Data.character.combatStartTime = GetTime()
 		end
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		TRB.Data.character.inCombat = false
+		TRB.Data.lookupDirty = true
 		-- Dying drops combat but the fight may continue, so only reset when leaving combat while alive and not in an encounter.
 		if not UnitIsDeadOrGhost("player") and not inEncounter then
 			TRB.Data.character.combatStartTime = nil

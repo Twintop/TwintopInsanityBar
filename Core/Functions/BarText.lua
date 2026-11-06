@@ -63,6 +63,10 @@ if TRB.Flavor.skyriding ~= nil then
 	speedVariables["$skyridingSpeed"] = true
 end
 local speedTextOffBar = false
+-- Set by BuildActiveVariableSet: whether every condition using $inCombatTime is a bare check, so its text moves once a second.
+local inCombatTimeWholeSeconds = false
+-- The combat second the last refresh ran in, -1 before any time has passed.
+local lastCombatSecond = nil
 -- Filled below beside the tables they come from: the self-driven bar variables, and each satellite refresher's variables.
 local selfDrivenBarVariables = {}
 local refresherGroupOf = {}
@@ -804,6 +808,7 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	local selfDrivenInUse = false
 	local offBar = false
 	local speedOffBar = false
+	local wholeSeconds = true
 	-- Per Skyriding variable, the Skyriding bars its entries ride, or "" for anywhere else.
 	local skyridingAnchors = {}
 	if settings ~= nil and settings.displayText ~= nil then
@@ -813,6 +818,11 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 			if displayText.barText[i].enabled then
 				local text = displayText.barText[i].text
 				if text and text ~= "" then
+					for condition in string.gmatch(text, "%b{}") do
+						if string.find(condition, "$inCombatTime", 1, true) and string.match(condition, "^{%s*%$inCombatTime%s*}$") == nil then
+							wholeSeconds = false
+						end
+					end
 					local position = displayText.barText[i].position
 					local anchorGroupKey = position and castbarAnchorGroupKeys[position.relativeToFrame]
 					local onSkyridingBar = TRB.Classes.BarTypeRegistry:IsSkyridingBar(anchorGroupKey)
@@ -849,6 +859,7 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	TRB.Data.activeVariables = activeVars
 	skyridingTextOffBar = offBar
 	speedTextOffBar = speedOffBar
+	inCombatTimeWholeSeconds = wholeSeconds
 	TRB.Functions.Skyriding:SetBarTextUse(offBar, skyridingAnchors)
 end
 
@@ -3567,10 +3578,30 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	-- The tick a cast/timer ends on: one final pass has to write out its now-empty variables.
 	local selfDrivenBarEnded = selfDrivenBarWasInUse and not selfDrivenBarInUse
 	selfDrivenBarWasInUse = selfDrivenBarInUse
-	if not visibilityRefresh and not selfDrivenBarEnded and not TRB.Data.lookupDirty and not TRB.Data.character.inCombat and not selfDrivenBarInUse and not TRB.Functions.Class:HasActiveTimers() then
+	-- In combat only $inCombatTime moves on its own, for a spec whose other text inputs all mark the lookup dirty.
+	local inCombat = TRB.Data.character.inCombat
+	local combatNeedsTick = false
+	local combatSecond = nil
+	if inCombat then
+		local activeVariables = TRB.Data.activeVariables
+		if activeVariables == nil or not TRB.Functions.Class:HasEventDrivenCombatText() then
+			combatNeedsTick = true
+		elseif activeVariables["$inCombatTime"] then
+			local combatStartTime = TRB.Data.character.combatStartTime
+			local elapsed = combatStartTime ~= nil and GetTime() - combatStartTime or 0
+			combatSecond = elapsed > 0 and math.floor(elapsed) or -1
+			combatNeedsTick = not inCombatTimeWholeSeconds or combatSecond ~= lastCombatSecond
+		end
+	end
+	if not visibilityRefresh and not selfDrivenBarEnded and not TRB.Data.lookupDirty and not combatNeedsTick and not selfDrivenBarInUse and not TRB.Functions.Class:HasActiveTimers() then
+		-- Custom threshold lines keep their every-tick cadence in combat.
+		if inCombat and TRB.Functions.Threshold and TRB.Functions.Threshold.UpdateCustomThresholdLines then
+			TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, TRB.Frames.barGroups)
+		end
 		return
 	end
 	TRB.Data.lookupDirty = false
+	lastCombatSecond = combatSecond
 
 	-- Callers only set refreshText while a resource bar renders, so a cast/timer must drive its own write:
 	-- without this its text never updates when every resource bar is set to Never Show.
