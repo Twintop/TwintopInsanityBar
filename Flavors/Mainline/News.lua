@@ -72,6 +72,10 @@ TRB.Flavor.newsContent = [====[
 
 - [#950](#950) Improve update performance outside Mythic+ keystones.
 
+### Shadow
+
+- [#958](#958) Improve bar text update performance in combat.
+
 ## Rogue
 
 - [#948](#948) Improve combo point bar update performance.
