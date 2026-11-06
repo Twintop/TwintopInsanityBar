@@ -9,6 +9,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public resourceType Enum.PowerType? # When set, spells costing another resource are hidden in place (Druid forms)
 ---@field public maxResource number # The bar's scale; lines costing more are hidden
 ---@field public barSettings table? # Dimension block of the bar; nil means `settings.bar`
+---@field public curveMaxResource number? # The shown resource's real maximum in cost units, for cost curves; nil means the spec resource's
 TRB.Classes.ThresholdBar = {}
 TRB.Classes.ThresholdBar.__index = TRB.Classes.ThresholdBar
 
@@ -25,11 +26,13 @@ end
 ---@param maxResource number
 ---@param resourceType Enum.PowerType?
 ---@param barSettings table?
-function TRB.Classes.ThresholdBar:Set(node, maxResource, resourceType, barSettings)
+---@param curveMaxResource number? # Needed when the bar shows a resource other than the spec's own
+function TRB.Classes.ThresholdBar:Set(node, maxResource, resourceType, barSettings, curveMaxResource)
 	self.node = node
 	self.maxResource = maxResource
 	self.resourceType = resourceType
 	self.barSettings = barSettings
+	self.curveMaxResource = curveMaxResource
 end
 
 
@@ -204,8 +207,9 @@ function TRB.Classes.ThresholdLine:ApplyCostCurve(multiplier, baseCost)
 	local Color = TRB.Functions.Color
 	local settings = self.state.settings
 	local underColor, overColor = Threshold:ResolveThresholdCurveColors(self.spell, settings)
-	local thresholdCurve = Color:BuildThresholdCurve(multiplier, baseCost, underColor, overColor)
-	local iconCurve = Color:BuildIconVertexColorCurve(multiplier, baseCost)
+	local curveMaxResource = self.bar.curveMaxResource
+	local thresholdCurve = Color:BuildThresholdCurve(multiplier, baseCost, underColor, overColor, curveMaxResource)
+	local iconCurve = Color:BuildIconVertexColorCurve(multiplier, baseCost, curveMaxResource)
 	local resourceType = self.bar.resourceType or TRB.Data.resource
 	if Threshold:ApplyThresholdCurveColor(self.spell, self.frame, thresholdCurve, resourceType, settings, iconCurve, self.frameLevel, self.pairOffset, self.isUsable) then
 		self.color = nil
