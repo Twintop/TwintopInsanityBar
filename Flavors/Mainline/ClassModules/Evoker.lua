@@ -554,7 +554,7 @@ local function RefreshLookupData_Preservation()
 		lookupLogic["$essence"] = snapshotData.attributes.resource2
 		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 		lookupLogic["$essenceRegenTime"] = _essenceRegenTime
-		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 
 		lookup["$essence"] = snapshotData.formatted.resource2 or ""
