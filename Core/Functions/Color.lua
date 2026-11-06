@@ -706,12 +706,13 @@ TRB.Data.cache.thresholdCurves = TRB.Data.cache.thresholdCurves or {}
 ---@param baseCost number # The base (1x) cost of the spell
 ---@param underColor string # ARGB hex color for when player cannot afford
 ---@param overColor string # ARGB hex color for when player can afford
+---@param maxResource number? # The evaluated resource's real maximum; defaults to the spec resource's
 ---@return LuaColorCurveObject? colorCurve # A ColorCurve object ready for use with UnitPowerPercent
-function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, underColor, overColor)
+function TRB.Functions.Color:BuildThresholdCurve(costMultiplier, baseCost, underColor, overColor, maxResource)
 	local cache = TRB.Data.cache.thresholdCurves
-	
+
 	-- Use maxResourceUnmodified to match UnitPowerPercent's internal calculation
-	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
+	maxResource = maxResource or TRB.Data.character.maxResourceUnmodified or 100
 	
 	-- Calculate the threshold percentage where the multicast becomes affordable
 	local thresholdCost = baseCost * costMultiplier
@@ -878,15 +879,16 @@ end
 ---Below threshold: gray (desaturated look), at/above threshold: white (full color)
 ---@param costMultiplier number # The multiplier for the spell cost (2 for 2x, 3 for 3x)
 ---@param baseCost number # The base cost of the spell (1x cost)
+---@param maxResource number? # The evaluated resource's real maximum; defaults to the spec resource's
 ---@return LuaColorCurveObject? colorCurve # A ColorCurve for vertex colors
-function TRB.Functions.Color:BuildIconVertexColorCurve(costMultiplier, baseCost)
+function TRB.Functions.Color:BuildIconVertexColorCurve(costMultiplier, baseCost, maxResource)
 	local cache = TRB.Data.cache.iconVertexColorCurves
 	if cache == nil then
 		TRB.Data.cache.iconVertexColorCurves = {}
 		cache = TRB.Data.cache.iconVertexColorCurves
 	end
-	
-	local maxResource = TRB.Data.character.maxResourceUnmodified or 100
+
+	maxResource = maxResource or TRB.Data.character.maxResourceUnmodified or 100
 	local thresholdCost = baseCost * costMultiplier
 	local thresholdPercent = thresholdCost / maxResource
 	

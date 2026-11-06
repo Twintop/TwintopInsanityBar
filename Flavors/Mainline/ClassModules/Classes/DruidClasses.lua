@@ -713,16 +713,31 @@ end
 
 ---The maximum-cost line compares against secret Energy, so a curve colors it.
 ---@param line TRB.Classes.ThresholdLine
-local function FinisherMaximum(line)
-	if (line.state --[[@as TRB.Classes.Mainline.Druid.ThresholdState]]).apexPredatorsCraving then
-		line:Over()
-	elseif line.isUsable then
+local function MaximumCostCurve(line)
+	if line.isUsable then
 		local multiplier = line.spell.primaryResourceTypeMod
 		line:ApplyCostCurve(multiplier, line.resourceAmount / multiplier)
 	else
 		line:Under()
 	end
 end
+
+---@param line TRB.Classes.ThresholdLine
+local function FinisherMaximum(line)
+	if (line.state --[[@as TRB.Classes.Mainline.Druid.ThresholdState]]).apexPredatorsCraving then
+		line:Over()
+	else
+		MaximumCostCurve(line)
+	end
+end
+
+---Another spec's form has none of that form spec's rules, but its shared lines still need theirs.
+---@type TRB.Classes.ThresholdSnowflakes
+TRB.Classes.Mainline.Druid.DruidBaseSpells.thresholdSnowflakes = {
+	spells = {
+		ferociousBiteMaximum = MaximumCostCurve,
+	},
+}
 
 ---@type TRB.Classes.ThresholdSnowflakes
 TRB.Classes.Mainline.Druid.FeralSpells.thresholdSnowflakes = {

@@ -1986,7 +1986,8 @@ local function IsFormBarVisible(formSpecCacheSettings, barKey)
 end
 
 ---Places the form's spell threshold lines on the primary bar.
-local function ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource)
+---@param curveMaxResource number # The form resource's real maximum, for cost curves
+local function ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource, curveMaxResource)
 	-- Guard: Skip threshold processing if the form's spec doesn't define thresholds
 	if formSpecCacheSettings.thresholds == nil or formSpecCacheSettings.thresholds.properties == nil then
 		return
@@ -1997,10 +1998,10 @@ local function ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displ
 		return
 	end
 	
-	thresholdBar:Set(primaryNode, maxPrimaryBarResource, displayResourceType)
+	thresholdBar:Set(primaryNode, maxPrimaryBarResource, displayResourceType, nil, curveMaxResource)
 	thresholdState:Refresh(formSpecCacheSettings)
 	thresholdData:Refresh(talents)
-	Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData)
+	Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Druid.DruidBaseSpells.thresholdSnowflakes)
 end
 
 ---Draws combo points for the form when they apply; returns true when bar text needs a refresh.
@@ -2209,6 +2210,8 @@ local function UpdateResourceBar()
 		maxPrimaryBarResourceUnnormalized = math.min(formSpecCacheSettings.maxResource.value * displayResourceFactor, maxPrimaryBarResourceUnnormalized)
 	end
 	local maxPrimaryBarResource = maxPrimaryBarResourceUnnormalized / displayResourceFactor
+	-- Cost curves read the form resource's real maximum, not the bar's capped scale.
+	local curveMaxResource = displayMaxResource / displayResourceFactor
 
 	if TRB.Data.character.specId == 1 then
 		-- Override with form-appropriate spec settings for colors and bar configuration
@@ -2236,7 +2239,7 @@ local function UpdateResourceBar()
 				if displaySpecId ~= TRB.Data.character.specId then
 					barColor = formSpecSettings.colors.bar.base
 					barBorderColor = formSpecSettings.colors.bar.border.color
-					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource)
+					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource, curveMaxResource)
 				else
 					thresholdBar:Set(primaryNode, maxPrimaryBarResource, displayResourceType)
 					thresholdState:Refresh(specCacheSettings)
@@ -2407,7 +2410,7 @@ local function UpdateResourceBar()
 				if displaySpecId ~= TRB.Data.character.specId then
 					barColor = formSpecSettings.colors.bar.base
 					barBorderColor = formSpecSettings.colors.bar.border.color
-					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource)
+					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource, curveMaxResource)
 					primaryNode:SetBorderColor(barBorderColor)
 				else
 					thresholdBar:Set(primaryNode, maxPrimaryBarResourceUnnormalized, displayResourceType)
@@ -2711,7 +2714,7 @@ local function UpdateResourceBar()
 				if displaySpecId ~= TRB.Data.character.specId then
 					barColor = formSpecSettings.colors.bar.base
 					barBorderColor = formSpecSettings.colors.bar.border.color
-					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource)
+					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource, curveMaxResource)
 					primaryNode:SetBorderColor(barBorderColor)
 				else
 					thresholdBar:Set(primaryNode, maxPrimaryBarResource, displayResourceType)
@@ -2844,7 +2847,7 @@ local function UpdateResourceBar()
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
 					barColor = formSpecSettings.colors.bar.base
-					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource)
+					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource, curveMaxResource)
 				else
 					-- Precompute incarnation end timing threshold
 					local incarnationActive = snapshots[spells.incarnationTreeOfLife.id].buff.isActive and (talents:IsTalentActive(spells.cenariusGuidance) or snapshots[spells.clearcasting.id].buff.isActive)
