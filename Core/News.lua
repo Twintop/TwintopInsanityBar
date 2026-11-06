@@ -20,6 +20,7 @@ TRB.Details.coreNewsContent = [====[
 - [#956](#956) Improve Color Indicator performance.
 - [#959](#959) Improve bar text update performance in combat.
 - [#959](#959) Fix a buff or proc's bar text timer sometimes staying on screen after it ended, until something else changed.
+- [#964](#964) Fix casting, spending, absorb, and incoming heal overlays drawing over the bar's top and bottom border at some UI scales.
 
 ## Color Indicators
 

@@ -181,24 +181,15 @@ function TRB.Classes.OverlaySlot:GetAnchorInsets(fillDirection)
 	return border, -crossInset, -border, crossInset
 end
 
----Gets the TOPLEFT/BOTTOMRIGHT corner offsets for a clip frame that constrains ONLY the fill axis
----(so an appended/inset overlay can't draw past the bar ends). The cross axis is left at the full
----frame extent -- the overlay's own explicit size handles the side borders (and fullHeight overlap).
+---Gets the corner offsets for an appended/inset/range clip frame, the same inner-bar trim as GetAnchorInsets.
+---Overlays draw above the border, so an untrimmed cross axis rounds a pixel onto it at a fractional scale.
 ---@param fillDirection trbFillDirection?
 ---@return number leftXOffset
 ---@return number topYOffset
 ---@return number rightXOffset
 ---@return number bottomYOffset
 function TRB.Classes.OverlaySlot:GetClipInsets(fillDirection)
-	local parent = self.parentNode
-	local border = parent and parent.border or 0
-	fillDirection = fillDirection or (parent and parent.fillDirection) or "leftRight"
-	if TRB.Functions.Bar:IsVerticalFill(fillDirection) then
-		-- Fill axis vertical (top/bottom = border); cross axis horizontal left full
-		return 0, -border, 0, border
-	end
-	-- Fill axis horizontal (left/right = border); cross axis vertical left full
-	return border, 0, -border, 0
+	return self:GetAnchorInsets(fillDirection)
 end
 
 ---Gets the parent's current fill ratio without leaking secret values into layout math.
@@ -408,8 +399,7 @@ function TRB.Classes.OverlaySlot:ReanchorAppendedOverlay(force)
 	self._apBorder, self._apWidth, self._apHeight = border, width, height
 	self._apDirection, self._apFullHeight, self._apTexture, self._apEmpty = fillDirection, fullHeight, fillTexture, isEmpty
 
-	-- Re-anchor clip frame: it constrains only the FILL axis (so the appended bar can't draw past the
-	-- bar ends). The cross axis is left full -- the explicit overlay size below handles the side borders.
+	-- The clip trims to the inner bar on both axes (cross axis only without fullHeight).
 	self.appendedClipFrame:ClearAllPoints()
 	local clipLX, clipTY, clipRX, clipBY = self:GetClipInsets(fillDirection)
 	self.appendedClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", clipLX, clipTY)
@@ -721,8 +711,7 @@ function TRB.Classes.OverlaySlot:ReanchorInsetOverlay(force)
 	self._inDirection, self._inFullHeight, self._inTexture = fillDirection, fullHeight, fillTexture
 	self._inEdgeX, self._inEdgeY = edgeX, edgeY
 
-	-- Re-anchor clip frame: it constrains only the FILL axis (so the inset can't draw past the bar
-	-- ends). The cross axis is left full -- the explicit overlay size below handles the side borders.
+	-- The clip trims to the inner bar on both axes (cross axis only without fullHeight).
 	self.insetClipFrame:ClearAllPoints()
 	local clipLX, clipTY, clipRX, clipBY = self:GetClipInsets(fillDirection)
 	self.insetClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", clipLX, clipTY)
