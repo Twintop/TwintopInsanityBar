@@ -4327,4 +4327,13 @@ if locale == "zhCN" then
 	L["FiveSecondRuleShowBelowModeTime"] = "按剩余时间显示"
 	L["FiveSecondRuleShowBelowTime"] = "剩余秒数"
 	L["ShowBarVisibilityConditionOutOfCombat"] = "非战斗状态"
+	L["IndicatorEditTooltip"] = "修改此指示器的追踪目标，或添加修饰条件。"
+	L["IndicatorEditChangeSource"] = "更改来源"
+	L["IndicatorEditModifiers"] = "修饰条件"
+	L["IndicatorModifierNotActive"] = "未激活"
+	L["IndicatorModifierNotActiveTooltip"] = "在条件不满足时启用该指示器。冷却管理器条目、阈值线或无法读取的增益效果会保持关闭状态。"
+	L["IndicatorNotActiveLabelFormat"] = "非：%s"
+	L["BuiltInIndicatorChangeSourceTooltip"] = "选择本行要追踪的内置指示器。颜色、目标和修饰条件将保留。"
+	L["GradientIndicatorEditTooltip"] = "修改本行追踪的内置渐变色。"
+	L["BuiltInGradientChangeSourceTooltip"] = "选择本行要追踪的内置渐变色。颜色和目标将保留。"
 end
