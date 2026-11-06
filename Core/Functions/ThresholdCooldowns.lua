@@ -102,6 +102,7 @@ local function ScheduleChargeRefresh(cooldown)
 		chargeRefreshPending[cooldown] = nil
 		if cooldown.isActive then
 			cooldown:RefreshCharges()
+			TRB.Data.lookupDirty = true
 		end
 	end)
 end
@@ -149,6 +150,8 @@ eventFrame:SetScript("OnEvent", function(_, event, spellID, baseSpellID)
 				cooldown:RefreshCharges()
 			end
 		end
+		-- Bar text shows charge counts, and a finished recharge fires nothing else.
+		TRB.Data.lookupDirty = true
 		return
 	end
 

@@ -1324,6 +1324,8 @@ local function HandleSpellEvents(self, event, ...)
 				TRB.Functions.AudioCues:ResetLatch(snapshotData, "ruination")
 			end
 		end
+		-- A proc spent early ends here, possibly before its cast or aura event lands.
+		TRB.Data.lookupDirty = true
 	end
 end
 

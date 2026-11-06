@@ -860,6 +860,7 @@ local function HandleSpellEvents(self, event, ...)
 
 				-- No stacks or duration knowable from an overlay; active until HIDE.
 				essenceBurstSnapshot.buff:InitializeCustomSimple(true)
+				TRB.Data.lookupDirty = true
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
@@ -867,6 +868,7 @@ local function HandleSpellEvents(self, event, ...)
 		if spellId == essenceBurstDetectionId then -- Essence Burst
 			if essenceBurstSnapshot ~= nil then
 				essenceBurstSnapshot.buff:Reset()
+				TRB.Data.lookupDirty = true
 			end
 			TRB.Functions.AudioCues:ResetLatch(snapshotData, "essenceBurst")
 		end

@@ -794,8 +794,13 @@ local function UpdateSnapshot_Marksmanship()
 		local duration = casting.endTime - casting.startTime
 		local remainingTime = casting.endTime - currentTime
 		local ticksRemaining = math.ceil(remainingTime / (duration / (spells.rapidFire.attributes.shots - 1)))
+		local previousFinal = casting.resourceFinal
 		casting.resourceRaw = math.max(ticksRemaining * spells.rapidFire.resource, 0)
 		casting.resourceFinal = CalculateAbilityResourceValue(casting.resourceRaw)
+		-- The count drops with time, not on an event.
+		if casting.resourceFinal ~= previousFinal then
+			TRB.Data.lookupDirty = true
+		end
 	end
 end
 

@@ -4135,31 +4135,6 @@ function TRB.Functions.Class:HasActiveTimers()
 	return false
 end
 
----Shadow's in-combat text moves only on events, its HasActiveTimers buffs, and Shadow Word: Madness turning usable.
----@return boolean
-function TRB.Functions.Class:HasEventDrivenCombatText()
-	return TRB.Data.character.specId == 3
-end
-
--- Shadow Word: Madness's last usable state, so only a flip marks the lookup dirty.
-local shadowWordMadnessUsable = nil
-
-function TRB.Functions.Class:OnSpellUsableUpdate()
-	if TRB.Data.character.specId ~= 3 then
-		return
-	end
-	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.ShadowSpells]]
-	local shadowWordMadness = spells and spells.shadowWordMadness
-	if shadowWordMadness == nil then
-		return
-	end
-	local usable = shadowWordMadness:IsUsable() or shadowWordMadness:IsFree()
-	if usable ~= shadowWordMadnessUsable then
-		shadowWordMadnessUsable = usable
-		TRB.Data.lookupDirty = true
-	end
-end
-
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	if TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and Bar:IsRenderTransitionActive() then
 		Bar:HideResourceBar(true)

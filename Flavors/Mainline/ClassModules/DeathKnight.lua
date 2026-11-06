@@ -250,6 +250,8 @@ spellEventFrame:SetScript("OnEvent", function(self, event, spellId)
 			if spells.marrowrend and spellId == spells.marrowrend.id then
 				local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 				snapshotData.attributes.boneShieldStacks = C_Spell.GetSpellCastCount(spells.marrowrend.id) or 0
+				-- The count can be secret, so it can't be compared to the last one.
+				TRB.Data.lookupDirty = true
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then

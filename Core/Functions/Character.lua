@@ -475,7 +475,8 @@ local function CharacterChange(self, event, ...)
 	elseif event == "SPELL_UPDATE_USABLE" then
 		TRB.Classes.SpellBase.InvalidateSpellUsable()
 		TRB.Data.snapshotData.casting:RefreshCost()
-		TRB.Functions.Class:OnSpellUsableUpdate()
+		-- Bar text reads usability; this is the only signal it changed.
+		TRB.Data.lookupDirty = true
 	elseif event == "SPELLS_CHANGED" then
 		-- PvP talents become known and unknown here, with War Mode and PvP zones.
 		TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
@@ -527,6 +528,7 @@ local function CharacterChange(self, event, ...)
 	elseif event == "PLAYER_TARGET_CHANGED" then
 		TRB.Functions.Character:InvalidateSpellRanges()
 		TRB.Functions.BarVisibility:MarkDirty()
+		TRB.Data.lookupDirty = true
 	elseif event == "PLAYER_MOUNT_DISPLAY_CHANGED" then
 		local frame = self
 		C_Timer.After(0, function()
@@ -848,10 +850,14 @@ local function SpellRangeCheckUpdateEvent(self, event, spellIdentifier, isInRang
 		return
 	end
 	-- No check means no target, or one the spell can't be used on.
+	local range = TRB.Data.cache.values.range
+	local value = TRB.Data.constants.rangeInvalid
 	if checksRange == true then
-		TRB.Data.cache.values.range[spellIdentifier] = isInRange
-	else
-		TRB.Data.cache.values.range[spellIdentifier] = TRB.Data.constants.rangeInvalid
+		value = isInRange
+	end
+	if range[spellIdentifier] ~= value then
+		range[spellIdentifier] = value
+		TRB.Data.lookupDirty = true
 	end
 end
 

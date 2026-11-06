@@ -3521,6 +3521,8 @@ end
 
 -- Previous tick's HasActiveSelfDrivenBarVariableInUse result, for detecting the tick a cast/timer ends on.
 local selfDrivenBarWasInUse = false
+-- Previous tick's HasActiveTimers result: a timer can run out mid-tick with nothing marking the lookup dirty.
+local classTimersWereActive = false
 
 -- Reused per-call caches by anchor name: UpdateResourceBarText's ANCHOR_STATE_ values, and whether Show finds the
 -- anchor enabled and visible.
@@ -3593,7 +3595,11 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 			combatNeedsTick = not inCombatTimeWholeSeconds or combatSecond ~= lastCombatSecond
 		end
 	end
-	if not visibilityRefresh and not selfDrivenBarEnded and not TRB.Data.lookupDirty and not combatNeedsTick and not selfDrivenBarInUse and not TRB.Functions.Class:HasActiveTimers() then
+	local classTimersActive = TRB.Functions.Class:HasActiveTimers()
+	-- The tick the last class timer ends on: one final pass writes out its now-empty variables.
+	local classTimersEnded = classTimersWereActive and not classTimersActive
+	classTimersWereActive = classTimersActive
+	if not visibilityRefresh and not selfDrivenBarEnded and not classTimersEnded and not TRB.Data.lookupDirty and not combatNeedsTick and not selfDrivenBarInUse and not classTimersActive then
 		-- Custom threshold lines keep their every-tick cadence in combat.
 		if inCombat and TRB.Functions.Threshold and TRB.Functions.Threshold.UpdateCustomThresholdLines then
 			TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, TRB.Frames.barGroups)

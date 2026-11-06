@@ -1012,11 +1012,16 @@ local function UpdateSnapshot_Brewmaster()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	UpdateSnapshot()
 
+	local previousStagger = snapshotData.attributes.stagger
 	snapshotData.attributes.stagger = UnitStagger("player")
 
 	if issecretvalue(snapshotData.attributes.stagger) then
 		snapshotData.attributes.stagger = 0
 	else
+		-- Stagger has no event; it's polled here every tick.
+		if snapshotData.attributes.stagger ~= previousStagger then
+			TRB.Data.lookupDirty = true
+		end
 		snapshotData.attributes.staggerPercent = snapshotData.attributes.stagger / snapshotData.attributes.healthMax
 	end
 	UpdateStaggerColor()

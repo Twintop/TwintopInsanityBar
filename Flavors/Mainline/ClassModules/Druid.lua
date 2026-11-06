@@ -412,6 +412,8 @@ local function DruidPowerEvent(self, event, ...)
 			elseif powerType == "LUNAR_POWER" then
 				TRB.Data.character.maxAstralPower = UnitPowerMax("player", Enum.PowerType.LunarPower, true)
 			end
+			-- Core marks dirty only for the spec's own resource; every form shows its max.
+			TRB.Data.lookupDirty = true
 		end
 	end
 end
@@ -425,6 +427,7 @@ local function HandleSpellEvents(self, event, ...)
 			local spells = TRB.Data.spellsData.spells
 			if spellId == spells.clearcasting.id then
 				snapshotData.attributes.clearcastingActive = true
+				TRB.Data.lookupDirty = true
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
@@ -434,6 +437,7 @@ local function HandleSpellEvents(self, event, ...)
 			local spells = TRB.Data.spellsData.spells
 			if spellId == spells.clearcasting.id then
 				snapshotData.attributes.clearcastingActive = false
+				TRB.Data.lookupDirty = true
 			end
 		end
 	end

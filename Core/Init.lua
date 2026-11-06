@@ -82,14 +82,10 @@ function TRB.Functions.Class:HasActiveTimers()
 	return false
 end
 
----Whether every in-combat bar text input but $inCombatTime marks the lookup dirty; class modules opt specs in.
+---Whether every in-combat bar text input but $inCombatTime marks the lookup dirty; a class module can opt a spec out.
 ---@return boolean
 function TRB.Functions.Class:HasEventDrivenCombatText()
-	return false
-end
-
----Runs on SPELL_UPDATE_USABLE, after spell usability is invalidated.
-function TRB.Functions.Class:OnSpellUsableUpdate()
+	return true
 end
 
 -- Working data. The root table, the class/spec registries and TRB.Data.maxResource were created by

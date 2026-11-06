@@ -2898,6 +2898,11 @@ function TRB.Functions.Class:HasActiveTimers()
 		local fireBlastCooldown = GetFireBlastCooldownSnapshot(spells, true)
 		return fireBlastCooldown ~= nil and fireBlastCooldown.isActive == true
 	elseif TRB.Data.character.specId == 3 then
+		-- Shatter's stack count is secret, so its changes can't mark the lookup dirty.
+		local activeVars = TRB.Data.activeVariables
+		if TRB.Data.snapshotData.attributes.shatterActive and (activeVars == nil or activeVars["$shatterStacks"]) then
+			return true
+		end
 		return IsTimerBuffActive(frostTimerSpells)
 	end
 

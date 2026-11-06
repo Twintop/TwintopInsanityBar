@@ -826,6 +826,8 @@ local function DemonHunterEvent(self, event, ...)
 				-- Get Soul Fragment count via Spirit Bomb's GetSpellCastCount (returns 0-6)
 				local soulFragments = C_Spell.GetSpellCastCount(spells.spiritBomb.id) or 0
 				snapshotData.attributes.resource2 = soulFragments
+				-- Fragments spawn and expire without a cast, and the count can be secret.
+				TRB.Data.lookupDirty = true
 			end
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
@@ -897,8 +899,12 @@ local function UpdateSnapshot_Havoc()
 		local casting = snapshotData.casting
 		local remainingTime = casting.endTime - currentTime
 		local ticks = TRB.Functions.Number:RoundTo(remainingTime / (spells.blindFury:GetTickRate()), 0, "ceil", true)
-		local resource = ticks * spells.blindFury.resource * talents.talents[spells.blindFury.id].currentRank
-		casting.resourceRaw = math.max(resource, 0)
+		local resource = math.max(ticks * spells.blindFury.resource * talents.talents[spells.blindFury.id].currentRank, 0)
+		-- The count drops with time, not on an event.
+		if casting.resourceRaw ~= resource then
+			TRB.Data.lookupDirty = true
+		end
+		casting.resourceRaw = resource
 		casting.resourceFinal = casting.resourceRaw
 	end
 end
@@ -918,6 +924,7 @@ local function UpdateSnapshot_Devourer()
 	local currentTime = GetTime()
 	local collapsingStarBuff = snapshotData.snapshots[spells.collapsingStar.id].buff
 	local soulFragmentsBuff = snapshotData.snapshots[spells.soulFragments.id].buff
+	local previousResource2 = snapshotData.attributes.resource2
 
 	-- Context flag for custom thresholds: secondary bar shows Collapsing Star stacks while active,
 	-- Soul Fragments otherwise. Read by the custom-threshold sub-target visibility gate.
@@ -965,6 +972,11 @@ local function UpdateSnapshot_Devourer()
 		snapshotData.attributes.maxResource2 = maxResource2
 	end
 
+	-- The last-known and transition holds end with time, not on an event.
+	local resource2 = snapshotData.attributes.resource2
+	if issecretvalue(resource2) or issecretvalue(previousResource2) or resource2 ~= previousResource2 then
+		TRB.Data.lookupDirty = true
+	end
 end
 
 
