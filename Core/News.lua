@@ -18,6 +18,8 @@ TRB.Details.coreNewsContent = [====[
 - [#944](#944) Improve update performance of bar colors, the health and pet bars, and bars filled by a buff's duration.
 - [#946](#946) Improve bar text update performance, primarily for bar text with conditions.
 - [#956](#956) Improve Color Indicator performance.
+- [#959](#959) Improve bar text update performance in combat.
+- [#959](#959) Fix a buff or proc's bar text timer sometimes staying on screen after it ended, until something else changed.
 
 ## Color Indicators
 
