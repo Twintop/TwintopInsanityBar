@@ -24,7 +24,7 @@ local defaultElementDefs = {
 	{ key = "endCap", label = L["EndCap"] },
 }
 
--- Every flat and gradient row leaves room for the Remove button and a custom row's Edit button, so all the arrows line up.
+-- Every flat and gradient row leaves room for the Remove and Edit buttons, so all the arrows line up.
 local customColumnWidth = 46
 local targetsDropdownWidth = 254
 
@@ -378,6 +378,9 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return sorted
 	end
 
+	local sortedIndicatorDefs = SortDefsByLabel(indicatorDefs)
+	local sortedGradientDefs = SortDefsByLabel(gradientDefs)
+
 	local defaultShared = TRB.Functions.Settings:GetDefaultSharedIndicators(TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId))
 
 	---A built-in's default entry, or nil when it has none.
@@ -474,6 +477,97 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			indicator.enabled = false
 			indicator.targets = UntargetedBuiltIn(key)
 		end
+	end
+
+	---@param indicator table?
+	---@return boolean
+	local function IsNotActive(indicator)
+		return indicator ~= nil and indicator.modifiers ~= nil and indicator.modifiers.notActive == true
+	end
+
+	---Turns a row's Not Active on or off, dropping an emptied modifiers table.
+	---@param indicator table
+	---@param notActive boolean
+	local function SetNotActive(indicator, notActive)
+		if notActive then
+			indicator.modifiers = indicator.modifiers or {}
+			indicator.modifiers.notActive = true
+		elseif indicator.modifiers ~= nil then
+			indicator.modifiers.notActive = nil
+			if next(indicator.modifiers) == nil then
+				indicator.modifiers = nil
+			end
+		end
+	end
+
+	---Fills a menu with built-ins, sorted by row label, each with its tooltip. With a current built-in they are radios.
+	---@param description table
+	---@param defs TRB.Classes.OptionsUi.IndicatorDef[]
+	---@param currentBuiltInKey string?
+	---@param onPick fun(builtInKey: string)
+	local function PopulateBuiltInPicker(description, defs, currentBuiltInKey, onPick)
+		for _, def in ipairs(defs) do
+			local button
+			if currentBuiltInKey == nil then
+				button = description:CreateButton(def.colorLabel or def.key, function()
+					onPick(def.key)
+				end)
+			else
+				button = description:CreateRadio(def.colorLabel or def.key, function()
+					return def.key == currentBuiltInKey
+				end, function()
+					onPick(def.key)
+					return MenuResponse.Close
+				end)
+			end
+			if def.tooltip ~= nil then
+				button:SetTooltip(function(tooltipFrame)
+					tooltipFrame:SetText(def.tooltip, 1, 1, 1, 1, true)
+				end)
+			end
+		end
+		TRB.Functions.OptionsUi.Primitives:LimitMenuRows(description, #defs)
+	end
+
+	---Opens a row's Edit menu: Change Source, then the modifiers the row offers.
+	---@param owner Frame
+	---@param getIndicator fun(): table? # The row's entry, read live
+	---@param source TRB.Classes.OptionsUi.IndicatorEditSource
+	---@param offerNotActive boolean
+	---@param onModifierChanged fun()?
+	local function OpenEditMenu(owner, getIndicator, source, offerNotActive, onModifierChanged)
+		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
+			local sourceButton = rootDescription:CreateButton(L["IndicatorEditChangeSource"], source.click)
+			local sourceTooltip = source.block or source.tooltip
+			if source.block ~= nil then
+				sourceButton:SetEnabled(false)
+			elseif source.populate ~= nil then
+				source.populate(sourceButton)
+			end
+			if sourceTooltip ~= nil then
+				sourceButton:SetTooltip(function(tooltipFrame)
+					tooltipFrame:SetText(sourceTooltip, 1, 1, 1, 1, true)
+				end)
+			end
+
+			if offerNotActive then
+				rootDescription:CreateDivider()
+				rootDescription:CreateTitle(L["IndicatorEditModifiers"])
+				local checkbox = rootDescription:CreateCheckbox(L["IndicatorModifierNotActive"], function()
+					return IsNotActive(getIndicator())
+				end, function()
+					local indicator = getIndicator()
+					if indicator == nil then return end
+					SetNotActive(indicator, not IsNotActive(indicator))
+					if onModifierChanged ~= nil then
+						onModifierChanged()
+					end
+				end)
+				checkbox:SetTooltip(function(tooltipFrame)
+					tooltipFrame:SetText(L["IndicatorModifierNotActiveTooltip"], 1, 1, 1, 1, true)
+				end)
+			end
+		end)
 	end
 
 	---Whether an element is off-limits to a flat indicator row, because the panel excludes it outright.
@@ -596,6 +690,66 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		if colorPicker then
 			TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(colorPicker, anyEnabled)
 		end
+	end
+
+	---Points a built-in row at another built-in in place, keeping its colors, modifiers, and the targets the new built-in
+	---offers. An original's key belongs to its built-in, so the row becomes a copy (or the picked built-in's deleted key)
+	---and the original is deleted.
+	---@param key string
+	---@param builtInKey string
+	---@param list string[] # The row's nodeOrder or gradientOrder
+	---@return string key # The row's key afterward
+	local function SwitchBuiltInRow(key, builtInKey, list)
+		local indicator = indicatorColors[key]
+		if indicator == nil or (indicator.copyOf or key) == builtInKey then
+			return key
+		end
+		local offered = {}
+		for _, barDef in ipairs(GetBarTargetDefsFor(indicatorDefByKey[builtInKey])) do
+			offered[barDef.key] = true
+		end
+
+		local removed = sharedSettings.removed
+		if indicator.copyOf ~= nil and not (removed ~= nil and removed[builtInKey]) then
+			indicator.copyOf = builtInKey
+			indicatorDefByKey[key] = indicatorDefByKey[builtInKey]
+			for barKey in pairs(indicator.targets or {}) do
+				if not offered[barKey] then
+					indicator.targets[barKey] = nil
+				end
+			end
+			SyncEnabled(indicator)
+			return key
+		end
+
+		local newKey, entry = PrepareBuiltInRow(builtInKey)
+		if newKey == nil or entry == nil then
+			return key
+		end
+		entry.color = indicator.color
+		entry.color2 = indicator.color2
+		entry.gradientDirection = indicator.gradientDirection
+		entry.modifiers = TRB.Functions.Table:DeepCopy(indicator.modifiers)
+		-- Laid over the explicit falses, so the login's merge over the defaults can't turn the new built-in's elements on.
+		for barKey, elements in pairs(indicator.targets or {}) do
+			if offered[barKey] then
+				entry.targets[barKey] = entry.targets[barKey] or {}
+				for elemKey, value in pairs(elements) do
+					entry.targets[barKey][elemKey] = TRB.Functions.Table:DeepCopy(value)
+				end
+			end
+		end
+		SyncEnabled(entry)
+		indicatorColors[newKey] = entry
+		indicatorDefByKey[newKey] = indicatorDefByKey[builtInKey]
+		for i, k in ipairs(list) do
+			if k == key then
+				list[i] = newKey
+				break
+			end
+		end
+		DeleteIndicatorEntry(key, list)
+		return newKey
 	end
 
 	local cdm = TRB.Functions.CooldownManager
@@ -972,7 +1126,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				row.colorPicker.DirectionButton.Font:SetText(gradientDirectionAbbrevLabels[indicator.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
 			end
 			if row.colorPicker.Font then
-				row.colorPicker.Font:SetText(def.colorLabel)
+				-- A copy shares its built-in's def, so the Not Active mark goes on the text, not the def.
+				row.colorPicker.Font:SetText(IsNotActive(indicator) and string.format(L["IndicatorNotActiveLabelFormat"], def.colorLabel) or def.colorLabel)
 				-- After the relabel: the badge is placed past the measured end of the new text.
 				Primitives:AttachCdmBadgeToText(row.colorPicker.Font, def.cdm)
 				Primitives:AttachCustomBadgeToText(row.colorPicker.Font, isCustom, notTracked, badgeTooltip or "")
@@ -989,9 +1144,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			row.dropdown:SetText(GetSummaryText(key))
 		end
 		row.removeBtn:SetShown(true)
-		row.editBtn:SetShown(isCustom)
-		-- Threshold lines and spell IDs are the spec's own data, so they can be re-picked on any spec.
-		row.editBtn:SetEnabled(thresholdCondition ~= nil or (auraCondition ~= nil and TRB.Flavor.playerAuras) or blockReason == nil)
+		row.editBtn:SetShown(true)
 		-- Arrow enabled state
 		if row.upBtn then row.upBtn:SetEnabled(rowIndex > 1) end
 		if row.downBtn then row.downBtn:SetEnabled(rowIndex < #orderedKeys) end
@@ -1071,55 +1224,81 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		row.editBtn:SetScript("OnClick", function(self)
 			local currentKey = orderedKeys[capturedRowIdx]
 			local currentIndicator = indicatorColors[currentKey]
-			local conditions = currentIndicator and currentIndicator.custom and currentIndicator.custom.conditions
+			if currentIndicator == nil then return end
+			local conditions = currentIndicator.custom and currentIndicator.custom.conditions
 			local condition = conditions and conditions[1]
-			if condition == nil then return end
-			if condition.source == Threshold.CONDITION_SOURCE then
-				MenuUtil.CreateContextMenu(self, function(_, rootDescription)
-					PopulateThresholdPicker(rootDescription, condition, function(spell, state)
-						PointThresholdConditionAt(condition, spell, state)
-						Threshold:SyncIndicatorColors(settingsClassName, settingsSpecName)
-						RefreshRow(capturedRowIdx)
-						RefreshThresholdTracking()
-						RefreshRuntime()
-					end)
-				end)
-				return
-			end
-			if condition.source == Aura.CONDITION_SOURCE then
-				Primitives:ShowAuraSpellIdPrompt(condition.spellID, function(spellId)
-					PointAuraConditionAt(condition, spellId)
-					RefreshRow(capturedRowIdx)
-					Aura:RefreshConditionSpells()
-					RefreshRuntime()
-				end)
-				return
-			end
-			-- The Cooldown Manager or spec can change under an open panel; say why instead of doing nothing.
-			if GetPickerBlock() ~= nil then
-				RefreshAllRows()
-				ShowRowButtonTooltip(self, L["CustomIndicatorEditTooltip"])
-				return
-			end
-			OpenPicker(self, condition.cooldownID, function(entry)
-				cdm:PointConditionAt(condition, entry, true)
+			local function OnEdited()
 				RefreshRow(capturedRowIdx)
 				RefreshRuntime()
-			end)
+			end
+
+			---@type TRB.Classes.OptionsUi.IndicatorEditSource
+			local source
+			local offerNotActive = true
+			if currentIndicator.custom == nil then
+				source = {
+					tooltip = L["BuiltInIndicatorChangeSourceTooltip"],
+					populate = function(description)
+						PopulateBuiltInPicker(description, sortedIndicatorDefs, currentIndicator.copyOf or currentKey, function(builtInKey)
+							orderedKeys[capturedRowIdx] = SwitchBuiltInRow(currentKey, builtInKey, sharedSettings.nodeOrder)
+							OnEdited()
+						end)
+					end,
+				}
+			elseif condition == nil then
+				return
+			elseif condition.source == Threshold.CONDITION_SOURCE then
+				-- A Static line always holds, so its opposite never would.
+				offerNotActive = condition.state ~= ThresholdState.STATIC
+				source = {
+					tooltip = L["ThresholdIndicatorEditTooltip"],
+					populate = function(description)
+						PopulateThresholdPicker(description, condition, function(spell, state)
+							PointThresholdConditionAt(condition, spell, state)
+							if state == ThresholdState.STATIC then
+								SetNotActive(currentIndicator, false)
+							end
+							Threshold:SyncIndicatorColors(settingsClassName, settingsSpecName)
+							RefreshThresholdTracking()
+							OnEdited()
+						end)
+					end,
+				}
+			elseif condition.source == Aura.CONDITION_SOURCE then
+				source = {
+					tooltip = L["AuraIndicatorEditTooltip"],
+					block = not TRB.Flavor.playerAuras and L["AuraIndicatorUnavailableTooltip"] or nil,
+					click = function()
+						Primitives:ShowAuraSpellIdPrompt(condition.spellID, function(spellId)
+							PointAuraConditionAt(condition, spellId)
+							Aura:RefreshConditionSpells()
+							OnEdited()
+						end)
+					end,
+				}
+			else
+				-- The Cooldown Manager or spec can change under an open panel, so the rows' badges may be stale too.
+				local reason = GetPickerBlock()
+				if reason ~= blockReason then
+					RefreshAllRows()
+				end
+				source = {
+					tooltip = L["CustomIndicatorEditTooltip"],
+					block = reason,
+					populate = function(description)
+						Primitives:PopulateCdmPicker(description, condition.cooldownID, pickerWording, function(entry)
+							cdm:PointConditionAt(condition, entry, true)
+							OnEdited()
+						end)
+					end,
+				}
+			end
+			OpenEditMenu(self, function()
+				return indicatorColors[orderedKeys[capturedRowIdx]]
+			end, source, offerNotActive, OnEdited)
 		end)
 		row.editBtn:SetScript("OnEnter", function(self)
-			-- A block can clear without any event, which would leave the button greyed with no reason.
-			if not self:IsEnabled() and GetPickerBlock() == nil then
-				RefreshAllRows()
-			end
-			local currentIndicator = indicatorColors[orderedKeys[capturedRowIdx]]
-			local tooltip = L["CustomIndicatorEditTooltip"]
-			if GetThresholdCondition(currentIndicator) ~= nil then
-				tooltip = L["ThresholdIndicatorEditTooltip"]
-			elseif GetAuraCondition(currentIndicator) ~= nil then
-				tooltip = L["AuraIndicatorEditTooltip"]
-			end
-			ShowRowButtonTooltip(self, tooltip)
+			ShowRowButtonTooltip(self, L["IndicatorEditTooltip"])
 		end)
 		row.editBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
@@ -1363,17 +1542,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	---@param onPick fun(builtInKey: string)
 	local function OpenBuiltInMenu(owner, defs, onPick)
 		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
-			for _, def in ipairs(defs) do
-				local button = rootDescription:CreateButton(def.colorLabel or def.key, function()
-					onPick(def.key)
-				end)
-				if def.tooltip ~= nil then
-					button:SetTooltip(function(tooltipFrame)
-						tooltipFrame:SetText(def.tooltip, 1, 1, 1, 1, true)
-					end)
-				end
-			end
-			Primitives:LimitMenuRows(rootDescription, #defs)
+			PopulateBuiltInPicker(rootDescription, defs, nil, onPick)
 		end)
 	end
 
@@ -1502,7 +1671,6 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	addButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 	if #indicatorDefs > 0 then
-		local sortedIndicatorDefs = SortDefsByLabel(indicatorDefs)
 		local addBuiltInButton = Primitives:BuildButton(parent, L["BuiltInIndicatorAddButton"], oUi.xCoord + customColumnWidth + 46, yCoord, 250, 25)
 		addBuiltInButton:SetScript("OnClick", function(self)
 			OpenBuiltInMenu(self, sortedIndicatorDefs, AddBuiltInIndicator)
@@ -1593,6 +1761,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			local xOffset = oUi.xCoord
 			row.removeBtn:ClearAllPoints()
 			row.removeBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset, rowY)
+			row.editBtn:ClearAllPoints()
+			row.editBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset + 22, rowY)
 			xOffset = xOffset + customColumnWidth
 			row.upBtn:ClearAllPoints()
 			row.upBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", xOffset, rowY)
@@ -1608,6 +1778,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		---@param shown boolean
 		local function SetGradientRowShown(row, shown)
 			row.removeBtn:SetShown(shown)
+			row.editBtn:SetShown(shown)
 			row.upBtn:SetShown(shown)
 			row.downBtn:SetShown(shown)
 			row.dropdown:SetShown(shown)
@@ -1639,6 +1810,30 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				ShowRowButtonTooltip(self, L["IndicatorRemoveTooltip"])
 			end)
 			gradRow.removeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+			-- A gradient's condition only gates its curve, which does the threshold step; Not Active would just invert the gate.
+			gradRow.editBtn = Primitives:BuildEditIconButton(parent, 0, 0)
+			gradRow.editBtn:SetScript("OnClick", function(self)
+				local currentKey = orderedGradientKeys[capturedGradIdx]
+				local currentIndicator = indicatorColors[currentKey]
+				if currentIndicator == nil then return end
+				OpenEditMenu(self, function()
+					return indicatorColors[orderedGradientKeys[capturedGradIdx]]
+				end, {
+					tooltip = L["BuiltInGradientChangeSourceTooltip"],
+					populate = function(description)
+						PopulateBuiltInPicker(description, sortedGradientDefs, currentIndicator.copyOf or currentKey, function(builtInKey)
+							orderedGradientKeys[capturedGradIdx] = SwitchBuiltInRow(currentKey, builtInKey, sharedSettings.gradientOrder)
+							RefreshGradientRow(capturedGradIdx)
+							RefreshRuntime()
+						end)
+					end,
+				}, false)
+			end)
+			gradRow.editBtn:SetScript("OnEnter", function(self)
+				ShowRowButtonTooltip(self, L["GradientIndicatorEditTooltip"])
+			end)
+			gradRow.editBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 			-- Up arrow
 			local upBtn = CreateFrame("Button", nil, parent)
@@ -1818,7 +2013,6 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			yCoord = yCoord - 30
 		end
 
-		local sortedGradientDefs = SortDefsByLabel(gradientDefs)
 		local addGradientButton = Primitives:BuildButton(parent, L["BuiltInGradientAddButton"], oUi.xCoord + customColumnWidth + 46, yCoord, 250, 25)
 		addGradientButton:SetScript("OnClick", function(self)
 			OpenBuiltInMenu(self, sortedGradientDefs, AddBuiltInGradient)

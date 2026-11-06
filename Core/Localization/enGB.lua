@@ -567,4 +567,6 @@ if locale == "enGB" then
 	L["BuiltInGradientAddButton"] = "Add Built-in Gradient Colour"
 	L["BuiltInGradientDeleteConfirmation"] = "Remove the gradient colour \"%s\"? Add Built-in Gradient Colour can add it back."
 	L["CopyMenuSection_fiveSecondRuleColors"] = "Five Second Rule Bar - Colours"
+	L["BuiltInIndicatorChangeSourceTooltip"] = "Choose the built-in indicator this row follows. Its colours, targets, and modifiers stay."
+	L["BuiltInGradientChangeSourceTooltip"] = "Choose the built-in gradient this row follows. Its colours and targets stay."
 end

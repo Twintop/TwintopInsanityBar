@@ -401,11 +401,21 @@ end
 ---@param condition TRB.CustomIndicatorCondition
 ---@return boolean
 function TRB.Functions.Aura:IsConditionMet(condition)
+	return self:ReadCondition(condition) == true
+end
+
+---Whether a buff condition holds right now, or nil when its buff isn't followed.
+---@param condition TRB.CustomIndicatorCondition
+---@return boolean?
+function TRB.Functions.Aura:ReadCondition(condition)
 	if condition.state ~= TRB.Functions.Aura.ConditionState.ACTIVE then
 		return false
 	end
 	local name = conditionNames[condition.spellID]
-	return name ~= nil and conditionActive[name] == true
+	if name == nil then
+		return nil
+	end
+	return conditionActive[name] == true
 end
 
 ---@alias trbAuraEventType

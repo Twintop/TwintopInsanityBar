@@ -14,14 +14,15 @@
 	runs once per class. classic-overcap checks Classic's flat Overcap indicators and their text color; it runs once per
 	class. totems checks the Totems bar's slot events, node count, binding, expiry, and enable prompt defaults; it runs once
 	per class. indicator-copies checks built-in Color Indicator copies and deletions in settings, the options, and every
-	specialization's render; it runs once per class. bartext-conformance checks that the bar text engine renders exactly what
+	specialization's render; it runs once per class. indicator-modifiers checks Not Active and the Edit menu's Change Source in
+	resolution, the options, and every specialization's render; it runs once per class. bartext-conformance checks that the bar text engine renders exactly what
 	the legacy resolver does, and skips only when nothing it shows changed; it runs once per class. See build\harness\README.md.
 
 .PARAMETER Lua
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, indicator-copies, bartext-conformance). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, indicator-copies, indicator-modifiers, bartext-conformance). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
@@ -60,6 +61,7 @@ $drivers = @(
 	[pscustomobject]@{ Name = "classic-overcap"; EveryClass = $true },
 	[pscustomobject]@{ Name = "totems"; EveryClass = $true },
 	[pscustomobject]@{ Name = "indicator-copies"; EveryClass = $true },
+	[pscustomobject]@{ Name = "indicator-modifiers"; EveryClass = $true },
 	[pscustomobject]@{ Name = "bartext-conformance"; EveryClass = $true }
 )
 $known = $drivers | ForEach-Object { $_.Name }
