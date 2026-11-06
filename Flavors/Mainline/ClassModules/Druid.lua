@@ -647,6 +647,36 @@ local function TargetsCleanup(clearAll)
 	end
 end
 
+---Builds one threshold line per trackable Ironfur application on Guardian's Ironfur bar.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups { [string]: TRB.Classes.BarGroup }?
+local function ConstructIronfurLines(settings, barGroups)
+	if barGroups == nil or barGroups.ironfur == nil or TRB.Data.character.specId ~= 3 then
+		return
+	end
+	local ironfurNode = barGroups.ironfur:GetNode(1)
+	if ironfurNode == nil then
+		return
+	end
+
+	ironfurNode:ClearThresholds()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
+	local ironfurSettings = settings.bars and settings.bars["ironfur"]
+	local ironfurColors = settings.colors and settings.colors.bars and settings.colors.bars.ironfur
+	local thresholdSize = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
+	local isVertical = Bar:IsVerticalFill(ironfurSettings and ironfurSettings.fillDirection)
+	local ironfurFrame = ironfurNode:GetFrame()
+	local thresholdWidth = isVertical and (ironfurFrame and ironfurFrame:GetWidth() or (ironfurSettings and ironfurSettings.width) or 30) or thresholdSize
+	local thresholdHeight = isVertical and thresholdSize or (ironfurFrame and ironfurFrame:GetHeight() or (ironfurSettings and ironfurSettings.height) or 24)
+	local lineColor = ironfurColors and ironfurColors.stackLine and ironfurColors.stackLine.color
+
+	for _ = 1, spells.ironfur.maxStacks do
+		local thresholdFrame = CreateFrame("Frame", nil, ironfurFrame)
+		Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, lineColor, thresholdSize)
+		ironfurNode:RegisterThreshold(thresholdFrame)
+	end
+end
+
 local function ConstructResourceBar(settings)
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 
@@ -684,33 +714,29 @@ local function ConstructResourceBar(settings)
 		Bar:ConstructBarGroups(settings, barGroups)
 	end
 
-	-- One threshold line per trackable Ironfur application.
-	if barGroups and barGroups.ironfur and TRB.Data.character.specId == 3 then
-		local ironfurNode = barGroups.ironfur:GetNode(1)
-		if ironfurNode then
-			ironfurNode:ClearThresholds()
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
-			local ironfurSettings = settings.bars and settings.bars["ironfur"]
-			local ironfurColors = settings.colors and settings.colors.bars and settings.colors.bars.ironfur
-			local thresholdSize = settings.thresholds and settings.thresholds.properties and settings.thresholds.properties.width or 2
-			local isVertical = Bar:IsVerticalFill(ironfurSettings and ironfurSettings.fillDirection)
-			local ironfurFrame = ironfurNode:GetFrame()
-			local thresholdWidth = isVertical and (ironfurFrame and ironfurFrame:GetWidth() or (ironfurSettings and ironfurSettings.width) or 30) or thresholdSize
-			local thresholdHeight = isVertical and thresholdSize or (ironfurFrame and ironfurFrame:GetHeight() or (ironfurSettings and ironfurSettings.height) or 24)
-			local lineColor = ironfurColors and ironfurColors.stackLine and ironfurColors.stackLine.color
-
-			for _ = 1, spells.ironfur.maxStacks do
-				local thresholdFrame = CreateFrame("Frame", nil, ironfurFrame)
-				Threshold:ResetThresholdLineCustomBar(thresholdFrame, thresholdWidth, thresholdHeight, lineColor, thresholdSize)
-				ironfurNode:RegisterThreshold(thresholdFrame)
-			end
-		end
-	end
+	ConstructIronfurLines(settings, barGroups)
 
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
 	-- Bar:HideResourceBar()
 	TRB.Functions.Class:TriggerResourceBarUpdates()
+end
+
+local baseRecreateThresholds = TRB.Functions.Class.RecreateThresholds
+
+---Druid override: SwitchSpec's fresh bar groups also need Guardian's Ironfur lines, not just the primary bar's.
+---@param settings TRB.Classes.Settings.SpecializationSettingsBase
+---@param barGroups table<string, TRB.Classes.BarGroup>
+function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
+	baseRecreateThresholds(self, settings, barGroups)
+	if TRB.Data.character.specId ~= 3 or barGroups.ironfur == nil then
+		return
+	end
+	local ironfurNode = barGroups.ironfur:GetNode(1)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
+	if ironfurNode ~= nil and #ironfurNode:GetThresholds() ~= spells.ironfur.maxStacks then
+		ConstructIronfurLines(settings, barGroups)
+	end
 end
 
 local function GetBerserkRemainingTime()
