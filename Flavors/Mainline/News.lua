@@ -9,6 +9,11 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.11-release (2026-11-05)
+## Druid
+### Guardian
+
+- [#961](#961) Fix the Ironfur bar's application lines disappearing after a loading screen, a talent change, or a specialization change.
+
 ## Evoker
 ### Preservation
 
