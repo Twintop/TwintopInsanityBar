@@ -44,6 +44,7 @@ TRB.Flavor.newsContent = [====[
 ## Evoker
 
 - [#936](#936) Remove unused mana regeneration code.
+- [#957](#957) Improve Essence bar text update performance.
 
 ### Preservation
 
