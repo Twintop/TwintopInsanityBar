@@ -17,6 +17,7 @@ TRB.Details.coreNewsContent = [====[
 - [#943](#943) Improve update performance of threshold lines, primarily custom threshold lines.
 - [#944](#944) Improve update performance of bar colors, the health and pet bars, and bars filled by a buff's duration.
 - [#946](#946) Improve bar text update performance, primarily for bar text with conditions.
+- [#956](#956) Improve Color Indicator performance.
 
 ## Color Indicators
 
