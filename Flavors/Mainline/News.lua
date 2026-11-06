@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.11-release (2026-11-05)
+## Evoker
+### Preservation
+
+- [#960](#960) Fix bar text conditions comparing `$essenceMax` with your maximum mana instead of your maximum Essence.
+
+---
+
 # 12.1.5.10-release (2026-11-05)
 ## General
 ### Color Indicators
