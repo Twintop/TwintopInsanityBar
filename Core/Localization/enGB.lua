@@ -569,4 +569,5 @@ if locale == "enGB" then
 	L["CopyMenuSection_fiveSecondRuleColors"] = "Five Second Rule Bar - Colours"
 	L["BuiltInIndicatorChangeSourceTooltip"] = "Choose the built-in indicator this row follows. Its colours, targets, and modifiers stay."
 	L["BuiltInGradientChangeSourceTooltip"] = "Choose the built-in gradient this row follows. Its colours and targets stay."
+	L["ForeverPriestIndicatorInnerFireTooltip"] = "Changes to this colour while Inner Fire is active, from your cast until its charges or time run out."
 end

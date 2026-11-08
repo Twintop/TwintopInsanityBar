@@ -31,6 +31,11 @@ local Threshold = TRB.Functions.Threshold
 ---@field public SwitchSpec fun()
 ---@field public ConstructResourceBar fun(settings: table)
 ---@field public FillSpellData table<string, fun()> # keyed by specName
+---@field public CheckClassCharacter fun(spells: TRB.Classes.SpecializationSpellsBase)? # end of CheckCharacter: re-read character values the class module keeps
+---@field public UpdateClassSnapshot fun(currentTime: number)? # every bar update: advance the class's own timers
+---@field public RefreshClassLookupData fun(lookup: table, lookupLogic: table, prevState: table, activeVars: table?)? # the class's own bar text values
+---@field public IsValidClassVariable fun(var: string): boolean? # bare checks of the class's own bar text values
+---@field public HasClassTimers fun(): boolean? # whether a class timer is counting down
 
 ---Installs the runtime for one class and registers it with the bootstrap. Call only from the module of
 ---the player's class (the class file returns early otherwise).
@@ -77,6 +82,10 @@ function TRB.TBC.Templates.Runtime:Install(className)
 				if spell.hasCooldown then
 					snapshots[spell.id] = TRB.Classes.Snapshot:New(spell)
 				end
+			end
+			for _, key in ipairs(spec.buffs or {}) do
+				local spell = cache.spellsData.spells[key]
+				snapshots[spell.id] = TRB.Classes.Snapshot:New(spell)
 			end
 			cache.barTextVariables = { icons = {}, values = {} }
 		end
@@ -254,12 +263,19 @@ function TRB.TBC.Templates.Runtime:Install(className)
 			lookupLogic["$inStealth"] = IsStealthed()
 		end
 
+		if runtime.RefreshClassLookupData ~= nil then
+			runtime.RefreshClassLookupData(lookup, lookupLogic, prevState, activeVars)
+		end
+
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
 	local function UpdateSnapshot()
 		Character:UpdateSnapshot()
+		if runtime.UpdateClassSnapshot ~= nil then
+			runtime.UpdateClassSnapshot(GetTime())
+		end
 	end
 
 	-- Reused per-tick scratch tables so UpdateResourceBar allocates nothing.
@@ -309,6 +325,14 @@ function TRB.TBC.Templates.Runtime:Install(className)
 			wipe(conditionMap)
 			conditionMap.borderStealth = isStealthed
 			conditionMap.borderOvercap = TRB.Data.character.inCombat and not isStealthed and IsOvercapped(spec, specSettings)
+			if spec.indicators ~= nil then
+				local spells = TRB.Data.spellsData.spells
+				for i = 1, #spec.indicators do
+					local indicator = spec.indicators[i]
+					local snapshot = snapshotData.snapshots[spells[indicator.buff].id]
+					conditionMap[indicator.key] = snapshot ~= nil and snapshot.buff.isActive
+				end
+			end
 			local barColors = scratch.barColors
 			wipe(barColors)
 			barColors.bar = specSettings.colors.bar.base
@@ -507,6 +531,10 @@ function TRB.TBC.Templates.Runtime:Install(className)
 				end
 			end
 		end
+
+		if runtime.CheckClassCharacter ~= nil then
+			runtime.CheckClassCharacter(specCache[spec.entry.compositeKey].spellsData.spells)
+		end
 	end
 
 	function TRB.Functions.Class:EventRegistration()
@@ -613,6 +641,9 @@ function TRB.TBC.Templates.Runtime:Install(className)
 				return true
 			end
 		end
+		if runtime.IsValidClassVariable ~= nil then
+			return runtime.IsValidClassVariable(var)
+		end
 		return false
 	end
 
@@ -656,6 +687,9 @@ function TRB.TBC.Templates.Runtime:Install(className)
 	end
 
 	function TRB.Functions.Class:HasActiveTimers()
+		if runtime.HasClassTimers ~= nil then
+			return runtime.HasClassTimers()
+		end
 		return false
 	end
 

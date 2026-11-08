@@ -474,7 +474,8 @@ function M.install(opts)
 	G.MAX_PLAYER_LEVEL = 80
 	G.Enum = setmetatable({
 		PowerType = { HealthCost = -2, None = -1, Mana = 0, Rage = 1, Focus = 2, Energy = 3, ComboPoints = 4, Runes = 5, RunicPower = 6, SoulShards = 7, LunarPower = 8, HolyPower = 9, Alternate = 10, Maelstrom = 11, Chi = 12, Insanity = 13, Obsolete = 14, Obsolete2 = 15, ArcaneCharges = 16, Fury = 17, Pain = 18, Essence = 19, RuneBlood = 20, RuneFrost = 21, RuneUnholy = 22, AlternateMount = 23, AlternateQuest = 24, AlternateEncounter = 25, NumPowerTypes = 26 },
-		Damageclass = { Physical = 0, Holy = 1, Fire = 2, Nature = 3, Frost = 4, Shadow = 5, Arcane = 6 },
+		Damageclass = { Physical = 0, Holy = 1, Fire = 2, Nature = 3, Frost = 4, Shadow = 5, Arcane = 6,
+			MaskNone = 0, MaskPhysical = 1, MaskHoly = 2, MaskFire = 4, MaskNature = 8, MaskFrost = 16, MaskShadow = 32, MaskArcane = 64 },
 		PlayerSwingType = { MainHand = 0, OffHand = 1, Ranged = 2 },
 		EditModeLayoutType = { Preset = 0, Account = 1, Character = 2 },
 		EditModeSettingDisplayType = { Dropdown = 0, Slider = 1, Checkbox = 2 },
