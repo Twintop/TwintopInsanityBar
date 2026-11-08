@@ -570,4 +570,6 @@ if locale == "enGB" then
 	L["BuiltInIndicatorChangeSourceTooltip"] = "Choose the built-in indicator this row follows. Its colours, targets, and modifiers stay."
 	L["BuiltInGradientChangeSourceTooltip"] = "Choose the built-in gradient this row follows. Its colours and targets stay."
 	L["ForeverPriestIndicatorInnerFireTooltip"] = "Changes to this colour while Inner Fire is active, from your cast until its charges or time run out."
+	L["ForeverRogueIndicatorSliceAndDiceTooltip"] = "Changes to this colour while Slice and Dice is active, from your cast until its time runs out."
+	L["ForeverRogueIndicatorSliceAndDiceEndTooltip"] = "Changes to this colour when Slice and Dice is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 end

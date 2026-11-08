@@ -1,9 +1,15 @@
 local _, TRB = ...
+local L = TRB.Localization
 
 -- Rogue (The Burning Crusade Classic): Energy plus Combo Points. Loads in the Classes stage, before
 -- Core's Functions, so nothing here calls TRB.Functions.
 
+-- Key the Netherblade pieces are registered under in TRB.Data.itemSetRegistry, at the bottom of this file.
+local netherbladeSetKey = "rogue_general_netherblade"
+
 ---@class TRB.Classes.TBC.Rogue.GeneralSpells : TRB.Classes.SpecializationSpellsBase
+---@field public improvedSliceAndDice TRB.Classes.SpellBase
+---@field public netherbladeSetBonus TRB.Classes.SpellBase
 ---@field public sinisterStrike TRB.Classes.SpellComboPointThreshold
 ---@field public backstab TRB.Classes.SpellComboPointThreshold
 ---@field public hemorrhage TRB.Classes.SpellComboPointThreshold
@@ -30,9 +36,22 @@ local _, TRB = ...
 ---@field public shadowstep TRB.Classes.SpellThreshold
 ---@field public bladeFlurry TRB.Classes.SpellThreshold
 
----Adds the Rogue's Energy-spending abilities to a new spell set.
+---Adds the Rogue's Energy-spending abilities and tracked buffs to a new spell set.
 ---@param spells TRB.Classes.TBC.Rogue.GeneralSpells
 local function FillSpells(spells)
+	spells.improvedSliceAndDice = TRB.Classes.SpellBase:New({
+		id = 14165,
+		isTalent = true,
+		durationPercentPerRank = { 15, 30, 45 },
+	})
+	-- Netherblade's 2 piece bonus: Increased Slice and Dice Duration.
+	spells.netherbladeSetBonus = TRB.Classes.SpellBase:New({
+		id = 37167,
+		setKey = netherbladeSetKey,
+		pieces = 2,
+		sliceAndDiceDuration = 3,
+	})
+
 	-- Combo point generators
 	spells.sinisterStrike = TRB.Classes.SpellComboPointThreshold:New({
 		id = 1752,
@@ -171,6 +190,9 @@ local function FillSpells(spells)
 		settingKey = "sliceAndDice",
 		baseline = true,
 		category = "offensive",
+		isBuff = true,
+		baseDuration = 6,
+		durationPerComboPoint = 3,
 	})
 	spells.kidneyShot = TRB.Classes.SpellComboPointThreshold:New({
 		id = 408,
@@ -264,6 +286,14 @@ local function FillSpells(spells)
 	})
 end
 
+---The Slice and Dice bar text value, appended to the archetype's.
+---@return table[]
+local function BarTextValues()
+	return {
+		{ variable = "$sliceAndDiceTime", description = L["ForeverRogueBarTextVariable_sliceAndDiceTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+	}
+end
+
 TRB.TBC.Templates.Classes:DefineClass("rogue", {
 	general = {
 		archetype = "energyComboPoints",
@@ -274,7 +304,53 @@ TRB.TBC.Templates.Classes:DefineClass("rogue", {
 			"shiv", "sinisterStrike", "sliceAndDice",
 		},
 		spells = FillSpells,
+		buffs = { "sliceAndDice" },
+		barTextValues = BarTextValues,
+		-- Ending first, so it outranks the active color near the end.
+		indicators = {
+			{
+				key = "sliceAndDiceEnd",
+				buff = "sliceAndDice",
+				color = "FFFF0000",
+				targets = { resourceBar = { bar = true, border = false, background = false } },
+				labelKey = "ForeverRogueCheckboxSliceAndDiceEnding",
+				tooltipKey = "ForeverRogueIndicatorSliceAndDiceEndTooltip",
+				colorLabelKey = "ForeverRogueIndicatorSliceAndDiceEndColor",
+				endOf = {
+					key = "sliceAndDice",
+					mode = "gcd",
+					gcdsMax = 2,
+					timeMax = 3.0,
+					headerKey = "ForeverRogueHeaderEndOfSliceAndDiceConfiguration",
+					gcdRadioKey = "ForeverRogueCheckboxSliceAndDiceGcds",
+					gcdSliderKey = "ForeverRogueSliceAndDiceGcds",
+					timeRadioKey = "ForeverRogueCheckboxSliceAndDiceTime",
+					timeSliderKey = "ForeverRogueSliceAndDiceTime",
+				},
+			},
+			{
+				key = "sliceAndDice",
+				buff = "sliceAndDice",
+				color = "FFFFD100",
+				targets = { resourceBar = { bar = true, border = false, background = false } },
+				labelKey = "ForeverRogueCheckboxSliceAndDice",
+				tooltipKey = "ForeverRogueIndicatorSliceAndDiceTooltip",
+				colorLabelKey = "ForeverRogueIndicatorSliceAndDiceColor",
+			},
+		},
 	},
 })
 
 TRB.Classes.SpecDescriptor:DeclareForClass("rogue", { rangedAttack = true })
+
+-- Register class sets whose bonuses the addon reacts to. Functions\Item.lua counts the equipped pieces of
+-- every registered set once per gear change and caches it.
+TRB.Data.itemSetRegistry = TRB.Data.itemSetRegistry or {}
+---@type TRB.Classes.ItemSetDefinition
+TRB.Data.itemSetRegistry[netherbladeSetKey] = {
+	headId = 29044,
+	shoulderId = 29047,
+	chestId = 29045,
+	handId = 29048,
+	legId = 29046,
+}

@@ -16,6 +16,7 @@ TRB.Flavor.newsContent = [====[
 ## Rogue
 
 - [#969](#969) Add a Death Mark threshold line on the Energy bar and the `#deathMark` bar text variable.
+- [#969](#969) Add Slice and Dice tracking, with active and ending Color Indicators and the `$sliceAndDiceTime` bar text variable. The indicators target the Energy bar fill by default.
 - [#969](#969) Remove the Venom threshold line.
 - [#969](#969) Fix the Mutilate threshold line and the `#mutilate` bar text variable.
 

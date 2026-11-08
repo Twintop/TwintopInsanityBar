@@ -33,6 +33,7 @@ local Threshold = TRB.Functions.Threshold
 ---@field public FillSpellData table<string, fun()> # keyed by specName
 ---@field public CheckClassCharacter fun(spells: TRB.Classes.SpecializationSpellsBase)? # end of CheckCharacter: re-read character values the class module keeps
 ---@field public UpdateClassSnapshot fun(currentTime: number)? # every bar update: advance the class's own timers
+---@field public OnSpellCastSucceeded fun(spellId: integer?, castGuid: string?)? # the player's UNIT_SPELLCAST_SUCCEEDED
 ---@field public RefreshClassLookupData fun(lookup: table, lookupLogic: table, prevState: table, activeVars: table?)? # the class's own bar text values
 ---@field public IsValidClassVariable fun(var: string): boolean? # bare checks of the class's own bar text values
 ---@field public HasClassTimers fun(): boolean? # whether a class timer is counting down
@@ -288,6 +289,18 @@ function TRB.Classic.Templates.Runtime:Install(className)
 	local thresholdState = TRB.Classes.ThresholdState:New()
 	local thresholdData = TRB.Classes.ThresholdData:New()
 
+	---How many seconds before a buff ends its ending indicator turns on.
+	---@param endOfSettings table
+	---@return number
+	local function GetEndOfWindow(endOfSettings)
+		if endOfSettings.mode == "gcd" then
+			return Character:GetCurrentGCDTime() * endOfSettings.gcdsMax
+		elseif endOfSettings.mode == "time" then
+			return endOfSettings.timeMax
+		end
+		return 0
+	end
+
 	local function UpdateResourceBar()
 		local refreshText = false
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -330,7 +343,11 @@ function TRB.Classic.Templates.Runtime:Install(className)
 				for i = 1, #spec.indicators do
 					local indicator = spec.indicators[i]
 					local snapshot = snapshotData.snapshots[spells[indicator.buff].id]
-					conditionMap[indicator.key] = snapshot ~= nil and snapshot.buff.isActive
+					local isMet = snapshot ~= nil and snapshot.buff.isActive
+					if isMet and indicator.endOf ~= nil then
+						isMet = snapshot.buff.remaining <= GetEndOfWindow(specSettings.endOf[indicator.endOf.key])
+					end
+					conditionMap[indicator.key] = isMet
 				end
 			end
 			local barColors = scratch.barColors
@@ -597,7 +614,8 @@ function TRB.Classic.Templates.Runtime:Install(className)
 	---other archetypes have no cast-time resource spending to predict. A finished cast refreshes its cooldown.
 	---@param event string
 	---@param spellId integer?
-	function TRB.Functions.Class:SpellCast(event, spellId)
+	---@param castGuid string?
+	function TRB.Functions.Class:SpellCast(event, spellId, castGuid)
 		local spec = ActiveSpec()
 		if spec == nil then
 			return
@@ -608,6 +626,8 @@ function TRB.Classic.Templates.Runtime:Install(className)
 				snapshotData.casting:SnapshotManaSpell()
 				snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 			end
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" and runtime.OnSpellCastSucceeded ~= nil then
+			runtime.OnSpellCastSucceeded(spellId, castGuid)
 		end
 	end
 

@@ -168,7 +168,7 @@ TRB.Classic.Archetypes = {
 ---@field public barTextValues (fun(): table[])? # the class module's own bar text values, listed after the archetype's
 ---@field public indicators TRB.Classic.SpecIndicator[]? # built-in Color Indicators, listed after Stealth
 
----A built-in Color Indicator that is on while one of the spec's tracked buffs is active.
+---A built-in Color Indicator that is on while one of the spec's tracked buffs is active, or only while it is ending.
 ---@class TRB.Classic.SpecIndicator
 ---@field public key string # indicatorColors and nodeOrder key
 ---@field public buff string # spell field name, one of the spec's buffs
@@ -177,6 +177,19 @@ TRB.Classic.Archetypes = {
 ---@field public labelKey string # locale key of the row's name in the Add Built-in and Change Source menus
 ---@field public tooltipKey string
 ---@field public colorLabelKey string # locale key of the row's label
+---@field public endOf TRB.Classic.SpecIndicatorEndOf? # makes the row an ending one, with its own configuration section
+
+---How an ending indicator's window is set: within some GCDs or seconds of the buff ending.
+---@class TRB.Classic.SpecIndicatorEndOf
+---@field public key string # endOf settings key
+---@field public mode string # default mode, "gcd" or "time"
+---@field public gcdsMax number # default GCD count
+---@field public timeMax number # default seconds
+---@field public headerKey string # locale key of the configuration section's header
+---@field public gcdRadioKey string
+---@field public gcdSliderKey string
+---@field public timeRadioKey string
+---@field public timeSliderKey string
 
 ---How one spec is declared to DefineClass: an archetype key on its own, or a table when the spec
 ---brings abilities, icons, stealth, buffs, bar text values, or indicators along with it.
