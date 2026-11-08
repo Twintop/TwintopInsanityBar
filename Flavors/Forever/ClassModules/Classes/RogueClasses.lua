@@ -19,7 +19,7 @@ local _, TRB = ...
 ---@field public sliceAndDice TRB.Classes.SpellComboPointThreshold
 ---@field public kidneyShot TRB.Classes.SpellComboPointThreshold
 ---@field public exposeArmor TRB.Classes.SpellComboPointThreshold
----@field public venom TRB.Classes.SpellComboPointThreshold
+---@field public deathMark TRB.Classes.SpellComboPointThreshold
 ---@field public feint TRB.Classes.SpellThreshold
 ---@field public sap TRB.Classes.SpellThreshold
 ---@field public kick TRB.Classes.SpellThreshold
@@ -50,8 +50,8 @@ local function FillSpells(spells)
 		category = "offensive",
 	})
 	spells.mutilate = TRB.Classes.SpellComboPointThreshold:New({
-		id = 1310707,
-		rankIds = { 1310707, 399956, 1241582, 1241584 },
+		id = 399956,
+		rankIds = { 399956, 1241582, 1241584 },
 		primaryResourceType = Enum.PowerType.Energy,
 		comboPointsGenerated = 2,
 		settingKey = "mutilate",
@@ -170,12 +170,14 @@ local function FillSpells(spells)
 		baseline = true,
 		category = "offensive",
 	})
-	spells.venom = TRB.Classes.SpellComboPointThreshold:New({
-		id = 1310703,
+	spells.deathMark = TRB.Classes.SpellComboPointThreshold:New({
+		id = 1316709,
+		rankIds = { 1316709, 1325756, 1325757, 1325758 },
 		primaryResourceType = Enum.PowerType.Energy,
 		comboPoints = true,
-		settingKey = "venom",
+		settingKey = "deathMark",
 		isTalent = true,
+		hasCooldown = true,
 		category = "offensive",
 	})
 
@@ -240,7 +242,7 @@ TRB.Forever.Templates.Classes:DefineClass("rogue", {
 		archetype = "energyComboPoints",
 		stealth = true,
 		icons = {
-			"ambush", "backstab", "cheapShot", "eviscerate", "exposeArmor", "garrote", "gouge",
+			"ambush", "backstab", "cheapShot", "deathMark", "eviscerate", "exposeArmor", "garrote", "gouge",
 			"hemorrhage", "kick", "kidneyShot", "mutilate", "rupture", "sinisterStrike", "sliceAndDice",
 		},
 		spells = FillSpells,
