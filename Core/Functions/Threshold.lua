@@ -2527,7 +2527,8 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			-- A custom bar filled by a player power compares through that power's secret-safe curve.
 			if barTypeDef.powerType ~= nil then
 				resourceType = barTypeDef.powerType
-				local liveMax = GetPlainNumber(UnitPowerMax("player", barTypeDef.powerType), 0)
+				local power = TRB.Functions.Character:GetAdditionalPowerValues(TRB.Functions.Character:GetPowerToken(barTypeDef.powerType) --[[@as string]])
+				local liveMax = GetPlainNumber(power.max, 0)
 				if liveMax > 0 then
 					resourceMaxValue = liveMax
 					maxValue = TRB.Functions.Bar:GetCustomBarMaxValue(barSettings, liveMax)

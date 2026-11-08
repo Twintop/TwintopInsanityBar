@@ -9,6 +9,10 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 1.15.9.3-release (2026-11-09)
+## Druid
+
+- [#970](#970) Improve bar and bar text update performance.
+
 ## Priest
 
 - [#968](#968) Add Inner Fire tracking, with a Color Indicator and the `$innerFireStacks`, `$innerFireStacksMax`, `$innerFireTime`, and `#innerFire` bar text variables. The indicator has no targets by default.
@@ -16,6 +20,7 @@ TRB.Flavor.newsContent = [====[
 ## Rogue
 
 - [#969](#969) Add Slice and Dice tracking, with active and ending Color Indicators and the `$sliceAndDiceTime` bar text variable. By default, the Energy bar fill turns red while Slice and Dice is down in combat and orange while it is ending.
+- [#970](#970) Improve bar and bar text update performance.
 
 ---
 

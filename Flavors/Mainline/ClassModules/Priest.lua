@@ -220,7 +220,7 @@ end
 ---transition, so a cast that never crosses one would otherwise tick from the moment it lands.
 ---@param buff TRB.Classes.SnapshotBuff
 local function StartPausedIfOutOfCombat(buff)
-	if not InCombatLockdown() then
+	if not TRB.Data.character.inCombat then
 		buff:EnterPauseMode()
 	end
 end
@@ -1333,13 +1333,7 @@ local function RefreshLookupData_Shadow()
 	if not activeVars or activeVars["$mana"] or activeVars["$manaMax"] or activeVars["$manaPercent"] then
 		local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
 		local manaPrecision = sharedSettings.precision.mana or 1
-		-- Power events only mark dirty; re-derive here at most once per tick, plus first read and
-		-- precision changes.
-		local mana = snapshotData.formatted.additionalPower["MANA"]
-		if mana == nil or mana.dirty or mana.precision ~= manaPrecision then
-			TRB.Functions.Character:UpdateAdditionalPowerValues("MANA", manaPrecision)
-			mana = snapshotData.formatted.additionalPower["MANA"]
-		end
+		local mana = Character:GetAdditionalPowerValues("MANA", manaPrecision)
 		lookupLogic["$mana"] = mana.current
 		lookupLogic["$manaMax"] = mana.max
 		lookupLogic["$manaPercent"] = mana.percent
@@ -3088,8 +3082,9 @@ local function UpdateResourceBar()
 			refreshText = true
 			local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 			if manaNode then
-				local currentMana = snapshotData.attributes.mana or UnitPower("player", Enum.PowerType.Mana) or 0
-				local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
+				local mana = Character:GetAdditionalPowerValues("MANA")
+				local currentMana = mana.current
+				local maxMana = mana.max
 				manaNode:SetMinMax(0, maxMana)
 				manaNode:SetValue(currentMana)
 				Bar:ApplyNodeIndicators(manaNode, "manaBar")

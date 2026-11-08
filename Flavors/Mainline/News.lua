@@ -28,10 +28,12 @@ TRB.Flavor.newsContent = [====[
 
 - [#947](#947) Improve performance when any of your resources change.
 - [#963](#963) Fix the Ferocious Bite maximum threshold line showing as usable at Ferocious Bite's minimum cost in Cat Form for Balance, Guardian, and Restoration.
+- [#970](#970) Improve bar and bar text update performance.
 
 ### Balance
 
 - [#936](#936) Remove unused moon cycle tracking code.
+- [#970](#970) Improve mana bar and mana bar text update performance.
 
 ### Guardian
 
@@ -75,17 +77,20 @@ TRB.Flavor.newsContent = [====[
 ### Shadow
 
 - [#958](#958) Improve bar text update performance in combat.
+- [#970](#970) Improve mana bar update performance.
 
 ## Rogue
 
 - [#948](#948) Improve combo point bar update performance.
 - [#952](#952) Improve Color Indicator performance.
+- [#970](#970) Improve bar and bar text update performance.
 
 ## Shaman
 ### Elemental
 
 - [#949](#949) Improve update performance of Earth Shock, Elemental Blast, and Earthquake tracking.
 - [#954](#954) Improve mana bar Color Indicator performance.
+- [#970](#970) Improve mana bar update performance.
 
 ### Enhancement
 

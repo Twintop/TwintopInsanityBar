@@ -208,7 +208,7 @@ function TRB.TBC.Templates.Runtime:Install(className)
 					currentColor = textColors.overThreshold.color
 					castingColor = textColors.overThreshold.color
 				end
-				if textColors.overcap.enabled and not (spec.stealth and IsStealthed()) and IsOvercapped(spec, TRB.Data.settings[className][spec.entry.specName]) then
+				if textColors.overcap.enabled and not (spec.stealth and TRB.Data.character.isStealthed == true) and IsOvercapped(spec, TRB.Data.settings[className][spec.entry.specName]) then
 					valueColor = textColors.overcap.color
 				end
 			end
@@ -261,7 +261,7 @@ function TRB.TBC.Templates.Runtime:Install(className)
 		end
 
 		if spec.stealth and (not activeVars or activeVars["$inStealth"]) then
-			lookupLogic["$inStealth"] = IsStealthed()
+			lookupLogic["$inStealth"] = TRB.Data.character.isStealthed == true
 		end
 
 		if runtime.RefreshClassLookupData ~= nil then
@@ -333,7 +333,7 @@ function TRB.TBC.Templates.Runtime:Install(className)
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar
 			-- have their own visibility, so they still need coloring when the resource bar is set to Never Show.
 			local sharedColors = specSettings.colors.shared
-			local isStealthed = spec.stealth == true and IsStealthed()
+			local isStealthed = spec.stealth == true and TRB.Data.character.isStealthed == true
 			local conditionMap = scratch.conditionMap
 			wipe(conditionMap)
 			conditionMap.borderStealth = isStealthed

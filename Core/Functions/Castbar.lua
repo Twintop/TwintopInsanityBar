@@ -587,14 +587,14 @@ local function SpendsChargedPoint(comboPoints)
 end
 
 ---Resolves a per-cast tick count for a profile whose count varies (tickCountSource) rather than being a
----static tickCount. Read at channel start, which still sees the resource the finisher is about to spend.
+---static tickCount. Read at channel start from the cached combo points, which still hold what the finisher is about to spend.
 ---@param profile table
 ---@return integer? # Tick count for this cast, nil when the resource can't be read
 local function ResolveDynamicTickCount(profile)
-	if profile.tickCountSource ~= "comboPointsSpent" then
+	if profile.tickCountSource ~= "comboPointsSpent" or TRB.Data.resource2 ~= Enum.PowerType.ComboPoints then
 		return nil
 	end
-	local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints, false)
+	local comboPoints = TRB.Data.snapshotData.attributes.resource2
 	if comboPoints == nil or issecretvalue(comboPoints) or comboPoints <= 0 then
 		return nil
 	end

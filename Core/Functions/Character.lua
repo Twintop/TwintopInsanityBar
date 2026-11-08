@@ -208,6 +208,26 @@ function TRB.Functions.Character:UpdateAdditionalPowerValues(powerToken, precisi
 	entry.dirty = false
 end
 
+---The UNIT_POWER_UPDATE token of a power type, e.g. Enum.PowerType.Rage -> "RAGE".
+---@param powerType integer
+---@return string?
+function TRB.Functions.Character:GetPowerToken(powerType)
+	return PowerTypeToToken[powerType]
+end
+
+---An additional power's cached values, re-read only when a power event marked them or the percent precision changed.
+---@param powerToken string # One of TRB.Data.additionalPowerTokens, e.g. "MANA"
+---@param precision integer? # Decimal places for the percent string; nil keeps the last one
+---@return table
+function TRB.Functions.Character:GetAdditionalPowerValues(powerToken, precision)
+	local entry = TRB.Data.snapshotData.formatted.additionalPower[powerToken]
+	if entry == nil or entry.dirty or (precision ~= nil and entry.precision ~= precision) then
+		self:UpdateAdditionalPowerValues(powerToken, precision or (entry ~= nil and entry.precision or nil))
+		entry = TRB.Data.snapshotData.formatted.additionalPower[powerToken]
+	end
+	return entry
+end
+
 ---Marks every cached additional power entry stale. Spec changes stop the events that would
 ---otherwise mark them, so the next refresher pull must re-read rather than serve pre-swap values.
 function TRB.Functions.Character:InvalidateAdditionalPowerValues()
@@ -476,6 +496,9 @@ local function CharacterChange(self, event, ...)
 		TRB.Classes.SpellBase.InvalidateSpellUsable()
 		TRB.Data.snapshotData.casting:RefreshCost()
 		-- Bar text reads usability; this is the only signal it changed.
+		TRB.Data.lookupDirty = true
+	elseif event == "UPDATE_STEALTH" then
+		TRB.Data.character.isStealthed = IsStealthed()
 		TRB.Data.lookupDirty = true
 	elseif event == "SPELLS_CHANGED" then
 		-- PvP talents become known and unknown here, with War Mode and PvP zones.
@@ -758,6 +781,7 @@ function TRB.Functions.Character:EnableCharacterChange()
 	characterChangeFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 	characterChangeFrame:RegisterEvent("SPELL_UPDATE_USABLE")
 	characterChangeFrame:RegisterEvent("SPELLS_CHANGED")
+	characterChangeFrame:RegisterEvent("UPDATE_STEALTH")
 end
 
 ---Unregisters all character-change events from the characterChangeFrame and stops flight polling.
@@ -801,6 +825,7 @@ function TRB.Functions.Character:DisableCharacterChange()
 	characterChangeFrame:UnregisterEvent("TRAIT_CONFIG_UPDATED")
 	characterChangeFrame:UnregisterEvent("SPELL_UPDATE_USABLE")
 	characterChangeFrame:UnregisterEvent("SPELLS_CHANGED")
+	characterChangeFrame:UnregisterEvent("UPDATE_STEALTH")
 	TRB.Functions.Character:StopFlightPolling()
 end
 
@@ -1478,6 +1503,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex() or TRB.Data.character.specId
 	TRB.Data.character.latency = TRB.Functions.Character:GetLatency()
 	TRB.Data.character.inCombat = InCombatLockdown()
+	TRB.Data.character.isStealthed = IsStealthed()
 	TRB.Data.character.inVehicle = UnitInVehicle("player") or false
 	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle() or false
 	TRB.Data.character.onTaxi = UnitOnTaxi("player") or false

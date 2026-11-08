@@ -334,19 +334,6 @@ function TRB.Classes.Target:UpdateAllSpellTracking(currentTime)
     end
 end
 
----Attempts to get the current health percent for this creature. May fail if this creature does not have a current UnitToken.
----@return number? # Returns the health percentage if the creature has a valid UnitToken; nil otherwise
-function TRB.Classes.Target:GetHealthPercent()
-    self:UpdateUnitToken()
-	if self.unitToken ~= nil then
-		local health = UnitHealth(self.unitToken)
-		local healthMax = UnitHealthMax(self.unitToken)
-		return health / healthMax
-	else
-		return nil
-	end
-end
-
 ---Updates the UnitToken for the target. This check runs no more than once per frame.
 function TRB.Classes.Target:UpdateUnitToken()
     local currentTime = GetTime()

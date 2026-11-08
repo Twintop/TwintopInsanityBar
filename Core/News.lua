@@ -21,6 +21,8 @@ TRB.Details.coreNewsContent = [====[
 - [#959](#959) Improve bar text update performance in combat.
 - [#959](#959) Fix a buff or proc's bar text timer sometimes staying on screen after it ended, until something else changed.
 - [#964](#964) Fix casting, spending, absorb, and incoming heal overlays drawing over the bar's top and bottom border at some UI scales.
+- [#970](#970) Improve threshold line update performance.
+- [#970](#970) Remove unused target health percent code.
 
 ## Color Indicators
 
