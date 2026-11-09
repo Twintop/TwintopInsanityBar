@@ -1264,6 +1264,20 @@ local function IsIndicatorMet(conditionMap, key, indicator)
 	return met
 end
 
+---Whether a gradient row's curve applies right now: its built-in's condition, gated by Only In Combat. A gradient
+---offers no Not Active, which would only invert its gate.
+---@param conditionMap table<string, boolean?>
+---@param builtInKey string
+---@param indicator table # An indicatorColors entry; `modifiers` is a TRB.IndicatorModifiers
+---@return boolean?
+local function IsGradientMet(conditionMap, builtInKey, indicator)
+	local modifiers = indicator.modifiers
+	if modifiers ~= nil and modifiers.onlyInCombat and not TRB.Data.character.inCombat then
+		return false
+	end
+	return conditionMap[builtInKey]
+end
+
 ---Whether a flat row is on right now, for a spec walking nodeOrder against its own condition map.
 ---@param conditionMap table<string, boolean?> # After ApplyCustomIndicatorConditions
 ---@param key string
@@ -1334,7 +1348,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 		for i = 1, #gradientOrder do
 			local key = gradientOrder[i]
 			local indicator = indicatorColors[key]
-			if indicator and indicator.enabled and indicator.isGradient and indicator.targets and conditionMap[indicator.copyOf or key] then
+			if indicator and indicator.enabled and indicator.isGradient and indicator.targets and IsGradientMet(conditionMap, indicator.copyOf or key, indicator) then
 				gradientKeys[indicator] = indicator.copyOf or key
 				gradientsWritten = true
 				for barKey, elements in pairs(indicator.targets) do
@@ -1547,7 +1561,7 @@ function TRB.Functions.Color:ResolveGradientTargets(sharedColors, conditionMap, 
 		local targets = indicator and indicator.targets and indicator.targets[barKey]
 		if targets and indicator.enabled and indicator.isGradient then
 			local builtInKey = indicator.copyOf or key
-			if conditionMap[builtInKey] and (indicatorKey == nil or builtInKey == indicatorKey) then
+			if IsGradientMet(conditionMap, builtInKey, indicator) and (indicatorKey == nil or builtInKey == indicatorKey) then
 				for elemKey, isTargeted in pairs(targets) do
 					if isTargeted and out[elemKey] == nil and not nonColorElements[elemKey] then
 						out[elemKey] = indicator

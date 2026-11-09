@@ -223,6 +223,7 @@ local function HavocLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							furyBar = { bar = false, border = true, background = false },
@@ -440,6 +441,7 @@ local function VengeanceLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							furyBar = { bar = false, border = true, background = false },
@@ -733,6 +735,7 @@ local function DevourerLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							furyBar = { bar = false, border = true, background = false },

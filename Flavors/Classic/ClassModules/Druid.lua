@@ -319,7 +319,8 @@ local function UpdateResourceBar()
 		wipe(conditionMap)
 		conditionMap.borderStealth = isStealthed
 		for _, formBar in ipairs(formBars) do
-			conditionMap[formBar.overcapIndicator] = TRB.Data.character.inCombat and not (formBar.overcapPausedInStealth and isStealthed)
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap[formBar.overcapIndicator] = not (formBar.overcapPausedInStealth and isStealthed)
 				and IsFormBarOvercapped(formBar, specSettings)
 		end
 		local barColors = scratch.barColors

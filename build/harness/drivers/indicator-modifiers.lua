@@ -7,7 +7,7 @@ local parity = desktop.require("drivers.parity")
 
 local hooks = {}
 -- Colors painted during a draw, the conditions forced, and what the options built.
-local drv = { borders = {}, fills = {}, force = nil, groups = {}, panels = {}, menus = {}, popups = {}, editButtons = {} }
+local drv = { borders = {}, fills = {}, curves = {}, force = nil, groups = {}, panels = {}, menus = {}, popups = {}, editButtons = {} }
 
 ---A menu description that records what it was asked to draw.
 local function newDesc(label, kind)
@@ -73,6 +73,18 @@ function hooks.afterLoad(ctx)
 		local color = type(colorEntry) == "table" and colorEntry.color or colorEntry
 		if color ~= nil then drv.fills[color] = true end
 		return applyFill(self, node, colorEntry, ...)
+	end
+	-- A gradient paints through a curve up to its own color, so a built curve marks the gradient as applied.
+	local buildCurve = Color.BuildResourceThresholdCurve
+	Color.BuildResourceThresholdCurve = function(self, specSettings, belowColor, aboveColor, ...)
+		local color = type(aboveColor) == "table" and aboveColor.color or aboveColor
+		if color ~= nil then drv.curves[color] = true end
+		return buildCurve(self, specSettings, belowColor, aboveColor, ...)
+	end
+	local stepCurve = Color.GetStepColorCurve
+	Color.GetStepColorCurve = function(self, cacheKey, belowColor, aboveColor, ...)
+		if aboveColor ~= nil then drv.curves[aboveColor] = true end
+		return stepCurve(self, cacheKey, belowColor, aboveColor, ...)
 	end
 	local applyIndicators = Color.ApplyIndicatorColors
 	Color.ApplyIndicatorColors = function(self, sharedColors, conditionMap, ...)
@@ -258,6 +270,50 @@ function hooks.afterEvents(ctx)
 		cdm.ReadCondition = readCondition
 	end
 
+	-- Gradients: Only In Combat gates the curve on a spec's own bars and on the shared bars.
+	do
+		local character = TRB.Data.character
+		local wasInCombat = character.inCombat
+		local gradientShared = { nodeOrder = {}, gradientOrder = { "overcap" }, indicatorColors = {
+			overcap = { enabled = true, isGradient = true, color = "FF0D0D07", targets = { testBar = { border = true }, healthBar = { border = true } },
+				modifiers = { onlyInCombat = true } },
+		} }
+		local function Resolved()
+			local own = Color:ResolveGradientTargets(gradientShared, { overcap = true }, "testBar", {})
+			try("resolve gradients", function() Color:ApplyIndicatorColors(gradientShared, { overcap = true }, { testBar = {} }) end)
+			local sharedBar = Color:GetResolvedGradients("healthBar")
+			return own.border ~= nil, sharedBar ~= nil and sharedBar.border ~= nil
+		end
+		character.inCombat = false
+		local own, sharedBar = Resolved()
+		check("an Only In Combat gradient applies nowhere out of combat", not own and not sharedBar)
+		character.inCombat = true
+		own, sharedBar = Resolved()
+		check("and in combat applies on its own bar and the shared bars", own and sharedBar)
+		character.inCombat = false
+		gradientShared.indicatorColors.overcap.modifiers = { onlyInCombat = false }
+		own, sharedBar = Resolved()
+		check("with Only In Combat off, it applies out of combat too", own and sharedBar)
+		character.inCombat = wasInCombat
+		try("clear gradients", function() Color:ApplyIndicatorColors({ nodeOrder = {}, gradientOrder = {}, indicatorColors = {} }, {}, { testBar = {} }) end)
+	end
+
+	-- Copies take their built-in's default modifiers they leave unset, as the login's merge does for the built-in.
+	do
+		local defaultShared = { nodeOrder = { "builtIn" }, gradientOrder = {}, indicatorColors = {
+			builtIn = { enabled = true, color = "FF0D0D08", targets = {}, modifiers = { onlyInCombat = true } },
+		} }
+		local spec = { colors = { shared = { nodeOrder = { "builtIn", "copy_1", "copy_2" }, gradientOrder = {}, indicatorColors = {
+			builtIn = { enabled = true, color = "FF0D0D08", targets = {}, modifiers = { onlyInCombat = true } },
+			copy_1 = { copyOf = "builtIn", enabled = true, color = "FF0D0D09", targets = {} },
+			copy_2 = { copyOf = "builtIn", enabled = true, color = "FF0D0D0A", targets = {}, modifiers = { onlyInCombat = false } },
+		} } } }
+		try("reconcile copies", function() Settings:ReconcileSharedIndicators(spec, defaultShared) end)
+		local colors = spec.colors.shared.indicatorColors
+		check("a copy with no Only In Combat of its own takes its built-in's default", colors.copy_1.modifiers ~= nil and colors.copy_1.modifiers.onlyInCombat == true)
+		check("while a copy that turned it off keeps it off", colors.copy_2.modifiers ~= nil and colors.copy_2.modifiers.onlyInCombat == false)
+	end
+
 	-- Every options tab, so each specialization's Color Indicators panel is built.
 	try("ConstructOptionsPanel", function() TRB.Options:ConstructOptionsPanel() end)
 	local Tabs = TRB.Functions.OptionsUi.Tabs
@@ -440,13 +496,21 @@ function hooks.afterEvents(ctx)
 				end
 			end
 
-			local key = nil
+			-- A built-in with no default modifiers, so its menu starts with every modifier off.
+			local key, seededOnly = nil, false
 			for _, k in ipairs(shared.nodeOrder) do
 				local indicator = shared.indicatorColors[k]
-				if key == nil and indicator ~= nil and indicator.custom == nil and indicator.copyOf == nil and defKeys[k] and defKeys[k].barKeys == nil then key = k end
+				if indicator ~= nil and indicator.custom == nil and indicator.copyOf == nil and defKeys[k] and defKeys[k].barKeys == nil then
+					local defaultEntry = defaults ~= nil and defaults.indicatorColors[k] or nil
+					if defaultEntry ~= nil and defaultEntry.modifiers ~= nil then
+						seededOnly = true
+					elseif key == nil then
+						key = k
+					end
+				end
 			end
 			if key == nil then
-				check(label .. ": no built-in row to edit", #defs == 0 or #shared.nodeOrder == 0)
+				check(label .. ": no built-in row without default modifiers to edit", #defs == 0 or #shared.nodeOrder == 0 or seededOnly)
 			else
 				local rowIndex = RowIndex(key, "nodeOrder")
 				local sorted = SortedLabels(defs)
@@ -551,7 +615,7 @@ function hooks.afterEvents(ctx)
 				end
 			end
 
-			-- A gradient's Edit menu offers Change Source only.
+			-- A gradient's Edit menu offers Change Source and Only In Combat, never Not Active.
 			local gradientKey = nil
 			for _, k in ipairs(shared.gradientOrder or {}) do
 				local indicator = shared.indicatorColors[k]
@@ -563,8 +627,38 @@ function hooks.afterEvents(ctx)
 				local source = menu ~= nil and menu.children[1] or nil
 				check(label .. ": a gradient row's Edit menu offers Change Source", source ~= nil and source.label == L["IndicatorEditChangeSource"]
 					and #source.children == #gradientDefs)
-				check(label .. ": and no modifiers", menu ~= nil and FindEntry(menu, L["IndicatorEditModifiers"]) == nil
-					and FindEntry(menu, L["IndicatorModifierNotActive"]) == nil and FindEntry(menu, L["IndicatorModifierOnlyInCombat"]) == nil)
+				local onlyInCombat = menu ~= nil and FindEntry(menu, L["IndicatorModifierOnlyInCombat"]) or nil
+				check(label .. ": and Only In Combat under Modifiers, without Not Active", menu ~= nil and onlyInCombat ~= nil
+					and FindEntry(menu, L["IndicatorEditModifiers"]) ~= nil and FindEntry(menu, L["IndicatorModifierNotActive"]) == nil)
+				local defaultEntry = defaults ~= nil and defaults.indicatorColors[gradientKey] or nil
+				local seeded = defaultEntry ~= nil and defaultEntry.modifiers ~= nil and defaultEntry.modifiers.onlyInCombat == true
+				local function GradientLabel()
+					local row = panel.controls.indicatorColors.gradientRows[rowIndex]
+					return row ~= nil and row.colorPicker.Font:GetText() or nil
+				end
+				local function OnlyInCombatAfterLogin()
+					local merged = Table:Merge({ colors = { shared = Table:DeepCopy(defaults or {}) } }, { colors = { shared = Table:DeepCopy(shared) } })
+					local modifiers = merged.colors.shared.indicatorColors[gradientKey].modifiers
+					if modifiers == nil then
+						return nil
+					end
+					return modifiers.onlyInCombat
+				end
+				local plainLabel = defKeys[gradientKey].colorLabel
+				local combatLabel = string.format(L["IndicatorOnlyInCombatLabelFormat"], plainLabel)
+				if onlyInCombat ~= nil then
+					check(label .. ": which starts " .. (seeded and "on, as its default" or "off"), onlyInCombat.isSelected() == seeded
+						and GradientLabel() == (seeded and combatLabel or plainLabel))
+					try("gradient Only In Combat", function() onlyInCombat.setSelected() end)
+					local modifiers = shared.indicatorColors[gradientKey].modifiers
+					-- Off is saved as false over a default that has it on, so the login's merge can't turn it back on.
+					local expected = not seeded
+					check(label .. ": toggling it saves " .. tostring(expected) .. " on the row, which a login keeps", modifiers ~= nil
+						and modifiers.onlyInCombat == expected and OnlyInCombatAfterLogin() == expected)
+					check(label .. ": and relabels it", GradientLabel() == (expected and combatLabel or plainLabel))
+					try("gradient Only In Combat back", function() onlyInCombat.setSelected() end)
+					check(label .. ": and toggling it back restores it", onlyInCombat.isSelected() == seeded and GradientLabel() == (seeded and combatLabel or plainLabel))
+				end
 				local other = nil
 				for _, def in ipairs(gradientDefs) do
 					if other == nil and def.key ~= gradientKey then other = def.key end
@@ -622,6 +716,7 @@ function hooks.afterEvents(ctx)
 		drv.force = force
 		wipe(drv.borders)
 		wipe(drv.fills)
+		wipe(drv.curves)
 		try("power", function() Character:UpdateResourceValues() end)
 		local ok = try("draw", function() TRB.Functions.Class:TriggerResourceBarUpdates() end)
 		drv.force = nil
@@ -701,6 +796,57 @@ function hooks.afterEvents(ctx)
 			check(label .. ": and paints in combat", drv.borders[ORIGINAL] == true)
 			TRB.Data.character.inCombat = false
 			Restore(shared, backup)
+		end
+
+		-- Built-ins seeded with Only In Combat: off out of combat, on in combat, and on out of combat once it's turned off.
+		local SEEDED = "FF0F0F03"
+		for _, seededKey in ipairs(Table:DeepCopy(shared.nodeOrder) --[[@as string[] ]]) do
+			local indicator = shared.indicatorColors[seededKey]
+			local modifiers = indicator ~= nil and indicator.custom == nil and indicator.copyOf == nil and indicator.modifiers or nil
+			if modifiers ~= nil and modifiers.onlyInCombat == true and #barDefs > 0 then
+				table.remove(shared.nodeOrder, IndexOf(shared.nodeOrder, seededKey))
+				table.insert(shared.nodeOrder, 1, seededKey)
+				-- In combat a gradient on the same element paints it through a curve instead.
+				for _, k in ipairs(shared.gradientOrder or {}) do
+					if shared.indicatorColors[k] ~= nil then shared.indicatorColors[k].enabled = false end
+				end
+				-- Met after Not Active's flip, so only the combat gate decides.
+				local force = { [seededKey] = not modifiers.notActive }
+				indicator.enabled, indicator.color = true, SEEDED
+				TRB.Data.character.inCombat = true
+				local paintedIn = false
+				for _, barDef in ipairs(barDefs) do
+					if not paintedIn then
+						indicator.targets = { [barDef.key] = { border = true } }
+						Draw(force)
+						paintedIn = drv.borders[SEEDED] == true
+					end
+				end
+				check(label .. ": " .. seededKey .. ", seeded Only In Combat, paints in combat", paintedIn)
+				TRB.Data.character.inCombat = false
+				Draw(force)
+				check(label .. ": and not out of combat", not drv.borders[SEEDED])
+				indicator.modifiers = { notActive = modifiers.notActive, onlyInCombat = false }
+				Draw(force)
+				check(label .. ": until Only In Combat is turned off", drv.borders[SEEDED] == true)
+				Restore(shared, backup)
+			end
+		end
+		for _, seededKey in ipairs(Table:DeepCopy(shared.gradientOrder or {}) --[[@as string[] ]]) do
+			local indicator = shared.indicatorColors[seededKey]
+			if indicator ~= nil and indicator.copyOf == nil and indicator.enabled and indicator.modifiers ~= nil and indicator.modifiers.onlyInCombat == true then
+				indicator.color = SEEDED
+				TRB.Data.character.inCombat = true
+				Draw()
+				check(label .. ": the " .. seededKey .. " gradient, seeded Only In Combat, applies in combat", drv.curves[SEEDED] == true)
+				TRB.Data.character.inCombat = false
+				Draw()
+				check(label .. ": and not out of combat", not drv.curves[SEEDED])
+				indicator.modifiers = { onlyInCombat = false }
+				Draw()
+				check(label .. ": until Only In Combat is turned off", drv.curves[SEEDED] == true)
+				Restore(shared, backup)
+			end
 		end
 	end
 

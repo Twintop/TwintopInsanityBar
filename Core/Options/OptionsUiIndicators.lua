@@ -1781,7 +1781,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			if row.colorPicker then
 				row.colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(indicator.color, true))
 				if row.colorPicker.Font then
-					row.colorPicker.Font:SetText(def.colorLabel)
+					row.colorPicker.Font:SetText(ModifiedRowLabel(indicator, def.colorLabel))
 				end
 				TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
 			end
@@ -1860,8 +1860,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			end)
 			gradRow.removeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-			-- A gradient's condition only gates its curve, which does the threshold step; Not Active would just invert the gate,
-			-- and the gate already requires combat.
+			-- A gradient's condition only gates its curve, which does the threshold step, so Not Active would just invert the gate.
 			gradRow.editBtn = Primitives:BuildEditIconButton(parent, 0, 0)
 			gradRow.editBtn:SetScript("OnClick", function(self)
 				local currentKey = orderedGradientKeys[capturedGradIdx]
@@ -1879,10 +1878,13 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 							RefreshRuntime()
 						end)
 					end,
-				}, false, false)
+				}, false, true, function()
+					RefreshGradientRow(capturedGradIdx)
+					RefreshRuntime()
+				end)
 			end)
 			gradRow.editBtn:SetScript("OnEnter", function(self)
-				ShowRowButtonTooltip(self, L["GradientIndicatorEditTooltip"])
+				ShowRowButtonTooltip(self, L["IndicatorEditTooltip"])
 			end)
 			gradRow.editBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 

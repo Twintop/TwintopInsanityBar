@@ -3709,6 +3709,22 @@ function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
 		table.insert(result[listFor[indicatorColors[key].copyOf] or "nodeOrder"], key)
 	end
 
+	-- A copy takes its built-in's default modifiers it leaves unset, as the login's merge does for the built-in itself.
+	for key, indicator in pairs(indicatorColors) do
+		local defaultEntry = type(indicator) == "table" and indicator.copyOf ~= nil and IsCopyIndicatorKey(key)
+			and defaultIndicatorColors[indicator.copyOf] or nil
+		if defaultEntry ~= nil and type(defaultEntry.modifiers) == "table" then
+			for modifier, value in pairs(defaultEntry.modifiers) do
+				if type(indicator.modifiers) ~= "table" then
+					indicator.modifiers = {}
+				end
+				if indicator.modifiers[modifier] == nil then
+					indicator.modifiers[modifier] = value
+				end
+			end
+		end
+	end
+
 	-- Refill in place: the options panel and spec caches hold on to these tables.
 	for listName, keys in pairs(result) do
 		if type(shared[listName]) == "table" then

@@ -159,6 +159,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 						color2 = "FF005500",
 						gradientDirection = "disabled",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						targets = { focusBar = { bar = true, border = false, background = false } }
 					},
 					bestialWrathEnd = {
@@ -166,6 +167,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 						color2 = "FFFF0000",
 						gradientDirection = "disabled",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						targets = { focusBar = { bar = true, border = false, background = false } }
 					},
 					beastCleave = {
@@ -178,6 +180,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = { focusBar = { bar = false, border = true, background = false } }
 					},
@@ -398,6 +401,7 @@ local function MarksmanshipLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = { focusBar = { bar = false, border = true, background = false } }
 					},
@@ -610,6 +614,7 @@ local function SurvivalLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							focusBar = { bar = false, border = true, background = false },

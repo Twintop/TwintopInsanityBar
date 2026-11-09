@@ -258,6 +258,7 @@ local function AssassinationLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							energyBar = { bar = false, border = true, background = false },
@@ -552,6 +553,7 @@ local function OutlawLoadDefaultSettings(includeBarText, classic)
 						borderOvercap = {
 							color = "FFFF0000",
 							enabled = true,
+							modifiers = { onlyInCombat = true },
 							isGradient = true,
 							targets = {
 								energyBar = { bar = false, border = true, background = false },
@@ -839,6 +841,7 @@ local function SubtletyLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							energyBar = { bar = false, border = true, background = false },

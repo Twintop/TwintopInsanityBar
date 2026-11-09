@@ -1071,8 +1071,8 @@ local whirlwindBarResults = {}
 ---@param barColorMap table<string, table> # Resolved flat indicator colors, keyed by defensive target key
 local function UpdateDefensiveBuffs(specSettings, specCacheSettings, barColorMap)
 	local currentTime = GetTime()
-	local affectingCombat = TRB.Data.character.inCombat
-	defensiveGradientConditions.borderOvercap = affectingCombat
+	-- Overcap's combat gate is its Only In Combat modifier.
+	defensiveGradientConditions.borderOvercap = true
 
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -1212,7 +1212,8 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings, flatColor
 
 	-- Read Fury indicator colors system
 	local sharedColors = specSettings.colors.shared
-	whirlwindGradientConditions.borderOvercap = TRB.Data.character.inCombat
+	-- Overcap's combat gate is its Only In Combat modifier.
+	whirlwindGradientConditions.borderOvercap = true
 	local whirlwindTargets = Color:ResolveGradientTargets(sharedColors, whirlwindGradientConditions, "whirlwindBar", whirlwindGradients)
 	local overcapBorderColorResult = nil
 	local overcapBorderCurve = nil
@@ -1349,7 +1350,8 @@ local function UpdateResourceBar()
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 			local rageColors = scratch.rageColors1
 			wipe(rageColors)
 			rageColors.bar = barColor
@@ -1448,14 +1450,15 @@ local function UpdateResourceBar()
 				local whirlwindStacks = (wwBuff and wwBuff.isActive and wwBuff.applications) or 0
 				if whirlwindStacks < 0 then whirlwindStacks = 0 end
 				if whirlwindStacks > 4 then whirlwindStacks = 4 end
-				zeroStackActive = whirlwindStacks == 0 and affectingCombat == true
+				zeroStackActive = whirlwindStacks == 0
 			end
 			-- Enrage is fed from the Cooldown Manager, so it is false whenever nothing tracks the buff.
 			local cdm = TRB.Functions.CooldownManager
 			local enrageActive = snapshotData.attributes.enrageActive == true
 			local conditionMap = scratch.conditionMap2
 			wipe(conditionMap)
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 			conditionMap.zeroStackBackground = zeroStackActive
 			conditionMap.enrage = enrageActive
 
@@ -1598,7 +1601,8 @@ local function UpdateResourceBar()
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local conditionMap = scratch.conditionMap3
 			wipe(conditionMap)
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 			conditionMap.violentOutburst = snapshotData.snapshots[spells.violentOutburst.id] ~= nil and snapshotData.snapshots[spells.violentOutburst.id].buff.isActive
 			local rageColors = scratch.rageColors3
 			wipe(rageColors)

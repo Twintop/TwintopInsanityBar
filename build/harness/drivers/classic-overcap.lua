@@ -182,6 +182,14 @@ function hooks.afterEvents(ctx)
 		TRB.Data.character.inCombat = false
 		Draw()
 		check(overcap.key .. ": out of combat it doesn't", BorderOf(overcap) == overcap.baseBorder)
+		local modifiers = shared.indicatorColors[overcap.key].modifiers
+		check(overcap.key .. ": through Only In Combat, on by default", modifiers ~= nil and modifiers.onlyInCombat == true)
+		if modifiers ~= nil then
+			modifiers.onlyInCombat = false
+			Draw()
+			check(overcap.key .. ": which turned off shows it out of combat too", BorderOf(overcap) == indicatorColor)
+			modifiers.onlyInCombat = true
+		end
 		TRB.Data.character.inCombat = true
 		local settingsOvercap = overcap.key == "borderOvercap" and spec.overcap or spec.bars[overcap.key:gsub("Overcap$", "")].overcap
 		local savedMode, savedRelative = settingsOvercap.mode, settingsOvercap.relative

@@ -292,7 +292,8 @@ local scratch = { conditionMap = {}, barColors = {}, barColorMap = {}, formBarCo
 ---@param isStealthed boolean
 ---@return table<string, table>?
 local function ActiveFormBarGradients(formBar, sharedColors, isStealthed)
-	if not TRB.Data.character.inCombat or (formBar.overcapPausedInStealth and isStealthed) then
+	-- Overcap's combat gate is its Only In Combat modifier.
+	if formBar.overcapPausedInStealth and isStealthed then
 		return nil
 	end
 	local formConditionMap = scratch.formConditionMap

@@ -119,7 +119,7 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadT
 	end
 	if archetype.overcap ~= nil then
 		shared.nodeOrder[#shared.nodeOrder + 1] = "borderOvercap"
-		shared.indicatorColors.borderOvercap = { color = archetype.overcap.color, enabled = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
+		shared.indicatorColors.borderOvercap = { color = archetype.overcap.color, enabled = true, modifiers = { onlyInCombat = true }, targets = { resourceBar = { bar = false, border = true, background = false } } }
 	end
 
 	if hasSecondary then

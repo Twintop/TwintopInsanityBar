@@ -119,7 +119,7 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadT
 	end
 	if archetype.overcap ~= nil then
 		shared.gradientOrder[#shared.gradientOrder + 1] = "borderOvercap"
-		shared.indicatorColors.borderOvercap = { color = archetype.overcap.color, enabled = true, isGradient = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
+		shared.indicatorColors.borderOvercap = { color = archetype.overcap.color, enabled = true, modifiers = { onlyInCombat = true }, isGradient = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
 	end
 
 	if hasSecondary then

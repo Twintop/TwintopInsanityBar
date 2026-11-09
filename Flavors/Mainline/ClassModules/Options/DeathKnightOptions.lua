@@ -404,6 +404,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 						color2 = "FFFF4500",
 						gradientDirection = "disabled",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						targets = {
 							runicPowerBar = { bar = false, border = false, background = false },
 							runesBar = { bar = true, border = false, background = false },
@@ -428,6 +429,7 @@ local function BloodLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							runicPowerBar = { bar = false, border = true, background = false },
@@ -648,6 +650,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 						color2 = "FFFF4500",
 						gradientDirection = "disabled",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						targets = {
 							runicPowerBar = { bar = false, border = false, background = false },
 							runesBar = { bar = true, border = false, background = false },
@@ -657,6 +660,7 @@ local function FrostLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							runicPowerBar = { bar = false, border = true, background = false },
@@ -855,6 +859,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 						color2 = "FFFF4500",
 						gradientDirection = "disabled",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						targets = {
 							runicPowerBar = { bar = false, border = false, background = false },
 							runesBar = { bar = true, border = false, background = false },
@@ -886,6 +891,7 @@ local function UnholyLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							runicPowerBar = { bar = false, border = true, background = false },

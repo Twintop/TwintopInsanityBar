@@ -1041,7 +1041,6 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Havoc()
 
 		if snapshotData.attributes.isTracking then
-			local affectingCombat = TRB.Data.character.inCombat
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.HavocSpells]]
 			local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
@@ -1073,7 +1072,8 @@ local function UpdateResourceBar()
 			wipe(conditionMap)
 			conditionMap.metamorphosisEnd = metamorphosisActive and metamorphosisEndMet
 			conditionMap.metamorphosis = metamorphosisActive
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 
 			-- Color targets: barKey -> elementKey -> current color
 			local furyBarColors = scratch.furyBarColors1
@@ -1173,7 +1173,6 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Vengeance()
 
 		if snapshotData.attributes.isTracking then
-			local affectingCombat = TRB.Data.character.inCombat
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.DemonHunter.VengeanceSpells]]
 			local metaTime = snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
@@ -1205,7 +1204,8 @@ local function UpdateResourceBar()
 			wipe(conditionMap)
 			conditionMap.metamorphosisEnd = metamorphosisActive and metamorphosisEndMet
 			conditionMap.metamorphosis = metamorphosisActive
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 
 			-- Color targets: barKey -> elementKey -> current color
 			local furyBarColors = scratch.furyBarColors2
@@ -1388,7 +1388,6 @@ local function UpdateResourceBar()
 		local collapsingStarUsable = snapshots[spells.collapsingStar.id].buff.applications >= spells.collapsingStarThreshold.resource
 
 		if snapshotData.attributes.isTracking then
-			local affectingCombat = TRB.Data.character.inCombat
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
 			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
@@ -1408,7 +1407,8 @@ local function UpdateResourceBar()
 			conditionMap.collapsingStarReady = collapsingStarUsable
 			conditionMap.voidMetamorphosis = metaActive
 			conditionMap.voidRayReady = voidRayUsable
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 
 			-- Color targets: barKey -> elementKey -> current color
 			local furyBarColors = scratch.furyBarColors3

@@ -2912,7 +2912,6 @@ local function UpdateResourceBar()
 		wipe(overcapCurvesMana)
 
 		if snapshotData.attributes.isTracking then
-			local affectingCombat = TRB.Data.character.inCombat
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
 			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
@@ -2952,7 +2951,8 @@ local function UpdateResourceBar()
 			conditionMap.borderMindFlayInsanity = snapshots[spells.mindFlayInsanity.id].buff.isActive
 			conditionMap.shadowWordMadnessUsable = swmUsable
 			conditionMap.voidform = voidformActive
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 
 			-- Color targets: barKey -> elementKey -> current color
 			local insanityBarColors = scratch.insanityBarColors1

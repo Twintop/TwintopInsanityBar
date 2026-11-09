@@ -331,7 +331,8 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			local conditionMap = scratch.conditionMap
 			wipe(conditionMap)
 			conditionMap.borderStealth = isStealthed
-			conditionMap.borderOvercap = TRB.Data.character.inCombat and not isStealthed
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = not isStealthed
 			if spec.indicators ~= nil then
 				local spells = TRB.Data.spellsData.spells
 				for i = 1, #spec.indicators do

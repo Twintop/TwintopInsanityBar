@@ -878,7 +878,6 @@ local function UpdateResourceBar()
 		UpdateSnapshot_BeastMastery()
 
 		if snapshotData.attributes.isTracking then
-			local affectingCombat = TRB.Data.character.inCombat
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.BeastMasterySpells]]
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
@@ -890,15 +889,16 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
-			conditionMap.bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
-			conditionMap.bestialWrathEnd = snapshots[spells.bestialWrath.id].buff.isActive and affectingCombat
+			conditionMap.bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive
+			conditionMap.bestialWrathEnd = snapshots[spells.bestialWrath.id].buff.isActive
 					and specSettings.endOf.bestialWrath.enabled
 					and (snapshots[spells.bestialWrath.id].buff:GetRemainingTime(currentTime) <=
 						(specSettings.endOf.bestialWrath.mode == "gcd"
 							and Character:GetCurrentGCDTime() * specSettings.endOf.bestialWrath.gcdsMax
 							or specSettings.endOf.bestialWrath.timeMax))
 			conditionMap.beastCleave = snapshots[spells.beastCleave.id].buff.isActive
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 			local focusBarColors = scratch.focusBarColors1
 			wipe(focusBarColors)
 			focusBarColors.bar = barColor
@@ -990,7 +990,6 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Marksmanship()
 
 		if snapshotData.attributes.isTracking then
-			local affectingCombat = TRB.Data.character.inCombat
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.MarksmanshipSpells]]
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
@@ -1009,7 +1008,8 @@ local function UpdateResourceBar()
 						(specSettings.endOf.trueshot.mode == "gcd"
 							and Character:GetCurrentGCDTime() * specSettings.endOf.trueshot.gcdsMax
 							or specSettings.endOf.trueshot.timeMax))
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 			local focusBarColors = scratch.focusBarColors2
 			wipe(focusBarColors)
 			focusBarColors.bar = barColor
@@ -1093,7 +1093,6 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Survival()
 
 		if snapshotData.attributes.isTracking then
-			local affectingCombat = TRB.Data.character.inCombat
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Hunter.SurvivalSpells]]
 			local sharedColors = specSettings.colors.shared
 			local conditionMap = scratch.conditionMap3
@@ -1105,7 +1104,8 @@ local function UpdateResourceBar()
 						(specSettings.endOf.takedown.mode == "gcd"
 							and Character:GetCurrentGCDTime() * specSettings.endOf.takedown.gcdsMax
 							or specSettings.endOf.takedown.timeMax))
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 			local focusBarColors = scratch.focusBarColors3
 			wipe(focusBarColors)
 			focusBarColors.bar = specSettings.colors.bar.base

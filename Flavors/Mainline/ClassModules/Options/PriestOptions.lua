@@ -1250,6 +1250,7 @@ local function ShadowLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							insanityBar = { bar = false, border = true, background = false },

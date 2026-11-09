@@ -1019,7 +1019,7 @@ local function UpdateResourceBar()
 		local conditionMap = scratch.conditionMap1
 		wipe(conditionMap)
 		conditionMap.borderStealth = stealthActive
-		conditionMap.borderOvercap = TRB.Data.character.inCombat and not stealthActive
+		conditionMap.borderOvercap = not stealthActive
 		local barColorMap = scratch.barColorMap1
 		wipe(barColorMap)
 		barColorMap.energyBar = energyBarColors
@@ -1192,7 +1192,7 @@ local function UpdateResourceBar()
 		local conditionMap = scratch.conditionMap2
 		wipe(conditionMap)
 		conditionMap.borderStealth = stealthActive
-		conditionMap.borderOvercap = TRB.Data.character.inCombat and not stealthActive
+		conditionMap.borderOvercap = not stealthActive
 		local barColorMap = scratch.barColorMap2
 		wipe(barColorMap)
 		barColorMap.energyBar = energyBarColors
@@ -1364,7 +1364,7 @@ local function UpdateResourceBar()
 		local conditionMap = scratch.conditionMap3
 		wipe(conditionMap)
 		conditionMap.borderStealth = stealthActive
-		conditionMap.borderOvercap = TRB.Data.character.inCombat and not stealthActive
+		conditionMap.borderOvercap = not stealthActive
 		local barColorMap = scratch.barColorMap3
 		wipe(barColorMap)
 		barColorMap.energyBar = energyBarColors

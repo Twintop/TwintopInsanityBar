@@ -278,6 +278,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							energyBar = { bar = false, border = true, background = false }
@@ -445,6 +446,7 @@ local function MistweaverLoadDefaultSettings(includeBarText, classic)
 						color2 = "FF00FFBB",
 						gradientDirection = "disabled",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						targets = {
 							manaBar = { bar = true, border = false, background = false }
 						}
@@ -672,6 +674,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 						color2 = "FF008461",
 						gradientDirection = "disabled",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						targets = {
 							energyBar = { bar = false, border = true, background = false },
 							chiBar = { bar = false, border = false, background = false }
@@ -700,6 +703,7 @@ local function WindwalkerLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							energyBar = { bar = false, border = true, background = false },

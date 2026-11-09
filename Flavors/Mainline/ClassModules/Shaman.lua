@@ -1132,7 +1132,6 @@ local function UpdateResourceBar()
 			or (elementalTalentGates.elementalBlast and spells.elementalBlast:IsUsable())
 
 		if snapshotData.attributes.isTracking then
-			local affectingCombat = TRB.Data.character.inCombat
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
 			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
@@ -1164,7 +1163,8 @@ local function UpdateResourceBar()
 			conditionMap.earthShock = earthShockUsable
 			conditionMap.earthquake = earthquakeUsable
 			conditionMap.ascendance = ascendanceActive
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 			conditionMap.tempest = snapshotData.attributes.tempestActive == true
 			conditionMap.tempest2 = snapshotData.attributes.tempestStacks == spells.tempest.maxStacks
 			local maelstromBarColors = scratch.maelstromBarColors1
