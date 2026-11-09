@@ -8,6 +8,13 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.15.9.3-release (2026-11-09)
+## Priest
+
+- [#968](#968) Add Inner Fire tracking, with a Color Indicator and the `$innerFireStacks`, `$innerFireStacksMax`, `$innerFireTime`, and `#innerFire` bar text variables. The indicator has no targets by default.
+
+---
+
 # 1.15.9.2-release (2026-11-05)
 ## General
 ### Other Bars
