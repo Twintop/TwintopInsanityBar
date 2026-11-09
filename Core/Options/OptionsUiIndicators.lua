@@ -486,20 +486,41 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		return indicator ~= nil and indicator.modifiers ~= nil and indicator.modifiers[modifier] == true
 	end
 
-	---Turns one of a row's modifiers on or off, dropping an emptied modifiers table.
+	---Turns one of a row's modifiers on or off. Off is saved as false when the row's built-in has it on by default, so the
+	---login's merge over the defaults can't turn it back on; otherwise the key goes, and an emptied modifiers table with it.
 	---@param indicator table
 	---@param modifier string # A TRB.IndicatorModifiers field
 	---@param enabled boolean
-	local function SetModifier(indicator, modifier, enabled)
+	---@param defaultEntry table? # The row's built-in's default entry
+	local function SetModifier(indicator, modifier, enabled, defaultEntry)
 		if enabled then
 			indicator.modifiers = indicator.modifiers or {}
 			indicator.modifiers[modifier] = true
+		elseif defaultEntry ~= nil and defaultEntry.modifiers ~= nil and defaultEntry.modifiers[modifier] == true then
+			indicator.modifiers = indicator.modifiers or {}
+			indicator.modifiers[modifier] = false
 		elseif indicator.modifiers ~= nil then
 			indicator.modifiers[modifier] = nil
 			if next(indicator.modifiers) == nil then
 				indicator.modifiers = nil
 			end
 		end
+	end
+
+	---A copy of a row's modifiers for an entry following another built-in: each modifier that built-in has on by default
+	---and the row leaves unset is saved false, so the login's merge over the defaults can't turn it on.
+	---@param modifiers TRB.IndicatorModifiers?
+	---@param defaultEntry table? # The built-in's default entry
+	---@return TRB.IndicatorModifiers?
+	local function ModifiersOverDefault(modifiers, defaultEntry)
+		local out = TRB.Functions.Table:DeepCopy(modifiers)
+		for modifier, on in pairs(defaultEntry ~= nil and defaultEntry.modifiers or {}) do
+			if on == true and (out == nil or out[modifier] == nil) then
+				out = out or {}
+				out[modifier] = false
+			end
+		end
+		return out
 	end
 
 	---A flat row's label, marked with its modifiers.
@@ -548,7 +569,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 	---Opens a row's Edit menu: Change Source, then the modifiers the row offers.
 	---@param owner Frame
-	---@param getIndicator fun(): table? # The row's entry, read live
+	---@param getIndicator fun(): table?, string? # The row's entry and key, read live
 	---@param source TRB.Classes.OptionsUi.IndicatorEditSource
 	---@param offerNotActive boolean
 	---@param offerOnlyInCombat boolean
@@ -572,9 +593,9 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				local checkbox = rootDescription:CreateCheckbox(label, function()
 					return HasModifier(getIndicator(), modifier)
 				end, function()
-					local indicator = getIndicator()
+					local indicator, key = getIndicator()
 					if indicator == nil then return end
-					SetModifier(indicator, modifier, not HasModifier(indicator, modifier))
+					SetModifier(indicator, modifier, not HasModifier(indicator, modifier), GetDefaultEntry(indicator.copyOf or key or ""))
 					if onModifierChanged ~= nil then
 						onModifierChanged()
 					end
@@ -738,6 +759,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		local removed = sharedSettings.removed
 		if indicator.copyOf ~= nil and not (removed ~= nil and removed[builtInKey]) then
 			indicator.copyOf = builtInKey
+			indicator.modifiers = ModifiersOverDefault(indicator.modifiers, GetDefaultEntry(builtInKey))
 			indicatorDefByKey[key] = indicatorDefByKey[builtInKey]
 			for barKey in pairs(indicator.targets or {}) do
 				if not offered[barKey] then
@@ -755,7 +777,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		entry.color = indicator.color
 		entry.color2 = indicator.color2
 		entry.gradientDirection = indicator.gradientDirection
-		entry.modifiers = TRB.Functions.Table:DeepCopy(indicator.modifiers)
+		entry.modifiers = ModifiersOverDefault(indicator.modifiers, GetDefaultEntry(builtInKey))
 		-- Laid over the explicit falses, so the login's merge over the defaults can't turn the new built-in's elements on.
 		for barKey, elements in pairs(indicator.targets or {}) do
 			if offered[barKey] then
@@ -1320,7 +1342,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				}
 			end
 			OpenEditMenu(self, function()
-				return indicatorColors[orderedKeys[capturedRowIdx]]
+				local key = orderedKeys[capturedRowIdx]
+				return indicatorColors[key], key
 			end, source, offerNotActive, true, OnEdited)
 		end)
 		row.editBtn:SetScript("OnEnter", function(self)
@@ -1845,7 +1868,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				local currentIndicator = indicatorColors[currentKey]
 				if currentIndicator == nil then return end
 				OpenEditMenu(self, function()
-					return indicatorColors[orderedGradientKeys[capturedGradIdx]]
+					local key = orderedGradientKeys[capturedGradIdx]
+					return indicatorColors[key], key
 				end, {
 					tooltip = L["BuiltInGradientChangeSourceTooltip"],
 					populate = function(description)

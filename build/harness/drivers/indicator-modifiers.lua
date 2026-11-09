@@ -394,6 +394,52 @@ function hooks.afterEvents(ctx)
 				return nil
 			end
 
+			-- A built-in with modifiers on by default: turning one off saves false, which a login's merge keeps.
+			local seededKey, plainKey = nil, nil
+			for _, k in ipairs(shared.nodeOrder) do
+				local indicator = shared.indicatorColors[k]
+				local defaultEntry = defaults ~= nil and defaults.indicatorColors[k] or nil
+				if indicator ~= nil and indicator.custom == nil and indicator.copyOf == nil and defKeys[k] and defaultEntry ~= nil and defKeys[k].barKeys == nil then
+					if seededKey == nil and defaultEntry.modifiers ~= nil then seededKey = k end
+					if plainKey == nil and defaultEntry.modifiers == nil then plainKey = k end
+				end
+			end
+			if seededKey ~= nil then
+				local defaultModifiers = defaults.indicatorColors[seededKey].modifiers
+				local function ModifiersAfterLogin()
+					local merged = Table:Merge({ colors = { shared = Table:DeepCopy(defaults or {}) } }, { colors = { shared = Table:DeepCopy(shared) } })
+					return merged.colors.shared.indicatorColors[seededKey].modifiers or {}
+				end
+				local menu = OpenEdit(RowIndex(seededKey, "nodeOrder"), "nodeOrder")
+				for _, modifier in ipairs({ { "notActive", L["IndicatorModifierNotActive"] }, { "onlyInCombat", L["IndicatorModifierOnlyInCombat"] } }) do
+					local name, entry = modifier[1], menu ~= nil and FindEntry(menu, modifier[2]) or nil
+					if defaultModifiers[name] == true then
+						check(label .. ": " .. seededKey .. " starts with " .. name .. " on, as its default", entry ~= nil and entry.isSelected())
+						if entry ~= nil then
+							try(name .. " off", function() entry.setSelected() end)
+							local modifiers = shared.indicatorColors[seededKey].modifiers
+							check(label .. ": turning " .. name .. " off saves false", modifiers ~= nil and modifiers[name] == false and not entry.isSelected())
+							check(label .. ": which a login keeps", ModifiersAfterLogin()[name] == false)
+							try(name .. " on", function() entry.setSelected() end)
+							check(label .. ": turning it back on saves true", shared.indicatorColors[seededKey].modifiers[name] == true)
+						end
+					end
+				end
+				-- A row with no modifiers switched onto it keeps none, saved as false over the built-in's defaults.
+				if plainKey ~= nil then
+					local rowIndex = RowIndex(plainKey, "nodeOrder")
+					check(label .. ": switching a row without modifiers onto " .. seededKey, PickSource(rowIndex, "nodeOrder", seededKey))
+					local copy = shared.indicatorColors[KeyAtRow(rowIndex, "nodeOrder")]
+					local keptNone = copy ~= nil and copy.copyOf == seededKey and copy.modifiers ~= nil
+					for name, on in pairs(defaultModifiers) do
+						if on == true and (copy == nil or copy.modifiers == nil or copy.modifiers[name] ~= false) then keptNone = false end
+					end
+					check(label .. ": saves each of its default modifiers as false", keptNone)
+					check(label .. ": switching it back", PickSource(rowIndex, "nodeOrder", plainKey))
+					shared.indicatorColors[plainKey].modifiers = nil
+				end
+			end
+
 			local key = nil
 			for _, k in ipairs(shared.nodeOrder) do
 				local indicator = shared.indicatorColors[k]
