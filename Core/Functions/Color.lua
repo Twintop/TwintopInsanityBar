@@ -1242,9 +1242,10 @@ end
 ---A Color Indicator row's modifiers, saved as `indicatorColors[key].modifiers`.
 ---@class TRB.IndicatorModifiers
 ---@field notActive boolean? # The row is on while its condition is not met
+---@field onlyInCombat boolean? # The row is on only while the player is in combat
 
----Whether a flat row is on right now: its condition, flipped by Not Active. A custom source that can't be read
----stays off either way; a built-in condition the spec left unset counts as not met.
+---Whether a flat row is on right now: its condition, flipped by Not Active and gated by Only In Combat. A custom
+---source that can't be read stays off either way; a built-in condition the spec left unset counts as not met.
 ---@param conditionMap table<string, boolean?>
 ---@param key string
 ---@param indicator table # An indicatorColors entry; `modifiers` is a TRB.IndicatorModifiers
@@ -1252,8 +1253,13 @@ end
 local function IsIndicatorMet(conditionMap, key, indicator)
 	local met = conditionMap[key]
 	local modifiers = indicator.modifiers
-	if modifiers ~= nil and modifiers.notActive then
-		return not met and (met ~= nil or indicator.custom == nil)
+	if modifiers ~= nil then
+		if modifiers.onlyInCombat and not TRB.Data.character.inCombat then
+			return false
+		end
+		if modifiers.notActive then
+			return not met and (met ~= nil or indicator.custom == nil)
+		end
 	end
 	return met
 end

@@ -14,7 +14,7 @@
 	runs once per class. classic-overcap checks Classic's flat Overcap indicators and their text color; it runs once per
 	class. totems checks the Totems bar's slot events, node count, binding, expiry, and enable prompt defaults; it runs once
 	per class. indicator-copies checks built-in Color Indicator copies and deletions in settings, the options, and every
-	specialization's render; it runs once per class. indicator-modifiers checks Not Active and the Edit menu's Change Source in
+	specialization's render; it runs once per class. indicator-modifiers checks Not Active, Only In Combat, and the Edit menu's Change Source in
 	resolution, the options, and every specialization's render; it runs once per class. bartext-conformance checks that the bar text engine renders exactly what
 	the legacy resolver does, and skips only when nothing it shows changed; it runs once per class. inner-fire checks the Forever, Classic, and TBC
 	Priest's Inner Fire charges, timer, bar text, and Color Indicator, and Forever's diagnostic; it runs once per class. slice-and-dice checks the

@@ -1,5 +1,6 @@
 -- Checks Color Indicator modifiers and the Edit menu: Not Active flips a row's condition (an unreadable custom source
--- stays off), every specialization's real update honors it, and Change Source re-points built-in rows in place.
+-- stays off), Only In Combat keeps a row off out of combat, every specialization's real update honors both, and Change
+-- Source re-points built-in rows in place.
 local desktop = _G --[[@as table<string, any>]]
 local debug = desktop.debug
 local parity = desktop.require("drivers.parity")
@@ -234,6 +235,26 @@ function hooks.afterEvents(ctx)
 		local map = { builtIn = false }
 		check("IsIndicatorMet flips a built-in", Color:IsIndicatorMet(map, "builtIn", shared.indicatorColors.builtIn) == true)
 		check("and reads a row without modifiers as is", not Color:IsIndicatorMet({ builtIn = false }, "copy_1", shared.indicatorColors.copy_1))
+
+		-- Only In Combat keeps a row off out of combat, and in combat leaves its condition and Not Active as they are.
+		local character = TRB.Data.character
+		local wasInCombat = character.inCombat
+		local combatOnly = { enabled = true, color = BUILT_IN, targets = {}, modifiers = { onlyInCombat = true } }
+		local notActiveInCombat = { enabled = true, color = BUILT_IN, targets = {}, modifiers = { onlyInCombat = true, notActive = true } }
+		character.inCombat = false
+		check("Only In Combat keeps a met row off out of combat", Color:IsIndicatorMet({ builtIn = true }, "builtIn", combatOnly) == false)
+		check("and a Not Active row that isn't met", Color:IsIndicatorMet({ builtIn = false }, "builtIn", notActiveInCombat) == false)
+		shared.indicatorColors.builtIn.modifiers = { onlyInCombat = true, notActive = true }
+		testBar = Resolve({ builtIn = false })
+		check("and so does the resolve", testBar.border == nil)
+		character.inCombat = true
+		check("in combat it reads the condition as is", Color:IsIndicatorMet({ builtIn = true }, "builtIn", combatOnly) == true
+			and not Color:IsIndicatorMet({ builtIn = false }, "builtIn", combatOnly))
+		check("and Not Active still flips it", Color:IsIndicatorMet({ builtIn = false }, "builtIn", notActiveInCombat) == true
+			and not Color:IsIndicatorMet({ builtIn = true }, "builtIn", notActiveInCombat))
+		testBar = Resolve({ builtIn = false })
+		check("and the resolve paints it", testBar.border == BUILT_IN)
+		character.inCombat = wasInCombat
 		cdm.ReadCondition = readCondition
 	end
 
@@ -407,6 +428,20 @@ function hooks.afterEvents(ctx)
 					check(label .. ": turning it off leaves no modifiers", shared.indicatorColors[key].modifiers == nil and RowLabel(rowIndex) == defLabel)
 					try("Not Active on again", function() notActive.setSelected() end)
 				end
+				local onlyInCombat = menu ~= nil and FindEntry(menu, L["IndicatorModifierOnlyInCombat"]) or nil
+				check(label .. ": and Only In Combat", onlyInCombat ~= nil and onlyInCombat.kind == "checkbox" and not onlyInCombat.isSelected())
+				if onlyInCombat ~= nil then
+					local notLabel = string.format(L["IndicatorNotActiveLabelFormat"], defLabel)
+					try("Only In Combat on", function() onlyInCombat.setSelected() end)
+					local modifiers = shared.indicatorColors[key].modifiers
+					check(label .. ": Only In Combat saves on the row beside Not Active", modifiers ~= nil and modifiers.onlyInCombat == true
+						and modifiers.notActive == true and onlyInCombat.isSelected())
+					check(label .. ": and marks its label too", RowLabel(rowIndex) == string.format(L["IndicatorOnlyInCombatLabelFormat"], notLabel))
+					try("Only In Combat off", function() onlyInCombat.setSelected() end)
+					modifiers = shared.indicatorColors[key].modifiers
+					check(label .. ": turning it off keeps Not Active", modifiers ~= nil and modifiers.onlyInCombat == nil and modifiers.notActive == true
+						and RowLabel(rowIndex) == notLabel)
+				end
 
 				local other = nil
 				for _, def in ipairs(sorted) do
@@ -482,7 +517,8 @@ function hooks.afterEvents(ctx)
 				local source = menu ~= nil and menu.children[1] or nil
 				check(label .. ": a gradient row's Edit menu offers Change Source", source ~= nil and source.label == L["IndicatorEditChangeSource"]
 					and #source.children == #gradientDefs)
-				check(label .. ": and no Not Active", menu ~= nil and FindEntry(menu, L["IndicatorModifierNotActive"]) == nil)
+				check(label .. ": and no modifiers", menu ~= nil and FindEntry(menu, L["IndicatorEditModifiers"]) == nil
+					and FindEntry(menu, L["IndicatorModifierNotActive"]) == nil and FindEntry(menu, L["IndicatorModifierOnlyInCombat"]) == nil)
 				local other = nil
 				for _, def in ipairs(gradientDefs) do
 					if other == nil and def.key ~= gradientKey then other = def.key end
@@ -525,6 +561,7 @@ function hooks.afterEvents(ctx)
 				local notActive = menu ~= nil and FindEntry(menu, L["IndicatorModifierNotActive"]) or nil
 				check(label .. ": its Edit menu offers its threshold lines under Change Source", source ~= nil and source.label == L["IndicatorEditChangeSource"] and #source.children > 0)
 				check(label .. ": and Not Active unless the state is Static", (notActive ~= nil) == (condition ~= nil and condition.state ~= Threshold.ConditionState.STATIC))
+				check(label .. ": and Only In Combat", menu ~= nil and FindEntry(menu, L["IndicatorModifierOnlyInCombat"]) ~= nil)
 			end
 			Restore(shared, backup)
 		end
@@ -604,6 +641,19 @@ function hooks.afterEvents(ctx)
 			shared.indicatorColors.copy_1.modifiers = { notActive = true }
 			Draw({ [key] = false })
 			check(label .. ": a Not Active copy paints while its built-in is not met", drv.fills[COPY] == true and not drv.borders[ORIGINAL])
+
+			shared.indicatorColors.copy_1.modifiers = nil
+			original.modifiers = { onlyInCombat = true }
+			Draw({ [key] = true })
+			check(label .. ": an Only In Combat " .. key .. " stays off out of combat while its condition is met", not drv.borders[ORIGINAL])
+			-- In combat a gradient on the same element paints it through a curve instead, so gradients go off here.
+			for _, k in ipairs(shared.gradientOrder or {}) do
+				if shared.indicatorColors[k] ~= nil then shared.indicatorColors[k].enabled = false end
+			end
+			TRB.Data.character.inCombat = true
+			Draw({ [key] = true })
+			check(label .. ": and paints in combat", drv.borders[ORIGINAL] == true)
+			TRB.Data.character.inCombat = false
 			Restore(shared, backup)
 		end
 	end
