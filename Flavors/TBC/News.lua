@@ -15,7 +15,7 @@ TRB.Flavor.newsContent = [====[
 
 ## Rogue
 
-- [#969](#969) Add Slice and Dice tracking, with active and ending Color Indicators and the `$sliceAndDiceTime` bar text variable. The indicators target the Energy bar fill by default.
+- [#969](#969) Add Slice and Dice tracking, with active and ending Color Indicators and the `$sliceAndDiceTime` bar text variable. By default, the Energy bar fill turns red while Slice and Dice is down in combat and orange while it is ending.
 
 ---
 

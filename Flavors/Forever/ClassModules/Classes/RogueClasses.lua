@@ -270,9 +270,22 @@ TRB.Forever.Templates.Classes:DefineClass("rogue", {
 		-- Ending first, so it outranks the active color near the end.
 		indicators = {
 			{
-				key = "sliceAndDiceEnd",
+				key = "sliceAndDice",
 				buff = "sliceAndDice",
 				color = "FFFF0000",
+				modifiers = {
+					notActive = true,
+					onlyInCombat = true,
+				},
+				targets = { resourceBar = { bar = true, border = false, background = false } },
+				labelKey = "ForeverRogueCheckboxSliceAndDice",
+				tooltipKey = "ForeverRogueIndicatorSliceAndDiceTooltip",
+				colorLabelKey = "ForeverRogueIndicatorSliceAndDiceColor",
+			},
+			{
+				key = "sliceAndDiceEnd",
+				buff = "sliceAndDice",
+				color = "FFFF8000",
 				targets = { resourceBar = { bar = true, border = false, background = false } },
 				labelKey = "ForeverRogueCheckboxSliceAndDiceEnding",
 				tooltipKey = "ForeverRogueIndicatorSliceAndDiceEndTooltip",
@@ -288,15 +301,6 @@ TRB.Forever.Templates.Classes:DefineClass("rogue", {
 					timeRadioKey = "ForeverRogueCheckboxSliceAndDiceTime",
 					timeSliderKey = "ForeverRogueSliceAndDiceTime",
 				},
-			},
-			{
-				key = "sliceAndDice",
-				buff = "sliceAndDice",
-				color = "FFFFD100",
-				targets = { resourceBar = { bar = true, border = false, background = false } },
-				labelKey = "ForeverRogueCheckboxSliceAndDice",
-				tooltipKey = "ForeverRogueIndicatorSliceAndDiceTooltip",
-				colorLabelKey = "ForeverRogueIndicatorSliceAndDiceColor",
 			},
 		},
 	},

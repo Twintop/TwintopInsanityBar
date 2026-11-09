@@ -109,7 +109,8 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadT
 	end
 	for _, indicator in ipairs(spec.indicators or {}) do
 		shared.nodeOrder[#shared.nodeOrder + 1] = indicator.key
-		shared.indicatorColors[indicator.key] = { color = indicator.color, enabled = true, targets = TRB.Functions.Table:DeepCopy(indicator.targets or {}) }
+		shared.indicatorColors[indicator.key] = { color = indicator.color, enabled = true, targets = TRB.Functions.Table:DeepCopy(indicator.targets or {}),
+			modifiers = TRB.Functions.Table:DeepCopy(indicator.modifiers) }
 		local endOf = indicator.endOf
 		if endOf ~= nil then
 			settings.endOf = settings.endOf or {}

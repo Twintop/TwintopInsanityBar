@@ -7,7 +7,7 @@ local parity = desktop.require("drivers.parity")
 local hooks = {}
 local SLICE_AND_DICE_RANK_1, SLICE_AND_DICE_RANK_2, IMPROVED_SLICE_AND_DICE, EVISCERATE = 5171, 6774, 14165, 2098
 local NETHERBLADE = { [1] = 29044, [3] = 29047, [5] = 29045, [7] = 29046, [10] = 29048 }
-local ACTIVE_COLOR, ENDING_COLOR = "FFFFD100", "FFFF0000"
+local ACTIVE_COLOR, ENDING_COLOR = "FFFF0000", "FFFF8000"
 
 -- The test clock, the frames the addon made, the fill colors a draw painted, and worn gear by slot.
 local drv = { now = 1000, frames = {}, printed = {}, fills = {}, gear = {} }
@@ -159,11 +159,12 @@ function hooks.afterEvents(ctx)
 		stubs.fireEvents("PLAYER_EQUIPMENT_CHANGED:1", ctx.addonName)
 	end
 
-	-- Defaults: Ending outranks Active, both on the Energy bar's fill, and Ending starts at 2 GCDs.
+	-- Defaults: Stealth, then Active (Not Active, Only In Combat), then Ending, both on the Energy bar's fill; Ending starts at 2 GCDs.
 	local settings = TRB.Data.settings.rogue.general
 	local shared = settings.colors.shared
-	local endingAt, activeAt
+	local stealthAt, endingAt, activeAt
 	for i, key in ipairs(shared.nodeOrder) do
+		if key == "borderStealth" then stealthAt = i end
 		if key == "sliceAndDiceEnd" then endingAt = i end
 		if key == "sliceAndDice" then activeAt = i end
 	end
@@ -173,9 +174,11 @@ function hooks.afterEvents(ctx)
 		return targets.resourceBar ~= nil and targets.resourceBar.bar == true and targets.resourceBar.border ~= true
 			and targets.resourceBar.background ~= true and targets.comboPointsBar == nil
 	end
-	check("Ending is listed above Active", endingAt ~= nil and activeAt ~= nil and endingAt < activeAt)
+	check("Stealth, Active, and Ending lead the list in that order", stealthAt == 1 and activeAt == 2 and endingAt == 3)
 	check("both color the Energy bar's fill by default", FillOnly(ending) and FillOnly(active)
 		and ending.color == ENDING_COLOR and active.color == ACTIVE_COLOR)
+	check("Active is Not Active and Only In Combat by default, and Ending has no modifiers", active ~= nil and active.modifiers ~= nil
+		and active.modifiers.notActive == true and active.modifiers.onlyInCombat == true and ending ~= nil and ending.modifiers == nil)
 	local endOf = settings.endOf ~= nil and settings.endOf.sliceAndDice or {}
 	check("Ending defaults to 2 GCDs, or 3 seconds", endOf.mode == "gcd" and endOf.gcdsMax == 2 and endOf.timeMax == 3)
 
@@ -262,30 +265,38 @@ function hooks.afterEvents(ctx)
 		try("draw", function() triggerUpdates() end)
 		return drv.fills[ACTIVE_COLOR] == true, drv.fills[ENDING_COLOR] == true
 	end
+	local character = TRB.Data.character
+	character.inCombat = false
 	local painted, endingPainted = Draw()
-	check("with Slice and Dice down, neither paints", not painted and not endingPainted)
+	check("out of combat with Slice and Dice down, neither paints", not painted and not endingPainted)
+	character.inCombat = true
+	painted, endingPainted = Draw()
+	check("in combat with Slice and Dice down, Active paints the fill", painted and not endingPainted)
 	Cast(SLICE_AND_DICE_RANK_2, 5)
 	painted, endingPainted = Draw()
-	check("with plenty left, Active paints the fill", painted and not endingPainted)
+	check("with plenty left, neither paints", not painted and not endingPainted)
 	Tick(19.5)
 	painted, endingPainted = Draw()
-	check("within 2 GCDs of the end, Ending takes over", endingPainted and not painted)
+	check("within 2 GCDs of the end, Ending paints", endingPainted and not painted)
 	endOf.mode = "time"
 	Cast(SLICE_AND_DICE_RANK_2, 1)
 	Tick(5.5)
 	painted, endingPainted = Draw()
-	check("in time mode, Ending starts 3 seconds out", painted and not endingPainted)
+	check("in time mode, Ending starts 3 seconds out", not painted and not endingPainted)
 	Tick(1)
 	painted, endingPainted = Draw()
 	check("and paints inside them", endingPainted and not painted)
 	endOf.mode = "gcd"
 	Tick(3)
 	painted, endingPainted = Draw()
-	check("once it runs out, neither paints", not buff.isActive and not painted and not endingPainted)
-	active.modifiers = { notActive = true }
-	painted = Draw()
-	check("Not Active paints Active's color while Slice and Dice is down", painted)
+	check("once it runs out, Active paints again", not buff.isActive and painted and not endingPainted)
+	local defaultModifiers = active.modifiers
 	active.modifiers = nil
+	Cast(SLICE_AND_DICE_RANK_2, 5)
+	painted = Draw()
+	check("without its modifiers, Active paints while Slice and Dice is up", painted)
+	active.modifiers = defaultModifiers
+	character.inCombat = false
 
 	-- The diagnostic.
 	local descriptor = TRB.Functions.Character:GetActiveSpecDescriptor()

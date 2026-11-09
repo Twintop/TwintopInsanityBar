@@ -174,6 +174,7 @@ TRB.TBC.Archetypes = {
 ---@field public buff string # spell field name, one of the spec's buffs
 ---@field public color string # default color
 ---@field public targets table<string, table<string, boolean>>? # default targets; none when nil
+---@field public modifiers TRB.IndicatorModifiers? # default modifiers
 ---@field public labelKey string # locale key of the row's name in the Add Built-in and Change Source menus
 ---@field public tooltipKey string
 ---@field public colorLabelKey string # locale key of the row's label
