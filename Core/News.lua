@@ -30,6 +30,8 @@ TRB.Details.coreNewsContent = [====[
 - [#965](#965) Built-in Color Indicators and gradient colors get an Edit button, whose Change Source switches the row to another built-in and keeps its color and targets.
 - [#965](#965) Add a Not Active option to the Edit button, turning a Color Indicator on while its condition is not met.
 - [#969](#969) Add an Only In Combat option to the Edit button, turning a Color Indicator on only while you are in combat.
+- [#971](#971) Add Only In Combat to gradient colors' Edit button.
+- [#971](#971) Built-in Color Indicators and gradient colors that only showed in combat use Only In Combat instead, on by default.
 
 ## Pet Bars
 
