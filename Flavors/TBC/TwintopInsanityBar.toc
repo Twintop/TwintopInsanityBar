@@ -17,9 +17,9 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 2.5.6.0
+## Version: 2.5.6.1
 ## X-ReleaseType: release
-## X-ReleaseDate: 2026-11-05
+## X-ReleaseDate: 2026-11-10
 ## SavedVariables: TwintopInsanityBarTBCSettings
 ## IconTexture: Interface\AddOns\TwintopInsanityBar\Images\Icon.blp
 ## DefaultState: enabled

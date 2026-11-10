@@ -4,7 +4,7 @@ local _, TRB = ...
 -- first. Titles name the Live, Forever, Classic, and TBC releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
-# Live 12.1.5.11-release / Forever 1.60.1.18-release / Classic 1.15.9.3-release / TBC 2.5.6.1-release (2026-11-05)
+# Live 12.1.5.11-release / Forever 1.60.1.18-release / Classic 1.15.9.3-release / TBC 2.5.6.1-release (2026-11-10)
 ## General
 
 - [#935](#935) Improve bar text update performance, primarily out of combat and during casts.
@@ -32,6 +32,11 @@ TRB.Details.coreNewsContent = [====[
 - [#969](#969) Add an Only In Combat option to the Edit button, turning a Color Indicator on only while you are in combat.
 - [#971](#971) Add Only In Combat to gradient colors' Edit button.
 - [#971](#971) Built-in Color Indicators and gradient colors that only showed in combat use Only In Combat instead, on by default.
+
+## Localization
+
+- [#933 - @MOSS099](#933) Updated translations for Simplified Chinese (zhCN).
+- [#967 - @MOSS099](#967) Updated translations for Simplified Chinese (zhCN).
 
 ## Pet Bars
 

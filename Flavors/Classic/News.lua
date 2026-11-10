@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 1.15.9.3-release (2026-11-09)
+# 1.15.9.3-release (2026-11-10)
 ## Druid
 
 - [#970](#970) Improve bar and bar text update performance.

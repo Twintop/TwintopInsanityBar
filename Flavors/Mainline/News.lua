@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.5.11-release (2026-11-05)
+# 12.1.5.11-release (2026-11-10)
 ## Death Knight
 
 - [#951](#951) Improve rune bar update performance while all runes are ready.
