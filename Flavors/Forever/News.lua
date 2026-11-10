@@ -8,6 +8,25 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.18-release (2026-11-09)
+## Druid
+
+- [#970](#970) Improve bar and bar text update performance.
+
+## Priest
+
+- [#968](#968) Add Inner Fire tracking, with a Color Indicator and the `$innerFireStacks`, `$innerFireStacksMax`, `$innerFireTime`, and `#innerFire` bar text variables. The indicator has no targets by default.
+
+## Rogue
+
+- [#969](#969) Add a Death Mark threshold line on the Energy bar and the `#deathMark` bar text variable.
+- [#969](#969) Add Slice and Dice tracking, with active and ending Color Indicators and the `$sliceAndDiceTime` bar text variable. By default, the Energy bar fill turns red while Slice and Dice is down in combat and orange while it is ending.
+- [#969](#969) Remove the Venom threshold line.
+- [#969](#969) Fix the Mutilate threshold line and the `#mutilate` bar text variable.
+- [#970](#970) Improve bar and bar text update performance.
+
+---
+
 # 1.60.1.17-release (2026-11-05)
 ## General
 ### Color Indicators

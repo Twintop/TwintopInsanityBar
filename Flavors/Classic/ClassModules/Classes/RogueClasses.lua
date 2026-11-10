@@ -1,9 +1,11 @@
 local _, TRB = ...
+local L = TRB.Localization
 
 -- Rogue (World of Warcraft Classic): Energy plus Combo Points. Loads in the Classes stage, before
 -- Core's Functions, so nothing here calls TRB.Functions.
 
 ---@class TRB.Classes.Classic.Rogue.GeneralSpells : TRB.Classes.SpecializationSpellsBase
+---@field public improvedSliceAndDice TRB.Classes.SpellBase
 ---@field public sinisterStrike TRB.Classes.SpellComboPointThreshold
 ---@field public backstab TRB.Classes.SpellComboPointThreshold
 ---@field public hemorrhage TRB.Classes.SpellComboPointThreshold
@@ -25,9 +27,15 @@ local _, TRB = ...
 ---@field public blind TRB.Classes.SpellThreshold
 ---@field public bladeFlurry TRB.Classes.SpellThreshold
 
----Adds the Rogue's Energy-spending abilities to a new spell set.
+---Adds the Rogue's Energy-spending abilities and tracked buffs to a new spell set.
 ---@param spells TRB.Classes.Classic.Rogue.GeneralSpells
 local function FillSpells(spells)
+	spells.improvedSliceAndDice = TRB.Classes.SpellBase:New({
+		id = 14165,
+		isTalent = true,
+		durationPercentPerRank = { 15, 30, 45 },
+	})
+
 	-- Combo point generators
 	spells.sinisterStrike = TRB.Classes.SpellComboPointThreshold:New({
 		id = 1752,
@@ -140,6 +148,9 @@ local function FillSpells(spells)
 		settingKey = "sliceAndDice",
 		baseline = true,
 		category = "offensive",
+		isBuff = true,
+		baseDuration = 6,
+		durationPerComboPoint = 3,
 	})
 	spells.kidneyShot = TRB.Classes.SpellComboPointThreshold:New({
 		id = 408,
@@ -217,6 +228,14 @@ local function FillSpells(spells)
 	})
 end
 
+---The Slice and Dice bar text value, appended to the archetype's.
+---@return table[]
+local function BarTextValues()
+	return {
+		{ variable = "$sliceAndDiceTime", description = L["ForeverRogueBarTextVariable_sliceAndDiceTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+	}
+end
+
 TRB.Classic.Templates.Classes:DefineClass("rogue", {
 	general = {
 		archetype = "energyComboPoints",
@@ -226,6 +245,44 @@ TRB.Classic.Templates.Classes:DefineClass("rogue", {
 			"hemorrhage", "kick", "kidneyShot", "rupture", "sinisterStrike", "sliceAndDice",
 		},
 		spells = FillSpells,
+		buffs = { "sliceAndDice" },
+		barTextValues = BarTextValues,
+		-- Ending first, so it outranks the active color near the end.
+		indicators = {
+			{
+				key = "sliceAndDice",
+				buff = "sliceAndDice",
+				color = "FFFF0000",
+				modifiers = {
+					notActive = true,
+					onlyInCombat = true,
+				},
+				targets = { resourceBar = { bar = true, border = false, background = false } },
+				labelKey = "ForeverRogueCheckboxSliceAndDice",
+				tooltipKey = "ForeverRogueIndicatorSliceAndDiceTooltip",
+				colorLabelKey = "ForeverRogueIndicatorSliceAndDiceColor",
+			},
+			{
+				key = "sliceAndDiceEnd",
+				buff = "sliceAndDice",
+				color = "FFFF8000",
+				targets = { resourceBar = { bar = true, border = false, background = false } },
+				labelKey = "ForeverRogueCheckboxSliceAndDiceEnding",
+				tooltipKey = "ForeverRogueIndicatorSliceAndDiceEndTooltip",
+				colorLabelKey = "ForeverRogueIndicatorSliceAndDiceEndColor",
+				endOf = {
+					key = "sliceAndDice",
+					mode = "gcd",
+					gcdsMax = 2,
+					timeMax = 3.0,
+					headerKey = "ForeverRogueHeaderEndOfSliceAndDiceConfiguration",
+					gcdRadioKey = "ForeverRogueCheckboxSliceAndDiceGcds",
+					gcdSliderKey = "ForeverRogueSliceAndDiceGcds",
+					timeRadioKey = "ForeverRogueCheckboxSliceAndDiceTime",
+					timeSliderKey = "ForeverRogueSliceAndDiceTime",
+				},
+			},
+		},
 	},
 })
 

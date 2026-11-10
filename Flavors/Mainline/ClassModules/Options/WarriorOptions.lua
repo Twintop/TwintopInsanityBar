@@ -169,6 +169,7 @@ local function ArmsLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FF800000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = { rageBar = { bar = false, border = true, background = false } },
 					},
@@ -525,6 +526,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 					zeroStackBackground = {
 						color = "FF333333",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						targets = {
 							whirlwindBar = { bar = false, border = false, background = true },
 							enrageBar = { bar = false, border = false, background = false },
@@ -533,6 +535,7 @@ local function FuryLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FF800000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							rageBar = { bar = false, border = true, background = false },
@@ -836,6 +839,7 @@ local function ProtectionLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FF800000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = { rageBar = { bar = false, border = true, background = false } },
 					},

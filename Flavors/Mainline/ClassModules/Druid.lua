@@ -352,7 +352,7 @@ local druidPowerReads = {
 	LUNAR_POWER = { powerType = Enum.PowerType.LunarPower, raw = "astralPower", modified = "astralPowerModified" },
 }
 
----Re-reads the power one event names; any other event re-reads them all.
+---Re-reads the power one event names; powers no form shows are ignored.
 ---@param powerToken string?
 local function UpdateResourceValue(powerToken)
 	local attributes = TRB.Data.snapshotData.attributes
@@ -368,7 +368,6 @@ local function UpdateResourceValue(powerToken)
 	elseif powerToken == "COMBO_POINTS" then
 		attributes.comboPoints = UnitPower("player", Enum.PowerType.ComboPoints, false)
 	else
-		UpdateResourceValues()
 		return
 	end
 	-- Every power event rewrote resource2 from combo points, after Character's handler may have written it; keep that.
@@ -905,8 +904,8 @@ local function RefreshLookupData_Balance()
 	-- Block C: Mana ($mana, $manaMax, $manaPercent)
 	if not activeVars or activeVars["$mana"] or activeVars["$manaMax"] or activeVars["$manaPercent"] then
 		local currentManaColor = (sharedSettings.colors.text.manaBar and sharedSettings.colors.text.manaBar.color) or sharedSettings.colors.text.current.color
-		local normalizedMana = UnitPower("player", Enum.PowerType.Mana)
-		local normalizedManaMax = UnitPowerMax("player", Enum.PowerType.Mana)
+		local normalizedMana = snapshotData.attributes.manaModified
+		local normalizedManaMax = TRB.Data.character.maxMana
 		local manaPrecision = sharedSettings.precision.mana or 1
 		local _manaPercent = UnitPowerPercent("player", Enum.PowerType.Mana)
 		local manaPercentRaw = UnitPowerPercent("player", Enum.PowerType.Mana, false, CurveConstants.ScaleTo100)
@@ -994,7 +993,7 @@ local function RefreshLookupData_Feral()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local isStealthed = IsStealthed()
+		local isStealthed = TRB.Data.character.isStealthed == true
 		local ravageActive = snapshotData.snapshots[spells.ravageMinimum.id].buff.isActive
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource / TRB.Data.resourceFactor
@@ -2222,7 +2221,6 @@ local function UpdateResourceBar()
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 				local flashBar = false
@@ -2285,7 +2283,7 @@ local function UpdateResourceBar()
 				conditionMap.solar = snapshots[spells.eclipseSolar.id].buff.isActive and not celestialActive
 				conditionMap.lunar = snapshots[spells.eclipseLunar.id].buff.isActive and not celestialActive and not snapshots[spells.eclipseSolar.id].buff.isActive
 				conditionMap.touchTheCosmos = (spells.starsurge:IsUsable() and spells.starsurge:IsFree()) or (spells.starfall:IsUsable() and spells.starfall:IsFree())
-				conditionMap.borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId
+				conditionMap.borderOvercap = displaySpecId == TRB.Data.character.specId
 
 				local astralPowerBarColors = scratch.astralPowerBarColors1
 				wipe(astralPowerBarColors)
@@ -2359,8 +2357,8 @@ local function UpdateResourceBar()
 				refreshText = true
 				local manaNode = barGroups and barGroups.mana and barGroups.mana:GetNode(1)
 				if manaNode then
-					local currentMana = snapshotData.attributes.mana or UnitPower("player", Enum.PowerType.Mana) or 0
-					local maxMana = snapshotData.attributes.manaMax or UnitPowerMax("player", Enum.PowerType.Mana) or 1
+					local currentMana = snapshotData.attributes.manaModified
+					local maxMana = TRB.Data.character.maxMana
 					manaNode:SetMinMax(0, maxMana)
 					manaNode:SetValue(currentMana)
 					Bar:ApplyNodeIndicators(manaNode, "manaBar")
@@ -2391,7 +2389,6 @@ local function UpdateResourceBar()
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 
@@ -2425,7 +2422,7 @@ local function UpdateResourceBar()
 					local sharedColors = specSettings.colors.shared
 					local indicatorColors = sharedColors and sharedColors.indicatorColors
 
-					local isStealthed = IsStealthed()
+					local isStealthed = TRB.Data.character.isStealthed == true
 
 					local conditionMap = scratch.conditionMap2
 					wipe(conditionMap)
@@ -2435,7 +2432,7 @@ local function UpdateResourceBar()
 					conditionMap.borderStealth = isStealthed
 					conditionMap.halazzisFury = snapshots[spells.halazzisFury.id].buff.isActive
 					conditionMap.maxBite = snapshotData.attributes.resource2 == 5 and not apcActive
-					conditionMap.borderOvercap = affectingCombat and not isStealthed and displaySpecId == TRB.Data.character.specId
+					conditionMap.borderOvercap = not isStealthed and displaySpecId == TRB.Data.character.specId
 					-- The shared bars and End Caps step Max Bite at its cost, not at the overcap threshold.
 					local maxBitePercent = nil
 					if conditionMap.maxBite then
@@ -2697,7 +2694,6 @@ local function UpdateResourceBar()
 			ironfurColors.border = ironfurBarColors and ironfurBarColors.border.color
 			ironfurColors.background = ironfurBarColors and ironfurBarColors.background.color
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 
@@ -2751,7 +2747,7 @@ local function UpdateResourceBar()
 				wipe(conditionMap)
 				conditionMap.berserkEnd = berserkActive and guardianBerserkEndMet
 				conditionMap.berserk = berserkActive
-				conditionMap.borderOvercap = affectingCombat and displaySpecId == TRB.Data.character.specId
+				conditionMap.borderOvercap = displaySpecId == TRB.Data.character.specId
 
 				local rageBarColors = scratch.rageBarColors1
 				wipe(rageBarColors)
@@ -2832,7 +2828,6 @@ local function UpdateResourceBar()
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
-				local affectingCombat = TRB.Data.character.inCombat
 				refreshText = true
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 
@@ -2876,7 +2871,7 @@ local function UpdateResourceBar()
 					wipe(conditionMap)
 					conditionMap.incarnationEnd = isNativeForm and incarnationActive and incarnationEndMet
 					conditionMap.incarnation = isNativeForm and incarnationActive
-					conditionMap.noEfflorescence = isNativeForm and affectingCombat and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive
+					conditionMap.noEfflorescence = isNativeForm and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive
 					conditionMap.clearcasting = isNativeForm and clearcastingActive
 
 					local manaBarColors = scratch.manaBarColors1
@@ -3223,6 +3218,8 @@ function TRB.Functions.Class:CheckCharacter()
 	unifiedManaDirty = true
 	unifiedManaMaxDirty = true
 	TRB.Data.character.maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
+	-- Seeds every form's power; afterwards each power event re-reads only the power it names.
+	UpdateResourceValues()
 
 	local function SetupSharedSettingsForSpec()
 		local sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
@@ -3566,7 +3563,7 @@ do
 		["$incarnationNextCp"] = incarnFeralBuffFn,
 		["$halazzisFuryTime"] = halazzisFuryFeralFn,
 		["$clearcastingActive"] = clearcastingFn,
-		["$inStealth"] = function() return IsStealthed() end,
+		["$inStealth"] = function() return TRB.Data.character.isStealthed == true end,
 		["$ravageActive"] = function()
 			local spells = TRB.Data.spellsData.spells
 			return TRB.Data.snapshotData.snapshots[spells.ravageMinimum.id].buff.isActive

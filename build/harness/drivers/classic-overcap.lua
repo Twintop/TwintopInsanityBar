@@ -140,9 +140,12 @@ function hooks.afterEvents(ctx)
 		check("an older save's Overcap moves into the priority list", InList(shared.nodeOrder, key) and not InList(shared.gradientOrder, key))
 	end
 
-	-- A power event refreshes the snapshot's resource before the draw, as UNIT_POWER_FREQUENT does in game.
+	-- A power event refreshes the snapshot's resource and marks the form powers stale before the draw, as UNIT_POWER_FREQUENT does in game.
 	local function Draw()
-		try("power", function() TRB.Functions.Character:UpdateResourceValues() end)
+		try("power", function()
+			TRB.Functions.Character:UpdateResourceValues()
+			TRB.Functions.Character:InvalidateAdditionalPowerValues()
+		end)
 		try("draw", function() TRB.Functions.Class:TriggerResourceBarUpdates() end)
 		try("text", function() TRB.Functions.RefreshLookupData() end)
 	end
@@ -179,6 +182,14 @@ function hooks.afterEvents(ctx)
 		TRB.Data.character.inCombat = false
 		Draw()
 		check(overcap.key .. ": out of combat it doesn't", BorderOf(overcap) == overcap.baseBorder)
+		local modifiers = shared.indicatorColors[overcap.key].modifiers
+		check(overcap.key .. ": through Only In Combat, on by default", modifiers ~= nil and modifiers.onlyInCombat == true)
+		if modifiers ~= nil then
+			modifiers.onlyInCombat = false
+			Draw()
+			check(overcap.key .. ": which turned off shows it out of combat too", BorderOf(overcap) == indicatorColor)
+			modifiers.onlyInCombat = true
+		end
 		TRB.Data.character.inCombat = true
 		local settingsOvercap = overcap.key == "borderOvercap" and spec.overcap or spec.bars[overcap.key:gsub("Overcap$", "")].overcap
 		local savedMode, savedRelative = settingsOvercap.mode, settingsOvercap.relative
@@ -189,10 +200,12 @@ function hooks.afterEvents(ctx)
 		settingsOvercap.mode, settingsOvercap.relative = savedMode, savedRelative
 		if overcap.stealthPauses or (overcap.key == "borderOvercap" and shared.indicatorColors.borderStealth ~= nil) then
 			drv.stealthed = true
+			stubs.fireEvents("UPDATE_STEALTH", ctx.addonName)
 			drv.power[overcap.powerType] = drv.maxPower
 			Draw()
 			check(overcap.key .. ": Stealth pauses it", BorderOf(overcap) ~= indicatorColor)
 			drv.stealthed = false
+			stubs.fireEvents("UPDATE_STEALTH", ctx.addonName)
 		end
 		drv.power[overcap.powerType] = 0
 	end

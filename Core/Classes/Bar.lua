@@ -2308,7 +2308,7 @@ end
 ---@field public thresholdActiveAttribute string? # Optional snapshot attribute name that must be truthy for this bar's custom threshold lines to render. nil = always render. Unset by every bar today.
 ---@field public hasSpacing boolean # True if bar supports spacing option (multi-node only)
 ---@field public hasThresholds boolean # True if bar supports threshold lines
----@field public powerType integer? # Enum.PowerType shown by a custom bar whose fill is a player power (Rage, Energy); custom thresholds compare through UnitPowerPercent's secret-safe curve
+---@field public powerType integer? # Enum.PowerType shown by a custom bar whose fill is a player power (Rage, Energy); custom thresholds compare through UnitPowerPercent's secret-safe curve. Must be one of the spec's TRB.Data.additionalPowerTokens, whose cached max places the lines.
 ---@field public colorCurveType string? # nil for simple colors, "step" or "linear" for gradient/threshold colors
 ---@field public thresholdLevels TRB.Classes.BarTypeDefinition.ThresholdLevel[]? # Required when colorCurveType is "step" or "linear". Ordered array of threshold level definitions.
 ---@field public colorTypeLabel string? # Localized string for the color type dropdown header

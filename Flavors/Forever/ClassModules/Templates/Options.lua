@@ -107,9 +107,19 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadT
 		shared.nodeOrder[#shared.nodeOrder + 1] = "borderStealth"
 		shared.indicatorColors.borderStealth = { color = "FF000000", enabled = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
 	end
+	for _, indicator in ipairs(spec.indicators or {}) do
+		shared.nodeOrder[#shared.nodeOrder + 1] = indicator.key
+		shared.indicatorColors[indicator.key] = { color = indicator.color, enabled = true, targets = TRB.Functions.Table:DeepCopy(indicator.targets or {}),
+			modifiers = TRB.Functions.Table:DeepCopy(indicator.modifiers) }
+		local endOf = indicator.endOf
+		if endOf ~= nil then
+			settings.endOf = settings.endOf or {}
+			settings.endOf[endOf.key] = TRB.Functions.Settings:DefaultEndOfSettings(endOf.mode, endOf.gcdsMax, endOf.timeMax)
+		end
+	end
 	if archetype.overcap ~= nil then
 		shared.gradientOrder[#shared.gradientOrder + 1] = "borderOvercap"
-		shared.indicatorColors.borderOvercap = { color = archetype.overcap.color, enabled = true, isGradient = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
+		shared.indicatorColors.borderOvercap = { color = archetype.overcap.color, enabled = true, modifiers = { onlyInCombat = true }, isGradient = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
 	end
 
 	if hasSecondary then
@@ -422,10 +432,26 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 		end)
 
 		-- Every archetype gets the tab for custom indicators; only a resource that can overcap adds its gradient.
+		-- The spec's own built-ins follow Stealth.
 		local indicatorColorsPanel = withSpec(function(parent, specSettings, controls)
 			local indicatorDefs = {}
 			if spec.stealth then
 				indicatorDefs[1] = { key = "borderStealth", label = L["RogueCheckboxStealth"], tooltip = L["RogueIndicatorStealthTooltip"], colorLabel = L["RogueIndicatorStealthColor"] }
+			end
+			local endOfConfigs = {}
+			for _, indicator in ipairs(spec.indicators or {}) do
+				indicatorDefs[#indicatorDefs + 1] = { key = indicator.key, label = L[indicator.labelKey], tooltip = L[indicator.tooltipKey], colorLabel = L[indicator.colorLabelKey] }
+				local endOf = indicator.endOf
+				if endOf ~= nil then
+					endOfConfigs[#endOfConfigs + 1] = {
+						endOfKey = endOf.key,
+						sectionHeader = L[endOf.headerKey],
+						gcdRadioLabel = L[endOf.gcdRadioKey],
+						gcdSliderLabel = L[endOf.gcdSliderKey],
+						timeRadioLabel = L[endOf.timeRadioKey],
+						timeSliderLabel = L[endOf.timeSliderKey],
+					}
+				end
 			end
 			local overcap = archetype.overcap
 			local barTargetDefs = { { key = "resourceBar", label = overcap ~= nil and L[overcap.barNameKey] or resourceName } }
@@ -439,6 +465,7 @@ function TRB.Forever.Templates.Options:Install(className, specThresholds)
 				} or nil,
 				barTargetDefs = barTargetDefs,
 				ddNamePrefix = "TwintopResourceBar_" .. namePrefix,
+				endOfConfigs = #endOfConfigs > 0 and endOfConfigs or nil,
 				overcapConfig = overcap ~= nil and {
 					primaryResourceString = resourceName,
 					primaryResourceMax = maxResource,

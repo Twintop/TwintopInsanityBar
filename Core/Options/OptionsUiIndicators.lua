@@ -480,24 +480,62 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	end
 
 	---@param indicator table?
+	---@param modifier string # A TRB.IndicatorModifiers field
 	---@return boolean
-	local function IsNotActive(indicator)
-		return indicator ~= nil and indicator.modifiers ~= nil and indicator.modifiers.notActive == true
+	local function HasModifier(indicator, modifier)
+		return indicator ~= nil and indicator.modifiers ~= nil and indicator.modifiers[modifier] == true
 	end
 
-	---Turns a row's Not Active on or off, dropping an emptied modifiers table.
+	---Turns one of a row's modifiers on or off. Off is saved as false when the row's built-in has it on by default, so the
+	---login's merge over the defaults can't turn it back on; otherwise the key goes, and an emptied modifiers table with it.
 	---@param indicator table
-	---@param notActive boolean
-	local function SetNotActive(indicator, notActive)
-		if notActive then
+	---@param modifier string # A TRB.IndicatorModifiers field
+	---@param enabled boolean
+	---@param defaultEntry table? # The row's built-in's default entry
+	local function SetModifier(indicator, modifier, enabled, defaultEntry)
+		if enabled then
 			indicator.modifiers = indicator.modifiers or {}
-			indicator.modifiers.notActive = true
+			indicator.modifiers[modifier] = true
+		elseif defaultEntry ~= nil and defaultEntry.modifiers ~= nil and defaultEntry.modifiers[modifier] == true then
+			indicator.modifiers = indicator.modifiers or {}
+			indicator.modifiers[modifier] = false
 		elseif indicator.modifiers ~= nil then
-			indicator.modifiers.notActive = nil
+			indicator.modifiers[modifier] = nil
 			if next(indicator.modifiers) == nil then
 				indicator.modifiers = nil
 			end
 		end
+	end
+
+	---A copy of a row's modifiers for an entry following another built-in: each modifier that built-in has on by default
+	---and the row leaves unset is saved false, so the login's merge over the defaults can't turn it on.
+	---@param modifiers TRB.IndicatorModifiers?
+	---@param defaultEntry table? # The built-in's default entry
+	---@return TRB.IndicatorModifiers?
+	local function ModifiersOverDefault(modifiers, defaultEntry)
+		local out = TRB.Functions.Table:DeepCopy(modifiers)
+		for modifier, on in pairs(defaultEntry ~= nil and defaultEntry.modifiers or {}) do
+			if on == true and (out == nil or out[modifier] == nil) then
+				out = out or {}
+				out[modifier] = false
+			end
+		end
+		return out
+	end
+
+	---A flat row's label, marked with its modifiers.
+	---@param indicator table
+	---@param colorLabel string
+	---@return string
+	local function ModifiedRowLabel(indicator, colorLabel)
+		local text = colorLabel
+		if HasModifier(indicator, "notActive") then
+			text = string.format(L["IndicatorNotActiveLabelFormat"], text)
+		end
+		if HasModifier(indicator, "onlyInCombat") then
+			text = string.format(L["IndicatorOnlyInCombatLabelFormat"], text)
+		end
+		return text
 	end
 
 	---Fills a menu with built-ins, sorted by row label, each with its tooltip. With a current built-in they are radios.
@@ -531,11 +569,12 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 
 	---Opens a row's Edit menu: Change Source, then the modifiers the row offers.
 	---@param owner Frame
-	---@param getIndicator fun(): table? # The row's entry, read live
+	---@param getIndicator fun(): table?, string? # The row's entry and key, read live
 	---@param source TRB.Classes.OptionsUi.IndicatorEditSource
 	---@param offerNotActive boolean
+	---@param offerOnlyInCombat boolean
 	---@param onModifierChanged fun()?
-	local function OpenEditMenu(owner, getIndicator, source, offerNotActive, onModifierChanged)
+	local function OpenEditMenu(owner, getIndicator, source, offerNotActive, offerOnlyInCombat, onModifierChanged)
 		MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
 			local sourceButton = rootDescription:CreateButton(L["IndicatorEditChangeSource"], source.click)
 			local sourceTooltip = source.block or source.tooltip
@@ -550,22 +589,30 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				end)
 			end
 
-			if offerNotActive then
-				rootDescription:CreateDivider()
-				rootDescription:CreateTitle(L["IndicatorEditModifiers"])
-				local checkbox = rootDescription:CreateCheckbox(L["IndicatorModifierNotActive"], function()
-					return IsNotActive(getIndicator())
+			local function AddModifier(modifier, label, tooltip)
+				local checkbox = rootDescription:CreateCheckbox(label, function()
+					return HasModifier(getIndicator(), modifier)
 				end, function()
-					local indicator = getIndicator()
+					local indicator, key = getIndicator()
 					if indicator == nil then return end
-					SetNotActive(indicator, not IsNotActive(indicator))
+					SetModifier(indicator, modifier, not HasModifier(indicator, modifier), GetDefaultEntry(indicator.copyOf or key or ""))
 					if onModifierChanged ~= nil then
 						onModifierChanged()
 					end
 				end)
 				checkbox:SetTooltip(function(tooltipFrame)
-					tooltipFrame:SetText(L["IndicatorModifierNotActiveTooltip"], 1, 1, 1, 1, true)
+					tooltipFrame:SetText(tooltip, 1, 1, 1, 1, true)
 				end)
+			end
+			if offerNotActive or offerOnlyInCombat then
+				rootDescription:CreateDivider()
+				rootDescription:CreateTitle(L["IndicatorEditModifiers"])
+			end
+			if offerNotActive then
+				AddModifier("notActive", L["IndicatorModifierNotActive"], L["IndicatorModifierNotActiveTooltip"])
+			end
+			if offerOnlyInCombat then
+				AddModifier("onlyInCombat", L["IndicatorModifierOnlyInCombat"], L["IndicatorModifierOnlyInCombatTooltip"])
 			end
 		end)
 	end
@@ -712,6 +759,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		local removed = sharedSettings.removed
 		if indicator.copyOf ~= nil and not (removed ~= nil and removed[builtInKey]) then
 			indicator.copyOf = builtInKey
+			indicator.modifiers = ModifiersOverDefault(indicator.modifiers, GetDefaultEntry(builtInKey))
 			indicatorDefByKey[key] = indicatorDefByKey[builtInKey]
 			for barKey in pairs(indicator.targets or {}) do
 				if not offered[barKey] then
@@ -729,7 +777,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		entry.color = indicator.color
 		entry.color2 = indicator.color2
 		entry.gradientDirection = indicator.gradientDirection
-		entry.modifiers = TRB.Functions.Table:DeepCopy(indicator.modifiers)
+		entry.modifiers = ModifiersOverDefault(indicator.modifiers, GetDefaultEntry(builtInKey))
 		-- Laid over the explicit falses, so the login's merge over the defaults can't turn the new built-in's elements on.
 		for barKey, elements in pairs(indicator.targets or {}) do
 			if offered[barKey] then
@@ -1126,8 +1174,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				row.colorPicker.DirectionButton.Font:SetText(gradientDirectionAbbrevLabels[indicator.gradientDirection] or L["GradientDirectionDisabledAbbrev"])
 			end
 			if row.colorPicker.Font then
-				-- A copy shares its built-in's def, so the Not Active mark goes on the text, not the def.
-				row.colorPicker.Font:SetText(IsNotActive(indicator) and string.format(L["IndicatorNotActiveLabelFormat"], def.colorLabel) or def.colorLabel)
+				-- A copy shares its built-in's def, so the modifier marks go on the text, not the def.
+				row.colorPicker.Font:SetText(ModifiedRowLabel(indicator, def.colorLabel))
 				-- After the relabel: the badge is placed past the measured end of the new text.
 				Primitives:AttachCdmBadgeToText(row.colorPicker.Font, def.cdm)
 				Primitives:AttachCustomBadgeToText(row.colorPicker.Font, isCustom, notTracked, badgeTooltip or "")
@@ -1256,7 +1304,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 						PopulateThresholdPicker(description, condition, function(spell, state)
 							PointThresholdConditionAt(condition, spell, state)
 							if state == ThresholdState.STATIC then
-								SetNotActive(currentIndicator, false)
+								SetModifier(currentIndicator, "notActive", false)
 							end
 							Threshold:SyncIndicatorColors(settingsClassName, settingsSpecName)
 							RefreshThresholdTracking()
@@ -1294,8 +1342,9 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				}
 			end
 			OpenEditMenu(self, function()
-				return indicatorColors[orderedKeys[capturedRowIdx]]
-			end, source, offerNotActive, OnEdited)
+				local key = orderedKeys[capturedRowIdx]
+				return indicatorColors[key], key
+			end, source, offerNotActive, true, OnEdited)
 		end)
 		row.editBtn:SetScript("OnEnter", function(self)
 			ShowRowButtonTooltip(self, L["IndicatorEditTooltip"])
@@ -1704,7 +1753,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		yCoord = yCoord - 30
 
 		-- Note explaining gradient behavior
-		controls.gradientNote = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["GradientColorOverridesNote"], oUi.xCoord, yCoord, oUi.maxOptionsWidth, 28)
+		controls.gradientNote = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["GradientColorOverridesNote"], oUi.xCoord-(2*(oUi.xCoord+5)), yCoord, oUi.maxOptionsWidth, 28)
 		yCoord = yCoord - 30
 
 		-- Working copy of gradient ordered keys. Filter out phantom entries so
@@ -1732,7 +1781,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			if row.colorPicker then
 				row.colorPicker.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(indicator.color, true))
 				if row.colorPicker.Font then
-					row.colorPicker.Font:SetText(def.colorLabel)
+					row.colorPicker.Font:SetText(ModifiedRowLabel(indicator, def.colorLabel))
 				end
 				TRB.Functions.OptionsUi.Primitives:ToggleColorPickerEnabled(row.colorPicker, indicator.enabled)
 			end
@@ -1811,14 +1860,15 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			end)
 			gradRow.removeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-			-- A gradient's condition only gates its curve, which does the threshold step; Not Active would just invert the gate.
+			-- A gradient's condition only gates its curve, which does the threshold step, so Not Active would just invert the gate.
 			gradRow.editBtn = Primitives:BuildEditIconButton(parent, 0, 0)
 			gradRow.editBtn:SetScript("OnClick", function(self)
 				local currentKey = orderedGradientKeys[capturedGradIdx]
 				local currentIndicator = indicatorColors[currentKey]
 				if currentIndicator == nil then return end
 				OpenEditMenu(self, function()
-					return indicatorColors[orderedGradientKeys[capturedGradIdx]]
+					local key = orderedGradientKeys[capturedGradIdx]
+					return indicatorColors[key], key
 				end, {
 					tooltip = L["BuiltInGradientChangeSourceTooltip"],
 					populate = function(description)
@@ -1828,10 +1878,13 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 							RefreshRuntime()
 						end)
 					end,
-				}, false)
+				}, false, true, function()
+					RefreshGradientRow(capturedGradIdx)
+					RefreshRuntime()
+				end)
 			end)
 			gradRow.editBtn:SetScript("OnEnter", function(self)
-				ShowRowButtonTooltip(self, L["GradientIndicatorEditTooltip"])
+				ShowRowButtonTooltip(self, L["IndicatorEditTooltip"])
 			end)
 			gradRow.editBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 

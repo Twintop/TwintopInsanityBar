@@ -1112,7 +1112,6 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Brewmaster()
 
 		if snapshotData.attributes.isTracking then
-			local affectingCombat = TRB.Data.character.inCombat
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
@@ -1140,7 +1139,8 @@ local function UpdateResourceBar()
 			wipe(conditionMap)
 			conditionMap.invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet
 			conditionMap.invokeNiuzao = invokeNiuzaoActive
-			conditionMap.borderOvercap = affectingCombat
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = true
 			local energyBarColors = scratch.energyBarColors1
 			wipe(energyBarColors)
 			energyBarColors.bar = barColor
@@ -1348,7 +1348,6 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Mistweaver()
 
 		if snapshotData.attributes.isTracking then
-			local affectingCombat = TRB.Data.character.inCombat
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.MistweaverSpells]]
 
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar have
@@ -1360,7 +1359,7 @@ local function UpdateResourceBar()
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local conditionMap = scratch.conditionMap2
 			wipe(conditionMap)
-			conditionMap.vivaciousVivification = affectingCombat and (snapshots[spells.vivaciousVivification.id].buff.isActive or snapshots[spells.sereneSurge.id].buff.isActive)
+			conditionMap.vivaciousVivification = snapshots[spells.vivaciousVivification.id].buff.isActive or snapshots[spells.sereneSurge.id].buff.isActive
 			conditionMap.heartOfTheJadeSerpent = false
 			conditionMap.heartOfTheJadeSerpentReady = false
 			local manaBarColors = scratch.manaBarColors1
@@ -1405,8 +1404,7 @@ local function UpdateResourceBar()
 		local specCacheSettings = TRB.Data.specCache.monk_windwalker.settings
 		UpdateSnapshot_Windwalker()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.WindwalkerSpells]]
-		local affectingCombat = TRB.Data.character.inCombat
-		local heartOfTheJadeSerpentReady = affectingCombat and talents:IsTalentActive(spells.heartOfTheJadeSerpent) and
+		local heartOfTheJadeSerpentReady = talents:IsTalentActive(spells.heartOfTheJadeSerpent) and
 			((talents:IsTalentActive(spells.strikeOfTheWindlord) and snapshots[spells.strikeOfTheWindlord.id].cooldown:IsUsable()) or (talents:IsTalentActive(spells.whirlingDragonPunch) and snapshots[spells.whirlingDragonPunch.id].cooldown:IsUsable()))
 		local heartOfTheJadeSerpentActive = snapshots[spells.heartOfTheJadeSerpent.id].buff.isActive
 		local danceOfChiJiActive = snapshotData.attributes.danceOfChiJiActive == true
@@ -1418,7 +1416,8 @@ local function UpdateResourceBar()
 		conditionMap.danceOfChiJi = danceOfChiJiActive
 		conditionMap.hitCombo = snapshots[spells.hitCombo.id].buff.isActive
 			and snapshots[spells.hitCombo.id].buff.applications >= specSettings.stacks.hitCombo.min
-		conditionMap.borderOvercap = affectingCombat
+		-- Overcap's combat gate is its Only In Combat modifier.
+		conditionMap.borderOvercap = true
 		local energyBarColors = scratch.energyBarColors2
 		wipe(energyBarColors)
 		energyBarColors.bar = specSettings.colors.bar.base

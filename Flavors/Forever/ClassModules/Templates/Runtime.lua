@@ -31,6 +31,12 @@ local Threshold = TRB.Functions.Threshold
 ---@field public SwitchSpec fun()
 ---@field public ConstructResourceBar fun(settings: table)
 ---@field public FillSpellData table<string, fun()> # keyed by specName
+---@field public CheckClassCharacter fun(spells: TRB.Classes.SpecializationSpellsBase)? # end of CheckCharacter: re-read talent-dependent character values
+---@field public UpdateClassSnapshot fun(currentTime: number)? # every bar update: advance the class's own timers
+---@field public OnSpellCastSucceeded fun(spellId: integer?, castGuid: string?)? # the player's UNIT_SPELLCAST_SUCCEEDED
+---@field public RefreshClassLookupData fun(lookup: table, lookupLogic: table, prevState: table, activeVars: table?)? # the class's own bar text values
+---@field public IsValidClassVariable fun(var: string): boolean? # bare checks of the class's own bar text values
+---@field public HasClassTimers fun(): boolean? # whether a class timer is counting down
 
 ---Installs the runtime for one class and registers it with the bootstrap. Call only from the module of
 ---the player's class (the class file returns early otherwise).
@@ -77,6 +83,10 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				if spell.hasCooldown then
 					snapshots[spell.id] = TRB.Classes.Snapshot:New(spell)
 				end
+			end
+			for _, key in ipairs(spec.buffs or {}) do
+				local spell = cache.spellsData.spells[key]
+				snapshots[spell.id] = TRB.Classes.Snapshot:New(spell)
 			end
 			cache.barTextVariables = { icons = {}, values = {} }
 		end
@@ -188,7 +198,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 					currentColor = textColors.overThreshold.color
 					castingColor = textColors.overThreshold.color
 				end
-				if textColors.overcap.enabled and not (spec.stealth and IsStealthed()) then
+				if textColors.overcap.enabled and not (spec.stealth and TRB.Data.character.isStealthed == true) then
 					-- The raw settings: the spec cache's composed copy carries no overcap threshold.
 					local overcapCurve = Color:BuildResourceThresholdCurve(TRB.Data.settings[className][spec.entry.specName], currentColor, textColors.overcap.color)
 					if overcapCurve ~= nil then
@@ -244,7 +254,11 @@ function TRB.Forever.Templates.Runtime:Install(className)
 		end
 
 		if spec.stealth and (not activeVars or activeVars["$inStealth"]) then
-			lookupLogic["$inStealth"] = IsStealthed()
+			lookupLogic["$inStealth"] = TRB.Data.character.isStealthed == true
+		end
+
+		if runtime.RefreshClassLookupData ~= nil then
+			runtime.RefreshClassLookupData(lookup, lookupLogic, prevState, activeVars)
 		end
 
 		TRB.Data.lookup = lookup
@@ -253,6 +267,9 @@ function TRB.Forever.Templates.Runtime:Install(className)
 
 	local function UpdateSnapshot()
 		Character:UpdateSnapshot()
+		if runtime.UpdateClassSnapshot ~= nil then
+			runtime.UpdateClassSnapshot(GetTime())
+		end
 	end
 
 	-- Reused per-tick scratch tables so UpdateResourceBar allocates nothing.
@@ -264,6 +281,18 @@ function TRB.Forever.Templates.Runtime:Install(className)
 	local thresholdBar = TRB.Classes.ThresholdBar:New()
 	local thresholdState = TRB.Classes.ThresholdState:New()
 	local thresholdData = TRB.Classes.ThresholdData:New()
+
+	---How many seconds before a buff ends its ending indicator turns on.
+	---@param endOfSettings table
+	---@return number
+	local function GetEndOfWindow(endOfSettings)
+		if endOfSettings.mode == "gcd" then
+			return Character:GetCurrentGCDTime() * endOfSettings.gcdsMax
+		elseif endOfSettings.mode == "time" then
+			return endOfSettings.timeMax
+		end
+		return 0
+	end
 
 	local function UpdateResourceBar()
 		local refreshText = false
@@ -298,11 +327,24 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			-- have their own visibility, so they still need coloring when the resource bar is set to Never Show.
 			local sharedColors = specSettings.colors.shared
 			local powerType = spec.archetype.powerType
-			local isStealthed = spec.stealth == true and IsStealthed()
+			local isStealthed = spec.stealth == true and TRB.Data.character.isStealthed == true
 			local conditionMap = scratch.conditionMap
 			wipe(conditionMap)
 			conditionMap.borderStealth = isStealthed
-			conditionMap.borderOvercap = TRB.Data.character.inCombat and not isStealthed
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap.borderOvercap = not isStealthed
+			if spec.indicators ~= nil then
+				local spells = TRB.Data.spellsData.spells
+				for i = 1, #spec.indicators do
+					local indicator = spec.indicators[i]
+					local snapshot = snapshotData.snapshots[spells[indicator.buff].id]
+					local isMet = snapshot ~= nil and snapshot.buff.isActive
+					if isMet and indicator.endOf ~= nil then
+						isMet = snapshot.buff.remaining <= GetEndOfWindow(specSettings.endOf[indicator.endOf.key])
+					end
+					conditionMap[indicator.key] = isMet
+				end
+			end
 			local barColors = scratch.barColors
 			wipe(barColors)
 			barColors.bar = specSettings.colors.bar.base
@@ -526,6 +568,10 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				end
 			end
 		end
+
+		if runtime.CheckClassCharacter ~= nil then
+			runtime.CheckClassCharacter(specCache[spec.entry.compositeKey].spellsData.spells)
+		end
 	end
 
 	function TRB.Functions.Class:EventRegistration()
@@ -588,7 +634,8 @@ function TRB.Forever.Templates.Runtime:Install(className)
 	---other archetypes have no cast-time resource spending to predict. A finished cast refreshes its cooldown.
 	---@param event string
 	---@param spellId integer?
-	function TRB.Functions.Class:SpellCast(event, spellId)
+	---@param castGuid string?
+	function TRB.Functions.Class:SpellCast(event, spellId, castGuid)
 		local spec = ActiveSpec()
 		if spec == nil then
 			return
@@ -599,6 +646,8 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				snapshotData.casting:SnapshotManaSpell()
 				snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 			end
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" and runtime.OnSpellCastSucceeded ~= nil then
+			runtime.OnSpellCastSucceeded(spellId, castGuid)
 		end
 	end
 
@@ -628,6 +677,9 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			if var == secondaryVariable or var == secondaryVariable .. "Max" then
 				return true
 			end
+		end
+		if runtime.IsValidClassVariable ~= nil then
+			return runtime.IsValidClassVariable(var)
 		end
 		return false
 	end
@@ -672,6 +724,9 @@ function TRB.Forever.Templates.Runtime:Install(className)
 	end
 
 	function TRB.Functions.Class:HasActiveTimers()
+		if runtime.HasClassTimers ~= nil then
+			return runtime.HasClassTimers()
+		end
 		return false
 	end
 

@@ -504,6 +504,7 @@ local function BalanceLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							astralPowerBar = { bar = false, border = true, background = false },
@@ -974,6 +975,7 @@ local function FeralLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FFFF0000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							energyBar = { bar = false, border = true, background = false },
@@ -1239,6 +1241,7 @@ local function GuardianLoadDefaultSettings(includeBarText, classic)
 					borderOvercap = {
 						color = "FF800000",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						isGradient = true,
 						targets = {
 							rageBar = { bar = false, border = true, background = false },
@@ -1429,6 +1432,7 @@ local function RestorationLoadDefaultSettings(includeBarText, classic)
 						color2 = "FFFF0000",
 						gradientDirection = "disabled",
 						enabled = true,
+						modifiers = { onlyInCombat = true },
 						targets = {
 							manaBar = { bar = true, border = false, background = false },
 						},

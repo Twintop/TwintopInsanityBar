@@ -22,7 +22,7 @@ local function LoadDefaultThresholdDictionary()
 		sliceAndDice = { enabled = true },
 		kidneyShot = { enabled = true },
 		exposeArmor = { enabled = true },
-		venom = { enabled = true },
+		deathMark = { enabled = true },
 		feint = { enabled = false },
 		sap = { enabled = false },
 		kick = { enabled = true },

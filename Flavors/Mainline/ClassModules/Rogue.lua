@@ -472,7 +472,7 @@ local function RefreshLookupData_Assassination()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local isStealthed = IsStealthed()
+		local isStealthed = TRB.Data.character.isStealthed == true
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -559,7 +559,7 @@ local function RefreshLookupData_Outlaw()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local isStealthed = IsStealthed()
+		local isStealthed = TRB.Data.character.isStealthed == true
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -693,7 +693,7 @@ local function RefreshLookupData_Subtlety()
 			castingEnergyColor = sharedSettings.colors.text.spending.color
 		end
 
-		local isStealthed = IsStealthed()
+		local isStealthed = TRB.Data.character.isStealthed == true
 
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -1004,7 +1004,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Assassination()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.AssassinationSpells]]
 		local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
-		local stealthActive = IsStealthed() or stealthViaBuff
+		local stealthActive = TRB.Data.character.isStealthed == true or stealthViaBuff
 		local sharedColors = specSettings.colors.shared
 		local energyBarColors = scratch.energyBarColors1
 		wipe(energyBarColors)
@@ -1019,7 +1019,7 @@ local function UpdateResourceBar()
 		local conditionMap = scratch.conditionMap1
 		wipe(conditionMap)
 		conditionMap.borderStealth = stealthActive
-		conditionMap.borderOvercap = TRB.Data.character.inCombat and not stealthActive
+		conditionMap.borderOvercap = not stealthActive
 		local barColorMap = scratch.barColorMap1
 		wipe(barColorMap)
 		barColorMap.energyBar = energyBarColors
@@ -1177,7 +1177,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Outlaw()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 		local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive
-		local stealthActive = IsStealthed() or stealthViaBuff
+		local stealthActive = TRB.Data.character.isStealthed == true or stealthViaBuff
 		local sharedColors = specSettings.colors.shared
 		local energyBarColors = scratch.energyBarColors2
 		wipe(energyBarColors)
@@ -1192,7 +1192,7 @@ local function UpdateResourceBar()
 		local conditionMap = scratch.conditionMap2
 		wipe(conditionMap)
 		conditionMap.borderStealth = stealthActive
-		conditionMap.borderOvercap = TRB.Data.character.inCombat and not stealthActive
+		conditionMap.borderOvercap = not stealthActive
 		local barColorMap = scratch.barColorMap2
 		wipe(barColorMap)
 		barColorMap.energyBar = energyBarColors
@@ -1349,7 +1349,7 @@ local function UpdateResourceBar()
 		UpdateSnapshot_Subtlety()
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 		local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
-		local stealthActive = stealthViaBuff or IsStealthed()
+		local stealthActive = stealthViaBuff or TRB.Data.character.isStealthed == true
 		local sharedColors = specSettings.colors.shared
 		local energyBarColors = scratch.energyBarColors3
 		wipe(energyBarColors)
@@ -1364,7 +1364,7 @@ local function UpdateResourceBar()
 		local conditionMap = scratch.conditionMap3
 		wipe(conditionMap)
 		conditionMap.borderStealth = stealthActive
-		conditionMap.borderOvercap = TRB.Data.character.inCombat and not stealthActive
+		conditionMap.borderOvercap = not stealthActive
 		local barColorMap = scratch.barColorMap3
 		wipe(barColorMap)
 		barColorMap.energyBar = energyBarColors
@@ -1861,7 +1861,7 @@ do
 		end,
 		["$comboPoints"] = true,
 		["$comboPointsMax"] = true,
-		["$inStealth"] = function() return IsStealthed() end,
+		["$inStealth"] = function() return TRB.Data.character.isStealthed == true end,
 		["$health"] = true, ["$healthMax"] = true, ["$healthPercent"] = true,
 		["$absorb"] = true, ["$incomingHeal"] = true, ["$healAbsorb"] = true,
 	}

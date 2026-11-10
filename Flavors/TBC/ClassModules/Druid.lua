@@ -169,11 +169,12 @@ end
 ---@param specSettings table
 ---@return boolean
 local function IsFormBarOvercapped(formBar, specSettings)
-	local maxPower = UnitPowerMax("player", formBar.powerType)
+	local power = Character:GetAdditionalPowerValues(formBar.token)
+	local maxPower = power.max
 	if maxPower == nil or maxPower == 0 then
 		return false
 	end
-	return UnitPower("player", formBar.powerType) >= Color:GetOvercapThreshold(specSettings.bars[formBar.key].overcap, maxPower)
+	return power.current >= Color:GetOvercapThreshold(specSettings.bars[formBar.key].overcap, maxPower)
 end
 
 ---Refreshes lookup/lookupLogic: Mana on the primary variables, the form powers, and Combo Points.
@@ -226,7 +227,7 @@ local function RefreshLookupData()
 	end
 
 	local specSettings = TRB.Data.settings[className][specName]
-	local isStealthed = IsStealthed()
+	local isStealthed = TRB.Data.character.isStealthed == true
 	for _, formBar in ipairs(formBars) do
 		local variable = formBar.variable
 		if not activeVars or activeVars[variable] or activeVars[variable .. "Max"] then
@@ -246,12 +247,7 @@ local function RefreshLookupData()
 				end
 			end
 			valueColor = valueColor or currentColor
-			-- Power events only mark the entry dirty; the value is re-read here at most once per tick.
-			local power = snapshotData.formatted.additionalPower[token]
-			if power == nil or power.dirty then
-				Character:UpdateAdditionalPowerValues(token, 0)
-				power = snapshotData.formatted.additionalPower[token]
-			end
+			local power = Character:GetAdditionalPowerValues(token, 0)
 			lookupLogic[variable] = power.current
 			lookupLogic[variable .. "Max"] = power.max
 			if lookupChanged(prevState, variable, power.currentFormatted, valueColor) then
@@ -277,7 +273,7 @@ local function RefreshLookupData()
 	end
 
 	if not activeVars or activeVars["$inStealth"] then
-		lookupLogic["$inStealth"] = IsStealthed()
+		lookupLogic["$inStealth"] = TRB.Data.character.isStealthed == true
 	end
 
 	TRB.Data.lookup = lookup
@@ -323,12 +319,13 @@ local function UpdateResourceBar()
 		-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar
 		-- have their own visibility, so they still need coloring when the resource bar is set to Never Show.
 		local sharedColors = specSettings.colors.shared
-		local isStealthed = IsStealthed()
+		local isStealthed = TRB.Data.character.isStealthed == true
 		local conditionMap = scratch.conditionMap
 		wipe(conditionMap)
 		conditionMap.borderStealth = isStealthed
 		for _, formBar in ipairs(formBars) do
-			conditionMap[formBar.overcapIndicator] = TRB.Data.character.inCombat and not (formBar.overcapPausedInStealth and isStealthed)
+			-- Overcap's combat gate is its Only In Combat modifier.
+			conditionMap[formBar.overcapIndicator] = not (formBar.overcapPausedInStealth and isStealthed)
 				and IsFormBarOvercapped(formBar, specSettings)
 		end
 		local barColors = scratch.barColors
@@ -372,7 +369,8 @@ local function UpdateResourceBar()
 			local node = group and group:GetNode(1)
 			if node and not specSettings.displayBar[formBar.key].neverShow then
 				refreshText = true
-				local maxPower = UnitPowerMax("player", formBar.powerType)
+				local power = Character:GetAdditionalPowerValues(formBar.token)
+				local maxPower = power.max
 				if maxPower == nil or maxPower == 0 then
 					maxPower = 100
 				end
@@ -381,7 +379,7 @@ local function UpdateResourceBar()
 					formBarAppliedMax[formBar.key] = barMax
 					node:SetMinMax(0, barMax)
 				end
-				Bar:SetBarNodeValue(specCacheSettings, formBar.key, node, UnitPower("player", formBar.powerType), barMax)
+				Bar:SetBarNodeValue(specCacheSettings, formBar.key, node, power.current, barMax)
 				Bar:ApplyNodeIndicators(node, formBar.indicator)
 				Color:ApplyNodeColors(node, barColorMap[formBar.indicator])
 				local thresholdBar = thresholdBars[formBar.key]

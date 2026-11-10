@@ -363,12 +363,12 @@ TRB.Frames.combatFrame:SetScript("OnEvent", function(self, event, ...)
 	elseif event == "ENCOUNTER_END" then
 		inEncounter = false
 		-- Encounter over (kill or wipe); reset the timer unless combat is somehow still ongoing.
-		if not InCombatLockdown() then
+		if not TRB.Data.character.inCombat then
 			TRB.Data.character.combatStartTime = nil
 		end
 	elseif event == "PLAYER_UNGHOST" or event == "PLAYER_ALIVE" then
 		-- Fully resurrected out of combat with no active encounter (e.g. corpse run after a world death): reset before the next pull.
-		if not inEncounter and not InCombatLockdown() and not UnitIsDeadOrGhost("player") then
+		if not inEncounter and not TRB.Data.character.inCombat and not UnitIsDeadOrGhost("player") then
 			TRB.Data.character.combatStartTime = nil
 		end
 	end

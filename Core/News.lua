@@ -21,12 +21,17 @@ TRB.Details.coreNewsContent = [====[
 - [#959](#959) Improve bar text update performance in combat.
 - [#959](#959) Fix a buff or proc's bar text timer sometimes staying on screen after it ended, until something else changed.
 - [#964](#964) Fix casting, spending, absorb, and incoming heal overlays drawing over the bar's top and bottom border at some UI scales.
+- [#970](#970) Improve threshold line update performance.
+- [#970](#970) Remove unused target health percent code.
 
 ## Color Indicators
 
 - [#942](#942) Fix a Color Indicator that turns on mid-cast not recoloring the Target and Focus Cast Bars' border until the next cast.
 - [#965](#965) Built-in Color Indicators and gradient colors get an Edit button, whose Change Source switches the row to another built-in and keeps its color and targets.
 - [#965](#965) Add a Not Active option to the Edit button, turning a Color Indicator on while its condition is not met.
+- [#969](#969) Add an Only In Combat option to the Edit button, turning a Color Indicator on only while you are in combat.
+- [#971](#971) Add Only In Combat to gradient colors' Edit button.
+- [#971](#971) Built-in Color Indicators and gradient colors that only showed in combat use Only In Combat instead, on by default.
 
 ## Pet Bars
 

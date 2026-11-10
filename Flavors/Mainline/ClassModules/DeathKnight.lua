@@ -965,8 +965,9 @@ local function GetDeathKnightIndicatorState(specSettings)
 	-- Wiped per call, matching a fresh table: ApplyIndicatorColors writes custom indicator conditions into it.
 	local conditionMap = scratch.conditionMap1
 	wipe(conditionMap)
-	conditionMap.borderOvercap = TRB.Data.character.inCombat
-	conditionMap.runeRegenOvercap = TRB.Data.character.inCombat and runesOnCooldown < 3
+	-- Overcap's combat gate is its Only In Combat modifier.
+	conditionMap.borderOvercap = true
+	conditionMap.runeRegenOvercap = runesOnCooldown < 3
 	conditionMap.runicCorruption = TRB.Data.character.specId == 3 and TRB.Data.snapshotData.attributes.runicCorruptionActive == true
 	conditionMap.vampiricStrike = vampiricStrikeTalented and TRB.Data.snapshotData.attributes.vampiricStrikeActive == true
 

@@ -547,6 +547,8 @@ function hooks.afterEvents(ctx)
 			table.insert(shared.nodeOrder, 1, key)
 			table.insert(shared.nodeOrder, 2, "copy_1")
 			local original = shared.indicatorColors[key]
+			-- This draws out of combat, so a built-in seeded with Only In Combat drops its modifiers for the copy checks.
+			original.modifiers = nil
 			shared.indicatorColors.copy_1 = { copyOf = key, enabled = true, color = COPY, color2 = COPY, gradientDirection = "disabled", targets = {} }
 			drv.force = key
 			-- The first of the spec's bars this draw paints.

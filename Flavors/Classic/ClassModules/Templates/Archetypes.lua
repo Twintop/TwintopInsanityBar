@@ -164,14 +164,44 @@ TRB.Classic.Archetypes = {
 ---@field public fillSpells fun(spells: TRB.Classes.SpecializationSpellsBase)? # adds the spec's abilities to a new spell set
 ---@field public icons string[]? # spell field names offered as #icon bar text variables
 ---@field public stealth boolean? # spec cares about stealth: $inStealth and stealth-gated thresholds
+---@field public buffs string[]? # spell field names the class module tracks as buff snapshots
+---@field public barTextValues (fun(): table[])? # the class module's own bar text values, listed after the archetype's
+---@field public indicators TRB.Classic.SpecIndicator[]? # built-in Color Indicators, listed after Stealth
+
+---A built-in Color Indicator that is on while one of the spec's tracked buffs is active, or only while it is ending.
+---@class TRB.Classic.SpecIndicator
+---@field public key string # indicatorColors and nodeOrder key
+---@field public buff string # spell field name, one of the spec's buffs
+---@field public color string # default color
+---@field public targets table<string, table<string, boolean>>? # default targets; none when nil
+---@field public modifiers TRB.IndicatorModifiers? # default modifiers
+---@field public labelKey string # locale key of the row's name in the Add Built-in and Change Source menus
+---@field public tooltipKey string
+---@field public colorLabelKey string # locale key of the row's label
+---@field public endOf TRB.Classic.SpecIndicatorEndOf? # makes the row an ending one, with its own configuration section
+
+---How an ending indicator's window is set: within some GCDs or seconds of the buff ending.
+---@class TRB.Classic.SpecIndicatorEndOf
+---@field public key string # endOf settings key
+---@field public mode string # default mode, "gcd" or "time"
+---@field public gcdsMax number # default GCD count
+---@field public timeMax number # default seconds
+---@field public headerKey string # locale key of the configuration section's header
+---@field public gcdRadioKey string
+---@field public gcdSliderKey string
+---@field public timeRadioKey string
+---@field public timeSliderKey string
 
 ---How one spec is declared to DefineClass: an archetype key on its own, or a table when the spec
----brings abilities, icons, or stealth along with it.
+---brings abilities, icons, stealth, buffs, bar text values, or indicators along with it.
 ---@class TRB.Classic.SpecDeclaration
 ---@field public archetype string
 ---@field public spells fun(spells: TRB.Classes.SpecializationSpellsBase)?
 ---@field public icons string[]?
 ---@field public stealth boolean?
+---@field public buffs string[]?
+---@field public barTextValues (fun(): table[])?
+---@field public indicators TRB.Classic.SpecIndicator[]?
 
 ---@type table<string, TRB.Classic.ClassDefinition>
 TRB.Classic.Classes = TRB.Classic.Classes or {}
@@ -256,6 +286,7 @@ local function DefineSpellsClass(classModule, spec)
 	local resourceName = L[archetype.nameKey]
 	local icons = spec.icons
 	local stealth = spec.stealth
+	local barTextValues = spec.barTextValues
 
 	---Fills barTextVariables for the options panel display.
 	---@param specCacheEntry TRB.Classes.SpecCache
@@ -290,6 +321,11 @@ local function DefineSpellsClass(classModule, spec)
 		end
 		if stealth then
 			values[#values + 1] = { variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false }
+		end
+		if barTextValues ~= nil then
+			for _, entry in ipairs(barTextValues()) do
+				values[#values + 1] = entry
+			end
 		end
 		specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues(values)
 	end
@@ -388,6 +424,9 @@ function TRB.Classic.Templates.Classes:DefineClass(className, specDeclarations)
 			fillSpells = declaration.spells,
 			icons = declaration.icons,
 			stealth = declaration.stealth,
+			buffs = declaration.buffs,
+			barTextValues = declaration.barTextValues,
+			indicators = declaration.indicators,
 		}
 		DefineSpellsClass(classModule, spec)
 		classDef.specs[entry.specName] = spec

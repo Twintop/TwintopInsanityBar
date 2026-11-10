@@ -1242,9 +1242,10 @@ end
 ---A Color Indicator row's modifiers, saved as `indicatorColors[key].modifiers`.
 ---@class TRB.IndicatorModifiers
 ---@field notActive boolean? # The row is on while its condition is not met
+---@field onlyInCombat boolean? # The row is on only while the player is in combat
 
----Whether a flat row is on right now: its condition, flipped by Not Active. A custom source that can't be read
----stays off either way; a built-in condition the spec left unset counts as not met.
+---Whether a flat row is on right now: its condition, flipped by Not Active and gated by Only In Combat. A custom
+---source that can't be read stays off either way; a built-in condition the spec left unset counts as not met.
 ---@param conditionMap table<string, boolean?>
 ---@param key string
 ---@param indicator table # An indicatorColors entry; `modifiers` is a TRB.IndicatorModifiers
@@ -1252,10 +1253,29 @@ end
 local function IsIndicatorMet(conditionMap, key, indicator)
 	local met = conditionMap[key]
 	local modifiers = indicator.modifiers
-	if modifiers ~= nil and modifiers.notActive then
-		return not met and (met ~= nil or indicator.custom == nil)
+	if modifiers ~= nil then
+		if modifiers.onlyInCombat and not TRB.Data.character.inCombat then
+			return false
+		end
+		if modifiers.notActive then
+			return not met and (met ~= nil or indicator.custom == nil)
+		end
 	end
 	return met
+end
+
+---Whether a gradient row's curve applies right now: its built-in's condition, gated by Only In Combat. A gradient
+---offers no Not Active, which would only invert its gate.
+---@param conditionMap table<string, boolean?>
+---@param builtInKey string
+---@param indicator table # An indicatorColors entry; `modifiers` is a TRB.IndicatorModifiers
+---@return boolean?
+local function IsGradientMet(conditionMap, builtInKey, indicator)
+	local modifiers = indicator.modifiers
+	if modifiers ~= nil and modifiers.onlyInCombat and not TRB.Data.character.inCombat then
+		return false
+	end
+	return conditionMap[builtInKey]
 end
 
 ---Whether a flat row is on right now, for a spec walking nodeOrder against its own condition map.
@@ -1328,7 +1348,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 		for i = 1, #gradientOrder do
 			local key = gradientOrder[i]
 			local indicator = indicatorColors[key]
-			if indicator and indicator.enabled and indicator.isGradient and indicator.targets and conditionMap[indicator.copyOf or key] then
+			if indicator and indicator.enabled and indicator.isGradient and indicator.targets and IsGradientMet(conditionMap, indicator.copyOf or key, indicator) then
 				gradientKeys[indicator] = indicator.copyOf or key
 				gradientsWritten = true
 				for barKey, elements in pairs(indicator.targets) do
@@ -1541,7 +1561,7 @@ function TRB.Functions.Color:ResolveGradientTargets(sharedColors, conditionMap, 
 		local targets = indicator and indicator.targets and indicator.targets[barKey]
 		if targets and indicator.enabled and indicator.isGradient then
 			local builtInKey = indicator.copyOf or key
-			if conditionMap[builtInKey] and (indicatorKey == nil or builtInKey == indicatorKey) then
+			if IsGradientMet(conditionMap, builtInKey, indicator) and (indicatorKey == nil or builtInKey == indicatorKey) then
 				for elemKey, isTargeted in pairs(targets) do
 					if isTargeted and out[elemKey] == nil and not nonColorElements[elemKey] then
 						out[elemKey] = indicator

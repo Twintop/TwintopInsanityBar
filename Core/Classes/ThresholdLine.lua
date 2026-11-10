@@ -57,7 +57,7 @@ function TRB.Classes.ThresholdState:Refresh(settings)
 	self.settings = settings
 	self.snapshotData = TRB.Data.snapshotData
 	-- Only stealth-gated spells read it; nil means GetThresholdSpells hasn't said whether the spec has any.
-	self.isStealthed = TRB.Data.cache.thresholdStealthGated ~= false and IsStealthed()
+	self.isStealthed = TRB.Data.cache.thresholdStealthGated ~= false and TRB.Data.character.isStealthed == true
 	self.currentTime = GetTime()
 end
 

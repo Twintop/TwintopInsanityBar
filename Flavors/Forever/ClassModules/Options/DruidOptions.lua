@@ -208,7 +208,7 @@ local function LoadDefaultSettings(includeBarText, classic)
 		settings.bars[formBar.key].overcap = { mode = "relative", relative = 0, fixed = maxResources[formBar.key] }
 		settings.bars[formBar.key].maxResource = { enabled = false, value = maxResources[formBar.key] }
 		shared.gradientOrder[#shared.gradientOrder + 1] = formBar.overcapKey
-		shared.indicatorColors[formBar.overcapKey] = { color = formBar.archetype.overcap.color, enabled = true, isGradient = true, targets = { [formBar.indicator] = { bar = false, border = true, background = false } } }
+		shared.indicatorColors[formBar.overcapKey] = { color = formBar.archetype.overcap.color, enabled = true, modifiers = { onlyInCombat = true }, isGradient = true, targets = { [formBar.indicator] = { bar = false, border = true, background = false } } }
 	end
 
 	if includeBarText then
