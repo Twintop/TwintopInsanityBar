@@ -1753,7 +1753,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		yCoord = yCoord - 30
 
 		-- Note explaining gradient behavior
-		controls.gradientNote = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["GradientColorOverridesNote"], oUi.xCoord-(2*(oUi.xCoord+5)), yCoord, oUi.maxOptionsWidth, 28)
+		controls.gradientNote = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["GradientColorOverridesNote"], oUi.xCoord, yCoord, oUi.maxOptionsWidth-10, 28)
 		yCoord = yCoord - 30
 
 		-- Working copy of gradient ordered keys. Filter out phantom entries so
