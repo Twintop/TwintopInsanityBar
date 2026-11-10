@@ -8,6 +8,13 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.12-release (2026-11-10)
+## Druid
+
+- Fix a Lua error from happening on initial login.
+
+---
+
 # 12.1.5.11-release (2026-11-10)
 ## Death Knight
 
