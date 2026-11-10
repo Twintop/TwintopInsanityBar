@@ -323,6 +323,38 @@ function TRB.Functions.OptionsUi.Tabs:SwitchToBarTextTabByClassSpec(classId, spe
 	TRB.Functions.OptionsUi.Tabs:SwitchToTabByClassSpec(classId, specId, "barText")
 end
 
+---Opens the tab holding a bar's own options, on Global Options' screens or a specialization's panel.
+---@param classId integer? # nil is the global scope
+---@param specId integer?
+---@param barKey string
+function TRB.Functions.OptionsUi.Tabs:OpenBarTab(classId, specId, barKey)
+	local barGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(barKey, classId, specId)
+	local visibilityKey = TRB.Functions.Bar:GetVisibilityKey(barKey)
+	local navKey
+	if classId == nil or specId == nil then
+		classId, specId = nil, nil
+		navKey = barGroup == "spec" and "global" or barGroup
+	else
+		navKey = TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+	end
+	if navKey == nil then
+		return
+	end
+	TRB.Options.OptionsFrame:SelectCategory(navKey)
+	C_Timer.After(0, function()
+		-- A grouping's bars sit on a strip inside the spec panel's tab for that grouping, built on first visit.
+		if classId ~= nil and barGroup ~= "spec" then
+			self:SwitchToTabByClassSpec(classId, specId, barGroup)
+		end
+		for _, entry in ipairs(barTabs) do
+			if entry.classId == classId and entry.specId == specId and entry.visibilityKey == visibilityKey then
+				TRB.Functions.OptionsUi.Tabs.SwitchTab(entry.tab, entry.tab.id)
+				return
+			end
+		end
+	end)
+end
+
 ---Standard tab key constants used across all options panels.
 TRB.Functions.OptionsUi.Tabs.TabKeys = {
 	BarDisplay = "barDisplay",

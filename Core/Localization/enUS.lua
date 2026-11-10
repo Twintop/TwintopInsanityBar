@@ -1518,9 +1518,6 @@ L["MonkAudioCheckboxChiThreshold3Tooltip"] = "Play an audio cue when your curren
 L["OpenTRBOptions"] = "Open Twintop's Resource Bar Options"
 L["OpenTRBOptionsDescription"] = "Click the button below or type /trb to open options."
 
--- Drag & Drop removal
-L["DragAndDropEditModeMessage"] = "For Drag & Drop placement of the bar, please use Edit Mode."
-
 -- Options Frame Footer
 L["AboutTwintopsResourceBar"] = "About Twintop's Resource Bar"
 L["FooterDiscord"] = "Discord"
@@ -4384,3 +4381,5 @@ L["PreviewModeTooltip"] = "Show every bar that isn't set to Never Show, with eac
 L["PreviewModeDragTooltip"] = "Drag to move this bar and every bar anchored with it."
 L["PreviewModeEditModeTooltip"] = "This bar is positioned using Edit Mode."
 L["PreviewModeNoScreenAnchorTooltip"] = "This bar can't be moved because the bar it is anchored to isn't available."
+L["PreviewModeClickTooltip"] = "Click to open the options that position it."
+L["DragAndDropEditModeMessage"] = "For Drag & Drop placement of the bar, please enable \"Preview Mode\" above or use Edit Mode."

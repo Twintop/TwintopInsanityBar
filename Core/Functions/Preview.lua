@@ -8,6 +8,12 @@ TRB.Functions.Preview = {}
 
 -- Above every bar overlay, threshold line, and bar text frame in the bar's strata.
 local HANDLE_FRAME_LEVEL = 9000
+local ANCHOR_ICON_SIZE = 16
+local ANCHOR_TEXTURE = "Interface\\AddOns\\TwintopInsanityBar\\Images\\anchor64.png"
+local LOCK_TEXTURE = "Interface\\AddOns\\TwintopInsanityBar\\Images\\lock64.png"
+-- How far outside the bar the selection border sits, and how thick it is.
+local SELECTION_OUTSET = 3
+local SELECTION_THICKNESS = 2
 
 local active = false
 ---@type table<string, TRB.Classes.PreviewHandle>
@@ -29,6 +35,7 @@ local dragStartY = 0
 ---@field rootBarKey string? # The root of the stack this bar belongs to
 ---@field lockReason string? # Why the bar can't be dragged; nil when it can
 ---@field lockTexture Texture
+---@field anchorIcon Texture # Marks the point the bar, or its stack, is attached by
 
 ---@return boolean
 function TRB.Functions.Preview:IsActive()
@@ -181,7 +188,90 @@ local function ShowTooltip(handle)
 	GameTooltip:SetOwner(handle, "ANCHOR_CURSOR")
 	GameTooltip:SetText(TRB.Functions.Bar:GetBarDisplayName(handle.barKey, TRB.Data.character.classId, TRB.Data.character.specId), 1, 1, 1)
 	GameTooltip:AddLine(handle.lockReason or L["PreviewModeDragTooltip"], nil, nil, nil, true)
+	GameTooltip:AddLine(L["PreviewModeClickTooltip"], nil, nil, nil, true)
 	GameTooltip:Show()
+end
+
+-- The border around the bar last clicked; it rides that bar's handle.
+---@type Frame?
+local selectionFrame = nil
+
+---@param handle TRB.Classes.PreviewHandle
+local function SelectHandle(handle)
+	if selectionFrame == nil then
+		selectionFrame = CreateFrame("Frame", nil, handle)
+		local function Edge(point, relativePoint, width, height)
+			local edge = selectionFrame:CreateTexture(nil, "OVERLAY")
+			edge:SetColorTexture(1, 0.82, 0, 1)
+			edge:SetPoint(point, selectionFrame, point, 0, 0)
+			edge:SetPoint(relativePoint, selectionFrame, relativePoint, 0, 0)
+			if width ~= nil then
+				edge:SetWidth(width)
+			else
+				edge:SetHeight(height)
+			end
+		end
+		Edge("TOPLEFT", "TOPRIGHT", nil, SELECTION_THICKNESS)
+		Edge("BOTTOMLEFT", "BOTTOMRIGHT", nil, SELECTION_THICKNESS)
+		Edge("TOPLEFT", "BOTTOMLEFT", SELECTION_THICKNESS, nil)
+		Edge("TOPRIGHT", "BOTTOMRIGHT", SELECTION_THICKNESS, nil)
+	end
+	selectionFrame:SetParent(handle)
+	selectionFrame:ClearAllPoints()
+	selectionFrame:SetPoint("TOPLEFT", handle, "TOPLEFT", -SELECTION_OUTSET, SELECTION_OUTSET)
+	selectionFrame:SetPoint("BOTTOMRIGHT", handle, "BOTTOMRIGHT", SELECTION_OUTSET, -SELECTION_OUTSET)
+	selectionFrame:Show()
+end
+
+---Whether Global Options owns a bar's position, as its Use Global setting decides.
+---@param barKey string
+---@return boolean
+local function IsPositionedByGlobalOptions(barKey)
+	local barGroups = TRB.Frames.barGroups
+	local anchor = barGroups and barGroups.layoutSettings and TRB.Functions.Bar:GetBarAnchor(barGroups.layoutSettings, barKey)
+	local coreSettings = TRB.Functions.Bar:GetBarSettings(TRB.Data.settings.core, barKey)
+	return anchor ~= nil and coreSettings ~= nil and rawget(coreSettings, "anchor") == anchor
+end
+
+---Opens the options tab that positions a bar: Global Options' when that owns it, else the spec's.
+---@param handle TRB.Classes.PreviewHandle
+local function OpenPositionTab(handle)
+	if IsPositionedByGlobalOptions(handle.barKey) then
+		TRB.Functions.OptionsUi.Tabs:OpenBarTab(nil, nil, handle.barKey)
+	else
+		TRB.Functions.OptionsUi.Tabs:OpenBarTab(TRB.Data.character.classId, TRB.Data.character.specId, handle.barKey)
+	end
+end
+
+---Puts a handle's icon on the point its bar is attached by: a frame-anchored Edit Mode stack's point on its wrapper, a
+---screen-anchored or freely placed root's center, or an anchored bar's own attach point.
+---@param handle TRB.Classes.PreviewHandle
+---@param barGroups table
+local function PlaceAnchorIcon(handle, barGroups)
+	local EditMode = TRB.Functions.EditMode
+	local barKey = handle.barKey
+	local rootBarKey = handle.rootBarKey
+	local frame = handle --[[@as Frame]]
+	local point = "CENTER"
+	local texture = ANCHOR_TEXTURE
+	if barKey ~= rootBarKey then
+		local anchor = barGroups.layoutSettings and TRB.Functions.Bar:GetBarAnchor(barGroups.layoutSettings, barKey)
+		point = anchor and anchor.attachPoint or "CENTER"
+	elseif rootBarKey ~= nil and EditMode:IsLayoutEnabled(nil, rootBarKey) then
+		texture = LOCK_TEXTURE
+		local wrapper = EditMode:GetWrapperFrame(rootBarKey)
+		if wrapper ~= nil then
+			local anchorFrameKey = EditMode:GetAnchorFrameKey(nil, rootBarKey)
+			if anchorFrameKey ~= "none" and EditMode:GetAnchorFrame(anchorFrameKey, EditMode:GetCustomFrameName(nil, rootBarKey)) ~= nil then
+				frame = wrapper
+				point = EditMode:GetAttachPoint(nil, rootBarKey) or "CENTER"
+			end
+			-- A freely placed stack's saved point is only the screen region the client measured it from.
+		end
+	end
+	handle.anchorIcon:SetTexture(texture)
+	handle.anchorIcon:ClearAllPoints()
+	handle.anchorIcon:SetPoint("CENTER", frame, point, 0, 0)
 end
 
 ---@param kind string
@@ -198,15 +288,20 @@ local function CreateHandle(kind, barKey)
 	highlight:SetAllPoints()
 	highlight:SetColorTexture(1, 1, 1, 0.15)
 
-	handle.lockTexture = handle:CreateTexture(nil, "OVERLAY")
+	handle.lockTexture = handle:CreateTexture(nil, "ARTWORK")
 	handle.lockTexture:SetAllPoints()
-	handle.lockTexture:SetColorTexture(0.3, 0.3, 0.3, 0.75)
+	handle.lockTexture:SetColorTexture(0.4, 0.4, 0.4, 0.4)
 	handle.lockTexture:Hide()
+
+	handle.anchorIcon = handle:CreateTexture(nil, "OVERLAY")
+	handle.anchorIcon:SetSize(ANCHOR_ICON_SIZE, ANCHOR_ICON_SIZE)
 
 	handle:SetScript("OnEnter", ShowTooltip)
 	handle:SetScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
+	handle:SetScript("OnMouseDown", SelectHandle)
+	handle:SetScript("OnClick", OpenPositionTab)
 	handle:SetScript("OnDragStart", BeginDrag)
 	handle:SetScript("OnDragStop", EndDrag)
 	handle:SetScript("OnHide", EndDrag)
@@ -231,6 +326,9 @@ end
 
 local function HideHandles()
 	EndDrag()
+	if selectionFrame ~= nil then
+		selectionFrame:Hide()
+	end
 	for _, handle in pairs(handles) do
 		handle:Hide()
 	end
@@ -268,6 +366,7 @@ function TRB.Functions.Preview:Refresh()
 			handle.rootBarKey = rootBarKey
 			handle.lockReason = lockReasons[rootBarKey] or nil
 			handle.lockTexture:SetShown(handle.lockReason ~= nil)
+			PlaceAnchorIcon(handle, barGroups)
 			handle:Show()
 		end
 	end

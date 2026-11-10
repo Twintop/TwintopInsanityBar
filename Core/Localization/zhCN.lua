@@ -1501,9 +1501,6 @@ if locale == "zhCN" then
     L["OpenTRBOptions"] = "打开Twintop资源条设置"
     L["OpenTRBOptionsDescription"] = "点击下方按钮或输入 /trb 打开设置界面。"
 
-	-- Drag & Drop removal
-    L["DragAndDropEditModeMessage"] = "如需拖动调整资源条位置，请使用编辑模式。"
-
 	-- Options Frame Footer
     L["AboutTwintopsResourceBar"] = "关于Twintop资源条"
     L["FooterDiscord"] = "Discord社区"

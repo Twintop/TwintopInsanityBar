@@ -181,6 +181,34 @@ function hooks.afterEvents(ctx)
 		check("the lock lifts with Edit Mode's setting", rawget(dragHandle, "lockReason") == nil)
 	end
 
+	-- A click opens the tab that positions the bar, on Global Options when that owns its anchor.
+	local Tabs = TRB.Functions.OptionsUi.Tabs
+	local openBarTab = Tabs.OpenBarTab
+	local opened = {}
+	Tabs.OpenBarTab = function(_, classId, specId, barKey)
+		opened[barKey] = { classId = classId, specId = specId }
+	end
+	local clicksOk = true
+	for barKey, handle in pairs(BarHandles()) do
+		if handle:IsShown() then
+			handle:GetScript("OnMouseDown")(handle)
+			handle:GetScript("OnClick")(handle)
+			local coreSettings = Bar:GetBarSettings(TRB.Data.settings.core, barKey)
+			local anchor = Bar:GetBarAnchor(barGroups.layoutSettings, barKey)
+			local global = anchor ~= nil and coreSettings ~= nil and rawget(coreSettings, "anchor") == anchor
+			local call = opened[barKey]
+			if call == nil or (call.classId == nil) ~= global or (not global and call.specId ~= TRB.Data.character.specId) then
+				clicksOk = false
+				print("  click on " .. barKey .. " opened " .. tostring(call and call.classId))
+			end
+		end
+	end
+	check("a click opens the bar's position tab in the scope that owns it", clicksOk)
+	Tabs.OpenBarTab = openBarTab
+	local navOk, navError = pcall(Tabs.OpenBarTab, Tabs, TRB.Data.character.classId, TRB.Data.character.specId, "primary")
+	Drain("NAV")
+	check("the spec's bar tab opens" .. (navOk and "" or (": " .. tostring(navError))), navOk)
+
 	-- Combat ends it.
 	stubs.fireEvents("PLAYER_REGEN_DISABLED", ctx.addonName)
 	Drain("COMBAT")
