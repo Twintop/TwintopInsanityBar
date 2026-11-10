@@ -303,10 +303,15 @@ end
 ---Updates all resource values for Druids (Energy, Rage, Mana, Astral Power, Combo Points)
 ---This allows cross-form bar text variables to work
 local function UpdateResourceValues()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+
+	-- UPDATE_SHAPESHIFT_FORM can fire at login before the spec cache is loaded; the post-load CheckCharacter seeds these.
+	if snapshotData == nil or snapshotData.attributes == nil then
+		return
+	end
+
 	-- Track all resources simultaneously for form-based switching and cross-form bar text
-	snapshotData.attributes.energy = UnitPower("player", Enum.PowerType.Energy, true)
+	snapshotData.attributes.energy =UnitPower("player", Enum.PowerType.Energy, true)
 	snapshotData.attributes.energyModified = UnitPower("player", Enum.PowerType.Energy, false)
 	
 	snapshotData.attributes.rage = UnitPower("player", Enum.PowerType.Rage, true)
