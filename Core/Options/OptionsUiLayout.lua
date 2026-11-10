@@ -9,73 +9,16 @@ local L = TRB.Localization
 -- Bar layout and dimensions options
 -- ============================================================================
 
----Ensures the bar settings table has an anchor block, synthesizing from legacy fields if needed.
----Returns the anchor block (creates it if absent).
----@param barSettings table # A bar dimensions table (e.g., spec.comboPoints, spec.healthBar, barSettings)
----@param barKey string? # The bar key of this bar (e.g., "primary", "secondary", "health"). Used to determine default anchor target.
----@return table anchor # The anchor block
+---@param barSettings table
+---@param barKey string?
+---@return table anchor
 local function EnsureAnchorBlock(barSettings, barKey)
-	if barSettings.anchor then
-		return barSettings.anchor
-	end
-	-- Primary bar (or no barKey) defaults to "screen"; all others default to "primary"
-	local defaultTarget = (barKey == "primary") and "screen" or "primary"
-	-- Synthesize from legacy fields
-	local anchor = {
-		barKey = defaultTarget,
-		anchorPoint = "TOP",
-		attachPoint = "BOTTOM",
-		xOffset = barSettings.xPos or 0,
-		yOffset = barSettings.yPos or 0,
-		matchWidth = barSettings.fullWidth or false,
-	}
-	if barKey == "primary" then
-		-- Primary bar: screen anchor uses absolute position, default points are CENTER/CENTER
-		anchor.anchorPoint = "CENTER"
-		anchor.attachPoint = "CENTER"
-		anchor.xOffset = barSettings.xPos or 0
-		anchor.yOffset = barSettings.yPos or -200
-	elseif barSettings.relativeTo then
-		local mapping = TRB.Data.constants.relativeToAnchorMap[barSettings.relativeTo]
-		if mapping then
-			anchor.anchorPoint = mapping.anchorPoint
-			anchor.attachPoint = mapping.attachPoint
-		end
-	end
-	barSettings.anchor = anchor
-	return anchor
+	return TRB.Functions.Bar:EnsureAnchorBlock(barSettings, barKey)
 end
 
----Dual-writes anchor block values back to legacy fields for backward compatibility.
----Call after any change to barSettings.anchor so that legacy readers remain correct.
----@param barSettings table # A bar dimensions table with an anchor block
+---@param barSettings table
 local function DualWriteAnchorToLegacy(barSettings)
-	if not barSettings or not barSettings.anchor then return end
-	local anchor = barSettings.anchor
-	barSettings.xPos = anchor.xOffset or 0
-	barSettings.yPos = anchor.yOffset or 0
-	barSettings.fullWidth = anchor.matchWidth or false
-	-- Best-match relativeTo from anchorPoint (only for bar-anchored bars, not screen-anchored)
-	if anchor.barKey and anchor.barKey ~= "screen" then
-		local reverseMap = TRB.Data.constants.anchorPointToRelativeToMap
-		if reverseMap and anchor.anchorPoint then
-			barSettings.relativeTo = reverseMap[anchor.anchorPoint]
-			local nameMap = {
-				TOPLEFT = L["PositionAboveLeft"],
-				TOP = L["PositionAboveMiddle"],
-				TOPRIGHT = L["PositionAboveRight"],
-				BOTTOMLEFT = L["PositionBelowLeft"],
-				BOTTOM = L["PositionBelowMiddle"],
-				BOTTOMRIGHT = L["PositionBelowRight"],
-			}
-			barSettings.relativeToName = nameMap[barSettings.relativeTo] or ""
-		end
-	else
-		-- Screen-anchored: clear stale legacy fields so MigrateBarAnchors
-		-- won't incorrectly re-derive a bar-relative anchor from them on import.
-		barSettings.relativeTo = nil
-		barSettings.relativeToName = nil
-	end
+	TRB.Functions.Bar:DualWriteAnchorToLegacy(barSettings)
 end
 
 ---Lookup table mapping 9-point anchor constants to their localized display names.
@@ -488,6 +431,8 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 			end
 		end
 	end)
+
+	TRB.Functions.Preview:RegisterPositionSliders(primaryAnchor, controls.horizontal, controls.vertical)
 
 	title = L["BarBorderWidth"]
 	yCoord = yCoord - 60
@@ -1016,6 +961,8 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 			end
 		end
 	end)
+
+	TRB.Functions.Preview:RegisterPositionSliders(anchor, controls[settingKey .. "Horizontal"], controls[settingKey .. "Vertical"])
 
 	-- Border width slider
 	title = string.format(L["SecondaryBorderWidth"], displayName)
@@ -1658,6 +1605,8 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
+
+	TRB.Functions.Preview:RegisterPositionSliders(anchor, controls[barTypeDef.key .. "XPos"], controls[barTypeDef.key .. "YPos"])
 
 	-- Border slider
 	yCoord = yCoord - 60

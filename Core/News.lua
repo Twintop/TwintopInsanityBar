@@ -4,6 +4,15 @@ local _, TRB = ...
 -- first. Titles name the Live, Forever, Classic, and TBC releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.12-release / Forever 1.60.1.19-release / Classic 1.15.9.4-release / TBC 2.5.6.2-release (2026-11-10)
+## Preview Mode
+
+- Add a Preview Mode checkbox to the top of the options window, showing every bar that isn't set to Never Show, with each Bar Text Area showing its name.
+- In Preview Mode, drag a bar to move it and every bar anchored with it. Bars positioned using Edit Mode can't be dragged.
+- Preview Mode ends when the options window closes, Edit Mode opens, or you enter combat.
+
+---
+
 # Live 12.1.5.11-release / Forever 1.60.1.18-release / Classic 1.15.9.3-release / TBC 2.5.6.1-release (2026-11-10)
 ## General
 

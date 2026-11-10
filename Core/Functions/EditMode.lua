@@ -277,7 +277,7 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings, rootBarKey)
 	-- Edit Mode layout is enabled - encompass all bars for proper selection box
 
 	-- In Edit Mode, include all bars (even hidden ones)
-	local includeHidden = self:IsInEditMode()
+	local includeHidden = self:IsShowingAllBars()
 
 	-- Calculate wrapper layout from settings for this specific tree root
 	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = self:CalculateWrapperLayout(settings, includeHidden, rootBarKey)
@@ -321,7 +321,7 @@ function TRB.Functions.EditMode:RefreshFormWrapperVisibility(settings, forest)
 	end
 
 	-- Don't hide wrappers during Edit Mode — all bars should remain visible
-	if self:IsInEditMode() then
+	if self:IsShowingAllBars() then
 		return
 	end
 
@@ -1386,6 +1386,8 @@ end
 
 ---Called when Edit Mode is entered
 function TRB.Functions.EditMode:OnEditModeEnter()
+	TRB.Functions.Preview:SetActive(false)
+
 	-- Raise ALL wrapper frames' strata so selection frames can receive mouse events
 	for _, wrapperFrame in pairs(editModeWrapperFrames) do
 		if wrapperFrame then
@@ -1426,6 +1428,11 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		end
 	end
 
+	self:RestoreLiveBars()
+end
+
+---Hands every bar back to its live visibility after Edit Mode or Preview Mode showed them all.
+function TRB.Functions.EditMode:RestoreLiveBars()
 	-- Reapply layout to reset frame stratas and levels after Edit Mode
 	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 		local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
@@ -1657,6 +1664,12 @@ function TRB.Functions.EditMode:IsInEditMode()
 		return false
 	end
 	return LibEditMode:IsInEditMode()
+end
+
+---Whether every bar is being shown for placement, by Edit Mode or by Preview Mode.
+---@return boolean
+function TRB.Functions.EditMode:IsShowingAllBars()
+	return TRB.Functions.Preview:IsActive() or self:IsInEditMode()
 end
 
 ---@deprecated No longer needed - Edit Mode is controlled per-layout only

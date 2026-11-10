@@ -12,6 +12,7 @@
 	<Script file="Functions\Color.lua"/>
 	<Script file="Functions\Glow.lua"/>
 	<Script file="Functions\EditMode.lua"/>
+	<Script file="Functions\Preview.lua"/>
 	<Script file="Functions\Item.lua"/>
 	<Script file="Functions\IO.lua"/>
 	<Script file="Functions\LibSharedMedia.lua"/>

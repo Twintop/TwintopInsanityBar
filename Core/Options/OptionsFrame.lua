@@ -269,6 +269,25 @@ function OptionsFrame:EnsureFrame()
 		mainFrame:Hide()
 	end)
 
+	-- Preview Mode toggle, left of the close button
+	local previewCheckbox = CreateFrame("CheckButton", "TRB_OptionsFrame_PreviewMode", titleBar, "ChatConfigCheckButtonTemplate")
+	local previewLabel = getglobal(previewCheckbox:GetName() .. "Text")
+	previewLabel:SetText(L["PreviewMode"])
+	previewCheckbox:SetPoint("RIGHT", titleBar, "RIGHT", -(36 + previewLabel:GetStringWidth()), 0)
+	previewCheckbox:SetHitRectInsets(0, -previewLabel:GetStringWidth(), 0, 0)
+	---@diagnostic disable-next-line: inject-field
+	previewCheckbox.tooltip = L["PreviewModeTooltip"]
+	previewCheckbox:SetScript("OnClick", function(self)
+		TRB.Functions.Preview:SetActive(self:GetChecked())
+		self:SetChecked(TRB.Functions.Preview:IsActive())
+	end)
+	TRB.Functions.Preview:AddListener(function(active)
+		previewCheckbox:SetChecked(active)
+	end)
+	mainFrame:HookScript("OnHide", function()
+		TRB.Functions.Preview:SetActive(false)
+	end)
+
 	-- Divider under title
 	local titleDivider = mainFrame:CreateTexture(nil, "ARTWORK")
 	titleDivider:SetHeight(1)

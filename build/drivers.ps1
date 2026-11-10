@@ -63,6 +63,7 @@ $drivers = @(
 	[pscustomobject]@{ Name = "combat-conditions"; EveryClass = $false },
 	[pscustomobject]@{ Name = "classic-overcap"; EveryClass = $true },
 	[pscustomobject]@{ Name = "totems"; EveryClass = $true },
+	[pscustomobject]@{ Name = "preview-mode"; EveryClass = $true },
 	[pscustomobject]@{ Name = "indicator-copies"; EveryClass = $true },
 	[pscustomobject]@{ Name = "indicator-modifiers"; EveryClass = $true },
 	[pscustomobject]@{ Name = "bartext-conformance"; EveryClass = $true },

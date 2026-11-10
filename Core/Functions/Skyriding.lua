@@ -827,7 +827,7 @@ end
 ---Whether any Skyriding bar should be on screen, or still is. Edit Mode previews them through ProcessBars instead.
 ---@return boolean
 local function NeedsUpdater()
-	if TRB.Functions.EditMode:IsInEditMode() then
+	if TRB.Functions.EditMode:IsShowingAllBars() then
 		return false
 	end
 	local barGroups = TRB.Frames.barGroups
@@ -862,7 +862,7 @@ local function ResyncAfterChange()
 end
 
 updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
-	if TRB.Functions.EditMode:IsInEditMode() then
+	if TRB.Functions.EditMode:IsShowingAllBars() then
 		updaterFrame:Hide()
 		return
 	end
@@ -1067,7 +1067,7 @@ end
 
 ---Re-resolves every bar's display after a settings or environment change; the updater parks itself once nothing shows.
 function TRB.Functions.Skyriding:RefreshVisibility()
-	if SKYRIDING == nil or TRB.Functions.EditMode:IsInEditMode() then
+	if SKYRIDING == nil or TRB.Functions.EditMode:IsShowingAllBars() then
 		return
 	end
 	InvalidateRender()
