@@ -4,6 +4,29 @@ local _, TRB = ...
 -- first. Titles name the Live, Forever, Classic, and TBC releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.13-release / Forever 1.60.1.19-release / Classic 1.15.9.4-release / TBC 2.5.6.2-release (2026-11-10)
+## General
+
+- [#974](#974) Update LibEditMode to version 19.
+
+## Edit Mode
+
+- [#974](#974) Add X and Y position entry for the selected bar in Edit Mode.
+- [#974](#974) Bars dragged in Edit Mode snap to the grid, the screen edges and center, other Edit Mode frames, and other bars.
+- [#974](#974) Add Snap to Grid and Snap to Frames to each bar's Edit Mode settings, both on by default.
+- [#974](#974) Gray out a bar's Horizontal Position and Vertical Position options while Edit Mode positions it.
+- [#974](#974) Gray out a bar's Width or Height option while it matches its anchor's width or height.
+- [#974](#974) In Edit Mode, each Bar Text Area shows its name and each bar shows an icon where it is attached, as in Preview Mode.
+
+## Preview Mode
+
+- [#973](#973) Add a Preview Mode checkbox to the top of the options window, showing every bar that isn't set to Never Show, with each Bar Text Area showing its name.
+- [#973](#973) In Preview Mode, drag a bar to move it and every bar anchored with it. Bars positioned using Edit Mode are grayed out and can't be dragged.
+- [#973](#973) In Preview Mode, each bar shows an icon where it is attached, and clicking a bar opens the options that position it.
+- [#973](#973) Preview Mode ends when the options window closes, Edit Mode opens, or you enter combat.
+
+---
+
 # Live 12.1.5.11-release / Forever 1.60.1.18-release / Classic 1.15.9.3-release / TBC 2.5.6.1-release (2026-11-10)
 ## General
 

@@ -1880,7 +1880,7 @@ end
 ---Wakes the parked updater when a bar should now rest visible: a show condition changing only marks
 ---visibility dirty, so ProcessBars calls this. Edit Mode previews these bars as ProcessBars entries.
 function TRB.Functions.OtherBars:EnsureIdleState()
-	if updaterFrame:IsShown() or TRB.Functions.EditMode:IsInEditMode() then
+	if updaterFrame:IsShown() or TRB.Functions.EditMode:IsShowingAllBars() then
 		return
 	end
 	if NeedsUpdater() then

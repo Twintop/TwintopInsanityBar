@@ -142,6 +142,30 @@ end
 ---A frame that may be an Edit Mode root wrapper; only wrappers carry their root bar key.
 ---@class TRB.Classes.EditModeWrapper : Frame
 ---@field public trbRootBarKey string?
+---@field public GetScaledSelectionSides fun(self: Frame): number, number, number, number
+---@field public GetScaledSelectionCenter fun(self: Frame): number, number
+
+---Returns a wrapper's sides in UIParent units: left, right, bottom, top.
+---@param self Frame
+---@return number left
+---@return number right
+---@return number bottom
+---@return number top
+local function GetWrapperScaledSides(self)
+	local left, bottom, width, height = self:GetRect()
+	local scale = self:GetScale()
+	return left * scale, (left + width) * scale, bottom * scale, (bottom + height) * scale
+end
+
+---Returns a wrapper's center in UIParent units.
+---@param self Frame
+---@return number x
+---@return number y
+local function GetWrapperScaledCenter(self)
+	local x, y = self:GetCenter()
+	local scale = self:GetScale()
+	return x * scale, y * scale
+end
 
 ---Gets or creates the Edit Mode wrapper frame for a specific tree root.
 ---Each tree root gets its own wrapper. When LibEditMode drags a wrapper, all bars in that tree move with it.
@@ -200,6 +224,9 @@ function TRB.Functions.EditMode:GetOrCreateWrapperFrame(rootBarKey)
 
 	-- Tag the frame with its root bar key so callbacks can identify it
 	wrapperFrame.trbRootBarKey = rootBarKey
+	-- Blizzard's magnetism math asks the dragged frame and its corner targets for these.
+	wrapperFrame.GetScaledSelectionSides = GetWrapperScaledSides
+	wrapperFrame.GetScaledSelectionCenter = GetWrapperScaledCenter
 
 	editModeWrapperFrames[rootBarKey] = wrapperFrame
 
@@ -277,7 +304,7 @@ function TRB.Functions.EditMode:UpdateWrapperSize(settings, rootBarKey)
 	-- Edit Mode layout is enabled - encompass all bars for proper selection box
 
 	-- In Edit Mode, include all bars (even hidden ones)
-	local includeHidden = self:IsInEditMode()
+	local includeHidden = self:IsShowingAllBars()
 
 	-- Calculate wrapper layout from settings for this specific tree root
 	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = self:CalculateWrapperLayout(settings, includeHidden, rootBarKey)
@@ -321,7 +348,7 @@ function TRB.Functions.EditMode:RefreshFormWrapperVisibility(settings, forest)
 	end
 
 	-- Don't hide wrappers during Edit Mode — all bars should remain visible
-	if self:IsInEditMode() then
+	if self:IsShowingAllBars() then
 		return
 	end
 
@@ -924,6 +951,24 @@ function TRB.Functions.EditMode:RegisterTreeRoot(rootBarKey, containerFrame)
 	-- Add per-root Edit Mode settings
 	self:AddFrameSettingsForRoot(wrapperFrame, rootBarKey)
 
+	local dragSelection = LibEditMode.frameSelections and LibEditMode.frameSelections[wrapperFrame]
+	if dragSelection then
+		local libDragStop = dragSelection:GetScript("OnDragStop")
+		dragSelection:SetScript("OnDragStop", function(selection)
+			-- Snap first: the lib's handler saves wherever the wrapper sits.
+			self:StopSnapPreview()
+			self:ApplySnap(wrapperFrame)
+			libDragStop(selection)
+		end)
+		dragSelection:HookScript("OnDragStart", function()
+			self:StartSnapPreview(wrapperFrame)
+		end)
+		-- The lib ends a drag itself when combat starts.
+		dragSelection:HookScript("OnEvent", function()
+			self:StopSnapPreview()
+		end)
+	end
+
 	-- Hook anchor frames for all known CDM frame keys, plus any configured custom frame.
 	-- This ensures that if the user switches anchor targets, the hooks are already in place.
 	for frameKey, _ in pairs(FRAME_KEY_TO_GLOBAL) do
@@ -1002,6 +1047,14 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 				TRB.Frames.barGroups
 			)
 		end
+		TRB.Functions.OptionsUi.Layout:RefreshEditModeOverrides()
+	end
+
+	---Returns true when a drag of this root isn't kept, so snapping never applies
+	---@param layoutName string # The Edit Mode layout name to check
+	---@return boolean
+	local function isNotFreePositioned(layoutName)
+		return not self:IsFreePositioned(layoutName, rootBarKey)
 	end
 
 	-- Build the 9-point anchor values list for dropdowns
@@ -1240,6 +1293,38 @@ function TRB.Functions.EditMode:AddFrameSettingsForRoot(wrapperFrame, rootBarKey
 				reapplyLayout()
 			end,
 		},
+		-- 10. Divider
+		{
+			kind = LibEditMode.SettingType.Divider,
+		},
+		-- 11. Snap to Grid checkbox (shared by every bar)
+		{
+			kind = LibEditMode.SettingType.Checkbox,
+			name = L["EditModeSnapToGrid"],
+			desc = L["EditModeSnapToGridTooltip"],
+			default = true,
+			disabled = isNotFreePositioned,
+			get = function()
+				return self:IsSnapToGridEnabled()
+			end,
+			set = function(_, newValue)
+				self:SetSnapToGridEnabled(newValue)
+			end,
+		},
+		-- 12. Snap to Frames checkbox (shared by every bar)
+		{
+			kind = LibEditMode.SettingType.Checkbox,
+			name = L["EditModeSnapToFrames"],
+			desc = L["EditModeSnapToFramesTooltip"],
+			default = true,
+			disabled = isNotFreePositioned,
+			get = function()
+				return self:IsSnapToFramesEnabled()
+			end,
+			set = function(_, newValue)
+				self:SetSnapToFramesEnabled(newValue)
+			end,
+		},
 	})
 end
 
@@ -1354,6 +1439,7 @@ function TRB.Functions.EditMode:OnLayoutChanged(layoutName, layoutIndex)
 			TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, TRB.Frames.barGroups)
 		end
 	end
+	TRB.Functions.OptionsUi.Layout:RefreshEditModeOverrides()
 end
 
 ---Called when an Edit Mode layout is renamed
@@ -1386,6 +1472,8 @@ end
 
 ---Called when Edit Mode is entered
 function TRB.Functions.EditMode:OnEditModeEnter()
+	TRB.Functions.Preview:SetActive(false)
+
 	-- Raise ALL wrapper frames' strata so selection frames can receive mouse events
 	for _, wrapperFrame in pairs(editModeWrapperFrames) do
 		if wrapperFrame then
@@ -1414,6 +1502,7 @@ function TRB.Functions.EditMode:OnEditModeEnter()
 	-- whoever rendered it last left behind.
 	TRB.Functions.BarVisibility:InvalidateAppliedState()
 	TRB.Functions.Bar:HideResourceBar()
+	TRB.Functions.Preview:Refresh()
 end
 
 ---Called when Edit Mode is exited
@@ -1426,6 +1515,11 @@ function TRB.Functions.EditMode:OnEditModeExit()
 		end
 	end
 
+	self:RestoreLiveBars()
+end
+
+---Hands every bar back to its live visibility after Edit Mode or Preview Mode showed them all.
+function TRB.Functions.EditMode:RestoreLiveBars()
 	-- Reapply layout to reset frame stratas and levels after Edit Mode
 	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 		local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
@@ -1659,6 +1753,12 @@ function TRB.Functions.EditMode:IsInEditMode()
 	return LibEditMode:IsInEditMode()
 end
 
+---Whether every bar is being shown for placement, by Edit Mode or by Preview Mode.
+---@return boolean
+function TRB.Functions.EditMode:IsShowingAllBars()
+	return TRB.Functions.Preview:IsActive() or self:IsInEditMode()
+end
+
 ---@deprecated No longer needed - Edit Mode is controlled per-layout only
 ---@return boolean # Always returns true for backwards compatibility
 function TRB.Functions.EditMode:IsGlobalOptInEnabled()
@@ -1669,6 +1769,278 @@ end
 ---@param enabled boolean
 function TRB.Functions.EditMode:SetGlobalOptIn(enabled)
 	-- No-op, kept for backwards compatibility
+end
+
+-- ===== Snapping =====
+
+---@class TRB.Classes.EditModeSnapPreview : Frame
+---@field public wrapper TRB.Classes.EditModeWrapper?
+---@field public verticalLine Line
+---@field public horizontalLine Line
+
+---@type TRB.Classes.EditModeSnapPreview?
+local snapPreviewFrame = nil
+
+---Returns the x and y a point name picks out of a rect; an axis the point doesn't name is the center.
+---@param left number
+---@param right number
+---@param bottom number
+---@param top number
+---@param point string
+---@return number x
+---@return number y
+local function GetPointCoords(left, right, bottom, top, point)
+	local x = (left + right) / 2
+	if string.find(point, "LEFT") then
+		x = left
+	elseif string.find(point, "RIGHT") then
+		x = right
+	end
+
+	local y = (bottom + top) / 2
+	if string.find(point, "TOP") then
+		y = top
+	elseif string.find(point, "BOTTOM") then
+		y = bottom
+	end
+
+	return x, y
+end
+
+---@return boolean
+function TRB.Functions.EditMode:IsSnapToGridEnabled()
+	return TRB.Data.settings.core.editMode.snapToGrid ~= false
+end
+
+---@param enabled boolean
+function TRB.Functions.EditMode:SetSnapToGridEnabled(enabled)
+	TRB.Data.settings.core.editMode.snapToGrid = enabled
+end
+
+---@return boolean
+function TRB.Functions.EditMode:IsSnapToFramesEnabled()
+	return TRB.Data.settings.core.editMode.snapToFrames ~= false
+end
+
+---@param enabled boolean
+function TRB.Functions.EditMode:SetSnapToFramesEnabled(enabled)
+	TRB.Data.settings.core.editMode.snapToFrames = enabled
+end
+
+---Whether Edit Mode places this root by its saved free position, so a drag is kept.
+---@param layoutName string? # The layout name (uses active layout if nil)
+---@param rootBarKey string
+---@return boolean
+function TRB.Functions.EditMode:IsFreePositioned(layoutName, rootBarKey)
+	if not self:IsLayoutEnabled(layoutName, rootBarKey) then
+		return false
+	end
+
+	local frameKey = self:GetAnchorFrameKey(layoutName, rootBarKey)
+	return frameKey == "none" or not self:IsAnchorFrameAvailable(frameKey, self:GetCustomFrameName(layoutName, rootBarKey))
+end
+
+---Finds where a dragged wrapper would snap, using Blizzard's magnetism range, grid, and selection rules.
+---@param wrapper TRB.Classes.EditModeWrapper
+---@return number? deltaX # Horizontal move in UIParent units; nil when that axis doesn't snap
+---@return number? deltaY # Vertical move in UIParent units; nil when that axis doesn't snap
+---@return number? lineX # Where the snapped edge lands, for the preview line
+---@return number? lineY
+function TRB.Functions.EditMode:GetSnapDelta(wrapper)
+	local manager = EditModeMagnetismManager
+	local snapToGrid = self:IsSnapToGridEnabled()
+	local snapToFrames = self:IsSnapToFramesEnabled()
+	if manager == nil or manager.topLevelParentCenterX == nil or wrapper:GetRect() == nil or not (snapToGrid or snapToFrames) then
+		return nil, nil, nil, nil
+	end
+
+	local left, right, bottom, top = wrapper:GetScaledSelectionSides()
+	local horizontal, vertical, horizontalCorner, verticalCorner
+
+	if snapToGrid then
+		local distance, point, relativePoint, offset = manager:FindClosestGridLine(wrapper, true)
+		horizontal = manager:CheckReplaceMagneticFrameInfo(nil, UIParent, point, relativePoint, distance, offset, true)
+		distance, point, relativePoint, offset = manager:FindClosestGridLine(wrapper, false)
+		vertical = manager:CheckReplaceMagneticFrameInfo(nil, UIParent, point, relativePoint, distance, offset, false)
+	end
+
+	if snapToFrames then
+		---Offers a frame's facing edges as snap targets when it overlaps the wrapper on the other axis.
+		local function consider(frame)
+			local frameLeft, frameRight, frameBottom, frameTop = frame:GetScaledSelectionSides()
+			local point, relativePoint, distance
+
+			if top >= frameBottom and bottom <= frameTop then
+				if frameRight < left then
+					point, relativePoint, distance = "LEFT", "RIGHT", left - frameRight
+				elseif frameLeft > right then
+					point, relativePoint, distance = "RIGHT", "LEFT", frameLeft - right
+				end
+				if point ~= nil then
+					horizontal = manager:CheckReplaceMagneticFrameInfo(horizontal, frame, point, relativePoint, distance, 0, true)
+					horizontalCorner = manager:CheckReplaceMagneticFrameInfo(horizontalCorner, frame, point, relativePoint, distance, 0, true)
+				end
+			end
+
+			point = nil
+			if right >= frameLeft and left <= frameRight then
+				if frameBottom > top then
+					point, relativePoint, distance = "TOP", "BOTTOM", frameBottom - top
+				elseif frameTop < bottom then
+					point, relativePoint, distance = "BOTTOM", "TOP", bottom - frameTop
+				end
+				if point ~= nil then
+					vertical = manager:CheckReplaceMagneticFrameInfo(vertical, frame, point, relativePoint, distance, 0, false)
+					verticalCorner = manager:CheckReplaceMagneticFrameInfo(verticalCorner, frame, point, relativePoint, distance, 0, false)
+				end
+			end
+		end
+
+		for frame in pairs(manager.magneticFrames) do
+			if frame.GetScaledSelectionSides ~= nil and frame:HasValidSelectionRect() then
+				consider(frame)
+			end
+		end
+
+		-- Our wrappers stay out of Blizzard's registry so its secure frames never anchor to them.
+		for _, other in pairs(editModeWrapperFrames) do
+			if other ~= wrapper and other:IsShown() and other:GetRect() ~= nil then
+				consider(other)
+			end
+		end
+	end
+
+	local corner = manager:GetCornerMagneticFrameInfo(wrapper, horizontalCorner)
+	local otherCorner = manager:GetCornerMagneticFrameInfo(wrapper, verticalCorner)
+	if otherCorner ~= nil and (corner == nil or otherCorner.distance < corner.distance) then
+		corner = otherCorner
+	end
+
+	---Returns the move that lands the wrapper's point on the target's point, and where it lands.
+	local function resolve(info)
+		local frameLeft, frameRight, frameBottom, frameTop
+		if info.frame == UIParent then
+			frameLeft, frameRight, frameBottom, frameTop = manager.topLevelParentLeft, manager.topLevelParentRight, manager.topLevelParentBottom, manager.topLevelParentTop
+		else
+			frameLeft, frameRight, frameBottom, frameTop = info.frame:GetScaledSelectionSides()
+		end
+		local sourceX, sourceY = GetPointCoords(left, right, bottom, top, info.point)
+		local targetX, targetY = GetPointCoords(frameLeft, frameRight, frameBottom, frameTop, info.relativePoint)
+		targetX = targetX + info.offset
+		targetY = targetY + info.offset
+		return targetX - sourceX, targetY - sourceY, targetX, targetY
+	end
+
+	if corner ~= nil then
+		return resolve(corner)
+	end
+
+	local deltaX, deltaY, lineX, lineY, _
+	if horizontal ~= nil and vertical ~= nil and horizontal.frame == UIParent and vertical.frame == UIParent then
+		deltaX, _, lineX = resolve(horizontal)
+		_, deltaY, _, lineY = resolve(vertical)
+	elseif horizontal ~= nil and (vertical == nil or horizontal.distance < vertical.distance) then
+		deltaX, _, lineX = resolve(horizontal)
+	elseif vertical ~= nil then
+		_, deltaY, _, lineY = resolve(vertical)
+	end
+
+	return deltaX, deltaY, lineX, lineY
+end
+
+---Moves a just-dropped wrapper onto its snap target, before LibEditMode reads and saves its position.
+---@param wrapper TRB.Classes.EditModeWrapper
+function TRB.Functions.EditMode:ApplySnap(wrapper)
+	if InCombatLockdown() or not self:IsFreePositioned(nil, wrapper.trbRootBarKey or "primary") then
+		return
+	end
+
+	-- Settle the drag into a single screen anchor that can be shifted.
+	wrapper:StopMovingOrSizing()
+
+	local deltaX, deltaY = self:GetSnapDelta(wrapper)
+	if deltaX == nil and deltaY == nil then
+		return
+	end
+
+	local scale = wrapper:GetScale()
+	local point, relativeTo, relativePoint, x, y = wrapper:GetPoint(1)
+	wrapper:ClearAllPoints()
+	wrapper:SetPoint(point, relativeTo or UIParent, relativePoint, x + (deltaX or 0) / scale, y + (deltaY or 0) / scale)
+end
+
+---Hides the snap preview lines and stops tracking the dragged wrapper.
+function TRB.Functions.EditMode:StopSnapPreview()
+	if snapPreviewFrame ~= nil then
+		snapPreviewFrame.wrapper = nil
+		snapPreviewFrame:Hide()
+	end
+end
+
+---Shows lines where the dragged wrapper would snap if dropped now.
+---@param wrapper TRB.Classes.EditModeWrapper
+function TRB.Functions.EditMode:StartSnapPreview(wrapper)
+	if InCombatLockdown() or not self:IsFreePositioned(nil, wrapper.trbRootBarKey or "primary") then
+		return
+	end
+
+	if snapPreviewFrame == nil then
+		local preview = CreateFrame("Frame", nil, UIParent) --[[@as TRB.Classes.EditModeSnapPreview]]
+		preview:SetAllPoints(UIParent)
+		preview:SetFrameStrata("TOOLTIP")
+		preview.verticalLine = preview:CreateLine(nil, "OVERLAY")
+		preview.verticalLine:SetColorTexture(1, 0, 0)
+		preview.verticalLine:SetThickness(1.5)
+		preview.horizontalLine = preview:CreateLine(nil, "OVERLAY")
+		preview.horizontalLine:SetColorTexture(1, 0, 0)
+		preview.horizontalLine:SetThickness(1.5)
+		preview:SetScript("OnUpdate", function(frame)
+			local dragged = frame.wrapper
+			if dragged == nil or InCombatLockdown() or not IsMouseButtonDown("LeftButton") then
+				TRB.Functions.EditMode:StopSnapPreview()
+				return
+			end
+
+			local _, _, lineX, lineY = TRB.Functions.EditMode:GetSnapDelta(dragged)
+			frame.verticalLine:SetShown(lineX ~= nil)
+			if lineX ~= nil then
+				frame.verticalLine:SetStartPoint("BOTTOMLEFT", UIParent, lineX, 0)
+				frame.verticalLine:SetEndPoint("TOPLEFT", UIParent, lineX, 0)
+			end
+			frame.horizontalLine:SetShown(lineY ~= nil)
+			if lineY ~= nil then
+				frame.horizontalLine:SetStartPoint("BOTTOMLEFT", UIParent, 0, lineY)
+				frame.horizontalLine:SetEndPoint("BOTTOMRIGHT", UIParent, 0, lineY)
+			end
+		end)
+		snapPreviewFrame = preview
+	end
+
+	snapPreviewFrame.verticalLine:Hide()
+	snapPreviewFrame.horizontalLine:Hide()
+	snapPreviewFrame.wrapper = wrapper
+	snapPreviewFrame:Show()
+end
+
+---Reasons the Options position and size sliders of a bar don't apply right now; nil where the slider applies.
+---@param barKey string
+---@param anchor table # The bar's anchor block from its settings
+---@return string? positionReason
+---@return string? widthReason
+---@return string? heightReason
+function TRB.Functions.EditMode:GetOptionsOverrideReasons(barKey, anchor)
+	if anchor.barKey ~= "screen" then
+		return nil, anchor.matchWidth and L["DisabledReasonMatchAnchorWidth"] or nil, anchor.matchHeight and L["DisabledReasonMatchAnchorHeight"] or nil
+	end
+
+	if not self:IsLayoutEnabled(nil, barKey) then
+		return nil, nil, nil
+	end
+
+	local anchored = not self:IsFreePositioned(nil, barKey)
+	return L["DisabledReasonEditModePosition"],
+		anchored and self:IsWidthMatchingEnabled(nil, barKey) and L["DisabledReasonEditModeMatchWidth"] or nil,
+		anchored and self:IsHeightMatchingEnabled(nil, barKey) and L["DisabledReasonEditModeMatchHeight"] or nil
 end
 
 -- ============================================================================

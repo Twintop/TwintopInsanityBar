@@ -506,7 +506,7 @@ function TRB.Functions.Bar:HideResourceBar(force)
 
 	-- If Edit Mode is active, ensure bars stay visible so they can be repositioned
 	-- Primary bar ALWAYS shows; other bars show unless configured to "never" display
-	if TRB.Functions.EditMode and TRB.Functions.EditMode:IsInEditMode() then
+	if TRB.Functions.EditMode:IsShowingAllBars() then
 		local barGroups = TRB.Frames.barGroups
 		local displayBar = nil
 		local specSettings = nil
@@ -593,9 +593,9 @@ end
 function TRB.Functions.Bar:PrintDiagnostics()
 	local barGroups = TRB.Frames.barGroups
 	local settings = TRB.Functions.Class:GetActiveDisplaySettings()
-	print(string.format("|cFFFF8800TRB Bars:|r spec=%s form=%s (id %s, live %s) specSupported=%s transition=%s editMode=%s dirty=%s", tostring(TRB.Data.character and TRB.Data.character.compositeKey), tostring(TRB.Data.character and TRB.Data.character.currentShapeshiftForm),
+	print(string.format("|cFFFF8800TRB Bars:|r spec=%s form=%s (id %s, live %s) specSupported=%s transition=%s editMode=%s preview=%s dirty=%s", tostring(TRB.Data.character and TRB.Data.character.compositeKey), tostring(TRB.Data.character and TRB.Data.character.currentShapeshiftForm),
 		tostring(TRB.Data.character and TRB.Data.character.currentShapeshiftFormId), tostring(GetShapeshiftFormID and GetShapeshiftFormID()),
-		tostring(TRB.Data.specSupported), tostring((self:IsRenderTransitionActive())), tostring((TRB.Functions.EditMode:IsInEditMode())), tostring((TRB.Functions.BarVisibility:IsDirty(false)))))
+		tostring(TRB.Data.specSupported), tostring((self:IsRenderTransitionActive())), tostring((TRB.Functions.EditMode:IsInEditMode())), tostring((TRB.Functions.Preview:IsActive())), tostring((TRB.Functions.BarVisibility:IsDirty(false)))))
 	if barGroups == nil or settings == nil then
 		print("  no bar groups or settings")
 		return
@@ -983,6 +983,9 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	local forest = self:BuildAnchorForest(layoutSettings, barGroups, false, true)
 	local barKeyToRoot = BuildBarKeyToRootMap(forest)
 	local effectiveParentOf = BuildEffectiveParentMap(forest)
+	-- Preview Mode drags read which stack a bar belongs to, and save into the settings its root was placed from.
+	barGroups.barKeyToRoot = barKeyToRoot
+	barGroups.layoutSettings = layoutSettings
 	-- Anchor depth drives frame level, so recompute it here: this is the one place the anchor
 	-- topology changes. GetBarFrameLevel reads the cached map for every bar's level.
 	barGroups.barDepths = BuildBarDepthMap(forest)
@@ -1373,6 +1376,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- fresh ProcessBars pass or they stay revealed until the next unrelated dirty mark.
 	TRB.Functions.BarVisibility:MarkDirty()
 	self:HideResourceBar()
+	TRB.Functions.Preview:Refresh()
 end
 
 ---Applies anchor frame positioning to the bar groups wrapper.
@@ -1398,7 +1402,7 @@ function TRB.Functions.Bar:ApplyAnchorFramePositioning(barGroups, meta, settings
 	end
 
 	-- CRITICAL: In Edit Mode, include ALL bars (even hidden ones) in wrapper calculations.
-	local includeHidden = TRB.Functions.EditMode:IsInEditMode()
+	local includeHidden = TRB.Functions.EditMode:IsShowingAllBars()
 
 	-- Calculate wrapper layout for this specific root's tree
 	local totalWidth, totalHeight, extendAbove, extendBelow, baseOffsetX = TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, rootBarKey)
@@ -2549,6 +2553,76 @@ function TRB.Functions.Bar:GetBarAnchor(settings, barKey)
 	end
 
 	return nil
+end
+
+---Ensures the bar settings table has an anchor block, synthesizing from legacy fields if needed.
+---Returns the anchor block (creates it if absent).
+---@param barSettings table # A bar dimensions table (e.g., spec.comboPoints, spec.healthBar, barSettings)
+---@param barKey string? # The bar key of this bar (e.g., "primary", "secondary", "health"). Used to determine default anchor target.
+---@return table anchor # The anchor block
+function TRB.Functions.Bar:EnsureAnchorBlock(barSettings, barKey)
+	if barSettings.anchor then
+		return barSettings.anchor
+	end
+	-- Primary bar (or no barKey) defaults to "screen"; all others default to "primary"
+	local defaultTarget = (barKey == "primary") and "screen" or "primary"
+	-- Synthesize from legacy fields
+	local anchor = {
+		barKey = defaultTarget,
+		anchorPoint = "TOP",
+		attachPoint = "BOTTOM",
+		xOffset = barSettings.xPos or 0,
+		yOffset = barSettings.yPos or 0,
+		matchWidth = barSettings.fullWidth or false,
+	}
+	if barKey == "primary" then
+		-- Primary bar: screen anchor uses absolute position, default points are CENTER/CENTER
+		anchor.anchorPoint = "CENTER"
+		anchor.attachPoint = "CENTER"
+		anchor.xOffset = barSettings.xPos or 0
+		anchor.yOffset = barSettings.yPos or -200
+	elseif barSettings.relativeTo then
+		local mapping = TRB.Data.constants.relativeToAnchorMap[barSettings.relativeTo]
+		if mapping then
+			anchor.anchorPoint = mapping.anchorPoint
+			anchor.attachPoint = mapping.attachPoint
+		end
+	end
+	barSettings.anchor = anchor
+	return anchor
+end
+
+---Dual-writes anchor block values back to legacy fields for backward compatibility.
+---Call after any change to barSettings.anchor so that legacy readers remain correct.
+---@param barSettings table # A bar dimensions table with an anchor block
+function TRB.Functions.Bar:DualWriteAnchorToLegacy(barSettings)
+	if not barSettings or not barSettings.anchor then return end
+	local L = TRB.Localization
+	local anchor = barSettings.anchor
+	barSettings.xPos = anchor.xOffset or 0
+	barSettings.yPos = anchor.yOffset or 0
+	barSettings.fullWidth = anchor.matchWidth or false
+	-- Best-match relativeTo from anchorPoint (only for bar-anchored bars, not screen-anchored)
+	if anchor.barKey and anchor.barKey ~= "screen" then
+		local reverseMap = TRB.Data.constants.anchorPointToRelativeToMap
+		if reverseMap and anchor.anchorPoint then
+			barSettings.relativeTo = reverseMap[anchor.anchorPoint]
+			local nameMap = {
+				TOPLEFT = L["PositionAboveLeft"],
+				TOP = L["PositionAboveMiddle"],
+				TOPRIGHT = L["PositionAboveRight"],
+				BOTTOMLEFT = L["PositionBelowLeft"],
+				BOTTOM = L["PositionBelowMiddle"],
+				BOTTOMRIGHT = L["PositionBelowRight"],
+			}
+			barSettings.relativeToName = nameMap[barSettings.relativeTo] or ""
+		end
+	else
+		-- Screen-anchored: clear stale legacy fields so MigrateBarAnchors
+		-- won't incorrectly re-derive a bar-relative anchor from them on import.
+		barSettings.relativeTo = nil
+		barSettings.relativeToName = nil
+	end
 end
 
 ---Gets the effective matchWidth setting for a bar, reading from anchor with legacy fallback.
@@ -4434,7 +4508,7 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 		cdmHeightMatched = heightMatched,
 	}
 
-	local inEditMode = TRB.Functions.EditMode:IsInEditMode()
+	local inEditMode = TRB.Functions.EditMode:IsShowingAllBars()
 	local barIsVisible = self:IsBarVisible(settings, barKey, inEditMode) and not self:IsBarTalentGatedHidden(barKey)
 	-- Edit Mode previews everything except bars set to "Never Show", which stay collapsed.
 	if inEditMode and self:IsBarNeverShow(settings, barKey) then

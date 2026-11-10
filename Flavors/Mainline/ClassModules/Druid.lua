@@ -2120,7 +2120,7 @@ local function UpdateResourceBar()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
-	local isInEditMode = TRB.Functions.EditMode:IsInEditMode()
+	local isInEditMode = TRB.Functions.EditMode:IsShowingAllBars()
 
 	-- Always call HideResourceBar first to ensure visibility is correctly determined
 	-- even if we return early due to missing data

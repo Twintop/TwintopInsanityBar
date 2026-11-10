@@ -363,6 +363,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			experimental = {
 			},
 			editMode = {
+				snapToGrid = true,
+				snapToFrames = true,
 				layouts = {}
 			}
 		},

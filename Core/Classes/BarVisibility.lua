@@ -784,8 +784,8 @@ end
 ---Marks that a resource or health value a threshold curve may read has changed. Unlike MarkDirty, the
 ---next pass only re-applies the curve alphas when nothing else changed (see NeedsFullPass).
 function TRB.Functions.BarVisibility:MarkCurveDirty()
-	-- Edit Mode runs ProcessBars itself and never reaches NeedsFullPass.
-	if TRB.Functions.EditMode:IsInEditMode() then
+	-- Edit Mode and Preview Mode run ProcessBars themselves and never reach NeedsFullPass.
+	if TRB.Functions.EditMode:IsShowingAllBars() then
 		self:MarkDirty()
 		return
 	end
@@ -875,7 +875,7 @@ function TRB.Functions.BarVisibility:InvalidateAppliedState()
 	local barGroups = TRB.Frames.barGroups
 	-- In Edit Mode the self-driven bars ARE ProcessBars entries, so they must be reset like every other
 	-- bar; outside it they render themselves from live state and nothing would show them again.
-	local skipSelfDriven = not TRB.Functions.EditMode:IsInEditMode()
+	local skipSelfDriven = not TRB.Functions.EditMode:IsShowingAllBars()
 	if barGroups ~= nil then
 		for key, group in pairs(barGroups) do
 			local isSelfDriven = skipSelfDriven and TRB.Classes.BarTypeRegistry:IsSelfDriven(key)
@@ -1321,7 +1321,7 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
 	-- A forced, render transition, or Edit Mode pass leaves no record, so the next value change still gets a full pass.
 	local curveReplay = self.curveReplay
 	local recordCurves = conditionsChanged and not context.force and not isRenderTransition
-		and not TRB.Functions.EditMode:IsInEditMode()
+		and not TRB.Functions.EditMode:IsShowingAllBars()
 	-- A fade-only pass has no Phase 1 results, so the last full pass's record says which bars the curve drives.
 	local useCurveRecord = not conditionsChanged and not isRenderTransition and curveReplay.valid
 		and curveReplay.barGroups == TRB.Frames.barGroups
