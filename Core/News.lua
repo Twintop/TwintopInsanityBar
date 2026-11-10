@@ -17,6 +17,8 @@ TRB.Details.coreNewsContent = [====[
 - [#974](#974) Gray out a bar's Horizontal Position and Vertical Position options while Edit Mode positions it.
 - [#974](#974) Gray out a bar's Width or Height option while it matches its anchor's width or height.
 - [#974](#974) In Edit Mode, each Bar Text Area shows its name and each bar shows an icon where it is attached, as in Preview Mode.
+- [#976](#976) Fix bar text drawing behind its bar in Edit Mode.
+- [#976](#976) Fix the Other Bars and the Target and Focus Cast Bars disappearing in Edit Mode and Preview Mode.
 
 ## Preview Mode
 

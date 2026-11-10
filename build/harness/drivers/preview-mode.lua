@@ -4,9 +4,17 @@ local desktop = _G --[[@as table<string, any>]]
 local parity = desktop.require("drivers.parity")
 
 local hooks = {}
+-- Every frame made, so the self-driven bars' updaters can be ticked as the client ticks a shown frame.
+local allFrames = {}
 
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
+	local createAnyFrame = desktop.CreateFrame
+	desktop.CreateFrame = function(...)
+		local frame = createAnyFrame(...)
+		allFrames[#allFrames + 1] = frame
+		return frame
+	end
 	-- Brewmaster's and Evoker's ticks read these.
 	desktop.UnitStagger = function() return 0 end
 	desktop.UnitPartialPower = function() return 0 end
@@ -226,16 +234,55 @@ function hooks.afterEvents(ctx)
 	check("Preview Mode stays off while Edit Mode is open", not Preview:IsActive())
 	EditMode.IsInEditMode = isInEditMode
 
+	-- Opening Edit Mode from Preview Mode hands every bar over still showing.
+	local function always() return true end
+	-- The stub's alpha is a constant, and the self-driven bars default to Never Show: track one, show the other.
+	for barKey in pairs(barGroups.barKeyToRoot) do
+		local container = barGroups[barKey].containerFrame
+		local setAlpha = container.SetAlpha
+		rawset(container, "trackedAlpha", 1)
+		rawset(container, "SetAlpha", function(self, alpha)
+			rawset(self, "trackedAlpha", alpha)
+			return setAlpha(self, alpha)
+		end)
+		rawset(container, "GetAlpha", function(self) return rawget(self, "trackedAlpha") end)
+		local visibility = settings.displayBar[Bar:GetVisibilityKey(barKey)]
+		if visibility ~= nil then
+			visibility.neverShow = false
+			-- One resting bar keeps the Other Bars updater awake, as a user's Always Show bar does.
+			visibility.alwaysShow = barKey == "gcd"
+		end
+	end
 	Preview:SetActive(true)
 	Drain("REENTER")
+	rawset(EditMode, "IsInEditMode", always)
 	EditMode:OnEditModeEnter()
 	Drain("EDITMODE")
 	check("opening Edit Mode ends Preview Mode", not Preview:IsActive())
+	for _ = 1, 10 do
+		for _, frame in ipairs(allFrames) do
+			local scripts = rawget(frame, "__scripts")
+			local onUpdate = scripts ~= nil and scripts.OnUpdate or nil
+			if onUpdate ~= nil and frame:IsShown() then
+				onUpdate(frame, 0.06)
+			end
+		end
+	end
+	local handedOver = true
+	for barKey in pairs(barGroups.barKeyToRoot) do
+		local neverShow = Bar:IsBarNeverShow(settings, barKey)
+		local hasNodes = barKey ~= "secondary" or (TRB.Data.character.maxResource2 or 0) > 0
+		local group = barGroups[barKey]
+		local alpha = group.containerFrame:GetAlpha()
+		if hasNodes and (group.isVisible ~= not neverShow or (not neverShow and alpha <= 0)) then
+			handedOver = false
+			print("  " .. barKey .. " visible=" .. tostring(group.isVisible) .. " alpha=" .. tostring(alpha) .. " after the handover")
+		end
+	end
+	check("every bar still shows after Preview Mode hands over to Edit Mode", handedOver)
 
 	-- Edit Mode keeps the icons and the Bar Text Area names, without the drag handles' lock shading.
 	local layoutEnabled = EditMode.IsLayoutEnabled
-	local function always() return true end
-	rawset(EditMode, "IsInEditMode", always)
 	rawset(EditMode, "IsLayoutEnabled", always)
 	EditMode:OnEditModeEnter()
 	Drain("EDITMODE_ICONS")
@@ -266,6 +313,17 @@ function hooks.afterEvents(ctx)
 		end
 	end
 	check("every written Bar Text Area reads as its name in Edit Mode (" .. editNamed .. ")", editNamed > 0 and editMisnamed == 0)
+	-- Edit Mode raises every bar stack to DIALOG; text left in the settings' strata would draw behind its bar.
+	local function TextStrataIs(strata)
+		for i, entry in ipairs(settings.displayText.barText) do
+			local frame = TRB.Frames.textFrames[i]
+			if entry.enabled and frame ~= nil and frame:IsShown() and frame:GetFrameStrata() ~= strata then
+				return false
+			end
+		end
+		return true
+	end
+	check("bar text rises with the bars in Edit Mode", TextStrataIs("DIALOG"))
 	rawset(EditMode, "IsInEditMode", isInEditMode)
 	rawset(EditMode, "IsLayoutEnabled", layoutEnabled)
 	EditMode:OnEditModeExit()
@@ -275,6 +333,7 @@ function hooks.afterEvents(ctx)
 		anyHandleShown = anyHandleShown or handle:IsShown()
 	end
 	check("the icons go away when Edit Mode closes", not anyHandleShown)
+	check("bar text returns to its own strata after Edit Mode", TextStrataIs(TRB.Data.settings.core.strata.level))
 
 	desktop.CreateFrame = createFrame
 	print(string.format("DRIVER preview-mode: %d failures", errors))

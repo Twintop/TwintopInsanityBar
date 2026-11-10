@@ -604,6 +604,10 @@ end
 ---mounting would shut it down and dismounting would never bring the bar back.
 ---@return boolean
 local function NeedsUpdater()
+	-- Edit Mode and Preview Mode show these bars through ProcessBars; a live tick would hide the idle ones.
+	if TRB.Functions.EditMode:IsShowingAllBars() then
+		return false
+	end
 	if fsrExpiry ~= nil then
 		return true
 	end
@@ -1438,6 +1442,10 @@ end
 -- Per-frame updater
 -- ============================================================================
 updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
+	if TRB.Functions.EditMode:IsShowingAllBars() then
+		updaterFrame:Hide()
+		return
+	end
 	local needsUpdater = false
 	local now = GetTime()
 
