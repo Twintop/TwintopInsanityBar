@@ -13,9 +13,6 @@ local lookupChanged = TRB.Functions.BarText.LookupChanged
 -- The last Slice and Dice cast sent and the cached combo points then, before the server spends them.
 local sentCast = { castGuid = nil, comboPoints = nil }
 
--- /trb snd (temporary): one line per cast with each combo point reading, and one when the timer ends.
-local diagnostic = { enabled = false }
-
 ---The active spell set's Slice and Dice snapshot and the spell set, or nil before the spec cache loads.
 ---@return TRB.Classes.Snapshot?, TRB.Classes.TBC.Rogue.GeneralSpells?
 local function GetSliceAndDice()
@@ -69,26 +66,6 @@ local function GetSliceAndDiceDuration(spells, comboPoints)
 	return duration
 end
 
----A combo point reading for a diagnostic line.
----@param value integer?
----@return string
-local function DiagnosticValue(value)
-	return value == nil and "-" or tostring(value)
-end
-
-local function ToggleDiagnostic()
-	diagnostic.enabled = not diagnostic.enabled
-	if not diagnostic.enabled then
-		print("|cFFFF8800TRB Slice and Dice:|r diagnostic off")
-		return
-	end
-	local sliceAndDice, spells = GetSliceAndDice()
-	print(string.format("|cFFFF8800TRB Slice and Dice:|r diagnostic on. Improved Slice and Dice rank %d, Netherblade pieces %d, tracked %s",
-		spells ~= nil and GetImprovedRank(spells) or 0,
-		spells ~= nil and TRB.Functions.Item:GetEquippedSetPieceCount(spells.netherbladeSetBonus.attributes.setKey) or 0,
-		(sliceAndDice ~= nil and sliceAndDice.buff.isActive) and string.format("%.2fs left", sliceAndDice.buff.remaining) or "nothing"))
-end
-
 local sendFrame = CreateFrame("Frame")
 sendFrame:RegisterUnitEvent("UNIT_SPELLCAST_SENT", "player")
 sendFrame:SetScript("OnEvent", function(_, _, _, _, castGuid, spellId)
@@ -113,27 +90,18 @@ function runtime.OnSpellCastSucceeded(spellId, castGuid)
 		sent = sentCast.comboPoints
 	end
 	sentCast.castGuid = nil
-	local cached = TRB.Data.snapshotData.attributes.resource2
-	local duration = GetSliceAndDiceDuration(spells, sent or cached or 0)
-	sliceAndDice.buff:InitializeCustom(duration, GetTime())
+	local comboPoints = sent or TRB.Data.snapshotData.attributes.resource2 or 0
+	sliceAndDice.buff:InitializeCustom(GetSliceAndDiceDuration(spells, comboPoints), GetTime())
 	TRB.Functions.BarText:MarkLookupDirty()
-	if diagnostic.enabled then
-		print(string.format("|cFFFF8800TRB Slice and Dice:|r cast %d | combo points sent %s, cached %s | tracking %.2fs from %s",
-			spellId, DiagnosticValue(sent), DiagnosticValue(cached), duration, sent ~= nil and "sent" or "cached"))
-	end
 end
 
 ---@param currentTime number
 function runtime.UpdateClassSnapshot(currentTime)
 	local sliceAndDice = GetSliceAndDice()
 	if sliceAndDice ~= nil and sliceAndDice.buff.isActive then
-		local duration = sliceAndDice.buff.duration
 		sliceAndDice.buff:GetRemainingTime(currentTime)
 		if not sliceAndDice.buff.isActive then
 			TRB.Functions.BarText:MarkLookupDirty()
-			if diagnostic.enabled then
-				print(string.format("|cFFFF8800TRB Slice and Dice:|r timer ended after %.2fs", duration or 0))
-			end
 		end
 	end
 end
@@ -173,15 +141,3 @@ function runtime.HasClassTimers()
 	local sliceAndDice = GetSliceAndDice()
 	return sliceAndDice ~= nil and sliceAndDice.buff.isActive
 end
-
-TRB.Classes.SpecDescriptor:Declare("rogue_general", {
-	slashCommands = {
-		snd = function(subcommand)
-			if subcommand ~= nil and subcommand ~= "" then
-				print("|cFFFF8800TRB Slice and Dice:|r Unknown argument '" .. subcommand .. "'. Usage: /trb snd")
-				return
-			end
-			ToggleDiagnostic()
-		end,
-	},
-})

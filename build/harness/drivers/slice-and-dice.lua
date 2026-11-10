@@ -1,5 +1,5 @@
 -- Checks the Forever, Classic, and TBC Rogue's Slice and Dice: its cast-tracked timer, bar text, Active and Ending
--- Color Indicators, and /trb snd.
+-- Color Indicators.
 local desktop = _G --[[@as table<string, any>]]
 local debug = desktop.debug
 local parity = desktop.require("drivers.parity")
@@ -10,7 +10,7 @@ local NETHERBLADE = { [1] = 29044, [3] = 29047, [5] = 29045, [7] = 29046, [10] =
 local ACTIVE_COLOR, ENDING_COLOR = "FFFF0000", "FFFF8000"
 
 -- The test clock, the frames the addon made, the fill colors a draw painted, and worn gear by slot.
-local drv = { now = 1000, frames = {}, printed = {}, fills = {}, gear = {} }
+local drv = { now = 1000, frames = {}, fills = {}, gear = {} }
 
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
@@ -297,58 +297,6 @@ function hooks.afterEvents(ctx)
 	check("without its modifiers, Active paints while Slice and Dice is up", painted)
 	active.modifiers = defaultModifiers
 	character.inCombat = false
-
-	-- The diagnostic.
-	local descriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
-	local command = descriptor ~= nil and descriptor.slashCommands ~= nil and descriptor.slashCommands.snd or nil
-	check("/trb snd exists", command ~= nil)
-	if command == nil then
-		return errors
-	end
-	local innerPrint = desktop.print
-	local function Capture(fn)
-		drv.printed = {}
-		desktop.print = function(...)
-			local parts = {}
-			for i = 1, select("#", ...) do
-				parts[#parts + 1] = tostring((select(i, ...)))
-			end
-			drv.printed[#drv.printed + 1] = table.concat(parts, " ")
-		end
-		try("diagnostic", fn)
-		desktop.print = innerPrint
-		return drv.printed
-	end
-	local function AnyLine(lines, pattern)
-		for _, line in ipairs(lines) do
-			if line:find(pattern) then
-				return true
-			end
-		end
-		return false
-	end
-
-	local lines = Capture(function() command("now") end)
-	check("an argument is rejected with the usage", AnyLine(lines, "Usage: /trb snd") and not AnyLine(lines, "diagnostic on"))
-	if talents ~= nil then
-		SetImproved(2)
-	end
-	lines = Capture(function() command("") end)
-	check("/trb snd turns it on with the talent rank", AnyLine(lines, "diagnostic on%. Improved Slice and Dice rank " .. (talents ~= nil and 2 or 0)))
-	lines = Capture(function() Cast(SLICE_AND_DICE_RANK_2, 4) end)
-	check("a cast prints both combo point readings and the time tracked",
-		AnyLine(lines, "cast 6774 | combo points sent 4, cached 0 | tracking " .. string.format("%.2f", 18 * (talents ~= nil and 1.30 or 1)) .. "s from sent"))
-	lines = Capture(function() Tick(30) end)
-	check("its end prints the time it ran", AnyLine(lines, "timer ended after " .. string.format("%.2f", 18 * (talents ~= nil and 1.30 or 1)) .. "s"))
-	lines = Capture(function() CastUnsent(SLICE_AND_DICE_RANK_1, 2) end)
-	check("an unsent cast says it used the cached count", AnyLine(lines, "combo points sent %-, cached 2 | tracking .-s from cached"))
-	lines = Capture(function() command("") end)
-	check("/trb snd again turns it off", AnyLine(lines, "diagnostic off"))
-	lines = Capture(function() Cast(SLICE_AND_DICE_RANK_2, 5) end)
-	check("and casts print nothing after", not AnyLine(lines, "TRB Slice and Dice"))
-	if talents ~= nil then
-		SetImproved(0)
-	end
 
 	return errors
 end
