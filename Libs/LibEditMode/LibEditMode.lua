@@ -1,5 +1,5 @@
 ---@diagnostic disable: redundant-parameter
-local MINOR = 18
+local MINOR = 19
 
 local _, ns = ...
 local lib
@@ -167,7 +167,7 @@ local function updatePosition(selection, xDelta, yDelta)
 	internal:TriggerCallback(parent, point, x, y)
 
 	if selection.isSelected then
-		internal.dialog:Update(selection)
+		internal.dialog:Update(selection, point, x, y)
 	end
 end
 
@@ -785,6 +785,18 @@ end
 
 function internal:MoveParent(selection, x, y)
 	updatePosition(selection, x, y)
+end
+
+function internal:MoveParentToPoint(selection, point, x, y)
+	selection.parent:ClearAllPoints()
+	selection.parent:SetPoint(point, x, y)
+
+	-- actually recalculate and update the point
+	updatePosition(selection)
+end
+
+function internal:CalculateParentPosition(selection)
+	return normalizePosition(selection.parent)
 end
 
 function internal:GetSystemSettings(systemID, subSystemID)
