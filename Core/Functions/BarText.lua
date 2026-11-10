@@ -3554,6 +3554,15 @@ local function GetTextFrameKey(i)
 	return key
 end
 
+---The strata bar text draws in. Edit Mode raises every bar stack to DIALOG, which would bury text left below it.
+---@return FrameStrata
+local function GetBarTextStrata()
+	if TRB.Functions.EditMode:IsInEditMode() then
+		return "DIALOG"
+	end
+	return TRB.Data.settings.core.strata.level
+end
+
 ---Updates the resource bar text based on the settings
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param refreshText boolean
@@ -3640,7 +3649,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 		-- Read once per call; nothing in the loop replaces these tables.
 		local barTextList = displayText.barText
 		local frameCaches = TRB.Data.cache.values.frame
-		local strataLevel = TRB.Data.settings.core.strata.level
+		local strataLevel = GetBarTextStrata()
 		local previewActive = TRB.Functions.EditMode:IsShowingAllBars()
 		for i = 1, entries do
 			local e = barTextList[i]
@@ -3829,7 +3838,7 @@ function TRB.Functions.BarText:RepositionBarTextEntry(entryIndex, classId, specI
 	end
 
 	textFrames[entryIndex]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-	textFrames[entryIndex]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+	textFrames[entryIndex]:SetFrameStrata(GetBarTextStrata())
 
 	if relativeToFrame ~= nil and entry.enabled and isEnabled then
 		font:ClearAllPoints()
@@ -3948,7 +3957,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 			end
 
 			textFrames[frameCount]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-			textFrames[frameCount]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			textFrames[frameCount]:SetFrameStrata(GetBarTextStrata())
 
 			if textFrames[frameCount].font == nil then
 				textFrames[frameCount].font = TRB.Frames.textFrames[frameCount]:CreateFontString(nil, "BACKGROUND")

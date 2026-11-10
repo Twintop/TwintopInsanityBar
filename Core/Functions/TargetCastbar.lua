@@ -882,7 +882,8 @@ end
 ---when the updater runs guarantees the next frame re-resolves settings/conditions from the new state
 ---rather than acting on a cache left over from the previous state.
 local function SyncUpdater()
-	if NeedsUpdater() then
+	-- Edit Mode and Preview Mode show these bars through ProcessBars; a live tick would hide the idle ones.
+	if NeedsUpdater() and not TRB.Functions.EditMode:IsShowingAllBars() then
 		ForceThrottleTick()
 		updaterFrame:Show()
 	else
@@ -966,6 +967,10 @@ end
 -- via SetTimerDuration; the countdown text flows through the shared bar-text pipeline.
 -- ============================================================================
 updaterFrame:SetScript("OnUpdate", function(_, sinceLastUpdate)
+	if TRB.Functions.EditMode:IsShowingAllBars() then
+		updaterFrame:Hide()
+		return
+	end
 	local anyActive = false
 	local needsUpdater = false
 	local now = GetTime()
