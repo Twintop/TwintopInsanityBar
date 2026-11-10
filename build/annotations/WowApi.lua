@@ -72,3 +72,41 @@ function C_Spell.GetSpellCooldownDuration(spellIdentifier, ignoreGCD) end
 ---@param slot integer
 ---@return LuaDurationObject? duration
 function GetTotemDuration(slot) end
+
+---@class EditModeMagneticFrame : Frame
+---@field GetScaledSelectionSides fun(self: Frame): number, number, number, number
+---@field HasValidSelectionRect fun(self: Frame): boolean
+
+---Blizzard_EditMode's snap math (EditModeUtil.lua); a frame info is { frame, point, relativePoint, distance, offset, isHorizontal }.
+---@class EditModeMagnetismManager
+---@field magneticFrames table<EditModeMagneticFrame, boolean>
+---@field topLevelParentCenterX number?
+---@field topLevelParentLeft number
+---@field topLevelParentRight number
+---@field topLevelParentBottom number
+---@field topLevelParentTop number
+EditModeMagnetismManager = {}
+
+---@param systemFrame Frame
+---@param verticalLines boolean
+---@return number distance
+---@return string point
+---@return string relativePoint
+---@return number offset
+function EditModeMagnetismManager:FindClosestGridLine(systemFrame, verticalLines) end
+
+---Returns the closer of the current info and the offered one, or the current one when the offer is out of range.
+---@param currentMagneticFrameInfo table?
+---@param frame Frame
+---@param point string
+---@param relativePoint string
+---@param distance number
+---@param offset number
+---@param isHorizontal boolean
+---@return table? magneticFrameInfo
+function EditModeMagnetismManager:CheckReplaceMagneticFrameInfo(currentMagneticFrameInfo, frame, point, relativePoint, distance, offset, isHorizontal) end
+
+---@param frame Frame
+---@param relativeToFrameInfo table?
+---@return table? magneticFrameInfo
+function EditModeMagnetismManager:GetCornerMagneticFrameInfo(frame, relativeToFrameInfo) end

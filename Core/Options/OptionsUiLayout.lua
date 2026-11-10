@@ -34,6 +34,44 @@ local anchorPointDisplayNames = {
 	BOTTOMRIGHT = L["AnchorPointBOTTOMRIGHT"],
 }
 
+---@type table<string, fun()>
+local sliderOverrideRefreshers = {}
+
+---Grays out the size and position sliders a bar's anchor or Edit Mode overrides, now and on every later refresh.
+---@param key string # Unique per panel and bar, so a rebuilt panel replaces its old entry
+---@param barKey string
+---@param getAnchor fun(): table # Returns the bar's current anchor block
+---@param widthSlider TRB.Classes.OptionsUi.Slider
+---@param heightSlider TRB.Classes.OptionsUi.Slider
+---@param horizontalSlider TRB.Classes.OptionsUi.Slider
+---@param verticalSlider TRB.Classes.OptionsUi.Slider
+---@return fun() refresh
+local function TrackSliderOverrides(key, barKey, getAnchor, widthSlider, heightSlider, horizontalSlider, verticalSlider)
+	local function apply(slider, reason)
+		TRB.Functions.OptionsUi.Primitives:ToggleSliderEnabled(slider, reason == nil)
+		TRB.Functions.OptionsUi.Primitives:SetDisabledReason(slider, reason)
+	end
+
+	local function refresh()
+		local positionReason, widthReason, heightReason = TRB.Functions.EditMode:GetOptionsOverrideReasons(barKey, getAnchor())
+		apply(widthSlider, widthReason)
+		apply(heightSlider, heightReason)
+		apply(horizontalSlider, positionReason)
+		apply(verticalSlider, positionReason)
+	end
+
+	sliderOverrideRefreshers[key] = refresh
+	refresh()
+	return refresh
+end
+
+---Regrays every built panel's size and position sliders after an Edit Mode setting or layout change.
+function TRB.Functions.OptionsUi.Layout:RefreshEditModeOverrides()
+	for _, refresh in pairs(sliderOverrideRefreshers) do
+		refresh()
+	end
+end
+
 ---Returns the localized display name for a 9-point anchor constant.
 ---@param point string # One of TOPLEFT, TOP, TOPRIGHT, LEFT, CENTER, RIGHT, BOTTOMLEFT, BOTTOM, BOTTOMRIGHT
 ---@return string
@@ -475,6 +513,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	-- Forward-declare dropdown locals so closures defined before CreateFrame can reference them
 	local primaryAnchorPointDropdown
 	local primaryAttachPointDropdown
+	local RefreshSliderOverrides
 
 	---Applies the current primary bar anchor layout to the active bar groups if the spec matches.
 	local function ApplyPrimaryAnchorLayout()
@@ -539,6 +578,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 			getglobal(controls.checkBoxes.primaryMatchWidth:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
 			controls.checkBoxes.primaryMatchHeight:SetEnabled(newValue ~= "screen")
 			getglobal(controls.checkBoxes.primaryMatchHeight:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
+			RefreshSliderOverrides()
 			ApplyPrimaryAnchorLayout()
 		end)
 	end
@@ -570,6 +610,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		a.matchWidth = self:GetChecked()
 		DualWriteAnchorToLegacy(spec.bar)
+		RefreshSliderOverrides()
 		ApplyPrimaryAnchorLayout()
 	end)
 
@@ -585,8 +626,13 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	f:SetScript("OnClick", function(self, ...)
 		local a = EnsureAnchorBlock(spec.bar, "primary")
 		a.matchHeight = self:GetChecked()
+		RefreshSliderOverrides()
 		ApplyPrimaryAnchorLayout()
 	end)
+
+	RefreshSliderOverrides = TrackSliderOverrides(namePrefix .. "_primary", "primary", function()
+		return EnsureAnchorBlock(spec.bar, "primary")
+	end, controls.width, controls.height, controls.horizontal, controls.vertical)
 
 	-- Anchor Point dropdown (point on target bar/screen)
 	yCoord = yCoord - 60
@@ -1043,6 +1089,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 
 	-- Forward-declare dropdown variables referenced in callbacks
 	local anchorPointDropdown, attachPointDropdown
+	local RefreshSliderOverrides
 
 	---Applies the current ancillary bar anchor layout to the active bar groups if the spec matches.
 	local function ApplyAnchorLayout()
@@ -1109,6 +1156,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 			local matchHeightCb = controls.checkBoxes[settingKey .. "MatchHeight"]
 			matchHeightCb:SetEnabled(newValue ~= "screen")
 			getglobal(matchHeightCb:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
+			RefreshSliderOverrides()
 			ApplyAnchorLayout()
 		end)
 	end
@@ -1141,6 +1189,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 		local a = EnsureAnchorBlock(spec[settingKey])
 		a.matchWidth = self:GetChecked()
 		DualWriteAnchorToLegacy(spec[settingKey])
+		RefreshSliderOverrides()
 
 		-- Update border max based on new effective width
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or spec[settingKey].width
@@ -1173,6 +1222,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 	f:SetScript("OnClick", function(self, ...)
 		local a = EnsureAnchorBlock(spec[settingKey])
 		a.matchHeight = self:GetChecked()
+		RefreshSliderOverrides()
 
 		-- Update border max based on new effective dimensions
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or spec[settingKey].width
@@ -1192,6 +1242,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 			end
 		end
 	end)
+
+	RefreshSliderOverrides = TrackSliderOverrides(namePrefix .. "_" .. settingKey, thisBarKey, function()
+		return EnsureAnchorBlock(spec[settingKey])
+	end, controls[settingKey .. "Width"], controls[settingKey .. "Height"], controls[settingKey .. "Horizontal"], controls[settingKey .. "Vertical"])
 
 	-- Anchor Point dropdown (point on target bar)
 	yCoord = yCoord - 60
@@ -1678,6 +1732,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 
 	-- Forward-declare dropdown variables referenced in callbacks
 	local anchorPointDropdown, attachPointDropdown
+	local RefreshSliderOverrides
 
 	-- "Anchor To" dropdown
 	local anchorToDropdown = CreateFrame("DropdownButton", "TwintopResourceBar_" .. namePrefix .. "_AnchorTo", parent, "WowStyle1DropdownTemplate")
@@ -1732,6 +1787,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 			local matchHeightCb = controls[barTypeDef.key .. "MatchHeight"]
 			matchHeightCb:SetEnabled(newValue ~= "screen")
 			getglobal(matchHeightCb:GetName() .. 'Text'):SetFontObject(newValue ~= "screen" and GameFontHighlight or GameFontDisable)
+			RefreshSliderOverrides()
 
 			if TRB.Frames.barGroups ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
@@ -1766,6 +1822,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 		local a = EnsureAnchorBlock(barSettings)
 		a.matchWidth = self:GetChecked()
 		DualWriteAnchorToLegacy(barSettings)
+		RefreshSliderOverrides()
 
 		-- Update border max based on new effective width/height
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or barSettings.width
@@ -1793,6 +1850,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	f:SetScript("OnClick", function(self, ...)
 		local a = EnsureAnchorBlock(barSettings)
 		a.matchHeight = self:GetChecked()
+		RefreshSliderOverrides()
 
 		-- Update border max based on new effective dimensions
 		local effectiveWidth = a.matchWidth and TRB.Functions.Bar:ResolveBarWidth(spec, a.barKey) or barSettings.width
@@ -1807,6 +1865,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
+
+	RefreshSliderOverrides = TrackSliderOverrides(namePrefix, thisBarKey, function()
+		return EnsureAnchorBlock(barSettings)
+	end, controls[barTypeDef.key .. "Width"], controls[barTypeDef.key .. "Height"], controls[barTypeDef.key .. "XPos"], controls[barTypeDef.key .. "YPos"])
 
 	-- Fill Direction dropdown
 	yCoord = yCoord - 60

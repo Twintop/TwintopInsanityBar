@@ -335,8 +335,10 @@ local function HideHandles()
 end
 
 ---Puts a handle over every bar of the current layout. Layout calls this each time it finishes.
+---Edit Mode gets the icons alone: its own selection boxes do the dragging.
 function TRB.Functions.Preview:Refresh()
-	if not active then
+	if not TRB.Functions.EditMode:IsShowingAllBars() then
+		HideHandles()
 		return
 	end
 	local barGroups = TRB.Frames.barGroups
@@ -365,7 +367,8 @@ function TRB.Functions.Preview:Refresh()
 			handle:SetFrameLevel(HANDLE_FRAME_LEVEL)
 			handle.rootBarKey = rootBarKey
 			handle.lockReason = lockReasons[rootBarKey] or nil
-			handle.lockTexture:SetShown(handle.lockReason ~= nil)
+			handle:EnableMouse(active)
+			handle.lockTexture:SetShown(active and handle.lockReason ~= nil)
 			PlaceAnchorIcon(handle, barGroups)
 			handle:Show()
 		end

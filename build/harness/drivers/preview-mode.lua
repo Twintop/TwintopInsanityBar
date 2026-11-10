@@ -232,6 +232,50 @@ function hooks.afterEvents(ctx)
 	Drain("EDITMODE")
 	check("opening Edit Mode ends Preview Mode", not Preview:IsActive())
 
+	-- Edit Mode keeps the icons and the Bar Text Area names, without the drag handles' lock shading.
+	local layoutEnabled = EditMode.IsLayoutEnabled
+	local function always() return true end
+	rawset(EditMode, "IsInEditMode", always)
+	rawset(EditMode, "IsLayoutEnabled", always)
+	EditMode:OnEditModeEnter()
+	Drain("EDITMODE_ICONS")
+	local iconsShown, shaded = true, false
+	for barKey, handle in pairs(BarHandles()) do
+		if barKeyToRoot[barKey] ~= nil then
+			iconsShown = iconsShown and handle:IsShown() and rawget(handle, "anchorIcon") ~= nil
+			shaded = shaded or rawget(handle, "lockTexture"):IsShown()
+		end
+	end
+	check("every bar keeps its icon handle in Edit Mode", iconsShown)
+	check("Edit Mode bars are not shaded as locked", not shaded)
+	TRB.Data.barTextVisibilityRefreshNeeded = true
+	TRB.Functions.BarText:UpdateResourceBarText(settings, true)
+	local editNamed, editMisnamed = 0, 0
+	for i, entry in ipairs(settings.displayText.barText) do
+		local frame = TRB.Frames.textFrames[i]
+		if entry.enabled and frame ~= nil and frame:IsShown() and frame.font ~= nil then
+			local name = (entry.name ~= nil and entry.name ~= "") and entry.name or L["BarText"]
+			local text = frame.font:GetText() or ""
+			if text ~= "" then
+				if text:sub(-#name) == name then
+					editNamed = editNamed + 1
+				else
+					editMisnamed = editMisnamed + 1
+				end
+			end
+		end
+	end
+	check("every written Bar Text Area reads as its name in Edit Mode (" .. editNamed .. ")", editNamed > 0 and editMisnamed == 0)
+	rawset(EditMode, "IsInEditMode", isInEditMode)
+	rawset(EditMode, "IsLayoutEnabled", layoutEnabled)
+	EditMode:OnEditModeExit()
+	Drain("EDITMODE_EXIT")
+	anyHandleShown = false
+	for _, handle in pairs(BarHandles()) do
+		anyHandleShown = anyHandleShown or handle:IsShown()
+	end
+	check("the icons go away when Edit Mode closes", not anyHandleShown)
+
 	desktop.CreateFrame = createFrame
 	print(string.format("DRIVER preview-mode: %d failures", errors))
 end

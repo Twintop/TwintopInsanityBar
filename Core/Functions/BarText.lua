@@ -3641,7 +3641,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 		local barTextList = displayText.barText
 		local frameCaches = TRB.Data.cache.values.frame
 		local strataLevel = TRB.Data.settings.core.strata.level
-		local previewActive = TRB.Functions.Preview:IsActive()
+		local previewActive = TRB.Functions.EditMode:IsShowingAllBars()
 		for i = 1, entries do
 			local e = barTextList[i]
 			if e.enabled then
@@ -3715,7 +3715,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 						end
 						local renderOk, rendered, returnText = false, false, nil
 						if previewActive then
-							-- Preview Mode shows where each Bar Text Area sits by writing its name.
+							-- Preview Mode and Edit Mode show where each Bar Text Area sits by writing its name.
 							local name = e.name
 							if name == nil or name == "" then
 								name = L["BarText"]
