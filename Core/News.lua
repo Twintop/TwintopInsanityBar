@@ -7,9 +7,10 @@ TRB.Details.coreNewsContent = [====[
 # Live 12.1.5.12-release / Forever 1.60.1.19-release / Classic 1.15.9.4-release / TBC 2.5.6.2-release (2026-11-10)
 ## Preview Mode
 
-- Add a Preview Mode checkbox to the top of the options window, showing every bar that isn't set to Never Show, with each Bar Text Area showing its name.
-- In Preview Mode, drag a bar to move it and every bar anchored with it. Bars positioned using Edit Mode can't be dragged.
-- Preview Mode ends when the options window closes, Edit Mode opens, or you enter combat.
+- [#973](#973) Add a Preview Mode checkbox to the top of the options window, showing every bar that isn't set to Never Show, with each Bar Text Area showing its name.
+- [#973](#973) In Preview Mode, drag a bar to move it and every bar anchored with it. Bars positioned using Edit Mode are grayed out and can't be dragged.
+- [#973](#973) In Preview Mode, each bar shows an icon where it is attached, and clicking a bar opens the options that position it.
+- [#973](#973) Preview Mode ends when the options window closes, Edit Mode opens, or you enter combat.
 
 ---
 
