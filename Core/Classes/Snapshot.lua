@@ -1721,7 +1721,7 @@ function TRB.Classes.SnapshotCooldown:ReadInitial()
 	end
 	-- Secret times can't be compared, but the never-secret isOnGCD false still marks the ability's own cooldown.
 	if issecretvalue(info.startTime) or issecretvalue(info.duration) then
-		if info.isOnGCD == false then
+		if info.isOnGCD == false or spell.attributes.offGcd == true then
 			self:Start(info)
 		end
 		return

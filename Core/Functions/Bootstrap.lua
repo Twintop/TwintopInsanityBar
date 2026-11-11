@@ -19,6 +19,7 @@ TRB.Functions.Bootstrap = {}
 ---@field fillSpellData fun()[]? # Spell data fillers to run once during the deferred setup, before the first SwitchSpec (a module may fill inside SwitchSpec instead and leave this empty)
 ---@field OnSettingsLoaded fun(settings: table, savedVariables: table?, checks: table)? # After the settings are merged and migrated: seed class-specific bar text, run one-shot migrations. `checks` carries freshInstall = true when there were no saved variables, plus whatever the flavor's manual update checks reported (e.g. barTextReset = true)
 ---@field OnBeforeReady fun()? # Runs synchronously the moment the deferred setup is scheduled (e.g. initialize class state the setup relies on)
+---@field OnReady fun()? # Runs at the end of the deferred setup, after the shared enable prompts (e.g. show a class bar's own enable prompt)
 ---@field extraEvents string[]? # Additional events to register on the bootstrap frame; delivered to OnEvent
 ---@field OnEvent fun(event: string, ...): boolean? # Sees every event first; return true to consume it (the shared handling is skipped)
 
@@ -131,6 +132,9 @@ local function StartDeferredSetup(module, classEntry)
 			TRB.Functions.News:Init()
 			TRB.Functions.Skyriding:ShowEnablePrompt()
 			TRB.Functions.Totems:ShowEnablePrompt()
+			if module.OnReady ~= nil then
+				module.OnReady()
+			end
 			TRB.Details.addonData.optionsPanelFinished = true
 		end)
 	end)

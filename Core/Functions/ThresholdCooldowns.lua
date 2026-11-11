@@ -127,7 +127,8 @@ local function ApplyCooldownEvent(cooldown, now)
 		return
 	end
 	local isOnGCD = info.isOnGCD
-	if isOnGCD == false then
+	-- An off-GCD spell reads nil even at its cast, but never reads the GCD, so an untracked running cooldown is its own.
+	if isOnGCD == false or (spell.attributes.offGcd == true and not cooldown.onCooldown) then
 		cooldown:Start(info)
 		startedAt[cooldown] = now
 		LoadEndWidget(cooldown)

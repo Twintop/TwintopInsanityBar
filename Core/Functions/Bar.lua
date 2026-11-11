@@ -1271,7 +1271,9 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 			local barDisplaySettings = settings.displayBar[barKey]
 			if barDisplaySettings ~= nil and type(barGroup) == "table" and barGroup.SetSmooth ~= nil and
 				not TRB.Classes.BarTypeRegistry:IsSelfDriven(barKey) then
-				barGroup:SetSmooth(barDisplaySettings.smooth or false)
+				-- A timer-driven fill has no Smooth option, and a preset or copied entry may still carry one.
+				local barDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(barKey)
+				barGroup:SetSmooth(barDisplaySettings.smooth == true and not (barDef ~= nil and barDef.timerDrivenFill == true))
 			end
 		end
 	end
