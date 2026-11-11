@@ -931,12 +931,6 @@ do
 	SpecDescriptor:Declare("monk_brewmaster", {
 		customBars = { "stagger", "brews" },
 		cooldownSpells = { "purifyingBrew", "celestialBrew", "celestialInfusion", "fortifyingBrew", "blackOxBrew" },
-		-- TEMPORARY (#721): /trb brews toggles the Brews bar diagnostics. Remove before merge.
-		slashCommands = {
-			brews = function(subcommand)
-				TRB.Functions.Class:ToggleBrewDiagnostics(subcommand)
-			end,
-		},
 		barTextAnchorFrames = {
 			stagger = { { label = L["Stagger"], frame = "ComboPoint_1" } },
 			brews = {
