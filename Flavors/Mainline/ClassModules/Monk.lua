@@ -72,6 +72,47 @@ local brewFrameNodes = {}
 -- Nodes the mapped brews fill.
 local brewNodeCount = 0
 
+-- Bumped whenever the brews' nodes are remapped.
+local brewMapVersion = 0
+
+-- Which brews' time text can draw, and the inputs that answer was built from.
+local brewTimeText = { drawable = {}, activeVars = nil, mapVersion = -1, barShown = nil }
+
+---Whether an enabled bar text entry using the brew's time has somewhere to draw: off the Brews bar, or on a node the
+---shown bar has.
+---@param brew TRB.Classes.Mainline.Monk.BrewNode
+---@return boolean
+local function CanBrewTimeTextDraw(brew)
+	local displayBar = TRB.Data.settings.monk.brewmaster.displayBar
+	local barShown = displayBar.brews ~= nil and displayBar.brews.neverShow ~= true
+	local activeVars = TRB.Data.activeVariables
+	if brewTimeText.activeVars ~= activeVars or brewTimeText.mapVersion ~= brewMapVersion or brewTimeText.barShown ~= barShown then
+		brewTimeText.activeVars = activeVars
+		brewTimeText.mapVersion = brewMapVersion
+		brewTimeText.barShown = barShown
+		local drawable = brewTimeText.drawable
+		for _, other in pairs(brewNodes) do
+			drawable[other.timeVariable] = false
+		end
+		local specCache = TRB.Data.specCache.monk_brewmaster
+		local barText = specCache ~= nil and specCache.settings ~= nil and specCache.settings.displayText.barText or {}
+		for i = 1, #barText do
+			local entry = barText[i]
+			if entry.enabled and entry.text then
+				local frame = entry.position and entry.position.relativeToFrame and string.gsub(entry.position.relativeToFrame, "_", "") or ""
+				if not brewFrames[frame] or (barShown and brewFrameNodes[frame] ~= nil) then
+					for _, other in pairs(brewNodes) do
+						if not drawable[other.timeVariable] and string.find(entry.text, other.timeVariable, 1, true) then
+							drawable[other.timeVariable] = true
+						end
+					end
+				end
+			end
+		end
+	end
+	return brewTimeText.drawable[brew.timeVariable] == true
+end
+
 -- The duration object each recharging node's fill is bound to. Weak, since nodes are rebuilt with their groups.
 local brewNodeDurations = setmetatable({}, { __mode = "k" })
 
@@ -127,6 +168,7 @@ local function MapBrewNodes(colorSettings)
 	end
 
 	if changed then
+		brewMapVersion = brewMapVersion + 1
 		brewNodeCount = nodeCount
 		wipe(brewFrameNodes)
 		for _, brew in pairs(brewNodes) do
@@ -746,7 +788,7 @@ local function RefreshLookupData_Brewmaster()
 
 			-- The time is secret in combat, so conditions only see whether it is counting.
 			lookupLogic[brew.timeVariable] = recharging and 1 or 0
-			lookup[brew.timeVariable] = TRB.Functions.BarText:TimerPrecision(_time)
+			lookup[brew.timeVariable] = recharging and TRB.Functions.BarText:TimerPrecision(_time) or TRB.Functions.BarText:ZeroTimerText()
 			if brew.chargesVariable ~= nil then
 				lookupLogic[brew.chargesVariable] = _charges
 				lookup[brew.chargesVariable] = _charges
@@ -2574,7 +2616,7 @@ function TRB.Functions.Class:HasActiveTimers()
 
 			local activeVars = TRB.Data.activeVariables
 			for _, brew in pairs(brewNodes) do
-				if brew.maxCharges > 0 and (not activeVars or activeVars[brew.timeVariable])
+				if brew.maxCharges > 0 and (not activeVars or (activeVars[brew.timeVariable] and CanBrewTimeTextDraw(brew)))
 					and GetBrewCharges(brew, snapshotData.snapshots[spells[brew.spellKey].id].cooldown) < brew.maxCharges then
 					return true
 				end

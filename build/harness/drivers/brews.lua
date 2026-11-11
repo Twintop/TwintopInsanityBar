@@ -159,6 +159,13 @@ function hooks.afterEvents(ctx)
 	check("dropping Endless Draught takes the second charge away again", group.nodeCount == 5 and NodeOf("CelestialBrew_2") == nil
 		and NodeOf("PurifyingBrew_1") == 1)
 
+	-- A Smooth carried in from a preset or a copied entry never reaches the timer-driven nodes.
+	settings.displayBar.brews.smooth = true
+	settings.displayBar.stagger.smooth = true
+	Layout()
+	check("a timer-driven bar ignores a carried Smooth, and Stagger keeps its own", group.smooth == false and barGroups.stagger.smooth == true)
+	settings.displayBar.brews.smooth = false
+
 	-- Cooldown events, as the client reports them: the count secret, the recharging and no-charges flags plain.
 	local function Fire(spec)
 		drv.now = drv.now + 1
@@ -257,6 +264,29 @@ function hooks.afterEvents(ctx)
 	lookup, logic = Lookup()
 	check("Fortifying Brew counts its cooldown", logic["$fortifyingBrewTime"] == 1 and lookup["$fortifyingBrewTime"] == TimerPrecision(300)
 		and Valid("$fortifyingBrewTime") and Class:HasActiveTimers())
+
+	-- The count only keeps bar text refreshing while an entry using it has somewhere to draw.
+	local brewsVisibility = TRB.Data.settings.monk.brewmaster.displayBar.brews
+	local function Ticking()
+		TRB.Data.activeVariables = { ["$fortifyingBrewTime"] = true }
+		return Class:HasActiveTimers()
+	end
+	check("text on a shown brew's node keeps refreshing", Ticking() == true)
+	brewsVisibility.neverShow = true
+	check("a Never Show bar's own text doesn't", Ticking() == false)
+	local offBar = { enabled = true, text = "$fortifyingBrewTime", position = { relativeToFrame = "Resource" } }
+	table.insert(settings.displayText.barText, offBar)
+	check("the same time in text off the bar still does", Ticking() == true)
+	table.remove(settings.displayText.barText)
+	brewsVisibility.neverShow = false
+	brewColors.nodeColors.fortifyingBrew.enabled = false
+	Remap()
+	check("nor does the text of a brew switched off the bar", Ticking() == false)
+	brewColors.nodeColors.fortifyingBrew.enabled = true
+	Remap()
+	check("and it resumes once the brew is back", Ticking() == true)
+	TRB.Data.activeVariables = nil
+
 	drv.cooldowns[FORTIFYING_BREW] = Reading(true, nil)
 	drv.durations[FORTIFYING_BREW] = Duration(297)
 	Fire("SPELL_UPDATE_COOLDOWN:" .. FORTIFYING_BREW)
@@ -267,6 +297,17 @@ function hooks.afterEvents(ctx)
 	Fire("SPELL_UPDATE_COOLDOWN:" .. FORTIFYING_BREW)
 	lookup, logic = Lookup()
 	check("and its end stops the count", logic["$fortifyingBrewTime"] == 0 and not Valid("$fortifyingBrewTime") and not Class:HasActiveTimers())
+
+	-- A cooldown already running when tracking starts, as after a reload, also reads nil.
+	local fortifying = TRB.Data.snapshotData.snapshots[FORTIFYING_BREW].cooldown
+	drv.cooldowns[FORTIFYING_BREW] = Reading(true, nil)
+	drv.durations[FORTIFYING_BREW] = Duration(200)
+	try("ReadInitial", function() fortifying:ReadInitial() end)
+	check("an off-GCD cooldown found running at load is tracked", fortifying.onCooldown == true)
+	drv.cooldowns[FORTIFYING_BREW] = Reading(false)
+	drv.durations[FORTIFYING_BREW] = nil
+	Fire("SPELL_UPDATE_COOLDOWN:" .. FORTIFYING_BREW)
+	check("and ends like any other", fortifying.onCooldown ~= true)
 
 	-- Black Ox Brew is off the GCD too.
 	Cast(BLACK_OX_BREW)
@@ -444,7 +485,8 @@ function hooks.afterEvents(ctx)
 		check("a profile without the Brews bar copies Stagger's visibility, hidden until answered", type(brews) == "table" and brews ~= stagger
 			and brews.neverShow == true and brews.alwaysShow == false and brews.presetId == "preset-guid" and brews.useGlobal == false
 			and brews.conditions ~= stagger.conditions and brews.conditions.inCombat == true and brews.hideConditions.isDead == true and brews.fadeDuration == 1.5)
-		check("and leaves Stagger's own entry alone", stagger.neverShow == false)
+		check("and leaves Stagger's own entry alone", stagger.neverShow == false and stagger.smooth == true)
+		check("the copy drops Smooth, which the Brews bar doesn't offer", brews.smooth == false)
 
 		checks.brewsBarPrompt = { answered = true, hidden = false }
 		check("a Yes shows the bar by default", Settings:DefaultBrewsBarVisibility().neverShow == false)

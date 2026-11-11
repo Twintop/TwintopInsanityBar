@@ -93,6 +93,8 @@ function TRB.Functions.Settings:SeedBrewsBarVisibility(settings)
 	end
 	local brews = TRB.Functions.Table:DeepCopy(displayBar.stagger)
 	brews.neverShow = brews.neverShow == true or self:AreBrewsBarDeclined()
+	-- The Brews bar has no Smooth option.
+	brews.smooth = false
 	displayBar.brews = brews
 end
 
