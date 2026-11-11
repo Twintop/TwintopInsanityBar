@@ -282,7 +282,8 @@ local function SyncEventRegistration()
 	end
 end
 
----Rebuilds the tracked set from the live spec's lines that need their cooldown and its descriptor's cooldownSpells.
+---Rebuilds the tracked set from the live spec's lines that need their cooldown, its descriptor's cooldownSpells, and
+---the cooldowns its custom bars read.
 ---A cooldown that joins is read once; one that leaves ends, so no stale cooldown outlives tracking.
 function ThresholdCooldowns:Sync()
 	local previous = tracked
@@ -304,6 +305,11 @@ function ThresholdCooldowns:Sync()
 			for _, key in ipairs(descriptor.cooldownSpells) do
 				Track(spells[key], snapshots)
 			end
+		end
+		local customBarSpells = {}
+		TRB.Functions.CustomBars:AppendCooldownSpells(customBarSpells)
+		for _, spell in ipairs(customBarSpells) do
+			Track(spell, snapshots)
 		end
 	end
 

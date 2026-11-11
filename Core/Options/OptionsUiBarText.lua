@@ -13,7 +13,7 @@ local deleteActionTextColor = { r = 1, g = 0.12, b = 0.12, a = 1 }
 local includeAllGroups = {}
 
 -- Each built editor's refresh hooks, by scope then grouping, so a change in one reaches its siblings.
----@type table<string, table<string, { RefreshTable: fun(closeEditor: boolean?), RefreshUseGlobalCheckbox: fun() }>>
+---@type table<string, table<string, { RefreshTable: fun(closeEditor: boolean?), RefreshUseGlobalCheckbox: fun(), RefreshCatalog: fun() }>>
 local barTextEditors = {}
 
 ---@param classId integer?
@@ -1690,13 +1690,33 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		controls.barTextFields.ResetTableValues = ResetTableValues
 	end
 	barTextEditors[scopeKey] = barTextEditors[scopeKey] or {}
-	barTextEditors[scopeKey][groupKey] = { RefreshTable = RefreshBarTextTable, RefreshUseGlobalCheckbox = RefreshUseGlobalCheckbox }
+	barTextEditors[scopeKey][groupKey] = {
+		RefreshTable = RefreshBarTextTable,
+		RefreshUseGlobalCheckbox = RefreshUseGlobalCheckbox,
+		RefreshCatalog = function()
+			catalog = TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
+			RefreshBarTextTable()
+		end,
+	}
 
 	yCoord = oldYCoord
 	local variablesPanel = TRB.Functions.OptionsUi.BarTextVariables:CreateVariablesSidePanel(parent, namePrefix, cache, classId, specId)
 	-- Tag the scroll child's ancestor (the tabsheet parent) so SwitchTab/SelectCategory can find the right panel
 	parent.barTextVariablesPanel = variablesPanel
 	TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
+end
+
+---Rebuilds the anchors a specialization's built editors offer, after one of its custom bars was added, renamed, or deleted.
+---@param classId integer
+---@param specId integer
+function TRB.Functions.OptionsUi.BarText:RefreshAnchorCatalogs(classId, specId)
+	local scopeEditors = barTextEditors[GetScopeKey(classId, specId)]
+	if scopeEditors == nil then
+		return
+	end
+	for _, editor in pairs(scopeEditors) do
+		editor.RefreshCatalog()
+	end
 end
 
 ---Redraws every built editor's Use Global Bar Text box from the saved flag, and its table, which lists Global Bar
@@ -1763,6 +1783,8 @@ function TRB.Functions.OptionsUi.BarText:ConstructGroupPanel(parent, classId, sp
 		sectionTitle = L["BarDisplayTextCustomizationHeaderTotems"]
 	elseif groupKey == "skyriding" then
 		sectionTitle = L["BarDisplayTextCustomizationHeaderSkyriding"]
+	elseif groupKey == "customBars" then
+		sectionTitle = L["BarDisplayTextCustomizationHeaderCustomBars"]
 	end
 	TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, sectionTitle, oUi.xCoord, 5)
 	-- The first row clears the header, as on a class's own Bar Text tab; the Global screens have no Use Global box there, so the table takes it.

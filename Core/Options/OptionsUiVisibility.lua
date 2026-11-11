@@ -1966,6 +1966,31 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 	end
 
+	---Rebuilds the entries of the bars the user added, which come and go while this panel stays built.
+	local function SyncUserBarEntries()
+		for index = #allBarEntries, 1, -1 do
+			if allBarEntries[index].isUserBar then
+				table.remove(allBarEntries, index)
+			end
+		end
+		for _, userBarKey in ipairs(TRB.Classes.BarTypeRegistry:GetUserBarKeys(classId, specId)) do
+			if spec.displayBar and spec.displayBar[userBarKey] ~= nil then
+				local userBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get(userBarKey)
+				table.insert(allBarEntries, {
+					key = userBarKey,
+					displayBarKey = userBarKey,
+					label = userBarDef.displayName,
+					globalLabel = userBarDef.displayName,
+					isCustomBar = true,
+					isUserBar = true,
+					hidesSmooth = userBarDef.timerDrivenFill == true,
+					isGlobal = false,
+				})
+			end
+		end
+	end
+	SyncUserBarEntries()
+
 	-- barEntries is mutated in place: the Use Global box, table, detail panel, and handlers all close over it.
 	local function RebuildBarEntries()
 		for index = #barEntries, 1, -1 do
@@ -3261,8 +3286,13 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end,
 	})
 
-	-- Keep the table in sync with visibility changes made from the per-bar tab headers.
+	-- Keep the table in sync with visibility changes made from the per-bar tab headers, and with custom bars added or
+	-- deleted since.
 	parent:HookScript("OnShow", function()
+		if not isPresetHost then
+			SyncUserBarEntries()
+			RebuildRows()
+		end
 		RefreshTableForGlobalToggle()
 	end)
 

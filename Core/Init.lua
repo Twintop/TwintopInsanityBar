@@ -331,6 +331,8 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		TRB.Classes.SpellBase.SetTickTime(GetTime())
 		TRB.Functions.Character:FlushHealthValues()
 		TRB.Functions.AudioCues:UpdateBuffCues(TRB.Data.snapshotData)
+		-- Ahead of the class update, so a bar that just went active shows in this tick's visibility pass.
+		TRB.Functions.CustomBars:Render()
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 		TRB.Classes.SpellBase.SetTickTime(nil)
 		TRB.Functions.CurveMemo:SetActive(false)

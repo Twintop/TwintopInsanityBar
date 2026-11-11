@@ -19,13 +19,15 @@
 	the legacy resolver does, and skips only when nothing it shows changed; it runs once per class. inner-fire checks the Forever, Classic, and TBC
 	Priest's Inner Fire charges, timer, bar text, and Color Indicator, and Forever's diagnostic; it runs once per class. slice-and-dice checks the
 	Forever, Classic, and TBC Rogue's Slice and Dice timer, bar text, Active and Ending Color Indicators, and diagnostic; it runs once per class.
+	custom-bars checks Custom Bars: an added bar's sources, registry scope, group, fill, visibility entry, bar text anchor, and the
+	options tab's add, edit, and delete; it runs once per class.
 	See build\harness\README.md.
 
 .PARAMETER Lua
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, custom-bars). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
@@ -68,7 +70,8 @@ $drivers = @(
 	[pscustomobject]@{ Name = "indicator-modifiers"; EveryClass = $true },
 	[pscustomobject]@{ Name = "bartext-conformance"; EveryClass = $true },
 	[pscustomobject]@{ Name = "inner-fire"; EveryClass = $true },
-	[pscustomobject]@{ Name = "slice-and-dice"; EveryClass = $true }
+	[pscustomobject]@{ Name = "slice-and-dice"; EveryClass = $true },
+	[pscustomobject]@{ Name = "custom-bars"; EveryClass = $true }
 )
 $known = $drivers | ForEach-Object { $_.Name }
 if ($Driver -ne "" -and $known -notcontains $Driver) {

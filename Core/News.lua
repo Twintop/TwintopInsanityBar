@@ -9,6 +9,14 @@ TRB.Details.coreNewsContent = [====[
 
 - [#974](#974) Update LibEditMode to version 19.
 
+## Custom Bars
+
+- Add a Custom Bars tab to every specialization, where you can add your own bars tracking the duration or stacks of a buff or proc, or the cooldown, recharge, total recharge, or charges of an ability, that the specialization already tracks.
+- Each custom bar has its own layout, colors, End Cap, textures, and visibility, shows When active by default, and is included in the specialization's Bar Display export.
+- A custom bar tracking charges can fill the recharging charge as it recharges, on by default.
+- Bar text bound to a custom bar can use `$abilityTime`, `$abilityStacks`, and `$abilityStacksMax` for what that bar tracks, and each new bar gets default bar text on its right side.
+- Custom bars belong to their specialization and have no Use Global options, threshold lines, or Color Indicator targets.
+
 ## Edit Mode
 
 - [#974](#974) Add X and Y position entry for the selected bar in Edit Mode.

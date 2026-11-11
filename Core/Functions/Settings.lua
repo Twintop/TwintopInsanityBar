@@ -1051,6 +1051,24 @@ function TRB.Functions.Settings:DefaultCustomBarTextures()
 	}
 end
 
+---Default visibility for a bar the user added on the Custom Bars tab: shown while its timer runs or its count isn't 0.
+---@return trbBarVisibilitySetting
+function TRB.Functions.Settings:DefaultUserBarVisibility()
+	return {
+		neverShow = false,
+		alwaysShow = false,
+		conditions = { whenActive = true },
+		hideConditions = self:LoadDefaultBarVisibilityHideConditions(),
+		activeAlpha = 100,
+		inactiveAlpha = 0,
+		fadeDuration = 0,
+		fadeDelay = 0,
+		resourceConditionType = "none",
+		resourceConditionOperator = ">=",
+		resourceConditionValue = 0
+	}
+end
+
 ---Gets default Castbar bar dimensions (single node, full width; wider/taller default than a generic bar)
 ---@param classic boolean?
 ---@return TRB.Classes.Settings.SecondaryBar
@@ -2758,6 +2776,12 @@ function TRB.Functions.Settings:GetTextureKeysForBar(barKey)
 end
 
 local textureMedia = nil
+
+---Drops the memoized texture media, for when a custom bar is added or deleted.
+function TRB.Functions.Settings:ResetTextureMedia()
+	textureMedia = nil
+end
+
 ---Each texture key's media type and what it draws while its pick isn't loaded: the slot's default, else the main bar's
 ---of that type. Built on first use, once every bar type has registered.
 ---@return table<string, { mediaType: string, fallback: string }>

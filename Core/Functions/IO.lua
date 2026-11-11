@@ -194,6 +194,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		end
 
 		CopyCustomBarConfigurations(configuration, settings, classId, specId)
+		-- What each bar the user added tracks; the bars' own data went with the registry bars above.
+		configuration.customBars = settings.customBars
 	end
 
 	if includeThresholds then

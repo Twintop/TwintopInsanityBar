@@ -698,6 +698,25 @@ local CDM_PICKER_NOTE_R, CDM_PICKER_NOTE_G, CDM_PICKER_NOTE_B = 0.85, 0.75, 1.0
 local menuMaxRowsBeforeScroll = 15
 local menuRowHeight = 20
 
+---Frees the global names of everything under a frame that is being retired, so a rebuilt copy can take them: a
+---named frame or region doesn't replace a global that already exists, which leaves the copy's labels unset.
+---@param frame Frame
+function TRB.Functions.OptionsUi.Primitives:ReleaseFrameNames(frame)
+	for _, region in ipairs({ frame:GetRegions() }) do
+		local name = region:GetName()
+		if name ~= nil and _G[name] == region then
+			_G[name] = nil
+		end
+	end
+	for _, child in ipairs({ frame:GetChildren() }) do
+		local name = child:GetName()
+		if name ~= nil and _G[name] == child then
+			_G[name] = nil
+		end
+		self:ReleaseFrameNames(child)
+	end
+end
+
 ---Makes a menu scroll once it holds more rows than fit comfortably on screen.
 ---@param rootDescription table
 ---@param rowCount integer # Rows the menu draws, counting titles and dividers

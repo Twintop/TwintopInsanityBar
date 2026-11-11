@@ -858,6 +858,36 @@ local function EnsureTotemBarGroups(barGroups)
 	end
 end
 
+---Guarantees a group for each bar the user added to the live spec, rebuilt when its node count changed, and
+---drops the group of a bar that was deleted.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsureUserBarGroups(barGroups)
+	local live = {}
+	for _, entry in ipairs(TRB.Functions.CustomBars:GetRuntime()) do
+		local key = entry.key
+		local maxNodes = entry.definition.maxNodes
+		live[key] = true
+		if barGroups[key] ~= nil and barGroups[key].maxNodes ~= maxNodes then
+			barGroups[key]:Destroy()
+			barGroups[key] = nil
+		end
+		if barGroups[key] == nil then
+			local frameName = "TwintopResourceBarFrame_" .. key:gsub("^%l", string.upper)
+			barGroups[key] = TRB.Classes.BarGroup:New(UIParent, frameName, maxNodes, false)
+		end
+		-- Ahead of the layout pass, which is what positions the tracker.
+		if entry.definition.fillsRecharge then
+			barGroups[key]:EnableChargeTracker()
+		end
+	end
+	for key, group in pairs(barGroups) do
+		if not live[key] and TRB.Classes.BarTypeRegistry:IsUserBar(key) then
+			group:Destroy()
+			barGroups[key] = nil
+		end
+	end
+end
+
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
@@ -904,6 +934,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	EnsurePetBarGroups(barGroups)
 	EnsureTotemBarGroups(barGroups)
 	EnsureSkyridingBarGroups(settings, barGroups)
+	EnsureUserBarGroups(barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
@@ -957,6 +988,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	EnsurePetBarGroups(barGroups)
 	EnsureTotemBarGroups(barGroups)
 	EnsureSkyridingBarGroups(settings, barGroups)
+	EnsureUserBarGroups(barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
 
@@ -3224,6 +3256,18 @@ end
 function TRB.Functions.Bar:ResolveFormIndependentBarSettings(settings)
 	local descriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
 	local barKeys = descriptor and descriptor.formIndependentBars
+	-- A spec with forms keeps the bars its user added, whichever spec's settings the form lays out with.
+	local userBars = descriptor ~= nil and descriptor.forms ~= nil and TRB.Functions.CustomBars:GetRuntime() or nil
+	if userBars ~= nil and #userBars > 0 then
+		local combined = {}
+		for _, barKey in ipairs(barKeys or {}) do
+			combined[#combined + 1] = barKey
+		end
+		for _, entry in ipairs(userBars) do
+			combined[#combined + 1] = entry.key
+		end
+		barKeys = combined
+	end
 	if barKeys == nil then
 		return settings
 	end

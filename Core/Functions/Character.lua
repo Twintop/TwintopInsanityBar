@@ -1651,6 +1651,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	local s = core.global[className][specName] --[[@as TRB.Classes.Settings.SpecializationGlobalEnabled]]
 	local spec = TRB.Data.settings[className][specName] --[[@as TRB.Classes.Settings.SpecializationSettingsBase]]
 
+	-- First, since the textures and bars composed below read the registry.
+	local specEntry = TRB.Functions.Character:GetSpecRegistryEntry(compositeKey)
+	TRB.Functions.CustomBars:SyncRegistry(specEntry and specEntry.classId, specEntry and specEntry.specId, spec)
+
 	if s.bar then
 		specCache.settings.bar = core.bar
 	else
