@@ -13,12 +13,20 @@ TRB.Classes.Mainline.Monk = TRB.Classes.Mainline.Monk or {}
 --Class Talents
 ---@field public detox TRB.Classes.SpellThreshold
 ---@field public disable TRB.Classes.SpellThreshold
+---@field public fortifyingBrew TRB.Classes.SpellBase
 ---@field public paralysis TRB.Classes.SpellThreshold
 ---@field public soothingMist TRB.Classes.SpellThreshold
 --Spec Talents
+---@field public blackOxBrew TRB.Classes.SpellBase
+---@field public celestialBrew TRB.Classes.SpellBase
+---@field public celestialInfusion TRB.Classes.SpellBase
+---@field public fortifyingBrewDetermination TRB.Classes.SpellBase
 ---@field public invokeNiuzao TRB.Classes.SpellBase
 ---@field public kegSmash TRB.Classes.SpellThreshold
 ---@field public pressTheAdvantage TRB.Classes.SpellBase
+---@field public purifyingBrew TRB.Classes.SpellBase
+--Master of Harmony
+---@field public endlessDraught TRB.Classes.SpellBase
 TRB.Classes.Mainline.Monk.BrewmasterSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mainline.Monk.BrewmasterSpells.__index = TRB.Classes.Mainline.Monk.BrewmasterSpells
 
@@ -97,6 +105,13 @@ function TRB.Classes.Mainline.Monk.BrewmasterSpells:New()
 		isTalent = true,
 		category = "utility"
 	})
+	self.fortifyingBrew = TRB.Classes.SpellBase:New({
+		id = 115203,
+		talentId = 388917,
+		isTalent = true,
+		hasCooldown = true,
+		offGcd = true
+	})
 	self.paralysis = TRB.Classes.SpellThreshold:New({
 		id = 115078,
 		castId = 115078,
@@ -118,6 +133,30 @@ function TRB.Classes.Mainline.Monk.BrewmasterSpells:New()
 	})
 
 	-- Brewmaster Spec Talents
+	self.blackOxBrew = TRB.Classes.SpellBase:New({
+		id = 115399,
+		isTalent = true,
+		hasCooldown = true,
+		offGcd = true
+	})
+	self.celestialBrew = TRB.Classes.SpellBase:New({
+		id = 322507,
+		isTalent = true,
+		hasCooldown = true,
+		hasCharges = true,
+		maxCharges = 1
+	})
+	self.celestialInfusion = TRB.Classes.SpellBase:New({
+		id = 1241059,
+		isTalent = true,
+		hasCooldown = true,
+		hasCharges = true,
+		maxCharges = 1
+	})
+	self.fortifyingBrewDetermination = TRB.Classes.SpellBase:New({
+		id = 322960,
+		isTalent = true
+	})
 	self.invokeNiuzao = TRB.Classes.SpellBase:New({
 		id = 132578,
 		isTalent = true,
@@ -138,6 +177,20 @@ function TRB.Classes.Mainline.Monk.BrewmasterSpells:New()
 		id = 418359,
 		isTalent = true
 	})
+	self.purifyingBrew = TRB.Classes.SpellBase:New({
+		id = 119582,
+		isTalent = true,
+		hasCooldown = true,
+		hasCharges = true,
+		maxCharges = 2
+	})
+
+	-- Master of Harmony
+	self.endlessDraught = TRB.Classes.SpellBase:New({
+		id = 450892,
+		isTalent = true,
+		maxChargesMod = 1
+	})
 
 	return self
 end
@@ -153,7 +206,12 @@ function TRB.Classes.Mainline.Monk.BrewmasterSpells.FillBarTextVariables(specCac
 	local spells = specCacheEntry.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
 
 	specCacheEntry.barTextVariables.icons = TRB.Functions.BarText:GetCommonIcons({
+		{ variable = "#blackOxBrew", icon = spells.blackOxBrew.icon, description = spells.blackOxBrew.name, printInSettings = true },
+		{ variable = "#celestialBrew", icon = spells.celestialBrew.icon, description = spells.celestialBrew.name, printInSettings = true },
+		{ variable = "#celestialInfusion", icon = spells.celestialInfusion.icon, description = spells.celestialInfusion.name, printInSettings = true },
+		{ variable = "#fortifyingBrew", icon = spells.fortifyingBrew.icon, description = spells.fortifyingBrew.name, printInSettings = true },
 		{ variable = "#niuzao", icon = spells.invokeNiuzao.icon, description = L["MonkBrewmasterBarTextIcon_niuzao"], printInSettings = true },
+		{ variable = "#purifyingBrew", icon = spells.purifyingBrew.icon, description = spells.purifyingBrew.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -167,6 +225,15 @@ function TRB.Classes.Mainline.Monk.BrewmasterSpells.FillBarTextVariables(specCac
 		{ variable = "$staggerPercent", description = L["MonkBrewmasterBarTextVariable_staggerPercent"], printInSettings = true, color = false, secret = true, category = varCategory.RESOURCES },
 
 		{ variable = "$niuzaoTime", description = L["MonkBrewmasterBarTextVariable_niuzaoTime"], printInSettings = true, color = false },
+
+		{ variable = "$purifyingBrewCharges", description = L["MonkBrewmasterBarTextVariable_purifyingBrewCharges"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$purifyingBrewTime", description = L["MonkBrewmasterBarTextVariable_purifyingBrewTime"], printInSettings = true, color = false, secret = true },
+		{ variable = "$celestialBrewCharges", description = L["MonkBrewmasterBarTextVariable_celestialBrewCharges"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$celestialBrewTime", description = L["MonkBrewmasterBarTextVariable_celestialBrewTime"], printInSettings = true, color = false, secret = true },
+		{ variable = "$celestialInfusionCharges", description = L["MonkBrewmasterBarTextVariable_celestialInfusionCharges"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+		{ variable = "$celestialInfusionTime", description = L["MonkBrewmasterBarTextVariable_celestialInfusionTime"], printInSettings = true, color = false, secret = true },
+		{ variable = "$fortifyingBrewTime", description = L["MonkBrewmasterBarTextVariable_fortifyingBrewTime"], printInSettings = true, color = false, secret = true },
+		{ variable = "$blackOxBrewTime", description = L["MonkBrewmasterBarTextVariable_blackOxBrewTime"], printInSettings = true, color = false, secret = true },
 	})
 end
 
@@ -644,6 +711,14 @@ function TRB.Classes.Mainline.Monk.BarGroupsFactory:CreateForSpec(specId)
             false -- not primary
         )
 
+        -- Brews bar (up to 6 nodes) - custom bar type
+        barGroups.brews = TRB.Classes.BarGroup:New(
+            UIParent,
+            "TwintopResourceBarFrame_Brews",
+            6,
+            false -- not primary
+        )
+
         -- Health bar (1 node)
         barGroups.health = TRB.Classes.BarGroup:New(
             UIParent,
@@ -714,6 +789,12 @@ function TRB.Classes.Mainline.Monk.BarGroupsFactory:GetSpecConfiguration(specId)
                 maxNodes = 1,
                 isPrimary = false,
                 resourceType = "Stagger",
+                isCustomBar = true
+            },
+            brews = {
+                maxNodes = 6,
+                isPrimary = false,
+                resourceType = "Brews",
                 isCustomBar = true
             },
             health = {
@@ -848,9 +929,22 @@ do
 	local L = TRB.Localization
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
 	SpecDescriptor:Declare("monk_brewmaster", {
-		customBars = { "stagger" },
+		customBars = { "stagger", "brews" },
+		cooldownSpells = { "purifyingBrew", "celestialBrew", "celestialInfusion", "fortifyingBrew", "blackOxBrew" },
+		-- TEMPORARY (#721): /trb brews toggles the Brews bar diagnostics. Remove before merge.
+		slashCommands = {
+			brews = function(subcommand)
+				TRB.Functions.Class:ToggleBrewDiagnostics(subcommand)
+			end,
+		},
 		barTextAnchorFrames = {
 			stagger = { { label = L["Stagger"], frame = "ComboPoint_1" } },
+			brews = {
+				{ label = L["PurifyingBrewCharge1"], frame = "PurifyingBrew_1" }, { label = L["PurifyingBrewCharge2"], frame = "PurifyingBrew_2" },
+				{ label = L["CelestialBrewCharge1"], frame = "CelestialBrew_1" }, { label = L["CelestialBrewCharge2"], frame = "CelestialBrew_2" },
+				{ label = L["CelestialInfusionCharge1"], frame = "CelestialInfusion_1" }, { label = L["CelestialInfusionCharge2"], frame = "CelestialInfusion_2" },
+				{ label = L["FortifyingBrew"], frame = "FortifyingBrew" }, { label = L["BlackOxBrew"], frame = "BlackOxBrew" },
+			},
 		},
 	})
 	SpecDescriptor:Declare("monk_mistweaver", {

@@ -34,6 +34,259 @@ local specCache = {
 }
 TRB.Data.specCache = specCache
 
+---@class TRB.Classes.Mainline.Monk.BrewNode
+---@field spellKey string # Key in the spec's spells
+---@field targetKey string # Color Indicator target
+---@field frames string[] # Bar text anchor per charge, without underscores
+---@field timeVariable string
+---@field chargesVariable string?
+---@field extraChargeKey string? # Key in the spec's spells of a talent that adds charges
+---@field altTalentKey string? # Key in the spec's spells of another talent that also teaches the brew
+---@field maxCharges integer # Charges with the current talents; 0 when not talented
+---@field firstNode integer? # First node of its run on the Brews bar; nil while disabled or not talented
+---@field spent integer # Charges a multi-charge brew is missing
+
+-- Brews bar nodes by key. MapBrewNodes keeps maxCharges and firstNode current.
+---@type table<string, TRB.Classes.Mainline.Monk.BrewNode>
+local brewNodes = {
+	purifyingBrew = { spellKey = "purifyingBrew", targetKey = "brewsPurifyingBrewBar", frames = { "PurifyingBrew1", "PurifyingBrew2" }, timeVariable = "$purifyingBrewTime", chargesVariable = "$purifyingBrewCharges", maxCharges = 0, spent = 0 },
+	celestialBrew = { spellKey = "celestialBrew", targetKey = "brewsCelestialBrewBar", frames = { "CelestialBrew1", "CelestialBrew2" }, timeVariable = "$celestialBrewTime", chargesVariable = "$celestialBrewCharges", extraChargeKey = "endlessDraught", maxCharges = 0, spent = 0 },
+	celestialInfusion = { spellKey = "celestialInfusion", targetKey = "brewsCelestialInfusionBar", frames = { "CelestialInfusion1", "CelestialInfusion2" }, timeVariable = "$celestialInfusionTime", chargesVariable = "$celestialInfusionCharges", extraChargeKey = "endlessDraught", maxCharges = 0, spent = 0 },
+	fortifyingBrew = { spellKey = "fortifyingBrew", targetKey = "brewsFortifyingBrewBar", frames = { "FortifyingBrew" }, timeVariable = "$fortifyingBrewTime", altTalentKey = "fortifyingBrewDetermination", maxCharges = 0, spent = 0 },
+	blackOxBrew = { spellKey = "blackOxBrew", targetKey = "brewsBlackOxBrewBar", frames = { "BlackOxBrew" }, timeVariable = "$blackOxBrewTime", maxCharges = 0, spent = 0 },
+}
+
+-- Every brew's bar text anchors, on the bar or not.
+---@type table<string, boolean>
+local brewFrames = {}
+for _, brew in pairs(brewNodes) do
+	for _, frame in ipairs(brew.frames) do
+		brewFrames[frame] = true
+	end
+end
+
+-- Node index by bar text anchor, for the brews on the bar.
+---@type table<string, integer>
+local brewFrameNodes = {}
+
+-- Nodes the mapped brews fill.
+local brewNodeCount = 0
+
+-- The duration object each recharging node's fill is bound to. Weak, since nodes are rebuilt with their groups.
+local brewNodeDurations = setmetatable({}, { __mode = "k" })
+
+---Charges a brew has with the current talents; 0 when it isn't talented.
+---@param brew TRB.Classes.Mainline.Monk.BrewNode
+---@return integer
+local function GetBrewMaxCharges(brew)
+	local spells = specCache.monk_brewmaster.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
+	local brewTalents = specCache.monk_brewmaster.talents
+	local spell = spells[brew.spellKey] --[[@as TRB.Classes.SpellBase?]]
+	if spell == nil then
+		return 0
+	end
+	-- Brewmaster learns Fortifying Brew from the class talent or from Fortifying Brew: Determination.
+	local altTalent = brew.altTalentKey ~= nil and spells[brew.altTalentKey] --[[@as TRB.Classes.SpellBase?]] or nil
+	if not brewTalents:IsTalentActive(spell) and (altTalent == nil or not brewTalents:IsTalentActive(altTalent)) then
+		return 0
+	end
+
+	local maxCharges = spell.attributes.maxCharges or 1
+	if brew.extraChargeKey ~= nil then
+		local extraCharge = spells[brew.extraChargeKey] --[[@as TRB.Classes.SpellBase]]
+		if brewTalents:IsTalentActive(extraCharge) then
+			maxCharges = maxCharges + extraCharge.attributes.maxChargesMod
+		end
+	end
+	return maxCharges
+end
+
+---Assigns each enabled, talented brew its run of nodes in the user's order.
+---@param colorSettings table # colors.bars.brews
+---@return boolean changed # True when a brew's run or charges changed, so its bar text must be re-anchored
+local function MapBrewNodes(colorSettings)
+	local barDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("brews")
+	local changed = false
+	local nodeCount = 0
+	for _, key in ipairs(barDef:GetOrderedNodeKeys(colorSettings)) do
+		local brew = brewNodes[key]
+		local maxCharges = GetBrewMaxCharges(brew)
+		local firstNode = nil
+		local nodeColor = colorSettings.nodeColors[key]
+		-- Both Celestial talents at once would outgrow the bar; the game only ever grants one.
+		if maxCharges > 0 and nodeColor and nodeColor.enabled and nodeCount + maxCharges <= barDef.maxNodes then
+			firstNode = nodeCount + 1
+			nodeCount = nodeCount + maxCharges
+		end
+		if brew.maxCharges ~= maxCharges or brew.firstNode ~= firstNode then
+			brew.maxCharges = maxCharges
+			brew.firstNode = firstNode
+			brew.spent = math.min(brew.spent, maxCharges)
+			changed = true
+		end
+	end
+
+	if changed then
+		brewNodeCount = nodeCount
+		wipe(brewFrameNodes)
+		for _, brew in pairs(brewNodes) do
+			if brew.firstNode ~= nil then
+				for chargeIndex = 1, brew.maxCharges do
+					brewFrameNodes[brew.frames[chargeIndex]] = brew.firstNode + chargeIndex - 1
+				end
+			end
+		end
+	end
+	return changed
+end
+
+-- The layout counts a brew's nodes by its charges.
+TRB.Classes.BarTypeRegistry:GetInstance():Get("brews").getNodeCountForKey = function(key)
+	return GetBrewMaxCharges(brewNodes[key])
+end
+
+---Charges a talented brew has ready. The game's count is secret in combat, so this follows the plain
+---recharging and no-charges flags, and counts casts to tell one charge left from none.
+---@param brew TRB.Classes.Mainline.Monk.BrewNode
+---@param cooldown TRB.Classes.SnapshotCooldown
+---@return integer
+local function GetBrewCharges(brew, cooldown)
+	local maxCharges = brew.maxCharges
+	if maxCharges == 1 then
+		return (cooldown.onCooldown or cooldown.isActive) and 0 or 1
+	end
+
+	if not cooldown.isActive then
+		brew.spent = 0
+	elseif brew.spent == 0 then
+		-- A recharge no counted cast started, such as one already running at login.
+		brew.spent = cooldown.onCooldown and maxCharges or maxCharges - 1
+	elseif brew.spent == maxCharges and not cooldown.onCooldown then
+		-- A charge came back while another still recharges.
+		brew.spent = maxCharges - 1
+	end
+	return maxCharges - brew.spent
+end
+
+---The running cooldown or recharge of a brew with a charge missing, for a node's fill and the timer text.
+---@param brew TRB.Classes.Mainline.Monk.BrewNode
+---@param cooldown TRB.Classes.SnapshotCooldown
+---@return any? # DurationObject
+local function GetBrewDurationObject(brew, cooldown)
+	if brew.maxCharges > 1 then
+		return cooldown.rechargeDurationObject
+	end
+	return cooldown:GetDurationObject()
+end
+
+-- TEMPORARY (#721): /trb brews echoes each brew's derived state beside the game's plain flags. Remove before merge.
+local brewDiagnosticFrame = CreateFrame("Frame")
+---@type table<string, string>
+local brewDiagnosticLines = {}
+---@type string?
+local brewDiagnosticTrigger = nil
+
+---@param value any
+---@return string
+local function DescribeBrewValue(value)
+	if value == nil then
+		return "nil"
+	elseif issecretvalue(value) then
+		return "secret"
+	end
+	return tostring(value)
+end
+
+---Prints each talented brew whose derived state or game flags changed since its last line.
+---@param trigger string
+local function PrintBrewDiagnostics(trigger)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
+	local snapshots = TRB.Data.snapshotData.snapshots
+	for key, brew in pairs(brewNodes) do
+		if brew.maxCharges == 0 or brew.firstNode == nil then
+			local spell = spells[brew.spellKey] --[[@as TRB.Classes.SpellBase]]
+			local line = string.format("%s not on the bar | charges %d | node %s | talent %s", spell.name, brew.maxCharges, tostring(brew.firstNode),
+				tostring(specCache.monk_brewmaster.talents:IsTalentActive(spell)))
+			if brewDiagnosticLines[key] ~= line then
+				brewDiagnosticLines[key] = line
+				print("|cFF00FF00TRB Brews:|r [" .. trigger .. "] " .. line)
+			end
+		else
+			local spell = spells[brew.spellKey] --[[@as TRB.Classes.SpellBase]]
+			local cooldown = snapshots[spell.id].cooldown
+			local info = C_Spell.GetSpellCooldown(spell.id)
+			local chargeInfo = C_Spell.GetSpellCharges(spell.id)
+			local secrecy = C_Secrets ~= nil and C_Secrets.GetSpellCooldownSecrecy ~= nil and C_Secrets.GetSpellCooldownSecrecy(spell.id) or nil
+			local line = string.format("%s %d/%d | tracker recharging=%s noCharges=%s | cooldown active=%s onGCD=%s | charges %s/%s recharging=%s | secrecy %s",
+				spell.name, GetBrewCharges(brew, cooldown), brew.maxCharges,
+				tostring(cooldown.isActive), tostring(cooldown.onCooldown),
+				DescribeBrewValue(info and info.isActive), DescribeBrewValue(info and info.isOnGCD),
+				DescribeBrewValue(chargeInfo and chargeInfo.currentCharges), DescribeBrewValue(chargeInfo and chargeInfo.maxCharges), DescribeBrewValue(chargeInfo and chargeInfo["isActive"]),
+				tostring(secrecy))
+			if brewDiagnosticLines[key] ~= line then
+				brewDiagnosticLines[key] = line
+				print("|cFF00FF00TRB Brews:|r [" .. trigger .. "] " .. line)
+			end
+		end
+	end
+end
+
+brewDiagnosticFrame:SetScript("OnEvent", function(_, event, arg1, arg2, spellId)
+	-- A cooldown event naming a brew: the flags the tracker reads in that same event.
+	if event == "SPELL_UPDATE_COOLDOWN" and arg1 ~= nil and not issecretvalue(arg1) then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
+		for _, brew in pairs(brewNodes) do
+			local spell = spells[brew.spellKey] --[[@as TRB.Classes.SpellBase]]
+			if arg1 == spell.id or arg2 == spell.id then
+				local info = C_Spell.GetSpellCooldown(spell.id)
+				print(string.format("|cFF00FF00TRB Brews:|r event %s (base %s) for %s | active=%s onGCD=%s | tracker onCooldown=%s",
+					tostring(arg1), DescribeBrewValue(arg2), spell.name, DescribeBrewValue(info and info.isActive), DescribeBrewValue(info and info.isOnGCD),
+					tostring(TRB.Data.snapshotData.snapshots[spell.id].cooldown.onCooldown)))
+			end
+		end
+	end
+	local pending = brewDiagnosticTrigger ~= nil
+	if event == "UNIT_SPELLCAST_SUCCEEDED" and spellId ~= nil and not issecretvalue(spellId) then
+		brewDiagnosticTrigger = "cast " .. (C_Spell.GetSpellName(spellId) or tostring(spellId))
+	elseif not pending then
+		brewDiagnosticTrigger = event
+	end
+	-- Printed once the cooldown tracker has settled on the same events.
+	if not pending then
+		C_Timer.After(0.05, function()
+			local trigger = brewDiagnosticTrigger or event
+			brewDiagnosticTrigger = nil
+			PrintBrewDiagnostics(trigger)
+		end)
+	end
+end)
+
+---Toggles the Brews bar diagnostics echo.
+---@param subcommand string?
+function TRB.Functions.Class:ToggleBrewDiagnostics(subcommand)
+	if subcommand ~= nil and subcommand ~= "" then
+		print("|cFFFF8800TRB Brews:|r Unknown argument '" .. subcommand .. "'. Usage: /trb brews")
+		return
+	end
+	if TRB.Data.character.specId ~= 1 then
+		print("|cFFFF8800TRB Brews:|r Brewmaster specialization only.")
+		return
+	end
+
+	if brewDiagnosticFrame:IsEventRegistered("SPELL_UPDATE_CHARGES") then
+		brewDiagnosticFrame:UnregisterAllEvents()
+		print("|cFF00FF00TRB Brews:|r diagnostics off")
+		return
+	end
+
+	brewDiagnosticFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+	brewDiagnosticFrame:RegisterEvent("SPELL_UPDATE_CHARGES")
+	brewDiagnosticFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+	print("|cFF00FF00TRB Brews:|r diagnostics on; a brew prints whenever its state changes")
+	wipe(brewDiagnosticLines)
+	PrintBrewDiagnostics("now")
+end
+
 local function FillSpecializationCache()
 	-- Brewmaster
 	specCache.monk_brewmaster.Global_TwintopResourceBar = {
@@ -72,6 +325,16 @@ local function FillSpecializationCache()
 	specCache.monk_brewmaster.snapshotData.snapshots[spells.kegSmash.id] = TRB.Classes.Snapshot:New(spells.kegSmash)
 	---@type TRB.Classes.Snapshot
 	specCache.monk_brewmaster.snapshotData.snapshots[spells.invokeNiuzao.id] = TRB.Classes.Snapshot:New(spells.invokeNiuzao)
+	---@type TRB.Classes.Snapshot
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.purifyingBrew.id] = TRB.Classes.Snapshot:New(spells.purifyingBrew)
+	---@type TRB.Classes.Snapshot
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.celestialBrew.id] = TRB.Classes.Snapshot:New(spells.celestialBrew)
+	---@type TRB.Classes.Snapshot
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.celestialInfusion.id] = TRB.Classes.Snapshot:New(spells.celestialInfusion)
+	---@type TRB.Classes.Snapshot
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.fortifyingBrew.id] = TRB.Classes.Snapshot:New(spells.fortifyingBrew)
+	---@type TRB.Classes.Snapshot
+	specCache.monk_brewmaster.snapshotData.snapshots[spells.blackOxBrew.id] = TRB.Classes.Snapshot:New(spells.blackOxBrew)
 
 	specCache.monk_brewmaster.snapshotData.attributes.resourceRegen = 0
 
@@ -246,6 +509,11 @@ local function ConstructResourceBar(settings)
 	-- Don't construct bars for disabled specs
 	if not TRB.Data.specSupported then
 		return
+	end
+
+	if TRB.Data.character.specId == 1 then
+		-- Mapped ahead of construction, which anchors bar text to the brews' nodes.
+		MapBrewNodes(settings.colors.bars.brews)
 	end
 
 	-- Create thresholds on the primary BarNode
@@ -460,6 +728,32 @@ local function RefreshLookupData_Brewmaster()
 		end
 	end
 
+	-- Block D: Brews (each brew's $...Time, and $...Charges for the brews with charges)
+	for _, brew in pairs(brewNodes) do
+		if not activeVars or activeVars[brew.timeVariable] or (brew.chargesVariable ~= nil and activeVars[brew.chargesVariable]) then
+			local _charges = 0
+			local _time = 0
+			local recharging = false
+			if brew.maxCharges > 0 then
+				local cooldown = snapshots[spells[brew.spellKey].id].cooldown
+				_charges = GetBrewCharges(brew, cooldown)
+				recharging = _charges < brew.maxCharges
+				local durationObject = recharging and GetBrewDurationObject(brew, cooldown) or nil
+				if durationObject ~= nil then
+					_time = durationObject:GetRemainingDuration() or 0
+				end
+			end
+
+			-- The time is secret in combat, so conditions only see whether it is counting.
+			lookupLogic[brew.timeVariable] = recharging and 1 or 0
+			lookup[brew.timeVariable] = TRB.Functions.BarText:TimerPrecision(_time)
+			if brew.chargesVariable ~= nil then
+				lookupLogic[brew.chargesVariable] = _charges
+				lookup[brew.chargesVariable] = _charges
+			end
+		end
+	end
+
 	TRB.Data.lookup = lookup
 	TRB.Data.lookupLogic = lookupLogic
 end
@@ -670,6 +964,14 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 		if event == "UNIT_SPELLCAST_SUCCEEDED" then
 			if spellId == spells.invokeNiuzao.id then
 				snapshotData.snapshots[spells.invokeNiuzao.id].buff:InitializeCustom(spells.invokeNiuzao.duration, currentTime)
+			else
+				for _, brew in pairs(brewNodes) do
+					if spellId == spells[brew.spellKey].id then
+						brew.spent = math.min(brew.spent + 1, brew.maxCharges)
+						TRB.Data.lookupDirty = true
+						break
+					end
+				end
 			end
 		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 			if spellId == spells.cracklingJadeLightning.castId then
@@ -1082,7 +1384,78 @@ local scratch = {
 	energyGradients2 = {},
 	chiGradients1 = {},
 	staggerBarColors1 = {},
+	brewColors1 = { purifyingBrew = {}, celestialBrew = {}, celestialInfusion = {}, fortifyingBrew = {}, blackOxBrew = {} },
 }
+
+---Renders each brew on the Brews bar: a full node per ready charge, and its cooldown filling the next one.
+---@param specSettings table
+---@param specCacheSettings TRB.Classes.Settings.SpecializationSettingsBase
+local function UpdateBrews(specSettings, specCacheSettings)
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local group = barGroups.brews
+	if group == nil then
+		return
+	end
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Monk.BrewmasterSpells]]
+	local snapshots = TRB.Data.snapshotData.snapshots
+
+	for key, brew in pairs(brewNodes) do
+		if brew.firstNode ~= nil then
+			local cooldown = snapshots[spells[brew.spellKey].id].cooldown
+			local charges = GetBrewCharges(brew, cooldown)
+			local durationObject = charges < brew.maxCharges and GetBrewDurationObject(brew, cooldown) or nil
+			local colors = scratch.brewColors1[key]
+			local gradientTargets = Color:GetResolvedGradients(brew.targetKey)
+			-- The End Cap rides the recharging charge, or sits on the last node once every charge is ready.
+			local endCapCharge = math.min(charges + 1, brew.maxCharges)
+
+			for chargeIndex = 1, brew.maxCharges do
+				local nodeIndex = brew.firstNode + chargeIndex - 1
+				local node = group:GetNode(nodeIndex)
+				if node then
+					if chargeIndex == charges + 1 and durationObject ~= nil then
+						-- Bound once per duration object; the fill then animates on its own.
+						if brewNodeDurations[node] ~= durationObject then
+							brewNodeDurations[node] = durationObject
+							Bar:SetBarNodeTimerDuration(specCacheSettings, nodeKeys.brew[nodeIndex], node, durationObject)
+						end
+					else
+						if brewNodeDurations[node] ~= nil then
+							brewNodeDurations[node] = nil
+							node:ClearTimerDuration()
+						end
+						Bar:SetBarNodeValue(specCacheSettings, nodeKeys.brew[nodeIndex], node, chargeIndex <= charges and 1 or 0, 1)
+					end
+
+					if gradientTargets and gradientTargets.bar then
+						local barCurve = Color:BuildResourceThresholdCurve(specSettings, colors.bar, gradientTargets.bar.color)
+						node:SetColorCurve(UnitPowerPercent("player", TRB.Data.resource, true, barCurve))
+					else
+						Color:ApplyFillColor(node, colors.bar)
+					end
+					if gradientTargets and gradientTargets.border then
+						local borderCurve = Color:BuildResourceThresholdCurve(specSettings, colors.border, gradientTargets.border.color)
+						node:SetBorderColorCurve(UnitPowerPercent("player", TRB.Data.resource, true, borderCurve), Color:EvaluateEndCapCurve(node, borderCurve))
+					else
+						node:SetBorderColor(colors.border)
+					end
+					if gradientTargets and gradientTargets.background then
+						local backgroundCurve = Color:BuildResourceThresholdCurve(specSettings, colors.background, gradientTargets.background.color)
+						node:SetBackgroundColorCurve(UnitPowerPercent("player", TRB.Data.resource, true, backgroundCurve))
+					else
+						node:SetBackgroundColorFromString(colors.background)
+					end
+					Bar:ApplyNodeIndicators(node, brew.targetKey)
+
+					if node.endCapConfig ~= nil then
+						node.overlaySlots.endCap:SetEndCapShown(chargeIndex == endCapCharge)
+					end
+				end
+			end
+		end
+	end
+end
 
 local function UpdateResourceBar()
 	local currentTime = GetTime()
@@ -1153,6 +1526,15 @@ local function UpdateResourceBar()
 			local staggerBarColors = scratch.staggerBarColors1
 			wipe(staggerBarColors)
 			barColorMap.staggerBar = staggerBarColors
+			local brewBarColors = specSettings.colors.bars.brews
+			for key, brew in pairs(brewNodes) do
+				local nodeColors = scratch.brewColors1[key]
+				wipe(nodeColors)
+				nodeColors.bar = brewBarColors.nodeColors[key]
+				nodeColors.border = brewBarColors.border.color
+				nodeColors.background = brewBarColors.background.color
+				barColorMap[brew.targetKey] = nodeColors
+			end
 
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
@@ -1329,6 +1711,11 @@ local function UpdateResourceBar()
 						end
 					end
 				end
+			end
+
+			if not specSettings.displayBar.brews.neverShow then
+				refreshText = true
+				UpdateBrews(specSettings, specCacheSettings)
 			end
 
 			if not specSettings.displayBar.health.neverShow then
@@ -1614,7 +2001,12 @@ local function SwitchSpec()
 		Bar:UpdateSanityCheckValues(specCache.monk_brewmaster.settings)
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#blackOxBrew"] = spells.blackOxBrew.icon
+		lookup["#celestialBrew"] = spells.celestialBrew.icon
+		lookup["#celestialInfusion"] = spells.celestialInfusion.icon
+		lookup["#fortifyingBrew"] = spells.fortifyingBrew.icon
 		lookup["#niuzao"] = spells.invokeNiuzao.icon
+		lookup["#purifyingBrew"] = spells.purifyingBrew.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -1728,6 +2120,54 @@ local function SwitchSpec()
 	end)
 end
 
+---Asks an existing install, the first time it plays a Monk, whether to show the Brewmaster Brews bar, then says where
+---to change it later.
+local function ShowBrewsBarPrompt()
+	local checks = TRB.Data.settings.manualUpdateChecks
+	local prompt = checks ~= nil and checks.brewsBarPrompt or nil
+	if type(prompt) ~= "table" or prompt.answered ~= false then
+		return
+	end
+
+	---@param hidden boolean
+	local function Answer(hidden)
+		-- Recorded before SetBrewsBarHidden, whose defaults follow it.
+		prompt.hidden = hidden
+		prompt.answered = true
+		TRB.Functions.Settings:SetBrewsBarHidden(TRB.Data.settings, hidden)
+		TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChangeAllSpecs()
+		StaticPopup_Show("TwintopResourceBar_BrewsBarFollowUp")
+	end
+
+	StaticPopupDialogs["TwintopResourceBar_BrewsBarPrompt"] = {
+		text = L["BrewsBarPromptText"],
+		button1 = L["Yes"],
+		button2 = L["No"],
+		OnAccept = function()
+			Answer(false)
+		end,
+		-- Blizzard also calls OnCancel, with no reason, when it can't show the popup at all.
+		OnCancel = function(_, _, reason)
+			if reason == "clicked" then
+				Answer(true)
+			end
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = false,
+		preferredIndex = 3
+	}
+	StaticPopupDialogs["TwintopResourceBar_BrewsBarFollowUp"] = {
+		text = L["BrewsBarPromptFollowUpText"],
+		button1 = L["OK"],
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+	StaticPopup_Show("TwintopResourceBar_BrewsBarPrompt")
+end
+
 -- Core runs the shared load sequence (settings load/merge/migrate at ADDON_LOADED, saving at logout,
 -- media validation, the deferred first-time setup and spec re-switches); this module only supplies
 -- the class-specific pieces.
@@ -1738,6 +2178,7 @@ TRB.Functions.Bootstrap:RegisterClassModule({
 	SwitchSpec = SwitchSpec,
 	ConstructResourceBar = ConstructResourceBar,
 	fillSpellData = { FillSpellData_Windwalker, FillSpellData_Mistweaver }, -- Brewmaster fills its spell data inside SwitchSpec
+	OnReady = ShowBrewsBarPrompt,
 })
 
 function TRB.Functions.Class:CheckCharacter()
@@ -1766,6 +2207,19 @@ function TRB.Functions.Class:CheckCharacter()
 				if barGroups and barGroups.primary then
 					Bar:SetPosition(sharedSettings, barGroups.primary:GetContainerFrame())
 				end
+			end
+
+			if MapBrewNodes(sharedSettings.colors.bars.brews) then
+				if barGroups and barGroups.brews then
+					-- A talent change runs no layout of its own; the layout ends by running this function again.
+					if brewNodeCount > 0 and brewNodeCount ~= barGroups.brews:GetNodeCount() then
+						Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
+						Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
+					end
+					TRB.Functions.BarText:CreateBarTextFrames()
+				end
+				TRB.Functions.BarVisibility:MarkDirty()
+				TRB.Data.lookupDirty = true
 			end
 		end
 	elseif TRB.Data.character.specId == 2 then
@@ -1861,13 +2315,15 @@ function TRB.Functions.Class:HideResourceBar(force)
 			sharedSettings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 		end
 
-		-- Brewmaster (1) uses the stagger bar; Windwalker (3) uses the secondary (Chi) bar
+		-- Brewmaster (1) uses the stagger and brews bars; Windwalker (3) uses the secondary (Chi) bar
 		local hasStagger = TRB.Data.character.specId == 1
 		local hasChi = TRB.Data.character.specId == 3
+		local brewCount = hasStagger and brewNodeCount or 0
 
 		local entries = TRB.Functions.BarVisibility:BeginEntries()
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.stagger, sharedSettings and sharedSettings.displayBar.stagger, hasStagger, 1, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.brews, sharedSettings and sharedSettings.displayBar.brews, brewCount > 0, brewCount, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasChi, TRB.Data.character.maxResource2, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, sharedSettings and sharedSettings.displayBar.health, true, 1, nil)
 		TRB.Functions.BarVisibility:AppendTotemEntries(entries, barGroups, sharedSettings)
@@ -1919,6 +2375,24 @@ do
 			return TRB.Data.snapshotData.snapshots[spells.invokeNiuzao.id].buff.isActive
 		end,
 	}
+	-- Brews: a time while a charge is missing, a count while a charge is ready.
+	for _, brew in pairs(brewNodes) do
+		local chargesFn = function()
+			if brew.maxCharges == 0 then
+				return 0
+			end
+			local spells = TRB.Data.spellsData.spells
+			return GetBrewCharges(brew, TRB.Data.snapshotData.snapshots[spells[brew.spellKey].id].cooldown)
+		end
+		brewmaster[brew.timeVariable] = function()
+			return chargesFn() < brew.maxCharges
+		end
+		if brew.chargesVariable ~= nil then
+			brewmaster[brew.chargesVariable] = function()
+				return chargesFn() > 0
+			end
+		end
+	end
 	for k, v in pairs(healthVars) do brewmaster[k] = v end
 	-- Mistweaver
 	local mistweaver = {
@@ -1997,6 +2471,17 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 			end
 		end
 		return nil, true, false
+	elseif brewFrames[normalizedRelativeFrame] then
+		-- Brewmaster Brews bar; a brew that isn't on the bar has no node
+		local nodeIndex = brewFrameNodes[normalizedRelativeFrame]
+		if nodeIndex ~= nil and barGroups.brews then
+			local brewNode = barGroups.brews:GetNode(nodeIndex)
+			if brewNode then
+				local isVisible = barGroups.brews.isVisible and brewNode.isVisible
+				return brewNode:GetFrame(), true, isVisible
+			end
+		end
+		return nil, false, false
 	end
 
 	-- Handle secondary resources (Chi for Windwalker, also supports Stagger for Brewmaster via ComboPoint1)
@@ -2074,8 +2559,8 @@ function TRB.Functions.Class:RecreateThresholds(settings, barGroups)
 	end
 end
 
----Returns true while a timer variable is counting: Invoke Niuzao (Brewmaster) or Hit Combo (Windwalker).
----Mistweaver has no timer variables.
+---Returns true while a timer variable is counting: Invoke Niuzao or a brew in bar text (Brewmaster), or
+---Hit Combo (Windwalker). Mistweaver has no timer variables.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
 	if TRB.Data.character.specId == 1 then -- Brewmaster
@@ -2085,6 +2570,14 @@ function TRB.Functions.Class:HasActiveTimers()
 			local snapshot = snapshotData.snapshots[spells.invokeNiuzao.id]
 			if snapshot and snapshot.buff and snapshot.buff.isActive then
 				return true
+			end
+
+			local activeVars = TRB.Data.activeVariables
+			for _, brew in pairs(brewNodes) do
+				if brew.maxCharges > 0 and (not activeVars or activeVars[brew.timeVariable])
+					and GetBrewCharges(brew, snapshotData.snapshots[spells[brew.spellKey].id].cooldown) < brew.maxCharges then
+					return true
+				end
 			end
 		end
 	elseif TRB.Data.character.specId == 3 then -- Windwalker

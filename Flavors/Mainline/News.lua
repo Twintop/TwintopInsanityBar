@@ -8,6 +8,16 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.13-release (2026-11-11)
+## Monk
+### Brewmaster
+
+- [#721](#721) Add a new Brews bar, tracking the cooldowns of Purifying Brew, Celestial Brew, Celestial Infusion, Fortifying Brew, and Black Ox Brew, with default cooldown bar text on each. Adds the `$purifyingBrewTime`, `$purifyingBrewCharges`, `$celestialBrewTime`, `$celestialBrewCharges`, `$celestialInfusionTime`, `$celestialInfusionCharges`, `$fortifyingBrewTime`, and `$blackOxBrewTime` bar text variables and the `#purifyingBrew`, `#celestialBrew`, `#celestialInfusion`, `#fortifyingBrew`, and `#blackOxBrew` icons. New installs show it; existing installs give it the Stagger bar's visibility and are asked the first time they log in on a Monk.
+- [#721](#721) Each charge has its own node, full while ready and filling as it recharges, and brews can be reordered or disabled. Endless Draught adds a second node to Celestial Brew and Celestial Infusion. A brew that isn't talented is hidden.
+- [#721](#721) Each brew joins the bar text Relative to Frame and Color Indicator target lists. Does not offer Smooth or custom thresholds, and the time variables can't be compared in bar text conditions.
+
+---
+
 # 12.1.5.12-release (2026-11-10)
 ## Druid
 

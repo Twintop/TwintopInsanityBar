@@ -1082,6 +1082,7 @@ local resourceTypeNames = {
 	ElementalBlastBuffs = TRB.Localization["ResourceShamanElementalBlastBuffs"],
 	FireBlastCharges = TRB.Localization["MageFireBlastCharges"],
 	Castbar = TRB.Localization["ResourceCastbar"],
+	Brews = TRB.Localization["ResourceMonkBrews"],
 }
 
 -- Spec bar group configs by class id, then spec id. Every factory returns load-time constants.
