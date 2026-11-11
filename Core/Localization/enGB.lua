@@ -572,6 +572,7 @@ if locale == "enGB" then
 	L["ForeverPriestIndicatorInnerFireTooltip"] = "Changes to this colour while Inner Fire is active, from your cast until its charges or time run out."
 	L["ForeverRogueIndicatorSliceAndDiceTooltip"] = "Changes to this colour while Slice and Dice is active, from your cast until its time runs out."
 	L["ForeverRogueIndicatorSliceAndDiceEndTooltip"] = "Changes to this colour when Slice and Dice is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+	L["BrewsBarPromptFollowUpText"] = "You can enable, disable, or customise the Brews bar at any time on the Brews tab of Brewmaster Monk in Twintop's Resource Bar options (/trb)."
 	L["CustomBarsPanelNote"] = "Add your own bars for the buffs, procs, cooldowns, and charges this specialisation already tracks. Each bar's layout and colours are set here, and its textures, visibility, and bar text are on the tabs beside this one."
 	L["BarDisplayTextCustomizationHeaderCustomBars"] = "Custom Bar Display Text Customisation"
 end

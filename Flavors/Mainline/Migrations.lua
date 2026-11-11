@@ -39,6 +39,11 @@ function TRB.Flavor.DefaultManualUpdateChecks()
 		totemBarsPrompt = {
 			answered = true,
 			hidden = false
+		},
+		-- Fresh installs show the Brews bar; PortForwardSettings marks existing saves to be asked.
+		brewsBarPrompt = {
+			answered = true,
+			hidden = false
 		}
 	}
 end
@@ -8861,6 +8866,45 @@ function TRB.Flavor.PortForwardSettings(settings)
 		if TwintopInsanityBarSettings.manualUpdateChecks.totemBarsPrompt == nil then
 			TwintopInsanityBarSettings.manualUpdateChecks.totemBarsPrompt = { answered = false }
 		end
+	end
+
+	-- Brewmaster Monk: seed the Brews bar's default bar text; barText is an array the defaults merge cannot backfill.
+	do
+		local brewmaster = TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings.monk ~= nil
+			and TwintopInsanityBarSettings.monk.brewmaster or nil
+		local displayText = brewmaster ~= nil and brewmaster.displayText or nil
+		if displayText ~= nil and type(displayText.barText) == "table" then
+			-- Flagged so a deleted entry stays deleted; the scan skips any brew that already has text.
+			displayText.migrations = displayText.migrations or {}
+			if not displayText.migrations.brewsBarTextSeeded then
+				local anchoredFrames = {}
+				for _, entry in ipairs(displayText.barText) do
+					if entry.position and entry.position.relativeToFrame then
+						anchoredFrames[entry.position.relativeToFrame] = true
+					end
+				end
+				for _, entry in ipairs(TRB.Functions.Settings:LoadDefaultBrewsBarTextSettings()) do
+					if not anchoredFrames[entry.position.relativeToFrame] then
+						table.insert(displayText.barText, entry)
+					end
+				end
+			end
+			displayText.migrations.brewsBarTextSeeded = true
+		end
+	end
+
+	-- Brewmaster Monk: existing saves get asked on their first login on a Monk. The bar stays hidden until then. Live saves
+	-- only, so profiles and imports never carry the flag.
+	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings == TRB.Flavor.GetSavedVariables() then
+		TwintopInsanityBarSettings.manualUpdateChecks = TwintopInsanityBarSettings.manualUpdateChecks or {}
+		if TwintopInsanityBarSettings.manualUpdateChecks.brewsBarPrompt == nil then
+			TwintopInsanityBarSettings.manualUpdateChecks.brewsBarPrompt = { answered = false }
+		end
+	end
+
+	-- Brewmaster Monk: the Brews bar starts with the Stagger bar's visibility, hidden until the prompt says otherwise.
+	if TwintopInsanityBarSettings ~= nil then
+		TRB.Functions.Settings:SeedBrewsBarVisibility(TwintopInsanityBarSettings)
 	end
 end
 

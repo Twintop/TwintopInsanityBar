@@ -85,6 +85,7 @@ local function BrewmasterLoadDefaultBarTextSettings(classic)
 	}
 
 	table.insert(textSettings, TRB.Functions.Settings:DefaultBuffTimeBarTextEntry("niuzaoTime", "niuzao", classic, "CENTER", "RIGHT"))
+	for _, v in ipairs(TRB.Functions.Settings:LoadDefaultBrewsBarTextSettings()) do table.insert(textSettings, v) end
 
 	local globalTextSettings = TRB.Functions.Settings:GlobalLoadDefaultBarTextSettings("resource", classic)
 	for k,v in pairs(globalTextSettings) do table.insert(textSettings, v) end
@@ -162,6 +163,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 		displayBar = {
 			primary = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 			stagger = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
+			brews = TRB.Functions.Settings:DefaultBrewsBarVisibility(),
 			health = { neverShow = false, alwaysShow = true, conditions = {}, hideConditions = TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions(), smooth = true, activeAlpha = 100, inactiveAlpha = 0, fadeDuration = 0, fadeDelay = 0 },
 		},
 		endOf = {
@@ -179,6 +181,7 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 				TRB.Functions.Settings:DefaultStaggerBarDimensions(classic),
 				{ maxScale = 1.0 }
 			),
+			brews = TRB.Functions.Settings:DefaultBrewsBarDimensions(classic),
 		},
 		colors = {
 			text = {
@@ -245,7 +248,8 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 						color = "FFBB1111",
 						threshold = 1.0
 					}
-				}
+				},
+				brews = TRB.Functions.Settings:DefaultBrewsBarColors(),
 			},
 			healthBar = TRB.Functions.Settings:DefaultHealthBarColors(),
 			shared = {
@@ -321,12 +325,14 @@ local function BrewmasterLoadDefaultSettings(includeBarText, classic)
 					yOffset = -1,
 				},
 			},
+			migrations = { brewsBarTextSeeded = true },
 			barText = {}
 		},
 		audio = {
 		},
 		textures = TRB.Functions.Settings:DefaultTextures(false, {
 			TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger"),
+			TRB.Classes.BarTypeRegistry:GetInstance():Get("brews"),
 		}),
 	}
 
@@ -945,6 +951,23 @@ local function BrewmasterConstructStaggerBarPanel(parent)
 	end)
 end
 
+local function BrewmasterConstructBrewsBarPanel(parent)
+	if parent == nil then
+		return
+	end
+
+	local spec = TRB.Data.settings.monk.brewmaster
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local controls = interfaceSettingsFrame.controls.monk_brewmaster
+	local yCoord = 5
+	local brewsBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("brews")
+
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 10, 1, yCoord, brewsBarDef, L["ResourceEnergy"])
+
+	yCoord = yCoord - 90
+	yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 10, 1, yCoord, brewsBarDef)
+end
+
 local function BrewmasterConstructHealthBarPanel(parent)
 	if parent == nil then
 		return
@@ -998,6 +1021,11 @@ local function BrewmasterConstructIndicatorColorsPanel(parent)
 		barTargetDefs = {
 			{ key = "energyBar", label = L["BarNameEnergyBar"] },
 			{ key = "staggerBar", label = L["BarNameStaggerBar"] },
+			{ key = "brewsPurifyingBrewBar", label = L["PurifyingBrew"] },
+			{ key = "brewsCelestialBrewBar", label = L["CelestialBrew"] },
+			{ key = "brewsCelestialInfusionBar", label = L["CelestialInfusion"] },
+			{ key = "brewsFortifyingBrewBar", label = L["FortifyingBrew"] },
+			{ key = "brewsBlackOxBrewBar", label = L["BlackOxBrew"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_Monk_Brewmaster",
 		excludedElements = {
@@ -1039,6 +1067,7 @@ local function BrewmasterConstructBarTexturesPanel(parent)
 	if staggerBarDef then
 		table.insert(customBars, staggerBarDef)
 	end
+	table.insert(customBars, TRB.Classes.BarTypeRegistry:GetInstance():Get("brews"))
 	yCoord = TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, spec, 10, 1, yCoord, false, nil, false, customBars)
 end
 
@@ -1052,12 +1081,13 @@ local function BrewmasterConstructBarVisibilityPanel(parent)
 	local controls = interfaceSettingsFrame.controls.monk_brewmaster
 	local yCoord = 5
 
-	-- Primary, health, and stagger bar visibility
+	-- Primary, health, stagger, and brews bar visibility
 	local customBars = {}
 	local staggerBarDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("stagger")
 	if staggerBarDef then
 		table.insert(customBars, staggerBarDef)
 	end
+	table.insert(customBars, TRB.Classes.BarTypeRegistry:GetInstance():Get("brews"))
 
 	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, 10, 1, yCoord, L["ResourceEnergy"], nil, false, nil, true, nil, customBars)
 end
@@ -1352,6 +1382,7 @@ local function BrewmasterConstructOptionsPanel(cache)
 	local tabDefinitions = {
 		{ "energyBar", L["TabEnergy"], oUi.tabWidth.small, BrewmasterConstructEnergyBarPanel, visibilityKey = "primary" },
 		{ "staggerBar", L["TabStagger"], oUi.tabWidth.small, BrewmasterConstructStaggerBarPanel, visibilityKey = "stagger" },
+		{ "brewsBar", L["TabBrews"], oUi.tabWidth.small, BrewmasterConstructBrewsBarPanel, visibilityKey = "brews" },
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, BrewmasterConstructHealthBarPanel, visibilityKey = "health" },
 		{ "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, BrewmasterConstructIndicatorColorsPanel },
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, BrewmasterConstructBarTexturesPanel },
