@@ -8,6 +8,15 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.15.9.4-release (2026-11-12)
+## General
+### Bar Visibility
+
+- Fix a mana spec's Primary Resource Value bar visibility condition being met at far less mana than the value set.
+- A mana spec's Primary Resource Value condition now goes up to 15,000.
+
+---
+
 # 1.15.9.3-release (2026-11-10)
 ## Druid
 
