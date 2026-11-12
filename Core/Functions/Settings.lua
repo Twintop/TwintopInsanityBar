@@ -3,8 +3,6 @@ local L = TRB.Localization
 
 TRB.Functions.Settings = {}
 
-local VISIBILITY_MANA_MAX = 275625 -- 250k base, enchant or Gnome * 1.05, both is another * 1.05
-
 ---Creates spec-level threshold definitions for secondary Mana Bar visibility options.
 ---@return table<string, table>
 function TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds()
@@ -16,7 +14,7 @@ function TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds()
 		manaValue = {
 			valueType = "value",
 			powerType = Enum.PowerType.Mana,
-			maxValue = VISIBILITY_MANA_MAX,
+			maxValue = TRB.Flavor.manaVisibilityMax,
 		},
 	}
 end

@@ -2417,6 +2417,10 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
 	controls.sliders.selectedThresholdValue:Hide()
 
+	-- A spec whose primary bar is mana takes the flavor's mana scale for its value thresholds.
+	local specBarGroups = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
+	local primaryType = specBarGroups and specBarGroups.primary and TRB.Functions.Character:GetResourceTypeDefinition(specBarGroups.primary.resourceType)
+	local primaryIsMana = primaryType ~= nil and primaryType.powerType == Enum.PowerType.Mana
 	local function GetThresholdValueMax(conditionType)
 		if conditionType == "healthValue" then
 			return 1000000
@@ -2428,13 +2432,13 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 
 		local visibilityMaxValue = TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionType, spec)
-		if visibilityMaxValue ~= nil and visibilityMaxValue > 0 and (conditionType ~= "resourceValue" or primaryResourceString ~= L["ResourceMana"]) then
+		if visibilityMaxValue ~= nil and visibilityMaxValue > 0 and (conditionType ~= "resourceValue" or not primaryIsMana) then
 			return visibilityMaxValue
 		end
 
 		if conditionType == "resourceValue" then
-			if primaryResourceString == L["ResourceMana"] then
-				return 275625
+			if primaryIsMana then
+				return TRB.Flavor.manaVisibilityMax
 			end
 			if spec.maxResource ~= nil and type(spec.maxResource.value) == "number" and spec.maxResource.value > 0 then
 				return spec.maxResource.value

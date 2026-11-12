@@ -34,6 +34,7 @@ local addonName, TRB = ...
 ---@field public name string # Localized resource name, e.g. "Insanity"
 ---@field public containerLabel string? # Localized name of a multi-node bar's whole-bar text anchor
 ---@field public percentScale boolean? # A primary bar of this type takes custom thresholds as percentages
+---@field public powerType integer? # Its Enum.PowerType, where Core compares one
 
 ---@class TRB.Flavor.TalentRank
 ---@field public currentRank integer
@@ -65,6 +66,7 @@ local addonName, TRB = ...
 ---@field public classNamespace string # Key under TRB.Classes holding the flavor's class modules, since flavors share class names
 ---@field public savedVariablesName string # Global declared by the TOC's SavedVariables line
 ---@field public gcdSpellId integer # Dummy spell whose cooldown is the global cooldown
+---@field public manaVisibilityMax number # The mana pool Mana Value visibility thresholds scale against, and their slider's maximum
 ---@field public unavailableVisibilityConditions table<string, boolean>? # Bar visibility condition keys the client can never satisfy (no flying, say); dropped from the options and the defaults
 ---@field public swingTimers boolean? # The Main Hand, Off Hand, and Ranged Swing bars exist
 ---@field public blizzardSwingTimer boolean? # The client has Blizzard's swing timer: it fires PLAYER_SWING and draws bars this addon can hide. Without it, swings come from the combat log and `swingSpells` (default false)
@@ -102,6 +104,7 @@ assert(type(TRB.Flavor.savedVariablesName) == "string", "TwintopInsanityBar: fla
 assert(type(TRB.Flavor.classNamespace) == "string" and TRB.Flavor.classNamespace ~= "", "TwintopInsanityBar: flavor manifest has no classNamespace.")
 assert(type(TRB.Flavor.classes) == "table", "TwintopInsanityBar: flavor manifest has no classes.")
 assert(type(TRB.Flavor.gcdSpellId) == "number", "TwintopInsanityBar: flavor manifest has no gcdSpellId.")
+assert(type(TRB.Flavor.manaVisibilityMax) == "number", "TwintopInsanityBar: flavor manifest has no manaVisibilityMax.")
 assert(type(TRB.Flavor.pvpTalents) == "boolean" and type(TRB.Flavor.cooldownManager) == "boolean" and type(TRB.Flavor.secretValues) == "boolean",
 	"TwintopInsanityBar: flavor manifest needs pvpTalents, cooldownManager, and secretValues.")
 assert(type(TRB.Flavor.ReadTalentRanks) == "function", "TwintopInsanityBar: flavor manifest has no ReadTalentRanks.")

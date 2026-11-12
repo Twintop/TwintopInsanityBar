@@ -33,6 +33,8 @@ TRB.Flavor = {
 	savedVariablesName = "TwintopInsanityBarSettings",
 	-- Dummy spell whose cooldown is the global cooldown.
 	gcdSpellId = 61304,
+	-- Mana Value visibility thresholds' scale: 250k base mana, times 1.05 each for the enchant and Gnome.
+	manaVisibilityMax = 275625,
 	-- The Speed bar's scale; only a flavor with this block gets the Skyriding bars.
 	skyriding = {
 		-- Top and passive (no abilities) speeds in yards per second, measured with /trb skyriding. Outside

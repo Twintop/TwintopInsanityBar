@@ -7,7 +7,7 @@ local L = TRB.Localization
 TRB.Flavor.resourceTypes = {
 	-- Primary power types
 	Rage = { name = L["ResourceRage"] },
-	Mana = { name = L["ResourceMana"], percentScale = true },
+	Mana = { name = L["ResourceMana"], percentScale = true, powerType = Enum.PowerType.Mana },
 	Energy = { name = L["ResourceEnergy"] },
 	-- Secondary resources
 	ComboPoints = { name = L["ResourceComboPoints"], containerLabel = L["ComboPointsContainer"] },

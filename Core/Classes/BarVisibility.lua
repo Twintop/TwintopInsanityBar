@@ -1069,7 +1069,6 @@ TRB.Data.cache = TRB.Data.cache or {}
 TRB.Data.cache.stepColorCurves = TRB.Data.cache.stepColorCurves or {}
 
 local VISIBILITY_HEALTH_MAX = 1000000
-local VISIBILITY_MANA_MAX = 275625 -- 250k base, enchant or Gnome * 1.05, both is another * 1.05
 
 ---@param conditionType string
 ---@param settings table|nil
@@ -1099,7 +1098,7 @@ function TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionTyp
 
 	if conditionType == "resourceValue" then
 		if TRB.Data.resource == Enum.PowerType.Mana then
-			return VISIBILITY_MANA_MAX
+			return TRB.Flavor.manaVisibilityMax
 		end
 
 		local specCache = nil
