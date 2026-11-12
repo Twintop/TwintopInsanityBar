@@ -972,7 +972,13 @@ function hooks.afterEvents(ctx)
 			end
 			return api.GetSpellCooldownDuration(id, ...)
 		end)
-		desktop.GetSpellBaseCooldown = function(id) return id == 990030 and 30000 or 0 end
+		-- The second value is the spell's global cooldown: none for the typed cooldown, the usual one for the charges.
+		desktop.GetSpellBaseCooldown = function(id)
+			if id == 990030 then
+				return 30000, 0
+			end
+			return 0, 1500
+		end
 
 		local typedCooldownSources = CustomBars:GetSpellIdSources(990030)
 		local typedChargeSources = CustomBars:GetSpellIdSources(990031)
@@ -991,6 +997,12 @@ function hooks.afterEvents(ctx)
 			CustomBars:AppendCooldownSpells(typedSpells, typedSnapshots)
 			check("both join the cooldown tracker with snapshots of their own", #typedSpells == 2 and typedSnapshots[typedSpells[1]] ~= nil
 				and typedSnapshots[typedSpells[2]] ~= nil and snapshots[990030] == nil)
+			local offGcdById = {}
+			for _, typedSpell in ipairs(typedSpells) do
+				offGcdById[typedSpell.id] = typedSpell.attributes.offGcd
+			end
+			check("an ability with no global cooldown is tracked as off it, and one with it isn't", offGcdById[990030] == true
+				and offGcdById[990031] == false)
 			try("lay out the typed bars", Relayout)
 			try("render the typed bars", function() CustomBars:Render() end)
 			check("a ready typed cooldown is hidden, and typed charges show", not Shows(EntryFor(barGroups[typedCooldownKey]))
