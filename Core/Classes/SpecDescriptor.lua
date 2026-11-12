@@ -16,6 +16,8 @@ TRB.Classes = TRB.Classes or {}
 ---@field IsSharedActive fun(activeSpecSettings: table?): boolean # With sharedFrom: whether the borrowing applies right now (reads the ACTIVE spec's saved settings)
 ---@field exportable boolean? # Always include the secondary bar in exports even when the spec's bar group config declares no secondary
 ---@field thresholdDecimals integer? # Decimal places custom thresholds may target on the secondary bar (fragment-scaled resources)
+---@field thresholdValueAttribute string? # snapshotData.attributes key holding the plain count custom thresholds compare, for nodes that fill fractionally
+---@field compressedStacksAttribute string? # snapshotData.attributes key holding the full stack count when the Compressed View setting folds stacks onto the nodes
 
 ---A bar visibility condition met while the character is in one of its shapeshift forms.
 ---@class TRB.Classes.SpecDescriptor.FormCondition

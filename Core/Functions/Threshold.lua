@@ -2376,23 +2376,21 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			else
 				currentValue = rawResource2
 			end
-			local isRunes = TRB.Data.resource2 == Enum.PowerType.Runes
+			local secondaryDescriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
+			secondaryDescriptor = secondaryDescriptor and secondaryDescriptor.secondary
+			local valueAttribute = secondaryDescriptor and secondaryDescriptor.thresholdValueAttribute
 			-- compressedView is a per-spec secondary bar option (only specs that offer it carry the setting).
 			local compressedView = settings.colors and settings.colors.comboPoints
 				and settings.colors.comboPoints.compressedView == true
-			if isRunes then
-				-- Death Knight Runes recharge per-node (fractional fills) and Runes is a real PowerType, so
-				-- UnitPowerPercent only sees the ready count and the curve never matches the bar. Compare
-				-- the complete (ready) rune count directly instead, like a summed combo-point bar.
-				currentValue = GetPlainNumber(attributes.runesReadyCount, 0)
+			if valueAttribute ~= nil then
+				-- Nodes that fill fractionally never match the power curve, so compare the spec's plain count.
+				currentValue = GetPlainNumber(attributes[valueAttribute], 0)
 				supportsValueComparison = true
 			elseif compressedView and liveMax > nodeCount then
-				-- Enhancement compressed Maelstrom Weapon: 5 physical nodes show 10 stacks (6-10 overlap
-				-- 1-5). Keep the full 0-10 stack scale so 6-10 thresholds stay in range, and use the plain
-				-- stack count for over/under (the render remap folds 6-10 onto the overlap nodes and the
-				-- visibility gate hides the inactive layer). Stacks come from the snapshot (resource2 is
-				-- nil for Enhancement); node fills cap at the visible 5 in compressed view.
-				local stacks = GetPlainNumber(attributes.maelstromWeaponStacks, rawResource2)
+				-- Compressed view folds the stacks past nodeCount onto the same nodes: keep the full stack scale so
+				-- those thresholds stay in range, and compare the plain stack count.
+				local stacksAttribute = secondaryDescriptor and secondaryDescriptor.compressedStacksAttribute
+				local stacks = GetPlainNumber(stacksAttribute and attributes[stacksAttribute] or nil, rawResource2)
 				maxValue = liveMax
 				currentValue = stacks
 				supportsValueComparison = true
@@ -2422,8 +2420,8 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			fillDirection = settings.comboPoints and settings.comboPoints.fillDirection or fillDirection
 			border = settings.comboPoints and settings.comboPoints.border or 0
 			resourceType = TRB.Data.resource2
-			-- Skip the power curve for Runes so the ready-count comparison above decides over/under.
-			if isRunes then
+			-- Skip the power curve so the plain count above decides over/under.
+			if valueAttribute ~= nil then
 				resourceType = nil
 			end
 			if nodeCount > 1 then

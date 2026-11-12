@@ -741,7 +741,7 @@ do
 	SpecDescriptor:Declare("shaman_enhancement", {
 		manaBar = true,
 		totems = { placement = "spec" },
-		secondary = { exportable = true },
+		secondary = { exportable = true, compressedStacksAttribute = "maelstromWeaponStacks" },
 		barTextAnchorFrames = {
 			secondary = {
 				{ label = L["Maelstrom1"], frame = "ComboPoint_1" }, { label = L["Maelstrom2"], frame = "ComboPoint_2" }, { label = L["Maelstrom3"], frame = "ComboPoint_3" }, { label = L["Maelstrom4"], frame = "ComboPoint_4" },
