@@ -772,6 +772,9 @@ TRB.Data.castbarTickModifiersRegistry["demonhunter_havoc"] = TRB.Classes.Mainlin
 do
 	local L = TRB.Localization
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
+	SpecDescriptor:Declare("demonhunter_havoc", {
+		thresholdCategories = { metamorphosis = L["ThresholdCategoryMetamorphosis"] },
+	})
 	SpecDescriptor:Declare("demonhunter_vengeance", {
 		secondary = { exportable = true, minMaxMode = "stepped" },
 		barTextAnchorFrames = {

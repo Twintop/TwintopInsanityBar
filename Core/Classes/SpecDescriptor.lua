@@ -59,6 +59,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field totems TRB.Classes.SpecDescriptor.Totems? # Where the spec's Totems bar lives; on Live a spec without one keeps it under Other Bars, never shown by default
 ---@field otherBars string[]? # Class-scoped Other Bar keys the spec's class claims (Feign Death, Five Second Rule)
 ---@field rangedAttack boolean? # The class auto-shoots a ranged weapon or wand, so the Ranged Swing bar offers its movement shading
+---@field thresholdCategories table<string, string>? # Threshold list categories beyond Core's own: category -> localized label
 
 TRB.Classes.SpecDescriptor = {}
 
