@@ -1148,6 +1148,10 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		specCache.settings.displayText = specCache.settings.displayText or {}
 		specCache.settings.displayText.barText = mergedBarText
 		specCache.settings.displayText.globalBarTextCount = globalBarTextCount
+		-- The text frames are built from the character's list, whichever spec's custom bars a form shows.
+		if composite == TRB.Data.character.compositeKey then
+			TRB.Functions.BarText:ApplyDisplayedBoundText(specCache.settings.displayText)
+		end
 		if globalSettings.displayText and core.displayText then
 			specCache.settings.displayText.default = core.displayText.default
 		else
@@ -1674,6 +1678,9 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			-- Force an immediate bar text update so the new strings render right away
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
+		elseif TRB.Functions.CustomBars:IsDisplayedSpec(classId, specId) then
+			-- A form is drawing the text bound to this spec's custom bars.
+			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 		end
 		for siblingGroupKey, sibling in pairs(barTextEditors[scopeKey]) do
 			if siblingGroupKey ~= groupKey then

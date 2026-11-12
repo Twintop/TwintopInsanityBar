@@ -328,6 +328,11 @@ end
 ---@param specId integer?
 ---@param barKey string
 function TRB.Functions.OptionsUi.Tabs:OpenBarTab(classId, specId, barKey)
+	-- A custom bar's options are its own specialization's, which a form can show on another.
+	local userBarDef = TRB.Classes.BarTypeRegistry:IsUserBar(barKey) and TRB.Classes.BarTypeRegistry:GetInstance():Get(barKey) or nil
+	if userBarDef ~= nil then
+		classId, specId = userBarDef.ownerClassId, userBarDef.ownerSpecId
+	end
 	local barGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(barKey, classId, specId)
 	local visibilityKey = TRB.Functions.Bar:GetVisibilityKey(barKey)
 	local navKey
@@ -812,6 +817,9 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 		end
 		if not hasCustomBarsTab then
 			local cId, sId = castbarSpec.classId, castbarSpec.specId
+			-- Another class's saved bars are registered nowhere else, and every tab built below lists them.
+			local cName, sName = TRB.Functions.Character:GetClassAndSpecializationNames(cId, sId, true)
+			TRB.Functions.CustomBars:SyncRegistry(cId, sId, TRB.Data.settings[cName] and TRB.Data.settings[cName][sName])
 			local insertIndex = #tabDefinitions + 1
 			for i, def in ipairs(tabDefinitions) do
 				if def[1] == "skyriding" or def[1] == "petBars" or def[1] == "otherBars" then

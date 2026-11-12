@@ -128,6 +128,19 @@ function hooks.afterEvents(ctx)
 	local spec = TRB.Data.settings[character.className][character.specName]
 	local snapshots = TRB.Data.snapshotData.snapshots
 
+	-- A live Druid's humanoid form draws Restoration's bars, so the character starts in its own specialization's form.
+	local isLiveDruid = TRB.Flavor.id == "mainline" and classId == 11
+	local function SetForm(formId)
+		desktop.GetShapeshiftFormID = function() return formId end
+		stubs.fireEvents("UPDATE_SHAPESHIFT_FORM", ctx.addonName)
+	end
+	if isLiveDruid then
+		check("a Druid in humanoid form draws Restoration's bars", CustomBars:IsDisplayedSpec(classId, 4) and not CustomBars:IsDisplayedSpec(classId, specId))
+		try("shift to Moonkin Form", function() SetForm(31) end)
+	end
+	check("the character's own specialization is the one drawn", CustomBars:IsDisplayedSpec(classId, specId)
+		and not CustomBars:IsDisplayedSpec(classId, specId + 50))
+
 	-- A timer and a count that behave the same on every class and flavor.
 	local timerSpell = TRB.Classes.SpellBase:New({
 		id = 990001,
@@ -712,6 +725,23 @@ function hooks.afterEvents(ctx)
 		rawset(desktop, "TRBDriverReplaced", nil)
 	end
 
+	-- A stored profile's bars, as another class's are, have no definition to export by.
+	do
+		local stored = TRB.Functions.Table:DeepCopy(spec)
+		local storedKey = CustomBars:GetBarKey("driver-stored")
+		stored.customBars.bars["driver-stored"] = { name = "Stored", source = { kind = "buffTime", spellId = timerSpell.id } }
+		stored.bars[storedKey] = { width = 10 }
+		stored.colors.bars[storedKey] = { bar = { color = "FFFFFFFF" } }
+		stored.displayBar[storedKey] = { alwaysShow = true }
+		stored.textures[storedKey .. "Bar"] = "Driver"
+		local exported = TRB.Functions.IO:BuildSpecProfileExportConfiguration("Driver", classId, specId, stored)
+		local _, classExport = next(exported ~= nil and exported.profiles.list.Driver or {})
+		local _, specExport = next(classExport or {})
+		check("a bar with no definition exports with its bar data", definitions:Get(storedKey) == nil and specExport ~= nil
+			and specExport.customBars.bars["driver-stored"] ~= nil and specExport.bars[storedKey] ~= nil and specExport.colors.bars[storedKey] ~= nil
+			and specExport.displayBar[storedKey] ~= nil and specExport.textures[storedKey .. "Bar"] == "Driver")
+	end
+
 	-- The options tab.
 	local tablesBefore = #drv.tables
 	local built = try("build the Bars tab", function()
@@ -752,6 +782,130 @@ function hooks.afterEvents(ctx)
 			and spec.customBars.bars[timerGuid] == nil and spec.bars[timerKey] == nil and spec.colors.bars[timerKey] == nil
 			and spec.displayBar[timerKey] == nil and spec.textures[timerKey .. "Bar"] == nil and #BoundText(anchorName) == 0)
 		check("and its bar", barGroups[timerKey] == nil)
+	end
+
+	-- A live Druid's form draws another specialization's bars: its custom bars, and the text bound to them.
+	if isLiveDruid then
+		local FERAL = 2
+		local feral = TRB.Data.settings.druid.feral
+		local function RecomposeFeral()
+			TRB.Functions.Character:FillSpecializationCacheSettings("druid", "feral")
+		end
+		local function RuntimeByKey()
+			local byKey = {}
+			for _, runtimeEntry in ipairs(CustomBars:GetRuntime()) do
+				byKey[runtimeEntry.key] = runtimeEntry
+			end
+			return byKey
+		end
+		local sharedGuid = CustomBars:Add(feral, classId, FERAL, timerSource)
+		-- Nothing the character tracks has this spell.
+		local lackingGuid = CustomBars:Add(feral, classId, FERAL, { kind = "buffTime", spellId = 990098, spellName = "Driver Feral Only" })
+		local sharedKey, lackingKey = CustomBars:GetBarKey(sharedGuid), CustomBars:GetBarKey(lackingGuid)
+		local sharedAnchor = CustomBars:GetAnchorName(sharedKey)
+		local BORDER = "FF0A0B0C"
+		feral.colors.bars[sharedKey].border = BORDER
+		feral.bars[sharedKey].width = 123
+		try("recompose Feral", RecomposeFeral)
+		try("render in Moonkin Form", function() CustomBars:Render() end)
+		check("another specialization's bars aren't drawn in the character's own form", barGroups[sharedKey] == nil and barGroups[stackKey] ~= nil
+			and FrameIndexOf(sharedAnchor) == nil)
+
+		local borders = {}
+		local setBorderColor = BarNode.SetBorderColor
+		BarNode.SetBorderColor = function(self, color, ...)
+			borders[self] = color
+			return setBorderColor(self, color, ...)
+		end
+		try("shift to Cat Form", function() SetForm(1) end)
+		try("render in Cat Form", function() CustomBars:Render() end)
+		barGroups = TRB.Frames.barGroups
+		local byKey = RuntimeByKey()
+		check("a form that draws another specialization's bars draws its custom bars, not the character's own", CustomBars:IsDisplayedSpec(classId, FERAL)
+			and byKey[sharedKey] ~= nil and byKey[lackingKey] ~= nil and byKey[stackKey] == nil
+			and barGroups[sharedKey] ~= nil and barGroups[lackingKey] ~= nil and barGroups[stackKey] == nil)
+		if byKey[sharedKey] ~= nil and byKey[lackingKey] ~= nil and barGroups[sharedKey] ~= nil and barGroups[lackingKey] ~= nil then
+			local ownSettings = TRB.Data.specCache[character.compositeKey].settings
+			check("with that specialization's layout and colors", barGroups.layoutSettings.bars[sharedKey].width == 123
+				and borders[barGroups[sharedKey].nodes[1]] == BORDER)
+			-- Edit Mode, Preview Mode, and the character's own options lay out and color with the character's settings.
+			try("lay out and color with the character's settings", function()
+				TRB.Functions.Bar:ApplyBarGroupsLayout(ownSettings, barGroups)
+				TRB.Functions.Bar:ApplyBarGroupsAppearance(ownSettings, barGroups)
+			end)
+			check("a pass given the character's settings leaves them", barGroups.layoutSettings.bars[sharedKey] ~= nil
+				and barGroups.layoutSettings.bars[sharedKey].width == 123 and borders[barGroups[sharedKey].nodes[1]] == BORDER)
+
+			-- Preview Mode places the character's own bars.
+			try("turn Preview Mode on", function() TRB.Functions.Preview:SetActive(true) end)
+			try("render in Preview Mode", function() CustomBars:Render() end)
+			local inPreview = RuntimeByKey()
+			check("Preview Mode shows the character's own custom bars in any form", inPreview[stackKey] ~= nil and inPreview[sharedKey] == nil
+				and barGroups[stackKey] ~= nil and barGroups[sharedKey] == nil and FrameIndexOf(sharedAnchor) == nil)
+			try("turn Preview Mode off", function() TRB.Functions.Preview:SetActive(false) end)
+			try("render after Preview Mode", function() CustomBars:Render() end)
+			byKey = RuntimeByKey()
+			check("and the form's return when it ends, where their specialization puts them", byKey[sharedKey] ~= nil and byKey[stackKey] == nil
+				and barGroups[sharedKey] ~= nil and barGroups[stackKey] == nil and barGroups.layoutSettings.bars[sharedKey] ~= nil
+				and barGroups.layoutSettings.bars[sharedKey].width == 123 and borders[barGroups[sharedKey].nodes[1]] == BORDER
+				and FrameIndexOf(sharedAnchor) ~= nil)
+		end
+		BarNode.SetBorderColor = setBorderColor
+		if byKey[sharedKey] ~= nil and byKey[lackingKey] ~= nil and barGroups[sharedKey] ~= nil and barGroups[lackingKey] ~= nil then
+			timerBuff:InitializeCustom(10)
+			try("render a running timer in Cat Form", function() CustomBars:Render() end)
+			check("one tracking something the character has runs", byKey[sharedKey].active and Shows(EntryFor(barGroups[sharedKey])))
+			check("one tracking something the character lacks never does anything", not byKey[lackingKey].active
+				and not Shows(EntryFor(barGroups[lackingKey])))
+			feral.displayBar[sharedKey].neverShow = true
+			try("recompose Feral with Never Show", RecomposeFeral)
+			check("its visibility is that specialization's", not Shows(EntryFor(barGroups[sharedKey])))
+			feral.displayBar[sharedKey].neverShow = false
+			try("recompose Feral without it", RecomposeFeral)
+
+			check("the text bound to it is drawn without joining the character's own list", FrameIndexOf(sharedAnchor) ~= nil
+				and #BoundText(sharedAnchor) == 0)
+			try("draw its text", function() DrawText(barGroups[sharedKey]) end)
+			local sharedTime = TRB.Data.lookup["$" .. sharedKey .. "Time"]
+			local shown = RenderedText(sharedAnchor)
+			check("and shows the bar's time", sharedTime ~= nil and sharedTime ~= "" and type(shown) == "string" and shown:find(sharedTime, 1, true) ~= nil)
+			try("recompose the character's settings", function()
+				TRB.Functions.Character:FillSpecializationCacheSettings(character.className, character.specName)
+			end)
+			check("recomposing the character's settings keeps that text drawn", FrameIndexOf(sharedAnchor) ~= nil)
+			local ownEntries = #spec.displayText.barText
+			table.insert(spec.displayText.barText, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings("UIParent", "Driver Own", "$haste", "CENTER", 12))
+			try("rebuild the text frames after adding the character's own text", function() BarText:CreateBarTextFrames() end)
+			check("the character's own new text is drawn ahead of it", FrameIndexOf("UIParent") ~= nil and FrameIndexOf(sharedAnchor) ~= nil
+				and FrameIndexOf("UIParent") < FrameIndexOf(sharedAnchor))
+			table.remove(spec.displayText.barText, ownEntries + 1)
+
+			-- Preview Mode passes the character's own specialization with the bar it was clicked on.
+			local opened = nil
+			local optionsFrame = TRB.Options.OptionsFrame
+			local selectCategory = optionsFrame.SelectCategory
+			optionsFrame.SelectCategory = function(_, navKey) opened = navKey end
+			try("open its options from Preview Mode", function() TRB.Functions.OptionsUi.Tabs:OpenBarTab(classId, specId, sharedKey) end)
+			optionsFrame.SelectCategory = selectCategory
+			check("a click on it in Preview Mode opens its own specialization's options", opened == "druid_feral")
+
+			CustomBars:Delete(feral, classId, FERAL, lackingGuid)
+			try("recompose Feral after deleting a bar", RecomposeFeral)
+			try("render after deleting it", function() CustomBars:Render() end)
+			check("deleting one of them while it shows drops its bar", barGroups[lackingKey] == nil and barGroups[sharedKey] ~= nil)
+		end
+
+		try("shift back to Moonkin Form", function() SetForm(31) end)
+		try("render back in Moonkin Form", function() CustomBars:Render() end)
+		barGroups = TRB.Frames.barGroups
+		byKey = RuntimeByKey()
+		check("back in its own form, the character's bars return and the other specialization's leave", byKey[stackKey] ~= nil and byKey[sharedKey] == nil
+			and barGroups[stackKey] ~= nil and barGroups[sharedKey] == nil and FrameIndexOf(sharedAnchor) == nil)
+		for guid in pairs(feral.customBars.bars) do
+			CustomBars:Delete(feral, classId, FERAL, guid)
+		end
+		try("recompose Feral with no custom bars", RecomposeFeral)
+		timerBuff.endTime = desktop.GetTime() - 1
 	end
 
 	-- Clean up, so nothing custom is left for a later check.

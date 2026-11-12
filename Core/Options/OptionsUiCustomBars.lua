@@ -84,26 +84,27 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 	local buildSerial = 0
 	local SetTableValues, RefreshEditor
 
-	---Recomposes the spec's settings and, when it is the one being played, lays its bars out again.
+	---Recomposes the spec's settings and, when its bars are the ones being drawn, lays them out again.
 	local function ReapplyBars()
 		if TRB.Data.specCache[compositeKey] ~= nil then
 			TRB.Functions.Character:FillSpecializationCacheSettings(classNameLower, specName)
 		else
 			CustomBars:SyncRegistry(classId, specId, GetSpec())
 		end
-		local character = TRB.Data.character
-		if character ~= nil and character.compositeKey == compositeKey and TRB.Frames.barGroups ~= nil then
-			local settings = TRB.Functions.Class:GetActiveDisplaySettings()
-			if settings ~= nil then
+		if CustomBars:IsDisplayedSpec(classId, specId) and TRB.Frames.barGroups ~= nil then
+			local settings = CustomBars:GetDisplayedSettings()
+			local character = TRB.Data.character
+			local ownCache = TRB.Data.specCache[character.compositeKey]
+			if settings ~= nil and ownCache ~= nil then
 				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+				TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, TRB.Frames.barGroups, true)
 				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
 				TRB.Functions.Class:TriggerResourceBarUpdates()
-				-- A rebuilt bar has new frames for its text to anchor to.
+				-- A rebuilt bar has new frames for its text to anchor to, and the frames follow the character's list.
 				TRB.Functions.BarText:CreateBarTextFrames()
 				TRB.Data.lookupDirty = true
-				TRB.Functions.BarText:UpdateResourceBarText(settings, true)
+				TRB.Functions.BarText:UpdateResourceBarText(ownCache.settings, true)
 			end
 		end
 		TRB.Functions.OptionsUi.BarText:RefreshAnchorCatalogs(classId, specId)

@@ -92,6 +92,9 @@ local runtimeKey = nil
 local runtimeHasCooldowns = false
 local pendingCooldownSync = false
 local pendingVisibility = false
+-- A rebuilt bar list has groups to build and drop, and the new ones to texture and color.
+local pendingGroups = false
+local pendingAppearance = false
 -- A count bar's last plain maximum, kept while the live one is secret or not yet read.
 ---@type table<string, integer>
 local knownMax = {}
@@ -448,6 +451,32 @@ local function RuntimeMatches(bars)
 	return count == #runtime
 end
 
+---The composite key of the specialization whose bars are drawn: the character's own, or the one a form shows instead.
+---@return string?
+local function GetDisplayedKey()
+	local character = TRB.Data.character
+	if character == nil or character.compositeKey == nil then
+		return nil
+	end
+	-- Edit Mode and Preview Mode place the character's own bars, whatever its form.
+	if TRB.Functions.EditMode:IsShowingAllBars() then
+		return character.compositeKey
+	end
+	return TRB.Functions.Class:GetActiveDisplayCompositeKey() or character.compositeKey
+end
+
+---Whether a specialization's bars are the ones being drawn.
+---@param classId integer?
+---@param specId integer?
+---@return boolean
+function CustomBars:IsDisplayedSpec(classId, specId)
+	if classId == nil or specId == nil then
+		return false
+	end
+	local displayedKey = GetDisplayedKey()
+	return displayedKey ~= nil and TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId) == displayedKey
+end
+
 ---Registers a specialization's custom bars and drops the definitions of any it no longer has.
 ---@param classId integer?
 ---@param specId integer?
@@ -483,8 +512,7 @@ function CustomBars:SyncRegistry(classId, specId, spec)
 		TRB.Functions.Settings:ResetTextureMedia()
 		TRB.Functions.OptionsUi.Textures:ResetLockMembers()
 	end
-	local character = TRB.Data.character
-	if character ~= nil and character.classId == classId and character.specId == specId and not RuntimeMatches(bars) then
+	if self:IsDisplayedSpec(classId, specId) and not RuntimeMatches(bars) then
 		runtimeKey = nil
 	end
 end
@@ -621,23 +649,52 @@ function CustomBars:Delete(spec, classId, specId, guid)
 	self:SyncRegistry(classId, specId, spec)
 end
 
----The character's own specialization settings, which a custom bar keeps in every form.
+---A specialization's saved settings.
+---@param compositeKey string?
 ---@return table?
-local function GetOwnSpec()
-	local character = TRB.Data.character
-	if character == nil or character.compositeKey == nil then
+local function GetSavedSpec(compositeKey)
+	if compositeKey == nil or TRB.Data.settings == nil then
 		return nil
 	end
-	local entry = TRB.Functions.Character:GetSpecRegistryEntry(character.compositeKey)
-	local classSettings = entry ~= nil and TRB.Data.settings ~= nil and TRB.Data.settings[entry.className] or nil
+	local entry = TRB.Functions.Character:GetSpecRegistryEntry(compositeKey)
+	if entry == nil then
+		return nil
+	end
+	local classSettings = TRB.Data.settings[entry.className]
 	return classSettings ~= nil and classSettings[entry.specName] or nil
 end
 
----Rebuilds the live spec's bar list after its settings or the spec changed.
+---The bar text bound to the displayed bars while a form shows another specialization's, which the character's own
+---list doesn't hold.
+---@return TRB.Classes.Settings.DisplayTextEntry[]?
+function CustomBars:GetDisplayedBoundText()
+	local displayedKey = GetDisplayedKey()
+	if displayedKey == nil or displayedKey == TRB.Data.character.compositeKey then
+		return nil
+	end
+	local spec = GetSavedSpec(displayedKey)
+	local bars = self:GetBars(spec)
+	if spec == nil or bars == nil or next(bars) == nil then
+		return nil
+	end
+	local keys = {}
+	for guid in pairs(bars) do
+		keys[self:GetBarKey(guid)] = true
+	end
+	local bound = {}
+	for _, entry in ipairs(GetBarTextList(spec)) do
+		local barKey = entry.position ~= nil and TRB.Functions.BarText:GetAnchorBarKey(entry.position.relativeToFrame) or nil
+		if barKey ~= nil and keys[barKey] then
+			bound[#bound + 1] = entry
+		end
+	end
+	return bound
+end
+
+---Rebuilds the displayed spec's bar list after its settings, the spec, or the form changed.
 ---@return boolean rebuilt
 local function EnsureRuntime()
-	local character = TRB.Data.character
-	local compositeKey = character ~= nil and character.compositeKey or nil
+	local compositeKey = GetDisplayedKey()
 	if compositeKey == nil or runtimeKey == compositeKey then
 		return false
 	end
@@ -648,7 +705,7 @@ local function EnsureRuntime()
 	wipe(runtime)
 	wipe(runtimeByKey)
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
-	local bars = CustomBars:GetBars(GetOwnSpec())
+	local bars = CustomBars:GetBars(GetSavedSpec(compositeKey))
 	local boundBars = {}
 	if bars ~= nil then
 		for guid, bar in pairs(bars) do
@@ -688,14 +745,29 @@ local function EnsureRuntime()
 	end
 	pendingCooldownSync = pendingCooldownSync or hadCooldowns or runtimeHasCooldowns
 	pendingVisibility = true
+	pendingGroups = true
+	pendingAppearance = #runtime > 0
 	return true
 end
 
----The live spec's bar keys, for the bar groups and anchor lists.
+---The displayed spec's bars, for the bar groups and anchor lists.
 ---@return TRB.Classes.CustomBarRuntime[]
 function CustomBars:GetRuntime()
 	EnsureRuntime()
 	return runtime
+end
+
+---Records that a layout pass has brought the bar groups in line with the bar list.
+function CustomBars:GroupsBuilt()
+	pendingGroups = false
+end
+
+---The settings the displayed bars lay out and draw with: their own specialization's.
+---@return table?
+function CustomBars:GetDisplayedSettings()
+	EnsureRuntime()
+	local cache = runtimeKey ~= nil and TRB.Data.specCache ~= nil and TRB.Data.specCache[runtimeKey] or nil
+	return cache ~= nil and cache.settings or nil
 end
 
 ---Whether a timer bar is running, which keeps bar text counting down while nothing else changes.
@@ -769,7 +841,7 @@ function CustomBars:WriteLookup(lookup)
 	end
 end
 
----Appends the spells whose cooldowns the live spec's bars read, for the cooldown tracker.
+---Appends the spells whose cooldowns the displayed bars read, for the cooldown tracker.
 ---@param spells TRB.Classes.SpellBase[]
 function CustomBars:AppendCooldownSpells(spells)
 	EnsureRuntime()
@@ -791,7 +863,7 @@ function CustomBars:AppendCooldownSpells(spells)
 	end
 end
 
----Appends the live spec's custom bars to a visibility pass, each carrying whether it is active for When Active.
+---Appends the displayed custom bars to a visibility pass, each carrying whether it is active for When Active.
 ---@param entries TRB.Classes.BarVisibilityEntry[]
 ---@param barGroups table<string, TRB.Classes.BarGroup>?
 function CustomBars:AppendVisibilityEntries(entries, barGroups)
@@ -799,7 +871,7 @@ function CustomBars:AppendVisibilityEntries(entries, barGroups)
 	if #runtime == 0 or barGroups == nil then
 		return
 	end
-	local settings = TRB.Functions.Character:GetSpecSettingsByKey(TRB.Data.character.compositeKey)
+	local settings = self:GetDisplayedSettings()
 	local displayBar = settings ~= nil and settings.displayBar or nil
 	for _, entry in ipairs(runtime) do
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups[entry.key], displayBar and displayBar[entry.key], true,
@@ -1060,7 +1132,7 @@ local function ApplyLiveMax(entry, max)
 	return true
 end
 
----Draws the live spec's custom bars. Runs on the 20Hz tick, ahead of the visibility pass.
+---Draws the displayed custom bars. Runs on the 20Hz tick, ahead of the visibility pass.
 function CustomBars:Render()
 	EnsureRuntime()
 	if pendingCooldownSync then
@@ -1071,7 +1143,7 @@ function CustomBars:Render()
 		pendingVisibility = false
 		TRB.Functions.BarVisibility:MarkDirty()
 	end
-	if #runtime == 0 or not TRB.Data.specSupported then
+	if (#runtime == 0 and not pendingGroups) or not TRB.Data.specSupported then
 		return
 	end
 	local barGroups = TRB.Frames.barGroups --[[@as table<string, TRB.Classes.BarGroup>?]]
@@ -1080,9 +1152,20 @@ function CustomBars:Render()
 		return
 	end
 
-	local settings = TRB.Functions.Class:GetActiveDisplaySettings()
+	local settings = self:GetDisplayedSettings()
 	if settings == nil then
 		return
+	end
+	if pendingGroups then
+		-- The list changed outside a layout pass, which is what builds and drops the groups their text is on.
+		pendingGroups = false
+		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
+		TRB.Functions.BarText:CreateBarTextFrames()
+		TRB.Functions.BarText:InvalidateLookupMemoization()
+	end
+	if pendingAppearance then
+		pendingAppearance = false
+		TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups, true)
 	end
 	local now = GetTime()
 	local kinds = self.kinds
@@ -1144,7 +1227,7 @@ function CustomBars:Render()
 
 	if needsLayout then
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
-		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
+		TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups, true)
 	end
 	anyTimerActive = timerActive
 	if activityChanged then

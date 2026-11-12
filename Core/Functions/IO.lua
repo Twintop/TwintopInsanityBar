@@ -152,6 +152,10 @@ end
 
 local function CopyCustomBarConfigurations(configuration, settings, classId, specId)
 	local allowedBars = GetAllowedCustomBarKeys(classId, specId)
+	-- From the saved bars themselves, since another class's may not be registered.
+	for guid in pairs(TRB.Functions.CustomBars:GetBars(settings) or {}) do
+		AddCustomBarKey(allowedBars, TRB.Functions.CustomBars:GetBarKey(guid))
+	end
 	for barKey in pairs(allowedBars) do
 		CopyCustomBarConfiguration(configuration, settings, barKey)
 	end

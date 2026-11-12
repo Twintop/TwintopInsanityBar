@@ -9,6 +9,12 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.13-release (2026-11-11)
+## Druid
+
+- A form that shows another specialization's bars shows that specialization's custom bars and the bar text bound to them.
+- A custom bar tracking something the current specialization doesn't have stays inactive.
+- Edit Mode and Preview Mode show the current specialization's own custom bars in every form.
+
 ## Monk
 ### Brewmaster
 

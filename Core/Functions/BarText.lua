@@ -4004,6 +4004,34 @@ local function ResolveFontFace(fontFaceName, fallbackFontFace)
 	return TRB.Functions.LibSharedMedia:Resolve("font", fontFaceName, fallbackFontFace, fallbackFontFace)
 end
 
+-- The character's own list behind each drawn list that carries another spec's bound text.
+---@type table<table, table>
+local ownListOf = setmetatable({}, { __mode = "k" })
+
+---Brings the character's drawn bar text list in line with the displayed custom bars: while a form shows another
+---specialization's, the text bound to them follows the character's own entries.
+---@param displayText TRB.Classes.Settings.DisplayText # The character's composed display text
+function TRB.Functions.BarText:ApplyDisplayedBoundText(displayText)
+	local own = ownListOf[displayText.barText] or displayText.barText
+	local drawn = own
+	local bound = TRB.Functions.CustomBars:GetDisplayedBoundText()
+	if bound ~= nil and #bound > 0 then
+		drawn = {}
+		for index, entry in ipairs(own) do
+			drawn[index] = entry
+		end
+		for _, entry in ipairs(bound) do
+			drawn[#drawn + 1] = entry
+		end
+		ownListOf[drawn] = own
+	end
+	if displayText.barText ~= drawn then
+		displayText.barText = drawn
+		-- The entries that came or went name variables of their own.
+		TRB.Data.activeVariables = nil
+	end
+end
+
 ---Builds the required bar text frames
 ---@param classId integer?
 ---@param specId integer?
@@ -4013,15 +4041,23 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 
 	-- Don't do this if we're not modifying the current spec's bar text
 	if classId ~= TRB.Data.character.classId or specId ~= TRB.Data.character.specId then
-		return
+		-- A form showing that spec's custom bars draws the text bound to them.
+		if not TRB.Functions.CustomBars:IsDisplayedSpec(classId, specId) then
+			return
+		end
+		classId, specId = TRB.Data.character.classId, TRB.Data.character.specId
+		self:ClearBarTextCacheHash()
+		TRB.Data.activeVariables = nil
+		self:InvalidateLookupMemoization()
 	end
 
 	-- New font strings start empty; drop the unchanged-skip states so every entry rewrites.
 	wipe(barTextEntryStates)
-	
+
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
 	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
 	local settings = TRB.Data.specCache[compositeKey].settings
+	self:ApplyDisplayedBoundText(settings.displayText)
 
 	---@type TRB.Classes.BarTextFrame[]
 	local textFrames = TRB.Frames.textFrames

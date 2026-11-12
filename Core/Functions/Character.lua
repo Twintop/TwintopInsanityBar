@@ -1609,6 +1609,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		barText = mergedBarText,
 		globalBarTextCount = globalBarTextCount
 	}
+	-- The text frames are built from the character's list, whichever spec's custom bars a form shows.
+	if compositeKey == TRB.Data.character.compositeKey then
+		TRB.Functions.BarText:ApplyDisplayedBoundText(specCache.settings.displayText)
+	end
 
 	local textSource = s.textColors and core.colors.text or spec.colors.text
 	specCache.settings.colors = {
