@@ -972,18 +972,13 @@ local function InferBarTextVariableLogicType(variable, sectionKey, entry)
 		return TRB.Functions.BarText.VariableLogicType.BOOLEAN
 	end
 
-	if variableName == "incombat" or variableName == "instealth" or variableName == "eclipse" or
-		variableName == "lunar" or variableName == "solar" or variableName == "celestialalignment" or
-		variableName == "rtbgoodbuff" or variableName == "benediction" or
+	if variableName == "incombat" or variableName == "instealth" or
 		string.match(variableName, "usable$") ~= nil or string.match(variableName, "ready$") ~= nil or
 		string.match(variableName, "active$") ~= nil then
 		return TRB.Functions.BarText.VariableLogicType.BOOLEAN
 	end
 
-	if string.match(variableName, "percent$") ~= nil or string.match(variableName, "time$") ~= nil or
-		variableName == "gcd" or variableName == "haste" or variableName == "crit" or
-		variableName == "mastery" or variableName == "vers" or variableName == "versatility" or
-		variableName == "overs" or variableName == "dvers" then
+	if string.match(variableName, "percent$") ~= nil or string.match(variableName, "time$") ~= nil then
 		return TRB.Functions.BarText.VariableLogicType.NUMBER
 	end
 
@@ -1018,19 +1013,9 @@ local function InferBarTextVariableBooleanCheck(variable, sectionKey, entry, log
 	local variableName = string.gsub(variable or "", "^%$", "")
 	variableName = string.lower(variableName)
 
-	if variableName == "resource" or variableName == "mana" or variableName == "energy" or
-		variableName == "rage" or variableName == "focus" or variableName == "fury" or
-		variableName == "pain" or variableName == "insanity" or variableName == "astralpower" or
-		variableName == "maelstrom" or variableName == "runicpower" or variableName == "holypower" or
-		variableName == "resourcepercent" or variableName == "manapercent" then
-		return false
-	end
-
 	if variableName == "casting" or variableName == "health" or variableName == "healthmax" or
 		variableName == "healthpercent" or variableName == "absorb" or variableName == "incomingheal" or
-		variableName == "gcd" or variableName == "haste" or variableName == "crit" or
-		variableName == "mastery" or variableName == "vers" or variableName == "versatility" or
-		variableName == "overs" or variableName == "dvers" then
+		variableName == "gcd" then
 		return true
 	end
 
@@ -1275,7 +1260,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 			statIndex = statIndex + 1
 			table.insert(values, statIndex, {
 				variable = variable, description = L[stat.descriptionKey], printInSettings = i == 1, color = false, secret = stat.secret,
-				logicType = stat.integer and logicTypes.INTEGER or nil,
+				logicType = stat.integer and logicTypes.INTEGER or nil, booleanCheck = stat.booleanCheck,
 			})
 		end
 	end

@@ -27,6 +27,7 @@ local addonName, TRB = ...
 ---@field public format "percent"|"number" # percent rounds to the secondary precision; number uses short notation
 ---@field public integer boolean? # Whole number: options logic type INTEGER
 ---@field public secret boolean? # May hold a secret, so display only (default: the flavor's secretValues)
+---@field public booleanCheck boolean? # A bare {$stat} check is meaningful
 
 ---A GetSpecConfiguration resourceType's display data (Flavors\<Flavor>\Resources.lua).
 ---@class TRB.Flavor.ResourceType
