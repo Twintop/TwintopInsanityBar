@@ -18,6 +18,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field thresholdDecimals integer? # Decimal places custom thresholds may target on the secondary bar (fragment-scaled resources)
 ---@field thresholdValueAttribute string? # snapshotData.attributes key holding the plain count custom thresholds compare, for nodes that fill fractionally
 ---@field compressedStacksAttribute string? # snapshotData.attributes key holding the full stack count when the Compressed View setting folds stacks onto the nodes
+---@field colorsBarKey string? # Custom bar type whose colors (colors.bars[key]) the secondary bar draws with, for a spec without comboPoints colors
 
 ---A bar visibility condition met while the character is in one of its shapeshift forms.
 ---@class TRB.Classes.SpecDescriptor.FormCondition
