@@ -918,6 +918,58 @@ function hooks.afterEvents(ctx)
 			and not has[ownTimerText] and #result == 3)
 	end
 
+	-- Another provider's bars draw and read through it, and a bar whose provider is missing is left alone.
+	do
+		local drawn, looked = 0, 0
+		---@type TRB.Classes.CustomBarProvider
+		local driverProvider = {
+			GetSources = function()
+				return { { kind = "buffTime", spellId = 990020, spellName = "Driver Provided", label = "Driver Provided" } }
+			end,
+			GetSourceName = function() return "Driver Named" end,
+			ReadMax = function() return nil end,
+			WriteLookup = function()
+				looked = looked + 1
+				return "7", "", ""
+			end,
+			Render = function(runtimeEntry)
+				drawn = drawn + 1
+				runtimeEntry.active = true
+				return false
+			end,
+		}
+		CustomBars:RegisterProvider("driver", driverProvider)
+		local provided = nil
+		for _, source in ipairs(CustomBars:GetSources(classId, specId)) do
+			if source.provider == "driver" then
+				provided = source
+			end
+		end
+		check("a provider's sources are listed under its name, and the spec's own under none", provided ~= nil and provided.spellId == 990020
+			and timerSource.provider == nil)
+		if provided ~= nil then
+			local providedGuid = CustomBars:Add(spec, classId, specId, provided)
+			local providedKey = CustomBars:GetBarKey(providedGuid)
+			local providedBar = spec.customBars.bars[providedGuid]
+			try("lay out the provided bar", Relayout)
+			try("render the provided bar", function() CustomBars:Render() end)
+			local lookup = {}
+			CustomBars:WriteLookup(lookup)
+			check("its bar is saved with the provider, and draws, reads, and is named through it", providedBar.source.provider == "driver" and drawn > 0
+				and looked > 0 and lookup["$" .. providedKey .. "Time"] == "7" and Shows(EntryFor(barGroups[providedKey]))
+				and CustomBars:GetSourceLabel(classId, specId, providedBar.source):find("Driver Named", 1, true) ~= nil)
+			CustomBars:RegisterProvider("driver", nil)
+			try("lay out without the provider", Relayout)
+			try("render without the provider", function() CustomBars:Render() end)
+			check("with its provider missing, the bar isn't built and stays in the save", definitions:Get(providedKey) == nil
+				and barGroups[providedKey] == nil and spec.customBars.bars[providedGuid] == providedBar and RuntimeEntry(providedKey) == nil)
+			CustomBars:RegisterProvider("driver", driverProvider)
+			CustomBars:Delete(spec, classId, specId, providedGuid)
+			CustomBars:RegisterProvider("driver", nil)
+			try("lay out after deleting it", Relayout)
+		end
+	end
+
 	-- A stored profile's bars, as another class's are, have no definition to export by.
 	do
 		local stored = TRB.Functions.Table:DeepCopy(spec)

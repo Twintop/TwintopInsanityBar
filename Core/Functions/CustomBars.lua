@@ -12,6 +12,7 @@ local L = TRB.Localization
 ---@field public kind trbCustomBarSourceKind
 ---@field public spellId integer
 ---@field public spellName string? # Shown where the spec's snapshots aren't loaded
+---@field public provider string? # Which provider reads it; nil is the spec's own tracking
 
 ---@class TRB.Classes.Settings.CustomBar
 ---@field public guid string
@@ -27,11 +28,13 @@ local L = TRB.Localization
 ---@field public spellName string
 ---@field public icon string?
 ---@field public label string
+---@field public provider string? # Set by GetSources; nil is the spec's own tracking
 
 ---@class TRB.Classes.CustomBarRuntime
 ---@field public key string
 ---@field public bar TRB.Classes.Settings.CustomBar
 ---@field public definition TRB.Classes.BarTypeDefinition
+---@field public provider TRB.Classes.CustomBarProvider
 ---@field public kind trbCustomBarSourceKind
 ---@field public spellId integer
 ---@field public isTimer boolean
@@ -72,6 +75,39 @@ CustomBars.kinds = {
 
 -- A count bar with no saved choice is segmented up to this many stacks or charges.
 CustomBars.segmentedAutoMax = 10
+
+---One place custom bars can be fed from. The spec's own tracking is the only one so far.
+---@class TRB.Classes.CustomBarProvider
+---@field public GetSources fun(classId: integer?, specId: integer?): TRB.Classes.CustomBarSourceOption[] # What it offers a specialization, unsorted
+---@field public GetSourceName fun(classId: integer?, specId: integer?, source: TRB.Classes.Settings.CustomBarSource): string? # The tracked spell's current name
+---@field public ReadMax fun(classId: integer, specId: integer, source: TRB.Classes.Settings.CustomBarSource): integer? # A count source's maximum, when known in plain form
+---@field public OnAdd fun(classId: integer, specId: integer, source: TRB.Classes.Settings.CustomBarSource)? # Runs once a bar on the source is saved
+---@field public AppendCooldownSpell fun(entry: TRB.Classes.CustomBarRuntime, spells: TRB.Classes.SpellBase[])? # Adds the spell whose cooldown the cooldown tracker should read
+---@field public WriteLookup fun(entry: TRB.Classes.CustomBarRuntime, now: number): string, string, string # The bar's time, stacks, and maximum stacks as text
+---@field public Render fun(entry: TRB.Classes.CustomBarRuntime, group: TRB.Classes.BarGroup, node: TRB.Classes.BarNode, settings: table, now: number, redraw: boolean): boolean # Draws the bar; true when the bars need laying out again
+
+CustomBars.defaultProvider = "snapshot"
+
+---@type table<string, TRB.Classes.CustomBarProvider>
+local providers = {}
+
+---@param name string
+---@param provider TRB.Classes.CustomBarProvider? # nil withdraws it
+function CustomBars:RegisterProvider(name, provider)
+	providers[name] = provider
+end
+
+---The provider that reads a source, or nil for one this version doesn't have.
+---@param source TRB.Classes.Settings.CustomBarSource
+---@return TRB.Classes.CustomBarProvider?
+local function ProviderOf(source)
+	return providers[source.provider or CustomBars.defaultProvider]
+end
+
+---@type TRB.Classes.CustomBarProvider
+---@diagnostic disable-next-line: missing-fields
+local snapshotProvider = {}
+CustomBars:RegisterProvider(CustomBars.defaultProvider, snapshotProvider)
 
 local kindLabels = {
 	buffTime = L["CustomBarsKindBuffTime"],
@@ -182,6 +218,7 @@ end
 ---@return boolean
 local function IsUsable(bar)
 	return type(bar) == "table" and type(bar.source) == "table" and kindLabels[bar.source.kind] ~= nil and type(bar.source.spellId) == "number"
+		and ProviderOf(bar.source) ~= nil
 end
 
 ---A specialization's custom bars, by name.
@@ -235,7 +272,8 @@ end
 ---@param classId integer?
 ---@param specId integer?
 ---@return TRB.Classes.CustomBarSourceOption[]
-function CustomBars:GetSources(classId, specId)
+function snapshotProvider.GetSources(classId, specId)
+	local kinds = CustomBars.kinds
 	local sources = {}
 	local snapshots = GetSnapshots(classId, specId)
 	if snapshots == nil then
@@ -265,30 +303,59 @@ function CustomBars:GetSources(classId, specId)
 			-- A charge ability's duration is its recharge, unless the spell also names a buff.
 			local durationIsBuff = not hasCharges or spell.buffId ~= nil or spell.isBuff == true
 			if spell.duration ~= nil and durationIsBuff and not snapshot.buff.alwaysSimple then
-				Add(self.kinds.buffTime, spell, name)
+				Add(kinds.buffTime, spell, name)
 			end
 			if spell.maxStacks ~= nil then
-				Add(self.kinds.buffStacks, spell, name)
+				Add(kinds.buffStacks, spell, name)
 			end
 			if hasCharges then
-				Add(self.kinds.charges, spell, name)
-				Add(self.kinds.rechargeTime, spell, name)
+				Add(kinds.charges, spell, name)
+				Add(kinds.rechargeTime, spell, name)
 				-- The time until every charge is back needs a plain count, which only hand-counted charges have in combat.
 				if snapshot.cooldown.useManualCharges == true and snapshot.cooldown.manualMaxCharges > 1 then
-					Add(self.kinds.totalRechargeTime, spell, name)
+					Add(kinds.totalRechargeTime, spell, name)
 				end
 			elseif spell.hasCooldown == true then
-				Add(self.kinds.cooldownTime, spell, name)
+				Add(kinds.cooldownTime, spell, name)
 			end
+		end
+	end
+	return sources
+end
+
+---Every source a specialization's bars can track, by label.
+---@param classId integer?
+---@param specId integer?
+---@return TRB.Classes.CustomBarSourceOption[]
+function CustomBars:GetSources(classId, specId)
+	local sources = {}
+	for name, provider in pairs(providers) do
+		for _, source in ipairs(provider.GetSources(classId, specId)) do
+			if name ~= self.defaultProvider then
+				source.provider = name
+			end
+			sources[#sources + 1] = source
 		end
 	end
 	table.sort(sources, function(a, b)
 		if a.label ~= b.label then
 			return a.label < b.label
+		elseif a.spellId ~= b.spellId then
+			return a.spellId < b.spellId
 		end
-		return a.spellId < b.spellId
+		return (a.provider or "") < (b.provider or "")
 	end)
 	return sources
+end
+
+---@param classId integer?
+---@param specId integer?
+---@param source TRB.Classes.Settings.CustomBarSource
+---@return string?
+function snapshotProvider.GetSourceName(classId, specId, source)
+	local snapshots = GetSnapshots(classId, specId)
+	local snapshot = snapshots ~= nil and snapshots[source.spellId] or nil
+	return snapshot ~= nil and snapshot.spell ~= nil and GetSpellName(snapshot.spell) or nil
 end
 
 ---What a bar tracks, as the table and the dropdown show it.
@@ -300,9 +367,8 @@ function CustomBars:GetSourceLabel(classId, specId, source)
 	if source == nil then
 		return ""
 	end
-	local snapshots = GetSnapshots(classId, specId)
-	local snapshot = snapshots ~= nil and snapshots[source.spellId] or nil
-	local name = snapshot ~= nil and snapshot.spell ~= nil and GetSpellName(snapshot.spell) or source.spellName
+	local provider = ProviderOf(source)
+	local name = provider ~= nil and provider.GetSourceName(classId, specId, source) or source.spellName
 	return string.format(L["CustomBarsSourceFormat"], name or tostring(source.spellId), kindLabels[source.kind] or "")
 end
 
@@ -326,6 +392,30 @@ local function GetCountMax(kind, snapshot)
 		return max
 	end
 	return nil
+end
+
+---@param classId integer
+---@param specId integer
+---@param source TRB.Classes.Settings.CustomBarSource
+---@return integer?
+function snapshotProvider.ReadMax(classId, specId, source)
+	local snapshots = GetSnapshots(classId, specId)
+	return GetCountMax(source.kind, snapshots ~= nil and snapshots[source.spellId] or nil)
+end
+
+---A game-counted charge ability hasn't been read yet, and its maximum decides the bar's shape and default text.
+---@param classId integer
+---@param specId integer
+---@param source TRB.Classes.Settings.CustomBarSource
+function snapshotProvider.OnAdd(classId, specId, source)
+	if source.kind ~= CustomBars.kinds.charges then
+		return
+	end
+	local snapshots = GetSnapshots(classId, specId)
+	local snapshot = snapshots ~= nil and snapshots[source.spellId] or nil
+	if snapshot ~= nil and not snapshot.cooldown.useManualCharges then
+		snapshot.cooldown:RefreshCharges()
+	end
 end
 
 ---Whether a count bar draws one node per stack or charge.
@@ -387,16 +477,16 @@ end
 ---@param bar TRB.Classes.Settings.CustomBar
 ---@param classId integer
 ---@param specId integer
----@param snapshots table<integer, TRB.Classes.Snapshot>?
 ---@return boolean created
-local function SyncDefinition(bar, classId, specId, snapshots)
+local function SyncDefinition(bar, classId, specId)
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local key = CustomBars:GetBarKey(bar.guid)
 	local kind = bar.source.kind
 	local isCount = CustomBars:IsCountKind(kind)
 	local max = 1
 	if isCount then
-		local read = GetCountMax(kind, snapshots ~= nil and snapshots[bar.source.spellId] or nil)
+		local provider = ProviderOf(bar.source)
+		local read = provider ~= nil and provider.ReadMax(classId, specId, bar.source) or nil
 		if read ~= nil then
 			knownMax[key] = read
 			bar.maxCount = read
@@ -451,6 +541,7 @@ local function RuntimeMatches(bars)
 				count = count + 1
 				local entry = runtimeByKey[CustomBars:GetBarKey(guid)]
 				if entry == nil or entry.bar ~= bar or entry.kind ~= bar.source.kind or entry.spellId ~= bar.source.spellId
+					or entry.provider ~= ProviderOf(bar.source)
 					or entry.fillRecharge ~= CustomBars:FillsRecharge(bar) then
 					return false
 				end
@@ -495,7 +586,6 @@ function CustomBars:SyncRegistry(classId, specId, spec)
 		return
 	end
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
-	local snapshots = GetSnapshots(classId, specId)
 	local changed = false
 	local seen = {}
 	local bars = self:GetBars(spec)
@@ -507,7 +597,7 @@ function CustomBars:SyncRegistry(classId, specId, spec)
 				local key = self:GetBarKey(guid)
 				seen[key] = true
 				EnsureBarData(spec, key)
-				changed = SyncDefinition(bar, classId, specId, snapshots) or changed
+				changed = SyncDefinition(bar, classId, specId) or changed
 			end
 		end
 	end
@@ -666,15 +756,11 @@ function CustomBars:Add(spec, classId, specId, source)
 	spec.customBars.bars[guid] = {
 		guid = guid,
 		name = source.spellName,
-		source = { kind = source.kind, spellId = source.spellId, spellName = source.spellName },
+		source = { kind = source.kind, spellId = source.spellId, spellName = source.spellName, provider = source.provider },
 	}
-	-- A charge ability the game counts hasn't been read yet, and its maximum decides the bar's shape and default text.
-	if source.kind == self.kinds.charges then
-		local snapshots = GetSnapshots(classId, specId)
-		local snapshot = snapshots ~= nil and snapshots[source.spellId] or nil
-		if snapshot ~= nil and not snapshot.cooldown.useManualCharges then
-			snapshot.cooldown:RefreshCharges()
-		end
+	local provider = ProviderOf(spec.customBars.bars[guid].source)
+	if provider ~= nil and provider.OnAdd ~= nil then
+		provider.OnAdd(classId, specId, spec.customBars.bars[guid].source)
 	end
 	self:SyncRegistry(classId, specId, spec)
 	AddDefaultText(spec, spec.customBars.bars[guid])
@@ -692,7 +778,7 @@ function CustomBars:SetSource(spec, classId, specId, bar, source)
 		if bar.name == bar.source.spellName then
 			bar.name = source.spellName
 		end
-		bar.source = { kind = source.kind, spellId = source.spellId, spellName = source.spellName }
+		bar.source = { kind = source.kind, spellId = source.spellId, spellName = source.spellName, provider = source.provider }
 		bar.segmented = nil
 	end)
 end
@@ -800,13 +886,15 @@ local function EnsureRuntime()
 		for guid, bar in pairs(bars) do
 			local key = CustomBars:GetBarKey(guid)
 			local definition = registry:Get(key)
-			if definition ~= nil then
+			local provider = ProviderOf(bar.source)
+			if definition ~= nil and provider ~= nil then
 				local kind = bar.source.kind
 				---@type TRB.Classes.CustomBarRuntime
 				local entry = {
 					key = key,
 					bar = bar,
 					definition = definition,
+					provider = provider,
 					kind = kind,
 					spellId = bar.source.spellId,
 					isTimer = not CustomBars:IsCountKind(kind),
@@ -890,52 +978,60 @@ local function ReadCount(kind, snapshot, now)
 	return charges
 end
 
----Writes each bar's own bar text variables. A secret time or count reaches the lookup only as a formatted string.
----@param lookup table<string, any>
-function CustomBars:WriteLookup(lookup)
+---A bar's time, stacks, and maximum stacks as text. A secret time or count is only ever formatted.
+---@param entry TRB.Classes.CustomBarRuntime
+---@param now number
+---@return string timeText
+---@return string stacksText
+---@return string stacksMaxText
+function snapshotProvider.WriteLookup(entry, now)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
 	local snapshots = snapshotData ~= nil and snapshotData.snapshots or nil
-	local now = GetTime()
-	local kinds = self.kinds
-	for _, entry in ipairs(runtime) do
-		local timeText, stacksText, stacksMaxText = "", "", ""
-		local snapshot = snapshots ~= nil and snapshots[entry.spellId] or nil
-		if snapshot ~= nil then
-			if not entry.isTimer then
-				stacksText = TRB.Functions.Number:RoundTo(ReadCount(entry.kind, snapshot, now), 0)
-				local max = knownMax[entry.key] or entry.bar.maxCount
-				if max ~= nil then
-					stacksMaxText = tostring(max)
-				end
-				-- A charges bar's time is its next charge's recharge.
-				if entry.recharging then
-					local cooldown = snapshot.cooldown
-					if cooldown.useManualCharges then
-						timeText = TRB.Functions.BarText:TimerPrecision((cooldown.manualCooldownExpires or now) - now)
-					elseif cooldown.rechargeDurationObject ~= nil then
-						timeText = TRB.Functions.BarText:TimerPrecision(cooldown.rechargeDurationObject:GetRemainingDuration())
-					end
-				end
-			elseif entry.active and entry.pausedRemaining ~= nil then
-				timeText = TRB.Functions.BarText:TimerPrecision(entry.pausedRemaining)
-			elseif entry.active and entry.endTime ~= nil then
-				-- A plain timer, which only the hand-tracked sources have.
-				timeText = TRB.Functions.BarText:TimerPrecision(entry.endTime - now)
-			elseif entry.active then
-				local durationObject = nil
-				if entry.kind == kinds.cooldownTime then
-					durationObject = snapshot.cooldown:GetDurationObject()
-				elseif entry.kind == kinds.rechargeTime then
-					durationObject = snapshot.cooldown.rechargeDurationObject
-				end
-				if durationObject ~= nil then
-					timeText = TRB.Functions.BarText:TimerPrecision(durationObject:GetRemainingDuration())
+	local kinds = CustomBars.kinds
+	local timeText, stacksText, stacksMaxText = "", "", ""
+	local snapshot = snapshots ~= nil and snapshots[entry.spellId] or nil
+	if snapshot ~= nil then
+		if not entry.isTimer then
+			stacksText = TRB.Functions.Number:RoundTo(ReadCount(entry.kind, snapshot, now), 0)
+			local max = knownMax[entry.key] or entry.bar.maxCount
+			if max ~= nil then
+				stacksMaxText = tostring(max)
+			end
+			-- A charges bar's time is its next charge's recharge.
+			if entry.recharging then
+				local cooldown = snapshot.cooldown
+				if cooldown.useManualCharges then
+					timeText = TRB.Functions.BarText:TimerPrecision((cooldown.manualCooldownExpires or now) - now)
+				elseif cooldown.rechargeDurationObject ~= nil then
+					timeText = TRB.Functions.BarText:TimerPrecision(cooldown.rechargeDurationObject:GetRemainingDuration())
 				end
 			end
+		elseif entry.active and entry.pausedRemaining ~= nil then
+			timeText = TRB.Functions.BarText:TimerPrecision(entry.pausedRemaining)
+		elseif entry.active and entry.endTime ~= nil then
+			-- A plain timer, which only the hand-tracked sources have.
+			timeText = TRB.Functions.BarText:TimerPrecision(entry.endTime - now)
+		elseif entry.active then
+			local durationObject = nil
+			if entry.kind == kinds.cooldownTime then
+				durationObject = snapshot.cooldown:GetDurationObject()
+			elseif entry.kind == kinds.rechargeTime then
+				durationObject = snapshot.cooldown.rechargeDurationObject
+			end
+			if durationObject ~= nil then
+				timeText = TRB.Functions.BarText:TimerPrecision(durationObject:GetRemainingDuration())
+			end
 		end
-		lookup[entry.timeVar] = timeText
-		lookup[entry.stacksVar] = stacksText
-		lookup[entry.stacksMaxVar] = stacksMaxText
+	end
+	return timeText, stacksText, stacksMaxText
+end
+
+---Writes each bar's own bar text variables.
+---@param lookup table<string, any>
+function CustomBars:WriteLookup(lookup)
+	local now = GetTime()
+	for _, entry in ipairs(runtime) do
+		lookup[entry.timeVar], lookup[entry.stacksVar], lookup[entry.stacksMaxVar] = entry.provider.WriteLookup(entry, now)
 	end
 end
 
@@ -946,6 +1042,19 @@ local function IsHandTimed(snapshot)
 	return snapshot.cooldown.useManualCharges == true or (snapshot.spell ~= nil and snapshot.spell.attributes.handTimedCooldown == true)
 end
 
+---@param entry TRB.Classes.CustomBarRuntime
+---@param spells TRB.Classes.SpellBase[]
+function snapshotProvider.AppendCooldownSpell(entry, spells)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+	local snapshots = snapshotData ~= nil and snapshotData.snapshots or nil
+	local source = entry.bar.source
+	local snapshot = snapshots ~= nil and CustomBars:IsCooldownKind(source.kind) and snapshots[source.spellId] or nil
+	-- A cooldown a class module counts or times by hand is its own to keep.
+	if snapshot ~= nil and snapshot.spell ~= nil and not IsHandTimed(snapshot) then
+		spells[#spells + 1] = snapshot.spell
+	end
+end
+
 ---Appends the spells whose cooldowns the displayed bars read, for the cooldown tracker.
 ---@param spells TRB.Classes.SpellBase[]
 function CustomBars:AppendCooldownSpells(spells)
@@ -953,17 +1062,9 @@ function CustomBars:AppendCooldownSpells(spells)
 	if not runtimeHasCooldowns then
 		return
 	end
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
-	local snapshots = snapshotData ~= nil and snapshotData.snapshots or nil
-	if snapshots == nil then
-		return
-	end
 	for _, entry in ipairs(runtime) do
-		local source = entry.bar.source
-		local snapshot = self:IsCooldownKind(source.kind) and snapshots[source.spellId] or nil
-		-- A cooldown a class module counts or times by hand is its own to keep.
-		if snapshot ~= nil and snapshot.spell ~= nil and not IsHandTimed(snapshot) then
-			spells[#spells + 1] = snapshot.spell
+		if entry.provider.AppendCooldownSpell ~= nil then
+			entry.provider.AppendCooldownSpell(entry, spells)
 		end
 	end
 end
@@ -1256,6 +1357,76 @@ local function ApplyLiveMax(entry, max)
 	return true
 end
 
+---Draws a bar from the spec's own snapshot of its spell.
+---@param entry TRB.Classes.CustomBarRuntime
+---@param group TRB.Classes.BarGroup
+---@param node TRB.Classes.BarNode
+---@param settings table # The spec cache settings
+---@param now number
+---@param redraw boolean
+---@return boolean needsLayout
+function snapshotProvider.Render(entry, group, node, settings, now, redraw)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+	local kinds = CustomBars.kinds
+	local source = entry.bar.source
+	local snapshot = snapshotData ~= nil and snapshotData.snapshots[source.spellId] or nil
+	local needsLayout = false
+	if snapshot == nil then
+		entry.active = false
+		if redraw then
+			ClearNode(node)
+		end
+	elseif source.kind == kinds.buffTime and snapshot.buff.isPaused and snapshot.buff.isActive == true then
+		RenderPausedTimer(entry, node, snapshot.buff, redraw)
+	elseif source.kind == kinds.buffTime then
+		local buff = snapshot.buff
+		-- Leaving a pause: the timer has to be bound again.
+		if entry.pausedRemaining ~= nil then
+			entry.pausedRemaining = nil
+			redraw = true
+		end
+		RenderPlainTimer(entry, node, buff.isActive == true, buff.endTime, buff.duration, now, redraw)
+	elseif source.kind == kinds.cooldownTime and snapshot.cooldown.useManualCharges then
+		-- A cooldown its class module counts by hand runs on the hand-counted recharge.
+		RenderRechargeTime(entry, node, snapshot.cooldown, now, redraw)
+	elseif source.kind == kinds.cooldownTime and IsHandTimed(snapshot) then
+		local cooldown = snapshot.cooldown
+		local started, length = cooldown.startTime, cooldown.duration
+		local timed = started ~= nil and length ~= nil and length > 0
+		RenderPlainTimer(entry, node, timed, timed and started + length or nil, length, now, redraw)
+	elseif source.kind == kinds.cooldownTime then
+		RenderCooldownTime(entry, node, snapshot.cooldown, redraw)
+	elseif source.kind == kinds.rechargeTime then
+		RenderRechargeTime(entry, node, snapshot.cooldown, now, redraw)
+	elseif source.kind == kinds.totalRechargeTime then
+		RenderTotalRechargeTime(entry, node, snapshot.cooldown, now, redraw)
+	else
+		local count = ReadCount(source.kind, snapshot, now)
+		local max = GetCountMax(source.kind, snapshot)
+		if max ~= nil then
+			needsLayout = ApplyLiveMax(entry, max)
+		end
+		-- The cooldown tracker's version moves with every charge gained or spent.
+		local changed = entry.version ~= snapshot.cooldown.version
+		entry.version = snapshot.cooldown.version
+		RenderCount(entry, group, settings, count, max or knownMax[entry.key] or entry.bar.maxCount or 1, redraw, changed)
+		if source.kind == kinds.charges then
+			local recharging = IsRecharging(snapshot.cooldown, now)
+			if entry.recharging ~= recharging then
+				entry.recharging = recharging
+				TRB.Data.lookupDirty = true
+			end
+			if group.chargeTracker ~= nil then
+				local recharge = entry.fillRecharge and GetRechargeObject(entry, snapshot.cooldown) or nil
+				RenderRechargeFill(entry, group, settings, count, recharge, redraw, changed)
+				-- A bar with no charges left still has something to show while one recharges.
+				entry.active = entry.active or recharge ~= nil
+			end
+		end
+	end
+	return needsLayout
+end
+
 ---Draws the displayed custom bars. Runs on the 20Hz tick, ahead of the visibility pass.
 function CustomBars:Render()
 	EnsureRuntime()
@@ -1292,16 +1463,12 @@ function CustomBars:Render()
 		TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups, true)
 	end
 	local now = GetTime()
-	local kinds = self.kinds
-	local snapshots = snapshotData.snapshots
 	local activityChanged = false
 	local needsLayout = false
 	local timerActive = false
 	for _, entry in ipairs(runtime) do
 		local group = barGroups[entry.key]
 		local node = group ~= nil and group.nodes[1] or nil
-		local source = entry.bar.source
-		local snapshot = snapshots[source.spellId]
 		if group ~= nil and node ~= nil then
 			local wasActive = entry.active
 			local layout = layoutVersions[group] or 0
@@ -1309,59 +1476,7 @@ function CustomBars:Render()
 			local redraw = entry.frame ~= node.frame or entry.layout ~= layout
 			entry.frame = node.frame
 			entry.layout = layout
-			if snapshot == nil then
-				entry.active = false
-				if redraw then
-					ClearNode(node)
-				end
-			elseif source.kind == kinds.buffTime and snapshot.buff.isPaused and snapshot.buff.isActive == true then
-				RenderPausedTimer(entry, node, snapshot.buff, redraw)
-			elseif source.kind == kinds.buffTime then
-				local buff = snapshot.buff
-				-- Leaving a pause: the timer has to be bound again.
-				if entry.pausedRemaining ~= nil then
-					entry.pausedRemaining = nil
-					redraw = true
-				end
-				RenderPlainTimer(entry, node, buff.isActive == true, buff.endTime, buff.duration, now, redraw)
-			elseif source.kind == kinds.cooldownTime and snapshot.cooldown.useManualCharges then
-				-- A cooldown its class module counts by hand runs on the hand-counted recharge.
-				RenderRechargeTime(entry, node, snapshot.cooldown, now, redraw)
-			elseif source.kind == kinds.cooldownTime and IsHandTimed(snapshot) then
-				local cooldown = snapshot.cooldown
-				local started, length = cooldown.startTime, cooldown.duration
-				local timed = started ~= nil and length ~= nil and length > 0
-				RenderPlainTimer(entry, node, timed, timed and started + length or nil, length, now, redraw)
-			elseif source.kind == kinds.cooldownTime then
-				RenderCooldownTime(entry, node, snapshot.cooldown, redraw)
-			elseif source.kind == kinds.rechargeTime then
-				RenderRechargeTime(entry, node, snapshot.cooldown, now, redraw)
-			elseif source.kind == kinds.totalRechargeTime then
-				RenderTotalRechargeTime(entry, node, snapshot.cooldown, now, redraw)
-			else
-				local count = ReadCount(source.kind, snapshot, now)
-				local max = GetCountMax(source.kind, snapshot)
-				if max ~= nil then
-					needsLayout = ApplyLiveMax(entry, max) or needsLayout
-				end
-				-- The cooldown tracker's version moves with every charge gained or spent.
-				local changed = entry.version ~= snapshot.cooldown.version
-				entry.version = snapshot.cooldown.version
-				RenderCount(entry, group, settings, count, max or knownMax[entry.key] or entry.bar.maxCount or 1, redraw, changed)
-				if source.kind == kinds.charges then
-					local recharging = IsRecharging(snapshot.cooldown, now)
-					if entry.recharging ~= recharging then
-						entry.recharging = recharging
-						TRB.Data.lookupDirty = true
-					end
-					if group.chargeTracker ~= nil then
-						local recharge = entry.fillRecharge and GetRechargeObject(entry, snapshot.cooldown) or nil
-						RenderRechargeFill(entry, group, settings, count, recharge, redraw, changed)
-						-- A bar with no charges left still has something to show while one recharges.
-						entry.active = entry.active or recharge ~= nil
-					end
-				end
-			end
+			needsLayout = entry.provider.Render(entry, group, node, settings, now, redraw) or needsLayout
 			activityChanged = activityChanged or entry.active ~= wasActive
 			timerActive = timerActive or (entry.isTimer and entry.active) or entry.recharging == true
 		end

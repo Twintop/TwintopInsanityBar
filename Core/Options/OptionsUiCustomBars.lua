@@ -46,7 +46,7 @@ end
 ---@param source TRB.Classes.Settings.CustomBarSource|TRB.Classes.CustomBarSourceOption
 ---@return string
 local function GetSourceKey(source)
-	return source.kind .. ":" .. tostring(source.spellId)
+	return (source.provider or "") .. ":" .. source.kind .. ":" .. tostring(source.spellId)
 end
 
 ---Builds the Custom Bars tab's Bars sub-tab.
