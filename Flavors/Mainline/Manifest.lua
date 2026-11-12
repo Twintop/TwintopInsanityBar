@@ -48,6 +48,8 @@ TRB.Flavor = {
 	},
 	-- Blizzard's TotemFrame under the player frame, which the Totems bar can hide.
 	blizzardTotemFrame = true,
+	-- Creating an aura container in combat errors on builds up to 68675.
+	auraContainersInCombat = (tonumber((select(2, GetBuildInfo()))) or 0) > 68675,
 	-- PvP talents, Blizzard's Cooldown Manager, and secret values.
 	pvpTalents = true,
 	cooldownManager = true,

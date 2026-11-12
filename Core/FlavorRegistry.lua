@@ -92,6 +92,7 @@ local addonName, TRB = ...
 ---@field public pvpTalents boolean # The client has PvP talents
 ---@field public talentEvents string[]? # Events besides TRAIT_CONFIG_UPDATED meaning the player's talents changed, which re-run SwitchSpec
 ---@field public cooldownManager boolean # The client has Blizzard's Cooldown Manager, so it can feed tracking and anchor bars
+---@field public auraContainersInCombat boolean? # Aura containers can be created in combat (default false)
 ---@field public playerAuras boolean? # The player's aura data is never secret, so custom indicators and Buff Alerts can follow a buff by spell ID (default false)
 ---@field public secretValues boolean # The client hands out secret values, so bar text marks the variables that may hold one
 ---@field public DefaultCastbarTickProfiles (fun(): table<integer, TRB.Classes.Settings.CastbarTickProfile>)? # Channel tick profiles for every class (racials, consumables), keyed by spell ID; a fresh table per call, which the spec's own profiles overlay
@@ -168,6 +169,9 @@ if TRB.Flavor.talentEvents == nil then
 end
 if TRB.Flavor.playerAuras == nil then
 	TRB.Flavor.playerAuras = false
+end
+if TRB.Flavor.auraContainersInCombat == nil then
+	TRB.Flavor.auraContainersInCombat = false
 end
 
 -- Placeholder rank resolution: a flavor with ranked spells replaces it.
