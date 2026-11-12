@@ -3195,7 +3195,7 @@ function TRB.Functions.Settings:DefaultThresholdIconSettings()
 		yPos = 12,
 		width = 24,
 		height = 24,
-		overlapMode = "off",
+		overlapMode = TRB.Data.constants.thresholdIconOverlapModes.OFF,
 		overlapSpacing = 2,
 		overlapMaxRows = 3,
 		overlapAllowance = 0,

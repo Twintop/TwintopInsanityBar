@@ -294,23 +294,24 @@ function TRB.Functions.OptionsUi.Thresholds:GenerateThresholdLineIconsOptions(pa
 		end
 	end
 
+	local overlapModes = TRB.Data.constants.thresholdIconOverlapModes
 	local function RefreshOverlapControlStates()
 		local primitives = TRB.Functions.OptionsUi.Primitives
 		local mode = spec.thresholds.icons.overlapMode
-		local offReason = mode == "off" and L["ThresholdIconOverlapOffTooltip"] or nil
-		primitives:ToggleSliderEnabled(controls.thresholdIconOverlapSpacing, mode ~= "off")
-		primitives:ToggleSliderEnabled(controls.thresholdIconOverlapMaxRows, mode == "stagger")
-		primitives:ToggleSliderEnabled(controls.thresholdIconOverlapAllowance, mode ~= "off")
+		local offReason = mode == overlapModes.OFF and L["ThresholdIconOverlapOffTooltip"] or nil
+		primitives:ToggleSliderEnabled(controls.thresholdIconOverlapSpacing, mode ~= overlapModes.OFF)
+		primitives:ToggleSliderEnabled(controls.thresholdIconOverlapMaxRows, mode == overlapModes.STAGGER)
+		primitives:ToggleSliderEnabled(controls.thresholdIconOverlapAllowance, mode ~= overlapModes.OFF)
 		primitives:SetDisabledReason(controls.thresholdIconOverlapSpacing, offReason)
-		primitives:SetDisabledReason(controls.thresholdIconOverlapMaxRows, offReason or (mode ~= "stagger" and L["ThresholdIconOverlapNotStaggerTooltip"] or nil))
+		primitives:SetDisabledReason(controls.thresholdIconOverlapMaxRows, offReason or (mode ~= overlapModes.STAGGER and L["ThresholdIconOverlapNotStaggerTooltip"] or nil))
 		primitives:SetDisabledReason(controls.thresholdIconOverlapAllowance, offReason)
 	end
 
 	yCoord = yCoord - 20
 	local overlapModeOptions = {
-		{ value = "off", label = L["ThresholdIconOverlapModeOff"] },
-		{ value = "stagger", label = L["ThresholdIconOverlapModeStagger"] },
-		{ value = "topOnly", label = L["ThresholdIconOverlapModeTopOnly"] },
+		{ value = overlapModes.OFF, label = L["ThresholdIconOverlapModeOff"] },
+		{ value = overlapModes.STAGGER, label = L["ThresholdIconOverlapModeStagger"] },
+		{ value = overlapModes.TOP_ONLY, label = L["ThresholdIconOverlapModeTopOnly"] },
 	}
 	controls.thresholdIconOverlapMode = TRB.Functions.OptionsUi.Primitives:BuildDropdown(parent, "TwintopResourceBar_" .. namePrefix .. "_ThresholdIconOverlapMode", L["ThresholdIconOverlapMode"], overlapModeOptions,
 		function() return spec.thresholds.icons.overlapMode end,

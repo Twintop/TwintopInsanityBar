@@ -112,6 +112,12 @@ TRB.Data.constants = {
 	---Declared Cooldown Manager reliance, read only by the options panel. Lives here rather than on
 	---the CDM module because bar types register before that module loads.
 	---@enum TRB.CdmDependency
+	-- Threshold icon overlap layouts (thresholds.icons.overlapMode).
+	thresholdIconOverlapModes = {
+		OFF = "off",
+		STAGGER = "stagger", -- lint-core: allow (staggered icon rows, not the Stagger bar)
+		TOP_ONLY = "topOnly",
+	},
 	cdmDependency = {
 		-- Value is unobtainable without the tracked spell: bar text renders "??", nodes stay empty.
 		REQUIRED = "required",

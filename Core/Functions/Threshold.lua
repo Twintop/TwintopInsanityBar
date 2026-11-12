@@ -4,6 +4,7 @@ local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 local UnitHealthPercent = TRB.Functions.CurveMemo.UnitHealthPercent
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Threshold = {}
+local ICON_OVERLAP_MODES = TRB.Data.constants.thresholdIconOverlapModes
 
 
 ---Returns the anchoring parameters for positioning a threshold line based on fill direction.
@@ -734,7 +735,7 @@ end
 ---@param iconSettings TRB.Classes.Settings.ThresholdIcons
 local function SolveIconLayout(layout, iconSettings)
 	layout.dirty = false
-	local maxRows = iconSettings.overlapMode == "topOnly" and 1 or math.max(tonumber(iconSettings.overlapMaxRows) or 1, 1)
+	local maxRows = iconSettings.overlapMode == ICON_OVERLAP_MODES.TOP_ONLY and 1 or math.max(tonumber(iconSettings.overlapMaxRows) or 1, 1)
 	local spacing = tonumber(iconSettings.overlapSpacing) or 0
 	-- Icons may overlap by this share of their size, so collisions test inset bounds and rows pack tighter.
 	local allowance = math.min(math.max((tonumber(iconSettings.overlapAllowance) or 0) / 100, 0), 0.9)
@@ -842,7 +843,7 @@ end
 ---@return boolean
 local function IsIconLayoutActive(settings)
 	local mode = settings.thresholds.icons.overlapMode
-	return mode == "stagger" or mode == "topOnly"
+	return mode == ICON_OVERLAP_MODES.STAGGER or mode == ICON_OVERLAP_MODES.TOP_ONLY
 end
 
 -- Spell lines' draw-order offsets within a state bucket, by spec cache settings table, then setting key.

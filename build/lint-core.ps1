@@ -11,12 +11,13 @@
 	  * literal class/spec id comparisons (classId == 11, specId ~= 2, ...)
 	  * settings-tree class keys (settings.druid, .feral, ...)
 	  * vocabulary only a flavor may name, as a string, a table key, or a field: the resourceType tokens
-	    its classes declare, the snapshot attributes its descriptors point Core at, its shapeshift form
-	    condition keys and form names, and its threshold categories. The resource types of Core's own
-	    bars (coreResourceTypes) are Core's.
+	    its classes declare, the bar types it registers, the snapshot attributes its descriptors point
+	    Core at, its shapeshift form condition keys and form names, and its threshold categories. The
+	    resource types and bar types of Core's own bars (coreResourceTypes, RegisterBuiltInTypes) are Core's.
 	  * literal spell ids (id = 372608, spellId == 61304, GCD_SPELL = 61304, [372608] = ..., C_Spell.X(61304))
 	It also fails when a flavor declares a resourceType that neither its Resources.lua nor Core names.
-	It prints every hit and exits 1 when there are any, so CI keeps Core clean once it is.
+	It prints every hit and exits 1 when there are any, so CI keeps Core clean once it is. A line whose
+	comment reads "lint-core: allow (<reason>)" is skipped, for a word that only collides with flavor vocabulary.
 
 .PARAMETER Root
 	Repository root. Defaults to the parent of this script's folder.
@@ -93,6 +94,7 @@ foreach ($file in $flavorFiles) {
 		foreach ($forms in (Get-TableBodies $body "forms")) { foreach ($key in (Get-TopLevelKeys $forms)) { $vocabulary[$key] = $true } }
 	}
 	foreach ($m in [regex]::Matches($text, 'defaultForm\s*=\s*"(\w+)"')) { $vocabulary[$m.Groups[1].Value] = $true }
+	foreach ($m in [regex]::Matches($text, 'BarTypeDefinition:New\(\{\s*key\s*=\s*"(\w+)"')) { $vocabulary[$m.Groups[1].Value] = $true }
 	foreach ($body in (Get-TableBodies $text "thresholdCategories")) { foreach ($key in (Get-TopLevelKeys $body)) { $vocabulary[$key] = $true } }
 }
 # Snapshot attributes a descriptor or bar group configuration names for Core to read (thresholdValueAttribute, ...).
@@ -104,6 +106,7 @@ foreach ($file in $coreFiles) {
 	$text = [System.IO.File]::ReadAllText($file.FullName)
 	foreach ($m in [regex]::Matches($text, 'resourceType\s*=\s*"(\w+)"')) { $coreTypes[$m.Groups[1].Value] = $true }
 	foreach ($body in (Get-TableBodies $text "coreResourceTypes")) { foreach ($key in (Get-TopLevelKeys $body)) { $coreTypes[$key] = $true } }
+	foreach ($m in [regex]::Matches($text, 'BarTypeDefinition:New\(\{\s*key\s*=\s*"(\w+)"')) { $coreTypes[$m.Groups[1].Value] = $true }
 }
 foreach ($key in @($coreTypes.Keys)) { $vocabulary.Remove($key) }
 
@@ -143,6 +146,7 @@ $coreFiles | ForEach-Object {
 	$lineNo = 0
 	foreach ($line in [System.IO.File]::ReadLines($file.FullName)) {
 		$lineNo++
+		if ($line -match "--\s*lint-core:\s*allow\b") { continue }
 		# Strip comments: whole-line comments, doc comments and trailing "--" comments (crude but
 		# sufficient; string literals containing "--" are rare in this code base).
 		$code = $line -replace "--.*$", ""
