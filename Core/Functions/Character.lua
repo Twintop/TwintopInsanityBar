@@ -1038,52 +1038,13 @@ function TRB.Functions.Character:GetClassModuleName(classIdOrName)
 	return entry and entry.classModuleName or nil
 end
 
--- Resolved display name per resource-type token. Literal localization keys only (built at
--- load like BarText's anchor maps). Single source for turning a GetSpecConfiguration
--- resourceType / primary token into a user-facing name.
-local resourceTypeNames = {
-	-- Primary power types
-	Rage = TRB.Localization["ResourceRage"],
-	Mana = TRB.Localization["ResourceMana"],
-	Energy = TRB.Localization["ResourceEnergy"],
-	Focus = TRB.Localization["ResourceFocus"],
-	Insanity = TRB.Localization["ResourceInsanity"],
-	RunicPower = TRB.Localization["ResourceRunicPower"],
-	Maelstrom = TRB.Localization["ResourceMaelstrom"],
-	AstralPower = TRB.Localization["ResourceAstralPower"],
-	Fury = TRB.Localization["ResourceFury"],
-	-- Secondary / custom / utility resources
-	ComboPoints = TRB.Localization["ResourceComboPoints"],
-	SoulShards = TRB.Localization["ResourceSoulShards"],
-	SoulFragments = TRB.Localization["ResourceSoulFragments"],
-	CollapsingStar = TRB.Localization["ResourceCollapsingStar"],
-	ArcaneCharges = TRB.Localization["ResourceArcaneCharges"],
-	Runes = TRB.Localization["ResourceRunes"],
-	HolyPower = TRB.Localization["ResourceHolyPower"],
-	Chi = TRB.Localization["ResourceChi"],
-	Essence = TRB.Localization["ResourceEssence"],
-	TipOfTheSpear = TRB.Localization["ResourceTipOfTheSpear"],
-	MaelstromWeapon = TRB.Localization["ResourceMaelstromWeapon"],
-	Icicles = TRB.Localization["ResourceIcicles"],
-	Shatter = TRB.Localization["ResourceMageShatter"],
-	ArcaneSalvo = TRB.Localization["ResourceMageArcaneSalvo"],
-	BoneShield = TRB.Localization["ResourceBoneShield"],
-	CoagulatingBlood = TRB.Localization["ResourceCoagulatingBlood"],
-	Stagger = TRB.Localization["ResourceStagger"],
-	Health = TRB.Localization["ResourceHealth"],
-	Utility = TRB.Localization["ResourceUtility"],
-	AngelicFeather = TRB.Localization["ResourceAngelicFeather"],
-	Lightweaver = TRB.Localization["ResourcePriestLightweaver"],
-	HolyWords = TRB.Localization["ResourcePriestHolyWords"],
-	PowerWords = TRB.Localization["BarNamePowerWordsBar"],
-	DefensiveBuffs = TRB.Localization["ResourceWarriorDefensives"],
-	WhirlwindCharges = TRB.Localization["ResourceWarriorWhirlwind"],
-	EbonMight = TRB.Localization["ResourceEvokerEbonMight"],
-	ElementalBlastBuffs = TRB.Localization["ResourceShamanElementalBlastBuffs"],
-	FireBlastCharges = TRB.Localization["MageFireBlastCharges"],
-	Castbar = TRB.Localization["ResourceCastbar"],
-	Brews = TRB.Localization["ResourceMonkBrews"],
-	ArcaneBlast = TRB.Localization["ResourceMageArcaneBlast"],
+assert(type(TRB.Flavor.resourceTypes) == "table", "TwintopInsanityBar: flavor has no resourceTypes (Resources.lua must load from Classes.xml).")
+
+-- The resource types of the bars Core itself gives every spec; the flavor declares the rest.
+---@type table<string, TRB.Flavor.ResourceType>
+local coreResourceTypes = {
+	Castbar = { name = TRB.Localization["ResourceCastbar"] },
+	Health = { name = TRB.Localization["ResourceHealth"] },
 }
 
 -- Spec bar group configs by class id, then spec id. Every factory returns load-time constants.
@@ -1137,15 +1098,23 @@ function TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	return config
 end
 
+---A GetSpecConfiguration resourceType's display data, or nil if neither Core nor the flavor declares it.
+---@param resourceType string?
+---@return TRB.Flavor.ResourceType?
+function TRB.Functions.Character:GetResourceTypeDefinition(resourceType)
+	if resourceType == nil then
+		return nil
+	end
+	return coreResourceTypes[resourceType] or TRB.Flavor.resourceTypes[resourceType]
+end
+
 ---Returns the localized display name for a resource-type token (as used in
 ---GetSpecConfiguration resourceType fields and primary power types), or nil if unknown.
 ---@param resourceType string?
 ---@return string?
 function TRB.Functions.Character:GetResourceTypeName(resourceType)
-	if resourceType == nil then
-		return nil
-	end
-	return resourceTypeNames[resourceType]
+	local definition = self:GetResourceTypeDefinition(resourceType)
+	return definition and definition.name or nil
 end
 
 ---Returns the localized PRIMARY resource name for a spec, or nil if unknown. Reads the

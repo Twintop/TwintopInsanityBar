@@ -1904,7 +1904,8 @@ local function IsPercentScaleTarget(classId, specId, barKey, barTypeDef)
 	end
 	if barKey == "primary" then
 		local config = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
-		if config and config.primary and config.primary.resourceType == "Mana" then
+		local definition = config and config.primary and TRB.Functions.Character:GetResourceTypeDefinition(config.primary.resourceType)
+		if definition and definition.percentScale then
 			return true
 		end
 	end

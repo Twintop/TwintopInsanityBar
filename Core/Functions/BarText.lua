@@ -159,25 +159,6 @@ local function IsSelfDrivenBarFading(groupKey)
 	end
 	return TRB.Functions.OtherBars:IsFadingOut(groupKey)
 end
-local containerAnchorLabelByResourceType = {
-	AngelicFeather = L["AngelicFeatherContainer"],
-	ArcaneBlast = L["ArcaneBlastContainer"],
-	ArcaneCharges = L["ArcaneChargesContainer"],
-	BoneShield = L["BoneShieldContainer"],
-	Chi = L["ChiContainer"],
-	ComboPoints = L["ComboPointsContainer"],
-	Essence = L["EssenceContainer"],
-	Icicles = L["IciclesContainer"],
-	Lightweaver = L["LightweaverContainer"],
-	HolyPower = L["HolyPowerContainer"],
-	MaelstromWeapon = L["MaelstromWeaponContainer"],
-	Runes = L["RunesContainer"],
-	Shatter = L["ShatterContainer"],
-	SoulFragments = L["SoulFragmentsContainer"],
-	SoulShards = L["SoulShardsContainer"],
-	TipOfTheSpear = L["TipOfTheSpearContainer"],
-	WhirlwindCharges = L["WhirlwindChargesContainer"],
-}
 
 -- Anchor names come from a small set of settings strings, so the per-tick lookups memoize their
 -- normalized form and pattern captures (false records a pattern that did not match).
@@ -287,7 +268,8 @@ local function GetContainerAnchorDefinition(classId, specId, barGroupKey)
 		return nil
 	end
 
-	local label = containerAnchorLabelByResourceType[barGroupConfig.resourceType]
+	local resourceTypeDefinition = TRB.Functions.Character:GetResourceTypeDefinition(barGroupConfig.resourceType)
+	local label = resourceTypeDefinition and resourceTypeDefinition.containerLabel
 	if label == nil then
 		return nil
 	end

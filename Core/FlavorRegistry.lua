@@ -28,6 +28,12 @@ local addonName, TRB = ...
 ---@field public integer boolean? # Whole number: options logic type INTEGER
 ---@field public secret boolean? # May hold a secret, so display only (default: the flavor's secretValues)
 
+---A GetSpecConfiguration resourceType's display data (Flavors\<Flavor>\Resources.lua).
+---@class TRB.Flavor.ResourceType
+---@field public name string # Localized resource name, e.g. "Insanity"
+---@field public containerLabel string? # Localized name of a multi-node bar's whole-bar text anchor
+---@field public percentScale boolean? # A primary bar of this type takes custom thresholds as percentages
+
 ---@class TRB.Flavor.TalentRank
 ---@field public currentRank integer
 ---@field public maxRank integer
@@ -71,6 +77,7 @@ local addonName, TRB = ...
 ---@field public classes TRB.Flavor.ClassEntry[]
 ---@field public stats TRB.Flavor.StatDefinition[] # Bar text stat variables (Flavors\<Flavor>\Stats.lua)
 ---@field public statEvents TRB.Flavor.StatEvents
+---@field public resourceTypes table<string, TRB.Flavor.ResourceType> # Every resourceType the flavor's classes declare, except those of Core's own bars (Flavors\<Flavor>\Resources.lua)
 ---@field public PortForwardSettings (fun(settings: table?))? # Saved-variable migrations, if the flavor has any
 ---@field public DefaultManualUpdateChecks (fun(): table)? # Seed for settings.manualUpdateChecks
 ---@field public OnBarTextSeeded (fun(settings: table, className: string))? # Hook after a class receives fresh default bar text
