@@ -11,6 +11,7 @@ TRB.Details.coreNewsContent = [====[
 - [#982](#982) Fix memory use growing with every loading screen, specialization change, and talent change.
 - [#983](#983) Remove the `/trb fill` command.
 - Update LibSimpleHTMLMarkdown to version 1.0.3.
+- Move each game version's resource names, spells, and shapeshift form conditions from the shared code into that version's own files.
 
 ## Edit Mode
 
