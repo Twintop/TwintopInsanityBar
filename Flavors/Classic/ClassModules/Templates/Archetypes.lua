@@ -51,19 +51,45 @@ TRB.Classic.Templates = TRB.Classic.Templates or {}
 ---@field public barBorder string
 ---@field public barBackground string
 
+---Localized text of a secondary bar's color section.
+---@class TRB.Classic.SecondaryColorLabels
+---@field public header string
+---@field public penultimate string
+---@field public final string
+---@field public sameColor string # the "use highest color for all" checkbox
+---@field public sameColorTooltip string
+---@field public border string
+---@field public background string
+
+---A secondary bar's nodes, filled by an archetype's power or by the stacks of a buff the spec tracks.
 ---@class TRB.Classic.ArchetypeSecondary
----@field public powerType integer
 ---@field public resourceType string
----@field public nameKey string
----@field public variable string # bar text variable stem, e.g. "comboPoints"
+---@field public name string # localized bar name
+---@field public colorLabels TRB.Classic.SecondaryColorLabels
+---@field public nodeLabels string[] # localized bar text anchor label per node
 ---@field public maxNodes integer
+---@field public powerType integer? # the power filling the nodes; nil when a buff's stacks do
+---@field public variable string? # bar text variable stem for a power, e.g. "comboPoints"; a buff's come from its class module
+---@field public buff string? # spell field name of the spec buff whose stacks fill the nodes; its spell gates the bar
+---@field public colors table? # default colors.comboPoints; nil derives them from the archetype
+---@field public audioCueSource TRB.Classes.AudioCueCounterSource? # counter the node count feeds; nil means Combo Points
 
 ---Shared secondary definition for the Energy + Combo Points archetype.
 ---@type TRB.Classic.ArchetypeSecondary
 local comboPointsSecondary = {
 	powerType = Enum.PowerType.ComboPoints,
 	resourceType = "ComboPoints",
-	nameKey = "ResourceComboPoints",
+	name = L["ResourceComboPoints"],
+	colorLabels = {
+		header = L["ComboPointColorsHeader"],
+		penultimate = L["ComboPointColorPickerPenultimate"],
+		final = L["ComboPointColorPickerFinal"],
+		sameColor = L["ComboPointCheckboxUseHighestForAll"],
+		sameColorTooltip = L["ComboPointCheckboxUseHighestForAllTooltip"],
+		border = L["ComboPointColorPickerBorder"],
+		background = L["ComboPointColorPickerBackground"],
+	},
+	nodeLabels ={ L["ComboPoint1"], L["ComboPoint2"], L["ComboPoint3"], L["ComboPoint4"], L["ComboPoint5"] },
 	variable = "comboPoints",
 	maxNodes = 5,
 }
@@ -167,6 +193,8 @@ TRB.Classic.Archetypes = {
 ---@field public buffs string[]? # spell field names the class module tracks as buff snapshots
 ---@field public barTextValues (fun(): table[])? # the class module's own bar text values, listed after the archetype's
 ---@field public indicators TRB.Classic.SpecIndicator[]? # built-in Color Indicators, listed after Stealth
+---@field public secondary TRB.Classic.ArchetypeSecondary? # the spec's own secondary bar, else its archetype's
+---@field public secondaryCounterId string? # the audio cue counter the secondary's node count feeds
 
 ---A built-in Color Indicator that is on while one of the spec's tracked buffs is active, or only while it is ending.
 ---@class TRB.Classic.SpecIndicator
@@ -193,7 +221,7 @@ TRB.Classic.Archetypes = {
 ---@field public timeSliderKey string
 
 ---How one spec is declared to DefineClass: an archetype key on its own, or a table when the spec
----brings abilities, icons, stealth, buffs, bar text values, or indicators along with it.
+---brings abilities, icons, stealth, buffs, bar text values, indicators, or a secondary bar along with it.
 ---@class TRB.Classic.SpecDeclaration
 ---@field public archetype string
 ---@field public spells fun(spells: TRB.Classes.SpecializationSpellsBase)?
@@ -202,6 +230,7 @@ TRB.Classic.Archetypes = {
 ---@field public buffs string[]?
 ---@field public barTextValues (fun(): table[])?
 ---@field public indicators TRB.Classic.SpecIndicator[]?
+---@field public secondary TRB.Classic.ArchetypeSecondary? # a buff-stack secondary bar, for an archetype without one
 
 ---@type table<string, TRB.Classic.ClassDefinition>
 TRB.Classic.Classes = TRB.Classic.Classes or {}
@@ -313,9 +342,10 @@ local function DefineSpellsClass(classModule, spec)
 			{ variable = "$resourceMax", description = "", printInSettings = false, color = false, category = varCategory.RESOURCES },
 			{ variable = "$casting", description = string.format(L["ForeverBarTextVariable_casting"], resourceName), printInSettings = true, color = false, category = varCategory.RESOURCES },
 		}
-		if archetype.secondary ~= nil then
-			local secondaryName = L[archetype.secondary.nameKey]
-			local secondaryVariable = archetype.secondary.variable
+		local secondary = spec.secondary
+		if secondary ~= nil and secondary.variable ~= nil then
+			local secondaryName = secondary.name
+			local secondaryVariable = secondary.variable
 			values[#values + 1] = { variable = "$" .. secondaryVariable, description = string.format(L["ForeverBarTextVariable_secondary"], secondaryName), printInSettings = true, color = false, category = varCategory.RESOURCES }
 			values[#values + 1] = { variable = "$" .. secondaryVariable .. "Max", description = string.format(L["ForeverBarTextVariable_secondaryMax"], secondaryName), printInSettings = true, color = false, category = varCategory.RESOURCES }
 		end
@@ -357,9 +387,9 @@ local function DefineBarGroupsFactory(classModule, classDef)
 		end
 
 		barGroups.primary = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame", 1, true)
-		if spec.archetype.secondary ~= nil then
+		if spec.secondary ~= nil then
 			-- Secondary bars are parented to UIParent for independent visibility
-			barGroups.secondary = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_ComboPoint", spec.archetype.secondary.maxNodes, false)
+			barGroups.secondary = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_ComboPoint", spec.secondary.maxNodes, false)
 		end
 		barGroups.health = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Health", 1, false)
 		return barGroups
@@ -377,8 +407,8 @@ local function DefineBarGroupsFactory(classModule, classDef)
 			primary = { maxNodes = 1, isPrimary = true, resourceType = spec.archetype.resourceType },
 			health = { maxNodes = 1, isPrimary = false, resourceType = "Health" },
 		}
-		if spec.archetype.secondary ~= nil then
-			config.secondary = { maxNodes = spec.archetype.secondary.maxNodes, isPrimary = false, resourceType = spec.archetype.secondary.resourceType }
+		if spec.secondary ~= nil then
+			config.secondary = { maxNodes = spec.secondary.maxNodes, isPrimary = false, resourceType = spec.secondary.resourceType }
 		end
 		return config
 	end
@@ -427,7 +457,17 @@ function TRB.Classic.Templates.Classes:DefineClass(className, specDeclarations)
 			buffs = declaration.buffs,
 			barTextValues = declaration.barTextValues,
 			indicators = declaration.indicators,
+			secondary = declaration.secondary or archetype.secondary,
 		}
+		-- A buff secondary counts that buff's snapshot, which only a tracked buff has.
+		local secondaryBuff = spec.secondary ~= nil and spec.secondary.buff or nil
+		if secondaryBuff ~= nil then
+			local tracked = false
+			for _, buffKey in ipairs(spec.buffs or {}) do
+				tracked = tracked or buffKey == secondaryBuff
+			end
+			assert(tracked, "TwintopInsanityBar: Classic DefineClass '" .. className .. "' spec '" .. entry.specName .. "' fills its secondary bar from '" .. secondaryBuff .. "', which its buffs don't list")
+		end
 		DefineSpellsClass(classModule, spec)
 		classDef.specs[entry.specName] = spec
 		classDef.specsById[entry.specId] = spec
@@ -442,21 +482,27 @@ function TRB.Classic.Templates.Classes:DefineClass(className, specDeclarations)
 			return self:CastbarTickProfilesFromSpells(spellsClass:New())
 		end
 
-		-- Descriptor: every Classic spec shows mana precision when mana is its resource; combo point
-		-- specs export their secondary bar, offer its nodes as bar text anchors, and get combo point audio cues.
+		-- Descriptor: every Classic spec shows mana precision when mana is its resource; a spec with a
+		-- secondary bar exports it, offers its nodes as bar text anchors, and gets its counter's audio cues.
 		local descriptor = { manaBar = archetype.key == "mana" }
 		-- Mana specs get the Five Second Rule bar.
 		if archetype.key == "mana" and TRB.Flavor.fiveSecondRule ~= nil then
 			descriptor.otherBars = { "fiveSecondRule" }
 		end
-		if archetype.secondary ~= nil then
+		local secondary = spec.secondary
+		if secondary ~= nil then
 			descriptor.secondary = { exportable = true }
 			local anchors = {}
-			for i = 1, archetype.secondary.maxNodes do
-				anchors[i] = { label = L["ComboPoint" .. i], frame = "ComboPoint_" .. i }
+			for i = 1, secondary.maxNodes do
+				anchors[i] = { label = secondary.nodeLabels[i], frame = "ComboPoint_" .. i }
 			end
 			descriptor.barTextAnchorFrames = { secondary = anchors }
-			TRB.Functions.AudioCues:Register(entry.compositeKey, { counters = { self:ComboPointAudioCueSource() } })
+			if secondary.buff ~= nil then
+				descriptor.talentGatedBars = { secondary = secondary.buff }
+			end
+			local counter = secondary.audioCueSource or self:ComboPointAudioCueSource()
+			spec.secondaryCounterId = counter.id
+			TRB.Functions.AudioCues:Register(entry.compositeKey, { counters = { counter } })
 		end
 		TRB.Classes.SpecDescriptor:Declare(entry.compositeKey, descriptor)
 	end

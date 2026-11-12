@@ -3296,7 +3296,7 @@ end
 ---briefly resurface the bar.
 ---
 ---The gates themselves come from the active spec's descriptor (`talentGatedBars`: bar key ->
----spell key whose talent must be active).
+---spell key whose talent must be active, or that must be learned when it is no talent).
 ---@param barKey string
 ---@return boolean
 function TRB.Functions.Bar:IsBarTalentGatedHidden(barKey)
@@ -3315,7 +3315,14 @@ function TRB.Functions.Bar:IsBarTalentGatedHidden(barKey)
 	if not talents or not spells then return false end
 
 	local spell = spells[spellKey]
-	return spell ~= nil and not talents:IsTalentActive(spell)
+	if spell == nil then
+		return false
+	end
+	-- A spell that is no talent gates on being learned.
+	if not spell.isTalent then
+		return not spell:IsKnown()
+	end
+	return not talents:IsTalentActive(spell)
 end
 
 ---Enumerates all bar keys present for the current bar groups.

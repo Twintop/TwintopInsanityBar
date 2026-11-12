@@ -20,14 +20,15 @@
 	Priest's Inner Fire charges, timer, bar text, and Color Indicator, and Forever's diagnostic; it runs once per class. slice-and-dice checks the
 	Forever, Classic, and TBC Rogue's Slice and Dice timer, bar text, Active and Ending Color Indicators, and diagnostic; it runs once per class.
 	brews checks the Live Brewmaster's Brews bar: its nodes by talent, order, and enable, charges counted from the plain cooldown flags, bar text,
-	timer bindings, and Color Indicator targets; it runs once per class.
+	timer bindings, and Color Indicator targets; it runs once per class. arcane-blast checks the Forever and TBC Mage's Arcane Blast bar: its
+	gate, cast-tracked stacks and timer, node fill, bar text, and audio counter; it runs once per class.
 	See build\harness\README.md.
 
 .PARAMETER Lua
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews, arcane-blast). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
@@ -71,7 +72,8 @@ $drivers = @(
 	[pscustomobject]@{ Name = "bartext-conformance"; EveryClass = $true },
 	[pscustomobject]@{ Name = "inner-fire"; EveryClass = $true },
 	[pscustomobject]@{ Name = "slice-and-dice"; EveryClass = $true },
-	[pscustomobject]@{ Name = "brews"; EveryClass = $true }
+	[pscustomobject]@{ Name = "brews"; EveryClass = $true },
+	[pscustomobject]@{ Name = "arcane-blast"; EveryClass = $true }
 )
 $known = $drivers | ForEach-Object { $_.Name }
 if ($Driver -ne "" -and $known -notcontains $Driver) {
