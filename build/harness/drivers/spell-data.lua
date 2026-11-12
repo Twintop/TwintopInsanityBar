@@ -1,8 +1,10 @@
--- Checks that every specialization's spellsById lists each spell once under each of its ids, through the SwitchSpec re-runs after a loading screen, a talent change, and a specialization change.
+-- Checks that every specialization's spellsById lists each spell once under each of its ids and ranks, through the SwitchSpec re-runs after a loading screen, a talent change, and a specialization change.
 local desktop = _G --[[@as table<string, any>]]
 local parity = desktop.require("drivers.parity")
 
 local hooks = {}
+-- Fills per SpellsData, so only filled specializations are checked and each step proves its own specialization refilled.
+local fillCounts = {}
 
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
@@ -11,6 +13,11 @@ end
 -- The News popup needs UI the stubs lack, and its error would stop the deferred setup before optionsPanelFinished.
 function hooks.afterLoad(ctx)
 	ctx.TRB.Functions.News.Init = function() end
+	local innerFill = ctx.TRB.Classes.SpellsData.FillSpellData
+	ctx.TRB.Classes.SpellsData.FillSpellData = function(self, ...)
+		fillCounts[self] = (fillCounts[self] or 0) + 1
+		return innerFill(self, ...)
+	end
 end
 
 function hooks.afterEvents(ctx)
@@ -34,14 +41,6 @@ function hooks.afterEvents(ctx)
 		end
 	end
 
-	-- Counting fills shows each event re-filled, so a clean list isn't just one that was never filled again.
-	local fills = 0
-	local innerFill = TRB.Classes.SpellsData.FillSpellData
-	TRB.Classes.SpellsData.FillSpellData = function(...)
-		fills = fills + 1
-		return innerFill(...)
-	end
-
 	TRB.Functions.Bar.UpdateHealthBar = function() end
 	TRB.Functions.Class.TriggerResourceBarUpdates = function() end
 	stubs.fireEvents(parity.releaseEvent, ctx.addonName)
@@ -50,7 +49,7 @@ function hooks.afterEvents(ctx)
 
 	local idFields = { "id", "buffId", "debuffId", "energizeId", "talentId", "castId", "tickId" }
 
-	---Every filled specialization's spellsById problems: a spell listed twice, a spell missing under one of its ids, or a spell no longer in its spells.
+	---Every filled specialization's spellsById problems: a spell listed twice, a spell missing under one of its ids or ranks, or a spell no longer in its spells.
 	---@return string[]
 	local function Problems()
 		local problems = {}
@@ -61,15 +60,22 @@ function hooks.afterEvents(ctx)
 		table.sort(keys)
 		for _, key in ipairs(keys) do
 			local spellsData = TRB.Data.specCache[key].spellsData
-			if spellsData ~= nil and next(spellsData.spellsById) ~= nil then
+			if spellsData ~= nil and fillCounts[spellsData] ~= nil then
 				local current = {}
+				local function Listed(label, id, spell)
+					if not tContains(spellsData.spellsById[id] or {}, spell) then
+						problems[#problems + 1] = string.format("%s %s %s not listed", key, label, tostring(id))
+					end
+				end
 				for _, spell in pairs(spellsData.spells) do
 					current[spell] = true
 					for _, field in ipairs(idFields) do
-						local id = spell[field]
-						if id ~= nil and not tContains(spellsData.spellsById[id] or {}, spell) then
-							problems[#problems + 1] = string.format("%s %s %s not listed", key, field, tostring(id))
+						if spell[field] ~= nil then
+							Listed(field, spell[field], spell)
 						end
+					end
+					for _, rankId in ipairs(spell.rankIds or {}) do
+						Listed("rank", rankId, spell)
 					end
 				end
 				for id, list in pairs(spellsData.spellsById) do
@@ -95,14 +101,15 @@ function hooks.afterEvents(ctx)
 		for i = 1, math.min(#problems, 5) do
 			shown[i] = problems[i]
 		end
-		check(label .. ": spellsById lists each spell once under each of its ids" .. (#problems > 0 and " (" .. #problems .. " problems: " .. table.concat(shown, "; ") .. ")" or ""), #problems == 0)
+		check(label .. ": spellsById lists each spell once under each of its ids and ranks" .. (#problems > 0 and " (" .. #problems .. " problems: " .. table.concat(shown, "; ") .. ")" or ""), #problems == 0)
 	end
 
-	local function Step(label, event)
-		local before = fills
+	local function Step(label, event, key)
+		local spellsData = TRB.Data.specCache[key].spellsData
+		local before = fillCounts[spellsData] or 0
 		stubs.fireEvents(event, ctx.addonName)
 		Drain(event:match("^[^:]+"))
-		check(label .. ": spell data filled again", fills > before)
+		check(label .. ": its spell data filled again", (fillCounts[spellsData] or 0) > before)
 		CheckLists(label)
 	end
 
@@ -128,12 +135,13 @@ function hooks.afterEvents(ctx)
 		local change = entry.specId ~= current and "a specialization change" or "a same-specialization event"
 		current = entry.specId
 		SetSpec(entry.specId)
-		Step(entry.compositeKey .. " after " .. change, "PLAYER_SPECIALIZATION_CHANGED")
-		Step(entry.compositeKey .. " after a loading screen", "PLAYER_ENTERING_WORLD")
-		Step(entry.compositeKey .. " after a second loading screen", "PLAYER_ENTERING_WORLD")
-		Step(entry.compositeKey .. " after a talent change", "TRAIT_CONFIG_UPDATED:12345")
+		local key = entry.compositeKey
+		Step(key .. " after " .. change, "PLAYER_SPECIALIZATION_CHANGED", key)
+		Step(key .. " after a loading screen", "PLAYER_ENTERING_WORLD", key)
+		Step(key .. " after a second loading screen", "PLAYER_ENTERING_WORLD", key)
+		Step(key .. " after a talent change", "TRAIT_CONFIG_UPDATED:12345", key)
 		for _, talentEvent in ipairs(TRB.Flavor.talentEvents) do
-			Step(entry.compositeKey .. " after " .. talentEvent, talentEvent)
+			Step(key .. " after " .. talentEvent, talentEvent, key)
 		end
 	end
 

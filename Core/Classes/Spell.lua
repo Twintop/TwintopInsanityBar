@@ -29,9 +29,9 @@ function TRB.Classes.SpellsData:New()
 	return self
 end
 
----Fills extra spell data for all spells in the dictionary.
+---Fills extra spell data for all spells in the dictionary and rebuilds `spellsById` from them.
 function TRB.Classes.SpellsData:FillSpellData()
-	-- Every spec switch fills again; wiped in place since readers may hold the table.
+	-- Runs again on every SwitchSpec, so the lists start empty.
 	wipe(self.spellsById)
 	for _, v in pairs(self.spells) do
 		---@type TRB.Classes.SpellBase
