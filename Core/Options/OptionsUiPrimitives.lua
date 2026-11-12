@@ -717,6 +717,26 @@ function TRB.Functions.OptionsUi.Primitives:ReleaseFrameNames(frame)
 	end
 end
 
+---Retires a built frame that is being replaced. A frame can't be destroyed, so this leaves it inert: names freed,
+---and nothing under it shown, anchored, or listening.
+---@param frame Frame
+function TRB.Functions.OptionsUi.Primitives:RetireFrame(frame)
+	self:ReleaseFrameNames(frame)
+	---@param retired Frame
+	local function Strip(retired)
+		for _, child in ipairs({ retired:GetChildren() }) do
+			Strip(child)
+		end
+		retired:UnregisterAllEvents()
+		retired:SetScript("OnUpdate", nil)
+		retired:SetScript("OnEvent", nil)
+		retired:Hide()
+		retired:ClearAllPoints()
+	end
+	Strip(frame)
+	frame:SetParent(nil)
+end
+
 ---Makes a menu scroll once it holds more rows than fit comfortably on screen.
 ---@param rootDescription table
 ---@param rowCount integer # Rows the menu draws, counting titles and dividers

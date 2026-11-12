@@ -542,7 +542,8 @@ local function HandleImport(input)
 					for specName, spec in pairs(class) do
 						local entryCount = TRB.Functions.Table:Length(newBarText[className.."_"..specName])
 						if entryCount > 0 then
-							spec.displayText.barText = newBarText[className.."_"..specName]
+							-- The list is replaced whole, except for what belongs to the bars the user added.
+							spec.displayText.barText = TRB.Functions.CustomBars:ReconcileImportedText(spec, newBarText[className.."_"..specName], spec.displayText.barText)
 						end
 					end
 				end

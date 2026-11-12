@@ -19,6 +19,7 @@ local L = TRB.Localization
 ---@field public source TRB.Classes.Settings.CustomBarSource
 ---@field public segmented boolean? # A count bar's one node per stack or charge; nil follows the maximum
 ---@field public fillRecharge boolean? # A segmented charges bar's recharging charge fills as it recharges; nil is on
+---@field public maxCount integer? # A count bar's last plain maximum, for a login where it can't be read
 
 ---@class TRB.Classes.CustomBarSourceOption
 ---@field public kind trbCustomBarSourceKind
@@ -54,6 +55,7 @@ local L = TRB.Localization
 ---@field public layout integer? # The group's layout pass the fill was last written after
 ---@field public endTime number?
 ---@field public duration number?
+---@field public pausedRemaining number? # The frozen time a paused buff's bar holds
 ---@field public version integer?
 ---@field public count number?
 ---@field public max number?
@@ -394,8 +396,13 @@ local function SyncDefinition(bar, classId, specId, snapshots)
 	local isCount = CustomBars:IsCountKind(kind)
 	local max = 1
 	if isCount then
-		max = GetCountMax(kind, snapshots ~= nil and snapshots[bar.source.spellId] or nil) or knownMax[key] or 1
-		knownMax[key] = max
+		local read = GetCountMax(kind, snapshots ~= nil and snapshots[bar.source.spellId] or nil)
+		if read ~= nil then
+			knownMax[key] = read
+			bar.maxCount = read
+		end
+		-- Unread, as on a login in combat: the last one saved shapes the bar until it can be.
+		max = read or knownMax[key] or bar.maxCount or 1
 	end
 	local segmented = CustomBars:IsSegmented(bar, max)
 
@@ -507,6 +514,7 @@ function CustomBars:SyncRegistry(classId, specId, spec)
 	for key, definition in pairs(registry:GetAll()) do
 		if definition.isUserBar and definition.ownerClassId == classId and definition.ownerSpecId == specId and not seen[key] then
 			registry:Unregister(key)
+			knownMax[key] = nil
 			changed = true
 		end
 	end
@@ -526,6 +534,14 @@ local function GetBarTextList(spec)
 	return spec.displayText ~= nil and spec.displayText.barText or {}
 end
 
+---The label bar text bound to a bar is given, on the bar or on its recharging charge.
+---@param name string
+---@param onRechargingCharge boolean
+---@return string
+local function AnchorLabel(name, onRechargingCharge)
+	return string.format(onRechargingCharge and L["CustomBarsRechargingAnchorLabel"] or L["CustomBarsAnchorLabel"], name)
+end
+
 ---Adds a bar's default bar text.
 ---@param spec table
 ---@param bar TRB.Classes.Settings.CustomBar
@@ -534,9 +550,42 @@ local function AddDefaultText(spec, bar)
 		return
 	end
 	local anchorName, variable, onRechargingCharge = GetDefaultText(bar)
-	local labelFormat = onRechargingCharge and L["CustomBarsRechargingAnchorLabel"] or L["CustomBarsAnchorLabel"]
-	table.insert(spec.displayText.barText, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings(anchorName, string.format(labelFormat, bar.name),
+	table.insert(spec.displayText.barText, TRB.Functions.Settings:LoadDefaultOtherBarTextSettings(anchorName, AnchorLabel(bar.name, onRechargingCharge),
 		variable, "CENTER", onRechargingCharge and 12 or 14))
+end
+
+---Renames the anchor of every bar text entry bound to a bar, and the entry itself where it still carries the
+---name it was given.
+---@param spec table
+---@param bar TRB.Classes.Settings.CustomBar
+---@param oldName string
+local function RelabelText(spec, bar, oldName)
+	local key = CustomBars:GetBarKey(bar.guid)
+	local anchorName, rechargingAnchorName = CustomBars:GetAnchorName(key), CustomBars:GetRechargingAnchorName(key)
+	for _, entry in ipairs(GetBarTextList(spec)) do
+		local position = entry.position
+		local frame = position ~= nil and position.relativeToFrame or nil
+		if frame == anchorName or frame == rechargingAnchorName then
+			local label = AnchorLabel(bar.name, frame == rechargingAnchorName)
+			if entry.name == AnchorLabel(oldName, false) or entry.name == AnchorLabel(oldName, true) then
+				entry.name = label
+			end
+			position.relativeToFrameName = label
+		end
+	end
+end
+
+---Renames a bar, taking the names of the bar text bound to it along.
+---@param spec table # The specialization's saved settings
+---@param classId integer
+---@param specId integer
+---@param bar TRB.Classes.Settings.CustomBar
+---@param name string
+function CustomBars:Rename(spec, classId, specId, bar, name)
+	local oldName = bar.name
+	bar.name = name
+	RelabelText(spec, bar, oldName)
+	self:SyncRegistry(classId, specId, spec)
 end
 
 ---Changes a bar's settings, then moves its default bar text along with what the change made the default, where
@@ -548,22 +597,60 @@ end
 ---@param change fun(bar: TRB.Classes.Settings.CustomBar)
 function CustomBars:Change(spec, classId, specId, bar, change)
 	local oldAnchor, oldVariable = GetDefaultText(bar)
+	local oldName = bar.name
 	change(bar)
 	self:SyncRegistry(classId, specId, spec)
-	local newAnchor, newVariable, onRechargingCharge = GetDefaultText(bar)
-	if oldAnchor == newAnchor and oldVariable == newVariable then
-		return
-	end
-	local oldText = DefaultTextOf(oldVariable)
-	local labelFormat = onRechargingCharge and L["CustomBarsRechargingAnchorLabel"] or L["CustomBarsAnchorLabel"]
-	for _, entry in ipairs(GetBarTextList(spec)) do
-		local position = entry.position
-		if position ~= nil and position.relativeToFrame == oldAnchor and entry.text == oldText then
-			entry.text = DefaultTextOf(newVariable)
-			position.relativeToFrame = newAnchor
-			position.relativeToFrameName = string.format(labelFormat, bar.name)
+	local newAnchor, newVariable = GetDefaultText(bar)
+	if oldAnchor ~= newAnchor or oldVariable ~= newVariable then
+		local oldText = DefaultTextOf(oldVariable)
+		for _, entry in ipairs(GetBarTextList(spec)) do
+			local position = entry.position
+			if position ~= nil and position.relativeToFrame == oldAnchor and entry.text == oldText then
+				entry.text = DefaultTextOf(newVariable)
+				position.relativeToFrame = newAnchor
+			end
 		end
 	end
+	RelabelText(spec, bar, oldName)
+end
+
+---What a specialization's bar text list is after an import replaced it: imported text bound to a custom bar the
+---specialization doesn't have is dropped, and its own text on a custom bar the import carried none for is kept.
+---@param spec table # The merged specialization settings
+---@param imported TRB.Classes.Settings.DisplayTextEntry[]
+---@param own TRB.Classes.Settings.DisplayTextEntry[]? # The list the import replaces
+---@return TRB.Classes.Settings.DisplayTextEntry[]
+function CustomBars:ReconcileImportedText(spec, imported, own)
+	local registry = TRB.Classes.BarTypeRegistry
+	local keys = {}
+	for guid in pairs(self:GetBars(spec) or {}) do
+		keys[self:GetBarKey(guid)] = true
+	end
+	---@param entry any
+	---@return string?
+	local function UserBarKeyOf(entry)
+		local position = type(entry) == "table" and entry.position or nil
+		local key = type(position) == "table" and TRB.Functions.BarText:GetAnchorBarKey(position.relativeToFrame) or nil
+		return registry:IsUserBar(key) and key or nil
+	end
+	local result = {}
+	local carried = {}
+	for _, entry in ipairs(imported) do
+		local key = UserBarKeyOf(entry)
+		if key == nil or keys[key] then
+			result[#result + 1] = entry
+			if key ~= nil then
+				carried[key] = true
+			end
+		end
+	end
+	for _, entry in ipairs(own or {}) do
+		local key = UserBarKeyOf(entry)
+		if key ~= nil and keys[key] and not carried[key] then
+			result[#result + 1] = entry
+		end
+	end
+	return result
 end
 
 ---Adds a bar to a specialization's saved settings.
@@ -736,7 +823,7 @@ local function EnsureRuntime()
 				boundBars[#boundBars + 1] = { key = key, resolvers = {
 					Time = function() return (entry.isTimer and entry.active) or entry.recharging == true end,
 					Stacks = function() return not entry.isTimer and entry.active end,
-					StacksMax = function() return not entry.isTimer and knownMax[key] ~= nil end,
+					StacksMax = function() return not entry.isTimer and (knownMax[key] or bar.maxCount) ~= nil end,
 				} }
 			end
 		end
@@ -786,7 +873,8 @@ end
 local function ReadCount(kind, snapshot, now)
 	if kind == CustomBars.kinds.buffStacks then
 		local buff = snapshot.buff
-		if buff.isActive == true and (buff.endTime == nil or buff.endTime > now) then
+		-- A paused buff or one with no timer has no end to have passed.
+		if buff.isActive == true and (buff.isPaused or buff.currentlySimple or buff.endTime == nil or buff.endTime == 0 or buff.endTime > now) then
 			return buff.applications or 0
 		end
 		return 0
@@ -794,7 +882,12 @@ local function ReadCount(kind, snapshot, now)
 	if snapshot.cooldown.useManualCharges then
 		return snapshot.cooldown.manualCharges
 	end
-	return snapshot.cooldown.charges or 0
+	-- Only the nil check: a secret count can't be tested for truth.
+	local charges = snapshot.cooldown.charges
+	if charges == nil then
+		return 0
+	end
+	return charges
 end
 
 ---Writes each bar's own bar text variables. A secret time or count reaches the lookup only as a formatted string.
@@ -810,8 +903,9 @@ function CustomBars:WriteLookup(lookup)
 		if snapshot ~= nil then
 			if not entry.isTimer then
 				stacksText = TRB.Functions.Number:RoundTo(ReadCount(entry.kind, snapshot, now), 0)
-				if knownMax[entry.key] ~= nil then
-					stacksMaxText = tostring(knownMax[entry.key])
+				local max = knownMax[entry.key] or entry.bar.maxCount
+				if max ~= nil then
+					stacksMaxText = tostring(max)
 				end
 				-- A charges bar's time is its next charge's recharge.
 				if entry.recharging then
@@ -822,6 +916,8 @@ function CustomBars:WriteLookup(lookup)
 						timeText = TRB.Functions.BarText:TimerPrecision(cooldown.rechargeDurationObject:GetRemainingDuration())
 					end
 				end
+			elseif entry.active and entry.pausedRemaining ~= nil then
+				timeText = TRB.Functions.BarText:TimerPrecision(entry.pausedRemaining)
 			elseif entry.active and entry.endTime ~= nil then
 				-- A plain timer, which only the hand-tracked sources have.
 				timeText = TRB.Functions.BarText:TimerPrecision(entry.endTime - now)
@@ -843,6 +939,13 @@ function CustomBars:WriteLookup(lookup)
 	end
 end
 
+---Whether a class module times a spell's cooldown itself, which the cooldown tracker would overwrite.
+---@param snapshot TRB.Classes.Snapshot
+---@return boolean
+local function IsHandTimed(snapshot)
+	return snapshot.cooldown.useManualCharges == true or (snapshot.spell ~= nil and snapshot.spell.attributes.handTimedCooldown == true)
+end
+
 ---Appends the spells whose cooldowns the displayed bars read, for the cooldown tracker.
 ---@param spells TRB.Classes.SpellBase[]
 function CustomBars:AppendCooldownSpells(spells)
@@ -858,8 +961,8 @@ function CustomBars:AppendCooldownSpells(spells)
 	for _, entry in ipairs(runtime) do
 		local source = entry.bar.source
 		local snapshot = self:IsCooldownKind(source.kind) and snapshots[source.spellId] or nil
-		-- Charges a class module counts by hand are its own to keep.
-		if snapshot ~= nil and snapshot.spell ~= nil and not snapshot.cooldown.useManualCharges then
+		-- A cooldown a class module counts or times by hand is its own to keep.
+		if snapshot ~= nil and snapshot.spell ~= nil and not IsHandTimed(snapshot) then
 			spells[#spells + 1] = snapshot.spell
 		end
 	end
@@ -917,17 +1020,6 @@ end
 ---@param redraw boolean
 local function RenderPlainTimer(entry, node, running, endTime, duration, now, redraw)
 	entry.active = running and endTime ~= nil and endTime > now and duration ~= nil and duration > 0
-	-- No duration objects on this client: write the remaining time each tick instead.
-	if C_DurationUtil == nil then
-		if entry.active then
-			node:SetMinMax(0, duration)
-			node:SetValue(endTime - now, false)
-		elseif redraw or entry.endTime ~= nil then
-			ClearNode(node)
-		end
-		entry.endTime = entry.active and endTime or nil
-		return
-	end
 	local wasBound = entry.endTime ~= nil
 	local rebind = redraw or wasBound ~= entry.active or (entry.active and (entry.endTime ~= endTime or entry.duration ~= duration))
 	if not rebind then
@@ -943,6 +1035,26 @@ local function RenderPlainTimer(entry, node, running, endTime, duration, now, re
 		end
 	end
 	RenderTimer(entry, node, true, durationObject)
+end
+
+---Holds a paused buff's bar at its frozen time.
+---@param entry TRB.Classes.CustomBarRuntime
+---@param node TRB.Classes.BarNode
+---@param buff TRB.Classes.SnapshotBuff
+---@param redraw boolean
+local function RenderPausedTimer(entry, node, buff, redraw)
+	local remaining = buff.previousRemaining or 0
+	entry.active = true
+	if not redraw and entry.pausedRemaining == remaining then
+		return
+	end
+	entry.pausedRemaining = remaining
+	entry.endTime = nil
+	entry.duration = nil
+	node:ClearTimerDuration()
+	node:SetMinMax(0, math.max(buff.duration or 0, remaining, 1))
+	node:SetValue(remaining, false)
+	TRB.Data.lookupDirty = true
 end
 
 ---Draws a charge ability's running recharge.
@@ -1009,7 +1121,7 @@ local function GetRechargeObject(entry, cooldown)
 		return cooldown.rechargeDurationObject
 	end
 	local expires, length = cooldown.manualCooldownExpires, cooldown.manualCooldownDuration
-	if C_DurationUtil == nil or length == nil or length <= 0 then
+	if length == nil or length <= 0 then
 		return nil
 	end
 	-- The same object while the recharge is unchanged, so the fill isn't bound again every tick.
@@ -1031,9 +1143,10 @@ end
 ---@param count number
 ---@param recharge any? # The recharge's duration object, or nil with nothing recharging
 ---@param redraw boolean
-local function RenderRechargeFill(entry, group, settings, count, recharge, redraw)
+---@param changed boolean # Whether a secret count may have changed since it was last written
+local function RenderRechargeFill(entry, group, settings, count, recharge, redraw, changed)
 	local isSecret = issecretvalue(count)
-	if redraw or isSecret or entry.trackerCount ~= count then
+	if redraw or (isSecret and (changed or entry.trackerCount ~= nil)) or (not isSecret and entry.trackerCount ~= count) then
 		entry.trackerCount = not isSecret and count or nil
 		group:SetChargeTrackerValue(count)
 	end
@@ -1070,18 +1183,26 @@ local function RenderCooldownTime(entry, node, cooldown, redraw)
 end
 
 ---Draws a count across a group's nodes through SetBarNodeValue, which also keeps the End Cap on the highest
----filled node. A secret count is written every tick, since it can't be compared.
+---filled node. A secret count can't be compared, so it is written when its cooldown reports a change.
 ---@param entry TRB.Classes.CustomBarRuntime
 ---@param group TRB.Classes.BarGroup
 ---@param settings table # The spec cache settings
 ---@param count number
 ---@param max integer
 ---@param redraw boolean
-local function RenderCount(entry, group, settings, count, max, redraw)
+---@param changed boolean # Whether a secret count may have changed since it was last written
+local function RenderCount(entry, group, settings, count, max, redraw, changed)
 	local isSecret = issecretvalue(count)
 	entry.active = isSecret or count > 0
-	if not redraw and not isSecret and entry.count == count and entry.max == max then
-		return
+	if not redraw and entry.max == max then
+		if isSecret then
+			-- A plain count held from before means the secret one hasn't been written yet.
+			if not changed and entry.count == nil then
+				return
+			end
+		elseif entry.count == count then
+			return
+		end
 	end
 	entry.count = not isSecret and count or nil
 	entry.max = max
@@ -1121,6 +1242,7 @@ end
 local function ApplyLiveMax(entry, max)
 	local definition = entry.definition
 	knownMax[entry.key] = max
+	entry.bar.maxCount = max
 	local segmented = CustomBars:IsSegmented(entry.bar, max)
 	local nodes = segmented and max or 1
 	definition.fillsRecharge = segmented and max > 1 and entry.fillRecharge
@@ -1192,12 +1314,24 @@ function CustomBars:Render()
 				if redraw then
 					ClearNode(node)
 				end
+			elseif source.kind == kinds.buffTime and snapshot.buff.isPaused and snapshot.buff.isActive == true then
+				RenderPausedTimer(entry, node, snapshot.buff, redraw)
 			elseif source.kind == kinds.buffTime then
 				local buff = snapshot.buff
+				-- Leaving a pause: the timer has to be bound again.
+				if entry.pausedRemaining ~= nil then
+					entry.pausedRemaining = nil
+					redraw = true
+				end
 				RenderPlainTimer(entry, node, buff.isActive == true, buff.endTime, buff.duration, now, redraw)
 			elseif source.kind == kinds.cooldownTime and snapshot.cooldown.useManualCharges then
 				-- A cooldown its class module counts by hand runs on the hand-counted recharge.
 				RenderRechargeTime(entry, node, snapshot.cooldown, now, redraw)
+			elseif source.kind == kinds.cooldownTime and IsHandTimed(snapshot) then
+				local cooldown = snapshot.cooldown
+				local started, length = cooldown.startTime, cooldown.duration
+				local timed = started ~= nil and length ~= nil and length > 0
+				RenderPlainTimer(entry, node, timed, timed and started + length or nil, length, now, redraw)
 			elseif source.kind == kinds.cooldownTime then
 				RenderCooldownTime(entry, node, snapshot.cooldown, redraw)
 			elseif source.kind == kinds.rechargeTime then
@@ -1210,7 +1344,10 @@ function CustomBars:Render()
 				if max ~= nil then
 					needsLayout = ApplyLiveMax(entry, max) or needsLayout
 				end
-				RenderCount(entry, group, settings, count, max or knownMax[entry.key] or 1, redraw)
+				-- The cooldown tracker's version moves with every charge gained or spent.
+				local changed = entry.version ~= snapshot.cooldown.version
+				entry.version = snapshot.cooldown.version
+				RenderCount(entry, group, settings, count, max or knownMax[entry.key] or entry.bar.maxCount or 1, redraw, changed)
 				if source.kind == kinds.charges then
 					local recharging = IsRecharging(snapshot.cooldown, now)
 					if entry.recharging ~= recharging then
@@ -1219,7 +1356,7 @@ function CustomBars:Render()
 					end
 					if group.chargeTracker ~= nil then
 						local recharge = entry.fillRecharge and GetRechargeObject(entry, snapshot.cooldown) or nil
-						RenderRechargeFill(entry, group, settings, count, recharge, redraw)
+						RenderRechargeFill(entry, group, settings, count, recharge, redraw, changed)
 						-- A bar with no charges left still has something to show while one recharges.
 						entry.active = entry.active or recharge ~= nil
 					end
@@ -1233,6 +1370,9 @@ function CustomBars:Render()
 	if needsLayout then
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 		TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups, true)
+		-- A rebuilt group has new frames for its text to anchor to.
+		TRB.Functions.BarText:CreateBarTextFrames()
+		TRB.Functions.BarText:InvalidateLookupMemoization()
 	end
 	anyTimerActive = timerActive
 	if activityChanged then

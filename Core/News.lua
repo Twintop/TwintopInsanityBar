@@ -18,11 +18,11 @@ TRB.Details.coreNewsContent = [====[
 
 ## Custom Bars
 
-- Add a Custom Bars tab to every specialization, where you can add your own bars tracking the duration or stacks of a buff or proc, or the cooldown, recharge, total recharge, or charges of an ability, that the specialization already tracks.
-- Each custom bar has its own layout, colors, End Cap, textures, and visibility, shows When active by default, and is included in the specialization's Bar Display export.
-- A custom bar tracking charges can fill the recharging charge as it recharges, on by default.
-- Bar text bound to a custom bar can use `$abilityTime`, `$abilityStacks`, and `$abilityStacksMax` for what that bar tracks, and each new bar gets centered default bar text.
-- Custom bars belong to their specialization and have no Use Global options, threshold lines, or Color Indicator targets.
+- [#988](#988) Add a Custom Bars tab to every specialization, where you can add your own bars tracking the duration or stacks of a buff or proc, or the cooldown, recharge, total recharge, or charges of an ability, that the specialization already tracks.
+- [#988](#988) Each custom bar has its own layout, colors, End Cap, textures, and visibility, shows When Active by default, and is included in the specialization's Bar Display export.
+- [#988](#988) A custom bar tracking charges can fill the recharging charge as it recharges, on by default.
+- [#988](#988) Bar text bound to a custom bar can use `$abilityTime`, `$abilityStacks`, and `$abilityStacksMax` for what that bar tracks, and each new bar gets centered default bar text.
+- [#988](#988) Custom bars belong to their specialization and have no Use Global options, threshold lines, or Color Indicator targets.
 
 ## Edit Mode
 

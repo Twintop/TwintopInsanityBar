@@ -554,7 +554,39 @@ function hooks.afterEvents(ctx)
 			CustomBars:Render()
 		end)
 		entry = EntryFor(chargeGroup)
-		check("a secret count is written on every tick, and its bar stays shown", writes == 4 and Shows(entry))
+		check("a secret count is written once, not on every tick, and its bar stays shown", writes == 2 and Shows(entry))
+		chargeReading.isActive = true
+		stubs.fireEvents("SPELL_UPDATE_CHARGES", ctx.addonName)
+		try("render after a charge event", function()
+			CustomBars:Render()
+			CustomBars:Render()
+		end)
+		check("and again when a charge event says it changed", writes == 4)
+		chargeReading.isActive = false
+		stubs.fireEvents("SPELL_UPDATE_CHARGES", ctx.addonName)
+		try("render after the recharge ends", function() CustomBars:Render() end)
+
+		-- A maximum learned after the bar was built rebuilds it, and the text frames with it.
+		local textBuilds = 0
+		local createBarTextFrames = BarText.CreateBarTextFrames
+		BarText.CreateBarTextFrames = function(...)
+			textBuilds = textBuilds + 1
+			return createBarTextFrames(...)
+		end
+		chargeReading.currentCharges, chargeReading.maxCharges = 1, 3
+		stubs.fireEvents("SPELL_UPDATE_CHARGES", ctx.addonName)
+		try("render a raised maximum", function() CustomBars:Render() end)
+		check("a raised maximum rebuilds the bar and its text frames", barGroups[chargeKey] ~= nil and barGroups[chargeKey].maxNodes == 3
+			and textBuilds > 0 and spec.customBars.bars[chargeGuid].maxCount == 3)
+		BarText.CreateBarTextFrames = createBarTextFrames
+		chargeReading.currentCharges, chargeReading.maxCharges = SECRET, 2
+		chargeReading.isActive = true
+		stubs.fireEvents("SPELL_UPDATE_CHARGES", ctx.addonName)
+		try("render the maximum back", function() CustomBars:Render() end)
+		chargeReading.isActive = false
+		stubs.fireEvents("SPELL_UPDATE_CHARGES", ctx.addonName)
+		try("render settled", function() CustomBars:Render() end)
+		chargeGroup = barGroups[chargeKey]
 
 		binds, clears = 0, 0
 		BarNode.SetTimerDuration = function(self, ...)
@@ -752,6 +784,138 @@ function hooks.afterEvents(ctx)
 			and rawget(desktop, "TRBDriverCheckbox") == nil)
 		check("a name something else took since is left alone", rawget(desktop, "TRBDriverReplaced") == other)
 		rawset(desktop, "TRBDriverReplaced", nil)
+	end
+
+	local function RuntimeEntry(key)
+		for _, runtimeEntry in ipairs(CustomBars:GetRuntime()) do
+			if runtimeEntry.key == key then
+				return runtimeEntry
+			end
+		end
+		return nil
+	end
+
+	-- The real visibility pass takes the bars in and shows or hides them.
+	do
+		local appended = 0
+		local append = CustomBars.AppendVisibilityEntries
+		CustomBars.AppendVisibilityEntries = function(self, entries, groups)
+			local before = #entries
+			append(self, entries, groups)
+			appended = #entries - before
+		end
+		-- What the pass asks of the timer bar; a layout pass's transition would hold every bar hidden.
+		local alpha = nil
+		local passGroup = barGroups[timerKey]
+		local setTargetAlpha = passGroup.SetTargetAlpha
+		passGroup.SetTargetAlpha = function(self, target, ...)
+			alpha = target
+			return setTargetAlpha(self, target, ...)
+		end
+		try("end the render transition", function() TRB.Functions.Bar:EndRenderTransition("driver") end)
+		local function Pass()
+			BarVisibility:ProcessBars(BarVisibility:GetGameStateContext(false), BarVisibility:BeginEntries(), TRB.Data.snapshotData,
+				TRB.Data.specCache[character.compositeKey].settings)
+		end
+		timerBuff:InitializeCustom(10)
+		try("render a running timer for the visibility pass", function() CustomBars:Render() end)
+		try("run the visibility pass", Pass)
+		check("the visibility pass takes in every custom bar and shows a running one", appended == #CustomBars:GetRuntime() and appended > 0
+			and alpha ~= nil and alpha > 0)
+		timerBuff.endTime = desktop.GetTime() - 1
+		try("render an expired timer for the visibility pass", function() CustomBars:Render() end)
+		try("run the visibility pass again", Pass)
+		check("and hides it once it stops", alpha == 0)
+		passGroup.SetTargetAlpha = nil
+		CustomBars.AppendVisibilityEntries = append
+	end
+
+	-- A paused buff holds its bar.
+	do
+		timerBuff:InitializeCustom(10)
+		try("render before the pause", function() CustomBars:Render() end)
+		timerBuff:SetPauseMaxDuration(5)
+		timerBuff:GetRemainingTime()
+		timerBuff:EnterPauseMode()
+		try("render a paused buff", function() CustomBars:Render() end)
+		local paused = RuntimeEntry(timerKey)
+		check("a paused buff's bar holds its time and stays shown", timerBuff.isPaused == true and paused ~= nil and paused.active
+			and paused.pausedRemaining ~= nil and paused.endTime == nil and Shows(EntryFor(barGroups[timerKey])))
+		local lookup = {}
+		CustomBars:WriteLookup(lookup)
+		check("and its text shows the held time", lookup["$" .. timerKey .. "Time"] ~= nil and lookup["$" .. timerKey .. "Time"] ~= "")
+		timerBuff:ExitPauseMode()
+		try("render after the pause", function() CustomBars:Render() end)
+		check("and runs again when the pause ends", paused ~= nil and paused.pausedRemaining == nil and paused.endTime ~= nil)
+		timerBuff:SetPauseMaxDuration(nil)
+		timerBuff.endTime = desktop.GetTime() - 1
+		try("render the expired timer", function() CustomBars:Render() end)
+	end
+
+	-- A rename takes the bound text's names along, unless one was changed by hand.
+	do
+		local timerBar = spec.customBars.bars[timerGuid]
+		local textEntry = BoundText(anchorName)[1].entry
+		local label = TRB.Localization["CustomBarsAnchorLabel"]
+		CustomBars:Rename(spec, classId, specId, timerBar, "Renamed")
+		check("renaming a bar renames its untouched bar text and its anchor", textEntry.name == string.format(label, "Renamed")
+			and textEntry.position.relativeToFrameName == string.format(label, "Renamed") and timerDef.displayName == "Renamed")
+		textEntry.name = "Mine"
+		CustomBars:Rename(spec, classId, specId, timerBar, "Driver Timer")
+		check("a bar text name changed by hand is kept, and its anchor still follows", textEntry.name == "Mine"
+			and textEntry.position.relativeToFrameName == string.format(label, "Driver Timer"))
+		textEntry.name = string.format(label, "Driver Timer")
+	end
+
+	-- A count bar's maximum is saved, for a login where it can't be read.
+	check("a count bar saves the maximum it read", spec.customBars.bars[stackGuid].maxCount == 3)
+
+	-- A cooldown its class module times itself stays out of the tracker and runs on the module's timing.
+	do
+		local handSpell = TRB.Classes.SpellBase:New({
+			id = 990008,
+			hasCooldown = true,
+			handTimedCooldown = true
+		})
+		handSpell.name = "Driver Hand Timed"
+		snapshots[handSpell.id] = TRB.Classes.Snapshot:New(handSpell)
+		local handSource = FindSource("cooldownTime", handSpell.id)
+		check("a hand-timed cooldown is offered as a Cooldown", handSource ~= nil)
+		if handSource ~= nil then
+			local handGuid = CustomBars:Add(spec, classId, specId, handSource)
+			local handKey = CustomBars:GetBarKey(handGuid)
+			try("lay out the hand-timed bar", Relayout)
+			local trackedSpells = {}
+			CustomBars:AppendCooldownSpells(trackedSpells)
+			check("it stays out of the cooldown tracker", #trackedSpells == 0)
+			try("render it idle", function() CustomBars:Render() end)
+			check("and is hidden until the module times it", not Shows(EntryFor(barGroups[handKey])))
+			snapshots[handSpell.id].cooldown:InitializeCustom(30, desktop.GetTime())
+			try("render it running", function() CustomBars:Render() end)
+			local hand = RuntimeEntry(handKey)
+			check("then runs on the module's timing", hand ~= nil and hand.active and hand.duration == 30 and Shows(EntryFor(barGroups[handKey])))
+			CustomBars:Delete(spec, classId, specId, handGuid)
+			check("and deleting its bar leaves the module's cooldown running", snapshots[handSpell.id].cooldown.isCustom == true
+				and snapshots[handSpell.id].cooldown.startTime ~= nil)
+			try("lay out without it", Relayout)
+		end
+		snapshots[handSpell.id] = nil
+	end
+
+	-- An import replaces the bar text list, except for what belongs to the bars the user added.
+	do
+		local plain = { position = { relativeToFrame = "UIParent" } }
+		local orphan = { position = { relativeToFrame = CustomBars:GetAnchorName(CustomBars:GetBarKey("driver-missing")) } }
+		local replacement = { position = { relativeToFrame = anchorName } }
+		local result = CustomBars:ReconcileImportedText(spec, { plain, orphan, replacement }, spec.displayText.barText)
+		local has = {}
+		for _, textEntry in ipairs(result) do
+			has[textEntry] = true
+		end
+		local ownTimerText, ownStackText = BoundText(anchorName)[1].entry, BoundText(stackAnchor)[1].entry
+		check("imported text bound to a bar that isn't here is dropped", has[plain] and has[replacement] and not has[orphan])
+		check("the character's own text on a custom bar is kept, unless the import carries that bar's text", has[ownStackText]
+			and not has[ownTimerText] and #result == 3)
 	end
 
 	-- A stored profile's bars, as another class's are, have no definition to export by.

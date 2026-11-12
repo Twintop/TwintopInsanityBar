@@ -190,10 +190,8 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 	local function DropBarFrame(guid)
 		local frame = barFrames[guid]
 		if frame ~= nil then
-			frame:Hide()
-			-- The rebuilt options reuse these names.
-			TRB.Functions.OptionsUi.Primitives:ReleaseFrameNames(frame)
-			frame:SetParent(nil)
+			-- The rebuilt options reuse its names.
+			TRB.Functions.OptionsUi.Primitives:RetireFrame(frame)
 			barFrames[guid] = nil
 			builtFor[guid] = nil
 		end
@@ -277,7 +275,8 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 						CustomBars:Change(spec, classId, specId, bar, function()
 							bar.fillRecharge = checked
 						end)
-						RebuildBar(bar.guid)
+						-- Nothing built here depends on it, so the options stay as they are.
+						ReapplyBars()
 					end)
 				-- Only a segmented bar has a charge to fill.
 				fillRecharge:ClearAllPoints()
@@ -366,9 +365,12 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 		if bar == nil then
 			return
 		end
-		bar.name = self:GetText()
+		local spec = GetSpec()
+		if spec == nil then
+			return
+		end
+		CustomBars:Rename(spec, classId, specId, bar, self:GetText())
 		nameChanged = true
-		CustomBars:SyncRegistry(classId, specId, GetSpec())
 		SetTableValues()
 	end)
 	-- The built options and the other tabs name the bar, so they follow once the edit is finished.
