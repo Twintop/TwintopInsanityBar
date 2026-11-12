@@ -754,9 +754,11 @@ function TRB.Functions.OptionsUi.ThresholdList:GenerateThresholdListPanel(parent
 		utility = L["ThresholdCategoryUtility"],
 		execute = L["ThresholdCategoryExecute"],
 		custom = L["ThresholdCategoryCustom"],
-		-- Spec specific categories (e.g., Druid shapeshift forms)
-		metamorphosis = L["ThresholdCategoryMetamorphosis"],
 	}
+	local descriptor = TRB.Functions.Character:GetSpecDescriptor(classId, specId)
+	for category, label in pairs(descriptor and descriptor.thresholdCategories or {}) do
+		categoryLabels[category] = label
+	end
 
 	-- Bar target display names (caller provides friendly resource names)
 	local barTargetLabels = thresholdConfig.barTargetLabels or {

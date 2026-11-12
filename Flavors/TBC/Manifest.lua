@@ -103,6 +103,8 @@ TRB.Flavor = {
 	savedVariablesName = "TwintopInsanityBarTBCSettings",
 	-- Retail's 61304 does not exist on this client.
 	gcdSpellId = 29515,
+	-- Mana Value visibility thresholds' scale: the deepest level 70 mana pools.
+	manaVisibilityMax = 25000,
 	-- Flying mounts and Flight Form exist, but skyriding does not.
 	unavailableVisibilityConditions = {
 		isSkyriding = true, isSkyridingFlying = true,

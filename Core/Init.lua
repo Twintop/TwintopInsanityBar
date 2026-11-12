@@ -9,7 +9,7 @@ TRB.Details.addonAuthor = C_AddOns.GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = C_AddOns.GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = C_AddOns.GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = C_AddOns.GetAddOnMetadata(addonName, "X-ReleaseDate")
--- Voidform (file 1386550) shipped with the addon, since Classic Era's client lacks it. Every TOC's IconTexture names this file too.
+-- Voidform (file 1386550) shipped with the addon, since not every client has it. Every TOC's IconTexture names this file too.
 TRB.Details.addonIcon = "Interface\\AddOns\\TwintopInsanityBar\\Images\\Icon.blp"
 -- One line per class, sorted by module name, listing its supported specializations in spec order.
 TRB.Details.supportedSpecs = ""
@@ -35,7 +35,7 @@ do
 		end
 		TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. line .. "\n"
 	end
-	-- A flavor with one spec per class lists classes, under its own game's name rather than Midnight's.
+	-- A flavor with one spec per class lists classes, under its own game's name instead of SupportedSpecs' label.
 	if not hasSpecs then
 		TRB.Details.supportedSpecsLabel = string.format(L["SupportedClassesFormat"], L[TRB.Flavor.nameKey])
 	end
@@ -112,6 +112,12 @@ TRB.Data.constants = {
 	---Declared Cooldown Manager reliance, read only by the options panel. Lives here rather than on
 	---the CDM module because bar types register before that module loads.
 	---@enum TRB.CdmDependency
+	-- Threshold icon overlap layouts (thresholds.icons.overlapMode).
+	thresholdIconOverlapModes = {
+		OFF = "off",
+		STAGGER = "stagger", -- lint-core: allow (staggered icon rows, not the Stagger bar)
+		TOP_ONLY = "topOnly",
+	},
 	cdmDependency = {
 		-- Value is unobtainable without the tracked spell: bar text renders "??", nodes stay empty.
 		REQUIRED = "required",
@@ -450,8 +456,6 @@ function SlashCmdList.TWINTOP(msg)
 	local cmd, subcmd = ParseCmdString(msg)
 	if cmd == "reset" then
 		StaticPopup_Show("TwintopResourceBar_Reset")
-	elseif cmd == "fill" then
-		TRB.Functions.Spell:FillSpellData()
 	elseif cmd == "move" then
 		local x, y = ParseCmdString(subcmd)
 		TRB.Functions.Bar:SetPositionXY(tonumber(x), tonumber(y))
@@ -503,7 +507,7 @@ function SlashCmdList.TWINTOP(msg)
 		if handler ~= nil then
 			handler(subcmd)
 		else
-			print("|cFFFF8800TRB:|r Unknown command '" .. cmd .. "'. Valid: reset, fill, move, news, minimap. Use /trb on its own for options.")
+			print("|cFFFF8800TRB:|r Unknown command '" .. cmd .. "'. Valid: reset, move, news, minimap. Use /trb on its own for options.")
 		end
 	end
 end

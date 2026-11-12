@@ -24,10 +24,10 @@ having to worry that you forgot to close the right tags.
 
 ## Usage
 
-The library implements only one function, `:ToHTML()` (also available as `:ToHtml()`),
-which takes an argument of either a single string or a table of strings (joined as lines),
-and returns a string with HTML formatting, appropriate for the `:SetText()` function on a
-`SimpleHTML` frame.
+The library's main function is `:ToHTML()` (also available as `:ToHtml()`), which takes
+either a single string or a table of strings (joined as lines), and returns a string with
+HTML formatting, appropriate for the `:SetText()` function on a `SimpleHTML` frame. An
+optional second argument changes the [configuration](#configuration) for that call only.
 
 ```
 local LSHM = LibStub("LibSimpleHTMLMarkdown-1.0");
@@ -72,16 +72,19 @@ Heading 2
 ```
 
 These are rendered as `&lt;h1&gt;`, `&lt;h2&gt;`, and `&lt;h3&gt;` HTML tags.
-Level 4 headings and above will be converted down to `&lt;h3&gt;`.
+Level 4 headings and above will be converted down to `&lt;h3&gt;`. As in CommonMark, the
+`#`s must be followed by a space, so `#hashtag` stays text.
 
 ```
 [Link Name](http://LinkURL)
 
-[Link Name](1)
-[Link Name](2)
+[Link Name][1]
+[Link Name][2]
+[3]
 
 [1]: http://LinkURL
 [2]: mailto:user@example.org
+[3]: http://LinkURL
 ```
 
 Hyperlinks are rendered as you'd expect; however, please note that you need to explicitly
@@ -106,7 +109,7 @@ rudimentary support for lists, presenting them as separate paragraphs with a mar
 before each.
 
 If you have consecutive lists, use a caret (`^`) alone on a line to indicate the
-end of the current list.
+end of the current list. The caret isn't shown.
 
 
 ```
@@ -129,7 +132,51 @@ end of the current list.
 Likewise, LibSimpleHTMLMarkdown will generate pseudo-ordered lists, even though `SimpleHTML`
 doesn't support `&lt;ol&gt;`. As an extension to standard markdown, LibSimpleHTMLMarkdown
 supports letters or Roman numerals for lists. (To distinguish between Roman numeral
-one and a lowercase I, use a square bracket for `i]`.)
+one and a lowercase I, use a square bracket for `i]`.) A letter or Roman numeral list needs
+at least two items in sequence, so a line like "A. Lincoln was president." stays text.
+
+```
+- Fruit
+  - Apple
+    - Granny Smith
+- [ ] Not done yet
+- [x] Done
+```
+
+Indent an item at least two spaces past its parent's marker to nest it. Each level is
+indented further (the `list_indent` setting), and `list_marker_2`, `list_marker_3`, and so on
+can set a different marker per level. Task list items (GitHub's `[ ]` and `[x]`) show an
+empty box or a check mark in place of the marker.
+
+```
+| Spell     | Cost |
+|-----------|-----:|
+| Fireball  |   2% |
+| Frostbolt |   1% |
+```
+
+`SimpleHTML` can't lay out columns, so a table is shown one row per line, with the cells
+between dim `|` separators and the header row in its own color. A table is centered or
+right-aligned when every one of its columns is. Use `\|` for a pipe inside a cell.
+
+```
+~~Strikethrough~~
+https://example.org and www.example.org
+```
+
+`SimpleHTML` can't draw a line through text, so strikethrough is shown dimmed. Bare
+`http://`, `https://`, and `www.` addresses become links, like `<https://example.org>`.
+
+```
+Arcane Blast stacks four times.[^stacks]
+
+[^stacks]: The stacks end 18 seconds after the first cast,
+  or when you cast Arcane Barrage.
+```
+
+A footnote reference shows as a number, `[1]`, numbered in the order the text first refers
+to it. The notes are listed after a rule at the end of the document. A note can go on in
+lines indented under it.
 
 ```
 ![Alt Text](Interface\\ICONS\\ABILITY_SAP.PNG)
@@ -175,6 +222,10 @@ In addition, the following entities are implemented in LibSimpleHTMLMarkdown:
 &thinsp;  1/5 of the font size; non-breaking.
 ```
 
+Numeric references (`&#169;`, `&#x2014;`) and common named ones (Latin-1 letters and symbols,
+dashes, curly quotes, `&hellip;`, arrows, and so on) are converted to the character itself. Any
+other entity is shown literally. WoW's fonts may not have a glyph for every character.
+
 ### WoW Raid Targeting Icons
 
 You can use these in your markdown:
@@ -196,7 +247,8 @@ __Bold Text__
 ```
 
 `SimpleHTML` has no ability to produce inline bolding or italics, and doesn't recognize
-`&lt;b&gt;`, `&lt;i&gt;`, `&lt;em&gt;`, or `&lt;strong&lt;` HTML tags.
+`&lt;b&gt;`, `&lt;i&gt;`, `&lt;em&gt;`, or `&lt;strong&lt;` HTML tags. An `_` between two
+letters or digits is literal, so `snake_case_names` aren't emphasized.
 
 See below under "Configuration", however.
 
@@ -210,25 +262,43 @@ See below under "Configuration", however.
     print("Code blocks can also be created by starting a line with 4 spaces.")
 ```
 
+Fences can also be `~~~`, or four or more backticks to hold a line of three. A `|` in code
+is shown as itself rather than starting a UI escape sequence.
+
 ## Configuration
 
 LibSimpleHTMLMarkdown requires no specific configuration to use, and usually the default options
 will work just fine. However, you are able to change the appearance of certain unsupported
 tags -- specificially the colors -- by embedding UI escape codes.
 
-You do this by setting properties in the library object's `config` table.
+The library object is shared by every AddOn that embeds it, so don't change its `config` table:
+your settings would apply to every other AddOn's text too. Instead, pass your settings to
+`:ToHTML()`, which applies them to that call only:
 
-``` 
+```
 local LSHM = LibStub("LibSimpleHTMLMarkdown-1.0");
 
-LSHM.config["em"]          = "|cffbbbb00"; -- emphasized text in yellow
-LSHM.config["/em"]         = "|r"; -- this ends the yellow text; close your tags!
-LSHM.config["blockquote"]  = "|cff00dddd"; -- blockquotes in cyan
-LSHM.config["/blockquote"] = "|r";
+local settings = {
+  ["em"]          = "|cffbbbb00", -- emphasized text in yellow
+  ["/em"]         = "|r",         -- this ends the yellow text; close your tags!
+  ["list_marker"] = "|TInterface\\MINIMAP\\TempleofKotmogu_ball_purple.PNG:0|t",
+                                  -- a purple ball for the list marker
+};
 
-LSHM.config["list_marker"] = "|TInterface\\MINIMAP\\TempleofKotmogu_ball_purple.PNG:0|t";
-                             -- a purple ball for the list marker
+MyFrame:SetText( LSHM:ToHTML(text, settings) );
 ```
+
+Or make a renderer of your own with `:New()`. It uses your settings, and the library's
+defaults for anything you leave out, and keeps working when a newer copy of the library loads:
+
+```
+local MyMarkdown = LibStub("LibSimpleHTMLMarkdown-1.0"):New(settings);
+
+MyFrame:SetText( MyMarkdown:ToHTML(text) );
+```
+
+AddOns that do change the shared `config` keep their changes when a newer copy of the library
+loads.
 
 To see what you can change, see the source or type `/script LibStub("LibSimpleHTMLMarkdown-1.0"):ShowConfig()`
 
@@ -236,6 +306,18 @@ To see what you can change, see the source or type `/script LibStub("LibSimpleHT
 
 Included in this package is a `Demo.lua` file that you can enable in `LibSimpleHTMLMarkdown.xml`.
 It has some sample code; to view it once it's loaded, type `/script LSHMDemoFrame:Show()`.
+
+`Showcase.lua`, also enabled in `LibSimpleHTMLMarkdown.xml`, is a page-by-page tour of everything
+the library renders, for checking a change by eye in game. Each case shows its markdown, what you
+should see, and the result. Type `/lshm` to open it.
+
+## Tests
+
+`tests/run_tests.py` renders the showcase cases, the demo text, a set of probes, and some real
+AddOn news pages under Lua 5.1, and checks that each output is markup `SimpleHTML` can parse and
+matches its golden file in `tests/golden/`. It needs [lupa](https://pypi.org/project/lupa/)
+(`pip install lupa`). After an intended change to the output, run it with `--update` and review
+the golden file diffs. GitHub Actions runs the tests on every push, and before each release.
 
 ## Changes from LibMarkdown
 
@@ -264,6 +346,43 @@ LibSimpleHTMLMarkdown 1.0 minor 1 starts from LibMarkdown-1.0 minor 9, the last 
 - Reference links and images no longer index a missing `link_database`.
 - Empty text passed through tab expansion or code encoding returns `""` instead of erroring.
 - Blank lines inside a blockquote put a non-breaking space between their line breaks.
+- An unclosed code fence no longer turns later documents into code blocks. The fence state was
+  kept on the library object, which every AddOn shares.
+- A `<` that doesn't start a tag (`x<y`, `<3`) is escaped. SimpleHTML shows the whole document
+  as raw text when any part of it is malformed.
+- Raw HTML blocks pass through unchanged, as documented, instead of being wrapped in another
+  `<p>`. HTML inside a code fence stays code.
+- Blocks are never nested, since SimpleHTML can't lay them out. Loose list items, code in list
+  items, and headings or images inside another block become a flat run of blocks.
+- Character references SimpleHTML can't parse are decoded (see [HTML Entities](#html-entities)).
+  `&#169;` was shown as `&amp;#169;`, and `&copy;` reached SimpleHTML undecoded.
 - The AceGUI widget only registers when `AceGUI-3.0` is loaded, keeps its library reference
   (it was overwritten with `false`), and its default list marker uses the `list_marker` key
   the library actually reads.
+- The AceGUI widget's settings apply to its own text; they were written into the library's
+  shared config, changing every AddOn's text.
+- A closing tag with no opening tag (`</a>`) is dropped, a tag left open is closed with its
+  block, and `<br>`, `<img>`, and `<hr>` are self-closed, since SimpleHTML can't parse them otherwise.
+- Blockquote lines are joined with a space instead of run together, and a blank `>` line no
+  longer adds a stray `"`.
+- `_` inside a word, `#hashtag`, and `**x**` (one character) are rendered as CommonMark does.
+- A `|` in code no longer starts a UI escape sequence.
+- The `^` that ends a list isn't shown, and a list right after it is still a list.
+- Lists nest, list items are numbered from their own lines, and an item's indented paragraphs
+  and code stay in the item.
+- Image attributes are written in a fixed order.
+- A footnote definition is no longer read as a link definition, link urls keep balanced
+  parentheses, and image references (`![alt][]`) resolve.
+- Fences close only with the character that opened them, at least as many times.
+- An item's indented rules stay in the item, and an unindented rule or heading ends the list.
+- Setext headings take every line of their paragraph.
+- Blockquotes keep indented code as code, and a heading or quote inside a quote stays in it.
+- Letter and Roman numeral lists need two items in sequence.
+- A newer copy of the library keeps the config changes AddOns made to the older one.
+
+### Added
+
+- Nested lists, task lists, GFM tables, `~~strikethrough~~`, bare url links, footnotes, `~~~`
+  fences, shortcut references, and backslash line breaks.
+- `:ToHTML(text, settings)` and `:New(settings)`, so an AddOn's settings don't change the
+  shared config.

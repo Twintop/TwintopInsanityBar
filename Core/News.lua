@@ -8,6 +8,13 @@ TRB.Details.coreNewsContent = [====[
 ## General
 
 - [#974](#974) Update LibEditMode to version 19.
+- [#982](#982) Fix memory use growing with every loading screen, specialization change, and talent change.
+- [#983](#983) Remove the `/trb fill` command.
+- [#985](#985) Move each game version's resource names, spells, and shapeshift form conditions from the shared code into that version's own files.
+- [#985](#985) Remove `Character:ClassHasForms`.
+- [#986](#986) Move the remaining class bar colors, bar text variable types, and build check from the shared code into each game version.
+- [#986](#986) Remove the shared code's redundant bar hiding when a specialization is disabled.
+- Update LibSimpleHTMLMarkdown to version 1.0.3.
 
 ## Custom Bars
 
@@ -27,6 +34,12 @@ TRB.Details.coreNewsContent = [====[
 - [#974](#974) In Edit Mode, each Bar Text Area shows its name and each bar shows an icon where it is attached, as in Preview Mode.
 - [#976](#976) Fix bar text drawing behind its bar in Edit Mode.
 - [#976](#976) Fix the Other Bars and the Target and Focus Cast Bars disappearing in Edit Mode and Preview Mode.
+
+## Localization
+
+- [#978 - @MOSS099](#978) Updated translations for Simplified Chinese (zhCN).
+- [#980 - @MOSS099](#980) Updated translations for Simplified Chinese (zhCN).
+- [#984 - @MOSS099](#984) Updated translations for Simplified Chinese (zhCN).
 
 ## Preview Mode
 

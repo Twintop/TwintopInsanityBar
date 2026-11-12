@@ -11,14 +11,14 @@ TRB.Flavor.statEvents = {
 
 ---@type TRB.Flavor.StatDefinition[]
 TRB.Flavor.stats = {
-	{ key = "haste", variables = { "$haste", "$hastePercent" }, descriptionKey = "BarTextVariableHaste", refresh = "secondary", format = "percent", read = function() return (UnitSpellHaste("player")) end },
+	{ key = "haste", variables = { "$haste", "$hastePercent" }, descriptionKey = "BarTextVariableHaste", refresh = "secondary", format = "percent", booleanCheck = true, read = function() return (UnitSpellHaste("player")) end },
 	{ key = "hasteRating", variables = { "$hasteRating" }, descriptionKey = "BarTextVariableHasteRating", refresh = "secondary", format = "number", read = function() return (GetCombatRating(20)) end },
-	{ key = "crit", variables = { "$crit", "$critPercent" }, descriptionKey = "BarTextVariableCrit", refresh = "secondary", format = "percent", read = function() return (GetCritChance()) end },
+	{ key = "crit", variables = { "$crit", "$critPercent" }, descriptionKey = "BarTextVariableCrit", refresh = "secondary", format = "percent", booleanCheck = true, read = function() return (GetCritChance()) end },
 	{ key = "critRating", variables = { "$critRating" }, descriptionKey = "BarTextVariableCritRating", refresh = "secondary", format = "number", read = function() return (GetCombatRating(11)) end },
-	{ key = "mastery", variables = { "$mastery", "$masteryPercent" }, descriptionKey = "BarTextVariableMastery", refresh = "secondary", format = "percent", read = function() return (GetMasteryEffect()) end },
+	{ key = "mastery", variables = { "$mastery", "$masteryPercent" }, descriptionKey = "BarTextVariableMastery", refresh = "secondary", format = "percent", booleanCheck = true, read = function() return (GetMasteryEffect()) end },
 	{ key = "masteryRating", variables = { "$masteryRating" }, descriptionKey = "BarTextVariableMasteryRating", refresh = "secondary", format = "number", read = function() return (GetCombatRating(26)) end },
-	{ key = "versatilityOffensive", variables = { "$vers", "$versPercent", "$versatility", "$versatilityPercent", "$oVers", "$oVersPercent" }, descriptionKey = "BarTextVariableVers", refresh = "secondary", format = "percent", read = function() return (GetCombatRatingBonus(29)) end },
-	{ key = "versatilityDefensive", variables = { "$dVers", "$dVersPercent" }, descriptionKey = "BarTextVariableVersDefense", refresh = "secondary", format = "percent", read = function() return (GetCombatRatingBonus(31)) end },
+	{ key = "versatilityOffensive", variables = { "$vers", "$versPercent", "$versatility", "$versatilityPercent", "$oVers", "$oVersPercent" }, descriptionKey = "BarTextVariableVers", refresh = "secondary", format = "percent", booleanCheck = true, read = function() return (GetCombatRatingBonus(29)) end },
+	{ key = "versatilityDefensive", variables = { "$dVers", "$dVersPercent" }, descriptionKey = "BarTextVariableVersDefense", refresh = "secondary", format = "percent", booleanCheck = true, read = function() return (GetCombatRatingBonus(31)) end },
 	{ key = "versatilityRating", variables = { "$versRating", "$versatilityRating" }, descriptionKey = "BarTextVariableVersRating", refresh = "secondary", format = "number", read = function() return (GetCombatRating(29)) end },
 
 	{ key = "intellect", variables = { "$int", "$intellect" }, descriptionKey = "BarTextVariableIntellect", refresh = "primary", format = "number", integer = true, read = function() return (UnitStat("player", 4)) end },

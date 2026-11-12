@@ -8,6 +8,21 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 2.5.6.2-release (2026-11-12)
+## General
+### Bar Visibility
+
+- [#986](#986) Fix a mana spec's Primary Resource Value bar visibility condition being met at far less mana than the value set.
+- [#986](#986) A mana spec's Primary Resource Value condition now goes up to 25,000.
+
+## Mage
+
+- [#981](#981) Add a new Arcane Blast bar, tracking your Arcane Blast stacks, with the `$arcaneBlastStacks`, `$arcaneBlastStacksMax`, `$arcaneBlastTime`, and `#arcaneBlast` bar text variables. It shows once you learn Arcane Blast.
+- [#981](#981) Each Arcane Blast cast fills one of its three nodes and restarts its 8 second timer.
+- [#981](#981) The Arcane Blast bar joins the bar text Relative to Frame and Color Indicator target lists, and adds an Arcane Blast Stacks source for audio cues.
+
+---
+
 # 2.5.6.1-release (2026-11-10)
 ## Druid
 

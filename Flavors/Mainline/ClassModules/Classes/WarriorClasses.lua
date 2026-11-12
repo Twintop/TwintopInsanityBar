@@ -864,7 +864,7 @@ do
 	local L = TRB.Localization
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
 	SpecDescriptor:Declare("warrior_fury", {
-		secondary = { exportable = true },
+		secondary = { exportable = true, colorsBarKey = "whirlwind" },
 		talentGatedBars = { secondary = "improvedWhirlwind" },
 		customBars = { "whirlwind", "enrage" },
 		barTextAnchorFrames = {

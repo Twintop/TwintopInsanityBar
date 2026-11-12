@@ -19,7 +19,6 @@ local deleteActionTextColor = { r = 1, g = 0.12, b = 0.12, a = 1 }
 -- ============================================================================
 
 local STANDARD_CONDITION_KEYS = { "inCombat", "outOfCombat", "inVehicle", "hasFriendlyTarget", "hasUnfriendlyTarget", "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isSteadyFlight", "isSteadyFlightFlying", "inGroup", "inRaid", "inInstance", "inDungeon", "inRaidInstance", "inBattleground", "inArena", "inDelve", "isPvpFlagged", "isWarMode" }
-local DRUID_FORM_CONDITION_KEYS = { "isDruidHumanoidForm", "isDruidTravelFormAny", "isDruidStagForm", "isDruidFlightForm", "isDruidSwiftFlightForm", "isDruidAquaticForm", "isDruidCatForm", "isDruidBearForm", "isDruidMoonkinForm" }
 local CASTBAR_CONDITION_KEYS = { "casting", "channeling", "empowered" }
 -- Other Bars' own show state: their timer is running.
 local TIMER_CONDITION_KEYS = { "whenActive" }
@@ -61,15 +60,6 @@ local CONDITION_LABELS = {
 	inPetBattle = L["ShowBarVisibilityConditionInPetBattle"],
 	onTaxi = L["ShowBarVisibilityConditionOnTaxi"],
 	isDead = L["ShowBarVisibilityConditionIsDead"],
-	isDruidHumanoidForm = L["ShowBarVisibilityConditionDruidHumanoidForm"],
-	isDruidTravelFormAny = L["ShowBarVisibilityConditionDruidTravelFormAny"],
-	isDruidStagForm = L["ShowBarVisibilityConditionDruidStagForm"],
-	isDruidFlightForm = L["ShowBarVisibilityConditionDruidFlightForm"],
-	isDruidSwiftFlightForm = L["ShowBarVisibilityConditionDruidSwiftFlightForm"],
-	isDruidAquaticForm = L["ShowBarVisibilityConditionDruidAquaticForm"],
-	isDruidCatForm = L["ShowBarVisibilityConditionDruidCatForm"],
-	isDruidBearForm = L["ShowBarVisibilityConditionDruidBearForm"],
-	isDruidMoonkinForm = L["ShowBarVisibilityConditionDruidMoonkinForm"],
 	casting = L["ShowBarVisibilityConditionCasting"],
 	channeling = L["ShowBarVisibilityConditionChanneling"],
 	empowered = L["ShowBarVisibilityConditionEmpowered"],
@@ -82,15 +72,20 @@ local CONDITION_LABELS = {
 	isTotemMissing = L["ShowBarVisibilityConditionTotemMissing"],
 	isItemMissing = L["ShowBarVisibilityConditionItemMissing"],
 }
+-- The shapeshift form conditions, which the flavor's class modules declare (SpecDescriptor forms.visibilityConditions).
+local FORM_CONDITION_GROUPS = TRB.Classes.SpecDescriptor:GetFormConditionGroups()
+for _, condition in ipairs(TRB.Classes.SpecDescriptor:GetFormConditions()) do
+	CONDITION_LABELS[condition.key] = condition.label
+end
 
--- Deterministic iteration order for show-side summaries: standard, then Druid forms, then cast states,
+-- Deterministic iteration order for show-side summaries: standard, then shapeshift forms, then cast states,
 -- then the timer-bar state.
 local SHOW_CONDITION_ORDER = {}
 for _, key in ipairs(STANDARD_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
 end
-for _, key in ipairs(DRUID_FORM_CONDITION_KEYS) do
-	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
+for _, condition in ipairs(TRB.Classes.SpecDescriptor:GetFormConditions()) do
+	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = condition.key
 end
 for _, key in ipairs(CASTBAR_CONDITION_KEYS) do
 	SHOW_CONDITION_ORDER[#SHOW_CONDITION_ORDER + 1] = key
@@ -1092,10 +1087,13 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	yCoord = yCoord - 30
-	-- Shapeshift form conditions only make sense for a class whose display follows forms (descriptor
-	-- `forms`). Global Options and its presets serve every class, so they always list them.
-	local isDruidVisibilityPanel = classId == nil or TRB.Functions.Character:ClassHasForms(classId)
-	local druidFormConditionKeys = CopyKeys(DRUID_FORM_CONDITION_KEYS)
+	-- Form conditions go on their class's panels; Global Options serves every class, so it lists them all.
+	local formGroups = {}
+	for _, group in ipairs(FORM_CONDITION_GROUPS) do
+		if classId == nil or group.classId == classId then
+			table.insert(formGroups, { title = group.title, keys = CopyKeys(group.keys) })
+		end
+	end
 
 	-- Condition definitions for multi-select bar visibility
 	local conditionKeys = CopyKeys(STANDARD_CONDITION_KEYS)
@@ -1124,15 +1122,12 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			keys = { "isPvpFlagged", "isWarMode" },
 		},
 	}
-	if isDruidVisibilityPanel then
-		for _, key in ipairs(druidFormConditionKeys) do
+	for _, formGroup in ipairs(formGroups) do
+		for _, key in ipairs(formGroup.keys) do
 			table.insert(conditionKeys, key)
 			conditionLabels[key] = CONDITION_LABELS[key]
 		end
-		table.insert(conditionGroups, {
-			title = L["ShowBarVisibilityGroupDruidForms"],
-			keys = druidFormConditionKeys,
-		})
+		table.insert(conditionGroups, formGroup)
 	end
 	conditionGroups = AvailableGroups(conditionGroups)
 
@@ -1148,15 +1143,12 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 			keys = { "isMountedAny", "isMountedGround", "isSkyriding", "isSkyridingFlying", "isMountedFlying", "isSteadyFlightFlying" },
 		},
 	}
-	if isDruidVisibilityPanel then
-		for _, key in ipairs(druidFormConditionKeys) do
+	for _, formGroup in ipairs(formGroups) do
+		for _, key in ipairs(formGroup.keys) do
 			table.insert(hideConditionKeys, key)
 			hideConditionLabels[key] = CONDITION_LABELS[key]
 		end
-		table.insert(hideConditionGroups, {
-			title = L["ShowBarVisibilityGroupDruidForms"],
-			keys = druidFormConditionKeys,
-		})
+		table.insert(hideConditionGroups, formGroup)
 	end
 	hideConditionGroups = AvailableGroups(hideConditionGroups)
 
@@ -1205,7 +1197,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	-- Mirror timers: one show state, "When Active", meaning the bar's timer is
 	-- running. It sits alongside Always Show / Never Show exactly like the cast bars' cast states do, so
 	-- a bar can be enabled without being pinned on screen. Resource/health thresholds don't apply, but
-	-- the hard-hide list is the full standard one (Druid forms included) rather than the cast bars'
+	-- the hard-hide list is the full standard one (shapeshift forms included) rather than the cast bars'
 	-- pared-back pair: these run in exactly the situations people want to suppress -- mounted, flying,
 	-- on a taxi -- so the whole set has to be reachable.
 	local timerBarConditionKeys = CopyKeys(TIMER_CONDITION_KEYS)
@@ -2450,6 +2442,10 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, detailYCoord)
 	controls.sliders.selectedThresholdValue:Hide()
 
+	-- A spec whose primary bar is mana takes the flavor's mana scale for its value thresholds.
+	local specBarGroups = TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
+	local primaryType = specBarGroups and specBarGroups.primary and TRB.Functions.Character:GetResourceTypeDefinition(specBarGroups.primary.resourceType)
+	local primaryIsMana = primaryType ~= nil and primaryType.powerType == Enum.PowerType.Mana
 	local function GetThresholdValueMax(conditionType)
 		if conditionType == "healthValue" then
 			return 1000000
@@ -2461,13 +2457,13 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 		end
 
 		local visibilityMaxValue = TRB.Functions.BarVisibility:GetVisibilityThresholdMaxValue(conditionType, spec)
-		if visibilityMaxValue ~= nil and visibilityMaxValue > 0 and (conditionType ~= "resourceValue" or primaryResourceString ~= L["ResourceMana"]) then
+		if visibilityMaxValue ~= nil and visibilityMaxValue > 0 and (conditionType ~= "resourceValue" or not primaryIsMana) then
 			return visibilityMaxValue
 		end
 
 		if conditionType == "resourceValue" then
-			if primaryResourceString == L["ResourceMana"] then
-				return 275625
+			if primaryIsMana then
+				return TRB.Flavor.manaVisibilityMax
 			end
 			if spec.maxResource ~= nil and type(spec.maxResource.value) == "number" and spec.maxResource.value > 0 then
 				return spec.maxResource.value

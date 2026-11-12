@@ -344,7 +344,19 @@ do
 	SpecDescriptor:Declare("druid_general", {
 		manaBar = true,
 		otherBars = { "fiveSecondRule" },
-		forms = {},
+		forms = {
+			defaultForm = "humanoid",
+			visibilityGroupTitle = L["ShowBarVisibilityGroupDruidForms"],
+			visibilityConditions = {
+				{ key = "isDruidHumanoidForm", label = L["ShowBarVisibilityConditionDruidHumanoidForm"], forms = { humanoid = true } },
+				{ key = "isDruidTravelFormAny", label = L["ShowBarVisibilityConditionDruidTravelFormAny"], forms = { travel = true, aquatic = true } },
+				{ key = "isDruidStagForm", label = L["ShowBarVisibilityConditionDruidStagForm"], forms = { travel = true } },
+				{ key = "isDruidAquaticForm", label = L["ShowBarVisibilityConditionDruidAquaticForm"], forms = { aquatic = true } },
+				{ key = "isDruidCatForm", label = L["ShowBarVisibilityConditionDruidCatForm"], forms = { cat = true } },
+				{ key = "isDruidBearForm", label = L["ShowBarVisibilityConditionDruidBearForm"], forms = { bear = true } },
+				{ key = "isDruidMoonkinForm", label = L["ShowBarVisibilityConditionDruidMoonkinForm"], forms = { moonkin = true } },
+			},
+		},
 		secondary = { exportable = true },
 		customBars = { "rage", "energy" },
 		-- The global panel has no notion of a form-following bar set, so visibility and combo point layout stay spec-owned.

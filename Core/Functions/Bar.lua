@@ -1675,6 +1675,7 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 	local hasComboPointSettings = settings.comboPoints ~= nil and settings.colors ~= nil and settings.colors.comboPoints ~= nil
 	local effectiveSettings = settings
 	local activeDescriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
+	local secondaryColorsBarKey = activeDescriptor and activeDescriptor.secondary and activeDescriptor.secondary.colorsBarKey
 	if activeDescriptor and activeDescriptor.secondary and activeDescriptor.secondary.sharedFrom then
 		local resolved, borrowed, sharedSettings = self:ResolveSharedSecondarySettings(settings, false)
 		if borrowed and sharedSettings and sharedSettings.colors and sharedSettings.colors.comboPoints then
@@ -1711,13 +1712,12 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 				node:SetFrameLevel(self:GetBarFrameLevel("secondary"))
 			end
 		end
-	elseif barGroups.secondary and not hasComboPointSettings
-		and settings.colors and settings.colors.bars and settings.colors.bars.whirlwind
+	elseif barGroups.secondary and not hasComboPointSettings and secondaryColorsBarKey ~= nil
+		and settings.colors and settings.colors.bars and settings.colors.bars[secondaryColorsBarKey]
 		and settings.textures then
-		-- Fury Warrior uses colors.bars.whirlwind instead of colors.comboPoints for
-		-- its secondary (Whirlwind stacks) bar. Apply textures and default colors here
-		-- so that options UI changes propagate to the secondary bar nodes.
-		local whirlwindColors = settings.colors.bars.whirlwind
+		-- A secondary bar drawn with a custom bar's colors gets them here, so options changes reach its nodes.
+		local barColors = settings.colors.bars[secondaryColorsBarKey]
+		local firstNodeKey = TRB.Classes.BarTypeRegistry:GetInstance():Get(secondaryColorsBarKey).nodeColors[1].key
 		for i = 1, barGroups.secondary.maxNodes do
 			local node = barGroups.secondary:GetNode(i)
 			if node then
@@ -1727,10 +1727,10 @@ function TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, barGroups)
 					settings.textures.comboPointsBackground
 				)
 				node:SetMinMax(0, 1)
-				node:ApplyEndCap(whirlwindColors.endCap, whirlwindColors.border.color)
-				node:SetBorderColor(whirlwindColors.border.color)
-				node:SetBackgroundColorFromString(whirlwindColors.background.color)
-				TRB.Functions.Color:ApplyFillColor(node, whirlwindColors.nodeColors.charge1)
+				node:ApplyEndCap(barColors.endCap, barColors.border.color)
+				node:SetBorderColor(barColors.border.color)
+				node:SetBackgroundColorFromString(barColors.background.color)
+				TRB.Functions.Color:ApplyFillColor(node, barColors.nodeColors[firstNodeKey])
 				node:SetFrameLevel(self:GetBarFrameLevel("secondary"))
 			end
 		end
@@ -3340,7 +3340,7 @@ end
 ---briefly resurface the bar.
 ---
 ---The gates themselves come from the active spec's descriptor (`talentGatedBars`: bar key ->
----spell key whose talent must be active).
+---spell key whose talent must be active, or that must be learned when it is no talent).
 ---@param barKey string
 ---@return boolean
 function TRB.Functions.Bar:IsBarTalentGatedHidden(barKey)
@@ -3359,7 +3359,14 @@ function TRB.Functions.Bar:IsBarTalentGatedHidden(barKey)
 	if not talents or not spells then return false end
 
 	local spell = spells[spellKey]
-	return spell ~= nil and not talents:IsTalentActive(spell)
+	if spell == nil then
+		return false
+	end
+	-- A spell that is no talent gates on being learned.
+	if not spell.isTalent then
+		return not spell:IsKnown()
+	end
+	return not talents:IsTalentActive(spell)
 end
 
 ---Enumerates all bar keys present for the current bar groups.

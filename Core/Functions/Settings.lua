@@ -3,8 +3,6 @@ local L = TRB.Localization
 
 TRB.Functions.Settings = {}
 
-local VISIBILITY_MANA_MAX = 275625 -- 250k base, enchant or Gnome * 1.05, both is another * 1.05
-
 ---Creates spec-level threshold definitions for secondary Mana Bar visibility options.
 ---@return table<string, table>
 function TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds()
@@ -16,7 +14,7 @@ function TRB.Functions.Settings:LoadDefaultManaBarVisibilityThresholds()
 		manaValue = {
 			valueType = "value",
 			powerType = Enum.PowerType.Mana,
-			maxValue = VISIBILITY_MANA_MAX,
+			maxValue = TRB.Flavor.manaVisibilityMax,
 		},
 	}
 end
@@ -31,15 +29,6 @@ function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
 		isSteadyFlightFlying = false,
 		isSkyriding = false,
 		isSkyridingFlying = false,
-		isDruidHumanoidForm = false,
-		isDruidTravelFormAny = false,
-		isDruidStagForm = false,
-		isDruidFlightForm = false,
-		isDruidSwiftFlightForm = false,
-		isDruidAquaticForm = false,
-		isDruidCatForm = false,
-		isDruidBearForm = false,
-		isDruidMoonkinForm = false,
 		inVehicle = false,
 		inPetBattle = true,
 		onTaxi = true,
@@ -47,6 +36,9 @@ function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
 		inCombat = false,
 		outOfCombat = false,
 	}
+	for _, condition in ipairs(TRB.Classes.SpecDescriptor:GetFormConditions()) do
+		conditions[condition.key] = false
+	end
 	for key in pairs(TRB.Flavor.unavailableVisibilityConditions) do
 		conditions[key] = nil
 	end
@@ -3227,7 +3219,7 @@ function TRB.Functions.Settings:DefaultThresholdIconSettings()
 		yPos = 12,
 		width = 24,
 		height = 24,
-		overlapMode = "off",
+		overlapMode = TRB.Data.constants.thresholdIconOverlapModes.OFF,
 		overlapSpacing = 2,
 		overlapMaxRows = 3,
 		overlapAllowance = 0,

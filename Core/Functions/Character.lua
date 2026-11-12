@@ -40,7 +40,7 @@ local cachedHealthPercentFmt = nil
 local cachedHealthPercentPrecision = nil
 
 local function UpdateSkyridingState()
-	-- Only a skyriding client glides, and Classic has no GetGlidingInfo.
+	-- Only a skyriding client glides, and a client without skyriding may have no GetGlidingInfo.
 	if TRB.Flavor.skyriding == nil then
 		TRB.Data.character.isSkyriding = false
 		return
@@ -469,7 +469,7 @@ local function CharacterChange(self, event, ...)
 			if event == "UNIT_MAXPOWER" and powerType == TRB.Data.resourceToken then
 				TRB.Functions.Class:CheckCharacter()
 			elseif event == "UNIT_POWER_UPDATE" and powerType == TRB.Data.resourceToken then
-				-- UNIT_MAXPOWER alone has let the saved max fall behind on Forever; Blizzard's mana bar re-reads it here too.
+				-- UNIT_MAXPOWER alone has let the saved max fall behind on some clients; Blizzard's mana bar re-reads it here too.
 				local maxPower = UnitPowerMax("player", TRB.Data.resource, true)
 				if not issecretvalue(maxPower) and maxPower ~= lastPrimaryMax then
 					lastPrimaryMax = maxPower
@@ -630,7 +630,7 @@ local function CharacterChange(self, event, ...)
 end
 
 local characterChangeFrame = CreateFrame("Frame")
--- Registering an event the client doesn't know errors, and Forever may not have this one.
+-- Registering an event the client doesn't know errors, and not every client has this one.
 local mapChangedEventValid = C_EventUtils ~= nil and C_EventUtils.IsEventValid ~= nil
 	and C_EventUtils.IsEventValid("PLAYER_MAP_CHANGED") == true
 characterChangeFrame:SetScript("OnEvent", CharacterChange)
@@ -1038,51 +1038,13 @@ function TRB.Functions.Character:GetClassModuleName(classIdOrName)
 	return entry and entry.classModuleName or nil
 end
 
--- Resolved display name per resource-type token. Literal localization keys only (built at
--- load like BarText's anchor maps). Single source for turning a GetSpecConfiguration
--- resourceType / primary token into a user-facing name.
-local resourceTypeNames = {
-	-- Primary power types
-	Rage = TRB.Localization["ResourceRage"],
-	Mana = TRB.Localization["ResourceMana"],
-	Energy = TRB.Localization["ResourceEnergy"],
-	Focus = TRB.Localization["ResourceFocus"],
-	Insanity = TRB.Localization["ResourceInsanity"],
-	RunicPower = TRB.Localization["ResourceRunicPower"],
-	Maelstrom = TRB.Localization["ResourceMaelstrom"],
-	AstralPower = TRB.Localization["ResourceAstralPower"],
-	Fury = TRB.Localization["ResourceFury"],
-	-- Secondary / custom / utility resources
-	ComboPoints = TRB.Localization["ResourceComboPoints"],
-	SoulShards = TRB.Localization["ResourceSoulShards"],
-	SoulFragments = TRB.Localization["ResourceSoulFragments"],
-	CollapsingStar = TRB.Localization["ResourceCollapsingStar"],
-	ArcaneCharges = TRB.Localization["ResourceArcaneCharges"],
-	Runes = TRB.Localization["ResourceRunes"],
-	HolyPower = TRB.Localization["ResourceHolyPower"],
-	Chi = TRB.Localization["ResourceChi"],
-	Essence = TRB.Localization["ResourceEssence"],
-	TipOfTheSpear = TRB.Localization["ResourceTipOfTheSpear"],
-	MaelstromWeapon = TRB.Localization["ResourceMaelstromWeapon"],
-	Icicles = TRB.Localization["ResourceIcicles"],
-	Shatter = TRB.Localization["ResourceMageShatter"],
-	ArcaneSalvo = TRB.Localization["ResourceMageArcaneSalvo"],
-	BoneShield = TRB.Localization["ResourceBoneShield"],
-	CoagulatingBlood = TRB.Localization["ResourceCoagulatingBlood"],
-	Stagger = TRB.Localization["ResourceStagger"],
-	Health = TRB.Localization["ResourceHealth"],
-	Utility = TRB.Localization["ResourceUtility"],
-	AngelicFeather = TRB.Localization["ResourceAngelicFeather"],
-	Lightweaver = TRB.Localization["ResourcePriestLightweaver"],
-	HolyWords = TRB.Localization["ResourcePriestHolyWords"],
-	PowerWords = TRB.Localization["BarNamePowerWordsBar"],
-	DefensiveBuffs = TRB.Localization["ResourceWarriorDefensives"],
-	WhirlwindCharges = TRB.Localization["ResourceWarriorWhirlwind"],
-	EbonMight = TRB.Localization["ResourceEvokerEbonMight"],
-	ElementalBlastBuffs = TRB.Localization["ResourceShamanElementalBlastBuffs"],
-	FireBlastCharges = TRB.Localization["MageFireBlastCharges"],
-	Castbar = TRB.Localization["ResourceCastbar"],
-	Brews = TRB.Localization["ResourceMonkBrews"],
+assert(type(TRB.Flavor.resourceTypes) == "table", "TwintopInsanityBar: flavor has no resourceTypes (Resources.lua must load from Classes.xml).")
+
+-- The resource types of the bars Core itself gives every spec; the flavor declares the rest.
+---@type table<string, TRB.Flavor.ResourceType>
+local coreResourceTypes = {
+	Castbar = { name = TRB.Localization["ResourceCastbar"] },
+	Health = { name = TRB.Localization["ResourceHealth"] },
 }
 
 -- Spec bar group configs by class id, then spec id. Every factory returns load-time constants.
@@ -1136,15 +1098,23 @@ function TRB.Functions.Character:GetSpecBarGroupConfig(classId, specId)
 	return config
 end
 
+---A GetSpecConfiguration resourceType's display data, or nil if neither Core nor the flavor declares it.
+---@param resourceType string?
+---@return TRB.Flavor.ResourceType?
+function TRB.Functions.Character:GetResourceTypeDefinition(resourceType)
+	if resourceType == nil then
+		return nil
+	end
+	return coreResourceTypes[resourceType] or TRB.Flavor.resourceTypes[resourceType]
+end
+
 ---Returns the localized display name for a resource-type token (as used in
 ---GetSpecConfiguration resourceType fields and primary power types), or nil if unknown.
 ---@param resourceType string?
 ---@return string?
 function TRB.Functions.Character:GetResourceTypeName(resourceType)
-	if resourceType == nil then
-		return nil
-	end
-	return resourceTypeNames[resourceType]
+	local definition = self:GetResourceTypeDefinition(resourceType)
+	return definition and definition.name or nil
 end
 
 ---Returns the localized PRIMARY resource name for a spec, or nil if unknown. Reads the
@@ -1347,22 +1317,6 @@ function TRB.Functions.Character:GetActiveRawSpecSettings()
 	end
 	local classSettings = TRB.Data.settings[character.className]
 	return classSettings and classSettings[character.specName] or nil
-end
-
----Whether any spec of a class declares shapeshift-form driven display (descriptor `forms`).
----@param classId integer?
----@return boolean
-function TRB.Functions.Character:ClassHasForms(classId)
-	local classEntry = classId ~= nil and TRB.Data.classRegistryByIds[classId] or nil
-	if classEntry == nil then
-		return false
-	end
-	for _, specEntry in ipairs(classEntry.specs) do
-		if specEntry.descriptor ~= nil and specEntry.descriptor.forms ~= nil then
-			return true
-		end
-	end
-	return false
 end
 
 ---Whether an options panel for classId/specId edits what the active character displays right now, so
@@ -1594,57 +1548,8 @@ local function OverlayOn(base, overrides)
 end
 
 ---Fills the specialization cache with a combination of global and spec specific settings
----@param className string # Class name
----| '"deathknight"' # Death Knight
----| '"demonhunter"' # Demon Hunter
----| '"druid"' # Druid 
----| '"evoker"' # Evoker
----| '"hunter"' # Hunter
----| '"mage"' # Mage
----| '"monk"' # Monk
----| '"paladin' # Paladin
----| '"priest"' # Priest
----| '"rogue"' # Rogue
----| '"shaman"' # Shaman
----| '"warlock' # Warlock
----| '"warrior"' # Warrior
----@param specName string
----| '"blood"' # Blood (Death Knight)
----| '"frost"' # Frost (Death Knight, Mage)
----| '"unholy"' # Unholy (Death Knight)
----| '"havoc"' # Havoc (Demon Hunter)
----| '"vengeance"' # Vengeance (Demon Hunter)
----| '"devourer"' # Devourer (Demon Hunter)
----| '"balance"' # Balance (Druid)
----| '"feral"' # Feral (Druid)
----| '"guardian"' # Guardian (Druid)
----| '"restoration"' # Restoration (Druid, Shaman)
----| '"devastation"' # Devastation (Evoker)
----| '"preservation"' # Preservation (Evoker)
----| '"augmentation"' # Augmentation (Evoker)
----| '"beastMastery"' # Beast Mastery (Hunter)
----| '"marksmanship"' # Marksmanship (Hunter)
----| '"survival"' # Survival (Hunter)
----| '"arcane"' # Arcane (Mage)
----| '"fire"' # Fire (Mage)
----| '"brewmaster"' # Brewmaster (Monk)
----| '"mistweaver"' # Mistweaver (Monk)
----| '"windwalker"' # Windwalker (Monk)
----| '"retribution"' # Retribution (Paladin)
----| '"discipline"' # Discipline (Priest)
----| '"holy"' # Holy (Paladin, Priest)
----| '"shadow"' # Shadow (Priest)
----| '"assassination"' # Assassination (Rogue)
----| '"outlaw"' # Outlaw (Rogue)
----| '"subtlety"' # Subtlety (Rogue)
----| '"elemental"' # Elemental (Shaman)
----| '"enhancement"' # Enhancement (Shaman)
----| '"affliction"' # Affliction (Warlock)
----| '"demonology"' # Demonology (Warlock)
----| '"destruction"' # Destruction (Warlock)
----| '"arms"' # Arms (Warrior)
----| '"fury"' # Fury (Warrior)
----| '"protection"' # Protection (Paladin, Warrior)
+---@param className string # All-lowercase class key, as the flavor manifest declares it
+---@param specName string # Spec key, as the flavor manifest declares it
 function TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
 	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
 	local specCache = TRB.Data.specCache[compositeKey] --[[@as TRB.Classes.SpecCache]]
@@ -2273,7 +2178,7 @@ function TRB.Functions.Character:EnsureSpecCache(compositeKey)
 end
 
 ---Calculates the player's current GCD duration, clamped between 0.75s and 1.5s.
----Uses the cached GCD duration observed from C_Spell.GetSpellCooldownDuration(61304)
+---Uses the cached GCD duration observed from C_Spell.GetSpellCooldownDuration(TRB.Flavor.gcdSpellId)
 ---during the last spell cast, since haste is now a secret value.
 ---@param floor boolean|nil If true, skips the 0.75s minimum clamp (allows sub-0.75 values)
 ---@return number gcd The GCD duration in seconds
@@ -2487,29 +2392,6 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.ThresholdCooldowns:Disable()
 		TRB.Details.addonData.registered = false
-		if barGroups then
-			if barGroups.primary then
-				barGroups.primary:Hide()
-			end
-			if barGroups.secondary then
-				barGroups.secondary:Hide()
-			end
-			if barGroups.health then
-				barGroups.health:Hide()
-			end
-			if barGroups.mana then
-				barGroups.mana:Hide()
-			end
-			if barGroups.stagger then
-				barGroups.stagger:Hide()
-			end
-			if barGroups.defensives then
-				barGroups.defensives:Hide()
-			end
-			if barGroups.holyWords then
-				barGroups.holyWords:Hide()
-			end
-		end
 	end
 
 	TRB.Functions.BarVisibility:MarkDirty()

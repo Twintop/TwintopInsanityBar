@@ -2,7 +2,18 @@ local _, TRB = ...
 local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.News = {}
-local LMD = LibStub("LibSimpleHTMLMarkdown-1.0")
+-- A renderer of our own, with a cleaner palette for the inline color escapes and the gap after paragraphs
+-- kept. Its settings apply only to our text; the library's own config is shared by every AddOn.
+local LMD = LibStub("LibSimpleHTMLMarkdown-1.0"):New({
+	["strong"]  = "|cffffcc00",
+	["/strong"] = "|r",
+	["em"]      = "|cffff9966",
+	["/em"]     = "|r",
+	["code"]    = "|cffaaaadd",
+	["/code"]   = "|r",
+	["pre"]     = "<p>|cffaaaadd",
+	["/pre"]    = "|r</p>",
+})
 local oUi = TRB.Data.constants.optionsUi
 
 -- Two changelogs, one tab each: the flavor's (Flavors\<Flavor>\News.lua) and Core's (Core\News.lua). This
@@ -45,7 +56,7 @@ local function OnHyperlinkClick(_, link, text)
 	end
 end
 
----Retitles Core's "# Live X / Forever Y / Classic Z (date)" sections to the flavor's "# Y (date)" and drops
+---Retitles Core's "# <Label> <version> / <Label> <version> (date)" sections to the flavor's "# <version> (date)" and drops
 ---the sections that don't name it. A title that doesn't parse is kept as written.
 ---@param markdown string
 ---@param label string? # The flavor's name in Core titles (TRB.Flavor.coreNewsLabel); nil keeps every title
@@ -154,16 +165,6 @@ function TRB.Functions.News:BuildNewsPopup()
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.news.enabled = self:GetChecked()
 	end)
-
-	-- Override LibSimpleHTMLMarkdown inline color escapes for a cleaner palette, and keep the gap after paragraphs
-	LMD.config["strong"]  = "|cffffcc00"
-	LMD.config["/strong"] = "|r"
-	LMD.config["em"]      = "|cffff9966"
-	LMD.config["/em"]     = "|r"
-	LMD.config["code"]    = "|cffaaaadd"
-	LMD.config["/code"]   = "|r"
-	LMD.config["pre"]     = "<p>|cffaaaadd"
-	LMD.config["/pre"]    = "|r</p>"
 
 	-- The tab row and both readers share a container that stops short of the bottom controls.
 	local tabContainer = CreateFrame("Frame", "TRB_News_Frame_Tabs", newsFrame)

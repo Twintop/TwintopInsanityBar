@@ -12,6 +12,8 @@ TRB.Functions.BarText = {}
 ---@class TRB.Classes.BarTextFrame : Frame
 ---@field public font TRB.Classes.BarTextFont # Created right after the frame
 
+assert(type(TRB.Flavor.globalBarTextAnchorFrames) == "table", "TwintopInsanityBar: flavor has no globalBarTextAnchorFrames (Resources.lua must load from Classes.xml).")
+
 local containerAnchorPrefix = "Container::"
 
 -- Self-driven bar anchor keys → their bar group key. For the cast bars both the bar and its side icon
@@ -181,24 +183,6 @@ local function IsSelfDrivenBarFading(groupKey)
 	end
 	return TRB.Functions.OtherBars:IsFadingOut(groupKey)
 end
-local containerAnchorLabelByResourceType = {
-	AngelicFeather = L["AngelicFeatherContainer"],
-	ArcaneCharges = L["ArcaneChargesContainer"],
-	BoneShield = L["BoneShieldContainer"],
-	Chi = L["ChiContainer"],
-	ComboPoints = L["ComboPointsContainer"],
-	Essence = L["EssenceContainer"],
-	Icicles = L["IciclesContainer"],
-	Lightweaver = L["LightweaverContainer"],
-	HolyPower = L["HolyPowerContainer"],
-	MaelstromWeapon = L["MaelstromWeaponContainer"],
-	Runes = L["RunesContainer"],
-	Shatter = L["ShatterContainer"],
-	SoulFragments = L["SoulFragmentsContainer"],
-	SoulShards = L["SoulShardsContainer"],
-	TipOfTheSpear = L["TipOfTheSpearContainer"],
-	WhirlwindCharges = L["WhirlwindChargesContainer"],
-}
 
 -- Anchor names come from a small set of settings strings, so the per-tick lookups memoize their
 -- normalized form and pattern captures (false records a pattern that did not match).
@@ -356,7 +340,8 @@ local function GetContainerAnchorDefinition(classId, specId, barGroupKey)
 		return nil
 	end
 
-	local label = containerAnchorLabelByResourceType[barGroupConfig.resourceType]
+	local resourceTypeDefinition = TRB.Functions.Character:GetResourceTypeDefinition(barGroupConfig.resourceType)
+	local label = resourceTypeDefinition and resourceTypeDefinition.containerLabel
 	if label == nil then
 		return nil
 	end
@@ -438,10 +423,7 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 	end
 	local anchorFrames
 	if classId == nil then -- Global Bar Text
-		anchorFrames = { secondary = {} }
-		for i = 1, 5 do
-			anchorFrames.secondary[i] = { label = L["ComboPoint" .. i], frame = "ComboPoint_" .. i }
-		end
+		anchorFrames = TRB.Flavor.globalBarTextAnchorFrames
 	else
 		local descriptor = TRB.Functions.Character:GetSpecDescriptor(classId, specId)
 		anchorFrames = descriptor and descriptor.barTextAnchorFrames or {}
@@ -1076,18 +1058,13 @@ local function InferBarTextVariableLogicType(variable, sectionKey, entry)
 		return TRB.Functions.BarText.VariableLogicType.BOOLEAN
 	end
 
-	if variableName == "incombat" or variableName == "instealth" or variableName == "eclipse" or
-		variableName == "lunar" or variableName == "solar" or variableName == "celestialalignment" or
-		variableName == "rtbgoodbuff" or variableName == "benediction" or
+	if variableName == "incombat" or variableName == "instealth" or
 		string.match(variableName, "usable$") ~= nil or string.match(variableName, "ready$") ~= nil or
 		string.match(variableName, "active$") ~= nil then
 		return TRB.Functions.BarText.VariableLogicType.BOOLEAN
 	end
 
-	if string.match(variableName, "percent$") ~= nil or string.match(variableName, "time$") ~= nil or
-		variableName == "gcd" or variableName == "haste" or variableName == "crit" or
-		variableName == "mastery" or variableName == "vers" or variableName == "versatility" or
-		variableName == "overs" or variableName == "dvers" then
+	if string.match(variableName, "percent$") ~= nil or string.match(variableName, "time$") ~= nil then
 		return TRB.Functions.BarText.VariableLogicType.NUMBER
 	end
 
@@ -1122,19 +1099,9 @@ local function InferBarTextVariableBooleanCheck(variable, sectionKey, entry, log
 	local variableName = string.gsub(variable or "", "^%$", "")
 	variableName = string.lower(variableName)
 
-	if variableName == "resource" or variableName == "mana" or variableName == "energy" or
-		variableName == "rage" or variableName == "focus" or variableName == "fury" or
-		variableName == "pain" or variableName == "insanity" or variableName == "astralpower" or
-		variableName == "maelstrom" or variableName == "runicpower" or variableName == "holypower" or
-		variableName == "resourcepercent" or variableName == "manapercent" then
-		return false
-	end
-
 	if variableName == "casting" or variableName == "health" or variableName == "healthmax" or
 		variableName == "healthpercent" or variableName == "absorb" or variableName == "incomingheal" or
-		variableName == "gcd" or variableName == "haste" or variableName == "crit" or
-		variableName == "mastery" or variableName == "vers" or variableName == "versatility" or
-		variableName == "overs" or variableName == "dvers" then
+		variableName == "gcd" then
 		return true
 	end
 
@@ -1293,7 +1260,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$petResourceName", description = L["BarTextVariablePetResourceName"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.PET,
 			logicType = logicTypes.TEXT, booleanCheck = true },
 	}
-	-- Totems, after the pet. Names and times are secret in combat on Mainline and Forever, so they are display-only; a
+	-- Totems, after the pet. Names and times can be secret in combat (secretValues), so they are display-only; a
 	-- bare check on one resolves to "is that slot's totem up?" instead. Each slot's first name is listed, the rest aliases.
 	for slot = 1, TRB.Functions.Totems:GetSlotCount() do
 		local vars = totemSlotVars[slot]
@@ -1386,7 +1353,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 			statIndex = statIndex + 1
 			table.insert(values, statIndex, {
 				variable = variable, description = L[stat.descriptionKey], printInSettings = i == 1, color = false, secret = stat.secret,
-				logicType = stat.integer and logicTypes.INTEGER or nil,
+				logicType = stat.integer and logicTypes.INTEGER or nil, booleanCheck = stat.booleanCheck,
 			})
 		end
 	end

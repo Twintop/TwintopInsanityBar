@@ -16,10 +16,22 @@ TRB.Classes = TRB.Classes or {}
 ---@field IsSharedActive fun(activeSpecSettings: table?): boolean # With sharedFrom: whether the borrowing applies right now (reads the ACTIVE spec's saved settings)
 ---@field exportable boolean? # Always include the secondary bar in exports even when the spec's bar group config declares no secondary
 ---@field thresholdDecimals integer? # Decimal places custom thresholds may target on the secondary bar (fragment-scaled resources)
+---@field thresholdValueAttribute string? # snapshotData.attributes key holding the plain count custom thresholds compare, for nodes that fill fractionally
+---@field compressedStacksAttribute string? # snapshotData.attributes key holding the full stack count when the Compressed View setting folds stacks onto the nodes
+---@field colorsBarKey string? # Custom bar type whose colors (colors.bars[key]) the secondary bar draws with, for a spec without comboPoints colors
+
+---A bar visibility condition met while the character is in one of its shapeshift forms.
+---@class TRB.Classes.SpecDescriptor.FormCondition
+---@field key string # Key the show and hide conditions store it under
+---@field label string # Localized condition name
+---@field forms table<string, boolean> # currentShapeshiftForm values that meet it
 
 ---@class TRB.Classes.SpecDescriptor.Forms
 ---@field IsBarEligibleForLayout fun(barKey: string, activeSpecSettings: table?): boolean? # Whether a form-dependent bar (secondary, mana, ...) is eligible to show given the current shapeshift form; nil = no opinion
 ---@field exportDisplayBarKeys string[]? # Spec displayBar flags that travel with bar display exports (e.g. enableFormSwitching)
+---@field defaultForm string? # The form the character counts as in before the class module reports one
+---@field visibilityConditions TRB.Classes.SpecDescriptor.FormCondition[]? # The form conditions bar visibility offers, in option order
+---@field visibilityGroupTitle string? # Localized title of those conditions' options group
 
 ---@class TRB.Classes.SpecDescriptor.AnchorFrame
 ---@field label string # Localized name shown in the bar text "relative to" dropdown
@@ -36,7 +48,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field manaBar boolean? # The spec shows a mana bar / mana bar text, so mana precision options apply
 ---@field secondary TRB.Classes.SpecDescriptor.Secondary?
 ---@field forms TRB.Classes.SpecDescriptor.Forms? # Declared by every spec of a class whose display follows shapeshift forms
----@field talentGatedBars table<string, string>? # barKey -> key in spellsData.spells whose talent must be active for the bar to show
+---@field talentGatedBars table<string, string>? # barKey -> key in spellsData.spells whose talent must be active (or, for a spell that is no talent, learned) for the bar to show
 ---@field barTextAnchorFrames table<string, TRB.Classes.SpecDescriptor.AnchorFrame[]>? # Extra "relative to" anchor frames offered by the bar text editor, keyed by the bar group they sort with (e.g. secondary, boneShield); a key that is no bar group sorts with the spec bars
 ---@field exportExtras string[]? # Extra top-level spec settings keys exported with the Font & Text section
 ---@field cooldownSpells string[]? # Keys in spellsData.spells whose cooldown snapshots stay tracked for bar text even when no threshold line tracks them
@@ -47,9 +59,10 @@ TRB.Classes = TRB.Classes or {}
 ---@field useGlobalDefaults table<string, boolean>? # "Use global settings" toggles seeded differently from the shipped defaults (key -> value), for a spec whose layout the global options cannot describe
 ---@field formIndependentBars string[]? # Custom bar keys that keep this spec's own layout and visibility while a shapeshift form lays out with another spec's settings
 ---@field pet TRB.Classes.SpecDescriptor.Pet? # The spec can hold a permanent pet, so it gets the Pet bars
----@field totems TRB.Classes.SpecDescriptor.Totems? # Where the spec's Totems bar lives; on Live a spec without one keeps it under Other Bars, never shown by default
+---@field totems TRB.Classes.SpecDescriptor.Totems? # Where the spec's Totems bar lives; unless the flavor sets specOwnedTotems, a spec without one keeps it under Other Bars, never shown by default
 ---@field otherBars string[]? # Class-scoped Other Bar keys the spec's class claims (Feign Death, Five Second Rule)
 ---@field rangedAttack boolean? # The class auto-shoots a ranged weapon or wand, so the Ranged Swing bar offers its movement shading
+---@field thresholdCategories table<string, string>? # Threshold list categories beyond Core's own: category -> localized label
 
 TRB.Classes.SpecDescriptor = {}
 
@@ -108,4 +121,51 @@ function TRB.Classes.SpecDescriptor:GetActive()
 		return nil
 	end
 	return self:Get(character.classId, character.specId)
+end
+
+---@class TRB.Classes.SpecDescriptor.FormConditionGroup
+---@field classId integer
+---@field title string
+---@field keys string[]
+---@field conditions TRB.Classes.SpecDescriptor.FormCondition[]
+
+-- Built on first use, after the Classes stage has declared every descriptor.
+---@type TRB.Classes.SpecDescriptor.FormConditionGroup[]?
+local formConditionGroups = nil
+---@type TRB.Classes.SpecDescriptor.FormCondition[]?
+local formConditions = nil
+
+---Each class's form visibility conditions, in class order.
+---@return TRB.Classes.SpecDescriptor.FormConditionGroup[]
+function TRB.Classes.SpecDescriptor:GetFormConditionGroups()
+	if formConditionGroups == nil then
+		formConditionGroups = {}
+		formConditions = {}
+		local seen = {}
+		for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+			for _, specEntry in ipairs(classEntry.specs) do
+				local forms = specEntry.descriptor and specEntry.descriptor.forms
+				if forms ~= nil and forms.visibilityConditions ~= nil then
+					local group = { classId = classEntry.classId, title = forms.visibilityGroupTitle, keys = {}, conditions = forms.visibilityConditions }
+					for _, condition in ipairs(forms.visibilityConditions) do
+						table.insert(group.keys, condition.key)
+						if not seen[condition.key] then
+							seen[condition.key] = true
+							table.insert(formConditions, condition)
+						end
+					end
+					table.insert(formConditionGroups, group)
+					break
+				end
+			end
+		end
+	end
+	return formConditionGroups
+end
+
+---Every class's form visibility conditions, each key once.
+---@return TRB.Classes.SpecDescriptor.FormCondition[]
+function TRB.Classes.SpecDescriptor:GetFormConditions()
+	self:GetFormConditionGroups()
+	return formConditions --[[@as TRB.Classes.SpecDescriptor.FormCondition[] ]]
 end

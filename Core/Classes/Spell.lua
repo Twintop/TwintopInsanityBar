@@ -6,8 +6,7 @@ TRB.Classes = TRB.Classes or {}
 ---| '"TRB.Classes.SpellComboPoint"' # TRB.Classes.SpellComboPointThreshold
 ---| '"TRB.Classes.SpellThreshold"' # TRB.Classes.SpellThreshold
 ---| '"TRB.Classes.SpellComboPointThreshold"' # TRB.Classes.SpellComboPointThreshold
----| '"TRB.Classes.Mainline.Priest.HolyWordSpell"' # TRB.Classes.Mainline.Priest.HolyWordSpell
----| '"TRB.Classes.Mainline.Shaman.OverloadSpell"' # TRB.Classes.Mainline.Shaman.OverloadSpell
+---| string # A spell class a flavor's class module derives
 
 ---@class TRB.Classes.SpellsData
 ---@field public spells TRB.Classes.SpecializationSpellsBase # Dictionary of spells
@@ -29,8 +28,10 @@ function TRB.Classes.SpellsData:New()
 	return self
 end
 
----Fills extra spell data for all spells in the dictionary.
+---Fills extra spell data for all spells in the dictionary and rebuilds `spellsById` from them.
 function TRB.Classes.SpellsData:FillSpellData()
+	-- Runs again on every SwitchSpec, so the lists start empty.
+	wipe(self.spellsById)
 	for _, v in pairs(self.spells) do
 		---@type TRB.Classes.SpellBase
 		local spell = v
@@ -529,7 +530,7 @@ function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 	end
 
 	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self:GetRankedId())
-	-- Not every usability change fires SPELL_UPDATE_USABLE (Execute, Overpower on Classic Era), so a re-read that differs repaints bar text.
+	-- Not every usability change fires SPELL_UPDATE_USABLE (Execute and Overpower, on some clients), so a re-read that differs repaints bar text.
 	if not issecretvalue(isUsable) and not issecretvalue(insufficientPower)
 		and (isUsable ~= self._isUsable or insufficientPower ~= self._insufficientPower) then
 		TRB.Data.lookupDirty = true
