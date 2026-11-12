@@ -257,7 +257,9 @@ function CustomBars:GetSources(classId, specId)
 		local spell = snapshot.spell
 		local name = spell ~= nil and GetSpellName(spell) or nil
 		if spell ~= nil and name ~= nil then
-			local hasCharges = spell.hasCharges == true or snapshot.cooldown.useManualCharges == true
+			-- A hand-counted single charge is a plain cooldown.
+			local hasCharges = spell.hasCharges == true
+				or (snapshot.cooldown.useManualCharges == true and (snapshot.cooldown.manualMaxCharges > 1 or spell.hasCooldown ~= true))
 			-- A charge ability's duration is its recharge, unless the spell also names a buff.
 			local durationIsBuff = not hasCharges or spell.buffId ~= nil or spell.isBuff == true
 			if spell.duration ~= nil and durationIsBuff and not snapshot.buff.alwaysSimple then
@@ -1193,6 +1195,9 @@ function CustomBars:Render()
 			elseif source.kind == kinds.buffTime then
 				local buff = snapshot.buff
 				RenderPlainTimer(entry, node, buff.isActive == true, buff.endTime, buff.duration, now, redraw)
+			elseif source.kind == kinds.cooldownTime and snapshot.cooldown.useManualCharges then
+				-- A cooldown its class module counts by hand runs on the hand-counted recharge.
+				RenderRechargeTime(entry, node, snapshot.cooldown, now, redraw)
 			elseif source.kind == kinds.cooldownTime then
 				RenderCooldownTime(entry, node, snapshot.cooldown, redraw)
 			elseif source.kind == kinds.rechargeTime then

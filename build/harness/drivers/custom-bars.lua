@@ -475,6 +475,35 @@ function hooks.afterEvents(ctx)
 	local manualSource = FindSource("rechargeTime", manualSpell.id)
 	check("charges a class module counts by hand make it a charge ability", manualSource ~= nil and FindSource("charges", manualSpell.id) ~= nil
 		and FindSource("buffTime", manualSpell.id) == nil)
+	-- A hand-counted single charge on a spell that declares a cooldown, as Holy Word: Chastise is.
+	local singleSpell = TRB.Classes.SpellBase:New({
+		id = 990007,
+		cooldown = 60,
+		hasCooldown = true
+	})
+	singleSpell.name = "Driver Single Charge"
+	snapshots[singleSpell.id] = TRB.Classes.Snapshot:New(singleSpell)
+	local listedBefore = FindSource("cooldownTime", singleSpell.id) ~= nil and FindSource("buffTime", singleSpell.id) == nil
+	local singleCooldown = snapshots[singleSpell.id].cooldown
+	singleCooldown:InitializeManualCharges(1, 0)
+	local singleSource = FindSource("cooldownTime", singleSpell.id)
+	check("a hand-counted single charge is a Cooldown, counted or not, and never a Duration", listedBefore and singleSource ~= nil
+		and FindSource("buffTime", singleSpell.id) == nil and FindSource("charges", singleSpell.id) == nil
+		and FindSource("rechargeTime", singleSpell.id) == nil)
+	if singleSource ~= nil then
+		local singleGuid = CustomBars:Add(spec, classId, specId, singleSource)
+		local singleKey = CustomBars:GetBarKey(singleGuid)
+		try("lay out the single charge bar", Relayout)
+		singleCooldown.manualCooldownDuration = 60
+		singleCooldown.manualCooldownExpires = desktop.GetTime() + 20
+		try("render the single charge's cooldown", function() CustomBars:Render() end)
+		check("its Cooldown bar runs on the hand-counted cooldown", Shows(EntryFor(barGroups[singleKey])))
+		singleCooldown.manualCharges = 1
+		try("render the single charge ready", function() CustomBars:Render() end)
+		check("and hides when it is ready", not Shows(EntryFor(barGroups[singleKey])))
+		CustomBars:Delete(spec, classId, specId, singleGuid)
+	end
+	snapshots[singleSpell.id] = nil
 	local totalSource = FindSource("totalRechargeTime", manualSpell.id)
 	check("only hand-counted charges are offered a Total Recharge", totalSource ~= nil and FindSource("totalRechargeTime", chargeSpell.id) == nil)
 	if cooldownSource ~= nil and chargeSource ~= nil and rechargeSource ~= nil and manualSource ~= nil then
