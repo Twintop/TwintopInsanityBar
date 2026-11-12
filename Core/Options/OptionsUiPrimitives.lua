@@ -955,7 +955,7 @@ end
 local function UpdateAuraSpellIdPrompt(dialog)
 	local text = dialog:GetEditBox():GetText()
 	local spellId = ParseAuraSpellId(text)
-	local message = L["AuraSpellIdPromptText"]
+	local message = dialog.data ~= nil and dialog.data.promptText or L["AuraSpellIdPromptText"]
 	if spellId ~= nil then
 		message = message .. "\n\n" .. (TRB.Functions.OptionsUi.Primitives:FormatAuraSpellLabel(spellId) or "")
 	elseif text ~= nil and text:match("%S") then
@@ -1008,8 +1008,9 @@ StaticPopupDialogs["TwintopResourceBar_AuraSpellId"] = {
 ---Asks for the spell ID of a buff to follow, showing the spell it names as it's typed.
 ---@param currentSpellId integer? # Pre-filled, when re-pointing
 ---@param onAccept fun(spellId: integer) # Only called with an ID some spell has
-function TRB.Functions.OptionsUi.Primitives:ShowAuraSpellIdPrompt(currentSpellId, onAccept)
-	StaticPopup_Show("TwintopResourceBar_AuraSpellId", nil, nil, { spellId = currentSpellId, onAccept = onAccept })
+---@param promptText string? # What to ask for, when it isn't a buff
+function TRB.Functions.OptionsUi.Primitives:ShowAuraSpellIdPrompt(currentSpellId, onAccept, promptText)
+	StaticPopup_Show("TwintopResourceBar_AuraSpellId", nil, nil, { spellId = currentSpellId, onAccept = onAccept, promptText = promptText })
 end
 
 ---Creates a two-part help entry: a right-aligned variable name and a left-aligned description below it.

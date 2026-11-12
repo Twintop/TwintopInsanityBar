@@ -209,8 +209,9 @@ end
 
 ---@param spell TRB.Classes.SpellBase?
 ---@param snapshots table<integer, TRB.Classes.Snapshot>
-local function Track(spell, snapshots)
-	local snapshot = spell ~= nil and snapshots[spell.id] or nil
+---@param ownSnapshot TRB.Classes.Snapshot? # The spell's snapshot, when the spec's own table doesn't hold it
+local function Track(spell, snapshots, ownSnapshot)
+	local snapshot = ownSnapshot or (spell ~= nil and snapshots[spell.id]) or nil
 	if snapshot == nil or snapshot.spell == nil then
 		return
 	end
@@ -307,10 +308,10 @@ function ThresholdCooldowns:Sync()
 				Track(spells[key], snapshots)
 			end
 		end
-		local customBarSpells = {}
-		TRB.Functions.CustomBars:AppendCooldownSpells(customBarSpells)
+		local customBarSpells, customBarSnapshots = {}, {}
+		TRB.Functions.CustomBars:AppendCooldownSpells(customBarSpells, customBarSnapshots)
 		for _, spell in ipairs(customBarSpells) do
-			Track(spell, snapshots)
+			Track(spell, snapshots, customBarSnapshots[spell])
 		end
 	end
 

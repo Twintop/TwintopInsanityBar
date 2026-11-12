@@ -26,7 +26,7 @@ local L = TRB.Localization
 ---@field public kind trbCustomBarSourceKind
 ---@field public spellId integer
 ---@field public spellName string
----@field public icon string?
+---@field public icon string? # Texture markup, as a spell's icon is
 ---@field public label string
 ---@field public provider string? # Set by GetSources; nil is the spec's own tracking
 
@@ -78,11 +78,13 @@ CustomBars.segmentedAutoMax = 10
 
 ---One place custom bars can be fed from. The spec's own tracking is the only one so far.
 ---@class TRB.Classes.CustomBarProvider
+---@field public label string # What the Add Bar menu calls it
+---@field public shortLabel string? # What a bar's Tracks text says its value comes from
 ---@field public GetSources fun(classId: integer?, specId: integer?): TRB.Classes.CustomBarSourceOption[] # What it offers a specialization, unsorted
 ---@field public GetSourceName fun(classId: integer?, specId: integer?, source: TRB.Classes.Settings.CustomBarSource): string? # The tracked spell's current name
 ---@field public ReadMax fun(classId: integer, specId: integer, source: TRB.Classes.Settings.CustomBarSource): integer? # A count source's maximum, when known in plain form
 ---@field public OnAdd fun(classId: integer, specId: integer, source: TRB.Classes.Settings.CustomBarSource)? # Runs once a bar on the source is saved
----@field public AppendCooldownSpell fun(entry: TRB.Classes.CustomBarRuntime, spells: TRB.Classes.SpellBase[])? # Adds the spell whose cooldown the cooldown tracker should read
+---@field public AppendCooldownSpell fun(entry: TRB.Classes.CustomBarRuntime, spells: TRB.Classes.SpellBase[], ownSnapshots: table<TRB.Classes.SpellBase, TRB.Classes.Snapshot>?)? # Adds the spell whose cooldown the cooldown tracker should read, with its snapshot when the spec doesn't hold it
 ---@field public WriteLookup fun(entry: TRB.Classes.CustomBarRuntime, now: number): string, string, string # The bar's time, stacks, and maximum stacks as text
 ---@field public Render fun(entry: TRB.Classes.CustomBarRuntime, group: TRB.Classes.BarGroup, node: TRB.Classes.BarNode, settings: table, now: number, redraw: boolean): boolean # Draws the bar; true when the bars need laying out again
 
@@ -97,6 +99,14 @@ function CustomBars:RegisterProvider(name, provider)
 	providers[name] = provider
 end
 
+---What the Add Bar menu calls a provider.
+---@param name string? # nil is the spec's own tracking
+---@return string
+function CustomBars:GetProviderLabel(name)
+	local provider = providers[name or self.defaultProvider]
+	return provider ~= nil and provider.label or ""
+end
+
 ---The provider that reads a source, or nil for one this version doesn't have.
 ---@param source TRB.Classes.Settings.CustomBarSource
 ---@return TRB.Classes.CustomBarProvider?
@@ -106,7 +116,7 @@ end
 
 ---@type TRB.Classes.CustomBarProvider
 ---@diagnostic disable-next-line: missing-fields
-local snapshotProvider = {}
+local snapshotProvider = { label = L["CustomBarsAddGroupSnapshot"], shortLabel = L["CustomBarsProviderShortSnapshot"] }
 CustomBars:RegisterProvider(CustomBars.defaultProvider, snapshotProvider)
 
 local kindLabels = {
@@ -358,7 +368,7 @@ function snapshotProvider.GetSourceName(classId, specId, source)
 	return snapshot ~= nil and snapshot.spell ~= nil and GetSpellName(snapshot.spell) or nil
 end
 
----What a bar tracks, as the table and the dropdown show it.
+---What a bar tracks and where that comes from, as the table and the closed dropdown show it.
 ---@param classId integer?
 ---@param specId integer?
 ---@param source TRB.Classes.Settings.CustomBarSource?
@@ -369,7 +379,11 @@ function CustomBars:GetSourceLabel(classId, specId, source)
 	end
 	local provider = ProviderOf(source)
 	local name = provider ~= nil and provider.GetSourceName(classId, specId, source) or source.spellName
-	return string.format(L["CustomBarsSourceFormat"], name or tostring(source.spellId), kindLabels[source.kind] or "")
+	local via = provider ~= nil and (provider.shortLabel or provider.label) or nil
+	if via == nil then
+		return string.format(L["CustomBarsSourceFormat"], name or tostring(source.spellId), kindLabels[source.kind] or "")
+	end
+	return string.format(L["CustomBarsSourceViaFormat"], name or tostring(source.spellId), kindLabels[source.kind] or "", via)
 end
 
 ---A count source's maximum, when the snapshot knows it in plain form.
@@ -984,12 +998,10 @@ end
 ---@return string timeText
 ---@return string stacksText
 ---@return string stacksMaxText
-function snapshotProvider.WriteLookup(entry, now)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
-	local snapshots = snapshotData ~= nil and snapshotData.snapshots or nil
+---@param snapshot TRB.Classes.Snapshot?
+local function LookupSnapshot(entry, now, snapshot)
 	local kinds = CustomBars.kinds
 	local timeText, stacksText, stacksMaxText = "", "", ""
-	local snapshot = snapshots ~= nil and snapshots[entry.spellId] or nil
 	if snapshot ~= nil then
 		if not entry.isTimer then
 			stacksText = TRB.Functions.Number:RoundTo(ReadCount(entry.kind, snapshot, now), 0)
@@ -1026,6 +1038,16 @@ function snapshotProvider.WriteLookup(entry, now)
 	return timeText, stacksText, stacksMaxText
 end
 
+---@param entry TRB.Classes.CustomBarRuntime
+---@param now number
+---@return string timeText
+---@return string stacksText
+---@return string stacksMaxText
+function snapshotProvider.WriteLookup(entry, now)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+	return LookupSnapshot(entry, now, snapshotData ~= nil and snapshotData.snapshots[entry.spellId] or nil)
+end
+
 ---Writes each bar's own bar text variables.
 ---@param lookup table<string, any>
 function CustomBars:WriteLookup(lookup)
@@ -1057,14 +1079,15 @@ end
 
 ---Appends the spells whose cooldowns the displayed bars read, for the cooldown tracker.
 ---@param spells TRB.Classes.SpellBase[]
-function CustomBars:AppendCooldownSpells(spells)
+---@param ownSnapshots table<TRB.Classes.SpellBase, TRB.Classes.Snapshot>? # Filled with the snapshots the spec doesn't hold
+function CustomBars:AppendCooldownSpells(spells, ownSnapshots)
 	EnsureRuntime()
 	if not runtimeHasCooldowns then
 		return
 	end
 	for _, entry in ipairs(runtime) do
 		if entry.provider.AppendCooldownSpell ~= nil then
-			entry.provider.AppendCooldownSpell(entry, spells)
+			entry.provider.AppendCooldownSpell(entry, spells, ownSnapshots)
 		end
 	end
 end
@@ -1357,19 +1380,18 @@ local function ApplyLiveMax(entry, max)
 	return true
 end
 
----Draws a bar from the spec's own snapshot of its spell.
+---Draws a bar from a snapshot of its spell.
 ---@param entry TRB.Classes.CustomBarRuntime
 ---@param group TRB.Classes.BarGroup
 ---@param node TRB.Classes.BarNode
 ---@param settings table # The spec cache settings
 ---@param now number
 ---@param redraw boolean
+---@param snapshot TRB.Classes.Snapshot?
 ---@return boolean needsLayout
-function snapshotProvider.Render(entry, group, node, settings, now, redraw)
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+local function RenderSnapshot(entry, group, node, settings, now, redraw, snapshot)
 	local kinds = CustomBars.kinds
 	local source = entry.bar.source
-	local snapshot = snapshotData ~= nil and snapshotData.snapshots[source.spellId] or nil
 	local needsLayout = false
 	if snapshot == nil then
 		entry.active = false
@@ -1426,6 +1448,122 @@ function snapshotProvider.Render(entry, group, node, settings, now, redraw)
 	end
 	return needsLayout
 end
+
+---@param entry TRB.Classes.CustomBarRuntime
+---@param group TRB.Classes.BarGroup
+---@param node TRB.Classes.BarNode
+---@param settings table # The spec cache settings
+---@param now number
+---@param redraw boolean
+---@return boolean needsLayout
+function snapshotProvider.Render(entry, group, node, settings, now, redraw)
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
+	return RenderSnapshot(entry, group, node, settings, now, redraw, snapshotData ~= nil and snapshotData.snapshots[entry.bar.source.spellId] or nil)
+end
+
+-- An ability by the spell ID the user typed, read through a snapshot of its own.
+CustomBars.spellProvider = "spell"
+
+---@type table<integer, TRB.Classes.Snapshot>
+local spellSnapshots = {}
+
+---@param source TRB.Classes.Settings.CustomBarSource
+---@return TRB.Classes.Snapshot
+local function GetSpellSnapshot(source)
+	local snapshot = spellSnapshots[source.spellId]
+	if snapshot == nil then
+		local spell = TRB.Classes.SpellBase:New({
+			id = source.spellId,
+			hasCooldown = true,
+			hasCharges = source.kind ~= CustomBars.kinds.cooldownTime
+		})
+		snapshot = TRB.Classes.Snapshot:New(spell)
+		spellSnapshots[source.spellId] = snapshot
+	end
+	return snapshot
+end
+
+---What the client says an ability can be tracked as: its charges and recharge, or its cooldown.
+---@param spellId integer
+---@return TRB.Classes.CustomBarSourceOption[]
+function CustomBars:GetSpellIdSources(spellId)
+	local sources = {}
+	local name = C_Spell.GetSpellName(spellId)
+	if name == nil then
+		return sources
+	end
+	local kinds = self.kinds
+	local texture = C_Spell.GetSpellTexture(spellId)
+	local offered = {}
+	if C_Spell.GetSpellCharges(spellId) ~= nil then
+		offered = { kinds.charges, kinds.rechargeTime }
+	elseif (GetSpellBaseCooldown(spellId) or 0) > 0 then
+		offered = { kinds.cooldownTime }
+	end
+	for _, kind in ipairs(offered) do
+		sources[#sources + 1] = {
+			kind = kind,
+			spellId = spellId,
+			spellName = name,
+			icon = texture ~= nil and string.format("|T%s:0|t", texture) or nil,
+			label = string.format(L["CustomBarsSourceFormat"], name, kindLabels[kind]),
+			provider = self.spellProvider,
+		}
+	end
+	return sources
+end
+
+---@type TRB.Classes.CustomBarProvider
+local spellProvider = {
+	label = L["CustomBarsAddGroupSpellId"],
+	shortLabel = L["CustomBarsProviderShortSpellId"],
+	-- The abilities this specialization's bars already name, so a bar can change what it tracks of one.
+	GetSources = function(classId, specId)
+		local sources = {}
+		local compositeKey = classId ~= nil and specId ~= nil and TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId) or nil
+		local seen = {}
+		for _, bar in pairs(CustomBars:GetBars(GetSavedSpec(compositeKey)) or {}) do
+			local source = type(bar) == "table" and bar.source or nil
+			if type(source) == "table" and source.provider == CustomBars.spellProvider and type(source.spellId) == "number" and not seen[source.spellId] then
+				seen[source.spellId] = true
+				for _, option in ipairs(CustomBars:GetSpellIdSources(source.spellId)) do
+					sources[#sources + 1] = option
+				end
+			end
+		end
+		return sources
+	end,
+	GetSourceName = function(_, _, source)
+		return C_Spell.GetSpellName(source.spellId)
+	end,
+	ReadMax = function(_, _, source)
+		local charges = source.kind == CustomBars.kinds.charges and C_Spell.GetSpellCharges(source.spellId) or nil
+		local max = charges ~= nil and charges.maxCharges or nil
+		if max ~= nil and not issecretvalue(max) and max > 0 then
+			return max
+		end
+		return nil
+	end,
+	OnAdd = function(_, _, source)
+		if source.kind == CustomBars.kinds.charges then
+			GetSpellSnapshot(source).cooldown:RefreshCharges()
+		end
+	end,
+	AppendCooldownSpell = function(entry, spells, ownSnapshots)
+		local snapshot = GetSpellSnapshot(entry.bar.source)
+		spells[#spells + 1] = snapshot.spell
+		if ownSnapshots ~= nil then
+			ownSnapshots[snapshot.spell] = snapshot
+		end
+	end,
+	WriteLookup = function(entry, now)
+		return LookupSnapshot(entry, now, GetSpellSnapshot(entry.bar.source))
+	end,
+	Render = function(entry, group, node, settings, now, redraw)
+		return RenderSnapshot(entry, group, node, settings, now, redraw, GetSpellSnapshot(entry.bar.source))
+	end,
+}
+CustomBars:RegisterProvider(CustomBars.spellProvider, spellProvider)
 
 ---Draws the displayed custom bars. Runs on the 20Hz tick, ahead of the visibility pass.
 function CustomBars:Render()

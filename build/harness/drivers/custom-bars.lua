@@ -7,6 +7,25 @@ local hooks = {}
 -- What the stubbed client UI was asked for.
 local drv = { tables = {}, menus = {}, buttons = {}, durations = 0 }
 
+-- Each button is a menu of its own, as a submenu's parent is.
+function drv.NewMenu(label, callback)
+	local menu = { label = label, callback = callback, buttons = {} }
+	function menu:CreateTitle() end
+	function menu:CreateButton(childLabel, childCallback)
+		local child = drv.NewMenu(childLabel, childCallback)
+		self.buttons[#self.buttons + 1] = child
+		return child
+	end
+	function menu:CreateRadio(childLabel, isSelected, onPick, data)
+		local child = drv.NewMenu(childLabel, function() onPick(data) end)
+		child.isSelected = function() return isSelected(data) end
+		self.buttons[#self.buttons + 1] = child
+		return child
+	end
+	function menu:SetScrollMode() end
+	return menu
+end
+
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
 	-- Brewmaster's and Evoker's ticks read these on the way through a layout pass.
@@ -21,12 +40,7 @@ function hooks.afterInstall(ctx)
 	end
 	desktop.MenuUtil = setmetatable({
 		CreateContextMenu = function(owner, generator)
-			local root = { buttons = {} }
-			function root:CreateTitle() end
-			function root:CreateButton(label, callback)
-				self.buttons[#self.buttons + 1] = { label = label, callback = callback }
-			end
-			function root:SetScrollMode() end
+			local root = drv.NewMenu()
 			generator(owner, root)
 			drv.menus[#drv.menus + 1] = root
 			return root
@@ -77,6 +91,15 @@ function hooks.afterLoad(ctx)
 	end)
 
 	local Primitives = TRB.Functions.OptionsUi.Primitives
+	-- The menu a dropdown is given after it is built, which is the Tracks dropdown's tiers.
+	local buildDropdown = Primitives.BuildDropdown
+	Primitives.BuildDropdown = function(self, parent, name, ...)
+		local dropdown = buildDropdown(self, parent, name, ...)
+		rawset(dropdown, "SetupMenu", function(_, generator)
+			drv.lastDropdownMenu = { name = name, generator = generator }
+		end)
+		return dropdown
+	end
 	local buildButton = Primitives.BuildButton
 	Primitives.BuildButton = function(self, parent, text, ...)
 		local button = buildButton(self, parent, text, ...)
@@ -918,11 +941,95 @@ function hooks.afterEvents(ctx)
 			and not has[ownTimerText] and #result == 3)
 	end
 
+	-- An ability named by spell ID: the client says what it can be tracked as, and its cooldown is read like any other.
+	do
+		local names = { [990030] = "Driver Typed Cooldown", [990031] = "Driver Typed Charges", [990032] = "Driver Typed Passive" }
+		local api = {
+			GetSpellName = desktop.C_Spell.GetSpellName,
+			GetSpellCharges = desktop.C_Spell.GetSpellCharges,
+			GetSpellCooldown = desktop.C_Spell.GetSpellCooldown,
+			GetSpellCooldownDuration = desktop.C_Spell.GetSpellCooldownDuration,
+			GetSpellBaseCooldown = desktop.GetSpellBaseCooldown,
+		}
+		local typedCharges = { currentCharges = 1, maxCharges = 3, isActive = false }
+		local typedCooldown = nil
+		rawset(desktop.C_Spell, "GetSpellName", function(id) return names[id] or api.GetSpellName(id) end)
+		rawset(desktop.C_Spell, "GetSpellCharges", function(id)
+			if names[id] ~= nil then
+				return id == 990031 and typedCharges or nil
+			end
+			return api.GetSpellCharges(id)
+		end)
+		rawset(desktop.C_Spell, "GetSpellCooldown", function(id)
+			if names[id] ~= nil then
+				return id == 990030 and typedCooldown or nil
+			end
+			return api.GetSpellCooldown(id)
+		end)
+		rawset(desktop.C_Spell, "GetSpellCooldownDuration", function(id, ...)
+			if id == 990030 then
+				return { GetRemainingDuration = function() return 9 end }
+			end
+			return api.GetSpellCooldownDuration(id, ...)
+		end)
+		desktop.GetSpellBaseCooldown = function(id) return id == 990030 and 30000 or 0 end
+
+		local typedCooldownSources = CustomBars:GetSpellIdSources(990030)
+		local typedChargeSources = CustomBars:GetSpellIdSources(990031)
+		check("a typed ability is offered by what the client says it has: a Cooldown, or Charges and a Recharge, or nothing",
+			#typedCooldownSources == 1 and typedCooldownSources[1].kind == "cooldownTime" and typedCooldownSources[1].provider == "spell"
+			and #typedChargeSources == 2 and typedChargeSources[1].kind == "charges" and typedChargeSources[2].kind == "rechargeTime"
+			and #CustomBars:GetSpellIdSources(990032) == 0)
+		if #typedCooldownSources == 1 and #typedChargeSources == 2 then
+			local typedCooldownGuid = CustomBars:Add(spec, classId, specId, typedCooldownSources[1])
+			local typedChargeGuid = CustomBars:Add(spec, classId, specId, typedChargeSources[1])
+			local typedCooldownKey, typedChargeKey = CustomBars:GetBarKey(typedCooldownGuid), CustomBars:GetBarKey(typedChargeGuid)
+			check("its bar is saved with the spell ID, and a charges bar takes the client's maximum",
+				spec.customBars.bars[typedCooldownGuid].source.provider == "spell" and spec.customBars.bars[typedCooldownGuid].source.spellId == 990030
+				and definitions:Get(typedChargeKey) ~= nil and definitions:Get(typedChargeKey).maxNodes == 3)
+			local typedSpells, typedSnapshots = {}, {}
+			CustomBars:AppendCooldownSpells(typedSpells, typedSnapshots)
+			check("both join the cooldown tracker with snapshots of their own", #typedSpells == 2 and typedSnapshots[typedSpells[1]] ~= nil
+				and typedSnapshots[typedSpells[2]] ~= nil and snapshots[990030] == nil)
+			try("lay out the typed bars", Relayout)
+			try("render the typed bars", function() CustomBars:Render() end)
+			check("a ready typed cooldown is hidden, and typed charges show", not Shows(EntryFor(barGroups[typedCooldownKey]))
+				and barGroups[typedChargeKey] ~= nil and barGroups[typedChargeKey].maxNodes == 3 and Shows(EntryFor(barGroups[typedChargeKey])))
+			typedCooldown = { isActive = true, isOnGCD = false, isEnabled = true, modRate = 1, startTime = desktop.GetTime(), duration = 30 }
+			stubs.fireEvents("SPELL_UPDATE_COOLDOWN:990030", ctx.addonName)
+			try("render a running typed cooldown", function()
+				CustomBars:Render()
+				CustomBars:Render()
+			end)
+			check("a running typed cooldown shows", Shows(EntryFor(barGroups[typedCooldownKey])))
+			local listed = 0
+			for _, source in ipairs(CustomBars:GetSources(classId, specId)) do
+				if source.provider == "spell" then
+					listed = listed + 1
+				end
+			end
+			check("abilities the specialization's bars name are listed with its sources", listed == 3)
+			CustomBars:Delete(spec, classId, specId, typedCooldownGuid)
+			CustomBars:Delete(spec, classId, specId, typedChargeGuid)
+			try("lay out without the typed bars", Relayout)
+			try("render without them", function() CustomBars:Render() end)
+			local stillTyped = {}
+			CustomBars:AppendCooldownSpells(stillTyped)
+			check("deleted typed bars leave the cooldown tracker", #stillTyped == 0)
+		end
+		rawset(desktop.C_Spell, "GetSpellName", api.GetSpellName)
+		rawset(desktop.C_Spell, "GetSpellCharges", api.GetSpellCharges)
+		rawset(desktop.C_Spell, "GetSpellCooldown", api.GetSpellCooldown)
+		rawset(desktop.C_Spell, "GetSpellCooldownDuration", api.GetSpellCooldownDuration)
+		desktop.GetSpellBaseCooldown = api.GetSpellBaseCooldown
+	end
+
 	-- Another provider's bars draw and read through it, and a bar whose provider is missing is left alone.
 	do
 		local drawn, looked = 0, 0
 		---@type TRB.Classes.CustomBarProvider
 		local driverProvider = {
+			label = "Driver",
 			GetSources = function()
 				return { { kind = "buffTime", spellId = 990020, spellName = "Driver Provided", label = "Driver Provided" } }
 			end,
@@ -1006,9 +1113,50 @@ function hooks.afterEvents(ctx)
 		local menusBefore = #drv.menus
 		try("click Add Bar", function() addButton.__scripts.OnClick(addButton) end)
 		local menu = drv.menus[menusBefore + 1]
-		check("Add Bar offers what the specialization tracks", menu ~= nil and #menu.buttons == #CustomBars:GetSources(classId, specId))
-		if menu ~= nil and #menu.buttons > 0 then
-			try("pick the first source", function() menu.buttons[1].callback() end)
+		---Every entry that does something, in menu order.
+		local function Leaves(parent, into)
+			for _, button in ipairs(parent.buttons) do
+				if button.callback ~= nil then
+					into[#into + 1] = button
+				end
+				Leaves(button, into)
+			end
+			return into
+		end
+		local leaves = menu ~= nil and Leaves(menu, {}) or {}
+		local tracked = menu ~= nil and menu.buttons[1] or nil --[[@as table?]]
+		local typed = menu ~= nil and menu.buttons[2] or nil --[[@as table?]]
+		check("Add Bar opens on where a bar's value comes from: the specialization's tracking, then a spell ID", menu ~= nil and #menu.buttons == 2
+			and tracked ~= nil and typed ~= nil and tracked.label == TRB.Localization["CustomBarsAddGroupSnapshot"] and tracked.callback == nil
+			and typed.label == TRB.Localization["CustomBarsAddGroupSpellId"]
+			and typed.buttons[1] ~= nil and typed.buttons[1].label == TRB.Localization["CustomBarsAddSpellId"])
+		local stackSpellMenu = nil
+		for _, button in ipairs(tracked ~= nil and tracked.buttons or {}) do
+			if button.label:sub(-13) == "Driver Stacks" then
+				stackSpellMenu = button
+			end
+		end
+		local iconSpell = TRB.Classes.SpellBase:New({
+			id = 990040,
+			duration = 5
+		})
+		iconSpell.name = "Driver Icon"
+		iconSpell.icon = "|T12345:0|t"
+		snapshots[iconSpell.id] = TRB.Classes.Snapshot:New(iconSpell)
+		try("click Add Bar with an icon spell", function() addButton.__scripts.OnClick(addButton) end)
+		local iconLabel = nil
+		for _, button in ipairs(drv.menus[#drv.menus].buttons[1].buttons) do
+			if button.label:sub(-11) == "Driver Icon" then
+				iconLabel = button.label
+			end
+		end
+		check("a spell is listed with its icon", iconLabel == "|T12345:0|t Driver Icon")
+		snapshots[iconSpell.id] = nil
+		check("then each spell, then what to track of it", stackSpellMenu ~= nil and stackSpellMenu.callback == nil and #stackSpellMenu.buttons == 1
+			and stackSpellMenu.buttons[1].label == CustomBars:GetKindLabel("buffStacks")
+			and #leaves == #CustomBars:GetSources(classId, specId) + 1)
+		if #leaves > 0 then
+			try("pick the first source", function() leaves[1].callback() end)
 		end
 		check("picking one adds a bar and lists it", #barsTable.rows == 3)
 
@@ -1024,8 +1172,39 @@ function hooks.afterEvents(ctx)
 		barsTable.sel = nil
 		try("open the stack bar from its key", function() TRB.Functions.OptionsUi.CustomBars:OpenBar(classId, specId, stackKey) end)
 		check("opening a bar by its key selects its row", barsTable.sel ~= nil and barsTable.sel == RowOf(stackGuid))
+		-- The open bar's Tracks dropdown has the same tiers, with what it tracks now marked.
+		local tracksMenu = drv.lastDropdownMenu
+		local tracksRoot = drv.NewMenu()
+		if tracksMenu ~= nil then
+			try("open the Tracks dropdown", function() tracksMenu.generator(nil, tracksRoot) end)
+		end
+		local trackedGroup = tracksRoot.buttons[1]
+		local toTimer, current = nil, nil
+		for _, spellMenu in ipairs(trackedGroup ~= nil and trackedGroup.buttons or {}) do
+			for _, kindRadio in ipairs(spellMenu.buttons) do
+				if spellMenu.label:sub(-12) == "Driver Timer" then
+					toTimer = kindRadio
+				elseif kindRadio.isSelected ~= nil and kindRadio.isSelected() then
+					current = spellMenu.label
+				end
+			end
+		end
+		check("the Tracks dropdown is tiered like Add Bar and marks what the bar tracks", tracksMenu ~= nil and tracksMenu.name:sub(-7) == "_Tracks"
+			and #tracksRoot.buttons == 2 and trackedGroup.label == TRB.Localization["CustomBarsAddGroupSnapshot"]
+			and toTimer ~= nil and toTimer.label == CustomBars:GetKindLabel("buffTime") and current ~= nil and current:sub(-13) == "Driver Stacks")
+		if toTimer ~= nil then
+			try("pick another source from the Tracks dropdown", function() toTimer.callback() end)
+			check("picking from it changes what the bar tracks", spec.customBars.bars[stackGuid].source.kind == "buffTime"
+				and spec.customBars.bars[stackGuid].source.spellId == timerSpell.id)
+			CustomBars:SetSource(spec, classId, specId, spec.customBars.bars[stackGuid], stackSource)
+		end
 		local timerRow = RowOf(timerGuid)
-		check("the table names what each bar tracks", timerRow ~= nil and barsTable.rows[timerRow].cols[3].value == timerSource.label)
+		check("the table names what each bar tracks and where that comes from", timerRow ~= nil
+			and barsTable.rows[timerRow].cols[3].value == CustomBars:GetSourceLabel(classId, specId, timerSource)
+			and CustomBars:GetSourceLabel(classId, specId, timerSource) == string.format(TRB.Localization["CustomBarsSourceViaFormat"], "Driver Timer",
+				CustomBars:GetKindLabel("buffTime"), TRB.Localization["CustomBarsProviderShortSnapshot"])
+			and CustomBars:GetSourceLabel(classId, specId, { kind = "cooldownTime", spellId = 990030, spellName = "Driver Typed", provider = "spell" })
+				:find(TRB.Localization["CustomBarsProviderShortSpellId"], 1, true) ~= nil)
 		if timerRow ~= nil then
 			try("open the timer bar", function() barsTable.events.OnClick(nil, nil, barsTable.rows, nil, timerRow, timerRow, 2, barsTable, "LeftButton") end)
 			try("delete the timer bar", function() barsTable.events.OnClick(nil, nil, barsTable.rows, nil, timerRow, timerRow, 4, barsTable, "LeftButton") end)
