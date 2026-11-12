@@ -89,7 +89,6 @@ TRB.Flavor = {
 	-- No flying of any kind.
 	unavailableVisibilityConditions = {
 		isMountedFlying = true, isSteadyFlight = true, isSteadyFlightFlying = true, isSkyriding = true, isSkyridingFlying = true,
-		isDruidFlightForm = true, isDruidSwiftFlightForm = true,
 	},
 	-- Ranked spells are learned one at a time, so a threshold's spell may not be known yet.
 	thresholdsRequireKnown = true,

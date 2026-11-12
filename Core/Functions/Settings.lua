@@ -31,15 +31,6 @@ function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
 		isSteadyFlightFlying = false,
 		isSkyriding = false,
 		isSkyridingFlying = false,
-		isDruidHumanoidForm = false,
-		isDruidTravelFormAny = false,
-		isDruidStagForm = false,
-		isDruidFlightForm = false,
-		isDruidSwiftFlightForm = false,
-		isDruidAquaticForm = false,
-		isDruidCatForm = false,
-		isDruidBearForm = false,
-		isDruidMoonkinForm = false,
 		inVehicle = false,
 		inPetBattle = true,
 		onTaxi = true,
@@ -47,6 +38,9 @@ function TRB.Functions.Settings:LoadDefaultBarVisibilityHideConditions()
 		inCombat = false,
 		outOfCombat = false,
 	}
+	for _, condition in ipairs(TRB.Classes.SpecDescriptor:GetFormConditions()) do
+		conditions[condition.key] = false
+	end
 	for key in pairs(TRB.Flavor.unavailableVisibilityConditions) do
 		conditions[key] = nil
 	end

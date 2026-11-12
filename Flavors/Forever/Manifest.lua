@@ -30,7 +30,6 @@ TRB.Flavor = {
 	-- No flying of any kind.
 	unavailableVisibilityConditions = {
 		isMountedFlying = true, isSteadyFlight = true, isSteadyFlightFlying = true, isSkyriding = true, isSkyridingFlying = true,
-		isDruidFlightForm = true, isDruidSwiftFlightForm = true,
 	},
 	-- Blizzard_SwingTimer's PLAYER_SWING event; no other client has it.
 	-- Mana regen pauses this long after each mana spend: the Five Second Rule bar.

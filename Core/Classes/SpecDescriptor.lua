@@ -17,9 +17,18 @@ TRB.Classes = TRB.Classes or {}
 ---@field exportable boolean? # Always include the secondary bar in exports even when the spec's bar group config declares no secondary
 ---@field thresholdDecimals integer? # Decimal places custom thresholds may target on the secondary bar (fragment-scaled resources)
 
+---A bar visibility condition met while the character is in one of its shapeshift forms.
+---@class TRB.Classes.SpecDescriptor.FormCondition
+---@field key string # Key the show and hide conditions store it under
+---@field label string # Localized condition name
+---@field forms table<string, boolean> # currentShapeshiftForm values that meet it
+
 ---@class TRB.Classes.SpecDescriptor.Forms
 ---@field IsBarEligibleForLayout fun(barKey: string, activeSpecSettings: table?): boolean? # Whether a form-dependent bar (secondary, mana, ...) is eligible to show given the current shapeshift form; nil = no opinion
 ---@field exportDisplayBarKeys string[]? # Spec displayBar flags that travel with bar display exports (e.g. enableFormSwitching)
+---@field defaultForm string? # The form the character counts as in before the class module reports one
+---@field visibilityConditions TRB.Classes.SpecDescriptor.FormCondition[]? # The form conditions bar visibility offers, in option order
+---@field visibilityGroupTitle string? # Localized title of those conditions' options group
 
 ---@class TRB.Classes.SpecDescriptor.AnchorFrame
 ---@field label string # Localized name shown in the bar text "relative to" dropdown
@@ -108,4 +117,51 @@ function TRB.Classes.SpecDescriptor:GetActive()
 		return nil
 	end
 	return self:Get(character.classId, character.specId)
+end
+
+---@class TRB.Classes.SpecDescriptor.FormConditionGroup
+---@field classId integer
+---@field title string
+---@field keys string[]
+---@field conditions TRB.Classes.SpecDescriptor.FormCondition[]
+
+-- Built on first use, after the Classes stage has declared every descriptor.
+---@type TRB.Classes.SpecDescriptor.FormConditionGroup[]?
+local formConditionGroups = nil
+---@type TRB.Classes.SpecDescriptor.FormCondition[]?
+local formConditions = nil
+
+---Each class's form visibility conditions, in class order.
+---@return TRB.Classes.SpecDescriptor.FormConditionGroup[]
+function TRB.Classes.SpecDescriptor:GetFormConditionGroups()
+	if formConditionGroups == nil then
+		formConditionGroups = {}
+		formConditions = {}
+		local seen = {}
+		for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+			for _, specEntry in ipairs(classEntry.specs) do
+				local forms = specEntry.descriptor and specEntry.descriptor.forms
+				if forms ~= nil and forms.visibilityConditions ~= nil then
+					local group = { classId = classEntry.classId, title = forms.visibilityGroupTitle, keys = {}, conditions = forms.visibilityConditions }
+					for _, condition in ipairs(forms.visibilityConditions) do
+						table.insert(group.keys, condition.key)
+						if not seen[condition.key] then
+							seen[condition.key] = true
+							table.insert(formConditions, condition)
+						end
+					end
+					table.insert(formConditionGroups, group)
+					break
+				end
+			end
+		end
+	end
+	return formConditionGroups
+end
+
+---Every class's form visibility conditions, each key once.
+---@return TRB.Classes.SpecDescriptor.FormCondition[]
+function TRB.Classes.SpecDescriptor:GetFormConditions()
+	self:GetFormConditionGroups()
+	return formConditions --[[@as TRB.Classes.SpecDescriptor.FormCondition[] ]]
 end

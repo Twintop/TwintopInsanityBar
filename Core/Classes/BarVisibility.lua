@@ -34,15 +34,6 @@ TRB.Functions = TRB.Functions or {}
 ---@field inDelve boolean # Whether the player is in a delve (scenario with isDelve flag)
 ---@field isPvpFlagged boolean # Whether the player is PVP flagged
 ---@field isWarMode boolean # Whether War Mode is enabled
----@field isDruidHumanoidForm boolean # Whether the Druid player is in humanoid form
----@field isDruidTravelFormAny boolean # Whether the Druid player is in any travel form variant
----@field isDruidStagForm boolean # Whether the Druid player is in stag/ground travel form
----@field isDruidFlightForm boolean # Whether the Druid player is in steady flight form
----@field isDruidSwiftFlightForm boolean # Whether the Druid player is in skyriding flight form
----@field isDruidAquaticForm boolean # Whether the Druid player is in aquatic form
----@field isDruidCatForm boolean # Whether the Druid player is in cat form
----@field isDruidBearForm boolean # Whether the Druid player is in bear form
----@field isDruidMoonkinForm boolean # Whether the Druid player is in moonkin form
 ---@field isPetAlive boolean # Whether the player's pet is out and alive
 ---@field isPetDead boolean # Whether the player's pet is out and dead
 ---@field isPetMissing boolean # Whether the player has no pet out
@@ -85,15 +76,9 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.inDelve = params.inDelve or false
 	self.isPvpFlagged = params.isPvpFlagged or false
 	self.isWarMode = params.isWarMode or false
-	self.isDruidHumanoidForm = params.isDruidHumanoidForm or false
-	self.isDruidTravelFormAny = params.isDruidTravelFormAny or false
-	self.isDruidStagForm = params.isDruidStagForm or false
-	self.isDruidFlightForm = params.isDruidFlightForm or false
-	self.isDruidSwiftFlightForm = params.isDruidSwiftFlightForm or false
-	self.isDruidAquaticForm = params.isDruidAquaticForm or false
-	self.isDruidCatForm = params.isDruidCatForm or false
-	self.isDruidBearForm = params.isDruidBearForm or false
-	self.isDruidMoonkinForm = params.isDruidMoonkinForm or false
+	for _, condition in ipairs(TRB.Classes.SpecDescriptor:GetFormConditions()) do
+		self[condition.key] = params[condition.key] or false
+	end
 	self.isPetAlive = params.isPetAlive or false
 	self.isPetDead = params.isPetDead or false
 	self.isPetMissing = params.isPetMissing or false
@@ -137,11 +122,10 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 	-- Shapeshift forms only exist for a class whose display follows them (descriptor `forms`); the
 	-- class module keeps currentShapeshiftForm up to date.
 	local activeDescriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
-	local druidForm = nil
+	local form = nil
 	if activeDescriptor ~= nil and activeDescriptor.forms ~= nil then
-		druidForm = TRB.Data.character.currentShapeshiftForm or "humanoid"
+		form = TRB.Data.character.currentShapeshiftForm or activeDescriptor.forms.defaultForm
 	end
-	local isDruidTravelFormAny = druidForm == "travel" or druidForm == "aquatic" or druidForm == "flight" or druidForm == "swiftFlight"
 
 	-- Instance type: cached on ZONE_CHANGED_NEW_AREA
 	local instanceType = TRB.Data.character.instanceType or "none"
@@ -188,15 +172,9 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 	target.inDelve = inDelve
 	target.isPvpFlagged = UnitIsPVP("player") or false
 	target.isWarMode = C_PvP.IsWarModeDesired() or false
-	target.isDruidHumanoidForm = druidForm == "humanoid"
-	target.isDruidTravelFormAny = isDruidTravelFormAny
-	target.isDruidStagForm = druidForm == "travel"
-	target.isDruidFlightForm = druidForm == "flight"
-	target.isDruidSwiftFlightForm = druidForm == "swiftFlight"
-	target.isDruidAquaticForm = druidForm == "aquatic"
-	target.isDruidCatForm = druidForm == "cat"
-	target.isDruidBearForm = druidForm == "bear"
-	target.isDruidMoonkinForm = druidForm == "moonkin"
+	for _, condition in ipairs(TRB.Classes.SpecDescriptor:GetFormConditions()) do
+		target[condition.key] = form ~= nil and condition.forms[form] == true
+	end
 	target.isPetAlive = petState == "alive"
 	target.isPetDead = petState == "dead"
 	target.isPetMissing = petState == "none"
@@ -706,20 +684,9 @@ local function UneventedInputsUnchanged(recorded)
 	return true
 end
 
-local DRUID_FORM_VISIBILITY_KEYS = {
-	"isDruidHumanoidForm",
-	"isDruidTravelFormAny",
-	"isDruidStagForm",
-	"isDruidFlightForm",
-	"isDruidSwiftFlightForm",
-	"isDruidAquaticForm",
-	"isDruidCatForm",
-	"isDruidBearForm",
-	"isDruidMoonkinForm",
-}
-
-local function HasMatchingDruidFormCondition(conditions, context)
-	for _, key in ipairs(DRUID_FORM_VISIBILITY_KEYS) do
+local function HasMatchingFormCondition(conditions, context)
+	for _, condition in ipairs(TRB.Classes.SpecDescriptor:GetFormConditions()) do
+		local key = condition.key
 		if conditions[key] == true and context[key] == true then
 			return true
 		end
@@ -756,7 +723,7 @@ end
 ---  inCombat, inVehicle, inPetBattle, onTaxi, specSupported,
 ---  isMountedAny, isMountedGround, isMountedFlying, isSkyriding, isSkyridingFlying, isSteadyFlight, isSteadyFlightFlying, hasTarget, inGroup, inRaid,
 ---  inInstance, inDungeon, inRaidInstance, inBattleground, inArena, isPvpFlagged, isWarMode,
----  Druid shapeshift form, pet state,
+---  shapeshift form, pet state,
 ---  per-bar visibility settings, talent gates, maxResource2.
 function TRB.Functions.BarVisibility:MarkDirty()
 	self.dirtyToken = self.dirtyToken + 1
@@ -943,7 +910,7 @@ function TRB.Functions.BarVisibility:ShouldForceHideBar(context, entry)
 	if conditions.outOfCombat == true and not context.inCombat then
 		return true
 	end
-	if HasMatchingDruidFormCondition(conditions, context) then
+	if HasMatchingFormCondition(conditions, context) then
 		return true
 	end
 	if HasMatchingPetCondition(conditions, context) then
@@ -1081,7 +1048,7 @@ function TRB.Functions.BarVisibility:MatchesShowConditions(context, conditions)
 	if conditions.isWarMode and context.isWarMode then
 		return true
 	end
-	if HasMatchingDruidFormCondition(conditions, context) then
+	if HasMatchingFormCondition(conditions, context) then
 		return true
 	end
 	if HasMatchingPetCondition(conditions, context) then

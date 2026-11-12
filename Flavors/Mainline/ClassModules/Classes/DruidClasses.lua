@@ -1649,6 +1649,19 @@ do
 		forms = {
 			IsBarEligibleForLayout = IsBarEligibleForLayout,
 			exportDisplayBarKeys = { "enableFormSwitching", "showComboPoints" },
+			defaultForm = "humanoid",
+			visibilityGroupTitle = L["ShowBarVisibilityGroupDruidForms"],
+			visibilityConditions = {
+				{ key = "isDruidHumanoidForm", label = L["ShowBarVisibilityConditionDruidHumanoidForm"], forms = { humanoid = true } },
+				{ key = "isDruidTravelFormAny", label = L["ShowBarVisibilityConditionDruidTravelFormAny"], forms = { travel = true, aquatic = true, flight = true, swiftFlight = true } },
+				{ key = "isDruidStagForm", label = L["ShowBarVisibilityConditionDruidStagForm"], forms = { travel = true } },
+				{ key = "isDruidFlightForm", label = L["ShowBarVisibilityConditionDruidFlightForm"], forms = { flight = true } },
+				{ key = "isDruidSwiftFlightForm", label = L["ShowBarVisibilityConditionDruidSwiftFlightForm"], forms = { swiftFlight = true } },
+				{ key = "isDruidAquaticForm", label = L["ShowBarVisibilityConditionDruidAquaticForm"], forms = { aquatic = true } },
+				{ key = "isDruidCatForm", label = L["ShowBarVisibilityConditionDruidCatForm"], forms = { cat = true } },
+				{ key = "isDruidBearForm", label = L["ShowBarVisibilityConditionDruidBearForm"], forms = { bear = true } },
+				{ key = "isDruidMoonkinForm", label = L["ShowBarVisibilityConditionDruidMoonkinForm"], forms = { moonkin = true } },
+			},
 		},
 		formIndependentBars = { "totems" },
 	})

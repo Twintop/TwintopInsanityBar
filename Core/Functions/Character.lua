@@ -1319,22 +1319,6 @@ function TRB.Functions.Character:GetActiveRawSpecSettings()
 	return classSettings and classSettings[character.specName] or nil
 end
 
----Whether any spec of a class declares shapeshift-form driven display (descriptor `forms`).
----@param classId integer?
----@return boolean
-function TRB.Functions.Character:ClassHasForms(classId)
-	local classEntry = classId ~= nil and TRB.Data.classRegistryByIds[classId] or nil
-	if classEntry == nil then
-		return false
-	end
-	for _, specEntry in ipairs(classEntry.specs) do
-		if specEntry.descriptor ~= nil and specEntry.descriptor.forms ~= nil then
-			return true
-		end
-	end
-	return false
-end
-
 ---Whether an options panel for classId/specId edits what the active character displays right now, so
 ---changes should be applied live. The Global panel (nil ids) is the caller's decision and returns false.
 ---A class whose display follows shapeshift forms shares live bar state across all of its specs.
