@@ -337,8 +337,8 @@ end
 ---@param specId integer
 ---@return table # Configuration describing the bar groups for this spec
 function TRB.Classes.Mainline.Evoker.BarGroupsFactory:GetSpecConfiguration(specId)
-    -- All Evoker specs have the same configuration
-    return {
+    -- Every Evoker spec has these
+    local config = {
         primary = {
             maxNodes = 1,
             isPrimary = true,
@@ -355,6 +355,17 @@ function TRB.Classes.Mainline.Evoker.BarGroupsFactory:GetSpecConfiguration(specI
             resourceType = "Health"
         }
     }
+
+    -- Ebon Might bar (1 node, Augmentation only)
+    if specId == 3 then
+        config.ebonMight = {
+            maxNodes = 1,
+            isPrimary = false,
+            resourceType = "EbonMight"
+        }
+    end
+
+    return config
 end
 
 -- Register barTextVariables fillers for cross-class options panel support
