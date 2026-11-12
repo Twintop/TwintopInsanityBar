@@ -161,6 +161,7 @@ local function IsSelfDrivenBarFading(groupKey)
 end
 local containerAnchorLabelByResourceType = {
 	AngelicFeather = L["AngelicFeatherContainer"],
+	ArcaneBlast = L["ArcaneBlastContainer"],
 	ArcaneCharges = L["ArcaneChargesContainer"],
 	BoneShield = L["BoneShieldContainer"],
 	Chi = L["ChiContainer"],

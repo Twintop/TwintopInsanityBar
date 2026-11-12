@@ -111,6 +111,38 @@ function TRB.Classic.Templates.Runtime:Install(className)
 		end
 	end
 
+	---The secondary bar's filled node count: its buff's stacks, or its power.
+	---@param spec TRB.Classic.SpecDefinition
+	---@param snapshotData TRB.Classes.SnapshotData
+	---@return integer
+	local function GetSecondaryCount(spec, snapshotData)
+		local buffKey = spec.secondary.buff
+		if buffKey == nil then
+			return snapshotData.attributes.resource2 or 0
+		end
+		local buff = snapshotData.snapshots[TRB.Data.spellsData.spells[buffKey].id].buff
+		return buff.isActive and buff.applications or 0
+	end
+
+	-- The secondary bar's talent gate the current layout was built with.
+	local secondaryGateHidden = nil
+
+	---Lays the bars out again when a buff secondary's talent gate opens or closes.
+	---@param spec TRB.Classic.SpecDefinition
+	local function RefreshSecondaryGate(spec)
+		local hidden = Bar:IsBarTalentGatedHidden("secondary")
+		if hidden == secondaryGateHidden then
+			return
+		end
+		secondaryGateHidden = hidden
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+		local sharedSettings = specCache[spec.entry.compositeKey].settings
+		if barGroups ~= nil and sharedSettings ~= nil then
+			Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
+		end
+		TRB.Functions.BarVisibility:MarkDirty()
+	end
+
 	local function ConstructResourceBar(settings)
 		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 		if not TRB.Data.specSupported then
@@ -135,13 +167,14 @@ function TRB.Classic.Templates.Runtime:Install(className)
 		end
 
 		if barGroups and barGroups.secondary then
-			if spec.archetype.secondary ~= nil then
-				local maxNodes = TRB.Data.character.maxResource2 or spec.archetype.secondary.maxNodes
+			if spec.secondary ~= nil then
+				local maxNodes = TRB.Data.character.maxResource2 or spec.secondary.maxNodes
 				barGroups.secondary:RebuildNodes(maxNodes, settings)
 			else
 				barGroups.secondary:Hide()
 			end
 		end
+		secondaryGateHidden = Bar:IsBarTalentGatedHidden("secondary")
 
 		TRB.Functions.Class:CheckCharacter()
 		-- Make sure bar visibility and bar text are updated immediately.
@@ -244,11 +277,12 @@ function TRB.Classic.Templates.Runtime:Install(className)
 			end
 		end
 
-		if archetype.secondary ~= nil then
-			local secondaryVariable = "$" .. archetype.secondary.variable
+		local secondary = spec.secondary
+		if secondary ~= nil and secondary.variable ~= nil then
+			local secondaryVariable = "$" .. secondary.variable
 			if not activeVars or activeVars[secondaryVariable] or activeVars[secondaryVariable .. "Max"] then
 				local current = snapshotData.attributes.resource2 or 0
-				local max = TRB.Data.character.maxResource2 or archetype.secondary.maxNodes
+				local max = TRB.Data.character.maxResource2 or secondary.maxNodes
 				lookupLogic[secondaryVariable] = current
 				lookupLogic[secondaryVariable .. "Max"] = max
 				if lookupChanged(prevState, secondaryVariable, current) then
@@ -328,6 +362,7 @@ function TRB.Classic.Templates.Runtime:Install(className)
 		local specSettings = TRB.Data.settings[className][spec.entry.specName]
 		local specCacheSettings = specCache[spec.entry.compositeKey].settings
 		UpdateSnapshot()
+		local secondaryCount = spec.secondary ~= nil and GetSecondaryCount(spec, snapshotData) or 0
 
 		if snapshotData.attributes.isTracking then
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar
@@ -361,7 +396,7 @@ function TRB.Classic.Templates.Runtime:Install(className)
 			barColorMap.resourceBar = barColors
 			local comboPointColors = scratch.comboPointColors
 			wipe(comboPointColors)
-			if spec.archetype.secondary ~= nil then
+			if spec.secondary ~= nil then
 				comboPointColors.bar = specSettings.colors.comboPoints.base
 				comboPointColors.border = specSettings.colors.comboPoints.border.color
 				comboPointColors.background = specSettings.colors.comboPoints.background.color
@@ -390,11 +425,11 @@ function TRB.Classic.Templates.Runtime:Install(className)
 				Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, spec.spellsClass.thresholdSnowflakes)
 			end
 
-			if spec.archetype.secondary ~= nil and barGroups.secondary and not specSettings.displayBar.secondary.neverShow then
+			if spec.secondary ~= nil and barGroups.secondary and not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				local comboPointsColors = specSettings.colors.comboPoints
-				local current = snapshotData.attributes.resource2 or 0
-				local max = TRB.Data.character.maxResource2 or spec.archetype.secondary.maxNodes
+				local current = secondaryCount
+				local max = TRB.Data.character.maxResource2 or spec.secondary.maxNodes
 				-- An element an indicator owns keeps the indicator's color over the per-point colors.
 				local fillClaimed = claimed.comboPointsBar.bar
 				local nodeColors = scratch.comboPointNodeColors
@@ -435,8 +470,8 @@ function TRB.Classic.Templates.Runtime:Install(className)
 		-- Threshold line sounds (independent of bar visibility)
 		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
 
-		if spec.archetype.secondary ~= nil then
-			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
+		if spec.secondary ~= nil then
+			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, spec.secondaryCounterId, secondaryCount)
 		end
 
 		TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
@@ -532,10 +567,11 @@ function TRB.Classic.Templates.Runtime:Install(className)
 		TRB.Data.character.maxResource = UnitPowerMax("player", spec.archetype.powerType, true)
 		TRB.Data.character.maxResourceUnmodified = UnitPowerMax("player", spec.archetype.powerType, false)
 
-		if spec.archetype.secondary ~= nil then
-			local maxSecondary = UnitPowerMax("player", spec.archetype.secondary.powerType)
+		local secondary = spec.secondary
+		if secondary ~= nil then
+			local maxSecondary = secondary.powerType ~= nil and UnitPowerMax("player", secondary.powerType) or nil
 			if maxSecondary == nil or maxSecondary == 0 then
-				maxSecondary = spec.archetype.secondary.maxNodes
+				maxSecondary = secondary.maxNodes
 			end
 			local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
 			local sharedSettings = specCache[spec.entry.compositeKey].settings
@@ -547,6 +583,9 @@ function TRB.Classic.Templates.Runtime:Install(className)
 					Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
 					Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
 				end
+			end
+			if secondary.buff ~= nil then
+				RefreshSecondaryGate(spec)
 			end
 		end
 
@@ -561,8 +600,9 @@ function TRB.Classic.Templates.Runtime:Install(className)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = spec.archetype.powerType
 			TRB.Data.resourceFactor = spec.archetype.resourceFactor or 1
-			if spec.archetype.secondary ~= nil then
-				TRB.Data.resource2 = spec.archetype.secondary.powerType
+			if spec.secondary ~= nil then
+				-- "SPELL" leaves a buff secondary's count to its snapshot instead of UnitPower.
+				TRB.Data.resource2 = spec.secondary.powerType or "SPELL"
 				TRB.Data.resource2Factor = 1
 			else
 				TRB.Data.resource2 = nil
@@ -592,8 +632,8 @@ function TRB.Classic.Templates.Runtime:Install(className)
 			if specCache[spec.entry.compositeKey] ~= nil then
 				sharedSettings = specCache[spec.entry.compositeKey].settings
 			end
-			local hasSecondary = spec.archetype.secondary ~= nil
-			local secondaryNodes = hasSecondary and (TRB.Data.character.maxResource2 or spec.archetype.secondary.maxNodes) or nil
+			local hasSecondary = spec.secondary ~= nil and not Bar:IsBarTalentGatedHidden("secondary")
+			local secondaryNodes = spec.secondary ~= nil and (TRB.Data.character.maxResource2 or spec.secondary.maxNodes) or nil
 			local entries = TRB.Functions.BarVisibility:BeginEntries()
 			TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)
 			TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, sharedSettings and sharedSettings.displayBar.secondary, hasSecondary, secondaryNodes, nil)
@@ -656,8 +696,8 @@ function TRB.Classic.Templates.Runtime:Install(className)
 		if spec.stealth and var == "$inStealth" then
 			return true
 		end
-		if spec.archetype.secondary ~= nil then
-			local secondaryVariable = "$" .. spec.archetype.secondary.variable
+		if spec.secondary ~= nil and spec.secondary.variable ~= nil then
+			local secondaryVariable = "$" .. spec.secondary.variable
 			if var == secondaryVariable or var == secondaryVariable .. "Max" then
 				return true
 			end
@@ -727,6 +767,25 @@ function TRB.Classic.Templates.Runtime:Install(className)
 			return
 		end
 		UpdateResourceBar()
+	end
+
+	-- Learning a spell can open a buff secondary's gate.
+	for _, spec in ipairs(classDef.specOrder) do
+		if spec.secondary ~= nil and spec.secondary.buff ~= nil then
+			local function RefreshActiveSecondaryGate()
+				local active = ActiveSpec()
+				if active ~= nil and active.secondary ~= nil and active.secondary.buff ~= nil and TRB.Data.barConstructedForSpec ~= nil then
+					RefreshSecondaryGate(active)
+				end
+			end
+			local spellsChangedFrame = CreateFrame("Frame")
+			spellsChangedFrame:RegisterEvent("SPELLS_CHANGED")
+			spellsChangedFrame:SetScript("OnEvent", function()
+				-- A frame later, so the flavor has resolved the new ranks first.
+				C_Timer.After(0, RefreshActiveSecondaryGate)
+			end)
+			break
+		end
 	end
 
 	local fillSpellData = {}

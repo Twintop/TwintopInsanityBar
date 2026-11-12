@@ -36,7 +36,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field manaBar boolean? # The spec shows a mana bar / mana bar text, so mana precision options apply
 ---@field secondary TRB.Classes.SpecDescriptor.Secondary?
 ---@field forms TRB.Classes.SpecDescriptor.Forms? # Declared by every spec of a class whose display follows shapeshift forms
----@field talentGatedBars table<string, string>? # barKey -> key in spellsData.spells whose talent must be active for the bar to show
+---@field talentGatedBars table<string, string>? # barKey -> key in spellsData.spells whose talent must be active (or, for a spell that is no talent, learned) for the bar to show
 ---@field barTextAnchorFrames table<string, TRB.Classes.SpecDescriptor.AnchorFrame[]>? # Extra "relative to" anchor frames offered by the bar text editor, keyed by the bar group they sort with (e.g. secondary, boneShield); a key that is no bar group sorts with the spec bars
 ---@field exportExtras string[]? # Extra top-level spec settings keys exported with the Font & Text section
 ---@field cooldownSpells string[]? # Keys in spellsData.spells whose cooldown snapshots stay tracked for bar text even when no threshold line tracks them

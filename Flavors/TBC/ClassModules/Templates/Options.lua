@@ -24,7 +24,8 @@ TRB.TBC.Templates.Options = {}
 local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadThresholdDictionary, includeBarText, classic)
 	local archetype = spec.archetype
 	local colors = archetype.colors
-	local hasSecondary = archetype.secondary ~= nil
+	local secondary = spec.secondary
+	local hasSecondary = secondary ~= nil
 	local maxResource = spec.entry.resources[archetype.variable] or archetype.defaultMax
 
 	local settings = {
@@ -122,7 +123,10 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadT
 		shared.indicatorColors.borderOvercap = { color = archetype.overcap.color, enabled = true, modifiers = { onlyInCombat = true }, targets = { resourceBar = { bar = false, border = true, background = false } } }
 	end
 
-	if hasSecondary then
+	if secondary ~= nil and secondary.colors ~= nil then
+		settings.comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
+		settings.colors.comboPoints = TRB.Functions.Table:DeepCopy(secondary.colors)
+	elseif hasSecondary then
 		settings.comboPoints = TRB.Functions.Settings:DefaultComboPointsDimensions(classic)
 		settings.colors.comboPoints = {
 			border = { color = colors.barBorder },
@@ -234,7 +238,8 @@ local function BuildComboPointsPanel(classDef, spec)
 	local classId, specId = classDef.classId, spec.entry.specId
 	local compositeKey = spec.entry.compositeKey
 	local resourceName = L[spec.archetype.nameKey]
-	local secondaryName = L[spec.archetype.secondary.nameKey]
+	local secondary = spec.secondary --[[@as TRB.TBC.ArchetypeSecondary]]
+	local secondaryName = secondary.name
 	local namePrefix = classDef.classModuleName .. "_" .. spec.specPascal
 
 	return function(parent)
@@ -248,7 +253,7 @@ local function BuildComboPointsPanel(classDef, spec)
 		yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, specSettings, classId, specId, yCoord, resourceName, secondaryName)
 
 		yCoord = yCoord - 60
-		controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["ComboPointColorsHeader"], oUi.xCoord, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, secondary.colorsHeader, oUi.xCoord, yCoord)
 		controls.colors.comboPoints = {}
 
 		local function gradientPicker(key, label)
@@ -313,7 +318,8 @@ function TRB.TBC.Templates.Options:Install(className, specThresholds)
 		local archetype = spec.archetype
 		local resourceName = L[archetype.nameKey]
 		local maxResource = spec.entry.resources[archetype.variable] or archetype.defaultMax
-		local hasSecondary = archetype.secondary ~= nil
+		local secondaryName = spec.secondary ~= nil and spec.secondary.name or nil
+		local hasSecondary = secondaryName ~= nil
 		local fullLabel = L[spec.entry.specLocaleKey .. "Full"]
 		local namePrefix = moduleName .. "_" .. spec.specPascal
 		local loadThresholdDictionary = specThresholds and specThresholds[specName] or nil
@@ -389,11 +395,11 @@ function TRB.TBC.Templates.Options:Install(className, specThresholds)
 		end) or nil
 
 		local texturesPanel = withSpec(function(parent, specSettings, controls)
-			TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, specSettings, classId, specId, 5, hasSecondary, hasSecondary and L[archetype.secondary.nameKey] or nil)
+			TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, specSettings, classId, specId, 5, hasSecondary, secondaryName)
 		end)
 
 		local visibilityPanel = withSpec(function(parent, specSettings, controls)
-			TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, specSettings, classId, specId, 5, resourceName, "notFull", hasSecondary, hasSecondary and L[archetype.secondary.nameKey] or nil, true)
+			TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, specSettings, classId, specId, 5, resourceName, "notFull", hasSecondary, secondaryName, true)
 		end)
 
 		local fontTextPanel = withSpec(function(parent, specSettings, controls)
@@ -456,7 +462,7 @@ function TRB.TBC.Templates.Options:Install(className, specThresholds)
 			end
 			local barTargetDefs = { { key = "resourceBar", label = overcap ~= nil and L[overcap.barNameKey] or resourceName } }
 			if hasSecondary then
-				barTargetDefs[2] = { key = "comboPointsBar", label = L[archetype.secondary.nameKey] }
+				barTargetDefs[2] = { key = "comboPointsBar", label = secondaryName }
 			end
 			TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, specSettings, classId, specId, 5, {
 				indicatorDefs = indicatorDefs,
@@ -506,7 +512,7 @@ function TRB.TBC.Templates.Options:Install(className, specThresholds)
 				{ "resourceBar", resourceName, oUi.tabWidth.small, resourceBarPanel, visibilityKey = "primary" },
 			}
 			if comboPointsPanel ~= nil then
-				tabDefinitions[#tabDefinitions + 1] = { "comboPoints", L[archetype.secondary.nameKey], oUi.tabWidth.medium, comboPointsPanel, visibilityKey = "secondary" }
+				tabDefinitions[#tabDefinitions + 1] = { "comboPoints", secondaryName, oUi.tabWidth.medium, comboPointsPanel, visibilityKey = "secondary" }
 			end
 			tabDefinitions[#tabDefinitions + 1] = { "healthBar", L["TabHealth"], oUi.tabWidth.small, healthBarPanel, visibilityKey = "health" }
 			tabDefinitions[#tabDefinitions + 1] = { "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, indicatorColorsPanel }
