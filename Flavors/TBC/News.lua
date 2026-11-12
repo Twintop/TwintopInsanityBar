@@ -12,8 +12,8 @@ TRB.Flavor.newsContent = [====[
 ## General
 ### Bar Visibility
 
-- Fix a mana spec's Primary Resource Value bar visibility condition being met at far less mana than the value set.
-- A mana spec's Primary Resource Value condition now goes up to 25,000.
+- [#986](#986) Fix a mana spec's Primary Resource Value bar visibility condition being met at far less mana than the value set.
+- [#986](#986) A mana spec's Primary Resource Value condition now goes up to 25,000.
 
 ## Mage
 

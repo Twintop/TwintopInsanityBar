@@ -12,8 +12,8 @@ TRB.Details.coreNewsContent = [====[
 - [#983](#983) Remove the `/trb fill` command.
 - [#985](#985) Move each game version's resource names, spells, and shapeshift form conditions from the shared code into that version's own files.
 - [#985](#985) Remove `Character:ClassHasForms`.
-- Move the remaining class bar colors, bar text variable types, and build check from the shared code into each game version.
-- Remove the shared code's redundant bar hiding when a specialization is disabled.
+- [#986](#986) Move the remaining class bar colors, bar text variable types, and build check from the shared code into each game version.
+- [#986](#986) Remove the shared code's redundant bar hiding when a specialization is disabled.
 - Update LibSimpleHTMLMarkdown to version 1.0.3.
 
 ## Edit Mode
