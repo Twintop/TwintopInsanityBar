@@ -11,9 +11,9 @@ TRB.Flavor.newsContent = [====[
 # 1.60.1.19-release (2026-11-12)
 ## Mage
 
-- Add a new Arcane Blast bar, tracking your Arcane Blast stacks, with the `$arcaneBlastStacks`, `$arcaneBlastStacksMax`, `$arcaneBlastTime`, and `#arcaneBlast` bar text variables. It shows once you take the Arcane Blast talent.
-- Each Arcane Blast cast fills one of its four nodes, and the stacks end 18 seconds after the first cast.
-- The Arcane Blast bar joins the bar text Relative to Frame and Color Indicator target lists, and adds an Arcane Blast Stacks source for audio cues.
+- [#981](#981) Add a new Arcane Blast bar, tracking your Arcane Blast stacks, with the `$arcaneBlastStacks`, `$arcaneBlastStacksMax`, `$arcaneBlastTime`, and `#arcaneBlast` bar text variables. It shows once you take the Arcane Blast talent.
+- [#981](#981) Each Arcane Blast cast fills one of its four nodes, and the stacks end 18 seconds after the first cast.
+- [#981](#981) The Arcane Blast bar joins the bar text Relative to Frame and Color Indicator target lists, and adds an Arcane Blast Stacks source for audio cues.
 
 ---
 
