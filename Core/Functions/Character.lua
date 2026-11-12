@@ -1548,57 +1548,8 @@ local function OverlayOn(base, overrides)
 end
 
 ---Fills the specialization cache with a combination of global and spec specific settings
----@param className string # Class name
----| '"deathknight"' # Death Knight
----| '"demonhunter"' # Demon Hunter
----| '"druid"' # Druid 
----| '"evoker"' # Evoker
----| '"hunter"' # Hunter
----| '"mage"' # Mage
----| '"monk"' # Monk
----| '"paladin' # Paladin
----| '"priest"' # Priest
----| '"rogue"' # Rogue
----| '"shaman"' # Shaman
----| '"warlock' # Warlock
----| '"warrior"' # Warrior
----@param specName string
----| '"blood"' # Blood (Death Knight)
----| '"frost"' # Frost (Death Knight, Mage)
----| '"unholy"' # Unholy (Death Knight)
----| '"havoc"' # Havoc (Demon Hunter)
----| '"vengeance"' # Vengeance (Demon Hunter)
----| '"devourer"' # Devourer (Demon Hunter)
----| '"balance"' # Balance (Druid)
----| '"feral"' # Feral (Druid)
----| '"guardian"' # Guardian (Druid)
----| '"restoration"' # Restoration (Druid, Shaman)
----| '"devastation"' # Devastation (Evoker)
----| '"preservation"' # Preservation (Evoker)
----| '"augmentation"' # Augmentation (Evoker)
----| '"beastMastery"' # Beast Mastery (Hunter)
----| '"marksmanship"' # Marksmanship (Hunter)
----| '"survival"' # Survival (Hunter)
----| '"arcane"' # Arcane (Mage)
----| '"fire"' # Fire (Mage)
----| '"brewmaster"' # Brewmaster (Monk)
----| '"mistweaver"' # Mistweaver (Monk)
----| '"windwalker"' # Windwalker (Monk)
----| '"retribution"' # Retribution (Paladin)
----| '"discipline"' # Discipline (Priest)
----| '"holy"' # Holy (Paladin, Priest)
----| '"shadow"' # Shadow (Priest)
----| '"assassination"' # Assassination (Rogue)
----| '"outlaw"' # Outlaw (Rogue)
----| '"subtlety"' # Subtlety (Rogue)
----| '"elemental"' # Elemental (Shaman)
----| '"enhancement"' # Enhancement (Shaman)
----| '"affliction"' # Affliction (Warlock)
----| '"demonology"' # Demonology (Warlock)
----| '"destruction"' # Destruction (Warlock)
----| '"arms"' # Arms (Warrior)
----| '"fury"' # Fury (Warrior)
----| '"protection"' # Protection (Paladin, Warrior)
+---@param className string # All-lowercase class key, as the flavor manifest declares it
+---@param specName string # Spec key, as the flavor manifest declares it
 function TRB.Functions.Character:FillSpecializationCacheSettings(className, specName)
 	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
 	local specCache = TRB.Data.specCache[compositeKey] --[[@as TRB.Classes.SpecCache]]
