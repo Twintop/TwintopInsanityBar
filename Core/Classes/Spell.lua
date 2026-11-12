@@ -6,8 +6,7 @@ TRB.Classes = TRB.Classes or {}
 ---| '"TRB.Classes.SpellComboPoint"' # TRB.Classes.SpellComboPointThreshold
 ---| '"TRB.Classes.SpellThreshold"' # TRB.Classes.SpellThreshold
 ---| '"TRB.Classes.SpellComboPointThreshold"' # TRB.Classes.SpellComboPointThreshold
----| '"TRB.Classes.Mainline.Priest.HolyWordSpell"' # TRB.Classes.Mainline.Priest.HolyWordSpell
----| '"TRB.Classes.Mainline.Shaman.OverloadSpell"' # TRB.Classes.Mainline.Shaman.OverloadSpell
+---| string # A spell class a flavor's class module derives
 
 ---@class TRB.Classes.SpellsData
 ---@field public spells TRB.Classes.SpecializationSpellsBase # Dictionary of spells

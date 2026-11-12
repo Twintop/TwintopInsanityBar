@@ -84,7 +84,6 @@ local addonName, TRB = ...
 ---@field public DefaultManualUpdateChecks (fun(): table)? # Seed for settings.manualUpdateChecks
 ---@field public OnBarTextSeeded (fun(settings: table, className: string))? # Hook after a class receives fresh default bar text
 ---@field public RunManualUpdateChecks (fun(settings: table, classEntry: TRB.Data.ClassRegistryEntry): table)? # One-shot per-class manual migrations run right after the saved variables are merged
----@field public ShowMidnightBarTextResetMessage (fun(className: string))? # Mainline-only chat notice for its bar text reset
 ---@field public ResolveSpellRankId (fun(spell: TRB.Classes.SpellBase): integer?)? # The rank of a `rankIds` spell to hand the client API; flavors without ranked spells leave it unset and get the spell's `id`
 ---@field public ReadTalentRanks fun(): table<integer, TRB.Flavor.TalentRank> # Every talent's rank keyed by spell ID
 ---@field public pvpTalents boolean # The client has PvP talents
