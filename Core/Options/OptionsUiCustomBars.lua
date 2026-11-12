@@ -79,7 +79,8 @@ local function FillSourceMenu(rootDescription, classId, specId, onPick, onSpellI
 		local spell = group.bySpell[source.spellId]
 		if spell == nil then
 			local icon = source.icon
-			spell = { name = (icon ~= nil and icon ~= "" and icon .. " " or "") .. source.spellName, sources = {} }
+			spell = { name = (icon ~= nil and icon ~= "" and icon .. " " or "") .. source.spellName, sortName = source.spellName,
+				section = source.section, sectionOrder = source.sectionOrder or 0, sources = {} }
 			group.bySpell[source.spellId] = spell
 			group.spells[#group.spells + 1] = spell
 		end
@@ -114,7 +115,20 @@ local function FillSourceMenu(rootDescription, classId, specId, onPick, onSpellI
 				end, promptText)
 			end)
 		end
+		table.sort(group.spells, function(a, b)
+			if a.sectionOrder ~= b.sectionOrder then
+				return a.sectionOrder < b.sectionOrder
+			end
+			return a.sortName < b.sortName
+		end)
+		local section = nil
 		for _, spell in ipairs(group.spells) do
+			-- A provider's headings, such as what is and isn't displayed.
+			if spell.section ~= nil and spell.section ~= section then
+				section = spell.section
+				rows = rows + 1
+				groupMenu:CreateTitle(section)
+			end
 			local spellMenu = groupMenu:CreateButton(spell.name)
 			for _, source in ipairs(spell.sources) do
 				if selectedKey ~= nil then

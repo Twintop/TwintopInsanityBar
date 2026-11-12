@@ -9,6 +9,11 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.13-release (2026-11-11)
+## General
+### Custom Bars
+
+- A custom bar can track the cooldown, recharge, or charges of an ability in your Cooldown Manager, including the ones under Not Displayed.
+
 ## Druid
 
 - [#988](#988) A form that shows another specialization's bars shows that specialization's custom bars and the bar text bound to them.

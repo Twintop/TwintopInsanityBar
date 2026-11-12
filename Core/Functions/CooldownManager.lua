@@ -1097,6 +1097,64 @@ function CDM:GetLayoutEntries()
 	return entries
 end
 
+---One ability in the user's layout.
+---@class TRB.CdmAbilityEntry
+---@field cooldownID integer
+---@field spellID integer # The entry's own spell, which its cooldown is read by
+---@field name string
+---@field icon any
+---@field known boolean
+---@field displayed boolean # In Essential Cooldowns or Utility Cooldowns
+---@field hasCharges boolean
+
+---Every ability in the user's layout, in layout order, or nil unless the layout is READY.
+---@return TRB.CdmAbilityEntry[]?
+function CDM:GetAbilityEntries()
+	if self:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
+		return nil
+	end
+	local displayData = GetDisplayData()
+	local categories = Enum.CooldownViewerCategory --[[@as table<string, integer?>]]
+	if displayData == nil or categories == nil then
+		return nil
+	end
+	local displayedByCategory = {}
+	if categories.Essential ~= nil then
+		displayedByCategory[categories.Essential] = true
+	end
+	if Enum.CooldownViewerCategory.Utility ~= nil then
+		displayedByCategory[Enum.CooldownViewerCategory.Utility] = true
+	end
+	if categories.HiddenActive ~= nil then
+		displayedByCategory[categories.HiddenActive] = false
+	end
+	local entries = {}
+	for _, cooldownID in ipairs(displayData.orderedCooldownIDs) do
+		local info = displayData.cooldownInfoByID[cooldownID]
+		local category = type(info) == "table" and info.category or nil
+		if category ~= nil and not issecretvalue(category) and displayedByCategory[category] ~= nil and not issecretvalue(info.isKnown)
+			and TRB.Functions.Number:IsPlainNumber(info.spellID) then
+			local overrideId = info.overrideSpellID
+			local name, icon = DescribeSpell(overrideId ~= nil and overrideId or info.spellID)
+			if name == nil then
+				name, icon = DescribeSpell(info.spellID)
+			end
+			if name ~= nil then
+				entries[#entries + 1] = {
+					cooldownID = cooldownID,
+					spellID = info.spellID,
+					name = name,
+					icon = icon,
+					known = info.isKnown == true,
+					displayed = displayedByCategory[category],
+					hasCharges = not issecretvalue(info.charges) and info.charges == true,
+				}
+			end
+		end
+	end
+	return entries
+end
+
 ---One passive entry by cooldownID; nil when it isn't in the layout. Callers check GetLayoutStatus first,
 ---since a layout that isn't READY makes every entry look missing.
 ---@param cooldownID integer

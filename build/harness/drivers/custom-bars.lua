@@ -1244,6 +1244,70 @@ function hooks.afterEvents(ctx)
 		rawset(desktop.C_Spell, "IsSpellHarmful", isSpellHarmful)
 	end
 
+	-- Abilities picked from the Cooldown Manager's layout, where the client has one: read by spell, like a typed one.
+	check("the Cooldown Manager is a source only where the client has one",
+		(CustomBars:GetProviderLabel("cdm") ~= "") == (TRB.Flavor.cooldownManager == true))
+	if TRB.Flavor.cooldownManager then
+		local CDM = TRB.Functions.CooldownManager
+		local getAbilityEntries = CDM.GetAbilityEntries
+		local api = { GetSpellCharges = desktop.C_Spell.GetSpellCharges, GetSpellName = desktop.C_Spell.GetSpellName }
+		local names = { [990060] = "Driver Shown Ability", [990061] = "Driver Hidden Charges", [990062] = "Driver Unlearned" }
+		rawset(desktop.C_Spell, "GetSpellName", function(id) return names[id] or api.GetSpellName(id) end)
+		rawset(desktop.C_Spell, "GetSpellCharges", function(id)
+			if names[id] ~= nil then
+				return id == 990061 and { currentCharges = 2, maxCharges = 2, isActive = false } or nil
+			end
+			return api.GetSpellCharges(id)
+		end)
+		CDM.GetAbilityEntries = function()
+			return {
+				{ cooldownID = 71, spellID = 990060, name = "Driver Shown Ability", icon = 111, known = true, displayed = true, hasCharges = false },
+				{ cooldownID = 72, spellID = 990061, name = "Driver Hidden Charges", icon = 112, known = true, displayed = false, hasCharges = true },
+				{ cooldownID = 73, spellID = 990062, name = "Driver Unlearned", icon = 113, known = false, displayed = true, hasCharges = false },
+			}
+		end
+		local byKey = {}
+		for _, source in ipairs(CustomBars:GetSources(classId, specId)) do
+			if source.provider == "cdm" then
+				byKey[source.spellId .. ":" .. source.kind] = source
+			end
+		end
+		local shown, hiddenCharges = byKey["990060:cooldownTime"], byKey["990061:charges"]
+		check("a Cooldown Manager ability is offered as a Cooldown, or as Charges and a Recharge", shown ~= nil and shown.cooldownID == 71
+			and shown.icon == "|T111:0|t" and hiddenCharges ~= nil and byKey["990061:rechargeTime"] ~= nil and byKey["990061:cooldownTime"] == nil)
+		check("under headings for displayed, not displayed, and not learned", shown ~= nil and hiddenCharges ~= nil
+			and shown.section == TRB.Localization["CustomBarsCdmSectionAbilities"]
+			and hiddenCharges.section == TRB.Localization["CustomBarsCdmSectionAbilitiesNotDisplayed"]
+			and byKey["990062:cooldownTime"].section == TRB.Localization["CustomBarsCdmSectionAbilitiesNotLearned"])
+		check("another specialization is offered nothing from the layout", (function()
+			for _, source in ipairs(CustomBars:GetSources(classId, specId + 50)) do
+				if source.provider == "cdm" then
+					return false
+				end
+			end
+			return true
+		end)())
+		if hiddenCharges ~= nil then
+			local cdmGuid = CustomBars:Add(spec, classId, specId, hiddenCharges)
+			local cdmKey = CustomBars:GetBarKey(cdmGuid)
+			local cdmBar = spec.customBars.bars[cdmGuid]
+			try("lay out the Cooldown Manager bar", Relayout)
+			try("render the Cooldown Manager bar", function() CustomBars:Render() end)
+			local cdmSpells, cdmSnapshots = {}, {}
+			CustomBars:AppendCooldownSpells(cdmSpells, cdmSnapshots)
+			check("a not displayed ability's bar is saved with its entry and read by its spell", cdmBar.source.provider == "cdm"
+				and cdmBar.source.cooldownID == 72 and cdmBar.source.spellId == 990061 and #cdmSpells == 1 and cdmSnapshots[cdmSpells[1]] ~= nil
+				and barGroups[cdmKey] ~= nil and barGroups[cdmKey].maxNodes == 2 and Shows(EntryFor(barGroups[cdmKey]))
+				and CustomBars:GetSourceLabel(classId, specId, cdmBar.source):find(TRB.Localization["CustomBarsProviderShortCdm"], 1, true) ~= nil)
+			CustomBars:Delete(spec, classId, specId, cdmGuid)
+			try("lay out without it", Relayout)
+			try("render without it", function() CustomBars:Render() end)
+		end
+		CDM.GetAbilityEntries = getAbilityEntries
+		rawset(desktop.C_Spell, "GetSpellName", api.GetSpellName)
+		rawset(desktop.C_Spell, "GetSpellCharges", api.GetSpellCharges)
+	end
+
 	-- Another provider's bars draw and read through it, and a bar whose provider is missing is left alone.
 	do
 		local drawn, looked = 0, 0

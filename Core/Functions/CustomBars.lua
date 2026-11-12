@@ -13,6 +13,7 @@ local L = TRB.Localization
 ---@field public spellId integer
 ---@field public spellName string? # Shown where the spec's snapshots aren't loaded
 ---@field public provider string? # Which provider reads it; nil is the spec's own tracking
+---@field public cooldownID integer? # The Cooldown Manager entry it was picked from
 
 ---@class TRB.Classes.Settings.CustomBar
 ---@field public guid string
@@ -29,6 +30,9 @@ local L = TRB.Localization
 ---@field public icon string? # Texture markup, as a spell's icon is
 ---@field public label string
 ---@field public provider string? # Set by GetSources; nil is the spec's own tracking
+---@field public cooldownID integer? # The Cooldown Manager entry it comes from
+---@field public section string? # The heading the menu lists it under
+---@field public sectionOrder integer? # Where that heading sorts
 
 ---@class TRB.Classes.CustomBarRuntime
 ---@field public key string
@@ -775,7 +779,7 @@ function CustomBars:Add(spec, classId, specId, source)
 	spec.customBars.bars[guid] = {
 		guid = guid,
 		name = source.spellName,
-		source = { kind = source.kind, spellId = source.spellId, spellName = source.spellName, provider = source.provider },
+		source = { kind = source.kind, spellId = source.spellId, spellName = source.spellName, provider = source.provider, cooldownID = source.cooldownID },
 	}
 	local provider = ProviderOf(spec.customBars.bars[guid].source)
 	if provider ~= nil and provider.OnAdd ~= nil then
@@ -797,7 +801,7 @@ function CustomBars:SetSource(spec, classId, specId, bar, source)
 		if bar.name == bar.source.spellName then
 			bar.name = source.spellName
 		end
-		bar.source = { kind = source.kind, spellId = source.spellId, spellName = source.spellName, provider = source.provider }
+		bar.source = { kind = source.kind, spellId = source.spellId, spellName = source.spellName, provider = source.provider, cooldownID = source.cooldownID }
 		bar.segmented = nil
 	end)
 end
@@ -1581,6 +1585,58 @@ local spellProvider = {
 	end,
 }
 CustomBars:RegisterProvider(CustomBars.spellProvider, spellProvider)
+
+-- An ability picked from the Cooldown Manager's layout, read by its spell like one named by spell ID.
+CustomBars.cdmProvider = "cdm"
+
+---@type TRB.Classes.CustomBarProvider
+local cdmProvider = {
+	label = L["CustomBarsAddGroupCdm"],
+	shortLabel = L["CustomBarsProviderShortCdm"],
+	-- The layout is the played specialization's, so only that one is offered it.
+	GetSources = function(classId, specId)
+		local sources = {}
+		local character = TRB.Data.character
+		if character == nil or character.classId ~= classId or character.specId ~= specId then
+			return sources
+		end
+		local kinds = CustomBars.kinds
+		for _, ability in ipairs(TRB.Functions.CooldownManager:GetAbilityEntries() or {}) do
+			local offered = { kinds.cooldownTime }
+			if ability.hasCharges or C_Spell.GetSpellCharges(ability.spellID) ~= nil then
+				offered = { kinds.charges, kinds.rechargeTime }
+			end
+			local section, sectionOrder = L["CustomBarsCdmSectionAbilities"], 1
+			if not ability.known then
+				section, sectionOrder = L["CustomBarsCdmSectionAbilitiesNotLearned"], 3
+			elseif not ability.displayed then
+				section, sectionOrder = L["CustomBarsCdmSectionAbilitiesNotDisplayed"], 2
+			end
+			for _, kind in ipairs(offered) do
+				sources[#sources + 1] = {
+					kind = kind,
+					spellId = ability.spellID,
+					cooldownID = ability.cooldownID,
+					spellName = ability.name,
+					icon = ability.icon ~= nil and string.format("|T%s:0|t", ability.icon) or nil,
+					label = string.format(L["CustomBarsSourceFormat"], ability.name, kindLabels[kind]),
+					section = section,
+					sectionOrder = sectionOrder,
+				}
+			end
+		end
+		return sources
+	end,
+	GetSourceName = spellProvider.GetSourceName,
+	ReadMax = spellProvider.ReadMax,
+	OnAdd = spellProvider.OnAdd,
+	AppendCooldownSpell = spellProvider.AppendCooldownSpell,
+	WriteLookup = spellProvider.WriteLookup,
+	Render = spellProvider.Render,
+}
+if TRB.Flavor.cooldownManager then
+	CustomBars:RegisterProvider(CustomBars.cdmProvider, cdmProvider)
+end
 
 ---The providers that take a spell ID the user types, in menu order.
 ---@return string[]
