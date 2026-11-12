@@ -46,6 +46,7 @@ local addonName, TRB = ...
 ---@class TRB.Flavor.Skyriding
 ---@field public speedCaps { default: TRB.Flavor.SkyridingSpeedCap, dragonIsles: TRB.Flavor.SkyridingSpeedCap }
 ---@field public dragonIslesMapIds integer[] # UiMap ids whose maps and child maps use the Dragon Isles speed caps
+---@field public spells table<string, TRB.Classes.SpellBase>? # The tracked spells by TRB.Classes.SkyridingSpells role, which Flavors\<Flavor>\Skyriding.lua adds
 
 ---@class TRB.Flavor.SkyridingSpeedCap
 ---@field public max number # The Speed bar's maximum, in yards per second
@@ -62,7 +63,7 @@ local addonName, TRB = ...
 ---@field public nameKey string # Localization key of the flavor's display name
 ---@field public classNamespace string # Key under TRB.Classes holding the flavor's class modules, since flavors share class names
 ---@field public savedVariablesName string # Global declared by the TOC's SavedVariables line
----@field public gcdSpellId integer? # Dummy spell whose cooldown is the global cooldown; defaults to retail's 61304
+---@field public gcdSpellId integer # Dummy spell whose cooldown is the global cooldown
 ---@field public unavailableVisibilityConditions table<string, boolean>? # Bar visibility condition keys the client can never satisfy (no flying, say); dropped from the options and the defaults
 ---@field public swingTimers boolean? # The Main Hand, Off Hand, and Ranged Swing bars exist
 ---@field public blizzardSwingTimer boolean? # The client has Blizzard's swing timer: it fires PLAYER_SWING and draws bars this addon can hide. Without it, swings come from the combat log and `swingSpells` (default false)
@@ -100,6 +101,7 @@ assert(type(TRB.Flavor.id) == "string" and TRB.Flavor.id ~= "", "TwintopInsanity
 assert(type(TRB.Flavor.savedVariablesName) == "string", "TwintopInsanityBar: flavor manifest has no savedVariablesName.")
 assert(type(TRB.Flavor.classNamespace) == "string" and TRB.Flavor.classNamespace ~= "", "TwintopInsanityBar: flavor manifest has no classNamespace.")
 assert(type(TRB.Flavor.classes) == "table", "TwintopInsanityBar: flavor manifest has no classes.")
+assert(type(TRB.Flavor.gcdSpellId) == "number", "TwintopInsanityBar: flavor manifest has no gcdSpellId.")
 assert(type(TRB.Flavor.GetSpecializationIndex) == "function", "TwintopInsanityBar: flavor manifest has no GetSpecializationIndex.")
 assert(type(TRB.Flavor.stats) == "table", "TwintopInsanityBar: flavor has no stats (Stats.lua must load after Manifest.lua).")
 assert(type(TRB.Flavor.statEvents) == "table" and type(TRB.Flavor.statEvents.primary) == "table" and type(TRB.Flavor.statEvents.secondary) == "table", "TwintopInsanityBar: flavor statEvents needs primary and secondary event lists.")
@@ -133,9 +135,6 @@ function TRB.Flavor.GetClassModule(classModuleName)
 	return TRB.Classes[TRB.Flavor.classNamespace][classModuleName]
 end
 
-if TRB.Flavor.gcdSpellId == nil then
-	TRB.Flavor.gcdSpellId = 61304
-end
 if TRB.Flavor.unavailableVisibilityConditions == nil then
 	TRB.Flavor.unavailableVisibilityConditions = {}
 end

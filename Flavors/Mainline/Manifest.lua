@@ -31,6 +31,8 @@ TRB.Flavor = {
 	-- The global the TOC's SavedVariables line declares. Per-flavor so two flavors can never share a
 	-- settings table, even if a future client ends up sharing an AddOns/WTF folder between lineages.
 	savedVariablesName = "TwintopInsanityBarSettings",
+	-- Dummy spell whose cooldown is the global cooldown.
+	gcdSpellId = 61304,
 	-- The Speed bar's scale; only a flavor with this block gets the Skyriding bars.
 	skyriding = {
 		-- Top and passive (no abilities) speeds in yards per second, measured with /trb skyriding. Outside
