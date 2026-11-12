@@ -2174,7 +2174,7 @@ function TRB.Functions.Character:EnsureSpecCache(compositeKey)
 end
 
 ---Calculates the player's current GCD duration, clamped between 0.75s and 1.5s.
----Uses the cached GCD duration observed from C_Spell.GetSpellCooldownDuration(61304)
+---Uses the cached GCD duration observed from C_Spell.GetSpellCooldownDuration(TRB.Flavor.gcdSpellId)
 ---during the last spell cast, since haste is now a secret value.
 ---@param floor boolean|nil If true, skips the 0.75s minimum clamp (allows sub-0.75 values)
 ---@return number gcd The GCD duration in seconds

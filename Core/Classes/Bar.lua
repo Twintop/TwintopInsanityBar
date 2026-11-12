@@ -3067,8 +3067,7 @@ end
 ---The Totems bar's keys. One bar, whose nodes are the client's totem slots.
 TRB.Classes.BarTypeRegistry.totemBarKeys = { "totems" }
 
--- Unless the flavor sets specOwnedTotems, an item or toy can fill a totem slot on any spec, so one that declares no
--- Totems trait keeps the bar under Other Bars. With it, only a spec that declares one has totems.
+-- Without specOwnedTotems an item or toy can fill any spec's totem slot, so an undeclared spec keeps the bar in Other Bars.
 ---@type TRB.Classes.SpecDescriptor.Totems
 local undeclaredTotemSpecInfo = { placement = "otherBars" }
 
@@ -3379,7 +3378,7 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 	end
 
 	-- Global Cooldown bar (all specs, hidden by default). Timer-driven: the fill is bound to the
-	-- DurationObject for the dummy GCD spell (61304), so it animates correctly even when the
+	-- DurationObject for the flavor's dummy GCD spell (TRB.Flavor.gcdSpellId), so it animates correctly even when the
 	-- underlying cooldown values are secret. minMaxMode "custom" -- the generic snapshot-value path
 	-- never touches it.
 	self:Register(TRB.Classes.BarTypeDefinition:New({

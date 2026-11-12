@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
-	<!-- Classic flavor: resource names, the class template (spell sets, bar group factories, spec descriptors) and one definition file per class. Loads for every class. -->
+	<!-- Classic flavor: resource names, the class template (spell sets, bar group factories, spec descriptors), and one definition file per class. Loads for every class. -->
 	<Script file="Resources.lua"/>
 	<Script file="ClassModules\Templates\Archetypes.lua"/>
 	<Script file="ClassModules\Classes\WarriorClasses.lua"/>

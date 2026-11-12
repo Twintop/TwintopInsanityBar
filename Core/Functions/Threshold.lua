@@ -2387,8 +2387,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				currentValue = GetPlainNumber(attributes[valueAttribute], 0)
 				supportsValueComparison = true
 			elseif compressedView and liveMax > nodeCount then
-				-- Compressed view folds the stacks past nodeCount onto the same nodes: keep the full stack scale so
-				-- those thresholds stay in range, and compare the plain stack count.
+				-- Compressed View folds stacks past nodeCount onto the nodes, so keep the full stack scale and compare the plain count.
 				local stacksAttribute = secondaryDescriptor and secondaryDescriptor.compressedStacksAttribute
 				local stacks = GetPlainNumber(stacksAttribute and attributes[stacksAttribute] or nil, rawResource2)
 				maxValue = liveMax

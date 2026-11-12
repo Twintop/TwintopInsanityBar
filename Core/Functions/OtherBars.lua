@@ -1700,7 +1700,7 @@ function TRB.Functions.OtherBars:SyncEnabledState()
 	self:UpdateBlizzardSwingTimerVisibility()
 end
 
--- TEMPORARY DIAGNOSTIC (/trb otherbars), remove once every client's mirror timers render: dumps each bar's
+-- TEMPORARY DIAGNOSTIC (/trb otherbars), remove once mirror timers render on every client with MirrorTimerContainer: dumps each bar's
 -- resolved state and echoes raw MIRROR_TIMER_* payloads to chat until toggled off.
 local echoMirrorEvents = false
 local echoFrame = CreateFrame("Frame")

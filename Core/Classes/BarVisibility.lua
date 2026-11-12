@@ -4,6 +4,8 @@ local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 local UnitHealthPercent = TRB.Functions.CurveMemo.UnitHealthPercent
 TRB.Classes = TRB.Classes or {}
 TRB.Functions = TRB.Functions or {}
+-- The flavor's shapeshift form conditions; every descriptor is declared before this file loads.
+local FORM_CONDITIONS = TRB.Classes.SpecDescriptor:GetFormConditions()
 
 ---@class TRB.Classes.BarVisibilityContext
 ---@field force boolean # Whether to force-hide all bars (e.g., spec switch or render transition)
@@ -76,7 +78,7 @@ function TRB.Classes.BarVisibilityContext:New(params)
 	self.inDelve = params.inDelve or false
 	self.isPvpFlagged = params.isPvpFlagged or false
 	self.isWarMode = params.isWarMode or false
-	for _, condition in ipairs(TRB.Classes.SpecDescriptor:GetFormConditions()) do
+	for _, condition in ipairs(FORM_CONDITIONS) do
 		self[condition.key] = params[condition.key] or false
 	end
 	self.isPetAlive = params.isPetAlive or false
@@ -172,7 +174,7 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 	target.inDelve = inDelve
 	target.isPvpFlagged = UnitIsPVP("player") or false
 	target.isWarMode = C_PvP.IsWarModeDesired() or false
-	for _, condition in ipairs(TRB.Classes.SpecDescriptor:GetFormConditions()) do
+	for _, condition in ipairs(FORM_CONDITIONS) do
 		target[condition.key] = form ~= nil and condition.forms[form] == true
 	end
 	target.isPetAlive = petState == "alive"
@@ -685,7 +687,7 @@ local function UneventedInputsUnchanged(recorded)
 end
 
 local function HasMatchingFormCondition(conditions, context)
-	for _, condition in ipairs(TRB.Classes.SpecDescriptor:GetFormConditions()) do
+	for _, condition in ipairs(FORM_CONDITIONS) do
 		local key = condition.key
 		if conditions[key] == true and context[key] == true then
 			return true

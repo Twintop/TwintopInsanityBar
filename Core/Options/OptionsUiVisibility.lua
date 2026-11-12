@@ -1087,8 +1087,7 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 
 	yCoord = yCoord - 30
-	-- A class's shapeshift form conditions go on its own panels. Global Options and its presets serve
-	-- every class, so they list every class's.
+	-- Form conditions go on their class's panels; Global Options serves every class, so it lists them all.
 	local formGroups = {}
 	for _, group in ipairs(FORM_CONDITION_GROUPS) do
 		if classId == nil or group.classId == classId then

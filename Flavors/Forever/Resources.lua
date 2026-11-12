@@ -1,8 +1,7 @@
 local _, TRB = ...
 local L = TRB.Localization
 
--- Forever resource vocabulary: every resourceType this flavor's GetSpecConfiguration declares, and the Global Bar
--- Text's resource anchors. Loads after Core's localization and before Core reads it.
+-- Forever's resource type names and Global Bar Text resource anchors, which Core reads once localization loads.
 
 ---@type table<string, TRB.Flavor.ResourceType>
 TRB.Flavor.resourceTypes = {

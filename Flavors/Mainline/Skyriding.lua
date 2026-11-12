@@ -1,7 +1,6 @@
 local _, TRB = ...
 
--- Mainline's skyriding spells, by the role Core's Skyriding bars track them in. Loads after Core's spell classes and
--- before Core\Functions\Skyriding.lua reads them.
+-- Mainline's skyriding spells, keyed by the role Core's Skyriding bars track them in.
 
 TRB.Flavor.skyriding.spells = {
 	-- Skyward Ascent spends the same charges.
