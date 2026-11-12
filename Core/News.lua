@@ -23,6 +23,12 @@ TRB.Details.coreNewsContent = [====[
 - [#976](#976) Fix bar text drawing behind its bar in Edit Mode.
 - [#976](#976) Fix the Other Bars and the Target and Focus Cast Bars disappearing in Edit Mode and Preview Mode.
 
+## Localization
+
+- [#978 - @MOSS099](#978) Updated translations for Simplified Chinese (zhCN).
+- [#980 - @MOSS099](#980) Updated translations for Simplified Chinese (zhCN).
+- [#984 - @MOSS099](#984) Updated translations for Simplified Chinese (zhCN).
+
 ## Preview Mode
 
 - [#973](#973) Add a Preview Mode checkbox to the top of the options window, showing every bar that isn't set to Never Show, with each Bar Text Area showing its name.
