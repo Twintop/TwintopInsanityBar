@@ -356,6 +356,15 @@ function TRB.Classes.Mainline.Evoker.BarGroupsFactory:GetSpecConfiguration(specI
         }
     }
 
+    -- Dragonrage bar (1 node, Devastation only)
+    if specId == 1 then
+        config.dragonrage = {
+            maxNodes = 1,
+            isPrimary = false,
+            resourceType = "Dragonrage"
+        }
+    end
+
     -- Ebon Might bar (1 node, Augmentation only)
     if specId == 3 then
         config.ebonMight = {

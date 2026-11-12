@@ -42,6 +42,7 @@ TRB.Flavor.resourceTypes = {
 	DefensiveBuffs = { name = L["ResourceWarriorDefensives"] },
 	WhirlwindCharges = { name = L["ResourceWarriorWhirlwind"], containerLabel = L["WhirlwindChargesContainer"] },
 	EbonMight = { name = L["ResourceEvokerEbonMight"] },
+	Dragonrage = { name = L["ResourceEvokerDragonrage"] },
 	ElementalBlastBuffs = { name = L["ResourceShamanElementalBlastBuffs"] },
 	FireBlastCharges = { name = L["MageFireBlastCharges"] },
 	Brews = { name = L["ResourceMonkBrews"] },
