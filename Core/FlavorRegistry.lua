@@ -78,6 +78,7 @@ local addonName, TRB = ...
 ---@field public stats TRB.Flavor.StatDefinition[] # Bar text stat variables (Flavors\<Flavor>\Stats.lua)
 ---@field public statEvents TRB.Flavor.StatEvents
 ---@field public resourceTypes table<string, TRB.Flavor.ResourceType> # Every resourceType the flavor's classes declare, except those of Core's own bars (Flavors\<Flavor>\Resources.lua)
+---@field public globalBarTextAnchorFrames table<string, TRB.Classes.SpecDescriptor.AnchorFrame[]> # Global Bar Text anchors beyond the bars every spec has, keyed by the bar group they sort with (Flavors\<Flavor>\Resources.lua)
 ---@field public PortForwardSettings (fun(settings: table?))? # Saved-variable migrations, if the flavor has any
 ---@field public DefaultManualUpdateChecks (fun(): table)? # Seed for settings.manualUpdateChecks
 ---@field public OnBarTextSeeded (fun(settings: table, className: string))? # Hook after a class receives fresh default bar text

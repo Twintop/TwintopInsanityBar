@@ -12,6 +12,8 @@ TRB.Functions.BarText = {}
 ---@class TRB.Classes.BarTextFrame : Frame
 ---@field public font TRB.Classes.BarTextFont # Created right after the frame
 
+assert(type(TRB.Flavor.globalBarTextAnchorFrames) == "table", "TwintopInsanityBar: flavor has no globalBarTextAnchorFrames (Resources.lua must load from Classes.xml).")
+
 local containerAnchorPrefix = "Container::"
 
 -- Self-driven bar anchor keys → their bar group key. For the cast bars both the bar and its side icon
@@ -351,10 +353,7 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 	end
 	local anchorFrames
 	if classId == nil then -- Global Bar Text
-		anchorFrames = { secondary = {} }
-		for i = 1, 5 do
-			anchorFrames.secondary[i] = { label = L["ComboPoint" .. i], frame = "ComboPoint_" .. i }
-		end
+		anchorFrames = TRB.Flavor.globalBarTextAnchorFrames
 	else
 		local descriptor = TRB.Functions.Character:GetSpecDescriptor(classId, specId)
 		anchorFrames = descriptor and descriptor.barTextAnchorFrames or {}
