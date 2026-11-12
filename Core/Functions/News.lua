@@ -56,7 +56,7 @@ local function OnHyperlinkClick(_, link, text)
 	end
 end
 
----Retitles Core's "# Live X / Forever Y / Classic Z (date)" sections to the flavor's "# Y (date)" and drops
+---Retitles Core's "# <Label> <version> / <Label> <version> (date)" sections to the flavor's "# <version> (date)" and drops
 ---the sections that don't name it. A title that doesn't parse is kept as written.
 ---@param markdown string
 ---@param label string? # The flavor's name in Core titles (TRB.Flavor.coreNewsLabel); nil keeps every title

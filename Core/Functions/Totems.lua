@@ -6,7 +6,7 @@ TRB.Functions.Totems = {}
 -- The Totems bar, one node per totem slot; slot behavior is measured in docs/totem-tracker-plan.md, Appendix C.
 local Totems = TRB.Functions.Totems
 
--- The fewest nodes the Mainline bar shows, so its width doesn't change for the first few totems.
+-- The fewest nodes a bar without element slots shows, so its width doesn't change for the first few totems.
 local MIN_VISIBLE_NODES = 4
 -- Element slots on a flavor whose slots are elements (Blizzard's FIRE/EARTH/WATER/AIR_TOTEM_SLOT).
 local ELEMENT_SLOTS = { fire = 1, earth = 2, water = 3, air = 4 }
@@ -154,7 +154,7 @@ eventFrame:SetScript("OnEvent", function(_, event, slot)
 	end
 end)
 
----How many totem slots the bar has nodes for: four elements on Forever, Classic, and TBC, eight on Mainline.
+---How many totem slots the bar has nodes for: the four elements where slots are elements, else up to eight.
 ---@return integer
 function Totems:GetSlotCount()
 	local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get("totems")
@@ -250,8 +250,8 @@ function Totems:UpdateBlizzardFrameVisibility()
 	end
 end
 
----The slot a node shows: the node's own index on Mainline, and the element in that position of the node order where
----slots are elements.
+---The slot a node shows: the node's own index, or where slots are elements, the element in that position of the
+---node order.
 ---@param nodeIndex integer
 ---@param colorSettings table? # The bar's colors, holding the element order
 ---@return integer

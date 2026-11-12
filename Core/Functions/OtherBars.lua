@@ -1330,9 +1330,9 @@ local function ShouldSuppressBlizzardTimer(timerName)
 	return barSettings ~= nil and barSettings.disableBlizzardBar == true and IsEnabled(visibility)
 end
 
--- Classic Era and TBC have no container: their frames are the globals MirrorTimer1-3, shown through MirrorTimer_Show, with no
+-- A client without MirrorTimerContainer has the globals MirrorTimer1-3, shown through MirrorTimer_Show, with no
 -- shown-state check of their own. The types hidden there are kept, so only those are ever re-shown.
-local classicSuppressedTimers = {}
+local unpooledSuppressedTimers = {}
 
 ---Whether a mirror timer type is still running, so a frame hidden for it can come back.
 ---@param timerName string
@@ -1346,7 +1346,7 @@ local function IsMirrorTimerRunning(timerName)
 	return false
 end
 
----Blizzard's mirror timer frames: the pooled container's on Mainline and Forever, else Classic Era's and TBC's globals.
+---Blizzard's mirror timer frames: MirrorTimerContainer's pooled ones where it exists, else the MirrorTimer1-3 globals.
 ---@return table[]?
 ---@return boolean pooled # The frames have their own UpdateShownState
 local function GetBlizzardMirrorTimerFrames()
@@ -1364,14 +1364,14 @@ local function GetBlizzardMirrorTimerFrames()
 	return frames, false
 end
 
----Hides Classic Era's and TBC's frames showing a type we have taken over.
+---Hides the unpooled frames showing a type we have taken over.
 ---@param frames table[]
-local function SuppressClassicMirrorTimers(frames)
+local function SuppressUnpooledMirrorTimers(frames)
 	for _, frame in ipairs(frames) do
 		-- Shown only: a hidden frame keeps the type of a timer that has since stopped.
 		if frame:IsShown() and frame.timer ~= nil and ShouldSuppressBlizzardTimer(frame.timer) then
 			frame:Hide()
-			classicSuppressedTimers[frame.timer] = true
+			unpooledSuppressedTimers[frame.timer] = true
 		end
 	end
 end
@@ -1384,11 +1384,11 @@ function TRB.Functions.OtherBars:UpdateBlizzardMirrorTimerVisibility()
 		return
 	end
 	if not pooled then
-		SuppressClassicMirrorTimers(frames)
+		SuppressUnpooledMirrorTimers(frames)
 		-- Restored through Blizzard's own show, and only while running: a hidden frame never sees its timer stop.
-		for timerName in pairs(classicSuppressedTimers) do
+		for timerName in pairs(unpooledSuppressedTimers) do
 			if not ShouldSuppressBlizzardTimer(timerName) then
-				classicSuppressedTimers[timerName] = nil
+				unpooledSuppressedTimers[timerName] = nil
 				for i = 1, MIRROR_TIMER_COUNT do
 					local timer, value, maxValue, scale, paused, label = GetMirrorTimerInfo(i)
 					if timer == timerName then
@@ -1396,7 +1396,7 @@ function TRB.Functions.OtherBars:UpdateBlizzardMirrorTimerVisibility()
 					end
 				end
 			elseif not IsMirrorTimerRunning(timerName) then
-				classicSuppressedTimers[timerName] = nil
+				unpooledSuppressedTimers[timerName] = nil
 			end
 		end
 		return
@@ -1411,7 +1411,7 @@ function TRB.Functions.OtherBars:UpdateBlizzardMirrorTimerVisibility()
 end
 
 ---Post-hooks each pooled Blizzard mirror timer frame so a type we have taken over stays hidden even
----after Blizzard re-shows it (a new timer starting, an Edit Mode relayout). On Classic Era and TBC, hooks MirrorTimer_Show.
+---after Blizzard re-shows it (a new timer starting, an Edit Mode relayout). Without the container, hooks MirrorTimer_Show.
 local function InstallMirrorTimerHooks()
 	if mirrorHooksInstalled then
 		return
@@ -1422,7 +1422,7 @@ local function InstallMirrorTimerHooks()
 	end
 	if not pooled then
 		hooksecurefunc("MirrorTimer_Show", function()
-			SuppressClassicMirrorTimers(frames)
+			SuppressUnpooledMirrorTimers(frames)
 		end)
 	else
 		for _, frame in ipairs(frames) do
@@ -1700,7 +1700,7 @@ function TRB.Functions.OtherBars:SyncEnabledState()
 	self:UpdateBlizzardSwingTimerVisibility()
 end
 
--- TEMPORARY DIAGNOSTIC (/trb otherbars), remove once the Forever mirror timers render: dumps each bar's
+-- TEMPORARY DIAGNOSTIC (/trb otherbars), remove once every client's mirror timers render: dumps each bar's
 -- resolved state and echoes raw MIRROR_TIMER_* payloads to chat until toggled off.
 local echoMirrorEvents = false
 local echoFrame = CreateFrame("Frame")

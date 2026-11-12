@@ -1189,7 +1189,7 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 		{ variable = "$petResourceName", description = L["BarTextVariablePetResourceName"], printInSettings = true, pet = true, color = false, category = self.VariableCategory.PET,
 			logicType = logicTypes.TEXT, booleanCheck = true },
 	}
-	-- Totems, after the pet. Names and times are secret in combat on Mainline and Forever, so they are display-only; a
+	-- Totems, after the pet. Names and times can be secret in combat (secretValues), so they are display-only; a
 	-- bare check on one resolves to "is that slot's totem up?" instead. Each slot's first name is listed, the rest aliases.
 	for slot = 1, TRB.Functions.Totems:GetSlotCount() do
 		local vars = totemSlotVars[slot]

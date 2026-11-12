@@ -9,7 +9,7 @@ TRB.Details.addonAuthor = C_AddOns.GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = C_AddOns.GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = C_AddOns.GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = C_AddOns.GetAddOnMetadata(addonName, "X-ReleaseDate")
--- Voidform (file 1386550) shipped with the addon, since Classic Era's client lacks it. Every TOC's IconTexture names this file too.
+-- Voidform (file 1386550) shipped with the addon, since not every client has it. Every TOC's IconTexture names this file too.
 TRB.Details.addonIcon = "Interface\\AddOns\\TwintopInsanityBar\\Images\\Icon.blp"
 -- One line per class, sorted by module name, listing its supported specializations in spec order.
 TRB.Details.supportedSpecs = ""
@@ -35,7 +35,7 @@ do
 		end
 		TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. line .. "\n"
 	end
-	-- A flavor with one spec per class lists classes, under its own game's name rather than Midnight's.
+	-- A flavor with one spec per class lists classes, under its own game's name instead of SupportedSpecs' label.
 	if not hasSpecs then
 		TRB.Details.supportedSpecsLabel = string.format(L["SupportedClassesFormat"], L[TRB.Flavor.nameKey])
 	end

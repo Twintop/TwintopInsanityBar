@@ -40,7 +40,7 @@ local cachedHealthPercentFmt = nil
 local cachedHealthPercentPrecision = nil
 
 local function UpdateSkyridingState()
-	-- Only a skyriding client glides, and Classic has no GetGlidingInfo.
+	-- Only a skyriding client glides, and a client without skyriding may have no GetGlidingInfo.
 	if TRB.Flavor.skyriding == nil then
 		TRB.Data.character.isSkyriding = false
 		return
@@ -469,7 +469,7 @@ local function CharacterChange(self, event, ...)
 			if event == "UNIT_MAXPOWER" and powerType == TRB.Data.resourceToken then
 				TRB.Functions.Class:CheckCharacter()
 			elseif event == "UNIT_POWER_UPDATE" and powerType == TRB.Data.resourceToken then
-				-- UNIT_MAXPOWER alone has let the saved max fall behind on Forever; Blizzard's mana bar re-reads it here too.
+				-- UNIT_MAXPOWER alone has let the saved max fall behind on some clients; Blizzard's mana bar re-reads it here too.
 				local maxPower = UnitPowerMax("player", TRB.Data.resource, true)
 				if not issecretvalue(maxPower) and maxPower ~= lastPrimaryMax then
 					lastPrimaryMax = maxPower
@@ -630,7 +630,7 @@ local function CharacterChange(self, event, ...)
 end
 
 local characterChangeFrame = CreateFrame("Frame")
--- Registering an event the client doesn't know errors, and Forever may not have this one.
+-- Registering an event the client doesn't know errors, and not every client has this one.
 local mapChangedEventValid = C_EventUtils ~= nil and C_EventUtils.IsEventValid ~= nil
 	and C_EventUtils.IsEventValid("PLAYER_MAP_CHANGED") == true
 characterChangeFrame:SetScript("OnEvent", CharacterChange)

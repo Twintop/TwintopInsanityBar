@@ -2744,7 +2744,7 @@ end
 ---The all-spec "Other Bars" keys, in tab order. The mirror timers follow Blizzard's own MirrorTimerAtlas
 ---order (EXHAUSTION, BREATH, FEIGNDEATH), which is also the order they stack in by default. Feign Death
 ---only ever fires for Hunters, so GetOtherBarKeys filters it out for every other class. Blizzard's fourth
----timer type, DEATH, is deliberately absent: it never fires in retail content.
+---timer type, DEATH, is deliberately absent: no current content starts it.
 TRB.Classes.BarTypeRegistry.otherBarKeys = { "gcd", "fatigue", "breath", "feignDeath" }
 
 ---The swing timer bars, in tab order and stacking order. Empty unless the flavor fires PLAYER_SWING.
@@ -3067,13 +3067,13 @@ end
 ---The Totems bar's keys. One bar, whose nodes are the client's totem slots.
 TRB.Classes.BarTypeRegistry.totemBarKeys = { "totems" }
 
--- On Live an item or toy can fill a totem slot on any spec, so one that declares no Totems trait keeps the bar under
--- Other Bars. On Forever, Classic, and TBC only Shaman has totems.
+-- Unless the flavor sets specOwnedTotems, an item or toy can fill a totem slot on any spec, so one that declares no
+-- Totems trait keeps the bar under Other Bars. With it, only a spec that declares one has totems.
 ---@type TRB.Classes.SpecDescriptor.Totems
 local undeclaredTotemSpecInfo = { placement = "otherBars" }
 
----The Totems trait a spec declares through its descriptor, the Other Bars default where it declares none on Live, or
----nil for an unknown spec or one without totems.
+---The Totems trait a spec declares through its descriptor, the Other Bars default where it declares none and the flavor
+---doesn't set specOwnedTotems, or nil for an unknown spec or one without totems.
 ---@param classId integer?
 ---@param specId integer?
 ---@return TRB.Classes.SpecDescriptor.Totems?
@@ -3091,7 +3091,7 @@ function TRB.Classes.BarTypeRegistry:GetTotemSpecInfo(classId, specId)
 	return declared
 end
 
----Whether a spec gets the Totems bar at all: every known spec on Live, only Shaman on Forever, Classic, and TBC.
+---Whether a spec gets the Totems bar at all: every known spec, or with specOwnedTotems, only a spec that declares one.
 ---@param classId integer?
 ---@param specId integer?
 ---@return boolean
@@ -3627,14 +3627,14 @@ function TRB.Classes.BarTypeRegistry:RegisterBuiltInTypes()
 	}))
 
 	-- Totems bar: one node per totem slot, filled from the slot's engine duration, which stays drawable while it is
-	-- secret. Forever, Classic, and TBC slots are the four elements, shown in Blizzard's order and reorderable.
+	-- secret. With totemElements, the slots are the four elements, shown in Blizzard's order and reorderable.
 	local totemElements = TRB.Flavor.totemElements and {
 		{ key = "earth", displayName = L["TotemElementEarth"] },
 		{ key = "fire", displayName = L["TotemElementFire"] },
 		{ key = "water", displayName = L["TotemElementWater"] },
 		{ key = "air", displayName = L["TotemElementAir"] },
 	} or nil
-	-- Eight slots on Mainline. At least four, so the bar always has room for its fewest visible nodes.
+	-- Otherwise the client's slots, up to eight. At least four, so the bar always has room for its fewest visible nodes.
 	local totemSlots = TRB.Flavor.totemElements and 4 or math.max(math.min(GetNumTotemSlots() or 0, 8), 4)
 	self:Register(TRB.Classes.BarTypeDefinition:New({
 		key = "totems",

@@ -530,7 +530,7 @@ function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 	end
 
 	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self:GetRankedId())
-	-- Not every usability change fires SPELL_UPDATE_USABLE (Execute, Overpower on Classic Era), so a re-read that differs repaints bar text.
+	-- Not every usability change fires SPELL_UPDATE_USABLE (Execute and Overpower, on some clients), so a re-read that differs repaints bar text.
 	if not issecretvalue(isUsable) and not issecretvalue(insufficientPower)
 		and (isUsable ~= self._isUsable or insufficientPower ~= self._insufficientPower) then
 		TRB.Data.lookupDirty = true

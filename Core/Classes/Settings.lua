@@ -428,7 +428,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public insideAnchorBorder boolean? # Five Second Rule only: sit inside the anchor bar's border rather than over it
 
 ---@class TRB.Classes.Settings.TotemBar : TRB.Classes.Settings.OtherBar
----@field public showAllSlots boolean? # Mainline: show a node for every totem slot, not just up to the highest one in use
+---@field public showAllSlots boolean? # Without element slots: show a node for every totem slot, not just up to the highest one in use
 
 ---Skyriding bar colors. `bar` is the Speed bar's fill, a charge bar's full charges, and Whirling Surge while it recharges.
 ---@class TRB.Classes.Settings.SkyridingBarColors

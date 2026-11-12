@@ -181,7 +181,7 @@ end]]
 
 
 ---Converts a number into a short notation following the pattern: 1000, 10.00k, 100.0k, 1000k, 10.00m, 100.0m, 1000m, 10.00b, 100.0b, 1000b
----As of Midnight, using built-in AbbreviateNumbers() method which means it returns capitals but in exchange can accept secrets.
+---Uses the built-in AbbreviateNumbers(), which returns capitals but accepts secrets.
 ---@param num number
 ---@return string # Short notation output
 function TRB.Functions.String:ConvertToAbbreviatedNumber(num)

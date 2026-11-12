@@ -517,7 +517,7 @@ local chargedPointsChangedAt = 0
 -- now. The consuming update and CHANNEL_START arrive together; a GCD separates them from any earlier cast.
 local CHARGED_POINT_CONSUME_GRACE = 0.5
 
--- Classic has no charged combo points, and registering an event the client doesn't know errors.
+-- Not every client has charged combo points, and registering an event the client doesn't know errors.
 local hasChargedPoints = C_EventUtils.IsEventValid("UNIT_POWER_POINT_CHARGE") == true
 
 ---Reads the player's charged combo point slot indices, dropping any the game hides.
