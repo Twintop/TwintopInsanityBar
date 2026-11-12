@@ -86,12 +86,12 @@ local addonName, TRB = ...
 ---@field public RunManualUpdateChecks (fun(settings: table, classEntry: TRB.Data.ClassRegistryEntry): table)? # One-shot per-class manual migrations run right after the saved variables are merged
 ---@field public ShowMidnightBarTextResetMessage (fun(className: string))? # Mainline-only chat notice for its bar text reset
 ---@field public ResolveSpellRankId (fun(spell: TRB.Classes.SpellBase): integer?)? # The rank of a `rankIds` spell to hand the client API; flavors without ranked spells leave it unset and get the spell's `id`
----@field public ReadTalentRanks (fun(): table<integer, TRB.Flavor.TalentRank>)? # Every talent's rank keyed by spell ID; defaults to the active trait config's trees
----@field public pvpTalents boolean? # The client has PvP talents (default true)
+---@field public ReadTalentRanks fun(): table<integer, TRB.Flavor.TalentRank> # Every talent's rank keyed by spell ID
+---@field public pvpTalents boolean # The client has PvP talents
 ---@field public talentEvents string[]? # Events besides TRAIT_CONFIG_UPDATED meaning the player's talents changed, which re-run SwitchSpec
----@field public cooldownManager boolean? # The client has Blizzard's Cooldown Manager, so it can feed tracking and anchor bars (default true)
+---@field public cooldownManager boolean # The client has Blizzard's Cooldown Manager, so it can feed tracking and anchor bars
 ---@field public playerAuras boolean? # The player's aura data is never secret, so custom indicators and Buff Alerts can follow a buff by spell ID (default false)
----@field public secretValues boolean? # The client hands out secret values, so bar text marks the variables that may hold one (default true)
+---@field public secretValues boolean # The client hands out secret values, so bar text marks the variables that may hold one
 ---@field public DefaultCastbarTickProfiles (fun(): table<integer, TRB.Classes.Settings.CastbarTickProfile>)? # Channel tick profiles for every class (racials, consumables), keyed by spell ID; a fresh table per call, which the spec's own profiles overlay
 ---@field public newsContent string? # Markdown changelog shown by the News window's flavor tab; Core\News.lua holds the Core tab's
 ---@field public coreNewsLabel string? # The flavor's name in Core\News.lua titles, such as "Live"; the Core tab titles each section with that release alone and drops sections without it. Unset shows every title as written
@@ -102,6 +102,9 @@ assert(type(TRB.Flavor.savedVariablesName) == "string", "TwintopInsanityBar: fla
 assert(type(TRB.Flavor.classNamespace) == "string" and TRB.Flavor.classNamespace ~= "", "TwintopInsanityBar: flavor manifest has no classNamespace.")
 assert(type(TRB.Flavor.classes) == "table", "TwintopInsanityBar: flavor manifest has no classes.")
 assert(type(TRB.Flavor.gcdSpellId) == "number", "TwintopInsanityBar: flavor manifest has no gcdSpellId.")
+assert(type(TRB.Flavor.pvpTalents) == "boolean" and type(TRB.Flavor.cooldownManager) == "boolean" and type(TRB.Flavor.secretValues) == "boolean",
+	"TwintopInsanityBar: flavor manifest needs pvpTalents, cooldownManager, and secretValues.")
+assert(type(TRB.Flavor.ReadTalentRanks) == "function", "TwintopInsanityBar: flavor manifest has no ReadTalentRanks.")
 assert(type(TRB.Flavor.GetSpecializationIndex) == "function", "TwintopInsanityBar: flavor manifest has no GetSpecializationIndex.")
 assert(type(TRB.Flavor.stats) == "table", "TwintopInsanityBar: flavor has no stats (Stats.lua must load after Manifest.lua).")
 assert(type(TRB.Flavor.statEvents) == "table" and type(TRB.Flavor.statEvents.primary) == "table" and type(TRB.Flavor.statEvents.secondary) == "table", "TwintopInsanityBar: flavor statEvents needs primary and secondary event lists.")
@@ -157,68 +160,14 @@ assert(not TRB.Flavor.swingTimers or TRB.Flavor.blizzardSwingTimer or type(TRB.F
 if TRB.Flavor.thresholdsRequireKnown == nil then
 	TRB.Flavor.thresholdsRequireKnown = false
 end
-if TRB.Flavor.pvpTalents == nil then
-	TRB.Flavor.pvpTalents = true
-end
 if TRB.Flavor.talentEvents == nil then
 	TRB.Flavor.talentEvents = {}
-end
-if TRB.Flavor.cooldownManager == nil then
-	TRB.Flavor.cooldownManager = true
 end
 if TRB.Flavor.playerAuras == nil then
 	TRB.Flavor.playerAuras = false
 end
-if TRB.Flavor.secretValues == nil then
-	TRB.Flavor.secretValues = true
-end
 
--- Trait-tree talents (retail and Forever); a flavor with another talent system replaces it.
-if TRB.Flavor.ReadTalentRanks == nil then
-	---@return table<integer, TRB.Flavor.TalentRank>
-	function TRB.Flavor.ReadTalentRanks()
-		local ranks = {}
-		local configId = C_ClassTalents.GetActiveConfigID()
-		if configId == nil then
-			return ranks
-		end
-		local configInfo = C_Traits.GetConfigInfo(configId)
-		if configInfo == nil then
-			return ranks
-		end
-		for _, treeId in pairs(configInfo.treeIDs) do
-			local nodes = C_Traits.GetTreeNodes(treeId)
-			for _, nodeId in pairs(nodes) do
-				local node = C_Traits.GetNodeInfo(configId, nodeId)
-				local entryId = nil
-
-				if node.activeEntry ~= nil then
-					entryId = node.activeEntry.entryID
-				elseif node.nextEntry ~= nil then
-					entryId = node.nextEntry.entryID
-				elseif node.entryIDs ~= nil then
-					entryId = node.entryIDs[1]
-				end
-
-				if entryId ~= nil then
-					local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
-					if entryInfo.definitionID ~= nil then
-						local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
-						if definitionInfo ~= nil then
-							local spellId = definitionInfo.spellID or definitionInfo.overriddenSpellID
-							if spellId ~= nil then
-								ranks[spellId] = { currentRank = node.currentRank, maxRank = node.maxRanks, subTreeActive = node.subTreeActive }
-							end
-						end
-					end
-				end
-			end
-		end
-		return ranks
-	end
-end
-
--- Placeholder rank resolution: a flavor with ranked spells (Forever, Classic, and TBC) replaces it.
+-- Placeholder rank resolution: a flavor with ranked spells replaces it.
 if TRB.Flavor.ResolveSpellRankId == nil then
 	---@param spell TRB.Classes.SpellBase
 	---@return integer

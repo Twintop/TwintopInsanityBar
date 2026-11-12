@@ -46,6 +46,10 @@ TRB.Flavor = {
 	},
 	-- Blizzard's TotemFrame under the player frame, which the Totems bar can hide.
 	blizzardTotemFrame = true,
+	-- PvP talents, Blizzard's Cooldown Manager, and secret values.
+	pvpTalents = true,
+	cooldownManager = true,
+	secretValues = true,
 
 	---True when the running client is this flavor's game. Checked by the version gate when the TOC
 	---sets X-FlavorCheck to enabled. An unreadable project ID or interface number is not evidence of a
@@ -135,6 +139,49 @@ TRB.Flavor = {
 			-- Timerunner's Bandage: a heal every 2 seconds
 			[428448] = { mode = "fixedCount", baseDuration = 10, tickCount = 5, firstTickAtStart = false },
 		}
+	end,
+
+	---Every talent's rank in the active trait config's trees, keyed by its definition's spell.
+	---@return table<integer, TRB.Flavor.TalentRank>
+	ReadTalentRanks = function()
+		local ranks = {}
+		local configId = C_ClassTalents.GetActiveConfigID()
+		if configId == nil then
+			return ranks
+		end
+		local configInfo = C_Traits.GetConfigInfo(configId)
+		if configInfo == nil then
+			return ranks
+		end
+		for _, treeId in pairs(configInfo.treeIDs) do
+			local nodes = C_Traits.GetTreeNodes(treeId)
+			for _, nodeId in pairs(nodes) do
+				local node = C_Traits.GetNodeInfo(configId, nodeId)
+				local entryId = nil
+
+				if node.activeEntry ~= nil then
+					entryId = node.activeEntry.entryID
+				elseif node.nextEntry ~= nil then
+					entryId = node.nextEntry.entryID
+				elseif node.entryIDs ~= nil then
+					entryId = node.entryIDs[1]
+				end
+
+				if entryId ~= nil then
+					local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
+					if entryInfo.definitionID ~= nil then
+						local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+						if definitionInfo ~= nil then
+							local spellId = definitionInfo.spellID or definitionInfo.overriddenSpellID
+							if spellId ~= nil then
+								ranks[spellId] = { currentRank = node.currentRank, maxRank = node.maxRanks, subTreeActive = node.subTreeActive }
+							end
+						end
+					end
+				end
+			end
+		end
+		return ranks
 	end,
 
 	classes = {
