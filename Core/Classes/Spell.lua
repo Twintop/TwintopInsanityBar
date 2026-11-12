@@ -31,6 +31,8 @@ end
 
 ---Fills extra spell data for all spells in the dictionary.
 function TRB.Classes.SpellsData:FillSpellData()
+	-- Every spec switch fills again; wiped in place since readers may hold the table.
+	wipe(self.spellsById)
 	for _, v in pairs(self.spells) do
 		---@type TRB.Classes.SpellBase
 		local spell = v

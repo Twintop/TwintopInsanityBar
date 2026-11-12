@@ -168,13 +168,16 @@ function TRB.Functions.Table:DeepMergeInto(target, overlay)
 	end
 end
 
----Appends an element to a list stored at the given key in a dictionary, creating the list if it does not exist
+---Appends an element to a list stored at the given key in a dictionary, creating the list if it does not exist.
+---An element already in that list is not added again.
 ---@param dictionary table<any, any[]> The dictionary of lists to add to
 ---@param id any The key under which to store the element (skipped if nil)
 ---@param element any The element to append to the list
 function TRB.Functions.Table:AddToDictionaryOfListsById(dictionary, id, element)
 	if id ~= nil then
 		dictionary[id] = dictionary[id] or {}
-		table.insert(dictionary[id], element)
+		if not tContains(dictionary[id], element) then
+			table.insert(dictionary[id], element)
+		end
 	end
 end
