@@ -308,6 +308,26 @@ TRB.Functions.Aura.ConditionState = {
 local conditionNames = {}
 local conditionActive = {}
 local conditionInstances = {}
+-- name -> the copy last read, for the custom bars that draw its time and stacks.
+---@type table<string, { expirationTime: number, duration: number, applications: number }>
+local conditionDetails = {}
+
+---@param name string
+---@param aura AuraData?
+local function StoreConditionDetails(name, aura)
+	if aura == nil then
+		conditionDetails[name] = nil
+		return
+	end
+	local details = conditionDetails[name]
+	if details == nil then
+		details = {}
+		conditionDetails[name] = details
+	end
+	details.expirationTime = aura.expirationTime or 0
+	details.duration = aura.duration or 0
+	details.applications = aura.applications or 0
+end
 
 ---@param conditions TRB.CustomIndicatorCondition[]?
 local function AddConditionSpells(conditions)
@@ -329,8 +349,18 @@ end
 local function ReadConditionAura(name)
 	local aura = C_UnitAuras.GetAuraDataBySpellName("player", name, "HELPFUL")
 	conditionActive[name] = aura ~= nil
+	StoreConditionDetails(name, aura)
 	if aura ~= nil then
 		conditionInstances[aura.auraInstanceID] = name
+	end
+end
+
+---@param spellId integer?
+local function AddConditionSpell(spellId)
+	local name = spellId ~= nil and C_Spell.GetSpellName(spellId) or nil
+	if spellId ~= nil and name ~= nil then
+		conditionNames[spellId] = name
+		conditionActive[name] = false
 	end
 end
 
@@ -340,6 +370,7 @@ function TRB.Functions.Aura:RefreshConditionSpells()
 	wipe(conditionNames)
 	wipe(conditionActive)
 	wipe(conditionInstances)
+	wipe(conditionDetails)
 	local spec = TRB.Flavor.playerAuras and TRB.Functions.Character:GetActiveRawSpecSettings() or nil
 	if spec == nil then
 		return
@@ -355,6 +386,11 @@ function TRB.Functions.Aura:RefreshConditionSpells()
 		for _, cue in pairs(spec.audio) do
 			AddConditionSpells(type(cue) == "table" and cue.kind == "buff" and cue.configuration ~= nil and cue.configuration.conditions or nil)
 		end
+	end
+	local customBarSpellIds = {}
+	TRB.Functions.CustomBars:AppendAuraSpellIds(customBarSpellIds)
+	for _, spellId in ipairs(customBarSpellIds) do
+		AddConditionSpell(spellId)
 	end
 	for name in pairs(conditionActive) do
 		ReadConditionAura(name)
@@ -382,6 +418,16 @@ function TRB.Functions.Aura:UpdateConditionAuras(info)
 			if name ~= nil and conditionActive[name] ~= nil then
 				conditionActive[name] = true
 				conditionInstances[aura.auraInstanceID] = name
+				StoreConditionDetails(name, aura)
+			end
+		end
+	end
+	-- A refresh or a stack changes what a custom bar draws, though not whether the buff is up.
+	if info.updatedAuraInstanceIDs ~= nil then
+		for _, auraInstanceId in ipairs(info.updatedAuraInstanceIDs) do
+			local name = conditionInstances[auraInstanceId]
+			if name ~= nil and conditionDetails[name] ~= nil then
+				ReadConditionAura(name)
 			end
 		end
 	end
@@ -395,6 +441,21 @@ function TRB.Functions.Aura:UpdateConditionAuras(info)
 			end
 		end
 	end
+end
+
+---A followed buff's time and stacks: any rank of the spell, from any caster.
+---@param spellId integer
+---@return boolean isActive
+---@return number expirationTime # 0 for a buff with no timer
+---@return number duration
+---@return number applications
+function TRB.Functions.Aura:GetFollowedAura(spellId)
+	local name = conditionNames[spellId]
+	local details = name ~= nil and conditionActive[name] == true and conditionDetails[name] or nil
+	if details == nil then
+		return false, 0, 0, 0
+	end
+	return true, details.expirationTime, details.duration, details.applications
 end
 
 ---Whether a buff condition holds right now: the player has any rank of its spell.

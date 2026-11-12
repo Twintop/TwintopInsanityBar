@@ -80,6 +80,9 @@ CustomBars.segmentedAutoMax = 10
 ---@class TRB.Classes.CustomBarProvider
 ---@field public label string # What the Add Bar menu calls it
 ---@field public shortLabel string? # What a bar's Tracks text says its value comes from
+---@field public GetIdSources (fun(spellId: integer): TRB.Classes.CustomBarSourceOption[])? # What a spell ID the user typed can be tracked as; a provider with this takes typed IDs
+---@field public promptText string? # What the spell ID prompt asks for
+---@field public noSourcesText string? # Format for the message when a typed spell has nothing to track
 ---@field public GetSources fun(classId: integer?, specId: integer?): TRB.Classes.CustomBarSourceOption[] # What it offers a specialization, unsorted
 ---@field public GetSourceName fun(classId: integer?, specId: integer?, source: TRB.Classes.Settings.CustomBarSource): string? # The tracked spell's current name
 ---@field public ReadMax fun(classId: integer, specId: integer, source: TRB.Classes.Settings.CustomBarSource): integer? # A count source's maximum, when known in plain form
@@ -139,6 +142,7 @@ local anyTimerActive = false
 local runtimeKey = nil
 local runtimeHasCooldowns = false
 local pendingCooldownSync = false
+local pendingAuraSync = false
 local pendingVisibility = false
 -- A rebuilt bar list has groups to build and drop, and the new ones to texture and color.
 local pendingGroups = false
@@ -935,6 +939,8 @@ local function EnsureRuntime()
 		TRB.Functions.BarText:SetBoundBarVariables(boundBars)
 	end
 	pendingCooldownSync = pendingCooldownSync or hadCooldowns or runtimeHasCooldowns
+	-- The buffs followed by spell ID are read from the bar list.
+	pendingAuraSync = TRB.Flavor.playerAuras == true
 	pendingVisibility = true
 	pendingGroups = true
 	pendingAppearance = #runtime > 0
@@ -1522,6 +1528,11 @@ end
 local spellProvider = {
 	label = L["CustomBarsAddGroupSpellId"],
 	shortLabel = L["CustomBarsProviderShortSpellId"],
+	promptText = L["CustomBarsSpellIdPromptText"],
+	noSourcesText = L["CustomBarsSpellIdNoCooldown"],
+	GetIdSources = function(spellId)
+		return CustomBars:GetSpellIdSources(spellId)
+	end,
 	-- The abilities this specialization's bars already name, so a bar can change what it tracks of one.
 	GetSources = function(classId, specId)
 		local sources = {}
@@ -1570,12 +1581,160 @@ local spellProvider = {
 }
 CustomBars:RegisterProvider(CustomBars.spellProvider, spellProvider)
 
+---The providers that take a spell ID the user types, in menu order.
+---@return string[]
+function CustomBars:GetTypedProviders()
+	local names = {}
+	for name, provider in pairs(providers) do
+		if provider.GetIdSources ~= nil then
+			names[#names + 1] = name
+		end
+	end
+	table.sort(names, function(a, b)
+		return providers[a].label < providers[b].label
+	end)
+	return names
+end
+
+---What a typed spell ID can be tracked as through a provider, and that provider's prompt and no-source texts.
+---@param name string
+---@param spellId integer?
+---@return TRB.Classes.CustomBarSourceOption[] sources
+---@return string? promptText
+---@return string? noSourcesText
+function CustomBars:GetTypedSources(name, spellId)
+	local provider = providers[name]
+	if provider == nil or provider.GetIdSources == nil then
+		return {}, nil, nil
+	end
+	return spellId ~= nil and provider.GetIdSources(spellId) or {}, provider.promptText, provider.noSourcesText
+end
+
+-- A buff by the spell ID the user typed, where the player's auras are never secret. Any rank and any caster count.
+CustomBars.auraProvider = "aura"
+
+---What the client says a buff can be tracked as: its duration, and its stacks when it stacks.
+---@param spellId integer
+---@return TRB.Classes.CustomBarSourceOption[]
+function CustomBars:GetAuraIdSources(spellId)
+	local sources = {}
+	local name = C_Spell.GetSpellName(spellId)
+	if name == nil then
+		return sources
+	end
+	local kinds = self.kinds
+	local texture = C_Spell.GetSpellTexture(spellId)
+	local offered = { kinds.buffTime }
+	if (C_Spell.GetSpellMaxCumulativeAuraApplications(spellId) or 0) > 1 then
+		offered[#offered + 1] = kinds.buffStacks
+	end
+	for _, kind in ipairs(offered) do
+		sources[#sources + 1] = {
+			kind = kind,
+			spellId = spellId,
+			spellName = name,
+			icon = texture ~= nil and string.format("|T%s:0|t", texture) or nil,
+			label = string.format(L["CustomBarsSourceFormat"], name, kindLabels[kind]),
+			provider = self.auraProvider,
+		}
+	end
+	return sources
+end
+
+---Appends the spell IDs of the buffs the displayed bars follow, for the aura reader.
+---@param spellIds integer[]
+function CustomBars:AppendAuraSpellIds(spellIds)
+	EnsureRuntime()
+	for _, entry in ipairs(runtime) do
+		if entry.bar.source.provider == self.auraProvider then
+			spellIds[#spellIds + 1] = entry.spellId
+		end
+	end
+end
+
+---A followed buff's stacks: a buff that doesn't stack counts as one while it is up.
+---@param entry TRB.Classes.CustomBarRuntime
+---@return number
+local function ReadAuraCount(entry)
+	local isActive, _, _, applications = TRB.Functions.Aura:GetFollowedAura(entry.spellId)
+	if not isActive then
+		return 0
+	end
+	return math.max(applications, 1)
+end
+
+---@type TRB.Classes.CustomBarProvider
+local auraProvider = {
+	label = L["CustomBarsAddGroupAuraId"],
+	shortLabel = L["CustomBarsProviderShortSpellId"],
+	GetIdSources = function(spellId)
+		return CustomBars:GetAuraIdSources(spellId)
+	end,
+	-- The buffs this specialization's bars already name, so a bar can change what it tracks of one.
+	GetSources = function(classId, specId)
+		local sources = {}
+		local compositeKey = classId ~= nil and specId ~= nil and TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId) or nil
+		local seen = {}
+		for _, bar in pairs(CustomBars:GetBars(GetSavedSpec(compositeKey)) or {}) do
+			local source = type(bar) == "table" and bar.source or nil
+			if type(source) == "table" and source.provider == CustomBars.auraProvider and type(source.spellId) == "number" and not seen[source.spellId] then
+				seen[source.spellId] = true
+				for _, option in ipairs(CustomBars:GetAuraIdSources(source.spellId)) do
+					sources[#sources + 1] = option
+				end
+			end
+		end
+		return sources
+	end,
+	GetSourceName = function(_, _, source)
+		return C_Spell.GetSpellName(source.spellId)
+	end,
+	ReadMax = function(_, _, source)
+		local max = source.kind == CustomBars.kinds.buffStacks and C_Spell.GetSpellMaxCumulativeAuraApplications(source.spellId) or nil
+		if max ~= nil and not issecretvalue(max) and max > 0 then
+			return max
+		end
+		return nil
+	end,
+	WriteLookup = function(entry, now)
+		local timeText, stacksText, stacksMaxText = "", "", ""
+		if entry.isTimer then
+			if entry.active and entry.endTime ~= nil then
+				timeText = TRB.Functions.BarText:TimerPrecision(entry.endTime - now)
+			end
+		else
+			stacksText = TRB.Functions.Number:RoundTo(ReadAuraCount(entry), 0)
+			local max = knownMax[entry.key] or entry.bar.maxCount
+			if max ~= nil then
+				stacksMaxText = tostring(max)
+			end
+		end
+		return timeText, stacksText, stacksMaxText
+	end,
+	Render = function(entry, group, node, settings, now, redraw)
+		if entry.isTimer then
+			local isActive, expirationTime, duration = TRB.Functions.Aura:GetFollowedAura(entry.spellId)
+			RenderPlainTimer(entry, node, isActive, expirationTime, duration, now, redraw)
+			return false
+		end
+		RenderCount(entry, group, settings, ReadAuraCount(entry), knownMax[entry.key] or entry.bar.maxCount or 1, redraw, true)
+		return false
+	end,
+}
+if TRB.Flavor.playerAuras then
+	CustomBars:RegisterProvider(CustomBars.auraProvider, auraProvider)
+end
+
 ---Draws the displayed custom bars. Runs on the 20Hz tick, ahead of the visibility pass.
 function CustomBars:Render()
 	EnsureRuntime()
 	if pendingCooldownSync then
 		pendingCooldownSync = false
 		TRB.Functions.ThresholdCooldowns:Sync()
+	end
+	if pendingAuraSync then
+		pendingAuraSync = false
+		TRB.Functions.Aura:RefreshConditionSpells()
 	end
 	if pendingVisibility then
 		pendingVisibility = false

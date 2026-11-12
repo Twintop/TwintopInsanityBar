@@ -15,6 +15,10 @@ TRB.Flavor.newsContent = [====[
 - [#986](#986) Fix a mana spec's Primary Resource Value bar visibility condition being met at far less mana than the value set.
 - [#986](#986) A mana spec's Primary Resource Value condition now goes up to 25,000.
 
+### Custom Bars
+
+- A custom bar can track the duration or stacks of a buff by its spell ID, counting any rank of the spell.
+
 ## Mage
 
 - [#981](#981) Add a new Arcane Blast bar, tracking your Arcane Blast stacks, with the `$arcaneBlastStacks`, `$arcaneBlastStacksMax`, `$arcaneBlastTime`, and `#arcaneBlast` bar text variables. It shows once you learn Arcane Blast.

@@ -15,6 +15,10 @@ TRB.Flavor.newsContent = [====[
 - [#986](#986) Fix a mana spec's Primary Resource Value bar visibility condition being met at far less mana than the value set.
 - [#986](#986) A mana spec's Primary Resource Value condition now goes up to 15,000.
 
+### Custom Bars
+
+- A custom bar can track the duration or stacks of a buff by its spell ID, counting any rank of the spell.
+
 ---
 
 # 1.15.9.3-release (2026-11-10)

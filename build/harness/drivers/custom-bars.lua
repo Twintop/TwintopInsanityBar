@@ -1066,6 +1066,72 @@ function hooks.afterEvents(ctx)
 		desktop.GetSpellBaseCooldown = api.GetSpellBaseCooldown
 	end
 
+	-- A buff named by spell ID, where the player's auras are never secret: read by name, so any rank counts.
+	if TRB.Flavor.playerAuras then
+		local Aura = TRB.Functions.Aura
+		local names = { [990050] = "Driver Typed Buff", [990051] = "Driver Typed Plain Buff" }
+		local api = {
+			GetSpellName = desktop.C_Spell.GetSpellName,
+			GetMax = desktop.C_Spell.GetSpellMaxCumulativeAuraApplications,
+			GetAura = desktop.C_UnitAuras.GetAuraDataBySpellName,
+		}
+		local live = nil
+		rawset(desktop.C_Spell, "GetSpellName", function(id) return names[id] or api.GetSpellName(id) end)
+		rawset(desktop.C_Spell, "GetSpellMaxCumulativeAuraApplications", function(id) return id == 990050 and 5 or 0 end)
+		rawset(desktop.C_UnitAuras, "GetAuraDataBySpellName", function(unit, name, filter)
+			if name == "Driver Typed Buff" then
+				return live
+			end
+			return api.GetAura(unit, name, filter)
+		end)
+
+		local buffSources = CustomBars:GetAuraIdSources(990050)
+		check("a typed buff is offered as a Duration, and as Stacks when the client says it stacks", #buffSources == 2
+			and buffSources[1].kind == "buffTime" and buffSources[2].kind == "buffStacks" and buffSources[1].provider == "aura"
+			and #CustomBars:GetAuraIdSources(990051) == 1)
+		if #buffSources == 2 then
+			local buffTimeGuid = CustomBars:Add(spec, classId, specId, buffSources[1])
+			local buffStackGuid = CustomBars:Add(spec, classId, specId, buffSources[2])
+			local buffTimeKey, buffStackKey = CustomBars:GetBarKey(buffTimeGuid), CustomBars:GetBarKey(buffStackGuid)
+			check("its stacks bar takes the client's maximum", definitions:Get(buffStackKey) ~= nil and definitions:Get(buffStackKey).maxNodes == 5)
+			try("lay out the typed buff bars", Relayout)
+			try("render with the buff down", function() CustomBars:Render() end)
+			check("with the buff down both bars are hidden", not Shows(EntryFor(barGroups[buffTimeKey])) and not Shows(EntryFor(barGroups[buffStackKey])))
+			local now = desktop.GetTime()
+			live = { auraInstanceID = 77, name = "Driver Typed Buff", isHelpful = true, expirationTime = now + 20, duration = 30, applications = 3 }
+			Aura:UpdateConditionAuras({ addedAuras = { live } })
+			try("render with the buff up", function() CustomBars:Render() end)
+			local lookup = {}
+			CustomBars:WriteLookup(lookup)
+			local timeEntry = RuntimeEntry(buffTimeKey)
+			check("a gained buff runs its Duration bar on the buff's own time", timeEntry ~= nil and timeEntry.active
+				and math.abs(timeEntry.endTime - (now + 20)) < 0.001 and timeEntry.duration == 30 and lookup["$" .. buffTimeKey .. "Time"] ~= ""
+				and Shows(EntryFor(barGroups[buffTimeKey])))
+			check("and its Stacks bar shows the buff's stacks", lookup["$" .. buffStackKey .. "Stacks"] == "3"
+				and lookup["$" .. buffStackKey .. "StacksMax"] == "5" and Shows(EntryFor(barGroups[buffStackKey])))
+			live = { auraInstanceID = 77, name = "Driver Typed Buff", isHelpful = true, expirationTime = now + 30, duration = 30, applications = 4 }
+			Aura:UpdateConditionAuras({ updatedAuraInstanceIDs = { 77 } })
+			try("render a refreshed buff", function() CustomBars:Render() end)
+			CustomBars:WriteLookup(lookup)
+			check("a refresh or a new stack is followed", timeEntry ~= nil and math.abs(timeEntry.endTime - (now + 30)) < 0.001
+				and lookup["$" .. buffStackKey .. "Stacks"] == "4")
+			live = nil
+			Aura:UpdateConditionAuras({ removedAuraInstanceIDs = { 77 } })
+			try("render with the buff gone", function() CustomBars:Render() end)
+			check("and both bars hide when it drops", not Shows(EntryFor(barGroups[buffTimeKey])) and not Shows(EntryFor(barGroups[buffStackKey])))
+			CustomBars:Delete(spec, classId, specId, buffTimeGuid)
+			CustomBars:Delete(spec, classId, specId, buffStackGuid)
+			try("lay out without the typed buff bars", Relayout)
+			try("render without them", function() CustomBars:Render() end)
+			local followed = {}
+			CustomBars:AppendAuraSpellIds(followed)
+			check("deleted buff bars stop being followed", #followed == 0 and Aura:GetFollowedAura(990050) == false)
+		end
+		rawset(desktop.C_Spell, "GetSpellName", api.GetSpellName)
+		rawset(desktop.C_Spell, "GetSpellMaxCumulativeAuraApplications", api.GetMax)
+		rawset(desktop.C_UnitAuras, "GetAuraDataBySpellName", api.GetAura)
+	end
+
 	-- Another provider's bars draw and read through it, and a bar whose provider is missing is left alone.
 	do
 		local drawn, looked = 0, 0
@@ -1168,7 +1234,10 @@ function hooks.afterEvents(ctx)
 		local leaves = menu ~= nil and Leaves(menu, {}) or {}
 		local tracked = menu ~= nil and menu.buttons[1] or nil --[[@as table?]]
 		local typed = menu ~= nil and menu.buttons[2] or nil --[[@as table?]]
-		check("Add Bar opens on where a bar's value comes from: the specialization's tracking, then a spell ID", menu ~= nil and #menu.buttons == 2
+		local typedProviders = CustomBars:GetTypedProviders()
+		check("a buff can be named by spell ID only where the player's auras are never secret", #typedProviders == (TRB.Flavor.playerAuras and 2 or 1))
+		check("Add Bar opens on where a bar's value comes from: the specialization's tracking, then a spell ID", menu ~= nil
+			and #menu.buttons == 1 + #typedProviders
 			and tracked ~= nil and typed ~= nil and tracked.label == TRB.Localization["CustomBarsAddGroupSnapshot"] and tracked.callback == nil
 			and typed.label == TRB.Localization["CustomBarsAddGroupSpellId"]
 			and typed.buttons[1] ~= nil and typed.buttons[1].label == TRB.Localization["CustomBarsAddSpellId"])
@@ -1196,7 +1265,7 @@ function hooks.afterEvents(ctx)
 		snapshots[iconSpell.id] = nil
 		check("then each spell, then what to track of it", stackSpellMenu ~= nil and stackSpellMenu.callback == nil and #stackSpellMenu.buttons == 1
 			and stackSpellMenu.buttons[1].label == CustomBars:GetKindLabel("buffStacks")
-			and #leaves == #CustomBars:GetSources(classId, specId) + 1)
+			and #leaves == #CustomBars:GetSources(classId, specId) + #typedProviders)
 		if #leaves > 0 then
 			try("pick the first source", function() leaves[1].callback() end)
 		end
@@ -1232,7 +1301,7 @@ function hooks.afterEvents(ctx)
 			end
 		end
 		check("the Tracks dropdown is tiered like Add Bar and marks what the bar tracks", tracksMenu ~= nil and tracksMenu.name:sub(-7) == "_Tracks"
-			and #tracksRoot.buttons == 2 and trackedGroup.label == TRB.Localization["CustomBarsAddGroupSnapshot"]
+			and #tracksRoot.buttons == 1 + #CustomBars:GetTypedProviders() and trackedGroup.label == TRB.Localization["CustomBarsAddGroupSnapshot"]
 			and toTimer ~= nil and toTimer.label == CustomBars:GetKindLabel("buffTime") and current ~= nil and current:sub(-13) == "Driver Stacks")
 		if toTimer ~= nil then
 			try("pick another source from the Tracks dropdown", function() toTimer.callback() end)

@@ -64,7 +64,7 @@ end
 ---@param classId integer
 ---@param specId integer
 ---@param onPick fun(source: TRB.Classes.CustomBarSourceOption)
----@param onSpellId fun(spellId: integer) # Takes a spell ID the user typed
+---@param onSpellId fun(providerName: string, spellId: integer) # Takes a spell ID the user typed for a provider
 ---@param selectedKey string? # The source to mark as chosen, for a menu that changes one
 local function FillSourceMenu(rootDescription, classId, specId, onPick, onSpellId, selectedKey)
 	local groups, groupByProvider = {}, {}
@@ -85,9 +85,13 @@ local function FillSourceMenu(rootDescription, classId, specId, onPick, onSpellI
 		end
 		spell.sources[#spell.sources + 1] = source
 	end
-	-- A spell ID can be typed with or without abilities already named.
-	if groupByProvider[CustomBars.spellProvider] == nil then
-		groups[#groups + 1] = { name = CustomBars.spellProvider, label = CustomBars:GetProviderLabel(CustomBars.spellProvider), spells = {} }
+	-- A spell ID can be typed with or without spells already named.
+	local typedProviders = {}
+	for _, providerName in ipairs(CustomBars:GetTypedProviders()) do
+		typedProviders[providerName] = true
+		if groupByProvider[providerName] == nil then
+			groups[#groups + 1] = { name = providerName, label = CustomBars:GetProviderLabel(providerName), spells = {} }
+		end
 	end
 	table.sort(groups, function(a, b)
 		if (a.name == CustomBars.defaultProvider) ~= (b.name == CustomBars.defaultProvider) then
@@ -101,10 +105,13 @@ local function FillSourceMenu(rootDescription, classId, specId, onPick, onSpellI
 	for _, group in ipairs(groups) do
 		local groupMenu = rootDescription:CreateButton(group.label)
 		local rows = #group.spells
-		if group.name == CustomBars.spellProvider then
+		if typedProviders[group.name] then
 			rows = rows + 1
 			groupMenu:CreateButton(L["CustomBarsAddSpellId"], function()
-				TRB.Functions.OptionsUi.Primitives:ShowAuraSpellIdPrompt(nil, onSpellId, L["CustomBarsSpellIdPromptText"])
+				local _, promptText = CustomBars:GetTypedSources(group.name, nil)
+				TRB.Functions.OptionsUi.Primitives:ShowAuraSpellIdPrompt(nil, function(spellId)
+					onSpellId(group.name, spellId)
+				end, promptText)
 			end)
 		end
 		for _, spell in ipairs(group.spells) do
@@ -125,14 +132,16 @@ end
 
 ---The source a typed spell ID gives, after telling the user when there is none or more than one. A bar being
 ---changed keeps its kind when the spell offers it.
+---@param providerName string
 ---@param spellId integer
 ---@param current TRB.Classes.Settings.CustomBarSource? # The source of the bar being changed, nil for a new bar
----@return TRB.Classes.CustomBarSourceOption? picked # nil when the ability has nothing to track or nothing changes
-local function ResolveSpellId(spellId, current)
-	local options = CustomBars:GetSpellIdSources(spellId)
+---@return TRB.Classes.CustomBarSourceOption? picked # nil when the spell has nothing to track or nothing changes
+local function ResolveSpellId(providerName, spellId, current)
+	local options, _, noSourcesText = CustomBars:GetTypedSources(providerName, spellId)
 	if #options == 0 then
-		StaticPopup_Show("TwintopResourceBar_CustomBarsMessage",
-			string.format(L["CustomBarsSpellIdNoCooldown"], C_Spell.GetSpellName(spellId) or tostring(spellId)))
+		if noSourcesText ~= nil then
+			StaticPopup_Show("TwintopResourceBar_CustomBarsMessage", string.format(noSourcesText, C_Spell.GetSpellName(spellId) or tostring(spellId)))
+		end
 		return nil
 	end
 	local picked = options[1]
@@ -374,8 +383,8 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 				return (icon ~= nil and icon ~= "" and icon .. " " or "") .. CustomBars:GetSourceLabel(classId, specId, source)
 			end)
 			tracks:SetupMenu(function(_, rootDescription)
-				FillSourceMenu(rootDescription, classId, specId, Track, function(spellId)
-					Track(ResolveSpellId(spellId, bar.source))
+				FillSourceMenu(rootDescription, classId, specId, Track, function(providerName, spellId)
+					Track(ResolveSpellId(providerName, spellId, bar.source))
 				end, GetSourceKey(bar.source))
 			end)
 		end
@@ -521,10 +530,11 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 		RefreshEditor(guid)
 	end
 
-	---Adds a bar for an ability the user named by spell ID, tracking the first thing it offers.
+	---Adds a bar for a spell the user named by spell ID, tracking the first thing it offers.
+	---@param providerName string
 	---@param spellId integer
-	local function AddSpellIdBar(spellId)
-		local source = ResolveSpellId(spellId)
+	local function AddSpellIdBar(providerName, spellId)
+		local source = ResolveSpellId(providerName, spellId)
 		if source ~= nil then
 			AddBar(source)
 		end
