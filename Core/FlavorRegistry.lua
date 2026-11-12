@@ -27,6 +27,14 @@ local addonName, TRB = ...
 ---@field public format "percent"|"number" # percent rounds to the secondary precision; number uses short notation
 ---@field public integer boolean? # Whole number: options logic type INTEGER
 ---@field public secret boolean? # May hold a secret, so display only (default: the flavor's secretValues)
+---@field public booleanCheck boolean? # A bare {$stat} check is meaningful
+
+---A GetSpecConfiguration resourceType's display data (Flavors\<Flavor>\Resources.lua).
+---@class TRB.Flavor.ResourceType
+---@field public name string # Localized resource name, e.g. "Insanity"
+---@field public containerLabel string? # Localized name of a multi-node bar's whole-bar text anchor
+---@field public percentScale boolean? # A primary bar of this type takes custom thresholds as percentages
+---@field public powerType integer? # Its Enum.PowerType, where Core compares one
 
 ---@class TRB.Flavor.TalentRank
 ---@field public currentRank integer
@@ -40,6 +48,7 @@ local addonName, TRB = ...
 ---@class TRB.Flavor.Skyriding
 ---@field public speedCaps { default: TRB.Flavor.SkyridingSpeedCap, dragonIsles: TRB.Flavor.SkyridingSpeedCap }
 ---@field public dragonIslesMapIds integer[] # UiMap ids whose maps and child maps use the Dragon Isles speed caps
+---@field public spells table<string, TRB.Classes.SpellBase>? # The tracked spells by TRB.Classes.SkyridingSpells role, which Flavors\<Flavor>\Skyriding.lua adds
 
 ---@class TRB.Flavor.SkyridingSpeedCap
 ---@field public max number # The Speed bar's maximum, in yards per second
@@ -56,7 +65,8 @@ local addonName, TRB = ...
 ---@field public nameKey string # Localization key of the flavor's display name
 ---@field public classNamespace string # Key under TRB.Classes holding the flavor's class modules, since flavors share class names
 ---@field public savedVariablesName string # Global declared by the TOC's SavedVariables line
----@field public gcdSpellId integer? # Dummy spell whose cooldown is the global cooldown; defaults to retail's 61304
+---@field public gcdSpellId integer # Dummy spell whose cooldown is the global cooldown
+---@field public manaVisibilityMax number # The mana pool Mana Value visibility thresholds scale against, and their slider's maximum
 ---@field public unavailableVisibilityConditions table<string, boolean>? # Bar visibility condition keys the client can never satisfy (no flying, say); dropped from the options and the defaults
 ---@field public swingTimers boolean? # The Main Hand, Off Hand, and Ranged Swing bars exist
 ---@field public blizzardSwingTimer boolean? # The client has Blizzard's swing timer: it fires PLAYER_SWING and draws bars this addon can hide. Without it, swings come from the combat log and `swingSpells` (default false)
@@ -71,27 +81,34 @@ local addonName, TRB = ...
 ---@field public classes TRB.Flavor.ClassEntry[]
 ---@field public stats TRB.Flavor.StatDefinition[] # Bar text stat variables (Flavors\<Flavor>\Stats.lua)
 ---@field public statEvents TRB.Flavor.StatEvents
+---@field public resourceTypes table<string, TRB.Flavor.ResourceType> # Every resourceType the flavor's classes declare, except those of Core's own bars (Flavors\<Flavor>\Resources.lua)
+---@field public globalBarTextAnchorFrames table<string, TRB.Classes.SpecDescriptor.AnchorFrame[]> # Global Bar Text anchors beyond the bars every spec has, keyed by the bar group they sort with (Flavors\<Flavor>\Resources.lua)
 ---@field public PortForwardSettings (fun(settings: table?))? # Saved-variable migrations, if the flavor has any
 ---@field public DefaultManualUpdateChecks (fun(): table)? # Seed for settings.manualUpdateChecks
 ---@field public OnBarTextSeeded (fun(settings: table, className: string))? # Hook after a class receives fresh default bar text
 ---@field public RunManualUpdateChecks (fun(settings: table, classEntry: TRB.Data.ClassRegistryEntry): table)? # One-shot per-class manual migrations run right after the saved variables are merged
----@field public ShowMidnightBarTextResetMessage (fun(className: string))? # Mainline-only chat notice for its bar text reset
 ---@field public ResolveSpellRankId (fun(spell: TRB.Classes.SpellBase): integer?)? # The rank of a `rankIds` spell to hand the client API; flavors without ranked spells leave it unset and get the spell's `id`
----@field public ReadTalentRanks (fun(): table<integer, TRB.Flavor.TalentRank>)? # Every talent's rank keyed by spell ID; defaults to the active trait config's trees
----@field public pvpTalents boolean? # The client has PvP talents (default true)
+---@field public ReadTalentRanks fun(): table<integer, TRB.Flavor.TalentRank> # Every talent's rank keyed by spell ID
+---@field public pvpTalents boolean # The client has PvP talents
 ---@field public talentEvents string[]? # Events besides TRAIT_CONFIG_UPDATED meaning the player's talents changed, which re-run SwitchSpec
----@field public cooldownManager boolean? # The client has Blizzard's Cooldown Manager, so it can feed tracking and anchor bars (default true)
+---@field public cooldownManager boolean # The client has Blizzard's Cooldown Manager, so it can feed tracking and anchor bars
+---@field public auraContainersInCombat boolean? # Aura containers can be created in combat (default false)
 ---@field public playerAuras boolean? # The player's aura data is never secret, so custom indicators and Buff Alerts can follow a buff by spell ID (default false)
----@field public secretValues boolean? # The client hands out secret values, so bar text marks the variables that may hold one (default true)
+---@field public secretValues boolean # The client hands out secret values, so bar text marks the variables that may hold one
 ---@field public DefaultCastbarTickProfiles (fun(): table<integer, TRB.Classes.Settings.CastbarTickProfile>)? # Channel tick profiles for every class (racials, consumables), keyed by spell ID; a fresh table per call, which the spec's own profiles overlay
 ---@field public newsContent string? # Markdown changelog shown by the News window's flavor tab; Core\News.lua holds the Core tab's
----@field public coreNewsLabel string? # The flavor's name in Core\News.lua titles, such as "Live"; the Core tab titles each section with that release alone and drops sections without it. Unset shows every title as written
+---@field public coreNewsLabel string? # The flavor's name in Core\News.lua titles; the Core tab titles each section with that release alone and drops sections without it. Unset shows every title as written
 
 assert(type(TRB.Flavor) == "table", "TwintopInsanityBar: no flavor manifest loaded before Core. Check the TOC.")
 assert(type(TRB.Flavor.id) == "string" and TRB.Flavor.id ~= "", "TwintopInsanityBar: flavor manifest has no id.")
 assert(type(TRB.Flavor.savedVariablesName) == "string", "TwintopInsanityBar: flavor manifest has no savedVariablesName.")
 assert(type(TRB.Flavor.classNamespace) == "string" and TRB.Flavor.classNamespace ~= "", "TwintopInsanityBar: flavor manifest has no classNamespace.")
 assert(type(TRB.Flavor.classes) == "table", "TwintopInsanityBar: flavor manifest has no classes.")
+assert(type(TRB.Flavor.gcdSpellId) == "number", "TwintopInsanityBar: flavor manifest has no gcdSpellId.")
+assert(type(TRB.Flavor.manaVisibilityMax) == "number", "TwintopInsanityBar: flavor manifest has no manaVisibilityMax.")
+assert(type(TRB.Flavor.pvpTalents) == "boolean" and type(TRB.Flavor.cooldownManager) == "boolean" and type(TRB.Flavor.secretValues) == "boolean",
+	"TwintopInsanityBar: flavor manifest needs pvpTalents, cooldownManager, and secretValues.")
+assert(type(TRB.Flavor.ReadTalentRanks) == "function", "TwintopInsanityBar: flavor manifest has no ReadTalentRanks.")
 assert(type(TRB.Flavor.GetSpecializationIndex) == "function", "TwintopInsanityBar: flavor manifest has no GetSpecializationIndex.")
 assert(type(TRB.Flavor.stats) == "table", "TwintopInsanityBar: flavor has no stats (Stats.lua must load after Manifest.lua).")
 assert(type(TRB.Flavor.statEvents) == "table" and type(TRB.Flavor.statEvents.primary) == "table" and type(TRB.Flavor.statEvents.secondary) == "table", "TwintopInsanityBar: flavor statEvents needs primary and secondary event lists.")
@@ -125,9 +142,6 @@ function TRB.Flavor.GetClassModule(classModuleName)
 	return TRB.Classes[TRB.Flavor.classNamespace][classModuleName]
 end
 
-if TRB.Flavor.gcdSpellId == nil then
-	TRB.Flavor.gcdSpellId = 61304
-end
 if TRB.Flavor.unavailableVisibilityConditions == nil then
 	TRB.Flavor.unavailableVisibilityConditions = {}
 end
@@ -150,68 +164,17 @@ assert(not TRB.Flavor.swingTimers or TRB.Flavor.blizzardSwingTimer or type(TRB.F
 if TRB.Flavor.thresholdsRequireKnown == nil then
 	TRB.Flavor.thresholdsRequireKnown = false
 end
-if TRB.Flavor.pvpTalents == nil then
-	TRB.Flavor.pvpTalents = true
-end
 if TRB.Flavor.talentEvents == nil then
 	TRB.Flavor.talentEvents = {}
-end
-if TRB.Flavor.cooldownManager == nil then
-	TRB.Flavor.cooldownManager = true
 end
 if TRB.Flavor.playerAuras == nil then
 	TRB.Flavor.playerAuras = false
 end
-if TRB.Flavor.secretValues == nil then
-	TRB.Flavor.secretValues = true
+if TRB.Flavor.auraContainersInCombat == nil then
+	TRB.Flavor.auraContainersInCombat = false
 end
 
--- Trait-tree talents (retail and Forever); a flavor with another talent system replaces it.
-if TRB.Flavor.ReadTalentRanks == nil then
-	---@return table<integer, TRB.Flavor.TalentRank>
-	function TRB.Flavor.ReadTalentRanks()
-		local ranks = {}
-		local configId = C_ClassTalents.GetActiveConfigID()
-		if configId == nil then
-			return ranks
-		end
-		local configInfo = C_Traits.GetConfigInfo(configId)
-		if configInfo == nil then
-			return ranks
-		end
-		for _, treeId in pairs(configInfo.treeIDs) do
-			local nodes = C_Traits.GetTreeNodes(treeId)
-			for _, nodeId in pairs(nodes) do
-				local node = C_Traits.GetNodeInfo(configId, nodeId)
-				local entryId = nil
-
-				if node.activeEntry ~= nil then
-					entryId = node.activeEntry.entryID
-				elseif node.nextEntry ~= nil then
-					entryId = node.nextEntry.entryID
-				elseif node.entryIDs ~= nil then
-					entryId = node.entryIDs[1]
-				end
-
-				if entryId ~= nil then
-					local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
-					if entryInfo.definitionID ~= nil then
-						local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
-						if definitionInfo ~= nil then
-							local spellId = definitionInfo.spellID or definitionInfo.overriddenSpellID
-							if spellId ~= nil then
-								ranks[spellId] = { currentRank = node.currentRank, maxRank = node.maxRanks, subTreeActive = node.subTreeActive }
-							end
-						end
-					end
-				end
-			end
-		end
-		return ranks
-	end
-end
-
--- Placeholder rank resolution: a flavor with ranked spells (Forever, Classic, and TBC) replaces it.
+-- Placeholder rank resolution: a flavor with ranked spells replaces it.
 if TRB.Flavor.ResolveSpellRankId == nil then
 	---@param spell TRB.Classes.SpellBase
 	---@return integer

@@ -428,7 +428,7 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public insideAnchorBorder boolean? # Five Second Rule only: sit inside the anchor bar's border rather than over it
 
 ---@class TRB.Classes.Settings.TotemBar : TRB.Classes.Settings.OtherBar
----@field public showAllSlots boolean? # Mainline: show a node for every totem slot, not just up to the highest one in use
+---@field public showAllSlots boolean? # Without element slots: show a node for every totem slot, not just up to the highest one in use
 
 ---Skyriding bar colors. `bar` is the Speed bar's fill, a charge bar's full charges, and Whirling Surge while it recharges.
 ---@class TRB.Classes.Settings.SkyridingBarColors
@@ -550,15 +550,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public inDelve boolean? # Show when the player is in a delve
 ---@field public isPvpFlagged boolean? # Show when the player is PVP flagged
 ---@field public isWarMode boolean? # Show when War Mode is enabled
----@field public isDruidHumanoidForm boolean? # Show when the Druid player is in humanoid form
----@field public isDruidTravelFormAny boolean? # Show when the Druid player is in any travel form variant
----@field public isDruidStagForm boolean? # Show when the Druid player is in stag/ground travel form
----@field public isDruidFlightForm boolean? # Show when the Druid player is in steady flight form
----@field public isDruidSwiftFlightForm boolean? # Show when the Druid player is in skyriding flight form
----@field public isDruidAquaticForm boolean? # Show when the Druid player is in aquatic form
----@field public isDruidCatForm boolean? # Show when the Druid player is in cat form
----@field public isDruidBearForm boolean? # Show when the Druid player is in bear form
----@field public isDruidMoonkinForm boolean? # Show when the Druid player is in moonkin form
 ---@field public isPetAlive boolean? # Pet bars only: show while the pet is out and alive
 ---@field public isPetDead boolean? # Pet bars only: show while the pet is dead
 ---@field public isPetMissing boolean? # Pet bars only: show while there is no pet
@@ -579,15 +570,6 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isSkyriding boolean? # Hide when able to glide on a skyriding-capable mount or in a Druid flight form
 ---@field public isSkyridingFlying boolean? # Hide when actively skyriding (skyriding and flying)
 ---@field public isNotSkyriding boolean? # Skyriding bars only: hide while not skyriding
----@field public isDruidHumanoidForm boolean? # Hide when the Druid player is in humanoid form
----@field public isDruidTravelFormAny boolean? # Hide when the Druid player is in any travel form variant
----@field public isDruidStagForm boolean? # Hide when the Druid player is in stag/ground travel form
----@field public isDruidFlightForm boolean? # Hide when the Druid player is in steady flight form
----@field public isDruidSwiftFlightForm boolean? # Hide when the Druid player is in skyriding flight form
----@field public isDruidAquaticForm boolean? # Hide when the Druid player is in aquatic form
----@field public isDruidCatForm boolean? # Hide when the Druid player is in cat form
----@field public isDruidBearForm boolean? # Hide when the Druid player is in bear form
----@field public isDruidMoonkinForm boolean? # Hide when the Druid player is in moonkin form
 ---@field public inVehicle boolean? # Hide when the player is in a vehicle
 ---@field public inPetBattle boolean? # Hide when the player is in a pet battle
 ---@field public onTaxi boolean? # Hide when the player is on a flight path

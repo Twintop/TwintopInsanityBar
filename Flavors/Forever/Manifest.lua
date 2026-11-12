@@ -27,10 +27,11 @@ TRB.Flavor = {
 	savedVariablesName = "TwintopInsanityBarForeverSettings",
 	-- Retail's 61304 has no cooldown data on this client.
 	gcdSpellId = 29515,
+	-- Mana Value visibility thresholds' scale: the deepest level 60 mana pools.
+	manaVisibilityMax = 15000,
 	-- No flying of any kind.
 	unavailableVisibilityConditions = {
 		isMountedFlying = true, isSteadyFlight = true, isSteadyFlightFlying = true, isSkyriding = true, isSkyridingFlying = true,
-		isDruidFlightForm = true, isDruidSwiftFlightForm = true,
 	},
 	-- Blizzard_SwingTimer's PLAYER_SWING event; no other client has it.
 	-- Mana regen pauses this long after each mana spend: the Five Second Rule bar.
@@ -45,6 +46,10 @@ TRB.Flavor = {
 	blizzardTotemFrame = true,
 	-- Ranked spells are learned one at a time, so a threshold's spell may not be known yet.
 	thresholdsRequireKnown = true,
+	-- PvP talents, Blizzard's Cooldown Manager, and secret values.
+	pvpTalents = true,
+	cooldownManager = true,
+	secretValues = true,
 
 	---True when the running client is WoW Forever: the mainline project with a 1.x interface number
 	---(the same rule AceDB uses). An unreadable project ID or interface number is not evidence of a mismatch.
@@ -102,6 +107,49 @@ TRB.Flavor = {
 			-- Crystal Infused Bandage
 			[30020] = Bandage(10),
 		}
+	end,
+
+	---Every talent's rank in the active trait config's trees, keyed by its definition's spell.
+	---@return table<integer, TRB.Flavor.TalentRank>
+	ReadTalentRanks = function()
+		local ranks = {}
+		local configId = C_ClassTalents.GetActiveConfigID()
+		if configId == nil then
+			return ranks
+		end
+		local configInfo = C_Traits.GetConfigInfo(configId)
+		if configInfo == nil then
+			return ranks
+		end
+		for _, treeId in pairs(configInfo.treeIDs) do
+			local nodes = C_Traits.GetTreeNodes(treeId)
+			for _, nodeId in pairs(nodes) do
+				local node = C_Traits.GetNodeInfo(configId, nodeId)
+				local entryId = nil
+
+				if node.activeEntry ~= nil then
+					entryId = node.activeEntry.entryID
+				elseif node.nextEntry ~= nil then
+					entryId = node.nextEntry.entryID
+				elseif node.entryIDs ~= nil then
+					entryId = node.entryIDs[1]
+				end
+
+				if entryId ~= nil then
+					local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
+					if entryInfo.definitionID ~= nil then
+						local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+						if definitionInfo ~= nil then
+							local spellId = definitionInfo.spellID or definitionInfo.overriddenSpellID
+							if spellId ~= nil then
+								ranks[spellId] = { currentRank = node.currentRank, maxRank = node.maxRanks, subTreeActive = node.subTreeActive }
+							end
+						end
+					end
+				end
+			end
+		end
+		return ranks
 	end,
 
 	-- Class ids follow the client's class file ids (Death Knight = 6, Monk = 10, Demon Hunter = 12, and

@@ -9,6 +9,12 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 1.60.1.19-release (2026-11-12)
+## General
+### Bar Visibility
+
+- [#986](#986) Fix a mana spec's Primary Resource Value bar visibility condition being met at far less mana than the value set.
+- [#986](#986) A mana spec's Primary Resource Value condition now goes up to 15,000.
+
 ## Mage
 
 - [#981](#981) Add a new Arcane Blast bar, tracking your Arcane Blast stacks, with the `$arcaneBlastStacks`, `$arcaneBlastStacksMax`, `$arcaneBlastTime`, and `#arcaneBlast` bar text variables. It shows once you take the Arcane Blast talent.

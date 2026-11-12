@@ -471,7 +471,7 @@ do
 	local L = TRB.Localization
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
 	SpecDescriptor:Declare("deathknight_blood", {
-		secondary = { exportable = true },
+		secondary = { exportable = true, thresholdValueAttribute = "runesReadyCount" },
 		customBars = { "boneShield", "coagulatingBlood" },
 		empowerCastbar = true,
 		barTextAnchorFrames = {
@@ -488,7 +488,7 @@ do
 		},
 	})
 	SpecDescriptor:Declare("deathknight_frost", {
-		secondary = { exportable = true },
+		secondary = { exportable = true, thresholdValueAttribute = "runesReadyCount" },
 		barTextAnchorFrames = {
 			secondary = {
 				{ label = L["Rune1"], frame = "ComboPoint_1" }, { label = L["Rune2"], frame = "ComboPoint_2" }, { label = L["Rune3"], frame = "ComboPoint_3" }, { label = L["Rune4"], frame = "ComboPoint_4" },
@@ -497,7 +497,7 @@ do
 		},
 	})
 	SpecDescriptor:Declare("deathknight_unholy", {
-		secondary = { exportable = true },
+		secondary = { exportable = true, thresholdValueAttribute = "runesReadyCount" },
 		pet = { power = "ENERGY" },
 		barTextAnchorFrames = {
 			secondary = {

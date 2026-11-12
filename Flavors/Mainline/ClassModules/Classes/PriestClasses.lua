@@ -538,7 +538,7 @@ function TRB.Classes.Mainline.Priest.HolySpells.FillBarTextVariables(specCacheEn
 		{ variable = "$surgeOfLightStacks", description = L["PriestBarTextVariable_surgeOfLightStacks"], printInSettings = true, color = false },
 		{ variable = "$surgeOfLightStacksMax", description = L["PriestBarTextVariable_surgeOfLightStacksMax"], printInSettings = true, color = false },
 		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
-		{ variable = "$benediction", description = L["PriestHolyBarTextVariable_benediction"], printInSettings = true, color = false },
+		{ variable = "$benediction", description = L["PriestHolyBarTextVariable_benediction"], printInSettings = true, color = false, logicType = "boolean" },
 	})
 end
 

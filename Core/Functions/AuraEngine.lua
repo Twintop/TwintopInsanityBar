@@ -9,8 +9,8 @@ local AuraEngine = TRB.Functions.AuraEngine
 local BUTTON_TEMPLATE = "TwintopAuraEngineButtonTemplate"
 local CONTAINER_TEMPLATE = "CustomAuraContainerTemplate"
 
--- Creating an aura container in combat errors on earlier builds; those wait for the next combat drop.
-local combatCreateAllowed = (tonumber((select(2, GetBuildInfo()))) or 0) > 68675
+-- Where the client can't create an aura container in combat, it waits for the next combat drop.
+local combatCreateAllowed = TRB.Flavor.auraContainersInCombat
 
 -- A button's art is painted inside its initialize window only, so a changed look needs a new button and
 -- therefore a new container. Containers are cached per look and swapped back in when that look returns.

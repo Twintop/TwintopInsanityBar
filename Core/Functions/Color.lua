@@ -528,7 +528,7 @@ function TRB.Functions.Color:SetCurveThresholdMeta(curve, baseColor, points)
 	curveThresholdMeta[curve] = { baseColor = baseColor, key = key, points = points }
 end
 
----Evaluates the end cap companion for a curve-driven border, preserving the pre-Midnight
+---Evaluates the end cap companion for a curve-driven border, preserving the plain-value
 ---"only non-default border colors" semantics against a secret resource: below the threshold the
 ---border shows the curve's base color, so the cap shows its own color when that base IS the bar's
 ---configured (default) border color, and follows the base when an indicator overrode it; at/above
@@ -859,7 +859,7 @@ function TRB.Functions.Color:BuildThresholdValueCurve(value, maxResource, underC
 end
 
 ---Evaluates a threshold curve using UnitPowerPercent and returns the color object
----Uses UnitPowerPercent to safely handle secret resource values in Midnight
+---Uses UnitPowerPercent to safely handle secret resource values
 ---@param colorCurve table # The ColorCurve to evaluate
 ---@param resourceType number # The Enum.PowerType for the resource (e.g., Enum.PowerType.Insanity)
 ---@return table|nil # The color object result from UnitPowerPercent, or nil if evaluation fails
@@ -870,7 +870,7 @@ function TRB.Functions.Color:EvaluateThresholdCurve(colorCurve, resourceType)
 end
 
 ---Sets threshold color from a curve-evaluated color object
----This handles secret values from Midnight's hidden resource system
+---This handles secret resource values
 ---@param frame table # The threshold frame
 ---@param colorResult table # The color object from UnitPowerPercent curve evaluation
 ---@param classId number|nil # Optional class ID filter

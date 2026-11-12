@@ -21,7 +21,7 @@ TRB.Classic.Templates = TRB.Classic.Templates or {}
 ---@field public key string # archetype name
 ---@field public powerType integer # Enum.PowerType of the primary resource
 ---@field public powerToken string # UNIT_POWER_UPDATE token of the primary resource
----@field public resourceType string # GetSpecConfiguration resourceType / resourceTypeNames key
+---@field public resourceType string # GetSpecConfiguration resourceType, a TRB.Flavor.resourceTypes key
 ---@field public nameKey string # localization key of the resource name
 ---@field public variable string # bar text variable stem (without "$"), e.g. "mana" -> $mana, $manaMax
 ---@field public defaultMax integer # maxResource before the client reports one
