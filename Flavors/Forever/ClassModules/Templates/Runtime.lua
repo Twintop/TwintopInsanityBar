@@ -124,8 +124,17 @@ function TRB.Forever.Templates.Runtime:Install(className)
 		return buff.isActive and buff.applications or 0
 	end
 
-	-- The secondary bar's talent gate the current layout was built with.
+	-- The secondary bar's talent gate the current layout was built with; nil until the bar is first built.
 	local secondaryGateHidden = nil
+
+	---Whether the secondary bar's talent gate hides it: the built layout's gate, which RefreshSecondaryGate keeps current.
+	---@return boolean
+	local function IsSecondaryGateHidden()
+		if secondaryGateHidden ~= nil then
+			return secondaryGateHidden
+		end
+		return Bar:IsBarTalentGatedHidden("secondary")
+	end
 
 	---Lays the bars out again when a buff secondary's talent gate opens or closes.
 	---@param spec TRB.Forever.SpecDefinition
@@ -355,7 +364,9 @@ function TRB.Forever.Templates.Runtime:Install(className)
 		local specSettings = TRB.Data.settings[className][spec.entry.specName]
 		local specCacheSettings = specCache[spec.entry.compositeKey].settings
 		UpdateSnapshot()
-		local secondaryCount = spec.secondary ~= nil and GetSecondaryCount(spec, snapshotData) or 0
+		-- A secondary its gate hides draws nothing and feeds no audio cue.
+		local secondaryShown = spec.secondary ~= nil and not IsSecondaryGateHidden()
+		local secondaryCount = secondaryShown and GetSecondaryCount(spec, snapshotData) or 0
 
 		if snapshotData.attributes.isTracking then
 			-- Indicators resolve ahead of the primary bar's visibility guard: the health bar and cast bar
@@ -422,7 +433,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 				end
 			end
 
-			if spec.secondary ~= nil and barGroups.secondary and not specSettings.displayBar.secondary.neverShow then
+			if secondaryShown and barGroups.secondary and not specSettings.displayBar.secondary.neverShow then
 				refreshText = true
 				local comboPointsColors = specSettings.colors.comboPoints
 				local current = secondaryCount
@@ -490,7 +501,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 		-- Threshold line sounds (independent of bar visibility)
 		Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
 
-		if spec.secondary ~= nil then
+		if secondaryShown then
 			TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, spec.secondaryCounterId, secondaryCount)
 		end
 
@@ -652,7 +663,7 @@ function TRB.Forever.Templates.Runtime:Install(className)
 			if specCache[spec.entry.compositeKey] ~= nil then
 				sharedSettings = specCache[spec.entry.compositeKey].settings
 			end
-			local hasSecondary = spec.secondary ~= nil and not Bar:IsBarTalentGatedHidden("secondary")
+			local hasSecondary = spec.secondary ~= nil and not IsSecondaryGateHidden()
 			local secondaryNodes = spec.secondary ~= nil and (TRB.Data.character.maxResource2 or spec.secondary.maxNodes) or nil
 			local entries = TRB.Functions.BarVisibility:BeginEntries()
 			TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.primary, sharedSettings and sharedSettings.displayBar.primary, true, 1, nil)

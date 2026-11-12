@@ -240,6 +240,7 @@ local function BuildComboPointsPanel(classDef, spec)
 	local resourceName = L[spec.archetype.nameKey]
 	local secondary = spec.secondary --[[@as TRB.TBC.ArchetypeSecondary]]
 	local secondaryName = secondary.name
+	local labels = secondary.colorLabels
 	local namePrefix = classDef.classModuleName .. "_" .. spec.specPascal
 
 	return function(parent)
@@ -253,7 +254,7 @@ local function BuildComboPointsPanel(classDef, spec)
 		yCoord = TRB.Functions.OptionsUi.Layout:GenerateComboPointDimensionsOptions(parent, controls, specSettings, classId, specId, yCoord, resourceName, secondaryName)
 
 		yCoord = yCoord - 60
-		controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, secondary.colorsHeader, oUi.xCoord, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, labels.header, oUi.xCoord, yCoord)
 		controls.colors.comboPoints = {}
 
 		local function gradientPicker(key, label)
@@ -268,27 +269,27 @@ local function BuildComboPointsPanel(classDef, spec)
 			end)
 		end
 		gradientPicker("base", secondaryName)
-		gradientPicker("penultimate", L["ComboPointColorPickerPenultimate"])
-		gradientPicker("final", L["ComboPointColorPickerFinal"])
+		gradientPicker("penultimate", labels.penultimate)
+		gradientPicker("final", labels.final)
 
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_" .. namePrefix .. "_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 		local f = controls.checkBoxes.sameColorComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. "Text"):SetText(L["ComboPointCheckboxUseHighestForAll"])
-		f.tooltip = L["ComboPointCheckboxUseHighestForAllTooltip"]
+		getglobal(f:GetName() .. "Text"):SetText(labels.sameColor)
+		f.tooltip = labels.sameColorTooltip
 		f:SetChecked(specSettings.comboPoints.sameColor)
 		f:SetScript("OnClick", function(self)
 			specSettings.comboPoints.sameColor = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ComboPointColorPickerBorder"], specSettings.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.border = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, labels.border, specSettings.colors.comboPoints.border.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		controls.colors.comboPoints.border:SetScript("OnMouseDown", function(_, button)
 			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, specSettings.colors.comboPoints, controls.colors.comboPoints, "border")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, L["ComboPointColorPickerBackground"], specSettings.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.background = TRB.Functions.OptionsUi.ColorPickers:BuildColorPicker(parent, labels.background, specSettings.colors.comboPoints.background.color, oUi.colorPickerTextWidth, oUi.colorPickerFrameSize, oUi.xCoord2, yCoord)
 		controls.colors.comboPoints.background:SetScript("OnMouseDown", function(_, button)
 			TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, specSettings.colors.comboPoints, controls.colors.comboPoints, "background", "backdrop", TRB.Functions.OptionsUi.ColorPickers:GetSecondaryBackdropFrames())
 		end)

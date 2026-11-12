@@ -3318,8 +3318,8 @@ function TRB.Functions.Bar:IsBarTalentGatedHidden(barKey)
 	if spell == nil then
 		return false
 	end
-	-- A trained spell that is no talent gates on being learned.
-	if not spell.isTalent and not spell.baseline then
+	-- A spell that is no talent gates on being learned.
+	if not spell.isTalent then
 		return not spell:IsKnown()
 	end
 	return not talents:IsTalentActive(spell)

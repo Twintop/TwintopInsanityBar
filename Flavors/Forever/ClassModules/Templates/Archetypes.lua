@@ -51,11 +51,21 @@ TRB.Forever.Templates = TRB.Forever.Templates or {}
 ---@field public barBorder string
 ---@field public barBackground string
 
+---Localized text of a secondary bar's color section.
+---@class TRB.Forever.SecondaryColorLabels
+---@field public header string
+---@field public penultimate string
+---@field public final string
+---@field public sameColor string # the "use highest color for all" checkbox
+---@field public sameColorTooltip string
+---@field public border string
+---@field public background string
+
 ---A secondary bar's nodes, filled by an archetype's power or by the stacks of a buff the spec tracks.
 ---@class TRB.Forever.ArchetypeSecondary
 ---@field public resourceType string
 ---@field public name string # localized bar name
----@field public colorsHeader string # localized header of its tab's color section
+---@field public colorLabels TRB.Forever.SecondaryColorLabels
 ---@field public nodeLabels string[] # localized bar text anchor label per node
 ---@field public maxNodes integer
 ---@field public powerType integer? # the power filling the nodes; nil when a buff's stacks do
@@ -70,8 +80,16 @@ local comboPointsSecondary = {
 	powerType = Enum.PowerType.ComboPoints,
 	resourceType = "ComboPoints",
 	name = L["ResourceComboPoints"],
-	colorsHeader = L["ComboPointColorsHeader"],
-	nodeLabels = { L["ComboPoint1"], L["ComboPoint2"], L["ComboPoint3"], L["ComboPoint4"], L["ComboPoint5"] },
+	colorLabels = {
+		header = L["ComboPointColorsHeader"],
+		penultimate = L["ComboPointColorPickerPenultimate"],
+		final = L["ComboPointColorPickerFinal"],
+		sameColor = L["ComboPointCheckboxUseHighestForAll"],
+		sameColorTooltip = L["ComboPointCheckboxUseHighestForAllTooltip"],
+		border = L["ComboPointColorPickerBorder"],
+		background = L["ComboPointColorPickerBackground"],
+	},
+	nodeLabels ={ L["ComboPoint1"], L["ComboPoint2"], L["ComboPoint3"], L["ComboPoint4"], L["ComboPoint5"] },
 	variable = "comboPoints",
 	maxNodes = 5,
 }
@@ -441,6 +459,15 @@ function TRB.Forever.Templates.Classes:DefineClass(className, specDeclarations)
 			indicators = declaration.indicators,
 			secondary = declaration.secondary or archetype.secondary,
 		}
+		-- A buff secondary counts that buff's snapshot, which only a tracked buff has.
+		local secondaryBuff = spec.secondary ~= nil and spec.secondary.buff or nil
+		if secondaryBuff ~= nil then
+			local tracked = false
+			for _, buffKey in ipairs(spec.buffs or {}) do
+				tracked = tracked or buffKey == secondaryBuff
+			end
+			assert(tracked, "TwintopInsanityBar: Forever DefineClass '" .. className .. "' spec '" .. entry.specName .. "' fills its secondary bar from '" .. secondaryBuff .. "', which its buffs don't list")
+		end
 		DefineSpellsClass(classModule, spec)
 		classDef.specs[entry.specName] = spec
 		classDef.specsById[entry.specId] = spec

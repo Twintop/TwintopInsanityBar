@@ -574,4 +574,6 @@ if locale == "enGB" then
 	L["ForeverRogueIndicatorSliceAndDiceEndTooltip"] = "Changes to this colour when Slice and Dice is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
 	L["BrewsBarPromptFollowUpText"] = "You can enable, disable, or customise the Brews bar at any time on the Brews tab of Brewmaster Monk in Twintop's Resource Bar options (/trb)."
 	L["ForeverMageArcaneBlastColorsHeader"] = "Arcane Blast Colours"
+	L["ForeverMageArcaneBlastCheckboxUseHighestForAll"] = "Use highest Arcane Blast stack colour for all?"
+	L["ForeverMageArcaneBlastCheckboxUseHighestForAllTooltip"] = "When checked, the highest Arcane Blast stack's colour will be used for all Arcane Blast stacks. E.g., if you have maximum %d Arcane Blast stacks and currently have %d, the Penultimate colour will be used for all Arcane Blast stacks instead of just the second to last."
 end

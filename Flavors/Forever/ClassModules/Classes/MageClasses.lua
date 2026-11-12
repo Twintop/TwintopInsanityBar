@@ -67,7 +67,15 @@ TRB.Forever.Templates.Classes:DefineClass("mage", {
 			buff = "arcaneBlast",
 			resourceType = "ArcaneBlast",
 			name = L["ResourceMageArcaneBlast"],
-			colorsHeader = L["ForeverMageArcaneBlastColorsHeader"],
+			colorLabels = {
+				header = L["ForeverMageArcaneBlastColorsHeader"],
+				penultimate = L["ForeverMageArcaneBlastColorPickerPenultimate"],
+				final = L["ForeverMageArcaneBlastColorPickerFinal"],
+				sameColor = L["ForeverMageArcaneBlastCheckboxUseHighestForAll"],
+				sameColorTooltip = string.format(L["ForeverMageArcaneBlastCheckboxUseHighestForAllTooltip"], 4, 3),
+				border = L["ForeverMageArcaneBlastColorPickerBorder"],
+				background = L["ForeverMageArcaneBlastColorPickerBackground"],
+			},
 			nodeLabels = { L["ForeverMageArcaneBlast1"], L["ForeverMageArcaneBlast2"], L["ForeverMageArcaneBlast3"], L["ForeverMageArcaneBlast4"] },
 			maxNodes = 4,
 			-- Arcane Charges' colors.
