@@ -2388,29 +2388,6 @@ function TRB.Functions.Character:EventRegistration()
 		TRB.Functions.Character:DisableSpellRangeCheckUpdate()
 		TRB.Functions.ThresholdCooldowns:Disable()
 		TRB.Details.addonData.registered = false
-		if barGroups then
-			if barGroups.primary then
-				barGroups.primary:Hide()
-			end
-			if barGroups.secondary then
-				barGroups.secondary:Hide()
-			end
-			if barGroups.health then
-				barGroups.health:Hide()
-			end
-			if barGroups.mana then
-				barGroups.mana:Hide()
-			end
-			if barGroups.stagger then
-				barGroups.stagger:Hide()
-			end
-			if barGroups.defensives then
-				barGroups.defensives:Hide()
-			end
-			if barGroups.holyWords then
-				barGroups.holyWords:Hide()
-			end
-		end
 	end
 
 	TRB.Functions.BarVisibility:MarkDirty()
