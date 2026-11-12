@@ -448,8 +448,6 @@ function SlashCmdList.TWINTOP(msg)
 	local cmd, subcmd = ParseCmdString(msg)
 	if cmd == "reset" then
 		StaticPopup_Show("TwintopResourceBar_Reset")
-	elseif cmd == "fill" then
-		TRB.Functions.Spell:FillSpellData()
 	elseif cmd == "move" then
 		local x, y = ParseCmdString(subcmd)
 		TRB.Functions.Bar:SetPositionXY(tonumber(x), tonumber(y))
@@ -501,7 +499,7 @@ function SlashCmdList.TWINTOP(msg)
 		if handler ~= nil then
 			handler(subcmd)
 		else
-			print("|cFFFF8800TRB:|r Unknown command '" .. cmd .. "'. Valid: reset, fill, move, news, minimap. Use /trb on its own for options.")
+			print("|cFFFF8800TRB:|r Unknown command '" .. cmd .. "'. Valid: reset, move, news, minimap. Use /trb on its own for options.")
 		end
 	end
 end

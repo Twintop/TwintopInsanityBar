@@ -8,6 +8,8 @@ TRB.Details.coreNewsContent = [====[
 ## General
 
 - [#974](#974) Update LibEditMode to version 19.
+- [#982](#982) Fix memory use growing with every loading screen, specialization change, and talent change.
+- [#983](#983) Remove the `/trb fill` command.
 
 ## Edit Mode
 

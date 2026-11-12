@@ -11,9 +11,12 @@
 	range-checks checks that range checks stay on after a loading screen, a talent change, and a specialization change;
 	it runs once per class. aura-conditions checks custom indicators and Buff Alerts that follow a buff by spell ID; it runs
 	once per class. swing-timers checks the swing bars: the combat log tracker on Classic and PLAYER_SWING on Forever; it
-	runs once per class. classic-overcap checks Classic's flat Overcap indicators and their text color; it runs once per
-	class. totems checks the Totems bar's slot events, node count, binding, expiry, and enable prompt defaults; it runs once
-	per class. indicator-copies checks built-in Color Indicator copies and deletions in settings, the options, and every
+	runs once per class. five-second-rule checks the Five Second Rule bar: which classes and flavors get it, the pause a mana
+	cast starts, and Show Below; it runs once per class. combat-conditions checks the In Combat and Out of Combat visibility
+	conditions on the shared bar checks; it runs once per flavor. classic-overcap checks Classic's flat Overcap indicators and
+	their text color; it runs once per class. totems checks the Totems bar's slot events, node count, binding, expiry, and
+	enable prompt defaults; it runs once per class. preview-mode checks Preview Mode: which bars show, Bar Text Area names,
+	drag saves, Edit Mode locks, and what ends it; it runs once per class. indicator-copies checks built-in Color Indicator copies and deletions in settings, the options, and every
 	specialization's render; it runs once per class. indicator-modifiers checks Not Active, Only In Combat, and the Edit menu's Change Source in
 	resolution, the options, and every specialization's render; it runs once per class. bartext-conformance checks that the bar text engine renders exactly what
 	the legacy resolver does, and skips only when nothing it shows changed; it runs once per class. inner-fire checks the Forever, Classic, and TBC
@@ -21,14 +24,16 @@
 	Forever, Classic, and TBC Rogue's Slice and Dice timer, bar text, Active and Ending Color Indicators, and diagnostic; it runs once per class.
 	brews checks the Live Brewmaster's Brews bar: its nodes by talent, order, and enable, charges counted from the plain cooldown flags, bar text,
 	timer bindings, and Color Indicator targets; it runs once per class. arcane-blast checks the Forever and TBC Mage's Arcane Blast bar: its
-	gate, cast-tracked stacks and timer, node fill, bar text, and audio counter; it runs once per class.
+	gate, cast-tracked stacks and timer, node fill, bar text, and audio counter; it runs once per class. spell-data checks that every
+	filled specialization's spellsById lists each spell once under each of its ids and ranks through loading screens, talent changes, and
+	specialization changes; it runs once per class.
 	See build\harness\README.md.
 
 .PARAMETER Lua
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews, arcane-blast). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews, arcane-blast, spell-data). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
@@ -73,7 +78,8 @@ $drivers = @(
 	[pscustomobject]@{ Name = "inner-fire"; EveryClass = $true },
 	[pscustomobject]@{ Name = "slice-and-dice"; EveryClass = $true },
 	[pscustomobject]@{ Name = "brews"; EveryClass = $true },
-	[pscustomobject]@{ Name = "arcane-blast"; EveryClass = $true }
+	[pscustomobject]@{ Name = "arcane-blast"; EveryClass = $true },
+	[pscustomobject]@{ Name = "spell-data"; EveryClass = $true }
 )
 $known = $drivers | ForEach-Object { $_.Name }
 if ($Driver -ne "" -and $known -notcontains $Driver) {
