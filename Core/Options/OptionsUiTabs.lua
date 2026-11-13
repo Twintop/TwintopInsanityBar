@@ -4,8 +4,8 @@ TRB.Functions.OptionsUi = TRB.Functions.OptionsUi or {}
 TRB.Functions.OptionsUi.Tabs = TRB.Functions.OptionsUi.Tabs or {}
 local oUi = TRB.Data.constants.optionsUi
 
--- Reverse map (namePrefix -> {classId, specId}) so the all-spec castbar tab can be injected centrally
--- in BuildTabGroup without per-class wiring. Built lazily from the spec registry and cached.
+-- Reverse map (namePrefix -> {classId, specId}) so BuildTabGroup can tell a spec panel, and add the
+-- all-spec sections to it, without per-class wiring. Built lazily from the spec registry and cached.
 local castbarSpecByNamePrefix = nil
 local function GetCastbarSpecMap()
 	if castbarSpecByNamePrefix ~= nil then
@@ -23,6 +23,44 @@ local function GetCastbarSpecMap()
 	end
 	return castbarSpecByNamePrefix
 end
+
+-- The nav sections a panel's tabs are split into, in nav order, with the locale key of each one's label.
+local sectionOrder = { "general", "visibility", "thresholds", "customBars", "castbar", "otherBars", "petBars", "skyriding", "resetDefaults" }
+local sectionLabelKeys = {
+	general = "NavSectionGeneral",
+	visibility = "NavSectionVisibilityAndBehavior",
+	thresholds = "NavSectionThresholds",
+	customBars = "TabCustomBars",
+	castbar = "TabCastbars",
+	otherBars = "TabOtherBars",
+	petBars = "TabPetBars",
+	skyriding = "TabSkyriding",
+	resetDefaults = "TabResetDefaults",
+}
+
+-- The section each settings tab sits in; a tab not listed is a bar's, in General.
+local tabSectionByKey = {
+	barVisibility = "visibility",
+	presets = "visibility",
+	barTextures = "visibility",
+	glows = "visibility",
+	indicatorColors = "visibility",
+	audioCues = "visibility",
+	fontText = "visibility",
+	barText = "visibility",
+	miscellaneous = "visibility",
+	thresholdSettings = "thresholds",
+	thresholds = "thresholds",
+	customThresholds = "thresholds",
+	resetDefaults = "resetDefaults",
+}
+
+-- The order of Visibility and Behavior's tabs, whatever order a panel defines them in.
+local visibilityTabRank = { barVisibility = 1, presets = 2, barTextures = 3, glows = 4, indicatorColors = 5, audioCues = 6, fontText = 7, barText = 8, miscellaneous = 9 }
+
+-- Tab group name prefix -> the sectioned panel holding its tabs, and the one section they are on where the prefix is a grouping's.
+---@type table<string, { host: TRB.Classes.OptionsUi.SectionedPanel, sectionKey: string? }>
+local sectionRoutes = {}
 
 -- Every bar tab built so far, so one visibility change can recolour labels across every panel at
 -- once. Panels are built lazily and never torn down, so this only ever grows to the tabs in use.
@@ -169,23 +207,16 @@ function TRB.Functions.OptionsUi.Tabs:ActivateBarTextVariablesPanel(scrollChild)
 	end
 end
 
----The scroll child of the Bar Text tab showing under a tab, looking through the nested strips of Cast Bars and the other groupings.
----@param host table # A panel or strip that ran BuildTabGroup
+---The scroll child of a strip's Bar Text tab while that tab is the one showing.
+---@param host table # A frame that ran BuildTabGroup
 ---@param tabId string? # Its active tab
 ---@return TRB.Classes.OptionsUi.ScrollChild|nil
 function TRB.Functions.OptionsUi.Tabs:GetShownBarTextScrollChild(host, tabId)
-	if host == nil or tabId == nil or host.tabsheets == nil or host.tabsheets[tabId] == nil then
+	if host == nil or tabId ~= TRB.Functions.OptionsUi.Tabs.TabKeys.BarText or host.tabsheets == nil or host.tabsheets[tabId] == nil then
 		return nil
 	end
 	local sheet = host.tabsheets[tabId]
-	if tabId == TRB.Functions.OptionsUi.Tabs.TabKeys.BarText then
-		return sheet.scrollFrame and sheet.scrollFrame.scrollChild
-	end
-	local inner = sheet.constructorFrame
-	if inner ~= nil and inner.tabsheets ~= nil then
-		return self:GetShownBarTextScrollChild(inner, inner.lastTabId)
-	end
-	return nil
+	return sheet.scrollFrame and sheet.scrollFrame.scrollChild
 end
 
 ---Switches the visible tab in a multi-tab options panel, updating visual states and toggling the bar text variables flyout.
@@ -293,8 +324,17 @@ end
 
 ---Switches to a specific tab by key for a panel identified by its tab-group name prefix.
 ---@param namePrefix string The tab-group name prefix (e.g., "Global", "Castbar", "Priest_shadow")
----@param tabKey string The tab key to switch to (e.g., "barText", "barDisplay")
+---@param tabKey string The tab key to switch to (e.g., "barText", "barVisibility")
 function TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(namePrefix, tabKey)
+	-- A tab on a sectioned panel exists only once its section is built, and shows only while that section does.
+	local route = sectionRoutes[namePrefix]
+	if route ~= nil then
+		local host = route.host
+		local sectionKey = route.sectionKey or host.tabSections[tabKey] or (host.sections[tabKey] ~= nil and tabKey or nil)
+		if sectionKey ~= nil then
+			TRB.Options.OptionsFrame:SelectCategory(host.navKey .. ":" .. sectionKey)
+		end
+	end
 	local tab = _G["TwintopResourceBar_Options_" .. namePrefix .. "_Tab_" .. tabKey]
 	if tab then
 		TRB.Functions.OptionsUi.Tabs.SwitchTab(tab, tab.id)
@@ -347,7 +387,7 @@ function TRB.Functions.OptionsUi.Tabs:OpenBarTab(classId, specId, barKey)
 	end
 	TRB.Options.OptionsFrame:SelectCategory(navKey)
 	C_Timer.After(0, function()
-		-- A grouping's bars sit on a strip inside the spec panel's tab for that grouping, built on first visit.
+		-- A grouping's bars sit on the strip of the spec panel's section for that grouping, built on first visit.
 		if classId ~= nil and barGroup ~= "spec" then
 			self:SwitchToTabByClassSpec(classId, specId, barGroup)
 		end
@@ -359,6 +399,10 @@ function TRB.Functions.OptionsUi.Tabs:OpenBarTab(classId, specId, barKey)
 		end
 		for _, entry in ipairs(barTabs) do
 			if entry.classId == classId and entry.specId == specId and entry.visibilityKey == visibilityKey then
+				local sectionNavKey = entry.tab:GetParent().sectionNavKey
+				if sectionNavKey ~= nil then
+					TRB.Options.OptionsFrame:SelectCategory(sectionNavKey)
+				end
 				TRB.Functions.OptionsUi.Tabs.SwitchTab(entry.tab, entry.tab.id)
 				return
 			end
@@ -368,7 +412,6 @@ end
 
 ---Standard tab key constants used across all options panels.
 TRB.Functions.OptionsUi.Tabs.TabKeys = {
-	BarDisplay = "barDisplay",
 	Thresholds = "thresholds",
 	FontText = "fontText",
 	AudioTracking = "audioTracking",
@@ -384,10 +427,10 @@ TRB.Functions.OptionsUi.Tabs.TabKeys = {
 }
 
 local groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", totems = "Totems", skyriding = "Skyriding" }
-local groupInnerPrefixStem = { castbar = "CastbarInner_", otherBars = "OtherBarsInner_", petBars = "PetBarsInner_", totems = "TotemsInner_", skyriding = "SkyridingInner_", customBars = "CustomBarsInner_" }
+local groupInnerPrefixStem = { castbar = "CastbarInner_", otherBars = "OtherBarsInner_", petBars = "PetBarsInner_", skyriding = "SkyridingInner_", customBars = "CustomBarsInner_" }
 
----The tab group name prefix of a shared grouping's strip: the Global screen's own, or the spec panel's inner one.
----@param groupKey string # castbar, otherBars, petBars, totems, or skyriding
+---The tab group name prefix of a shared grouping's strip: the Global screen's own, or its section's on a spec panel.
+---@param groupKey string # castbar, otherBars, petBars, skyriding, or customBars; totems on the Global screen only
 ---@param classId integer? # nil is the global scope
 ---@param specId integer?
 ---@return string
@@ -437,40 +480,18 @@ function TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(tabDefinitions, cl
 	}
 end
 
----The tab group name prefix of the strip inside Global Options' Visibility tab, apart from the Global screen's own.
-TRB.Functions.OptionsUi.Tabs.globalVisibilityPrefix = "GlobalVisibility"
-
----Builds the nested Bar Display / Manage Presets strip inside Global Options' Visibility tab.
----@param parent Frame # The Visibility tab's manual container frame
----@param barDisplayConstructor fun(scrollChild: Frame) # Builds the Bar Display tab
-function TRB.Functions.OptionsUi.Tabs:BuildGlobalVisibilityInnerTabGroup(parent, barDisplayConstructor)
-	if parent == nil then
-		return
-	end
-	local innerTabs = {
-		{ self.TabKeys.BarDisplay, TRB.Localization["TabBarDisplay"], oUi.tabWidth.small, barDisplayConstructor },
-		{ self.TabKeys.VisibilityPresets, TRB.Localization["TabManagePresets"], oUi.tabWidth.small, function(scrollChild)
-			TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(scrollChild, nil, nil, "presets")
-		end },
-	}
-	self:BuildTabGroup(parent, self.globalVisibilityPrefix, innerTabs, -10)
-end
-
----Opens Global Options' Visibility tab on one of its inner tabs.
+---Opens one of Global Options' two Visibility tabs.
 ---@param innerKey string? # Defaults to Bar Display
 function TRB.Functions.OptionsUi.Tabs:SwitchToGlobalVisibilityTab(innerKey)
-	self:SwitchToTabByNamePrefix("Global", self.TabKeys.BarVisibility)
-	self:SwitchToTabByNamePrefix(self.globalVisibilityPrefix, innerKey or self.TabKeys.BarDisplay)
+	self:SwitchToTabByNamePrefix("Global", innerKey == self.TabKeys.VisibilityPresets and innerKey or self.TabKeys.BarVisibility)
 end
 
----Builds the nested Cast Bar sub-tab group (player / target / focus) inside a spec's Cast Bar tab.
----Each sub-tab is scoped to the given spec so its settings can be overridden per-spec. The namePrefix
----never matches the castbar spec map, so BuildTabGroup's auto-injection is skipped here. Hosted in a
----manual (non-scroll) container so each sub-tab supplies its own scroll frame.
----@param parent Frame # The Cast Bar tab's manual container frame
+---Builds a spec's Cast Bars strip (player / target / focus), each tab scoped to the spec.
+---@param parent Frame # The Cast Bars section's frame
 ---@param classId integer?
 ---@param specId integer?
-function TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(parent, classId, specId)
+---@param yCoord number # The row the strip starts on
+function TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(parent, classId, specId, yCoord)
 	if parent == nil then
 		return
 	end
@@ -494,15 +515,15 @@ function TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(parent, classId,
 	end
 	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "castbar")
 	-- The synthesized namePrefix never matches the castbar spec map, so the scope is passed explicitly.
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, yCoord, { classId = classId, specId = specId })
 end
 
----Builds the nested Other Bars sub-tab group inside a spec's Other Bars tab, one sub-tab per bar its class can have.
----Structured like the Cast Bar inner group: a manual container whose sub-tabs supply their own scroll frames.
----@param parent Frame # The Other Bars tab's manual container frame
+---Builds a spec's Timer Bars strip, one tab per bar its class can have.
+---@param parent Frame # The Timer Bars section's frame
 ---@param classId integer?
 ---@param specId integer?
-function TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(parent, classId, specId)
+---@param yCoord number # The row the strip starts on
+function TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(parent, classId, specId, yCoord)
 	if parent == nil then
 		return
 	end
@@ -524,7 +545,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(parent, classI
 			}
 		end
 	end
-	-- A spec that keeps its Totems bar here gets it after the Other Bars.
+	-- A spec that keeps its Totems bar here gets it after the timer bars.
 	if TRB.Classes.BarTypeRegistry:GetTotemPlacement(classId, specId) == "otherBars" then
 		innerTabs[#innerTabs + 1] = { "totems", TRB.Localization["ResourceTotems"], oUi.tabWidth.small, function(scrollChild)
 			TRB.Functions.OptionsUi.Totems:ConstructPanel(scrollChild, classId, specId)
@@ -534,15 +555,15 @@ function TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(parent, classI
 		return
 	end
 	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "otherBars")
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, yCoord, { classId = classId, specId = specId })
 end
 
----Builds the nested Pet sub-tab group (Health / Resource) inside a spec's Pet tab. Only built for the
----specs that can hold a permanent pet; every other spec never gets the outer tab at all.
----@param parent Frame # The Pet tab's manual container frame
+---Builds a spec's Pet Bars strip (Health / Resource), on the specs that can hold a permanent pet.
+---@param parent Frame # The Pet Bars section's frame
 ---@param classId integer?
 ---@param specId integer?
-function TRB.Functions.OptionsUi.Tabs:BuildPetBarsInnerTabGroup(parent, classId, specId)
+---@param yCoord number # The row the strip starts on
+function TRB.Functions.OptionsUi.Tabs:BuildPetBarsInnerTabGroup(parent, classId, specId, yCoord)
 	if parent == nil then
 		return
 	end
@@ -568,33 +589,15 @@ function TRB.Functions.OptionsUi.Tabs:BuildPetBarsInnerTabGroup(parent, classId,
 		return
 	end
 	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "petBars")
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, yCoord, { classId = classId, specId = specId })
 end
 
----Builds the nested Totems sub-tab group inside a spec's Totems tab: the bar, then its Textures, Visibility, and Bar Text.
----Only built for the specs with the Totems bar.
----@param parent Frame # The Totems tab's manual container frame
+---Builds a spec's Skyriding strip, one tab per Skyriding bar.
+---@param parent Frame # The Skyriding section's frame
 ---@param classId integer?
 ---@param specId integer?
-function TRB.Functions.OptionsUi.Tabs:BuildTotemsInnerTabGroup(parent, classId, specId)
-	if parent == nil then
-		return
-	end
-	local namePrefix = TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("totems", classId, specId)
-	local innerTabs = {
-		{ "totems", TRB.Localization["ResourceTotems"], oUi.tabWidth.small, function(scrollChild)
-			TRB.Functions.OptionsUi.Totems:ConstructPanel(scrollChild, classId, specId)
-		end, visibilityKey = "totems" },
-	}
-	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "totems")
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
-end
-
----Builds the nested Skyriding sub-tab group inside a spec's Skyriding tab, one sub-tab per Skyriding bar.
----@param parent Frame # The Skyriding tab's manual container frame
----@param classId integer?
----@param specId integer?
-function TRB.Functions.OptionsUi.Tabs:BuildSkyridingInnerTabGroup(parent, classId, specId)
+---@param yCoord number # The row the strip starts on
+function TRB.Functions.OptionsUi.Tabs:BuildSkyridingInnerTabGroup(parent, classId, specId, yCoord)
 	if parent == nil then
 		return
 	end
@@ -620,15 +623,15 @@ function TRB.Functions.OptionsUi.Tabs:BuildSkyridingInnerTabGroup(parent, classI
 		return
 	end
 	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "skyriding")
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, yCoord, { classId = classId, specId = specId })
 end
 
----Builds the nested sub-tab group inside a spec's Custom Bars tab: the bars the user added, then their Textures,
----Visibility, and Bar Text.
----@param parent Frame # The Custom Bars tab's manual container frame
+---Builds a spec's Custom Bars strip: the bars the user added, then their Textures, Visibility, and Bar Text.
+---@param parent Frame # The Custom Bars section's frame
 ---@param classId integer
 ---@param specId integer
-function TRB.Functions.OptionsUi.Tabs:BuildCustomBarsInnerTabGroup(parent, classId, specId)
+---@param yCoord number # The row the strip starts on
+function TRB.Functions.OptionsUi.Tabs:BuildCustomBarsInnerTabGroup(parent, classId, specId, yCoord)
 	if parent == nil then
 		return
 	end
@@ -639,22 +642,13 @@ function TRB.Functions.OptionsUi.Tabs:BuildCustomBarsInnerTabGroup(parent, class
 		end, true },
 	}
 	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "customBars")
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, yCoord, { classId = classId, specId = specId })
 end
 
----Builds a dynamic set of tabs and tabsheets for an options panel.
----Tabs automatically wrap to multiple rows when they would exceed the parent frame's width.
----@param parent Frame|TRB.Classes.OptionsUi.TabbedPanel The parent frame to attach tabs to (e.g., the spec display panel)
----@param namePrefix string The naming prefix (e.g., "Priest_Shadow")
----@param tabDefinitions table[] Ordered list of tab definitions: { [1]=key:string, [2]=label:string, [3]=width:number, [4]=constructor:function(scrollChild) }. A named `visibilityKey` field marks a bar tab and gives it a pinned enable/disable header.
----@param yCoord number The starting y coordinate for the tabs row. Will be adjusted internally.
----@param specContext table? Explicit { classId, specId } scope; only needed when namePrefix is synthesized (e.g. the castbar sub-tab group)
----@return number yCoord The adjusted yCoord after tabs are placed (for further content below if needed)
-function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord, specContext)
-	local optionsUiFuncs = TRB.Functions.OptionsUi.Tabs
-
-	-- Normalize: support both positional { key, label, width, constructor, isManualScrollFrame } and named
-	for i, def in ipairs(tabDefinitions) do
+---Fills in a tab definition's positional fields from its named ones.
+---@param tabDefinitions table[]
+local function NormalizeTabDefinitions(tabDefinitions)
+	for _, def in ipairs(tabDefinitions) do
 		if def[1] == nil and def.key ~= nil then
 			def[1] = def.key
 			def[2] = def.label
@@ -663,179 +657,187 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 			def[5] = def.isManualScrollFrame
 		end
 	end
+end
 
-	-- Inject the all-spec castbar tab once for real spec panels (resolved from namePrefix).
-	local castbarSpec = GetCastbarSpecMap()[namePrefix]
-	if castbarSpec then
-		local hasCastbar = false
-		for _, def in ipairs(tabDefinitions) do
-			if def[1] == "castbar" then
-				hasCastbar = true
+---Builds a section's tab strip if it has yet to be shown.
+---@param host TRB.Classes.OptionsUi.SectionedPanel
+---@param sectionKey string
+---@return TRB.Classes.OptionsUi.PanelSection?
+function TRB.Functions.OptionsUi.Tabs:EnsureSectionBuilt(host, sectionKey)
+	local section = host.sections and host.sections[sectionKey]
+	local build = section and section.build
+	if section ~= nil and build ~= nil then
+		section.build = nil
+		build()
+	end
+	return section
+end
+
+---Shows one section of a sectioned panel in place of the others.
+---@param host TRB.Classes.OptionsUi.SectionedPanel
+---@param sectionKey string
+function TRB.Functions.OptionsUi.Tabs:ShowSection(host, sectionKey)
+	if self:EnsureSectionBuilt(host, sectionKey) == nil then
+		return
+	end
+	for key, section in pairs(host.sections) do
+		section.frame:SetShown(key == sectionKey)
+	end
+	host.activeSection = sectionKey
+end
+
+---The frame holding the tab strip a panel is showing: its active section's, or the panel itself without sections.
+---@param panel Frame|TRB.Classes.OptionsUi.SectionedPanel
+---@return TRB.Classes.OptionsUi.TabbedPanel
+function TRB.Functions.OptionsUi.Tabs:GetActiveTabHost(panel)
+	local section = panel.sections and panel.sections[panel.activeSection]
+	return section and section.frame or panel
+end
+
+---Splits a panel's tabs into nav sections, one tab strip each, listed under the panel's nav entry. A strip is built
+---when its section is first shown.
+---@param parent Frame # The panel; its title row stays above every section
+---@param namePrefix string # The naming prefix every section's tabs share
+---@param tabDefinitions table[] # As BuildTabGroup takes
+---@param yCoord number # The row each strip starts on
+---@param navKey string # The panel's nav entry
+---@param scope { classId: integer?, specId: integer? }? # nil is the global scope
+---@param groupSections table<string, { prefix: string, build: fun(frame: Frame, yCoord: number) }>? # Sections holding a shared grouping's strip, by section key
+function TRB.Functions.OptionsUi.Tabs:BuildSectionedTabGroup(parent, namePrefix, tabDefinitions, yCoord, navKey, scope, groupSections)
+	NormalizeTabDefinitions(tabDefinitions)
+	local host = parent --[[@as TRB.Classes.OptionsUi.SectionedPanel]]
+	host.navKey = navKey
+	host.sections = {}
+	host.tabSections = {}
+
+	local definitionsBySection = {}
+	for index, def in ipairs(tabDefinitions) do
+		local sectionKey = tabSectionByKey[def[1]] or "general"
+		definitionsBySection[sectionKey] = definitionsBySection[sectionKey] or {}
+		table.insert(definitionsBySection[sectionKey], def)
+		host.tabSections[def[1]] = sectionKey
+		def.definedIndex = index
+	end
+	if definitionsBySection.visibility ~= nil then
+		table.sort(definitionsBySection.visibility, function(a, b)
+			local rankA, rankB = visibilityTabRank[a[1]] or 0, visibilityTabRank[b[1]] or 0
+			if rankA ~= rankB then
+				return rankA < rankB
+			end
+			return a.definedIndex < b.definedIndex
+		end)
+	end
+
+	local sectionContext = { classId = scope and scope.classId, specId = scope and scope.specId, isSection = true }
+	local firstSectionKey = nil
+	for _, sectionKey in ipairs(sectionOrder) do
+		local definitions = definitionsBySection[sectionKey]
+		local group = groupSections and groupSections[sectionKey]
+		if definitions ~= nil or group ~= nil then
+			local frame = CreateFrame("Frame", nil, parent) --[[@as TRB.Classes.OptionsUi.TabbedPanel]]
+			frame:SetAllPoints(parent)
+			frame:Hide()
+			frame.sectionNavKey = TRB.Options.OptionsFrame:RegisterSection(navKey, sectionKey, TRB.Localization[sectionLabelKeys[sectionKey]], parent)
+			local build
+			if group ~= nil then
+				build = function()
+					group.build(frame, yCoord)
+				end
+				sectionRoutes[group.prefix] = { host = host, sectionKey = sectionKey }
+			elseif definitions ~= nil then
+				local sectionDefinitions = definitions
+				build = function()
+					self:BuildTabGroup(frame, namePrefix, sectionDefinitions, yCoord, sectionContext)
+				end
+			end
+			host.sections[sectionKey] = { frame = frame, build = build }
+			firstSectionKey = firstSectionKey or sectionKey
+		end
+	end
+	sectionRoutes[namePrefix] = { host = host }
+	self.sectionedPanels[namePrefix] = host
+
+	if firstSectionKey ~= nil then
+		self:ShowSection(host, firstSectionKey)
+	end
+end
+
+---Every sectioned panel built so far, by its tab group name prefix.
+---@type table<string, TRB.Classes.OptionsUi.SectionedPanel>
+TRB.Functions.OptionsUi.Tabs.sectionedPanels = {}
+
+---Builds a spec panel's sections: its own tabs split by kind, then one per shared grouping of bars.
+---@param parent Frame
+---@param namePrefix string
+---@param tabDefinitions table[]
+---@param yCoord number
+---@param classId integer
+---@param specId integer
+local function BuildSpecSections(parent, namePrefix, tabDefinitions, yCoord, classId, specId)
+	local tabs = TRB.Functions.OptionsUi.Tabs
+	local registry = TRB.Classes.BarTypeRegistry
+
+	-- Totems sits just before Health on a spec whose Totems bar is its own, where every spec bar's tab sits.
+	if registry:GetTotemPlacement(classId, specId) == "spec" then
+		local insertIndex = #tabDefinitions + 1
+		for i, def in ipairs(tabDefinitions) do
+			if def[1] == "healthBar" then
+				insertIndex = i
 				break
 			end
 		end
-		if not hasCastbar then
-			local cId, sId = castbarSpec.classId, castbarSpec.specId
-			-- Insert immediately after the Health tab; append if the panel has none.
-			local insertIndex = #tabDefinitions + 1
-			for i, def in ipairs(tabDefinitions) do
-				if def[1] == "healthBar" then
-					insertIndex = i + 1
-					break
-				end
-			end
-			table.insert(tabDefinitions, insertIndex, {
-				"castbar",
-				TRB.Localization["TabCastbars"],
-				oUi.tabWidth.small,
-				function(scrollChild)
-					-- Nested sub-tabs (player / target / focus), each scoped to this spec.
-					TRB.Functions.OptionsUi.Tabs:BuildCastbarInnerTabGroup(scrollChild, cId, sId)
-				end,
-				true -- manual container: the inner sub-tabs provide their own scroll frames
-			})
-		end
+		table.insert(tabDefinitions, insertIndex, {
+			"totems",
+			TRB.Localization["ResourceTotems"],
+			oUi.tabWidth.small,
+			function(scrollChild)
+				TRB.Functions.OptionsUi.Totems:ConstructPanel(scrollChild, classId, specId)
+			end,
+			visibilityKey = "totems",
+		})
+	end
 
-		-- Totems sits just before Health on a spec whose Totems bar is its own, where every spec bar's tab sits.
-		local hasTotemsTab = false
-		for _, def in ipairs(tabDefinitions) do
-			if def[1] == "totems" then
-				hasTotemsTab = true
-				break
-			end
-		end
-		if not hasTotemsTab and TRB.Classes.BarTypeRegistry:GetTotemPlacement(castbarSpec.classId, castbarSpec.specId) == "spec" then
-			local cId, sId = castbarSpec.classId, castbarSpec.specId
-			local insertIndex = #tabDefinitions + 1
-			for i, def in ipairs(tabDefinitions) do
-				if def[1] == "healthBar" then
-					insertIndex = i
-					break
-				end
-			end
-			table.insert(tabDefinitions, insertIndex, {
-				"totems",
-				TRB.Localization["ResourceTotems"],
-				oUi.tabWidth.small,
-				function(scrollChild)
-					TRB.Functions.OptionsUi.Tabs:BuildTotemsInnerTabGroup(scrollChild, cId, sId)
-				end,
-				true -- manual container: the inner sub-tabs provide their own scroll frames
-			})
-		end
+	-- Another class's saved bars are registered nowhere else, and every section built below lists them.
+	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
+	TRB.Functions.CustomBars:SyncRegistry(classId, specId, TRB.Data.settings[className] and TRB.Data.settings[className][specName])
 
-		-- Other Bars sits immediately after Cast Bars, structured the same way.
-		local hasOtherBars = false
-		for _, def in ipairs(tabDefinitions) do
-			if def[1] == "otherBars" then
-				hasOtherBars = true
-				break
-			end
-		end
-		if not hasOtherBars then
-			local cId, sId = castbarSpec.classId, castbarSpec.specId
-			local insertIndex = #tabDefinitions + 1
-			for i, def in ipairs(tabDefinitions) do
-				if def[1] == "castbar" then
-					insertIndex = i + 1
-					break
-				end
-			end
-			table.insert(tabDefinitions, insertIndex, {
-				"otherBars",
-				TRB.Localization["TabOtherBars"],
-				oUi.tabWidth.small,
-				function(scrollChild)
-					TRB.Functions.OptionsUi.Tabs:BuildOtherBarsInnerTabGroup(scrollChild, cId, sId)
-				end,
-				true -- manual container: the inner sub-tabs provide their own scroll frames
-			})
-		end
+	local groupSections = {
+		customBars = { build = function(frame, y) tabs:BuildCustomBarsInnerTabGroup(frame, classId, specId, y) end },
+		castbar = { build = function(frame, y) tabs:BuildCastbarInnerTabGroup(frame, classId, specId, y) end },
+		otherBars = { build = function(frame, y) tabs:BuildOtherBarsInnerTabGroup(frame, classId, specId, y) end },
+	}
+	if registry:SpecHasPet(classId, specId) then
+		groupSections.petBars = { build = function(frame, y) tabs:BuildPetBarsInnerTabGroup(frame, classId, specId, y) end }
+	end
+	if #registry.skyridingBarKeys > 0 then
+		groupSections.skyriding = { build = function(frame, y) tabs:BuildSkyridingInnerTabGroup(frame, classId, specId, y) end }
+	end
+	for groupKey, group in pairs(groupSections) do
+		group.prefix = tabs:GetGroupInnerPrefix(groupKey, classId, specId)
+	end
 
-		-- Pet sits after Other Bars, structured the same way, and only on specs with a permanent pet.
-		local hasPetTab = false
-		for _, def in ipairs(tabDefinitions) do
-			if def[1] == "petBars" then
-				hasPetTab = true
-				break
-			end
-		end
-		if not hasPetTab and TRB.Classes.BarTypeRegistry:SpecHasPet(castbarSpec.classId, castbarSpec.specId) then
-			local cId, sId = castbarSpec.classId, castbarSpec.specId
-			local insertIndex = #tabDefinitions + 1
-			for i, def in ipairs(tabDefinitions) do
-				if def[1] == "otherBars" then
-					insertIndex = i + 1
-					break
-				end
-			end
-			table.insert(tabDefinitions, insertIndex, {
-				"petBars",
-				TRB.Localization["TabPetBars"],
-				oUi.tabWidth.small,
-				function(scrollChild)
-					TRB.Functions.OptionsUi.Tabs:BuildPetBarsInnerTabGroup(scrollChild, cId, sId)
-				end,
-				true -- manual container: the inner sub-tabs provide their own scroll frames
-			})
-		end
+	tabs:BuildSectionedTabGroup(parent, namePrefix, tabDefinitions, yCoord, TRB.Functions.Character:GetCompositeKeyFromIds(classId, specId),
+		{ classId = classId, specId = specId }, groupSections)
+end
 
-		-- Skyriding follows Pet, or Other Bars on a spec without one, where the flavor has skyriding.
-		local hasSkyridingTab = false
-		for _, def in ipairs(tabDefinitions) do
-			if def[1] == "skyriding" then
-				hasSkyridingTab = true
-				break
-			end
-		end
-		if not hasSkyridingTab and #TRB.Classes.BarTypeRegistry.skyridingBarKeys > 0 then
-			local cId, sId = castbarSpec.classId, castbarSpec.specId
-			local insertIndex = #tabDefinitions + 1
-			for i, def in ipairs(tabDefinitions) do
-				if def[1] == "petBars" or def[1] == "otherBars" then
-					insertIndex = i + 1
-				end
-			end
-			table.insert(tabDefinitions, insertIndex, {
-				"skyriding",
-				TRB.Localization["TabSkyriding"],
-				oUi.tabWidth.small,
-				function(scrollChild)
-					TRB.Functions.OptionsUi.Tabs:BuildSkyridingInnerTabGroup(scrollChild, cId, sId)
-				end,
-				true -- manual container: the inner sub-tabs provide their own scroll frames
-			})
-		end
+---Builds a dynamic set of tabs and tabsheets for an options panel. A spec panel's tabs are split into nav sections instead.
+---Tabs automatically wrap to multiple rows when they would exceed the parent frame's width.
+---@param parent Frame|TRB.Classes.OptionsUi.TabbedPanel The parent frame to attach tabs to (e.g., the spec display panel)
+---@param namePrefix string The naming prefix (e.g., "Priest_Shadow")
+---@param tabDefinitions table[] Ordered list of tab definitions: { [1]=key:string, [2]=label:string, [3]=width:number, [4]=constructor:function(scrollChild) }. A named `visibilityKey` field marks a bar tab and gives it a pinned enable/disable header.
+---@param yCoord number The starting y coordinate for the tabs row. Will be adjusted internally.
+---@param specContext table? Explicit { classId, specId } scope; only needed when namePrefix is synthesized (e.g. a spec's Cast Bars strip)
+---@return number yCoord The adjusted yCoord after tabs are placed (for further content below if needed)
+function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord, specContext)
+	local optionsUiFuncs = TRB.Functions.OptionsUi.Tabs
 
-		-- Custom Bars closes the run of bar tabs, on every spec.
-		local hasCustomBarsTab = false
-		for _, def in ipairs(tabDefinitions) do
-			if def[1] == "customBars" then
-				hasCustomBarsTab = true
-				break
-			end
-		end
-		if not hasCustomBarsTab then
-			local cId, sId = castbarSpec.classId, castbarSpec.specId
-			-- Another class's saved bars are registered nowhere else, and every tab built below lists them.
-			local cName, sName = TRB.Functions.Character:GetClassAndSpecializationNames(cId, sId, true)
-			TRB.Functions.CustomBars:SyncRegistry(cId, sId, TRB.Data.settings[cName] and TRB.Data.settings[cName][sName])
-			local insertIndex = #tabDefinitions + 1
-			for i, def in ipairs(tabDefinitions) do
-				if def[1] == "skyriding" or def[1] == "petBars" or def[1] == "otherBars" then
-					insertIndex = i + 1
-				end
-			end
-			table.insert(tabDefinitions, insertIndex, {
-				"customBars",
-				TRB.Localization["TabCustomBars"],
-				oUi.tabWidth.medium,
-				function(scrollChild)
-					TRB.Functions.OptionsUi.Tabs:BuildCustomBarsInnerTabGroup(scrollChild, cId, sId)
-				end,
-				true -- manual container: the inner sub-tabs provide their own scroll frames
-			})
-		end
+	NormalizeTabDefinitions(tabDefinitions)
+
+	-- A real spec panel, resolved from namePrefix, is split into sections; each section's strip comes back through here.
+	local specPanel = GetCastbarSpecMap()[namePrefix]
+	if specPanel ~= nil and not (specContext ~= nil and specContext.isSection) then
+		BuildSpecSections(parent, namePrefix, tabDefinitions, yCoord, specPanel.classId, specPanel.specId)
+		return yCoord
 	end
 
 	local tabs = {}
@@ -879,7 +881,8 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 		for _, def in ipairs(rowDefs) do
 			baseRowWidth = baseRowWidth + def[3]
 		end
-		local extraSpace = maxWidth - baseRowWidth - totalSpacing
+		-- A strip's only tab keeps its own width instead of spanning the panel.
+		local extraSpace = #tabDefinitions > 1 and (maxWidth - baseRowWidth - totalSpacing) or 0
 		local extraPerTab = math.floor(extraSpace / numTabs)
 		local remainder = extraSpace - (extraPerTab * numTabs)
 
@@ -986,9 +989,14 @@ end
 ---Used when an action on one tab depends on controls/closures created by another tab's
 ---constructor (e.g. resetting bar text needs the Bar Text editor's ResetTableValues, which
 ---only exists once that tab has been built). No-op if the tab is already built or unknown.
----@param displayPanel table # The tab group parent frame (holds tabConstructors/tabsheets)
+---@param displayPanel table # The tab group parent frame (holds tabConstructors/tabsheets), or a sectioned panel
 ---@param tabId string # The tab key to ensure is constructed
 function TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(displayPanel, tabId)
+	-- A sectioned panel's tab is on the strip of its section.
+	if displayPanel and displayPanel.sections then
+		local section = self:EnsureSectionBuilt(displayPanel, displayPanel.tabSections[tabId])
+		displayPanel = section and section.frame
+	end
 	if displayPanel and displayPanel.tabConstructors and displayPanel.tabConstructors[tabId]
 		and displayPanel.tabsheets and displayPanel.tabsheets[tabId] then
 		displayPanel.tabConstructors[tabId](displayPanel.tabsheets[tabId].constructorFrame)

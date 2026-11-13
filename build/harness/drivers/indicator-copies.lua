@@ -272,6 +272,7 @@ function hooks.afterEvents(ctx)
 	-- Every options tab, so each specialization's Color Indicators panel is built.
 	try("ConstructOptionsPanel", function() TRB.Options:ConstructOptionsPanel() end)
 	local Tabs = TRB.Functions.OptionsUi.Tabs
+	parity.BuildAllSections(TRB)
 	local g = 1
 	while g <= #drv.groups do
 		local parent = drv.groups[g]

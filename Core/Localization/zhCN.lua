@@ -3353,11 +3353,7 @@ if locale == "zhCN" then
 	L["ResourceBreath"] = "呼吸值"
 	-- REMOVED: L["ResourceDeathTimer"] - the Death mirror timer bar was retired
 	L["ResourceFeignDeath"] = "假死"
-	
-	-- Other Bars: tab + screen labels
-	L["TabOtherBars"] = "其他资源条"
-	L["OtherBarsGlobalOptionsHeader"] = "全局其他资源条设置"
-	
+		
 	-- Other Bars: panel sections and options
 	L["OtherBarsColorsHeader"] = "颜色"
 	L["OtherBarsColorFill"] = "资源条本体"
@@ -3366,13 +3362,7 @@ if locale == "zhCN" then
 	L["GcdBarGrowInsteadTooltip"] = "公共冷却运行时从空到满填充资源条，而非从满向空倒计时。"
 	L["MirrorTimerDisableBlizzard"] = "隐藏原生计时条"
 	L["MirrorTimerDisableBlizzardTooltip"] = "本插件显示该计时时，隐藏游戏原生对应计时条。原生设置在编辑模式的「持续时间条」，无法单独关闭某一个计时，只会隐藏本插件接管的这一项，其余不受影响。"
-	
-	-- Other Bars: global settings
-	L["CheckboxUseGlobalOtherBars"] = "使用全局其他资源条设置"
-	L["CheckboxUseGlobalTooltipOtherBars"] = "勾选后，该模块将读取全局其他资源条配置，而非本专精独立设置。"
-	L["OpenGlobalOtherBarsSettings"] = "打开全局其他资源条设置"
-	L["OpenGlobalOtherBarsSettingsTooltip"] = "跳转至全局其他资源条配置界面，在这里的修改会作用于全部专精。"
-	
+		
 	-- Other Bars: copy menu section labels
 	L["CopyMenuSection_gcdDimensions"] = "公共冷却条 - 尺寸位置"
 	L["CopyMenuSection_gcdColors"] = "公共冷却条 - 颜色"
@@ -3392,9 +3382,6 @@ if locale == "zhCN" then
 	L["ShowBarVisibilityGroupTimer"] = "计时"
 	
 	-- Other Bars: Use Global tooltips for the shared dimensions rows (looked up by section key)
-	L["CheckboxUseGlobalTooltip_GcdDimensions"] = "勾选后，该资源条的位置大小取自全局其他资源条配置，而非本专精独立设置。"
-	L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "勾选后，该资源条的位置大小取自全局其他资源条配置，而非本专精独立设置。"
-	L["CheckboxUseGlobalTooltip_BreathDimensions"] = "勾选后，该资源条的位置大小取自全局其他资源条配置，而非本专精独立设置。"
 	-- REMOVED: L["CheckboxUseGlobalTooltip_DeathDimensions"] - the Death mirror timer bar was retired
 	
 	-- Other Bars: bar text variables and the shared precision slider
@@ -4089,7 +4076,6 @@ if locale == "zhCN" then
 	L["BarVisibilityPresetDeleteConfirm"] = "确定删除预设「%s」？正在使用它的%d个进度条会保留当前配置，不再绑定该预设。"
 	L["BarVisibilityPresetKindConfirm"] = "要把预设「%s」从%s改为%s吗？正在使用它的%d个进度条会保留当前配置，但不再绑定这个预设。"
 	L["BarDisplayHeaderCastbar"] = "施法条外观"
-	L["BarDisplayHeaderOtherBars"] = "其他进度条外观"
 	L["BarDisplayHeaderPetBars"] = "宠物进度条外观"
 	L["BarDisplayHeaderSkyriding"] = "驭空术进度条外观"
 	L["BarVisibilityEnabledTooltip"] = "取消勾选以停用该进度条，等同于「何时显示进度条」设为永不显示，和进度条自身标签页顶部的勾选框效果一致，在绑定预设时也生效。"
@@ -4102,7 +4088,6 @@ if locale == "zhCN" then
 	L["CheckboxUseGlobalBarText"] = "在此专精的进度条上显示全局进度条文字"
 	L["CheckboxUseGlobalTooltip_GlobalBarText"] = "勾选后，全局选项里配置的文字会和该专精自有文字一同显示，在标签页中以淡蓝色列出；取消勾选则只显示该专精自己的文字。"
 	L["BarDisplayTextCustomizationHeaderCastbar"] = "施法条文字自定义"
-	L["BarDisplayTextCustomizationHeaderOtherBars"] = "其他进度条文字自定义"
 	L["BarDisplayTextCustomizationHeaderPetBars"] = "宠物进度条文字自定义"
 	L["BarDisplayTextCustomizationHeaderSkyriding"] = "驭空术进度条文字自定义"
 	L["TextureLockBar"] = "全部进度条共用同一张填充材质"
@@ -4129,7 +4114,6 @@ if locale == "zhCN" then
 	L["TextureLockGlobalTooltip"] = "%s行启用了全局设置，本专精沿用全局里的锁定选项；取消该行全局设置，才能为本专精单独配置锁定。"
 	L["BarTexturesUsingGlobal"] = "该进度条使用全局选项的材质，显示材质为全局配置。"
 	L["BarTexturesHeaderCastbar"] = "施法条材质"
-	L["BarTexturesHeaderOtherBars"] = "其他进度条材质"
 	L["BarTexturesHeaderPetBars"] = "宠物进度条材质"
 	L["BarTexturesHeaderSkyriding"] = "驭空术进度条材质"
 	L["CheckboxIncludeAllTextureGroups"] = "包含其他材质标签页的进度条"

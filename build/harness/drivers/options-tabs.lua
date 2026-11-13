@@ -75,10 +75,12 @@ function hooks.afterLoad(ctx)
 		local origBuild = Tabs.BuildTabGroup
 		Tabs.BuildTabGroup = function(self, parent, namePrefix, defs, y, tabContext)
 			local r = origBuild(self, parent, namePrefix, defs, y, tabContext)
-			-- Read after the build, which injects the all-spec tabs into defs.
-			local keys = {}
-			for _, d in ipairs(defs) do keys[#keys + 1] = d[1] end
-			drv.groups[#drv.groups + 1] = { parent = parent, prefix = namePrefix, keys = keys }
+			-- A spec panel hands its tabs to its sections, whose strips come back through here one at a time.
+			if parent.sections == nil then
+				local keys = {}
+				for _, d in ipairs(defs) do keys[#keys + 1] = d[1] end
+				drv.groups[#drv.groups + 1] = { parent = parent, prefix = namePrefix, keys = keys }
+			end
 			return r
 		end
 
@@ -223,7 +225,8 @@ function hooks.afterEvents(ctx)
 		try("ConstructOptionsPanel", function() TRB_.Options:ConstructOptionsPanel() end)
 		do
 			local globalPanel = TRB_.Frames.interfaceSettingsFrameContainer.optionsPanel
-			local barTextUnbuilt = globalPanel ~= nil and globalPanel.tabConstructors ~= nil and globalPanel.tabConstructors.barText ~= nil
+			local visibilitySection = globalPanel ~= nil and globalPanel.sections ~= nil and globalPanel.sections.visibility or nil
+			local barTextUnbuilt = visibilitySection ~= nil and (visibilitySection.build ~= nil or visibilitySection.frame.tabConstructors.barText ~= nil)
 			Tabs:EnsureTabConstructed(globalPanel, "resetDefaults")
 			local ok = try("Reset Global Bar Text", function() G.StaticPopupDialogs["TwintopResourceBar_ResetGlobalBarText"].OnAccept() end)
 			check("Reset Global Bar Text works before its Bar Text tab is opened", barTextUnbuilt and ok
@@ -244,6 +247,23 @@ function hooks.afterEvents(ctx)
 			end
 			if not built then
 				try("BuildClassPanels " .. classDef.classKey, function() TRB_.Options:BuildClassPanels(classDef.classKey) end)
+			end
+		end
+
+		-- A section's strip is built when it is first shown; build them all, each panel's in nav order.
+		do
+			local prefixes = {}
+			for prefix in pairs(Tabs.sectionedPanels) do prefixes[#prefixes + 1] = prefix end
+			table.sort(prefixes)
+			for _, prefix in ipairs(prefixes) do
+				local host = Tabs.sectionedPanels[prefix]
+				local navEntry = TRB_.Options.OptionsFrame.navEntries[host.navKey]
+				for _, childKey in ipairs(navEntry.children) do
+					local sectionKey = TRB_.Options.OptionsFrame.navEntries[childKey].section
+					if sectionKey ~= nil then
+						try(prefix .. " section " .. sectionKey, function() Tabs:EnsureSectionBuilt(host, sectionKey) end)
+					end
+				end
 			end
 		end
 
@@ -358,7 +378,6 @@ function hooks.afterEvents(ctx)
 			if e.classId ~= nil and e.groupKey == "spec" then
 				local want = { "castbar", "otherBars" }
 				if TRB_.Classes.BarTypeRegistry:SpecHasPet(e.classId, e.specId) then want[#want + 1] = "petBars" end
-				if TRB_.Classes.BarTypeRegistry:GetTotemPlacement(e.classId, e.specId) == "spec" then want[#want + 1] = "totems" end
 				if #TRB_.Classes.BarTypeRegistry.skyridingBarKeys > 0 then want[#want + 1] = "skyriding" end
 				for _, g in ipairs(want) do
 					if find(e.classId, e.specId, g) == nil then missing[#missing + 1] = e.classId .. "_" .. e.specId .. "/" .. g end
@@ -392,8 +411,8 @@ function hooks.afterEvents(ctx)
 					end
 				end
 			end
-			print("INFO specs with a top-level Totems tab: " .. totemSpecs .. "; Totems tabs constructed: " .. totemsDrained)
-			check("a Totems tab sits just before Health on every spec with totems, and nowhere else (" .. table.concat(misplaced, "; ") .. ")", #misplaced == 0 and totemSpecs > 0)
+			print("INFO specs with a Totems tab in General: " .. totemSpecs .. "; Totems tabs constructed: " .. totemsDrained)
+			check("a Totems tab sits just before Health in General on every spec with totems, and nowhere else (" .. table.concat(misplaced, "; ") .. ")", #misplaced == 0 and totemSpecs > 0)
 			-- Totems textures are each spec's own, as the pet bars' are, so the Global strip has no Textures tab.
 			-- Where the specs own the bar, Global Options has no Totems home.
 			if registry:HasGlobalTotems() then
@@ -401,14 +420,19 @@ function hooks.afterEvents(ctx)
 			else
 				check("Global Options has no Totems home without a global scope", stripKeys("Totems") == nil)
 			end
-			local innerStrips, badInner = 0, {}
-			for _, g in ipairs(drv.groups) do
-				if g.prefix:find("^TotemsInner_") then
-					innerStrips = innerStrips + 1
-					if table.concat(g.keys, ",") ~= "totems,barTextures,barVisibility,barText" then badInner[#badInner + 1] = g.prefix .. "=" .. table.concat(g.keys, ",") end
+			-- A spec's own Totems bar has no strip of its own: its textures are listed on the spec's Textures tab.
+			local unlisted = {}
+			for _, e in ipairs(drv.editors) do
+				if e.classId ~= nil and e.groupKey == "spec" then
+					local listed = false
+					for _, row in ipairs(e.st.rows) do
+						if row.cols[1].value == "totems" then listed = true end
+					end
+					if listed ~= (registry:GetTotemPlacement(e.classId, e.specId) == "spec") then unlisted[#unlisted + 1] = e.classId .. "_" .. e.specId end
 				end
+				if e.classId ~= nil and e.groupKey == "totems" then unlisted[#unlisted + 1] = e.classId .. "_" .. e.specId .. " has a Totems strip" end
 			end
-			check("every spec's Totems tab holds the bar, Textures, Visibility, and Bar Text (" .. table.concat(badInner, "; ") .. ")", innerStrips == totemSpecs and #badInner == 0)
+			check("a spec's own Totems bar is listed on its Textures tab, and on no other spec's (" .. table.concat(unlisted, "; ") .. ")", #unlisted == 0)
 			-- A spec that places its Totems bar under Other Bars gets it there, and no other spec does.
 			local otherBarsTotems, wrongOtherBars = 0, {}
 			for _, classEntry in ipairs(TRB_.Data.classRegistryOrder) do
@@ -423,6 +447,130 @@ function hooks.afterEvents(ctx)
 			print("INFO specs with Totems under Other Bars: " .. otherBarsTotems)
 			check("a Totems tab sits under Other Bars on exactly the specs that place it there (" .. table.concat(wrongOtherBars, "; ") .. ")", #wrongOtherBars == 0)
 		end
+		-- ===== Nav section checks =====
+		do
+			local nav = TRB_.Options.OptionsFrame
+			local registry = TRB_.Classes.BarTypeRegistry
+			local hasSkyriding = #registry.skyridingBarKeys > 0
+			local function children(key)
+				local entry = nav.navEntries[key]
+				return entry ~= nil and entry.children ~= nil and table.concat(entry.children, ",") or nil
+			end
+
+			local wantGlobal = { "global:general", "global:visibility", "global:thresholds", "castbar", "otherBars", "petBars" }
+			if registry:HasGlobalTotems() then wantGlobal[#wantGlobal + 1] = "totems" end
+			if hasSkyriding then wantGlobal[#wantGlobal + 1] = "skyriding" end
+			wantGlobal[#wantGlobal + 1] = "global:resetDefaults"
+			print("INFO Global Options lists: " .. tostring(children("global")))
+			check("Global Options lists its sections, then each grouping, then Reset Defaults", children("global") == table.concat(wantGlobal, ","))
+			check("IO and Profiles lists Import/Export and Profile Defaults", children("ioProfiles") == "importExport,profileDefaults")
+			check("the top level opens with Global Options and IO and Profiles, and About closes it",
+				nav.navOrder[1] == "global" and nav.navOrder[2] == "ioProfiles" and nav.navBottomOrder[1] == "main")
+			local strays = {}
+			for _, key in ipairs(nav.navOrder) do
+				local entry = nav.navEntries[key]
+				if key ~= "global" and key ~= "ioProfiles" and not entry.isClass then strays[#strays + 1] = key end
+			end
+			check("and holds only classes below them (" .. table.concat(strays, ", ") .. ")", #strays == 0)
+			check("Global's Visibility and Behavior holds Bar Display, Manage Presets, Textures, Glows, Font & Text, Bar Text, and Miscellaneous",
+				table.concat(Tabs.sectionedPanels.Global.sections.visibility.frame.tabOrder, ",") == "barVisibility,presets,barTextures,glows,fontText,barText,miscellaneous")
+
+			-- Every spec lists the same sections in the same order, less the ones it has no bars for.
+			local wrongSections, wrongStrips, specCount = {}, {}, 0
+			for _, classEntry in ipairs(TRB_.Data.classRegistryOrder) do
+				for _, specEntry in ipairs(classEntry.specs) do
+					local navKey = TRB_.Functions.Character:GetCompositeKeyFromIds(specEntry.classId, specEntry.specId)
+					local cName, sName = TRB_.Functions.Character:GetClassAndSpecializationNames(specEntry.classId, specEntry.specId)
+					local host = Tabs.sectionedPanels[cName .. "_" .. sName]
+					if host ~= nil then
+						specCount = specCount + 1
+						local want = { "general", "visibility", "thresholds", "customBars", "castbar", "otherBars" }
+						if registry:SpecHasPet(specEntry.classId, specEntry.specId) then want[#want + 1] = "petBars" end
+						if hasSkyriding then want[#want + 1] = "skyriding" end
+						want[#want + 1] = "resetDefaults"
+						for index, sectionKey in ipairs(want) do want[index] = navKey .. ":" .. sectionKey end
+						if children(navKey) ~= table.concat(want, ",") then wrongSections[#wrongSections + 1] = navKey .. "=" .. tostring(children(navKey)) end
+						local visibility = table.concat(host.sections.visibility.frame.tabOrder, ",")
+						local thresholds = "," .. table.concat(host.sections.thresholds.frame.tabOrder, ",") .. ","
+						if visibility ~= "barVisibility,barTextures,indicatorColors,audioCues,fontText,barText"
+							or thresholds:gsub(",thresholds,", ",") ~= ",thresholdSettings,customThresholds,"
+							or table.concat(host.sections.resetDefaults.frame.tabOrder, ",") ~= "resetDefaults" then
+							wrongStrips[#wrongStrips + 1] = navKey .. "=" .. visibility .. "|" .. thresholds
+						end
+						for _, tabKey in ipairs(host.sections.general.frame.tabOrder) do
+							if host.sections.general.frame.tabsheets[tabKey].visibilityHeader == nil then wrongStrips[#wrongStrips + 1] = navKey .. " General holds " .. tabKey end
+						end
+					end
+				end
+			end
+			print("INFO specs with sections: " .. specCount)
+			check("every spec lists General, Visibility and Behavior, Thresholds, Custom Bars, each grouping, then Reset Defaults (" .. table.concat(wrongSections, "; ") .. ")", #wrongSections == 0 and specCount > 0)
+			check("General holds only bar tabs, and the settings tabs sit in their sections in order (" .. table.concat(wrongStrips, "; ") .. ")", #wrongStrips == 0)
+
+			-- No strip sits inside another strip's tab.
+			local sheets, nested = {}, {}
+			for _, g in ipairs(drv.groups) do
+				for _, sheet in pairs(g.parent.tabsheets or {}) do sheets[sheet] = true end
+			end
+			for _, g in ipairs(drv.groups) do
+				if sheets[g.parent] then nested[#nested + 1] = g.prefix end
+			end
+			check("no tab strip sits inside another's tab (" .. table.concat(nested, ", ") .. ")", #nested == 0)
+
+			-- A class with one spec lists that spec's sections itself.
+			local merged, split = 0, 0
+			for _, key in ipairs(nav.navOrder) do
+				local entry = nav.navEntries[key]
+				if entry.isClass then
+					local driver = nav:GetNavDriver(entry)
+					if #entry.children == 1 then
+						merged = merged + 1
+						if driver ~= nav.navEntries[entry.children[1]] then split = split + 1000 end
+					elseif driver ~= entry then
+						split = split + 1000
+					else
+						split = split + 1
+					end
+				end
+			end
+			print("INFO classes listing their one spec's sections: " .. merged .. "; classes listing specs: " .. split)
+			check("a class with one spec has no spec tier, and every other class keeps it", merged + split > 0 and split < 1000)
+
+			-- Opening a spec opens its first section, then the one last shown; a tab switch opens the section holding the tab.
+			local navKey = TRB_.Functions.Character:GetCompositeKeyFromIds(classId, specId)
+			local host = Tabs.sectionedPanels[className .. "_" .. specName]
+			local function shownSections()
+				local shown = {}
+				for sectionKey, section in pairs(host.sections) do
+					if section.frame.__shown then shown[#shown + 1] = sectionKey end
+				end
+				table.sort(shown)
+				return table.concat(shown, ",")
+			end
+			try("select the spec", function() nav:SelectCategory(navKey) end)
+			check("opening a spec opens General", nav.selectedKey == navKey .. ":general" and shownSections() == "general" and nav.currentPanel == host)
+			try("switch to Bar Text", function() Tabs:SwitchToBarTextTabByClassSpec(classId, specId) end)
+			check("switching to a tab opens the section holding it", nav.selectedKey == navKey .. ":visibility" and shownSections() == "visibility"
+				and host.sections.visibility.frame.lastTabId == "barText")
+			try("switch to the Cast Bars Visibility tab", function() Tabs:SwitchToTabByNamePrefix(Tabs:GetGroupInnerPrefix("castbar", classId, specId), Tabs.TabKeys.BarVisibility) end)
+			check("a grouping's tab opens that grouping's section", nav.selectedKey == navKey .. ":castbar" and shownSections() == "castbar"
+				and host.sections.castbar.frame.lastTabId == Tabs.TabKeys.BarVisibility)
+			try("select Global Options", function() nav:SelectCategory("global") end)
+			-- The bar text reset above left Global Options on its Bar Text tab.
+			check("opening Global Options hides the spec and opens the section it last showed", nav.selectedKey == "global:visibility" and host.__shown == false
+				and nav.currentPanel == Tabs.sectionedPanels.Global)
+			try("select the spec again", function() nav:SelectCategory(navKey) end)
+			check("a spec reopens on the section last shown", nav.selectedKey == navKey .. ":castbar" and shownSections() == "castbar")
+			local origAfter = G.C_Timer.After
+			rawset(G.C_Timer, "After", function(_, fn) fn() end)
+			try("open the health bar's tab", function() Tabs:OpenBarTab(classId, specId, "health") end)
+			check("opening a spec bar's tab goes to General", nav.selectedKey == navKey .. ":general" and host.sections.general.frame.lastTabId == "healthBar")
+			try("open Global's Manage Presets", function() nav:SelectCategory("global") Tabs:SwitchToGlobalVisibilityTab(Tabs.TabKeys.VisibilityPresets) end)
+			check("Manage Presets opens in Global's Visibility and Behavior", nav.selectedKey == "global:visibility"
+				and Tabs.sectionedPanels.Global.sections.visibility.frame.lastTabId == Tabs.TabKeys.VisibilityPresets)
+			rawset(G.C_Timer, "After", origAfter)
+		end
+
 		-- A Use Global link opens its category's strip by GetGroupInnerPrefix, so every category's Global prefix must name a built strip.
 		do
 			local unresolved = {}
@@ -829,21 +977,25 @@ function hooks.afterEvents(ctx)
 			check("a bar on Global has its dropdowns covered", cover ~= nil and cover.__shown == true)
 
 			-- Open goes to the Global Options tab that lists the bar and opens it there.
-			local switched, category = nil, nil
+			local switched, category, section = nil, nil, nil
 			local origSwitch = Tabs_.SwitchToTabByNamePrefix
 			Tabs_.SwitchToTabByNamePrefix = function(self, prefix, key) switched = tostring(prefix) .. "/" .. tostring(key) return origSwitch(self, prefix, key) end
 			local origFrame = TRB_.Options.OptionsFrame
-			TRB_.Options.OptionsFrame = { SelectCategory = function(_, key) category = key end }
+			-- The category is selected first, then the section holding the tab.
+			TRB_.Options.OptionsFrame = { SelectCategory = function(_, key)
+				if category == nil then category = key else section = key end
+			end }
 			local origAfter = G.C_Timer.After
 			rawset(G.C_Timer, "After", function(_, fn) fn() end)
 			try("open Global's textures", function() cover.openButton.__scripts.OnClick(cover.openButton) end)
 			check("Open goes to Global Options' Textures tab", category == "global" and switched == "Global/" .. Tabs_.TabKeys.BarTextures)
+			check("in its Visibility and Behavior section", section == "global:visibility")
 			local globalHealth = rowOf(globalSpecEd, "health")
 			check("and opens the bar there", globalHealth ~= nil and globalSpecEd.st.sel == globalHealth)
 			open(castEd, "castbar")
 			local castCover = castEd.controls.barTexturesDetailCover
 			check("a cast bar on Global is covered too", castCover.__shown == true)
-			category, switched = nil, nil
+			category, switched, section = nil, nil, nil
 			try("open Global's cast bar textures", function() castCover.openButton.__scripts.OnClick(castCover.openButton) end)
 			local globalCast = find(nil, nil, "castbar")
 			check("a cast bar opens on Global Options' Cast Bars Textures tab", category == "castbar"

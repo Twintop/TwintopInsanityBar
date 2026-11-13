@@ -396,19 +396,11 @@ if locale == "enGB" then
     -- Other Bars
     L["OtherBarsColorsHeader"] = "Colours"
     L["OtherBarsBehaviorHeader"] = "Behaviour"
-    L["CheckboxUseGlobalTooltipOtherBars"] = "When checked, this section uses the settings from the global Other Bars screen instead of this specialisation's own."
-    L["OpenGlobalOtherBarsSettingsTooltip"] = "Opens the global Other Bars options screen, where these settings are configured for every specialisation at once."
     L["CopyMenuSection_gcdColors"] = "Global Cooldown Bar - Colours"
     L["CopyMenuSection_fatigueColors"] = "Fatigue Bar - Colours"
     L["CopyMenuSection_breathColors"] = "Breath Bar - Colours"
     -- REMOVED: L["CopyMenuSection_deathColors"] - the Death mirror timer bar was retired
     L["CopyMenuSection_feignDeathColors"] = "Feign Death Bar - Colours"
-
-    -- Other Bars: Use Global tooltips for the shared dimensions rows
-    L["CheckboxUseGlobalTooltip_GcdDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
-    L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
-    L["CheckboxUseGlobalTooltip_BreathDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialisation's own settings."
-    -- REMOVED: L["CheckboxUseGlobalTooltip_DeathDimensions"] - the Death mirror timer bar was retired
 
     -- Health Bar: flat class colour transition type
     L["HealthBarColorTypeClassColor"] = "Single (Class Colour)"
@@ -535,7 +527,6 @@ if locale == "enGB" then
 	L["CheckboxUseGlobalBarText"] = "Display Global Bar Text on this specialisation's bars"
 	L["CheckboxUseGlobalTooltip_GlobalBarText"] = "When checked, the bar text set in Global Options is shown on this specialisation's bars along with its own, and is listed on its Bar Text tabs in light blue. When unchecked, only this specialisation's own bar text is shown."
 	L["BarDisplayTextCustomizationHeaderCastbar"] = "Cast Bar Display Text Customisation"
-	L["BarDisplayTextCustomizationHeaderOtherBars"] = "Other Bar Display Text Customisation"
 	L["BarDisplayTextCustomizationHeaderPetBars"] = "Pet Bar Display Text Customisation"
 	L["BarDisplayTextCustomizationHeaderSkyriding"] = "Skyriding Bar Display Text Customisation"
 	L["BarTexturesUseGlobalAllSpecsTooltip"] = "Checked bars draw with the textures set in Global Options in every specialisation. Unchecking gives each specialisation its own textures for them, starting from Global's. A dimmed check means some specialisations do."
@@ -580,4 +571,11 @@ if locale == "enGB" then
 	L["BarDisplayTextCustomizationHeaderCustomBars"] = "Custom Bar Display Text Customisation"
 	L["CustomBarsAddGroupSnapshot"] = "Tracked by This Specialisation"
 	L["CustomBarsProviderShortSnapshot"] = "Specialisation"
+	L["NavSectionVisibilityAndBehavior"] = "Visibility and Behaviour"
+	L["CheckboxUseGlobalTooltipOtherBars"] = "When checked, this section uses the settings from the global Timer Bars screen instead of this specialisation's own."
+	L["OpenGlobalOtherBarsSettingsTooltip"] = "Opens the global Timer Bars options screen, where these settings are configured for every specialisation at once."
+	L["CheckboxUseGlobalTooltip_GcdDimensions"] = "When checked, this bar's position and size come from the global Timer Bars screen instead of this specialisation's own settings."
+	L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "When checked, this bar's position and size come from the global Timer Bars screen instead of this specialisation's own settings."
+	L["CheckboxUseGlobalTooltip_BreathDimensions"] = "When checked, this bar's position and size come from the global Timer Bars screen instead of this specialisation's own settings."
+	L["BarDisplayTextCustomizationHeaderOtherBars"] = "Timer Bar Display Text Customisation"
 end

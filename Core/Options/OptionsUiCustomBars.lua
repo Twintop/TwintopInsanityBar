@@ -182,8 +182,8 @@ local function ResolveSpellId(providerName, spellId, current)
 	return picked
 end
 
----Builds the Custom Bars tab's Bars sub-tab.
----@param parent Frame # The sub-tab's manual container frame
+---Builds Custom Bars' Bars tab.
+---@param parent Frame # The tab's manual container frame
 ---@param classId integer
 ---@param specId integer
 function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, specId)

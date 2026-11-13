@@ -112,4 +112,23 @@ function M.Install(ctx, options)
 	end
 end
 
+---Builds every nav section's tab strip, which the options build only when a section is first shown.
+---@param TRB table
+function M.BuildAllSections(TRB)
+	local Tabs = TRB.Functions.OptionsUi.Tabs
+	local navEntries = TRB.Options.OptionsFrame.navEntries
+	local prefixes = {}
+	for prefix in pairs(Tabs.sectionedPanels) do prefixes[#prefixes + 1] = prefix end
+	table.sort(prefixes)
+	for _, prefix in ipairs(prefixes) do
+		local host = Tabs.sectionedPanels[prefix]
+		for _, childKey in ipairs(navEntries[host.navKey].children) do
+			local sectionKey = navEntries[childKey].section
+			if sectionKey ~= nil then
+				pcall(Tabs.EnsureSectionBuilt, Tabs, host, sectionKey)
+			end
+		end
+	end
+end
+
 return M

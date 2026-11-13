@@ -336,6 +336,7 @@ function hooks.afterEvents(ctx)
 	TRB.Details.addonData.optionsPanelFinished = true
 	try("ConstructOptionsPanel", function() TRB.Options:ConstructOptionsPanel() end)
 	local Tabs = TRB.Functions.OptionsUi.Tabs
+	parity.BuildAllSections(TRB)
 	local i = 1
 	while i <= #drv.groups do
 		local parent = drv.groups[i]

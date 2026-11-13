@@ -58,12 +58,16 @@ OptionsFrame.__index = OptionsFrame
 ---@class TRB.Options.OptionsFrame.NavEntry
 ---@field public key string
 ---@field public label string
----@field public panel Frame|TRB.Classes.OptionsUi.TabbedPanel|nil # Spec panels are tabbed; category panels may be plain frames
+---@field public panel Frame|TRB.Classes.OptionsUi.SectionedPanel|nil # A section's entry holds the panel its section is on
+---@field public section string|nil # The section of the panel this entry shows
 ---@field public parentKey string|nil
----@field public children string[]|nil
+---@field public children string[]|nil # Headers and specs only
 ---@field public collapsed boolean
 ---@field public button TRB.Classes.OptionsUi.NavButton|nil
 ---@field public builder function|nil
+---@field public isClass boolean|nil
+---@field public isSpec boolean|nil
+---@field public lastChildKey string|nil # The child last selected, reopened when this entry is selected
 
 -- ─────────────────────────────────────────────────────────────────────
 -- Internal helpers
@@ -118,8 +122,9 @@ end
 ---@param indent number Pixel indent from the left edge (used for child/spec entries)
 ---@param isHeader boolean Whether this button represents a collapsible class header (adds an arrow indicator)
 ---@param iconInfo table|nil {atlas=string} or {texture=number} for an optional icon displayed left of the label
+---@param useHeaderFont boolean? Whether the label takes the larger header font, as the top-level headers do
 ---@return TRB.Classes.OptionsUi.NavButton button The created navigation button frame
-local function CreateNavButton(parent, label, indent, isHeader, iconInfo)
+local function CreateNavButton(parent, label, indent, isHeader, iconInfo, useHeaderFont)
 	local btn = CreateFrame("Button", nil, parent) --[[@as TRB.Classes.OptionsUi.NavButton]]
 	btn:SetHeight(NAV_BUTTON_HEIGHT)
 	btn:SetWidth(NAV_WIDTH - 16 - indent)
@@ -153,7 +158,7 @@ local function CreateNavButton(parent, label, indent, isHeader, iconInfo)
 
 	-- Text
 	local text = btn:CreateFontString(nil, "OVERLAY")
-	text:SetFontObject(isHeader and GameFontNormal or GameFontHighlightSmall)
+	text:SetFontObject(useHeaderFont and GameFontNormal or GameFontHighlightSmall)
 	text:SetJustifyH("LEFT")
 	text:SetPoint("LEFT", textLeftOffset, 0)
 	text:SetPoint("RIGHT", -4, 0)
@@ -535,29 +540,39 @@ end
 -- Registration API
 -- ─────────────────────────────────────────────────────────────────────
 
----Register a top-level nav category (e.g., Global Options, Import/Export)
----@param key string
----@param label string
+---Parents a panel to the content area, hidden until its nav entry is selected.
 ---@param panel Frame
-function OptionsFrame:RegisterCategory(key, label, panel)
-	self:EnsureFrame()
-	self.navEntries[key] = {
-		key = key,
-		label = label,
-		panel = panel,
-		parentKey = nil,
-		children = nil,
-		collapsed = false,
-		button = nil,
-	}
-	table.insert(self.navOrder, key)
-
-	-- Re-parent the panel into content area, hide it
+function OptionsFrame:AdoptPanel(panel)
 	panel:SetParent(self.contentArea)
 	panel:ClearAllPoints()
 	panel:SetAllPoints(self.contentArea)
 	ConfigureDragHandle(panel, self.mainFrame)
 	panel:Hide()
+end
+
+---Register a nav category with a panel of its own, at the top level or under a header.
+---@param key string
+---@param label string
+---@param panel Frame
+---@param parentKey string? # A registered header to list it under
+function OptionsFrame:RegisterCategory(key, label, panel, parentKey)
+	self:EnsureFrame()
+	local parent = parentKey ~= nil and self.navEntries[parentKey] or nil
+	self.navEntries[key] = {
+		key = key,
+		label = label,
+		panel = panel,
+		parentKey = parent ~= nil and parentKey or nil,
+		children = nil,
+		collapsed = false,
+		button = nil,
+	}
+	if parent ~= nil then
+		table.insert(parent.children, key)
+	else
+		table.insert(self.navOrder, key)
+	end
+	self:AdoptPanel(panel)
 end
 
 ---Register a top-level nav category that always appears at the bottom of the nav list
@@ -576,36 +591,41 @@ function OptionsFrame:RegisterBottomCategory(key, label, panel)
 		button = nil,
 	}
 	table.insert(self.navBottomOrder, key)
-
-	-- Re-parent the panel into content area, hide it
-	panel:SetParent(self.contentArea)
-	panel:ClearAllPoints()
-	panel:SetAllPoints(self.contentArea)
-	ConfigureDragHandle(panel, self.mainFrame)
-	panel:Hide()
+	self:AdoptPanel(panel)
 end
 
----Register a class header (collapsible, no panel)
----@param classKey string
----@param classLabel string
-function OptionsFrame:RegisterClassHeader(classKey, classLabel)
+---Register a top-level collapsible header with no panel of its own.
+---@param key string
+---@param label string
+function OptionsFrame:RegisterHeader(key, label)
 	self:EnsureFrame()
-	if self.navEntries[classKey] then
+	if self.navEntries[key] then
 		return -- already registered
 	end
-	self.navEntries[classKey] = {
-		key = classKey,
-		label = classLabel,
+	self.navEntries[key] = {
+		key = key,
+		label = label,
 		panel = nil,
 		parentKey = nil,
 		children = {},
 		collapsed = true,
 		button = nil,
 	}
-	table.insert(self.navOrder, classKey)
+	table.insert(self.navOrder, key)
 end
 
----Register a spec panel under a class header
+---Register a class header (collapsible, no panel)
+---@param classKey string
+---@param classLabel string
+function OptionsFrame:RegisterClassHeader(classKey, classLabel)
+	if self.navEntries[classKey] then
+		return -- already registered
+	end
+	self:RegisterHeader(classKey, classLabel)
+	self.navEntries[classKey].isClass = true
+end
+
+---Register a spec under a class header. Its sections are listed under it once its panel is built.
 ---@param classKey string
 ---@param specKey string
 ---@param specLabel string
@@ -623,21 +643,7 @@ function OptionsFrame:RegisterSpecPanel(classKey, specKey, specLabel, panel, bui
 	if self.navEntries[specKey] then
 		if panel then
 			self.navEntries[specKey].panel = panel
-			panel:SetParent(self.contentArea)
-			panel:ClearAllPoints()
-			panel:SetAllPoints(self.contentArea)
-			ConfigureDragHandle(panel, self.mainFrame)
-			panel:Hide()
-
-			-- If the button was already created (during RefreshNav) with no panel,
-			-- it has no click handler yet. Set it now.
-			if self.navEntries[specKey].button then
-				local selfRef = self
-				local k = specKey
-				self.navEntries[specKey].button:SetScript("OnClick", function()
-					selfRef:SelectCategory(k)
-				end)
-			end
+			self:AdoptPanel(panel)
 		end
 		if builder then
 			self.navEntries[specKey].builder = builder
@@ -650,20 +656,16 @@ function OptionsFrame:RegisterSpecPanel(classKey, specKey, specLabel, panel, bui
 		label = specLabel,
 		panel = panel,
 		parentKey = classKey,
-		children = nil,
-		collapsed = false,
+		children = {},
+		collapsed = true,
 		button = nil,
 		builder = builder,
+		isSpec = true,
 	}
 	table.insert(self.navEntries[classKey].children, specKey)
 
-	-- Re-parent the panel into content area, hide it
 	if panel then
-		panel:SetParent(self.contentArea)
-		panel:ClearAllPoints()
-		panel:SetAllPoints(self.contentArea)
-		ConfigureDragHandle(panel, self.mainFrame)
-		panel:Hide()
+		self:AdoptPanel(panel)
 	end
 
 	-- Populate compat shim so existing code referencing addonCategory.specs still works
@@ -672,11 +674,82 @@ function OptionsFrame:RegisterSpecPanel(classKey, specKey, specLabel, panel, bui
 	TRB.Details.addonCategory.specs[specKey] = { key = specKey, ID = specKey }
 end
 
+---Register one section of a panel under that panel's header or spec entry.
+---@param parentKey string
+---@param sectionKey string
+---@param label string
+---@param panel Frame # The panel holding the section
+---@return string key # The section's nav key
+function OptionsFrame:RegisterSection(parentKey, sectionKey, label, panel)
+	local key = parentKey .. ":" .. sectionKey
+	local parent = self.navEntries[parentKey]
+	if parent == nil or self.navEntries[key] then
+		return key
+	end
+	self.navEntries[key] = {
+		key = key,
+		label = label,
+		panel = panel,
+		section = sectionKey,
+		parentKey = parentKey,
+		children = nil,
+		collapsed = false,
+		button = nil,
+	}
+	table.insert(parent.children, key)
+	return key
+end
+
+---Moves a header's child to the end of its list.
+---@param parentKey string
+---@param childKey string
+function OptionsFrame:MoveChildToEnd(parentKey, childKey)
+	local parent = self.navEntries[parentKey]
+	if parent == nil or parent.children == nil then
+		return
+	end
+	for index, key in ipairs(parent.children) do
+		if key == childKey then
+			table.remove(parent.children, index)
+			table.insert(parent.children, childKey)
+			return
+		end
+	end
+end
+
 -- ─────────────────────────────────────────────────────────────────────
 -- Navigation
 -- ─────────────────────────────────────────────────────────────────────
 
----Select and show the given category/spec
+---The entry whose children a header row lists: its own, or its lone spec's, so a class with one spec has no spec tier.
+---@param entry TRB.Options.OptionsFrame.NavEntry
+---@return TRB.Options.OptionsFrame.NavEntry
+function OptionsFrame:GetNavDriver(entry)
+	if entry.isClass and entry.children ~= nil and #entry.children == 1 then
+		local only = self.navEntries[entry.children[1]]
+		if only ~= nil and only.isSpec then
+			return only
+		end
+	end
+	return entry
+end
+
+---Expands or collapses a header row, building its panel first where the sections it lists come from one.
+---@param key string
+function OptionsFrame:ToggleHeader(key)
+	local entry = self.navEntries[key]
+	if entry == nil then
+		return
+	end
+	local driver = self:GetNavDriver(entry)
+	if driver.panel == nil and driver.builder then
+		driver.builder()
+	end
+	driver.collapsed = not driver.collapsed
+	self:RefreshNav()
+end
+
+---Select and show the given category, section, or spec. A header or spec opens the section last shown under it.
 ---@param key string
 function OptionsFrame:SelectCategory(key)
 	if not self.navEntries[key] then
@@ -691,147 +764,152 @@ function OptionsFrame:SelectCategory(key)
 		entry.builder()
 	end
 
-	-- Hide current panel
-	if self.currentPanel then
+	if entry.children ~= nil and #entry.children > 0 then
+		local childKey = entry.lastChildKey
+		if childKey == nil or self.navEntries[childKey] == nil then
+			childKey = entry.children[1]
+		end
+		self:SelectCategory(childKey)
+		return
+	end
+
+	-- Sections of one panel swap inside it, so it stays shown.
+	if self.currentPanel and self.currentPanel ~= entry.panel then
 		self.currentPanel:Hide()
 	end
 	-- Clear active edit box tracking when switching panels
 	TRB.Frames.activeBarTextEditBox = nil
 	TRB.Frames.activeBarTextCursorPosition = nil
-	if self.selectedKey and self.navEntries[self.selectedKey] and self.navEntries[self.selectedKey].button then
-		self.navEntries[self.selectedKey].button.selectedTexture:Hide()
-	end
 
-	-- If this entry has a parent class header, expand it
-	if entry.parentKey and self.navEntries[entry.parentKey] then
-		self.navEntries[entry.parentKey].collapsed = false
+	-- Expand every header above this entry, and have each reopen on it.
+	local child = entry
+	while child.parentKey and self.navEntries[child.parentKey] do
+		local parent = self.navEntries[child.parentKey]
+		parent.collapsed = false
+		parent.lastChildKey = child.key
+		child = parent
 	end
 
 	-- Show new panel
+	local tabs = TRB.Functions.OptionsUi.Tabs
 	if entry.panel then
+		if entry.section ~= nil then
+			tabs:ShowSection(entry.panel, entry.section)
+		end
 		entry.panel:Show()
 		self.currentPanel = entry.panel
 	end
 	self.selectedKey = key
 
 	-- Show/hide the Bar Text Variables flyout based on the new panel's active tab
-	local barTextScrollChild = entry.panel and TRB.Functions.OptionsUi.Tabs:GetShownBarTextScrollChild(entry.panel, entry.panel.lastTabId)
-	if entry.panel and (entry.panel.lastTabId == "barText" or barTextScrollChild ~= nil) then
+	local host = entry.panel and tabs:GetActiveTabHost(entry.panel)
+	local barTextScrollChild = host and tabs:GetShownBarTextScrollChild(host, host.lastTabId)
+	if host and (host.lastTabId == "barText" or barTextScrollChild ~= nil) then
 		-- Swap to the new spec's variables panel
-		TRB.Functions.OptionsUi.Tabs:ActivateBarTextVariablesPanel(barTextScrollChild)
+		tabs:ActivateBarTextVariablesPanel(barTextScrollChild)
 	else
-		TRB.Functions.OptionsUi.Tabs:HideAllBarTextVariablesPanels()
-	end
-
-	-- Highlight the button
-	if entry.button then
-		entry.button.selectedTexture:Show()
+		tabs:HideAllBarTextVariablesPanels()
 	end
 
 	self:RefreshNav()
 end
 
----Render a list of nav keys into the scroll child and return the updated yOffset
+---Lays out one nav entry and everything listed under it, and returns the updated yOffset
+---@param key string
+---@param depth integer # 0 for the top level
+---@param yOffset number
+---@param shown boolean # False under a collapsed header
+---@return number
+function OptionsFrame:RenderNavEntry(key, depth, yOffset, shown)
+	local entry = self.navEntries[key]
+	if not entry then
+		return yOffset
+	end
+
+	local driver = self:GetNavDriver(entry)
+	local isHeader = driver.children ~= nil
+	local indent = depth * NAV_INDENT
+
+	if not shown then
+		if entry.button then
+			entry.button:Hide()
+		end
+	else
+		if not entry.button then
+			local iconInfo = nil
+			if entry.isClass then
+				iconInfo = GetNavIcon(entry.key, nil)
+			elseif entry.isSpec then
+				iconInfo = GetNavIcon(entry.parentKey, entry.key)
+			end
+			entry.button = CreateNavButton(self.navScrollChild, entry.label, indent, isHeader, iconInfo, depth == 0 and isHeader)
+			local selfRef = self
+			local k = entry.key
+			if isHeader then
+				entry.button:SetScript("OnClick", function()
+					selfRef:ToggleHeader(k)
+				end)
+			else
+				entry.button:SetScript("OnClick", function()
+					selfRef:SelectCategory(k)
+				end)
+			end
+		end
+
+		entry.button:SetPoint("TOPLEFT", self.navScrollChild, "TOPLEFT", 4 + indent, yOffset)
+		entry.button:SetWidth(NAV_WIDTH - 34 - indent)
+		entry.button:Show()
+
+		-- Update selected highlight
+		if self.selectedKey == key then
+			entry.button.selectedTexture:Show()
+		else
+			entry.button.selectedTexture:Hide()
+		end
+
+		-- Update arrow rotation: 0 = right-pointing (collapsed), -π/2 = down-pointing (expanded)
+		if entry.button.arrow then
+			entry.button.arrow:SetRotation(driver.collapsed and 0 or (-math.pi / 2))
+		end
+
+		-- Color spec text red when disabled
+		if driver.isSpec and driver.parentKey then
+			local specName = string.sub(driver.key, #driver.parentKey + 2)
+			local enabled = TRB.Data.settings
+				and TRB.Data.settings.core
+				and TRB.Data.settings.core.enabled
+				and TRB.Data.settings.core.enabled[driver.parentKey]
+				and TRB.Data.settings.core.enabled[driver.parentKey][specName]
+			if enabled == false then
+				entry.button.label:SetTextColor(1, 0.3, 0.3)
+			elseif depth == 0 then
+				entry.button.label:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
+			else
+				entry.button.label:SetTextColor(1, 1, 1)
+			end
+		end
+
+		yOffset = yOffset - NAV_BUTTON_HEIGHT - NAV_BUTTON_PAD
+	end
+
+	if driver.children then
+		local childrenShown = shown and not driver.collapsed
+		for _, childKey in ipairs(driver.children) do
+			yOffset = self:RenderNavEntry(childKey, depth + 1, yOffset, childrenShown)
+		end
+	end
+
+	return yOffset
+end
+
+---Render a list of top-level nav keys into the scroll child and return the updated yOffset
 ---@param keys string[]
 ---@param yOffset number
 ---@return number
 function OptionsFrame:RenderNavSection(keys, yOffset)
 	for _, topKey in ipairs(keys) do
-		local entry = self.navEntries[topKey]
-		if entry then
-			-- Create or update button
-			local isHeader = (entry.children ~= nil and #entry.children > 0)
-			if not entry.button then
-				local iconInfo = isHeader and GetNavIcon(entry.key, nil) or nil
-				entry.button = CreateNavButton(self.navScrollChild, entry.label, 0, isHeader, iconInfo)
-				if isHeader then
-					local selfRef = self
-					entry.button:SetScript("OnClick", function()
-						entry.collapsed = not entry.collapsed
-						selfRef:RefreshNav()
-					end)
-				elseif entry.panel then
-					local selfRef = self
-					local k = entry.key
-					entry.button:SetScript("OnClick", function()
-						selfRef:SelectCategory(k)
-					end)
-				end
-			end
-
-			entry.button:SetPoint("TOPLEFT", self.navScrollChild, "TOPLEFT", 4, yOffset)
-			entry.button:SetWidth(NAV_WIDTH - 34)
-			entry.button:Show()
-
-			-- Update selected highlight
-			if self.selectedKey == topKey then
-				entry.button.selectedTexture:Show()
-			else
-				entry.button.selectedTexture:Hide()
-			end
-
-			-- Update arrow rotation: 0 = right-pointing (collapsed), -π/2 = down-pointing (expanded)
-			if entry.button.arrow then
-				entry.button.arrow:SetRotation(entry.collapsed and 0 or (-math.pi / 2))
-			end
-
-			yOffset = yOffset - NAV_BUTTON_HEIGHT - NAV_BUTTON_PAD
-
-			-- Children (spec entries)
-			if entry.children and not entry.collapsed then
-				for _, childKey in ipairs(entry.children) do
-					local childEntry = self.navEntries[childKey]
-					if childEntry then
-						if not childEntry.button then
-						local childIconInfo = GetNavIcon(entry.key, childEntry.key)
-						childEntry.button = CreateNavButton(self.navScrollChild, childEntry.label, NAV_INDENT, false, childIconInfo)
-							local selfRef = self
-							local ck = childEntry.key
-							childEntry.button:SetScript("OnClick", function()
-								selfRef:SelectCategory(ck)
-							end)
-						end
-
-						childEntry.button:SetPoint("TOPLEFT", self.navScrollChild, "TOPLEFT", 4 + NAV_INDENT, yOffset)
-						childEntry.button:SetWidth(NAV_WIDTH - 34 - NAV_INDENT)
-						childEntry.button:Show()
-
-						if self.selectedKey == childKey then
-							childEntry.button.selectedTexture:Show()
-						else
-							childEntry.button.selectedTexture:Hide()
-						end
-
-						-- Color spec text red when disabled, white when enabled
-						if childEntry.button.label and childEntry.parentKey then
-							local specName = string.sub(childEntry.key, #childEntry.parentKey + 2)
-							local enabled = TRB.Data.settings
-								and TRB.Data.settings.core
-								and TRB.Data.settings.core.enabled
-								and TRB.Data.settings.core.enabled[childEntry.parentKey]
-								and TRB.Data.settings.core.enabled[childEntry.parentKey][specName]
-							if enabled == false then
-								childEntry.button.label:SetTextColor(1, 0.3, 0.3)
-							else
-								childEntry.button.label:SetTextColor(1, 1, 1)
-							end
-						end
-
-						yOffset = yOffset - NAV_BUTTON_HEIGHT - NAV_BUTTON_PAD
-					end
-				end
-			elseif entry.children then
-				-- Collapsed: hide child buttons
-				for _, childKey in ipairs(entry.children) do
-					local childEntry = self.navEntries[childKey]
-					if childEntry and childEntry.button then
-						childEntry.button:Hide()
-					end
-				end
-			end
-		end
+		yOffset = self:RenderNavEntry(topKey, 0, yOffset, true)
 	end
-
 	return yOffset
 end
 

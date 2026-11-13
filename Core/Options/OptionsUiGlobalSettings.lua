@@ -22,7 +22,7 @@ local globalSettingDefinitions = {
 	textColors      = { checkboxSuffix = "textColors",      tabKey = "fontText",        sectionLabel = L["CopyMenuSection_textColors"],      paths = { {"colors", "text"} } },
 	precision       = { checkboxSuffix = "precision",       tabKey = "fontText",        sectionLabel = L["CopyMenuSection_precision"],       paths = { {"precision"} } },
 	globalBarText   = { checkboxSuffix = "globalBarText",   tabKey = "barText",         sectionLabel = L["CopyMenuSection_globalBarText"],   paths = { {"displayText", "barText"} }, shapeSensitive = true },
-	-- Castbar sections live on the top-level "Castbar" nav category, not the Global Options panel;
+	-- Castbar sections live on Global Options' Cast Bars screen, not the Global Options panel;
 	-- useGlobalLabel gives their checkboxes distinct wording so users aren't sent looking in the
 	-- normal Global Options frame. Field-level paths so copies never clobber spec-only data
 	-- (enabled, tickProfiles).
@@ -74,7 +74,7 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "breath", "width"}, {"bars", "breath", "height"}, {"bars", "breath", "border"}, {"bars", "breath", "xPos"}, {"bars", "breath", "yPos"}, {"bars", "breath", "anchor"}, {"bars", "breath", "fillDirection"} } },
 	breathColors         = { checkboxSuffix = "breathColors",         tabKey = "breath",     categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_breathColors"],
 		paths = { {"colors", "bars", "breath", "bar"}, {"colors", "bars", "breath", "border"}, {"colors", "bars", "breath", "background"}, {"colors", "bars", "breath", "endCap"}, {"bars", "breath", "disableBlizzardBar"} } },
-	-- Pet bar sections live on the top-level "Pet Bars" nav category, two per bar. Whole-table paths, not
+	-- Pet bar sections live on Global Options' Pet Bars screen, two per bar. Whole-table paths, not
 	-- field-level: these tables carry nothing spec-only, so there is no spec data for a copy to clobber.
 	petPowerDimensions   = { checkboxSuffix = "petPowerDimensions",   tabKey = "petPower",   categoryKey = "petBars", barKey = "petPower", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petPowerDimensions"],
 		paths = { {"bars", "petPower"} } },
@@ -84,7 +84,7 @@ local globalSettingDefinitions = {
 		paths = { {"bars", "petHealth"} } },
 	petHealthColors      = { checkboxSuffix = "petHealthColors",      tabKey = "petHealth",  categoryKey = "petBars", barKey = "petHealth", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petHealthColors"],
 		paths = { {"colors", "bars", "petHealth"} } },
-	-- The Totems bar's sections live on the top-level "Totems" nav category. Whole tables, as for the pet bars.
+	-- The Totems bar's sections live on Global Options' Totems screen. Whole tables, as for the pet bars.
 	totemsDimensions     = { checkboxSuffix = "totemsDimensions",     tabKey = "totems",     categoryKey = "totems", barKey = "totems", useGlobalLabel = L["CheckboxUseGlobalTotems"], sectionLabel = L["CopyMenuSection_totemsDimensions"],
 		paths = { {"bars", "totems"} } },
 	totemsColors         = { checkboxSuffix = "totemsColors",         tabKey = "totems",     categoryKey = "totems", barKey = "totems", useGlobalLabel = L["CheckboxUseGlobalTotems"], sectionLabel = L["CopyMenuSection_totemsColors"],
@@ -134,7 +134,7 @@ for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
 		paths = colorPaths }
 end
 
--- Skyriding sections live on the top-level "Skyriding" nav category, two per bar, swapping whole tables like the pet bars'.
+-- Skyriding sections live on Global Options' Skyriding screen, two per bar, swapping whole tables like the pet bars'.
 local skyridingSectionLabels = {
 	skyridingSpeedDimensions = L["CopyMenuSection_skyridingSpeedDimensions"],
 	skyridingSpeedColors = L["CopyMenuSection_skyridingSpeedColors"],
@@ -549,11 +549,11 @@ function TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox(
 end
 
 ---Creates a teal hyperlink-style text button anchored to the right of a "Use global settings" checkbox.
----Clicking the link navigates to the Global Options panel (or another top-level category, e.g. the
----Castbar screen) and selects the corresponding tab.
+---Clicking the link navigates to the Global Options panel (or another of its screens, e.g. Cast Bars)
+---and selects the corresponding tab.
 ---@param checkbox CheckButton|TRB.Classes.OptionsUi.UseGlobalCheckbox The "Use global settings" checkbox to attach the link to
 ---@param globalTabKey string The tab key to navigate to (e.g., "resourceBar", "barTextures", "castbar")
----@param categoryKey string? The top-level nav category holding the tab (defaults to "global")
+---@param categoryKey string? The nav category holding the tab (defaults to "global")
 ---@return TRB.Classes.OptionsUi.UseGlobalLink|nil link The created link button, or nil when the checkbox has no text region
 function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(checkbox, globalTabKey, categoryKey)
 	local textRegion = _G[checkbox:GetName() .. "Text"]
@@ -561,8 +561,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		return nil
 	end
 
-	-- The Castbar and Other Bars categories have their own wording so it's clear the link opens that
-	-- screen, not the normal Global Options frame.
+	-- Each grouping's screen has its own wording so it's clear the link opens that screen, not the Global Options panel.
 	local navKey = categoryKey or "global"
 	local linkText = L["OpenGlobalSettings"]
 	local linkTooltip = L["OpenGlobalSettingsTooltip"]
@@ -624,13 +623,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalShortcutLink(check
 		if TRB.Options.OptionsFrame then
 			TRB.Options.OptionsFrame:SelectCategory(navKey)
 			C_Timer.After(0, function()
-				local targetKey = tabKey or globalTabKey
-				if navKey == "global" and targetKey == TRB.Functions.OptionsUi.Tabs.TabKeys.BarVisibility then
-					-- Visibility holds a strip of its own, with the bars on its Bar Display tab.
-					TRB.Functions.OptionsUi.Tabs:SwitchToGlobalVisibilityTab()
-				else
-					TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(tabNamePrefix, targetKey)
-				end
+				TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(tabNamePrefix, tabKey or globalTabKey)
 			end)
 		end
 	end

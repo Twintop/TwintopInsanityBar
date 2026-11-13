@@ -42,6 +42,17 @@ TRB.Details.coreNewsContent = [====[
 - [#980 - @MOSS099](#980) Updated translations for Simplified Chinese (zhCN).
 - [#984 - @MOSS099](#984) Updated translations for Simplified Chinese (zhCN).
 
+## Options
+
+- [#996](#996) The options menu lists sections under Global Options and under each specialization, each holding its own tabs: General, Visibility and Behavior, Thresholds, Custom Bars, Cast Bars, Timer Bars, Pet Bars, Skyriding, and Reset Defaults.
+- [#996](#996) A class with one specialization lists these sections directly under the class.
+- [#996](#996) General holds each bar's tab. Visibility and Behavior holds Visibility, Textures, Color Indicators, Audio Cues, Font & Text, and Bar Text. Thresholds holds Threshold Shared Settings, Threshold Lines, and Custom Thresholds.
+- [#996](#996) Move the screens that were listed beside Global Options under it.
+- [#996](#996) Rename Other Bars to Timer Bars.
+- [#996](#996) Add an IO and Profiles group to the options menu, holding Import/Export and Profile Defaults.
+- [#996](#996) Global Options' Bar Display and Manage Presets are tabs of Visibility and Behavior.
+- [#996](#996) Remove the Textures, Visibility, and Bar Text tabs of a specialization's own Totems bar. Its tab is in General, and the specialization's Textures, Visibility, and Bar Text tabs list it.
+
 ## Preview Mode
 
 - [#973](#973) Add a Preview Mode checkbox to the top of the options window, showing every bar that isn't set to Never Show, with each Bar Text Area showing its name.

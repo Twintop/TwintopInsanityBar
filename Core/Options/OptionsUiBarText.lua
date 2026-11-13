@@ -117,7 +117,8 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	controls.checkBoxes = controls.checkBoxes or {}
 	-- Re-reads the flag into this tab's box, so a click on a sibling tab's box shows here too.
 	local RefreshUseGlobalCheckbox = function() end
-	if classId ~= nil and specId ~= nil then
+	-- Custom bars belong to their specialization, so their bar text has no Global Options to follow.
+	if classId ~= nil and specId ~= nil and groupKey ~= "customBars" then
 		local lowerClassName = string.lower(className)
 		-- SetAllSpecsGlobalSetting finds the spec tab's box by name; the other tabs' boxes follow through the registry.
 		local checkboxName = "TwintopResourceBar_" .. className .. "_" .. specName .. "_useGlobal_globalBarText" .. (groupKey == "spec" and "" or "_" .. groupKey)
@@ -485,13 +486,13 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	---Whether a bar text entry belongs on this tab: a grouping's tab lists the text bound to its bars, and the spec tab
 	---lists the rest plus the text on the screen, or everything when the include-all box is ticked.
 	---@param groupOfEntry string
-	---@param entryCatalog TRB.Classes.BarTextAnchorCatalog? # The catalog the entry's bar comes from
+	---@param isEntry boolean? # True for a bar text entry, whose grouping this scope may have no tab for
 	---@return boolean
-	local function IsGroupListed(groupOfEntry, entryCatalog)
+	local function IsGroupListed(groupOfEntry, isEntry)
 		if groupKey == "spec" then
-			-- Text bound to a bar this scope has no tab for, like pet bar text copied to a spec without a pet, stays listed here.
+			-- Text bound to a bar this scope has no tab for stays listed here: pet bar text copied to a spec without a pet, or Global Bar Text on a Totem slot.
 			return includeAllGroups[scopeKey] == true or groupOfEntry == "spec" or groupOfEntry == "screen"
-				or (entryCatalog ~= nil and not entryCatalog.groups[groupOfEntry])
+				or (isEntry == true and not catalog.groups[groupOfEntry])
 		end
 		return groupOfEntry == groupKey
 	end
@@ -872,7 +873,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		local function AddRow(barTextEntry, isGlobal)
 			NormalizeBarTextEntryColor(barTextEntry)
 			local entryCatalog = isGlobal and globalCatalog or catalog
-			if not IsGroupListed(TRB.Functions.BarText:GetEntryGroupKey(barTextEntry, entryCatalog), entryCatalog) then
+			if not IsGroupListed(TRB.Functions.BarText:GetEntryGroupKey(barTextEntry, entryCatalog), true) then
 				return
 			end
 			listedEntries[#listedEntries + 1] = barTextEntry

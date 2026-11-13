@@ -124,12 +124,6 @@ local function ConstructBarVisibilityPanel(parent)
 	yCoord = TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, spec, nil, nil, yCoord, L["Resource"], "notFull", true, L["ResourceComboPoints"], true, nil, customBars)
 end
 
----Constructs Global Options' Visibility tab: a strip holding the Bar Display and Manage Presets tabs.
----@param parent Frame The Visibility tab's container frame
-local function ConstructVisibilityTabGroup(parent)
-	TRB.Functions.OptionsUi.Tabs:BuildGlobalVisibilityInnerTabGroup(parent, ConstructBarVisibilityPanel)
-end
-
 ---Constructs the threshold line color and icon options panel in the global options UI.
 ---@param parent Frame The parent frame to anchor UI elements to
 local function ConstructThresholdPanel(parent)
@@ -649,7 +643,7 @@ local function ConstructGlobalBarTextPanel(parent)
 	TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls, TRB.Data.settings.core, nil, nil, yCoord, TRB.Functions.OptionsUi.BarText:GetGlobalVariablesCache())
 end
 
----Constructs the global options panel with all tab groups (resource bar, combo points, health, textures, visibility, thresholds, font/text, bar text, miscellaneous, reset defaults) and registers it with the addon's options frame.
+---Constructs the global options panel, whose tabs (resource bar, combo points, health, textures, visibility, thresholds, font/text, bar text, miscellaneous, reset defaults) are split into the sections listed under the Global Options nav header.
 local function ConstructGlobalOptionsPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local parent = interfaceSettingsFrame.panel
@@ -665,7 +659,8 @@ local function ConstructGlobalOptionsPanel()
 	controls.buttons = controls.buttons or {}
 	
 	interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General")
-	TRB.Options.OptionsFrame:RegisterCategory("global", L["GlobalOptions"], interfaceSettingsFrame.optionsPanel)
+	TRB.Options.OptionsFrame:RegisterHeader("global", L["GlobalOptions"])
+	TRB.Options.OptionsFrame:AdoptPanel(interfaceSettingsFrame.optionsPanel)
 
 	parent = interfaceSettingsFrame.optionsPanel
 
@@ -676,7 +671,7 @@ local function ConstructGlobalOptionsPanel()
 
 	yCoord = yCoord - 37
 
-	-- Must assign controls before BuildTabGroup, since constructors read interfaceSettingsFrame.controls.global
+	-- Must assign controls before the tabs are built, since constructors read interfaceSettingsFrame.controls.global
 	TRB.Frames.interfaceSettingsFrameContainer.controls.global = controls
 
 	local tabDefinitions = {
@@ -685,7 +680,10 @@ local function ConstructGlobalOptionsPanel()
 		{ "healthBar", L["TabHealth"], oUi.tabWidth.small, ConstructHealthBarPanel, visibilityKey = "health" },
 		TRB.Functions.OptionsUi.Glows:BuildTabDefinition(controls),
 		{ "barTextures", L["TabTextures"], oUi.tabWidth.small, ConstructBarTexturesPanel },
-		{ "barVisibility", L["TabVisibility"], oUi.tabWidth.small, ConstructVisibilityTabGroup, true },
+		{ "barVisibility", L["TabBarDisplay"], oUi.tabWidth.small, ConstructBarVisibilityPanel },
+		{ TRB.Functions.OptionsUi.Tabs.TabKeys.VisibilityPresets, L["TabManagePresets"], oUi.tabWidth.small, function(scrollChild)
+			TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(scrollChild, nil, nil, "presets")
+		end },
 		{ "thresholds", L["TabThresholds"], oUi.tabWidth.large, ConstructThresholdPanel },
 		{ "fontText", L["TabFontText"], oUi.tabWidth.medium, ConstructFontAndTextPanel },
 		{ "barText", L["TabBarText"], oUi.tabWidth.small, ConstructGlobalBarTextPanel },
@@ -693,12 +691,12 @@ local function ConstructGlobalOptionsPanel()
 		{ "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, ConstructResetDefaultsPanel },
 	}
 
-	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, "Global", tabDefinitions, yCoord)
+	TRB.Functions.OptionsUi.Tabs:BuildSectionedTabGroup(parent, "Global", tabDefinitions, yCoord, "global")
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 end
 
----Constructs the top-level Castbar options panel: global (core-scope) castbar settings in a tabbed
+---Constructs Global Options' Cast Bars panel: global (core-scope) castbar settings in a tabbed
 ---screen like Global Options, including the same core-scope (Global) profile dropdown.
 local function ConstructCastbarOptionsPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
@@ -709,7 +707,7 @@ local function ConstructCastbarOptionsPanel()
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.castbarPanel = CreateFrame("Frame", "TwintopResourceBar_Options_CastbarPanel")
-	TRB.Options.OptionsFrame:RegisterCategory("castbar", L["TabCastbars"], interfaceSettingsFrame.castbarPanel)
+	TRB.Options.OptionsFrame:RegisterCategory("castbar", L["TabCastbars"], interfaceSettingsFrame.castbarPanel, "global")
 
 	local parent = interfaceSettingsFrame.castbarPanel
 
@@ -737,7 +735,7 @@ local function ConstructCastbarOptionsPanel()
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("castbar"), tabDefinitions, -37)
 end
 
----Constructs the top-level Other Bars options panel: global (core-scope) settings for the GCD bar and
+---Constructs Global Options' Timer Bars panel: global (core-scope) settings for the GCD bar and
 ---the Fatigue/Breath/Death/Feign Death mirror timers, in a tabbed screen like the Castbar one.
 local function ConstructOtherBarsOptionsPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
@@ -748,7 +746,7 @@ local function ConstructOtherBarsOptionsPanel()
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.otherBarsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_OtherBarsPanel")
-	TRB.Options.OptionsFrame:RegisterCategory("otherBars", L["TabOtherBars"], interfaceSettingsFrame.otherBarsPanel)
+	TRB.Options.OptionsFrame:RegisterCategory("otherBars", L["TabOtherBars"], interfaceSettingsFrame.otherBarsPanel, "global")
 
 	local parent = interfaceSettingsFrame.otherBarsPanel
 
@@ -780,8 +778,8 @@ local function ConstructOtherBarsOptionsPanel()
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("otherBars"), tabDefinitions, -37)
 end
 
----Constructs the top-level Pet Bars panel: global settings for the Pet Resource and Pet Health bars, tabbed
----like Other Bars. The Pet Cast Bar is configured under Cast Bars instead.
+---Constructs Global Options' Pet Bars panel: global settings for the Pet Resource and Pet Health bars, tabbed
+---like Timer Bars. The Pet Cast Bar is configured under Cast Bars instead.
 local function ConstructPetBarsOptionsPanel()
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	local controls = interfaceSettingsFrame.controls.core or {}
@@ -791,7 +789,7 @@ local function ConstructPetBarsOptionsPanel()
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.petBarsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_PetBarsPanel")
-	TRB.Options.OptionsFrame:RegisterCategory("petBars", L["TabPetBars"], interfaceSettingsFrame.petBarsPanel)
+	TRB.Options.OptionsFrame:RegisterCategory("petBars", L["TabPetBars"], interfaceSettingsFrame.petBarsPanel, "global")
 
 	local parent = interfaceSettingsFrame.petBarsPanel
 
@@ -822,7 +820,7 @@ local function ConstructPetBarsOptionsPanel()
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("petBars"), tabDefinitions, -37)
 end
 
----Constructs the top-level Totems panel: Global Options' Totems bar, which the specs with totems can follow. Only a
+---Constructs Global Options' Totems panel: its Totems bar, which the specs with totems can follow. Only a
 ---flavor where the bar has a global scope gets it.
 local function ConstructTotemsOptionsPanel()
 	if not TRB.Classes.BarTypeRegistry:HasGlobalTotems() then
@@ -836,7 +834,7 @@ local function ConstructTotemsOptionsPanel()
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.totemsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_TotemsPanel")
-	TRB.Options.OptionsFrame:RegisterCategory("totems", L["ResourceTotems"], interfaceSettingsFrame.totemsPanel)
+	TRB.Options.OptionsFrame:RegisterCategory("totems", L["ResourceTotems"], interfaceSettingsFrame.totemsPanel, "global")
 
 	local parent = interfaceSettingsFrame.totemsPanel
 
@@ -860,7 +858,7 @@ local function ConstructTotemsOptionsPanel()
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("totems"), tabDefinitions, -37)
 end
 
----Constructs the top-level Skyriding panel: global settings for the Skyriding bars, tabbed like Other Bars. Only
+---Constructs Global Options' Skyriding panel: global settings for the Skyriding bars, tabbed like Timer Bars. Only
 ---a flavor with skyriding gets it.
 local function ConstructSkyridingOptionsPanel()
 	if #TRB.Classes.BarTypeRegistry.skyridingBarKeys == 0 then
@@ -874,7 +872,7 @@ local function ConstructSkyridingOptionsPanel()
 	controls.buttons = controls.buttons or {}
 
 	interfaceSettingsFrame.skyridingPanel = CreateFrame("Frame", "TwintopResourceBar_Options_SkyridingPanel")
-	TRB.Options.OptionsFrame:RegisterCategory("skyriding", L["TabSkyriding"], interfaceSettingsFrame.skyridingPanel)
+	TRB.Options.OptionsFrame:RegisterCategory("skyriding", L["TabSkyriding"], interfaceSettingsFrame.skyridingPanel, "global")
 
 	local parent = interfaceSettingsFrame.skyridingPanel
 
@@ -958,7 +956,7 @@ local function ConstructImportExportPanel()
 	interfaceSettingsFrame.importExportPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport")
 	TRB.Options.OptionsFrame:RegisterCategory("importExport",
 		string.format("%s/%s", L["Import"], L["Export"]),
-		interfaceSettingsFrame.importExportPanel)
+		interfaceSettingsFrame.importExportPanel, "ioProfiles")
 
 	local topPanel = interfaceSettingsFrame.importExportPanel
 
@@ -2043,7 +2041,7 @@ local function ConstructProfileDefaultsPanel()
 	interfaceSettingsFrame.profileDefaultsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ProfileDefaults")
 	TRB.Options.OptionsFrame:RegisterCategory("profileDefaults",
 		L["ProfileDefaults"],
-		interfaceSettingsFrame.profileDefaultsPanel)
+		interfaceSettingsFrame.profileDefaultsPanel, "ioProfiles")
 
 	local topPanel = interfaceSettingsFrame.profileDefaultsPanel
 
@@ -2258,12 +2256,13 @@ function TRB.Options:ConstructOptionsPanel()
 	ConstructPetBarsOptionsPanel()
 	ConstructTotemsOptionsPanel()
 	ConstructSkyridingOptionsPanel()
+	-- The shared groupings' screens register after Global Options' own sections, and Reset Defaults closes the list.
+	TRB.Options.OptionsFrame:MoveChildToEnd("global", "global:resetDefaults")
+	TRB.Options.OptionsFrame:RegisterHeader("ioProfiles", L["NavIOAndProfiles"])
 	ConstructImportExportPanel()
 	ConstructProfileDefaultsPanel()
 
-	-- Register all class headers and spec nav entries (with nil panels).
-	-- The active class's ConstructOptionsPanel will update its specs with real panels via RegisterSpecPanel.
-	-- Non-active classes appear in the nav but have no panels until lazy loading is implemented.
+	-- Every class and spec is listed up front; a spec's panel and sections are built when it is first opened.
 	TRB.Options:RegisterAllClassSpecNavEntries()
 
 	TRB.Options.OptionsFrame:RefreshNav()

@@ -615,7 +615,7 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 	yCoord = yCoord - 28
 
 	-- ===== The table =====
-	-- Narrow enough, with the last column at its minimum, to fit a grouping's tab nested inside a specialization's.
+	-- Narrow enough, with the last column at its minimum, to fit a grouping's tab on a specialization's panel.
 	local columns = {
 		{ ["name"] = "Key", ["width"] = 1, ["align"] = "CENTER" },
 		{ ["name"] = L["BarTexturesTableHeaderBar"], ["width"] = 170, ["align"] = "LEFT" },
