@@ -66,7 +66,8 @@ local L = TRB.Localization
 ---@field public currentSpellId integer? # A Cooldown Manager ability's spell now, after any talent replacing it
 ---@field public untimed boolean? # Whether a typed buff with no duration is drawn full while it is up
 ---@field public valueDriven boolean? # Whether the timer's fill is being written as values
----@field public engineNode TRB.Classes.BarNode? # The node the aura engine fills
+---@field public engineToken string? # Names the bar and source the aura engine fills its node for
+---@field public auraIds integer[]? # A Cooldown Manager aura's spell IDs, its own first
 ---@field public harmful boolean? # Whether a Cooldown Manager aura is a debuff on the target, not a buff on the player
 ---@field public version integer?
 ---@field public count number?
@@ -92,8 +93,8 @@ CustomBars.segmentedAutoMax = 10
 ---@field public GetIdSources (fun(spellId: integer): TRB.Classes.CustomBarSourceOption[])? # What a spell ID the user typed can be tracked as; a provider with this takes typed IDs
 ---@field public WritesTimerValues (fun(source: TRB.Classes.Settings.CustomBarSource): boolean)? # Whether a timer's fill is written as values, which Smooth acts on
 ---@field public HasSecretCounts (fun(source: TRB.Classes.Settings.CustomBarSource): boolean)? # Whether a count can be secret
----@field public GetSourceNote (fun(source: TRB.Classes.Settings.CustomBarSource): string?)? # A short state the bars table adds, such as Not Tracked
----@field public GetOptionsNote (fun(source: TRB.Classes.Settings.CustomBarSource): string?)? # A sentence a bar's options show under Tracks
+---@field public GetSourceNote (fun(classId: integer, specId: integer, source: TRB.Classes.Settings.CustomBarSource): string?)? # A short state the bars table adds, such as Not Tracked
+---@field public GetOptionsNote (fun(classId: integer, specId: integer, source: TRB.Classes.Settings.CustomBarSource): string?)? # A sentence a bar's options show under Tracks
 ---@field public promptText string? # What the spell ID prompt asks for
 ---@field public noSourcesText string? # Format for the message when a typed spell has nothing to track
 ---@field public GetSources fun(classId: integer?, specId: integer?): TRB.Classes.CustomBarSourceOption[] # What it offers a specialization, unsorted
@@ -124,16 +125,18 @@ function CustomBars:GetProviderLabel(name)
 end
 
 ---A short state the bars table adds to what a bar tracks, such as Not Tracked, and a sentence for its options.
+---@param classId integer
+---@param specId integer
 ---@param source TRB.Classes.Settings.CustomBarSource
 ---@return string? tableNote
 ---@return string? optionsNote
-function CustomBars:GetSourceNotes(source)
+function CustomBars:GetSourceNotes(classId, specId, source)
 	local provider = providers[source.provider or self.defaultProvider]
 	if provider == nil then
 		return nil, nil
 	end
-	return provider.GetSourceNote ~= nil and provider.GetSourceNote(source) or nil,
-		provider.GetOptionsNote ~= nil and provider.GetOptionsNote(source) or nil
+	return provider.GetSourceNote ~= nil and provider.GetSourceNote(classId, specId, source) or nil,
+		provider.GetOptionsNote ~= nil and provider.GetOptionsNote(classId, specId, source) or nil
 end
 
 ---The provider that reads a source, or nil for one this version doesn't have.
@@ -946,6 +949,7 @@ local function EnsureRuntime()
 					spellId = bar.source.spellId,
 					isTimer = not CustomBars:IsCountKind(kind),
 					fillRecharge = CustomBars:FillsRecharge(bar),
+					engineToken = guid .. ":" .. kind .. ":" .. tostring(bar.source.cooldownID or bar.source.spellId),
 					timeVar = "$" .. key .. "Time",
 					stacksVar = "$" .. key .. "Stacks",
 					stacksMaxVar = "$" .. key .. "StacksMax",
@@ -1775,6 +1779,32 @@ local function ReadCdmCount(entry)
 	return applications, true
 end
 
+---A Cooldown Manager aura's spell IDs and side, read once per bar: its linked aura spells lead, and the first decides
+---whether it is a debuff on the target.
+---@param entry TRB.Classes.CustomBarRuntime
+---@return integer[]
+local function GetCdmAuraIds(entry)
+	local auraIds = entry.auraIds
+	if auraIds == nil then
+		-- An entry with no spell of its own, such as a trinket's, has nothing for the engine to find.
+		auraIds = entry.spellId > 0 and TRB.Functions.CooldownManager:GetAuraSpellIds(entry.bar.source.cooldownID, entry.spellId) or {}
+		entry.auraIds = auraIds
+		entry.harmful = auraIds[1] ~= nil and C_Spell.IsSpellHarmful(auraIds[1]) == true
+	end
+	return auraIds
+end
+
+-- The token of the bar each node's aura engine binding was made for; a node drawn for anything else is handed back.
+---@type table<TRB.Classes.BarNode, string>
+local engineOwners = setmetatable({}, { __mode = "k" })
+
+---Takes a node back from the aura engine.
+---@param node TRB.Classes.BarNode
+local function ParkEngine(node)
+	TRB.Functions.AuraEngine:Park(node)
+	engineOwners[node] = nil
+end
+
 ---Draws a buff's timer. In Tracked Bars the viewer's own remaining time is written to the bar, which keeps End Cap
 ---and Smooth; anywhere else the aura engine fills it from the buff itself.
 ---@param entry TRB.Classes.CustomBarRuntime
@@ -1786,9 +1816,8 @@ local function RenderCdmTimer(entry, node, redraw)
 	local cooldownID = entry.bar.source.cooldownID
 	entry.active = (IsCdmAuraActive(entry)) == true
 	if CDM:GetCooldownSourceKind(cooldownID) == CDM.SourceKind.BUFF_BAR then
-		if entry.engineNode ~= nil then
-			AuraEngine:Detach(entry.engineNode)
-			entry.engineNode = nil
+		if node.engineDriven then
+			ParkEngine(node)
 			redraw = true
 		end
 		---@type boolean, any, any
@@ -1816,21 +1845,24 @@ local function RenderCdmTimer(entry, node, redraw)
 		entry.valueDriven = false
 		ClearNode(node)
 	end
-	-- An entry with no spell of its own has nothing for the engine to find.
-	if entry.spellId > 0 then
+	local auraIds = GetCdmAuraIds(entry)
+	if auraIds[1] ~= nil then
 		-- The layout doesn't say which side an aura is on; the spell does.
-		if entry.harmful == nil then
-			entry.harmful = C_Spell.IsSpellHarmful(entry.spellId) == true
-		end
 		local unit, filter = "player", "HELPFUL"
 		if entry.harmful then
 			unit, filter = "target", "HARMFUL|PLAYER"
 		end
-		if AuraEngine:Attach(node, unit, filter, entry.spellId) then
-			entry.engineNode = node
+		AuraEngine:Attach(node, unit, filter, auraIds[1], auraIds[2], auraIds[3], auraIds[4])
+		if node.engineDriven then
+			engineOwners[node] = entry.engineToken
 		end
-	elseif redraw then
-		ClearNode(node)
+	else
+		if node.engineDriven then
+			ParkEngine(node)
+		end
+		if redraw then
+			ClearNode(node)
+		end
 	end
 end
 
@@ -1860,7 +1892,9 @@ cdmProvider.ReadMax = function(classId, specId, source)
 	if not IsCdmBuff(source) then
 		return cdmAbility.ReadMax(classId, specId, source)
 	end
-	local max = source.kind == CustomBars.kinds.buffStacks and source.spellId > 0 and C_Spell.GetSpellMaxCumulativeAuraApplications(source.spellId) or nil
+	local auraId = source.kind == CustomBars.kinds.buffStacks and source.spellId > 0
+		and TRB.Functions.CooldownManager:GetAuraSpellIds(source.cooldownID, source.spellId)[1] or nil
+	local max = auraId ~= nil and C_Spell.GetSpellMaxCumulativeAuraApplications(auraId) or nil
 	if max ~= nil and not issecretvalue(max) and max > 1 then
 		return max
 	end
@@ -1913,9 +1947,18 @@ cdmProvider.Render = function(entry, group, node, settings, now, redraw)
 	RenderCount(entry, group, settings, (ReadCdmCount(entry)), knownMax[entry.key] or entry.bar.maxCount or 1, redraw, true)
 	return false
 end
-cdmProvider.GetSourceNote = function(source)
+---Whether a panel is the played specialization's, the only one the layout describes.
+---@param classId integer
+---@param specId integer
+---@return boolean
+local function IsPlayedSpec(classId, specId)
+	local character = TRB.Data.character
+	return character ~= nil and character.classId == classId and character.specId == specId
+end
+
+cdmProvider.GetSourceNote = function(classId, specId, source)
 	local CDM = TRB.Functions.CooldownManager
-	if not IsCdmBuff(source) or CDM:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
+	if not IsCdmBuff(source) or not IsPlayedSpec(classId, specId) or CDM:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
 		return nil
 	end
 	local layoutEntry = GetCdmLayoutEntry(source.cooldownID)
@@ -1925,16 +1968,17 @@ cdmProvider.GetSourceNote = function(source)
 	end
 	return nil
 end
-cdmProvider.GetOptionsNote = function(source)
+cdmProvider.GetOptionsNote = function(classId, specId, source)
 	local CDM = TRB.Functions.CooldownManager
-	if source.kind ~= CustomBars.kinds.buffTime or CDM:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
+	if source.kind ~= CustomBars.kinds.buffTime or not IsPlayedSpec(classId, specId) or CDM:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
 		return nil
 	end
 	local layoutEntry = GetCdmLayoutEntry(source.cooldownID)
 	if layoutEntry == nil or not layoutEntry.displayed then
 		return layoutEntry ~= nil and CDM:IsEntryTracked(layoutEntry) and L["CustomBarsCdmEngineNote"] or L["CustomBarsCdmNotDisplayedNote"]
 	end
-	if CDM:GetCooldownSourceKind(source.cooldownID) ~= CDM.SourceKind.BUFF_BAR then
+	-- From the layout, since a viewer set to show only in combat is hidden while the options are open.
+	if not CDM:IsInTrackedBars(source.cooldownID) then
 		return L["CustomBarsCdmEngineNote"]
 	end
 	return nil
@@ -1962,7 +2006,8 @@ cdmProvider.GetSources = function(classId, specId)
 		local section = cdmBuffSections[layoutEntry.group]
 		if layoutEntry.name ~= nil and section ~= nil then
 			local offered = { kinds.buffTime }
-			local max = layoutEntry.spellID ~= nil and C_Spell.GetSpellMaxCumulativeAuraApplications(layoutEntry.spellID) or nil
+			local auraId = layoutEntry.spellID ~= nil and CDM:GetAuraSpellIds(layoutEntry.cooldownID, layoutEntry.spellID)[1] or nil
+			local max = auraId ~= nil and C_Spell.GetSpellMaxCumulativeAuraApplications(auraId) or nil
 			if max ~= nil and not issecretvalue(max) and max > 1 then
 				offered[#offered + 1] = kinds.buffStacks
 			end
@@ -2216,6 +2261,10 @@ function CustomBars:Render()
 			local redraw = entry.frame ~= node.frame or entry.layout ~= layout
 			entry.frame = node.frame
 			entry.layout = layout
+			if node.engineDriven and engineOwners[node] ~= entry.engineToken then
+				ParkEngine(node)
+				redraw = true
+			end
 			needsLayout = entry.provider.Render(entry, group, node, settings, now, redraw) or needsLayout
 			activityChanged = activityChanged or entry.active ~= wasActive
 			timerActive = timerActive or (entry.isTimer and entry.active) or entry.recharging == true

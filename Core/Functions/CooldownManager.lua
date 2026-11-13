@@ -1235,6 +1235,50 @@ function CDM:IsEntryTracked(entry)
 	return false
 end
 
+---Whether the user's layout puts an entry in Tracked Bars, whether or not that viewer is shown right now.
+---@param cooldownID integer
+---@return boolean
+function CDM:IsInTrackedBars(cooldownID)
+	local displayData = GetDisplayData()
+	local trackedBar = Enum.CooldownViewerCategory ~= nil and Enum.CooldownViewerCategory.TrackedBar or nil
+	if displayData == nil or trackedBar == nil or not TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		return false
+	end
+	local info = displayData.cooldownInfoByID[cooldownID]
+	local category = type(info) == "table" and info.category or nil
+	return category ~= nil and not issecretvalue(category) and category == trackedBar
+end
+
+---The spell IDs an entry's aura can land under, the aura's own first: its linked spells, then its override and its
+---spell, which are often the ability applying it (Coagulating Blood rides on Death Strike).
+---@param cooldownID integer
+---@param spellId integer? # The entry's spell, used when its metadata can't be read
+---@return integer[]
+function CDM:GetAuraSpellIds(cooldownID, spellId)
+	local ids = {}
+	local function Add(id)
+		if TRB.Functions.Number:IsPlainNumber(id) and id > 0 and not tContains(ids, id) then
+			ids[#ids + 1] = id
+		end
+	end
+	local getInfo = C_CooldownViewer ~= nil and C_CooldownViewer.GetCooldownViewerCooldownInfo or nil
+	if getInfo ~= nil and TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		local ok, info = pcall(getInfo, cooldownID)
+		if ok and type(info) == "table" then
+			local linked = info.linkedSpellIDs
+			if type(linked) == "table" and not issecrettable(linked) then
+				for _, linkedSpellId in ipairs(linked) do
+					Add(linkedSpellId)
+				end
+			end
+			Add(info.overrideSpellID)
+			Add(info.spellID)
+		end
+	end
+	Add(spellId)
+	return ids
+end
+
 ---One passive entry by cooldownID; nil when it isn't in the layout. Callers check GetLayoutStatus first,
 ---since a layout that isn't READY makes every entry look missing.
 ---@param cooldownID integer

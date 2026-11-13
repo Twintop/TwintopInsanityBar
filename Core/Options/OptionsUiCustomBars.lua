@@ -76,12 +76,14 @@ local function FillSourceMenu(rootDescription, classId, specId, onPick, onSpellI
 			groupByProvider[providerName] = group
 			groups[#groups + 1] = group
 		end
-		local spell = group.bySpell[source.spellId]
+		-- A buff and the ability applying it can share a spell, so a row is its spell under its heading.
+		local spellKey = tostring(source.spellId) .. ":" .. tostring(source.section)
+		local spell = group.bySpell[spellKey]
 		if spell == nil then
 			local icon = source.icon
 			spell = { name = (icon ~= nil and icon ~= "" and icon .. " " or "") .. source.spellName, sortName = source.spellName,
 				section = source.section, sectionOrder = source.sectionOrder or 0, sources = {} }
-			group.bySpell[source.spellId] = spell
+			group.bySpell[spellKey] = spell
 			group.spells[#group.spells + 1] = spell
 		end
 		spell.sources[#spell.sources + 1] = source
@@ -404,7 +406,7 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 		end
 		barY = barY - 70
 		-- What its source can't do where it sits, such as an End Cap on a buff outside Tracked Bars.
-		local _, optionsNote = CustomBars:GetSourceNotes(bar.source)
+		local _, optionsNote = CustomBars:GetSourceNotes(classId, specId, bar.source)
 		if optionsNote ~= nil then
 			TRB.Functions.OptionsUi.Primitives:BuildLabel(frame, optionsNote, oUi.xCoord, barY, oUi.maxOptionsWidth, 40)
 			barY = barY - 50
@@ -496,7 +498,7 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 	---@return string
 	local function TracksText(source)
 		local label = CustomBars:GetSourceLabel(classId, specId, source)
-		local note = CustomBars:GetSourceNotes(source)
+		local note = CustomBars:GetSourceNotes(classId, specId, source)
 		if note ~= nil then
 			return string.format(L["CustomBarsSourceNoteFormat"], label, note)
 		end

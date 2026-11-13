@@ -1395,8 +1395,9 @@ function hooks.afterEvents(ctx)
 			GetLayoutStatus = CDM.GetLayoutStatus, GetLayoutEntries = CDM.GetLayoutEntries, GetLayoutEntry = CDM.GetLayoutEntry,
 			IsCooldownActive = CDM.IsCooldownActive, GetCooldownSourceKind = CDM.GetCooldownSourceKind, ReadCooldown = CDM.ReadCooldown,
 			GetAbilityEntries = CDM.GetAbilityEntries, IsSpellAuraActive = CDM.IsSpellAuraActive, IsTracked = CDM.IsTracked, Read = CDM.Read,
+			IsInTrackedBars = CDM.IsInTrackedBars, GetAuraSpellIds = CDM.GetAuraSpellIds,
 		}
-		local attach, detach = AuraEngine.Attach, AuraEngine.Detach
+		local attach, park = AuraEngine.Attach, AuraEngine.Park
 		local getMax = desktop.C_Spell.GetSpellMaxCumulativeAuraApplications
 		local layout = {
 			{ cooldownID = 81, spellID = 990070, name = "Driver Bar Buff", icon = 121, group = CDM.LayoutGroup.DISPLAYED, state = CDM.EntryState.TRACKED, displayed = true, isPotion = false },
@@ -1404,9 +1405,19 @@ function hooks.afterEvents(ctx)
 			{ cooldownID = 83, name = "Trinket 1: Driver", icon = 123, group = CDM.LayoutGroup.NOT_DISPLAYED, state = CDM.EntryState.NOT_DISPLAYED, displayed = false, isPotion = false },
 		}
 		local viewerKind = { [81] = CDM.SourceKind.BUFF_BAR, [82] = CDM.SourceKind.BUFF_ICON }
+		-- Where the layout puts each, which holds while its viewer is hidden.
+		local inTrackedBars = { [81] = true }
+		CDM.IsInTrackedBars = function(_, cooldownID) return inTrackedBars[cooldownID] == true end
+		-- 85's spell is the harmful ability that applies it; the aura itself, a stacking buff, is only linked.
+		CDM.GetAuraSpellIds = function(_, cooldownID, spellId)
+			if cooldownID == 85 then
+				return { 990074, 990073 }
+			end
+			return { spellId }
+		end
 		local up = { [81] = false, [82] = false }
 		local signals = { [CDM.Signal.DURATION] = 30, [CDM.Signal.REMAINING] = 12, [CDM.Signal.APPLICATIONS] = 3, [CDM.Signal.REMAINING_TEXT] = "12.3" }
-		local attached, detached = {}, 0
+		local attached, parked = {}, {}
 		CDM.GetLayoutStatus = function() return CDM.LayoutStatus.READY end
 		CDM.GetLayoutEntries = function() return layout end
 		rawset(CDM, "GetAbilityEntries", function() return {} end)
@@ -1449,12 +1460,19 @@ function hooks.afterEvents(ctx)
 		AuraEngine.Attach = function(_, node, unit, filter, spellId)
 			attached[node] = spellId
 			attachedTo[node] = unit .. ":" .. filter
+			node.engineDriven = true
 			return true
 		end
 		local isSpellHarmful = desktop.C_Spell.IsSpellHarmful
-		rawset(desktop.C_Spell, "IsSpellHarmful", function(id) return id == 990071 end)
-		AuraEngine.Detach = function() detached = detached + 1 end
-		rawset(desktop.C_Spell, "GetSpellMaxCumulativeAuraApplications", function(id) return id == 990070 and 4 or 0 end)
+		rawset(desktop.C_Spell, "IsSpellHarmful", function(id) return id == 990071 or id == 990073 end)
+		AuraEngine.Park = function(_, node)
+			parked[node] = true
+			attached[node] = nil
+			node.engineDriven = nil
+		end
+		rawset(desktop.C_Spell, "GetSpellMaxCumulativeAuraApplications", function(id) return (id == 990070 or id == 990074) and 4 or 0 end)
+		layout[#layout + 1] = { cooldownID = 85, spellID = 990073, name = "Driver Linked Buff", icon = 125, group = CDM.LayoutGroup.DISPLAYED,
+			state = CDM.EntryState.TRACKED, displayed = true, isPotion = false }
 
 		local buffByKey = {}
 		for _, source in ipairs(CustomBars:GetSources(classId, specId)) do
@@ -1464,6 +1482,7 @@ function hooks.afterEvents(ctx)
 		end
 		check("a Cooldown Manager buff is offered as a Duration, and as Stacks when the client says it stacks", buffByKey["81:buffTime"] ~= nil
 			and buffByKey["81:buffStacks"] ~= nil and buffByKey["82:buffTime"] ~= nil and buffByKey["82:buffStacks"] == nil)
+		check("one whose aura is a linked spell, not the ability applying it, is offered that aura's stacks", buffByKey["85:buffStacks"] ~= nil)
 		check("an entry with no spell of its own, such as a trinket buff, is a Duration keyed by its entry", buffByKey["83:buffTime"] ~= nil
 			and buffByKey["83:buffTime"].spellId == -83 and buffByKey["83:buffStacks"] == nil
 			and buffByKey["83:buffTime"].section == TRB.Localization["CustomIndicatorPickerNotDisplayed"]
@@ -1513,12 +1532,30 @@ function hooks.afterEvents(ctx)
 			check("a harmful spell's aura is looked for on the target, as the player's own debuff", attachedTo[iconNode] == "target:HARMFUL|PLAYER")
 			check("an entry no viewer shows is never active, has no spell for the engine, and reads as unknown", not Shows(EntryFor(barGroups[trinketKey]))
 				and attached[barGroups[trinketKey].nodes[1]] == nil and lookup["$" .. trinketKey .. "Time"] == TRB.Localization["CustomBarsCdmUnknownValue"])
-			local barNote, barOptionsNote = CustomBars:GetSourceNotes(spec.customBars.bars[barTimeGuid].source)
-			local _, iconOptionsNote = CustomBars:GetSourceNotes(spec.customBars.bars[iconTimeGuid].source)
-			local trinketNote, trinketOptionsNote = CustomBars:GetSourceNotes(spec.customBars.bars[trinketGuid].source)
+			local barNote, barOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[barTimeGuid].source)
+			local _, iconOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[iconTimeGuid].source)
+			local trinketNote, trinketOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[trinketGuid].source)
 			check("the options say what a buff's place in the Cooldown Manager costs its bar", barNote == nil and barOptionsNote == nil
 				and iconOptionsNote == TRB.Localization["CustomBarsCdmEngineNote"] and trinketNote == TRB.Localization["CustomBarsCdmNotTracked"]
 				and trinketOptionsNote == TRB.Localization["CustomBarsCdmNotDisplayedNote"])
+			-- With its viewer hidden, as one set to show only in combat is, the layout still says where it is.
+			viewerKind[81] = nil
+			local _, hiddenOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[barTimeGuid].source)
+			viewerKind[81] = CDM.SourceKind.BUFF_BAR
+			local otherNote, otherOptionsNote = CustomBars:GetSourceNotes(classId, specId + 50, spec.customBars.bars[trinketGuid].source)
+			check("a buff in Tracked Bars gets no note while its viewer is hidden, and another specialization's panel gets none",
+				hiddenOptionsNote == nil and otherNote == nil and otherOptionsNote == nil)
+			-- The linked aura is the one the engine looks for, and it isn't harmful, though the ability is.
+			local linkedGuid = CustomBars:Add(spec, classId, specId, buffByKey["85:buffTime"])
+			local linkedKey = CustomBars:GetBarKey(linkedGuid)
+			try("lay out the linked buff bar", Relayout)
+			up[85] = true
+			try("render the linked buff", function() CustomBars:Render() end)
+			local linkedNode = barGroups[linkedKey].nodes[1]
+			check("an aura linked to the ability applying it is filled from the aura's own spell, on the player",
+				attached[linkedNode] == 990074 and attachedTo[linkedNode] == "player:HELPFUL")
+			CustomBars:Delete(spec, classId, specId, linkedGuid)
+			up[85] = nil
 			-- The DoT: no buff viewer shows it, so its ability's cooldown viewer item answers.
 			local dotGuid = CustomBars:Add(spec, classId, specId, buffByKey["84:buffTime"])
 			local dotKey = CustomBars:GetBarKey(dotGuid)
@@ -1529,16 +1566,33 @@ function hooks.afterEvents(ctx)
 			dotUp = true
 			try("render the DoT up", function() CustomBars:Render() end)
 			CustomBars:WriteLookup(lookup)
-			local dotNote, dotOptionsNote = CustomBars:GetSourceNotes(spec.customBars.bars[dotGuid].source)
+			local dotNote, dotOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[dotGuid].source)
 			check("an aura no buff viewer shows follows its ability's cooldown viewer item: active state, time text, and no Not Tracked",
 				not dotDownShows and Shows(EntryFor(barGroups[dotKey])) and lookup["$" .. dotKey .. "Time"] == "9.9"
 				and attached[barGroups[dotKey].nodes[1]] == 990072 and dotNote == nil
 				and dotOptionsNote == TRB.Localization["CustomBarsCdmEngineNote"])
+			-- Deleting another bar rebuilds every bar's runtime, which must not lose which node the engine fills.
 			CustomBars:Delete(spec, classId, specId, dotGuid)
 			try("lay out without the DoT bar", Relayout)
+			try("render after the rebuild", function() CustomBars:Render() end)
+			local keptAfterRebuild = attached[iconNode] == 990071 and parked[iconNode] == nil
 			viewerKind[82] = CDM.SourceKind.BUFF_BAR
+			inTrackedBars[82] = true
 			try("render after moving the buff to Tracked Bars", function() CustomBars:Render() end)
-			check("moving a buff to Tracked Bars takes its bar back from the aura engine", detached == 1 and written[iconNode] == 12)
+			check("after a rebuild, the engine keeps its node, and moving the buff to Tracked Bars takes the node back from it",
+				keptAfterRebuild and parked[iconNode] == true and iconNode.engineDriven == nil and written[iconNode] == 12)
+			-- A bar the engine fills that is switched to something it doesn't fill is taken back too.
+			viewerKind[82], inTrackedBars[82] = CDM.SourceKind.BUFF_ICON, nil
+			try("render back in Tracked Buffs", function() CustomBars:Render() end)
+			parked[iconNode] = nil
+			local engineBefore = iconNode.engineDriven == true
+			CustomBars:SetSource(spec, classId, specId, spec.customBars.bars[iconTimeGuid],
+				{ kind = "cooldownTime", spellId = 990060, spellName = "Driver Shown Ability", provider = "spell" })
+			try("lay out the switched bar", Relayout)
+			try("render the switched bar", function() CustomBars:Render() end)
+			local switchedNode = barGroups[iconTimeKey].nodes[1]
+			check("a bar switched from an engine-filled buff to something else is taken back from the engine", engineBefore
+				and (switchedNode ~= iconNode or parked[iconNode] == true) and switchedNode.engineDriven ~= true)
 			up[81] = false
 			try("render after the buff drops", function() CustomBars:Render() end)
 			check("a dropped buff empties and hides its bar", written[barTimeNode] == 0 and not Shows(EntryFor(barGroups[barTimeKey])))
@@ -1552,8 +1606,121 @@ function hooks.afterEvents(ctx)
 		for name, fn in pairs(saved) do
 			CDM[name] = fn
 		end
-		AuraEngine.Attach, AuraEngine.Detach = attach, detach
+		AuraEngine.Attach, AuraEngine.Park = attach, park
 		CDM.IsEntryTracked = isEntryTracked
+
+		-- The real readers against fake viewer items, with what goes secret in combat secret.
+		do
+			local barViewer, essentialViewer = desktop.BuffBarCooldownViewer, desktop.EssentialCooldownViewer
+			local viewerApi = { barShown = barViewer.IsShown, barItems = barViewer.GetItemFrames, essentialShown = essentialViewer.IsShown,
+				essentialItems = essentialViewer.GetItemFrames }
+			local function Text(value) return { GetText = function() return value end } end
+			local barItem = {
+				GetCooldownID = function() return 86 end, GetSpellID = function() return 990075 end, GetBaseSpellID = function() return 990075 end,
+				IsActive = function() return SECRET end, auraDataCached = { applications = SECRET },
+				Bar = { GetValue = function() return SECRET end, GetMinMaxValues = function() return 0, SECRET end, Duration = Text(SECRET) },
+				Icon = { Applications = Text(SECRET) },
+			}
+			local dotItem = {
+				GetCooldownID = function() return 87 end, GetSpellID = function() return 990076 end, GetBaseSpellID = function() return 990076 end,
+				IsActive = function() return true end, auraDataCached = { applications = 0 },
+				Cooldown = { GetCountdownFontString = function() return Text("7.1") end, GetCooldownTimes = function() return 0, 0 end },
+			}
+			barViewer.IsShown = function() return true end
+			barViewer.GetItemFrames = function() return { barItem } end
+			essentialViewer.IsShown = function() return true end
+			essentialViewer.GetItemFrames = function() return { dotItem } end
+			local attachReal, parkReal = AuraEngine.Attach, AuraEngine.Park
+			local engineIds = {}
+			AuraEngine.Attach = function(_, node, _, _, spellId)
+				engineIds[node] = spellId
+				node.engineDriven = true
+				return true
+			end
+			AuraEngine.Park = function(_, node) node.engineDriven = nil end
+			local isSecretValue = desktop.issecretvalue
+			desktop.issecretvalue = function(value) return value == SECRET end
+			CDM:MarkIndexDirty()
+			-- The client's string.format takes a secret and hands back a secret string.
+			local stringFormat = desktop.string.format
+			local function SecretFormat(fmt, ...)
+				for index = 1, select("#", ...) do
+					if select(index, ...) == SECRET then
+						return SECRET
+					end
+				end
+				return stringFormat(fmt, ...)
+			end
+			desktop.string.format = SecretFormat
+			local secretSource = { kind = "buffTime", spellId = 990075, cooldownID = 86, spellName = "Driver Secret Buff", provider = "cdm" }
+			local secretStacks = { kind = "buffStacks", spellId = 990075, cooldownID = 86, spellName = "Driver Secret Buff", provider = "cdm" }
+			local dotSource = { kind = "buffTime", spellId = 990076, cooldownID = 88, spellName = "Driver Viewer Dot", provider = "cdm" }
+			local secretGuid = CustomBars:Add(spec, classId, specId, secretSource)
+			local secretStackGuid = CustomBars:Add(spec, classId, specId, secretStacks)
+			local viewerDotGuid = CustomBars:Add(spec, classId, specId, dotSource)
+			local secretKey, secretStackKey = CustomBars:GetBarKey(secretGuid), CustomBars:GetBarKey(secretStackGuid)
+			local viewerDotKey = CustomBars:GetBarKey(viewerDotGuid)
+			try("lay out bars read from the viewers", Relayout)
+			local ranges, values = {}, {}
+			local setMinMax, setNodeValue = BarNode.SetMinMax, BarNode.SetValue
+			BarNode.SetMinMax = function(self, min, max)
+				ranges[self] = max
+				return setMinMax(self, min, max)
+			end
+			BarNode.SetValue = function(self, value, ...)
+				values[self] = value
+				return setNodeValue(self, value, ...)
+			end
+			try("render secret viewer values", function() CustomBars:Render() end)
+			local lookup = {}
+			try("write secret viewer values to bar text", function() CustomBars:WriteLookup(lookup) end)
+			BarNode.SetMinMax, BarNode.SetValue = setMinMax, setNodeValue
+			local secretNode = barGroups[secretKey] ~= nil and barGroups[secretKey].nodes[1] or nil
+			check("the real readers find a Tracked Bars buff by its entry, and its secret time is written through to the bar",
+				CDM:GetCooldownSourceKind(86) == CDM.SourceKind.BUFF_BAR and CDM:IsCooldownActive(86) == true
+				and secretNode ~= nil and ranges[secretNode] == SECRET and values[secretNode] == SECRET and lookup["$" .. secretKey .. "Time"] == SECRET)
+			check("and its secret stacks reach the bar text uncompared", lookup["$" .. secretStackKey .. "Stacks"] == SECRET)
+			local viewerDotNode = barGroups[viewerDotKey] ~= nil and barGroups[viewerDotKey].nodes[1] or nil
+			check("an aura only a cooldown viewer item shows is read from that item by the real readers",
+				CDM:IsSpellAuraActive(990076) == true and lookup["$" .. viewerDotKey .. "Time"] == "7.1"
+				and viewerDotNode ~= nil and engineIds[viewerDotNode] == 990076)
+			-- The real engine takes a parked node back with the container it already built, not a new one.
+			if viewerDotNode ~= nil and AuraEngine:IsAvailable() then
+				local createFrame = desktop.CreateFrame
+				local built = 0
+				desktop.CreateFrame = function(frameType, ...)
+					if frameType ~= "AuraContainer" then
+						return createFrame(frameType, ...)
+					end
+					built = built + 1
+					local container = {}
+					for _, method in ipairs({ "SetUnit", "ClearAllPoints", "SetPoint", "SetSize", "SetEnabled", "Hide", "Show", "AddAuraSlot",
+						"SetAuraSlotCandidateFilters" }) do
+						container[method] = function() end
+					end
+					return container
+				end
+				viewerDotNode.engineDriven = nil
+				attachReal(AuraEngine, viewerDotNode, "player", "HELPFUL", 990076)
+				parkReal(AuraEngine, viewerDotNode)
+				local drivenWhileParked = viewerDotNode.engineDriven
+				attachReal(AuraEngine, viewerDotNode, "player", "HELPFUL", 990076)
+				check("a parked node is handed back to its own fill, and the engine takes it again with the container it built",
+					built == 1 and drivenWhileParked == nil and viewerDotNode.engineDriven == true)
+				AuraEngine:Detach(viewerDotNode)
+				desktop.CreateFrame = createFrame
+			end
+			for _, guid in ipairs({ secretGuid, secretStackGuid, viewerDotGuid }) do
+				CustomBars:Delete(spec, classId, specId, guid)
+			end
+			try("lay out without the viewer bars", Relayout)
+			AuraEngine.Attach, AuraEngine.Park = attachReal, parkReal
+			desktop.issecretvalue = isSecretValue
+			desktop.string.format = stringFormat
+			barViewer.IsShown, barViewer.GetItemFrames = viewerApi.barShown, viewerApi.barItems
+			essentialViewer.IsShown, essentialViewer.GetItemFrames = viewerApi.essentialShown, viewerApi.essentialItems
+			CDM:MarkIndexDirty()
+		end
 
 		-- A custom Color Indicator's or Buff Alert's condition falls back the same way.
 		local isCooldownActive, isSpellAuraActive, getAbilities = CDM.IsCooldownActive, CDM.IsSpellAuraActive, CDM.GetAbilityEntries
