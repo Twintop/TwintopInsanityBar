@@ -14,7 +14,7 @@ TRB.Details.coreNewsContent = [====[
 - [#985](#985) Remove `Character:ClassHasForms`.
 - [#986](#986) Move the remaining class bar colors, bar text variable types, and build check from the shared code into each game version.
 - [#986](#986) Remove the shared code's redundant bar hiding when a specialization is disabled.
-- Update LibSimpleHTMLMarkdown to version 1.0.3.
+- Update LibSimpleHTMLMarkdown to version 1.0.4.
 
 ## Custom Bars
 

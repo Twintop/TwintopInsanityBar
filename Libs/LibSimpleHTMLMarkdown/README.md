@@ -71,9 +71,14 @@ Heading 2
 ---------
 ```
 
-These are rendered as `&lt;h1&gt;`, `&lt;h2&gt;`, and `&lt;h3&gt;` HTML tags.
-Level 4 headings and above will be converted down to `&lt;h3&gt;`. As in CommonMark, the
+These are rendered as `&lt;h1&gt;`, `&lt;h2&gt;`, and `&lt;h3&gt;` HTML tags. As in CommonMark, the
 `#`s must be followed by a space, so `#hashtag` stays text.
+
+`SimpleHTML` has no smaller heading styles and no inline font sizes, so `####` to `######`
+headings are lines at text size, set apart by color as GitHub does: level 4 in the `strong`
+color, level 5 in the `strong_em` color, and level 6 in gray. Each level has `h4`, `/h4`, and
+`h4_style` settings (and so on); `h4_style` names the setting whose color the heading takes. To
+show level 4 as `&lt;h3&gt;` instead: `h4 = "<h3>"`, `["/h4"] = "</h3><br />"`, `h4_style = false`.
 
 ```
 [Link Name](http://LinkURL)
@@ -160,6 +165,16 @@ between dim `|` separators and the header row in its own color. A table is cente
 right-aligned when every one of its columns is. Use `\|` for a pipe inside a cell.
 
 ```
+> A blockquote.
+>
+> > A quote inside it.
+```
+
+A blockquote is shown in gray with a bar at the start of each line (`blockquote_bar`), and a
+quote inside a quote adds a second bar. `SimpleHTML` can't put the bar on the wrapped part of a
+long line; `SetIndentedWordWrap` on your frame indents those parts instead.
+
+```
 ~~Strikethrough~~
 https://example.org and www.example.org
 ```
@@ -177,6 +192,63 @@ Arcane Blast stacks four times.[^stacks]
 A footnote reference shows as a number, `[1]`, numbered in the order the text first refers
 to it. The notes are listed after a rule at the end of the document. A note can go on in
 lines indented under it.
+
+### Extensions from other Markdown flavors
+
+None of these are in CommonMark or the GFM spec, but each is the syntax other renderers use:
+
+```
+> [!NOTE]
+> GitHub's alerts: [!NOTE], [!TIP], [!IMPORTANT], [!WARNING], and [!CAUTION].
+
+Term
+: A definition (PHP Markdown Extra, Pandoc)
+
+==Highlighted==, x^2^, and H~2~O (Pandoc, markdown-it)
+
+## Setup {#setup}
+[Jump to setup](#setup)
+```
+
+- An alert is shown as its kind's icon and title, then its text. The titles are config keys
+  (`admonition_note` and so on), so they can be translated.
+- A definition list shows each term in its own color, with its definitions indented under it.
+- `SimpleHTML` can't color a background, so highlighted text is colored instead.
+- Superscripts and subscripts use the Unicode characters for digits, `+ - = ( )`, and (in a
+  superscript) `n` and `i`. Anything else is shown dimmed. Set `script_glyphs` to `false` to
+  always dim them.
+- A heading's `{#id}` isn't shown. `SimpleHTML` can't scroll to a heading, so a `[link](#id)` is
+  handed to your hyperlink handler as `#id`. `:GetHeadings(text)` lists a document's headings
+  (`level`, `text`, and `id`, which is the `{#id}` or a GitHub-style id from the text), for a
+  table of contents or for acting on those links.
+
+### WoW extensions
+
+```
+![](atlas:groupfinder-icon-role-large-tank)
+![](atlas:groupfinder-icon-role-large-tank 32x32)
+
+:check: :x: :question: :warning: :gold: :silver: :copper: :tank: :healer: :dps:
+
+[Fireball](spell:133) [Hearthstone](item:6948) [Level 10](achievement:6)
+```
+
+- An `atlas:` image is an atlas, shown inside the line (`<img>` only takes texture files). Without
+  a size it's as tall as the text.
+- A `spell:`, `item:`, `currency:`, or `achievement:` image is that thing's icon, looked up when the
+  text is rendered and shown inside the line: `![](spell:133)`. An unknown id shows a question mark.
+- A texture marked `inline`, `![](Interface\\ICONS\\X 16x16 inline)`, is shown inside the line too.
+  Without `inline`, an image is a block of its own, as below.
+- A `:shortcode:` with a config entry under that key is replaced by it. Add your own, such as
+  `[":myicon:"] = "|TInterface\\ICONS\\X:0|t"`. Unknown shortcodes are shown as typed, and
+  `\:check:` is shown as `:check:`.
+- Game links are ordinary links. To show the game's tooltip for `spell:`, `item:`, `currency:`,
+  and `achievement:` links, use the library's helpers in your frame's hyperlink scripts:
+
+```
+html:SetScript("OnHyperlinkEnter", function(self, link) LSHM:ShowLinkTooltip(self, link) end)
+html:SetScript("OnHyperlinkLeave", function() LSHM:HideLinkTooltip() end)
+```
 
 ```
 ![Alt Text](Interface\\ICONS\\ABILITY_SAP.PNG)
@@ -300,6 +372,9 @@ MyFrame:SetText( MyMarkdown:ToHTML(text) );
 AddOns that do change the shared `config` keep their changes when a newer copy of the library
 loads.
 
+The library keeps its 20 most recent renders, by text and settings, so showing a document again
+doesn't render it again. Changing any setting, in any of these ways, renders it anew.
+
 To see what you can change, see the source or type `/script LibStub("LibSimpleHTMLMarkdown-1.0"):ShowConfig()`
 
 ## Demo Frames
@@ -311,13 +386,26 @@ It has some sample code; to view it once it's loaded, type `/script LSHMDemoFram
 the library renders, for checking a change by eye in game. Each case shows its markdown, what you
 should see, and the result. Type `/lshm` to open it.
 
+## Errors
+
+If rendering ever fails, `:ToHTML()` doesn't raise the error into your code. It reports it through
+WoW's error handler (so BugSack and the like show it) and returns the text as plain paragraphs, so
+your frame still shows something readable. Set `raise_errors` on the library to get the error
+itself while developing.
+
 ## Tests
 
 `tests/run_tests.py` renders the showcase cases, the demo text, a set of probes, and some real
 AddOn news pages under Lua 5.1, and checks that each output is markup `SimpleHTML` can parse and
 matches its golden file in `tests/golden/`. It needs [lupa](https://pypi.org/project/lupa/)
 (`pip install lupa`). After an intended change to the output, run it with `--update` and review
-the golden file diffs. GitHub Actions runs the tests on every push, and before each release.
+the golden file diffs. It also renders a few hundred random documents built from every syntax the
+library knows, valid and malformed, and checks that each one renders to markup `SimpleHTML` can
+parse; set `FUZZ_SEED` and `FUZZ_COUNT` to try others. GitHub Actions runs the tests on every push, and before each release.
+
+`Demo.lua` and `Showcase.lua` are for development. Enable them in `LibSimpleHTMLMarkdown.xml`
+locally, but commit them commented out: `tests/check_release_files.py` fails the push's tests,
+and stops a release tag from being packaged, if the TOC or an XML file it loads would load one.
 
 ## Changes from LibMarkdown
 
@@ -384,5 +472,7 @@ LibSimpleHTMLMarkdown 1.0 minor 1 starts from LibMarkdown-1.0 minor 9, the last 
 
 - Nested lists, task lists, GFM tables, `~~strikethrough~~`, bare url links, footnotes, `~~~`
   fences, shortcut references, and backslash line breaks.
+- Alerts, definition lists, highlight, superscript and subscript, and heading ids, from other
+  Markdown flavors; atlases, shortcodes, and game link tooltips for WoW.
 - `:ToHTML(text, settings)` and `:New(settings)`, so an AddOn's settings don't change the
   shared config.
