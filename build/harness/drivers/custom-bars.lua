@@ -1249,9 +1249,12 @@ function hooks.afterEvents(ctx)
 		(CustomBars:GetProviderLabel("cdm") ~= "") == (TRB.Flavor.cooldownManager == true))
 	if TRB.Flavor.cooldownManager then
 		local CDM = TRB.Functions.CooldownManager
-		local getAbilityEntries = CDM.GetAbilityEntries
-		local api = { GetSpellCharges = desktop.C_Spell.GetSpellCharges, GetSpellName = desktop.C_Spell.GetSpellName }
-		local names = { [990060] = "Driver Shown Ability", [990061] = "Driver Hidden Charges", [990062] = "Driver Unlearned", [990063] = "Driver Instant" }
+		local api = { GetSpellCharges = desktop.C_Spell.GetSpellCharges, GetSpellName = desktop.C_Spell.GetSpellName,
+			GetSpellTexture = desktop.C_Spell.GetSpellTexture, GetOverrideSpell = desktop.C_Spell.GetOverrideSpell,
+			GetCVarBool = desktop.C_CVar.GetCVarBool }
+		-- 990064 has charges only by the layout's word; 990065 is replaced by a talent with 990066, which has charges.
+		local names = { [990060] = "Driver Shown Ability", [990061] = "Driver Hidden Charges", [990062] = "Driver Unlearned", [990063] = "Driver Instant",
+			[990064] = "Driver Layout Charges", [990065] = "Driver Base", [990066] = "Driver Override", [990067] = "Driver Buff", [990068] = "Driver Secret" }
 		local getSpellBaseCooldown = desktop.GetSpellBaseCooldown
 		desktop.GetSpellBaseCooldown = function(id)
 			if id == 990060 or id == 990062 then
@@ -1260,20 +1263,65 @@ function hooks.afterEvents(ctx)
 			return 0, 1500
 		end
 		rawset(desktop.C_Spell, "GetSpellName", function(id) return names[id] or api.GetSpellName(id) end)
+		rawset(desktop.C_Spell, "GetSpellTexture", function(id)
+			if names[id] ~= nil then
+				return id - 989949
+			end
+			return api.GetSpellTexture(id)
+		end)
 		rawset(desktop.C_Spell, "GetSpellCharges", function(id)
 			if names[id] ~= nil then
-				return id == 990061 and { currentCharges = 2, maxCharges = 2, isActive = false } or nil
+				return (id == 990061 or id == 990066) and { currentCharges = 2, maxCharges = 2, isActive = false } or nil
 			end
 			return api.GetSpellCharges(id)
 		end)
-		CDM.GetAbilityEntries = function()
-			return {
-				{ cooldownID = 71, spellID = 990060, name = "Driver Shown Ability", icon = 111, known = true, displayed = true, hasCharges = false },
-				{ cooldownID = 72, spellID = 990061, name = "Driver Hidden Charges", icon = 112, known = true, displayed = false, hasCharges = true },
-				{ cooldownID = 73, spellID = 990062, name = "Driver Unlearned", icon = 113, known = false, displayed = true, hasCharges = false },
-				{ cooldownID = 74, spellID = 990063, name = "Driver Instant", icon = 114, known = true, displayed = true, hasCharges = false },
-			}
+		rawset(desktop.C_Spell, "GetOverrideSpell", function(id)
+			if id == 990065 then
+				return 990066
+			end
+			return id
+		end)
+		-- A ready layout, run through the real reader: displayed, not displayed, and not learned abilities, a buff,
+		-- and an entry whose category is secret.
+		local categories = desktop.Enum.CooldownViewerCategory
+		local hiddenActive, hiddenPassive = categories.HiddenActive, categories.HiddenPassive
+		rawset(categories, "HiddenActive", -1)
+		rawset(categories, "HiddenPassive", -2)
+		rawset(desktop.C_CVar, "GetCVarBool", function(name, ...)
+			if name == "cooldownViewerEnabled" then
+				return true
+			end
+			return api.GetCVarBool(name, ...)
+		end)
+		local layout = {
+			orderedCooldownIDs = { 71, 72, 73, 74, 75, 76, 77, 78 },
+			cooldownInfoByID = {
+				[71] = { category = categories.Essential, spellID = 990060, isKnown = true, charges = false },
+				[72] = { category = -1, spellID = 990061, isKnown = true, charges = true },
+				[73] = { category = categories.Utility, spellID = 990062, isKnown = false, charges = false },
+				[74] = { category = categories.Essential, spellID = 990063, isKnown = true, charges = false },
+				[75] = { category = categories.TrackedBuff, spellID = 990067, isKnown = true },
+				[76] = { category = SECRET, spellID = 990068, isKnown = true },
+				[77] = { category = categories.Essential, spellID = 990064, isKnown = true, charges = true },
+				[78] = { category = categories.Essential, spellID = 990065, overrideSpellID = 990066, isKnown = true, charges = false },
+			},
+		}
+		local dataProvider = { displayDataDirty = false, GetDisplayData = function() return layout end }
+		local getDataProvider = desktop.CooldownViewerSettings.GetDataProvider
+		desktop.CooldownViewerSettings.GetDataProvider = function() return dataProvider end
+		local entries = CDM:GetAbilityEntries() or {}
+		local entriesById = {}
+		for _, entry in ipairs(entries) do
+			entriesById[entry.cooldownID] = entry
 		end
+		check("the layout's abilities are read in order, without its buffs or an entry whose category is secret", #entries == 6
+			and entries[1].cooldownID == 71 and entries[2].cooldownID == 72 and entriesById[75] == nil and entriesById[76] == nil)
+		check("each is read as displayed, not displayed, or not learned, with its charges and icon", entriesById[71] ~= nil
+			and entriesById[71].displayed == true and entriesById[71].known == true and entriesById[71].icon == 111
+			and entriesById[72] ~= nil and entriesById[72].displayed == false and entriesById[72].hasCharges == true
+			and entriesById[73] ~= nil and entriesById[73].known == false and entriesById[73].displayed == true)
+		check("one a talent replaces is named by the replacement and keeps its own spell", entriesById[78] ~= nil
+			and entriesById[78].name == "Driver Override" and entriesById[78].spellID == 990065)
 		local byKey = {}
 		for _, source in ipairs(CustomBars:GetSources(classId, specId)) do
 			if source.provider == "cdm" then
@@ -1281,14 +1329,32 @@ function hooks.afterEvents(ctx)
 			end
 		end
 		local shown, hiddenCharges = byKey["990060:cooldownTime"], byKey["990061:charges"]
+		local unlearned = byKey["990062:cooldownTime"]
 		check("a Cooldown Manager ability is offered as a Cooldown, or as Charges and a Recharge", shown ~= nil and shown.cooldownID == 71
 			and shown.icon == "|T111:0|t" and hiddenCharges ~= nil and byKey["990061:rechargeTime"] ~= nil and byKey["990061:cooldownTime"] == nil)
+		check("one the layout alone says has charges is offered its charges", byKey["990064:charges"] ~= nil and byKey["990064:cooldownTime"] == nil)
+		check("one a talent replaces is offered what the replacement has", byKey["990065:charges"] ~= nil
+			and byKey["990065:charges"].spellName == "Driver Override" and byKey["990065:cooldownTime"] == nil)
 		check("an ability with no cooldown of its own and no charges isn't offered", byKey["990063:cooldownTime"] == nil
 			and byKey["990063:charges"] == nil)
-		check("under headings for displayed, not displayed, and not learned", shown ~= nil and hiddenCharges ~= nil
+		check("under headings for displayed, not displayed, and not learned", shown ~= nil and hiddenCharges ~= nil and unlearned ~= nil
 			and shown.section == TRB.Localization["CustomBarsCdmSectionAbilities"]
 			and hiddenCharges.section == TRB.Localization["CustomBarsCdmSectionAbilitiesNotDisplayed"]
-			and byKey["990062:cooldownTime"].section == TRB.Localization["CustomBarsCdmSectionAbilitiesNotLearned"])
+			and unlearned.section == TRB.Localization["CustomBarsCdmSectionAbilitiesNotLearned"])
+		local replaced = byKey["990065:charges"]
+		if replaced ~= nil then
+			local replacedGuid = CustomBars:Add(spec, classId, specId, replaced)
+			local replacedBar = spec.customBars.bars[replacedGuid]
+			try("lay out the replaced ability's bar", Relayout)
+			local replacedSpells = {}
+			CustomBars:AppendCooldownSpells(replacedSpells)
+			check("a replaced ability's bar is saved with its own spell, but read and named by the replacement",
+				replacedBar.source.spellId == 990065 and #replacedSpells == 1 and replacedSpells[1].id == 990066
+				and replacedSpells[1].hasCharges == true
+				and CustomBars:GetSourceLabel(classId, specId, replacedBar.source):find("Driver Override", 1, true) ~= nil)
+			CustomBars:Delete(spec, classId, specId, replacedGuid)
+			try("lay out without it", Relayout)
+		end
 		check("another specialization is offered nothing from the layout", (function()
 			for _, source in ipairs(CustomBars:GetSources(classId, specId + 50)) do
 				if source.provider == "cdm" then
@@ -1313,7 +1379,12 @@ function hooks.afterEvents(ctx)
 			try("lay out without it", Relayout)
 			try("render without it", function() CustomBars:Render() end)
 		end
-		CDM.GetAbilityEntries = getAbilityEntries
+		desktop.CooldownViewerSettings.GetDataProvider = getDataProvider
+		rawset(categories, "HiddenActive", hiddenActive)
+		rawset(categories, "HiddenPassive", hiddenPassive)
+		rawset(desktop.C_CVar, "GetCVarBool", api.GetCVarBool)
+		rawset(desktop.C_Spell, "GetOverrideSpell", api.GetOverrideSpell)
+		rawset(desktop.C_Spell, "GetSpellTexture", api.GetSpellTexture)
 		desktop.GetSpellBaseCooldown = getSpellBaseCooldown
 		rawset(desktop.C_Spell, "GetSpellName", api.GetSpellName)
 		rawset(desktop.C_Spell, "GetSpellCharges", api.GetSpellCharges)

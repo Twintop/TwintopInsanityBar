@@ -63,6 +63,7 @@ local L = TRB.Localization
 ---@field public endTime number?
 ---@field public duration number?
 ---@field public pausedRemaining number? # The frozen time a paused buff's bar holds
+---@field public currentSpellId integer? # A Cooldown Manager ability's spell now, after any talent replacing it
 ---@field public untimed boolean? # Whether a typed buff with no duration is drawn full while it is up
 ---@field public version integer?
 ---@field public count number?
@@ -1479,22 +1480,23 @@ CustomBars.spellProvider = "spell"
 ---@type table<boolean, table<integer, TRB.Classes.Snapshot>>
 local spellSnapshots = { [true] = {}, [false] = {} }
 
----@param source TRB.Classes.Settings.CustomBarSource
+---@param kind trbCustomBarSourceKind
+---@param spellId integer
 ---@return TRB.Classes.Snapshot
-local function GetSpellSnapshot(source)
-	local hasCharges = source.kind ~= CustomBars.kinds.cooldownTime
-	local snapshot = spellSnapshots[hasCharges][source.spellId]
+local function GetSpellSnapshot(kind, spellId)
+	local hasCharges = kind ~= CustomBars.kinds.cooldownTime
+	local snapshot = spellSnapshots[hasCharges][spellId]
 	if snapshot == nil then
 		-- A spell with no global cooldown never reads as off it at its cast, so the tracker has to be told.
-		local _, globalCooldown = GetSpellBaseCooldown(source.spellId)
+		local _, globalCooldown = GetSpellBaseCooldown(spellId)
 		local spell = TRB.Classes.SpellBase:New({
-			id = source.spellId,
+			id = spellId,
 			hasCooldown = true,
 			hasCharges = hasCharges,
 			offGcd = globalCooldown == 0
 		})
 		snapshot = TRB.Classes.Snapshot:New(spell)
-		spellSnapshots[hasCharges][source.spellId] = snapshot
+		spellSnapshots[hasCharges][spellId] = snapshot
 	end
 	return snapshot
 end
@@ -1567,27 +1569,60 @@ local spellProvider = {
 	end,
 	OnAdd = function(_, _, source)
 		if source.kind == CustomBars.kinds.charges then
-			GetSpellSnapshot(source).cooldown:RefreshCharges()
+			GetSpellSnapshot(source.kind, source.spellId).cooldown:RefreshCharges()
 		end
 	end,
 	AppendCooldownSpell = function(entry, spells, ownSnapshots)
-		local snapshot = GetSpellSnapshot(entry.bar.source)
+		local snapshot = GetSpellSnapshot(entry.kind, entry.spellId)
 		spells[#spells + 1] = snapshot.spell
 		if ownSnapshots ~= nil then
 			ownSnapshots[snapshot.spell] = snapshot
 		end
 	end,
 	WriteLookup = function(entry, now)
-		return LookupSnapshot(entry, now, GetSpellSnapshot(entry.bar.source))
+		return LookupSnapshot(entry, now, GetSpellSnapshot(entry.kind, entry.spellId))
 	end,
 	Render = function(entry, group, node, settings, now, redraw)
-		return RenderSnapshot(entry, group, node, settings, now, redraw, GetSpellSnapshot(entry.bar.source))
+		return RenderSnapshot(entry, group, node, settings, now, redraw, GetSpellSnapshot(entry.kind, entry.spellId))
 	end,
 }
 CustomBars:RegisterProvider(CustomBars.spellProvider, spellProvider)
 
 -- An ability picked from the Cooldown Manager's layout, read by its spell like one named by spell ID.
 CustomBars.cdmProvider = "cdm"
+
+---The spell a Cooldown Manager ability is now: the one a talent replaces it with, as the layout shows, or its own.
+---@param spellId integer
+---@return integer
+local function GetCdmCurrentSpellId(spellId)
+	local overrideId = C_Spell.GetOverrideSpell ~= nil and C_Spell.GetOverrideSpell(spellId) or nil
+	if not TRB.Functions.Number:IsPlainNumber(overrideId) or overrideId == 0 then
+		return spellId
+	end
+	return overrideId
+end
+
+---The kinds a Cooldown Manager ability offers: its charges and recharge, or its cooldown, or none for one with only
+---the global cooldown.
+---@param spellId integer # The ability's current spell
+---@param hasCharges boolean # Whether the layout says it has charges
+---@return trbCustomBarSourceKind[]
+local function GetCdmKinds(spellId, hasCharges)
+	local kinds = CustomBars.kinds
+	if hasCharges or C_Spell.GetSpellCharges(spellId) ~= nil then
+		return { kinds.charges, kinds.rechargeTime }
+	elseif (GetSpellBaseCooldown(spellId) or 0) > 0 then
+		return { kinds.cooldownTime }
+	end
+	return {}
+end
+
+---The snapshot a Cooldown Manager bar reads: its ability's current spell, which the cooldown tracker's sync resolves.
+---@param entry TRB.Classes.CustomBarRuntime
+---@return TRB.Classes.Snapshot
+local function GetCdmSnapshot(entry)
+	return GetSpellSnapshot(entry.kind, entry.currentSpellId or entry.spellId)
+end
 
 ---@type TRB.Classes.CustomBarProvider
 local cdmProvider = {
@@ -1600,15 +1635,9 @@ local cdmProvider = {
 		if character == nil or character.classId ~= classId or character.specId ~= specId then
 			return sources
 		end
-		local kinds = CustomBars.kinds
 		for _, ability in ipairs(TRB.Functions.CooldownManager:GetAbilityEntries() or {}) do
 			-- An ability with no cooldown beyond the global one, and no charges, has nothing to track.
-			local offered = {}
-			if ability.hasCharges or C_Spell.GetSpellCharges(ability.spellID) ~= nil then
-				offered = { kinds.charges, kinds.rechargeTime }
-			elseif (GetSpellBaseCooldown(ability.spellID) or 0) > 0 then
-				offered = { kinds.cooldownTime }
-			end
+			local offered = GetCdmKinds(GetCdmCurrentSpellId(ability.spellID), ability.hasCharges)
 			local section, sectionOrder = L["CustomBarsCdmSectionAbilities"], 1
 			if not ability.known then
 				section, sectionOrder = L["CustomBarsCdmSectionAbilitiesNotLearned"], 3
@@ -1630,12 +1659,33 @@ local cdmProvider = {
 		end
 		return sources
 	end,
-	GetSourceName = spellProvider.GetSourceName,
-	ReadMax = spellProvider.ReadMax,
-	OnAdd = spellProvider.OnAdd,
-	AppendCooldownSpell = spellProvider.AppendCooldownSpell,
-	WriteLookup = spellProvider.WriteLookup,
-	Render = spellProvider.Render,
+	-- Named, counted, and read by the spell a talent replaces it with, which the layout shows.
+	GetSourceName = function(_, _, source)
+		return C_Spell.GetSpellName(GetCdmCurrentSpellId(source.spellId))
+	end,
+	ReadMax = function(classId, specId, source)
+		return spellProvider.ReadMax(classId, specId, { kind = source.kind, spellId = GetCdmCurrentSpellId(source.spellId) })
+	end,
+	OnAdd = function(_, _, source)
+		if source.kind == CustomBars.kinds.charges then
+			GetSpellSnapshot(source.kind, GetCdmCurrentSpellId(source.spellId)).cooldown:RefreshCharges()
+		end
+	end,
+	-- The sync runs after a talent change, so the current spell is resolved there rather than on the tick.
+	AppendCooldownSpell = function(entry, spells, ownSnapshots)
+		entry.currentSpellId = GetCdmCurrentSpellId(entry.spellId)
+		local snapshot = GetCdmSnapshot(entry)
+		spells[#spells + 1] = snapshot.spell
+		if ownSnapshots ~= nil then
+			ownSnapshots[snapshot.spell] = snapshot
+		end
+	end,
+	WriteLookup = function(entry, now)
+		return LookupSnapshot(entry, now, GetCdmSnapshot(entry))
+	end,
+	Render = function(entry, group, node, settings, now, redraw)
+		return RenderSnapshot(entry, group, node, settings, now, redraw, GetCdmSnapshot(entry))
+	end,
 }
 if TRB.Flavor.cooldownManager then
 	CustomBars:RegisterProvider(CustomBars.cdmProvider, cdmProvider)
