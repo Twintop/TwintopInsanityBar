@@ -758,7 +758,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 				buffSpellButton:SetScript("OnClick", function()
 					TRB.Functions.OptionsUi.Primitives:ShowAuraSpellIdPrompt(spellId, function(picked)
 						PickAuraBuff(cue, picked)
-					end)
+					end, L["CustomBarsAuraIdPromptText"])
 				end)
 				buffSpellButton:SetEnabled(TRB.Flavor.playerAuras)
 				TRB.Functions.OptionsUi.Primitives:AttachCdmBadgeToText(buffHeader.font, nil)

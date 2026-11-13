@@ -1641,13 +1641,19 @@ function CustomBars:GetAuraIdSources(spellId)
 	return sources
 end
 
----Appends the spell IDs of the buffs the displayed bars follow, for the aura reader.
----@param spellIds integer[]
-function CustomBars:AppendAuraSpellIds(spellIds)
+---Appends the spell IDs of the auras the displayed bars follow, for the aura reader: a harmful spell's is the
+---player's debuff on the target, any other a buff on the player.
+---@param buffSpellIds integer[]
+---@param debuffSpellIds integer[]
+function CustomBars:AppendAuraSpellIds(buffSpellIds, debuffSpellIds)
 	EnsureRuntime()
 	for _, entry in ipairs(runtime) do
 		if entry.bar.source.provider == self.auraProvider then
-			spellIds[#spellIds + 1] = entry.spellId
+			if C_Spell.IsSpellHarmful(entry.spellId) == true then
+				debuffSpellIds[#debuffSpellIds + 1] = entry.spellId
+			else
+				buffSpellIds[#buffSpellIds + 1] = entry.spellId
+			end
 		end
 	end
 end
@@ -1667,6 +1673,7 @@ end
 local auraProvider = {
 	label = L["CustomBarsAddGroupAuraId"],
 	shortLabel = L["CustomBarsProviderShortSpellId"],
+	promptText = L["CustomBarsAuraIdPromptText"],
 	GetIdSources = function(spellId)
 		return CustomBars:GetAuraIdSources(spellId)
 	end,

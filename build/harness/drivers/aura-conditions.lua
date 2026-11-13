@@ -56,6 +56,8 @@ end
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
 	local G = desktop
+	-- The stub calls every spell harmful, which would make each followed buff a debuff on the target.
+	rawset(G.C_Spell, "IsSpellHarmful", function() return false end)
 	local innerCreate = G.CreateFrame
 	G.CreateFrame = function(...)
 		local frame = innerCreate(...)
@@ -400,7 +402,7 @@ function hooks.afterEvents(ctx)
 	if not TRB.Flavor.playerAuras then
 		try("Add indicator", function() addButton.__scripts.OnClick(addButton) end)
 		try("Add cue", function() cueAddButton.__scripts.OnClick(cueAddButton) end)
-		check("no Add menu offers a buff by spell ID", not AllMenuLabels()[L["CustomIndicatorSourceAuraSpellId"]])
+		check("no Add menu offers a buff by spell ID", not AllMenuLabels()[L["CustomBarsAddGroupAuraId"]])
 		check("no prompt for a spell ID opens", LastPopup("TwintopResourceBar_AuraSpellId") == nil)
 		return errors
 	end
@@ -448,7 +450,7 @@ function hooks.afterEvents(ctx)
 	for key in pairs(indicatorColors) do before[key] = true end
 	try("Add indicator", function() addButton.__scripts.OnClick(addButton) end)
 	local menu = drv.menus[#drv.menus]
-	local auraEntry = menu ~= nil and FindEntry(menu, L["CustomIndicatorSourceAuraSpellId"]) or nil
+	local auraEntry = menu ~= nil and FindEntry(menu, L["CustomBarsAddGroupAuraId"]) or nil
 	check("the Add menu offers a buff by spell ID", auraEntry ~= nil)
 	local offersCdm = false
 	for _, child in ipairs(menu ~= nil and menu.children or {}) do

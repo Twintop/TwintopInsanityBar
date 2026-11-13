@@ -1076,6 +1076,9 @@ function hooks.afterEvents(ctx)
 			GetAura = desktop.C_UnitAuras.GetAuraDataBySpellName,
 		}
 		local live = nil
+		-- The stub calls every spell harmful; only the typed debuff is.
+		local isSpellHarmful = desktop.C_Spell.IsSpellHarmful
+		rawset(desktop.C_Spell, "IsSpellHarmful", function(id) return id == 990052 end)
 		rawset(desktop.C_Spell, "GetSpellName", function(id) return names[id] or api.GetSpellName(id) end)
 		rawset(desktop.C_Spell, "GetSpellMaxCumulativeAuraApplications", function(id) return id == 990050 and 5 or 0 end)
 		rawset(desktop.C_UnitAuras, "GetAuraDataBySpellName", function(unit, name, filter)
@@ -1123,13 +1126,66 @@ function hooks.afterEvents(ctx)
 			CustomBars:Delete(spec, classId, specId, buffStackGuid)
 			try("lay out without the typed buff bars", Relayout)
 			try("render without them", function() CustomBars:Render() end)
-			local followed = {}
-			CustomBars:AppendAuraSpellIds(followed)
-			check("deleted buff bars stop being followed", #followed == 0 and Aura:GetFollowedAura(990050) == false)
+			local followed, followedDebuffs = {}, {}
+			CustomBars:AppendAuraSpellIds(followed, followedDebuffs)
+			check("deleted buff bars stop being followed", #followed == 0 and #followedDebuffs == 0 and Aura:GetFollowedAura(990050) == false)
+
+			-- A harmful spell is the player's own debuff on the target.
+			names[990052] = "Driver Typed Debuff"
+			local onTarget = nil
+			local asked = nil
+			local getAura = desktop.C_UnitAuras.GetAuraDataBySpellName
+			rawset(desktop.C_UnitAuras, "GetAuraDataBySpellName", function(unit, name, filter)
+				if name == "Driver Typed Debuff" then
+					asked = unit .. ":" .. filter
+					return onTarget
+				end
+				return getAura(unit, name, filter)
+			end)
+			local debuffGuid = CustomBars:Add(spec, classId, specId, CustomBars:GetAuraIdSources(990052)[1])
+			local debuffKey = CustomBars:GetBarKey(debuffGuid)
+			try("lay out the typed debuff bar", Relayout)
+			try("render with the debuff off the target", function() CustomBars:Render() end)
+			local buffIds, debuffIds = {}, {}
+			CustomBars:AppendAuraSpellIds(buffIds, debuffIds)
+			check("a harmful spell is followed on the target as the player's own debuff", #buffIds == 0 and #debuffIds == 1
+				and asked == "target:HARMFUL|PLAYER" and not Shows(EntryFor(barGroups[debuffKey])))
+			local debuffNow = desktop.GetTime()
+			onTarget = { auraInstanceID = 88, name = "Driver Typed Debuff", isHarmful = true, expirationTime = debuffNow + 18, duration = 18, applications = 0 }
+			stubs.fireEvents("UNIT_AURA", ctx.addonName)
+			try("render with the debuff on the target", function() CustomBars:Render() end)
+			local debuffEntry = RuntimeEntry(debuffKey)
+			check("its bar runs on the debuff's own time", debuffEntry ~= nil and debuffEntry.active
+				and math.abs(debuffEntry.endTime - (debuffNow + 18)) < 0.001 and Shows(EntryFor(barGroups[debuffKey])))
+			onTarget = nil
+			stubs.fireEvents("PLAYER_TARGET_CHANGED", ctx.addonName)
+			try("render after changing target", function() CustomBars:Render() end)
+			check("and follows a target change", not Shows(EntryFor(barGroups[debuffKey])))
+			-- A spell ID Color Indicator on the same spell follows the same debuff.
+			local debuffCondition = { source = Aura.CONDITION_SOURCE, state = Aura.ConditionState.ACTIVE, spellID = 990052 }
+			local buffCondition = { source = Aura.CONDITION_SOURCE, state = Aura.ConditionState.ACTIVE, spellID = 990050 }
+			spec.colors.shared.indicatorColors.driver_debuff = { custom = { conditions = { debuffCondition, buffCondition } } }
+			CustomBars:Delete(spec, classId, specId, debuffGuid)
+			try("follow the indicator's spells", function() Aura:RefreshConditionSpells() end)
+			local offTarget = Aura:ReadCondition(debuffCondition)
+			onTarget = { auraInstanceID = 89, name = "Driver Typed Debuff", isHarmful = true, expirationTime = debuffNow + 18, duration = 18, applications = 0 }
+			stubs.fireEvents("UNIT_AURA", ctx.addonName)
+			check("a spell ID Color Indicator on a harmful spell follows the player's debuff on the target, with no custom bar on it",
+				offTarget == false and Aura:IsConditionMet(debuffCondition) and Aura:ReadCondition(buffCondition) == false)
+			onTarget = nil
+			stubs.fireEvents("PLAYER_TARGET_CHANGED", ctx.addonName)
+			check("and drops when the target changes", Aura:ReadCondition(debuffCondition) == false)
+			spec.colors.shared.indicatorColors.driver_debuff = nil
+			try("stop following the indicator's spells", function() Aura:RefreshConditionSpells() end)
+			check("a spell nothing follows any more reads as unknown", Aura:ReadCondition(debuffCondition) == nil)
+			try("lay out without the debuff bar", Relayout)
+			try("render without it", function() CustomBars:Render() end)
+			rawset(desktop.C_UnitAuras, "GetAuraDataBySpellName", getAura)
 		end
 		rawset(desktop.C_Spell, "GetSpellName", api.GetSpellName)
 		rawset(desktop.C_Spell, "GetSpellMaxCumulativeAuraApplications", api.GetMax)
 		rawset(desktop.C_UnitAuras, "GetAuraDataBySpellName", api.GetAura)
+		rawset(desktop.C_Spell, "IsSpellHarmful", isSpellHarmful)
 	end
 
 	-- Another provider's bars draw and read through it, and a bar whose provider is missing is left alone.
