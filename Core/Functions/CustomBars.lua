@@ -886,8 +886,8 @@ local function EnsureRuntime()
 		for guid, bar in pairs(bars) do
 			local key = CustomBars:GetBarKey(guid)
 			local definition = registry:Get(key)
-			local provider = ProviderOf(bar.source)
-			if definition ~= nil and provider ~= nil then
+			local provider = definition ~= nil and IsUsable(bar) and ProviderOf(bar.source) or nil
+			if provider ~= nil then
 				local kind = bar.source.kind
 				---@type TRB.Classes.CustomBarRuntime
 				local entry = {

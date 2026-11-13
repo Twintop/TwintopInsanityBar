@@ -939,15 +939,19 @@ function hooks.afterEvents(ctx)
 			end,
 		}
 		CustomBars:RegisterProvider("driver", driverProvider)
-		local provided = nil
+		local provided, ownTimer = nil, nil
 		for _, source in ipairs(CustomBars:GetSources(classId, specId)) do
 			if source.provider == "driver" then
 				provided = source
+			elseif source.kind == timerSource.kind and source.spellId == timerSource.spellId then
+				ownTimer = source
 			end
 		end
 		check("a provider's sources are listed under its name, and the spec's own under none", provided ~= nil and provided.spellId == 990020
-			and timerSource.provider == nil)
+			and ownTimer ~= nil and ownTimer.provider == nil)
 		if provided ~= nil then
+			-- A damaged saved bar with no source is skipped without stopping the rest.
+			spec.customBars.bars["driver-damaged"] = { guid = "driver-damaged" }
 			local providedGuid = CustomBars:Add(spec, classId, specId, provided)
 			local providedKey = CustomBars:GetBarKey(providedGuid)
 			local providedBar = spec.customBars.bars[providedGuid]
@@ -958,6 +962,9 @@ function hooks.afterEvents(ctx)
 			check("its bar is saved with the provider, and draws, reads, and is named through it", providedBar.source.provider == "driver" and drawn > 0
 				and looked > 0 and lookup["$" .. providedKey .. "Time"] == "7" and Shows(EntryFor(barGroups[providedKey]))
 				and CustomBars:GetSourceLabel(classId, specId, providedBar.source):find("Driver Named", 1, true) ~= nil)
+			check("a damaged saved bar beside it is skipped", RuntimeEntry(providedKey) ~= nil
+				and RuntimeEntry(CustomBars:GetBarKey("driver-damaged")) == nil)
+			spec.customBars.bars["driver-damaged"] = nil
 			CustomBars:RegisterProvider("driver", nil)
 			try("lay out without the provider", Relayout)
 			try("render without the provider", function() CustomBars:Render() end)
