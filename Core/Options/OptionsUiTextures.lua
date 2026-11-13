@@ -79,6 +79,11 @@ local function GetLockOfKey(key)
 	return found.lock, found.isSource
 end
 
+---Drops the memoized lock membership, for when a custom bar is added or deleted.
+function TRB.Functions.OptionsUi.Textures:ResetLockMembers()
+	lockByKey = nil
+end
+
 ---Copies a lock's source texture to everything the lock matches that the table holds.
 ---@param textures table
 ---@param lockName string
@@ -283,6 +288,30 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		} })
 	end
 
+	---Rebuilds the rows of the bars the user added, which come and go while this panel stays built.
+	local function SyncUserBarRows()
+		for index = #allRows, 1, -1 do
+			local row = allRows[index]
+			if row.isUserBar then
+				table.remove(allRows, index)
+				rowsByKey[row.key] = nil
+				for _, item in ipairs(row.items) do
+					rowByTextureKey[item.key] = nil
+					itemByTextureKey[item.key] = nil
+				end
+			end
+		end
+		for _, userBarKey in ipairs(TRB.Classes.BarTypeRegistry:GetUserBarKeys(classId, specId)) do
+			local barName = barRegistry:Get(userBarKey).displayName
+			AddRow({ key = userBarKey, label = barName, isUserBar = true, items = {
+				Item(userBarKey .. "Bar", string.format(L["CustomBarTextureBar"], barName), "statusbar"),
+				Item(userBarKey .. "Border", string.format(L["CustomBarTextureBorder"], barName), "border"),
+				Item(userBarKey .. "Background", string.format(L["CustomBarTextureBackground"], barName), "background"),
+			} })
+		end
+	end
+	SyncUserBarRows()
+
 	-- Mutated in place: the table, detail panel, and handlers below all close over it.
 	local listedRows = {}
 	local function RebuildRows()
@@ -431,6 +460,8 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		sectionTitle = L["BarTexturesHeaderTotems"]
 	elseif groupKey == "skyriding" then
 		sectionTitle = L["BarTexturesHeaderSkyriding"]
+	elseif groupKey == "customBars" then
+		sectionTitle = L["BarTexturesHeaderCustomBars"]
 	end
 	controls.textBarTexturesSection = primitives:BuildSectionHeader(parent, sectionTitle, oUi.xCoord, yCoord)
 
@@ -919,9 +950,10 @@ function TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, con
 		end,
 	}
 
-	-- A sibling tab's edits show up when this one comes back into view.
+	-- A sibling tab's edits show up when this one comes back into view, as do custom bars added or deleted since.
 	container:HookScript("OnShow", function()
-		Refresh()
+		SyncUserBarRows()
+		ReloadRows()
 	end)
 
 	Refresh()

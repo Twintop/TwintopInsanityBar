@@ -2352,6 +2352,10 @@ end
 ---@field public globalScope boolean # A class-scoped Other Bar that still has Global Options for its specs to follow
 ---@field public liveNodeCountFunc (fun(): integer?)? # Self-driven multi-node bar whose node count follows live game data; nil from it keeps maxNodes
 ---@field public onLayout (fun(group: TRB.Classes.BarGroup, groupSettings: table, colors: table?))? # Runs after each layout pass of the bar, for a bar that positions its own nodes
+---@field public isUserBar boolean # A bar the user added on a specialization's Custom Bars tab
+---@field public ownerClassId integer? # The class of the specialization a custom bar belongs to
+---@field public ownerSpecId integer? # The specialization a custom bar belongs to
+---@field public fillsRecharge boolean? # A custom charges bar whose recharging charge fills, through the group's charge tracker
 TRB.Classes.BarTypeDefinition = {}
 TRB.Classes.BarTypeDefinition.__index = TRB.Classes.BarTypeDefinition
 
@@ -2429,6 +2433,9 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.environmentShowConditions = config.environmentShowConditions or false
 	self.liveNodeCountFunc = config.liveNodeCountFunc
 	self.onLayout = config.onLayout
+	self.isUserBar = config.isUserBar or false
+	self.ownerClassId = config.ownerClassId
+	self.ownerSpecId = config.ownerSpecId
 
 	return self
 end
@@ -2684,6 +2691,12 @@ function TRB.Classes.BarTypeRegistry:Register(definition)
 	self.definitions[definition.key] = definition
 end
 
+---Removes a bar type definition, for a custom bar the user deleted.
+---@param key string
+function TRB.Classes.BarTypeRegistry:Unregister(key)
+	self.definitions[key] = nil
+end
+
 ---Gets a bar type definition by key
 ---@param key string
 ---@return TRB.Classes.BarTypeDefinition?
@@ -2812,6 +2825,9 @@ end
 function TRB.Classes.BarTypeRegistry:IsGlobalScopeBar(key)
 	if key == nil then
 		return true
+	end
+	if self:IsUserBar(key) then
+		return false
 	end
 	if self:IsTotemBar(key) then
 		return self:HasGlobalTotems()
@@ -2985,6 +3001,9 @@ function TRB.Classes.BarTypeRegistry:IsBarInScope(barKey, classId, specId)
 		return self:SpecHasTotems(classId, specId)
 	end
 	local definition = TRB.Classes.BarTypeRegistry:GetInstance():Get(barKey)
+	if self:IsUserBar(barKey) then
+		return definition ~= nil and classId ~= nil and definition.ownerClassId == classId and definition.ownerSpecId == specId
+	end
 	if definition ~= nil and definition.classScoped then
 		return ClassClaimsOtherBar(classId, barKey) or (classId == nil and definition.globalScope)
 	end
@@ -2993,15 +3012,72 @@ end
 
 local castbarGroupKeySet = { castbar = true, targetCastbar = true, focusCastbar = true, petCastbar = true }
 
+TRB.Classes.BarTypeRegistry.userBarKeyPrefix = "custom_"
+
+---Whether a bar key is one the user added on a specialization's Custom Bars tab.
+---@param key string?
+---@return boolean
+function TRB.Classes.BarTypeRegistry:IsUserBar(key)
+	return type(key) == "string" and string.sub(key, 1, 7) == self.userBarKeyPrefix
+end
+
+---A specialization's custom bar keys that have a definition, ordered by name.
+---@param classId integer?
+---@param specId integer?
+---@return string[]
+function TRB.Classes.BarTypeRegistry:GetUserBarKeys(classId, specId)
+	local keys = {}
+	if classId == nil or specId == nil then
+		return keys
+	end
+	local definitions = TRB.Classes.BarTypeRegistry:GetInstance():GetAll()
+	for key, definition in pairs(definitions) do
+		if definition.isUserBar and definition.ownerClassId == classId and definition.ownerSpecId == specId then
+			keys[#keys + 1] = key
+		end
+	end
+	table.sort(keys, function(a, b)
+		local nameA, nameB = definitions[a].displayName, definitions[b].displayName
+		if nameA ~= nameB then
+			return nameA < nameB
+		end
+		return a < b
+	end)
+	return keys
+end
+
+---Appends a specialization's custom bar definitions to a customBars list, skipping any already present.
+---@param list TRB.Classes.BarTypeDefinition[]
+---@param classId integer?
+---@param specId integer?
+function TRB.Classes.BarTypeRegistry:AppendUserBars(list, classId, specId)
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
+	for _, key in ipairs(self:GetUserBarKeys(classId, specId)) do
+		local present = false
+		for _, existing in ipairs(list) do
+			if existing.key == key then
+				present = true
+				break
+			end
+		end
+		if not present then
+			list[#list + 1] = registry:Get(key)
+		end
+	end
+end
+
 ---The grouping a bar's options live under, also the shared grouping's tab key and nav category; anything unlisted is the
 ---spec's own. The Totems bar follows the spec's placement, and Global Options' Totems screen without a spec.
 ---@param barKey string?
 ---@param classId integer? # The scope; nil is Global Options
 ---@param specId integer?
----@return "spec"|"castbar"|"otherBars"|"petBars"|"totems"|"skyriding"
+---@return "spec"|"castbar"|"otherBars"|"petBars"|"totems"|"skyriding"|"customBars"
 function TRB.Classes.BarTypeRegistry:GetBarGroup(barKey, classId, specId)
 	if castbarGroupKeySet[barKey] then
 		return "castbar"
+	end
+	if self:IsUserBar(barKey) then
+		return "customBars"
 	end
 	for _, key in ipairs(self.otherBarKeys) do
 		if key == barKey then
@@ -3261,6 +3337,11 @@ function TRB.Classes.BarTypeRegistry:GetBarTypesForSpec(classId, specId)
 		if self.definitions[key] then
 			result[key] = self.definitions[key]
 		end
+	end
+
+	-- The bars the user added to this spec.
+	for _, key in ipairs(self:GetUserBarKeys(classId, specId)) do
+		result[key] = self.definitions[key]
 	end
 
 	return result

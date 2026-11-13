@@ -15,6 +15,16 @@ TRB.Flavor.newsContent = [====[
 - [#986](#986) Fix a mana spec's Primary Resource Value bar visibility condition being met at far less mana than the value set.
 - [#986](#986) A mana spec's Primary Resource Value condition now goes up to 15,000.
 
+### Color Indicators
+
+- [#993](#993) A custom Color Indicator or Buff Alert on a buff or debuff under Not Displayed now works when its ability is in Essential Cooldowns or Utility Cooldowns, such as a damage over time effect on your target.
+
+### Custom Bars
+
+- [#992](#992) A custom bar can track the cooldown, recharge, or charges of an ability in your Cooldown Manager, including the ones under Not Displayed.
+- [#993](#993) A custom bar can track the duration or stacks of a buff, enemy debuff, trinket buff, or combat potion buff in your Cooldown Manager.
+- [#993](#993) A buff in Tracked Bars keeps End Cap and Smooth on its custom bar. One in Tracked Buffs fills without them, and one that isn't displayed needs Always Show.
+
 ## Mage
 
 - [#981](#981) Add a new Arcane Blast bar, tracking your Arcane Blast stacks, with the `$arcaneBlastStacks`, `$arcaneBlastStacksMax`, `$arcaneBlastTime`, and `#arcaneBlast` bar text variables. It shows once you take the Arcane Blast talent.

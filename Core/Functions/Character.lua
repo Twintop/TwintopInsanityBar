@@ -1557,6 +1557,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 	local s = core.global[className][specName] --[[@as TRB.Classes.Settings.SpecializationGlobalEnabled]]
 	local spec = TRB.Data.settings[className][specName] --[[@as TRB.Classes.Settings.SpecializationSettingsBase]]
 
+	-- First, since the textures and bars composed below read the registry.
+	local specEntry = TRB.Functions.Character:GetSpecRegistryEntry(compositeKey)
+	TRB.Functions.CustomBars:SyncRegistry(specEntry and specEntry.classId, specEntry and specEntry.specId, spec)
+
 	if s.bar then
 		specCache.settings.bar = core.bar
 	else
@@ -1605,6 +1609,10 @@ function TRB.Functions.Character:FillSpecializationCacheSettings(className, spec
 		barText = mergedBarText,
 		globalBarTextCount = globalBarTextCount
 	}
+	-- The text frames are built from the character's list, whichever spec's custom bars a form shows.
+	if compositeKey == TRB.Data.character.compositeKey then
+		TRB.Functions.BarText:ApplyDisplayedBoundText(specCache.settings.displayText)
+	end
 
 	local textSource = s.textColors and core.colors.text or spec.colors.text
 	specCache.settings.colors = {

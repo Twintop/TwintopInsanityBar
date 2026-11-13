@@ -188,6 +188,8 @@ end
 
 local unitAuraFrame = CreateFrame("Frame")
 unitAuraFrame:SetScript("OnEvent", AuraUpdateEvent)
+-- Follows the player's debuffs on the target; set up with them below.
+local targetAuraFrame = CreateFrame("Frame")
 
 ---Registers the UNIT_AURA event so the addon begins processing aura updates for the player
 function TRB.Functions.Aura:EnableUnitAura()
@@ -199,6 +201,7 @@ end
 ---Unregisters the UNIT_AURA event so the addon stops processing aura updates
 function TRB.Functions.Aura:DisableUnitAura()
 	unitAuraFrame:UnregisterEvent("UNIT_AURA")
+	targetAuraFrame:UnregisterAllEvents()
 end
 
 ---Stores the AuraInstanceId->SnapshotBuff in a dictionary
@@ -308,6 +311,29 @@ TRB.Functions.Aura.ConditionState = {
 local conditionNames = {}
 local conditionActive = {}
 local conditionInstances = {}
+-- The followed spells that are harmful: those are the player's debuffs on the target, not buffs on the player.
+---@type integer[]
+local conditionDebuffIds = {}
+-- name -> the copy last read, for the custom bars that draw its time and stacks.
+---@type table<string, { expirationTime: number, duration: number, applications: number }>
+local conditionDetails = {}
+
+---@param name string
+---@param aura AuraData?
+local function StoreConditionDetails(name, aura)
+	if aura == nil then
+		conditionDetails[name] = nil
+		return
+	end
+	local details = conditionDetails[name]
+	if details == nil then
+		details = {}
+		conditionDetails[name] = details
+	end
+	details.expirationTime = aura.expirationTime or 0
+	details.duration = aura.duration or 0
+	details.applications = aura.applications or 0
+end
 
 ---@param conditions TRB.CustomIndicatorCondition[]?
 local function AddConditionSpells(conditions)
@@ -318,8 +344,12 @@ local function AddConditionSpells(conditions)
 		local spellId = condition.source == TRB.Functions.Aura.CONDITION_SOURCE and condition.spellID or nil
 		local name = spellId ~= nil and C_Spell.GetSpellName(spellId) or nil
 		if spellId ~= nil and name ~= nil then
-			conditionNames[spellId] = name
-			conditionActive[name] = false
+			if C_Spell.IsSpellHarmful(spellId) == true then
+				conditionDebuffIds[#conditionDebuffIds + 1] = spellId
+			else
+				conditionNames[spellId] = name
+				conditionActive[name] = false
+			end
 		end
 	end
 end
@@ -329,8 +359,123 @@ end
 local function ReadConditionAura(name)
 	local aura = C_UnitAuras.GetAuraDataBySpellName("player", name, "HELPFUL")
 	conditionActive[name] = aura ~= nil
+	StoreConditionDetails(name, aura)
 	if aura ~= nil then
 		conditionInstances[aura.auraInstanceID] = name
+	end
+end
+
+-- The player's own debuffs on the target that custom bars follow by spell ID: spell -> name, name -> followed,
+-- name -> the copy last read, aura instance -> name; kept current by the target's UNIT_AURA and by target changes.
+local targetNames = {}
+local targetFollowed = {}
+---@type table<string, { expirationTime: number, duration: number, applications: number }>
+local targetDetails = {}
+local targetInstances = {}
+
+---Re-reads whether the target has the player's named debuff, recording the copy it found.
+---@param name string
+---@return boolean changed
+local function ReadTargetAura(name)
+	local aura = C_UnitAuras.GetAuraDataBySpellName("target", name, "HARMFUL|PLAYER")
+	local details = targetDetails[name]
+	if aura == nil then
+		targetDetails[name] = nil
+		return details ~= nil
+	end
+	targetInstances[aura.auraInstanceID] = name
+	local expirationTime, duration, applications = aura.expirationTime or 0, aura.duration or 0, aura.applications or 0
+	if details == nil then
+		details = {}
+		targetDetails[name] = details
+	elseif details.expirationTime == expirationTime and details.duration == duration and details.applications == applications then
+		return false
+	end
+	details.expirationTime = expirationTime
+	details.duration = duration
+	details.applications = applications
+	return true
+end
+
+---@return boolean changed
+local function ReadTargetAuras()
+	wipe(targetInstances)
+	local changed = false
+	for name in pairs(targetFollowed) do
+		changed = ReadTargetAura(name) or changed
+	end
+	return changed
+end
+
+-- Bar text is rebuilt only when a followed debuff changed, since a raid boss's auras change constantly.
+---@param event string
+---@param info UnitAuraUpdateInfo?
+local function TargetAuraEvent(_, event, _, info)
+	local changed = false
+	if event ~= "UNIT_AURA" or info == nil or info.isFullUpdate then
+		changed = ReadTargetAuras()
+	else
+		if info.addedAuras ~= nil then
+			for _, aura in ipairs(info.addedAuras) do
+				if aura.name ~= nil and targetFollowed[aura.name] then
+					changed = ReadTargetAura(aura.name) or changed
+				end
+			end
+		end
+		if info.updatedAuraInstanceIDs ~= nil then
+			for _, auraInstanceId in ipairs(info.updatedAuraInstanceIDs) do
+				local name = targetInstances[auraInstanceId]
+				if name ~= nil then
+					changed = ReadTargetAura(name) or changed
+				end
+			end
+		end
+		if info.removedAuraInstanceIDs ~= nil then
+			for _, auraInstanceId in ipairs(info.removedAuraInstanceIDs) do
+				local name = targetInstances[auraInstanceId]
+				if name ~= nil then
+					targetInstances[auraInstanceId] = nil
+					changed = ReadTargetAura(name) or changed
+				end
+			end
+		end
+	end
+	if changed then
+		TRB.Data.lookupDirty = true
+	end
+end
+
+targetAuraFrame:SetScript("OnEvent", TargetAuraEvent)
+
+---Follows these spells as the player's debuffs on the target, replacing the last set, and listens only while there are any.
+---@param spellIds integer[]
+local function FollowTargetDebuffs(spellIds)
+	wipe(targetNames)
+	wipe(targetFollowed)
+	wipe(targetDetails)
+	wipe(targetInstances)
+	for _, spellId in ipairs(spellIds) do
+		local name = C_Spell.GetSpellName(spellId)
+		if name ~= nil then
+			targetNames[spellId] = name
+			targetFollowed[name] = true
+		end
+	end
+	if next(targetFollowed) == nil then
+		targetAuraFrame:UnregisterAllEvents()
+		return
+	end
+	targetAuraFrame:RegisterUnitEvent("UNIT_AURA", "target")
+	targetAuraFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
+	ReadTargetAuras()
+end
+
+---@param spellId integer?
+local function AddConditionSpell(spellId)
+	local name = spellId ~= nil and C_Spell.GetSpellName(spellId) or nil
+	if spellId ~= nil and name ~= nil then
+		conditionNames[spellId] = name
+		conditionActive[name] = false
 	end
 end
 
@@ -340,8 +485,11 @@ function TRB.Functions.Aura:RefreshConditionSpells()
 	wipe(conditionNames)
 	wipe(conditionActive)
 	wipe(conditionInstances)
+	wipe(conditionDetails)
+	wipe(conditionDebuffIds)
 	local spec = TRB.Flavor.playerAuras and TRB.Functions.Character:GetActiveRawSpecSettings() or nil
 	if spec == nil then
+		FollowTargetDebuffs({})
 		return
 	end
 
@@ -356,6 +504,12 @@ function TRB.Functions.Aura:RefreshConditionSpells()
 			AddConditionSpells(type(cue) == "table" and cue.kind == "buff" and cue.configuration ~= nil and cue.configuration.conditions or nil)
 		end
 	end
+	local customBarSpellIds = {}
+	TRB.Functions.CustomBars:AppendAuraSpellIds(customBarSpellIds, conditionDebuffIds)
+	for _, spellId in ipairs(customBarSpellIds) do
+		AddConditionSpell(spellId)
+	end
+	FollowTargetDebuffs(conditionDebuffIds)
 	for name in pairs(conditionActive) do
 		ReadConditionAura(name)
 	end
@@ -382,6 +536,16 @@ function TRB.Functions.Aura:UpdateConditionAuras(info)
 			if name ~= nil and conditionActive[name] ~= nil then
 				conditionActive[name] = true
 				conditionInstances[aura.auraInstanceID] = name
+				StoreConditionDetails(name, aura)
+			end
+		end
+	end
+	-- A refresh or a stack changes what a custom bar draws, though not whether the buff is up.
+	if info.updatedAuraInstanceIDs ~= nil then
+		for _, auraInstanceId in ipairs(info.updatedAuraInstanceIDs) do
+			local name = conditionInstances[auraInstanceId]
+			if name ~= nil and conditionDetails[name] ~= nil then
+				ReadConditionAura(name)
 			end
 		end
 	end
@@ -395,6 +559,26 @@ function TRB.Functions.Aura:UpdateConditionAuras(info)
 			end
 		end
 	end
+end
+
+---A followed aura's time and stacks: any rank of a buff on the player from any caster, or of the player's own
+---debuff on the target.
+---@param spellId integer
+---@return boolean isActive
+---@return number expirationTime # 0 for an aura with no timer
+---@return number duration
+---@return number applications
+function TRB.Functions.Aura:GetFollowedAura(spellId)
+	local name = conditionNames[spellId]
+	local details = name ~= nil and conditionActive[name] == true and conditionDetails[name] or nil
+	if details == nil then
+		local targetName = targetNames[spellId]
+		details = targetName ~= nil and targetDetails[targetName] or nil
+	end
+	if details == nil then
+		return false, 0, 0, 0
+	end
+	return true, details.expirationTime, details.duration, details.applications
 end
 
 ---Whether a buff condition holds right now: the player has any rank of its spell.
@@ -413,7 +597,11 @@ function TRB.Functions.Aura:ReadCondition(condition)
 	end
 	local name = conditionNames[condition.spellID]
 	if name == nil then
-		return nil
+		local targetName = targetNames[condition.spellID]
+		if targetName == nil then
+			return nil
+		end
+		return targetDetails[targetName] ~= nil
 	end
 	return conditionActive[name] == true
 end

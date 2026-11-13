@@ -1046,7 +1046,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				notTracked = true
 				badgeTooltip = L["CustomIndicatorMissingTooltip"]
 			else
-				notTracked = entry.state ~= cdm.EntryState.TRACKED
+				notTracked = not cdm:IsEntryTracked(entry)
 				local status = GetEntryStatusText(entry)
 				if notTracked then
 					badgeTooltip = status or badgeTooltip
@@ -1639,7 +1639,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				end
 			end
 			if TRB.Flavor.playerAuras then
-				rootDescription:CreateButton(L["CustomIndicatorSourceAuraSpellId"], function()
+				rootDescription:CreateButton(L["CustomBarsAddGroupAuraId"], function()
 					Primitives:ShowAuraSpellIdPrompt(nil, AddAuraIndicator)
 				end)
 			end

@@ -298,7 +298,8 @@ function TRB.Classes.Mainline.Priest.HolySpells:New()
 	-- Holy Word: Chastise
 	self.holyWordChastise = TRB.Classes.SpellBase:New({
 		id = 88625,
-		duration = 60,
+		cooldown = 60,
+		hasCooldown = true,
 		isTalent = true
 	})
 	self.smite = TRB.Classes.Mainline.Priest.HolyWordSpell:New({

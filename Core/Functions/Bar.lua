@@ -858,6 +858,38 @@ local function EnsureTotemBarGroups(barGroups)
 	end
 end
 
+---Guarantees a group for each bar the user added to the displayed spec, rebuilt when its node count changed, and
+---drops the group of a bar that was deleted or belongs to a spec no longer displayed.
+---@param barGroups table<string, TRB.Classes.BarGroup>
+local function EnsureUserBarGroups(barGroups)
+	local live = {}
+	local runtime = TRB.Functions.CustomBars:GetRuntime()
+	TRB.Functions.CustomBars:GroupsBuilt()
+	for _, entry in ipairs(runtime) do
+		local key = entry.key
+		local maxNodes = entry.definition.maxNodes
+		live[key] = true
+		if barGroups[key] ~= nil and barGroups[key].maxNodes ~= maxNodes then
+			barGroups[key]:Destroy()
+			barGroups[key] = nil
+		end
+		if barGroups[key] == nil then
+			local frameName = "TwintopResourceBarFrame_" .. key:gsub("^%l", string.upper)
+			barGroups[key] = TRB.Classes.BarGroup:New(UIParent, frameName, maxNodes, false)
+		end
+		-- Ahead of the layout pass, which is what positions the tracker.
+		if entry.definition.fillsRecharge then
+			barGroups[key]:EnableChargeTracker()
+		end
+	end
+	for key, group in pairs(barGroups) do
+		if not live[key] and TRB.Classes.BarTypeRegistry:IsUserBar(key) then
+			group:Destroy()
+			barGroups[key] = nil
+		end
+	end
+end
+
 ---Destroys existing bar groups before creating new ones
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
@@ -904,6 +936,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	EnsurePetBarGroups(barGroups)
 	EnsureTotemBarGroups(barGroups)
 	EnsureSkyridingBarGroups(settings, barGroups)
+	EnsureUserBarGroups(barGroups)
 
 	-- Clear color caches to ensure fresh application on bar construction
 	wipe(TRB.Data.cache.colors.border)
@@ -957,6 +990,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	EnsurePetBarGroups(barGroups)
 	EnsureTotemBarGroups(barGroups)
 	EnsureSkyridingBarGroups(settings, barGroups)
+	EnsureUserBarGroups(barGroups)
 
 	local strata = TRB.Data.settings.core.strata.level
 
@@ -3226,18 +3260,22 @@ end
 function TRB.Functions.Bar:ResolveFormIndependentBarSettings(settings)
 	local descriptor = TRB.Functions.Character:GetActiveSpecDescriptor()
 	local barKeys = descriptor and descriptor.formIndependentBars
-	if barKeys == nil then
-		return settings
+	-- A bar the user added lays out with its own spec's settings, and a form's pass can be given another's.
+	local userBars = TRB.Functions.CustomBars:GetRuntime()
+	local userBarSettings = #userBars > 0 and TRB.Functions.CustomBars:GetDisplayedSettings() or nil
+	if userBarSettings == settings then
+		userBarSettings = nil
 	end
-	local ownSettings = TRB.Functions.Character:GetSpecSettingsByKey(TRB.Data.character.compositeKey)
-	if ownSettings == nil or ownSettings.bars == nil then
+	if barKeys == nil and userBarSettings == nil then
 		return settings
 	end
 
 	local effective
-	for _, barKey in ipairs(barKeys) do
-		local ownBar = ownSettings.bars[barKey]
-		if ownBar ~= nil and (settings.bars == nil or settings.bars[barKey] ~= ownBar) then
+	---@param barKey string
+	---@param source table? # The settings the bar keeps
+	local function Keep(barKey, source)
+		local sourceBar = source ~= nil and source.bars ~= nil and source.bars[barKey] or nil
+		if source ~= nil and sourceBar ~= nil and (settings.bars == nil or settings.bars[barKey] ~= sourceBar) then
 			if effective == nil then
 				-- New nested tables, not shared references, so the form spec's own settings stay untouched.
 				effective = {}
@@ -3251,8 +3289,19 @@ function TRB.Functions.Bar:ResolveFormIndependentBarSettings(settings)
 					effective.displayBar[k] = v
 				end
 			end
-			effective.bars[barKey] = ownBar
-			effective.displayBar[barKey] = ownSettings.displayBar and ownSettings.displayBar[barKey]
+			effective.bars[barKey] = sourceBar
+			effective.displayBar[barKey] = source.displayBar and source.displayBar[barKey]
+		end
+	end
+	if barKeys ~= nil then
+		local ownSettings = TRB.Functions.Character:GetSpecSettingsByKey(TRB.Data.character.compositeKey)
+		for _, barKey in ipairs(barKeys) do
+			Keep(barKey, ownSettings)
+		end
+	end
+	if userBarSettings ~= nil then
+		for _, entry in ipairs(userBars) do
+			Keep(entry.key, userBarSettings)
 		end
 	end
 	return effective or settings
@@ -4637,7 +4686,8 @@ end
 ---Applies appearance (textures/colors) to all custom bar groups registered in the BarTypeRegistry
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param barGroups table<string, TRB.Classes.BarGroup>
-function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
+---@param userBarsOnly boolean? # Only the bars the user added
+function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups, userBarsOnly)
 	-- Mirror ApplyCustomBarGroupsLayout's primary guard: without primary the custom bars are never
 	-- laid out, so texturing an unsized node throws "TexCoord out of range" in Blizzard's ApplyBackdrop.
 	if settings == nil or barGroups == nil or barGroups.primary == nil then
@@ -4646,13 +4696,16 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 	
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local allBarTypes = registry:GetAll()
+	-- A bar the user added draws with its own spec's settings, whichever spec's this pass was given.
+	local userBarSettings = TRB.Functions.CustomBars:GetDisplayedSettings() or settings
+	local passSettings = settings
 
 	for key, barTypeDef in pairs(allBarTypes) do
 		local barGroup = barGroups[key]
-		local barSettings = settings.bars and settings.bars[key]
+		settings = barTypeDef.isUserBar and userBarSettings or passSettings
 
 		-- Apply appearance if bar group exists, even if barSettings is missing (use fallbacks)
-		if barGroup then
+		if barGroup and (not userBarsOnly or barTypeDef.isUserBar) then
 			-- Under a texture lock the main bar's textures win: a panel only syncs the per-bar keys it built
 			-- dropdowns for, and the global panel builds none for class-specific bars.
 			local textures = settings.textures
@@ -4723,7 +4776,9 @@ function TRB.Functions.Bar:ApplyCustomBarGroupsAppearance(settings, barGroups)
 		end
 	end
 	-- The Skyriding bars draw their own colors, which the pass above just replaced.
-	TRB.Functions.Skyriding:InvalidateRender()
+	if not userBarsOnly then
+		TRB.Functions.Skyriding:InvalidateRender()
+	end
 end
 
 ---Shows the end cap on the highest node with any fill in first..last and hides the rest of that run's caps.

@@ -16,6 +16,15 @@ TRB.Details.coreNewsContent = [====[
 - [#986](#986) Remove the shared code's redundant bar hiding when a specialization is disabled.
 - Update LibSimpleHTMLMarkdown to version 1.0.3.
 
+## Custom Bars
+
+- [#988](#988) Add a Custom Bars tab to every specialization, where you can add your own bars tracking the duration or stacks of a buff or proc, or the cooldown, recharge, total recharge, or charges of an ability, that the specialization already tracks.
+- [#988](#988) Each custom bar has its own layout, colors, End Cap, textures, and visibility, shows When Active by default, and is included in the specialization's Bar Display export.
+- [#988](#988) A custom bar tracking charges can fill the recharging charge as it recharges, on by default.
+- [#988](#988) Bar text bound to a custom bar can use `$abilityTime`, `$abilityStacks`, and `$abilityStacksMax` for what that bar tracks, and each new bar gets centered default bar text.
+- [#988](#988) Custom bars belong to their specialization and have no Use Global options, threshold lines, or Color Indicator targets.
+- [#990](#990) A custom bar can track the cooldown, recharge, or charges of any ability by its spell ID.
+
 ## Edit Mode
 
 - [#974](#974) Add X and Y position entry for the selected bar in Edit Mode.

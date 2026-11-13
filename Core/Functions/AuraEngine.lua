@@ -501,6 +501,23 @@ function AuraEngine:PrintDiagnostics()
 	end
 end
 
+---Hands a node's fill back to its own writes but keeps its parked containers, so a later Attach reuses them rather
+---than building more. For a node that moves between the engine and value writes.
+---@param node TRB.Classes.BarNode
+function AuraEngine:Park(node)
+	local record = records[node]
+	if record == nil or record.active == nil then
+		return
+	end
+	Deactivate(record.active)
+	record.active = nil
+	node.engineDriven = nil
+	local endCapSlot = node.overlaySlots.endCap
+	if endCapSlot ~= nil then
+		endCapSlot:ReanchorEndCap()
+	end
+end
+
 ---Releases the node's binding so its own fill takes over again.
 ---@param node TRB.Classes.BarNode
 function AuraEngine:Detach(node)

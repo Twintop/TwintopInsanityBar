@@ -576,4 +576,8 @@ if locale == "enGB" then
 	L["ForeverMageArcaneBlastColorsHeader"] = "Arcane Blast Colours"
 	L["ForeverMageArcaneBlastCheckboxUseHighestForAll"] = "Use highest Arcane Blast stack colour for all?"
 	L["ForeverMageArcaneBlastCheckboxUseHighestForAllTooltip"] = "When checked, the highest Arcane Blast stack's colour will be used for all Arcane Blast stacks. E.g., if you have maximum %d Arcane Blast stacks and currently have %d, the Penultimate colour will be used for all Arcane Blast stacks instead of just the second to last."
+	L["CustomBarsPanelNote"] = "Add your own bars for the buffs, procs, cooldowns, and charges this specialisation already tracks. Each bar's layout and colours are set here, and its textures, visibility, and bar text are on the tabs beside this one."
+	L["BarDisplayTextCustomizationHeaderCustomBars"] = "Custom Bar Display Text Customisation"
+	L["CustomBarsAddGroupSnapshot"] = "Tracked by This Specialisation"
+	L["CustomBarsProviderShortSnapshot"] = "Specialisation"
 end

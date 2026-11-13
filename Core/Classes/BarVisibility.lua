@@ -203,6 +203,7 @@ end
 ---@field boolShowCached boolean|nil # Cached result of ShouldShowBar from last dirty evaluation; used by Phase 3 to skip curve when boolean conditions already satisfied
 ---@field forceHideCached boolean|nil # Cached result of hard-hide/force/unsupported evaluation from last dirty evaluation
 ---@field thresholdEligibleCached boolean|nil # Cached threshold eligibility from last dirty evaluation; false when force/neverShow/unsupported prevent curve evaluation
+---@field isActive boolean|nil # A custom bar's own state for its When Active condition: its timer is running or its count isn't 0
 TRB.Classes.BarVisibilityEntry = {}
 TRB.Classes.BarVisibilityEntry.__index = TRB.Classes.BarVisibilityEntry
 
@@ -313,6 +314,10 @@ function TRB.Functions.BarVisibility:GetProfileKeyForBar(barKey)
 	end
 	if registry:IsSkyridingBar(barKey) then
 		return "skyriding"
+	end
+	-- When Active and the standard conditions, as the Global Cooldown bar offers.
+	if registry:IsUserBar(barKey) then
+		return "timerEnvironment"
 	end
 	if registry:GetBarGroup(barKey) == "otherBars" then
 		if barKey == "mainHandSwing" or barKey == "rangedSwing" then
@@ -644,6 +649,7 @@ function TRB.Functions.BarVisibility:AddEntry(entries, barGroup, visibilitySetti
 	entry.enabled = enabled
 	entry.showNodesCount = showNodesCount
 	entry.setMaxNodes = setMaxNodes
+	entry.isActive = nil
 	entry.boolShowCached = nil
 	entry.forceHideCached = nil
 	entry.thresholdEligibleCached = nil
@@ -974,6 +980,11 @@ function TRB.Functions.BarVisibility:ShouldShowBar(context, entry)
 		return false
 	end
 
+	-- A custom bar's own show state, which no other bar's entry carries.
+	if conditions.whenActive and entry.isActive then
+		return true
+	end
+
 	-- ProcessBars handles the OR with the resource/health threshold independently.
 	return self:MatchesShowConditions(context, conditions)
 end
@@ -1280,6 +1291,11 @@ end
 ---@param barTextSettings table|nil # The settings whose bar text list built the text frames, when they differ from settings
 ---@return boolean # Whether any bar is showing (isTracking value)
 function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData, settings, barTextSettings)
+	-- The bars the user added join every class's list here; Edit Mode's and Preview's entries already hold every group.
+	if not TRB.Functions.EditMode:IsShowingAllBars() then
+		TRB.Functions.CustomBars:AppendVisibilityEntries(entries, TRB.Frames.barGroups)
+	end
+
 	local anyShowing = false
 	local anyFading = false
 	local anyEntryHasCurve = false

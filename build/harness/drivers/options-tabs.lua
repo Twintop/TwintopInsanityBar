@@ -435,9 +435,10 @@ function hooks.afterEvents(ctx)
 			end
 			check("every Global category's link resolves to its tab strip (" .. table.concat(unresolved, ", ") .. ")", #unresolved == 0)
 		end
+		-- Custom Bars lists nothing until the user adds a bar.
 		local empty = {}
 		for _, e in ipairs(drv.editors) do
-			if e.st == nil or #e.st.rows == 0 then empty[#empty + 1] = tostring(e.classId) .. "_" .. tostring(e.specId) .. "/" .. e.groupKey end
+			if e.groupKey ~= "customBars" and (e.st == nil or #e.st.rows == 0) then empty[#empty + 1] = tostring(e.classId) .. "_" .. tostring(e.specId) .. "/" .. e.groupKey end
 		end
 		check("no Textures tab lists nothing (" .. table.concat(empty, ", ") .. ")", #empty == 0)
 		-- A grouping's tab inside a specialization measured about 671 wide in game; LibScrollingTable draws the columns plus 20.
@@ -1083,7 +1084,7 @@ function hooks.afterEvents(ctx)
 
 		-- Each grouping's Textures tab names its grouping, and a grouping's strip orders its tabs as the spec's own do.
 		do
-			local wanted = { castbar = "BarTexturesHeaderCastbar", otherBars = "BarTexturesHeaderOtherBars", petBars = "BarTexturesHeaderPetBars", totems = "BarTexturesHeaderTotems", skyriding = "BarTexturesHeaderSkyriding" }
+			local wanted = { castbar = "BarTexturesHeaderCastbar", otherBars = "BarTexturesHeaderOtherBars", petBars = "BarTexturesHeaderPetBars", totems = "BarTexturesHeaderTotems", skyriding = "BarTexturesHeaderSkyriding", customBars = "BarTexturesHeaderCustomBars" }
 			local wrong, seen = {}, 0
 			for _, e in ipairs(drv.editors) do
 				local headers = drv.headersByParent[e.parent] or {}

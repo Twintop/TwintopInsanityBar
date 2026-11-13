@@ -614,7 +614,8 @@ end
 ---@return number # The effective cooldown duration in seconds
 local function CalculateHolyWordDuration(holyWordSpell)
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
-	local duration = holyWordSpell.duration
+	-- Chastise declares a cooldown; the Holy Words with charges declare their recharge as a duration.
+	local duration = holyWordSpell.cooldown or holyWordSpell.duration
 	if talents:IsTalentActive(spells.holyCelerity) then
 		duration = duration + spells.holyCelerity.attributes.durationMod
 	end

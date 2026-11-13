@@ -86,6 +86,28 @@ local castbarIconAnchors = {
 
 -- Bar text anchors on the Totems bar: TotemSlot1 and up, each the node showing that slot.
 local TOTEM_SLOT_ANCHOR_PATTERN = "^TotemSlot(%d+)$"
+-- Bar text anchors on a bar the user added, and on a charges bar's recharging charge: the capture is the bar's key.
+local USER_BAR_ANCHOR_PATTERN = "^CustomBar::(.+)$"
+local USER_BAR_RECHARGING_ANCHOR_PATTERN = "^CustomBarRecharging::(.+)$"
+-- Text bound to a custom bar reads that bar through these; each is rewritten per entry to the bar's own variable.
+local BOUND_BAR_SUFFIXES = { "Time", "Stacks", "StacksMax" }
+local UNBOUND_BAR_VARIABLES = { "$abilityTime", "$abilityStacks", "$abilityStacksMax" }
+local boundBarSuffixSet = { Time = true, Stacks = true, StacksMax = true }
+-- Rewritten entry text, by bar key then the text as saved.
+---@type table<string, table<string, string>>
+local boundTexts = {}
+-- The live spec's custom bars and their bare checks, as last registered.
+---@type { key: string, resolvers: table<string, fun(): boolean> }[]
+local boundBars = {}
+-- The bars' own variable names, and the variable list they were added to.
+---@type string[]
+local boundBarVariables = {}
+local boundBarValues = nil
+-- The lookup table the unbound names were last blanked in.
+local boundWrittenLookup = nil
+-- Adds the bars' variables to the live variable list; assigned beside the base resolvers.
+---@type fun()
+local InjectBoundBarVariables
 -- Per totem slot, its name, time, and icon variables. Where slots are elements, each also answers to its element's
 -- name, and those lead so the options list them (the slot names stay as unlisted aliases).
 local totemElementLabels = {}
@@ -201,6 +223,50 @@ function TRB.Functions.BarText:MatchAnchorKey(key, pattern)
 	return nil, nil
 end
 
+---The custom bar an anchor name is on, and whether it is the bar's recharging charge.
+---@param relativeToFrame string
+---@return string? userBarKey
+---@return boolean onRechargingCharge
+local function GetUserBarKeyOfAnchor(relativeToFrame)
+	local userBarKey = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, USER_BAR_ANCHOR_PATTERN)
+	if userBarKey ~= nil then
+		return userBarKey, false
+	end
+	userBarKey = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, USER_BAR_RECHARGING_ANCHOR_PATTERN)
+	return userBarKey, userBarKey ~= nil
+end
+
+---The text an entry renders: bound to a custom bar, its $ability variables name that bar's own.
+---@param entry TRB.Classes.Settings.DisplayTextEntry
+---@return string?
+local function ResolveEntryText(entry)
+	local text = entry.text
+	local relativeToFrame = entry.position ~= nil and entry.position.relativeToFrame or nil
+	if text == nil or relativeToFrame == nil then
+		return text
+	end
+	local userBarKey = GetUserBarKeyOfAnchor(relativeToFrame)
+	if userBarKey == nil then
+		return text
+	end
+	local byText = boundTexts[userBarKey]
+	if byText == nil then
+		byText = {}
+		boundTexts[userBarKey] = byText
+	end
+	local resolved = byText[text]
+	if resolved == nil then
+		resolved = string.gsub(text, "%$ability(%a+)", function(suffix)
+			if boundBarSuffixSet[suffix] then
+				return "$" .. userBarKey .. suffix
+			end
+			return nil
+		end)
+		byText[text] = resolved
+	end
+	return resolved
+end
+
 local function GetContainerAnchorBarGroupKey(relativeToFrame)
 	if type(relativeToFrame) ~= "string" then
 		return nil
@@ -227,6 +293,10 @@ local function GetSharedAnchorBarGroupKey(relativeToFrame)
 	end
 	if TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, TOTEM_SLOT_ANCHOR_PATTERN) then
 		return "totems"
+	end
+	local userBarKey = GetUserBarKeyOfAnchor(relativeToFrame)
+	if userBarKey ~= nil then
+		return userBarKey
 	end
 	local normalized = TRB.Functions.BarText:NormalizeAnchorKey(relativeToFrame)
 	groupKey = sharedAnchorGroupKeys[normalized]
@@ -410,6 +480,17 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 		AddAnchorFrame("secondWind", L["SecondWindRecharging"], "SecondWindRecharging")
 	end
 
+	-- The bars the user added to this spec.
+	for _, userBarKey in ipairs(registry:GetUserBarKeys(classId, specId)) do
+		local userBarDef = barRegistry:Get(userBarKey)
+		AddAnchorFrame(userBarKey, string.format(L["CustomBarsAnchorLabel"], userBarDef.displayName),
+			TRB.Functions.CustomBars:GetAnchorName(userBarKey))
+		if userBarDef.fillsRecharge then
+			AddAnchorFrame(userBarKey, string.format(L["CustomBarsRechargingAnchorLabel"], userBarDef.displayName),
+				TRB.Functions.CustomBars:GetRechargingAnchorName(userBarKey))
+		end
+	end
+
 	-- A group sorts by its first label; the labels within it keep the order they were added in.
 	local sortedAnchorGroups = {}
 	for _, group in pairs(anchorGroups) do
@@ -484,6 +565,8 @@ local ANCHOR_RECHARGE = 3
 local ANCHOR_SELF_DRIVEN = 4
 local ANCHOR_CONTAINER = 5
 local ANCHOR_CLASS = 6
+-- A bar group with nothing special about it: its container, or its one node.
+local ANCHOR_BAR_GROUP = 7
 
 ---@class TRB.Classes.BarTextAnchorPlan
 ---@field public kind integer # One of the ANCHOR_ kinds
@@ -508,8 +591,11 @@ local function GetAnchorPlan(relativeToFrame)
 		plan = { kind = ANCHOR_SCREEN }
 	else
 		local totemSlot = TRB.Functions.BarText:MatchAnchorKey(relativeToFrame, TOTEM_SLOT_ANCHOR_PATTERN)
+		local userBarKey, onRechargingCharge = GetUserBarKeyOfAnchor(relativeToFrame)
 		if totemSlot ~= nil then
 			plan = { kind = ANCHOR_TOTEM_SLOT, groupKey = "totems", slot = tonumber(totemSlot) }
+		elseif userBarKey ~= nil then
+			plan = { kind = onRechargingCharge and ANCHOR_RECHARGE or ANCHOR_BAR_GROUP, groupKey = userBarKey }
 		elseif selfDrivenKey ~= nil then
 			-- Castbar is an all-spec bar not handled by any class's per-spec GetBarTextFrame; resolve it here
 			-- centrally so bar text can anchor to it (or its side icon) regardless of class/spec.
@@ -798,7 +884,7 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 		local entries = #displayText.barText
 		for i = 1, entries do
 			if displayText.barText[i].enabled then
-				local text = displayText.barText[i].text
+				local text = ResolveEntryText(displayText.barText[i])
 				if text and text ~= "" then
 					for condition in string.gmatch(text, "%b{}") do
 						if string.find(condition, "$inCombatTime", 1, true) and string.match(condition, "^{%s*%$inCombatTime%s*}$") == nil then
@@ -1188,6 +1274,13 @@ function TRB.Functions.BarText:GetCommonValues(additionalValues)
 			table.insert(values, { variable = var, description = timeDescription, printInSettings = i == 1, totem = true, color = false, secret = true,
 				category = self.VariableCategory.TOTEMS, booleanCheck = true })
 		end
+	end
+	-- What a custom bar tracks, for text bound to that bar. A cooldown's time and a charge count can be secret, so
+	-- they are display-only; a bare check on one resolves to "is the bar active?" instead.
+	local boundBarDescriptions = { L["BarTextVariableAbilityTime"], L["BarTextVariableAbilityStacks"], L["BarTextVariableAbilityStacksMax"] }
+	for index, var in ipairs(UNBOUND_BAR_VARIABLES) do
+		table.insert(values, { variable = var, description = boundBarDescriptions[index], printInSettings = true, color = false, secret = true,
+			category = self.VariableCategory.ABILITIES, booleanCheck = true })
 	end
 	-- Swing bars follow Breath, where the flavor has them. Plain seconds, so they can be compared.
 	if TRB.Flavor.swingTimers then
@@ -2813,6 +2906,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 	TRB.Functions.BarText:RefreshPetLookupData(settings)
 	TRB.Functions.BarText:RefreshTotemLookupData()
+	TRB.Functions.BarText:RefreshCustomBarLookupData()
 	TRB.Functions.BarText:RefreshSkyridingLookupData()
 
 	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
@@ -2933,6 +3027,28 @@ function TRB.Functions.BarText:RefreshTotemLookupData()
 			end
 		end
 	end
+end
+
+---Refreshes the custom bars' own variables. The unbound $ability names render empty, for text on any other bar.
+function TRB.Functions.BarText:RefreshCustomBarLookupData()
+	local lookup = TRB.Data.lookup
+	if boundWrittenLookup ~= lookup then
+		boundWrittenLookup = lookup
+		for _, var in ipairs(UNBOUND_BAR_VARIABLES) do
+			lookup[var] = ""
+		end
+	end
+	if #boundBars == 0 then
+		return
+	end
+	-- A spec load swaps the variable list after the bars registered.
+	if TRB.Data.barTextVariables.values ~= boundBarValues then
+		InjectBoundBarVariables()
+	end
+	if not IsRefresherInUse("customBars") then
+		return
+	end
+	TRB.Functions.CustomBars:WriteLookup(lookup)
 end
 
 -- Other Bars variable -> bar key. Each bar contributes $<key>Duration and $<key>DurationRemaining.
@@ -3367,6 +3483,53 @@ for var, check in pairs(skyridingValidVars) do
 	AddBaseResolver(var, check)
 end
 
+InjectBoundBarVariables = function()
+	local values = TRB.Data.barTextVariables.values
+	for index = #values, 1, -1 do
+		if values[index].boundBarKey ~= nil then
+			table.remove(values, index)
+		end
+	end
+	for _, bar in ipairs(boundBars) do
+		for _, suffix in ipairs(BOUND_BAR_SUFFIXES) do
+			values[#values + 1] = { variable = "$" .. bar.key .. suffix, printInSettings = false, color = false, secret = true,
+				booleanCheck = true, boundBarKey = bar.key }
+		end
+	end
+	boundBarValues = values
+	-- Text parsed before its bar's variables existed kept them as plain text.
+	TRB.Functions.BarText:ClearBarTextCacheHash()
+	TRB.Data.activeVariables = nil
+	TRB.Data.lookupDirty = true
+end
+
+---Registers the live spec's custom bars, replacing the last set: each bar's own variables, their bare checks, and
+---the refresher that writes them.
+---@param bars { key: string, resolvers: table<string, fun(): boolean> }[]
+function TRB.Functions.BarText:SetBoundBarVariables(bars)
+	for _, var in ipairs(boundBarVariables) do
+		baseVariableResolvers[var] = nil
+		selfDrivenBarVariables[var] = nil
+		refresherGroupOf[var] = nil
+	end
+	wipe(boundBarVariables)
+	wipe(boundTexts)
+	boundBars = bars
+	for _, bar in ipairs(bars) do
+		for _, suffix in ipairs(BOUND_BAR_SUFFIXES) do
+			local var = "$" .. bar.key .. suffix
+			boundBarVariables[#boundBarVariables + 1] = var
+			baseVariableResolvers[var] = bar.resolvers[suffix]
+			refresherGroupOf[var] = "customBars"
+			-- A timer counts down with nothing else changing.
+			if suffix == "Time" then
+				selfDrivenBarVariables[var] = true
+			end
+		end
+	end
+	InjectBoundBarVariables()
+end
+
 ---Flags many variables, for baseline stats and stat percentages, as valid for bar text logic
 ---@param var string
 ---@return boolean
@@ -3484,6 +3647,7 @@ local function HasActiveSelfDrivenBarVariableInUse()
 		or IsSkyridingTextLive()
 		or (speedTextOffBar and not TRB.Functions.Character:IsSpeedSettled())
 		or TRB.Functions.Totems:GetActiveCount() > 0
+		or TRB.Functions.CustomBars:HasActiveTimer()
 end
 
 -- Previous tick's HasActiveSelfDrivenBarVariableInUse result, for detecting the tick a cast/timer ends on.
@@ -3681,12 +3845,13 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 							entryState = {}
 							barTextEntryStates[i] = entryState
 						end
+						local entryText = ResolveEntryText(e)
 						-- A frame hidden or never written may hold stale text, so it bypasses the unchanged-skip.
 						local forceWrite = visibilityRefresh or not frameCache.written
 						-- An entry that keeps throwing latches to legacy so it stops paying for both paths
 						-- every tick; the latch clears whenever entry state is wiped.
 						local engineFailures = entryState.engineFailures or 0
-						if engineFailures > 0 and entryState.sigText ~= e.text then
+						if engineFailures > 0 and entryState.sigText ~= entryText then
 							engineFailures = 0
 						end
 						local renderOk, rendered, returnText = false, false, nil
@@ -3701,7 +3866,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 							entryState.previewText = returnText
 							renderOk = true
 						elseif engineFailures < maxEngineFailures then
-							renderOk, rendered, returnText = pcall(RenderBarTextEntry, entryState, e.text, colorCode, forceWrite)
+							renderOk, rendered, returnText = pcall(RenderBarTextEntry, entryState, entryText, colorCode, forceWrite)
 							if not renderOk then
 								entryState.engineFailures = engineFailures + 1
 							elseif engineFailures > 0 then
@@ -3709,7 +3874,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 							end
 						end
 						if not renderOk then
-							barTextBuffer.text = e.text
+							barTextBuffer.text = entryText
 							barTextBuffer.color = colorCode
 							returnText = GetReturnText(barTextBuffer)
 							rendered = true
@@ -3839,6 +4004,34 @@ local function ResolveFontFace(fontFaceName, fallbackFontFace)
 	return TRB.Functions.LibSharedMedia:Resolve("font", fontFaceName, fallbackFontFace, fallbackFontFace)
 end
 
+-- The character's own list behind each drawn list that carries another spec's bound text.
+---@type table<table, table>
+local ownListOf = setmetatable({}, { __mode = "k" })
+
+---Brings the character's drawn bar text list in line with the displayed custom bars: while a form shows another
+---specialization's, the text bound to them follows the character's own entries.
+---@param displayText TRB.Classes.Settings.DisplayText # The character's composed display text
+function TRB.Functions.BarText:ApplyDisplayedBoundText(displayText)
+	local own = ownListOf[displayText.barText] or displayText.barText
+	local drawn = own
+	local bound = TRB.Functions.CustomBars:GetDisplayedBoundText()
+	if bound ~= nil and #bound > 0 then
+		drawn = {}
+		for index, entry in ipairs(own) do
+			drawn[index] = entry
+		end
+		for _, entry in ipairs(bound) do
+			drawn[#drawn + 1] = entry
+		end
+		ownListOf[drawn] = own
+	end
+	if displayText.barText ~= drawn then
+		displayText.barText = drawn
+		-- The entries that came or went name variables of their own.
+		TRB.Data.activeVariables = nil
+	end
+end
+
 ---Builds the required bar text frames
 ---@param classId integer?
 ---@param specId integer?
@@ -3848,15 +4041,23 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 
 	-- Don't do this if we're not modifying the current spec's bar text
 	if classId ~= TRB.Data.character.classId or specId ~= TRB.Data.character.specId then
-		return
+		-- A form showing that spec's custom bars draws the text bound to them.
+		if not TRB.Functions.CustomBars:IsDisplayedSpec(classId, specId) then
+			return
+		end
+		classId, specId = TRB.Data.character.classId, TRB.Data.character.specId
+		self:ClearBarTextCacheHash()
+		TRB.Data.activeVariables = nil
+		self:InvalidateLookupMemoization()
 	end
 
 	-- New font strings start empty; drop the unchanged-skip states so every entry rewrites.
 	wipe(barTextEntryStates)
-	
+
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
 	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
 	local settings = TRB.Data.specCache[compositeKey].settings
+	self:ApplyDisplayedBoundText(settings.displayText)
 
 	---@type TRB.Classes.BarTextFrame[]
 	local textFrames = TRB.Frames.textFrames

@@ -840,6 +840,62 @@ function CDM:IsCooldownActive(cooldownID)
 	return entry.frame.auraDataCached ~= nil
 end
 
+---Whether the aura a cooldown viewer's item tracks for its spell is up, such as a DoT on the target: nil when no
+---usable cooldown viewer holds the spell.
+---@param spellId integer
+---@return boolean?
+function CDM:IsSpellAuraActive(spellId)
+	local entry = GetSource(spellId, CDM.SourceGroup.COOLDOWN)
+	if entry == nil then
+		return nil
+	end
+	return entry.frame.auraDataCached ~= nil
+end
+
+---Which buff viewer holds an entry, or nil when no usable one does.
+---@param cooldownID integer
+---@return TRB.CdmSourceKind?
+function CDM:GetCooldownSourceKind(cooldownID)
+	if not TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		return nil
+	end
+	if indexDirty or ShownStateChanged() then
+		self:RebuildIndex()
+	end
+	local entry = cooldownSources[cooldownID]
+	if entry == nil or quarantined[entry.frame] then
+		return nil
+	end
+	return entry.kind
+end
+
+---Reads a signal from the buff viewer entry with this cooldownID, which stays plain where a spell ID goes secret.
+---@param cooldownID integer
+---@param signal TRB.CdmSignal
+---@return boolean ok # False means "no data"
+---@return any value
+---@return boolean isSecret
+function CDM:ReadCooldown(cooldownID, signal)
+	if signal == nil or not TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		return false, nil, false
+	end
+	if indexDirty or ShownStateChanged() then
+		self:RebuildIndex()
+	end
+	local entry = cooldownSources[cooldownID]
+	if entry == nil or quarantined[entry.frame] or not SupportsSignal(entry, signal) then
+		return false, nil, false
+	end
+	local ok, value = pcall(ReadSignal, entry, signal)
+	if not ok then
+		if not nonQuarantiningSignals[signal] then
+			quarantined[entry.frame] = true
+		end
+		return false, nil, false
+	end
+	return true, value, issecretvalue(value)
+end
+
 ---A custom Color Indicator's or Buff Alert's condition: which source it reads and what must hold.
 ---@class TRB.CustomIndicatorCondition
 ---@field source string # CDM.CONDITION_SOURCE, Threshold.CONDITION_SOURCE for a threshold line's state, or Aura.CONDITION_SOURCE for a player buff
@@ -864,7 +920,12 @@ function CDM:ReadCondition(condition)
 	if condition.source ~= CDM.CONDITION_SOURCE or condition.state ~= CDM.ConditionState.ACTIVE or cooldownID == nil then
 		return false
 	end
-	return self:IsCooldownActive(cooldownID)
+	local isActive = self:IsCooldownActive(cooldownID)
+	-- With no buff viewer showing it, an ability's own aura is followed from its cooldown viewer item.
+	if isActive == nil and condition.spellID ~= nil then
+		isActive = self:IsSpellAuraActive(condition.spellID)
+	end
+	return isActive
 end
 
 ---Whether one custom indicator condition holds right now. Unknown answers count as not met.
@@ -1095,6 +1156,127 @@ function CDM:GetLayoutEntries()
 		end
 	end
 	return entries
+end
+
+---One ability in the user's layout.
+---@class TRB.CdmAbilityEntry
+---@field cooldownID integer
+---@field spellID integer # The entry's own spell, which its cooldown is read by
+---@field name string
+---@field icon any
+---@field known boolean
+---@field displayed boolean # In Essential Cooldowns or Utility Cooldowns
+---@field hasCharges boolean
+
+---Every ability in the user's layout, in layout order, or nil unless the layout is READY.
+---@return TRB.CdmAbilityEntry[]?
+function CDM:GetAbilityEntries()
+	if self:GetLayoutStatus() ~= CDM.LayoutStatus.READY then
+		return nil
+	end
+	local displayData = GetDisplayData()
+	local categories = Enum.CooldownViewerCategory --[[@as table<string, integer?>]]
+	if displayData == nil or categories == nil then
+		return nil
+	end
+	local displayedByCategory = {}
+	if categories.Essential ~= nil then
+		displayedByCategory[categories.Essential] = true
+	end
+	if Enum.CooldownViewerCategory.Utility ~= nil then
+		displayedByCategory[Enum.CooldownViewerCategory.Utility] = true
+	end
+	if categories.HiddenActive ~= nil then
+		displayedByCategory[categories.HiddenActive] = false
+	end
+	local entries = {}
+	for _, cooldownID in ipairs(displayData.orderedCooldownIDs) do
+		local info = displayData.cooldownInfoByID[cooldownID]
+		local category = type(info) == "table" and info.category or nil
+		if category ~= nil and not issecretvalue(category) and displayedByCategory[category] ~= nil and not issecretvalue(info.isKnown)
+			and TRB.Functions.Number:IsPlainNumber(info.spellID) then
+			local overrideId = info.overrideSpellID
+			local name, icon = DescribeSpell(overrideId ~= nil and overrideId or info.spellID)
+			if name == nil then
+				name, icon = DescribeSpell(info.spellID)
+			end
+			if name ~= nil then
+				entries[#entries + 1] = {
+					cooldownID = cooldownID,
+					spellID = info.spellID,
+					name = name,
+					icon = icon,
+					known = info.isKnown == true,
+					displayed = displayedByCategory[category],
+					hasCharges = not issecretvalue(info.charges) and info.charges == true,
+				}
+			end
+		end
+	end
+	return entries
+end
+
+---Whether a passive entry can be followed: it is displayed, or it is the aura of an ability the user displays in a
+---cooldown viewer, whose item follows that aura.
+---@param entry TRB.CdmLayoutEntry
+---@return boolean
+function CDM:IsEntryTracked(entry)
+	if entry.state == CDM.EntryState.TRACKED then
+		return true
+	end
+	if entry.state ~= CDM.EntryState.NOT_DISPLAYED or entry.spellID == nil then
+		return false
+	end
+	for _, ability in ipairs(self:GetAbilityEntries() or {}) do
+		if ability.spellID == entry.spellID and ability.displayed and ability.known then
+			return true
+		end
+	end
+	return false
+end
+
+---Whether the user's layout puts an entry in Tracked Bars, whether or not that viewer is shown right now.
+---@param cooldownID integer
+---@return boolean
+function CDM:IsInTrackedBars(cooldownID)
+	local displayData = GetDisplayData()
+	local trackedBar = Enum.CooldownViewerCategory ~= nil and Enum.CooldownViewerCategory.TrackedBar or nil
+	if displayData == nil or trackedBar == nil or not TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		return false
+	end
+	local info = displayData.cooldownInfoByID[cooldownID]
+	local category = type(info) == "table" and info.category or nil
+	return category ~= nil and not issecretvalue(category) and category == trackedBar
+end
+
+---The spell IDs an entry's aura can land under, the aura's own first: its linked spells, then its override and its
+---spell, which are often the ability applying it (Coagulating Blood rides on Death Strike).
+---@param cooldownID integer
+---@param spellId integer? # The entry's spell, used when its metadata can't be read
+---@return integer[]
+function CDM:GetAuraSpellIds(cooldownID, spellId)
+	local ids = {}
+	local function Add(id)
+		if TRB.Functions.Number:IsPlainNumber(id) and id > 0 and not tContains(ids, id) then
+			ids[#ids + 1] = id
+		end
+	end
+	local getInfo = C_CooldownViewer ~= nil and C_CooldownViewer.GetCooldownViewerCooldownInfo or nil
+	if getInfo ~= nil and TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		local ok, info = pcall(getInfo, cooldownID)
+		if ok and type(info) == "table" then
+			local linked = info.linkedSpellIDs
+			if type(linked) == "table" and not issecrettable(linked) then
+				for _, linkedSpellId in ipairs(linked) do
+					Add(linkedSpellId)
+				end
+			end
+			Add(info.overrideSpellID)
+			Add(info.spellID)
+		end
+	end
+	Add(spellId)
+	return ids
 end
 
 ---One passive entry by cooldownID; nil when it isn't in the layout. Callers check GetLayoutStatus first,

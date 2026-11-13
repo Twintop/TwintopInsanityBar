@@ -15,6 +15,14 @@ TRB.Flavor.newsContent = [====[
 - [#986](#986) Fix a mana spec's Primary Resource Value bar visibility condition being met at far less mana than the value set.
 - [#986](#986) A mana spec's Primary Resource Value condition now goes up to 15,000.
 
+### Color Indicators
+
+- [#991](#991) A custom Color Indicator or Buff Alert by spell ID can follow your debuff on your target, such as a damage over time effect.
+
+### Custom Bars
+
+- [#991](#991) A custom bar can track the duration or stacks of a buff on you, or of your debuff on your target, by its spell ID, counting any rank of the spell.
+
 ---
 
 # 1.15.9.3-release (2026-11-10)

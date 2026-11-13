@@ -13,6 +13,9 @@ local tracked = {}
 -- Tracked cooldowns by every spell id a cooldown event can name them by.
 ---@type table<integer, TRB.Classes.SnapshotCooldown[]>
 local trackedById = {}
+-- Spell name -> the cooldowns of spells a custom bar names by ID, since a cooldown event names the rank that was cast.
+---@type table<string, TRB.Classes.SnapshotCooldown[]>
+local trackedByName = {}
 -- No event marks a cooldown's natural end, so an invisible Cooldown frame per cooldown reports it.
 ---@type table<TRB.Classes.SnapshotCooldown, Cooldown>
 local endWidgets = {}
@@ -176,6 +179,18 @@ eventFrame:SetScript("OnEvent", function(_, event, spellID, baseSpellID)
 			ApplyCooldownEvent(cooldown, now)
 		end
 	end
+	-- A spell ID bar's spell also matches by name, beside the spec's own tracking of a rank of it.
+	if next(trackedByName) ~= nil then
+		local name = C_Spell.GetSpellName(spellID)
+		local named = name ~= nil and trackedByName[name] or nil
+		if named ~= nil then
+			for _, cooldown in ipairs(named) do
+				if matches == nil or not tContains(matches, cooldown) then
+					ApplyCooldownEvent(cooldown, now)
+				end
+			end
+		end
+	end
 end)
 
 ---@param id integer?
@@ -209,8 +224,9 @@ end
 
 ---@param spell TRB.Classes.SpellBase?
 ---@param snapshots table<integer, TRB.Classes.Snapshot>
-local function Track(spell, snapshots)
-	local snapshot = spell ~= nil and snapshots[spell.id] or nil
+---@param ownSnapshot TRB.Classes.Snapshot? # The spell's snapshot, when the spec's own table doesn't hold it
+local function Track(spell, snapshots, ownSnapshot)
+	local snapshot = ownSnapshot or (spell ~= nil and snapshots[spell.id]) or nil
 	if snapshot == nil or snapshot.spell == nil then
 		return
 	end
@@ -221,6 +237,18 @@ local function Track(spell, snapshots)
 	-- Lines sharing a snapshot, such as Execute's, are named by their own ids as well as the snapshot's.
 	AddSpellIds(spell --[[@as TRB.Classes.SpellBase]], cooldown)
 	AddSpellIds(snapshot.spell, cooldown)
+	-- A spell the user named by ID carries no ranks, so any rank of its name is it.
+	local name = ownSnapshot ~= nil and C_Spell.GetSpellName(snapshot.spell.id) or nil
+	if name ~= nil then
+		local list = trackedByName[name]
+		if list == nil then
+			list = {}
+			trackedByName[name] = list
+		end
+		if not tContains(list, cooldown) then
+			list[#list + 1] = cooldown
+		end
+	end
 end
 
 ---The settings the live spec's lines can draw with, and the lines its On Cooldown Color Indicators follow.
@@ -283,12 +311,14 @@ local function SyncEventRegistration()
 	end
 end
 
----Rebuilds the tracked set from the live spec's lines that need their cooldown and its descriptor's cooldownSpells.
+---Rebuilds the tracked set from the live spec's lines that need their cooldown, its descriptor's cooldownSpells, and
+---the cooldowns its custom bars read.
 ---A cooldown that joins is read once; one that leaves ends, so no stale cooldown outlives tracking.
 function ThresholdCooldowns:Sync()
 	local previous = tracked
 	tracked = {}
 	wipe(trackedById)
+	wipe(trackedByName)
 
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
 	if enabled and snapshotData ~= nil then
@@ -305,6 +335,11 @@ function ThresholdCooldowns:Sync()
 			for _, key in ipairs(descriptor.cooldownSpells) do
 				Track(spells[key], snapshots)
 			end
+		end
+		local customBarSpells, customBarSnapshots = {}, {}
+		TRB.Functions.CustomBars:AppendCooldownSpells(customBarSpells, customBarSnapshots)
+		for _, spell in ipairs(customBarSpells) do
+			Track(spell, snapshots, customBarSnapshots[spell])
 		end
 	end
 

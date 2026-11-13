@@ -698,6 +698,45 @@ local CDM_PICKER_NOTE_R, CDM_PICKER_NOTE_G, CDM_PICKER_NOTE_B = 0.85, 0.75, 1.0
 local menuMaxRowsBeforeScroll = 15
 local menuRowHeight = 20
 
+---Frees the global names of everything under a frame that is being retired, so a rebuilt copy can take them: a
+---named frame or region doesn't replace a global that already exists, which leaves the copy's labels unset.
+---@param frame Frame
+function TRB.Functions.OptionsUi.Primitives:ReleaseFrameNames(frame)
+	for _, region in ipairs({ frame:GetRegions() }) do
+		local name = region:GetName()
+		if name ~= nil and _G[name] == region then
+			_G[name] = nil
+		end
+	end
+	for _, child in ipairs({ frame:GetChildren() }) do
+		local name = child:GetName()
+		if name ~= nil and _G[name] == child then
+			_G[name] = nil
+		end
+		self:ReleaseFrameNames(child)
+	end
+end
+
+---Retires a built frame that is being replaced. A frame can't be destroyed, so this leaves it inert: names freed,
+---and nothing under it shown, anchored, or listening.
+---@param frame Frame
+function TRB.Functions.OptionsUi.Primitives:RetireFrame(frame)
+	self:ReleaseFrameNames(frame)
+	---@param retired Frame
+	local function Strip(retired)
+		for _, child in ipairs({ retired:GetChildren() }) do
+			Strip(child)
+		end
+		retired:UnregisterAllEvents()
+		retired:SetScript("OnUpdate", nil)
+		retired:SetScript("OnEvent", nil)
+		retired:Hide()
+		retired:ClearAllPoints()
+	end
+	Strip(frame)
+	frame:SetParent(nil)
+end
+
 ---Makes a menu scroll once it holds more rows than fit comfortably on screen.
 ---@param rootDescription table
 ---@param rowCount integer # Rows the menu draws, counting titles and dividers
@@ -916,7 +955,7 @@ end
 local function UpdateAuraSpellIdPrompt(dialog)
 	local text = dialog:GetEditBox():GetText()
 	local spellId = ParseAuraSpellId(text)
-	local message = L["AuraSpellIdPromptText"]
+	local message = dialog.data ~= nil and dialog.data.promptText or L["CustomBarsAuraIdPromptText"]
 	if spellId ~= nil then
 		message = message .. "\n\n" .. (TRB.Functions.OptionsUi.Primitives:FormatAuraSpellLabel(spellId) or "")
 	elseif text ~= nil and text:match("%S") then
@@ -969,8 +1008,9 @@ StaticPopupDialogs["TwintopResourceBar_AuraSpellId"] = {
 ---Asks for the spell ID of a buff to follow, showing the spell it names as it's typed.
 ---@param currentSpellId integer? # Pre-filled, when re-pointing
 ---@param onAccept fun(spellId: integer) # Only called with an ID some spell has
-function TRB.Functions.OptionsUi.Primitives:ShowAuraSpellIdPrompt(currentSpellId, onAccept)
-	StaticPopup_Show("TwintopResourceBar_AuraSpellId", nil, nil, { spellId = currentSpellId, onAccept = onAccept })
+---@param promptText string? # What to ask for, when it isn't a buff
+function TRB.Functions.OptionsUi.Primitives:ShowAuraSpellIdPrompt(currentSpellId, onAccept, promptText)
+	StaticPopup_Show("TwintopResourceBar_AuraSpellId", nil, nil, { spellId = currentSpellId, onAccept = onAccept, promptText = promptText })
 end
 
 ---Creates a two-part help entry: a right-aligned variable name and a left-aligned description below it.

@@ -529,12 +529,14 @@ function TRB.Classes.Mainline.Monk.WindwalkerSpells:New()
 	self.strikeOfTheWindlord = TRB.Classes.SpellBase:New({
 		id = 392983,
 		hasCooldown = true,
+		handTimedCooldown = true,
 		isTalent = true,
 		cooldown = 30 -- Tooltip lies and says it is 35 as of 2026-03-02
 	})
 	self.whirlingDragonPunch = TRB.Classes.SpellBase:New({
 		id = 152175,
 		hasCooldown = true,
+		handTimedCooldown = true,
 		isTalent = true,
 		cooldown = 30 -- Tooltip lies and says it is 35 as of 2026-03-02
 	})

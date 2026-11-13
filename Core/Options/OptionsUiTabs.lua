@@ -328,6 +328,11 @@ end
 ---@param specId integer?
 ---@param barKey string
 function TRB.Functions.OptionsUi.Tabs:OpenBarTab(classId, specId, barKey)
+	-- A custom bar's options are its own specialization's, which a form can show on another.
+	local userBarDef = TRB.Classes.BarTypeRegistry:IsUserBar(barKey) and TRB.Classes.BarTypeRegistry:GetInstance():Get(barKey) or nil
+	if userBarDef ~= nil then
+		classId, specId = userBarDef.ownerClassId, userBarDef.ownerSpecId
+	end
 	local barGroup = TRB.Classes.BarTypeRegistry:GetBarGroup(barKey, classId, specId)
 	local visibilityKey = TRB.Functions.Bar:GetVisibilityKey(barKey)
 	local navKey
@@ -345,6 +350,12 @@ function TRB.Functions.OptionsUi.Tabs:OpenBarTab(classId, specId, barKey)
 		-- A grouping's bars sit on a strip inside the spec panel's tab for that grouping, built on first visit.
 		if classId ~= nil and barGroup ~= "spec" then
 			self:SwitchToTabByClassSpec(classId, specId, barGroup)
+		end
+		-- Custom bars share one tab, so the bar's row is what opens its options.
+		if classId ~= nil and barGroup == "customBars" then
+			self:SwitchToTabByNamePrefix(self:GetGroupInnerPrefix("customBars", classId, specId), "bars")
+			TRB.Functions.OptionsUi.CustomBars:OpenBar(classId, specId, barKey)
+			return
 		end
 		for _, entry in ipairs(barTabs) do
 			if entry.classId == classId and entry.specId == specId and entry.visibilityKey == visibilityKey then
@@ -373,7 +384,7 @@ TRB.Functions.OptionsUi.Tabs.TabKeys = {
 }
 
 local groupGlobalPrefix = { castbar = "Castbar", otherBars = "OtherBars", petBars = "PetBars", totems = "Totems", skyriding = "Skyriding" }
-local groupInnerPrefixStem = { castbar = "CastbarInner_", otherBars = "OtherBarsInner_", petBars = "PetBarsInner_", totems = "TotemsInner_", skyriding = "SkyridingInner_" }
+local groupInnerPrefixStem = { castbar = "CastbarInner_", otherBars = "OtherBarsInner_", petBars = "PetBarsInner_", totems = "TotemsInner_", skyriding = "SkyridingInner_", customBars = "CustomBarsInner_" }
 
 ---The tab group name prefix of a shared grouping's strip: the Global screen's own, or the spec panel's inner one.
 ---@param groupKey string # castbar, otherBars, petBars, totems, or skyriding
@@ -612,6 +623,25 @@ function TRB.Functions.OptionsUi.Tabs:BuildSkyridingInnerTabGroup(parent, classI
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
 end
 
+---Builds the nested sub-tab group inside a spec's Custom Bars tab: the bars the user added, then their Textures,
+---Visibility, and Bar Text.
+---@param parent Frame # The Custom Bars tab's manual container frame
+---@param classId integer
+---@param specId integer
+function TRB.Functions.OptionsUi.Tabs:BuildCustomBarsInnerTabGroup(parent, classId, specId)
+	if parent == nil then
+		return
+	end
+	local namePrefix = TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("customBars", classId, specId)
+	local innerTabs = {
+		{ "bars", TRB.Localization["TabCustomBarsBars"], oUi.tabWidth.small, function(container)
+			TRB.Functions.OptionsUi.CustomBars:ConstructPanel(container, classId, specId)
+		end, true },
+	}
+	TRB.Functions.OptionsUi.Tabs:AppendGroupSettingsTabs(innerTabs, classId, specId, "customBars")
+	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, innerTabs, -10, { classId = classId, specId = specId })
+end
+
 ---Builds a dynamic set of tabs and tabsheets for an options panel.
 ---Tabs automatically wrap to multiple rows when they would exceed the parent frame's width.
 ---@param parent Frame|TRB.Classes.OptionsUi.TabbedPanel The parent frame to attach tabs to (e.g., the spec display panel)
@@ -772,6 +802,36 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 				oUi.tabWidth.small,
 				function(scrollChild)
 					TRB.Functions.OptionsUi.Tabs:BuildSkyridingInnerTabGroup(scrollChild, cId, sId)
+				end,
+				true -- manual container: the inner sub-tabs provide their own scroll frames
+			})
+		end
+
+		-- Custom Bars closes the run of bar tabs, on every spec.
+		local hasCustomBarsTab = false
+		for _, def in ipairs(tabDefinitions) do
+			if def[1] == "customBars" then
+				hasCustomBarsTab = true
+				break
+			end
+		end
+		if not hasCustomBarsTab then
+			local cId, sId = castbarSpec.classId, castbarSpec.specId
+			-- Another class's saved bars are registered nowhere else, and every tab built below lists them.
+			local cName, sName = TRB.Functions.Character:GetClassAndSpecializationNames(cId, sId, true)
+			TRB.Functions.CustomBars:SyncRegistry(cId, sId, TRB.Data.settings[cName] and TRB.Data.settings[cName][sName])
+			local insertIndex = #tabDefinitions + 1
+			for i, def in ipairs(tabDefinitions) do
+				if def[1] == "skyriding" or def[1] == "petBars" or def[1] == "otherBars" then
+					insertIndex = i + 1
+				end
+			end
+			table.insert(tabDefinitions, insertIndex, {
+				"customBars",
+				TRB.Localization["TabCustomBars"],
+				oUi.tabWidth.medium,
+				function(scrollChild)
+					TRB.Functions.OptionsUi.Tabs:BuildCustomBarsInnerTabGroup(scrollChild, cId, sId)
 				end,
 				true -- manual container: the inner sub-tabs provide their own scroll frames
 			})

@@ -27,13 +27,15 @@
 	gate, cast-tracked stacks and timer, node fill, bar text, and audio counter; it runs once per class. spell-data checks that every
 	filled specialization's spellsById lists each spell once under each of its ids and ranks through loading screens, talent changes, and
 	specialization changes; it runs once per class.
+	custom-bars checks Custom Bars: an added bar's sources, registry scope, group, fill, visibility entry, bar text anchor, and the
+	options tab's add, edit, and delete; it runs once per class.
 	See build\harness\README.md.
 
 .PARAMETER Lua
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews, arcane-blast, spell-data). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews, arcane-blast, spell-data, custom-bars). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
@@ -79,7 +81,8 @@ $drivers = @(
 	[pscustomobject]@{ Name = "slice-and-dice"; EveryClass = $true },
 	[pscustomobject]@{ Name = "brews"; EveryClass = $true },
 	[pscustomobject]@{ Name = "arcane-blast"; EveryClass = $true },
-	[pscustomobject]@{ Name = "spell-data"; EveryClass = $true }
+	[pscustomobject]@{ Name = "spell-data"; EveryClass = $true },
+	[pscustomobject]@{ Name = "custom-bars"; EveryClass = $true }
 )
 $known = $drivers | ForEach-Object { $_.Name }
 if ($Driver -ne "" -and $known -notcontains $Driver) {

@@ -152,6 +152,10 @@ end
 
 local function CopyCustomBarConfigurations(configuration, settings, classId, specId)
 	local allowedBars = GetAllowedCustomBarKeys(classId, specId)
+	-- From the saved bars themselves, since another class's may not be registered.
+	for guid in pairs(TRB.Functions.CustomBars:GetBars(settings) or {}) do
+		AddCustomBarKey(allowedBars, TRB.Functions.CustomBars:GetBarKey(guid))
+	end
 	for barKey in pairs(allowedBars) do
 		CopyCustomBarConfiguration(configuration, settings, barKey)
 	end
@@ -194,6 +198,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		end
 
 		CopyCustomBarConfigurations(configuration, settings, classId, specId)
+		-- What each bar the user added tracks; the bars' own data went with the registry bars above.
+		configuration.customBars = settings.customBars
 	end
 
 	if includeThresholds then
@@ -536,7 +542,8 @@ local function HandleImport(input)
 					for specName, spec in pairs(class) do
 						local entryCount = TRB.Functions.Table:Length(newBarText[className.."_"..specName])
 						if entryCount > 0 then
-							spec.displayText.barText = newBarText[className.."_"..specName]
+							-- The list is replaced whole, except for what belongs to the bars the user added.
+							spec.displayText.barText = TRB.Functions.CustomBars:ReconcileImportedText(spec, newBarText[className.."_"..specName], spec.displayText.barText)
 						end
 					end
 				end
